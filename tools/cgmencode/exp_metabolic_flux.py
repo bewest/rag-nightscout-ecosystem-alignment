@@ -95,8 +95,31 @@ def find_patient_dirs(patients_dir):
 
 
 def load_patients(patients_dir, max_patients=None, patient_filter=None,
-                  verbose=True):
-    """Load per-patient DataFrames + PK features."""
+                  verbose=True, parquet_path=None):
+    """Load per-patient DataFrames + PK features.
+
+    Args:
+        patients_dir: Directory containing patient subdirectories with
+            training/ JSON files (traditional path).
+        max_patients: Limit number of patients loaded.
+        patient_filter: Load only this patient name.
+        verbose: Print progress messages.
+        parquet_path: If provided, load from grid.parquet instead of JSON.
+            Delegates to real_data_adapter.load_parquet_patients() which
+            handles column renaming, profile attrs, and normalization.
+    """
+    if parquet_path:
+        from cgmencode.real_data_adapter import load_parquet_patients
+        return load_parquet_patients(parquet_path, max_patients=max_patients,
+                                    patient_filter=patient_filter,
+                                    verbose=verbose)
+    return _load_patients_json(patients_dir, max_patients,
+                               patient_filter, verbose)
+
+
+def _load_patients_json(patients_dir, max_patients=None,
+                        patient_filter=None, verbose=True):
+    """Load patients from Nightscout JSON directories (original path)."""
     pdirs = find_patient_dirs(patients_dir)
     if patient_filter:
         pdirs = [p for p in pdirs if p.name == patient_filter]

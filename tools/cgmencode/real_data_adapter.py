@@ -636,7 +636,9 @@ def _reconstruct_attrs(profiles_df: pd.DataFrame, patient_id: str) -> dict:
 
     # Use latest profile snapshot only
     if 'created_at' in pf.columns:
-        pf = pf[pf['created_at'] == pf['created_at'].max()]
+        max_created = pf['created_at'].max()
+        if pd.notna(max_created):
+            pf = pf[pf['created_at'] == max_created]
 
     attrs = {}
 

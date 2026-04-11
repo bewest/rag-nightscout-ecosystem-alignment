@@ -38,9 +38,20 @@ class NumpyEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
-PATIENT_DIR = 'externals/ns-data/patients/'
-FIG_DIR = 'docs/60-research/figures'
-EXP_DIR = 'externals/experiments'
+# Resolve workspace root (two levels up from this file)
+_WORKSPACE_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PATIENT_DIR = os.path.join(_WORKSPACE_ROOT, 'externals/ns-data/patients/')
+PARQUET_DIR = None
+for i, arg in enumerate(sys.argv):
+    if arg == '--parquet' and i + 1 < len(sys.argv):
+        PARQUET_DIR = sys.argv[i + 1]
+    elif arg.startswith('--parquet='):
+        PARQUET_DIR = arg.split('=', 1)[1]
+_default_parquet = os.path.join(_WORKSPACE_ROOT, 'externals/ns-parquet/training')
+if PARQUET_DIR is None and os.path.exists(os.path.join(_default_parquet, 'grid.parquet')):
+    PARQUET_DIR = _default_parquet
+FIG_DIR = os.path.join(_WORKSPACE_ROOT, 'docs/60-research/figures')
+EXP_DIR = os.path.join(_WORKSPACE_ROOT, 'externals/experiments')
 MAKE_FIGS = '--figures' in sys.argv
 
 if MAKE_FIGS:
@@ -59,7 +70,7 @@ TARGET_HIGH = 180
 SUPPLY_SCALE = 0.3
 
 
-patients = load_patients(PATIENT_DIR)
+patients = load_patients(PATIENT_DIR, parquet_path=PARQUET_DIR)
 
 
 def get_profile_value(df, attr_name, hour, convert_mmol=False):
