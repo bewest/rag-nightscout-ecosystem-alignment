@@ -1,0 +1,878 @@
+{
+  "experiment": "EXP-2539",
+  "title": "Hypo Early Warning Signals",
+  "summary": {
+    "key_question": "Can we detect hypo risk with AUC > 0.85 at 30-min lead time?",
+    "baseline": "Current loop median reduction lead time: 5 min (EXP-2538)",
+    "best_auc": 0.9035,
+    "best_method": "gradient_boosting",
+    "target_met": true
+  },
+  "sub_experiments": {
+    "exp_2539a_feature_divergence": {
+      "hypo_event_count": 6641,
+      "divergence": {
+        "glucose": {
+          "-5min": {
+            "hypo_mean": 65.8832,
+            "control_mean": 100.6757,
+            "hypo_n": 6562,
+            "control_n": 8341,
+            "cohens_d": -1.4237,
+            "p_value": 0.0
+          },
+          "-15min": {
+            "hypo_mean": 72.1533,
+            "control_mean": 101.0743,
+            "hypo_n": 6548,
+            "control_n": 8328,
+            "cohens_d": -1.0202,
+            "p_value": 0.0
+          },
+          "-30min": {
+            "hypo_mean": 77.9441,
+            "control_mean": 103.1296,
+            "hypo_n": 6564,
+            "control_n": 8302,
+            "cohens_d": -0.792,
+            "p_value": 0.0
+          },
+          "-45min": {
+            "hypo_mean": 91.0859,
+            "control_mean": 105.683,
+            "hypo_n": 6515,
+            "control_n": 8288,
+            "cohens_d": -0.3876,
+            "p_value": 0.0
+          },
+          "-60min": {
+            "hypo_mean": 97.213,
+            "control_mean": 108.2288,
+            "hypo_n": 6522,
+            "control_n": 8281,
+            "cohens_d": -0.2657,
+            "p_value": 0.0
+          }
+        },
+        "glucose_roc": {
+          "-5min": {
+            "hypo_mean": -3.6286,
+            "control_mean": -0.0871,
+            "hypo_n": 6550,
+            "control_n": 8335,
+            "cohens_d": -0.4097,
+            "p_value": 0.0
+          },
+          "-15min": {
+            "hypo_mean": -2.0953,
+            "control_mean": -0.5401,
+            "hypo_n": 6544,
+            "control_n": 8322,
+            "cohens_d": -0.1801,
+            "p_value": 0.0
+          },
+          "-30min": {
+            "hypo_mean": -7.1585,
+            "control_mean": -0.8028,
+            "hypo_n": 6516,
+            "control_n": 8294,
+            "cohens_d": -0.3082,
+            "p_value": 0.0
+          },
+          "-45min": {
+            "hypo_mean": -2.2331,
+            "control_mean": -0.937,
+            "hypo_n": 6508,
+            "control_n": 8283,
+            "cohens_d": -0.1467,
+            "p_value": 0.0
+          },
+          "-60min": {
+            "hypo_mean": -4.7521,
+            "control_mean": -0.8466,
+            "hypo_n": 6485,
+            "control_n": 8273,
+            "cohens_d": -0.2293,
+            "p_value": 0.0
+          }
+        },
+        "glucose_accel": {
+          "-5min": {
+            "hypo_mean": -0.9556,
+            "control_mean": 0.2341,
+            "hypo_n": 6542,
+            "control_n": 8327,
+            "cohens_d": -0.1136,
+            "p_value": 0.0
+          },
+          "-15min": {
+            "hypo_mean": -0.2594,
+            "control_mean": 0.1529,
+            "hypo_n": 6536,
+            "control_n": 8306,
+            "cohens_d": -0.0344,
+            "p_value": 0.044733
+          },
+          "-30min": {
+            "hypo_mean": -4.1256,
+            "control_mean": 0.0126,
+            "hypo_n": 6507,
+            "control_n": 8289,
+            "cohens_d": -0.1922,
+            "p_value": 0.0
+          },
+          "-45min": {
+            "hypo_mean": -0.3239,
+            "control_mean": -0.1675,
+            "hypo_n": 6502,
+            "control_n": 8277,
+            "cohens_d": -0.0124,
+            "p_value": 0.473397
+          },
+          "-60min": {
+            "hypo_mean": -2.3144,
+            "control_mean": 0.0289,
+            "hypo_n": 6474,
+            "control_n": 8265,
+            "cohens_d": -0.1256,
+            "p_value": 0.0
+          }
+        },
+        "iob": {
+          "-5min": {
+            "hypo_mean": -0.1105,
+            "control_mean": 0.5936,
+            "hypo_n": 6562,
+            "control_n": 8341,
+            "cohens_d": -0.3909,
+            "p_value": 0.0
+          },
+          "-15min": {
+            "hypo_mean": 0.0414,
+            "control_mean": 0.5862,
+            "hypo_n": 6548,
+            "control_n": 8328,
+            "cohens_d": -0.2994,
+            "p_value": 0.0
+          },
+          "-30min": {
+            "hypo_mean": 0.2757,
+            "control_mean": 0.6207,
+            "hypo_n": 6564,
+            "control_n": 8302,
+            "cohens_d": -0.1825,
+            "p_value": 0.0
+          },
+          "-45min": {
+            "hypo_mean": 0.5078,
+            "control_mean": 0.6795,
+            "hypo_n": 6515,
+            "control_n": 8288,
+            "cohens_d": -0.0868,
+            "p_value": 0.0
+          },
+          "-60min": {
+            "hypo_mean": 0.7305,
+            "control_mean": 0.7496,
+            "hypo_n": 6522,
+            "control_n": 8281,
+            "cohens_d": -0.0091,
+            "p_value": 0.588452
+          }
+        },
+        "cob": {
+          "-5min": {
+            "hypo_mean": 3.5449,
+            "control_mean": 4.0324,
+            "hypo_n": 6562,
+            "control_n": 8341,
+            "cohens_d": -0.0395,
+            "p_value": 0.015846
+          },
+          "-15min": {
+            "hypo_mean": 3.551,
+            "control_mean": 3.7094,
+            "hypo_n": 6548,
+            "control_n": 8328,
+            "cohens_d": -0.013,
+            "p_value": 0.429726
+          },
+          "-30min": {
+            "hypo_mean": 3.6379,
+            "control_mean": 3.4537,
+            "hypo_n": 6564,
+            "control_n": 8302,
+            "cohens_d": 0.0153,
+            "p_value": 0.353218
+          },
+          "-45min": {
+            "hypo_mean": 3.7848,
+            "control_mean": 3.3784,
+            "hypo_n": 6515,
+            "control_n": 8288,
+            "cohens_d": 0.0334,
+            "p_value": 0.043055
+          },
+          "-60min": {
+            "hypo_mean": 4.0488,
+            "control_mean": 3.4419,
+            "hypo_n": 6522,
+            "control_n": 8281,
+            "cohens_d": 0.0485,
+            "p_value": 0.003391
+          }
+        },
+        "net_basal": {
+          "-5min": {
+            "hypo_mean": -0.5991,
+            "control_mean": 0.8003,
+            "hypo_n": 6562,
+            "control_n": 8341,
+            "cohens_d": -0.1194,
+            "p_value": 0.0
+          },
+          "-15min": {
+            "hypo_mean": -0.6182,
+            "control_mean": 0.7031,
+            "hypo_n": 6548,
+            "control_n": 8328,
+            "cohens_d": -0.115,
+            "p_value": 0.0
+          },
+          "-30min": {
+            "hypo_mean": -0.5426,
+            "control_mean": 0.5923,
+            "hypo_n": 6564,
+            "control_n": 8302,
+            "cohens_d": -0.1049,
+            "p_value": 0.0
+          },
+          "-45min": {
+            "hypo_mean": -0.38,
+            "control_mean": 0.6844,
+            "hypo_n": 6515,
+            "control_n": 8288,
+            "cohens_d": -0.0921,
+            "p_value": 0.0
+          },
+          "-60min": {
+            "hypo_mean": -0.1967,
+            "control_mean": 0.8032,
+            "hypo_n": 6522,
+            "control_n": 8281,
+            "cohens_d": -0.0761,
+            "p_value": 3e-06
+          }
+        },
+        "iob_rate": {
+          "-5min": {
+            "hypo_mean": -0.0802,
+            "control_mean": 0.0085,
+            "hypo_n": 6562,
+            "control_n": 8341,
+            "cohens_d": -0.2076,
+            "p_value": 0.0
+          },
+          "-15min": {
+            "hypo_mean": -0.0744,
+            "control_mean": -0.0075,
+            "hypo_n": 6548,
+            "control_n": 8328,
+            "cohens_d": -0.1815,
+            "p_value": 0.0
+          },
+          "-30min": {
+            "hypo_mean": -0.0797,
+            "control_mean": -0.0142,
+            "hypo_n": 6564,
+            "control_n": 8302,
+            "cohens_d": -0.1859,
+            "p_value": 0.0
+          },
+          "-45min": {
+            "hypo_mean": -0.071,
+            "control_mean": -0.0209,
+            "hypo_n": 6515,
+            "control_n": 8288,
+            "cohens_d": -0.1419,
+            "p_value": 0.0
+          },
+          "-60min": {
+            "hypo_mean": -0.067,
+            "control_mean": -0.0177,
+            "hypo_n": 6522,
+            "control_n": 8281,
+            "cohens_d": -0.1244,
+            "p_value": 0.0
+          }
+        }
+      },
+      "earliest_significant_divergence": {
+        "glucose": "-45min",
+        "glucose_roc": "-30min",
+        "iob": "-5min"
+      }
+    },
+    "exp_2539b_prediction_models": {
+      "models": {
+        "logistic_regression": {
+          "mean_auc": 0.8832,
+          "std_auc": 0.0108,
+          "mean_precision": 0.0926,
+          "mean_recall": 1.0,
+          "fold_aucs": [
+            0.8651,
+            0.8882,
+            0.8861,
+            0.8935
+          ],
+          "feature_importance": null,
+          "detection_by_glucose_range": {
+            "70-90": {
+              "n_total": 62376,
+              "n_positive": 15811,
+              "detection_rate": 0.98
+            },
+            "90-110": {
+              "n_total": 95485,
+              "n_positive": 7630,
+              "detection_rate": 0.8374
+            },
+            "110-140": {
+              "n_total": 110477,
+              "n_positive": 4620,
+              "detection_rate": 0.3214
+            },
+            "140-180": {
+              "n_total": 104896,
+              "n_positive": 2212,
+              "detection_rate": 0.0357
+            },
+            "180+": {
+              "n_total": 136091,
+              "n_positive": 996,
+              "detection_rate": 0.003
+            }
+          }
+        },
+        "gradient_boosting": {
+          "mean_auc": 0.9035,
+          "std_auc": 0.0086,
+          "mean_precision": 0.0926,
+          "mean_recall": 1.0,
+          "fold_aucs": [
+            0.8895,
+            0.9062,
+            0.9052,
+            0.9131
+          ],
+          "feature_importance": {
+            "glucose": 0.8067,
+            "glucose_roc": 0.1051,
+            "glucose_accel": 0.0182,
+            "iob": 0.0128,
+            "cob": 0.0083,
+            "net_basal": 0.0248,
+            "hour": 0.0082,
+            "iob_isf_ratio": 0.0159
+          },
+          "detection_by_glucose_range": {
+            "70-90": {
+              "n_total": 62376,
+              "n_positive": 15811,
+              "detection_rate": 0.8665
+            },
+            "90-110": {
+              "n_total": 95485,
+              "n_positive": 7630,
+              "detection_rate": 0.5181
+            },
+            "110-140": {
+              "n_total": 110477,
+              "n_positive": 4620,
+              "detection_rate": 0.3502
+            },
+            "140-180": {
+              "n_total": 104896,
+              "n_positive": 2212,
+              "detection_rate": 0.1876
+            },
+            "180+": {
+              "n_total": 136091,
+              "n_positive": 996,
+              "detection_rate": 0.0492
+            }
+          }
+        }
+      },
+      "feature_columns": [
+        "glucose",
+        "glucose_roc",
+        "glucose_accel",
+        "iob",
+        "cob",
+        "net_basal",
+        "hour",
+        "iob_isf_ratio"
+      ],
+      "target": "glucose_min_1h < 70",
+      "cv_method": "temporal_5fold"
+    },
+    "exp_2539c_iob_ratio_heuristic": {
+      "thresholds": {
+        "0.3": {
+          "precision": 0.0647,
+          "recall": 0.3967,
+          "f1": 0.1112,
+          "fpr": 0.6262,
+          "flagged_pct": 60.36,
+          "tp": 26031,
+          "fp": 376396,
+          "fn": 39586,
+          "tn": 224717
+        },
+        "0.5": {
+          "precision": 0.0679,
+          "recall": 0.3751,
+          "f1": 0.115,
+          "fpr": 0.5619,
+          "flagged_pct": 54.35,
+          "tp": 24616,
+          "fp": 337778,
+          "fn": 41001,
+          "tn": 263335
+        },
+        "0.7": {
+          "precision": 0.0744,
+          "recall": 0.353,
+          "f1": 0.1228,
+          "fpr": 0.4797,
+          "flagged_pct": 46.73,
+          "tp": 23165,
+          "fp": 288373,
+          "fn": 42452,
+          "tn": 312740
+        },
+        "1.0": {
+          "precision": 0.091,
+          "recall": 0.3222,
+          "f1": 0.1419,
+          "fpr": 0.3513,
+          "flagged_pct": 34.85,
+          "tp": 21139,
+          "fp": 211194,
+          "fn": 44478,
+          "tn": 389919
+        },
+        "1.5": {
+          "precision": 0.1228,
+          "recall": 0.2866,
+          "f1": 0.172,
+          "fpr": 0.2234,
+          "flagged_pct": 22.96,
+          "tp": 18803,
+          "fp": 134263,
+          "fn": 46814,
+          "tn": 466850
+        },
+        "2.0": {
+          "precision": 0.1539,
+          "recall": 0.2596,
+          "f1": 0.1932,
+          "fpr": 0.1558,
+          "flagged_pct": 16.6,
+          "tp": 17033,
+          "fp": 93640,
+          "fn": 48584,
+          "tn": 507473
+        },
+        "3.0": {
+          "precision": 0.2186,
+          "recall": 0.2246,
+          "f1": 0.2215,
+          "fpr": 0.0876,
+          "flagged_pct": 10.11,
+          "tp": 14737,
+          "fp": 52682,
+          "fn": 50880,
+          "tn": 548431
+        }
+      },
+      "continuous_auc": 0.3937,
+      "by_glucose_range": {
+        "70-90": {
+          "n_total": 76488,
+          "n_hypo": 19337,
+          "recall_at_1.0": 0.2844,
+          "fpr_at_1.0": 0.2217
+        },
+        "90-110": {
+          "n_total": 118245,
+          "n_hypo": 9707,
+          "recall_at_1.0": 0.3627,
+          "fpr_at_1.0": 0.2655
+        },
+        "110-140": {
+          "n_total": 141251,
+          "n_hypo": 6131,
+          "recall_at_1.0": 0.4618,
+          "fpr_at_1.0": 0.2806
+        },
+        "140-180": {
+          "n_total": 133047,
+          "n_hypo": 3031,
+          "recall_at_1.0": 0.5332,
+          "fpr_at_1.0": 0.373
+        }
+      }
+    },
+    "exp_2539d_trajectory_kinematic": {
+      "horizons": {
+        "15min": {
+          "auc": 0.8198,
+          "precision": 0.4146,
+          "recall": 0.4866,
+          "fpr": 0.0749,
+          "tp": 31806,
+          "fp": 44912,
+          "fn": 33559,
+          "tn": 554781
+        },
+        "30min": {
+          "auc": 0.6892,
+          "precision": 0.2016,
+          "recall": 0.5318,
+          "fpr": 0.2296,
+          "tp": 34759,
+          "fp": 137688,
+          "fn": 30606,
+          "tn": 462005
+        },
+        "45min": {
+          "auc": 0.6129,
+          "precision": 0.151,
+          "recall": 0.5438,
+          "fpr": 0.3334,
+          "tp": 35548,
+          "fp": 199921,
+          "fn": 29817,
+          "tn": 399772
+        },
+        "60min": {
+          "auc": 0.5736,
+          "precision": 0.1336,
+          "recall": 0.5484,
+          "fpr": 0.3877,
+          "tp": 35843,
+          "fp": 232482,
+          "fn": 29522,
+          "tn": 367211
+        },
+        "combined_30min": {
+          "auc": 0.5355,
+          "precision": 0.1293,
+          "recall": 0.6795,
+          "fpr": 0.499,
+          "tp": 44418,
+          "fp": 299238,
+          "fn": 20947,
+          "tn": 300455,
+          "method": "kinematic_OR_iob_ratio"
+        },
+        "combined_60min": {
+          "auc": 0.503,
+          "precision": 0.1119,
+          "recall": 0.6902,
+          "fpr": 0.597,
+          "tp": 45118,
+          "fp": 358022,
+          "fn": 20247,
+          "tn": 241671,
+          "method": "kinematic_OR_iob_ratio"
+        }
+      }
+    },
+    "exp_2539e_per_patient_variation": {
+      "patients": {
+        "a": {
+          "n_rows": 45639,
+          "n_hypo_events": 3361,
+          "hypo_rate": 7.36,
+          "gbm_auc": 0.9664,
+          "iob_ratio_auc": 0.712,
+          "kinematic_30min_auc": 0.6964,
+          "mean_glucose": 180.9,
+          "std_glucose": 81.4,
+          "cv_pct": 45.0,
+          "mean_iob": 2.723,
+          "controller": "NS"
+        },
+        "b": {
+          "n_rows": 46361,
+          "n_hypo_events": 1588,
+          "hypo_rate": 3.43,
+          "gbm_auc": 0.8842,
+          "iob_ratio_auc": 0.8092,
+          "kinematic_30min_auc": 0.6836,
+          "mean_glucose": 175.0,
+          "std_glucose": 61.8,
+          "cv_pct": 35.3,
+          "mean_iob": 2.027,
+          "controller": "NS"
+        },
+        "c": {
+          "n_rows": 42760,
+          "n_hypo_events": 5027,
+          "hypo_rate": 11.76,
+          "gbm_auc": 0.9309,
+          "iob_ratio_auc": 0.3509,
+          "kinematic_30min_auc": 0.6831,
+          "mean_glucose": 162.0,
+          "std_glucose": 70.2,
+          "cv_pct": 43.3,
+          "mean_iob": 1.423,
+          "controller": "NS"
+        },
+        "d": {
+          "n_rows": 45158,
+          "n_hypo_events": 1227,
+          "hypo_rate": 2.72,
+          "gbm_auc": 0.8629,
+          "iob_ratio_auc": 0.3743,
+          "kinematic_30min_auc": 0.6408,
+          "mean_glucose": 145.8,
+          "std_glucose": 44.3,
+          "cv_pct": 30.4,
+          "mean_iob": 1.371,
+          "controller": "NS"
+        },
+        "e": {
+          "n_rows": 40335,
+          "n_hypo_events": 2424,
+          "hypo_rate": 6.01,
+          "gbm_auc": 0.9115,
+          "iob_ratio_auc": 0.3776,
+          "kinematic_30min_auc": 0.7199,
+          "mean_glucose": 161.6,
+          "std_glucose": 59.0,
+          "cv_pct": 36.5,
+          "mean_iob": 3.99,
+          "controller": "NS"
+        },
+        "f": {
+          "n_rows": 45966,
+          "n_hypo_events": 3412,
+          "hypo_rate": 7.42,
+          "gbm_auc": 0.8896,
+          "iob_ratio_auc": 0.3014,
+          "kinematic_30min_auc": 0.6643,
+          "mean_glucose": 157.2,
+          "std_glucose": 76.9,
+          "cv_pct": 48.9,
+          "mean_iob": 3.206,
+          "controller": "NS"
+        },
+        "g": {
+          "n_rows": 45989,
+          "n_hypo_events": 4606,
+          "hypo_rate": 10.02,
+          "gbm_auc": 0.8913,
+          "iob_ratio_auc": 0.6627,
+          "kinematic_30min_auc": 0.6805,
+          "mean_glucose": 145.6,
+          "std_glucose": 59.7,
+          "cv_pct": 41.0,
+          "mean_iob": 1.987,
+          "controller": "NS"
+        },
+        "h": {
+          "n_rows": 18488,
+          "n_hypo_events": 3271,
+          "hypo_rate": 17.69,
+          "gbm_auc": 0.8555,
+          "iob_ratio_auc": 0.6796,
+          "kinematic_30min_auc": 0.6116,
+          "mean_glucose": 118.9,
+          "std_glucose": 44.0,
+          "cv_pct": 37.0,
+          "mean_iob": 1.233,
+          "controller": "NS"
+        },
+        "i": {
+          "n_rows": 46252,
+          "n_hypo_events": 9094,
+          "hypo_rate": 19.66,
+          "gbm_auc": 0.959,
+          "iob_ratio_auc": 0.1594,
+          "kinematic_30min_auc": 0.7069,
+          "mean_glucose": 150.3,
+          "std_glucose": 76.3,
+          "cv_pct": 50.8,
+          "mean_iob": 2.079,
+          "controller": "NS"
+        },
+        "j": {
+          "n_rows": 15842,
+          "n_hypo_events": 798,
+          "hypo_rate": 5.04,
+          "gbm_auc": 0.8792,
+          "iob_ratio_auc": 0.5,
+          "kinematic_30min_auc": 0.5935,
+          "mean_glucose": 141.2,
+          "std_glucose": 44.4,
+          "cv_pct": 31.5,
+          "mean_iob": 0.0,
+          "controller": "NS"
+        },
+        "k": {
+          "n_rows": 45776,
+          "n_hypo_events": 5779,
+          "hypo_rate": 12.62,
+          "gbm_auc": 0.8682,
+          "iob_ratio_auc": 0.3713,
+          "kinematic_30min_auc": 0.5847,
+          "mean_glucose": 93.1,
+          "std_glucose": 15.5,
+          "cv_pct": 16.6,
+          "mean_iob": 0.947,
+          "controller": "NS"
+        },
+        "odc-39819048": {
+          "n_rows": 2920,
+          "n_hypo_events": 669,
+          "hypo_rate": 22.91,
+          "gbm_auc": 0.9024,
+          "iob_ratio_auc": 0.6096,
+          "kinematic_30min_auc": 0.704,
+          "mean_glucose": 120.5,
+          "std_glucose": 46.2,
+          "cv_pct": 38.3,
+          "mean_iob": 1.207,
+          "controller": "ODC"
+        },
+        "odc-49141524": {
+          "n_rows": 3418,
+          "n_hypo_events": 161,
+          "hypo_rate": 4.71,
+          "gbm_auc": 0.8859,
+          "iob_ratio_auc": 0.3674,
+          "kinematic_30min_auc": 0.7829,
+          "mean_glucose": 165.2,
+          "std_glucose": 59.2,
+          "cv_pct": 35.9,
+          "mean_iob": 0.51,
+          "controller": "ODC"
+        },
+        "odc-58680324": {
+          "n_rows": 2591,
+          "n_hypo_events": 244,
+          "hypo_rate": 9.42,
+          "gbm_auc": 0.7332,
+          "iob_ratio_auc": 0.6052,
+          "kinematic_30min_auc": 0.7349,
+          "mean_glucose": 131.5,
+          "std_glucose": 46.5,
+          "cv_pct": 35.3,
+          "mean_iob": 1.819,
+          "controller": "ODC"
+        },
+        "odc-61403732": {
+          "n_rows": 2292,
+          "n_hypo_events": 193,
+          "hypo_rate": 8.42,
+          "gbm_auc": 0.7815,
+          "iob_ratio_auc": 0.4825,
+          "kinematic_30min_auc": 0.6984,
+          "mean_glucose": 108.7,
+          "std_glucose": 28.7,
+          "cv_pct": 26.4,
+          "mean_iob": 0.801,
+          "controller": "ODC"
+        },
+        "odc-74077367": {
+          "n_rows": 60490,
+          "n_hypo_events": 3724,
+          "hypo_rate": 6.16,
+          "gbm_auc": 0.9184,
+          "iob_ratio_auc": 0.3787,
+          "kinematic_30min_auc": 0.7198,
+          "mean_glucose": 127.1,
+          "std_glucose": 42.2,
+          "cv_pct": 33.2,
+          "mean_iob": 1.926,
+          "controller": "ODC"
+        },
+        "odc-84181797": {
+          "n_rows": 1435,
+          "n_hypo_events": 78,
+          "hypo_rate": 5.44,
+          "gbm_auc": 0.9201,
+          "iob_ratio_auc": 0.4963,
+          "kinematic_30min_auc": 0.862,
+          "mean_glucose": 161.4,
+          "std_glucose": 74.5,
+          "cv_pct": 46.2,
+          "mean_iob": 0.004,
+          "controller": "ODC"
+        },
+        "odc-86025410": {
+          "n_rows": 105702,
+          "n_hypo_events": 13182,
+          "hypo_rate": 12.47,
+          "gbm_auc": 0.8577,
+          "iob_ratio_auc": 0.4572,
+          "kinematic_30min_auc": 0.6983,
+          "mean_glucose": 146.6,
+          "std_glucose": 66.0,
+          "cv_pct": 45.0,
+          "mean_iob": 0.188,
+          "controller": "ODC"
+        },
+        "odc-96254963": {
+          "n_rows": 47644,
+          "n_hypo_events": 6527,
+          "hypo_rate": 13.7,
+          "gbm_auc": 0.8901,
+          "iob_ratio_auc": 0.5295,
+          "kinematic_30min_auc": 0.7998,
+          "mean_glucose": 145.7,
+          "std_glucose": 64.7,
+          "cv_pct": 44.4,
+          "mean_iob": 1.622,
+          "controller": "ODC"
+        }
+      },
+      "summary": {
+        "n_patients_evaluated": 19,
+        "gbm_auc_mean": 0.8836,
+        "gbm_auc_std": 0.0532,
+        "gbm_auc_min": 0.7332,
+        "gbm_auc_max": 0.9664,
+        "iob_ratio_auc_mean": 0.4855,
+        "kinematic_30min_auc_mean": 0.6982,
+        "best_method_per_patient": {
+          "a": "gbm",
+          "b": "gbm",
+          "c": "gbm",
+          "d": "gbm",
+          "e": "gbm",
+          "f": "gbm",
+          "g": "gbm",
+          "h": "gbm",
+          "i": "gbm",
+          "j": "gbm",
+          "k": "gbm",
+          "odc-39819048": "gbm",
+          "odc-49141524": "gbm",
+          "odc-58680324": "kinematic",
+          "odc-61403732": "gbm",
+          "odc-74077367": "gbm",
+          "odc-84181797": "gbm",
+          "odc-86025410": "gbm",
+          "odc-96254963": "gbm"
+        },
+        "correlation_cv_vs_auc": 0.4813
+      }
+    }
+  }
+}
