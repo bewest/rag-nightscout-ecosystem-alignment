@@ -233,7 +233,7 @@ individual physiology.
 | Metric | Announced | UAM |
 |--------|-----------|-----|
 | Mean RMSE | **39.3** | **11.6** |
-| Mean bias | -11.6 | +6.4 |
+| Mean bias | -9.5 | +6.4 |
 | Systematic fraction | 0.23 | **0.56** |
 
 **Critical structural insight**: The model makes **3.4× larger errors** during

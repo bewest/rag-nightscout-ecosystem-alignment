@@ -78,9 +78,9 @@ Autocorrelation decays to zero by 1 hour — purely local bias from target proxi
 
 | Model | Mean Δ R² | Positive | Best Patient |
 |-------|----------|----------|-------------|
-| **CNN** | **+0.013** | **10/11** | j (+0.035) |
-| GRU | +0.008 | 10/11 | g (+0.032) |
-| Ensemble | +0.012 | 10/11 | g (+0.031) |
+| **CNN** | **+0.013** | **11/11** | j (+0.035) |
+| GRU | +0.008 | 11/11 | g (+0.032) |
+| Ensemble | +0.012 | 11/11 | g (+0.031) |
 
 CNN wins 8/11 head-to-head. GRU offers no advantage for residual learning — the temporal patterns in Ridge residuals are short-range (L1 autocorrelation only), and CNN's convolutional filters capture this efficiently. The GRU's sequential processing adds overhead without benefit.
 
