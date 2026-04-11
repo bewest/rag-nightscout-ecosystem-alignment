@@ -13,7 +13,7 @@ This batch produced three major advances and confirmed five dead ends:
 |---------|--------|--------|
 | **Conformal PIs properly calibrated** | 80% coverage, 75.5 mg/dL width with AR | ★★★★★ |
 | **Full stack CV: R²=0.664** | New definitive validated SOTA | ★★★★★★ |
-| **AR benefit scales with horizon** | 120min: +0.430 R² lift | ★★★★★ |
+| **AR benefit scales with horizon** | 120min: +0.449 R² lift | ★★★★★ |
 | **Horizon ensemble + AR: R²=0.839** | Needs CV validation | ★★★★ (provisional) |
 | **Patient h: 64% NaN** | Explains worst performance | ★★★ diagnostic |
 | Kalman filter | 0.221 — far worse than AR | ⛔ |
@@ -97,7 +97,7 @@ Noise ceiling (σ=15 mg/dL):            R² = 0.854
 **Key findings**:
 - **R²=0.664 is the new definitive validated SOTA** (5-fold CV, full production stack)
 - Online learning adds +0.047 on top of AR — substantial validated improvement
-- **9 of 11 patients exceed R²=0.54** in full production mode
+- **10 of 11 patients exceed R²=0.54** in full production mode
 - **6 of 11 patients exceed R²=0.70** — excellent prediction quality
 - Lift over offline: +0.187 R² from AR+online combined
 
@@ -109,8 +109,8 @@ Noise ceiling (σ=15 mg/dL):            R² = 0.854
 |---------|--------|--------|------|
 | 30 min | 0.785 | 0.784 | **−0.001** |
 | 60 min | 0.535 | 0.657 | **+0.122** |
-| 90 min | 0.348 | 0.691 | **+0.286** |
-| 120 min | 0.220 | 0.669 | **+0.430** |
+| 90 min | 0.348 | 0.691 | **+0.343** |
+| 120 min | 0.220 | 0.669 | **+0.449** |
 
 **This is remarkable**: AR benefit increases almost linearly with horizon!
 
