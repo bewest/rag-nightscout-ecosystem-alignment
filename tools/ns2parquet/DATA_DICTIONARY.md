@@ -153,7 +153,7 @@ Therapy settings expanded to one row per schedule segment.
 | `time_seconds` | int32 | ✓ | seconds since midnight (local) |
 | `time_str` | string | ✓ | "HH:MM" format |
 | `value` | float | ✓ | rate, ISF, CR, or target (mg/dL) |
-| `units` | string | ✓ | mg/dl or mmol/L — site preference |
+| `units` | string | ✓ | Always 'mg/dL' (converted at normalization time) |
 
 ---
 

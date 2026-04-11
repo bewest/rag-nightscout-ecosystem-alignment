@@ -314,7 +314,8 @@ make terrarium-tiny     # smoke-test build (2 patients, 7 days, ~800KB)
   predictions/actions from *any* AID controller (Loop, oref0, AAPS, Trio).
 - **Deduplication** uses composite keys per collection (e.g., `patient_id +
   time` for grid, `patient_id + created_at + event_type` for treatments).
-- **Append mode** is the default for `convert` — safe to re-run.
+- **Overwrite mode** is the default for `convert`. Use `--append` to
+  merge with existing output (deduplicates automatically).
 - **zstd compression** for 20-25× size reduction vs JSON.
 
 ## Running Tests

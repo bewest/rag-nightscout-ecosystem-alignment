@@ -6,6 +6,8 @@ Commands:
     convert-all Convert all patients in a patients directory
     convert-odc Convert OpenAPS Data Commons patients to Parquet
     ingest      Fetch from live Nightscout API and convert to Parquet
+    merge       Merge + deduplicate parquet from multiple directories
+    manifest    Generate patient manifest JSON
     info        Show summary of existing Parquet files
 """
 

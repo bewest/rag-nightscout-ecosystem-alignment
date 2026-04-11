@@ -15,10 +15,20 @@ Usage:
         --patients-dir externals/ns-data/patients \\
         --output output/
 
+    # Convert OpenAPS Data Commons patients
+    python -m tools.ns2parquet convert-odc \\
+        --odc-dir path/to/odc-dataset --output output/
+
     # Fetch from live Nightscout site and convert
     python -m tools.ns2parquet ingest \\
         --url https://your-ns.example.com \\
         --days 90 --patient-id mysite --output output/
+
+    # Merge parquet from multiple sources
+    python -m tools.ns2parquet merge dir1/ dir2/ --output combined/
+
+    # Generate patient manifest
+    python -m tools.ns2parquet manifest --input output/
 
     # Show info about existing parquet files
     python -m tools.ns2parquet info --input output/
