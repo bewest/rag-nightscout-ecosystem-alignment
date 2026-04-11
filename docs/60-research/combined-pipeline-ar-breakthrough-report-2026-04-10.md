@@ -41,7 +41,7 @@ Stacked ALL validated improvements: enhanced features (derivatives, momentum, ag
 | b | 0.512 | 0.547 | +0.035 | d6/lr0.03 |
 | c | 0.385 | 0.437 | +0.052 | d3/lr0.03 |
 | d | 0.634 | 0.686 | +0.051 | d3/lr0.03 |
-| e | 0.566 | 0.615 | +0.048 | d3/lr0.03 |
+| e | 0.566 | 0.614 | +0.048 | d3/lr0.03 |
 | f | 0.658 | 0.680 | +0.022 | d6/lr0.03 |
 | g | 0.616 | 0.637 | +0.021 | d6/lr0.03 |
 | h | 0.210 | 0.264 | +0.054 | d3/lr0.03 |
@@ -166,7 +166,7 @@ Prediction intervals are under-calibrated (coverage < 50% target), suggesting th
 ### EXP-1185: Weighted Loss — Hypo Safety
 
 Weighting low-glucose predictions higher trades 0.001 R² for improved hypo RMSE:
-- Mean hypo RMSE improvement: −3.1 mg/dL (from 37.7 to 34.6)
+- Mean hypo RMSE improvement: −2.2 mg/dL (from 37.7 to 35.6)
 - Worth exploring for safety-critical deployments where hypo accuracy matters more than overall R²
 
 ---
