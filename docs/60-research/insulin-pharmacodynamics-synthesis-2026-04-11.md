@@ -58,7 +58,7 @@ The three core discoveries are:
 glucose-lowering work. Doubling the dose from 1U to 2U only increases
 the total glucose drop by 2^0.1 ≈ 7%.
 
-### Component 2: Persistent HGP Suppression
+### Component 2: Persistent Effect (Residual IOB + Loop Compensation)
 
 | Property | Value | Source |
 |----------|-------|--------|
@@ -66,13 +66,23 @@ the total glucose drop by 2^0.1 ≈ 7%.
 | Duration | >12h (no decay observed) | EXP-2524a |
 | Decays like exponential? | **NO** — biexponential degenerates | EXP-2525a |
 | Best model | mono-exp + constant (R²=0.827) | EXP-2525a |
+| **Mechanism** | **NOT physiological HGP suppression** | **EXP-2534** |
 
-**Clinical meaning**: Once insulin triggers hepatic glucose production
-suppression, the effect persists far beyond when IOB returns to zero.
-IOB-based DIA (3-5h) only captures Component 1. This explains:
-- Why glucose stays low hours after IOB is zero
-- Why "insulin stacking" fear is overstated (Component 2 doesn't accumulate)
-- Why AID systems that only track IOB miss the sustained effect
+> **⚠️ CORRECTION (EXP-2534)**: Originally attributed to hepatic glucose
+> production (HGP) suppression. Overnight matched-pair validation (280
+> pairs, 17 patients) found correction nights carry +0.85U more residual
+> IOB (p<0.001), explaining ~42.5 mg/dL of the persistent effect. The
+> "persistent component" is residual IOB tail + loop basal adjustment,
+> not liver physiology. The two-component model remains **predictively
+> valid** (R²=0.827) but the mechanism is IOB underestimation by standard
+> DIA curves, not a separate physiological process.
+
+**Practical meaning**: Standard IOB curves (exponential decay, DIA 3-5h)
+underestimate the true insulin tail. The "persistent" component captures
+insulin effect that IOB says is zero but is still active. This explains:
+- Why glucose stays low hours after IOB nominally returns to zero
+- Why the model works predictively even though the mechanism isn't HGP
+- Why AID loops that trust IOB=0 may still have active insulin effects
 
 ### Component 3: Correction Rebounds (Mean Reversion)
 
@@ -168,6 +178,9 @@ ISF fit       +53% MAE      +0.006 R²
         │
         ├──→ EXP-2525 (TWO-COMPONENT MODEL)
         │    └─ Biexp degenerates → mono-exp + constant plateau
+        │    │
+        │    └──→ EXP-2534 (HGP VALIDATION: **DISCONFIRMED**)
+        │         └─ Persistent effect = residual IOB + loop, not liver
         │
         └──→ EXP-2526 (REBOUND = REGRESSION TO MEAN)
              ├─ 75% rebound from 130-180 mg/dL
@@ -210,13 +223,15 @@ plagues all other approaches.
 1. **No causal counterfactual**: We cannot observe what would have happened
    without a correction. All findings are observational.
 
-2. **HGP suppression is inferred**: The persistent component is consistent
-   with HGP suppression but could be other mechanisms (e.g., persistent
-   GLUT4 translocation, glycogen synthesis inertia).
+2. **~~HGP suppression is inferred~~** → **RESOLVED by EXP-2534**: The
+   persistent component is NOT physiological HGP suppression. It's
+   residual IOB underestimated by standard DIA curves, plus loop basal
+   adjustment. Correction nights carry +0.85U more IOB (p<0.001).
 
 3. **AID loop is a confounder**: The loop adjusts basal in response to
    corrections, making it impossible to isolate the pure insulin effect.
-   All "ISF" measurements include the loop's compensation.
+   All "ISF" measurements include the loop's compensation. **EXP-2534
+   confirmed this is a major factor in the persistent component.**
 
 4. **12h observation window**: The persistent component may eventually
    decay — we just can't observe it within our 12h window.
@@ -224,6 +239,11 @@ plagues all other approaches.
 5. **Selection bias in corrections**: Correction events are not random —
    they happen at specific glucose levels, times, and contexts. All
    effect size estimates are conditional on this selection.
+
+6. **Temporal CV invalidates PD forecasting features**: EXP-2531/2532
+   showed that PD features improve R² under shuffled CV (+0.011) but
+   DEGRADE under temporal CV. PD signal is swamped at h60 by meals,
+   exercise, and sensor drift.
 
 ---
 
@@ -240,6 +260,10 @@ plagues all other approaches.
 | EXP-2526 | `exp_rebound.py` | Rebound = mean reversion |
 | EXP-2527 | `exp_overcorrection.py` | Selection bias in TIR eval |
 | EXP-2528 | `exp_correction_threshold.py` | Threshold ≈ 166 mg/dL |
+| EXP-2529 | `exp_unified_pd.py` | Unified PD: +0.011 (shuffled) |
+| EXP-2531 | `exp_nonlinear_pd.py` | GBM > Ridge; PD fails temporal CV |
+| EXP-2532 | `exp_temporal_pd.py` | Ratio features stable but weak |
+| EXP-2534 | `exp_hgp_validation.py` | **HGP suppression disconfirmed** |
 
 All experiment scripts in `tools/cgmencode/production/`.  
 Results (gitignored) in `externals/experiments/`.
