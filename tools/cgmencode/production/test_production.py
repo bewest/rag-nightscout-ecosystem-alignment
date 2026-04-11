@@ -2620,3 +2620,265 @@ class TestCorrectionThresholdIntegration(unittest.TestCase):
                           if r.parameter.value == 'correction_threshold']
         self.assertEqual(len(threshold_recs), 1)
         self.assertEqual(threshold_recs[0].suggested_value, 166.0)
+
+
+# ── Circadian ISF Profiled Tests (EXP-2271, 4-block) ─────────────────
+
+class TestCircadianISFProfiledTypes(unittest.TestCase):
+    """Type-level tests for circadian ISF profiled constants."""
+
+    def test_circadian_blocks_is_dict(self):
+        """_CIRCADIAN_BLOCKS must be a dict of block names to hour tuples."""
+        from cgmencode.production.settings_advisor import _CIRCADIAN_BLOCKS
+        self.assertIsInstance(_CIRCADIAN_BLOCKS, dict)
+        self.assertEqual(len(_CIRCADIAN_BLOCKS), 4)
+        for name, (h_start, h_end) in _CIRCADIAN_BLOCKS.items():
+            self.assertIsInstance(name, str)
+            self.assertGreaterEqual(h_start, 0)
+            self.assertLessEqual(h_end, 24)
+            self.assertLess(h_start, h_end)
+
+    def test_deviation_threshold_value(self):
+        """Deviation threshold must be 0.30 (30%)."""
+        from cgmencode.production.settings_advisor import _CIRCADIAN_ISF_DEVIATION_THRESHOLD
+        self.assertAlmostEqual(_CIRCADIAN_ISF_DEVIATION_THRESHOLD, 0.30)
+
+    def test_min_corrections_per_block_positive(self):
+        """Minimum corrections per block must be > 0."""
+        from cgmencode.production.settings_advisor import _CIRCADIAN_MIN_CORRECTIONS_PER_BLOCK
+        self.assertGreater(_CIRCADIAN_MIN_CORRECTIONS_PER_BLOCK, 0)
+        self.assertEqual(_CIRCADIAN_MIN_CORRECTIONS_PER_BLOCK, 5)
+
+
+class TestCircadianISFProfiledFunction(unittest.TestCase):
+    """Functional tests for advise_circadian_isf_profiled."""
+
+    def _make_profile(self, isf=50.0):
+        from cgmencode.production.types import PatientProfile
+        return PatientProfile(
+            basal_schedule=[{'time': '00:00', 'value': 0.8}],
+            isf_schedule=[{'time': '00:00', 'value': isf}],
+            cr_schedule=[{'time': '00:00', 'value': 10.0}],
+            dia_hours=5.0,
+        )
+
+    def _make_events(self, block_hour=9.0, n=10, drop=80.0, dose=1.0):
+        """Create n correction events at a given hour with specified drop/dose."""
+        return [
+            {'hour': block_hour + (i % 3) * 0.5,
+             'start_bg': 200.0, 'drop_4h': drop, 'dose': dose}
+            for i in range(n)
+        ]
+
+    def test_returns_empty_insufficient_data(self):
+        """No advisory with < MIN_DATA_DAYS."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        events = self._make_events()
+        recs = advise_circadian_isf_profiled(
+            correction_events=events, profile=self._make_profile(),
+            days_of_data=1.0)
+        self.assertEqual(recs, [])
+
+    def test_returns_empty_no_events(self):
+        """No advisory without correction events."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        recs = advise_circadian_isf_profiled(
+            correction_events=None, profile=self._make_profile(),
+            days_of_data=7.0)
+        self.assertEqual(recs, [])
+
+    def test_returns_empty_no_profile(self):
+        """No advisory without profile."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        recs = advise_circadian_isf_profiled(
+            correction_events=self._make_events(), profile=None,
+            days_of_data=7.0)
+        self.assertEqual(recs, [])
+
+    def test_returns_empty_insufficient_events_per_block(self):
+        """No advisory when < 5 events in every block."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        events = self._make_events(n=3)  # only 3 events
+        recs = advise_circadian_isf_profiled(
+            correction_events=events, profile=self._make_profile(),
+            days_of_data=7.0)
+        self.assertEqual(recs, [])
+
+    def test_returns_empty_when_isf_matches(self):
+        """No advisory when block ISF is close to profile ISF."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        # Profile ISF=50, drop=50/dose=1 → effective ISF=50 → no deviation
+        events = self._make_events(drop=50.0, dose=1.0)
+        recs = advise_circadian_isf_profiled(
+            correction_events=events, profile=self._make_profile(isf=50.0),
+            days_of_data=7.0)
+        self.assertEqual(recs, [])
+
+    def test_fires_for_large_deviation(self):
+        """Advisory should fire when block ISF deviates >30% from profile."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        # Profile ISF=50, effective ISF=80 (60% deviation) → should fire
+        events = self._make_events(block_hour=9.0, drop=80.0, dose=1.0)
+        recs = advise_circadian_isf_profiled(
+            correction_events=events, profile=self._make_profile(isf=50.0),
+            days_of_data=7.0)
+        self.assertGreater(len(recs), 0)
+        rec = recs[0]
+        self.assertEqual(rec.parameter, SettingsParameter.ISF)
+        self.assertEqual(rec.direction, "increase")
+        self.assertAlmostEqual(rec.suggested_value, 80.0, delta=1.0)
+        self.assertIn("morning", rec.evidence)
+
+    def test_decrease_direction_when_block_isf_lower(self):
+        """Direction 'decrease' when block ISF < profile ISF by >30%."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        # Profile ISF=50, effective ISF=30 (-40% deviation) → decrease
+        events = self._make_events(block_hour=14.0, drop=30.0, dose=1.0)
+        recs = advise_circadian_isf_profiled(
+            correction_events=events, profile=self._make_profile(isf=50.0),
+            days_of_data=7.0)
+        self.assertGreater(len(recs), 0)
+        self.assertEqual(recs[0].direction, "decrease")
+
+    def test_evidence_cites_exp_2271(self):
+        """Evidence must reference EXP-2271."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        events = self._make_events(drop=80.0, dose=1.0)
+        recs = advise_circadian_isf_profiled(
+            correction_events=events, profile=self._make_profile(isf=50.0),
+            days_of_data=7.0)
+        self.assertGreater(len(recs), 0)
+        self.assertIn("EXP-2271", recs[0].evidence)
+
+    def test_rationale_mentions_block_name(self):
+        """Rationale should mention the time-of-day block."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        events = self._make_events(block_hour=20.0, drop=80.0, dose=1.0)
+        recs = advise_circadian_isf_profiled(
+            correction_events=events, profile=self._make_profile(isf=50.0),
+            days_of_data=7.0)
+        self.assertGreater(len(recs), 0)
+        self.assertIn("evening", recs[0].rationale)
+
+    def test_confidence_scales_with_events(self):
+        """More events should yield higher confidence."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        few = advise_circadian_isf_profiled(
+            correction_events=self._make_events(n=5, drop=80.0),
+            profile=self._make_profile(isf=50.0), days_of_data=7.0)
+        many = advise_circadian_isf_profiled(
+            correction_events=self._make_events(n=20, drop=80.0),
+            profile=self._make_profile(isf=50.0), days_of_data=7.0)
+        self.assertGreater(len(few), 0)
+        self.assertGreater(len(many), 0)
+        self.assertGreater(many[0].confidence, few[0].confidence)
+
+    def test_multiple_blocks_can_fire(self):
+        """Multiple blocks can produce recommendations simultaneously."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        events = (
+            self._make_events(block_hour=3.0, n=6, drop=80.0)   # overnight
+            + self._make_events(block_hour=9.0, n=6, drop=80.0)  # morning
+        )
+        recs = advise_circadian_isf_profiled(
+            correction_events=events, profile=self._make_profile(isf=50.0),
+            days_of_data=7.0)
+        self.assertGreaterEqual(len(recs), 2)
+
+    def test_predicted_tir_delta_positive(self):
+        """Predicted TIR improvement should be positive."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        events = self._make_events(drop=80.0, dose=1.0)
+        recs = advise_circadian_isf_profiled(
+            correction_events=events, profile=self._make_profile(isf=50.0),
+            days_of_data=7.0)
+        self.assertGreater(len(recs), 0)
+        self.assertGreater(recs[0].predicted_tir_delta, 0)
+
+    def test_affected_hours_match_block(self):
+        """affected_hours should match the block hour range."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
+        events = self._make_events(block_hour=14.0, drop=80.0, dose=1.0)
+        recs = advise_circadian_isf_profiled(
+            correction_events=events, profile=self._make_profile(isf=50.0),
+            days_of_data=7.0)
+        self.assertGreater(len(recs), 0)
+        self.assertEqual(recs[0].affected_hours, (12.0, 18.0))
+
+
+class TestCircadianISFProfiledIntegration(unittest.TestCase):
+    """Integration: circadian ISF profiled in generate_settings_advice."""
+
+    def test_correction_events_with_hour_accepted(self):
+        """generate_settings_advice should pass correction_events to profiled advisory."""
+        from cgmencode.production.settings_advisor import generate_settings_advice
+        from cgmencode.production.types import ClinicalReport, PatientProfile
+
+        glucose = np.full(288, 150.0)
+        hours = np.linspace(0, 24, 288, endpoint=False)
+        profile = PatientProfile(
+            basal_schedule=[{'time': '00:00', 'value': 0.8}],
+            isf_schedule=[{'time': '00:00', 'value': 50.0}],
+            cr_schedule=[{'time': '00:00', 'value': 10.0}],
+            dia_hours=5.0,
+            target_high=166.0,
+        )
+        clinical = ClinicalReport.__new__(ClinicalReport)
+        clinical.mean_glucose = 150.0
+        clinical.isf_discrepancy = None
+        clinical.effective_isf = None
+        clinical.profile_isf = 50.0
+        clinical.cr_score = None
+        clinical.tir_70_180 = 0.7
+        clinical.time_below_54 = 0.0
+        clinical.time_below_70 = 0.02
+
+        events = [
+            {'hour': 9.0 + i * 0.3, 'start_bg': 200.0,
+             'drop_4h': 80.0, 'dose': 1.0, 'tir_change': 5.0}
+            for i in range(10)
+        ]
+        recs = generate_settings_advice(
+            glucose, None, hours, clinical, profile, 7.0,
+            correction_events=events)
+        self.assertIsInstance(recs, list)
+
+    def test_profiled_recs_appear_in_results(self):
+        """Circadian profiled recs should appear when events have large ISF deviation."""
+        from cgmencode.production.settings_advisor import generate_settings_advice
+        from cgmencode.production.types import ClinicalReport, PatientProfile
+
+        glucose = np.full(288, 150.0)
+        hours = np.linspace(0, 24, 288, endpoint=False)
+        profile = PatientProfile(
+            basal_schedule=[{'time': '00:00', 'value': 0.8}],
+            isf_schedule=[{'time': '00:00', 'value': 50.0}],
+            cr_schedule=[{'time': '00:00', 'value': 10.0}],
+            dia_hours=5.0,
+            target_high=166.0,
+        )
+        clinical = ClinicalReport.__new__(ClinicalReport)
+        clinical.mean_glucose = 150.0
+        clinical.isf_discrepancy = None
+        clinical.effective_isf = None
+        clinical.profile_isf = 50.0
+        clinical.cr_score = None
+        clinical.tir_70_180 = 0.7
+        clinical.time_below_54 = 0.0
+        clinical.time_below_70 = 0.02
+
+        events = [
+            {'hour': 9.0 + i * 0.3, 'start_bg': 200.0,
+             'drop_4h': 80.0, 'dose': 1.0, 'tir_change': 5.0}
+            for i in range(10)
+        ]
+        recs = generate_settings_advice(
+            glucose, None, hours, clinical, profile, 7.0,
+            correction_events=events)
+        profiled_recs = [
+            r for r in recs
+            if r.parameter == SettingsParameter.ISF
+            and 'profiling' in r.evidence.lower()
+        ]
+        self.assertGreater(len(profiled_recs), 0)
+        self.assertEqual(profiled_recs[0].affected_hours, (6.0, 12.0))

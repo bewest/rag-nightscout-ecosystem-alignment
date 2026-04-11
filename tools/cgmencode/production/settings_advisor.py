@@ -841,6 +841,7 @@ def generate_settings_advice(glucose: np.ndarray,
     - ISF discrepancy (EXP-747)
     - ISF non-linearity warning (EXP-2511–2518)
     - Circadian ISF 2-zone (EXP-2271)
+    - Circadian ISF profiled 4-block (EXP-2271)
     - Context-aware CR by time of day (EXP-2341)
     - Overnight drift basal assessment (EXP-2371–2378)
     - Correction threshold (EXP-2528)
@@ -897,6 +898,12 @@ def generate_settings_advice(glucose: np.ndarray,
     circadian_isf_recs = advise_circadian_isf(
         glucose, metabolic, hours, profile, days_of_data)
     recs.extend(circadian_isf_recs)
+
+    # Circadian ISF profiled: 4-block correction-response method (EXP-2271)
+    circadian_profiled_recs = advise_circadian_isf_profiled(
+        correction_events=correction_events, profile=profile,
+        days_of_data=days_of_data)
+    recs.extend(circadian_profiled_recs)
 
     # Context-aware CR by time of day (EXP-2341)
     if carbs is not None:
@@ -1086,6 +1093,132 @@ def advise_circadian_isf(glucose: np.ndarray,
                       f"{day_ratio:.1f}× more effective than night."),
             rationale=(f"Increase ISF from {current_isf:.0f} to {day_isf:.0f} "
                        f"mg/dL/U during daytime (07:00-22:00)."),
+        ))
+
+    return recs
+
+
+# ── Circadian ISF Profiled: 4-Block Correction-Response (EXP-2271) ────
+
+# EXP-2271: ISF varies 4.6-9× by time of day. This advisory uses actual
+# correction events grouped into 4 time-of-day blocks to compute empirical
+# per-block ISF via the response-curve method (BG drop per unit insulin).
+# Complements advise_circadian_isf (2-zone residual-based) by using direct
+# correction outcomes rather than metabolic residuals.
+
+_CIRCADIAN_BLOCKS = {
+    "overnight": (0, 6),
+    "morning": (6, 12),
+    "afternoon": (12, 18),
+    "evening": (18, 24),
+}
+_CIRCADIAN_ISF_DEVIATION_THRESHOLD = 0.30   # 30% deviation triggers advisory
+_CIRCADIAN_MIN_CORRECTIONS_PER_BLOCK = 5    # minimum events per block
+
+
+def advise_circadian_isf_profiled(
+    correction_events: Optional[List[dict]] = None,
+    profile: Optional[PatientProfile] = None,
+    days_of_data: float = 0.0,
+) -> List[SettingsRecommendation]:
+    """Recommend time-of-day ISF adjustments from correction event outcomes.
+
+    Research: EXP-2271 shows ISF varies 4.6-9× across the day. This function
+    uses empirical correction-response data (BG drop per unit insulin) grouped
+    into 4 time-of-day blocks to detect blocks where the profile ISF is
+    significantly wrong.
+
+    Complements advise_circadian_isf() (2-zone residual method) by using
+    direct correction outcomes. The two approaches may produce overlapping
+    recommendations; downstream consumers should deduplicate.
+
+    Each correction event dict must contain:
+        'hour': fractional hour (0-24) when correction was given
+        'drop_4h': BG drop over 4 hours (mg/dL, positive = drop)
+        'dose': insulin dose (Units, > 0)
+
+    Args:
+        correction_events: list of correction event dicts.
+        profile: PatientProfile for current ISF.
+        days_of_data: data coverage (minimum 3 days).
+
+    Returns:
+        List of SettingsRecommendation for blocks with >30% ISF deviation.
+    """
+    if days_of_data < MIN_DATA_DAYS:
+        return []
+    if not correction_events or profile is None:
+        return []
+
+    isf_vals = [e.get('value', e.get('sensitivity', 50))
+                for e in profile.isf_mgdl()]
+    current_isf = (float(np.median([float(v) for v in isf_vals]))
+                   if isf_vals else 50.0)
+
+    recs: List[SettingsRecommendation] = []
+
+    for block_name, (h_start, h_end) in _CIRCADIAN_BLOCKS.items():
+        # Filter events to this block
+        block_events = [
+            e for e in correction_events
+            if 'hour' in e and 'drop_4h' in e and 'dose' in e
+            and h_start <= e['hour'] < h_end
+            and e['dose'] > 0
+        ]
+
+        if len(block_events) < _CIRCADIAN_MIN_CORRECTIONS_PER_BLOCK:
+            continue
+
+        # Compute effective ISF per event: BG drop / dose
+        effective_isfs = [e['drop_4h'] / e['dose'] for e in block_events]
+        block_isf = float(np.median(effective_isfs))
+
+        if block_isf <= 0 or current_isf <= 0:
+            continue
+
+        # Deviation from profile ISF
+        deviation = (block_isf - current_isf) / current_isf
+
+        if abs(deviation) < _CIRCADIAN_ISF_DEVIATION_THRESHOLD:
+            continue
+
+        direction = "increase" if deviation > 0 else "decrease"
+        magnitude = abs(deviation) * 100.0
+        suggested = round(block_isf, 0)
+
+        # Confidence: scales with event count, capped by data days
+        n = len(block_events)
+        event_factor = min(1.0, n / 20.0)
+        day_factor = min(1.0, days_of_data / HIGH_CONFIDENCE_DAYS)
+        confidence = round(event_factor * day_factor * 0.75, 2)
+
+        # Predicted TIR delta: conservative 0.1pp per 10% ISF correction
+        predicted_delta = round(magnitude * 0.01, 1)
+
+        recs.append(SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction=direction,
+            magnitude_pct=round(magnitude, 0),
+            current_value=current_isf,
+            suggested_value=suggested,
+            predicted_tir_delta=predicted_delta,
+            affected_hours=(float(h_start), float(h_end)),
+            confidence=confidence,
+            evidence=(
+                f"Circadian ISF profiling (EXP-2271): {block_name} block "
+                f"({h_start:02d}:00-{h_end:02d}:00) effective ISF is "
+                f"{block_isf:.0f} mg/dL/U vs profile {current_isf:.0f} "
+                f"({deviation:+.0%} deviation) from {n} correction events."
+            ),
+            rationale=(
+                f"{direction.capitalize()} ISF from {current_isf:.0f} to "
+                f"{suggested:.0f} mg/dL/U during {block_name} "
+                f"({h_start:02d}:00-{h_end:02d}:00). ISF varies 4.6-9× "
+                f"by time of day (EXP-2271). Observed {n} corrections in "
+                f"this block with median effective ISF {block_isf:.0f} "
+                f"mg/dL/U. Predicted TIR improvement: "
+                f"+{predicted_delta}pp."
+            ),
         ))
 
     return recs
