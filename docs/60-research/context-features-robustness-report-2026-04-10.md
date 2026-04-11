@@ -35,8 +35,8 @@ Noise ceiling (σ=15 mg/dL):            R² = 0.854
 | 4h (48 steps) | 0.538 | 0.553 | −0.010 | −0.014 |
 | 6h (72 steps) | 0.511 | 0.542 | −0.036 | −0.025 |
 
-- **4h wins for XGBoost**: 2/11 patients only
-- **6h wins**: 2/11 (only patients b, d where XGBoost handles the larger feature space)
+- **4h wins for XGBoost**: 1/11 patients only (patient k)
+- **6h wins**: 3/11 (patients b, d, f where XGBoost handles the larger feature space)
 
 **Verdict**: Longer context windows **hurt**. The curse of dimensionality dominates: 6h windows produce 360+ flattened glucose features, leading to overfitting. The 2h window already captures the relevant dynamics for 1h-ahead prediction. Longer-term patterns (dawn, meals) are better captured via explicit conditioning features (see EXP-1132, 1140).
 
@@ -103,7 +103,7 @@ Noise ceiling (σ=15 mg/dL):            R² = 0.854
 
 | Model | Base R² | + Derivatives | Δ | Wins |
 |-------|---------|--------------|---|------|
-| Ridge | 0.547 | 0.549 | +0.002 | 8/11 |
+| Ridge | 0.547 | 0.549 | +0.002 | 9/11 |
 | **XGBoost** | **0.566** | **0.578** | **+0.011** | **10/11** |
 
 **Per-patient XGBoost gains**:
@@ -133,7 +133,7 @@ Noise ceiling (σ=15 mg/dL):            R² = 0.854
 
 | Model | Base R² | + Interactions | Δ | Wins |
 |-------|---------|---------------|---|------|
-| Ridge | 0.547 | 0.550 | +0.003 | 7/11 |
+| Ridge | 0.547 | 0.550 | +0.003 | 9/11 |
 | XGBoost | 0.566 | 0.573 | +0.006 | 8/11 |
 
 **Verdict**: Interaction terms provide **moderate improvement**. XGBoost can theoretically learn interactions through tree splits, but explicit terms still help (+0.006). The benefit is smaller than derivatives (+0.011), suggesting the main information gap is in glucose dynamics, not in insulin-glucose coupling.
@@ -164,7 +164,7 @@ Noise ceiling (σ=15 mg/dL):            R² = 0.854
 | Loss | Ridge R² | XGBoost R² | XGBoost Wins vs MSE |
 |------|----------|-----------|-------------------|
 | MSE | 0.547 | 0.566 | baseline |
-| Huber | 0.534 | 0.564 | 1/11 |
+| Huber | 0.534 | 0.564 | 2/11 |
 | MAE/Quantile | — | 0.551 | 1/11 |
 
 **Verdict**: MSE is **optimal** for this task. Huber and MAE lose because glucose prediction errors are approximately Gaussian (not heavy-tailed). The sensor noise is well-behaved and doesn't benefit from robust estimation. Huber actually hurts Ridge (−0.013) by under-weighting large glucose excursions that carry important signal.
@@ -196,7 +196,7 @@ Noise ceiling (σ=15 mg/dL):            R² = 0.854
 | Ridge (time only) | 0.553 | — | — | — |
 | Ridge (dawn only) | 0.553 | — | — | — |
 | Ridge (both) | 0.555 | +0.009 | — | **10/11** |
-| XGBoost (+ dawn+time) | 0.566 | 0.572 | +0.006 | 7/11 |
+| XGBoost (+ dawn+time) | 0.566 | 0.572 | +0.006 | 9/11 |
 
 **Verdict**: Dawn conditioning provides **reliable improvement**, comparable to time-of-day conditioning. The dawn-specific features (proximity, ramp, cortisol proxy) perform as well as general time features alone. Both together give the best Ridge result (+0.009, 10/11 wins).
 
@@ -222,7 +222,7 @@ Noise ceiling (σ=15 mg/dL):            R² = 0.854
 | 12 | Interaction terms | +0.006 | 8/11 | ★★ |
 | 13 | Δg prediction target | +0.004 | 11/11 | ★★ |
 | — | Extended context (4h/6h) | −0.014 | 2/11 | ✗ Harmful |
-| — | Robust losses (Huber) | −0.002 | 1/11 | ✗ MSE optimal |
+| — | Robust losses (Huber) | −0.002 | 2/11 | ✗ MSE optimal |
 | — | Feature selection | −0.008 | 1/11 | ✗ XGBoost self-selects |
 | — | Online learning | −0.054 | 1/11 | ✗✗ Harmful |
 | — | Stacked generalization | −0.148 | 0/11 | ✗✗✗ Catastrophic |
