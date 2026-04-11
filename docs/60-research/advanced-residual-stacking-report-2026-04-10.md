@@ -50,9 +50,9 @@ This batch investigated autoregressive residual modeling, stacked generalization
 | Config | Mean R² | Δ vs Base | Positive |
 |--------|---------|-----------|----------|
 | Base Ridge | 0.505 | — | — |
-| + Interactions | 0.509 (+0.004) | +0.004 | 9/11 |
+| + Interactions | 0.509 (+0.004) | +0.004 | 10/11 |
 | + CNN | 0.522 (+0.017) | +0.017 | 10/11 |
-| **+ Both** | **0.522 (+0.017)** | +0.017 | 9/11 |
+| **+ Both** | **0.522 (+0.017)** | +0.017 | 10/11 |
 
 **Finding**: Interactions and CNN are **NOT additive**. The combined gain (+0.017) equals CNN alone. The CNN already implicitly learns the same cross-channel multiplicative patterns that explicit interactions capture. **Conclusion**: Use CNN alone; skip interaction features when CNN is in the pipeline.
 
