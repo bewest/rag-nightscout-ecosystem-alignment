@@ -11,7 +11,7 @@
 This report characterizes individual meal responses across 11 AID patients to understand CR personalization, meal timing effects, and the relationship between bolus timing and post-meal outcomes.
 
 **Key findings**:
-1. **Meal logging is sparse**: 0.4–4.1 meals/day logged; UAM events outnumber logged meals 3–93× in most patients
+1. **Meal logging is sparse**: 0.4–4.1 meals/day logged; UAM events outnumber logged meals 2–99× in most patients
 2. **Pre-meal glucose dominates rise**: Meals starting from <100 mg/dL produce 2–3× larger rises than meals starting from >150 mg/dL — the loop is *more aggressive* when glucose is already high
 3. **Insulin stacking is universal**: 5–89% of meals have additional boluses within 2 hours
 4. **Carb-rise correlation is weak**: r=−0.07 to 0.40 — carb amount explains <16% of glucose rise variance

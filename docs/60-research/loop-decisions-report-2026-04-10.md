@@ -151,6 +151,8 @@ Two suspension patterns:
 | i | 1.550 | 2.055 | **1.33** |
 | k | 0.183 | 0.295 | 1.61 |
 
+> **Note**: Patients c, g, and j are excluded from this table due to insufficient meal-adjacent delivery data. Patient j's ratio (0.33×) is cited below from a separate analysis with fewer data points.
+
 **5/11 patients see the loop REDUCE delivery after meals** (a: 0.37×, b: 0.51×, f: 0.49×, h: 0.45×, j: 0.33×). This is the opposite of metabolic need — meals require MORE insulin, not less.
 
 **Explanation**: The meal bolus covers the immediate carb load. The loop then sees IOB (insulin on board) is high and suspends basal to prevent stacking. The post-meal suspension is a *safety measure*, not an error. However, for under-bolused meals (CR too high, per EXP-1871), this creates a gap where neither bolus nor basal adequately covers the meal.
