@@ -68,13 +68,13 @@ Patient j's 41 events/day is clearly not 41 exercise sessions — this patient h
 
 | Patient | 1h Risk | 2h Risk | 4h Risk | 8h Risk |
 |---------|---------|---------|---------|---------|
-| a | **27%** | 19% | 14% | 11% |
-| b | **8%** | 5% | 4% | 3% |
-| c | **49%** | 35% | 19% | 12% |
-| d | 7% | **8%** | 6% | 3% |
-| e | **46%** | 30% | 14% | 7% |
-| i | **81%** | 59% | 27% | 8% |
-| j | 6% | 7% | **9%** | 7% |
+| a | **27%** | 25% | 12% | 11% |
+| b | **8%** | 7% | 4% | 4% |
+| c | **49%** | 41% | 22% | 13% |
+| d | 7% | **8%** | 4% | 2% |
+| e | **46%** | 30% | 12% | 7% |
+| i | **81%** | 78% | 20% | 8% |
+| j | 6% | 8% | **9%** | 5% |
 
 **Finding**: The immediate post-event window (0–2h) carries the highest risk for most patients. Risk declines monotonically with time — we do NOT see the commonly described "delayed exercise hypo at 6–12h" in this data.
 
