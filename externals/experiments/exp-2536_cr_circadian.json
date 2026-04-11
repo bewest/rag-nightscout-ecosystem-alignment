@@ -1,0 +1,854 @@
+{
+  "experiment": "EXP-2536",
+  "title": "Circadian CR Variation",
+  "description": "Tests whether carb ratio effectiveness varies by time of day. Examines dawn phenomenon effects on meal coverage, effective CR per time block, and CR-ISF circadian correlation.",
+  "n_meals": 14963,
+  "n_patients": 17,
+  "min_carbs_threshold": 10,
+  "exp_2536a": {
+    "total_meals": 14963,
+    "meals_ge_10g": 8576,
+    "non_overlapping": 5166,
+    "with_bolus": 4719,
+    "by_block": {
+      "breakfast": {
+        "n_total": 958,
+        "n_ge_10g": 700,
+        "mean_carbs": 27.5,
+        "mean_bolus": 4.35,
+        "mean_pre_bg": 165.1
+      },
+      "lunch": {
+        "n_total": 1713,
+        "n_ge_10g": 1202,
+        "mean_carbs": 36.3,
+        "mean_bolus": 3.47,
+        "mean_pre_bg": 128.3
+      },
+      "afternoon_snack": {
+        "n_total": 2317,
+        "n_ge_10g": 1475,
+        "mean_carbs": 28.3,
+        "mean_bolus": 3.26,
+        "mean_pre_bg": 142.6
+      },
+      "dinner": {
+        "n_total": 3870,
+        "n_ge_10g": 2182,
+        "mean_carbs": 28.3,
+        "mean_bolus": 3.14,
+        "mean_pre_bg": 145.9
+      },
+      "late_night": {
+        "n_total": 6105,
+        "n_ge_10g": 3017,
+        "mean_carbs": 30.0,
+        "mean_bolus": 4.38,
+        "mean_pre_bg": 174.8
+      }
+    }
+  },
+  "exp_2536b": {
+    "by_block": {
+      "breakfast": {
+        "n": 507,
+        "excursion_per_g_mean": 2.67,
+        "excursion_per_g_median": 2.12,
+        "excursion_per_g_std": 2.68,
+        "delta_4h_per_g_mean": -1.14,
+        "delta_4h_per_g_median": 0.27,
+        "peak_time_min_mean": 104.6,
+        "tir_2h": 0.651,
+        "tir_4h": 0.67,
+        "mean_excursion": 64.3,
+        "mean_carbs": 28.8
+      },
+      "lunch": {
+        "n": 831,
+        "excursion_per_g_mean": 3.26,
+        "excursion_per_g_median": 2.46,
+        "excursion_per_g_std": 3.18,
+        "delta_4h_per_g_mean": 0.25,
+        "delta_4h_per_g_median": 0.35,
+        "peak_time_min_mean": 111.6,
+        "tir_2h": 0.637,
+        "tir_4h": 0.654,
+        "mean_excursion": 87.0,
+        "mean_carbs": 38.1
+      },
+      "afternoon_snack": {
+        "n": 903,
+        "excursion_per_g_mean": 3.2,
+        "excursion_per_g_median": 2.45,
+        "excursion_per_g_std": 3.17,
+        "delta_4h_per_g_mean": -0.07,
+        "delta_4h_per_g_median": 0.13,
+        "peak_time_min_mean": 112.1,
+        "tir_2h": 0.609,
+        "tir_4h": 0.64,
+        "mean_excursion": 79.7,
+        "mean_carbs": 30.0
+      },
+      "dinner": {
+        "n": 1107,
+        "excursion_per_g_mean": 2.94,
+        "excursion_per_g_median": 2.13,
+        "excursion_per_g_std": 3.07,
+        "delta_4h_per_g_mean": -0.3,
+        "delta_4h_per_g_median": -0.03,
+        "peak_time_min_mean": 102.7,
+        "tir_2h": 0.62,
+        "tir_4h": 0.636,
+        "mean_excursion": 71.0,
+        "mean_carbs": 29.5
+      },
+      "late_night": {
+        "n": 1818,
+        "excursion_per_g_mean": 2.83,
+        "excursion_per_g_median": 1.89,
+        "excursion_per_g_std": 3.31,
+        "delta_4h_per_g_mean": -0.6,
+        "delta_4h_per_g_median": 0.07,
+        "peak_time_min_mean": 105.1,
+        "tir_2h": 0.572,
+        "tir_4h": 0.567,
+        "mean_excursion": 67.3,
+        "mean_carbs": 31.5
+      }
+    },
+    "kruskal_wallis": {
+      "H": 47.384,
+      "p": 0.0
+    },
+    "breakfast_vs_lunch": {
+      "U": 186719.5,
+      "p_one_sided": 0.999761,
+      "breakfast_mean": 2.67,
+      "lunch_mean": 3.26,
+      "effect_size_r": 0.443
+    },
+    "breakfast_vs_dinner": {
+      "U": 271900.0,
+      "p_two_sided": 0.315109,
+      "breakfast_mean": 2.67,
+      "dinner_mean": 2.94
+    }
+  },
+  "exp_2536c": {
+    "by_block": {
+      "breakfast": {
+        "n": 452,
+        "effective_cr_mean": 9.32,
+        "effective_cr_median": 7.14,
+        "effective_cr_std": 11.28,
+        "scheduled_cr_mean": 6.69,
+        "cr_ratio_mean": 1.434,
+        "cr_ratio_median": 1.008,
+        "pct_over_bolused": 21.0,
+        "pct_under_bolused": 24.1
+      },
+      "lunch": {
+        "n": 718,
+        "effective_cr_mean": 21.42,
+        "effective_cr_median": 9.52,
+        "effective_cr_std": 20.94,
+        "scheduled_cr_mean": 15.69,
+        "cr_ratio_mean": 1.453,
+        "cr_ratio_median": 1.082,
+        "pct_over_bolused": 14.6,
+        "pct_under_bolused": 37.5
+      },
+      "afternoon_snack": {
+        "n": 787,
+        "effective_cr_mean": 16.84,
+        "effective_cr_median": 8.86,
+        "effective_cr_std": 18.71,
+        "scheduled_cr_mean": 12.97,
+        "cr_ratio_mean": 1.335,
+        "cr_ratio_median": 1.023,
+        "pct_over_bolused": 23.1,
+        "pct_under_bolused": 33.8
+      },
+      "dinner": {
+        "n": 971,
+        "effective_cr_mean": 17.03,
+        "effective_cr_median": 8.93,
+        "effective_cr_std": 19.4,
+        "scheduled_cr_mean": 13.29,
+        "cr_ratio_mean": 1.338,
+        "cr_ratio_median": 1.008,
+        "pct_over_bolused": 29.4,
+        "pct_under_bolused": 31.2
+      },
+      "late_night": {
+        "n": 1607,
+        "effective_cr_mean": 12.8,
+        "effective_cr_median": 7.41,
+        "effective_cr_std": 17.18,
+        "scheduled_cr_mean": 10.82,
+        "cr_ratio_mean": 1.189,
+        "cr_ratio_median": 0.952,
+        "pct_over_bolused": 34.0,
+        "pct_under_bolused": 24.8
+      }
+    },
+    "scheduled_cr_by_block": {
+      "breakfast": {
+        "mean": 6.69,
+        "std": 3.66,
+        "min": 3.0,
+        "max": 33.0
+      },
+      "lunch": {
+        "mean": 15.69,
+        "std": 12.25,
+        "min": 3.0,
+        "max": 33.0
+      },
+      "afternoon_snack": {
+        "mean": 12.97,
+        "std": 10.84,
+        "min": 3.0,
+        "max": 33.0
+      },
+      "dinner": {
+        "mean": 13.29,
+        "std": 10.68,
+        "min": 3.0,
+        "max": 33.0
+      },
+      "late_night": {
+        "mean": 10.82,
+        "std": 8.9,
+        "min": 3.0,
+        "max": 33.0
+      }
+    },
+    "kruskal_wallis_effective_cr": {
+      "H": 237.599,
+      "p": 0.0
+    },
+    "bg_outcome_by_block": {
+      "breakfast": {
+        "mean_delta_4h": -15.0,
+        "median_delta_4h": 5.0,
+        "tir_4h": 0.667
+      },
+      "lunch": {
+        "mean_delta_4h": 10.3,
+        "median_delta_4h": 11.0,
+        "tir_4h": 0.646
+      },
+      "afternoon_snack": {
+        "mean_delta_4h": -3.3,
+        "median_delta_4h": 1.0,
+        "tir_4h": 0.635
+      },
+      "dinner": {
+        "mean_delta_4h": -4.6,
+        "median_delta_4h": -4.0,
+        "tir_4h": 0.625
+      },
+      "late_night": {
+        "mean_delta_4h": -8.3,
+        "median_delta_4h": -3.0,
+        "tir_4h": 0.555
+      }
+    }
+  },
+  "exp_2536d": {
+    "scheduled_profile_correlation": {
+      "spearman_r": 0.9278,
+      "p": 0.0,
+      "interpretation": "CR and ISF profiles are correlated"
+    },
+    "circadian_sensitivity": {
+      "breakfast": {
+        "n": 452,
+        "excursion_per_g_per_u": 1.0342,
+        "scheduled_isf": 53.8,
+        "scheduled_cr": 6.7
+      },
+      "lunch": {
+        "n": 718,
+        "excursion_per_g_per_u": 3.2153,
+        "scheduled_isf": 76.6,
+        "scheduled_cr": 15.7
+      },
+      "afternoon_snack": {
+        "n": 787,
+        "excursion_per_g_per_u": 1.9233,
+        "scheduled_isf": 68.7,
+        "scheduled_cr": 13.0
+      },
+      "dinner": {
+        "n": 971,
+        "excursion_per_g_per_u": 2.1028,
+        "scheduled_isf": 71.3,
+        "scheduled_cr": 13.3
+      },
+      "late_night": {
+        "n": 1607,
+        "excursion_per_g_per_u": 1.4235,
+        "scheduled_isf": 63.9,
+        "scheduled_cr": 10.8
+      }
+    },
+    "effective_cr_isf_correlation": {
+      "spearman_r": 0.1696,
+      "p": 0.428295,
+      "n_hours": 24,
+      "interpretation": "Effective CR and ISF show weak/no correlation \u2192 they vary independently"
+    },
+    "hourly_cr_isf": {
+      "0": {
+        "effective_cr": 11.76,
+        "effective_isf": 93.1
+      },
+      "1": {
+        "effective_cr": 12.47,
+        "effective_isf": 111.4
+      },
+      "2": {
+        "effective_cr": 10.21,
+        "effective_isf": 72.1
+      },
+      "3": {
+        "effective_cr": 7.62,
+        "effective_isf": 95.6
+      },
+      "4": {
+        "effective_cr": 6.64,
+        "effective_isf": 108.3
+      },
+      "5": {
+        "effective_cr": 9.06,
+        "effective_isf": 110.3
+      },
+      "6": {
+        "effective_cr": 6.75,
+        "effective_isf": 106.1
+      },
+      "7": {
+        "effective_cr": 9.6,
+        "effective_isf": 99.9
+      },
+      "8": {
+        "effective_cr": 9.84,
+        "effective_isf": 115.6
+      },
+      "9": {
+        "effective_cr": 12.09,
+        "effective_isf": 105.6
+      },
+      "10": {
+        "effective_cr": 22.89,
+        "effective_isf": 107.0
+      },
+      "11": {
+        "effective_cr": 23.66,
+        "effective_isf": 105.5
+      },
+      "12": {
+        "effective_cr": 20.33,
+        "effective_isf": 121.3
+      },
+      "13": {
+        "effective_cr": 17.64,
+        "effective_isf": 102.7
+      },
+      "14": {
+        "effective_cr": 17.0,
+        "effective_isf": 88.2
+      },
+      "15": {
+        "effective_cr": 14.55,
+        "effective_isf": 81.7
+      },
+      "16": {
+        "effective_cr": 18.93,
+        "effective_isf": 97.9
+      },
+      "17": {
+        "effective_cr": 18.21,
+        "effective_isf": 120.6
+      },
+      "18": {
+        "effective_cr": 14.33,
+        "effective_isf": 101.4
+      },
+      "19": {
+        "effective_cr": 17.66,
+        "effective_isf": 115.1
+      },
+      "20": {
+        "effective_cr": 17.28,
+        "effective_isf": 124.4
+      },
+      "21": {
+        "effective_cr": 15.88,
+        "effective_isf": 108.2
+      },
+      "22": {
+        "effective_cr": 20.65,
+        "effective_isf": 104.2
+      },
+      "23": {
+        "effective_cr": 15.12,
+        "effective_isf": 99.9
+      }
+    }
+  },
+  "exp_2536e": {
+    "patient_profiles": {
+      "a": {
+        "profile": {
+          "breakfast": {
+            "effective_cr_median": 3.18,
+            "effective_cr_mean": 3.67,
+            "n": 64
+          },
+          "lunch": {
+            "effective_cr_median": 3.29,
+            "effective_cr_mean": 3.0,
+            "n": 10
+          },
+          "afternoon_snack": {
+            "effective_cr_median": 3.28,
+            "effective_cr_mean": 3.14,
+            "n": 13
+          },
+          "dinner": {
+            "effective_cr_median": 3.36,
+            "effective_cr_mean": 3.29,
+            "n": 35
+          },
+          "late_night": {
+            "effective_cr_median": 3.01,
+            "effective_cr_mean": 3.15,
+            "n": 128
+          }
+        },
+        "cr_range": 0.35,
+        "cr_ratio": 1.12,
+        "pattern": "mixed",
+        "blocks_with_data": 5
+      },
+      "b": {
+        "profile": {
+          "breakfast": {
+            "effective_cr_median": 7.78,
+            "effective_cr_mean": 7.26,
+            "n": 5
+          },
+          "lunch": {
+            "effective_cr_median": 9.3,
+            "effective_cr_mean": 13.17,
+            "n": 102
+          },
+          "afternoon_snack": {
+            "effective_cr_median": 10.33,
+            "effective_cr_mean": 12.42,
+            "n": 86
+          },
+          "dinner": {
+            "effective_cr_median": 11.03,
+            "effective_cr_mean": 15.74,
+            "n": 118
+          },
+          "late_night": {
+            "effective_cr_median": 10.53,
+            "effective_cr_mean": 15.92,
+            "n": 184
+          }
+        },
+        "cr_range": 3.25,
+        "cr_ratio": 1.42,
+        "pattern": "mixed",
+        "blocks_with_data": 5
+      },
+      "c": {
+        "profile": {
+          "breakfast": {
+            "effective_cr_median": 3.49,
+            "effective_cr_mean": 8.41,
+            "n": 37
+          },
+          "lunch": {
+            "effective_cr_median": 4.12,
+            "effective_cr_mean": 5.22,
+            "n": 16
+          },
+          "afternoon_snack": {
+            "effective_cr_median": 4.05,
+            "effective_cr_mean": 7.28,
+            "n": 46
+          },
+          "dinner": {
+            "effective_cr_median": 3.86,
+            "effective_cr_mean": 5.81,
+            "n": 56
+          },
+          "late_night": {
+            "effective_cr_median": 3.72,
+            "effective_cr_mean": 7.54,
+            "n": 104
+          }
+        },
+        "cr_range": 0.63,
+        "cr_ratio": 1.18,
+        "pattern": "mixed",
+        "blocks_with_data": 5
+      },
+      "d": {
+        "profile": {
+          "breakfast": null,
+          "lunch": null,
+          "afternoon_snack": {
+            "effective_cr_median": 10.24,
+            "effective_cr_mean": 13.59,
+            "n": 70
+          },
+          "dinner": {
+            "effective_cr_median": 11.22,
+            "effective_cr_mean": 15.74,
+            "n": 48
+          },
+          "late_night": {
+            "effective_cr_median": 11.11,
+            "effective_cr_mean": 16.59,
+            "n": 109
+          }
+        },
+        "cr_range": 0.98,
+        "cr_ratio": 1.1,
+        "pattern": "mixed",
+        "blocks_with_data": 3
+      },
+      "e": {
+        "profile": {
+          "breakfast": {
+            "effective_cr_median": 3.18,
+            "effective_cr_mean": 4.18,
+            "n": 31
+          },
+          "lunch": {
+            "effective_cr_median": 3.12,
+            "effective_cr_mean": 8.81,
+            "n": 15
+          },
+          "afternoon_snack": {
+            "effective_cr_median": 2.99,
+            "effective_cr_mean": 3.5,
+            "n": 86
+          },
+          "dinner": {
+            "effective_cr_median": 3.01,
+            "effective_cr_mean": 3.31,
+            "n": 37
+          },
+          "late_night": {
+            "effective_cr_median": 3.1,
+            "effective_cr_mean": 3.78,
+            "n": 113
+          }
+        },
+        "cr_range": 0.2,
+        "cr_ratio": 1.07,
+        "pattern": "mixed",
+        "blocks_with_data": 5
+      },
+      "f": {
+        "profile": {
+          "breakfast": {
+            "effective_cr_median": 4.63,
+            "effective_cr_mean": 4.49,
+            "n": 18
+          },
+          "lunch": {
+            "effective_cr_median": 4.06,
+            "effective_cr_mean": 4.37,
+            "n": 8
+          },
+          "afternoon_snack": {
+            "effective_cr_median": 5.19,
+            "effective_cr_mean": 5.78,
+            "n": 21
+          },
+          "dinner": {
+            "effective_cr_median": 5.41,
+            "effective_cr_mean": 5.81,
+            "n": 45
+          },
+          "late_night": {
+            "effective_cr_median": 5.08,
+            "effective_cr_mean": 6.15,
+            "n": 155
+          }
+        },
+        "cr_range": 1.34,
+        "cr_ratio": 1.33,
+        "pattern": "mixed",
+        "blocks_with_data": 5
+      },
+      "g": {
+        "profile": {
+          "breakfast": null,
+          "lunch": null,
+          "afternoon_snack": {
+            "effective_cr_median": 7.69,
+            "effective_cr_mean": 8.99,
+            "n": 117
+          },
+          "dinner": {
+            "effective_cr_median": 7.11,
+            "effective_cr_mean": 10.44,
+            "n": 73
+          },
+          "late_night": {
+            "effective_cr_median": 7.14,
+            "effective_cr_mean": 8.06,
+            "n": 209
+          }
+        },
+        "cr_range": 0.58,
+        "cr_ratio": 1.08,
+        "pattern": "mixed",
+        "blocks_with_data": 3
+      },
+      "h": {
+        "profile": {
+          "breakfast": {
+            "effective_cr_median": 6.47,
+            "effective_cr_mean": 7.66,
+            "n": 10
+          },
+          "lunch": {
+            "effective_cr_median": 9.09,
+            "effective_cr_mean": 8.35,
+            "n": 9
+          },
+          "afternoon_snack": {
+            "effective_cr_median": 9.33,
+            "effective_cr_mean": 9.36,
+            "n": 12
+          },
+          "dinner": {
+            "effective_cr_median": 7.97,
+            "effective_cr_mean": 8.59,
+            "n": 44
+          },
+          "late_night": {
+            "effective_cr_median": 8.24,
+            "effective_cr_mean": 8.78,
+            "n": 84
+          }
+        },
+        "cr_range": 2.86,
+        "cr_ratio": 1.44,
+        "pattern": "mixed",
+        "blocks_with_data": 5
+      },
+      "i": {
+        "profile": {
+          "breakfast": null,
+          "lunch": null,
+          "afternoon_snack": {
+            "effective_cr_median": 8.2,
+            "effective_cr_mean": 8.54,
+            "n": 23
+          },
+          "dinner": {
+            "effective_cr_median": 6.82,
+            "effective_cr_mean": 6.4,
+            "n": 23
+          },
+          "late_night": {
+            "effective_cr_median": 6.96,
+            "effective_cr_mean": 8.36,
+            "n": 42
+          }
+        },
+        "cr_range": 1.38,
+        "cr_ratio": 1.2,
+        "pattern": "mixed",
+        "blocks_with_data": 3
+      },
+      "j": {
+        "profile": {
+          "breakfast": {
+            "effective_cr_median": 6.31,
+            "effective_cr_mean": 6.37,
+            "n": 12
+          },
+          "lunch": {
+            "effective_cr_median": 6.29,
+            "effective_cr_mean": 6.61,
+            "n": 41
+          },
+          "afternoon_snack": null,
+          "dinner": null,
+          "late_night": {
+            "effective_cr_median": 5.0,
+            "effective_cr_mean": 5.39,
+            "n": 79
+          }
+        },
+        "cr_range": 1.31,
+        "cr_ratio": 1.26,
+        "pattern": "mixed",
+        "blocks_with_data": 3
+      },
+      "k": {
+        "profile": {
+          "breakfast": null,
+          "lunch": null,
+          "afternoon_snack": {
+            "effective_cr_median": 6.82,
+            "effective_cr_mean": 6.71,
+            "n": 7
+          },
+          "dinner": {
+            "effective_cr_median": 7.41,
+            "effective_cr_mean": 9.29,
+            "n": 7
+          },
+          "late_night": {
+            "effective_cr_median": 8.0,
+            "effective_cr_mean": 8.74,
+            "n": 43
+          }
+        },
+        "cr_range": 1.18,
+        "cr_ratio": 1.17,
+        "pattern": "mixed",
+        "blocks_with_data": 3
+      },
+      "odc-74077367": {
+        "profile": {
+          "breakfast": {
+            "effective_cr_median": 8.0,
+            "effective_cr_mean": 14.24,
+            "n": 152
+          },
+          "lunch": {
+            "effective_cr_median": 8.0,
+            "effective_cr_mean": 14.02,
+            "n": 135
+          },
+          "afternoon_snack": {
+            "effective_cr_median": 7.5,
+            "effective_cr_mean": 15.27,
+            "n": 87
+          },
+          "dinner": {
+            "effective_cr_median": 7.5,
+            "effective_cr_mean": 13.93,
+            "n": 155
+          },
+          "late_night": {
+            "effective_cr_median": 8.05,
+            "effective_cr_mean": 13.09,
+            "n": 98
+          }
+        },
+        "cr_range": 0.55,
+        "cr_ratio": 1.07,
+        "pattern": "mixed",
+        "blocks_with_data": 5
+      },
+      "odc-86025410": {
+        "profile": {
+          "breakfast": {
+            "effective_cr_median": 29.0,
+            "effective_cr_mean": 27.24,
+            "n": 6
+          },
+          "lunch": {
+            "effective_cr_median": 39.5,
+            "effective_cr_mean": 43.04,
+            "n": 238
+          },
+          "afternoon_snack": {
+            "effective_cr_median": 40.0,
+            "effective_cr_mean": 42.68,
+            "n": 169
+          },
+          "dinner": {
+            "effective_cr_median": 37.5,
+            "effective_cr_mean": 39.94,
+            "n": 212
+          },
+          "late_night": {
+            "effective_cr_median": 37.0,
+            "effective_cr_mean": 40.02,
+            "n": 197
+          }
+        },
+        "cr_range": 11.0,
+        "cr_ratio": 1.38,
+        "pattern": "dawn\u2193",
+        "blocks_with_data": 5
+      },
+      "odc-96254963": {
+        "profile": {
+          "breakfast": {
+            "effective_cr_median": 8.06,
+            "effective_cr_mean": 8.15,
+            "n": 106
+          },
+          "lunch": {
+            "effective_cr_median": 8.06,
+            "effective_cr_mean": 8.83,
+            "n": 130
+          },
+          "afternoon_snack": {
+            "effective_cr_median": 8.33,
+            "effective_cr_mean": 9.78,
+            "n": 47
+          },
+          "dinner": {
+            "effective_cr_median": 8.11,
+            "effective_cr_mean": 9.14,
+            "n": 108
+          },
+          "late_night": {
+            "effective_cr_median": 8.33,
+            "effective_cr_mean": 8.32,
+            "n": 59
+          }
+        },
+        "cr_range": 0.27,
+        "cr_ratio": 1.03,
+        "pattern": "mixed",
+        "blocks_with_data": 5
+      }
+    },
+    "consistency": {
+      "n_patients": 14,
+      "pattern_counts": {
+        "mixed": 13,
+        "dawn\u2193": 1
+      },
+      "mean_cr_ratio": 1.2,
+      "median_cr_ratio": 1.17,
+      "cr_ratio_range": [
+        1.03,
+        1.44
+      ]
+    },
+    "breakfast_rank": {
+      "mean_rank": 2.0,
+      "expected_rank": 2.64,
+      "n_patients": 10,
+      "interpretation": "Breakfast CR tends to be lower (tighter) than other blocks \u2192 dawn phenomenon"
+    }
+  },
+  "conclusions": [
+    "BG excursion per gram varies significantly by time block (Kruskal-Wallis H=47.4, p=0.0000)",
+    "No significant difference in excursion/g between breakfast and lunch (p=0.9998)",
+    "Effective CR varies significantly by time block (H=237.6, p=0.0000)",
+    "Effective CR and ISF show weak/no correlation \u2192 they vary independently",
+    "Per-patient CR circadian ratio (max/min): mean=1.20\u00d7, median=1.17\u00d7"
+  ]
+}
