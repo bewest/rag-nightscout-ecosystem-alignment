@@ -1,0 +1,942 @@
+[
+  {
+    "_id": "69cc8ae42b390b6ca450ae4c",
+    "loopSettings": {
+      "maximumBolus": 8,
+      "deviceToken": "0145ce85934cdae539b64e7aedcd08eaf54f0b92f9ffb59b4490b2a90b4a7af5",
+      "bundleIdentifier": "com.medicaldatanetworks.loop-taupe.Loop",
+      "maximumBasalRatePerHour": 4,
+      "dosingStrategy": "automaticBolus",
+      "minimumBGGuard": 80,
+      "preMealTargetRange": [
+        80,
+        100
+      ],
+      "scheduleOverride": {
+        "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+        "insulinNeedsScaleFactor": 1.38,
+        "name": "Walking",
+        "duration": 3600
+      },
+      "dosingEnabled": true,
+      "overridePresets": [
+        {
+          "duration": 3600,
+          "name": "Walking",
+          "insulinNeedsScaleFactor": 0.5,
+          "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f"
+        }
+      ]
+    },
+    "store": {
+      "Default": {
+        "units": "mg/dL",
+        "basal": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 1
+          },
+          {
+            "time": "02:30",
+            "value": 0.8,
+            "timeAsSeconds": 9000
+          },
+          {
+            "value": 0.8,
+            "timeAsSeconds": 28800,
+            "time": "08:00"
+          },
+          {
+            "time": "20:30",
+            "value": 1,
+            "timeAsSeconds": 73800
+          }
+        ],
+        "target_low": [
+          {
+            "timeAsSeconds": 0,
+            "value": 100,
+            "time": "00:00"
+          }
+        ],
+        "carbs_hr": "0",
+        "target_high": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 105
+          }
+        ],
+        "dia": 6,
+        "delay": "0",
+        "timezone": "ETC/GMT+8",
+        "carbratio": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 14
+          }
+        ],
+        "sens": [
+          {
+            "value": 40,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          }
+        ]
+      }
+    },
+    "startDate": "2026-04-01T01:17:41Z",
+    "defaultProfile": "Default",
+    "enteredBy": "Loop",
+    "units": "mg/dL",
+    "mills": "1775006261975"
+  },
+  {
+    "_id": "69c85d722b390b1e4650a69b",
+    "startDate": "2026-03-28T23:00:01Z",
+    "defaultProfile": "Default",
+    "units": "mg/dL",
+    "mills": "1774738801934",
+    "store": {
+      "Default": {
+        "dia": 6,
+        "units": "mg/dL",
+        "carbs_hr": "0",
+        "target_low": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 100
+          }
+        ],
+        "target_high": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 105
+          }
+        ],
+        "carbratio": [
+          {
+            "time": "00:00",
+            "value": 14,
+            "timeAsSeconds": 0
+          }
+        ],
+        "timezone": "ETC/GMT+8",
+        "sens": [
+          {
+            "value": 40,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          }
+        ],
+        "delay": "0",
+        "basal": [
+          {
+            "time": "00:00",
+            "value": 1,
+            "timeAsSeconds": 0
+          },
+          {
+            "value": 0.8,
+            "time": "02:30",
+            "timeAsSeconds": 9000
+          },
+          {
+            "timeAsSeconds": 28800,
+            "time": "08:00",
+            "value": 0.8
+          },
+          {
+            "value": 1,
+            "timeAsSeconds": 73800,
+            "time": "20:30"
+          }
+        ]
+      }
+    },
+    "loopSettings": {
+      "preMealTargetRange": [
+        80,
+        100
+      ],
+      "minimumBGGuard": 80,
+      "deviceToken": "0145ce85934cdae539b64e7aedcd08eaf54f0b92f9ffb59b4490b2a90b4a7af5",
+      "dosingEnabled": true,
+      "scheduleOverride": {
+        "insulinNeedsScaleFactor": 1.38,
+        "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+        "name": "Walking",
+        "duration": 3600
+      },
+      "overridePresets": [
+        {
+          "insulinNeedsScaleFactor": 0.5,
+          "duration": 3600,
+          "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+          "name": "Walking"
+        }
+      ],
+      "maximumBolus": 8,
+      "maximumBasalRatePerHour": 4,
+      "dosingStrategy": "automaticBolus",
+      "bundleIdentifier": "com.medicaldatanetworks.loop-taupe.Loop"
+    },
+    "enteredBy": "Loop"
+  },
+  {
+    "_id": "69c85c022b390b801650a69a",
+    "loopSettings": {
+      "maximumBolus": 8,
+      "dosingStrategy": "automaticBolus",
+      "minimumBGGuard": 80,
+      "maximumBasalRatePerHour": 4,
+      "overridePresets": [
+        {
+          "name": "Walking",
+          "insulinNeedsScaleFactor": 0.5,
+          "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+          "duration": 3600
+        }
+      ],
+      "dosingEnabled": true,
+      "preMealTargetRange": [
+        80,
+        100
+      ],
+      "deviceToken": "0145ce85934cdae539b64e7aedcd08eaf54f0b92f9ffb59b4490b2a90b4a7af5",
+      "bundleIdentifier": "com.medicaldatanetworks.loop-taupe.Loop",
+      "scheduleOverride": {
+        "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+        "duration": 3600,
+        "name": "Walking",
+        "insulinNeedsScaleFactor": 1.38
+      }
+    },
+    "units": "mg/dL",
+    "mills": "1774738417692",
+    "startDate": "2026-03-28T22:53:37Z",
+    "store": {
+      "Default": {
+        "carbs_hr": "0",
+        "carbratio": [
+          {
+            "value": 14,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          }
+        ],
+        "units": "mg/dL",
+        "delay": "0",
+        "timezone": "ETC/GMT+8",
+        "dia": 6,
+        "target_low": [
+          {
+            "time": "00:00",
+            "value": 100,
+            "timeAsSeconds": 0
+          }
+        ],
+        "target_high": [
+          {
+            "time": "00:00",
+            "value": 105,
+            "timeAsSeconds": 0
+          }
+        ],
+        "sens": [
+          {
+            "timeAsSeconds": 0,
+            "value": 40,
+            "time": "00:00"
+          }
+        ],
+        "basal": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 1
+          },
+          {
+            "timeAsSeconds": 9000,
+            "time": "02:30",
+            "value": 0.8
+          },
+          {
+            "time": "08:00",
+            "timeAsSeconds": 28800,
+            "value": 0.8
+          },
+          {
+            "value": 1,
+            "time": "20:30",
+            "timeAsSeconds": 73800
+          }
+        ]
+      }
+    },
+    "enteredBy": "Loop",
+    "defaultProfile": "Default"
+  },
+  {
+    "_id": "69c7ed982b390bad8d50a62d",
+    "startDate": "2026-03-28T15:02:47Z",
+    "defaultProfile": "Default",
+    "loopSettings": {
+      "bundleIdentifier": "com.medicaldatanetworks.loop-taupe.Loop",
+      "scheduleOverride": {
+        "insulinNeedsScaleFactor": 1.38,
+        "duration": 3600,
+        "name": "Walking",
+        "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f"
+      },
+      "dosingStrategy": "automaticBolus",
+      "dosingEnabled": true,
+      "deviceToken": "0145ce85934cdae539b64e7aedcd08eaf54f0b92f9ffb59b4490b2a90b4a7af5",
+      "maximumBasalRatePerHour": 4,
+      "preMealTargetRange": [
+        80,
+        100
+      ],
+      "minimumBGGuard": 80,
+      "overridePresets": [
+        {
+          "duration": 3600,
+          "insulinNeedsScaleFactor": 0.5,
+          "name": "Walking",
+          "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f"
+        }
+      ],
+      "maximumBolus": 8
+    },
+    "units": "mg/dL",
+    "store": {
+      "Default": {
+        "target_high": [
+          {
+            "time": "00:00",
+            "value": 105,
+            "timeAsSeconds": 0
+          }
+        ],
+        "timezone": "ETC/GMT+8",
+        "sens": [
+          {
+            "time": "00:00",
+            "value": 40,
+            "timeAsSeconds": 0
+          }
+        ],
+        "dia": 6,
+        "carbs_hr": "0",
+        "carbratio": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 14
+          }
+        ],
+        "basal": [
+          {
+            "time": "00:00",
+            "value": 1,
+            "timeAsSeconds": 0
+          },
+          {
+            "time": "02:30",
+            "value": 0.8,
+            "timeAsSeconds": 9000
+          },
+          {
+            "time": "08:00",
+            "timeAsSeconds": 28800,
+            "value": 0.8
+          },
+          {
+            "value": 1,
+            "time": "20:30",
+            "timeAsSeconds": 73800
+          }
+        ],
+        "target_low": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 100
+          }
+        ],
+        "delay": "0",
+        "units": "mg/dL"
+      }
+    },
+    "mills": "1774710167673",
+    "enteredBy": "Loop"
+  },
+  {
+    "_id": "69c74bf02b390bd96a50a5a9",
+    "startDate": "2026-03-28T03:33:03Z",
+    "enteredBy": "Loop",
+    "store": {
+      "Default": {
+        "units": "mg/dL",
+        "basal": [
+          {
+            "value": 1,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          },
+          {
+            "value": 0.8,
+            "timeAsSeconds": 9000,
+            "time": "02:30"
+          },
+          {
+            "time": "08:00",
+            "timeAsSeconds": 28800,
+            "value": 0.8
+          },
+          {
+            "value": 1,
+            "time": "20:30",
+            "timeAsSeconds": 73800
+          }
+        ],
+        "sens": [
+          {
+            "value": 40,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          }
+        ],
+        "dia": 6,
+        "delay": "0",
+        "target_high": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 105
+          }
+        ],
+        "timezone": "ETC/GMT+8",
+        "carbratio": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 14
+          }
+        ],
+        "carbs_hr": "0",
+        "target_low": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 100
+          }
+        ]
+      }
+    },
+    "mills": "1774668783707",
+    "units": "mg/dL",
+    "loopSettings": {
+      "overridePresets": [
+        {
+          "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+          "duration": 3600,
+          "insulinNeedsScaleFactor": 0.5,
+          "name": "Walking"
+        }
+      ],
+      "minimumBGGuard": 80,
+      "deviceToken": "0145ce85934cdae539b64e7aedcd08eaf54f0b92f9ffb59b4490b2a90b4a7af5",
+      "scheduleOverride": {
+        "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+        "name": "Walking",
+        "insulinNeedsScaleFactor": 1.38,
+        "duration": 3600
+      },
+      "dosingStrategy": "automaticBolus",
+      "maximumBolus": 8,
+      "bundleIdentifier": "com.medicaldatanetworks.loop-taupe.Loop",
+      "preMealTargetRange": [
+        80,
+        100
+      ],
+      "maximumBasalRatePerHour": 4,
+      "dosingEnabled": true
+    },
+    "defaultProfile": "Default"
+  },
+  {
+    "_id": "69c58e322b390bab5c50a430",
+    "startDate": "2026-03-26T19:51:14Z",
+    "units": "mg/dL",
+    "defaultProfile": "Default",
+    "loopSettings": {
+      "dosingEnabled": true,
+      "scheduleOverride": {
+        "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+        "insulinNeedsScaleFactor": 1.38,
+        "name": "Walking",
+        "duration": 3600
+      },
+      "maximumBasalRatePerHour": 4,
+      "maximumBolus": 8,
+      "deviceToken": "0145ce85934cdae539b64e7aedcd08eaf54f0b92f9ffb59b4490b2a90b4a7af5",
+      "minimumBGGuard": 80,
+      "dosingStrategy": "automaticBolus",
+      "overridePresets": [
+        {
+          "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+          "name": "Walking",
+          "duration": 3600,
+          "insulinNeedsScaleFactor": 0.5
+        }
+      ],
+      "bundleIdentifier": "com.medicaldatanetworks.loop-taupe.Loop",
+      "preMealTargetRange": [
+        80,
+        100
+      ]
+    },
+    "enteredBy": "Loop",
+    "store": {
+      "Default": {
+        "target_high": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 105
+          }
+        ],
+        "sens": [
+          {
+            "value": 40,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          }
+        ],
+        "target_low": [
+          {
+            "value": 100,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          }
+        ],
+        "units": "mg/dL",
+        "carbs_hr": "0",
+        "carbratio": [
+          {
+            "time": "00:00",
+            "value": 14,
+            "timeAsSeconds": 0
+          }
+        ],
+        "dia": 6,
+        "basal": [
+          {
+            "value": 1,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          },
+          {
+            "time": "02:30",
+            "value": 0.8,
+            "timeAsSeconds": 9000
+          },
+          {
+            "time": "08:00",
+            "value": 0.8,
+            "timeAsSeconds": 28800
+          },
+          {
+            "value": 1,
+            "timeAsSeconds": 73800,
+            "time": "20:30"
+          }
+        ],
+        "timezone": "ETC/GMT+8",
+        "delay": "0"
+      }
+    },
+    "mills": "1774554674618"
+  },
+  {
+    "_id": "69c588e02b390bc27f50a42d",
+    "defaultProfile": "Default",
+    "mills": "1774553312379",
+    "startDate": "2026-03-26T19:28:32Z",
+    "loopSettings": {
+      "overridePresets": [
+        {
+          "insulinNeedsScaleFactor": 0.5,
+          "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+          "duration": 3600,
+          "name": "Walking"
+        }
+      ],
+      "maximumBasalRatePerHour": 4,
+      "dosingStrategy": "automaticBolus",
+      "dosingEnabled": true,
+      "scheduleOverride": {
+        "duration": 3600,
+        "insulinNeedsScaleFactor": 1.38,
+        "name": "Walking",
+        "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f"
+      },
+      "minimumBGGuard": 80,
+      "maximumBolus": 8,
+      "preMealTargetRange": [
+        80,
+        100
+      ],
+      "bundleIdentifier": "com.medicaldatanetworks.loop-taupe.Loop",
+      "deviceToken": "0145ce85934cdae539b64e7aedcd08eaf54f0b92f9ffb59b4490b2a90b4a7af5"
+    },
+    "store": {
+      "Default": {
+        "basal": [
+          {
+            "value": 1,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          },
+          {
+            "time": "02:30",
+            "value": 0.8,
+            "timeAsSeconds": 9000
+          },
+          {
+            "time": "08:00",
+            "value": 0.8,
+            "timeAsSeconds": 28800
+          },
+          {
+            "value": 1,
+            "time": "20:30",
+            "timeAsSeconds": 73800
+          }
+        ],
+        "carbratio": [
+          {
+            "time": "00:00",
+            "value": 14,
+            "timeAsSeconds": 0
+          }
+        ],
+        "target_high": [
+          {
+            "time": "00:00",
+            "value": 105,
+            "timeAsSeconds": 0
+          }
+        ],
+        "carbs_hr": "0",
+        "units": "mg/dL",
+        "delay": "0",
+        "sens": [
+          {
+            "value": 40,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          }
+        ],
+        "timezone": "ETC/GMT+8",
+        "dia": 6,
+        "target_low": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 100
+          }
+        ]
+      }
+    },
+    "enteredBy": "Loop",
+    "units": "mg/dL"
+  },
+  {
+    "_id": "69c588d32b390b0ceb50a42c",
+    "enteredBy": "Loop",
+    "loopSettings": {
+      "minimumBGGuard": 80,
+      "bundleIdentifier": "com.medicaldatanetworks.loop-taupe.Loop",
+      "overridePresets": [
+        {
+          "name": "Walking",
+          "duration": 3600,
+          "insulinNeedsScaleFactor": 0.5,
+          "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f"
+        }
+      ],
+      "maximumBasalRatePerHour": 4,
+      "scheduleOverride": {
+        "duration": 3600,
+        "insulinNeedsScaleFactor": 1.38,
+        "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+        "name": "Walking"
+      },
+      "maximumBolus": 8,
+      "preMealTargetRange": [
+        80,
+        100
+      ],
+      "dosingEnabled": true,
+      "deviceToken": "0145ce85934cdae539b64e7aedcd08eaf54f0b92f9ffb59b4490b2a90b4a7af5",
+      "dosingStrategy": "automaticBolus"
+    },
+    "startDate": "2026-03-26T19:28:19Z",
+    "defaultProfile": "Default",
+    "units": "mg/dL",
+    "store": {
+      "Default": {
+        "sens": [
+          {
+            "time": "00:00",
+            "value": 40,
+            "timeAsSeconds": 0
+          }
+        ],
+        "basal": [
+          {
+            "value": 1,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          },
+          {
+            "value": 0.8,
+            "time": "02:30",
+            "timeAsSeconds": 9000
+          },
+          {
+            "value": 0.8,
+            "time": "08:00",
+            "timeAsSeconds": 28800
+          },
+          {
+            "time": "20:30",
+            "timeAsSeconds": 73800,
+            "value": 1
+          }
+        ],
+        "delay": "0",
+        "timezone": "ETC/GMT+8",
+        "dia": 6,
+        "target_low": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 100
+          }
+        ],
+        "carbratio": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 13
+          }
+        ],
+        "target_high": [
+          {
+            "time": "00:00",
+            "value": 105,
+            "timeAsSeconds": 0
+          }
+        ],
+        "carbs_hr": "0",
+        "units": "mg/dL"
+      }
+    },
+    "mills": "1774553299017"
+  },
+  {
+    "_id": "69c149f82b390b7dab50a08e",
+    "enteredBy": "Loop",
+    "store": {
+      "Default": {
+        "carbratio": [
+          {
+            "time": "00:00",
+            "value": 13,
+            "timeAsSeconds": 0
+          }
+        ],
+        "target_high": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 105
+          }
+        ],
+        "delay": "0",
+        "carbs_hr": "0",
+        "units": "mg/dL",
+        "basal": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 1
+          },
+          {
+            "time": "02:30",
+            "value": 0.8,
+            "timeAsSeconds": 9000
+          },
+          {
+            "value": 0.8,
+            "time": "08:00",
+            "timeAsSeconds": 28800
+          },
+          {
+            "timeAsSeconds": 73800,
+            "time": "20:30",
+            "value": 1.2
+          }
+        ],
+        "timezone": "ETC/GMT+8",
+        "dia": 6,
+        "sens": [
+          {
+            "time": "00:00",
+            "value": 40,
+            "timeAsSeconds": 0
+          }
+        ],
+        "target_low": [
+          {
+            "value": 100,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          }
+        ]
+      }
+    },
+    "mills": "1774274946563",
+    "units": "mg/dL",
+    "loopSettings": {
+      "deviceToken": "0145ce85934cdae539b64e7aedcd08eaf54f0b92f9ffb59b4490b2a90b4a7af5",
+      "scheduleOverride": {
+        "duration": 3600,
+        "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+        "insulinNeedsScaleFactor": 1.38,
+        "name": "Walking"
+      },
+      "overridePresets": [
+        {
+          "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+          "insulinNeedsScaleFactor": 0.5,
+          "duration": 3600,
+          "name": "Walking"
+        }
+      ],
+      "preMealTargetRange": [
+        80,
+        100
+      ],
+      "dosingEnabled": true,
+      "minimumBGGuard": 80,
+      "maximumBasalRatePerHour": 4,
+      "maximumBolus": 8,
+      "dosingStrategy": "automaticBolus",
+      "bundleIdentifier": "com.medicaldatanetworks.loop-taupe.Loop"
+    },
+    "defaultProfile": "Default",
+    "startDate": "2026-03-23T14:09:06Z"
+  },
+  {
+    "_id": "69c011972b390b1415509f2a",
+    "defaultProfile": "Default",
+    "loopSettings": {
+      "maximumBasalRatePerHour": 4,
+      "dosingEnabled": true,
+      "scheduleOverride": {
+        "insulinNeedsScaleFactor": 1.38,
+        "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+        "duration": 3600,
+        "name": "Walking"
+      },
+      "preMealTargetRange": [
+        80,
+        100
+      ],
+      "maximumBolus": 8,
+      "dosingStrategy": "automaticBolus",
+      "overridePresets": [
+        {
+          "duration": 3600,
+          "symbol": "\ud83d\udeb6\u200d\u2642\ufe0f",
+          "name": "Walking",
+          "insulinNeedsScaleFactor": 0.5
+        }
+      ],
+      "minimumBGGuard": 80,
+      "deviceToken": "0145ce85934cdae539b64e7aedcd08eaf54f0b92f9ffb59b4490b2a90b4a7af5",
+      "bundleIdentifier": "com.medicaldatanetworks.loop-taupe.Loop"
+    },
+    "store": {
+      "Default": {
+        "carbratio": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 13
+          }
+        ],
+        "target_low": [
+          {
+            "time": "00:00",
+            "value": 100,
+            "timeAsSeconds": 0
+          }
+        ],
+        "timezone": "ETC/GMT+8",
+        "basal": [
+          {
+            "value": 1,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          },
+          {
+            "timeAsSeconds": 9000,
+            "time": "02:30",
+            "value": 0.8
+          },
+          {
+            "time": "08:00",
+            "timeAsSeconds": 28800,
+            "value": 0.8
+          },
+          {
+            "time": "20:30",
+            "timeAsSeconds": 73800,
+            "value": 1.2
+          }
+        ],
+        "units": "mg/dL",
+        "delay": "0",
+        "dia": 6,
+        "target_high": [
+          {
+            "value": 105,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          }
+        ],
+        "sens": [
+          {
+            "time": "00:00",
+            "value": 40,
+            "timeAsSeconds": 0
+          }
+        ],
+        "carbs_hr": "0"
+      }
+    },
+    "startDate": "2026-03-22T15:58:14Z",
+    "enteredBy": "Loop",
+    "units": "mg/dL",
+    "mills": "1774195094611"
+  }
+]

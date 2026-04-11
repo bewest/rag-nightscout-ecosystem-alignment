@@ -51,16 +51,18 @@ def _lookup_schedule(sec_of_day: int, schedule: list, default: float = 0.0) -> f
     """Look up current value from a time-varying schedule."""
     if not schedule:
         return default
-    val = schedule[0].get('value', default)
-    for entry in schedule:
-        tas = entry.get('timeAsSeconds', 0)
-        # NS-export profiles store these as strings
-        if isinstance(tas, str):
+    def _tas(entry):
+        t = entry.get('timeAsSeconds', 0)
+        if isinstance(t, str):
             try:
-                tas = int(tas)
+                return int(t)
             except ValueError:
-                tas = 0
-        if tas <= sec_of_day:
+                return 0
+        return t
+    sorted_sched = sorted(schedule, key=_tas)
+    val = sorted_sched[0].get('value', default)
+    for entry in sorted_sched:
+        if _tas(entry) <= sec_of_day:
             v = entry.get('value', val)
             val = float(v) if not isinstance(v, (int, float)) else v
     return float(val)

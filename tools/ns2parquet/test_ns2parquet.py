@@ -194,6 +194,21 @@ class TestScheduleLookup(unittest.TestCase):
     def test_default_value(self):
         self.assertEqual(self.lookup(0, [], default=42.0), 42.0)
 
+    def test_unsorted_schedule(self):
+        """Schedule entries not in chronological order should still work."""
+        unsorted = [
+            {'timeAsSeconds': 43200, 'value': 40},    # noon (out of order)
+            {'timeAsSeconds': 0, 'value': 50},         # midnight
+            {'timeAsSeconds': 64800, 'value': 55},    # 6pm
+            {'timeAsSeconds': 21600, 'value': 45},    # 6am (out of order)
+        ]
+        self.assertEqual(self.lookup(0, unsorted), 50.0)       # midnight
+        self.assertEqual(self.lookup(10800, unsorted), 50.0)   # 3am
+        self.assertEqual(self.lookup(21600, unsorted), 45.0)   # 6am
+        self.assertEqual(self.lookup(43200, unsorted), 40.0)   # noon
+        self.assertEqual(self.lookup(64800, unsorted), 55.0)   # 6pm
+        self.assertEqual(self.lookup(75600, unsorted), 55.0)   # 9pm
+
 
 class TestMmolConversion(unittest.TestCase):
     """Test mmol/L → mg/dL conversion using Nightscout canonical constant."""
@@ -457,6 +472,9 @@ HAS_ODC_FIXTURE = HAS_FIXTURES and os.path.isfile(
 HAS_NSEXPORT_FIXTURE = HAS_FIXTURES and os.path.isfile(
     os.path.join(FIXTURES_DIR, 'nsexport_74077367_entries.json')
 )
+HAS_SENSOR_FIXTURE = HAS_FIXTURES and os.path.isfile(
+    os.path.join(FIXTURES_DIR, 'sensor_d_entries.json')
+)
 
 # Tiny terrarium: pre-built parquet with 2 patients × 7 days (~800KB)
 TINY_TERRARIUM = os.path.join(
@@ -544,6 +562,15 @@ class TestGridIntegrity(unittest.TestCase):
         for col in ['loop_predicted_30', 'loop_predicted_60', 'loop_predicted_min']:
             valid = self.df_d[col].notna().sum()
             self.assertGreater(valid, 0, f'{col} should have some values')
+
+    def test_override_type_temporary_override(self):
+        """Patient a has Temporary Override events → override_type=2.0."""
+        ov_slots = (self.df_a['override_active'] > 0).sum()
+        self.assertGreater(ov_slots, 0,
+                           'Patient a should have Temporary Override events')
+        ov_type_2 = (self.df_a['override_type'] == 2.0).sum()
+        self.assertGreater(ov_type_2, 0,
+                           'Temporary Override should set override_type=2.0')
 
 
 @unittest.skipUnless(HAS_TINY_TERRARIUM, 'Tiny terrarium not available')
@@ -750,9 +777,13 @@ class TestPatientBMixedController(unittest.TestCase):
         self.assertGreater(ex_slots, 0, 'Expected exercise events for patient b')
 
     def test_override_detected(self):
-        """Patient b has temporary target/override events detected."""
+        """Patient b has temporary targets with override_type=1.0."""
         ov_slots = (self.df['override_active'] > 0).sum()
         self.assertGreater(ov_slots, 0, 'Expected overrides for patient b')
+        # Temporary Targets should have override_type=1.0
+        ov_type_slots = (self.df['override_type'] == 1.0).sum()
+        self.assertGreater(ov_type_slots, 0,
+                           'Temporary Targets should set override_type=1.0')
 
     def test_predictions_populated_for_oref0(self):
         """Patient b (mostly Trio) has predictions at 30 and 60 minutes."""
@@ -993,9 +1024,12 @@ class TestODCIntegration(unittest.TestCase):
         self.assertGreater(smb_n, 10)
 
     def test_override_from_temp_targets(self):
-        """TempTargets should populate override_active."""
+        """TempTargets should populate override_active with type=1.0."""
         override_n = (self.grid['override_active'] > 0).sum()
         self.assertGreater(override_n, 10)
+        ov_type_1 = (self.grid['override_type'] == 1.0).sum()
+        self.assertEqual(override_n, ov_type_1,
+                         'All ODC overrides are TempTargets → type should be 1.0')
 
     def test_profile_isf_reasonable(self):
         """Scheduled ISF should be in mg/dL range (converted from mmol)."""
@@ -1457,6 +1491,177 @@ class TestQualityMetadata(unittest.TestCase):
         self.assertEqual(q['total_records'], 1)
         self.assertEqual(q['accepted'], 1)
         self.assertEqual(q['minimal_records'], 0)
+
+
+# ── Sensor Age / Duration Capping / Schedule Edge Cases ──────────────
+
+@unittest.skipUnless(HAS_SENSOR_FIXTURE, 'Sensor fixture not available')
+class TestSensorAgeCalculation(unittest.TestCase):
+    """Test sage_hours, sensor_warmup, sensor_phase using real fixture data.
+
+    sensor_d fixture: 12h window from patient d containing 4 Sensor Start
+    events at ~2025-11-28T10:32. Validates the full sensor age pipeline.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.grid = _build_fixture_grid('sensor_d', 'sensor_d')
+
+    def test_grid_built(self):
+        """Sensor fixture produces a valid grid."""
+        self.assertIsNotNone(self.grid)
+        self.assertEqual(self.grid.shape[1], 49)
+
+    def test_sage_hours_populated(self):
+        """sage_hours should be non-NaN after the Sensor Start event."""
+        sage_valid = self.grid['sage_hours'].notna().sum()
+        self.assertGreater(sage_valid, 50,
+                           'sage_hours should be populated for most rows post-start')
+
+    def test_sage_hours_nan_before_start(self):
+        """sage_hours should be NaN for rows before the Sensor Start."""
+        sage_nan = self.grid['sage_hours'].isna().sum()
+        self.assertGreater(sage_nan, 10,
+                           'Some rows before Sensor Start should have NaN sage_hours')
+
+    def test_sage_hours_increases(self):
+        """sage_hours should increase monotonically after sensor start."""
+        valid = self.grid['sage_hours'].dropna()
+        diffs = valid.diff().dropna()
+        self.assertTrue((diffs >= 0).all(),
+                        'sage_hours should never decrease within a sensor session')
+
+    def test_sensor_warmup_duration(self):
+        """sensor_warmup=1.0 should last exactly 2 hours (24 × 5-min slots)."""
+        warmup_slots = (self.grid['sensor_warmup'] == 1.0).sum()
+        self.assertEqual(warmup_slots, 24,
+                         f'Expected 24 warmup slots (2h), got {warmup_slots}')
+
+    def test_sensor_warmup_at_start(self):
+        """sensor_warmup should be 1.0 right after sensor start."""
+        sage = self.grid['sage_hours']
+        first_valid_idx = sage.first_valid_index()
+        self.assertIsNotNone(first_valid_idx)
+        self.assertEqual(self.grid.loc[first_valid_idx, 'sensor_warmup'], 1.0)
+
+    def test_sensor_phase_warmup_value(self):
+        """sensor_phase=0.0 during warmup period."""
+        warmup_rows = self.grid[self.grid['sensor_warmup'] == 1.0]
+        self.assertTrue((warmup_rows['sensor_phase'] == 0.0).all(),
+                        'sensor_phase should be 0.0 during warmup')
+
+    def test_sensor_phase_early_after_warmup(self):
+        """sensor_phase=0.25 (early) after warmup ends."""
+        post_warmup = self.grid[
+            (self.grid['sage_hours'] > 2.0) & self.grid['sage_hours'].notna()
+        ]
+        self.assertGreater(len(post_warmup), 0)
+        self.assertTrue((post_warmup['sensor_phase'] == 0.25).all(),
+                        'sensor_phase should be 0.25 (early) after warmup')
+
+
+class TestDurationCapping(unittest.TestCase):
+    """Test exercise and override duration capping in grid.py."""
+
+    def _build_synthetic_grid(self, treatments):
+        """Build a grid from synthetic data with specified treatments."""
+        from tools.ns2parquet.grid import build_grid
+        import json
+
+        base_ts = '2025-06-15T00:00:00Z'
+        entries = []
+        for i in range(288):  # 1 day of 5-min entries
+            ts = f'2025-06-15T{i*5//60:02d}:{i*5%60:02d}:00Z'
+            entries.append({
+                'type': 'sgv', 'sgv': 120, 'direction': 'Flat',
+                'dateString': ts,
+            })
+
+        ds = [{
+            'created_at': '2025-06-15T00:00:00Z',
+            'loop': {'iob': {'iob': 1.0, 'timestamp': base_ts},
+                     'cob': {'cob': 0},
+                     'predicted': {'values': [120]*13, 'startDate': base_ts}},
+            'device': 'loop://iPhone',
+        }]
+
+        profile = [{'store': {'Default': {
+            'units': 'mg/dL', 'dia': 6,
+            'sens': [{'timeAsSeconds': 0, 'value': 50}],
+            'carbratio': [{'timeAsSeconds': 0, 'value': 10}],
+            'basal': [{'timeAsSeconds': 0, 'value': 1.0}],
+            'target_low': [{'timeAsSeconds': 0, 'value': 80}],
+            'target_high': [{'timeAsSeconds': 0, 'value': 120}],
+        }}, 'defaultProfile': 'Default'}]
+
+        tmpdir = tempfile.mkdtemp()
+        for name, data in [('entries', entries), ('treatments', treatments),
+                           ('devicestatus', ds), ('profile', profile)]:
+            with open(os.path.join(tmpdir, f'{name}.json'), 'w') as f:
+                json.dump(data, f)
+        grid = build_grid(tmpdir, 'test')
+        shutil.rmtree(tmpdir)
+        return grid
+
+    def test_exercise_capped_at_6_hours(self):
+        """Exercise with duration > 360 min should be capped at 6 hours."""
+        tx = [{'eventType': 'Exercise', 'duration': 600,
+               'created_at': '2025-06-15T06:00:00Z'}]
+        grid = self._build_synthetic_grid(tx)
+        self.assertIsNotNone(grid)
+        ex_slots = (grid['exercise_active'] > 0).sum()
+        # 6 hours = 72 slots at 5-min intervals (capped from 120 slots)
+        self.assertLessEqual(ex_slots, 72,
+                             f'Exercise should be capped at 72 slots (6h), got {ex_slots}')
+        self.assertGreater(ex_slots, 60, 'Exercise should still mark ~6h of slots')
+
+    def test_override_capped_at_24_hours(self):
+        """Temporary Target with duration > 1440 min should be capped at 24h."""
+        tx = [{'eventType': 'Temporary Target', 'duration': 2000,
+               'created_at': '2025-06-15T00:00:00Z'}]
+        grid = self._build_synthetic_grid(tx)
+        self.assertIsNotNone(grid)
+        ov_slots = (grid['override_active'] > 0).sum()
+        # 24 hours = 288 slots (full day). Grid is also 288 rows.
+        # But cap is 1440 min = 288 slots, and we start at row 0, so should fill all.
+        self.assertLessEqual(ov_slots, 288)
+        # Without cap, 2000 min = 400 slots, but grid is only 288 long anyway.
+        # Key: override_type should be 1.0 for Temporary Target
+        ov_type_1 = (grid['override_type'] == 1.0).sum()
+        self.assertEqual(ov_slots, ov_type_1)
+
+    def test_exercise_default_duration(self):
+        """Exercise with no duration defaults to 60 minutes."""
+        tx = [{'eventType': 'Exercise',
+               'created_at': '2025-06-15T06:00:00Z'}]
+        grid = self._build_synthetic_grid(tx)
+        self.assertIsNotNone(grid)
+        ex_slots = (grid['exercise_active'] > 0).sum()
+        self.assertEqual(ex_slots, 12,
+                         f'Exercise default should be 12 slots (60min), got {ex_slots}')
+
+    def test_override_zero_duration_no_slots(self):
+        """Temporary Target with duration=0 should not mark any slots."""
+        tx = [{'eventType': 'Temporary Target', 'duration': 0,
+               'created_at': '2025-06-15T06:00:00Z'}]
+        grid = self._build_synthetic_grid(tx)
+        self.assertIsNotNone(grid)
+        ov_slots = (grid['override_active'] > 0).sum()
+        self.assertEqual(ov_slots, 0,
+                         'Zero-duration override should not mark any slots')
+
+    def test_sensor_start_populates_sage(self):
+        """Sensor Start event in synthetic grid should populate sage_hours."""
+        tx = [{'eventType': 'Sensor Start',
+               'created_at': '2025-06-15T06:00:00Z'}]
+        grid = self._build_synthetic_grid(tx)
+        self.assertIsNotNone(grid)
+        sage_valid = grid['sage_hours'].notna().sum()
+        self.assertGreater(sage_valid, 100,
+                           'sage_hours should be populated after Sensor Start')
+        warmup = (grid['sensor_warmup'] == 1.0).sum()
+        self.assertEqual(warmup, 24,
+                         f'Expected 24 warmup slots (2h), got {warmup}')
 
 
 class TestSharedConstants(unittest.TestCase):
