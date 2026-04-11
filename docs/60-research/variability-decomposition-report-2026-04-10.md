@@ -13,10 +13,10 @@ Glucose variability in AID patients is **not random noise** — it has identifia
 **Key findings**:
 - **Circadian rhythm is the dominant variability source** for 9/11 patients (20–27% attribution), with the 24-hour cycle containing 25–53% of total spectral power
 - **Patient h and k are uniquely sensitivity-dominant** — their outcomes depend more on correct settings than on time-of-day patterns
-- **Supply variability (insulin delivery) is always 2–3× greater** than demand variability (glucose needs), indicating AID loops introduce more variation than they track
+- **Supply variability (insulin delivery) is 1.7–7.5× greater** than demand variability (glucose needs), indicating AID loops introduce more variation than they track
 - **ISF varies 87–110% (CV)** around its mean for every patient — far too much for a single profile value to represent
 - **Weekly-scale information content is highest** for 9/11 patients, suggesting week-level monitoring is the optimal aggregation window
-- **Random ±20% settings perturbation costs 7–24 percentage points of TIR**, quantifying the penalty of settings uncertainty
+- **Random ±20% settings perturbation costs 6–24 percentage points of TIR**, quantifying the penalty of settings uncertainty
 
 ## Motivation
 
@@ -93,7 +93,7 @@ Additionally extracted the first 4 harmonics of the 24h cycle (24h, 12h, 8h, 6h)
 
 **Key observations**:
 
-1. **Supply CV is always greater than demand CV** — on average 2.4× larger (range 1.7–7.5×). The AID loop's insulin delivery is inherently more variable than the underlying glucose demand it's trying to serve. This makes sense: the loop must over-correct and under-correct in alternating pulses to maintain range, but it means insulin variability is not a reliable proxy for metabolic variability.
+1. **Supply CV is always greater than demand CV** — on average 2.9× larger (median 2.4×, range 1.7–7.5×). The AID loop's insulin delivery is inherently more variable than the underlying glucose demand it's trying to serve. This makes sense: the loop must over-correct and under-correct in alternating pulses to maintain range, but it means insulin variability is not a reliable proxy for metabolic variability.
 
 2. **Supply-demand correlation ranges from 0.08 to 0.68**. Higher correlation (a: 0.68, d: 0.61, c: 0.60) means the loop is effectively tracking demand — when glucose needs go up, insulin delivery follows. Low correlation (j: 0.08, e: 0.18) suggests the loop is reacting to noise or using stale information.
 
@@ -176,7 +176,7 @@ Compared R² of both models against a flat (mean) ISF.
 
 **Key observations**:
 
-1. **12-hour is the dominant ACF period** for 10/11 patients (patient f is 24.3h). This is the meal-to-meal cycle: breakfast-lunch-dinner creates a ~12h glucose oscillation that dominates the autocorrelation structure.
+1. **12-hour is the dominant ACF period** for 9/11 patients (patient f is 24.3h, patient h is 12.7h). This is the meal-to-meal cycle: breakfast-lunch-dinner creates a ~12h glucose oscillation that dominates the autocorrelation structure.
 
 2. **Most patients decorrelate in ~30 hours** (a, b, e, f, g, i), meaning today's glucose trace has no predictive value for the day after tomorrow. This is consistent with prior work (EXP-1138) finding that multi-day glucose planning is essentially random.
 
@@ -259,7 +259,7 @@ Compared R² of both models against a flat (mean) ISF.
 
 **Key observations**:
 
-1. **Random ±20% perturbation reduces TIR by 7–24 percentage points on average**. This is the cost of settings uncertainty — even modest errors in basal, ISF, or CR have substantial impact on outcomes.
+1. **Random ±20% perturbation reduces TIR by 6–24 percentage points on average**. This is the cost of settings uncertainty — even modest errors in basal, ISF, or CR have substantial impact on outcomes.
 
 2. **Patient k is hypersensitive**: MC std of 35.3 TIR points means their outcomes swing from 2.3% to 99.6% TIR depending on settings. This makes sense — k's very tight control (95.1% TIR) means any perturbation can only make things worse, and the steep response curve amplifies small changes dramatically.
 

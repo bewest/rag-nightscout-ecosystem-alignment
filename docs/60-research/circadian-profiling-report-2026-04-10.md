@@ -12,8 +12,8 @@ Having established that circadian rhythm is the dominant glucose variability sou
 **Key findings**:
 - **ISF varies 4.6–9.0× within a single day** (peak-to-trough ratio), far exceeding any current pump profile's time-of-day adjustments
 - **Dawn phenomenon is real but heterogeneous**: 47 mg/dL rise for patient a, but absent or reversed for 4/11 patients
-- **Circadian profiles are moderately stable** (mean month-to-month correlation 0.63) — stable enough for 2-zone profiling but too variable for fine-grained 24h profiles
-- **Time-varying profiles yield modest TIR gains** (+2–8pp for 6/11 patients) but can *worsen* outcomes for patients already near optimal (f, i)
+- **Circadian profiles are moderately stable** (mean month-to-month correlation 0.59) — stable enough for 2-zone profiling but too variable for fine-grained 24h profiles
+- **Time-varying profiles yield modest TIR gains** (+1.6–7.9pp for 6/11 patients) but can *worsen* outcomes for patients already near optimal (f, i)
 - **2-zone (day/night) captures most of the benefit** — full 24h profiling adds marginal improvement with much more complexity
 - **Population template fits well** (mean r=0.71), suggesting 70% of circadian shape is shared across patients
 
@@ -247,7 +247,7 @@ The answer is nuanced: yes, circadian ISF/CR/basal variation is real and measura
 
 3. **The biggest beneficiary is patient b** (+7.9pp from 24h profiles). This patient has high variability with a consistent pattern that deviates significantly from target — the profile correction addresses the systematic bias.
 
-4. **2-zone captures 70–90% of the 24h benefit** for patients who benefit (b: 7.1/7.9 = 90%, d: 3.8/6.2 = 61%, e: 2.7/4.0 = 68%). This is practically important: a simple day/night split captures most of the circadian improvement with minimal complexity.
+4. **2-zone captures 41–94% of the 24h benefit** for patients who benefit (b: 7.1/7.9 = 90%, d: 3.8/6.2 = 61%, e: 2.7/4.0 = 68%). This is practically important: a simple day/night split captures a large fraction of the circadian improvement with minimal complexity, though the capture ratio varies widely.
 
 5. **The maximum achievable TIR improvement from circadian profiling alone is ~8pp** (patient b). This is meaningful but modest — it won't transform a 57% TIR patient into a 70% TIR patient. Other sources of variability (meal irregularity, ISF volatility) must be addressed concurrently.
 
