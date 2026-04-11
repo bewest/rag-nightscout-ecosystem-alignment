@@ -14,10 +14,10 @@ We simulated applying our data-derived settings corrections (basal -20%, CR -28%
 | Metric | Value |
 |--------|-------|
 | Population TIR (current) | 70.9% |
-| Population TIR (simulated corrections) | 70.1% |
-| TIR change | -0.8 pp |
-| TBR change | -0.6 pp (3.2% → 2.6%) — **hypo reduction** |
-| Patients that improve | 3/11 (h, k, b) |
+| Population TIR (simulated corrections) | 70.4% |
+| TIR change | -0.5 pp |
+| TBR change | -0.5 pp (3.6% → 3.1%) — **hypo reduction** |
+| Patients that improve | 5/11 (b, e, h, j, k) |
 | Mean loop headroom | 0.74 U/h |
 | Per-patient optimal improvement | +0.3 pp mean |
 | TIR drift over 90 days | ±5 pp mean |
@@ -124,7 +124,7 @@ This pattern repeats across all patients: TIR is approximately invariant to sett
 | j | 81.0% | 80.0% | -1.0 | 1.3% |
 | **k** | **95.1%** | **95.5%** | **+0.4** | **4.4%** |
 
-**Population mean**: TIR 70.4% → 70.4% (Δ ≈ 0), TBR 3.2% → 3.1%
+**Population mean**: TIR 70.9% → 70.4% (Δ ≈ −0.5 pp), TBR 3.6% → 3.1%
 
 **Interpretation**: The combined correction is approximately TIR-neutral. Patients h and k improve slightly because their loops had the most "wasted compensation" — correct settings let them achieve the same TIR with less effort. The ISF +19% correction partially offsets the CR correction's hypo risk, making the combined approach safer than CR correction alone.
 
@@ -185,7 +185,7 @@ This pattern repeats across all patients: TIR is approximately invariant to sett
 
 **Population mean Δ**: +0.3 pp
 
-**Remarkable finding**: 5/11 patients cannot improve AT ALL with any settings change in this simulation. This is the strongest possible evidence for the AID compensation theorem — the loop has already achieved the best TIR it can for these patients given the glucose dynamics. The 6 patients that do improve (b, e, f, h, j, k) show only marginal gains (mean +0.6pp).
+**Remarkable finding**: 6/11 patients cannot improve AT ALL with any settings change in this simulation. This is the strongest possible evidence for the AID compensation theorem — the loop has already achieved the best TIR it can for these patients given the glucose dynamics. The 5 patients that do improve (b, e, h, j, k) show only marginal gains (mean +0.6pp).
 
 ![Optimal Search](figures/opt-fig05-optimal-search.png)
 *Figure 5: Per-patient grid search results showing TIR as a function of basal and CR adjustments.*
@@ -276,7 +276,7 @@ This pattern repeats across all patients: TIR is approximately invariant to sett
 | i | 60% | 60% | 10.7% | 9.3% | 6.9 | 7.0 |
 | j | 81% | 80% | 1.1% | 1.3% | 6.5 | 6.6 |
 | **k** | **95%** | **96%** | **4.9%** | **4.4%** | **4.9** | **4.9** |
-| **Pop** | **70.9%** | **70.1%** | **3.6%** | **3.1%** | **6.8** | **6.8** |
+| **Pop** | **70.9%** | **70.4%** | **3.6%** | **3.1%** | **6.8** | **6.8** |
 
 **The synthesis tells a clear story**:
 - TIR is approximately invariant (±1pp for most patients)

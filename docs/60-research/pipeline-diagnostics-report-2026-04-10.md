@@ -59,7 +59,7 @@ This batch focuses on **diagnostics, calibration, and clinical metrics** for the
 | i | 0.574 | −0.090 | 0.808 | 4.79 | +5.3mg | 47.4mg |
 | j | 0.468 | −0.122 | 0.725 | 5.50 | −2.0mg | 29.3mg |
 | k | 0.417 | +0.071 | −0.003 | 5.21 | +0.8mg | 12.8mg |
-| **Mean** | **0.481** | **−0.018** | **0.454** | **4.64** | **+1.3mg** | **38.8mg** |
+| **Mean** | **0.481** | **−0.018** | **0.454** | **4.64** | **+1.1mg** | **38.8mg** |
 
 **Insights**:
 1. **ACF(1)=0.48**: Residuals at consecutive 5-min steps are highly correlated → AR correction at lag-1 (for 5-min predictions) would be powerful
