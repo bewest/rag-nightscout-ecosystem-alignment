@@ -11,7 +11,7 @@ Since glucose prediction is fundamentally limited (naive "no change" beats all a
 
 **Key results**:
 - **ISF varies 1.2–3.6× within each patient's day** — flat ISF profiles are universally wrong
-- **CR needs meal-specific adjustment** — dinner spikes 1.7× worse than breakfast (population median)
+- **CR needs meal-specific adjustment** — dinner spikes 1.7× worse than breakfast (population mean)
 - **Basal is over-set for 10/11 patients** (mean −12%)
 - **Simulated optimization: TIR 71% → 85%** (+13.7 percentage points population)
 - **Patient i: TIR 60% → 100%** (largest gain, driven by reducing 10.7% TBR)
@@ -222,7 +222,7 @@ Each experiment addresses one therapy parameter:
 **Key findings**:
 - **Patient h has 40% overcorrection rate** — 4 in 10 corrections cause hypos
 - **Patient i has the most overcorrection events** (1217) — high correction frequency × 23% failure rate
-- **ISF increases needed are LARGE**: median +212%, meaning profiles underestimate ISF by 3×+
+- **ISF increases needed are LARGE**: median +184%, meaning profiles underestimate ISF by ~3×
 - **This is consistent with effective ISF >> profile ISF** found in EXP-2071
 - **Patient a has the smallest needed increase** (+41%) — closest to correctly calibrated
 
