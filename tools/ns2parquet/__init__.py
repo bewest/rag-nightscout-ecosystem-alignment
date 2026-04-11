@@ -24,4 +24,18 @@ Usage:
     python -m tools.ns2parquet info --input output/
 """
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
+
+# Public API re-exports
+from .normalize import (                                    # noqa: F401
+    normalize_entries, normalize_treatments,
+    normalize_devicestatus, normalize_profiles,
+    normalize_settings,
+)
+from .grid import build_grid                                # noqa: F401
+from .writer import write_parquet, read_parquet, parquet_info  # noqa: F401
+from .schemas import (                                      # noqa: F401
+    ENTRIES_SCHEMA, TREATMENTS_SCHEMA, DEVICESTATUS_SCHEMA,
+    PROFILES_SCHEMA, SETTINGS_SCHEMA, GRID_SCHEMA,
+)
+from .constants import MMOLL_TO_MGDL, DIRECTION_MAP, normalize_timezone  # noqa: F401

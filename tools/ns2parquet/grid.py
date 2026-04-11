@@ -18,18 +18,9 @@ import pandas as pd
 from pathlib import Path
 from typing import Optional, Tuple
 
-from .constants import DIRECTION_MAP, MMOLL_TO_MGDL
+from .constants import DIRECTION_MAP, MMOLL_TO_MGDL, normalize_timezone
 
 logger = logging.getLogger(__name__)
-
-
-def _normalize_timezone(tz_str: str) -> str:
-    """Normalize Nightscout timezone (ETC/GMT+7 → Etc/GMT+7)."""
-    if not tz_str:
-        return 'UTC'
-    if tz_str.upper().startswith('ETC/'):
-        return 'Etc/' + tz_str[4:]
-    return tz_str
 
 
 def _to_local_index(index: pd.DatetimeIndex, patient_tz: str) -> pd.DatetimeIndex:
@@ -412,7 +403,7 @@ def build_grid(data_path: str, patient_id: str,
     cr_schedule = default_profile.get('carbratio', [])
     target_low_schedule = default_profile.get('target_low', [])
     target_high_schedule = default_profile.get('target_high', [])
-    patient_tz = _normalize_timezone(default_profile.get('timezone', ''))
+    patient_tz = normalize_timezone(default_profile.get('timezone', ''))
 
     # Convert mmol/L profiles to mg/dL for cross-patient consistency.
     # Glucose in the grid is always mg/dL (Nightscout entries store sgv in mg/dL).

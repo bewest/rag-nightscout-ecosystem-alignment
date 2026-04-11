@@ -58,6 +58,7 @@ def write_parquet(df: pd.DataFrame, output_path: str,
     # Append mode: merge with existing
     if append and out_file.exists():
         existing = pd.read_parquet(out_file)
+        n_incoming = len(df)
         df = pd.concat([existing, df], ignore_index=True)
 
         # Deduplicate
@@ -67,13 +68,10 @@ def write_parquet(df: pd.DataFrame, output_path: str,
             df = df.drop_duplicates(subset=valid_cols, keep='last')
 
         if verbose:
-            print(f'  APPEND {collection}: {len(existing)} existing + {len(df) - len(existing)} new → {len(df)} total')
-
-    # Convert timestamp columns to proper types
-    for col in df.columns:
-        if df[col].dtype == 'object':
-            # Check if it looks like timestamps
-            pass  # leave as-is for string columns
+            n_new = len(df) - len(existing)
+            print(f'  APPEND {collection}: {len(existing)} existing + '
+                  f'{n_incoming} incoming → {len(df)} total '
+                  f'({n_incoming - n_new} duplicates removed)')
 
     # Write with compression
     if schema:
@@ -89,6 +87,17 @@ def write_parquet(df: pd.DataFrame, output_path: str,
             table = pa.Table.from_pandas(df, preserve_index=False)
     else:
         table = pa.Table.from_pandas(df, preserve_index=False)
+
+    # Embed provenance metadata in parquet file
+    from . import __version__
+    existing_meta = table.schema.metadata or {}
+    extra_meta = {
+        b'ns2parquet.version': __version__.encode(),
+        b'ns2parquet.collection': collection.encode(),
+        b'ns2parquet.schema_fields': ','.join(
+            f.name for f in schema).encode() if schema else b'',
+    }
+    table = table.replace_schema_metadata({**existing_meta, **extra_meta})
 
     pq.write_table(table, out_file, compression='zstd')
 

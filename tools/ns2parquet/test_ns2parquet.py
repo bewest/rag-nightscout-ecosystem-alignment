@@ -30,6 +30,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from tools.ns2parquet.schemas import GRID_SCHEMA
+
+EXPECTED_GRID_COLS = len(GRID_SCHEMA)
+
 
 # ── Helpers available without real data ──────────────────────────────
 
@@ -532,8 +536,8 @@ class TestGridIntegrity(unittest.TestCase):
         self.assertLess(len(self.df_d), 400)
 
     def test_grid_has_49_columns(self):
-        """Grid should produce all 49 standard columns."""
-        self.assertEqual(self.df_d.shape[1], 49)
+        """Grid should produce all GRID_SCHEMA columns."""
+        self.assertEqual(self.df_d.shape[1], EXPECTED_GRID_COLS)
 
     def test_glucose_in_mgdl_range(self):
         """Glucose values should be in mg/dL range (40-500), not mmol/L."""
@@ -587,7 +591,7 @@ class TestTinyTerrariumSmoke(unittest.TestCase):
         self.assertIn('b', patients)
 
     def test_has_49_columns(self):
-        self.assertEqual(self.grid.shape[1], 49)
+        self.assertEqual(self.grid.shape[1], EXPECTED_GRID_COLS)
 
     def test_row_count_reasonable(self):
         """~2 patients × 7 days × 288 steps ≈ 4032 rows."""
@@ -987,7 +991,7 @@ class TestODCIntegration(unittest.TestCase):
         cls.grid = _build_fixture_grid('odc_39819048')
 
     def test_grid_has_49_columns(self):
-        self.assertEqual(self.grid.shape[1], 49)
+        self.assertEqual(self.grid.shape[1], EXPECTED_GRID_COLS)
 
     def test_glucose_populated(self):
         """SGV should be ~100% populated (ODC has dense CGM)."""
@@ -1128,7 +1132,7 @@ class TestNSExportIntegration(unittest.TestCase):
         self.assertGreater(len(self.grid), 200)
 
     def test_grid_has_49_columns(self):
-        self.assertEqual(self.grid.shape[1], 49)
+        self.assertEqual(self.grid.shape[1], EXPECTED_GRID_COLS)
 
     def test_glucose_populated(self):
         """NS-export entries should give >95% glucose coverage."""
@@ -1171,8 +1175,9 @@ class TestTimezoneHandling(unittest.TestCase):
     """Test timezone edge cases in grid builder and normalize functions."""
 
     def setUp(self):
-        from tools.ns2parquet.grid import _normalize_timezone, _to_local_index
-        self.norm_tz = _normalize_timezone
+        from tools.ns2parquet.constants import normalize_timezone
+        from tools.ns2parquet.grid import _to_local_index
+        self.norm_tz = normalize_timezone
         self.to_local = _to_local_index
 
     def test_etc_gmt_normalization(self):
@@ -1510,7 +1515,7 @@ class TestSensorAgeCalculation(unittest.TestCase):
     def test_grid_built(self):
         """Sensor fixture produces a valid grid."""
         self.assertIsNotNone(self.grid)
-        self.assertEqual(self.grid.shape[1], 49)
+        self.assertEqual(self.grid.shape[1], EXPECTED_GRID_COLS)
 
     def test_sage_hours_populated(self):
         """sage_hours should be non-NaN after the Sensor Start event."""
@@ -1694,6 +1699,355 @@ class TestSharedConstants(unittest.TestCase):
         from tools.ns2parquet.constants import DIRECTION_MAP as DM2
         self.assertIs(DIRECTION_MAP, DM2)
         self.assertEqual(MMOLL_TO_MGDL, 18.01559)
+
+    def test_normalize_timezone_reexported(self):
+        """normalize_timezone is available from constants, normalize, and __init__."""
+        from tools.ns2parquet.constants import normalize_timezone as nt1
+        from tools.ns2parquet.normalize import normalize_timezone as nt2
+        from tools.ns2parquet import normalize_timezone as nt3
+        self.assertIs(nt1, nt2)
+        self.assertIs(nt1, nt3)
+
+
+# ── Patient J — no AID controller (edge case) ───────────────────────
+
+PATIENT_J_FIXTURES = os.path.isfile(
+    os.path.join(FIXTURES_DIR, 'patient_j_entries.json'))
+
+
+@unittest.skipUnless(PATIENT_J_FIXTURES, 'Patient J fixtures not available')
+class TestPatientJNoController(unittest.TestCase):
+    """Patient j has no AID controller — pure CGM-only data.
+
+    This tests the edge case where devicestatus has no loop/openaps keys,
+    resulting in zero IOB/COB from DeviceStatus. The grid should still build
+    correctly with glucose data and treatments.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.grid = _build_fixture_grid('patient_j', 'j')
+
+    def test_grid_built(self):
+        """Grid builds successfully even without AID controller."""
+        self.assertIsNotNone(self.grid)
+        self.assertGreater(len(self.grid), 0)
+
+    def test_grid_has_expected_columns(self):
+        self.assertEqual(self.grid.shape[1], EXPECTED_GRID_COLS)
+
+    def test_glucose_populated(self):
+        """CGM glucose should still be present."""
+        valid = self.grid['glucose'].dropna()
+        self.assertGreater(len(valid), 0)
+        self.assertTrue((valid >= 30).all() and (valid <= 500).all(),
+                        'Glucose values should be in mg/dL range')
+
+    def test_iob_zero_without_controller(self):
+        """Without AID controller, IOB should be 0 or NaN (no data source)."""
+        iob = self.grid['iob']
+        non_nan = iob.dropna()
+        if len(non_nan) > 0:
+            self.assertAlmostEqual(non_nan.abs().mean(), 0, places=1,
+                                   msg='IOB should be ~0 without AID controller')
+
+    def test_cob_zero_without_controller(self):
+        """Without AID controller, COB should be 0 or NaN."""
+        cob = self.grid['cob']
+        non_nan = cob.dropna()
+        if len(non_nan) > 0:
+            self.assertAlmostEqual(non_nan.abs().mean(), 0, places=1,
+                                   msg='COB should be ~0 without AID controller')
+
+    def test_predictions_empty(self):
+        """No AID means no predictions."""
+        for col in ['loop_predicted_30', 'loop_predicted_60',
+                    'loop_predicted_min']:
+            valid = self.grid[col].dropna()
+            # May have some forward-filled values but shouldn't be many
+            self.assertLessEqual(len(valid), len(self.grid) * 0.1,
+                                 f'{col} should be mostly NaN without AID')
+
+    def test_treatments_still_present(self):
+        """Bolus/carb treatments should work regardless of controller."""
+        # Patient j may have manual treatments
+        self.assertIn('bolus', self.grid.columns)
+        self.assertIn('carbs', self.grid.columns)
+
+
+# ── CLI Integration Tests ────────────────────────────────────────────
+
+@unittest.skipUnless(HAS_FIXTURES, 'JSON fixtures not available')
+class TestCmdConvert(unittest.TestCase):
+    """Integration test: cmd_convert round-trips fixtures through CLI."""
+
+    def test_convert_produces_all_collections(self):
+        """cmd_convert writes entries, treatments, devicestatus, profiles, grid parquet files."""
+        import argparse
+        from tools.ns2parquet.cli import cmd_convert
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Copy fixture files to input dir
+            indir = os.path.join(tmpdir, 'input')
+            os.makedirs(indir)
+            for col in ['entries', 'treatments', 'devicestatus', 'profile']:
+                src = os.path.join(FIXTURES_DIR, f'patient_d_{col}.json')
+                shutil.copy(src, os.path.join(indir, f'{col}.json'))
+
+            outdir = os.path.join(tmpdir, 'output')
+
+            args = argparse.Namespace(
+                input=indir, patient_id='test_d', output=outdir,
+                append=False, quiet=True, skip_grid=False, opaque_ids=False,
+            )
+            rc = cmd_convert(args)
+            self.assertEqual(rc, 0)
+
+            # Verify all expected files
+            for collection in ['entries', 'treatments', 'devicestatus',
+                               'profiles', 'grid']:
+                pf = os.path.join(outdir, f'{collection}.parquet')
+                self.assertTrue(os.path.exists(pf),
+                                f'{collection}.parquet not created')
+                # Read and verify non-empty
+                df = pd.read_parquet(pf)
+                self.assertGreater(len(df), 0,
+                                   f'{collection}.parquet is empty')
+                # Verify patient_id column
+                self.assertIn('patient_id', df.columns)
+                self.assertTrue((df['patient_id'] == 'test_d').all())
+
+    def test_convert_skip_grid(self):
+        """--skip-grid should omit grid.parquet."""
+        import argparse
+        from tools.ns2parquet.cli import cmd_convert
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            indir = os.path.join(tmpdir, 'input')
+            os.makedirs(indir)
+            for col in ['entries', 'treatments', 'devicestatus', 'profile']:
+                src = os.path.join(FIXTURES_DIR, f'patient_d_{col}.json')
+                shutil.copy(src, os.path.join(indir, f'{col}.json'))
+
+            outdir = os.path.join(tmpdir, 'output')
+            args = argparse.Namespace(
+                input=indir, patient_id='test_d', output=outdir,
+                append=False, quiet=True, skip_grid=True, opaque_ids=False,
+            )
+            rc = cmd_convert(args)
+            self.assertEqual(rc, 0)
+            self.assertFalse(os.path.exists(os.path.join(outdir, 'grid.parquet')))
+            self.assertTrue(os.path.exists(os.path.join(outdir, 'entries.parquet')))
+
+    def test_convert_schema_metadata_embedded(self):
+        """Parquet files should contain ns2parquet provenance metadata."""
+        import argparse
+        import pyarrow.parquet as pq
+        from tools.ns2parquet.cli import cmd_convert
+        from tools.ns2parquet import __version__
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            indir = os.path.join(tmpdir, 'input')
+            os.makedirs(indir)
+            for col in ['entries', 'treatments', 'devicestatus', 'profile']:
+                src = os.path.join(FIXTURES_DIR, f'patient_d_{col}.json')
+                shutil.copy(src, os.path.join(indir, f'{col}.json'))
+
+            outdir = os.path.join(tmpdir, 'output')
+            args = argparse.Namespace(
+                input=indir, patient_id='test_d', output=outdir,
+                append=False, quiet=True, skip_grid=False, opaque_ids=False,
+            )
+            cmd_convert(args)
+
+            # Check entries parquet metadata
+            meta = pq.read_metadata(os.path.join(outdir, 'entries.parquet'))
+            schema_meta = meta.schema.to_arrow_schema().metadata
+            self.assertIn(b'ns2parquet.version', schema_meta)
+            self.assertEqual(schema_meta[b'ns2parquet.version'].decode(),
+                             __version__)
+            self.assertIn(b'ns2parquet.collection', schema_meta)
+            self.assertEqual(schema_meta[b'ns2parquet.collection'], b'entries')
+
+
+@unittest.skipUnless(HAS_FIXTURES, 'JSON fixtures not available')
+class TestCmdMerge(unittest.TestCase):
+    """Integration test: cmd_merge merges multiple parquet directories."""
+
+    def test_merge_two_patients(self):
+        """Merge two patient directories into one, verify dedup and coverage."""
+        import argparse
+        from tools.ns2parquet.cli import cmd_convert, cmd_merge
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Build two separate parquet directories
+            for prefix, pid in [('patient_d', 'd'), ('patient_a', 'a')]:
+                indir = os.path.join(tmpdir, f'input_{pid}')
+                os.makedirs(indir)
+                for col in ['entries', 'treatments', 'devicestatus', 'profile']:
+                    src = os.path.join(FIXTURES_DIR, f'{prefix}_{col}.json')
+                    shutil.copy(src, os.path.join(indir, f'{col}.json'))
+
+                outdir = os.path.join(tmpdir, f'out_{pid}')
+                args = argparse.Namespace(
+                    input=indir, patient_id=pid, output=outdir,
+                    append=False, quiet=True, skip_grid=False, opaque_ids=False,
+                )
+                rc = cmd_convert(args)
+                self.assertEqual(rc, 0, f'Convert failed for {pid}')
+
+            # Merge the two directories
+            merged_dir = os.path.join(tmpdir, 'merged')
+            merge_args = argparse.Namespace(
+                sources=[os.path.join(tmpdir, 'out_d'),
+                         os.path.join(tmpdir, 'out_a')],
+                output=merged_dir,
+                quiet=True,
+            )
+            rc = cmd_merge(merge_args)
+            self.assertEqual(rc, 0)
+
+            # Verify merged grid has both patients
+            grid = pd.read_parquet(os.path.join(merged_dir, 'grid.parquet'))
+            patients = sorted(grid['patient_id'].unique())
+            self.assertEqual(patients, ['a', 'd'])
+
+            # Verify each patient's rows are intact
+            for pid in ['a', 'd']:
+                single = pd.read_parquet(
+                    os.path.join(tmpdir, f'out_{pid}', 'grid.parquet'))
+                merged_subset = grid[grid['patient_id'] == pid]
+                self.assertEqual(len(merged_subset), len(single),
+                                 f'Patient {pid} row count changed after merge')
+
+    def test_merge_dedup_same_patient(self):
+        """Merging the same patient twice should deduplicate."""
+        import argparse
+        from tools.ns2parquet.cli import cmd_convert, cmd_merge
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            indir = os.path.join(tmpdir, 'input')
+            os.makedirs(indir)
+            for col in ['entries', 'treatments', 'devicestatus', 'profile']:
+                src = os.path.join(FIXTURES_DIR, f'patient_d_{col}.json')
+                shutil.copy(src, os.path.join(indir, f'{col}.json'))
+
+            outdir = os.path.join(tmpdir, 'out')
+            args = argparse.Namespace(
+                input=indir, patient_id='d', output=outdir,
+                append=False, quiet=True, skip_grid=False, opaque_ids=False,
+            )
+            cmd_convert(args)
+
+            single_grid = pd.read_parquet(os.path.join(outdir, 'grid.parquet'))
+            n_single = len(single_grid)
+
+            # Merge same dir with itself
+            merged_dir = os.path.join(tmpdir, 'merged')
+            merge_args = argparse.Namespace(
+                sources=[outdir, outdir],
+                output=merged_dir,
+                quiet=True,
+            )
+            rc = cmd_merge(merge_args)
+            self.assertEqual(rc, 0)
+
+            merged_grid = pd.read_parquet(os.path.join(merged_dir, 'grid.parquet'))
+            self.assertEqual(len(merged_grid), n_single,
+                             'Duplicate rows should be removed after merge')
+
+
+# ── parquet_info test ────────────────────────────────────────────────
+
+@unittest.skipUnless(HAS_FIXTURES, 'JSON fixtures not available')
+class TestParquetInfo(unittest.TestCase):
+    """Test parquet_info() returns correct structure."""
+
+    def test_info_structure(self):
+        import argparse
+        from tools.ns2parquet.cli import cmd_convert
+        from tools.ns2parquet.writer import parquet_info
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            indir = os.path.join(tmpdir, 'input')
+            os.makedirs(indir)
+            for col in ['entries', 'treatments', 'devicestatus', 'profile']:
+                src = os.path.join(FIXTURES_DIR, f'patient_d_{col}.json')
+                shutil.copy(src, os.path.join(indir, f'{col}.json'))
+
+            outdir = os.path.join(tmpdir, 'output')
+            args = argparse.Namespace(
+                input=indir, patient_id='d', output=outdir,
+                append=False, quiet=True, skip_grid=False, opaque_ids=False,
+            )
+            cmd_convert(args)
+
+            info = parquet_info(outdir)
+            self.assertIsInstance(info, dict)
+
+            # Should have entries for each collection
+            for coll in ['entries', 'treatments', 'devicestatus',
+                         'profiles', 'grid']:
+                self.assertIn(coll, info, f'{coll} missing from info')
+                cinfo = info[coll]
+                self.assertIn('rows', cinfo)
+                self.assertIn('columns', cinfo)
+                self.assertIn('size_bytes', cinfo)
+                self.assertIn('patients', cinfo)
+                self.assertIn('num_patients', cinfo)
+                self.assertGreater(cinfo['rows'], 0)
+                self.assertEqual(cinfo['num_patients'], 1)
+                self.assertIn('d', cinfo['patients'])
+
+    def test_info_empty_dir(self):
+        """parquet_info on empty directory returns empty dict."""
+        from tools.ns2parquet.writer import parquet_info
+        with tempfile.TemporaryDirectory() as tmpdir:
+            info = parquet_info(tmpdir)
+            self.assertEqual(info, {})
+
+
+# ── __init__.py re-exports ───────────────────────────────────────────
+
+class TestPublicAPI(unittest.TestCase):
+    """Verify that key functions are accessible from the package root."""
+
+    def test_version_bumped(self):
+        from tools.ns2parquet import __version__
+        # Should be >= 0.2.0 after re-export changes
+        major, minor, patch = __version__.split('.')
+        self.assertGreaterEqual(int(minor), 2)
+
+    def test_normalize_functions_exported(self):
+        from tools.ns2parquet import (
+            normalize_entries, normalize_treatments,
+            normalize_devicestatus, normalize_profiles,
+            normalize_settings,
+        )
+        for fn in [normalize_entries, normalize_treatments,
+                   normalize_devicestatus, normalize_profiles,
+                   normalize_settings]:
+            self.assertTrue(callable(fn))
+
+    def test_grid_function_exported(self):
+        from tools.ns2parquet import build_grid
+        self.assertTrue(callable(build_grid))
+
+    def test_writer_functions_exported(self):
+        from tools.ns2parquet import write_parquet, read_parquet, parquet_info
+        for fn in [write_parquet, read_parquet, parquet_info]:
+            self.assertTrue(callable(fn))
+
+    def test_schemas_exported(self):
+        from tools.ns2parquet import (
+            ENTRIES_SCHEMA, TREATMENTS_SCHEMA, DEVICESTATUS_SCHEMA,
+            PROFILES_SCHEMA, SETTINGS_SCHEMA, GRID_SCHEMA,
+        )
+        import pyarrow as pa
+        for schema in [ENTRIES_SCHEMA, TREATMENTS_SCHEMA,
+                       DEVICESTATUS_SCHEMA, PROFILES_SCHEMA,
+                       SETTINGS_SCHEMA, GRID_SCHEMA]:
+            self.assertIsInstance(schema, pa.Schema)
 
 
 if __name__ == '__main__':

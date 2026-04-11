@@ -205,6 +205,10 @@ GRID_SCHEMA = pa.schema([
     pa.field('rolling_noise', pa.float32()),
     pa.field('hours_since_cgm', pa.float32()),
     # AID algorithm context
+    # NOTE: "loop_" prefix is historical. These columns store predictions and
+    # recommendations from ANY AID controller (Loop, oref0, AAPS, Trio).
+    # For oref0/AAPS/Trio, values come from the openaps/suggested/enacted objects.
+    # For Loop, values come from the loop/predicted/automaticDoseRecommendation objects.
     pa.field('loop_predicted_30', pa.float32()),
     pa.field('loop_predicted_60', pa.float32()),
     pa.field('loop_predicted_min', pa.float32()),

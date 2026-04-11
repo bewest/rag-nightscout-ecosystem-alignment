@@ -21,3 +21,17 @@ DIRECTION_MAP = {
     'NOT COMPUTABLE': np.nan, 'RATE OUT OF RANGE': np.nan,
     'NONE': np.nan, 'None': np.nan, '': np.nan,
 }
+
+
+def normalize_timezone(tz_str: str) -> str:
+    """Normalize Nightscout timezone (ETC/GMT+7 → Etc/GMT+7).
+
+    Handles the common Nightscout quirk where timezone strings use
+    uppercase 'ETC/' prefix instead of the IANA-standard 'Etc/'.
+    Falls back to 'UTC' for empty/None input.
+    """
+    if not tz_str:
+        return 'UTC'
+    if tz_str.upper().startswith('ETC/'):
+        return 'Etc/' + tz_str[4:]
+    return tz_str

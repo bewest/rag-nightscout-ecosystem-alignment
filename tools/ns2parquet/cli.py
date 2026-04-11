@@ -244,16 +244,16 @@ def cmd_convert_all(args):
             if verbose:
                 print(f'── Patient {patient_id} ({data_dir.relative_to(patients_dir)}) ──')
 
-            # Create a fake args for cmd_convert
-            class ConvertArgs:
-                pass
-            conv_args = ConvertArgs()
-            conv_args.input = str(data_dir)
-            conv_args.patient_id = patient_id
-            conv_args.output = current_output
-            conv_args.append = True  # always append in batch mode
-            conv_args.quiet = args.quiet
-            conv_args.skip_grid = args.skip_grid
+            # Build args namespace for cmd_convert
+            conv_args = argparse.Namespace(
+                input=str(data_dir),
+                patient_id=patient_id,
+                output=current_output,
+                append=True,  # always append in batch mode
+                quiet=args.quiet,
+                skip_grid=args.skip_grid,
+                opaque_ids=False,  # already resolved above
+            )
 
             try:
                 rc = cmd_convert(conv_args)
@@ -319,9 +319,18 @@ def cmd_ingest(args):
     now = datetime.now(timezone.utc)
     start = now - timedelta(days=args.days)
 
-    # Use ns_fetch functions
-    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-    from cgmencode.ns_fetch import fetch_entries, fetch_treatments, fetch_devicestatus, fetch_json
+    # Import Nightscout fetch utilities (optional dependency from cgmencode)
+    try:
+        from cgmencode.ns_fetch import (
+            fetch_entries, fetch_treatments, fetch_devicestatus, fetch_json,
+        )
+    except ImportError:
+        print(
+            'ERROR: Live ingestion requires cgmencode.ns_fetch.\n'
+            '  Install: pip install -e tools/cgmencode  (or ensure tools/ is on PYTHONPATH)',
+            file=sys.stderr,
+        )
+        return 1
 
     now_ms = int(now.timestamp() * 1000)
     start_ms = int(start.timestamp() * 1000)
@@ -372,15 +381,15 @@ def cmd_ingest(args):
                 print(f'  Site: units={site_units}, mode={mode}, '
                       f'plugins={len(enabled)}')
 
-        class ConvertArgs:
-            pass
-        conv_args = ConvertArgs()
-        conv_args.input = tmpdir
-        conv_args.patient_id = patient_id
-        conv_args.output = output
-        conv_args.append = True
-        conv_args.quiet = args.quiet
-        conv_args.skip_grid = args.skip_grid
+        conv_args = argparse.Namespace(
+            input=tmpdir,
+            patient_id=patient_id,
+            output=output,
+            append=True,
+            quiet=args.quiet,
+            skip_grid=args.skip_grid,
+            opaque_ids=False,
+        )
 
         return cmd_convert(conv_args)
 

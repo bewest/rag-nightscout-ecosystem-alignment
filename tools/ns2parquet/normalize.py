@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 from typing import List, Dict, Optional
 
-from .constants import DIRECTION_MAP, MMOLL_TO_MGDL  # noqa: F401 — re-export
+from .constants import DIRECTION_MAP, MMOLL_TO_MGDL, normalize_timezone  # noqa: F401 — re-export
 
 logger = logging.getLogger(__name__)
 
@@ -541,14 +541,6 @@ def normalize_devicestatus(records: List[Dict], patient_id: str) -> pd.DataFrame
 
 # ── Profiles ────────────────────────────────────────────────────────────
 
-def _normalize_timezone(tz_str: str) -> str:
-    """Normalize Nightscout timezone (ETC/GMT+7 → Etc/GMT+7)."""
-    if not tz_str:
-        return 'UTC'
-    if tz_str.upper().startswith('ETC/'):
-        return 'Etc/' + tz_str[4:]
-    return tz_str
-
 
 def _resolve_timezone(settings: dict, patient_id: str) -> Optional[str]:
     """Extract IANA timezone from settings, NOT timeFormat.
@@ -560,7 +552,7 @@ def _resolve_timezone(settings: dict, patient_id: str) -> Optional[str]:
     # Some deployments surface timezone at the settings level
     tz = settings.get('timezone')
     if isinstance(tz, str) and tz:
-        return _normalize_timezone(tz)
+        return normalize_timezone(tz)
     return None
 
 
@@ -584,7 +576,7 @@ def normalize_profiles(records, patient_id: str) -> pd.DataFrame:
             continue
 
         for profile_name, profile in store.items():
-            tz = _normalize_timezone(profile.get('timezone', ''))
+            tz = normalize_timezone(profile.get('timezone', ''))
             dia = float(profile.get('dia', 5.0))
             insulin_curve = profile.get('insulinCurve')
 
