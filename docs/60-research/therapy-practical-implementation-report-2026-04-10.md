@@ -30,7 +30,7 @@ This batch stress-tests the therapy pipeline under real-world conditions: data s
 **Objective**: Classify pump activity modes and detect transitions.
 
 **Findings**:
-- **7/11 patients predominantly in "suspended" mode** (temp_rate near zero >45% of time)
+- **8/11 patients predominantly in "suspended" mode** (temp_rate near zero >45% of time)
 - Patient a is unique: 59.4% high-activity (most aggressive AID)
 - Patient j: 91.7% suspended (minimal AID intervention — likely open-loop or minimal mode)
 - Mode transitions range from 14/week (j, stable) to 92.5/week (f, frequent switching)
@@ -77,7 +77,7 @@ This batch stress-tests the therapy pipeline under real-world conditions: data s
 
 **Findings**:
 - **Daily is always worst** — highest recommendation variance for 10/11 patients
-- **Monthly/biweekly most stable** for majority (monthly wins 5/11, biweekly wins 3/11)
+- **Monthly/biweekly most stable** for majority (monthly wins 5/11, biweekly wins 4/11)
 - **Rolling-7 wins for 2/11** (f, h — patients with high within-week variability)
 - Daily TIR std: 5.7-16.3% vs monthly: 1.6-13.4%
 
@@ -127,7 +127,7 @@ This batch stress-tests the therapy pipeline under real-world conditions: data s
 **Objective**: Quantify impact of pump dose rounding (0.05U increments).
 
 **Findings**:
-- **9/11 patients**: rounding impact ≤0.2% — negligible
+- **10/11 patients**: rounding impact ≤0.2% — negligible
 - Patient j: anomalous 35.1% impact (large ideal change clipped by pump limits)
 - Patient g: 100% basal rounding loss (ideal change of 0.02 U/h rounds to 0)
 - CR and ISF rounding effects are zero (integer adjustments, not sub-unit)

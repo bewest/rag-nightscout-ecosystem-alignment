@@ -63,7 +63,7 @@ This batch validates the therapy pipeline for real-world deployment. Key finding
 - **10/11 patients well-calibrated** — quarter agreement matches CI width expectations
 - Patient h is the only miscalibrated case (44% agreement, narrower CIs than warranted)
 - Patient h also has lowest CGM coverage (35.8%) — sparse data degrades calibration
-- Mean quarter agreement: 85% across all patients
+- Mean quarter agreement: 82.8% across all patients
 
 **Clinical Implication**: Pipeline confidence estimates are trustworthy except for low-coverage patients. Add explicit coverage-gated confidence downgrade for patients <80% CGM coverage.
 
@@ -106,9 +106,9 @@ This batch validates the therapy pipeline for real-world deployment. Key finding
 - **Basal flag**: Variable — day 1-7 when present, absent in 6/11
 - **ISF flag**: Day 1-6 when present, absent in 4/11
 - **All flags stable**: Median 5 days, max 8 days
-- Grade at 7 days matches 30-day grade for **9/11** patients
+- Grade at 7 days matches 30-day grade for **8/11** patients
 
-**Clinical Implication**: The pipeline provides useful initial triage within one week. Grade assignments at 7 days are reliable enough for initial clinical routing. Only 2 patients (c, i) show grade improvement between 7 and 30 days.
+**Clinical Implication**: The pipeline provides useful initial triage within one week. Grade assignments at 7 days are reliable enough for initial clinical routing. Patients c and i show grade improvement between 7 and 30 days (D→C); patient j's grade decreased (B→C).
 
 ---
 
