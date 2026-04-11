@@ -8,7 +8,7 @@
 
 This batch investigated clinical safety metrics, diagnostic deep-dives, and architectural alternatives for the physics-based glucose prediction pipeline. Ten experiments across 11 patients (~50K timesteps each, 60-min horizon) produced three headline results:
 
-1. **Clinically safe predictions**: Clarke Error Grid shows 63.3% Zone A, 99.7% Zone A+B — zero dangerous predictions (Zone D+E < 0.1%)
+1. **Clinically safe predictions**: Clarke Error Grid shows 62.6% Zone A, 99.7% Zone A+B — zero dangerous predictions (Zone D+E < 0.1%)
 2. **Grand benchmark (honest evaluation)**: Ensemble R² = 0.540, MAE = 28.5 mg/dL on 10 valid patients (patient h excluded for 64% missing CGM)
 3. **Feature interactions confirm nonlinear physics**: +0.004 R² from pairwise interaction terms, 10/11 patients positive — the physics channels have multiplicative relationships Ridge cannot capture
 
@@ -49,7 +49,7 @@ This batch investigated clinical safety metrics, diagnostic deep-dives, and arch
 | f | 0.591 | 0.670 | −0.079 | 0.24/0.15/0.21/0.41 |
 | j | 0.231 | 0.486 | −0.256 | 0.23/0.29/0.33/0.15 |
 
-**Finding**: Attention **hurts** on average (−0.032 mean, 3/11 positive). Learned weights are roughly uniform (0.17–0.41 range), showing no strong channel selection signal. The attention module adds parameters without benefit, overfitting on our ~5K validation windows per patient.
+**Finding**: Attention **hurts** on average (−0.032 mean, 2/11 positive). Learned weights are roughly uniform (0.17–0.41 range), showing no strong channel selection signal. The attention module adds parameters without benefit, overfitting on our ~5K validation windows per patient.
 
 **Why it fails**: With only 4 channels, the attention mechanism doesn't have enough options to justify the parameter cost. The equal-channel CNN already learns channel-specific filters.
 
@@ -211,7 +211,7 @@ This batch investigated clinical safety metrics, diagnostic deep-dives, and arch
 | Glucose-only AR | 0.509 | — | — | — |
 | + Ridge physics | 0.521 | +0.012 | — | — |
 | + Residual CNN | 0.538 | +0.017 | — | — |
-| **+ Ensemble** | **0.540** | +0.002 | **28.5 mg/dL** | **63.3%** |
+| **+ Ensemble** | **0.540** | +0.002 | **28.5 mg/dL** | **62.6%** |
 
 **Per-patient breakdown**:
 | Tier | Patients | Ensemble R² | MAE | Clarke A |
@@ -234,7 +234,7 @@ Glucose-only AR(4):              R² = 0.509 (10 pts, simple split)
 + Residual CNN:                  R² = 0.538 (+0.017)  
 + Ensemble:                      R² = 0.540 (+0.002)
 Block CV estimate:               R² = 0.505 (honest, all 11)
-MAE = 28.5 mg/dL | Clarke A = 63.3% | A+B = 99.7%
+MAE = 28.5 mg/dL | Clarke A = 62.6% | A+B = 99.7%
 ```
 
 ### Technique Reliability Scorecard
@@ -249,7 +249,7 @@ MAE = 28.5 mg/dL | Clarke A = 63.3% | A+B = 99.7%
 | Multi-horizon joint | +0.030 (120m) | 7/11 | ✓ Only at long horizons |
 | Consecutive segments | +0.001 | 5/11 | ~ Marginal |
 | Selective prediction | varies | 4/11 @90% | ~ Only for easy patients |
-| Attention mechanism | −0.032 | 3/11 | ✗ Overfits |
+| Attention mechanism | −0.032 | 2/11 | ✗ Overfits |
 | Time-of-day features | −0.064 | 0/11 | ✗ Harmful |
 | Online learning | −0.025 | 2/11 | ✗ Insufficient data |
 | Regime segmentation | −0.010 | 1/11 | ✗ Fragments data |
@@ -310,7 +310,7 @@ MAE = 28.5 mg/dL | Clarke A = 63.3% | A+B = 99.7%
 |----|------|------------|--------|
 | EXP-1041 | Hepatic Deep Dive | dawn_gain=0.000 | ✅ Pass |
 | EXP-1042 | Attention Mechanism | Δ=−0.032 | ✅ Pass (negative) |
-| EXP-1043 | Clarke Error Grid | A=63.3%, A+B=99.7% | ✅ Pass |
+| EXP-1043 | Clarke Error Grid | A=62.6%, A+B=99.7% | ✅ Pass |
 | EXP-1044 | Selective Prediction | ensemble R²=0.526 | ✅ Pass |
 | EXP-1045 | Hypo/Hyper Alerts | hypo AUC=0.804, hyper AUC=0.855 | ✅ Pass |
 | EXP-1046 | Longer Windows | 2h optimal | ✅ Pass |
