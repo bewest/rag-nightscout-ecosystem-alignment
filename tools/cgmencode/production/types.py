@@ -716,6 +716,42 @@ class DIADiscrepancy:
 
 
 @dataclass
+class TwoComponentDIA:
+    """Two-component DIA decomposition (EXP-2525).
+
+    Insulin has two mechanistically distinct glucose effects:
+    1. Fast action (τ=0.8h): standard insulin-mediated glucose uptake,
+       decays exponentially with IOB.
+    2. Persistent HGP suppression: hepatic glucose production suppression
+       that acts as a step function — once triggered by insulin, it
+       persists far beyond IOB decay (>12h window).
+
+    The single-exponential IOB model captures only the fast component.
+    The persistent component explains the DIA discrepancy (EXP-2351):
+    why glucose response DIA >> IOB decay DIA.
+    """
+    iob_fast_effect: np.ndarray          # (N,) fast component, mg/dL per 5min
+    iob_persistent_effect: np.ndarray    # (N,) persistent component, mg/dL per 5min
+    total_insulin_12h: np.ndarray        # (N,) total insulin delivered in last 12h (Units)
+    fast_fraction: float                 # 1 - persistent_fraction (0.63)
+    persistent_fraction: float           # fraction of total effect (0.37)
+    fast_tau_hours: float                # fast component time constant (0.8h)
+    persistent_window_hours: float       # lookback for persistent effect (12h)
+
+    @property
+    def total_effect(self) -> np.ndarray:
+        """Combined fast + persistent effect."""
+        return self.iob_fast_effect + self.iob_persistent_effect
+
+    @property
+    def persistent_dominance_ratio(self) -> float:
+        """Ratio of persistent to fast effect energy (RMS)."""
+        fast_rms = float(np.sqrt(np.mean(self.iob_fast_effect ** 2)))
+        pers_rms = float(np.sqrt(np.mean(self.iob_persistent_effect ** 2)))
+        return pers_rms / fast_rms if fast_rms > 1e-12 else 0.0
+
+
+@dataclass
 class AIDCompensation:
     """AID compensation vs genuine under-insulinization analysis (EXP-747)."""
     compensation_type: CompensationType
@@ -913,6 +949,7 @@ class PipelineResult:
     optimal_settings: Optional[SettingsOptimizationResult] = None
     # Autoresearch productionization (EXP-2261–2358)
     dia_discrepancy: Optional[DIADiscrepancy] = None
+    two_component_dia: Optional[TwoComponentDIA] = None  # EXP-2525
     prediction_bias_mgdl: Optional[float] = None  # systematic bias at 30min (EXP-2331)
     # Overnight drift & loop workload (EXP-2371–2396)
     overnight_assessment: Optional[OvernightDriftAssessment] = None

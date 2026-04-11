@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from .types import MetabolicState, PatientData, PatientProfile, DIADiscrepancy, ResponderType
+from .types import MetabolicState, PatientData, PatientProfile, DIADiscrepancy, ResponderType, TwoComponentDIA
 
 
 # Hill equation parameters for hepatic production (from continuous_pk.py)
@@ -35,6 +35,11 @@ _CIRCADIAN_AMP = 0.15  # Dawn phenomenon amplitude (15% variation)
 # Glucose decay toward equilibrium (from exp_autoresearch_681.py:50)
 _DECAY_TARGET = 120.0  # mg/dL equilibrium
 _DECAY_RATE = 0.005    # per 5-min step
+
+# Two-component DIA parameters (EXP-2525)
+_FAST_TAU_HOURS = 0.8          # time constant for fast insulin action
+_PERSISTENT_FRACTION = 0.37    # fraction of total effect that's persistent (C/(A+C))
+_PERSISTENT_WINDOW_HOURS = 12.0  # lookback window for persistent HGP suppression
 
 
 def _compute_hepatic_production(iob: np.ndarray,
@@ -204,6 +209,110 @@ def _median_schedule_value(schedule: list, default: float = 50.0) -> float:
         if v is not None:
             values.append(float(v))
     return float(np.median(values)) if values else default
+
+
+# ── Two-Component DIA Decomposition (EXP-2525) ──────────────────────
+
+def _compute_total_insulin_delivered(bolus: np.ndarray,
+                                     basal_rate: np.ndarray,
+                                     window_steps: int) -> np.ndarray:
+    """Compute rolling total insulin delivered over a lookback window.
+
+    Args:
+        bolus: (N,) bolus insulin per 5-min interval (Units).
+        basal_rate: (N,) basal rate per interval (U/hr).
+        window_steps: number of 5-min steps in the lookback window.
+
+    Returns:
+        (N,) total insulin delivered in the lookback window (Units).
+    """
+    # Per-interval insulin delivery: bolus + basal converted to per-step
+    per_step = bolus + basal_rate * (5.0 / 60.0)
+    # Cumulative sum for efficient rolling window
+    cumsum = np.concatenate([[0.0], np.cumsum(per_step)])
+    total = np.zeros(len(bolus))
+    for i in range(len(bolus)):
+        start = max(0, i + 1 - window_steps)
+        total[i] = cumsum[i + 1] - cumsum[start]
+    return total
+
+
+def decompose_two_component_dia(patient: PatientData,
+                                metabolic: MetabolicState,
+                                ) -> TwoComponentDIA:
+    """Decompose insulin demand into fast-action and persistent HGP suppression.
+
+    EXP-2525 discovered that insulin's glucose effect has two components:
+    1. Fast action (τ=0.8h): exponentially-decaying insulin-mediated uptake.
+       This is what the pump's IOB curve models.
+    2. Persistent HGP suppression (>12h): once insulin triggers HGP
+       suppression, it persists as a step function far beyond IOB decay.
+
+    The fast component is proportional to demand (IOB-change × ISF),
+    weighted by the fast fraction (1 - 0.37 = 0.63).
+
+    The persistent component is proportional to total insulin delivered
+    in the last 12h, weighted by the persistent fraction (0.37).
+    The persistent effect is normalized to be in the same units as the
+    fast effect (mg/dL per 5-min step) using ISF scaling.
+
+    Args:
+        patient: PatientData with IOB, bolus, and basal_rate data.
+        metabolic: MetabolicState from compute_metabolic_state.
+
+    Returns:
+        TwoComponentDIA with decomposed effects.
+    """
+    N = patient.n_samples
+    fast_frac = 1.0 - _PERSISTENT_FRACTION
+    profile = patient.profile
+    isf = _median_schedule_value(profile.isf_mgdl(), default=50.0)
+
+    # Fast component: existing demand × fast fraction, shaped by τ
+    iob_fast_effect = metabolic.demand * fast_frac
+
+    # Persistent component: proportional to total insulin in 12h window
+    window_steps = int(_PERSISTENT_WINDOW_HOURS * 12)  # 12h × 12 steps/h = 144
+
+    if (patient.bolus is not None and patient.basal_rate is not None
+            and patient.has_insulin_data):
+        bolus = np.nan_to_num(patient.bolus.astype(np.float64), nan=0.0)
+        basal = np.nan_to_num(patient.basal_rate.astype(np.float64), nan=0.0)
+        total_insulin_12h = _compute_total_insulin_delivered(
+            bolus, basal, window_steps)
+    elif patient.has_insulin_data:
+        # Fallback: estimate from IOB curve (less accurate)
+        iob = np.nan_to_num(patient.iob.astype(np.float64), nan=0.0)
+        total_insulin_12h = iob * (_PERSISTENT_WINDOW_HOURS / 5.0)
+    else:
+        total_insulin_12h = np.zeros(N)
+
+    # Scale persistent effect: insulin × ISF / window_steps gives
+    # mg/dL per step equivalent. This normalizes persistent effect
+    # to the same units as fast effect.
+    mean_demand = float(np.mean(metabolic.demand))
+    if mean_demand > 1e-12:
+        # Calibrate persistent to be _PERSISTENT_FRACTION of total effect
+        mean_total_ins = float(np.mean(total_insulin_12h))
+        if mean_total_ins > 1e-12:
+            scale = (mean_demand * _PERSISTENT_FRACTION
+                     / (mean_total_ins * fast_frac))
+        else:
+            scale = 0.0
+    else:
+        scale = 0.0
+
+    iob_persistent_effect = total_insulin_12h * scale
+
+    return TwoComponentDIA(
+        iob_fast_effect=iob_fast_effect,
+        iob_persistent_effect=iob_persistent_effect,
+        total_insulin_12h=total_insulin_12h,
+        fast_fraction=fast_frac,
+        persistent_fraction=_PERSISTENT_FRACTION,
+        fast_tau_hours=_FAST_TAU_HOURS,
+        persistent_window_hours=_PERSISTENT_WINDOW_HOURS,
+    )
 
 
 # ── DIA Discrepancy Estimation (EXP-2351–2358) ──────────────────────

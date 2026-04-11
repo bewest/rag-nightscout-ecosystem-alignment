@@ -37,6 +37,7 @@ from cgmencode.production.types import (
     OptimalSettings, SettingScheduleEntry, SettingsOptimizationResult,
     ControllerType, ControllerBehavior,
     OvernightPhenotype, OvernightDriftAssessment, LoopWorkloadReport,
+    TwoComponentDIA,
 )
 
 
@@ -617,6 +618,133 @@ class TestMetabolicEngine(unittest.TestCase):
         # Hepatic production should be at or near base rate
         self.assertGreater(np.mean(state.hepatic), 0.5,
                            "Hepatic should be positive with no insulin suppression")
+
+
+class TestTwoComponentDIA(unittest.TestCase):
+    """metabolic_engine.py: two-component DIA decomposition (EXP-2525)."""
+
+    def setUp(self):
+        from cgmencode.production.metabolic_engine import (
+            compute_metabolic_state, decompose_two_component_dia,
+            _FAST_TAU_HOURS, _PERSISTENT_FRACTION,
+            _PERSISTENT_WINDOW_HOURS,
+        )
+        self.compute = compute_metabolic_state
+        self.decompose = decompose_two_component_dia
+        self.FAST_TAU = _FAST_TAU_HOURS
+        self.PERSISTENT_FRACTION = _PERSISTENT_FRACTION
+        self.PERSISTENT_WINDOW = _PERSISTENT_WINDOW_HOURS
+
+    # ── Type / constant tests ─────────────────────────────────────
+
+    def test_constants_values(self):
+        """EXP-2525 constants match specification."""
+        self.assertAlmostEqual(self.FAST_TAU, 0.8)
+        self.assertAlmostEqual(self.PERSISTENT_FRACTION, 0.37)
+        self.assertAlmostEqual(self.PERSISTENT_WINDOW, 12.0)
+
+    def test_output_type(self):
+        """decompose returns TwoComponentDIA dataclass."""
+        patient = make_patient(n=1000)
+        metabolic = self.compute(patient)
+        result = self.decompose(patient, metabolic)
+        self.assertIsInstance(result, TwoComponentDIA)
+
+    def test_output_shape(self):
+        """All arrays match input length."""
+        patient = make_patient(n=2000)
+        metabolic = self.compute(patient)
+        result = self.decompose(patient, metabolic)
+        self.assertEqual(len(result.iob_fast_effect), 2000)
+        self.assertEqual(len(result.iob_persistent_effect), 2000)
+        self.assertEqual(len(result.total_insulin_12h), 2000)
+
+    def test_fractions_sum_to_one(self):
+        """Fast + persistent fractions = 1.0."""
+        patient = make_patient(n=500)
+        metabolic = self.compute(patient)
+        result = self.decompose(patient, metabolic)
+        self.assertAlmostEqual(result.fast_fraction + result.persistent_fraction, 1.0)
+
+    # ── Functional tests ──────────────────────────────────────────
+
+    def test_fast_effect_proportional_to_demand(self):
+        """Fast effect = demand × fast_fraction."""
+        patient = make_patient(n=1000)
+        metabolic = self.compute(patient)
+        result = self.decompose(patient, metabolic)
+        expected = metabolic.demand * result.fast_fraction
+        np.testing.assert_allclose(result.iob_fast_effect, expected, atol=1e-10)
+
+    def test_total_effect_property(self):
+        """total_effect = fast + persistent."""
+        patient = make_patient(n=1000)
+        metabolic = self.compute(patient)
+        result = self.decompose(patient, metabolic)
+        expected = result.iob_fast_effect + result.iob_persistent_effect
+        np.testing.assert_allclose(result.total_effect, expected, atol=1e-10)
+
+    def test_persistent_effect_nonnegative(self):
+        """Persistent effect is non-negative (HGP suppression is one-way)."""
+        patient = make_patient(n=2000)
+        metabolic = self.compute(patient)
+        result = self.decompose(patient, metabolic)
+        self.assertTrue(np.all(result.iob_persistent_effect >= -1e-12),
+                        "Persistent effect should be non-negative")
+
+    def test_total_insulin_12h_nonnegative(self):
+        """Total insulin delivered in 12h window is non-negative."""
+        patient = make_patient(n=2000)
+        metabolic = self.compute(patient)
+        result = self.decompose(patient, metabolic)
+        self.assertTrue(np.all(result.total_insulin_12h >= -1e-12),
+                        "Total insulin should be non-negative")
+
+    def test_zero_insulin_gives_zero_effects(self):
+        """With no insulin, both components should be near zero."""
+        patient = make_patient(n=500, with_insulin=False)
+        metabolic = self.compute(patient)
+        result = self.decompose(patient, metabolic)
+        self.assertLess(np.max(np.abs(result.iob_fast_effect)), 1e-10)
+        self.assertLess(np.max(np.abs(result.iob_persistent_effect)), 1e-10)
+
+    def test_persistent_dominance_ratio(self):
+        """persistent_dominance_ratio property returns a finite float."""
+        patient = make_patient(n=2000)
+        metabolic = self.compute(patient)
+        result = self.decompose(patient, metabolic)
+        ratio = result.persistent_dominance_ratio
+        self.assertIsInstance(ratio, float)
+        self.assertTrue(np.isfinite(ratio))
+
+    def test_stored_parameters(self):
+        """Result stores the parameters used for decomposition."""
+        patient = make_patient(n=500)
+        metabolic = self.compute(patient)
+        result = self.decompose(patient, metabolic)
+        self.assertEqual(result.fast_tau_hours, 0.8)
+        self.assertEqual(result.persistent_fraction, 0.37)
+        self.assertEqual(result.persistent_window_hours, 12.0)
+
+    # ── Integration test ──────────────────────────────────────────
+
+    def test_pipeline_exposes_two_component(self):
+        """Pipeline result includes two_component_dia when insulin data present."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(n=4320)
+        result = run_pipeline(patient)
+        self.assertIsNotNone(result.two_component_dia,
+                             "Pipeline should produce two_component_dia with insulin data")
+        self.assertIsInstance(result.two_component_dia, TwoComponentDIA)
+        self.assertEqual(len(result.two_component_dia.iob_fast_effect),
+                         len(result.cleaned.glucose))
+
+    def test_pipeline_none_without_insulin(self):
+        """Pipeline result has None two_component_dia without insulin."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(n=4320, with_insulin=False)
+        result = run_pipeline(patient)
+        self.assertIsNone(result.two_component_dia)
 
 
 class TestMealDetector(unittest.TestCase):

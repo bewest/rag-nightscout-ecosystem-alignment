@@ -24,7 +24,7 @@ from .types import (
     ControllerType,
 )
 from .data_quality import clean_glucose
-from .metabolic_engine import compute_metabolic_state, _extract_hours, estimate_dia_discrepancy
+from .metabolic_engine import compute_metabolic_state, _extract_hours, estimate_dia_discrepancy, decompose_two_component_dia
 from .event_detector import classify_risk_simple
 from .hypo_predictor import predict_hypo, calibrate_threshold
 from .clinical_rules import generate_clinical_report
@@ -378,6 +378,7 @@ def run_pipeline(patient: PatientData,
 
     # ── Stage 8: DIA Discrepancy Analysis (EXP-2351–2358) ─────────
     dia_discrepancy = None
+    two_component_dia = None
     if metabolic is not None and patient.has_insulin_data:
         try:
             dia_discrepancy = estimate_dia_discrepancy(patient, metabolic)
@@ -390,6 +391,12 @@ def run_pipeline(patient: PatientData,
                 )
         except Exception as e:
             warnings.append(f"DIA discrepancy analysis failed: {e}")
+
+        # Two-component DIA decomposition (EXP-2525)
+        try:
+            two_component_dia = decompose_two_component_dia(patient, metabolic)
+        except Exception as e:
+            warnings.append(f"Two-component DIA decomposition failed: {e}")
 
     # ── Assemble result ───────────────────────────────────────────
     elapsed = (time.perf_counter() - start) * 1000.0
@@ -416,6 +423,7 @@ def run_pipeline(patient: PatientData,
         natural_experiments=natural_experiments,
         optimal_settings=optimal_settings,
         dia_discrepancy=dia_discrepancy,
+        two_component_dia=two_component_dia,
         overnight_assessment=overnight_assessment,
         loop_workload=loop_workload,
         pipeline_latency_ms=elapsed,
