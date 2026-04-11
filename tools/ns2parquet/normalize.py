@@ -596,6 +596,11 @@ def normalize_profiles(records, patient_id: str) -> pd.DataFrame:
                     continue
                 for entry in schedule:
                     time_secs = entry.get('timeAsSeconds', 0)
+                    if isinstance(time_secs, str):
+                        try:
+                            time_secs = int(time_secs)
+                        except ValueError:
+                            time_secs = 0
                     time_str = entry.get('time', f'{time_secs // 3600:02d}:{(time_secs % 3600) // 60:02d}')
                     raw_value = float(entry.get('value', 0))
                     # Convert mmol/L → mg/dL for ISF and target schedules

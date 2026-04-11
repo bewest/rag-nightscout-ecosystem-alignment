@@ -9,23 +9,27 @@ Tests cover:
   - Opaque ID generation (deterministic, case-insensitive)
   - Settings normalization (AID/pump/MDI classification)
   - Parquet write/read round-trip with dedup
-  - Grid builder column completeness
-  - Integration: full pipeline vs JSON pipeline (real patient data)
+  - Grid builder column completeness (fixture-based, fast)
+  - Integration: full pipeline vs JSON pipeline (real patient data, slow)
 
 Run:
-    python3 -m pytest tools/ns2parquet/test_ns2parquet.py -v
+    python3 -m pytest tools/ns2parquet/test_ns2parquet.py -v           # all tests
+    python3 -m pytest tools/ns2parquet/test_ns2parquet.py -m "not slow" -v  # fast only
     # or via Makefile:
-    make ns2parquet-tests
+    make ns2parquet-tests       # fast (unit + fixture-based)
+    make ns2parquet-tests-all   # everything including slow integration
 """
 
 import json
 import os
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 # ── Helpers available without real data ──────────────────────────────
 
@@ -438,25 +442,45 @@ class TestParquetRoundTrip(unittest.TestCase):
             self.assertEqual(len(result), 3)
 
 
-# ── Integration tests (require real patient data) ───────────────────
+# ── Fixture-based grid tests (use small JSON extracts, ~0.5s total) ──
 
-PATIENTS_DIR = os.path.join(
-    os.path.dirname(__file__), '..', '..', 'externals', 'ns-data', 'patients'
-)
-HAS_PATIENT_DATA = os.path.isdir(PATIENTS_DIR) and os.path.isfile(
-    os.path.join(PATIENTS_DIR, 'a', 'training', 'entries.json')
+FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixtures')
+HAS_FIXTURES = os.path.isdir(FIXTURES_DIR) and os.path.isfile(
+    os.path.join(FIXTURES_DIR, 'patient_d_entries.json')
 )
 
+# Tiny terrarium: pre-built parquet with 2 patients × 7 days (~800KB)
+TINY_TERRARIUM = os.path.join(
+    os.path.dirname(__file__), '..', '..', 'externals',
+    'ns-parquet-tiny', 'training', 'grid.parquet'
+)
+HAS_TINY_TERRARIUM = os.path.isfile(TINY_TERRARIUM)
 
-@unittest.skipUnless(HAS_PATIENT_DATA, 'Real patient data not available')
+
+def _build_fixture_grid(patient_id):
+    """Build a grid from small JSON fixtures (~288 rows, <0.5s)."""
+    from tools.ns2parquet.grid import build_grid
+    tmpdir = tempfile.mkdtemp()
+    for col in ['entries', 'treatments', 'devicestatus', 'profile']:
+        src = os.path.join(FIXTURES_DIR, f'patient_{patient_id}_{col}.json')
+        dst = os.path.join(tmpdir, f'{col}.json')
+        shutil.copy(src, dst)
+    df = build_grid(tmpdir, patient_id, verbose=False)
+    shutil.rmtree(tmpdir)
+    return df
+
+
+@unittest.skipUnless(HAS_FIXTURES, 'JSON fixtures not available')
 class TestGridIntegrity(unittest.TestCase):
-    """Integration tests: verify grid builder produces expected columns and values."""
+    """Grid tests using small JSON fixtures (~1 day, <0.5s per grid build)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.df_d = _build_fixture_grid('d')
+        cls.df_a = _build_fixture_grid('a')
 
     def test_grid_column_completeness(self):
         """Grid output has all expected columns."""
-        from tools.ns2parquet.grid import build_grid
-        df = build_grid(
-            os.path.join(PATIENTS_DIR, 'd', 'training'), 'd', verbose=False)
         expected_cols = [
             'patient_id', 'glucose', 'iob', 'cob', 'net_basal',
             'bolus', 'carbs', 'time_sin', 'time_cos',
@@ -469,48 +493,150 @@ class TestGridIntegrity(unittest.TestCase):
             'loop_predicted_30', 'loop_predicted_60', 'loop_predicted_min',
         ]
         for col in expected_cols:
-            self.assertIn(col, df.columns, f'Missing column: {col}')
+            self.assertIn(col, self.df_d.columns, f'Missing column: {col}')
 
-    def test_grid_row_count_reasonable(self):
-        """Grid has ~51,840 rows for 180-day patient (5-min intervals)."""
-        from tools.ns2parquet.grid import build_grid
-        df = build_grid(
-            os.path.join(PATIENTS_DIR, 'd', 'training'), 'd', verbose=False)
-        # 180 days * 288 steps/day = 51,840
-        self.assertGreater(len(df), 40000)
-        self.assertLess(len(df), 60000)
+    def test_grid_row_count_one_day(self):
+        """Fixture grid has ~288 rows (1 day at 5-min intervals)."""
+        self.assertGreater(len(self.df_d), 200)
+        self.assertLess(len(self.df_d), 400)
+
+    def test_grid_has_49_columns(self):
+        """Grid should produce all 49 standard columns."""
+        self.assertEqual(self.df_d.shape[1], 49)
 
     def test_glucose_in_mgdl_range(self):
         """Glucose values should be in mg/dL range (40-500), not mmol/L."""
-        from tools.ns2parquet.grid import build_grid
-        df = build_grid(
-            os.path.join(PATIENTS_DIR, 'a', 'training'), 'a', verbose=False)
-        valid = df['glucose'].dropna()
+        valid = self.df_a['glucose'].dropna()
         self.assertGreater(valid.median(), 50)   # not mmol/L
-        self.assertLess(valid.median(), 400)
+        self.assertLess(valid.median(), 300)
 
     def test_mmol_isf_converted(self):
         """Patient a (mmol/L) ISF should be converted to mg/dL range."""
-        from tools.ns2parquet.grid import build_grid
-        df = build_grid(
-            os.path.join(PATIENTS_DIR, 'a', 'training'), 'a', verbose=False)
-        isf = df['scheduled_isf'].iloc[0]
+        isf = self.df_a['scheduled_isf'].iloc[0]
         # Raw value is 2.7 mmol/L → should be ~48.6 mg/dL
         self.assertGreater(isf, 30)
         self.assertLess(isf, 80)
 
     def test_mgdl_isf_unchanged(self):
         """Patient d (mg/dL) ISF should stay in mg/dL range."""
+        isf = self.df_d['scheduled_isf'].iloc[0]
+        self.assertAlmostEqual(isf, 40.0, places=0)
+
+    def test_iob_populated(self):
+        """IOB should be populated from devicestatus."""
+        self.assertGreater(self.df_d['iob'].notna().mean(), 0.5)
+
+    def test_predictions_present(self):
+        """Prediction columns should have some non-null values."""
+        for col in ['loop_predicted_30', 'loop_predicted_60', 'loop_predicted_min']:
+            valid = self.df_d[col].notna().sum()
+            self.assertGreater(valid, 0, f'{col} should have some values')
+
+
+@unittest.skipUnless(HAS_TINY_TERRARIUM, 'Tiny terrarium not available')
+class TestTinyTerrariumSmoke(unittest.TestCase):
+    """Smoke tests using pre-built tiny terrarium (~800KB, <50ms load)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.grid = pd.read_parquet(TINY_TERRARIUM)
+
+    def test_has_expected_patients(self):
+        patients = sorted(self.grid['patient_id'].unique())
+        self.assertIn('a', patients)
+        self.assertIn('b', patients)
+
+    def test_has_49_columns(self):
+        self.assertEqual(self.grid.shape[1], 49)
+
+    def test_row_count_reasonable(self):
+        """~2 patients × 7 days × 288 steps ≈ 4032 rows."""
+        self.assertGreater(len(self.grid), 3000)
+        self.assertLess(len(self.grid), 5000)
+
+    def test_glucose_values_mgdl(self):
+        valid = self.grid['glucose'].dropna()
+        self.assertGreater(valid.median(), 50)
+        self.assertLess(valid.median(), 300)
+
+    def test_new_columns_present(self):
+        """All 5 newer columns present (bolus_smb, exercise, algo context)."""
+        for col in ['bolus_smb', 'exercise_active', 'eventual_bg',
+                     'sensitivity_ratio', 'insulin_req']:
+            self.assertIn(col, self.grid.columns, f'Missing: {col}')
+
+    def test_patient_a_mmol_isf_converted(self):
+        """Patient a (mmol/L site) ISF should be in mg/dL range."""
+        a = self.grid[self.grid['patient_id'] == 'a']
+        isf = a['scheduled_isf'].dropna().iloc[0]
+        self.assertGreater(isf, 30)
+        self.assertLess(isf, 80)
+
+    def test_patient_b_oref0_context(self):
+        """Patient b (Trio) should have oref0 algorithm context."""
+        b = self.grid[self.grid['patient_id'] == 'b']
+        for col in ['eventual_bg', 'sensitivity_ratio']:
+            pct = b[col].notna().mean()
+            self.assertGreater(pct, 0.3, f'{col} should be >30% for Trio patient')
+
+
+# ── Slow integration tests (require real patient data) ───────────────
+
+PATIENTS_DIR = os.path.join(
+    os.path.dirname(__file__), '..', '..', 'externals', 'ns-data', 'patients'
+)
+HAS_PATIENT_DATA = os.path.isdir(PATIENTS_DIR) and os.path.isfile(
+    os.path.join(PATIENTS_DIR, 'a', 'training', 'entries.json')
+)
+
+
+@pytest.mark.slow
+@unittest.skipUnless(HAS_PATIENT_DATA, 'Real patient data not available')
+class TestGridIntegrityFull(unittest.TestCase):
+    """Full-data integration tests — validates 180-day grid properties.
+
+    Marked @slow because each grid build parses 80-200MB of JSON (~15s each).
+    Run with: pytest -m slow
+    """
+
+    @classmethod
+    def setUpClass(cls):
         from tools.ns2parquet.grid import build_grid
-        df = build_grid(
+        cls.df_d = build_grid(
             os.path.join(PATIENTS_DIR, 'd', 'training'), 'd', verbose=False)
-        isf = df['scheduled_isf'].iloc[0]
+        cls.df_a = build_grid(
+            os.path.join(PATIENTS_DIR, 'a', 'training'), 'a', verbose=False)
+
+    def test_grid_row_count_180_days(self):
+        """Grid has ~51,840 rows for 180-day patient (5-min intervals)."""
+        self.assertGreater(len(self.df_d), 40000)
+        self.assertLess(len(self.df_d), 60000)
+
+    def test_glucose_in_mgdl_range(self):
+        """Glucose values in mg/dL range across full dataset."""
+        valid = self.df_a['glucose'].dropna()
+        self.assertGreater(valid.median(), 50)
+        self.assertLess(valid.median(), 300)
+
+    def test_mmol_isf_converted(self):
+        """Patient a (mmol/L) ISF converted to mg/dL."""
+        isf = self.df_a['scheduled_isf'].iloc[0]
+        self.assertGreater(isf, 30)
+        self.assertLess(isf, 80)
+
+    def test_mgdl_isf_unchanged(self):
+        """Patient d (mg/dL) ISF stays in mg/dL range."""
+        isf = self.df_d['scheduled_isf'].iloc[0]
         self.assertAlmostEqual(isf, 40.0, places=0)
 
 
+@pytest.mark.slow
 @unittest.skipUnless(HAS_PATIENT_DATA, 'Real patient data not available')
 class TestClinicalMetricsMatch(unittest.TestCase):
-    """Integration: clinical metrics from parquet match JSON pipeline."""
+    """Integration: clinical metrics from parquet match JSON pipeline.
+
+    Marked @slow: builds grids from both pipelines (~29s setup).
+    """
 
     @classmethod
     def setUpClass(cls):
@@ -618,9 +744,13 @@ class TestOref0PredictionExtraction(unittest.TestCase):
         self.assertIsNone(result['hypo_risk_count'])
 
 
+@pytest.mark.slow
 @unittest.skipUnless(HAS_PATIENT_DATA, 'Real patient data not available')
 class TestPatientBMixedController(unittest.TestCase):
-    """Integration: patient b (Trio + Loop) validates new columns."""
+    """Integration: patient b (Trio + Loop) validates new columns.
+
+    Marked @slow: patient b has 201MB devicestatus (~20s setup).
+    """
 
     HAS_B = os.path.isfile(
         os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json'))
@@ -875,12 +1005,16 @@ class TestODCLoaderConversion(unittest.TestCase):
 ODC_DIR = '/home/bewest/Downloads/openaps-data-commons-2023-samples'
 
 
+@pytest.mark.slow
 @unittest.skipUnless(
     os.path.isdir(os.path.join(ODC_DIR, '39819048')),
     'ODC sample data not available'
 )
 class TestODCIntegration(unittest.TestCase):
-    """Integration test: build grid from real ODC patient 39819048."""
+    """Integration test: build grid from real ODC patient 39819048.
+
+    Marked @slow: requires ODC data download (~5-10s).
+    """
 
     @classmethod
     def setUpClass(cls):
@@ -1025,11 +1159,15 @@ ODC_NS_EXPORT_DIR = os.path.join(
     ODC_NS_EXPORT_PID, 'direct-sharing-31')
 
 
+@pytest.mark.slow
 @unittest.skipUnless(
     os.path.isdir(ODC_NS_EXPORT_DIR),
     f'ODC NS-export data not available at {ODC_NS_EXPORT_DIR}')
 class TestNSExportIntegration(unittest.TestCase):
-    """Integration test: build grid from NS-export patient (CSV devicestatus)."""
+    """Integration test: build grid from NS-export patient (CSV devicestatus).
+
+    Marked @slow: converts ODC data + loops through all 8 patients (~2min).
+    """
 
     @classmethod
     def setUpClass(cls):
