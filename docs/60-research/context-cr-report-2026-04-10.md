@@ -18,7 +18,7 @@ Single carb ratio (CR) explains nearly zero glucose rise variance (R²=0.00–0.
 - **Negative pre-meal correlation**: Higher starting BG → smaller rise (r=-0.33 to -0.69)
 - **IOB negatively correlates with rise** (r=-0.22 to -0.61) — active insulin dampens response
 - **Multi-factor model R²=0.14–0.54** vs carbs-only R²=0.00–0.17
-- **73% of meals under-bolused** for patients a, d, f (CR too high)
+- **73–80% of meals under-bolused** for patients d, f (80%) and a (73%) — CR too high
 - **Individual models beat population** for 11/11 patients
 - **Delayed meals dominate**: Most patients have peak >90 min after eating
 

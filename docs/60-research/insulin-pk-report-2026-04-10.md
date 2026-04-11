@@ -17,7 +17,7 @@ Two different DIA estimates yield dramatically different results: **IOB decay** 
 - **8/11 patients are slow responders** (insulin onset >40 min)
 - **Time to nadir = 130–215 min** (2–3.5 hours after correction bolus)
 - **ISF ratio = 0.77–1.72** (insulin typically more effective than profile ISF)
-- **High IOB reduces hypo risk** (RR < 1 for 11/11) — loop compensates by suspending
+- **High IOB reduces hypo risk** (RR < 1 for 5/5 tested) — loop compensates by suspending
 - **Circadian PK variation = 1.3–2.3×** — insulin works differently at different times
 - **Pre-bolusing ranges from 0% (j) to 90% (k)** of meals
 
