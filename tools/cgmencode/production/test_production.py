@@ -1933,3 +1933,179 @@ class TestOvernightDriftIntegration(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class TestThreeWindowRoutingIntegration(unittest.TestCase):
+    """Integration test for 3-window forecast routing (w48, w96, w144).
+    
+    Validates that the pipeline correctly routes forecasts to different
+    windows based on forecast horizon and that the routing logic doesn't crash.
+    
+    Research: EXP-619 established optimal windows per horizon:
+    - w48 (12-hour history): h30, h60, h90, h120 (short-term)
+    - w96 (24-hour history): h150, h180, h240 (medium-term)
+    - w144 (36-hour history): h300, h360 (long-term)
+    """
+    
+    def test_horizon_routing_complete_coverage(self):
+        """Verify all horizons are mapped to valid windows."""
+        from cgmencode.production.glucose_forecast import (
+            HORIZON_ROUTING, WINDOW_CONFIG
+        )
+        
+        valid_windows = set(WINDOW_CONFIG.keys())
+        for horizon, window in HORIZON_ROUTING.items():
+            self.assertIn(horizon, [f'h{i}' for i in [30, 60, 90, 120, 150, 180, 240, 300, 360]])
+            self.assertIn(window, valid_windows,
+                         f"Horizon {horizon} maps to invalid window {window}")
+    
+    def test_routing_groups_horizons_by_window(self):
+        """Verify horizons are grouped into 3 window classes."""
+        from cgmencode.production.glucose_forecast import HORIZON_ROUTING
+        
+        window_groups = {}
+        for horizon, window in HORIZON_ROUTING.items():
+            if window not in window_groups:
+                window_groups[window] = []
+            window_groups[window].append(horizon)
+        
+        # Should have exactly 3 window groups
+        self.assertEqual(len(window_groups), 3,
+                        f"Expected 3 window groups, got {len(window_groups)}: {window_groups}")
+        
+        # w48 should handle short horizons (h30-h120)
+        self.assertIn('w48', window_groups)
+        self.assertTrue(all(h in ['h30', 'h60', 'h90', 'h120'] 
+                           for h in window_groups['w48']),
+                       f"w48 horizons incorrect: {window_groups['w48']}")
+        
+        # w96 should handle medium horizons (h150-h240)
+        self.assertIn('w96', window_groups)
+        self.assertTrue(all(h in ['h150', 'h180', 'h240'] 
+                           for h in window_groups['w96']),
+                       f"w96 horizons incorrect: {window_groups['w96']}")
+        
+        # w144 should handle long horizons (h300-h360)
+        self.assertIn('w144', window_groups)
+        self.assertTrue(all(h in ['h300', 'h360'] 
+                           for h in window_groups['w144']),
+                       f"w144 horizons incorrect: {window_groups['w144']}")
+    
+    def test_window_config_symmetry(self):
+        """Verify each window has symmetric history/future splits."""
+        from cgmencode.production.glucose_forecast import WINDOW_CONFIG
+        
+        for window_name, cfg in WINDOW_CONFIG.items():
+            hist = cfg['history']
+            future = cfg['future']
+            total = cfg['total']
+            
+            self.assertEqual(total, hist + future,
+                           f"{window_name}: total != history + future")
+            self.assertEqual(hist, future,
+                           f"{window_name}: history != future (asymmetric)")
+    
+    def test_prepare_input_window_all_sizes(self):
+        """Test prepare_input_window works with all 3 window sizes."""
+        from cgmencode.production.glucose_forecast import prepare_input_window
+        
+        patient = make_patient(n=4320, with_insulin=True)
+        hours = _make_hours(4320)
+        metabolic = _make_metabolic(4320)
+        
+        for window in ['w48', 'w96', 'w144']:
+            arr, hist_len = prepare_input_window(
+                glucose=patient.glucose,
+                metabolic=metabolic,
+                patient=patient,
+                hours=hours,
+                window=window,
+            )
+            
+            # Verify shape matches window config
+            from cgmencode.production.glucose_forecast import WINDOW_CONFIG
+            expected_total = WINDOW_CONFIG[window]['total']
+            expected_hist = WINDOW_CONFIG[window]['history']
+            
+            self.assertEqual(arr.shape[0], expected_total,
+                           f"{window}: expected {expected_total} steps, got {arr.shape[0]}")
+            self.assertEqual(arr.shape[1], 8,
+                           f"{window}: expected 8 channels, got {arr.shape[1]}")
+            self.assertEqual(hist_len, expected_hist,
+                           f"{window}: expected hist_len={expected_hist}, got {hist_len}")
+    
+    def test_pipeline_accepts_routing_config(self):
+        """Pipeline accepts forecast_config with any valid window."""
+        from cgmencode.production.pipeline import run_pipeline
+        
+        patient = make_patient(n=4320, with_insulin=True)
+        
+        for window in ['w48', 'w96', 'w144']:
+            result = run_pipeline(patient, forecast_config={
+                'patient_id': 'test',
+                'window': window,
+                'models_dir': '/nonexistent',  # Will gracefully fail to load models
+            })
+            
+            # Pipeline should not crash even with missing models
+            self.assertIsNotNone(result)
+            # Forecast should be None (no models found) but no exception
+            self.assertIsNone(result.forecast)
+    
+    def test_routing_horizontal_consistency(self):
+        """Verify routing produces consistent window for same horizon."""
+        from cgmencode.production.glucose_forecast import HORIZON_ROUTING
+        
+        # Pick a few test horizons
+        test_horizons = ['h30', 'h90', 'h180', 'h360']
+        
+        for horizon in test_horizons:
+            window1 = HORIZON_ROUTING.get(horizon)
+            window2 = HORIZON_ROUTING.get(horizon)
+            
+            self.assertEqual(window1, window2,
+                           f"Routing for {horizon} is inconsistent!")
+            self.assertIsNotNone(window1,
+                               f"Horizon {horizon} has no routing entry")
+    
+    def test_mae_metrics_available_for_all_horizons(self):
+        """All routed horizons should have expected MAE metrics."""
+        from cgmencode.production.glucose_forecast import (
+            HORIZON_ROUTING, ROUTED_MAE
+        )
+        
+        for horizon in HORIZON_ROUTING.keys():
+            self.assertIn(horizon, ROUTED_MAE,
+                         f"No MAE metric for horizon {horizon}")
+            mae_val = ROUTED_MAE[horizon]
+            self.assertGreater(mae_val, 0.0,
+                             f"Invalid MAE for {horizon}: {mae_val}")
+            # MAE should be reasonable (5-50 mg/dL for typical forecasts)
+            self.assertGreater(mae_val, 5.0,
+                             f"MAE suspiciously low: {horizon}={mae_val}")
+            self.assertLess(mae_val, 50.0,
+                           f"MAE suspiciously high: {horizon}={mae_val}")
+    
+    def test_routing_monotonic_mae_increase(self):
+        """MAE should generally increase with forecast horizon."""
+        from cgmencode.production.glucose_forecast import ROUTED_MAE
+        
+        # Extract MAE values in horizon order
+        mae_progression = [
+            ('h30', ROUTED_MAE['h30']),
+            ('h60', ROUTED_MAE['h60']),
+            ('h90', ROUTED_MAE['h90']),
+            ('h180', ROUTED_MAE['h180']),
+            ('h360', ROUTED_MAE['h360']),
+        ]
+        
+        # Check that later horizons generally have higher (or equal) MAE
+        for i in range(len(mae_progression) - 1):
+            h_now = mae_progression[i][1]
+            h_next = mae_progression[i + 1][1]
+            # Allow small decreases due to different window benefits,
+            # but overall trend should be up
+            self.assertLessEqual(h_now, h_next * 1.1,  # Allow 10% variance
+                               f"MAE regression: {mae_progression[i][0]}={h_now} > "
+                               f"{mae_progression[i+1][0]}={h_next}")
+
+
