@@ -31,20 +31,20 @@ This analysis maps what AID (Automated Insulin Delivery) systems actually decide
 
 | Patient | Decisions | Suspend% | Reduce% | Maintain% | Increase% | Surge% | Zero Delivery% |
 |---------|-----------|---------|---------|----------|----------|-------|---------------|
-| a | 44,022 | **54.6%** | 4.1% | 18.2% | 7.4% | 15.7% | 54.7% |
-| b | 1,001 | **70.1%** | 3.3% | 18.1% | 3.2% | 5.3% | 70.0% |
-| c | 41,238 | **74.9%** | 2.1% | 13.2% | 5.1% | 4.7% | 74.4% |
-| d | 33,560 | **80.5%** | 2.2% | 14.2% | 1.4% | 1.6% | 80.5% |
-| e | 38,826 | **72.3%** | 2.8% | 15.3% | 4.2% | 5.4% | 71.8% |
-| f | 45,045 | **79.8%** | 1.7% | 2.2% | 5.2% | 11.1% | 79.6% |
-| g | 44,800 | **80.5%** | 3.9% | 14.2% | 0.8% | 0.7% | 81.6% |
-| h | 40,310 | **84.3%** | 1.5% | 9.2% | 2.3% | 2.7% | 84.3% |
-| i | 44,798 | **77.2%** | 1.9% | 10.5% | 4.3% | 6.1% | 77.1% |
-| k | 31,571 | **76.9%** | 2.2% | 11.2% | 4.5% | 5.1% | 77.2% |
+| a | 44,022 | **54.6%** | 2.2% | 5.3% | 7.2% | 30.8% | 54.7% |
+| b | 1,001 | **70.1%** | 14.5% | 15.4% | 0.0% | 0.0% | 70.0% |
+| c | 41,238 | **74.9%** | 12.3% | 11.2% | 1.6% | 0.0% | 74.4% |
+| d | 33,560 | **80.5%** | 11.6% | 8.0% | 0.0% | 0.0% | 80.5% |
+| e | 38,826 | **72.3%** | 10.8% | 15.3% | 1.5% | 0.1% | 71.8% |
+| f | 45,045 | **79.8%** | 1.0% | 1.3% | 18.0% | 0.0% | 79.6% |
+| g | 44,800 | **80.5%** | 13.3% | 6.1% | 0.0% | 0.0% | 81.6% |
+| h | 40,310 | **84.3%** | 7.3% | 8.2% | 0.1% | 0.0% | 84.3% |
+| i | 44,798 | **77.2%** | 4.9% | 12.1% | 5.1% | 0.8% | 77.1% |
+| k | 31,571 | **76.9%** | 7.9% | 13.8% | 1.3% | 0.0% | 77.2% |
 
 **The Suspend Paradox**: The AID loop's dominant state is NOT delivering insulin. For patient h, the loop suspends delivery **84% of the time** — insulin is delivered only 16% of 5-minute cycles. Yet patient h still has 41% post-bolus hypo rates (EXP-2183). This means the boluses that DO get delivered are too large for the patient's actual sensitivity.
 
-**Patient a is Unique**: With only 55% suspend rate and 16% surge, patient a has the most active loop — consistent with being the only under-basaled patient identified in overnight analysis (EXP-2161).
+**Patient a is Unique**: With only 55% suspend rate and 31% surge, patient a has the most active loop — consistent with being the only under-basaled patient identified in overnight analysis (EXP-2161).
 
 ![Decision Taxonomy](figures/loop-fig01-decision-taxonomy.png)
 

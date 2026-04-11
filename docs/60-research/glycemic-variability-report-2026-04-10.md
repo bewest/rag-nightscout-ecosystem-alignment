@@ -9,12 +9,12 @@
 
 We profiled glycemic variability across 11 patients using clinical metrics (CV, MAGE, LBGI/HBGI), temporal patterns (circadian, weekly, streak), and information-theoretic measures (entropy, predictability). Key findings:
 
-1. **Only 3/11 patients meet CV <36% target** (b, d, j) — the majority have excessive variability
+1. **Only 4/11 patients meet CV <36% target** (b, d, j, k) — the majority have excessive variability
 2. **Mean glucose is the strongest variability driver** (r=0.665) — not carbs, not insulin dose
 3. **7/11 patients show persistent day quality** (lag-1 autocorrelation >0.15) — bad days cluster
 4. **No consistent weekend effect** — individual DOW patterns are idiosyncratic, not population-level
 5. **Glucose predictability ranges 30–45%** — knowing current state resolves ~40% of next-step uncertainty
-6. **5/11 patients show volatility clustering** — periods of unstable control breed more instability
+6. **6/11 patients show volatility clustering** — periods of unstable control breed more instability
 
 The most actionable finding: **bad days are not random — they cluster**. This means an early warning system detecting the start of a bad streak could trigger proactive therapy adjustment.
 
