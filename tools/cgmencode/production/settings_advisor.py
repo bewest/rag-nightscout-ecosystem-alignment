@@ -829,6 +829,7 @@ def generate_settings_advice(glucose: np.ndarray,
                              cob: Optional[np.ndarray] = None,
                              actual_basal: Optional[np.ndarray] = None,
                              correction_events: Optional[List[dict]] = None,
+                             meal_events: Optional[List[dict]] = None,
                              ) -> List[SettingsRecommendation]:
     """Generate all applicable settings recommendations.
 
@@ -845,6 +846,7 @@ def generate_settings_advice(glucose: np.ndarray,
     - Context-aware CR by time of day (EXP-2341)
     - Overnight drift basal assessment (EXP-2371–2378)
     - Correction threshold (EXP-2528)
+    - CR adequacy analysis (EXP-2535/2536)
 
     Args:
         glucose: (N,) cleaned glucose.
@@ -860,6 +862,9 @@ def generate_settings_advice(glucose: np.ndarray,
         actual_basal: (N,) optional actual basal rate for loop workload.
         correction_events: optional list of correction event dicts for
             correction threshold analysis (EXP-2528).
+        meal_events: optional list of meal event dicts for CR adequacy
+            analysis (EXP-2535/2536). Each dict: carbs, bolus, pre_meal_bg,
+            post_meal_bg_4h, hour.
 
     Returns:
         List of SettingsRecommendation, sorted by predicted_tir_delta descending.
@@ -910,6 +915,11 @@ def generate_settings_advice(glucose: np.ndarray,
         context_cr_recs = advise_context_cr(
             glucose, metabolic, hours, profile, carbs, days_of_data)
         recs.extend(context_cr_recs)
+
+    # CR adequacy analysis (EXP-2535/2536)
+    if meal_events is not None:
+        adequacy_recs = advise_cr_adequacy(meal_events, profile)
+        recs.extend(adequacy_recs)
 
     # Overnight drift assessment (EXP-2371–2378)
     overnight = assess_overnight_drift(
@@ -1220,6 +1230,179 @@ def advise_circadian_isf_profiled(
                 f"+{predicted_delta}pp."
             ),
         ))
+
+    return recs
+
+
+# ── CR Adequacy Analysis (EXP-2535/2536) ──────────────────────────────
+
+# EXP-2535: Effective CR = 1.47× profile CR (systematic under-dosing).
+# CR nonlinearity: BG rise/gram decreases with meal size (5.50→0.59).
+# Post-meal TIR drops ~11pp. 4h mean delta = +1.8 mg/dL.
+# EXP-2536: CR and ISF vary independently (r=0.17). Patients under-bolused
+# at all time blocks. Breakfast CR is tightest (already compensated).
+
+_CR_ADEQUACY_MIN_MEALS = 10       # minimum meals for analysis
+_CR_ADEQUACY_DEVIATION_THRESHOLD = 0.20  # 20% deviation triggers recommendation
+_CR_NONLINEARITY_THRESHOLD = 2.0  # BG rise ratio between small and large meals
+
+
+def advise_cr_adequacy(
+    meal_events: List[dict],
+    profile: PatientProfile,
+) -> List[SettingsRecommendation]:
+    """Analyse CR adequacy from meal-level bolus and outcome data (EXP-2535/2536).
+
+    Complements advise_cr() (simulation-based) by using actual meal events to
+    detect systematic under/over-dosing and meal-size nonlinearity.
+
+    EXP-2535 found effective CR = 1.47× profile CR across the population,
+    indicating widespread under-dosing. EXP-2536 confirmed CR and ISF vary
+    independently (r=0.17) and that patients under-bolus at all time blocks.
+
+    Each meal_event dict must contain:
+        'carbs': grams of carbs (> 0)
+        'bolus': insulin dose (Units, > 0)
+        'pre_meal_bg': glucose before meal (mg/dL)
+        'post_meal_bg_4h': glucose 4h after meal (mg/dL)
+        'hour': fractional hour of day (0-24)
+
+    Args:
+        meal_events: list of meal event dicts.
+        profile: PatientProfile with current CR schedule.
+
+    Returns:
+        List of SettingsRecommendation (0-2: adequacy rec + nonlinearity warning).
+    """
+    if not meal_events or len(meal_events) < _CR_ADEQUACY_MIN_MEALS:
+        return []
+
+    # Filter to valid events
+    valid = [
+        e for e in meal_events
+        if all(k in e for k in ('carbs', 'bolus', 'pre_meal_bg',
+                                'post_meal_bg_4h', 'hour'))
+        and e['carbs'] > 0 and e['bolus'] > 0
+    ]
+
+    if len(valid) < _CR_ADEQUACY_MIN_MEALS:
+        return []
+
+    cr_vals = [e.get('value', e.get('carbratio', 10)) for e in profile.cr_schedule]
+    profile_cr = float(np.median([float(v) for v in cr_vals])) if cr_vals else 10.0
+
+    # Compute effective CR per event: carbs / bolus
+    effective_crs = np.array([e['carbs'] / e['bolus'] for e in valid])
+    mean_effective_cr = float(np.mean(effective_crs))
+
+    recs: List[SettingsRecommendation] = []
+
+    # ── Systematic deviation check ────────────────────────────────
+    if profile_cr > 0:
+        deviation = (mean_effective_cr - profile_cr) / profile_cr
+    else:
+        deviation = 0.0
+
+    if abs(deviation) >= _CR_ADEQUACY_DEVIATION_THRESHOLD:
+        # Determine direction of dosing error
+        if deviation > 0:
+            # Effective CR > profile CR → patients use more carbs per unit
+            # → they are under-dosing (giving less insulin than profile says)
+            direction = "decrease"
+            dosing_pattern = "under-dosing"
+        else:
+            direction = "increase"
+            dosing_pattern = "over-dosing"
+
+        magnitude_pct = abs(deviation) * 100.0
+
+        # Confidence scales with meal count
+        n = len(valid)
+        confidence = min(0.85, 0.3 + 0.55 * min(1.0, n / 50.0))
+
+        # Predicted TIR delta: ~11pp post-meal TIR drop is recoverable
+        # proportionally to how much of the deviation we correct
+        predicted_delta = round(min(5.0, magnitude_pct * 0.1), 1)
+
+        # Compute 4h BG deltas for evidence
+        deltas = [e['post_meal_bg_4h'] - e['pre_meal_bg'] for e in valid]
+        mean_delta = float(np.mean(deltas))
+
+        recs.append(SettingsRecommendation(
+            parameter=SettingsParameter.CR,
+            direction=direction,
+            magnitude_pct=round(magnitude_pct, 0),
+            current_value=profile_cr,
+            suggested_value=round(mean_effective_cr, 1),
+            predicted_tir_delta=predicted_delta,
+            affected_hours=(5.0, 21.0),
+            confidence=confidence,
+            evidence=(
+                f"CR adequacy analysis (EXP-2535): effective CR is "
+                f"{mean_effective_cr:.1f} g/U vs profile {profile_cr:.1f} g/U "
+                f"({deviation:+.0%} deviation) from {n} meals. "
+                f"Mean 4h BG delta: {mean_delta:+.1f} mg/dL. "
+                f"Systematic {dosing_pattern} detected."
+            ),
+            rationale=(
+                f"{direction.capitalize()} CR from {profile_cr:.1f} to "
+                f"{mean_effective_cr:.1f} g/U to match observed dosing. "
+                f"EXP-2535 found effective CR = 1.47× profile CR population-"
+                f"wide. This patient shows {deviation:+.0%} deviation "
+                f"({dosing_pattern}). Predicted TIR improvement: "
+                f"+{predicted_delta}pp."
+            ),
+        ))
+
+    # ── Meal-size nonlinearity check ──────────────────────────────
+    # Split meals into small (<30g) and large (>60g) categories
+    small_meals = [e for e in valid if e['carbs'] <= 30]
+    large_meals = [e for e in valid if e['carbs'] >= 60]
+
+    if len(small_meals) >= 5 and len(large_meals) >= 5:
+        small_rise = float(np.mean([
+            (e['post_meal_bg_4h'] - e['pre_meal_bg']) / e['carbs']
+            for e in small_meals
+        ]))
+        large_rise = float(np.mean([
+            (e['post_meal_bg_4h'] - e['pre_meal_bg']) / e['carbs']
+            for e in large_meals
+        ]))
+
+        # Only check ratio when small meals actually show a positive rise
+        if small_rise > 0 and large_rise >= 0:
+            nonlinearity_ratio = small_rise / max(large_rise, 0.01)
+
+            if nonlinearity_ratio >= _CR_NONLINEARITY_THRESHOLD:
+                n_small = len(small_meals)
+                n_large = len(large_meals)
+                confidence = min(0.70, 0.2 + 0.5 * min(
+                    1.0, (n_small + n_large) / 40.0))
+
+                recs.append(SettingsRecommendation(
+                    parameter=SettingsParameter.CR,
+                    direction="decrease",
+                    magnitude_pct=0.0,
+                    current_value=profile_cr,
+                    suggested_value=profile_cr,
+                    predicted_tir_delta=round(min(3.0, nonlinearity_ratio * 0.5), 1),
+                    affected_hours=(5.0, 21.0),
+                    confidence=confidence,
+                    evidence=(
+                        f"CR nonlinearity (EXP-2535): BG rise/gram is "
+                        f"{small_rise:.2f} mg/dL/g for small meals (≤30g, "
+                        f"n={n_small}) vs {large_rise:.2f} mg/dL/g for large "
+                        f"meals (≥60g, n={n_large}). Ratio: "
+                        f"{nonlinearity_ratio:.1f}×."
+                    ),
+                    rationale=(
+                        f"Meal-size nonlinearity detected: small meals produce "
+                        f"{nonlinearity_ratio:.1f}× more BG rise per gram than "
+                        f"large meals. A fixed CR under-doses small meals and "
+                        f"may over-dose large meals. Consider meal-size-aware "
+                        f"dosing or pre-bolus timing adjustments for small meals."
+                    ),
+                ))
 
     return recs
 

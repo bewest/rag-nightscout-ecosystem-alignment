@@ -2882,3 +2882,264 @@ class TestCircadianISFProfiledIntegration(unittest.TestCase):
         ]
         self.assertGreater(len(profiled_recs), 0)
         self.assertEqual(profiled_recs[0].affected_hours, (6.0, 12.0))
+
+
+# ── CR Adequacy Tests (EXP-2535/2536) ─────────────────────────────────
+
+class TestCRAdequacyTypes(unittest.TestCase):
+    """Type-level tests for CR adequacy constants."""
+
+    def test_min_meals_value(self):
+        """Minimum meals for analysis must be 10."""
+        from cgmencode.production.settings_advisor import _CR_ADEQUACY_MIN_MEALS
+        self.assertEqual(_CR_ADEQUACY_MIN_MEALS, 10)
+
+    def test_deviation_threshold_value(self):
+        """Deviation threshold must be 0.20 (20%)."""
+        from cgmencode.production.settings_advisor import _CR_ADEQUACY_DEVIATION_THRESHOLD
+        self.assertAlmostEqual(_CR_ADEQUACY_DEVIATION_THRESHOLD, 0.20)
+
+    def test_nonlinearity_threshold_value(self):
+        """Nonlinearity threshold must be 2.0."""
+        from cgmencode.production.settings_advisor import _CR_NONLINEARITY_THRESHOLD
+        self.assertAlmostEqual(_CR_NONLINEARITY_THRESHOLD, 2.0)
+
+    def test_settings_parameter_cr_exists(self):
+        """SettingsParameter should have CR value."""
+        from cgmencode.production.types import SettingsParameter
+        self.assertEqual(SettingsParameter.CR.value, 'cr')
+
+
+class TestCRAdequacyFunction(unittest.TestCase):
+    """Functional tests for advise_cr_adequacy."""
+
+    def _make_profile(self, cr=10.0):
+        from cgmencode.production.types import PatientProfile
+        return PatientProfile(
+            basal_schedule=[{'time': '00:00', 'value': 0.8}],
+            isf_schedule=[{'time': '00:00', 'value': 50.0}],
+            cr_schedule=[{'time': '00:00', 'value': cr}],
+            dia_hours=5.0,
+        )
+
+    def _make_meals(self, n=15, carbs=40.0, bolus=4.0,
+                    pre_bg=120.0, post_bg=140.0, hour=12.0):
+        """Create n meal events with specified parameters."""
+        return [
+            {'carbs': carbs, 'bolus': bolus,
+             'pre_meal_bg': pre_bg, 'post_meal_bg_4h': post_bg,
+             'hour': hour + (i % 5) * 0.5}
+            for i in range(n)
+        ]
+
+    def test_returns_empty_insufficient_meals(self):
+        """No advisory with < _CR_ADEQUACY_MIN_MEALS."""
+        from cgmencode.production.settings_advisor import advise_cr_adequacy
+        meals = self._make_meals(n=5)
+        recs = advise_cr_adequacy(meals, self._make_profile())
+        self.assertEqual(recs, [])
+
+    def test_returns_empty_none_meals(self):
+        """No advisory with None meal_events."""
+        from cgmencode.production.settings_advisor import advise_cr_adequacy
+        recs = advise_cr_adequacy(None, self._make_profile())
+        self.assertEqual(recs, [])
+
+    def test_returns_empty_empty_list(self):
+        """No advisory with empty list."""
+        from cgmencode.production.settings_advisor import advise_cr_adequacy
+        recs = advise_cr_adequacy([], self._make_profile())
+        self.assertEqual(recs, [])
+
+    def test_neutral_cr_no_recommendation(self):
+        """No deviation recommendation when effective CR matches profile."""
+        from cgmencode.production.settings_advisor import advise_cr_adequacy
+        # Profile CR=10, meals: 40g / 4U = effective CR=10 → no deviation
+        meals = self._make_meals(n=15, carbs=40.0, bolus=4.0)
+        recs = advise_cr_adequacy(meals, self._make_profile(cr=10.0))
+        # Filter to deviation recs (not nonlinearity)
+        deviation_recs = [r for r in recs if 'adequacy' in r.evidence.lower()]
+        self.assertEqual(deviation_recs, [])
+
+    def test_under_dosing_detected(self):
+        """Should detect under-dosing when effective CR >> profile CR."""
+        from cgmencode.production.settings_advisor import advise_cr_adequacy
+        # Profile CR=10, meals: 60g / 4U = effective CR=15 → 50% deviation
+        meals = self._make_meals(n=20, carbs=60.0, bolus=4.0, post_bg=160.0)
+        recs = advise_cr_adequacy(meals, self._make_profile(cr=10.0))
+        deviation_recs = [r for r in recs if 'adequacy' in r.evidence.lower()]
+        self.assertEqual(len(deviation_recs), 1)
+        rec = deviation_recs[0]
+        self.assertEqual(rec.parameter, SettingsParameter.CR)
+        self.assertEqual(rec.direction, 'decrease')
+        self.assertAlmostEqual(rec.suggested_value, 15.0, places=0)
+        self.assertIn('under-dosing', rec.evidence)
+
+    def test_over_dosing_detected(self):
+        """Should detect over-dosing when effective CR << profile CR."""
+        from cgmencode.production.settings_advisor import advise_cr_adequacy
+        # Profile CR=15, meals: 40g / 4U = effective CR=10 → -33% deviation
+        meals = self._make_meals(n=20, carbs=40.0, bolus=4.0, post_bg=100.0)
+        recs = advise_cr_adequacy(meals, self._make_profile(cr=15.0))
+        deviation_recs = [r for r in recs if 'adequacy' in r.evidence.lower()]
+        self.assertEqual(len(deviation_recs), 1)
+        rec = deviation_recs[0]
+        self.assertEqual(rec.direction, 'increase')
+        self.assertIn('over-dosing', rec.evidence)
+
+    def test_nonlinearity_warning(self):
+        """Should warn about nonlinearity when small/large rise ratio >= 2.0."""
+        from cgmencode.production.settings_advisor import advise_cr_adequacy
+        # Small meals: 20g carbs, rise 60 mg/dL → 3.0 mg/dL/g
+        # Large meals: 80g carbs, rise 40 mg/dL → 0.5 mg/dL/g
+        # Ratio: 3.0/0.5 = 6.0 → should trigger
+        small = [
+            {'carbs': 20.0, 'bolus': 2.0, 'pre_meal_bg': 120.0,
+             'post_meal_bg_4h': 180.0, 'hour': 12.0 + i * 0.3}
+            for i in range(8)
+        ]
+        large = [
+            {'carbs': 80.0, 'bolus': 8.0, 'pre_meal_bg': 120.0,
+             'post_meal_bg_4h': 160.0, 'hour': 18.0 + i * 0.3}
+            for i in range(8)
+        ]
+        meals = small + large
+        recs = advise_cr_adequacy(meals, self._make_profile(cr=10.0))
+        nonlinear_recs = [r for r in recs if 'nonlinearity' in r.evidence.lower()]
+        self.assertEqual(len(nonlinear_recs), 1)
+        self.assertIn('rise/gram', nonlinear_recs[0].evidence)
+
+    def test_no_nonlinearity_when_similar_rise(self):
+        """No nonlinearity warning when small and large meals rise similarly."""
+        from cgmencode.production.settings_advisor import advise_cr_adequacy
+        # Both small and large meals: ~1.0 mg/dL/g rise
+        small = [
+            {'carbs': 20.0, 'bolus': 2.0, 'pre_meal_bg': 120.0,
+             'post_meal_bg_4h': 140.0, 'hour': 12.0 + i * 0.3}
+            for i in range(8)
+        ]
+        large = [
+            {'carbs': 80.0, 'bolus': 8.0, 'pre_meal_bg': 120.0,
+             'post_meal_bg_4h': 200.0, 'hour': 18.0 + i * 0.3}
+            for i in range(8)
+        ]
+        meals = small + large
+        recs = advise_cr_adequacy(meals, self._make_profile(cr=10.0))
+        nonlinear_recs = [r for r in recs if 'nonlinearity' in r.evidence.lower()]
+        self.assertEqual(nonlinear_recs, [])
+
+    def test_confidence_scales_with_meal_count(self):
+        """Confidence should increase with more meals."""
+        from cgmencode.production.settings_advisor import advise_cr_adequacy
+        # 15 meals: lower confidence
+        meals_15 = self._make_meals(n=15, carbs=60.0, bolus=4.0, post_bg=160.0)
+        recs_15 = advise_cr_adequacy(meals_15, self._make_profile(cr=10.0))
+        dev_15 = [r for r in recs_15 if 'adequacy' in r.evidence.lower()]
+
+        # 50 meals: higher confidence
+        meals_50 = self._make_meals(n=50, carbs=60.0, bolus=4.0, post_bg=160.0)
+        recs_50 = advise_cr_adequacy(meals_50, self._make_profile(cr=10.0))
+        dev_50 = [r for r in recs_50 if 'adequacy' in r.evidence.lower()]
+
+        self.assertEqual(len(dev_15), 1)
+        self.assertEqual(len(dev_50), 1)
+        self.assertGreater(dev_50[0].confidence, dev_15[0].confidence)
+
+    def test_evidence_cites_exp_2535(self):
+        """Evidence string should reference EXP-2535."""
+        from cgmencode.production.settings_advisor import advise_cr_adequacy
+        meals = self._make_meals(n=20, carbs=60.0, bolus=4.0, post_bg=160.0)
+        recs = advise_cr_adequacy(meals, self._make_profile(cr=10.0))
+        dev_recs = [r for r in recs if 'adequacy' in r.evidence.lower()]
+        self.assertEqual(len(dev_recs), 1)
+        self.assertIn('EXP-2535', dev_recs[0].evidence)
+
+    def test_skips_invalid_events(self):
+        """Events missing required keys should be filtered out."""
+        from cgmencode.production.settings_advisor import advise_cr_adequacy
+        # 8 valid + 5 invalid (missing 'bolus') = only 8 valid < 10 → no recs
+        valid = self._make_meals(n=8, carbs=60.0, bolus=4.0, post_bg=160.0)
+        invalid = [{'carbs': 40.0, 'pre_meal_bg': 120.0,
+                     'post_meal_bg_4h': 140.0, 'hour': 12.0}
+                    for _ in range(5)]
+        recs = advise_cr_adequacy(valid + invalid, self._make_profile(cr=10.0))
+        self.assertEqual(recs, [])
+
+
+class TestCRAdequacyIntegration(unittest.TestCase):
+    """Integration: CR adequacy in generate_settings_advice."""
+
+    def test_meal_events_kwarg_accepted(self):
+        """generate_settings_advice should accept meal_events kwarg."""
+        from cgmencode.production.settings_advisor import generate_settings_advice
+        from cgmencode.production.types import ClinicalReport, PatientProfile
+
+        glucose = np.full(288, 150.0)
+        hours = np.linspace(0, 24, 288, endpoint=False)
+        profile = PatientProfile(
+            basal_schedule=[{'time': '00:00', 'value': 0.8}],
+            isf_schedule=[{'time': '00:00', 'value': 50.0}],
+            cr_schedule=[{'time': '00:00', 'value': 10.0}],
+            dia_hours=5.0,
+            target_high=166.0,
+        )
+        clinical = ClinicalReport.__new__(ClinicalReport)
+        clinical.mean_glucose = 150.0
+        clinical.isf_discrepancy = None
+        clinical.effective_isf = None
+        clinical.profile_isf = 50.0
+        clinical.cr_score = None
+        clinical.tir_70_180 = 0.7
+        clinical.time_below_54 = 0.0
+        clinical.time_below_70 = 0.02
+
+        meals = [
+            {'carbs': 60.0, 'bolus': 4.0, 'pre_meal_bg': 120.0,
+             'post_meal_bg_4h': 160.0, 'hour': 12.0 + i * 0.3}
+            for i in range(15)
+        ]
+        recs = generate_settings_advice(
+            glucose, None, hours, clinical, profile, 7.0,
+            meal_events=meals)
+        self.assertIsInstance(recs, list)
+
+    def test_adequacy_recs_appear_in_results(self):
+        """CR adequacy recs should appear when meals show large deviation."""
+        from cgmencode.production.settings_advisor import generate_settings_advice
+        from cgmencode.production.types import ClinicalReport, PatientProfile
+
+        glucose = np.full(288, 150.0)
+        hours = np.linspace(0, 24, 288, endpoint=False)
+        profile = PatientProfile(
+            basal_schedule=[{'time': '00:00', 'value': 0.8}],
+            isf_schedule=[{'time': '00:00', 'value': 50.0}],
+            cr_schedule=[{'time': '00:00', 'value': 10.0}],
+            dia_hours=5.0,
+            target_high=166.0,
+        )
+        clinical = ClinicalReport.__new__(ClinicalReport)
+        clinical.mean_glucose = 150.0
+        clinical.isf_discrepancy = None
+        clinical.effective_isf = None
+        clinical.profile_isf = 50.0
+        clinical.cr_score = None
+        clinical.tir_70_180 = 0.7
+        clinical.time_below_54 = 0.0
+        clinical.time_below_70 = 0.02
+
+        # Effective CR = 60/4 = 15, profile CR = 10 → 50% deviation
+        meals = [
+            {'carbs': 60.0, 'bolus': 4.0, 'pre_meal_bg': 120.0,
+             'post_meal_bg_4h': 160.0, 'hour': 12.0 + i * 0.3}
+            for i in range(20)
+        ]
+        recs = generate_settings_advice(
+            glucose, None, hours, clinical, profile, 7.0,
+            meal_events=meals)
+        adequacy_recs = [
+            r for r in recs
+            if r.parameter == SettingsParameter.CR
+            and 'adequacy' in r.evidence.lower()
+        ]
+        self.assertGreater(len(adequacy_recs), 0)
+        self.assertEqual(adequacy_recs[0].direction, 'decrease')
