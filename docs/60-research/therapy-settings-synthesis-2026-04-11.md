@@ -31,7 +31,7 @@ This session produced a complete analysis of the **therapy triangle** (ISF, CR, 
 |----------|-------|--------|
 | Model | ISF(dose) = ISF_base × dose^(−β) | EXP-2511 |
 | Population β | 0.899 ± 0.382 | EXP-2511 |
-| Wins | 17/17 patients, +53% MAE improvement | EXP-2512 |
+| Wins | 17/17 patients, +59% MAE improvement | EXP-2512 |
 | β universality | CV=43%, 14/17 within 0.3 of mean | EXP-2513 |
 | Causal validation | 4 methods (stratification, propensity, matched pairs, BG strata) | EXP-2523 |
 | Matched-pair saturation | 68.9% show effect (p<0.0001) | EXP-2523d |

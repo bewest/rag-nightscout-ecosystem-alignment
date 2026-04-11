@@ -53,7 +53,7 @@ mismatch. This means they are measuring fundamentally different things:
 The response-curve ratio decomposes multiplicatively:
 
 ```
-Total ratio (4.26×) = Suspension component (1.33×) × Residual component (3.36×)
+Total ratio (4.47×) = Suspension component (1.33×) × Residual component (3.36×)
 ```
 
 The **residual component** (3.36×) represents ISF error that is NOT explained

@@ -17,7 +17,7 @@ Where **β = 0.899 ± 0.382** (population mean). This means:
 
 - A **2U correction is 46% less effective per unit** than a 1U correction
 - Power-law ISF wins in **17/17 patients** over flat ISF
-- Mean prediction improvement: **+53.4% MAE reduction**
+- Mean prediction improvement: **+59% MAE reduction**
 - β is **universal** (CV=43%), enabling population-level deployment
 - β transfers across patients: **14/17 patients** within 0.3 of population mean
 
