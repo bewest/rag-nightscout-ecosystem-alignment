@@ -15,7 +15,7 @@ Comprehensive phenotyping of 11 AID patients reveals a population in far worse g
 |---------|----------|--------|
 | ALL 11 patients have high hypo risk | 3.5–19.9 hypos/week (threshold: 3/wk) | Universal problem, not patient-specific |
 | 7/11 CRITICAL risk tier | Composite risk score ≥6/10 | Population needs systematic intervention |
-| No patient scores grade A | Best: d, j at grade B (66–74/100) | AID settings universally suboptimal |
+| No patient scores grade A | Best: d, j at grade B (74–78/100) | AID settings universally suboptimal |
 | Patient k paradox: best TIR, worst hypo | 95% TIR but 18.6 hypos/wk | TIR alone is misleading |
 | 3 singletons with unique profiles | h, i, k don't cluster with others | Personalization essential |
 | TIR and TAR anti-correlate r=−0.98 | Near-perfect inverse relationship | Reducing highs mechanically improves TIR |

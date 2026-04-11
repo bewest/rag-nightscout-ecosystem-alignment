@@ -19,7 +19,7 @@ This batch quantifies how insulin sensitivity, basal needs, and glucose dynamics
 | Circadian ISF ratio | **2–4× within-day** | ISF varies enormously by hour |
 | Population ISF nadir | 4pm (71 mg/dL/U) | Afternoon insulin least effective |
 | Population ISF peak | 1pm (126 mg/dL/U) | Early afternoon most effective |
-| Dawn amplitude | **127 mg/dL median** | Measuring nadir-to-peak, not just 4–7am |
+| Dawn amplitude | **116 mg/dL median** | Measuring nadir-to-peak, not just 4–7am |
 | Dawn onset | **2.1h after midnight** | Starts much earlier than textbook 4am |
 | Dinner/breakfast ISF | **1.9× worse at dinner** | Same carbs spike nearly 2× more at dinner |
 | Fasting drift 6am | **+5 mg/dL/hr** | Only hour with significant upward drift |
@@ -134,7 +134,7 @@ Population fasting glucose drift by hour (mg/dL/hr, negative = dropping, positiv
 | d | 151 | 82 ±49 | 2.3h | 93% |
 | **k** | 161 | **33 ±17** | 1.8h | 84% |
 
-**Population: 127 mg/dL amplitude, 2.1h onset, 95% present**
+**Population: 116 mg/dL amplitude (median), 2.1h onset, 95% present**
 
 ### Interpretation — Dawn Phenomenon Is Universal and Massive
 
