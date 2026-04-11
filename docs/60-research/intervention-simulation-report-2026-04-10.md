@@ -78,7 +78,7 @@ We designed 5 algorithmic interventions and simulated their impact on patient ou
 | j | 59 | 20% | 0% | **20pp** | 0.30U |
 | k | 314 | 0% | 0% | 0pp | 0.03U |
 
-**This is the most impactful single intervention.** The mean correction dose is only 0.42U — a tiny amount of insulin that prevents hours of post-hypo hyperglycemia. Patient e benefits most: 33pp reduction with 1.10U mean dose.
+**This is the most impactful single intervention.** The mean correction dose is only 0.51U — a tiny amount of insulin that prevents hours of post-hypo hyperglycemia. Patient e benefits most: 33pp reduction with 1.10U mean dose.
 
 **Caveat**: This simulation assumes we know the rebound peak in advance (from historical data). A real implementation would need to predict rebound severity — which correlates with nadir depth, trend rate at recovery, and counter-regulatory activity.
 
