@@ -139,14 +139,14 @@ Mean gain: −0.000, 4/11. **Notable**: Patient `g` gains +0.026 (regime transit
 | Feature Group | Ridge Importance | GB Importance | Ratio GB/Ridge |
 |--------------|-----------------|---------------|----------------|
 | **Glucose** | **1.056** | **1.078** | 1.02 |
-| Hepatic | 0.023 | 0.055 | 2.4 |
-| Net flux | 0.015 | 0.025 | 1.7 |
-| Supply | 0.008 | 0.052 | 6.5 |
-| Demand | 0.006 | 0.040 | 6.7 |
+| Hepatic | 0.023 | 0.054 | 2.3 |
+| Net flux | 0.018 | 0.026 | 1.5 |
+| Supply | 0.007 | 0.050 | 7.4 |
+| Demand | 0.008 | 0.040 | 5.0 |
 
 **Key findings**:
 1. **Glucose dominates** — importance ~1.06 vs ~0.03 for best physics channel. Glucose history carries 97% of the predictive signal.
-2. **GB extracts 2-7× more from physics** than Ridge — especially from supply (6.5×) and demand (6.7×). GB's nonlinear splits can extract interaction effects that Ridge misses.
+2. **GB extracts 1.5-7× more from physics** than Ridge — especially from supply (7.4×) and demand (5.0×). GB's nonlinear splits can extract interaction effects that Ridge misses.
 3. **Hepatic is the most useful physics channel** for both models — endogenous glucose production provides consistent, patient-independent signal.
 4. **Supply and demand swap rank** between Ridge and GB — Ridge uses net/demand (linear summaries), GB uses supply/demand directly (nonlinear interactions).
 

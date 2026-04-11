@@ -119,7 +119,7 @@ therapy estimator (EXP-1848)?
 
 ![Therapy assessment](figures/dose-fig03-therapy-assessment.png)
 
-**Results**: CONSTANT_ISF_SUFFICIENT — Hill ISF makes things *worse* for 8/9
+**Results**: CONSTANT_ISF_SUFFICIENT — Hill ISF makes things *worse* for 7/9
 patients.
 
 **Why it fails**: The Hill equation gives ISF at a specific dose, but the S/D
