@@ -30,7 +30,7 @@ reaches zero. However, when we observe actual glucose responses to correction
 boluses, the glucose trajectory extends well beyond the configured DIA:
 
 - IOB half-life: 1.4–1.9 hours (insulin activity decays exponentially)
-- Observed glucose nadir: **4.3 hours** median (261 min) after correction
+- Observed glucose nadir: **4.3 hours** median (255 min) after correction
 - Glucose still changing at 6 hours: **68% of corrections** show rebound
 
 This creates a problem for therapy assessment. If we use the IOB DIA (3–4h) to
