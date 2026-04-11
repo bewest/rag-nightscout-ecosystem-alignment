@@ -16,7 +16,7 @@ per-period CR recommendations with confidence intervals.
 
 **Key findings:**
 - **Meal excursion shapes are highly individual**: peak time ranges from 5–175 min across patients
-- **Carb count is a weak spike predictor** (r = 0.01–0.40); only 3/11 show proportional response
+- **Carb count is a weak spike predictor** (r = −0.13–0.40); only 3/11 show proportional response
 - **Pre-bolusing reduces spikes by 10–58 mg/dL** in 10/11 patients — the single most effective
   meal management strategy
 - **Dinner spikes are 1.1–1.8× larger than breakfast** in all evaluable patients
