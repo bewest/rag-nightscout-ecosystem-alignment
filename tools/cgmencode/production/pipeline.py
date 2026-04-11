@@ -32,7 +32,7 @@ from .pattern_analyzer import analyze_patterns
 from .patient_onboarding import get_onboarding_state
 from .meal_detector import detect_meal_events, build_meal_history, classify_all_meal_responses, classify_meal_archetypes
 from .meal_predictor import build_timing_models, predict_next_meal, MealMLModel
-from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented, advise_circadian_isf, advise_context_cr
+from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented, advise_circadian_isf, advise_context_cr, assess_overnight_drift, compute_loop_workload
 from .recommender import generate_recommendations, detect_controller_type, get_controller_behavior, adjust_confidence_for_controller
 from .clinical_rules import (
     generate_clinical_report, compute_correction_energy,
@@ -315,13 +315,16 @@ def run_pipeline(patient: PatientData,
     settings_recs = None
     controller_type = detect_controller_type(patient)
     controller_behavior = get_controller_behavior(controller_type)
+    overnight_assessment = None
+    loop_workload = None
 
     if patient.days_of_data >= 3.0:
         try:
             settings_recs = generate_settings_advice(
                 cleaned.glucose, metabolic, hours,
                 clinical_report, patient.profile, patient.days_of_data,
-                carbs=patient.carbs)
+                carbs=patient.carbs, iob=patient.iob,
+                cob=patient.cob, actual_basal=patient.basal_rate)
 
             # ISF segmentation recommendations (EXP-765)
             isf_segment_recs = advise_isf_segmented(
@@ -339,6 +342,23 @@ def run_pipeline(patient: PatientData,
                     settings_recs, controller_type)
         except Exception as e:
             warnings.append(f"Settings advisor failed: {e}")
+
+        # Overnight drift assessment (EXP-2371–2378)
+        try:
+            overnight_assessment = assess_overnight_drift(
+                cleaned.glucose, hours, patient.profile, patient.days_of_data,
+                iob=patient.iob, cob=patient.cob,
+                actual_basal=patient.basal_rate)
+        except Exception as e:
+            warnings.append(f"Overnight drift assessment failed: {e}")
+
+        # Loop workload report (EXP-2391–2396)
+        if patient.basal_rate is not None:
+            try:
+                loop_workload = compute_loop_workload(
+                    hours, patient.basal_rate, patient.profile)
+            except Exception as e:
+                warnings.append(f"Loop workload analysis failed: {e}")
 
     if controller_type != ControllerType.UNKNOWN:
         warnings.append(
@@ -396,6 +416,8 @@ def run_pipeline(patient: PatientData,
         natural_experiments=natural_experiments,
         optimal_settings=optimal_settings,
         dia_discrepancy=dia_discrepancy,
+        overnight_assessment=overnight_assessment,
+        loop_workload=loop_workload,
         pipeline_latency_ms=elapsed,
         warnings=warnings,
     )

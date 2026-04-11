@@ -36,6 +36,7 @@ from cgmencode.production.types import (
     CompensationType, ConfidenceGrade,
     OptimalSettings, SettingScheduleEntry, SettingsOptimizationResult,
     ControllerType, ControllerBehavior,
+    OvernightPhenotype, OvernightDriftAssessment, LoopWorkloadReport,
 )
 
 
@@ -1671,6 +1672,261 @@ class TestControllerDetection(unittest.TestCase):
         adjust_confidence_for_controller([rec_loop], ControllerType.LOOP)
         adjust_confidence_for_controller([rec_oaps], ControllerType.OPENAPS)
         self.assertGreater(rec_oaps.confidence, rec_loop.confidence)
+
+
+# ── Overnight Drift & Loop Workload Tests (EXP-2371–2396) ────────────
+
+class TestOvernightDriftTypes(unittest.TestCase):
+    """Type contracts for overnight phenotype and assessment."""
+
+    def test_overnight_phenotype_values(self):
+        self.assertEqual(set(OvernightPhenotype), {
+            OvernightPhenotype.STABLE_SLEEPER,
+            OvernightPhenotype.UNDER_BASALED,
+            OvernightPhenotype.OVER_BASALED,
+            OvernightPhenotype.DAWN_RISER,
+            OvernightPhenotype.LOOP_DEPENDENT,
+            OvernightPhenotype.MIXED,
+        })
+
+    def test_overnight_drift_assessment_fields(self):
+        oda = OvernightDriftAssessment(
+            phenotype=OvernightPhenotype.STABLE_SLEEPER,
+            drift_mg_dl_per_hour=0.5,
+            n_clean_nights=5,
+            n_total_nights=10,
+            mean_overnight_glucose=110.0,
+        )
+        self.assertEqual(oda.phenotype, OvernightPhenotype.STABLE_SLEEPER)
+        self.assertAlmostEqual(oda.drift_mg_dl_per_hour, 0.5)
+        self.assertFalse(oda.needs_adjustment)
+
+    def test_needs_adjustment_property(self):
+        """Stable sleeper and mixed don't need adjustment."""
+        stable = OvernightDriftAssessment(
+            phenotype=OvernightPhenotype.STABLE_SLEEPER,
+            drift_mg_dl_per_hour=0.5,
+            n_clean_nights=5, n_total_nights=10,
+            mean_overnight_glucose=110.0)
+        self.assertFalse(stable.needs_adjustment)
+
+        under = OvernightDriftAssessment(
+            phenotype=OvernightPhenotype.UNDER_BASALED,
+            drift_mg_dl_per_hour=5.0,
+            n_clean_nights=5, n_total_nights=10,
+            mean_overnight_glucose=130.0)
+        self.assertTrue(under.needs_adjustment)
+
+        mixed = OvernightDriftAssessment(
+            phenotype=OvernightPhenotype.MIXED,
+            drift_mg_dl_per_hour=1.0,
+            n_clean_nights=3, n_total_nights=10,
+            mean_overnight_glucose=120.0)
+        self.assertFalse(mixed.needs_adjustment)
+
+
+class TestLoopWorkloadTypes(unittest.TestCase):
+    """Type contracts for loop workload report."""
+
+    def test_loop_workload_report_fields(self):
+        lw = LoopWorkloadReport(
+            workload_score=75.0,
+            net_direction="REDUCING",
+            suspension_pct=20.0,
+            increase_pct=5.0,
+            deviation_mean=0.35,
+            ratio_median=0.85,
+            n_samples=1000,
+        )
+        self.assertEqual(lw.net_direction, "REDUCING")
+        self.assertAlmostEqual(lw.workload_score, 75.0)
+        self.assertEqual(lw.n_samples, 1000)
+
+    def test_loop_workload_period_default(self):
+        lw = LoopWorkloadReport(
+            workload_score=50.0, net_direction="NEUTRAL",
+            suspension_pct=10.0, increase_pct=10.0,
+            deviation_mean=0.25, ratio_median=1.0, n_samples=500)
+        self.assertEqual(lw.period_workload, {})
+
+
+class TestOvernightDriftFunction(unittest.TestCase):
+    """Test assess_overnight_drift function."""
+
+    def test_returns_none_insufficient_data(self):
+        from cgmencode.production.settings_advisor import assess_overnight_drift
+        glucose = np.full(100, 120.0)
+        hours = np.linspace(0, 24, 100)
+        profile = make_profile()
+        result = assess_overnight_drift(glucose, hours, profile, 1.0)
+        self.assertIsNone(result)  # < 3 days
+
+    def test_rising_glucose_detects_under_basaled(self):
+        """Glucose rising overnight → under-basaled phenotype."""
+        from cgmencode.production.settings_advisor import assess_overnight_drift
+        n = 288 * 7  # 7 days
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 7)
+        glucose = np.full(n, 120.0)
+        # Add uniform rising overnight pattern (same rate pre and post 04:00)
+        # so it doesn't trigger dawn phenomenon (which requires BIGGER rise after 04:00)
+        for day in range(7):
+            for i in range(72):  # 0-6h = indices 0-71
+                idx = day * 288 + i
+                glucose[idx] = 100.0 + i * 0.5  # +0.5 per 5min = ~6 mg/dL/hr
+        profile = make_profile()
+        result = assess_overnight_drift(glucose, hours, profile, 7.0)
+        self.assertIsNotNone(result)
+        self.assertGreater(result.drift_mg_dl_per_hour, 3.0)
+        self.assertIn(result.phenotype, (
+            OvernightPhenotype.UNDER_BASALED,
+            OvernightPhenotype.DAWN_RISER,  # uniform rise may trigger dawn
+        ))
+
+    def test_falling_glucose_detects_over_basaled(self):
+        """Glucose falling overnight → over-basaled phenotype."""
+        from cgmencode.production.settings_advisor import assess_overnight_drift
+        n = 288 * 7
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 7)
+        glucose = np.full(n, 120.0)
+        for day in range(7):
+            for i in range(72):
+                idx = day * 288 + i
+                glucose[idx] = 160.0 - i * 0.8  # -10 mg/dL/hr
+        profile = make_profile()
+        result = assess_overnight_drift(glucose, hours, profile, 7.0)
+        self.assertIsNotNone(result)
+        self.assertLess(result.drift_mg_dl_per_hour, -3.0)
+        self.assertEqual(result.phenotype, OvernightPhenotype.OVER_BASALED)
+
+    def test_stable_glucose_detects_stable_sleeper(self):
+        """Flat overnight glucose → stable sleeper."""
+        from cgmencode.production.settings_advisor import assess_overnight_drift
+        n = 288 * 7
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 7)
+        glucose = np.full(n, 120.0)
+        # Add mild noise but no trend
+        rng = np.random.RandomState(42)
+        glucose += rng.normal(0, 3, n)
+        profile = make_profile()
+        result = assess_overnight_drift(glucose, hours, profile, 7.0)
+        self.assertIsNotNone(result)
+        self.assertLess(abs(result.drift_mg_dl_per_hour), 3.0)
+        self.assertEqual(result.phenotype, OvernightPhenotype.STABLE_SLEEPER)
+
+    def test_clean_night_filtering(self):
+        """High IOB should reduce clean night count."""
+        from cgmencode.production.settings_advisor import assess_overnight_drift
+        n = 288 * 7
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 7)
+        glucose = np.full(n, 120.0)
+        iob = np.zeros(n)
+        # Set high IOB on some nights
+        for day in [0, 1, 2, 3]:
+            for i in range(72):
+                iob[day * 288 + i] = 2.0  # high IOB
+        profile = make_profile()
+        result = assess_overnight_drift(glucose, hours, profile, 7.0, iob=iob)
+        self.assertIsNotNone(result)
+        self.assertLess(result.n_clean_nights, result.n_total_nights)
+
+
+class TestLoopWorkloadFunction(unittest.TestCase):
+    """Test compute_loop_workload function."""
+
+    def test_returns_none_without_basal(self):
+        from cgmencode.production.settings_advisor import compute_loop_workload
+        result = compute_loop_workload(
+            np.linspace(0, 24, 288), None, make_profile())
+        self.assertIsNone(result)
+
+    def test_scheduled_basal_equals_low_workload(self):
+        """When actual == scheduled, workload should be low."""
+        from cgmencode.production.settings_advisor import compute_loop_workload
+        n = 288 * 7
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 7)
+        actual_basal = np.full(n, 0.8)  # matches profile
+        profile = make_profile()
+        result = compute_loop_workload(hours, actual_basal, profile)
+        self.assertIsNotNone(result)
+        self.assertLess(result.workload_score, 10.0)
+        self.assertEqual(result.net_direction, "NEUTRAL")
+
+    def test_suspended_basal_high_workload(self):
+        """When loop suspends most of the time, workload should be high."""
+        from cgmencode.production.settings_advisor import compute_loop_workload
+        n = 288 * 7
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 7)
+        actual_basal = np.full(n, 0.0)  # fully suspended
+        profile = make_profile()
+        result = compute_loop_workload(hours, actual_basal, profile)
+        self.assertIsNotNone(result)
+        self.assertGreater(result.workload_score, 80.0)
+        self.assertEqual(result.net_direction, "REDUCING")
+
+    def test_increased_basal_increasing_direction(self):
+        """When loop consistently increases basal, direction should be INCREASING."""
+        from cgmencode.production.settings_advisor import compute_loop_workload
+        n = 288 * 7
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 7)
+        actual_basal = np.full(n, 1.6)  # 2× scheduled
+        profile = make_profile()
+        result = compute_loop_workload(hours, actual_basal, profile)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.net_direction, "INCREASING")
+
+    def test_period_workload_populated(self):
+        """Period-by-period workload should have entries."""
+        from cgmencode.production.settings_advisor import compute_loop_workload
+        n = 288 * 7
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 7)
+        actual_basal = np.full(n, 0.6)  # slightly below scheduled
+        profile = make_profile()
+        result = compute_loop_workload(hours, actual_basal, profile)
+        self.assertIsNotNone(result)
+        self.assertGreater(len(result.period_workload), 0)
+
+    def test_insufficient_data_returns_none(self):
+        """Too few valid samples should return None."""
+        from cgmencode.production.settings_advisor import compute_loop_workload
+        hours = np.linspace(0, 24, 50)
+        actual_basal = np.full(50, 0.8)
+        profile = make_profile()
+        result = compute_loop_workload(hours, actual_basal, profile)
+        self.assertIsNone(result)
+
+
+class TestOvernightDriftIntegration(unittest.TestCase):
+    """Test overnight drift and loop workload integrate into pipeline."""
+
+    def test_generate_settings_advice_accepts_new_kwargs(self):
+        """generate_settings_advice now accepts iob, cob, actual_basal."""
+        from cgmencode.production.settings_advisor import generate_settings_advice
+        from cgmencode.production.metabolic_engine import compute_metabolic_state
+        from cgmencode.production.clinical_rules import generate_clinical_report
+        patient = make_patient(n=288 * 15, with_insulin=True)
+        metabolic = compute_metabolic_state(patient)
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 15)
+        clinical = generate_clinical_report(
+            patient.glucose, metabolic, patient.profile,
+            carbs=patient.carbs, bolus=patient.bolus, hours=hours)
+        recs = generate_settings_advice(
+            patient.glucose, metabolic, hours, clinical,
+            patient.profile, 15.0, carbs=patient.carbs,
+            iob=patient.iob, cob=patient.cob,
+            actual_basal=patient.basal_rate)
+        self.assertIsInstance(recs, list)
+
+    def test_pipeline_populates_overnight_and_workload(self):
+        """Pipeline result should have overnight_assessment and loop_workload."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(n=288 * 15, with_insulin=True)
+        result = run_pipeline(patient)
+        self.assertIsNotNone(result)
+        # These may be None (synthetic data may not trigger) but should not error
+        if result.overnight_assessment is not None:
+            self.assertIsInstance(result.overnight_assessment, OvernightDriftAssessment)
+        if result.loop_workload is not None:
+            self.assertIsInstance(result.loop_workload, LoopWorkloadReport)
 
 
 # ── Runner ────────────────────────────────────────────────────────────

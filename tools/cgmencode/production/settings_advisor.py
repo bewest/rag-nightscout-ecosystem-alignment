@@ -28,6 +28,7 @@ import numpy as np
 
 from .types import (
     BasalAssessment, ClinicalReport, MetabolicState, OptimizationPhase,
+    OvernightDriftAssessment, OvernightPhenotype, LoopWorkloadReport,
     PatientProfile, SettingsParameter, SettingsRecommendation,
     PeriodMetrics, PatternProfile,
 )
@@ -532,6 +533,9 @@ def generate_settings_advice(glucose: np.ndarray,
                              profile: PatientProfile,
                              days_of_data: float,
                              carbs: Optional[np.ndarray] = None,
+                             iob: Optional[np.ndarray] = None,
+                             cob: Optional[np.ndarray] = None,
+                             actual_basal: Optional[np.ndarray] = None,
                              ) -> List[SettingsRecommendation]:
     """Generate all applicable settings recommendations.
 
@@ -544,6 +548,7 @@ def generate_settings_advice(glucose: np.ndarray,
     - ISF discrepancy (EXP-747)
     - Circadian ISF 2-zone (EXP-2271)
     - Context-aware CR by time of day (EXP-2341)
+    - Overnight drift basal assessment (EXP-2371–2378)
 
     Args:
         glucose: (N,) cleaned glucose.
@@ -553,6 +558,9 @@ def generate_settings_advice(glucose: np.ndarray,
         profile: current therapy profile.
         days_of_data: data coverage.
         carbs: (N,) optional carb data for context-aware CR.
+        iob: (N,) optional IOB for overnight clean-night filtering.
+        cob: (N,) optional COB for overnight clean-night filtering.
+        actual_basal: (N,) optional actual basal rate for loop workload.
 
     Returns:
         List of SettingsRecommendation, sorted by predicted_tir_delta descending.
@@ -584,6 +592,52 @@ def generate_settings_advice(glucose: np.ndarray,
         context_cr_recs = advise_context_cr(
             glucose, metabolic, hours, profile, carbs, days_of_data)
         recs.extend(context_cr_recs)
+
+    # Overnight drift assessment (EXP-2371–2378)
+    overnight = assess_overnight_drift(
+        glucose, hours, profile, days_of_data,
+        iob=iob, cob=cob, actual_basal=actual_basal)
+    if overnight is not None and overnight.needs_adjustment:
+        drift_direction = "increase" if overnight.drift_mg_dl_per_hour > 0 else "decrease"
+        basal_vals = [e.get('value', e.get('rate', 0.8))
+                      for e in profile.basal_schedule]
+        current_basal = float(np.median([float(v) for v in basal_vals])) if basal_vals else 0.8
+        magnitude = abs(overnight.suggested_basal_change_pct)
+        suggested = current_basal * (1.0 + overnight.suggested_basal_change_pct / 100.0)
+
+        # Simulate TIR impact if we have metabolic state
+        predicted_delta = round(magnitude * 0.05, 1)  # conservative default
+        if metabolic is not None and magnitude > 0:
+            mult = 1.0 + overnight.suggested_basal_change_pct / 100.0
+            tir_now, tir_sim = simulate_tir_with_settings(
+                glucose, metabolic, hours,
+                basal_multiplier=mult,
+                hour_range=(_OVERNIGHT_START, _OVERNIGHT_END))
+            predicted_delta = round((tir_sim - tir_now) * 100, 1)
+
+        phenotype_str = overnight.phenotype.value.replace('_', ' ')
+        dawn_note = ""
+        if overnight.has_dawn_phenomenon:
+            dawn_note = (f" Dawn phenomenon detected "
+                         f"(+{overnight.dawn_rise_mg_dl:.0f} mg/dL after 04:00).")
+
+        recs.append(SettingsRecommendation(
+            parameter=SettingsParameter.BASAL_RATE,
+            direction=drift_direction,
+            magnitude_pct=round(magnitude, 0),
+            current_value=current_basal,
+            suggested_value=round(suggested, 2),
+            predicted_tir_delta=predicted_delta,
+            affected_hours=(_OVERNIGHT_START, _OVERNIGHT_END),
+            confidence=overnight.confidence,
+            evidence=(f"Overnight drift analysis (EXP-2371): {overnight.n_clean_nights} "
+                      f"clean nights, mean drift {overnight.drift_mg_dl_per_hour:+.1f} "
+                      f"mg/dL/hr. Phenotype: {phenotype_str}.{dawn_note}"),
+            rationale=(f"{drift_direction.capitalize()} overnight basal by "
+                       f"{magnitude:.0f}% (from {current_basal:.2f} to {suggested:.2f} "
+                       f"U/hr) between 00:00-06:00. Glucose drifts "
+                       f"{overnight.drift_mg_dl_per_hour:+.1f} mg/dL/hr overnight."),
+        ))
 
     # Sort by predicted impact
     recs.sort(key=lambda r: abs(r.predicted_tir_delta), reverse=True)
@@ -931,6 +985,341 @@ def advise_context_cr(glucose: np.ndarray,
         ))
 
     return recs
+
+
+# ── Overnight Drift Assessment (EXP-2371–2378) ───────────────────────
+
+# Clean-night thresholds from EXP-2375: residual dinner bolus cleared
+_CLEAN_NIGHT_IOB_MAX = 0.5    # Units
+_CLEAN_NIGHT_COB_MAX = 5.0    # grams
+_CLEAN_NIGHT_GAP_MAX = 30.0   # minutes (max gap in glucose data)
+_OVERNIGHT_START = 0.0
+_OVERNIGHT_END = 6.0
+_DAWN_CUTOFF = 4.0            # hour when dawn phenomenon typically begins
+_MIN_CLEAN_NIGHTS = 3         # minimum clean nights for assessment
+
+# Drift thresholds (mg/dL/hr) from EXP-2372
+_DRIFT_STABLE_THRESHOLD = 3.0    # ±3 mg/dL/hr = stable
+_DRIFT_MODERATE_THRESHOLD = 8.0  # ±8 mg/dL/hr = moderate mismatch
+_DAWN_RISE_THRESHOLD = 15.0      # mg/dL rise after 04:00 = dawn phenomenon
+
+# Loop suspension threshold from EXP-2373
+_LOOP_DEPENDENT_SUSPENSION = 40.0  # >40% suspension = loop-dependent
+
+
+def assess_overnight_drift(
+        glucose: np.ndarray,
+        hours: np.ndarray,
+        profile: PatientProfile,
+        days_of_data: float,
+        iob: np.ndarray = None,
+        cob: np.ndarray = None,
+        actual_basal: np.ndarray = None,
+        ) -> Optional[OvernightDriftAssessment]:
+    """Assess basal adequacy from overnight glucose drift (EXP-2371–2378).
+
+    Uses clean overnight windows (00:00–06:00) where IOB and COB are minimal
+    to measure glucose drift rate — the most reliable indicator of basal
+    rate adequacy.
+
+    Clean-night filtering is critical: residual dinner bolus IOB and late
+    snack COB confound overnight glucose trends. Only nights with IOB < 0.5U
+    and COB < 5g are used (EXP-2375).
+
+    Args:
+        glucose: (N,) cleaned glucose values (mg/dL).
+        hours: (N,) fractional hours (0-24).
+        profile: patient therapy profile for scheduled basal.
+        days_of_data: total data coverage.
+        iob: (N,) optional IOB for clean-night filtering.
+        cob: (N,) optional COB for clean-night filtering.
+        actual_basal: (N,) optional actual basal rate for loop activity.
+
+    Returns:
+        OvernightDriftAssessment or None if insufficient data.
+    """
+    if days_of_data < MIN_DATA_DAYS:
+        return None
+
+    bg = np.nan_to_num(glucose.astype(np.float64), nan=np.nan)
+    overnight_mask = (hours >= _OVERNIGHT_START) & (hours < _OVERNIGHT_END)
+
+    if np.sum(overnight_mask) < 12:  # need at least 1 hour
+        return None
+
+    # Identify individual overnight segments by looking for time resets
+    overnight_idx = np.where(overnight_mask)[0]
+    if len(overnight_idx) == 0:
+        return None
+
+    # Split into separate nights: gap > 2 hours between consecutive indices
+    gaps = np.diff(overnight_idx)
+    night_breaks = np.where(gaps > 24)[0]  # >2 hours gap = new night
+    night_starts = [0] + (night_breaks + 1).tolist()
+    night_ends = (night_breaks + 1).tolist() + [len(overnight_idx)]
+
+    segments = []
+    for s, e in zip(night_starts, night_ends):
+        idx = overnight_idx[s:e]
+        if len(idx) < 12:
+            continue
+        seg_glucose = bg[idx]
+        if np.sum(np.isfinite(seg_glucose)) < 12:
+            continue
+        segments.append(idx)
+
+    n_total_nights = len(segments)
+    if n_total_nights == 0:
+        return None
+
+    # Filter to clean nights (IOB < 0.5, COB < 5)
+    clean_segments = []
+    for idx in segments:
+        is_clean = True
+        if iob is not None:
+            seg_iob = iob[idx]
+            if np.any(np.isfinite(seg_iob)) and np.nanmax(seg_iob) > _CLEAN_NIGHT_IOB_MAX:
+                is_clean = False
+        if cob is not None:
+            seg_cob = cob[idx]
+            if np.any(np.isfinite(seg_cob)) and np.nanmax(seg_cob) > _CLEAN_NIGHT_COB_MAX:
+                is_clean = False
+        if is_clean:
+            clean_segments.append(idx)
+
+    # If too few clean nights, fall back to all nights with reduced confidence
+    use_clean = len(clean_segments) >= _MIN_CLEAN_NIGHTS
+    analysis_segments = clean_segments if use_clean else segments
+    n_clean = len(clean_segments)
+
+    if len(analysis_segments) < 2:
+        return None
+
+    # Compute drift for each segment
+    drifts = []
+    dawn_rises = []
+    overnight_means = []
+
+    for idx in analysis_segments:
+        seg_bg = bg[idx]
+        seg_hours = hours[idx]
+        valid = np.isfinite(seg_bg)
+        if valid.sum() < 6:
+            continue
+
+        # Linear drift: slope of glucose over time
+        t = seg_hours[valid]
+        g = seg_bg[valid]
+        if len(t) < 6:
+            continue
+
+        # Duration in hours
+        duration = float(t[-1] - t[0])
+        if duration < 1.0:
+            continue
+
+        # Simple linear regression for drift rate
+        slope = float(np.polyfit(t, g, 1)[0])
+        drifts.append(slope)
+        overnight_means.append(float(np.mean(g)))
+
+        # Dawn phenomenon: compare pre-04:00 vs post-04:00
+        pre_dawn = g[t < _DAWN_CUTOFF]
+        post_dawn = g[t >= _DAWN_CUTOFF]
+        if len(pre_dawn) >= 3 and len(post_dawn) >= 3:
+            dawn_rise = float(np.mean(post_dawn) - np.mean(pre_dawn))
+            dawn_rises.append(dawn_rise)
+
+    if not drifts:
+        return None
+
+    mean_drift = float(np.mean(drifts))
+    mean_glucose = float(np.mean(overnight_means))
+    mean_dawn_rise = float(np.mean(dawn_rises)) if dawn_rises else 0.0
+    has_dawn = mean_dawn_rise > _DAWN_RISE_THRESHOLD
+
+    # Loop suspension analysis
+    suspension_pct = 0.0
+    if actual_basal is not None:
+        basal_vals = [e.get('value', e.get('rate', 0.8))
+                      for e in profile.basal_schedule]
+        sched_basal = float(np.median([float(v) for v in basal_vals])) if basal_vals else 0.8
+
+        on_indices = np.concatenate(analysis_segments)
+        ab = actual_basal[on_indices]
+        valid_ab = np.isfinite(ab) & (ab < 50)
+        if np.sum(valid_ab) > 10 and sched_basal > 0.01:
+            ratio = ab[valid_ab] / sched_basal
+            suspension_pct = float(100 * np.mean(ratio < 0.1))
+
+    # Classify phenotype
+    drift_abs = abs(mean_drift)
+    if suspension_pct > _LOOP_DEPENDENT_SUSPENSION:
+        phenotype = OvernightPhenotype.LOOP_DEPENDENT
+    elif drift_abs <= _DRIFT_STABLE_THRESHOLD and not has_dawn:
+        phenotype = OvernightPhenotype.STABLE_SLEEPER
+    elif mean_drift > _DRIFT_STABLE_THRESHOLD and has_dawn:
+        phenotype = OvernightPhenotype.DAWN_RISER
+    elif mean_drift > _DRIFT_STABLE_THRESHOLD:
+        phenotype = OvernightPhenotype.UNDER_BASALED
+    elif mean_drift < -_DRIFT_STABLE_THRESHOLD:
+        phenotype = OvernightPhenotype.OVER_BASALED
+    else:
+        # Check consistency: if drift varies a lot, it's mixed
+        if len(drifts) >= 3 and float(np.std(drifts)) > 2 * drift_abs:
+            phenotype = OvernightPhenotype.MIXED
+        else:
+            phenotype = OvernightPhenotype.STABLE_SLEEPER
+
+    # Suggest basal change: aim to zero out drift
+    # ~0.1 U/hr basal change → ~10 mg/dL/hr glucose effect (rough ISF-based estimate)
+    basal_vals = [e.get('value', e.get('rate', 0.8))
+                  for e in profile.basal_schedule]
+    current_basal = float(np.median([float(v) for v in basal_vals])) if basal_vals else 0.8
+    isf_vals = [e.get('value', e.get('sensitivity', 50))
+                for e in profile.isf_mgdl()]
+    current_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
+
+    # Each 0.1 U/hr change in basal → ISF/10 mg/dL/hr glucose change
+    if current_isf > 0 and current_basal > 0.01:
+        basal_change_per_drift = 0.1 / (current_isf / 10.0)
+        needed_change = mean_drift * basal_change_per_drift
+        suggested_change_pct = (needed_change / current_basal) * 100
+        # Cap at ±25%
+        suggested_change_pct = float(np.clip(suggested_change_pct, -25, 25))
+    else:
+        suggested_change_pct = 0.0
+
+    # Confidence based on clean nights and consistency
+    if use_clean:
+        base_conf = min(1.0, n_clean / 10.0)
+    else:
+        base_conf = min(0.5, len(analysis_segments) / 10.0)
+    drift_consistency = 1.0 - min(1.0, float(np.std(drifts)) / max(drift_abs, 1.0))
+    confidence = float(base_conf * 0.7 + drift_consistency * 0.3)
+
+    return OvernightDriftAssessment(
+        phenotype=phenotype,
+        drift_mg_dl_per_hour=round(mean_drift, 2),
+        n_clean_nights=n_clean,
+        n_total_nights=n_total_nights,
+        mean_overnight_glucose=round(mean_glucose, 1),
+        dawn_rise_mg_dl=round(mean_dawn_rise, 1),
+        has_dawn_phenomenon=has_dawn,
+        loop_suspension_pct=round(suspension_pct, 1),
+        suggested_basal_change_pct=round(suggested_change_pct, 1),
+        confidence=round(confidence, 2),
+    )
+
+
+# ── Loop Workload Assessment (EXP-2391–2396) ─────────────────────────
+
+_WORKLOAD_PERIODS = {
+    "overnight": (0.0, 6.0),
+    "morning": (6.0, 12.0),
+    "afternoon": (12.0, 18.0),
+    "evening": (18.0, 24.0),
+}
+
+# Normalization: percentile-based (research finding: 0.5 threshold too aggressive)
+_WORKLOAD_NORM_FACTOR = 0.7  # deviation of 0.7 = 100% workload
+
+
+def compute_loop_workload(
+        hours: np.ndarray,
+        actual_basal: np.ndarray,
+        profile: PatientProfile,
+        ) -> Optional[LoopWorkloadReport]:
+    """Compute loop workload metrics as settings adequacy indicator (EXP-2391–2396).
+
+    Loop workload measures how much the AID loop deviates from scheduled basal
+    rates. High workload means the loop is working hard to compensate for
+    incorrect settings. Key research finding: workload vs TIR has r=-0.165
+    (no correlation), confirming that the loop compensates effectively but at
+    the cost of increased risk and reduced margin.
+
+    Args:
+        hours: (N,) fractional hours (0-24).
+        actual_basal: (N,) actual basal rate delivered (U/hr).
+        profile: patient profile with scheduled basal rates.
+
+    Returns:
+        LoopWorkloadReport or None if insufficient basal data.
+    """
+    if actual_basal is None:
+        return None
+
+    ab = np.asarray(actual_basal, dtype=np.float64)
+    basal_vals = [e.get('value', e.get('rate', 0.8)) for e in profile.basal_schedule]
+    sched_basal = float(np.median([float(v) for v in basal_vals])) if basal_vals else 0.8
+
+    if sched_basal < 0.01:
+        return None
+
+    valid = np.isfinite(ab) & (ab < 50)  # filter implausible ODC values
+    if np.sum(valid) < 100:
+        return None
+
+    ratio = ab[valid] / sched_basal
+    h_valid = hours[valid]
+
+    # Core metrics
+    suspension_pct = float(100 * np.mean(ratio < 0.1))
+    increase_pct = float(100 * np.mean(ratio > 1.5))
+    deviation_mean = float(np.mean(np.abs(ratio - 1.0)))
+    ratio_median = float(np.median(ratio))
+
+    # Directional workload
+    reduction_workload = float(np.mean(np.maximum(0, 1 - ratio)))
+    increase_workload = float(np.mean(np.maximum(0, ratio - 1)))
+    if abs(reduction_workload - increase_workload) < 0.02:
+        net_direction = "NEUTRAL"
+    elif reduction_workload > increase_workload:
+        net_direction = "REDUCING"
+    else:
+        net_direction = "INCREASING"
+
+    # Workload score (percentile-normalized)
+    workload_score = min(100, float(100 * deviation_mean / _WORKLOAD_NORM_FACTOR))
+
+    # Period-by-period workload
+    period_workload = {}
+    for name, (h_start, h_end) in _WORKLOAD_PERIODS.items():
+        mask = (h_valid >= h_start) & (h_valid < h_end)
+        if np.sum(mask) >= 10:
+            period_dev = float(np.mean(np.abs(ratio[mask] - 1.0)))
+            period_workload[name] = round(
+                min(100, 100 * period_dev / _WORKLOAD_NORM_FACTOR), 1)
+
+    # Interpretation
+    if workload_score > 80:
+        severity = "very high"
+    elif workload_score > 50:
+        severity = "high"
+    elif workload_score > 25:
+        severity = "moderate"
+    else:
+        severity = "low"
+
+    interpretation = (
+        f"Loop workload is {severity} ({workload_score:.0f}/100). "
+        f"The loop is predominantly {net_direction} basal "
+        f"(median ratio: {ratio_median:.2f}× scheduled). "
+        f"Basal suspended {suspension_pct:.0f}% of the time, "
+        f"increased >150% for {increase_pct:.0f}% of the time."
+    )
+
+    return LoopWorkloadReport(
+        workload_score=round(workload_score, 1),
+        net_direction=net_direction,
+        suspension_pct=round(suspension_pct, 1),
+        increase_pct=round(increase_pct, 1),
+        deviation_mean=round(deviation_mean, 3),
+        ratio_median=round(ratio_median, 2),
+        n_samples=int(np.sum(valid)),
+        period_workload=period_workload,
+        interpretation=interpretation,
+    )
 
 
 # ── Optimization Sequence (EXP-1765) ─────────────────────────────────

@@ -85,6 +85,20 @@ class Phenotype(str, Enum):
     STABLE = "stable"
 
 
+class OvernightPhenotype(str, Enum):
+    """Overnight basal phenotype from EXP-2378.
+
+    Classifies patients based on overnight glucose drift patterns and
+    loop activity. Determines which basal adjustment strategy is appropriate.
+    """
+    STABLE_SLEEPER = "stable_sleeper"      # drift < 10 mg/dL, minimal loop activity
+    UNDER_BASALED = "under_basaled"        # glucose rises overnight (needs more basal)
+    OVER_BASALED = "over_basaled"          # glucose falls overnight (needs less basal)
+    DAWN_RISER = "dawn_riser"              # stable then rises after ~04:00 (dawn phenomenon)
+    LOOP_DEPENDENT = "loop_dependent"      # large loop corrections mask true basal need
+    MIXED = "mixed"                        # inconsistent pattern across nights
+
+
 class MealWindow(str, Enum):
     BREAKFAST = "breakfast"  # 05:00-10:00
     LUNCH = "lunch"          # 10:00-14:00
@@ -811,6 +825,63 @@ class ForecastResult:
     uses_isf_norm: bool = False
 
 
+# ── Overnight Drift & Loop Workload (EXP-2371–2396) ──────────────────
+
+@dataclass
+class OvernightDriftAssessment:
+    """Overnight glucose drift analysis for basal adequacy (EXP-2371–2378).
+
+    Uses clean overnight segments (00:00-06:00, IOB<0.5, COB<5, no gaps>30min)
+    to assess whether scheduled basal rates match true basal insulin need.
+
+    Research findings:
+    - 74% of patients have suboptimal overnight basal
+    - Only 1/19 patients is a "stable sleeper"
+    - Dawn phenomenon present in 6/19 patients
+    - Clean-night filtering is critical for accurate assessment
+    """
+    phenotype: OvernightPhenotype
+    drift_mg_dl_per_hour: float          # mean glucose drift (positive=rising)
+    n_clean_nights: int                  # nights passing IOB<0.5, COB<5 filter
+    n_total_nights: int                  # total overnight segments found
+    mean_overnight_glucose: float        # mean glucose during clean nights (mg/dL)
+    dawn_rise_mg_dl: float = 0.0        # glucose rise after 04:00 (mg/dL)
+    has_dawn_phenomenon: bool = False    # True if dawn rise > 15 mg/dL
+    loop_suspension_pct: float = 0.0    # % of overnight where loop suspends basal
+    suggested_basal_change_pct: float = 0.0  # recommended % change to basal
+    confidence: float = 0.0             # 0-1, based on n_clean_nights and consistency
+
+    @property
+    def needs_adjustment(self) -> bool:
+        return self.phenotype not in (
+            OvernightPhenotype.STABLE_SLEEPER,
+            OvernightPhenotype.MIXED,
+        )
+
+
+@dataclass
+class LoopWorkloadReport:
+    """Loop workload analysis as settings adequacy metric (EXP-2391–2396).
+
+    Research finding: AID loops NEVER operate at scheduled rates (18/19 patients
+    saturate workload). Workload vs TIR: r=-0.165 (no correlation). "Scheduled
+    basal rate" is a fiction for AID users.
+
+    Workload direction indicates whether the loop is predominantly REDUCING
+    (over-basaled, adding less insulin) or INCREASING (under-basaled, adding
+    more insulin) relative to scheduled rates.
+    """
+    workload_score: float               # 0-100 normalized workload
+    net_direction: str                   # "REDUCING", "INCREASING", or "NEUTRAL"
+    suspension_pct: float                # % time loop suspends basal entirely
+    increase_pct: float                  # % time loop delivers >150% of scheduled
+    deviation_mean: float                # mean |actual/scheduled - 1|
+    ratio_median: float                  # median actual/scheduled ratio
+    n_samples: int                       # number of valid samples
+    period_workload: Dict[str, float] = field(default_factory=dict)  # by time period
+    interpretation: str = ''             # human-readable summary
+
+
 # ── Complete Pipeline Result ──────────────────────────────────────────
 
 @dataclass
@@ -842,6 +913,9 @@ class PipelineResult:
     # Autoresearch productionization (EXP-2261–2358)
     dia_discrepancy: Optional[DIADiscrepancy] = None
     prediction_bias_mgdl: Optional[float] = None  # systematic bias at 30min (EXP-2331)
+    # Overnight drift & loop workload (EXP-2371–2396)
+    overnight_assessment: Optional[OvernightDriftAssessment] = None
+    loop_workload: Optional[LoopWorkloadReport] = None
     pipeline_latency_ms: float = 0.0
     warnings: List[str] = field(default_factory=list)
 
