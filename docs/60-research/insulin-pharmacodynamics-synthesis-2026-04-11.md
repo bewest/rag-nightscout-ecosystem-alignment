@@ -12,7 +12,7 @@ observational CGM/AID data, built bottom-up from 8 interconnected experiments.
 The three core discoveries are:
 
 1. **ISF follows a causal power-law** (β=0.9): a 2U correction is 46% less
-   effective per unit than 1U (17/17 patients, causally validated by 4 methods)
+   effective per unit than 1U (17/17 patients with sufficient corrections, causally validated by 4 methods)
 
 2. **Insulin has two effect components**: a fast exponential (τ=0.8h, matching
    IOB decay) plus a persistent HGP suppression that doesn't decay within 12h.

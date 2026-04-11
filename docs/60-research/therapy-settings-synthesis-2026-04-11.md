@@ -11,7 +11,7 @@
 
 This session produced a complete analysis of the **therapy triangle** (ISF, CR, basal) plus loop decision mechanics. Five key takeaways:
 
-1. **ISF follows a causal power-law** (β=0.9): doubling a correction dose only increases glucose drop by ~7%. SMB is accidentally optimal. Validated by 4 independent causal methods across 17/17 patients.
+1. **ISF follows a causal power-law** (β=0.9): doubling a correction dose only increases glucose drop by ~7%. SMB is accidentally optimal. Validated by 4 independent causal methods across 17/17 patients with sufficient corrections (2/19 excluded for sparse data).
 
 2. **Effective CR = 1.47× profile CR**: patients systematically under-dose meals, but the two nonlinearities (CR sub-linear absorption + ISF diminishing returns) approximately **cancel**, making standard linear dosing a valid approximation.
 
@@ -161,6 +161,7 @@ Meals around 15–30g achieve the best post-meal TIR and smallest absolute 4h BG
 | Well-calibrated patients | **1/19** (patient j only) | EXP-2371 |
 | Under-basaled | 6/19 patients | EXP-2371 |
 | Over-basaled | 8/19 patients | EXP-2371 |
+| Mixed / loop-dependent | 4/19 patients | EXP-2371 |
 | Mean basal suspension rate (overnight) | 60% | EXP-2373 |
 | Dawn phenomenon present | 6/19 patients | EXP-2375 |
 | Circadian model R² | 0.002–0.070 | EXP-2376 |
