@@ -120,7 +120,7 @@ Defined "stacked" boluses as those preceded by another bolus within 2h. Measured
 
 ### Interpretation — A Paradigm Shift
 
-This is one of our most counterintuitive findings: **insulin stacking does NOT increase hypoglycemia risk in AID-managed patients**. In fact, for 7/11 patients, stacking is associated with *lower* hypo rates.
+This is one of our most counterintuitive findings: **insulin stacking does NOT increase hypoglycemia risk in AID-managed patients**. In fact, for 6/11 patients, stacking is associated with *lower* hypo rates (7/11 including one tie).
 
 **Why?** AID systems (Loop, AAPS, Trio) are *designed* to stack insulin via Super Micro Boluses (SMBs). The loop accounts for IOB when calculating each new dose. When it stacks, it's because the algorithm has determined the prior dose is insufficient — and the algorithm is correct more often than not.
 

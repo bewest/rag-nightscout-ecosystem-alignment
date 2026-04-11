@@ -16,7 +16,7 @@ recommendations.
 
 **Key headline numbers**:
 - End-to-end grade accuracy: **91%** (EXP-1390)
-- Minimum data for 80% agreement: **60 days** (EXP-1389)
+- Minimum data for confident assessment: **60 days** (76% agreement, EXP-1389)
 - Optimal scoring: TIR-heavy weights, Cohen's d=**4.03** (EXP-1385)
 - Cross-patient transfer: needs-tuning Jaccard=**0.53** (EXP-1388)
 - Temporal smoothing: k=2 windows reduces instability 28% (EXP-1381)
