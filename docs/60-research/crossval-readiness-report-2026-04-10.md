@@ -11,7 +11,7 @@
 This batch assesses whether therapy estimates (delivery ratio, ISF, CR) are stable enough for production use. We test temporal reproducibility, convergence speed, confidence intervals, and minimum data requirements.
 
 **Key findings**:
-- **Delivery ratio estimates are precise** (95% CI width <0.13 for 9/11 patients) but **slowly converging** (60–150 days for most)
+- **Delivery ratio estimates are precise** (95% CI width <0.13 for 10/11 patients) but **slowly converging** (median 90 days, range 7–150)
 - **ISF ratio estimates are reproducible** for patients with many corrections but **highly variable** for patients with few corrections
 - **Only 3/11 patients pass all production readiness checks** — the primary blocker is month-to-month variability in delivery patterns
 - **Universal miscalibration thresholds have 55% accuracy** — personalized approaches needed
@@ -91,7 +91,7 @@ Computes estimates using increasing data windows (7, 14, 30, 60, 90, 120, 150, 1
 | j | 1.00 [1.00, 1.00] | 0.000 | 1.23 [0.77, 2.30] | 1.53 |
 | k | 0.11 [0.09, 0.13] | 0.033 | 3.07 [2.74, 3.57] | 0.83 |
 
-**DR confidence intervals are narrow** (<0.13 width for 9/11 patients). This means the delivery ratio is statistically well-determined from 180 days of data. Exception: patient a (width 0.39) due to extreme bimodal distribution.
+**DR confidence intervals are narrow** (<0.13 width for 10/11 patients). This means the delivery ratio is statistically well-determined from 180 days of data. Exception: patient a (width 0.39) due to extreme bimodal distribution.
 
 **ISF confidence intervals vary widely**: Patients with many corrections (c: width 0.35, i: width 0.47) have tight CIs. Patients with few corrections (b: width 1.20, j: width 1.53) have CIs spanning >1.0 — the ISF estimate is essentially meaningless for these patients.
 
