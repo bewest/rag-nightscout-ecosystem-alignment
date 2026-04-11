@@ -679,6 +679,9 @@ _PARQUET_COL_MAP = {
     'loop_enacted_rate': 'enacted_rate',
     'loop_enacted_bolus': 'enacted_bolus',
     'trend_rate': 'trend_rate_raw',
+    'time_since_bolus_min': 'time_since_bolus',
+    'time_since_carb_min': 'time_since_carb',
+    'suspension_time_min': 'suspension_time',
 }
 
 
