@@ -19,9 +19,9 @@ improvement discovered in our 1000+ experiment campaign.
 | Experiment | Finding | Impact |
 |-----------|---------|--------|
 | EXP-1001 | Postprandial residuals peak at hour 3 (+3.3 mg/dL mean) | Meal tail is systematic |
-| EXP-1002 | Lag compensation: best lag 15 min mean, +0.026 R² | Modest, patient-specific |
+| EXP-1002 | Lag compensation: best lag 5 min mean, +0.026 R² | Modest, patient-specific |
 | **EXP-1003** | **Decomposed physics: +0.265 R² (10/11 patients)** | **Campaign breakthrough** |
-| EXP-1004 | Meal absorption peak: 52–178 min (mean 98 min) | Huge inter-patient variability |
+| EXP-1004 | Meal absorption peak: 52–178 min (mean 101 min) | Huge inter-patient variability |
 | EXP-1005 | Daily summary: both baselines negative R² | Next-day BG unpredictable |
 | EXP-1006 | Meal features alone: +0.000; with physics: +0.025 | Physics dominates meals |
 | EXP-1007 | Conservation violations 33.5% predictable from PK | Systematic, not random |
@@ -85,9 +85,9 @@ feature and measured R² improvement over glucose-only baseline.
 | i | 0.290 | 0.327 | 0 | +0.037 |
 | j | 0.146 | 0.162 | 0 | +0.016 |
 | k | 0.093 | 0.107 | 0 | +0.014 |
-| **Mean** | **0.200** | **0.223** | **15** | **+0.026** |
+| **Mean** | **0.200** | **0.223** | **5** | **+0.026** |
 
-**Insight**: Most patients (8/11) have optimal lag at **0 minutes**, meaning the physics
+**Insight**: Most patients (9/11) have optimal lag at **0 minutes**, meaning the physics
 features are already temporally aligned. Patient a (lag=45) and f (lag=15) benefit from
 lag compensation — both are the most aggressively-controlled patients (bidirectional AID).
 The lag story is about AID aggressiveness: more aggressive loops alter the phase
@@ -156,7 +156,7 @@ glucose rise and return toward baseline.
 | i | 59 | 73 | 60 | 60 | 49.5 | 101 |
 | j | 55 | 97 | 85 | 78 | 53.7 | 171 |
 | k | 27 | 178 | 155 | 94 | 35.3 | 215 |
-| **Mean** | **112** | **98** | **85** | **72** | **69.4** | **159** |
+| **Mean** | **112** | **101** | **85** | **72** | **69.4** | **159** |
 
 **Insight**: Enormous inter-patient variability in absorption:
 - **Fast absorbers**: a (52 min peak), c (64 min) — AID-aggressive patients

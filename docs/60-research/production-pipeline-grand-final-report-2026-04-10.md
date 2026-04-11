@@ -238,7 +238,7 @@ Noise ceiling (σ=15 mg/dL):            R² = 0.854
 - Patient d has highest variance (±0.126/0.129) — possibly seasonal effects
 - Patient h remains hardest (0.295 production) — likely data quality issues
 - **8 of 11 patients exceed R² = 0.55 in production** (clinically useful)
-- **5 of 11 patients exceed R² = 0.70** — excellent predictions
+- **4 of 11 patients exceed R² = 0.70** — excellent predictions
 
 ---
 
