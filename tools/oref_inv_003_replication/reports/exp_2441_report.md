@@ -9,8 +9,8 @@
 
 | Finding | Their Claim | Our Result | Agreement |
 |---------|------------|------------|-----------|
-| F5 | Algorithm predictions are bad — eventualBG R²=0.002 against actual 4h BG | Algorithm predictions confirmed bad: our eventualBG R²=-3.0097 at 4h (theirs: 0.002). Loop predicted glucose R²=None at 30min. But this is EXPECTED: the algorithm's job is CONTROL, not prediction. AID Compensation Theorem shows correcting biases is dangerous — 1/2 patients have >5% of "corrected" suspensions preceding real hypos. | ✅✅ strongly_agrees |
-| F9 | Safety gate misses 33% of hypos — AUC=0.62 in LOUO | Safety gate gaps are EXPECTED and NECESSARY due to AID compensation. 1/2 patients have >5% of removed suspensions preceding hypos. The algorithm is deliberately cautious, and this caution prevents the very events that make it look "inaccurate." Correcting the safety gate would create more hypos. | ✅✅ strongly_agrees |
+| F5 | Algorithm predictions are bad — eventualBG R²=0.002 against actual 4h BG | Algorithm predictions confirmed bad: our eventualBG R²=-1.1134 at 4h (theirs: 0.002). Loop predicted glucose R²=None at 30min. But this is EXPECTED: the algorithm's job is CONTROL, not prediction. AID Compensation Theorem shows correcting biases is dangerous — 17/19 patients have >5% of "corrected" suspensions preceding real hypos. | ✅✅ strongly_agrees |
+| F9 | Safety gate misses 33% of hypos — AUC=0.62 in LOUO | Safety gate gaps are EXPECTED and NECESSARY due to AID compensation. 17/19 patients have >5% of removed suspensions preceding hypos. The algorithm is deliberately cautious, and this caution prevents the very events that make it look "inaccurate." Correcting the safety gate would create more hypos. | ✅✅ strongly_agrees |
 
 ## Colleague's Findings (OREF-INV-003)
 
@@ -26,15 +26,15 @@
 
 ## Our Findings
 
-### F5: Algorithm predictions confirmed bad: our eventualBG R²=-3.0097 at 4h (theirs: 0.002). Loop predicted glucose R²=None at 30min. But this is EXPECTED: the algorithm's job is CONTROL, not prediction. AID Compensation Theorem shows correcting biases is dangerous — 1/2 patients have >5% of "corrected" suspensions preceding real hypos. ✅✅
+### F5: Algorithm predictions confirmed bad: our eventualBG R²=-1.1134 at 4h (theirs: 0.002). Loop predicted glucose R²=None at 30min. But this is EXPECTED: the algorithm's job is CONTROL, not prediction. AID Compensation Theorem shows correcting biases is dangerous — 17/19 patients have >5% of "corrected" suspensions preceding real hypos. ✅✅
 
-**Evidence**: EXP-2441: eventualBG R²=-3.0097 (4h), loop_predicted R²=None (30min). EXP-2445: LightGBM R²=0.5423 vs algorithm R². EXP-2444: 1/2 patients show dangerous correction pattern. EXP-2442/2443: systematic negative bias across patients.
+**Evidence**: EXP-2441: eventualBG R²=-1.1134 (4h), loop_predicted R²=None (30min). EXP-2445: LightGBM R²=0.5305 vs algorithm R². EXP-2444: 17/19 patients show dangerous correction pattern. EXP-2442/2443: systematic negative bias across patients.
 **Agreement**: strongly_agrees
 **Prior work**: EXP-2441/2444/2445
 
-### F9: Safety gate gaps are EXPECTED and NECESSARY due to AID compensation. 1/2 patients have >5% of removed suspensions preceding hypos. The algorithm is deliberately cautious, and this caution prevents the very events that make it look "inaccurate." Correcting the safety gate would create more hypos. ✅✅
+### F9: Safety gate gaps are EXPECTED and NECESSARY due to AID compensation. 17/19 patients have >5% of removed suspensions preceding hypos. The algorithm is deliberately cautious, and this caution prevents the very events that make it look "inaccurate." Correcting the safety gate would create more hypos. ✅✅
 
-**Evidence**: EXP-2444: AID Compensation Theorem. EXP-2331 prior: 8/10 patients had >5% dangerous corrections. Our replication: 1/2 patients.
+**Evidence**: EXP-2444: AID Compensation Theorem. EXP-2331 prior: 8/10 patients had >5% dangerous corrections. Our replication: 17/19 patients.
 **Agreement**: strongly_agrees
 **Prior work**: EXP-2444
 
@@ -67,7 +67,7 @@ We computed algorithm prediction accuracy (R²) at 30min, 60min, and 4h horizons
 
 ## Synthesis
 
-This experiment STRONGLY AGREES with Finding F5 that algorithm predictions are poor as point estimates, but provides crucial nuance from the AID Compensation Theorem. The algorithm's job is CONTROL, not prediction. Our eventualBG R²=-3.0097 at 4h confirms their R²=0.002, while LightGBM achieves R²=0.5423 — showing ML can predict better. But the critical insight is that correcting the algorithm's apparent errors is DANGEROUS: 1/2 patients have >5% of "unnecessary" suspensions that actually preceded real hypoglycaemic events. Context explains only N/A of prediction bias (EXP-2331: R²=0.01-0.17), confirming the bias is not a simple fixable error but an inherent feature of closed-loop control. For Finding F9, the safety gate's apparent weakness (AUC=0.62) is EXPECTED — the gate is deliberately cautious, and this caution prevents the very events that make it look "inaccurate."
+This experiment STRONGLY AGREES with Finding F5 that algorithm predictions are poor as point estimates, but provides crucial nuance from the AID Compensation Theorem. The algorithm's job is CONTROL, not prediction. Our eventualBG R²=-1.1134 at 4h confirms their R²=0.002, while LightGBM achieves R²=0.5305 — showing ML can predict better. But the critical insight is that correcting the algorithm's apparent errors is DANGEROUS: 17/19 patients have >5% of "unnecessary" suspensions that actually preceded real hypoglycaemic events. Context explains only N/A of prediction bias (EXP-2331: R²=0.01-0.17), confirming the bias is not a simple fixable error but an inherent feature of closed-loop control. For Finding F9, the safety gate's apparent weakness (AUC=0.62) is EXPECTED — the gate is deliberately cautious, and this caution prevents the very events that make it look "inaccurate."
 
 ## Limitations
 

@@ -9,9 +9,9 @@
 
 | Finding | Their Claim | Our Result | Agreement |
 |---------|------------|------------|-----------|
-| F5 | Algorithm predictions are mediocre — hypo AUC=0.83 (5-fold) drops to 0.67 (LOUO), indicating within-user leakage | Within-patient leakage confirmed: 5-fold hypo AUC=0.86 vs LOPO=0.69 (gap=0.17, theirs: 0.83 vs 0.67 = 0.16 gap) | ✅ agrees |
-| F8 | Hyper events are more frequent than hypo in the cohort | Hyper > hypo confirmed: our hypo_4h=14.4% vs hyper_4h=76.7% (theirs: 29.8% vs 37.6%) | ✅ agrees |
-| F9 | Safety-gate AUC is only 0.62 — the algorithm is barely better than chance at preventing hypo | Safety gate is weak: LOPO hypo AUC=0.69 (theirs: 0.62). Both near chance level. | ✅ agrees |
+| F5 | Algorithm predictions are mediocre — hypo AUC=0.83 (5-fold) drops to 0.67 (LOUO), indicating within-user leakage | Within-patient leakage confirmed: 5-fold hypo AUC=0.80 vs LOPO=0.67 (gap=0.13, theirs: 0.83 vs 0.67 = 0.16 gap) | ✅ agrees |
+| F8 | Hyper events are more frequent than hypo in the cohort | Hyper > hypo confirmed: our hypo_4h=23.5% vs hyper_4h=55.1% (theirs: 29.8% vs 37.6%) | ✅ agrees |
+| F9 | Safety-gate AUC is only 0.62 — the algorithm is barely better than chance at preventing hypo | Safety gate is weak: LOPO hypo AUC=0.67 (theirs: 0.62). Both near chance level. | ✅ agrees |
 
 ## Colleague's Findings (OREF-INV-003)
 
@@ -32,19 +32,19 @@
 
 ## Our Findings
 
-### F5: Within-patient leakage confirmed: 5-fold hypo AUC=0.86 vs LOPO=0.69 (gap=0.17, theirs: 0.83 vs 0.67 = 0.16 gap) ✅
+### F5: Within-patient leakage confirmed: 5-fold hypo AUC=0.80 vs LOPO=0.67 (gap=0.13, theirs: 0.83 vs 0.67 = 0.16 gap) ✅
 
 **Evidence**: EXP-2431 5-fold + EXP-2432 LOPO results
 **Agreement**: agrees
 **Prior work**: EXP-2431/2432
 
-### F8: Hyper > hypo confirmed: our hypo_4h=14.4% vs hyper_4h=76.7% (theirs: 29.8% vs 37.6%) ✅
+### F8: Hyper > hypo confirmed: our hypo_4h=23.5% vs hyper_4h=55.1% (theirs: 29.8% vs 37.6%) ✅
 
 **Evidence**: EXP-2435 cohort statistics
 **Agreement**: agrees
 **Prior work**: EXP-2435
 
-### F9: Safety gate is weak: LOPO hypo AUC=0.69 (theirs: 0.62). Both near chance level. ✅
+### F9: Safety gate is weak: LOPO hypo AUC=0.67 (theirs: 0.62). Both near chance level. ✅
 
 **Evidence**: EXP-2432 LOPO results
 **Agreement**: agrees
@@ -76,7 +76,7 @@ We trained LightGBM hypo/hyper classifiers with the same architecture as the col
 
 ## Synthesis
 
-The prediction model replication shows that LightGBM hypo/hyper classifiers achieve similar performance on our independent data compared to the colleague's results. Our 5-fold hypo AUC=0.86 (theirs: 0.83), LOPO hypo AUC=0.69 (theirs: 0.67). The within-patient leakage gap of 0.17 is comparable to their 0.16 gap, confirming temporal leakage in stratified CV. Per-patient calibration improves prediction reliability, consistent with their finding.
+The prediction model replication shows that LightGBM hypo/hyper classifiers achieve similar performance on our independent data compared to the colleague's results. Our 5-fold hypo AUC=0.80 (theirs: 0.83), LOPO hypo AUC=0.67 (theirs: 0.67). The within-patient leakage gap of 0.13 is comparable to their 0.16 gap, confirming temporal leakage in stratified CV. Per-patient calibration has mixed effects on prediction reliability, consistent with their finding.
 
 ## Limitations
 

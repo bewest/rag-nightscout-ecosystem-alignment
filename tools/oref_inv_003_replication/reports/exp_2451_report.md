@@ -33,19 +33,19 @@
 
 ### F7: basalIOB direction is partially informative at population level ✅
 
-**Evidence**: Only 0/2 patients show consistent negative basalIOB. Their claim appears supported in our data.
+**Evidence**: Only 0/19 patients show consistent negative basalIOB. Their claim appears supported in our data.
 **Agreement**: agrees
 **Prior work**: EXP-2451
 
 ### F7-ext: Multi-method analysis confirms basal excess 🟠
 
-**Evidence**: 3 independent methods (basalIOB sign, supply-demand ratio, fasting BG drift): 0/2 patients basal too high by consensus. SD: 2/2 too high.
+**Evidence**: 3 independent methods (basalIOB sign, supply-demand ratio, fasting BG drift): 0/19 patients basal too high by consensus. SD: 12/19 too high.
 **Agreement**: partially_disagrees
 **Prior work**: EXP-1961, EXP-2452, EXP-2453
 
 ### AID-comp: AID Compensation Theorem: algorithm masks wrong basals 🟡
 
-**Evidence**: TIR stays acceptable even with basals too high because the algorithm compensates (basalIOB-TIR weak). Wrong basals increase IOB volatility and reduce safety margins.
+**Evidence**: TIR stays acceptable even with basals too high because the algorithm compensates (basalIOB-TIR r=-0.315). Wrong basals increase IOB volatility and reduce safety margins.
 **Agreement**: partially_agrees
 **Prior work**: EXP-1971, EXP-2456
 

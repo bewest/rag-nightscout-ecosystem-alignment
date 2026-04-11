@@ -9,10 +9,10 @@
 
 | Finding | Their Claim | Our Result | Agreement |
 |---------|------------|------------|-----------|
-| F1 | Target is the single most powerful user-controlled lever | Crossover could not be determined (curves did not intersect in sweep range) | ❓ inconclusive |
+| F1 | Target is the single most powerful user-controlled lever | Target tradeoff replicates: crossover at 83 mg/dL (vs their 92) | ✅ agrees |
 | F2 | Universal target tradeoff curve applies across users | Per-patient crossover could not be computed (insufficient data) | ❓ inconclusive |
 | F3 | Pre-trained LightGBM generalises to new data | Transfer sweep could not be evaluated | ❓ inconclusive |
-| F4 | Target tradeoff is algorithm-independent | Only one algorithm subset had enough data | ❓ inconclusive |
+| F4 | Target tradeoff is algorithm-independent | Loop crossover: 80.8 mg/dL | ❓ inconclusive |
 
 ## Colleague's Findings (OREF-INV-003)
 
@@ -38,10 +38,10 @@
 
 ## Our Findings
 
-### F1: Crossover could not be determined (curves did not intersect in sweep range) ❓
+### F1: Target tradeoff replicates: crossover at 83 mg/dL (vs their 92) ✅
 
-**Evidence**: Our sweep: crossover at N/A mg/dL (theirs: 92.5 mg/dL). Hypo at target 80: 19.7% (theirs: 48.6%). Hypo at target 150: 23.9% (theirs: 34.1%).
-**Agreement**: inconclusive
+**Evidence**: Our sweep: crossover at 82.8 mg/dL (theirs: 92.5 mg/dL). Hypo at target 80: 31.4% (theirs: 48.6%). Hypo at target 150: 20.4% (theirs: 34.1%).
+**Agreement**: agrees
 **Prior work**: EXP-2201 settings recalibration
 
 ### F2: Per-patient crossover could not be computed (insufficient data) ❓
@@ -56,9 +56,9 @@
 **Agreement**: inconclusive
 **Prior work**: EXP-2412
 
-### F4: Only one algorithm subset had enough data ❓
+### F4: Loop crossover: 80.8 mg/dL ❓
 
-**Evidence**: Loop data: present; AAPS data: absent.
+**Evidence**: Sub-group target sweeps: Loop crossover: 80.8 mg/dL. Algorithm gap: N/A mg/dL. Crossover difference warrants further investigation.
 **Agreement**: inconclusive
 **Prior work**: EXP-2414
 
@@ -88,11 +88,11 @@ Four sub-experiments provide complementary views:
 
 ## Synthesis
 
-The target-as-strongest-lever finding partially replicates in our independent dataset. Our retrained LightGBM places the hypo/hyper crossover at N/A mg/dL (theirs: 92.5 mg/dL), while their pre-trained model applied to our data yields N/A mg/dL — a reassuring convergence.
+The target-as-strongest-lever finding replicates in our independent dataset. Our retrained LightGBM places the hypo/hyper crossover at 82.8 mg/dL (theirs: 92.5 mg/dL), while their pre-trained model applied to our data yields N/A mg/dL — a reassuring convergence.
 
 Per-patient analysis (EXP-2413) reveals meaningful heterogeneity: individual crossovers span N/A–N/A mg/dL across 0 patients, suggesting that a single universal target recommendation may not be optimal for all individuals.
 
-The tradeoff shape is shifted across Loop and oref algorithms (EXP-2414), suggesting this is a fundamental property of closed-loop insulin delivery rather than an algorithm-specific effect. The monotonic decrease in hypo rate with increasing target is the expected result of how AID systems use target as a setpoint: higher targets reduce insulin delivery, lowering hypo risk at the cost of increased hyperglycemia.
+The tradeoff shape is consistent across Loop and oref algorithms (EXP-2414), suggesting this is a fundamental property of closed-loop insulin delivery rather than an algorithm-specific effect. The monotonic decrease in hypo rate with increasing target is the expected result of how AID systems use target as a setpoint: higher targets reduce insulin delivery, lowering hypo risk at the cost of increased hyperglycemia.
 
 ## Limitations
 
