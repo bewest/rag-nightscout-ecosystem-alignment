@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-Overnight glucose management reveals a paradox: AID systems suspend basal delivery 59–89% of overnight steps (9/10 patients), yet overnight TIR averages only 52–96% with hypo frequencies of 0.7–6.1/week. The data shows that **most AID patients are dramatically over-basaled in their profile settings**, forcing the loop to compensate by suspending delivery almost continuously. Despite this compensation, overnight glucose remains volatile (CV 11–33%), dawn phenomenon is universal (mean rises 41–105 mg/dL), and nocturnal hypoglycemia is frequent. These findings explain why basal assessment from "fasting tests" is essentially impossible with AID data — the loop has already replaced the patient's scheduled basal with its own dynamic program.
+Overnight glucose management reveals a paradox: AID systems suspend basal delivery 59–89% of overnight steps (9/10 patients), yet overnight TIR averages only 52–97% with hypo frequencies of 0.7–6.1/week. The data shows that **most AID patients are dramatically over-basaled in their profile settings**, forcing the loop to compensate by suspending delivery almost continuously. Despite this compensation, overnight glucose remains volatile (CV 11–33%), dawn phenomenon is universal (mean rises 41–105 mg/dL), and nocturnal hypoglycemia is frequent. These findings explain why basal assessment from "fasting tests" is essentially impossible with AID data — the loop has already replaced the patient's scheduled basal with its own dynamic program.
 
 ## Key Findings
 

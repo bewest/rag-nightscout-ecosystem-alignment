@@ -18,7 +18,7 @@ production readiness per patient.
 - **Glucose level alone is the best hypo predictor** (r = -0.10 to -0.38); adding trend
   improves F1 only modestly (+0.02 on average)
 - **Correction-induced hypos are the dominant preventable type** (5 of 11 patients)
-- **Context-aware guard prevents 51–75% of correction hypos** in 9/11 patients
+- **Context-aware guard prevents 51–75% of correction hypos** in 8/11 patients
 - **Sublinear ISF reduces held-out RMSE by 5–81%** (7/7 evaluable, α = 0.77–1.06)
 - **Combined intervention reduces post-correction hypos by 28–100%** in 9/11 patients
 - **ISF drift detected in all 8 evaluable patients** — CUSUM alerts fire 1–10 times per 6 months
@@ -132,7 +132,7 @@ would have blocked it and whether a hypo followed within 3 hours.
 
 **Key findings:**
 - The guard would prevent **988 hypo events** across the population (51–75% prevention
-  rate in 9/11 patients)
+  rate in 8/11 patients)
 - Patient i alone: 485 prevented hypos — massive safety improvement
 - **The guard is aggressive**: it blocks 60–80% of all corrections. This is because most
   corrections are given when IOB > 1.5U (the AID is already acting)
@@ -312,12 +312,12 @@ events), MEDIUM (≥10/30/10), LOW (≥3/10/5), or INSUFFICIENT.
 | g | 89% | MED | 16 | HIGH | 970 | INSUF | 0 | NOT_READY |
 | h | 36% | LOW | 4 | HIGH | 726 | INSUF | 0 | NOT_READY |
 | i | 90% | HIGH | 28 | HIGH | 105 | INSUF | 2 | NOT_READY |
-| k | 89% | INSUF | 1 | HIGH | 71 | INSUF | 24 | NOT_READY |
+| k | 89% | INSUF | 1 | HIGH | 71 | HIGH | 24 | NOT_READY |
 
 **Key findings:**
 - **Only 2/11 patients are fully production-ready** (a, f) — have sufficient data across
   all three estimation pillars
-- **Basal estimation is the bottleneck**: 7/11 patients have insufficient quiet overnight
+- **Basal estimation is the bottleneck**: 6/11 patients have insufficient quiet overnight
   windows. This is because AID systems actively correct overnight, preventing the "quiet
   baseline" needed for basal assessment
 - **CR estimation has the most data**: meals are frequent and well-recorded (HIGH for all 11)
@@ -388,7 +388,7 @@ The shift from "predict and alert" to "prevent the cause" is the key insight.
    without validation that AID automated delivery compensates adequately
 3. **Missing exercise/stress data**: 40% of patient b's hypos are "unexplained" — external
    factors we cannot measure
-4. **Basal assessment gap**: 7/11 patients lack sufficient quiet nights for basal analysis
+4. **Basal assessment gap**: 6/11 patients lack sufficient quiet nights for basal analysis
 5. **Small sample**: 11 patients is insufficient for generalizable production thresholds
 6. **CUSUM tuning**: Alert thresholds are heuristic, not optimized for clinical relevance
 
