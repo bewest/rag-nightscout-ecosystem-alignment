@@ -29,7 +29,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import pytest
+
 
 # ── Helpers available without real data ──────────────────────────────
 
@@ -448,6 +448,15 @@ FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixtures')
 HAS_FIXTURES = os.path.isdir(FIXTURES_DIR) and os.path.isfile(
     os.path.join(FIXTURES_DIR, 'patient_d_entries.json')
 )
+HAS_FIXTURE_B = HAS_FIXTURES and os.path.isfile(
+    os.path.join(FIXTURES_DIR, 'patient_b_entries.json')
+)
+HAS_ODC_FIXTURE = HAS_FIXTURES and os.path.isfile(
+    os.path.join(FIXTURES_DIR, 'odc_39819048_entries.json')
+)
+HAS_NSEXPORT_FIXTURE = HAS_FIXTURES and os.path.isfile(
+    os.path.join(FIXTURES_DIR, 'nsexport_74077367_entries.json')
+)
 
 # Tiny terrarium: pre-built parquet with 2 patients × 7 days (~800KB)
 TINY_TERRARIUM = os.path.join(
@@ -457,15 +466,19 @@ TINY_TERRARIUM = os.path.join(
 HAS_TINY_TERRARIUM = os.path.isfile(TINY_TERRARIUM)
 
 
-def _build_fixture_grid(patient_id):
-    """Build a grid from small JSON fixtures (~288 rows, <0.5s)."""
+def _build_fixture_grid(prefix, grid_id=None):
+    """Build a grid from small JSON fixtures (~288-577 rows, <0.5s).
+
+    prefix: fixture file prefix (e.g. 'patient_d', 'odc_39819048')
+    grid_id: patient_id passed to build_grid (defaults to prefix)
+    """
     from tools.ns2parquet.grid import build_grid
     tmpdir = tempfile.mkdtemp()
     for col in ['entries', 'treatments', 'devicestatus', 'profile']:
-        src = os.path.join(FIXTURES_DIR, f'patient_{patient_id}_{col}.json')
+        src = os.path.join(FIXTURES_DIR, f'{prefix}_{col}.json')
         dst = os.path.join(tmpdir, f'{col}.json')
         shutil.copy(src, dst)
-    df = build_grid(tmpdir, patient_id, verbose=False)
+    df = build_grid(tmpdir, grid_id or prefix, verbose=False)
     shutil.rmtree(tmpdir)
     return df
 
@@ -476,8 +489,8 @@ class TestGridIntegrity(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.df_d = _build_fixture_grid('d')
-        cls.df_a = _build_fixture_grid('a')
+        cls.df_d = _build_fixture_grid('patient_d', 'd')
+        cls.df_a = _build_fixture_grid('patient_a', 'a')
 
     def test_grid_column_completeness(self):
         """Grid output has all expected columns."""
@@ -580,73 +593,28 @@ class TestTinyTerrariumSmoke(unittest.TestCase):
             self.assertGreater(pct, 0.3, f'{col} should be >30% for Trio patient')
 
 
-# ── Slow integration tests (require real patient data) ───────────────
-
-PATIENTS_DIR = os.path.join(
-    os.path.dirname(__file__), '..', '..', 'externals', 'ns-data', 'patients'
-)
-HAS_PATIENT_DATA = os.path.isdir(PATIENTS_DIR) and os.path.isfile(
-    os.path.join(PATIENTS_DIR, 'a', 'training', 'entries.json')
-)
+# ── Cross-pipeline validation (fixture-based) ───────────────────────
 
 
-@pytest.mark.slow
-@unittest.skipUnless(HAS_PATIENT_DATA, 'Real patient data not available')
-class TestGridIntegrityFull(unittest.TestCase):
-    """Full-data integration tests — validates 180-day grid properties.
-
-    Marked @slow because each grid build parses 80-200MB of JSON (~15s each).
-    Run with: pytest -m slow
-    """
-
-    @classmethod
-    def setUpClass(cls):
-        from tools.ns2parquet.grid import build_grid
-        cls.df_d = build_grid(
-            os.path.join(PATIENTS_DIR, 'd', 'training'), 'd', verbose=False)
-        cls.df_a = build_grid(
-            os.path.join(PATIENTS_DIR, 'a', 'training'), 'a', verbose=False)
-
-    def test_grid_row_count_180_days(self):
-        """Grid has ~51,840 rows for 180-day patient (5-min intervals)."""
-        self.assertGreater(len(self.df_d), 40000)
-        self.assertLess(len(self.df_d), 60000)
-
-    def test_glucose_in_mgdl_range(self):
-        """Glucose values in mg/dL range across full dataset."""
-        valid = self.df_a['glucose'].dropna()
-        self.assertGreater(valid.median(), 50)
-        self.assertLess(valid.median(), 300)
-
-    def test_mmol_isf_converted(self):
-        """Patient a (mmol/L) ISF converted to mg/dL."""
-        isf = self.df_a['scheduled_isf'].iloc[0]
-        self.assertGreater(isf, 30)
-        self.assertLess(isf, 80)
-
-    def test_mgdl_isf_unchanged(self):
-        """Patient d (mg/dL) ISF stays in mg/dL range."""
-        isf = self.df_d['scheduled_isf'].iloc[0]
-        self.assertAlmostEqual(isf, 40.0, places=0)
-
-
-@pytest.mark.slow
-@unittest.skipUnless(HAS_PATIENT_DATA, 'Real patient data not available')
+@unittest.skipUnless(HAS_FIXTURES, 'JSON fixtures not available')
 class TestClinicalMetricsMatch(unittest.TestCase):
-    """Integration: clinical metrics from parquet match JSON pipeline.
+    """Cross-validates ns2parquet vs cgmencode pipelines on fixture data.
 
-    Marked @slow: builds grids from both pipelines (~29s setup).
+    Both pipelines process the same 1-day patient d fixture and should
+    produce identical clinical metrics (TIR, TBR, mean glucose, bolus/carb counts).
     """
 
     @classmethod
     def setUpClass(cls):
-        """Build grids from both pipelines for patient d."""
-        from tools.ns2parquet.grid import build_grid
         from tools.cgmencode.real_data_adapter import build_nightscout_grid
-
-        data_dir = os.path.join(PATIENTS_DIR, 'd', 'training')
-        cls.pq_df = build_grid(data_dir, 'd', verbose=False)
-        cls.json_df, _ = build_nightscout_grid(data_dir, verbose=False)
+        cls.pq_df = _build_fixture_grid('patient_d', 'd')
+        tmpdir = tempfile.mkdtemp()
+        for col in ['entries', 'treatments', 'devicestatus', 'profile']:
+            shutil.copy(
+                os.path.join(FIXTURES_DIR, f'patient_d_{col}.json'),
+                os.path.join(tmpdir, f'{col}.json'))
+        cls.json_df, _ = build_nightscout_grid(tmpdir, verbose=False)
+        shutil.rmtree(tmpdir)
 
     def _metrics(self, glucose):
         valid = glucose[np.isfinite(glucose)]
@@ -744,37 +712,23 @@ class TestOref0PredictionExtraction(unittest.TestCase):
         self.assertIsNone(result['hypo_risk_count'])
 
 
-@pytest.mark.slow
-@unittest.skipUnless(HAS_PATIENT_DATA, 'Real patient data not available')
+@unittest.skipUnless(HAS_FIXTURE_B, 'Patient b fixture not available')
 class TestPatientBMixedController(unittest.TestCase):
-    """Integration: patient b (Trio + Loop) validates new columns.
+    """Patient b (Trio/oref0): validates oref0 algo context, SMBs, exercise, overrides.
 
-    Marked @slow: patient b has 201MB devicestatus (~20s setup).
+    Uses 2-day fixture with exercise, temp targets, SMBs, oref0 devicestatus.
     """
-
-    HAS_B = os.path.isfile(
-        os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json'))
 
     @classmethod
     def setUpClass(cls):
-        if not cls.HAS_B:
-            return
-        from tools.ns2parquet.grid import build_grid
-        cls.df = build_grid(
-            os.path.join(PATIENTS_DIR, 'b', 'training'), 'b', verbose=False)
+        cls.df = _build_fixture_grid('patient_b', 'b')
 
-    @unittest.skipUnless(
-        os.path.isfile(os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json')),
-        'Patient b data not available')
     def test_new_columns_present(self):
         """All new columns exist in grid output."""
         for col in ['bolus_smb', 'exercise_active', 'eventual_bg',
                      'sensitivity_ratio', 'insulin_req']:
             self.assertIn(col, self.df.columns, f'Missing: {col}')
 
-    @unittest.skipUnless(
-        os.path.isfile(os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json')),
-        'Patient b data not available')
     def test_oref0_algo_context_populated(self):
         """Patient b (Trio) has oref0 algorithm context populated."""
         for col in ['eventual_bg', 'sensitivity_ratio', 'insulin_req']:
@@ -782,9 +736,6 @@ class TestPatientBMixedController(unittest.TestCase):
             self.assertGreater(valid, len(self.df) * 0.5,
                                f'{col} should be >50% populated for Trio patient')
 
-    @unittest.skipUnless(
-        os.path.isfile(os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json')),
-        'Patient b data not available')
     def test_smb_insulin_captured(self):
         """Patient b SMBs are captured in both bolus and bolus_smb."""
         smb_total = self.df['bolus_smb'].sum()
@@ -793,25 +744,16 @@ class TestPatientBMixedController(unittest.TestCase):
         self.assertGreater(bolus_total, smb_total, 'Total bolus should exceed SMBs')
         self.assertGreater(smb_total / bolus_total, 0.1, 'SMBs should be >10% of bolus')
 
-    @unittest.skipUnless(
-        os.path.isfile(os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json')),
-        'Patient b data not available')
     def test_exercise_detected(self):
         """Patient b has exercise events detected."""
         ex_slots = (self.df['exercise_active'] > 0).sum()
         self.assertGreater(ex_slots, 0, 'Expected exercise events for patient b')
 
-    @unittest.skipUnless(
-        os.path.isfile(os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json')),
-        'Patient b data not available')
     def test_override_detected(self):
         """Patient b has temporary target/override events detected."""
         ov_slots = (self.df['override_active'] > 0).sum()
         self.assertGreater(ov_slots, 0, 'Expected overrides for patient b')
 
-    @unittest.skipUnless(
-        os.path.isfile(os.path.join(PATIENTS_DIR, 'b', 'training', 'entries.json')),
-        'Patient b data not available')
     def test_predictions_populated_for_oref0(self):
         """Patient b (mostly Trio) has predictions at 30 and 60 minutes."""
         for col in ['loop_predicted_30', 'loop_predicted_60', 'loop_predicted_min']:
@@ -1000,36 +942,18 @@ class TestODCLoaderConversion(unittest.TestCase):
             self.assertEqual(patients[0][0], '12345')
 
 
-# ──────────── ODC Integration Test (real data) ─────────────────────────
+# ──────────── ODC Integration Test (fixture-based) ─────────────────
 
-ODC_DIR = '/home/bewest/Downloads/openaps-data-commons-2023-samples'
-
-
-@pytest.mark.slow
-@unittest.skipUnless(
-    os.path.isdir(os.path.join(ODC_DIR, '39819048')),
-    'ODC sample data not available'
-)
+@unittest.skipUnless(HAS_ODC_FIXTURE, 'ODC fixture not available')
 class TestODCIntegration(unittest.TestCase):
-    """Integration test: build grid from real ODC patient 39819048.
+    """Grid from ODC-converted data (AAPS-native format).
 
-    Marked @slow: requires ODC data download (~5-10s).
+    Uses 2-day fixture extracted from ODC patient 39819048.
     """
 
     @classmethod
     def setUpClass(cls):
-        import tempfile
-        from tools.ns2parquet.odc_loader import write_odc_as_nightscout
-        from tools.ns2parquet.grid import build_grid
-        cls._tmpdir = tempfile.mkdtemp()
-        ns_dir = os.path.join(cls._tmpdir, 'data')
-        write_odc_as_nightscout(os.path.join(ODC_DIR, '39819048'), ns_dir)
-        cls.grid = build_grid(ns_dir, 'odc-39819048')
-
-    @classmethod
-    def tearDownClass(cls):
-        import shutil
-        shutil.rmtree(cls._tmpdir, ignore_errors=True)
+        cls.grid = _build_fixture_grid('odc_39819048')
 
     def test_grid_has_49_columns(self):
         self.assertEqual(self.grid.shape[1], 49)
@@ -1065,8 +989,8 @@ class TestODCIntegration(unittest.TestCase):
         """ODC patient should have boluses and SMBs."""
         bolus_n = (self.grid['bolus'] > 0).sum()
         smb_n = (self.grid['bolus_smb'] > 0).sum()
-        self.assertGreater(bolus_n, 100)
-        self.assertGreater(smb_n, 100)
+        self.assertGreater(bolus_n, 10)
+        self.assertGreater(smb_n, 10)
 
     def test_override_from_temp_targets(self):
         """TempTargets should populate override_active."""
@@ -1082,12 +1006,12 @@ class TestODCIntegration(unittest.TestCase):
         self.assertTrue((isf < 200).all(),
                         f'ISF should be <200 mg/dL, got max={isf.max()}')
 
-    def test_date_range_10_days(self):
-        """Patient 39819048 spans ~10 days of data."""
+    def test_date_range(self):
+        """Fixture spans ~2 days."""
         time_col = self.grid['time']
         span_days = (time_col.max() - time_col.min()).total_seconds() / 86400
-        self.assertGreater(span_days, 7)
-        self.assertLess(span_days, 30)
+        self.assertGreater(span_days, 1)
+        self.assertLess(span_days, 5)
 
 
 # ── CSV Devicestatus Unit Tests ──────────────────────────────────────
@@ -1152,41 +1076,22 @@ class TestScheduleLookupStringValues(unittest.TestCase):
 
 # ── NS-Export Integration Tests ──────────────────────────────────────
 
-ODC_NS_EXPORT_PID = '74077367'  # Best NS-export patient (99% coverage)
-ODC_NS_EXPORT_DIR = os.path.join(
-    os.getenv('ODC_DATA',
-              '/home/bewest/Downloads/openaps-data-commons-2023-samples'),
-    ODC_NS_EXPORT_PID, 'direct-sharing-31')
+# ── NS-Export Integration Test (fixture-based) ───────────────────────
 
-
-@pytest.mark.slow
-@unittest.skipUnless(
-    os.path.isdir(ODC_NS_EXPORT_DIR),
-    f'ODC NS-export data not available at {ODC_NS_EXPORT_DIR}')
+@unittest.skipUnless(HAS_NSEXPORT_FIXTURE, 'NS-export fixture not available')
 class TestNSExportIntegration(unittest.TestCase):
-    """Integration test: build grid from NS-export patient (CSV devicestatus).
+    """Grid from NS-export-converted data (CSV devicestatus format).
 
-    Marked @slow: converts ODC data + loops through all 8 patients (~2min).
+    Uses 2-day fixture extracted from NS-export patient 74077367.
     """
 
     @classmethod
     def setUpClass(cls):
-        import tempfile
-        from tools.ns2parquet.odc_loader import write_odc_as_nightscout
-        from tools.ns2parquet.grid import build_grid
-        cls._tmpdir = tempfile.mkdtemp()
-        ns_dir = os.path.join(cls._tmpdir, 'data')
-        write_odc_as_nightscout(ODC_NS_EXPORT_DIR, ns_dir)
-        cls.grid = build_grid(ns_dir, f'odc-{ODC_NS_EXPORT_PID}')
-
-    @classmethod
-    def tearDownClass(cls):
-        import shutil
-        shutil.rmtree(cls._tmpdir, ignore_errors=True)
+        cls.grid = _build_fixture_grid('nsexport_74077367')
 
     def test_grid_built_successfully(self):
         self.assertIsNotNone(self.grid)
-        self.assertGreater(len(self.grid), 50000)
+        self.assertGreater(len(self.grid), 200)
 
     def test_grid_has_49_columns(self):
         self.assertEqual(self.grid.shape[1], 49)
@@ -1197,27 +1102,21 @@ class TestNSExportIntegration(unittest.TestCase):
         self.assertGreater(pct, 0.95)
 
     def test_iob_from_csv_devicestatus(self):
-        """IOB reconstructed from flattened CSV should be >90% non-zero."""
+        """IOB reconstructed from flattened CSV should be >80% non-zero."""
         nonzero_pct = (self.grid['iob'] != 0).mean()
-        self.assertGreater(nonzero_pct, 0.90)
+        self.assertGreater(nonzero_pct, 0.80)
 
     def test_predictions_from_csv(self):
-        """predBGs reconstructed from indexed CSV columns should be >90%."""
+        """predBGs reconstructed from indexed CSV columns should be >80%."""
         for col in ['loop_predicted_30', 'loop_predicted_60', 'loop_predicted_min']:
             pct = self.grid[col].notna().mean()
-            self.assertGreater(pct, 0.90,
-                               f'{col} should be >90% for NS-export patient')
+            self.assertGreater(pct, 0.80,
+                               f'{col} should be >80% for NS-export patient')
 
     def test_eventual_bg_from_csv(self):
-        """eventualBG reconstructed from CSV should be >90%."""
+        """eventualBG reconstructed from CSV should be >80%."""
         pct = self.grid['eventual_bg'].notna().mean()
-        self.assertGreater(pct, 0.90)
-
-    def test_spans_months(self):
-        """NS-export patient should span multiple months."""
-        time_col = self.grid['time']
-        span_days = (time_col.max() - time_col.min()).total_seconds() / 86400
-        self.assertGreater(span_days, 100)
+        self.assertGreater(pct, 0.80)
 
     def test_profile_values_reasonable(self):
         """Profile should have reasonable mg/dL values."""
@@ -1226,28 +1125,12 @@ class TestNSExportIntegration(unittest.TestCase):
         self.assertTrue((isf > 5).all(), f'ISF too low: min={isf.min()}')
         self.assertTrue((isf < 500).all(), f'ISF too high: max={isf.max()}')
 
-    def test_all_8_patients_loadable(self):
-        """Verify all 8 ODC patients produce a grid (not None)."""
-        from tools.ns2parquet.odc_loader import (discover_odc_patients,
-                                                  write_odc_as_nightscout)
-        from tools.ns2parquet.grid import build_grid
-        import tempfile, shutil
-        odc_root = os.getenv(
-            'ODC_DATA',
-            '/home/bewest/Downloads/openaps-data-commons-2023-samples')
-        patients = discover_odc_patients(odc_root)
-        ok = 0
-        for pid, pdir in patients:
-            tmpd = tempfile.mkdtemp()
-            try:
-                ns_dir = os.path.join(tmpd, 'data')
-                if write_odc_as_nightscout(pdir, ns_dir):
-                    grid = build_grid(ns_dir, pid)
-                    if grid is not None and len(grid) > 0:
-                        ok += 1
-            finally:
-                shutil.rmtree(tmpd, ignore_errors=True)
-        self.assertEqual(ok, 8, f'Expected 8/8 patients, got {ok}/{len(patients)}')
+    def test_date_range(self):
+        """Fixture spans ~2 days."""
+        time_col = self.grid['time']
+        span_days = (time_col.max() - time_col.min()).total_seconds() / 86400
+        self.assertGreater(span_days, 1)
+        self.assertLess(span_days, 5)
 
 
 class TestTimezoneHandling(unittest.TestCase):

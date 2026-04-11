@@ -27,6 +27,17 @@ from .constants import DIRECTION_MAP, MMOLL_TO_MGDL  # noqa: F401 — re-export
 logger = logging.getLogger(__name__)
 
 
+def _to_bool(val) -> Optional[bool]:
+    """Coerce a value to bool, handling string 'true'/'false' from CSV."""
+    if val is None:
+        return None
+    if isinstance(val, bool):
+        return val
+    if isinstance(val, str):
+        return val.lower() in ('true', '1', 'yes')
+    return bool(val)
+
+
 def _parse_ts(record: dict, *fields) -> Optional[pd.Timestamp]:
     """Try multiple timestamp fields, return first valid UTC timestamp."""
     for field in fields:
@@ -184,7 +195,7 @@ def normalize_entries(records: List[Dict], patient_id: str) -> pd.DataFrame:
             'date': ts,
             'sgv': sgv,
             'mbg': mbg,
-            'direction': e.get('direction'),
+            'direction': str(e.get('direction', '')) if e.get('direction') is not None else None,
             'noise': _safe_int(e.get('noise'), 'noise'),
             'filtered': _safe_float(e.get('filtered'), 'filtered'),
             'unfiltered': _safe_float(e.get('unfiltered'), 'unfiltered'),
@@ -344,7 +355,7 @@ def _extract_loop_ds(ds: dict) -> dict:
         'enacted_rate': float(enacted['rate']) if 'rate' in enacted else None,
         'enacted_duration_min': enacted_dur,
         'enacted_smb': float(enacted.get('bolusVolume', 0) or 0) if enacted else None,
-        'enacted_received': enacted.get('received'),
+        'enacted_received': _to_bool(enacted.get('received')),
         'predicted_30': float(pred_values[6]) if len(pred_values) > 6 else None,
         'predicted_60': float(pred_values[12]) if len(pred_values) > 12 else None,
         'predicted_min': float(min(pred_values)) if pred_values else None,
@@ -403,7 +414,7 @@ def _extract_oref0_ds(ds: dict) -> dict:
         'enacted_rate': float(enacted['rate']) if 'rate' in enacted else None,
         'enacted_duration_min': float(enacted['duration']) if 'duration' in enacted else None,
         'enacted_smb': float(enacted.get('units', 0)) if enacted else None,
-        'enacted_received': enacted.get('received') if enacted else None,
+        'enacted_received': _to_bool(enacted.get('received')) if enacted else None,
         'predicted_30': float(best_curve[6]) if best_curve and len(best_curve) > 6 else None,
         'predicted_60': float(best_curve[12]) if best_curve and len(best_curve) > 12 else None,
         'predicted_min': float(min(best_curve)) if best_curve else None,

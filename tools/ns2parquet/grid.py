@@ -122,7 +122,7 @@ def build_grid(data_path: str, patient_id: str,
             continue
         cgm_times.append(ts)
         cgm_values.append(sgv_val)
-        cgm_dirs.append(e.get('direction', ''))
+        cgm_dirs.append(str(e.get('direction', '')))
         cgm_rates.append(e.get('trendRate', np.nan))
 
     if n_no_ts > 0 or n_bad_sgv > 0:
