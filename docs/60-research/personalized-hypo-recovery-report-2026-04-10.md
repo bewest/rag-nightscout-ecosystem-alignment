@@ -26,7 +26,7 @@ tell us about overall glycemic control?**
 | **Overnight hypos rebound worst**: 69% cause hyperglycemia | EXP-1684 | Circadian timing is the strongest contextual factor |
 | **Can't predict rebound at nadir**: AUC=0.54 | EXP-1682 | The rescue behavior itself is unpredictable |
 | **Demand vacuum is weak**: r=−0.127 | EXP-1683 | IOB depletion matters less than expected |
-| **Equilibrium restored in 1.7h** mean (median 1.0h) | EXP-1686 | S×D rebalancing is faster than the glucose trajectory |
+| **Equilibrium restored in 1.7h** mean (median 0.5h) | EXP-1686 | S×D rebalancing is faster than the glucose trajectory |
 
 ### The Cascade Cycle
 
@@ -288,7 +288,7 @@ However, individual profiles are revealing:
 | Metric | Value |
 |--------|-------|
 | Population mean equilibrium time | **1.7 ± 1.8 h** |
-| Population median equilibrium time | **1.0 h** |
+| Population median equilibrium time | **0.5 h** |
 | Episodes reaching equilibrium <2h | **72%** |
 | Episodes NEVER reaching equilibrium (≥6h) | **9%** |
 | Mean oscillations (sign changes in 3h) | 0.9 ± 1.0 |
