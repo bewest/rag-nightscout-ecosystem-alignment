@@ -38,6 +38,7 @@ from cgmencode.production.types import (
     ControllerType, ControllerBehavior,
     OvernightPhenotype, OvernightDriftAssessment, LoopWorkloadReport,
     TwoComponentDIA,
+    HypoRiskResult,
 )
 
 
@@ -3143,3 +3144,188 @@ class TestCRAdequacyIntegration(unittest.TestCase):
         ]
         self.assertGreater(len(adequacy_recs), 0)
         self.assertEqual(adequacy_recs[0].direction, 'decrease')
+
+
+# ── Hypo Risk Type Tests (EXP-2539) ──────────────────────────────────
+
+class TestHypoRiskResultType(unittest.TestCase):
+    """Type contract tests for HypoRiskResult dataclass."""
+
+    def test_instantiation(self):
+        r = HypoRiskResult(
+            risk_score=0.25,
+            risk_level='moderate',
+            lead_time_minutes=30,
+            dominant_factor='glucose_level',
+            recommended_action='Monitor closely.',
+        )
+        self.assertAlmostEqual(r.risk_score, 0.25)
+        self.assertEqual(r.risk_level, 'moderate')
+        self.assertEqual(r.lead_time_minutes, 30)
+
+    def test_fields_accessible(self):
+        r = HypoRiskResult(
+            risk_score=0.0, risk_level='low', lead_time_minutes=30,
+            dominant_factor='glucose_level', recommended_action='None.',
+        )
+        self.assertEqual(r.dominant_factor, 'glucose_level')
+        self.assertEqual(r.recommended_action, 'None.')
+
+    def test_risk_level_values(self):
+        for level in ('low', 'moderate', 'high', 'critical'):
+            r = HypoRiskResult(
+                risk_score=0.5, risk_level=level, lead_time_minutes=30,
+                dominant_factor='glucose_level', recommended_action='x',
+            )
+            self.assertEqual(r.risk_level, level)
+
+    def test_pipeline_result_has_hypo_risk_field(self):
+        """PipelineResult accepts hypo_risk kwarg."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient()
+        result = run_pipeline(patient, skip_patterns=True)
+        self.assertTrue(hasattr(result, 'hypo_risk'))
+
+
+# ── Hypo Risk Functional Tests (EXP-2539) ────────────────────────────
+
+class TestComputeHypoRisk(unittest.TestCase):
+    """Functional tests for compute_hypo_risk."""
+
+    def setUp(self):
+        from cgmencode.production.hypo_risk import compute_hypo_risk
+        self.compute = compute_hypo_risk
+
+    def test_stable_high_glucose_low_risk(self):
+        """Stable glucose at 150 → low risk."""
+        readings = [150.0] * 12
+        result = self.compute(readings)
+        self.assertLess(result.risk_score, 0.05)
+        self.assertEqual(result.risk_level, 'low')
+
+    def test_stable_120_low_risk(self):
+        """Stable glucose at 120 → low risk."""
+        readings = [120.0] * 12
+        result = self.compute(readings)
+        self.assertLess(result.risk_score, 0.10)
+        self.assertEqual(result.risk_level, 'low')
+
+    def test_stable_100_moderate_risk(self):
+        """Stable glucose at 100 → moderate risk."""
+        readings = [100.0] * 12
+        result = self.compute(readings)
+        self.assertGreaterEqual(result.risk_score, 0.05)
+        self.assertLess(result.risk_score, 0.30)
+        self.assertIn(result.risk_level, ('low', 'moderate'))
+
+    def test_falling_toward_70_high_risk(self):
+        """Falling from ~110 toward 80 at -3/step → high risk."""
+        readings = [113, 110, 107, 104, 101, 98, 95, 92, 89, 86, 83, 80.0]
+        result = self.compute(readings)
+        self.assertGreater(result.risk_score, 0.30)
+        self.assertIn(result.risk_level, ('high', 'critical'))
+
+    def test_flat_at_70_critical_risk(self):
+        """Flat glucose at 70 → critical risk."""
+        readings = [70.0] * 12
+        result = self.compute(readings)
+        self.assertGreater(result.risk_score, 0.60)
+        self.assertEqual(result.risk_level, 'critical')
+
+    def test_rapidly_falling_critical(self):
+        """Rapidly falling glucose → critical risk."""
+        readings = [120, 116, 112, 108, 104, 100, 96, 92, 88, 84, 80, 76.0]
+        result = self.compute(readings)
+        self.assertGreater(result.risk_score, 0.50)
+        self.assertIn(result.risk_level, ('high', 'critical'))
+
+    def test_rising_glucose_low_risk(self):
+        """Rising glucose from 80 to 120 → low risk despite starting low."""
+        readings = [80, 84, 88, 92, 96, 100, 104, 108, 112, 116, 120, 124.0]
+        result = self.compute(readings)
+        self.assertLess(result.risk_score, 0.30)
+
+    def test_lead_time_always_30(self):
+        """Lead time is always 30 minutes."""
+        result = self.compute([120.0] * 12)
+        self.assertEqual(result.lead_time_minutes, 30)
+
+    def test_dominant_factor_is_valid(self):
+        """Dominant factor is one of the recognized feature names."""
+        valid = {'glucose_level', 'rate_of_change', 'acceleration',
+                 'recent_minimum', 'time_near_hypo'}
+        result = self.compute([120.0] * 12)
+        self.assertIn(result.dominant_factor, valid)
+
+    def test_recommended_action_nonempty(self):
+        """Recommended action is always a non-empty string."""
+        for sgv in [150.0, 100.0, 80.0, 70.0]:
+            result = self.compute([sgv] * 12)
+            self.assertIsInstance(result.recommended_action, str)
+            self.assertGreater(len(result.recommended_action), 0)
+
+    def test_insufficient_data_raises(self):
+        """Fewer than 3 readings raises ValueError."""
+        with self.assertRaises(ValueError):
+            self.compute([100.0, 100.0])
+        with self.assertRaises(ValueError):
+            self.compute([])
+
+    def test_single_reading_raises(self):
+        """Single reading raises ValueError."""
+        with self.assertRaises(ValueError):
+            self.compute([120.0])
+
+    def test_nan_handling(self):
+        """NaN values are filtered; enough valid readings still work."""
+        readings = [float('nan')] * 4 + [120.0] * 8
+        result = self.compute(readings)
+        self.assertLess(result.risk_score, 0.10)
+
+    def test_all_nan_raises(self):
+        """All NaN readings raises ValueError."""
+        with self.assertRaises(ValueError):
+            self.compute([float('nan')] * 12)
+
+    def test_minimum_3_readings(self):
+        """Exactly 3 readings produces a result."""
+        result = self.compute([120.0, 118.0, 116.0])
+        self.assertIsInstance(result.risk_score, float)
+        self.assertGreaterEqual(result.risk_score, 0.0)
+        self.assertLessEqual(result.risk_score, 1.0)
+
+    def test_risk_score_bounded(self):
+        """Risk score is always between 0 and 1."""
+        for readings in [[300.0]*12, [40.0]*12, [100.0]*12]:
+            result = self.compute(readings)
+            self.assertGreaterEqual(result.risk_score, 0.0)
+            self.assertLessEqual(result.risk_score, 1.0)
+
+    def test_monotonic_risk_with_decreasing_glucose(self):
+        """Lower stable glucose → higher risk score."""
+        risks = []
+        for sgv in [180, 150, 120, 100, 90, 80, 70]:
+            result = self.compute([float(sgv)] * 12)
+            risks.append(result.risk_score)
+        for i in range(len(risks) - 1):
+            self.assertLessEqual(risks[i], risks[i + 1],
+                                 f"Risk should increase as glucose decreases: "
+                                 f"sgv sequence not monotonic at index {i}")
+
+
+# ── Hypo Risk Pipeline Integration (EXP-2539) ────────────────────────
+
+class TestHypoRiskPipelineIntegration(unittest.TestCase):
+    """Integration test: hypo_risk runs as pipeline stage."""
+
+    def test_pipeline_populates_hypo_risk(self):
+        """Pipeline result includes non-None hypo_risk."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient()
+        result = run_pipeline(patient, skip_patterns=True)
+        self.assertIsNotNone(result.hypo_risk)
+        self.assertIsInstance(result.hypo_risk, HypoRiskResult)
+        self.assertGreaterEqual(result.hypo_risk.risk_score, 0.0)
+        self.assertLessEqual(result.hypo_risk.risk_score, 1.0)
+        self.assertIn(result.hypo_risk.risk_level,
+                      ('low', 'moderate', 'high', 'critical'))

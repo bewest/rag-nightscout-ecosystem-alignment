@@ -34,6 +34,7 @@ from .meal_detector import detect_meal_events, build_meal_history, classify_all_
 from .meal_predictor import build_timing_models, predict_next_meal, MealMLModel
 from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented, advise_circadian_isf, advise_context_cr, assess_overnight_drift, compute_loop_workload
 from .recommender import generate_recommendations, detect_controller_type, get_controller_behavior, adjust_confidence_for_controller
+from .hypo_risk import compute_hypo_risk
 from .clinical_rules import (
     generate_clinical_report, compute_correction_energy,
     assess_correction_timing, assess_aid_compensation,
@@ -398,6 +399,17 @@ def run_pipeline(patient: PatientData,
         except Exception as e:
             warnings.append(f"Two-component DIA decomposition failed: {e}")
 
+    # ── Stage 9: Hypo Early Warning (EXP-2539) ────────────────────
+    hypo_risk_result = None
+    if len(cleaned.glucose) >= 3:
+        try:
+            recent = cleaned.glucose[-12:].tolist()
+            recent_clean = [v for v in recent if not np.isnan(v)]
+            if len(recent_clean) >= 3:
+                hypo_risk_result = compute_hypo_risk(recent_clean)
+        except Exception as e:
+            warnings.append(f"Hypo risk assessment failed: {e}")
+
     # ── Assemble result ───────────────────────────────────────────
     elapsed = (time.perf_counter() - start) * 1000.0
 
@@ -426,6 +438,7 @@ def run_pipeline(patient: PatientData,
         two_component_dia=two_component_dia,
         overnight_assessment=overnight_assessment,
         loop_workload=loop_workload,
+        hypo_risk=hypo_risk_result,
         pipeline_latency_ms=elapsed,
         warnings=warnings,
     )

@@ -919,6 +919,23 @@ class LoopWorkloadReport:
     interpretation: str = ''             # human-readable summary
 
 
+# ── Hypo Early Warning (EXP-2539) ─────────────────────────────────────
+
+@dataclass
+class HypoRiskResult:
+    """30-minute hypo risk assessment from glucose trajectory (EXP-2539).
+
+    Uses population-fitted logistic regression on trajectory features
+    (glucose level, rate of change, acceleration, recent minimum,
+    time near hypo range). LogReg AUC=0.883, nearly matching GBM AUC=0.904.
+    """
+    risk_score: float           # 0.0–1.0 probability of hypo within 30 min
+    risk_level: str             # 'low', 'moderate', 'high', 'critical'
+    lead_time_minutes: int      # fixed at 30
+    dominant_factor: str        # which feature contributed most
+    recommended_action: str     # human-readable guidance
+
+
 # ── Complete Pipeline Result ──────────────────────────────────────────
 
 @dataclass
@@ -954,6 +971,8 @@ class PipelineResult:
     # Overnight drift & loop workload (EXP-2371–2396)
     overnight_assessment: Optional[OvernightDriftAssessment] = None
     loop_workload: Optional[LoopWorkloadReport] = None
+    # Hypo early warning (EXP-2539)
+    hypo_risk: Optional[HypoRiskResult] = None
     pipeline_latency_ms: float = 0.0
     warnings: List[str] = field(default_factory=list)
 
