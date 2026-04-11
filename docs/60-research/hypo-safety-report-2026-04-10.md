@@ -11,12 +11,12 @@ Hypoglycemia is the most dangerous acute complication in AID therapy. This batch
 
 **Key findings**:
 - **Hypoglycemia is ubiquitous**: 0.5–2.5 events/day, affecting 32–87% of all days across patients
-- **64–82% of hypos are preventable** (glucose was >100 mg/dL two hours before onset) for 9/11 patients — these are settings-correctable events, not inherent metabolic instability
-- **Rebound hyperglycemia follows 18–63% of hypo events** — the counter-regulatory overshoot is itself a source of poor control
+- **64–82% of hypos are preventable** (glucose was >100 mg/dL two hours before onset) for 8/11 patients — these are settings-correctable events, not inherent metabolic instability
+- **Rebound hyperglycemia follows 0–63% of hypo events** — the counter-regulatory overshoot is itself a source of poor control (0% for patient k, 18–63% for the rest)
 - **67–87% of hypos are bolus-associated** for most patients — correction and meal boluses are the primary trigger, not basal rates
 - **Patient i (HIGH risk)**: 2.5/day, 41% severe, 10.7% TBR, 87% of days affected
 - **Patient k (paradox)**: 2.4/day but only 16% preventable — tight control (95% TIR) means living near the hypo threshold by design
-- **A 10% basal reduction alone could eliminate 43–62% of hypo events** across the cohort
+- **A 10% basal reduction alone could eliminate 40–66% of hypo events** across the cohort
 
 ---
 
@@ -263,9 +263,9 @@ Hypoglycemia is the most dangerous acute complication in AID therapy. This batch
 
 **Key observations**:
 
-1. **64–82% of hypos are preventable for 9/11 patients** — glucose was well above threshold 2 hours before, meaning the insulin delivery between those points was excessive. These events are addressable through settings correction without sacrificing time-in-range.
+1. **64–82% of hypos are preventable for 8/11 patients** — glucose was well above threshold 2 hours before, meaning the insulin delivery between those points was excessive. These events are addressable through settings correction without sacrificing time-in-range.
 
-2. **Patient k is the exception** at only 16% preventable: most of k's hypos start from glucose already near threshold (<90 mg/dL). However, 62% would be fixed by a 10% basal reduction — k's issue is chronic over-basaling, not acute over-correction. The intervention is different but still addressable.
+2. **Patients f (53%), h (49%), and k (16%) have lower preventable fractions**: f's hypos are predominantly non-bolus (only 13% bolus-associated), h's hypos start from lower glucose, and k's hypos start from glucose already near threshold (<90 mg/dL). However, 62% of k's hypos would be fixed by a 10% basal reduction — k's issue is chronic over-basaling, not acute over-correction. The intervention is different but still addressable.
 
 3. **A 10% basal reduction is remarkably effective**: 40–66% of all hypo events across the cohort could be eliminated by this single, simple intervention. This represents approximately 0.2–1.6 fewer hypos per day.
 
