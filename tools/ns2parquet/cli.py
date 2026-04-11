@@ -141,7 +141,7 @@ def cmd_convert(args):
             print(f'\n── Building research grid ──')
         grid_df = build_grid(str(data_dir), patient_id, verbose=verbose)
         if grid_df is not None:
-            write_parquet(grid_df, output, 'grid', None,
+            write_parquet(grid_df, output, 'grid', GRID_SCHEMA,
                           append=args.append, verbose=verbose)
 
     elapsed = time.time() - t0
@@ -319,18 +319,9 @@ def cmd_ingest(args):
     now = datetime.now(timezone.utc)
     start = now - timedelta(days=args.days)
 
-    # Import Nightscout fetch utilities (optional dependency from cgmencode)
-    try:
-        from cgmencode.ns_fetch import (
-            fetch_entries, fetch_treatments, fetch_devicestatus, fetch_json,
-        )
-    except ImportError:
-        print(
-            'ERROR: Live ingestion requires cgmencode.ns_fetch.\n'
-            '  Install: pip install -e tools/cgmencode  (or ensure tools/ is on PYTHONPATH)',
-            file=sys.stderr,
-        )
-        return 1
+    from .ns_fetch import (
+        fetch_entries, fetch_treatments, fetch_devicestatus, fetch_json,
+    )
 
     now_ms = int(now.timestamp() * 1000)
     start_ms = int(start.timestamp() * 1000)
@@ -617,11 +608,14 @@ def cmd_convert_odc(args):
                 # Build research grid
                 if not args.skip_grid:
                     grid = build_grid(ns_dir, patient_id)
-                    write_parquet(grid.reset_index(drop=True),
-                                 output, 'grid',
-                                 schema=GRID_SCHEMA, append=True)
-                    if verbose:
-                        print(f'  Grid: {len(grid)} rows × {grid.shape[1]} cols')
+                    if grid is not None:
+                        write_parquet(grid.reset_index(drop=True),
+                                     output, 'grid',
+                                     schema=GRID_SCHEMA, append=True)
+                        if verbose:
+                            print(f'  Grid: {len(grid)} rows × {grid.shape[1]} cols')
+                    elif verbose:
+                        print(f'  SKIP grid: build_grid returned None')
 
             success += 1
         except Exception as e:
@@ -640,6 +634,127 @@ def cmd_convert_odc(args):
         print(f'{"═" * 60}')
 
     return 0 if failed == 0 else 1
+
+
+def build_manifest(input_path: str, verbose: bool = False) -> dict:
+    """Build a patient manifest from Parquet files.
+
+    Returns a dict suitable for writing as manifest.json, containing
+    per-patient metadata extracted from the grid and collection parquets.
+    """
+    import pandas as pd
+    from . import __version__
+    from datetime import datetime, timezone
+
+    in_dir = Path(input_path)
+    manifest = {
+        'ns2parquet_version': __version__,
+        'built': datetime.now(timezone.utc).isoformat(),
+        'schema_version': '0.3.0',
+        'collections': {},
+        'patients': {},
+    }
+
+    # Scan all parquet files for collection-level stats
+    for pf in sorted(in_dir.glob('*.parquet')):
+        collection = pf.stem
+        try:
+            df = pd.read_parquet(pf)
+        except Exception as e:
+            if verbose:
+                print(f'  WARNING: Could not read {pf}: {e}')
+            continue
+
+        col_info = {
+            'rows': len(df),
+            'columns': len(df.columns),
+            'size_bytes': pf.stat().st_size,
+        }
+        if 'patient_id' in df.columns:
+            col_info['num_patients'] = df['patient_id'].nunique()
+        manifest['collections'][collection] = col_info
+
+    # Build per-patient metadata from grid
+    grid_path = in_dir / 'grid.parquet'
+    if grid_path.exists():
+        grid = pd.read_parquet(grid_path)
+        for pid in sorted(grid['patient_id'].unique()):
+            pdf = grid[grid['patient_id'] == pid]
+            ts = pd.to_datetime(pdf['time'], utc=True)
+
+            # Detect controller from available data
+            controller = 'unknown'
+            has_oref = ('eventual_bg' in pdf.columns
+                        and pdf['eventual_bg'].notna().any())
+            has_loop = ('loop_predicted_30' in pdf.columns
+                        and pdf['loop_predicted_30'].notna().any())
+            if has_oref and has_loop:
+                controller = 'mixed'
+            elif has_oref:
+                controller = 'oref0'
+            elif has_loop:
+                controller = 'loop'
+
+            # Glucose stats
+            gluc = pdf['glucose'].dropna() if 'glucose' in pdf.columns else pd.Series(dtype=float)
+            tir = float((gluc.between(70, 180)).mean() * 100) if len(gluc) > 0 else None
+            mean_bg = float(gluc.mean()) if len(gluc) > 0 else None
+
+            patient_meta = {
+                'date_range': {
+                    'start': str(ts.min().isoformat()) if len(ts) else None,
+                    'end': str(ts.max().isoformat()) if len(ts) else None,
+                },
+                'grid_rows': len(pdf),
+                'days': round((ts.max() - ts.min()).total_seconds() / 86400, 1) if len(ts) > 1 else 0,
+                'cgm_coverage': round(float(pdf['glucose'].notna().mean() * 100), 1) if 'glucose' in pdf.columns else None,
+                'controller': controller,
+                'mean_glucose_mgdl': round(mean_bg, 1) if mean_bg else None,
+                'tir_pct': round(tir, 1) if tir is not None else None,
+            }
+
+            if 'bolus' in pdf.columns:
+                patient_meta['bolus_count'] = int((pdf['bolus'] > 0).sum())
+            if 'carbs' in pdf.columns:
+                patient_meta['carb_entries'] = int((pdf['carbs'] > 0).sum())
+
+            manifest['patients'][pid] = patient_meta
+
+    manifest['num_patients'] = len(manifest['patients'])
+    return manifest
+
+
+def cmd_manifest(args):
+    """Generate a patient manifest from existing Parquet files."""
+    input_path = args.input
+    verbose = not args.quiet
+
+    if not Path(input_path).exists():
+        print(f'ERROR: Directory not found: {input_path}', file=sys.stderr)
+        return 1
+
+    if verbose:
+        print(f'Building manifest from {input_path}/')
+
+    manifest = build_manifest(input_path, verbose=verbose)
+
+    out_path = Path(input_path) / 'manifest.json'
+    with open(out_path, 'w') as f:
+        json.dump(manifest, f, indent=2, default=str)
+
+    if verbose:
+        n = manifest['num_patients']
+        print(f'  {n} patient(s), {len(manifest["collections"])} collection(s)')
+        for pid, meta in manifest['patients'].items():
+            days = meta.get('days', 0)
+            ctrl = meta.get('controller', '?')
+            tir = meta.get('tir_pct')
+            tir_str = f'{tir:.0f}%' if tir is not None else '?'
+            print(f'    {pid}: {days:.0f}d, {ctrl}, TIR={tir_str}, '
+                  f'{meta.get("grid_rows", 0):,} rows')
+        print(f'  → {out_path}')
+
+    return 0
 
 
 def main():
@@ -731,6 +846,13 @@ def main():
         help='Skip building the research grid')
     p_odc.add_argument('--quiet', '-q', action='store_true')
 
+    # manifest
+    p_manifest = subparsers.add_parser('manifest',
+        help='Generate patient manifest from existing Parquet files')
+    p_manifest.add_argument('--input', '-i', default='output',
+        help='Directory containing Parquet files')
+    p_manifest.add_argument('--quiet', '-q', action='store_true')
+
     args = parser.parse_args()
 
     if args.command == 'convert':
@@ -745,6 +867,8 @@ def main():
         return cmd_merge(args)
     elif args.command == 'convert-odc':
         return cmd_convert_odc(args)
+    elif args.command == 'manifest':
+        return cmd_manifest(args)
     else:
         parser.print_help()
         return 1

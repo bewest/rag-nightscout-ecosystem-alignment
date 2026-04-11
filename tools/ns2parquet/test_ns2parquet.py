@@ -2014,9 +2014,9 @@ class TestPublicAPI(unittest.TestCase):
 
     def test_version_bumped(self):
         from tools.ns2parquet import __version__
-        # Should be >= 0.2.0 after re-export changes
+        # Should be >= 0.3.0 after ns_fetch + manifest changes
         major, minor, patch = __version__.split('.')
-        self.assertGreaterEqual(int(minor), 2)
+        self.assertGreaterEqual(int(minor), 3)
 
     def test_normalize_functions_exported(self):
         from tools.ns2parquet import (
@@ -2048,6 +2048,535 @@ class TestPublicAPI(unittest.TestCase):
                        DEVICESTATUS_SCHEMA, PROFILES_SCHEMA,
                        SETTINGS_SCHEMA, GRID_SCHEMA]:
             self.assertIsInstance(schema, pa.Schema)
+
+    def test_ns_fetch_exported(self):
+        from tools.ns2parquet import (
+            fetch_json, fetch_entries, fetch_treatments,
+            fetch_devicestatus, load_ns_url,
+        )
+        for fn in [fetch_json, fetch_entries, fetch_treatments,
+                   fetch_devicestatus, load_ns_url]:
+            self.assertTrue(callable(fn))
+
+    def test_build_manifest_exported(self):
+        from tools.ns2parquet import build_manifest
+        self.assertTrue(callable(build_manifest))
+
+
+# ── Controller detection tests ──────────────────────────────────────────
+
+class TestDetectController(unittest.TestCase):
+    """Test _detect_controller covers all controller string variants."""
+
+    def setUp(self):
+        from tools.ns2parquet.normalize import _detect_controller
+        self.detect = _detect_controller
+
+    def test_loop_url(self):
+        self.assertEqual(self.detect('loop://iPhone12,1'), 'loop')
+
+    def test_loop_substring(self):
+        self.assertEqual(self.detect('Loop'), 'loop')
+
+    def test_openaps_url(self):
+        self.assertEqual(self.detect('openaps://Edison'), 'openaps')
+
+    def test_openaps_substring(self):
+        self.assertEqual(self.detect('openaps'), 'openaps')
+
+    def test_trio(self):
+        self.assertEqual(self.detect('Trio 0.2.0'), 'trio')
+
+    def test_aaps(self):
+        self.assertEqual(self.detect('AAPS'), 'aaps')
+
+    def test_androidaps(self):
+        self.assertEqual(self.detect('AndroidAPS 3.2'), 'aaps')
+
+    def test_xdrip(self):
+        self.assertEqual(self.detect('xDrip-DexcomG6'), 'xdrip')
+
+    def test_unknown_device(self):
+        self.assertEqual(self.detect('DexcomShare2'), 'unknown')
+
+    def test_none_input(self):
+        self.assertEqual(self.detect(None), 'unknown')
+
+    def test_empty_string(self):
+        self.assertEqual(self.detect(''), 'unknown')
+
+
+# ── Loop devicestatus extraction tests ──────────────────────────────────
+
+class TestExtractLoopDS(unittest.TestCase):
+    """Test _extract_loop_ds with realistic Loop devicestatus records."""
+
+    def setUp(self):
+        from tools.ns2parquet.normalize import _extract_loop_ds
+        self.extract = _extract_loop_ds
+
+    def test_basic_loop_record(self):
+        ds = {
+            'loop': {
+                'iob': {'iob': 1.25, 'timestamp': '2024-01-01T12:00:00Z'},
+                'cob': {'cob': 30.0},
+                'predicted': {'values': [120, 118, 115, 112, 110, 108,
+                                         106, 104, 102, 100, 98, 96, 94]},
+                'enacted': {'rate': 0.5, 'duration': 1800, 'received': True},
+                'recommendedBolus': 0.0,
+            }
+        }
+        result = self.extract(ds)
+        self.assertAlmostEqual(result['iob'], 1.25)
+        self.assertAlmostEqual(result['cob'], 30.0)
+        self.assertAlmostEqual(result['predicted_30'], 106)   # values[6]
+        self.assertAlmostEqual(result['predicted_60'], 94)    # values[12]
+        self.assertAlmostEqual(result['predicted_min'], 94)
+        self.assertAlmostEqual(result['enacted_rate'], 0.5)
+        self.assertAlmostEqual(result['enacted_duration_min'], 30.0)  # 1800s→30min
+        self.assertTrue(result['enacted_received'])
+
+    def test_hypo_risk_count(self):
+        ds = {
+            'loop': {
+                'iob': {'iob': 2.0},
+                'cob': {},
+                'predicted': {'values': [100, 90, 80, 70, 65,
+                                         60, 55, 50, 55, 60, 65, 70, 75]},
+            }
+        }
+        result = self.extract(ds)
+        # Values < 70: 65, 60, 55, 50, 55, 60, 65 = 7
+        self.assertEqual(result['hypo_risk_count'], 7)
+
+    def test_override_from_ds_root(self):
+        ds = {
+            'loop': {'iob': {'iob': 0.5}, 'cob': {}},
+            'override': {'active': True, 'name': 'Running', 'multiplier': 1.5},
+        }
+        result = self.extract(ds)
+        self.assertTrue(result['override_active'])
+        self.assertEqual(result['override_name'], 'Running')
+        self.assertAlmostEqual(result['override_multiplier'], 1.5)
+
+    def test_no_predictions(self):
+        ds = {'loop': {'iob': {'iob': 0.0}, 'cob': {}}}
+        result = self.extract(ds)
+        self.assertIsNone(result['predicted_30'])
+        self.assertIsNone(result['predicted_60'])
+        self.assertIsNone(result['predicted_min'])
+        self.assertIsNone(result['hypo_risk_count'])
+
+    def test_empty_loop_object(self):
+        ds = {'loop': {}}
+        result = self.extract(ds)
+        self.assertIsNone(result['iob'])
+        self.assertIsNone(result['cob'])
+        self.assertIsNone(result['enacted_rate'])
+
+    def test_bolus_volume(self):
+        ds = {
+            'loop': {
+                'iob': {'iob': 0.5},
+                'cob': {},
+                'enacted': {'rate': 0.0, 'duration': 0, 'bolusVolume': 0.3},
+            }
+        }
+        result = self.extract(ds)
+        self.assertAlmostEqual(result['enacted_smb'], 0.3)
+
+
+# ── To-bool conversion tests ───────────────────────────────────────────
+
+class TestToBool(unittest.TestCase):
+    """Test _to_bool handles various input types from Nightscout JSON."""
+
+    def setUp(self):
+        from tools.ns2parquet.normalize import _to_bool
+        self.to_bool = _to_bool
+
+    def test_none(self):
+        self.assertIsNone(self.to_bool(None))
+
+    def test_bool_true(self):
+        self.assertTrue(self.to_bool(True))
+
+    def test_bool_false(self):
+        self.assertFalse(self.to_bool(False))
+
+    def test_string_true(self):
+        self.assertTrue(self.to_bool('true'))
+        self.assertTrue(self.to_bool('True'))
+        self.assertTrue(self.to_bool('1'))
+        self.assertTrue(self.to_bool('yes'))
+
+    def test_string_false(self):
+        self.assertFalse(self.to_bool('false'))
+        self.assertFalse(self.to_bool('0'))
+        self.assertFalse(self.to_bool('no'))
+
+    def test_int_truthy(self):
+        self.assertTrue(self.to_bool(1))
+        self.assertFalse(self.to_bool(0))
+
+
+# ── Grid dtype and alignment tests ──────────────────────────────────────
+
+class TestGridDtypeAndAlignment(unittest.TestCase):
+    """Verify grid output has correct dtypes and 5-min alignment."""
+
+    @classmethod
+    def setUpClass(cls):
+        patient_d = os.path.join(FIXTURES_DIR, 'patient_d')
+        if not os.path.isdir(patient_d):
+            # Build from individual fixture files
+            cls._tmpdir = tempfile.mkdtemp(prefix='ns2pq_dtype_')
+            for col in ['entries', 'treatments', 'devicestatus', 'profile']:
+                src = os.path.join(FIXTURES_DIR, f'patient_d_{col}.json')
+                if os.path.exists(src):
+                    shutil.copy(src, os.path.join(cls._tmpdir, f'{col}.json'))
+            from tools.ns2parquet.grid import build_grid
+            cls.grid = build_grid(cls._tmpdir, 'dtype_test')
+        else:
+            cls._tmpdir = None
+            from tools.ns2parquet.grid import build_grid
+            cls.grid = build_grid(patient_d, 'dtype_test')
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls._tmpdir:
+            shutil.rmtree(cls._tmpdir, ignore_errors=True)
+
+    def test_grid_not_none(self):
+        self.assertIsNotNone(self.grid, 'Grid should build from patient_d fixture')
+
+    @unittest.skipUnless(HAS_FIXTURES, 'patient_d fixtures required')
+    def test_time_column_is_datetime(self):
+        if self.grid is None:
+            self.skipTest('grid not built')
+        self.assertTrue(pd.api.types.is_datetime64_any_dtype(self.grid['time']))
+
+    @unittest.skipUnless(HAS_FIXTURES, 'patient_d fixtures required')
+    def test_time_column_is_tz_aware(self):
+        if self.grid is None:
+            self.skipTest('grid not built')
+        self.assertIsNotNone(self.grid['time'].dt.tz)
+
+    @unittest.skipUnless(HAS_FIXTURES, 'patient_d fixtures required')
+    def test_time_monotonically_increasing(self):
+        if self.grid is None:
+            self.skipTest('grid not built')
+        diffs = self.grid['time'].diff().dropna()
+        self.assertTrue((diffs > pd.Timedelta(0)).all(),
+                        'Time column should be monotonically increasing')
+
+    @unittest.skipUnless(HAS_FIXTURES, 'patient_d fixtures required')
+    def test_time_5min_intervals(self):
+        if self.grid is None:
+            self.skipTest('grid not built')
+        diffs = self.grid['time'].diff().dropna()
+        expected = pd.Timedelta(minutes=5)
+        self.assertTrue((diffs == expected).all(),
+                        f'All intervals should be 5 min; got unique: '
+                        f'{diffs.unique()[:5]}')
+
+    @unittest.skipUnless(HAS_FIXTURES, 'patient_d fixtures required')
+    def test_glucose_is_float(self):
+        if self.grid is None:
+            self.skipTest('grid not built')
+        self.assertTrue(pd.api.types.is_float_dtype(self.grid['glucose']))
+
+    @unittest.skipUnless(HAS_FIXTURES, 'patient_d fixtures required')
+    def test_iob_is_float(self):
+        if self.grid is None:
+            self.skipTest('grid not built')
+        self.assertTrue(pd.api.types.is_float_dtype(self.grid['iob']))
+
+    @unittest.skipUnless(HAS_FIXTURES, 'patient_d fixtures required')
+    def test_patient_id_is_string(self):
+        if self.grid is None:
+            self.skipTest('grid not built')
+        self.assertTrue(pd.api.types.is_string_dtype(self.grid['patient_id'])
+                        or pd.api.types.is_object_dtype(self.grid['patient_id']))
+
+    @unittest.skipUnless(HAS_FIXTURES, 'patient_d fixtures required')
+    def test_direction_is_string(self):
+        if self.grid is None:
+            self.skipTest('grid not built')
+        self.assertTrue(pd.api.types.is_string_dtype(self.grid['direction'])
+                        or pd.api.types.is_object_dtype(self.grid['direction']))
+
+    @unittest.skipUnless(HAS_FIXTURES, 'patient_d fixtures required')
+    def test_has_49_columns(self):
+        if self.grid is None:
+            self.skipTest('grid not built')
+        self.assertEqual(self.grid.shape[1], EXPECTED_GRID_COLS)
+
+
+# ── CGM gap tests ───────────────────────────────────────────────────────
+
+class TestCGMGap(unittest.TestCase):
+    """Test grid behavior when CGM data has a multi-hour gap."""
+
+    @classmethod
+    def setUpClass(cls):
+        """Create a synthetic patient directory with a 2-hour CGM gap."""
+        import json as _json
+
+        cls.tmpdir = tempfile.mkdtemp(prefix='ns2pq_gap_')
+
+        base_ts = 1704067200000  # 2024-01-01T00:00:00Z
+        entries = []
+        # 2 hours of data, then 2 hour gap, then 2 hours more
+        for i in range(24):  # 0:00 - 2:00 (every 5 min)
+            entries.append({
+                '_id': f'gap_a_{i}', 'type': 'sgv',
+                'sgv': 120 + i, 'date': base_ts + i * 300000,
+                'direction': 'Flat',
+            })
+        # Gap from 2:00 to 4:00
+        for i in range(24):  # 4:00 - 6:00
+            entries.append({
+                '_id': f'gap_b_{i}', 'type': 'sgv',
+                'sgv': 150 - i, 'date': base_ts + (48 + i) * 300000,
+                'direction': 'FortyFiveDown',
+            })
+
+        # Minimal treatments, devicestatus, profile
+        treatments = [{'_id': 't1', 'eventType': 'Correction Bolus',
+                       'insulin': 1.0,
+                       'created_at': '2024-01-01T01:00:00Z'}]
+        ds = [{'_id': 'ds1', 'created_at': '2024-01-01T01:00:00Z',
+               'device': 'loop://test',
+               'loop': {'iob': {'iob': 0.5}, 'cob': {'cob': 0}}}]
+        profile = [{'_id': 'p1', 'defaultProfile': 'Default',
+                    'store': {'Default': {
+                        'timezone': 'UTC', 'dia': 6, 'units': 'mg/dl',
+                        'basal': [{'time': '00:00', 'value': 1.0,
+                                   'timeAsSeconds': 0}],
+                        'isfProfile': [{'time': '00:00', 'value': 40,
+                                        'timeAsSeconds': 0}],
+                        'carbRatio': [{'time': '00:00', 'value': 10,
+                                       'timeAsSeconds': 0}],
+                        'target_low': [{'time': '00:00', 'value': 100,
+                                        'timeAsSeconds': 0}],
+                        'target_high': [{'time': '00:00', 'value': 120,
+                                         'timeAsSeconds': 0}],
+                    }}}]
+
+        for name, data in [('entries', entries), ('treatments', treatments),
+                           ('devicestatus', ds), ('profile', profile)]:
+            with open(os.path.join(cls.tmpdir, f'{name}.json'), 'w') as f:
+                _json.dump(data, f)
+
+        from tools.ns2parquet.grid import build_grid
+        cls.grid = build_grid(cls.tmpdir, 'gap_test')
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmpdir, ignore_errors=True)
+
+    def test_grid_built(self):
+        self.assertIsNotNone(self.grid)
+
+    def test_glucose_nan_during_gap(self):
+        """Glucose should be NaN during the 2h CGM gap."""
+        gap_rows = self.grid[
+            (self.grid['time'] > '2024-01-01T02:10:00Z') &
+            (self.grid['time'] < '2024-01-01T03:50:00Z')
+        ]
+        if len(gap_rows) > 0:
+            nan_count = gap_rows['glucose'].isna().sum()
+            self.assertGreater(nan_count, 0,
+                               'Expected NaN glucose during CGM gap')
+
+    def test_hours_since_cgm_increases_during_gap(self):
+        """hours_since_cgm should accumulate during the gap."""
+        if 'hours_since_cgm' not in self.grid.columns:
+            self.skipTest('hours_since_cgm column not present')
+        # Find rows in the middle of the 2h gap (between 2:30 and 3:30)
+        gap_mid = self.grid[
+            (self.grid['time'] >= '2024-01-01T02:30:00+00:00') &
+            (self.grid['time'] <= '2024-01-01T03:30:00+00:00')
+        ]
+        if len(gap_mid) > 0:
+            hsc = gap_mid['hours_since_cgm'].dropna()
+            if len(hsc) > 0:
+                self.assertGreater(hsc.max(), 0.5,
+                                   'hours_since_cgm should accumulate '
+                                   'during CGM gap')
+
+    def test_glucose_roc_nan_at_gap_boundary(self):
+        """Rate of change should be NaN at gap boundaries."""
+        if 'glucose_roc' not in self.grid.columns:
+            self.skipTest('glucose_roc column not present')
+        after_gap = self.grid[
+            self.grid['time'] >= '2024-01-01T04:00:00+00:00'].head(3)
+        if len(after_gap) > 0:
+            roc_vals = after_gap['glucose_roc'].dropna()
+            if len(roc_vals) > 0:
+                # Should not show huge jumps from interpolation across gap
+                self.assertTrue(
+                    all(abs(v) < 30 for v in roc_vals),
+                    f'glucose_roc at gap boundary should not be huge: '
+                    f'{roc_vals.tolist()}')
+
+    def test_has_49_columns(self):
+        self.assertEqual(self.grid.shape[1], EXPECTED_GRID_COLS)
+
+
+# ── Manifest tests ──────────────────────────────────────────────────────
+
+class TestManifest(unittest.TestCase):
+    """Test build_manifest and cmd_manifest."""
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp(prefix='ns2pq_manifest_')
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir, ignore_errors=True)
+
+    def test_manifest_from_grid(self):
+        """build_manifest extracts per-patient metadata from grid.parquet."""
+        from tools.ns2parquet.writer import write_parquet
+        from tools.ns2parquet.cli import build_manifest
+
+        times = pd.date_range('2024-01-01', periods=288,
+                              freq='5min', tz='UTC')
+        grid = pd.DataFrame({
+            'patient_id': 'test_p',
+            'time': times,
+            'glucose': np.random.uniform(70, 200, 288).astype(np.float32),
+            'iob': np.zeros(288, dtype=np.float32),
+            'cob': np.zeros(288, dtype=np.float32),
+            'net_basal': np.zeros(288, dtype=np.float32),
+            'bolus': np.zeros(288, dtype=np.float32),
+            'bolus_smb': np.zeros(288, dtype=np.float32),
+            'carbs': np.zeros(288, dtype=np.float32),
+            'eventual_bg': np.full(288, np.nan, dtype=np.float32),
+            'loop_predicted_30': np.full(288, 120, dtype=np.float32),
+        })
+        write_parquet(grid, self.tmpdir, 'grid', append=False)
+
+        manifest = build_manifest(self.tmpdir)
+        self.assertEqual(manifest['num_patients'], 1)
+        self.assertIn('test_p', manifest['patients'])
+
+        p = manifest['patients']['test_p']
+        self.assertEqual(p['grid_rows'], 288)
+        self.assertIsNotNone(p['tir_pct'])
+        self.assertIsNotNone(p['mean_glucose_mgdl'])
+        self.assertEqual(p['controller'], 'loop')  # has loop_predicted_30
+
+    def test_manifest_multiple_patients(self):
+        from tools.ns2parquet.writer import write_parquet
+        from tools.ns2parquet.cli import build_manifest
+
+        times = pd.date_range('2024-01-01', periods=100,
+                              freq='5min', tz='UTC')
+        rows = []
+        for pid in ['alice', 'bob']:
+            for t in times:
+                rows.append({
+                    'patient_id': pid, 'time': t,
+                    'glucose': np.float32(120),
+                    'eventual_bg': (np.float32(115)
+                                    if pid == 'bob' else np.nan),
+                })
+        grid = pd.DataFrame(rows)
+        write_parquet(grid, self.tmpdir, 'grid', append=False)
+
+        manifest = build_manifest(self.tmpdir)
+        self.assertEqual(manifest['num_patients'], 2)
+        self.assertIn('alice', manifest['patients'])
+        self.assertIn('bob', manifest['patients'])
+        self.assertEqual(manifest['patients']['bob']['controller'], 'oref0')
+        self.assertEqual(manifest['patients']['alice']['controller'],
+                         'unknown')
+
+    def test_manifest_has_version(self):
+        from tools.ns2parquet.cli import build_manifest
+        from tools.ns2parquet import __version__
+
+        manifest = build_manifest(self.tmpdir)
+        self.assertEqual(manifest['ns2parquet_version'], __version__)
+
+    def test_cmd_manifest_writes_json(self):
+        from tools.ns2parquet.writer import write_parquet
+        import argparse as _argparse
+
+        times = pd.date_range('2024-01-01', periods=50,
+                              freq='5min', tz='UTC')
+        grid = pd.DataFrame({
+            'patient_id': 'cmd_test',
+            'time': times,
+            'glucose': np.full(50, 130, dtype=np.float32),
+        })
+        write_parquet(grid, self.tmpdir, 'grid', append=False)
+
+        from tools.ns2parquet.cli import cmd_manifest
+        args = _argparse.Namespace(input=self.tmpdir, quiet=True)
+        rc = cmd_manifest(args)
+        self.assertEqual(rc, 0)
+
+        manifest_path = os.path.join(self.tmpdir, 'manifest.json')
+        self.assertTrue(os.path.exists(manifest_path))
+
+        import json as _json
+        with open(manifest_path) as f:
+            data = _json.load(f)
+        self.assertIn('cmd_test', data['patients'])
+
+
+# ── NS fetch module tests ──────────────────────────────────────────────
+
+class TestNsFetch(unittest.TestCase):
+    """Test ns_fetch module is self-contained and importable."""
+
+    def test_import_without_cgmencode(self):
+        """ns_fetch should import without any cgmencode dependency."""
+        from tools.ns2parquet.ns_fetch import (
+            fetch_json, fetch_entries, fetch_treatments,
+            fetch_devicestatus, load_ns_url, _fetch_windowed,
+        )
+        self.assertTrue(callable(fetch_json))
+        self.assertTrue(callable(_fetch_windowed))
+
+    def test_load_ns_url_from_envfile(self):
+        from tools.ns2parquet.ns_fetch import load_ns_url
+
+        envfile = os.path.join(tempfile.mkdtemp(), 'test.env')
+        try:
+            with open(envfile, 'w') as f:
+                f.write('NS_URL=https://my-nightscout.fly.dev\n')
+            url = load_ns_url(envfile)
+            self.assertEqual(url, 'https://my-nightscout.fly.dev')
+        finally:
+            shutil.rmtree(os.path.dirname(envfile), ignore_errors=True)
+
+    def test_load_ns_url_strips_quotes(self):
+        from tools.ns2parquet.ns_fetch import load_ns_url
+
+        envfile = os.path.join(tempfile.mkdtemp(), 'test.env')
+        try:
+            with open(envfile, 'w') as f:
+                f.write('NS_URL="https://my-ns.example.com/"\n')
+            url = load_ns_url(envfile)
+            self.assertEqual(url, 'https://my-ns.example.com')
+        finally:
+            shutil.rmtree(os.path.dirname(envfile), ignore_errors=True)
+
+    def test_load_ns_url_missing_raises(self):
+        from tools.ns2parquet.ns_fetch import load_ns_url
+
+        envfile = os.path.join(tempfile.mkdtemp(), 'test.env')
+        try:
+            with open(envfile, 'w') as f:
+                f.write('OTHER_VAR=foo\n')
+            with self.assertRaises(ValueError):
+                load_ns_url(envfile)
+        finally:
+            shutil.rmtree(os.path.dirname(envfile), ignore_errors=True)
 
 
 if __name__ == '__main__':

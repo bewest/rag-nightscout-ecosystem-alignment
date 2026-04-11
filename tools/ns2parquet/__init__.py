@@ -24,7 +24,7 @@ Usage:
     python -m tools.ns2parquet info --input output/
 """
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
 # Public API re-exports
 from .normalize import (                                    # noqa: F401
@@ -39,3 +39,8 @@ from .schemas import (                                      # noqa: F401
     PROFILES_SCHEMA, SETTINGS_SCHEMA, GRID_SCHEMA,
 )
 from .constants import MMOLL_TO_MGDL, DIRECTION_MAP, normalize_timezone  # noqa: F401
+from .ns_fetch import (                                     # noqa: F401
+    fetch_json, fetch_entries, fetch_treatments,
+    fetch_devicestatus, load_ns_url,
+)
+from .cli import build_manifest                             # noqa: F401

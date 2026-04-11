@@ -10,20 +10,23 @@ Three-level validation:
   3. TREATMENT COUNTS — Compare bolus/carb event counts
 
 Usage:
-    python3 tools/ns2parquet/validate_parquet.py
+    python3 tools/ns2parquet/validate_parquet.py --parquet-dir /path/to/parquet
+    python3 tools/ns2parquet/validate_parquet.py  # uses PARQUET_DIR env var or default
 """
 
+import argparse
+import os
 import sys
 import time
 import numpy as np
 import pandas as pd
 from pathlib import Path
 
-# Add tools/ to path for cgmencode imports
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
 PATIENTS_DIR = Path(__file__).resolve().parent.parent.parent / 'externals' / 'ns-data' / 'patients'
-PARQUET_DIR = Path('/tmp/ns2parquet-validate')
+DEFAULT_PARQUET_DIR = os.environ.get(
+    'NS2PARQUET_VALIDATE_DIR',
+    str(Path(__file__).resolve().parent.parent.parent / 'output' / 'validate'),
+)
 
 TARGET_LOW = 70
 TARGET_HIGH = 180
@@ -44,8 +47,16 @@ def glucose_metrics(glucose):
 
 
 def load_json_grid(patient_dir):
-    """Load via the original JSON pipeline (build_nightscout_grid)."""
-    from cgmencode.real_data_adapter import build_nightscout_grid
+    """Load via the original JSON pipeline (build_nightscout_grid).
+
+    Tries to import from cgmencode; returns None if unavailable.
+    """
+    try:
+        from cgmencode.real_data_adapter import build_nightscout_grid
+    except ImportError:
+        print('  WARNING: cgmencode not available — skipping JSON comparison',
+              file=sys.stderr)
+        return None, None
     df, features_8ch = build_nightscout_grid(str(patient_dir), verbose=False)
     return df, features_8ch
 
@@ -71,7 +82,7 @@ def compare_column(json_vals, parquet_vals, col_name, atol=0.5):
     return match_pct, float(np.max(diffs)), float(np.mean(diffs))
 
 
-def validate_patient(patient_id, verbose=True):
+def validate_patient(patient_id, parquet_dir, verbose=True):
     """Run all validation checks for one patient."""
     patient_dir = PATIENTS_DIR / patient_id / 'training'
     if not (patient_dir / 'entries.json').exists():
@@ -84,8 +95,12 @@ def validate_patient(patient_id, verbose=True):
     json_df, json_features = load_json_grid(patient_dir)
     json_time = time.time() - t0
 
+    if json_df is None:
+        results['status'] = 'SKIP_NO_CGMENCODE'
+        return results
+
     t0 = time.time()
-    pq_df = load_parquet_grid(PARQUET_DIR, patient_id)
+    pq_df = load_parquet_grid(parquet_dir, patient_id)
     parquet_time = time.time() - t0
 
     results['json_rows'] = len(json_df)
@@ -295,25 +310,40 @@ def print_results(all_results):
 
 
 def main():
-    if not PARQUET_DIR.exists():
-        print(f'ERROR: Parquet output not found at {PARQUET_DIR}')
-        print('Run: python3 -m tools.ns2parquet convert-all --patients-dir externals/ns-data/patients --subset training --output /tmp/ns2parquet-validate')
+    parser = argparse.ArgumentParser(
+        description='Validate ns2parquet output against original JSON pipeline')
+    parser.add_argument('--parquet-dir', '-p',
+                        default=DEFAULT_PARQUET_DIR,
+                        help=f'Directory containing parquet output (default: $NS2PARQUET_VALIDATE_DIR or {DEFAULT_PARQUET_DIR})')
+    parser.add_argument('--patients-dir',
+                        default=str(PATIENTS_DIR),
+                        help='Directory containing patient subdirectories')
+    args = parser.parse_args()
+
+    parquet_dir = Path(args.parquet_dir)
+    patients_dir = Path(args.patients_dir)
+
+    if not parquet_dir.exists():
+        print(f'ERROR: Parquet output not found at {parquet_dir}')
+        print(f'Run: python3 -m tools.ns2parquet convert-all '
+              f'--patients-dir {patients_dir} --subset training '
+              f'--output {parquet_dir}')
         return 1
 
     patient_ids = sorted([
-        d.name for d in PATIENTS_DIR.iterdir()
+        d.name for d in patients_dir.iterdir()
         if d.is_dir() and not d.name.startswith('.')
     ])
 
     print(f'Validating {len(patient_ids)} patients: {", ".join(patient_ids)}')
-    print(f'JSON source: {PATIENTS_DIR}')
-    print(f'Parquet source: {PARQUET_DIR}')
+    print(f'JSON source: {patients_dir}')
+    print(f'Parquet source: {parquet_dir}')
 
     all_results = []
     for pid in patient_ids:
         print(f'  Validating {pid}...', end='', flush=True)
         try:
-            r = validate_patient(pid)
+            r = validate_patient(pid, parquet_dir)
             status = r.get('status', '?') if r else 'SKIP'
             print(f' {status}')
             all_results.append(r)
