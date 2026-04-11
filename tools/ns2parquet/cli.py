@@ -582,10 +582,14 @@ def cmd_convert_odc(args):
 
                 # Load converted JSON for raw Parquet tables
                 import json as _json
-                entries_list = _json.load(open(Path(ns_dir) / 'entries.json'))
-                treatments_list = _json.load(open(Path(ns_dir) / 'treatments.json'))
-                ds_list = _json.load(open(Path(ns_dir) / 'devicestatus.json'))
-                profile_list = _json.load(open(Path(ns_dir) / 'profile.json'))
+                with open(Path(ns_dir) / 'entries.json') as _f:
+                    entries_list = _json.load(_f)
+                with open(Path(ns_dir) / 'treatments.json') as _f:
+                    treatments_list = _json.load(_f)
+                with open(Path(ns_dir) / 'devicestatus.json') as _f:
+                    ds_list = _json.load(_f)
+                with open(Path(ns_dir) / 'profile.json') as _f:
+                    profile_list = _json.load(_f)
 
                 # Normalize raw tables
                 entries_df = normalize_entries(entries_list, patient_id)

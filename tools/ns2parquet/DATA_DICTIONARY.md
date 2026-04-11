@@ -1,6 +1,6 @@
 # ns2parquet Data Dictionary
 
-Schema version: ns2parquet v0.2.0
+Schema version: ns2parquet v0.3.0
 
 All glucose values are in **mg/dL**. All timestamps are **UTC, millisecond precision**.
 All durations are in **minutes**. All absorption times are in **minutes**.

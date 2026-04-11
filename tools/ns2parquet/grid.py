@@ -190,8 +190,8 @@ def build_grid(data_path: str, patient_id: str,
             suggested = openaps.get('suggested', {}) or {}
             if 'iob' in iob_data:
                 iob_val = float(iob_data.get('iob', 0))
-            if 'IOB' in suggested:
-                iob_val = iob_val or float(suggested['IOB'])
+            if 'IOB' in suggested and iob_val is None:
+                iob_val = float(suggested['IOB'])
             cob_val = float(suggested.get('COB', 0))
             # Use best available prediction curve
             pred_bgs = suggested.get('predBGs', {}) or {}
