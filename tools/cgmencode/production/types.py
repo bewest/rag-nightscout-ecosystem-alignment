@@ -110,6 +110,7 @@ class SettingsParameter(str, Enum):
     BASAL_RATE = "basal_rate"
     ISF = "isf"
     CR = "cr"
+    CORRECTION_THRESHOLD = "correction_threshold"
 
 
 class ConfidenceGrade(str, Enum):

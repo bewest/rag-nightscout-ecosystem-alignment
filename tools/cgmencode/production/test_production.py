@@ -2255,3 +2255,240 @@ class TestISFNonlinearityIntegration(unittest.TestCase):
             bolus=bolus)
         # Should not raise — bolus kwarg is accepted
         self.assertIsInstance(recs, list)
+
+
+# ── Correction Threshold Tests (EXP-2528) ────────────────────────────
+
+class TestCorrectionThresholdTypes(unittest.TestCase):
+    """Type-level tests for correction threshold constants."""
+
+    def test_population_threshold_value(self):
+        """Population threshold should be 166 mg/dL per EXP-2528."""
+        from cgmencode.production.settings_advisor import _POPULATION_CORRECTION_THRESHOLD
+        self.assertEqual(_POPULATION_CORRECTION_THRESHOLD, 166)
+
+    def test_threshold_range_valid(self):
+        """Per-patient threshold range must be (130, 290)."""
+        from cgmencode.production.settings_advisor import _CORRECTION_THRESHOLD_RANGE
+        self.assertEqual(_CORRECTION_THRESHOLD_RANGE, (130, 290))
+
+    def test_settings_parameter_enum(self):
+        """SettingsParameter should have CORRECTION_THRESHOLD value."""
+        from cgmencode.production.types import SettingsParameter
+        self.assertEqual(SettingsParameter.CORRECTION_THRESHOLD.value, 'correction_threshold')
+
+    def test_min_correction_events_positive(self):
+        """Minimum correction events must be > 0."""
+        from cgmencode.production.settings_advisor import _MIN_CORRECTION_EVENTS
+        self.assertGreater(_MIN_CORRECTION_EVENTS, 0)
+
+
+class TestCorrectionThresholdFunction(unittest.TestCase):
+    """Functional tests for advise_correction_threshold."""
+
+    def _make_clinical(self, mean_glucose=180.0):
+        from cgmencode.production.types import ClinicalReport
+        cr = ClinicalReport.__new__(ClinicalReport)
+        cr.mean_glucose = mean_glucose
+        cr.isf_discrepancy = 2.0
+        cr.effective_isf = 100.0
+        cr.profile_isf = 50.0
+        return cr
+
+    def _make_profile(self, target_high=180.0):
+        from cgmencode.production.types import PatientProfile
+        return PatientProfile(
+            basal_schedule=[{'time': '00:00', 'value': 0.8}],
+            isf_schedule=[{'time': '00:00', 'value': 50.0}],
+            cr_schedule=[{'time': '00:00', 'value': 10.0}],
+            dia_hours=5.0,
+            target_high=target_high,
+        )
+
+    def _make_correction_events(self, n=30, start_bg_base=200.0):
+        """Create synthetic correction events."""
+        events = []
+        for i in range(n):
+            start_bg = start_bg_base + (i % 10) * 10 - 50
+            events.append({
+                'start_bg': float(start_bg),
+                'tir_change': 5.0 if start_bg >= 166 else -3.0,
+                'rebound': start_bg < 166,
+                'rebound_magnitude': 15.0 if start_bg < 166 else 0.0,
+                'went_below_70': start_bg < 150,
+                'drop_4h': 30.0 if start_bg >= 166 else 10.0,
+            })
+        return events
+
+    def test_returns_none_insufficient_data(self):
+        """No advisory with < MIN_DATA_DAYS."""
+        from cgmencode.production.settings_advisor import advise_correction_threshold
+        result = advise_correction_threshold(
+            self._make_clinical(), self._make_profile(), days_of_data=1.0)
+        self.assertIsNone(result)
+
+    def test_returns_population_default_no_events(self):
+        """Returns population default (166) when no correction events."""
+        from cgmencode.production.settings_advisor import advise_correction_threshold
+        result = advise_correction_threshold(
+            self._make_clinical(), self._make_profile(target_high=120.0),
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.suggested_value, 166.0)
+        self.assertEqual(result.parameter.value, 'correction_threshold')
+
+    def test_returns_none_when_current_matches(self):
+        """No advisory when current target_high ~= recommended threshold."""
+        from cgmencode.production.settings_advisor import advise_correction_threshold
+        result = advise_correction_threshold(
+            self._make_clinical(), self._make_profile(target_high=166.0),
+            days_of_data=7.0)
+        self.assertIsNone(result)
+
+    def test_direction_increase_when_below(self):
+        """Direction should be 'increase' when current < recommended."""
+        from cgmencode.production.settings_advisor import advise_correction_threshold
+        result = advise_correction_threshold(
+            self._make_clinical(), self._make_profile(target_high=120.0),
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.direction, 'increase')
+
+    def test_direction_decrease_when_above(self):
+        """Direction should be 'decrease' when current > recommended."""
+        from cgmencode.production.settings_advisor import advise_correction_threshold
+        result = advise_correction_threshold(
+            self._make_clinical(), self._make_profile(target_high=200.0),
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.direction, 'decrease')
+
+    def test_per_patient_calibration(self):
+        """With enough events, should compute per-patient threshold."""
+        from cgmencode.production.settings_advisor import advise_correction_threshold
+        events = self._make_correction_events(n=30, start_bg_base=200.0)
+        result = advise_correction_threshold(
+            self._make_clinical(), self._make_profile(target_high=120.0),
+            correction_events=events, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertIn('per-patient', result.evidence)
+
+    def test_population_fallback_few_events(self):
+        """With < MIN_CORRECTION_EVENTS, uses population default."""
+        from cgmencode.production.settings_advisor import advise_correction_threshold
+        events = self._make_correction_events(n=5)
+        result = advise_correction_threshold(
+            self._make_clinical(), self._make_profile(target_high=120.0),
+            correction_events=events, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertIn('population', result.evidence)
+
+    def test_confidence_increases_with_events(self):
+        """More events should give higher confidence."""
+        from cgmencode.production.settings_advisor import advise_correction_threshold
+        few = advise_correction_threshold(
+            self._make_clinical(), self._make_profile(target_high=120.0),
+            correction_events=None, days_of_data=7.0)
+        many = advise_correction_threshold(
+            self._make_clinical(), self._make_profile(target_high=120.0),
+            correction_events=self._make_correction_events(n=60),
+            days_of_data=7.0)
+        self.assertIsNotNone(few)
+        self.assertIsNotNone(many)
+        self.assertGreater(many.confidence, few.confidence)
+
+    def test_evidence_contains_exp_2528(self):
+        """Evidence should reference EXP-2528."""
+        from cgmencode.production.settings_advisor import advise_correction_threshold
+        result = advise_correction_threshold(
+            self._make_clinical(), self._make_profile(target_high=120.0),
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertIn('EXP-2528', result.evidence)
+
+    def test_rationale_explains_harm(self):
+        """Rationale should explain net-harm below threshold."""
+        from cgmencode.production.settings_advisor import advise_correction_threshold
+        result = advise_correction_threshold(
+            self._make_clinical(), self._make_profile(target_high=120.0),
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertIn('net-negative', result.rationale)
+
+    def test_predicted_tir_delta_positive(self):
+        """Predicted TIR improvement should be positive."""
+        from cgmencode.production.settings_advisor import advise_correction_threshold
+        result = advise_correction_threshold(
+            self._make_clinical(), self._make_profile(target_high=120.0),
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertGreater(result.predicted_tir_delta, 0)
+
+
+class TestCorrectionThresholdIntegration(unittest.TestCase):
+    """Integration: correction threshold advisory in generate_settings_advice."""
+
+    def test_correction_events_kwarg_accepted(self):
+        """generate_settings_advice should accept correction_events kwarg."""
+        from cgmencode.production.settings_advisor import generate_settings_advice
+        from cgmencode.production.types import ClinicalReport, PatientProfile
+
+        glucose = np.full(288, 150.0)
+        hours = np.linspace(0, 24, 288, endpoint=False)
+        profile = PatientProfile(
+            basal_schedule=[{'time': '00:00', 'value': 0.8}],
+            isf_schedule=[{'time': '00:00', 'value': 50.0}],
+            cr_schedule=[{'time': '00:00', 'value': 10.0}],
+            dia_hours=5.0,
+            target_high=120.0,
+        )
+        clinical = ClinicalReport.__new__(ClinicalReport)
+        clinical.mean_glucose = 150.0
+        clinical.isf_discrepancy = None
+        clinical.effective_isf = None
+        clinical.profile_isf = 50.0
+        clinical.cr_score = None
+        clinical.tir_70_180 = 0.7
+        clinical.time_below_54 = 0.0
+        clinical.time_below_70 = 0.02
+
+        events = [
+            {'start_bg': 200.0, 'tir_change': 5.0, 'rebound': False,
+             'rebound_magnitude': 0.0, 'went_below_70': False, 'drop_4h': 30.0}
+        ] * 30
+        recs = generate_settings_advice(
+            glucose, None, hours, clinical, profile, 7.0,
+            correction_events=events)
+        # Should not raise — correction_events kwarg is accepted
+        self.assertIsInstance(recs, list)
+
+    def test_threshold_rec_in_results(self):
+        """Correction threshold rec should appear when target_high != 166."""
+        from cgmencode.production.settings_advisor import generate_settings_advice
+        from cgmencode.production.types import ClinicalReport, PatientProfile
+
+        glucose = np.full(288, 150.0)
+        hours = np.linspace(0, 24, 288, endpoint=False)
+        profile = PatientProfile(
+            basal_schedule=[{'time': '00:00', 'value': 0.8}],
+            isf_schedule=[{'time': '00:00', 'value': 50.0}],
+            cr_schedule=[{'time': '00:00', 'value': 10.0}],
+            dia_hours=5.0,
+            target_high=120.0,
+        )
+        clinical = ClinicalReport.__new__(ClinicalReport)
+        clinical.mean_glucose = 150.0
+        clinical.isf_discrepancy = None
+        clinical.effective_isf = None
+        clinical.profile_isf = 50.0
+        clinical.cr_score = None
+        clinical.tir_70_180 = 0.7
+        clinical.time_below_54 = 0.0
+        clinical.time_below_70 = 0.02
+
+        recs = generate_settings_advice(
+            glucose, None, hours, clinical, profile, 7.0)
+        threshold_recs = [r for r in recs
+                          if r.parameter.value == 'correction_threshold']
+        self.assertEqual(len(threshold_recs), 1)
+        self.assertEqual(threshold_recs[0].suggested_value, 166.0)

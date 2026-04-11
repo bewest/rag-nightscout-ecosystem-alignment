@@ -476,6 +476,166 @@ def _estimate_typical_correction_dose(
     return excursion / current_isf
 
 
+# ── Correction Threshold Advisory (EXP-2528) ─────────────────────────
+
+# Population optimal correction threshold: corrections below this BG
+# level produce net harm (rebound + hypo risk exceeds glucose-lowering
+# benefit). Per-patient thresholds range 130-290 mg/dL.
+_POPULATION_CORRECTION_THRESHOLD = 166  # mg/dL (EXP-2528 population median)
+_CORRECTION_THRESHOLD_RANGE = (130, 290)  # observed per-patient range
+
+# Net benefit scoring from EXP-2528a:
+#   net_benefit = drop_4h - rebound_penalty - hypo_penalty
+# Hypo penalty: 50 mg/dL equivalent per hypo event (3× glucose excursion weight)
+_HYPO_PENALTY_MGDL = 50
+_MIN_CORRECTION_EVENTS = 10   # minimum events for per-patient calibration
+_HIGH_CONFIDENCE_EVENTS = 50  # full-confidence event count
+
+
+def advise_correction_threshold(
+    clinical: ClinicalReport,
+    profile: PatientProfile,
+    correction_events: Optional[List[dict]] = None,
+    days_of_data: float = 0.0,
+) -> Optional[SettingsRecommendation]:
+    """Generate advisory for optimal correction threshold (EXP-2528).
+
+    Research: EXP-2528. Corrections below a patient-specific BG threshold
+    produce net harm: glucose rebounds and hypo risk exceed the glucose-
+    lowering benefit. Population median threshold is 166 mg/dL; per-patient
+    values range 130-290 mg/dL.
+
+    When correction_events are provided (list of dicts with keys 'start_bg',
+    'tir_change', 'rebound', 'rebound_magnitude', 'went_below_70'), the
+    function computes a per-patient optimal threshold by scanning BG bins
+    for the net-benefit zero-crossing.
+
+    Falls back to population default (166 mg/dL) when insufficient data.
+
+    Args:
+        clinical: ClinicalReport from clinical_rules.
+        profile: PatientProfile with current target_high.
+        correction_events: optional list of correction event dicts from
+            find_corrections() or equivalent.  Each dict must contain at
+            minimum: 'start_bg' (float), 'tir_change' (float).
+            Also used if present: 'rebound' (bool), 'rebound_magnitude'
+            (float), 'went_below_70' (bool), 'drop_4h' (float).
+        days_of_data: number of days of available data.
+
+    Returns:
+        SettingsRecommendation with parameter=CORRECTION_THRESHOLD, or
+        None if insufficient data.
+    """
+    if days_of_data < MIN_DATA_DAYS:
+        return None
+
+    current_target_high = profile.target_high
+
+    # Try per-patient calibration if enough correction events
+    patient_threshold = None
+    n_events = 0
+    if correction_events is not None:
+        n_events = len(correction_events)
+
+    if n_events >= _MIN_CORRECTION_EVENTS:
+        patient_threshold = _compute_patient_threshold(correction_events)
+
+    if patient_threshold is not None:
+        recommended = patient_threshold
+        source = "per-patient"
+    else:
+        recommended = float(_POPULATION_CORRECTION_THRESHOLD)
+        source = "population"
+
+    # Confidence: based on event count and data days
+    if n_events >= _HIGH_CONFIDENCE_EVENTS:
+        confidence = min(0.9, days_of_data / HIGH_CONFIDENCE_DAYS)
+    elif n_events >= _MIN_CORRECTION_EVENTS:
+        confidence = min(0.7, days_of_data / HIGH_CONFIDENCE_DAYS)
+    else:
+        confidence = min(0.4, days_of_data / HIGH_CONFIDENCE_DAYS)
+
+    # Only recommend if threshold differs meaningfully from current target_high
+    gap = recommended - current_target_high
+    if abs(gap) < 5.0:
+        return None
+
+    direction = "increase" if gap > 0 else "decrease"
+    magnitude_pct = abs(gap) / max(current_target_high, 1.0) * 100.0
+
+    # Predicted TIR delta: corrections below threshold hurt TIR
+    # Conservative estimate: 0.1pp per 10 mg/dL of threshold adjustment
+    predicted_delta = round(abs(gap) / 10.0 * 0.1, 1)
+
+    return SettingsRecommendation(
+        parameter=SettingsParameter.CORRECTION_THRESHOLD,
+        direction=direction,
+        magnitude_pct=round(magnitude_pct, 0),
+        current_value=current_target_high,
+        suggested_value=round(recommended, 0),
+        predicted_tir_delta=predicted_delta,
+        affected_hours=(0.0, 24.0),
+        confidence=confidence,
+        evidence=(
+            f"Correction threshold analysis (EXP-2528): {source} optimal "
+            f"threshold is {recommended:.0f} mg/dL. "
+            f"Corrections below this level produce net harm "
+            f"(rebound + hypo risk > benefit). "
+            f"Based on {n_events} correction events."
+        ),
+        rationale=(
+            f"{direction.capitalize()} correction threshold from "
+            f"{current_target_high:.0f} to {recommended:.0f} mg/dL. "
+            f"Corrections below {recommended:.0f} mg/dL show net-negative "
+            f"outcomes: glucose rebounds and hypo risk exceed the "
+            f"glucose-lowering benefit. "
+            f"Per-patient thresholds range "
+            f"{_CORRECTION_THRESHOLD_RANGE[0]}-"
+            f"{_CORRECTION_THRESHOLD_RANGE[1]} mg/dL. "
+            f"Predicted TIR improvement: +{predicted_delta}pp."
+        ),
+    )
+
+
+def _compute_patient_threshold(
+    events: List[dict],
+) -> Optional[float]:
+    """Compute per-patient optimal correction threshold from event data.
+
+    Scans BG bins from 130-290 mg/dL in 10 mg/dL steps. For each bin,
+    computes mean TIR change for corrections starting at or above that BG.
+    The threshold is the lowest BG where mean TIR change becomes positive.
+
+    Returns None if no clear threshold can be determined.
+    """
+    start_bgs = np.array([e['start_bg'] for e in events], dtype=np.float64)
+    tir_changes = np.array([e['tir_change'] for e in events], dtype=np.float64)
+
+    best_threshold = None
+    best_score = -999.0
+
+    for threshold in range(130, 300, 10):
+        mask = start_bgs >= threshold
+        if np.sum(mask) < _MIN_CORRECTION_EVENTS:
+            continue
+        score = float(np.mean(tir_changes[mask]))
+        if score > best_score:
+            best_score = score
+            best_threshold = float(threshold)
+
+    if best_threshold is None:
+        return None
+
+    # Clamp to observed population range
+    best_threshold = float(np.clip(
+        best_threshold,
+        _CORRECTION_THRESHOLD_RANGE[0],
+        _CORRECTION_THRESHOLD_RANGE[1],
+    ))
+
+    return best_threshold
+
+
 def analyze_periods(glucose: np.ndarray,
                     metabolic: Optional[MetabolicState],
                     hours: np.ndarray,
@@ -668,6 +828,7 @@ def generate_settings_advice(glucose: np.ndarray,
                              iob: Optional[np.ndarray] = None,
                              cob: Optional[np.ndarray] = None,
                              actual_basal: Optional[np.ndarray] = None,
+                             correction_events: Optional[List[dict]] = None,
                              ) -> List[SettingsRecommendation]:
     """Generate all applicable settings recommendations.
 
@@ -682,6 +843,7 @@ def generate_settings_advice(glucose: np.ndarray,
     - Circadian ISF 2-zone (EXP-2271)
     - Context-aware CR by time of day (EXP-2341)
     - Overnight drift basal assessment (EXP-2371–2378)
+    - Correction threshold (EXP-2528)
 
     Args:
         glucose: (N,) cleaned glucose.
@@ -695,6 +857,8 @@ def generate_settings_advice(glucose: np.ndarray,
         iob: (N,) optional IOB for overnight clean-night filtering.
         cob: (N,) optional COB for overnight clean-night filtering.
         actual_basal: (N,) optional actual basal rate for loop workload.
+        correction_events: optional list of correction event dicts for
+            correction threshold analysis (EXP-2528).
 
     Returns:
         List of SettingsRecommendation, sorted by predicted_tir_delta descending.
@@ -721,6 +885,13 @@ def generate_settings_advice(glucose: np.ndarray,
         clinical, profile, bolus=bolus, days_of_data=days_of_data)
     if nonlinear_rec:
         recs.append(nonlinear_rec)
+
+    # Correction threshold advisory (EXP-2528)
+    threshold_rec = advise_correction_threshold(
+        clinical, profile, correction_events=correction_events,
+        days_of_data=days_of_data)
+    if threshold_rec:
+        recs.append(threshold_rec)
 
     # Circadian ISF: 2-zone day/night split (EXP-2271)
     circadian_isf_recs = advise_circadian_isf(
