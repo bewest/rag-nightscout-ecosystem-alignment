@@ -73,7 +73,7 @@ This **supply/demand decomposition** (metabolic flux) provides the foundation fo
 |---------|----------|
 | CR is the most reliable intervention | 10/11 CIs exclude zero; patient k has insufficient CR events (EXP-1451) |
 | Dinner CR is worst: 77 mg/dL excursion | vs. lunch 46 mg/dL (EXP-1353) |
-| 8/11 patients systematically overcount carbs | EXP-1486 |
+| 9/11 patients systematically overcount carbs | EXP-1485 |
 | CR triage works with just 14 days of data | EXP-1453 minimum data analysis |
 
 **What we learned**: Carb ratio miscalibration is nearly universal and the easiest to detect. Most patients need CR decreased (less insulin per carb) because they overestimate carbs and the AID compensates with extra insulin that then causes hypos.
