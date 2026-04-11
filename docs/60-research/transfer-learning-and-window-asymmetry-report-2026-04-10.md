@@ -170,10 +170,10 @@ All specialists share the same w48 transfer initialization. Total model count: 5
 
 | Patient | Overall | h30 | h60 | ISF |
 |---------|---------|-----|-----|-----|
-| a | 27.37 | 19.93 | 25.32 | 49 |
-| b | 18.54 | 13.35 | 17.52 | 94 |
-| c | 10.86 | 8.79 | 10.08 | 77 |
-| d | 20.26 | 16.72 | 19.28 | 40 |
+| a | 23.43 | 17.23 | 21.60 | 49 |
+| b | 28.92 | 19.93 | 26.16 | 94 |
+| c | 15.07 | 12.98 | 15.27 | 77 |
+| d | 9.64 | 8.64 | 9.17 | 40 |
 
 Note: Per-patient h120 breakdown was not captured in the experiment output. The aggregate h120=22.58 is reported in the main results table.
 
