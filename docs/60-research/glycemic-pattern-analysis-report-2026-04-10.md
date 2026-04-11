@@ -243,7 +243,7 @@ With the corrected supply/demand model production-ready (+63.9% improvement), th
 | j | -0.44 | 9.3 | 0.102 | -0.014 | 1.89 |
 | k | +0.30 | 5.2 | 0.056 | 0.018 | 0.80 |
 
-**Verdict**: `ACF1_0.264_MAX_HOUR_BIAS_0.95`
+**Verdict**: `ACF1_0.264_MAX_HOUR_BIAS_2.74`
 
 **Key Insights**:
 
