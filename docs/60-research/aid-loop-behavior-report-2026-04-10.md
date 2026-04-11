@@ -174,7 +174,7 @@ This batch shifts focus from *what glucose does* (EXP-1951–1958) to *what the 
 2. **Only patients a, f, i show positive meal response** — these patients are getting additional insulin delivery on top of meal boluses.
 3. **Carb size has ZERO correlation with loop response** (r = −0.02) — the loop responds equally to small and large meals. It doesn't scale correction by meal size.
 4. **IOB rise is substantial** (3–12 U) — this comes primarily from the user's manual bolus, not loop adjustment.
-5. **Time to peak is 35 min median** — by the time the loop reacts to a meal excursion, glucose has already risen significantly.
+5. **Time to peak is 40 min median** — by the time the loop reacts to a meal excursion, glucose has already risen significantly.
 
 **Implication**: AID loops are NOT scaling their response to meal size. A meal-size-aware correction (stronger response for larger meals) could improve post-meal control.
 
@@ -212,8 +212,8 @@ This batch shifts focus from *what glucose does* (EXP-1951–1958) to *what the 
 1. **Overnight suspension rate = 86%** — even higher than daytime. The loop spends most of the night with delivery suspended or near-zero.
 2. **Dawn ramp is near zero** (+0.03 U/h mean) — the loop does NOT significantly increase delivery during the dawn phenomenon period. This is why EXP-1954 showed +14 mg/dL dawn rise in 8/11 patients.
 3. **Patient i** has the strongest dawn ramp (+0.37) — the loop IS trying to compensate for dawn phenomenon, but the net_basal is still deeply negative (−1.25 U/h) — scheduled basal is so high that even with dawn compensation, delivery is still suppressed.
-4. **9/11 patients have NEGATIVE overnight net_basal** — the loop reduces delivery throughout the night, confirming overnight basal is too high.
-5. **Only patient a** has positive overnight delivery above scheduled — genuinely needs more overnight insulin.
+4. **8/11 patients have NEGATIVE overnight net_basal** — the loop reduces delivery throughout the night, confirming overnight basal is too high.
+5. **Only patients a and f** have positive overnight delivery above scheduled — they genuinely need more overnight insulin. Patient j is exactly zero.
 
 **Implication**: Scheduled overnight basal rates are systematically too high. The loop compensates by suspending delivery for 86% of overnight hours. If basal were lowered to match actual overnight needs, the loop would have more headroom to address dawn phenomenon.
 
@@ -364,7 +364,7 @@ The most striking finding across all experiments is that AID loops spend the maj
 | Zero delivery | 65% of time | EXP-1961 |
 | Overnight suspension | 86% | EXP-1965 |
 | Preventive suspensions | 98% of events | EXP-1967 |
-| Negative overnight net_basal | 9/11 patients | EXP-1965 |
+| Negative overnight net_basal | 8/11 patients | EXP-1965 |
 
 **Interpretation**: Scheduled basal rates are systematically too high across the population. The AID loop's primary function has become **insulin withholding** rather than insulin delivery. This is an inefficient operating point — the loop has very little upward headroom to correct hyperglycemia because it's already below scheduled basal.
 

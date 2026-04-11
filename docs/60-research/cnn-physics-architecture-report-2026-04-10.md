@@ -19,10 +19,10 @@ SOTA of R² = 0.525**, while naive single-branch CNNs can actually hurt performa
 | Experiment | Finding | Impact |
 |-----------|---------|--------|
 | EXP-1011 | CNN ≈ Ridge for decomposed physics (−0.003) | Architecture NOT the bottleneck |
-| **EXP-1012** | **Dual-branch CNN: +0.020 over single (8/11)** | **Separate encoders help** |
+| **EXP-1012** | **Dual-branch CNN: +0.020 over single (7/11)** | **Separate encoders help** |
 | EXP-1013 | FiLM conditioning: +0.114 (inflated by k outlier) | Stabilizes weak patients |
 | EXP-1014 | Conservation penalty: +0.019 (6/11) | Mild physics regularization |
-| EXP-1015 | Optimal DIA = 3h for all 10/11 patients | Artifact — shorter DIA = less tail noise |
+| EXP-1015 | Optimal DIA = 3h for all 11/11 patients | Artifact — shorter DIA = less tail noise |
 | EXP-1016 | Fidelity weighting: −0.001 (no benefit) | Violations not useful as weights |
 | EXP-1017 | LOPO beats per-patient for 7/11 | Cross-patient training viable |
 | EXP-1018 | 2h window optimal for CNN (6/11) | Short windows avoid CNN overfitting |
@@ -78,7 +78,7 @@ nonlinear interactions between them.
 | k | 0.354 | 0.371 | +0.017 |
 | **Mean** | **0.487** | **0.507** | **+0.020** |
 
-**Insight**: Dual-branch architecture helps 8/11 patients, with dramatic rescue for
+**Insight**: Dual-branch architecture helps 7/11 patients, with dramatic rescue for
 patient h (+0.210). The separate encoders prevent the physics channels from interfering
 with glucose feature extraction. Patient b is the outlier — dual-branch overfits on
 their unusual meal patterns.
