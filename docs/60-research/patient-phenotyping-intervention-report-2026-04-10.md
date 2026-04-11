@@ -184,13 +184,13 @@ Each patient's radar shows 6 normalized dimensions (higher = better):
 | k | 5 | 6.3% | −0.011 | MODERATE | DECLINING |
 
 **Key findings**:
-- **4/10 patients are DECLINING** (a, d, g, i) — settings are becoming less appropriate over time
+- **5/10 patients are DECLINING** (a, d, g, i, k) — settings are becoming less appropriate over time
 - **4/10 patients are IMPROVING** (b, e, f, h) — natural adaptation or setting adjustments
 - **Only 1 patient is truly STABLE** (c) — TIR range 3.8% over 4 months
 - **Patient f shows the most improvement** (+3.7pp/month) — possibly adjusted settings
 - **Patient a has the steepest decline** (−3.3pp/month) — would lose ~20pp TIR in 6 months
 
-**Clinical implication**: Settings are NOT static. 4/10 patients show meaningful monthly decline, suggesting that settings need periodic review — consistent with seasonal changes, weight fluctuations, medication changes, and normal physiological drift. An algorithm that detects drift and suggests re-calibration would catch declining patients before control deteriorates significantly.
+**Clinical implication**: Settings are NOT static. 5/10 patients show meaningful monthly decline, suggesting that settings need periodic review — consistent with seasonal changes, weight fluctuations, medication changes, and normal physiological drift. An algorithm that detects drift and suggests re-calibration would catch declining patients before control deteriorates significantly.
 
 ---
 
@@ -209,7 +209,7 @@ Then compute RMSE, bias, and autocorrelation separately for each regime.
 | Patient | Total RMSE | Supply RMSE | Demand RMSE | Supply % | Demand % |
 |---------|:----------:|:-----------:|:-----------:|:--------:|:--------:|
 | a | 24.8 | 28.5 | 18.9 | 65% | 17% |
-| b | 9.6 | 47.6 | 8.0 | 1% | 98% |
+| b | 47.9 | 58.6 | 21.6 | 60% | 23% |
 | c | 29.8 | 42.0 | 12.2 | 46% | 40% |
 | d | 8.4 | 9.9 | 6.7 | 47% | 40% |
 | e | 34.8 | 39.3 | 22.2 | 70% | 20% |
@@ -226,7 +226,7 @@ Then compute RMSE, bias, and autocorrelation separately for each regime.
 
 2. **Patient h has the largest supply/demand ratio** (71.2 vs 8.3 = 8.6×) — supply modeling fails dramatically for this patient while demand is well-characterized. Likely insulin absorption variability.
 
-3. **Patient b and j spend almost all time demand-dominated** (98% and 100%) — very low IOB. For patient j this confirms near-open-loop behavior. For patient b, it suggests very low insulin doses.
+3. **Patient j spends all time demand-dominated** (100%) — very low IOB, confirming near-open-loop behavior. Patient b is actually 60% supply-dominated with 23% demand, indicating frequent bolusing despite high suspension rate.
 
 4. **Patient e is the most supply-dominated** (70% of time with IOB>1.0) — frequent bolusing creates persistent insulin effects.
 
