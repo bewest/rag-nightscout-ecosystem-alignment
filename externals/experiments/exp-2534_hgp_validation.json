@@ -1,0 +1,285 @@
+{
+  "exp_2534a": {
+    "n_pairs": 280,
+    "per_patient": {
+      "a": 10,
+      "c": 5,
+      "d": 11,
+      "e": 4,
+      "f": 11,
+      "i": 15,
+      "j": 2,
+      "k": 42,
+      "odc-39819048": 2,
+      "odc-49141524": 4,
+      "odc-74077367": 45,
+      "odc-84181797": 1,
+      "odc-86025410": 103,
+      "odc-96254963": 25
+    },
+    "mean_dose": 2.9596428625285625,
+    "bg_diff_mean": 3.919644675936013,
+    "bg_diff_nadir": -1.0187200682503885,
+    "bg_diff_morning": 9.358710699183973,
+    "bg_diff_midnight": 0.20625892707278126,
+    "per_unit_mean_effect": 1.3243640729636128,
+    "per_unit_morning_effect": 3.1621081102969244,
+    "iob_diff_midnight": 0.4001717795866301,
+    "iob_diff_mean": 0.4524598351429502,
+    "paired_ttest_mean": {
+      "t": 1.4841213315395494,
+      "p": 0.1389055813197879
+    },
+    "paired_ttest_morning": {
+      "t": 2.4935612372177647,
+      "p": 0.013228424483119493
+    },
+    "interpretation": "CORRECTION nights HIGHER \u2192 possible rebound or confound",
+    "matched_pairs_summary": {
+      "corr_mean_bg": 140.68324613571167,
+      "nocorr_mean_bg": 136.76360145977566,
+      "corr_morning_bg": 136.43446791727484,
+      "nocorr_morning_bg": 127.07575721809087
+    }
+  },
+  "exp_2534b": {
+    "n_correction_nights": 570,
+    "strata": {
+      "small (<1U)": {
+        "n": 109,
+        "mean_dose": 0.5201834935113925,
+        "mean_bg": 124.87187292816442,
+        "std_bg": 46.98570274106673,
+        "nadir_bg": 88.54652005816818,
+        "morning_bg": 119.26670357940394,
+        "midnight_bg": 132.97932234264556,
+        "mean_iob": 0.5062253986832546
+      },
+      "medium (1-2U)": {
+        "n": 112,
+        "mean_dose": 1.2937500072377068,
+        "mean_bg": 144.0564067363739,
+        "std_bg": 56.27219057154401,
+        "nadir_bg": 88.53125,
+        "morning_bg": 133.412120402943,
+        "midnight_bg": 147.56850185564585,
+        "mean_iob": 0.5486665345337575
+      },
+      "large (>2U)": {
+        "n": 349,
+        "mean_dose": 8.298997154464695,
+        "mean_bg": 152.2368128429511,
+        "std_bg": 55.29984223531557,
+        "nadir_bg": 85.68088066953642,
+        "morning_bg": 140.60259029783052,
+        "midnight_bg": 158.0133193617939,
+        "mean_iob": 1.7344978034861898
+      }
+    },
+    "adjusted_strata": {
+      "small (<1U)": {
+        "n": 105,
+        "mean_dose": 0.5209523885023026,
+        "overnight_drift": -6.579620034354074,
+        "morning_drift": -12.689760189964657,
+        "mean_iob": 0.5226066524443532
+      },
+      "medium (1-2U)": {
+        "n": 112,
+        "mean_dose": 1.2937500072377068,
+        "overnight_drift": -3.5120951192719594,
+        "morning_drift": -13.58792985569347,
+        "mean_iob": 0.5486665345337575
+      },
+      "large (>2U)": {
+        "n": 347,
+        "mean_dose": 8.332420769016062,
+        "overnight_drift": -5.913732127428742,
+        "morning_drift": -17.403912494637375,
+        "mean_iob": 1.7333170608268456
+      }
+    },
+    "dose_drift_correlation": {
+      "r": -0.2239531007338114,
+      "p": 0.85620750704658
+    }
+  },
+  "exp_2534c": {
+    "hourly": [
+      {
+        "hour": 0,
+        "corr_mean": 150.10984559446678,
+        "nocorr_mean": 137.9583552089738,
+        "delta": 12.151490385492963,
+        "ci_95": [
+          4.8691848812351965,
+          19.43379588975073
+        ],
+        "n_corr": 566,
+        "n_nocorr": 567
+      },
+      {
+        "hour": 1,
+        "corr_mean": 147.9868254762835,
+        "nocorr_mean": 141.21142354218856,
+        "delta": 6.775401934094958,
+        "ci_95": [
+          -0.6469712852851819,
+          14.1977751534751
+        ],
+        "n_corr": 565,
+        "n_nocorr": 575
+      },
+      {
+        "hour": 2,
+        "corr_mean": 147.55981089745038,
+        "nocorr_mean": 146.12672230369685,
+        "delta": 1.4330885937535243,
+        "ci_95": [
+          -6.109437863830459,
+          8.975615051337508
+        ],
+        "n_corr": 567,
+        "n_nocorr": 579
+      },
+      {
+        "hour": 3,
+        "corr_mean": 146.66124748136122,
+        "nocorr_mean": 148.17240751036283,
+        "delta": -1.5111600290016156,
+        "ci_95": [
+          -9.077974206002484,
+          6.0556541479992525
+        ],
+        "n_corr": 569,
+        "n_nocorr": 580
+      },
+      {
+        "hour": 4,
+        "corr_mean": 142.6002678879535,
+        "nocorr_mean": 145.81408056338353,
+        "delta": -3.2138126754300345,
+        "ci_95": [
+          -10.501476964948267,
+          4.0738516140881975
+        ],
+        "n_corr": 569,
+        "n_nocorr": 578
+      },
+      {
+        "hour": 5,
+        "corr_mean": 137.4950071646585,
+        "nocorr_mean": 138.54365272193118,
+        "delta": -1.0486455572726925,
+        "ci_95": [
+          -7.859288308244407,
+          5.761997193699022
+        ],
+        "n_corr": 569,
+        "n_nocorr": 580
+      }
+    ],
+    "model_comparison": {
+      "constant": {
+        "ss": 173.87005769142777,
+        "mean": 2.431060441939517
+      },
+      "linear": {
+        "ss": 34.10295865817538,
+        "slope": -2.826073490433097,
+        "intercept": 9.496244168022258,
+        "p": 0.015489844748372991
+      },
+      "exponential": {
+        "amplitude": 16.16048112853524,
+        "tau_hours": 1.7687136319519803,
+        "plateau": -3.59600071136216,
+        "ss_residual": 6.618457595002523
+      },
+      "best_model": "exponential_decay"
+    }
+  },
+  "exp_2534d": {
+    "loop_metrics": {
+      "mean_actual_basal": {
+        "corr_mean": 3.438006217363127,
+        "nocorr_mean": 3.1077919933694877,
+        "delta": 0.3302142239936394,
+        "t_stat": 0.30725831414059807,
+        "p_value": 0.7587048207007008
+      },
+      "mean_scheduled_basal": {
+        "corr_mean": 1.1498918273992706,
+        "nocorr_mean": 0.7755708377968629,
+        "delta": 0.3743209896024078,
+        "t_stat": 10.28771057257211,
+        "p_value": 9.718512710575516e-24
+      },
+      "mean_net_basal": {
+        "corr_mean": 2.288114446372186,
+        "nocorr_mean": 2.332221077831635,
+        "delta": -0.04410663145944893,
+        "t_stat": -0.04101012383647132,
+        "p_value": 0.9672952675803383
+      },
+      "total_smb": {
+        "corr_mean": 4.068333345520915,
+        "nocorr_mean": 0.44802065621965315,
+        "delta": 3.6203126893012616,
+        "t_stat": 13.854459657232061,
+        "p_value": 1.0809450559718064e-38
+      },
+      "mean_iob": {
+        "corr_mean": 1.2666121995455015,
+        "nocorr_mean": 0.4173482476507507,
+        "delta": 0.8492639518947509,
+        "t_stat": 9.212719848065,
+        "p_value": 2.4435535403377855e-19
+      }
+    },
+    "confound_flags": {
+      "basal_confound": false,
+      "iob_confound": true,
+      "smb_confound": false,
+      "iob_explained_bg": 42.463197594737544
+    }
+  },
+  "synthesis": {
+    "hgp_confirmed": false,
+    "confidence": "HGP suppression NOT confirmed as physiological",
+    "evidence": [
+      "Matched pairs: +3.9 mg/dL \u2014 NOT supportive",
+      "Temporal: decay \u03c4=1.8h but plateau=-3.6 \u2014 partial HGP"
+    ],
+    "confounds": [
+      "IOB confound: residual insulin explains ~+42.5 mg/dL"
+    ]
+  },
+  "metadata": {
+    "experiment": "EXP-2534",
+    "title": "Empirical Validation of Persistent HGP Suppression",
+    "total_nights": 1151,
+    "correction_nights": 570,
+    "no_correction_nights": 581,
+    "patients": [
+      "a",
+      "c",
+      "d",
+      "e",
+      "f",
+      "h",
+      "i",
+      "j",
+      "k",
+      "odc-39819048",
+      "odc-49141524",
+      "odc-58680324",
+      "odc-61403732",
+      "odc-74077367",
+      "odc-84181797",
+      "odc-86025410",
+      "odc-96254963"
+    ],
+    "n_patients": 17
+  }
+}
