@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-This batch explores population-level insights and advanced analytics, reaching the **200-experiment milestone**. Key findings: 4 natural patient clusters emerge from therapy profiles, recommendation direction transfers perfectly between similar patients (10/10), weekend vs weekday differences are statistically insignificant (0/11 p<0.05), insulin stacking is prevalent (9/11) with 2-18% hypo risk, and all patients have low glycemic risk (LBGI/HBGI). The sequential fix protocol (Strategy C) outperforms single-parameter fixes by 40-90% for multi-flag patients.
+This batch explores population-level insights and advanced analytics, reaching the **200-experiment milestone**. Key findings: 4 natural patient clusters emerge from therapy profiles, recommendation direction transfers perfectly between similar patients (10/10), weekend vs weekday differences are statistically insignificant (0/11 p<0.05), insulin stacking is prevalent (10/11) with 0-18% hypo risk, and all patients have low glycemic risk (LBGI/HBGI). The sequential fix protocol (Strategy C) outperforms single-parameter fixes by 40-90% for multi-flag patients.
 
 ## Experiment Results
 
@@ -89,9 +89,9 @@ This batch explores population-level insights and advanced analytics, reaching t
 **Objective**: Detect multi-bolus insulin stacking and its consequences.
 
 **Findings**:
-- **9/11 patients have stacking events** (all except j and b≈0)
+- **10/11 patients have stacking events** (all except j)
 - Stacking rates: 0.1-25.7 events/week (k highest at 25.7)
-- **Hypo rate after stacking**: 2.1-18.3% (patient h worst at 18.3%)
+- **Hypo rate after stacking**: 0.0-18.3% (patient h worst at 18.3%)
 - Patient f has highest peak IOB during stacking (14.3 U)
 - Dominant stacking type: correction stacking (6/11) > mixed (4/11)
 
@@ -170,7 +170,7 @@ This batch explores population-level insights and advanced analytics, reaching t
 | 3 | Meal logging varies enormously (0.4-23.4/day) | CR analysis needs logging quality filter |
 | 4 | Exercise proxy too sensitive (7+/day) | Needs tighter criteria for clinical use |
 | 5 | Weekend≠weekday: 0/11 significant | No schedule-based protocol needed |
-| 6 | Insulin stacking in 9/11, 2-18% hypo risk | Stacking alerts high priority |
+| 6 | Insulin stacking in 10/11, 0-18% hypo risk | Stacking alerts high priority |
 | 7 | All patients low LBGI/HBGI | Standard risk scores don't discriminate AID users |
 | 8 | Sequential fix +40-90% for multi-flag patients | Validates protocol for complex cases |
 | 9 | Higher entropy = better control (r≈0.76) | Low-entropy patients have targetable patterns |
