@@ -55,7 +55,7 @@ This batch systematically evaluates glucose prediction strategies using only dat
 
 At 30 minutes, glucose typically moves ≤20 mg/dL. Any model that predicts movement introduces error that exceeds the actual change. This is the **forecasting paradox for slow-moving signals**: the more you try to predict, the worse you do at short horizons.
 
-**The loop's own predictions are worse than doing nothing** for 7/11 patients at 30min. This doesn't mean the loop is bad — it means the loop is trying to predict further ahead (60+ min) and the 30-min prediction is a byproduct of that longer-horizon model.
+**The loop's own predictions are worse than doing nothing** for 6/11 patients at 30min. This doesn't mean the loop is bad — it means the loop is trying to predict further ahead (60+ min) and the 30-min prediction is a byproduct of that longer-horizon model.
 
 **Momentum (linear extrapolation) is the worst** at 29.4 MAE — it amplifies noise. A slight upward trend gets projected linearly, but glucose oscillates and often reverses.
 
