@@ -2,7 +2,9 @@
 settings_advisor.py — Counterfactual TIR prediction for therapy changes.
 
 Research basis: EXP-693 (basal assessment), EXP-694 (CR effectiveness),
-               EXP-747 (ISF discrepancy 2.91×), EXP-574/575 (counterfactual ISF/CR)
+               EXP-747 (ISF discrepancy 2.91×), EXP-574/575 (counterfactual ISF/CR),
+               EXP-2271 (circadian ISF 4.6-9×, 2-zone captures 61-90%),
+               EXP-2341 (context-aware CR: pre-BG + time + IOB, R²+0.28)
 
 Key innovation: uses the physics model to simulate "what if we changed
 this setting?" and predicts the TIR improvement that would result.
@@ -529,11 +531,19 @@ def generate_settings_advice(glucose: np.ndarray,
                              clinical: ClinicalReport,
                              profile: PatientProfile,
                              days_of_data: float,
+                             carbs: Optional[np.ndarray] = None,
                              ) -> List[SettingsRecommendation]:
     """Generate all applicable settings recommendations.
 
     This is the primary API. Returns a list of recommendations
     sorted by predicted TIR impact (highest first).
+
+    Integrates:
+    - Basal assessment (EXP-693)
+    - CR effectiveness (EXP-694)
+    - ISF discrepancy (EXP-747)
+    - Circadian ISF 2-zone (EXP-2271)
+    - Context-aware CR by time of day (EXP-2341)
 
     Args:
         glucose: (N,) cleaned glucose.
@@ -542,6 +552,7 @@ def generate_settings_advice(glucose: np.ndarray,
         clinical: ClinicalReport from clinical_rules.
         profile: current therapy profile.
         days_of_data: data coverage.
+        carbs: (N,) optional carb data for context-aware CR.
 
     Returns:
         List of SettingsRecommendation, sorted by predicted_tir_delta descending.
@@ -563,8 +574,362 @@ def generate_settings_advice(glucose: np.ndarray,
     if isf_rec:
         recs.append(isf_rec)
 
+    # Circadian ISF: 2-zone day/night split (EXP-2271)
+    circadian_isf_recs = advise_circadian_isf(
+        glucose, metabolic, hours, profile, days_of_data)
+    recs.extend(circadian_isf_recs)
+
+    # Context-aware CR by time of day (EXP-2341)
+    if carbs is not None:
+        context_cr_recs = advise_context_cr(
+            glucose, metabolic, hours, profile, carbs, days_of_data)
+        recs.extend(context_cr_recs)
+
     # Sort by predicted impact
     recs.sort(key=lambda r: abs(r.predicted_tir_delta), reverse=True)
+    return recs
+
+
+# ── Circadian ISF: 2-Zone Recommendation (EXP-2271) ─────────────────
+
+# EXP-2271: 2-zone (day/night) captures 61-90% of circadian ISF benefit.
+# ISF varies 4.6-9× within a day. Simple day/night split is optimal for
+# most patients and avoids the complexity of 4+ segment schedules.
+DAY_ZONE = (7.0, 22.0)
+NIGHT_ZONE_START = 22.0
+NIGHT_ZONE_END = 7.0
+
+
+def advise_circadian_isf(glucose: np.ndarray,
+                         metabolic: Optional[MetabolicState],
+                         hours: np.ndarray,
+                         profile: PatientProfile,
+                         days_of_data: float,
+                         ) -> List[SettingsRecommendation]:
+    """Recommend 2-zone (day/night) ISF split based on circadian variation.
+
+    Research: EXP-2271 shows ISF varies 4.6-9× across the day. A simple
+    2-zone split captures 61-90% of the benefit of fully time-varying ISF.
+    Insulin is typically MORE effective at night (lower cortisol/GH).
+
+    The approach:
+    1. Compute effective ISF for day vs night periods
+    2. If ratio >1.3×, recommend splitting the ISF schedule
+    3. Simulate TIR impact of the split
+
+    Args:
+        glucose: (N,) cleaned glucose.
+        metabolic: MetabolicState for simulation.
+        hours: (N,) fractional hours.
+        profile: current therapy profile.
+        days_of_data: minimum 7 days required.
+
+    Returns:
+        List of SettingsRecommendation (0-2 recs: day ISF + night ISF).
+    """
+    if days_of_data < 7.0 or metabolic is None:
+        return []
+
+    isf_vals = [e.get('value', e.get('sensitivity', 50)) for e in profile.isf_mgdl()]
+    current_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
+
+    bg = np.nan_to_num(glucose.astype(np.float64), nan=120.0)
+
+    # Compute effective ISF for day vs night via correction response
+    day_mask = (hours >= DAY_ZONE[0]) & (hours < DAY_ZONE[1])
+    night_mask = ~day_mask
+
+    # Use residual-based ISF estimation: large negative residuals during
+    # corrections indicate higher effective ISF
+    residual = metabolic.residual
+    demand = metabolic.demand
+
+    # During high-demand periods (corrections), measure glucose response
+    high_demand = demand > np.percentile(demand[demand > 0], 75) if np.any(demand > 0) else np.zeros(len(demand), dtype=bool)
+
+    day_response = residual[day_mask & high_demand]
+    night_response = residual[night_mask & high_demand]
+
+    if len(day_response) < 20 or len(night_response) < 20:
+        return []
+
+    day_effect = float(np.abs(np.mean(day_response)))
+    night_effect = float(np.abs(np.mean(night_response)))
+
+    if day_effect < 0.01 or night_effect < 0.01:
+        return []
+
+    ratio = night_effect / day_effect
+
+    # Only recommend split if day/night differ by >30%
+    if abs(ratio - 1.0) < 0.30:
+        return []
+
+    recs = []
+
+    # Night ISF recommendation
+    if ratio > 1.0:
+        # Night insulin is more effective → increase night ISF
+        night_isf = current_isf * ratio
+        night_magnitude = (ratio - 1.0) * 100
+
+        tir_now, tir_sim = simulate_tir_with_settings(
+            glucose, metabolic, hours,
+            isf_multiplier=ratio,
+            hour_range=(NIGHT_ZONE_START, NIGHT_ZONE_END))
+        night_delta = round((tir_sim - tir_now) * 100, 1)
+
+        recs.append(SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction="increase",
+            magnitude_pct=round(night_magnitude, 0),
+            current_value=current_isf,
+            suggested_value=round(night_isf, 0),
+            predicted_tir_delta=night_delta,
+            affected_hours=(NIGHT_ZONE_START, NIGHT_ZONE_END),
+            confidence=min(0.7, days_of_data / HIGH_CONFIDENCE_DAYS),
+            evidence=(f"Circadian ISF analysis (EXP-2271): night insulin is "
+                      f"{ratio:.1f}× more effective than day. "
+                      f"2-zone split captures 61-90% of benefit."),
+            rationale=(f"Increase ISF from {current_isf:.0f} to {night_isf:.0f} "
+                       f"mg/dL/U during nighttime (22:00-07:00). "
+                       f"Insulin works more effectively at night due to lower "
+                       f"cortisol and growth hormone levels."),
+        ))
+    else:
+        # Day insulin is more effective → increase day ISF
+        day_ratio = 1.0 / ratio
+        day_isf = current_isf * day_ratio
+        day_magnitude = (day_ratio - 1.0) * 100
+
+        tir_now, tir_sim = simulate_tir_with_settings(
+            glucose, metabolic, hours,
+            isf_multiplier=day_ratio,
+            hour_range=DAY_ZONE)
+        day_delta = round((tir_sim - tir_now) * 100, 1)
+
+        recs.append(SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction="increase",
+            magnitude_pct=round(day_magnitude, 0),
+            current_value=current_isf,
+            suggested_value=round(day_isf, 0),
+            predicted_tir_delta=day_delta,
+            affected_hours=DAY_ZONE,
+            confidence=min(0.7, days_of_data / HIGH_CONFIDENCE_DAYS),
+            evidence=(f"Circadian ISF analysis (EXP-2271): day insulin is "
+                      f"{day_ratio:.1f}× more effective than night."),
+            rationale=(f"Increase ISF from {current_isf:.0f} to {day_isf:.0f} "
+                       f"mg/dL/U during daytime (07:00-22:00)."),
+        ))
+
+    return recs
+
+
+# ── Context-Aware CR (EXP-2341) ──────────────────────────────────────
+
+# EXP-2341: Carbs explain <16% of glucose rise. Pre-meal BG is NEGATIVELY
+# correlated with rise (r=-0.33 to -0.69). Multi-factor model R²=0.14-0.54
+# (avg +0.277 over carbs-only).
+#
+# Factors: pre-meal BG, time of day, IOB at meal time
+# Pre-meal BG effect: higher starting BG → smaller rise (regression to mean
+# + stronger insulin response at higher BG levels)
+
+# Coefficients from EXP-2341 population model
+_CR_PRE_BG_COEFF = -0.15     # mg/dL rise per mg/dL pre-BG above 120
+_CR_IOB_COEFF = -5.0          # mg/dL rise per Unit IOB at meal time
+_CR_MORNING_BOOST = 1.20      # 20% more insulin needed at breakfast
+_CR_EVENING_DAMPEN = 0.90     # 10% less insulin needed at dinner
+
+
+def compute_context_cr_adjustment(pre_meal_bg: float,
+                                  iob_at_meal: float,
+                                  hour: float,
+                                  base_cr: float,
+                                  ) -> dict:
+    """Compute context-aware CR adjustment for a specific meal context.
+
+    Research (EXP-2341): Pre-meal BG is negatively correlated with
+    post-meal rise. Higher starting BG means the same carbs produce
+    a SMALLER glucose excursion. IOB at meal time also reduces rise.
+
+    This function adjusts the base CR for the current context:
+    - High pre-meal BG → less insulin needed (larger CR)
+    - High IOB → less insulin needed (larger CR)
+    - Morning → more insulin needed (smaller CR)
+
+    Args:
+        pre_meal_bg: current glucose before meal (mg/dL).
+        iob_at_meal: current IOB (Units).
+        hour: fractional hour of day.
+        base_cr: base carb ratio from profile (g/U).
+
+    Returns:
+        Dict with 'adjusted_cr', 'adjustment_pct', 'factors' explaining
+        each component of the adjustment.
+    """
+    factors = {}
+    total_multiplier = 1.0
+
+    # Pre-meal BG adjustment: higher BG → less insulin
+    bg_delta = pre_meal_bg - 120.0
+    if abs(bg_delta) > 10:
+        bg_effect = _CR_PRE_BG_COEFF * bg_delta / 50.0  # normalized
+        bg_mult = 1.0 - bg_effect
+        bg_mult = max(0.7, min(1.3, bg_mult))
+        total_multiplier *= bg_mult
+        factors['pre_meal_bg'] = {
+            'value': pre_meal_bg,
+            'effect': f"{'less' if bg_mult > 1 else 'more'} insulin needed",
+            'multiplier': round(bg_mult, 2),
+        }
+
+    # IOB adjustment: high IOB → less insulin needed
+    if iob_at_meal > 0.5:
+        iob_mult = max(0.7, 1.0 + iob_at_meal * 0.05)
+        total_multiplier *= iob_mult
+        factors['iob'] = {
+            'value': iob_at_meal,
+            'effect': f"{'less' if iob_mult > 1 else 'more'} insulin needed",
+            'multiplier': round(iob_mult, 2),
+        }
+
+    # Time-of-day adjustment: morning more aggressive, evening less
+    if 5.0 <= hour < 10.0:
+        tod_mult = 1.0 / _CR_MORNING_BOOST  # smaller CR = more insulin
+        total_multiplier *= tod_mult
+        factors['time_of_day'] = {
+            'period': 'morning',
+            'effect': 'dawn phenomenon — more insulin needed',
+            'multiplier': round(tod_mult, 2),
+        }
+    elif 17.0 <= hour < 21.0:
+        tod_mult = 1.0 / _CR_EVENING_DAMPEN  # larger CR = less insulin
+        total_multiplier *= tod_mult
+        factors['time_of_day'] = {
+            'period': 'evening',
+            'effect': 'better insulin sensitivity — less insulin needed',
+            'multiplier': round(tod_mult, 2),
+        }
+
+    adjusted_cr = base_cr * total_multiplier
+    adjustment_pct = (total_multiplier - 1.0) * 100
+
+    return {
+        'adjusted_cr': round(adjusted_cr, 1),
+        'base_cr': base_cr,
+        'adjustment_pct': round(adjustment_pct, 1),
+        'total_multiplier': round(total_multiplier, 2),
+        'factors': factors,
+        'interpretation': (
+            f"Context-adjusted CR: {adjusted_cr:.1f} g/U "
+            f"(base {base_cr:.1f}, {adjustment_pct:+.0f}%). "
+            f"Pre-BG {pre_meal_bg:.0f}, IOB {iob_at_meal:.1f}U, "
+            f"hour {hour:.0f}."
+        ),
+    }
+
+
+def advise_context_cr(glucose: np.ndarray,
+                      metabolic: Optional[MetabolicState],
+                      hours: np.ndarray,
+                      profile: PatientProfile,
+                      carbs: Optional[np.ndarray] = None,
+                      days_of_data: float = 0.0,
+                      ) -> List[SettingsRecommendation]:
+    """Recommend time-of-day CR adjustments based on context analysis.
+
+    Research (EXP-2341): Multi-factor CR model improves R² by +0.28
+    vs carbs-only. Key finding: 47-80% of meals are under-bolused
+    for 8/11 patients. Morning meals need ~20% more insulin.
+
+    Args:
+        glucose: (N,) cleaned glucose.
+        metabolic: MetabolicState for meal response analysis.
+        hours: (N,) fractional hours.
+        profile: current therapy profile.
+        carbs: (N,) optional carb data for meal detection.
+        days_of_data: minimum 7 days required.
+
+    Returns:
+        List of CR SettingsRecommendations by time period.
+    """
+    if days_of_data < 7.0 or carbs is None:
+        return []
+
+    cr_vals = [e.get('value', e.get('carbratio', 10)) for e in profile.cr_schedule]
+    current_cr = float(np.median([float(v) for v in cr_vals])) if cr_vals else 10.0
+
+    bg = np.nan_to_num(glucose.astype(np.float64), nan=120.0)
+    c = np.nan_to_num(carbs.astype(np.float64), nan=0.0)
+
+    recs = []
+
+    # Analyze meal response by time of day
+    for name, h_start, h_end in PERIODS:
+        if name == "fasting":
+            continue  # No meals during fasting
+
+        mask = (hours >= h_start) & (hours < h_end)
+        # Find meals in this period: carbs > 5g
+        meal_indices = np.where(mask & (c > 5))[0]
+        if len(meal_indices) < 5:
+            continue
+
+        # Compute post-meal excursions (2h window)
+        excursions = []
+        for idx in meal_indices:
+            if idx + 24 >= len(bg):
+                continue
+            pre_bg = float(bg[idx])
+            post_window = bg[idx:idx+24]
+            peak = float(np.max(post_window))
+            excursion = peak - pre_bg
+            excursions.append(excursion)
+
+        if not excursions:
+            continue
+
+        mean_excursion = float(np.mean(excursions))
+        # Excessive excursion: >60 mg/dL mean suggests under-bolusing
+        if mean_excursion < 40:
+            continue
+
+        # Recommend CR decrease (more aggressive) for this period
+        # Scale by excursion severity
+        cr_reduction = min(0.25, (mean_excursion - 40) / 200)
+        suggested_cr = current_cr * (1.0 - cr_reduction)
+        magnitude = cr_reduction * 100
+
+        # Simulate impact
+        if metabolic is not None:
+            tir_now, tir_sim = simulate_tir_with_settings(
+                glucose, metabolic, hours,
+                cr_multiplier=(1.0 - cr_reduction),
+                hour_range=(h_start, h_end))
+            predicted_delta = round((tir_sim - tir_now) * 100, 1)
+        else:
+            predicted_delta = round(magnitude * 0.1, 1)
+
+        recs.append(SettingsRecommendation(
+            parameter=SettingsParameter.CR,
+            direction="decrease",
+            magnitude_pct=round(magnitude, 0),
+            current_value=current_cr,
+            suggested_value=round(suggested_cr, 1),
+            predicted_tir_delta=predicted_delta,
+            affected_hours=(h_start, h_end),
+            confidence=min(0.65, days_of_data / HIGH_CONFIDENCE_DAYS),
+            evidence=(f"Context-aware CR analysis (EXP-2341): {name} meals "
+                      f"show mean excursion {mean_excursion:.0f} mg/dL from "
+                      f"{len(meal_indices)} meals. Pre-meal BG negatively "
+                      f"correlated with rise (carbs explain <16% of variance)."),
+            rationale=(f"Decrease {name} CR from {current_cr:.1f} to "
+                       f"{suggested_cr:.1f} g/U ({magnitude:.0f}% more insulin). "
+                       f"Mean post-meal excursion is {mean_excursion:.0f} mg/dL."),
+        ))
+
     return recs
 
 

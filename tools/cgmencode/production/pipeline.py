@@ -31,7 +31,7 @@ from .pattern_analyzer import analyze_patterns
 from .patient_onboarding import get_onboarding_state
 from .meal_detector import detect_meal_events, build_meal_history, classify_all_meal_responses, classify_meal_archetypes
 from .meal_predictor import build_timing_models, predict_next_meal, MealMLModel
-from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented
+from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented, advise_circadian_isf, advise_context_cr
 from .recommender import generate_recommendations
 from .clinical_rules import (
     generate_clinical_report, compute_correction_energy,
@@ -316,7 +316,8 @@ def run_pipeline(patient: PatientData,
         try:
             settings_recs = generate_settings_advice(
                 cleaned.glucose, metabolic, hours,
-                clinical_report, patient.profile, patient.days_of_data)
+                clinical_report, patient.profile, patient.days_of_data,
+                carbs=patient.carbs)
 
             # ISF segmentation recommendations (EXP-765)
             isf_segment_recs = advise_isf_segmented(

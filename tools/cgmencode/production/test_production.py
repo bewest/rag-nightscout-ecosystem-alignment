@@ -1460,6 +1460,135 @@ class TestSettingsOptimizerPipeline(unittest.TestCase):
         self.assertTrue(hasattr(result, 'optimal_settings'))
 
 
+# ── Circadian ISF & Context CR Tests ─────────────────────────────────
+
+class TestCircadianISF(unittest.TestCase):
+    """Tests for advise_circadian_isf (EXP-2271)."""
+
+    def test_returns_empty_with_insufficient_data(self):
+        """Needs ≥7 days of data."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf
+        from cgmencode.production.metabolic_engine import compute_metabolic_state
+        patient = make_patient(n=288 * 3, with_insulin=True)  # 3 days
+        metabolic = compute_metabolic_state(patient)
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 3)
+        recs = advise_circadian_isf(
+            patient.glucose, metabolic, hours, patient.profile, days_of_data=3.0)
+        self.assertEqual(recs, [])
+
+    def test_returns_list(self):
+        """Returns list of SettingsRecommendation."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf
+        from cgmencode.production.metabolic_engine import compute_metabolic_state
+        patient = make_patient(n=288 * 15, with_insulin=True)
+        metabolic = compute_metabolic_state(patient)
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 15)
+        recs = advise_circadian_isf(
+            patient.glucose, metabolic, hours, patient.profile, days_of_data=15.0)
+        self.assertIsInstance(recs, list)
+        for r in recs:
+            self.assertIsInstance(r, SettingsRecommendation)
+            self.assertEqual(r.parameter, SettingsParameter.ISF)
+
+    def test_no_metabolic_returns_empty(self):
+        """Without metabolic state, no recommendations."""
+        from cgmencode.production.settings_advisor import advise_circadian_isf
+        patient = make_patient(n=288 * 15, with_insulin=True)
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 15)
+        recs = advise_circadian_isf(
+            patient.glucose, None, hours, patient.profile, days_of_data=15.0)
+        self.assertEqual(recs, [])
+
+
+class TestContextCR(unittest.TestCase):
+    """Tests for context-aware CR (EXP-2341)."""
+
+    def test_compute_context_cr_baseline(self):
+        """Neutral context should return ~unchanged CR."""
+        from cgmencode.production.settings_advisor import compute_context_cr_adjustment
+        result = compute_context_cr_adjustment(
+            pre_meal_bg=120.0, iob_at_meal=0.0, hour=12.0, base_cr=10.0)
+        self.assertIsInstance(result, dict)
+        self.assertIn('adjusted_cr', result)
+        self.assertIn('base_cr', result)
+        # Near neutral (120 BG, no IOB, noon) → minimal adjustment
+        self.assertAlmostEqual(result['adjusted_cr'], 10.0, delta=1.0)
+
+    def test_high_bg_increases_cr(self):
+        """High pre-meal BG → less insulin → larger CR."""
+        from cgmencode.production.settings_advisor import compute_context_cr_adjustment
+        result = compute_context_cr_adjustment(
+            pre_meal_bg=220.0, iob_at_meal=0.0, hour=12.0, base_cr=10.0)
+        # High BG should increase CR (less insulin per carb)
+        self.assertGreater(result['adjusted_cr'], 10.0)
+
+    def test_morning_decreases_cr(self):
+        """Morning meals need more insulin → smaller CR."""
+        from cgmencode.production.settings_advisor import compute_context_cr_adjustment
+        result = compute_context_cr_adjustment(
+            pre_meal_bg=120.0, iob_at_meal=0.0, hour=7.0, base_cr=10.0)
+        self.assertLess(result['adjusted_cr'], 10.0)
+
+    def test_high_iob_increases_cr(self):
+        """High IOB → less insulin needed → larger CR."""
+        from cgmencode.production.settings_advisor import compute_context_cr_adjustment
+        result = compute_context_cr_adjustment(
+            pre_meal_bg=120.0, iob_at_meal=3.0, hour=12.0, base_cr=10.0)
+        self.assertGreater(result['adjusted_cr'], 10.0)
+
+    def test_advise_context_cr_no_carbs(self):
+        """Without carb data, returns empty."""
+        from cgmencode.production.settings_advisor import advise_context_cr
+        patient = make_patient(n=288 * 15, with_insulin=True)
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 15)
+        recs = advise_context_cr(
+            patient.glucose, None, hours, patient.profile, carbs=None, days_of_data=15.0)
+        self.assertEqual(recs, [])
+
+    def test_advise_context_cr_returns_list(self):
+        """With carb data, returns list of recs."""
+        from cgmencode.production.settings_advisor import advise_context_cr
+        from cgmencode.production.metabolic_engine import compute_metabolic_state
+        patient = make_patient(n=288 * 15, with_insulin=True)
+        metabolic = compute_metabolic_state(patient)
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 15)
+        recs = advise_context_cr(
+            patient.glucose, metabolic, hours, patient.profile,
+            carbs=patient.carbs, days_of_data=15.0)
+        self.assertIsInstance(recs, list)
+        for r in recs:
+            self.assertIsInstance(r, SettingsRecommendation)
+            self.assertEqual(r.parameter, SettingsParameter.CR)
+
+
+class TestSettingsAdviceIntegration(unittest.TestCase):
+    """Test generate_settings_advice integrates new functions."""
+
+    def test_accepts_carbs_kwarg(self):
+        """generate_settings_advice now accepts optional carbs."""
+        from cgmencode.production.settings_advisor import generate_settings_advice
+        from cgmencode.production.metabolic_engine import compute_metabolic_state
+        from cgmencode.production.clinical_rules import generate_clinical_report
+        patient = make_patient(n=288 * 15, with_insulin=True)
+        metabolic = compute_metabolic_state(patient)
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 15)
+        clinical = generate_clinical_report(
+            patient.glucose, metabolic, patient.profile,
+            carbs=patient.carbs, bolus=patient.bolus, hours=hours)
+        recs = generate_settings_advice(
+            patient.glucose, metabolic, hours, clinical,
+            patient.profile, 15.0, carbs=patient.carbs)
+        self.assertIsInstance(recs, list)
+
+    def test_pipeline_still_runs(self):
+        """Full pipeline should still work with new settings_advisor."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(n=288 * 15, with_insulin=True)
+        result = run_pipeline(patient)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.patient_id, "test")
+
+
 # ── Runner ────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
