@@ -105,7 +105,7 @@ This batch translates pipeline findings into clinically actionable outputs. Key 
 
 **Findings**:
 - 3-month projected TIR: 59.8-100.0% (optimistic for patients with positive trends)
-- Patients with negative trends (a, c, g, i, k): projected decline despite therapy fixes
+- Patients with negative trends (a, c, d, g, i, k): projected decline despite therapy fixes
 - Patient f: strongest positive trajectory (65.5→95.9% at 12mo)
 - Patient a: therapy fixes offset by negative trend (55.8→60.6→45.0)
 - Trend dominates long-term projection for 6/11 patients

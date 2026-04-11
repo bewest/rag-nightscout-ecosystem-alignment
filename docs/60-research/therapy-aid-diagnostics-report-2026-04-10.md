@@ -63,7 +63,7 @@ This final batch of the 170-experiment campaign focuses on AID-aware diagnostics
 - **Afternoon dip** is the dominant pattern: 7/11 patients show consistent post-lunch glucose drops
 - Mean day-of-week effect: 0.3% TIR (negligible population-level)
 - 6/11 patients show weekly periodicity in TIR
-- Weekly TIR standard deviation ranges from 7.2% to 15.1% — substantial within-patient variation
+- Weekly TIR standard deviation ranges from 3.9% to 13.0% — substantial within-patient variation
 
 **Clinical Implication**: Afternoon dip suggests systematic lunch CR miscalibration or post-lunch activity patterns. Day-of-week effects are patient-specific, not population-generalizable.
 
@@ -90,7 +90,7 @@ This final batch of the 170-experiment campaign focuses on AID-aware diagnostics
 
 **Findings**:
 - 2/10 patients show dawn phenomenon (morning ISF significantly different from evening)
-- Mean time-of-day ISF variation: **17.0%** (some patients >100%)
+- Mean time-of-day ISF variation: **17.0%** (max 43.2%, patient i)
 - Most patients: afternoon ISF is highest (most sensitive), midnight/morning lowest
 - Individual ISF schedules would require ≥20 events per segment for reliable estimation
 
@@ -103,8 +103,8 @@ This final batch of the 170-experiment campaign focuses on AID-aware diagnostics
 **Objective**: Classify each patient's primary failure mode to route appropriate interventions.
 
 **Findings**:
-- **Meal-dominant**: 5 patients (a, b, d, e, f) — fix CR first
-- **Mixed**: 3 patients (c, i, j) — need multi-parameter intervention
+- **Meal-dominant**: 5 patients (a, b, c, f, i) — fix CR first
+- **Mixed**: 3 patients (d, e, j) — need multi-parameter intervention
 - **Basal-dominant**: 1 patient (g) — fix basal schedule
 - **Correction-dominant**: 1 patient (h) — fix ISF / overcorrection
 - **Well-controlled**: 1 patient (k) — no intervention needed
