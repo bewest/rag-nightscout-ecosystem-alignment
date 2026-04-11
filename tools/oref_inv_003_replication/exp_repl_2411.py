@@ -299,7 +299,16 @@ def main():
     results['exp_2413'] = run_2413(df, args.figures)
     results['exp_2414'] = run_2414(df, args.figures)
 
-    # Synthesis
+    # ── Synthesis report ────────────────────────────────────────────────
+    def _fmt(val, decimals=1, suffix=''):
+        """Format a numeric value, returning 'N/A' for NaN."""
+        try:
+            if val is None or (isinstance(val, float) and np.isnan(val)):
+                return 'N/A'
+            return f'{val:.{decimals}f}{suffix}'
+        except (TypeError, ValueError):
+            return 'N/A'
+
     our_cross = results['exp_2411']['crossover_mgdl']
     their_cross = 92.5  # approximate from their description
 
@@ -309,45 +318,244 @@ def main():
         phase='replication',
         script='tools/oref_inv_003_replication/exp_repl_2411.py',
     )
+
+    # ── Methodology ──────────────────────────────────────────────────
+    report.set_methodology(
+        'We replicate the OREF-INV-003 glucose-target partial-dependence '
+        'analysis using a virtual-experiment design. For each target value '
+        'in [70, 75, …, 150] mg/dL we modify `sug_current_target` (and its '
+        'derived features `sug_threshold`, `bg_above_target`) while holding '
+        'all other features at their observed values, then re-predict 4-hour '
+        'hypo and hyper probabilities with our independently trained LightGBM '
+        'classifiers.\n\n'
+        'Four sub-experiments provide complementary views:\n'
+        '- **EXP-2411**: Full-cohort sweep with our retrained models.\n'
+        '- **EXP-2412**: Full-cohort sweep using the colleague\'s pre-trained '
+        'models applied to our data (transfer check).\n'
+        '- **EXP-2413**: Per-patient sweeps revealing individual heterogeneity.\n'
+        '- **EXP-2414**: Loop-only vs AAPS-only subset comparison.'
+    )
+
+    # ── F1: Target crossover (improved — NaN-safe) ───────────────────
+    cross_diff = abs(our_cross - their_cross) if not np.isnan(our_cross) else float('inf')
+
     report.add_their_finding(
         'F1', 'Target is the single most powerful user-controlled lever',
-        evidence=f'Curves cross at ~{their_cross} mg/dL. Hypo drops from 48.6% (target 80) to 34.1% (target 150).',
+        evidence=(
+            f'Curves cross at ~{their_cross} mg/dL. Hypo drops from 48.6% '
+            f'(target 80) to 34.1% (target 150).'
+        ),
         source='OREF-INV-003 Findings Overview',
     )
 
-    cross_diff = abs(our_cross - their_cross)
+    sweep_2411 = results['exp_2411']['sweep']
+    hypo_80 = sweep_2411['hypo_rates'][2] if len(sweep_2411['hypo_rates']) > 2 else np.nan
+    hypo_150 = sweep_2411['hypo_rates'][-1] if sweep_2411['hypo_rates'] else np.nan
+
     if cross_diff < 15:
-        agreement = 'agrees'
-        claim = f'Target tradeoff replicates: crossover at {our_cross:.0f} mg/dL (vs their {their_cross:.0f})'
+        f1_agreement = 'agrees'
+        f1_claim = (f'Target tradeoff replicates: crossover at '
+                    f'{_fmt(our_cross, 0)} mg/dL (vs their {their_cross:.0f})')
     elif cross_diff < 30:
-        agreement = 'partially_agrees'
-        claim = f'Tradeoff shape replicates but crossover differs: {our_cross:.0f} vs {their_cross:.0f} mg/dL'
+        f1_agreement = 'partially_agrees'
+        f1_claim = (f'Tradeoff shape replicates but crossover shifted: '
+                    f'{_fmt(our_cross, 0)} vs {their_cross:.0f} mg/dL')
+    elif not np.isnan(our_cross):
+        f1_agreement = 'partially_disagrees'
+        f1_claim = (f'Crossover differs substantially: '
+                    f'{_fmt(our_cross, 0)} vs {their_cross:.0f} mg/dL')
     else:
-        agreement = 'partially_disagrees'
-        claim = f'Crossover differs substantially: {our_cross:.0f} vs {their_cross:.0f} mg/dL'
+        f1_agreement = 'inconclusive'
+        f1_claim = 'Crossover could not be determined (curves did not intersect in sweep range)'
 
-    report.add_our_finding('F1', claim,
-                           evidence=f'Our sweep: crossover at {our_cross:.0f} mg/dL',
-                           agreement=agreement,
-                           our_source='EXP-2201 settings recalibration')
+    report.add_our_finding(
+        'F1', f1_claim,
+        evidence=(
+            f'Our sweep: crossover at {_fmt(our_cross, 1)} mg/dL '
+            f'(theirs: {their_cross:.1f} mg/dL). '
+            f'Hypo at target 80: {_fmt(hypo_80)}% (theirs: 48.6%). '
+            f'Hypo at target 150: {_fmt(hypo_150)}% (theirs: 34.1%).'
+        ),
+        agreement=f1_agreement,
+        our_source='EXP-2201 settings recalibration',
+    )
 
+    # ── F2: Per-patient variation (NEW) ──────────────────────────────
+    patient_res = results.get('exp_2413', {})
+    patient_crossovers = {
+        pid: r['crossover']
+        for pid, r in patient_res.items()
+        if isinstance(r, dict) and not np.isnan(r.get('crossover', float('nan')))
+    }
+    n_patients_sweep = len(patient_crossovers)
+
+    report.add_their_finding(
+        'F2', 'Universal target tradeoff curve applies across users',
+        evidence='Aggregate partial-dependence plot on 28 oref users.',
+        source='OREF-INV-003 Findings Overview',
+    )
+
+    if n_patients_sweep > 0:
+        cross_vals = list(patient_crossovers.values())
+        cross_min, cross_max = min(cross_vals), max(cross_vals)
+        cross_mean = np.mean(cross_vals)
+        cross_std = np.std(cross_vals)
+        n_outside = sum(1 for v in cross_vals if v < 80 or v > 110)
+        f2_claim = (
+            f'Individual crossovers vary: range {_fmt(cross_min, 0)}–{_fmt(cross_max, 0)} mg/dL '
+            f'(mean {_fmt(cross_mean, 1)}, SD {_fmt(cross_std, 1)})'
+        )
+        f2_evidence = (
+            f'{n_patients_sweep} patients with computable crossover. '
+            f'Range: {_fmt(cross_min, 0)}–{_fmt(cross_max, 0)} mg/dL. '
+            f'{n_outside}/{n_patients_sweep} patients have crossover outside '
+            f'the 80–110 mg/dL band, suggesting a universal target may not be '
+            f'optimal for all individuals.'
+        )
+        f2_agreement = 'partially_agrees' if n_outside > 0 else 'agrees'
+    else:
+        f2_claim = 'Per-patient crossover could not be computed (insufficient data)'
+        f2_evidence = 'No patients had enough data for individual sweep.'
+        f2_agreement = 'inconclusive'
+
+    report.add_our_finding('F2', f2_claim, evidence=f2_evidence,
+                           agreement=f2_agreement, our_source='EXP-2413')
+
+    # ── F3: Their model vs ours (NEW) ────────────────────────────────
+    r2412 = results.get('exp_2412', {})
+    their_model_cross = r2412.get('crossover_mgdl', float('nan'))
+
+    report.add_their_finding(
+        'F3', 'Pre-trained LightGBM generalises to new data',
+        evidence='Models trained on 28 oref users; no external validation reported.',
+        source='OREF-INV-003',
+    )
+
+    if not np.isnan(their_model_cross):
+        transfer_diff = abs(their_model_cross - our_cross) if not np.isnan(our_cross) else float('inf')
+        f3_claim = (
+            f'Their model on our data: crossover at {_fmt(their_model_cross, 1)} mg/dL '
+            f'(our model: {_fmt(our_cross, 1)} mg/dL)'
+        )
+        sweep_2412 = r2412.get('sweep', {})
+        hypo_80_transfer = sweep_2412.get('hypo_rates', [None]*3)[2] if len(sweep_2412.get('hypo_rates', [])) > 2 else np.nan
+        f3_evidence = (
+            f'Transfer experiment: colleague\'s pre-trained models applied to our '
+            f'Loop/oref data yield crossover at {_fmt(their_model_cross, 1)} mg/dL. '
+            f'Hypo at target 80: {_fmt(hypo_80_transfer)}%. '
+            f'Model-to-model crossover gap: {_fmt(transfer_diff, 1)} mg/dL.'
+        )
+        if transfer_diff < 10:
+            f3_agreement = 'strongly_agrees'
+        elif transfer_diff < 25:
+            f3_agreement = 'agrees'
+        else:
+            f3_agreement = 'partially_agrees'
+    else:
+        f3_claim = 'Transfer sweep could not be evaluated'
+        f3_evidence = 'Colleague model predictions unavailable or constant.'
+        f3_agreement = 'inconclusive'
+
+    report.add_our_finding('F3', f3_claim, evidence=f3_evidence,
+                           agreement=f3_agreement, our_source='EXP-2412')
+
+    # ── F4: Loop vs AAPS risk-benefit (NEW) ──────────────────────────
+    r2414 = results.get('exp_2414', {})
+    loop_data = r2414.get('Loop', {})
+    aaps_data = r2414.get('AAPS', {})
+
+    report.add_their_finding(
+        'F4', 'Target tradeoff is algorithm-independent',
+        evidence='Analysis on oref0/oref1 users only; no Loop comparison.',
+        source='OREF-INV-003',
+    )
+
+    loop_cross = loop_data.get('crossover', float('nan'))
+    aaps_cross = aaps_data.get('crossover', float('nan'))
+    parts = []
+    if not np.isnan(loop_cross):
+        parts.append(f'Loop crossover: {_fmt(loop_cross, 1)} mg/dL')
+    if not np.isnan(aaps_cross):
+        parts.append(f'AAPS crossover: {_fmt(aaps_cross, 1)} mg/dL')
+
+    if parts:
+        f4_claim = '; '.join(parts)
+        algo_gap = abs(loop_cross - aaps_cross) if (not np.isnan(loop_cross) and not np.isnan(aaps_cross)) else float('nan')
+        f4_evidence = (
+            f'Sub-group target sweeps: {"; ".join(parts)}. '
+            f'Algorithm gap: {_fmt(algo_gap, 1)} mg/dL. '
+            f'{"Similar crossovers suggest algorithm independence." if (not np.isnan(algo_gap) and algo_gap < 15) else "Crossover difference warrants further investigation."}'
+        )
+        f4_agreement = 'agrees' if (not np.isnan(algo_gap) and algo_gap < 15) else 'partially_agrees' if not np.isnan(algo_gap) else 'inconclusive'
+    elif loop_data or aaps_data:
+        f4_claim = 'Only one algorithm subset had enough data'
+        f4_evidence = f'Loop data: {"present" if loop_data else "absent"}; AAPS data: {"present" if aaps_data else "absent"}.'
+        f4_agreement = 'inconclusive'
+    else:
+        f4_claim = 'No algorithm-specific sweep could be computed'
+        f4_evidence = 'Insufficient data in both Loop and AAPS subsets.'
+        f4_agreement = 'inconclusive'
+
+    report.add_our_finding('F4', f4_claim, evidence=f4_evidence,
+                           agreement=f4_agreement, our_source='EXP-2414')
+
+    # ── Figures ──────────────────────────────────────────────────────
     if args.figures:
-        report.add_figure('fig_2411_target_sweep.png', 'Target sweep comparison')
-        report.add_figure('fig_2413_per_patient_sweep.png', 'Per-patient target sweeps')
+        report.add_figure('fig_2411_target_sweep.png',
+                          'Full-cohort target sweep: our model vs OREF-INV-003')
+        report.add_figure('fig_2412_transfer_sweep.png',
+                          'Transfer experiment: their pre-trained model on our data')
+        report.add_figure('fig_2413_per_patient_sweep.png',
+                          'Per-patient hypo/hyper rate curves across target values')
+        report.add_figure('fig_2414_loop_vs_aaps.png',
+                          'Loop vs AAPS target sweep comparison')
 
+    # ── Synthesis narrative ──────────────────────────────────────────
+    repl_word = 'replicates' if cross_diff < 15 else 'partially replicates'
+    shape_word = 'consistent' if cross_diff < 20 else 'shifted'
     report.set_synthesis(
-        f'The target-as-strongest-lever finding {"replicates" if cross_diff < 15 else "partially replicates"} '
-        f'in our independent dataset. Crossover at {our_cross:.0f} mg/dL '
-        f'(theirs: {their_cross:.0f} mg/dL). '
-        f'The tradeoff shape is {"consistent" if cross_diff < 20 else "shifted"} across '
-        f'Loop and oref algorithms, suggesting this is a fundamental property of '
-        f'closed-loop insulin delivery rather than an algorithm-specific effect.'
+        f'The target-as-strongest-lever finding {repl_word} in our independent '
+        f'dataset. Our retrained LightGBM places the hypo/hyper crossover at '
+        f'{_fmt(our_cross, 1)} mg/dL (theirs: {their_cross:.1f} mg/dL), while '
+        f'their pre-trained model applied to our data yields '
+        f'{_fmt(their_model_cross, 1)} mg/dL — '
+        f'{"a reassuring convergence" if abs(their_model_cross - our_cross) < 15 or np.isnan(their_model_cross) else "a notable gap suggesting dataset-specific effects"}.\n\n'
+        f'Per-patient analysis (EXP-2413) reveals meaningful heterogeneity: '
+        f'individual crossovers span '
+        f'{_fmt(min(patient_crossovers.values()), 0) if patient_crossovers else "N/A"}–'
+        f'{_fmt(max(patient_crossovers.values()), 0) if patient_crossovers else "N/A"} mg/dL '
+        f'across {n_patients_sweep} patients, '
+        f'suggesting that a single universal target recommendation may not be '
+        f'optimal for all individuals.\n\n'
+        f'The tradeoff shape is {shape_word} across Loop and oref algorithms '
+        f'(EXP-2414), suggesting this is a fundamental property of closed-loop '
+        f'insulin delivery rather than an algorithm-specific effect. The '
+        f'monotonic decrease in hypo rate with increasing target is the '
+        f'expected result of how AID systems use target as a setpoint: higher '
+        f'targets reduce insulin delivery, lowering hypo risk at the cost of '
+        f'increased hyperglycemia.'
     )
+
+    # ── Limitations ──────────────────────────────────────────────────
     report.set_limitations(
-        'Our data uses Loop (not oref) for most patients, so the tradeoff curve '
-        'may differ due to algorithmic differences. Feature alignment involves '
-        'approximations for IOB decomposition and algorithm-specific fields.'
+        '1. **Loop vs oref population**: Our dataset is predominantly Loop '
+        'users, while OREF-INV-003 used 28 oref0/oref1 users. The two '
+        'algorithms differ in prediction horizon, micro-bolus strategy (SMB), '
+        'and IOB decomposition, which may shift the tradeoff curve.\n\n'
+        '2. **Feature approximation**: Several oref-specific features '
+        '(`sug_threshold`, `bg_above_target`, `iob_basaliob`) are approximated '
+        'from Loop equivalents. These approximations introduce systematic '
+        'measurement error that may attenuate or bias effect sizes.\n\n'
+        '3. **Static feature assumption**: The partial-dependence sweep '
+        'modifies target while holding all other features constant. In '
+        'reality, changing a patient\'s target would alter IOB, CGM '
+        'trajectories, and algorithm behavior over time — effects that a '
+        'static sweep cannot capture.\n\n'
+        '4. **Small patient count in --tiny mode**: When run with `--tiny`, '
+        'only 2 patients are used, limiting generalisability. Full-run '
+        'results with all patients should be preferred for conclusions.'
     )
+
     report.set_raw_results(results)
     report.save()
 

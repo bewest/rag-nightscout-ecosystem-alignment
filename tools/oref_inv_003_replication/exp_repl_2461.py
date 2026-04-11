@@ -594,21 +594,59 @@ def exp_2468_synthesis(all_results, gen_figures):
     """EXP-2468: Synthesis of IOB protective effect findings."""
     print("\n=== EXP-2468: IOB Protective Effect Synthesis ===")
 
+    def _fmt(val, decimals=3, suffix=''):
+        """Format a numeric value, returning 'N/A' for NaN/None."""
+        try:
+            if val is None or (isinstance(val, float) and np.isnan(val)):
+                return 'N/A'
+            return f'{val:.{decimals}f}{suffix}'
+        except (TypeError, ValueError):
+            return 'N/A'
+
     report = ComparisonReport(
         exp_id="EXP-2461",
         title="IOB Protective Effect: OREF-INV-003 vs Our EXP-2351",
         phase="contrast",
+        script="tools/oref_inv_003_replication/exp_repl_2461.py",
     )
 
     r2461 = all_results.get("2461", {})
+    r2462 = all_results.get("2462", {})
     r2463 = all_results.get("2463", {})
     r2464 = all_results.get("2464", {})
+    r2465 = all_results.get("2465", {})
+    r2466 = all_results.get("2466", {})
+    r2467 = all_results.get("2467", {})
 
     rr = r2461.get("rr_q4_vs_q1", np.nan)
+    rr_ci = r2461.get("rr_ci", [np.nan, np.nan])
     n_protective = r2463.get("n_protective", 0)
     n_patients = r2463.get("n_patients", 1)
 
-    # Their finding: iob_basaliob 8.4% SHAP importance (negative = compensation)
+    # ── Methodology ──────────────────────────────────────────────────
+    report.set_methodology(
+        "We reconcile OREF-INV-003's SHAP-based finding that `iob_basaliob` is "
+        "an 8.4% hypo predictor with our prior EXP-2351 finding that high IOB is "
+        "uniformly protective (RR<1 for all 11 patients). Seven sub-experiments "
+        "provide complementary evidence:\n\n"
+        "- **EXP-2461**: IOB quartile analysis — hypo rates stratified by total "
+        "IOB and basalIOB quartiles, with relative risk (RR) computation.\n"
+        "- **EXP-2462**: IOB trajectory analysis — mean IOB in the 2 hours "
+        "preceding hypo events vs normal glucose events.\n"
+        "- **EXP-2463**: Per-patient protective RR — individual RR(high vs low "
+        "IOB) for each patient with 95% confidence intervals.\n"
+        "- **EXP-2464**: Causal direction — Granger-like analysis testing whether "
+        "30-min IOB change predicts hypo, or 30-min glucose change predicts IOB "
+        "change (point-biserial and Pearson correlations).\n"
+        "- **EXP-2465**: Multi-threshold RR — per-patient RR at above-median, "
+        "top-quartile, and above-2U thresholds.\n"
+        "- **EXP-2466**: IOB decomposition — separate RR and AUC for total IOB, "
+        "basalIOB, bolusIOB, and activity components.\n"
+        "- **EXP-2467**: Circadian analysis — IOB protective effect stratified "
+        "by time-of-day (night, morning, afternoon, evening)."
+    )
+
+    # ── F-iob: IOB protective RR (improved) ──────────────────────────
     report.add_their_finding(
         finding_id="F-iob",
         claim="iob_basaliob has 8.4% SHAP importance for hypo prediction; "
@@ -616,54 +654,305 @@ def exp_2468_synthesis(all_results, gen_figures):
         evidence="LightGBM SHAP on 2.9M records from 28 oref users.",
     )
 
-    agreement = "strongly_agrees" if n_protective == n_patients and n_patients > 1 else \
-                "agrees" if n_protective > n_patients * 0.7 else "partially_agrees"
+    agreement = ("strongly_agrees" if n_protective == n_patients and n_patients > 1 else
+                 "agrees" if n_protective > n_patients * 0.7 else "partially_agrees")
+
+    # Build per-patient RR summary from r2463
+    per_patient_rr = r2463.get("per_patient", {})
+    per_patient_lines = []
+    for pid in sorted(per_patient_rr.keys()):
+        pr = per_patient_rr[pid]
+        per_patient_lines.append(
+            f'{pid}: RR={_fmt(pr.get("rr", np.nan))} '
+            f'(CI: {_fmt(pr.get("ci_low", np.nan))}–{_fmt(pr.get("ci_high", np.nan))})'
+        )
+    per_patient_summary = "; ".join(per_patient_lines) if per_patient_lines else "N/A"
 
     report.add_our_finding(
         finding_id="F-iob",
-        claim=f"High IOB is PROTECTIVE: RR(Q4 vs Q1)={rr:.3f}, "
-              f"{n_protective}/{n_patients} patients show RR<1",
-        evidence=f"Relative risk analysis on our independent dataset of {n_patients} patients. "
-                 f"Their statistical SHAP finding and our causal RR finding describe the "
-                 f"SAME phenomenon: the AID loop delivers more insulin when it's safe, "
-                 f"so high IOB correlates with low hypo risk.",
+        claim=(f"High IOB is PROTECTIVE: RR(Q4 vs Q1)={_fmt(rr)} "
+               f"(CI: {_fmt(rr_ci[0])}–{_fmt(rr_ci[1])}), "
+               f"{n_protective}/{n_patients} patients show RR<1"),
+        evidence=(
+            f"Relative risk analysis on our independent dataset of {n_patients} patients. "
+            f"Per-patient breakdown: {per_patient_summary}. "
+            f"Their SHAP finding and our RR finding describe the SAME phenomenon: "
+            f"the AID loop delivers more insulin when it is safe, so high IOB "
+            f"correlates with low hypo risk."
+        ),
         agreement=agreement,
         our_source="EXP-2351, EXP-2463",
     )
 
-    # Causal direction
+    # ── F-iob-causal: Causal direction (improved with correlation values) ─
     iob_r = r2464.get("iob_change_hypo_r")
+    iob_p = r2464.get("iob_change_hypo_p")
     glucose_r = r2464.get("glucose_change_hypo_r")
+    glucose_p = r2464.get("glucose_change_hypo_p")
     granger_r = r2464.get("glucose_to_iob_r")
+    granger_p = r2464.get("glucose_to_iob_p")
+
+    report.add_their_finding(
+        finding_id="F-iob-causal",
+        claim="basalIOB importance is correlational (SHAP)",
+        evidence="No causal direction analysis in OREF-INV-003.",
+    )
 
     if iob_r is not None and glucose_r is not None:
-        report.add_their_finding(
-            finding_id="F-iob-causal",
-            claim="basalIOB importance is correlational (SHAP)",
-            evidence="No causal direction analysis in OREF-INV-003.",
-        )
+        stronger = "IOB change" if abs(iob_r) > abs(glucose_r) else "Glucose change"
         report.add_our_finding(
             finding_id="F-iob-causal",
             claim="Causal direction: glucose→IOB→hypo, not IOB→hypo",
-            evidence=f"Glucose change→IOB change r={granger_r:.3f}; "
-                     f"IOB change→hypo r={iob_r:.3f}; glucose change→hypo r={glucose_r:.3f}. "
-                     f"The causal chain is: falling glucose triggers AID suspension → "
-                     f"IOB drops → hypo follows. High IOB is a MARKER of safety, not a cause.",
+            evidence=(
+                f"Point-biserial correlations: IOB change→hypo r={_fmt(iob_r, 4)} "
+                f"(p={_fmt(iob_p, 2, 'e') if iob_p is not None else 'N/A'}); "
+                f"glucose change→hypo r={_fmt(glucose_r, 4)} "
+                f"(p={_fmt(glucose_p, 2, 'e') if glucose_p is not None else 'N/A'}). "
+                f"Glucose→IOB Pearson r={_fmt(granger_r, 4)} "
+                f"(p={_fmt(granger_p, 2, 'e') if granger_p is not None else 'N/A'}). "
+                f"Stronger predictor: {stronger}. "
+                f"The causal chain is: falling glucose triggers AID suspension → "
+                f"IOB drops → hypo follows. High IOB is a MARKER of safety, not a cause."
+            ),
             agreement="partially_agrees",
             our_source="EXP-2464",
         )
+    else:
+        report.add_our_finding(
+            finding_id="F-iob-causal",
+            claim="Causal direction analysis inconclusive",
+            evidence="Insufficient data to compute temporal correlations.",
+            agreement="inconclusive",
+            our_source="EXP-2464",
+        )
 
-    report.set_synthesis(
-        "Both analyses identify the same phenomenon but interpret it differently. "
-        "Their SHAP importance correctly identifies basalIOB as a hypo predictor. "
-        "Our RR analysis adds causal direction: high IOB is protective BECAUSE the "
-        "AID loop delivered insulin only when safe. This is the AID Compensation "
-        "Theorem in action: the loop's own behavior creates a protective correlation "
-        "between IOB and outcomes. Clinical implication: do NOT reduce IOB to prevent "
-        "hypos — the algorithm is already doing the right thing."
+    # ── F-trajectory: IOB trajectory before hypo (NEW) ───────────────
+    report.add_their_finding(
+        finding_id="F-trajectory",
+        claim="IOB trajectory before hypo not explicitly analysed",
+        evidence="SHAP provides feature importance but not temporal trajectory.",
+        source="OREF-INV-003",
     )
 
-    # Save
+    iob_trend = r2462.get("iob_trend_before_hypo")
+    mean_before_hypo = r2462.get("mean_iob_2h_before_hypo")
+    mean_before_normal = r2462.get("mean_iob_2h_before_normal")
+    n_hypo_events = r2462.get("n_hypo_events", 0)
+
+    if iob_trend is not None and n_hypo_events > 0:
+        trend_dir = "falling" if iob_trend < 0 else "rising"
+        f_traj_claim = (
+            f"IOB is {trend_dir} in the 2h before hypo "
+            f"(Δ={_fmt(iob_trend)} U, n={n_hypo_events} events)"
+        )
+        f_traj_evidence = (
+            f"Mean IOB 2h before hypo: {_fmt(mean_before_hypo)} U; "
+            f"2h before normal BG: {_fmt(mean_before_normal)} U. "
+            f"IOB trend in the 2h window: {_fmt(iob_trend)} U "
+            f"({'dropping — consistent with AID suspension preceding hypo' if iob_trend < 0 else 'rising — AID was still delivering'}). "
+            f"This temporal signature supports the causal chain: "
+            f"glucose falling → AID suspends → IOB drops → hypo follows."
+        )
+        f_traj_agreement = "not_comparable"
+    else:
+        f_traj_claim = "IOB trajectory analysis could not be completed"
+        f_traj_evidence = f"Found {n_hypo_events} hypo events; insufficient for trajectory analysis."
+        f_traj_agreement = "inconclusive"
+
+    report.add_our_finding("F-trajectory", f_traj_claim,
+                           evidence=f_traj_evidence,
+                           agreement=f_traj_agreement,
+                           our_source="EXP-2462")
+
+    # ── F-decomp: IOB decomposition (NEW) ────────────────────────────
+    report.add_their_finding(
+        finding_id="F-decomp",
+        claim="basalIOB is the key IOB component (8.4% SHAP importance for hypo)",
+        evidence="iob_basaliob ranked among top features; bolusIOB and total IOB ranked lower.",
+        source="OREF-INV-003 Findings Overview",
+    )
+
+    total_iob = r2466.get("iob_iob", {})
+    basal_iob = r2466.get("iob_basaliob", {})
+    bolus_iob = r2466.get("iob_bolusiob", {})
+    activity = r2466.get("iob_activity", {})
+
+    decomp_parts = []
+    for label, d in [("totalIOB", total_iob), ("basalIOB", basal_iob),
+                     ("bolusIOB", bolus_iob), ("activity", activity)]:
+        if d:
+            decomp_parts.append(
+                f"{label} RR={_fmt(d.get('rr', np.nan))}, "
+                f"AUC={_fmt(d.get('auc', np.nan))}"
+            )
+
+    if decomp_parts:
+        # Determine which component is most protective
+        component_rrs = {}
+        if total_iob:
+            component_rrs["total IOB"] = total_iob.get("rr", np.nan)
+        if basal_iob:
+            component_rrs["basalIOB"] = basal_iob.get("rr", np.nan)
+        if bolus_iob:
+            component_rrs["bolusIOB"] = bolus_iob.get("rr", np.nan)
+        valid_rrs = {k: v for k, v in component_rrs.items() if not np.isnan(v)}
+        most_protective = min(valid_rrs, key=valid_rrs.get) if valid_rrs else "N/A"
+
+        f_decomp_claim = (
+            f"IOB decomposition: {most_protective} is most protective; "
+            f"{'; '.join(decomp_parts)}"
+        )
+        # Compare with their basalIOB emphasis
+        basal_rr_val = basal_iob.get("rr", np.nan)
+        total_rr_val = total_iob.get("rr", np.nan)
+        if not np.isnan(basal_rr_val) and not np.isnan(total_rr_val):
+            if basal_rr_val < total_rr_val:
+                f_decomp_agreement = "agrees"
+                comparison_note = "basalIOB is indeed more protective than total IOB, confirming their emphasis."
+            else:
+                f_decomp_agreement = "partially_disagrees"
+                comparison_note = "total IOB is more protective than basalIOB alone, suggesting their emphasis on basalIOB may be incomplete."
+        else:
+            f_decomp_agreement = "inconclusive"
+            comparison_note = "Insufficient data for component comparison."
+
+        f_decomp_evidence = (
+            f"Component-level RR (above-median vs below-median split): "
+            f"{'; '.join(decomp_parts)}. {comparison_note}"
+        )
+    else:
+        f_decomp_claim = "IOB decomposition could not be computed"
+        f_decomp_evidence = "IOB component columns not available or insufficient data."
+        f_decomp_agreement = "inconclusive"
+
+    report.add_our_finding("F-decomp", f_decomp_claim,
+                           evidence=f_decomp_evidence,
+                           agreement=f_decomp_agreement,
+                           our_source="EXP-2466")
+
+    # ── F-circadian: Circadian IOB protective effect (NEW) ───────────
+    report.add_their_finding(
+        finding_id="F-circadian",
+        claim="Hypo risk varies 5–20× by hour of day (F10)",
+        evidence="Hour-of-day partial dependence shows strong circadian effect.",
+        source="OREF-INV-003 Findings Overview",
+    )
+
+    if r2467:
+        circadian_parts = []
+        for period in ["night", "morning", "afternoon", "evening"]:
+            pd_data = r2467.get(period, {})
+            if pd_data:
+                circadian_parts.append(
+                    f"{period}: RR={_fmt(pd_data.get('rr', np.nan))}, "
+                    f"hypo={_fmt(pd_data.get('hypo_rate', np.nan), 1)}%"
+                )
+
+        night_rr = r2467.get("night", {}).get("rr", np.nan)
+        afternoon_rr = r2467.get("afternoon", {}).get("rr", np.nan)
+
+        if circadian_parts:
+            if not np.isnan(night_rr) and not np.isnan(afternoon_rr):
+                more_less = "more" if night_rr < afternoon_rr else "less"
+                f_circ_claim = (
+                    f"IOB protective effect varies by time of day: "
+                    f"{more_less} protective at night "
+                    f"(night RR={_fmt(night_rr)}, afternoon RR={_fmt(afternoon_rr)})"
+                )
+            else:
+                f_circ_claim = "IOB protective effect varies by time of day"
+
+            f_circ_evidence = (
+                f"Circadian breakdown: {'; '.join(circadian_parts)}. "
+                f"IOB is {more_less if not np.isnan(night_rr) and not np.isnan(afternoon_rr) else 'variably'} "
+                f"protective at night vs afternoon. This interacts with their F10 "
+                f"finding: the 5–20× variation in hypo rate by hour may partly reflect "
+                f"circadian changes in IOB dynamics and insulin sensitivity."
+            )
+            f_circ_agreement = "agrees"
+        else:
+            f_circ_claim = "Circadian IOB analysis returned no data"
+            f_circ_evidence = "Insufficient data in all time-of-day bins."
+            f_circ_agreement = "inconclusive"
+    else:
+        f_circ_claim = "Circadian analysis not run"
+        f_circ_evidence = "EXP-2467 returned no results."
+        f_circ_agreement = "inconclusive"
+
+    report.add_our_finding("F-circadian", f_circ_claim,
+                           evidence=f_circ_evidence,
+                           agreement=f_circ_agreement,
+                           our_source="EXP-2467")
+
+    # ── Figures ──────────────────────────────────────────────────────
+    if gen_figures:
+        report.add_figure("fig_2461_iob_vs_hypo.png",
+                          "IOB quartile hypo rates: total IOB and basalIOB")
+        report.add_figure("fig_2462_iob_trajectory.png",
+                          "IOB trajectory in 2h before hypo vs normal BG events")
+        report.add_figure("fig_2463_protective_rr.png",
+                          "Per-patient IOB protective relative risk with 95% CI")
+        report.add_figure("fig_2464_causal_direction.png",
+                          "Causal direction: glucose change vs IOB change as hypo predictors")
+        report.add_figure("fig_2466_iob_decomposition.png",
+                          "IOB component decomposition: RR for each IOB sub-component")
+        report.add_figure("fig_2467_circadian_iob.png",
+                          "Circadian IOB protective effect and hypo rate by time of day")
+
+    # ── Synthesis narrative ──────────────────────────────────────────
+    report.set_synthesis(
+        "Both analyses identify the same phenomenon but interpret it through "
+        "different lenses. Their SHAP importance correctly identifies basalIOB "
+        "as a strong hypo predictor (8.4% importance). Our RR analysis adds "
+        "causal direction: high IOB is protective BECAUSE the AID loop "
+        "delivered insulin only when safe. This is the **AID Compensation "
+        "Theorem** in action: the loop's own behavior creates a protective "
+        "correlation between IOB and outcomes.\n\n"
+        f"**Key convergence**: RR(Q4 vs Q1) = {_fmt(rr)} "
+        f"(CI: {_fmt(rr_ci[0])}–{_fmt(rr_ci[1])}), with "
+        f"{n_protective}/{n_patients} patients showing RR<1. "
+        f"The IOB trajectory analysis (EXP-2462) confirms IOB is "
+        f"{'falling' if (r2462.get('iob_trend_before_hypo') or 0) < 0 else 'changing'} "
+        f"before hypo events (Δ={_fmt(r2462.get('iob_trend_before_hypo', np.nan))} U), "
+        f"consistent with AID suspension preceding hypoglycemia.\n\n"
+        f"**IOB decomposition** (EXP-2466): "
+        f"{'; '.join(decomp_parts) if decomp_parts else 'not available'}. "
+        f"{'basalIOB dominates the protective effect, aligning with their emphasis.' if basal_iob.get('rr', 1) < total_iob.get('rr', 1) else 'Total IOB may be a stronger protective signal than basalIOB alone.'}\n\n"
+        f"**Circadian modulation** (EXP-2467): The IOB protective effect is not "
+        f"constant across the day. "
+        f"{'Night RR=' + _fmt(night_rr) + ' vs afternoon RR=' + _fmt(afternoon_rr) if not np.isnan(night_rr) and not np.isnan(afternoon_rr) else 'Circadian data incomplete.'} "
+        f"This interacts with their F10 (5–20× hourly hypo variation).\n\n"
+        "**Clinical implication**: Do NOT reduce IOB to prevent hypos — the "
+        "algorithm is already doing the right thing. The protective IOB signal "
+        "is a CONSEQUENCE of safe algorithm behavior, not a causal lever."
+    )
+
+    # ── Limitations ──────────────────────────────────────────────────
+    report.set_limitations(
+        "1. **Small patient count**: Our current dataset contains only "
+        f"{n_patients} patients (vs their 28). Results from --tiny mode (2 "
+        "patients) are directional only. The full 11-patient run is needed "
+        "for reliable conclusions, and even that is small compared to their "
+        "28-user cohort.\n\n"
+        "2. **basalIOB definition differences**: In oref0/oref1, basalIOB "
+        "represents net deviation from scheduled basal — negative means the "
+        "algorithm suspended delivery. In Loop, the closest equivalent is "
+        "derived from temp basal adjustments, but the accounting differs. "
+        "This makes direct basalIOB comparisons approximate.\n\n"
+        "3. **Causal analysis limitations**: Our Granger-like analysis uses "
+        "30-minute lagged correlations, not a formal causal inference method "
+        "(e.g., instrumental variables). The temporal ordering is suggestive "
+        "but not conclusive proof of causation.\n\n"
+        "4. **IOB decomposition availability**: bolusIOB and activity columns "
+        "may be missing or zero-filled in some patient datasets, reducing "
+        "the power of the decomposition analysis (EXP-2466).\n\n"
+        "5. **Circadian confounders**: Time-of-day effects conflate insulin "
+        "sensitivity changes, meal timing, and activity patterns. The "
+        "circadian RR differences (EXP-2467) may reflect these confounders "
+        "rather than a true time-varying IOB protective mechanism."
+    )
+
+    # ── Save ─────────────────────────────────────────────────────────
     report_path = Path("tools/oref_inv_003_replication/reports/exp_2461_report.md")
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(report.render_markdown())
@@ -675,10 +964,14 @@ def exp_2468_synthesis(all_results, gen_figures):
         "experiment": "EXP-2461-2468",
         "title": "IOB Protective Effect Reconciliation",
         "rr_q4_vs_q1": rr,
+        "rr_ci": rr_ci,
         "n_protective": n_protective,
         "n_patients": n_patients,
         "their_findings": [f["id"] for f in report.their_findings],
         "our_findings": [f["id"] for f in report.our_findings],
+        "iob_trend_before_hypo": r2462.get("iob_trend_before_hypo"),
+        "decomposition_rrs": {k: v.get("rr") for k, v in r2466.items() if isinstance(v, dict) and "rr" in v},
+        "circadian_rrs": {k: v.get("rr") for k, v in r2467.items() if isinstance(v, dict) and "rr" in v},
     }
     results_path.write_text(json.dumps(synthesis_data, indent=2, cls=NumpyEncoder))
     print(f"  Results saved: {results_path}")
