@@ -1,0 +1,3821 @@
+{
+  "experiment": "EXP-2542",
+  "title": "End-to-End Settings Advisor Validation",
+  "n_patients": 19,
+  "results": {
+    "exp_2542a_per_patient": {
+      "a": {
+        "patient_id": "a",
+        "days_of_data": 180.0,
+        "n_samples": 51841,
+        "glycemic_stats": {
+          "tir": 55.8,
+          "tbr": 3.0,
+          "tar": 41.2,
+          "mean_glucose": 180.9
+        },
+        "profile": {
+          "isf": 48.642093658447266,
+          "cr": 4.0,
+          "basal": 0.30000001192092896
+        },
+        "n_correction_events": 853,
+        "n_meal_events": 554,
+        "n_recommendations": 8,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": 68.0,
+            "current_value": 48.642093658447266,
+            "suggested_value": 16.0,
+            "predicted_tir_delta": 26.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.6,
+            "evidence": "ISF non-linearity (EXP-2511): typical correction dose 3.5U is 68% less effective per unit than 1U (power-law \u03b2=0.9). Splitting into 2\u00d71.8U would be ~87% more effective total.",
+            "rationale": "Correction doses above 1.5U show diminishing returns. At 3.5U, each unit achieves only 16 mg/dL drop vs 49 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=16 for doses \u22654U. This is a pharmacokinetic property (\u03b2=0.9), not circadian.",
+            "_patient_id": "a"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 67.0,
+            "current_value": 120.0,
+            "suggested_value": 200.0,
+            "predicted_tir_delta": 0.8,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 200 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 853 correction events.",
+            "rationale": "Increase correction threshold from 120 to 200 mg/dL. Corrections below 200 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.8pp.",
+            "_patient_id": "a"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 48.642093658447266,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is nan mg/dL/U vs profile 49 (+nan% deviation) from 361 correction events.",
+            "rationale": "Decrease ISF from 49 to nan mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 361 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "a"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 48.642093658447266,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is nan mg/dL/U vs profile 49 (+nan% deviation) from 208 correction events.",
+            "rationale": "Decrease ISF from 49 to nan mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 208 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "a"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 48.642093658447266,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is nan mg/dL/U vs profile 49 (+nan% deviation) from 80 correction events.",
+            "rationale": "Decrease ISF from 49 to nan mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 80 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "a"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 48.642093658447266,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 49 (+nan% deviation) from 204 correction events.",
+            "rationale": "Decrease ISF from 49 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 204 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "a"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 0.30000001192092896,
+            "suggested_value": 0.38,
+            "predicted_tir_delta": 2.9,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.35,
+            "evidence": "Overnight drift analysis (EXP-2371): 1 clean nights, mean drift +7.5 mg/dL/hr. Phenotype: loop dependent. Dawn phenomenon detected (+19 mg/dL after 04:00).",
+            "rationale": "Increase overnight basal by 25% (from 0.30 to 0.38 U/hr) between 00:00-06:00. Glucose drifts +7.5 mg/dL/hr overnight.",
+            "_patient_id": "a"
+          },
+          {
+            "parameter": "cr",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 4.0,
+            "suggested_value": 3.0,
+            "predicted_tir_delta": 2.5,
+            "affected_hours": [
+              5.0,
+              21.0
+            ],
+            "confidence": 0.85,
+            "evidence": "CR adequacy analysis (EXP-2535): effective CR is 3.0 g/U vs profile 4.0 g/U (-25% deviation) from 554 meals. Mean 4h BG delta: -82.8 mg/dL. Systematic over-dosing detected.",
+            "rationale": "Increase CR from 4.0 to 3.0 g/U to match observed dosing. EXP-2535 found effective CR = 1.47\u00d7 profile CR population-wide. This patient shows -25% deviation (over-dosing). Predicted TIR improvement: +2.5pp.",
+            "_patient_id": "a"
+          }
+        ]
+      },
+      "b": {
+        "patient_id": "b",
+        "days_of_data": 180.0,
+        "n_samples": 51840,
+        "glycemic_stats": {
+          "tir": 56.7,
+          "tbr": 1.0,
+          "tar": 42.3,
+          "mean_glucose": 175.0
+        },
+        "profile": {
+          "isf": 95.0,
+          "cr": 12.100000381469727,
+          "basal": 0.8500000238418579
+        },
+        "n_correction_events": 2865,
+        "n_meal_events": 1193,
+        "n_recommendations": 10,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 95.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is nan mg/dL/U vs profile 95 (+nan% deviation) from 997 correction events.",
+            "rationale": "Decrease ISF from 95 to nan mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 997 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "b"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 95.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is nan mg/dL/U vs profile 95 (+nan% deviation) from 279 correction events.",
+            "rationale": "Decrease ISF from 95 to nan mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 279 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "b"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 95.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 95 (+nan% deviation) from 960 correction events.",
+            "rationale": "Decrease ISF from 95 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 960 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "b"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 17.0,
+            "current_value": 12.100000381469727,
+            "suggested_value": 10.0,
+            "predicted_tir_delta": -8.7,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 74 mg/dL from 233 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 12.1 to 10.0 g/U (17% more insulin). Mean post-meal excursion is 74 mg/dL.",
+            "_patient_id": "b"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 7.0,
+            "current_value": 12.100000381469727,
+            "suggested_value": 11.2,
+            "predicted_tir_delta": -8.7,
+            "affected_hours": [
+              17.0,
+              24.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): evening meals show mean excursion 55 mg/dL from 615 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease evening CR from 12.1 to 11.2 g/U (7% more insulin). Mean post-meal excursion is 55 mg/dL.",
+            "_patient_id": "b"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 48.0,
+            "current_value": 95.0,
+            "suggested_value": 141.0,
+            "predicted_tir_delta": 3.3,
+            "affected_hours": [
+              22.0,
+              7.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Circadian ISF analysis (EXP-2271): night insulin is 1.5\u00d7 more effective than day. 2-zone split captures 61-90% of benefit.",
+            "rationale": "Increase ISF from 95 to 141 mg/dL/U during nighttime (22:00-07:00). Insulin works more effectively at night due to lower cortisol and growth hormone levels.",
+            "_patient_id": "b"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 9.0,
+            "current_value": 12.100000381469727,
+            "suggested_value": 11.0,
+            "predicted_tir_delta": -1.8,
+            "affected_hours": [
+              7.0,
+              12.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): morning meals show mean excursion 58 mg/dL from 85 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease morning CR from 12.1 to 11.0 g/U (9% more insulin). Mean post-meal excursion is 58 mg/dL.",
+            "_patient_id": "b"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 58.0,
+            "current_value": 120.0,
+            "suggested_value": 190.0,
+            "predicted_tir_delta": 0.7,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 190 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 2865 correction events.",
+            "rationale": "Increase correction threshold from 120 to 190 mg/dL. Corrections below 190 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.7pp.",
+            "_patient_id": "b"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": 63.0,
+            "current_value": 95.0,
+            "suggested_value": 36.0,
+            "predicted_tir_delta": 0.6,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is 36 mg/dL/U vs profile 95 (-63% deviation) from 629 correction events.",
+            "rationale": "Decrease ISF from 95 to 36 mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 629 corrections in this block with median effective ISF 36 mg/dL/U. Predicted TIR improvement: +0.6pp.",
+            "_patient_id": "b"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "increase",
+            "magnitude_pct": 0.0,
+            "current_value": 0.8500000238418579,
+            "suggested_value": 0.85,
+            "predicted_tir_delta": -0.1,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.35,
+            "evidence": "Overnight drift analysis (EXP-2371): 0 clean nights, mean drift +0.3 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Increase overnight basal by 0% (from 0.85 to 0.85 U/hr) between 00:00-06:00. Glucose drifts +0.3 mg/dL/hr overnight.",
+            "_patient_id": "b"
+          }
+        ]
+      },
+      "c": {
+        "patient_id": "c",
+        "days_of_data": 180.0,
+        "n_samples": 51841,
+        "glycemic_stats": {
+          "tir": 61.6,
+          "tbr": 4.7,
+          "tar": 33.7,
+          "mean_glucose": 162.0
+        },
+        "profile": {
+          "isf": 75.0,
+          "cr": 4.5,
+          "basal": 1.399999976158142
+        },
+        "n_correction_events": 2925,
+        "n_meal_events": 329,
+        "n_recommendations": 10,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 75.0,
+            "suggested_value": 118.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 3.3\u00d7 profile ISF (246 vs 75 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 75 to 118 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "c"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 75.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is nan mg/dL/U vs profile 75 (+nan% deviation) from 639 correction events.",
+            "rationale": "Decrease ISF from 75 to nan mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 639 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "c"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 75.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 75 (+nan% deviation) from 799 correction events.",
+            "rationale": "Decrease ISF from 75 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 799 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "c"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 23.0,
+            "current_value": 4.5,
+            "suggested_value": 3.5,
+            "predicted_tir_delta": -3.7,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 85 mg/dL from 94 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 4.5 to 3.5 g/U (23% more insulin). Mean post-meal excursion is 85 mg/dL.",
+            "_patient_id": "c"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 24.0,
+            "current_value": 4.5,
+            "suggested_value": 3.4,
+            "predicted_tir_delta": -2.5,
+            "affected_hours": [
+              7.0,
+              12.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): morning meals show mean excursion 88 mg/dL from 48 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease morning CR from 4.5 to 3.4 g/U (24% more insulin). Mean post-meal excursion is 88 mg/dL.",
+            "_patient_id": "c"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 100.0,
+            "current_value": 120.0,
+            "suggested_value": 240.0,
+            "predicted_tir_delta": 1.2,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 240 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 2925 correction events.",
+            "rationale": "Increase correction threshold from 120 to 240 mg/dL. Corrections below 240 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +1.2pp.",
+            "_patient_id": "c"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 71.0,
+            "current_value": 75.0,
+            "suggested_value": 128.0,
+            "predicted_tir_delta": 0.7,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is 128 mg/dL/U vs profile 75 (+71% deviation) from 607 correction events.",
+            "rationale": "Increase ISF from 75 to 128 mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 607 corrections in this block with median effective ISF 128 mg/dL/U. Predicted TIR improvement: +0.7pp.",
+            "_patient_id": "c"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 3.0,
+            "current_value": 4.5,
+            "suggested_value": 4.4,
+            "predicted_tir_delta": -0.6,
+            "affected_hours": [
+              17.0,
+              24.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): evening meals show mean excursion 46 mg/dL from 110 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease evening CR from 4.5 to 4.4 g/U (3% more insulin). Mean post-meal excursion is 46 mg/dL.",
+            "_patient_id": "c"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "decrease",
+            "magnitude_pct": 4.0,
+            "current_value": 1.399999976158142,
+            "suggested_value": 1.35,
+            "predicted_tir_delta": -0.3,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.28,
+            "evidence": "Overnight drift analysis (EXP-2371): 4 clean nights, mean drift -4.1 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Decrease overnight basal by 4% (from 1.40 to 1.35 U/hr) between 00:00-06:00. Glucose drifts -4.1 mg/dL/hr overnight.",
+            "_patient_id": "c"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 43.0,
+            "current_value": 75.0,
+            "suggested_value": 107.0,
+            "predicted_tir_delta": 0.2,
+            "affected_hours": [
+              7.0,
+              22.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Circadian ISF analysis (EXP-2271): day insulin is 1.4\u00d7 more effective than night.",
+            "rationale": "Increase ISF from 75 to 107 mg/dL/U during daytime (07:00-22:00).",
+            "_patient_id": "c"
+          }
+        ]
+      },
+      "d": {
+        "patient_id": "d",
+        "days_of_data": 180.0,
+        "n_samples": 51842,
+        "glycemic_stats": {
+          "tir": 79.2,
+          "tbr": 0.8,
+          "tar": 20.1,
+          "mean_glucose": 145.8
+        },
+        "profile": {
+          "isf": 40.0,
+          "cr": 14.0,
+          "basal": 0.800000011920929
+        },
+        "n_correction_events": 1879,
+        "n_meal_events": 307,
+        "n_recommendations": 9,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 40.0,
+            "suggested_value": 64.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 3.4\u00d7 profile ISF (136 vs 40 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 40 to 64 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "d"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 40.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is nan mg/dL/U vs profile 40 (+nan% deviation) from 746 correction events.",
+            "rationale": "Decrease ISF from 40 to nan mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 746 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "d"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 40.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is nan mg/dL/U vs profile 40 (+nan% deviation) from 466 correction events.",
+            "rationale": "Decrease ISF from 40 to nan mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 466 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "d"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 40.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 40 (+nan% deviation) from 469 correction events.",
+            "rationale": "Decrease ISF from 40 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 469 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "d"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 0.800000011920929,
+            "suggested_value": 1.0,
+            "predicted_tir_delta": 1.8,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Overnight drift analysis (EXP-2371): 37 clean nights, mean drift +9.1 mg/dL/hr. Phenotype: loop dependent. Dawn phenomenon detected (+27 mg/dL after 04:00).",
+            "rationale": "Increase overnight basal by 25% (from 0.80 to 1.00 U/hr) between 00:00-06:00. Glucose drifts +9.1 mg/dL/hr overnight.",
+            "_patient_id": "d"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 11.0,
+            "current_value": 14.0,
+            "suggested_value": 12.5,
+            "predicted_tir_delta": -1.0,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 62 mg/dL from 89 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 14.0 to 12.5 g/U (11% more insulin). Mean post-meal excursion is 62 mg/dL.",
+            "_patient_id": "d"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 75.0,
+            "current_value": 120.0,
+            "suggested_value": 210.0,
+            "predicted_tir_delta": 0.9,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 210 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 1879 correction events.",
+            "rationale": "Increase correction threshold from 120 to 210 mg/dL. Corrections below 210 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.9pp.",
+            "_patient_id": "d"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 75.0,
+            "current_value": 40.0,
+            "suggested_value": 70.0,
+            "predicted_tir_delta": 0.7,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is 70 mg/dL/U vs profile 40 (+75% deviation) from 198 correction events.",
+            "rationale": "Increase ISF from 40 to 70 mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 198 corrections in this block with median effective ISF 70 mg/dL/U. Predicted TIR improvement: +0.7pp.",
+            "_patient_id": "d"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 4.0,
+            "current_value": 14.0,
+            "suggested_value": 13.5,
+            "predicted_tir_delta": -0.7,
+            "affected_hours": [
+              17.0,
+              24.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): evening meals show mean excursion 47 mg/dL from 98 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease evening CR from 14.0 to 13.5 g/U (4% more insulin). Mean post-meal excursion is 47 mg/dL.",
+            "_patient_id": "d"
+          }
+        ]
+      },
+      "e": {
+        "patient_id": "e",
+        "days_of_data": 157.7,
+        "n_samples": 45424,
+        "glycemic_stats": {
+          "tir": 65.4,
+          "tbr": 1.8,
+          "tar": 32.9,
+          "mean_glucose": 161.6
+        },
+        "profile": {
+          "isf": 33.0,
+          "cr": 3.0,
+          "basal": 2.4000000953674316
+        },
+        "n_correction_events": 2903,
+        "n_meal_events": 302,
+        "n_recommendations": 10,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 33.0,
+            "suggested_value": 58.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 4.0\u00d7 profile ISF (131 vs 33 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 33 to 58 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "e"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 117.0,
+            "current_value": 120.0,
+            "suggested_value": 260.0,
+            "predicted_tir_delta": 1.4,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 260 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 2903 correction events.",
+            "rationale": "Increase correction threshold from 120 to 260 mg/dL. Corrections below 260 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +1.4pp.",
+            "_patient_id": "e"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 33.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is nan mg/dL/U vs profile 33 (+nan% deviation) from 781 correction events.",
+            "rationale": "Decrease ISF from 33 to nan mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 781 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "e"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 33.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is nan mg/dL/U vs profile 33 (+nan% deviation) from 967 correction events.",
+            "rationale": "Decrease ISF from 33 to nan mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 967 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "e"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 33.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is nan mg/dL/U vs profile 33 (+nan% deviation) from 651 correction events.",
+            "rationale": "Decrease ISF from 33 to nan mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 651 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "e"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 33.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 33 (+nan% deviation) from 504 correction events.",
+            "rationale": "Decrease ISF from 33 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 504 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "e"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 14.0,
+            "current_value": 3.0,
+            "suggested_value": 2.6,
+            "predicted_tir_delta": -4.6,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 68 mg/dL from 104 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 3.0 to 2.6 g/U (14% more insulin). Mean post-meal excursion is 68 mg/dL.",
+            "_patient_id": "e"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 40.0,
+            "current_value": 3.0,
+            "suggested_value": 4.2,
+            "predicted_tir_delta": 4.0,
+            "affected_hours": [
+              5.0,
+              21.0
+            ],
+            "confidence": 0.85,
+            "evidence": "CR adequacy analysis (EXP-2535): effective CR is 4.2 g/U vs profile 3.0 g/U (+40% deviation) from 302 meals. Mean 4h BG delta: +11.8 mg/dL. Systematic under-dosing detected.",
+            "rationale": "Decrease CR from 3.0 to 4.2 g/U to match observed dosing. EXP-2535 found effective CR = 1.47\u00d7 profile CR population-wide. This patient shows +40% deviation (under-dosing). Predicted TIR improvement: +4.0pp.",
+            "_patient_id": "e"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 5.0,
+            "current_value": 3.0,
+            "suggested_value": 2.9,
+            "predicted_tir_delta": -1.9,
+            "affected_hours": [
+              17.0,
+              24.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): evening meals show mean excursion 49 mg/dL from 120 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease evening CR from 3.0 to 2.9 g/U (5% more insulin). Mean post-meal excursion is 49 mg/dL.",
+            "_patient_id": "e"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "decrease",
+            "magnitude_pct": 2.0,
+            "current_value": 2.4000000953674316,
+            "suggested_value": 2.36,
+            "predicted_tir_delta": -0.5,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.35,
+            "evidence": "Overnight drift analysis (EXP-2371): 0 clean nights, mean drift -1.2 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Decrease overnight basal by 2% (from 2.40 to 2.36 U/hr) between 00:00-06:00. Glucose drifts -1.2 mg/dL/hr overnight.",
+            "_patient_id": "e"
+          }
+        ]
+      },
+      "f": {
+        "patient_id": "f",
+        "days_of_data": 180.0,
+        "n_samples": 51837,
+        "glycemic_stats": {
+          "tir": 65.5,
+          "tbr": 3.0,
+          "tar": 31.4,
+          "mean_glucose": 157.3
+        },
+        "profile": {
+          "isf": 20.0,
+          "cr": 5.0,
+          "basal": 1.399999976158142
+        },
+        "n_correction_events": 396,
+        "n_meal_events": 331,
+        "n_recommendations": 12,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": 79.0,
+            "current_value": 20.0,
+            "suggested_value": 4.0,
+            "predicted_tir_delta": 26.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.6,
+            "evidence": "ISF non-linearity (EXP-2511): typical correction dose 5.6U is 79% less effective per unit than 1U (power-law \u03b2=0.9). Splitting into 2\u00d72.8U would be ~87% more effective total.",
+            "rationale": "Correction doses above 1.5U show diminishing returns. At 5.6U, each unit achieves only 4 mg/dL drop vs 20 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=4 for doses \u22656U. This is a pharmacokinetic property (\u03b2=0.9), not circadian.",
+            "_patient_id": "f"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 20.0,
+            "suggested_value": 24.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 1.8\u00d7 profile ISF (36 vs 20 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 20 to 24 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "f"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 54.0,
+            "current_value": 20.0,
+            "suggested_value": 31.0,
+            "predicted_tir_delta": 1.4,
+            "affected_hours": [
+              22.0,
+              7.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Circadian ISF analysis (EXP-2271): night insulin is 1.5\u00d7 more effective than day. 2-zone split captures 61-90% of benefit.",
+            "rationale": "Increase ISF from 20 to 31 mg/dL/U during nighttime (22:00-07:00). Insulin works more effectively at night due to lower cortisol and growth hormone levels.",
+            "_patient_id": "f"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 75.0,
+            "current_value": 120.0,
+            "suggested_value": 210.0,
+            "predicted_tir_delta": 0.9,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 210 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 396 correction events.",
+            "rationale": "Increase correction threshold from 120 to 210 mg/dL. Corrections below 210 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.9pp.",
+            "_patient_id": "f"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 20.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is nan mg/dL/U vs profile 20 (+nan% deviation) from 168 correction events.",
+            "rationale": "Decrease ISF from 20 to nan mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 168 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "f"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 20.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is nan mg/dL/U vs profile 20 (+nan% deviation) from 58 correction events.",
+            "rationale": "Decrease ISF from 20 to nan mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 58 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "f"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 20.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is nan mg/dL/U vs profile 20 (+nan% deviation) from 36 correction events.",
+            "rationale": "Decrease ISF from 20 to nan mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 36 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "f"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 20.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 20 (+nan% deviation) from 134 correction events.",
+            "rationale": "Decrease ISF from 20 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 134 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "f"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 25.0,
+            "current_value": 5.0,
+            "suggested_value": 3.8,
+            "predicted_tir_delta": -3.8,
+            "affected_hours": [
+              17.0,
+              24.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): evening meals show mean excursion 93 mg/dL from 141 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease evening CR from 5.0 to 3.8 g/U (25% more insulin). Mean post-meal excursion is 93 mg/dL.",
+            "_patient_id": "f"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 25.0,
+            "current_value": 5.0,
+            "suggested_value": 3.8,
+            "predicted_tir_delta": -0.9,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 120 mg/dL from 34 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 5.0 to 3.8 g/U (25% more insulin). Mean post-meal excursion is 120 mg/dL.",
+            "_patient_id": "f"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 5.0,
+            "current_value": 5.0,
+            "suggested_value": 4.7,
+            "predicted_tir_delta": -0.3,
+            "affected_hours": [
+              7.0,
+              12.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): morning meals show mean excursion 51 mg/dL from 15 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease morning CR from 5.0 to 4.7 g/U (5% more insulin). Mean post-meal excursion is 51 mg/dL.",
+            "_patient_id": "f"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "increase",
+            "magnitude_pct": 10.0,
+            "current_value": 1.399999976158142,
+            "suggested_value": 1.54,
+            "predicted_tir_delta": 0.1,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.35,
+            "evidence": "Overnight drift analysis (EXP-2371): 0 clean nights, mean drift +2.9 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Increase overnight basal by 10% (from 1.40 to 1.54 U/hr) between 00:00-06:00. Glucose drifts +2.9 mg/dL/hr overnight.",
+            "_patient_id": "f"
+          }
+        ]
+      },
+      "g": {
+        "patient_id": "g",
+        "days_of_data": 180.0,
+        "n_samples": 51841,
+        "glycemic_stats": {
+          "tir": 75.2,
+          "tbr": 3.2,
+          "tar": 21.5,
+          "mean_glucose": 145.6
+        },
+        "profile": {
+          "isf": 65.0,
+          "cr": 8.5,
+          "basal": 0.6000000238418579
+        },
+        "n_correction_events": 1344,
+        "n_meal_events": 895,
+        "n_recommendations": 10,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 65.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is nan mg/dL/U vs profile 65 (+nan% deviation) from 500 correction events.",
+            "rationale": "Decrease ISF from 65 to nan mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 500 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "g"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 65.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is nan mg/dL/U vs profile 65 (+nan% deviation) from 137 correction events.",
+            "rationale": "Decrease ISF from 65 to nan mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 137 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "g"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 65.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 65 (+nan% deviation) from 453 correction events.",
+            "rationale": "Decrease ISF from 65 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 453 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "g"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 23.0,
+            "current_value": 8.5,
+            "suggested_value": 6.5,
+            "predicted_tir_delta": -17.0,
+            "affected_hours": [
+              17.0,
+              24.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): evening meals show mean excursion 87 mg/dL from 406 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease evening CR from 8.5 to 6.5 g/U (23% more insulin). Mean post-meal excursion is 87 mg/dL.",
+            "_patient_id": "g"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 21.0,
+            "current_value": 8.5,
+            "suggested_value": 6.7,
+            "predicted_tir_delta": -5.1,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 83 mg/dL from 225 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 8.5 to 6.7 g/U (21% more insulin). Mean post-meal excursion is 83 mg/dL.",
+            "_patient_id": "g"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 65.0,
+            "suggested_value": 91.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 2.6\u00d7 profile ISF (168 vs 65 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 65 to 91 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "g"
+          },
+          {
+            "parameter": "cr",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 8.5,
+            "suggested_value": 6.3,
+            "predicted_tir_delta": 2.5,
+            "affected_hours": [
+              5.0,
+              21.0
+            ],
+            "confidence": 0.85,
+            "evidence": "CR adequacy analysis (EXP-2535): effective CR is 6.3 g/U vs profile 8.5 g/U (-25% deviation) from 895 meals. Mean 4h BG delta: +19.3 mg/dL. Systematic over-dosing detected.",
+            "rationale": "Increase CR from 8.5 to 6.3 g/U to match observed dosing. EXP-2535 found effective CR = 1.47\u00d7 profile CR population-wide. This patient shows -25% deviation (over-dosing). Predicted TIR improvement: +2.5pp.",
+            "_patient_id": "g"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 125.0,
+            "current_value": 65.0,
+            "suggested_value": 146.0,
+            "predicted_tir_delta": 1.2,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is 146 mg/dL/U vs profile 65 (+125% deviation) from 254 correction events.",
+            "rationale": "Increase ISF from 65 to 146 mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 254 corrections in this block with median effective ISF 146 mg/dL/U. Predicted TIR improvement: +1.2pp.",
+            "_patient_id": "g"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 83.0,
+            "current_value": 120.0,
+            "suggested_value": 220.0,
+            "predicted_tir_delta": 1.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 220 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 1344 correction events.",
+            "rationale": "Increase correction threshold from 120 to 220 mg/dL. Corrections below 220 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +1.0pp.",
+            "_patient_id": "g"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "increase",
+            "magnitude_pct": 6.0,
+            "current_value": 0.6000000238418579,
+            "suggested_value": 0.64,
+            "predicted_tir_delta": 0.1,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.35,
+            "evidence": "Overnight drift analysis (EXP-2371): 0 clean nights, mean drift +2.3 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Increase overnight basal by 6% (from 0.60 to 0.64 U/hr) between 00:00-06:00. Glucose drifts +2.3 mg/dL/hr overnight.",
+            "_patient_id": "g"
+          }
+        ]
+      },
+      "h": {
+        "patient_id": "h",
+        "days_of_data": 179.9,
+        "n_samples": 51817,
+        "glycemic_stats": {
+          "tir": 85.0,
+          "tbr": 5.9,
+          "tar": 9.1,
+          "mean_glucose": 118.8
+        },
+        "profile": {
+          "isf": 90.0,
+          "cr": 10.0,
+          "basal": 1.0
+        },
+        "n_correction_events": 342,
+        "n_meal_events": 270,
+        "n_recommendations": 6,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 35.0,
+            "current_value": 90.0,
+            "suggested_value": 122.0,
+            "predicted_tir_delta": -2.3,
+            "affected_hours": [
+              22.0,
+              7.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Circadian ISF analysis (EXP-2271): night insulin is 1.4\u00d7 more effective than day. 2-zone split captures 61-90% of benefit.",
+            "rationale": "Increase ISF from 90 to 122 mg/dL/U during nighttime (22:00-07:00). Insulin works more effectively at night due to lower cortisol and growth hormone levels.",
+            "_patient_id": "h"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 125.0,
+            "current_value": 120.0,
+            "suggested_value": 270.0,
+            "predicted_tir_delta": 1.5,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 270 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 342 correction events.",
+            "rationale": "Increase correction threshold from 120 to 270 mg/dL. Corrections below 270 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +1.5pp.",
+            "_patient_id": "h"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 90.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is nan mg/dL/U vs profile 90 (+nan% deviation) from 133 correction events.",
+            "rationale": "Decrease ISF from 90 to nan mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 133 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "h"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 90.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 90 (+nan% deviation) from 93 correction events.",
+            "rationale": "Decrease ISF from 90 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 93 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "h"
+          },
+          {
+            "parameter": "cr",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 10.0,
+            "suggested_value": 7.5,
+            "predicted_tir_delta": 2.5,
+            "affected_hours": [
+              5.0,
+              21.0
+            ],
+            "confidence": 0.85,
+            "evidence": "CR adequacy analysis (EXP-2535): effective CR is 7.5 g/U vs profile 10.0 g/U (-25% deviation) from 270 meals. Mean 4h BG delta: -42.0 mg/dL. Systematic over-dosing detected.",
+            "rationale": "Increase CR from 10.0 to 7.5 g/U to match observed dosing. EXP-2535 found effective CR = 1.47\u00d7 profile CR population-wide. This patient shows -25% deviation (over-dosing). Predicted TIR improvement: +2.5pp.",
+            "_patient_id": "h"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "increase",
+            "magnitude_pct": 1.0,
+            "current_value": 1.0,
+            "suggested_value": 1.01,
+            "predicted_tir_delta": -0.2,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.35,
+            "evidence": "Overnight drift analysis (EXP-2371): 0 clean nights, mean drift +0.6 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Increase overnight basal by 1% (from 1.00 to 1.01 U/hr) between 00:00-06:00. Glucose drifts +0.6 mg/dL/hr overnight.",
+            "_patient_id": "h"
+          }
+        ]
+      },
+      "i": {
+        "patient_id": "i",
+        "days_of_data": 180.0,
+        "n_samples": 51841,
+        "glycemic_stats": {
+          "tir": 59.9,
+          "tbr": 10.7,
+          "tar": 29.4,
+          "mean_glucose": 150.3
+        },
+        "profile": {
+          "isf": 50.0,
+          "cr": 10.0,
+          "basal": 2.5
+        },
+        "n_correction_events": 4575,
+        "n_meal_events": 99,
+        "n_recommendations": 10,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 50.0,
+            "suggested_value": 89.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 4.1\u00d7 profile ISF (206 vs 50 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 50 to 89 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "i"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 142.0,
+            "current_value": 120.0,
+            "suggested_value": 290.0,
+            "predicted_tir_delta": 1.7,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 290 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 4575 correction events.",
+            "rationale": "Increase correction threshold from 120 to 290 mg/dL. Corrections below 290 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +1.7pp.",
+            "_patient_id": "i"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 50.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is nan mg/dL/U vs profile 50 (+nan% deviation) from 1627 correction events.",
+            "rationale": "Decrease ISF from 50 to nan mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 1627 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "i"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 50.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is nan mg/dL/U vs profile 50 (+nan% deviation) from 442 correction events.",
+            "rationale": "Decrease ISF from 50 to nan mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 442 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "i"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 50.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is nan mg/dL/U vs profile 50 (+nan% deviation) from 954 correction events.",
+            "rationale": "Decrease ISF from 50 to nan mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 954 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "i"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 50.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 50 (+nan% deviation) from 1552 correction events.",
+            "rationale": "Decrease ISF from 50 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 1552 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "i"
+          },
+          {
+            "parameter": "cr",
+            "direction": "increase",
+            "magnitude_pct": 37.0,
+            "current_value": 10.0,
+            "suggested_value": 6.3,
+            "predicted_tir_delta": 3.7,
+            "affected_hours": [
+              5.0,
+              21.0
+            ],
+            "confidence": 0.85,
+            "evidence": "CR adequacy analysis (EXP-2535): effective CR is 6.3 g/U vs profile 10.0 g/U (-37% deviation) from 99 meals. Mean 4h BG delta: +7.2 mg/dL. Systematic over-dosing detected.",
+            "rationale": "Increase CR from 10.0 to 6.3 g/U to match observed dosing. EXP-2535 found effective CR = 1.47\u00d7 profile CR population-wide. This patient shows -37% deviation (over-dosing). Predicted TIR improvement: +3.7pp.",
+            "_patient_id": "i"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 25.0,
+            "current_value": 10.0,
+            "suggested_value": 7.5,
+            "predicted_tir_delta": -0.8,
+            "affected_hours": [
+              17.0,
+              24.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): evening meals show mean excursion 94 mg/dL from 52 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease evening CR from 10.0 to 7.5 g/U (25% more insulin). Mean post-meal excursion is 94 mg/dL.",
+            "_patient_id": "i"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "increase",
+            "magnitude_pct": 2.0,
+            "current_value": 2.5,
+            "suggested_value": 2.54,
+            "predicted_tir_delta": -0.5,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.35,
+            "evidence": "Overnight drift analysis (EXP-2371): 2 clean nights, mean drift +1.9 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Increase overnight basal by 2% (from 2.50 to 2.54 U/hr) between 00:00-06:00. Glucose drifts +1.9 mg/dL/hr overnight.",
+            "_patient_id": "i"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 25.0,
+            "current_value": 10.0,
+            "suggested_value": 7.5,
+            "predicted_tir_delta": -0.3,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 107 mg/dL from 26 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 10.0 to 7.5 g/U (25% more insulin). Mean post-meal excursion is 107 mg/dL.",
+            "_patient_id": "i"
+          }
+        ]
+      },
+      "j": {
+        "patient_id": "j",
+        "days_of_data": 61.1,
+        "n_samples": 17605,
+        "glycemic_stats": {
+          "tir": 81.0,
+          "tbr": 1.1,
+          "tar": 17.9,
+          "mean_glucose": 141.2
+        },
+        "profile": {
+          "isf": 40.0,
+          "cr": 6.0,
+          "basal": 0.8
+        },
+        "n_correction_events": 92,
+        "n_meal_events": 147,
+        "n_recommendations": 8,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": 56.0,
+            "current_value": 40.0,
+            "suggested_value": 18.0,
+            "predicted_tir_delta": 26.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.6,
+            "evidence": "ISF non-linearity (EXP-2511): typical correction dose 2.5U is 56% less effective per unit than 1U (power-law \u03b2=0.9). Splitting into 2\u00d71.2U would be ~87% more effective total.",
+            "rationale": "Correction doses above 1.5U show diminishing returns. At 2.5U, each unit achieves only 18 mg/dL drop vs 40 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=18 for doses \u22652U. This is a pharmacokinetic property (\u03b2=0.9), not circadian.",
+            "_patient_id": "j"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 75.0,
+            "current_value": 120.0,
+            "suggested_value": 210.0,
+            "predicted_tir_delta": 0.9,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 210 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 92 correction events.",
+            "rationale": "Increase correction threshold from 120 to 210 mg/dL. Corrections below 210 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.9pp.",
+            "_patient_id": "j"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 40.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is nan mg/dL/U vs profile 40 (+nan% deviation) from 57 correction events.",
+            "rationale": "Decrease ISF from 40 to nan mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 57 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "j"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": 99.0,
+            "current_value": 40.0,
+            "suggested_value": 0.0,
+            "predicted_tir_delta": 1.0,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.52,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is 0 mg/dL/U vs profile 40 (-99% deviation) from 14 correction events.",
+            "rationale": "Decrease ISF from 40 to 0 mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 14 corrections in this block with median effective ISF 0 mg/dL/U. Predicted TIR improvement: +1.0pp.",
+            "_patient_id": "j"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 11.0,
+            "current_value": 6.0,
+            "suggested_value": 5.3,
+            "predicted_tir_delta": -0.5,
+            "affected_hours": [
+              7.0,
+              12.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): morning meals show mean excursion 63 mg/dL from 58 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease morning CR from 6.0 to 5.3 g/U (11% more insulin). Mean post-meal excursion is 63 mg/dL.",
+            "_patient_id": "j"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 37.0,
+            "current_value": 40.0,
+            "suggested_value": 55.0,
+            "predicted_tir_delta": 0.4,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.26,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is 55 mg/dL/U vs profile 40 (+37% deviation) from 7 correction events.",
+            "rationale": "Increase ISF from 40 to 55 mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 7 corrections in this block with median effective ISF 55 mg/dL/U. Predicted TIR improvement: +0.4pp.",
+            "_patient_id": "j"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 18.0,
+            "current_value": 6.0,
+            "suggested_value": 4.9,
+            "predicted_tir_delta": -0.4,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 76 mg/dL from 18 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 6.0 to 4.9 g/U (18% more insulin). Mean post-meal excursion is 76 mg/dL.",
+            "_patient_id": "j"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "increase",
+            "magnitude_pct": 2.0,
+            "current_value": 0.8,
+            "suggested_value": 0.82,
+            "predicted_tir_delta": 0.0,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Overnight drift analysis (EXP-2371): 55 clean nights, mean drift +0.7 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Increase overnight basal by 2% (from 0.80 to 0.82 U/hr) between 00:00-06:00. Glucose drifts +0.7 mg/dL/hr overnight.",
+            "_patient_id": "j"
+          }
+        ]
+      },
+      "k": {
+        "patient_id": "k",
+        "days_of_data": 179.0,
+        "n_samples": 51559,
+        "glycemic_stats": {
+          "tir": 95.1,
+          "tbr": 4.9,
+          "tar": 0.0,
+          "mean_glucose": 93.1
+        },
+        "profile": {
+          "isf": 25.0,
+          "cr": 10.0,
+          "basal": 0.550000011920929
+        },
+        "n_correction_events": 16,
+        "n_meal_events": 67,
+        "n_recommendations": 6,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 25.0,
+            "suggested_value": 41.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 3.5\u00d7 profile ISF (87 vs 25 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 25 to 41 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "k"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 471.0,
+            "current_value": 25.0,
+            "suggested_value": 143.0,
+            "predicted_tir_delta": 4.7,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.19,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is 143 mg/dL/U vs profile 25 (+471% deviation) from 5 correction events.",
+            "rationale": "Increase ISF from 25 to 143 mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 5 corrections in this block with median effective ISF 143 mg/dL/U. Predicted TIR improvement: +4.7pp.",
+            "_patient_id": "k"
+          },
+          {
+            "parameter": "cr",
+            "direction": "increase",
+            "magnitude_pct": 26.0,
+            "current_value": 10.0,
+            "suggested_value": 7.4,
+            "predicted_tir_delta": 2.6,
+            "affected_hours": [
+              5.0,
+              21.0
+            ],
+            "confidence": 0.85,
+            "evidence": "CR adequacy analysis (EXP-2535): effective CR is 7.4 g/U vs profile 10.0 g/U (-26% deviation) from 67 meals. Mean 4h BG delta: -2.4 mg/dL. Systematic over-dosing detected.",
+            "rationale": "Increase CR from 10.0 to 7.4 g/U to match observed dosing. EXP-2535 found effective CR = 1.47\u00d7 profile CR population-wide. This patient shows -26% deviation (over-dosing). Predicted TIR improvement: +2.6pp.",
+            "_patient_id": "k"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 248.0,
+            "current_value": 25.0,
+            "suggested_value": 87.0,
+            "predicted_tir_delta": 2.5,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.26,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 87 mg/dL/U vs profile 25 (+248% deviation) from 7 correction events.",
+            "rationale": "Increase ISF from 25 to 87 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 7 corrections in this block with median effective ISF 87 mg/dL/U. Predicted TIR improvement: +2.5pp.",
+            "_patient_id": "k"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "increase",
+            "magnitude_pct": 9.0,
+            "current_value": 0.550000011920929,
+            "suggested_value": 0.6,
+            "predicted_tir_delta": -1.2,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Overnight drift analysis (EXP-2371): 48 clean nights, mean drift +1.2 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Increase overnight basal by 9% (from 0.55 to 0.60 U/hr) between 00:00-06:00. Glucose drifts +1.2 mg/dL/hr overnight.",
+            "_patient_id": "k"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 8.0,
+            "current_value": 120.0,
+            "suggested_value": 130.0,
+            "predicted_tir_delta": 0.1,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 130 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 16 correction events.",
+            "rationale": "Increase correction threshold from 120 to 130 mg/dL. Corrections below 130 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.1pp.",
+            "_patient_id": "k"
+          }
+        ]
+      },
+      "odc-39819048": {
+        "patient_id": "odc-39819048",
+        "days_of_data": 10.1,
+        "n_samples": 2923,
+        "glycemic_stats": {
+          "tir": 77.0,
+          "tbr": 11.0,
+          "tar": 11.9,
+          "mean_glucose": 120.5
+        },
+        "profile": {
+          "isf": 39.63429641723633,
+          "cr": 8.0,
+          "basal": 0.8500000238418579
+        },
+        "n_correction_events": 82,
+        "n_meal_events": 24,
+        "n_recommendations": 10,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 39.63429641723633,
+            "suggested_value": 68.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 3.9\u00d7 profile ISF (153 vs 40 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 40 to 68 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "odc-39819048"
+          },
+          {
+            "parameter": "cr",
+            "direction": "increase",
+            "magnitude_pct": 29.0,
+            "current_value": 8.0,
+            "suggested_value": 5.6,
+            "predicted_tir_delta": 2.9,
+            "affected_hours": [
+              5.0,
+              21.0
+            ],
+            "confidence": 0.5640000000000001,
+            "evidence": "CR adequacy analysis (EXP-2535): effective CR is 5.6 g/U vs profile 8.0 g/U (-29% deviation) from 24 meals. Mean 4h BG delta: +4.2 mg/dL. Systematic over-dosing detected.",
+            "rationale": "Increase CR from 8.0 to 5.6 g/U to match observed dosing. EXP-2535 found effective CR = 1.47\u00d7 profile CR population-wide. This patient shows -29% deviation (over-dosing). Predicted TIR improvement: +2.9pp.",
+            "_patient_id": "odc-39819048"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 10.0,
+            "current_value": 8.0,
+            "suggested_value": 7.2,
+            "predicted_tir_delta": -1.9,
+            "affected_hours": [
+              17.0,
+              24.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): evening meals show mean excursion 60 mg/dL from 18 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease evening CR from 8.0 to 7.2 g/U (10% more insulin). Mean post-meal excursion is 60 mg/dL.",
+            "_patient_id": "odc-39819048"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 158.0,
+            "current_value": 39.63429641723633,
+            "suggested_value": 102.0,
+            "predicted_tir_delta": 1.6,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.16,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 102 mg/dL/U vs profile 40 (+158% deviation) from 6 correction events.",
+            "rationale": "Increase ISF from 40 to 102 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 6 corrections in this block with median effective ISF 102 mg/dL/U. Predicted TIR improvement: +1.6pp.",
+            "_patient_id": "odc-39819048"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 83.0,
+            "current_value": 120.0,
+            "suggested_value": 220.0,
+            "predicted_tir_delta": 1.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7249503968253969,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 220 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 82 correction events.",
+            "rationale": "Increase correction threshold from 120 to 220 mg/dL. Corrections below 220 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +1.0pp.",
+            "_patient_id": "odc-39819048"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 87.0,
+            "current_value": 39.63429641723633,
+            "suggested_value": 74.0,
+            "predicted_tir_delta": 0.9,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.54,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is 74 mg/dL/U vs profile 40 (+87% deviation) from 40 correction events.",
+            "rationale": "Increase ISF from 40 to 74 mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 40 corrections in this block with median effective ISF 74 mg/dL/U. Predicted TIR improvement: +0.9pp.",
+            "_patient_id": "odc-39819048"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 55.0,
+            "current_value": 39.63429641723633,
+            "suggested_value": 61.0,
+            "predicted_tir_delta": 0.6,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.3,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is 61 mg/dL/U vs profile 40 (+55% deviation) from 11 correction events.",
+            "rationale": "Increase ISF from 40 to 61 mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 11 corrections in this block with median effective ISF 61 mg/dL/U. Predicted TIR improvement: +0.6pp.",
+            "_patient_id": "odc-39819048"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 32.0,
+            "current_value": 39.63429641723633,
+            "suggested_value": 52.0,
+            "predicted_tir_delta": 0.3,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.54,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is 52 mg/dL/U vs profile 40 (+32% deviation) from 25 correction events.",
+            "rationale": "Increase ISF from 40 to 52 mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 25 corrections in this block with median effective ISF 52 mg/dL/U. Predicted TIR improvement: +0.3pp.",
+            "_patient_id": "odc-39819048"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "decrease",
+            "magnitude_pct": 3.0,
+            "current_value": 0.8500000238418579,
+            "suggested_value": 0.82,
+            "predicted_tir_delta": 0.2,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.35,
+            "evidence": "Overnight drift analysis (EXP-2371): 0 clean nights, mean drift -1.1 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Decrease overnight basal by 3% (from 0.85 to 0.82 U/hr) between 00:00-06:00. Glucose drifts -1.1 mg/dL/hr overnight.",
+            "_patient_id": "odc-39819048"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 0.0,
+            "current_value": 8.0,
+            "suggested_value": 8.0,
+            "predicted_tir_delta": 0.0,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 40 mg/dL from 12 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 8.0 to 8.0 g/U (0% more insulin). Mean post-meal excursion is 40 mg/dL.",
+            "_patient_id": "odc-39819048"
+          }
+        ]
+      },
+      "odc-49141524": {
+        "patient_id": "odc-49141524",
+        "days_of_data": 12.0,
+        "n_samples": 3469,
+        "glycemic_stats": {
+          "tir": 61.4,
+          "tbr": 1.8,
+          "tar": 36.8,
+          "mean_glucose": 165.2
+        },
+        "profile": {
+          "isf": 60.0,
+          "cr": 8.0,
+          "basal": 0.949999988079071
+        },
+        "n_correction_events": 105,
+        "n_meal_events": 0,
+        "n_recommendations": 5,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 60.0,
+            "suggested_value": 68.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 1.6\u00d7 profile ISF (93 vs 60 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 60 to 68 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "odc-49141524"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 250.0,
+            "current_value": 60.0,
+            "suggested_value": 210.0,
+            "predicted_tir_delta": 2.5,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.42,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 210 mg/dL/U vs profile 60 (+250% deviation) from 13 correction events.",
+            "rationale": "Increase ISF from 60 to 210 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 13 corrections in this block with median effective ISF 210 mg/dL/U. Predicted TIR improvement: +2.5pp.",
+            "_patient_id": "odc-49141524"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 197.0,
+            "current_value": 60.0,
+            "suggested_value": 178.0,
+            "predicted_tir_delta": 2.0,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is 178 mg/dL/U vs profile 60 (+197% deviation) from 41 correction events.",
+            "rationale": "Increase ISF from 60 to 178 mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 41 corrections in this block with median effective ISF 178 mg/dL/U. Predicted TIR improvement: +2.0pp.",
+            "_patient_id": "odc-49141524"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 83.0,
+            "current_value": 120.0,
+            "suggested_value": 220.0,
+            "predicted_tir_delta": 1.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.8603670634920634,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 220 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 105 correction events.",
+            "rationale": "Increase correction threshold from 120 to 220 mg/dL. Corrections below 220 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +1.0pp.",
+            "_patient_id": "odc-49141524"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "decrease",
+            "magnitude_pct": 14.0,
+            "current_value": 0.949999988079071,
+            "suggested_value": 0.82,
+            "predicted_tir_delta": -0.7,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.56,
+            "evidence": "Overnight drift analysis (EXP-2371): 8 clean nights, mean drift -7.9 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Decrease overnight basal by 14% (from 0.95 to 0.82 U/hr) between 00:00-06:00. Glucose drifts -7.9 mg/dL/hr overnight.",
+            "_patient_id": "odc-49141524"
+          }
+        ]
+      },
+      "odc-58680324": {
+        "patient_id": "odc-58680324",
+        "days_of_data": 10.6,
+        "n_samples": 3045,
+        "glycemic_stats": {
+          "tir": 81.5,
+          "tbr": 5.3,
+          "tar": 13.2,
+          "mean_glucose": 131.6
+        },
+        "profile": {
+          "isf": 33.0,
+          "cr": 4.0,
+          "basal": 0.7799999713897705
+        },
+        "n_correction_events": 21,
+        "n_meal_events": 26,
+        "n_recommendations": 10,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": 63.0,
+            "current_value": 33.0,
+            "suggested_value": 12.0,
+            "predicted_tir_delta": 26.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.6,
+            "evidence": "ISF non-linearity (EXP-2511): typical correction dose 3.0U is 63% less effective per unit than 1U (power-law \u03b2=0.9). Splitting into 2\u00d71.5U would be ~87% more effective total.",
+            "rationale": "Correction doses above 1.5U show diminishing returns. At 3.0U, each unit achieves only 12 mg/dL drop vs 33 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=12 for doses \u22653U. This is a pharmacokinetic property (\u03b2=0.9), not circadian.",
+            "_patient_id": "odc-58680324"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 52.0,
+            "current_value": 33.0,
+            "suggested_value": 50.0,
+            "predicted_tir_delta": -20.8,
+            "affected_hours": [
+              7.0,
+              22.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Circadian ISF analysis (EXP-2271): day insulin is 1.5\u00d7 more effective than night.",
+            "rationale": "Increase ISF from 33 to 50 mg/dL/U during daytime (07:00-22:00).",
+            "_patient_id": "odc-58680324"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 33.0,
+            "suggested_value": 40.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 1.9\u00d7 profile ISF (63 vs 33 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 33 to 40 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "odc-58680324"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 8.0,
+            "current_value": 4.0,
+            "suggested_value": 3.7,
+            "predicted_tir_delta": -2.9,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 56 mg/dL from 10 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 4.0 to 3.7 g/U (8% more insulin). Mean post-meal excursion is 56 mg/dL.",
+            "_patient_id": "odc-58680324"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 27.0,
+            "current_value": 4.0,
+            "suggested_value": 5.1,
+            "predicted_tir_delta": 2.7,
+            "affected_hours": [
+              5.0,
+              21.0
+            ],
+            "confidence": 0.5860000000000001,
+            "evidence": "CR adequacy analysis (EXP-2535): effective CR is 5.1 g/U vs profile 4.0 g/U (+27% deviation) from 26 meals. Mean 4h BG delta: -15.3 mg/dL. Systematic under-dosing detected.",
+            "rationale": "Decrease CR from 4.0 to 5.1 g/U to match observed dosing. EXP-2535 found effective CR = 1.47\u00d7 profile CR population-wide. This patient shows +27% deviation (under-dosing). Predicted TIR improvement: +2.7pp.",
+            "_patient_id": "odc-58680324"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 148.0,
+            "current_value": 33.0,
+            "suggested_value": 82.0,
+            "predicted_tir_delta": 1.5,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.31,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is 82 mg/dL/U vs profile 33 (+148% deviation) from 11 correction events.",
+            "rationale": "Increase ISF from 33 to 82 mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 11 corrections in this block with median effective ISF 82 mg/dL/U. Predicted TIR improvement: +1.5pp.",
+            "_patient_id": "odc-58680324"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": 72.0,
+            "current_value": 33.0,
+            "suggested_value": 9.0,
+            "predicted_tir_delta": 0.7,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.14,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is 9 mg/dL/U vs profile 33 (-72% deviation) from 5 correction events.",
+            "rationale": "Decrease ISF from 33 to 9 mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 5 corrections in this block with median effective ISF 9 mg/dL/U. Predicted TIR improvement: +0.7pp.",
+            "_patient_id": "odc-58680324"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 0.7799999713897705,
+            "suggested_value": 0.97,
+            "predicted_tir_delta": -0.7,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.28,
+            "evidence": "Overnight drift analysis (EXP-2371): 4 clean nights, mean drift +7.3 mg/dL/hr. Phenotype: under basaled.",
+            "rationale": "Increase overnight basal by 25% (from 0.78 to 0.97 U/hr) between 00:00-06:00. Glucose drifts +7.3 mg/dL/hr overnight.",
+            "_patient_id": "odc-58680324"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 42.0,
+            "current_value": 120.0,
+            "suggested_value": 170.0,
+            "predicted_tir_delta": 0.5,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 170 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 21 correction events.",
+            "rationale": "Increase correction threshold from 120 to 170 mg/dL. Corrections below 170 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.5pp.",
+            "_patient_id": "odc-58680324"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 2.0,
+            "current_value": 4.0,
+            "suggested_value": 3.9,
+            "predicted_tir_delta": -0.1,
+            "affected_hours": [
+              7.0,
+              12.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): morning meals show mean excursion 44 mg/dL from 10 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease morning CR from 4.0 to 3.9 g/U (2% more insulin). Mean post-meal excursion is 44 mg/dL.",
+            "_patient_id": "odc-58680324"
+          }
+        ]
+      },
+      "odc-61403732": {
+        "patient_id": "odc-61403732",
+        "days_of_data": 11.4,
+        "n_samples": 3294,
+        "glycemic_stats": {
+          "tir": 94.4,
+          "tbr": 2.6,
+          "tar": 3.0,
+          "mean_glucose": 108.8
+        },
+        "profile": {
+          "isf": 55.0,
+          "cr": 9.0,
+          "basal": 0.4000000059604645
+        },
+        "n_correction_events": 32,
+        "n_meal_events": 11,
+        "n_recommendations": 7,
+        "recommendations": [
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 12.0,
+            "current_value": 9.0,
+            "suggested_value": 7.9,
+            "predicted_tir_delta": -6.2,
+            "affected_hours": [
+              17.0,
+              24.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): evening meals show mean excursion 65 mg/dL from 8 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease evening CR from 9.0 to 7.9 g/U (12% more insulin). Mean post-meal excursion is 65 mg/dL.",
+            "_patient_id": "odc-61403732"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 55.0,
+            "suggested_value": 69.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 2.0\u00d7 profile ISF (110 vs 55 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 55 to 69 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "odc-61403732"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 93.0,
+            "current_value": 9.0,
+            "suggested_value": 17.4,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              5.0,
+              21.0
+            ],
+            "confidence": 0.421,
+            "evidence": "CR adequacy analysis (EXP-2535): effective CR is 17.4 g/U vs profile 9.0 g/U (+93% deviation) from 11 meals. Mean 4h BG delta: +34.0 mg/dL. Systematic under-dosing detected.",
+            "rationale": "Decrease CR from 9.0 to 17.4 g/U to match observed dosing. EXP-2535 found effective CR = 1.47\u00d7 profile CR population-wide. This patient shows +93% deviation (under-dosing). Predicted TIR improvement: +5.0pp.",
+            "_patient_id": "odc-61403732"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 291.0,
+            "current_value": 55.0,
+            "suggested_value": 215.0,
+            "predicted_tir_delta": 2.9,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.15,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 215 mg/dL/U vs profile 55 (+291% deviation) from 5 correction events.",
+            "rationale": "Increase ISF from 55 to 215 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 5 corrections in this block with median effective ISF 215 mg/dL/U. Predicted TIR improvement: +2.9pp.",
+            "_patient_id": "odc-61403732"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 136.0,
+            "current_value": 55.0,
+            "suggested_value": 130.0,
+            "predicted_tir_delta": 1.4,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.61,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is 130 mg/dL/U vs profile 55 (+136% deviation) from 25 correction events.",
+            "rationale": "Increase ISF from 55 to 130 mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 25 corrections in this block with median effective ISF 130 mg/dL/U. Predicted TIR improvement: +1.4pp.",
+            "_patient_id": "odc-61403732"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 50.0,
+            "current_value": 120.0,
+            "suggested_value": 180.0,
+            "predicted_tir_delta": 0.6,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 180 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 32 correction events.",
+            "rationale": "Increase correction threshold from 120 to 180 mg/dL. Corrections below 180 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.6pp.",
+            "_patient_id": "odc-61403732"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "decrease",
+            "magnitude_pct": 6.0,
+            "current_value": 0.4000000059604645,
+            "suggested_value": 0.38,
+            "predicted_tir_delta": 0.5,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.27,
+            "evidence": "Overnight drift analysis (EXP-2371): 3 clean nights, mean drift -1.2 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Decrease overnight basal by 6% (from 0.40 to 0.38 U/hr) between 00:00-06:00. Glucose drifts -1.2 mg/dL/hr overnight.",
+            "_patient_id": "odc-61403732"
+          }
+        ]
+      },
+      "odc-74077367": {
+        "patient_id": "odc-74077367",
+        "days_of_data": 212.4,
+        "n_samples": 61163,
+        "glycemic_stats": {
+          "tir": 86.1,
+          "tbr": 2.3,
+          "tar": 11.6,
+          "mean_glucose": 127.1
+        },
+        "profile": {
+          "isf": 50.44365310668945,
+          "cr": 7.0,
+          "basal": 1.350000023841858
+        },
+        "n_correction_events": 2250,
+        "n_meal_events": 1395,
+        "n_recommendations": 9,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 140.0,
+            "current_value": 50.44365310668945,
+            "suggested_value": 121.0,
+            "predicted_tir_delta": -14.2,
+            "affected_hours": [
+              7.0,
+              22.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Circadian ISF analysis (EXP-2271): day insulin is 2.4\u00d7 more effective than night.",
+            "rationale": "Increase ISF from 50 to 121 mg/dL/U during daytime (07:00-22:00).",
+            "_patient_id": "odc-74077367"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 50.44365310668945,
+            "suggested_value": 72.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 2.7\u00d7 profile ISF (138 vs 50 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 50 to 72 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "odc-74077367"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 50.44365310668945,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 50 (+nan% deviation) from 924 correction events.",
+            "rationale": "Decrease ISF from 50 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 924 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "odc-74077367"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 14.0,
+            "current_value": 7.0,
+            "suggested_value": 6.0,
+            "predicted_tir_delta": -6.5,
+            "affected_hours": [
+              7.0,
+              12.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): morning meals show mean excursion 68 mg/dL from 312 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease morning CR from 7.0 to 6.0 g/U (14% more insulin). Mean post-meal excursion is 68 mg/dL.",
+            "_patient_id": "odc-74077367"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 57.0,
+            "current_value": 7.0,
+            "suggested_value": 11.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              5.0,
+              21.0
+            ],
+            "confidence": 0.85,
+            "evidence": "CR adequacy analysis (EXP-2535): effective CR is 11.0 g/U vs profile 7.0 g/U (+57% deviation) from 1395 meals. Mean 4h BG delta: +18.4 mg/dL. Systematic under-dosing detected.",
+            "rationale": "Decrease CR from 7.0 to 11.0 g/U to match observed dosing. EXP-2535 found effective CR = 1.47\u00d7 profile CR population-wide. This patient shows +57% deviation (under-dosing). Predicted TIR improvement: +5.0pp.",
+            "_patient_id": "odc-74077367"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 3.0,
+            "current_value": 7.0,
+            "suggested_value": 6.8,
+            "predicted_tir_delta": -2.2,
+            "affected_hours": [
+              17.0,
+              24.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): evening meals show mean excursion 46 mg/dL from 687 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease evening CR from 7.0 to 6.8 g/U (3% more insulin). Mean post-meal excursion is 46 mg/dL.",
+            "_patient_id": "odc-74077367"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 189.0,
+            "current_value": 50.44365310668945,
+            "suggested_value": 146.0,
+            "predicted_tir_delta": 1.9,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 146 mg/dL/U vs profile 50 (+189% deviation) from 250 correction events.",
+            "rationale": "Increase ISF from 50 to 146 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 250 corrections in this block with median effective ISF 146 mg/dL/U. Predicted TIR improvement: +1.9pp.",
+            "_patient_id": "odc-74077367"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 3.0,
+            "current_value": 7.0,
+            "suggested_value": 6.8,
+            "predicted_tir_delta": -1.8,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 46 mg/dL from 451 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 7.0 to 6.8 g/U (3% more insulin). Mean post-meal excursion is 46 mg/dL.",
+            "_patient_id": "odc-74077367"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 75.0,
+            "current_value": 120.0,
+            "suggested_value": 210.0,
+            "predicted_tir_delta": 0.9,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 210 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 2250 correction events.",
+            "rationale": "Increase correction threshold from 120 to 210 mg/dL. Corrections below 210 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.9pp.",
+            "_patient_id": "odc-74077367"
+          }
+        ]
+      },
+      "odc-84181797": {
+        "patient_id": "odc-84181797",
+        "days_of_data": 138.8,
+        "n_samples": 39972,
+        "glycemic_stats": {
+          "tir": 62.6,
+          "tbr": 1.5,
+          "tar": 35.9,
+          "mean_glucose": 161.8
+        },
+        "profile": {
+          "isf": 54.04676818847656,
+          "cr": 9.0,
+          "basal": 1.2799999713897705
+        },
+        "n_correction_events": 172,
+        "n_meal_events": 0,
+        "n_recommendations": 8,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 54.04676818847656,
+            "suggested_value": 99.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 4.4\u00d7 profile ISF (236 vs 54 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 54 to 99 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "odc-84181797"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 75.0,
+            "current_value": 120.0,
+            "suggested_value": 210.0,
+            "predicted_tir_delta": 0.9,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 210 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 172 correction events.",
+            "rationale": "Increase correction threshold from 120 to 210 mg/dL. Corrections below 210 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.9pp.",
+            "_patient_id": "odc-84181797"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 54.04676818847656,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is nan mg/dL/U vs profile 54 (+nan% deviation) from 32 correction events.",
+            "rationale": "Decrease ISF from 54 to nan mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 32 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "odc-84181797"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 91.0,
+            "current_value": 54.04676818847656,
+            "suggested_value": 103.0,
+            "predicted_tir_delta": 0.9,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.64,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is 103 mg/dL/U vs profile 54 (+91% deviation) from 17 correction events.",
+            "rationale": "Increase ISF from 54 to 103 mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 17 corrections in this block with median effective ISF 103 mg/dL/U. Predicted TIR improvement: +0.9pp.",
+            "_patient_id": "odc-84181797"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "decrease",
+            "magnitude_pct": 10.0,
+            "current_value": 1.2799999713897705,
+            "suggested_value": 1.15,
+            "predicted_tir_delta": 0.0,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.8,
+            "evidence": "Overnight TIR currently 56%. Basal assessed as basal_slightly_high. Simulation predicts +0.0pp TIR improvement.",
+            "rationale": "Decrease basal by 10% (from 1.28 to 1.15 U/hr) between 00:00-06:00. Predicted to improve overnight TIR by +0.0 percentage points. Confirmable within 1 week of data.",
+            "_patient_id": "odc-84181797"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 54.04676818847656,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is nan mg/dL/U vs profile 54 (+nan% deviation) from 51 correction events.",
+            "rationale": "Decrease ISF from 54 to nan mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 51 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "odc-84181797"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 54.04676818847656,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 54 (+nan% deviation) from 72 correction events.",
+            "rationale": "Decrease ISF from 54 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 72 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "odc-84181797"
+          },
+          {
+            "parameter": "basal_rate",
+            "direction": "decrease",
+            "magnitude_pct": 25.0,
+            "current_value": 1.2799999713897705,
+            "suggested_value": 0.96,
+            "predicted_tir_delta": 0.0,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.53,
+            "evidence": "Overnight drift analysis (EXP-2371): 6 clean nights, mean drift -29.5 mg/dL/hr. Phenotype: loop dependent.",
+            "rationale": "Decrease overnight basal by 25% (from 1.28 to 0.96 U/hr) between 00:00-06:00. Glucose drifts -29.5 mg/dL/hr overnight.",
+            "_patient_id": "odc-84181797"
+          }
+        ]
+      },
+      "odc-86025410": {
+        "patient_id": "odc-86025410",
+        "days_of_data": 375.0,
+        "n_samples": 108004,
+        "glycemic_stats": {
+          "tir": 68.4,
+          "tbr": 6.0,
+          "tar": 25.7,
+          "mean_glucose": 146.6
+        },
+        "profile": {
+          "isf": 110.0,
+          "cr": 33.0,
+          "basal": 0.3499999940395355
+        },
+        "n_correction_events": 1021,
+        "n_meal_events": 1635,
+        "n_recommendations": 9,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 25.0,
+            "current_value": 110.0,
+            "suggested_value": 126.0,
+            "predicted_tir_delta": 5.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Effective ISF is 1.6\u00d7 profile ISF (175 vs 110 mg/dL/U). AID compensating for settings mismatch.",
+            "rationale": "Adjust ISF by 25% toward observed effective value (from 110 to 126 mg/dL/U). This reduces AID over-compensation and may smooth control. Predicted TIR improvement: +5.0pp. Confirmable within 2 weeks of stable use.",
+            "_patient_id": "odc-86025410"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 110.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is nan mg/dL/U vs profile 110 (+nan% deviation) from 308 correction events.",
+            "rationale": "Decrease ISF from 110 to nan mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 308 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "odc-86025410"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 110.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 110 (+nan% deviation) from 396 correction events.",
+            "rationale": "Decrease ISF from 110 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 396 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "odc-86025410"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 13.0,
+            "current_value": 33.0,
+            "suggested_value": 28.8,
+            "predicted_tir_delta": -2.7,
+            "affected_hours": [
+              17.0,
+              24.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): evening meals show mean excursion 66 mg/dL from 1013 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease evening CR from 33.0 to 28.8 g/U (13% more insulin). Mean post-meal excursion is 66 mg/dL.",
+            "_patient_id": "odc-86025410"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 24.0,
+            "current_value": 33.0,
+            "suggested_value": 40.8,
+            "predicted_tir_delta": 2.4,
+            "affected_hours": [
+              5.0,
+              21.0
+            ],
+            "confidence": 0.85,
+            "evidence": "CR adequacy analysis (EXP-2535): effective CR is 40.8 g/U vs profile 33.0 g/U (+24% deviation) from 1635 meals. Mean 4h BG delta: +20.6 mg/dL. Systematic under-dosing detected.",
+            "rationale": "Decrease CR from 33.0 to 40.8 g/U to match observed dosing. EXP-2535 found effective CR = 1.47\u00d7 profile CR population-wide. This patient shows +24% deviation (under-dosing). Predicted TIR improvement: +2.4pp.",
+            "_patient_id": "odc-86025410"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 14.0,
+            "current_value": 33.0,
+            "suggested_value": 28.2,
+            "predicted_tir_delta": -2.2,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 69 mg/dL from 653 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 33.0 to 28.2 g/U (14% more insulin). Mean post-meal excursion is 69 mg/dL.",
+            "_patient_id": "odc-86025410"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 25.0,
+            "current_value": 33.0,
+            "suggested_value": 24.8,
+            "predicted_tir_delta": -1.8,
+            "affected_hours": [
+              7.0,
+              12.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): morning meals show mean excursion 116 mg/dL from 244 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease morning CR from 33.0 to 24.8 g/U (25% more insulin). Mean post-meal excursion is 116 mg/dL.",
+            "_patient_id": "odc-86025410"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 83.0,
+            "current_value": 120.0,
+            "suggested_value": 220.0,
+            "predicted_tir_delta": 1.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 220 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 1021 correction events.",
+            "rationale": "Increase correction threshold from 120 to 220 mg/dL. Corrections below 220 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +1.0pp.",
+            "_patient_id": "odc-86025410"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": 45.0,
+            "current_value": 110.0,
+            "suggested_value": 60.0,
+            "predicted_tir_delta": 0.5,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is 60 mg/dL/U vs profile 110 (-45% deviation) from 59 correction events.",
+            "rationale": "Decrease ISF from 110 to 60 mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 59 corrections in this block with median effective ISF 60 mg/dL/U. Predicted TIR improvement: +0.5pp.",
+            "_patient_id": "odc-86025410"
+          }
+        ]
+      },
+      "odc-96254963": {
+        "patient_id": "odc-96254963",
+        "days_of_data": 183.1,
+        "n_samples": 52737,
+        "glycemic_stats": {
+          "tir": 66.8,
+          "tbr": 7.5,
+          "tar": 25.7,
+          "mean_glucose": 145.6
+        },
+        "profile": {
+          "isf": 60.0,
+          "cr": 8.0,
+          "basal": 1.149999976158142
+        },
+        "n_correction_events": 604,
+        "n_meal_events": 769,
+        "n_recommendations": 9,
+        "recommendations": [
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": 56.0,
+            "current_value": 60.0,
+            "suggested_value": 26.0,
+            "predicted_tir_delta": 26.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.6,
+            "evidence": "ISF non-linearity (EXP-2511): typical correction dose 2.5U is 56% less effective per unit than 1U (power-law \u03b2=0.9). Splitting into 2\u00d71.2U would be ~87% more effective total.",
+            "rationale": "Correction doses above 1.5U show diminishing returns. At 2.5U, each unit achieves only 26 mg/dL drop vs 60 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=26 for doses \u22652U. This is a pharmacokinetic property (\u03b2=0.9), not circadian.",
+            "_patient_id": "odc-96254963"
+          },
+          {
+            "parameter": "isf",
+            "direction": "increase",
+            "magnitude_pct": 102.0,
+            "current_value": 60.0,
+            "suggested_value": 121.0,
+            "predicted_tir_delta": -9.2,
+            "affected_hours": [
+              7.0,
+              22.0
+            ],
+            "confidence": 0.7,
+            "evidence": "Circadian ISF analysis (EXP-2271): day insulin is 2.0\u00d7 more effective than night.",
+            "rationale": "Increase ISF from 60 to 121 mg/dL/U during daytime (07:00-22:00).",
+            "_patient_id": "odc-96254963"
+          },
+          {
+            "parameter": "correction_threshold",
+            "direction": "increase",
+            "magnitude_pct": 83.0,
+            "current_value": 120.0,
+            "suggested_value": 220.0,
+            "predicted_tir_delta": 1.0,
+            "affected_hours": [
+              0.0,
+              24.0
+            ],
+            "confidence": 0.9,
+            "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 220 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 604 correction events.",
+            "rationale": "Increase correction threshold from 120 to 220 mg/dL. Corrections below 220 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +1.0pp.",
+            "_patient_id": "odc-96254963"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": 47.0,
+            "current_value": 60.0,
+            "suggested_value": 32.0,
+            "predicted_tir_delta": 0.5,
+            "affected_hours": [
+              0.0,
+              6.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 32 mg/dL/U vs profile 60 (-47% deviation) from 33 correction events.",
+            "rationale": "Decrease ISF from 60 to 32 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 33 corrections in this block with median effective ISF 32 mg/dL/U. Predicted TIR improvement: +0.5pp.",
+            "_patient_id": "odc-96254963"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 60.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              6.0,
+              12.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): morning block (06:00-12:00) effective ISF is nan mg/dL/U vs profile 60 (+nan% deviation) from 174 correction events.",
+            "rationale": "Decrease ISF from 60 to nan mg/dL/U during morning (06:00-12:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 174 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "odc-96254963"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 60.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              12.0,
+              18.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): afternoon block (12:00-18:00) effective ISF is nan mg/dL/U vs profile 60 (+nan% deviation) from 230 correction events.",
+            "rationale": "Decrease ISF from 60 to nan mg/dL/U during afternoon (12:00-18:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 230 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "odc-96254963"
+          },
+          {
+            "parameter": "isf",
+            "direction": "decrease",
+            "magnitude_pct": NaN,
+            "current_value": 60.0,
+            "suggested_value": NaN,
+            "predicted_tir_delta": NaN,
+            "affected_hours": [
+              18.0,
+              24.0
+            ],
+            "confidence": 0.75,
+            "evidence": "Circadian ISF profiling (EXP-2271): evening block (18:00-24:00) effective ISF is nan mg/dL/U vs profile 60 (+nan% deviation) from 167 correction events.",
+            "rationale": "Decrease ISF from 60 to nan mg/dL/U during evening (18:00-24:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 167 corrections in this block with median effective ISF nan mg/dL/U. Predicted TIR improvement: +nanpp.",
+            "_patient_id": "odc-96254963"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 7.0,
+            "current_value": 8.0,
+            "suggested_value": 7.5,
+            "predicted_tir_delta": -3.6,
+            "affected_hours": [
+              7.0,
+              12.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): morning meals show mean excursion 54 mg/dL from 261 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease morning CR from 8.0 to 7.5 g/U (7% more insulin). Mean post-meal excursion is 54 mg/dL.",
+            "_patient_id": "odc-96254963"
+          },
+          {
+            "parameter": "cr",
+            "direction": "decrease",
+            "magnitude_pct": 6.0,
+            "current_value": 8.0,
+            "suggested_value": 7.5,
+            "predicted_tir_delta": -3.6,
+            "affected_hours": [
+              12.0,
+              17.0
+            ],
+            "confidence": 0.65,
+            "evidence": "Context-aware CR analysis (EXP-2341): afternoon meals show mean excursion 52 mg/dL from 263 meals. Pre-meal BG negatively correlated with rise (carbs explain <16% of variance).",
+            "rationale": "Decrease afternoon CR from 8.0 to 7.5 g/U (6% more insulin). Mean post-meal excursion is 52 mg/dL.",
+            "_patient_id": "odc-96254963"
+          }
+        ]
+      }
+    },
+    "exp_2542b_consistency": {
+      "total_checks": 44,
+      "consistent_checks": 34,
+      "consistency_rate": 77.3,
+      "patients_with_issues": 7,
+      "inconsistencies": [
+        {
+          "patient_id": "a",
+          "n_issues": 2,
+          "issues": [
+            {
+              "check": "circadian_isf_uniformity",
+              "severity": "warning",
+              "detail": "All 4 circadian ISF blocks recommend 'decrease'. This suggests the baseline ISF is wrong rather than a circadian pattern issue."
+            },
+            {
+              "check": "cr_vs_tar",
+              "severity": "contradiction",
+              "detail": "CR adequacy says over-dosing (increase CR) but TAR is 41.2% (high). Over-dosing should lower TAR, not raise it. Possible data or detection issue."
+            }
+          ]
+        },
+        {
+          "patient_id": "e",
+          "n_issues": 1,
+          "issues": [
+            {
+              "check": "circadian_isf_uniformity",
+              "severity": "warning",
+              "detail": "All 4 circadian ISF blocks recommend 'decrease'. This suggests the baseline ISF is wrong rather than a circadian pattern issue."
+            }
+          ]
+        },
+        {
+          "patient_id": "g",
+          "n_issues": 1,
+          "issues": [
+            {
+              "check": "cr_opposing_directions",
+              "severity": "contradiction",
+              "detail": "Multiple CR recommendations in opposing directions. Directions: ['decrease', 'decrease', 'increase']. May reflect time-of-day differences or conflicting advisory logic."
+            }
+          ]
+        },
+        {
+          "patient_id": "i",
+          "n_issues": 2,
+          "issues": [
+            {
+              "check": "circadian_isf_uniformity",
+              "severity": "warning",
+              "detail": "All 4 circadian ISF blocks recommend 'decrease'. This suggests the baseline ISF is wrong rather than a circadian pattern issue."
+            },
+            {
+              "check": "cr_opposing_directions",
+              "severity": "contradiction",
+              "detail": "Multiple CR recommendations in opposing directions. Directions: ['increase', 'decrease', 'decrease']. May reflect time-of-day differences or conflicting advisory logic."
+            }
+          ]
+        },
+        {
+          "patient_id": "odc-39819048",
+          "n_issues": 2,
+          "issues": [
+            {
+              "check": "circadian_isf_uniformity",
+              "severity": "warning",
+              "detail": "All 4 circadian ISF blocks recommend 'increase'. This suggests the baseline ISF is wrong rather than a circadian pattern issue."
+            },
+            {
+              "check": "cr_opposing_directions",
+              "severity": "contradiction",
+              "detail": "Multiple CR recommendations in opposing directions. Directions: ['increase', 'decrease', 'decrease']. May reflect time-of-day differences or conflicting advisory logic."
+            }
+          ]
+        },
+        {
+          "patient_id": "odc-61403732",
+          "n_issues": 1,
+          "issues": [
+            {
+              "check": "cr_vs_tar",
+              "severity": "info",
+              "detail": "CR adequacy says under-dosing (decrease CR) but TAR is only 3.0%. AID may be compensating. Recommendation still valid to reduce AID workload."
+            }
+          ]
+        },
+        {
+          "patient_id": "odc-86025410",
+          "n_issues": 1,
+          "issues": [
+            {
+              "check": "circadian_isf_uniformity",
+              "severity": "warning",
+              "detail": "All 3 circadian ISF blocks recommend 'decrease'. This suggests the baseline ISF is wrong rather than a circadian pattern issue."
+            }
+          ]
+        }
+      ]
+    },
+    "exp_2542c_impact": {
+      "per_patient": {
+        "a": {
+          "current_tir": 55.8,
+          "total_predicted_delta": 32.2,
+          "projected_tir": 88.0,
+          "n_recommendations": 8,
+          "by_parameter": {
+            "isf": 26.0,
+            "correction_threshold": 0.8,
+            "basal_rate": 2.9,
+            "cr": 2.5
+          },
+          "is_plausible": false
+        },
+        "b": {
+          "current_tir": 56.7,
+          "total_predicted_delta": -14.7,
+          "projected_tir": 42.0,
+          "n_recommendations": 10,
+          "by_parameter": {
+            "cr": -19.2,
+            "isf": 3.9,
+            "correction_threshold": 0.7,
+            "basal_rate": -0.1
+          },
+          "is_plausible": true
+        },
+        "c": {
+          "current_tir": 61.6,
+          "total_predicted_delta": 0.0,
+          "projected_tir": 61.6,
+          "n_recommendations": 10,
+          "by_parameter": {
+            "isf": 5.9,
+            "cr": -6.8,
+            "correction_threshold": 1.2,
+            "basal_rate": -0.3
+          },
+          "is_plausible": true
+        },
+        "d": {
+          "current_tir": 79.2,
+          "total_predicted_delta": 6.7,
+          "projected_tir": 85.9,
+          "n_recommendations": 9,
+          "by_parameter": {
+            "isf": 5.7,
+            "basal_rate": 1.8,
+            "cr": -1.7,
+            "correction_threshold": 0.9
+          },
+          "is_plausible": true
+        },
+        "e": {
+          "current_tir": 65.4,
+          "total_predicted_delta": 3.4,
+          "projected_tir": 68.8,
+          "n_recommendations": 10,
+          "by_parameter": {
+            "isf": 5.0,
+            "correction_threshold": 1.4,
+            "cr": -2.5,
+            "basal_rate": -0.5
+          },
+          "is_plausible": true
+        },
+        "f": {
+          "current_tir": 65.5,
+          "total_predicted_delta": 28.4,
+          "projected_tir": 93.9,
+          "n_recommendations": 12,
+          "by_parameter": {
+            "isf": 32.4,
+            "correction_threshold": 0.9,
+            "cr": -5.0,
+            "basal_rate": 0.1
+          },
+          "is_plausible": true
+        },
+        "g": {
+          "current_tir": 75.2,
+          "total_predicted_delta": -12.3,
+          "projected_tir": 62.9,
+          "n_recommendations": 10,
+          "by_parameter": {
+            "cr": -19.6,
+            "isf": 6.2,
+            "correction_threshold": 1.0,
+            "basal_rate": 0.1
+          },
+          "is_plausible": true
+        },
+        "h": {
+          "current_tir": 85.0,
+          "total_predicted_delta": 1.5,
+          "projected_tir": 86.5,
+          "n_recommendations": 6,
+          "by_parameter": {
+            "isf": -2.3,
+            "correction_threshold": 1.5,
+            "cr": 2.5,
+            "basal_rate": -0.2
+          },
+          "is_plausible": true
+        },
+        "i": {
+          "current_tir": 59.9,
+          "total_predicted_delta": 8.8,
+          "projected_tir": 68.7,
+          "n_recommendations": 10,
+          "by_parameter": {
+            "isf": 5.0,
+            "correction_threshold": 1.7,
+            "cr": 2.6,
+            "basal_rate": -0.5
+          },
+          "is_plausible": true
+        },
+        "j": {
+          "current_tir": 81.0,
+          "total_predicted_delta": 27.4,
+          "projected_tir": 100.0,
+          "n_recommendations": 8,
+          "by_parameter": {
+            "isf": 27.4,
+            "correction_threshold": 0.9,
+            "cr": -0.9,
+            "basal_rate": 0.0
+          },
+          "is_plausible": true
+        },
+        "k": {
+          "current_tir": 95.1,
+          "total_predicted_delta": 13.7,
+          "projected_tir": 100.0,
+          "n_recommendations": 6,
+          "by_parameter": {
+            "isf": 12.2,
+            "cr": 2.6,
+            "basal_rate": -1.2,
+            "correction_threshold": 0.1
+          },
+          "is_plausible": true
+        },
+        "odc-39819048": {
+          "current_tir": 77.0,
+          "total_predicted_delta": 10.6,
+          "projected_tir": 87.6,
+          "n_recommendations": 10,
+          "by_parameter": {
+            "isf": 8.4,
+            "cr": 1.0,
+            "correction_threshold": 1.0,
+            "basal_rate": 0.2
+          },
+          "is_plausible": true
+        },
+        "odc-49141524": {
+          "current_tir": 61.4,
+          "total_predicted_delta": 9.8,
+          "projected_tir": 71.2,
+          "n_recommendations": 5,
+          "by_parameter": {
+            "isf": 9.5,
+            "correction_threshold": 1.0,
+            "basal_rate": -0.7
+          },
+          "is_plausible": true
+        },
+        "odc-58680324": {
+          "current_tir": 81.5,
+          "total_predicted_delta": 11.9,
+          "projected_tir": 93.4,
+          "n_recommendations": 10,
+          "by_parameter": {
+            "isf": 12.4,
+            "cr": -0.3,
+            "basal_rate": -0.7,
+            "correction_threshold": 0.5
+          },
+          "is_plausible": true
+        },
+        "odc-61403732": {
+          "current_tir": 94.4,
+          "total_predicted_delta": 9.2,
+          "projected_tir": 100.0,
+          "n_recommendations": 7,
+          "by_parameter": {
+            "cr": -1.2,
+            "isf": 9.3,
+            "correction_threshold": 0.6,
+            "basal_rate": 0.5
+          },
+          "is_plausible": true
+        },
+        "odc-74077367": {
+          "current_tir": 86.1,
+          "total_predicted_delta": -11.9,
+          "projected_tir": 74.2,
+          "n_recommendations": 9,
+          "by_parameter": {
+            "isf": -7.3,
+            "cr": -5.5,
+            "correction_threshold": 0.9
+          },
+          "is_plausible": true
+        },
+        "odc-84181797": {
+          "current_tir": 62.6,
+          "total_predicted_delta": 6.8,
+          "projected_tir": 69.4,
+          "n_recommendations": 8,
+          "by_parameter": {
+            "isf": 5.9,
+            "correction_threshold": 0.9,
+            "basal_rate": 0.0
+          },
+          "is_plausible": true
+        },
+        "odc-86025410": {
+          "current_tir": 68.4,
+          "total_predicted_delta": 2.2,
+          "projected_tir": 70.6,
+          "n_recommendations": 9,
+          "by_parameter": {
+            "isf": 5.5,
+            "cr": -4.3,
+            "correction_threshold": 1.0
+          },
+          "is_plausible": true
+        },
+        "odc-96254963": {
+          "current_tir": 66.8,
+          "total_predicted_delta": 11.1,
+          "projected_tir": 77.9,
+          "n_recommendations": 9,
+          "by_parameter": {
+            "isf": 17.3,
+            "correction_threshold": 1.0,
+            "cr": -7.2
+          },
+          "is_plausible": true
+        }
+      },
+      "population": {
+        "mean_predicted_delta": 7.6,
+        "median_predicted_delta": 8.8,
+        "max_predicted_delta": 32.2,
+        "n_implausible": 1,
+        "mean_current_tir": 72.6,
+        "mean_projected_tir": 79.1
+      }
+    },
+    "exp_2542d_dashboard": {
+      "total_recommendations": 166,
+      "n_patients": 19,
+      "recs_per_patient": {
+        "mean": 8.7,
+        "median": 9.0,
+        "min": 5,
+        "max": 12
+      },
+      "firing_rates": {
+        "isf": {
+          "n_patients": 19,
+          "pct_patients": 100.0,
+          "total_recommendations": 87
+        },
+        "cr": {
+          "n_patients": 17,
+          "pct_patients": 89.5,
+          "total_recommendations": 43
+        },
+        "basal_rate": {
+          "n_patients": 16,
+          "pct_patients": 84.2,
+          "total_recommendations": 17
+        },
+        "correction_threshold": {
+          "n_patients": 19,
+          "pct_patients": 100.0,
+          "total_recommendations": 19
+        }
+      },
+      "advisory_source_counts": {
+        "circadian_isf": 68,
+        "context_cr": 32,
+        "correction_threshold": 19,
+        "overnight_basal": 17,
+        "other": 14,
+        "cr_adequacy": 11,
+        "isf_nonlinearity": 5
+      },
+      "magnitude_stats": {
+        "isf": {
+          "mean": NaN,
+          "median": NaN,
+          "min": NaN,
+          "max": NaN
+        },
+        "correction_threshold": {
+          "mean": 78.9,
+          "median": 75.0,
+          "min": 8.0,
+          "max": 142.0
+        },
+        "basal_rate": {
+          "mean": 9.9,
+          "median": 6.0,
+          "min": 0.0,
+          "max": 25.0
+        },
+        "cr": {
+          "mean": 19.1,
+          "median": 17.0,
+          "min": 0.0,
+          "max": 93.0
+        }
+      },
+      "confidence_stats": {
+        "isf": {
+          "mean": 0.67,
+          "median": 0.75,
+          "min": 0.14,
+          "max": 0.75
+        },
+        "correction_threshold": {
+          "mean": 0.86,
+          "median": 0.9,
+          "min": 0.7,
+          "max": 0.9
+        },
+        "basal_rate": {
+          "mean": 0.45,
+          "median": 0.35,
+          "min": 0.27,
+          "max": 0.8
+        },
+        "cr": {
+          "mean": 0.68,
+          "median": 0.65,
+          "min": 0.42,
+          "max": 0.85
+        }
+      },
+      "most_common_advisory": [
+        "circadian_isf",
+        68
+      ]
+    },
+    "exp_2542e_contradictions": {
+      "n_contradictions": 6,
+      "n_warnings": 36,
+      "contradictions": [
+        {
+          "patient_id": "g",
+          "type": "opposing_overlapping",
+          "parameter": "cr",
+          "rec1_direction": "decrease",
+          "rec1_hours": [
+            17.0,
+            24.0
+          ],
+          "rec1_magnitude": 23.0,
+          "rec2_direction": "increase",
+          "rec2_hours": [
+            5.0,
+            21.0
+          ],
+          "rec2_magnitude": 25.0,
+          "detail": "cr: 'decrease' (17-24h) vs 'increase' (5-21h)"
+        },
+        {
+          "patient_id": "g",
+          "type": "opposing_overlapping",
+          "parameter": "cr",
+          "rec1_direction": "decrease",
+          "rec1_hours": [
+            12.0,
+            17.0
+          ],
+          "rec1_magnitude": 21.0,
+          "rec2_direction": "increase",
+          "rec2_hours": [
+            5.0,
+            21.0
+          ],
+          "rec2_magnitude": 25.0,
+          "detail": "cr: 'decrease' (12-17h) vs 'increase' (5-21h)"
+        },
+        {
+          "patient_id": "i",
+          "type": "opposing_overlapping",
+          "parameter": "cr",
+          "rec1_direction": "increase",
+          "rec1_hours": [
+            5.0,
+            21.0
+          ],
+          "rec1_magnitude": 37.0,
+          "rec2_direction": "decrease",
+          "rec2_hours": [
+            17.0,
+            24.0
+          ],
+          "rec2_magnitude": 25.0,
+          "detail": "cr: 'increase' (5-21h) vs 'decrease' (17-24h)"
+        },
+        {
+          "patient_id": "i",
+          "type": "opposing_overlapping",
+          "parameter": "cr",
+          "rec1_direction": "increase",
+          "rec1_hours": [
+            5.0,
+            21.0
+          ],
+          "rec1_magnitude": 37.0,
+          "rec2_direction": "decrease",
+          "rec2_hours": [
+            12.0,
+            17.0
+          ],
+          "rec2_magnitude": 25.0,
+          "detail": "cr: 'increase' (5-21h) vs 'decrease' (12-17h)"
+        },
+        {
+          "patient_id": "odc-39819048",
+          "type": "opposing_overlapping",
+          "parameter": "cr",
+          "rec1_direction": "increase",
+          "rec1_hours": [
+            5.0,
+            21.0
+          ],
+          "rec1_magnitude": 29.0,
+          "rec2_direction": "decrease",
+          "rec2_hours": [
+            17.0,
+            24.0
+          ],
+          "rec2_magnitude": 10.0,
+          "detail": "cr: 'increase' (5-21h) vs 'decrease' (17-24h)"
+        },
+        {
+          "patient_id": "odc-39819048",
+          "type": "opposing_overlapping",
+          "parameter": "cr",
+          "rec1_direction": "increase",
+          "rec1_hours": [
+            5.0,
+            21.0
+          ],
+          "rec1_magnitude": 29.0,
+          "rec2_direction": "decrease",
+          "rec2_hours": [
+            12.0,
+            17.0
+          ],
+          "rec2_magnitude": 0.0,
+          "detail": "cr: 'increase' (5-21h) vs 'decrease' (12-17h)"
+        }
+      ],
+      "warnings": [
+        {
+          "patient_id": "c",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (12-18h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "c",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (18-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "d",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (0-6h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "d",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (6-12h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "d",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (18-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "e",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (0-6h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "e",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (6-12h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "e",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (12-18h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "e",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (18-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "f",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'decrease' vs block 'increase' (0-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "f",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'decrease' vs block 'increase' (22-7h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "f",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (0-6h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "f",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (6-12h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "f",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (12-18h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "f",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (18-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "g",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'decrease' vs block 'increase' (0-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "g",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'decrease' vs block 'increase' (0-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "g",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'decrease' vs block 'increase' (0-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "i",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (0-6h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "i",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (6-12h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "i",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (12-18h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "i",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (18-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "j",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'decrease' vs block 'increase' (12-18h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "k",
+          "type": "tir_overflow",
+          "detail": "Current TIR 95.1% + predicted delta +13.7pp = 108.8%, exceeding 100%. Deltas are not additive."
+        },
+        {
+          "patient_id": "odc-58680324",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'decrease' vs block 'increase' (7-22h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "odc-58680324",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'decrease' vs block 'increase' (0-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "odc-58680324",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'decrease' vs block 'increase' (12-18h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "odc-58680324",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (18-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "odc-74077367",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (18-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "odc-84181797",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (0-6h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "odc-84181797",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (12-18h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "odc-84181797",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (18-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "odc-86025410",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (12-18h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "odc-86025410",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (18-24h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "odc-86025410",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'increase' vs block 'decrease' (6-12h). Block-specific rec should take priority."
+        },
+        {
+          "patient_id": "odc-96254963",
+          "type": "allday_vs_block",
+          "detail": "isf: all-day 'decrease' vs block 'increase' (7-22h). Block-specific rec should take priority."
+        }
+      ],
+      "verdict": "FAIL: 6 contradictions found"
+    }
+  },
+  "summary": {
+    "total_recommendations": 166,
+    "mean_recs_per_patient": 8.7,
+    "consistency_rate": 77.3,
+    "mean_predicted_tir_delta": 7.6,
+    "n_contradictions": 6,
+    "n_warnings": 36,
+    "verdict": "FAIL: 6 contradictions found"
+  }
+}
