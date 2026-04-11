@@ -266,7 +266,7 @@ XGBRegressor(
 ### Horizon Decay Model
 
 ```
-R²(h) ≈ 0.85 × exp(-0.017 × h_minutes)
+R²(h) ≈ 1.22 × exp(-0.014 × h_minutes)
 
 30 min:  R² = 0.78 — Excellent clinical utility
 60 min:  R² = 0.53 — Good for trend alerts  

@@ -53,7 +53,7 @@ Noise ceiling (σ=15 mg/dL):            R² ≈ 0.854
 | k | 0.283 | 0.276 | −0.007 |
 | **Mean** | **0.457** | **0.490** | **+0.033** |
 
-**Insight**: The improvement vs EXP-1254 (0.495 → 0.490) shows slight regression — the depth-2/lr-0.03 HPO doesn't fully stack with quantile models that were tuned at d3/lr0.05. The techniques are individually beneficial but share some variance.
+**Insight**: The comparison vs EXP-1254 (0.495 → 0.490) shows slight regression — the depth-2/lr-0.03 HPO doesn't fully stack with quantile models that were tuned at d3/lr0.05. The techniques are individually beneficial but share some variance.
 
 ---
 
