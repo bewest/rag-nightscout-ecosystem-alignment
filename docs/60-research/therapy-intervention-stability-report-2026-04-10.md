@@ -41,11 +41,11 @@ cycles improve grades?
 | Patient | Baseline | After Basal | After CR | After ISF | TIR Gain |
 |---------|:--------:|:-----------:|:--------:|:---------:|:--------:|
 | a | D | D | D | D | +0.1% |
-| b | C | C | C | C | +2.2% |
-| g | C | C | C | C | +2.0% |
-| d | C | C | C | C | +1.1% |
-| j | C | C | C | C | +0.7% |
-| k | A | A | A | A | ±0.0% |
+| b | C | C | C | C | +2.1% |
+| g | C | C | C | C | +1.8% |
+| d | C | C | C | C | +1.2% |
+| j | C | C | C | C | +0.6% |
+| k | A | A | A | A | −0.2% |
 
 **Most impactful cycle**: CR (9/11 patients), basal (2/11)
 
@@ -101,16 +101,16 @@ cycles improve grades?
 
 | Patient | Excursion | 10% TIR Δ | 20% TIR Δ | 30% TIR Δ | 30% Exc↓ |
 |---------|:---------:|:---------:|:---------:|:---------:|:--------:|
-| b | 145 | +2.7% | +5.1% | **+7.4%** | -53 |
+| b | 145 | +2.2% | +4.7% | **+7.4%** | -53 |
 | g | 172 | +2.0% | +3.8% | **+5.5%** | -70 |
-| d | 120 | +1.2% | +2.3% | **+3.4%** | -39 |
-| e | 134 | +0.8% | +1.5% | **+2.2%** | -39 |
-| j | 129 | +0.8% | +1.4% | **+2.1%** | -40 |
-| f | 210 | +0.7% | +1.4% | **+2.0%** | -69 |
-| h | 120 | +0.5% | +1.0% | **+1.4%** | -43 |
-| c | 189 | +0.5% | +0.9% | **+1.3%** | -59 |
-| i | 234 | +0.2% | +0.4% | **+0.6%** | -70 |
-| a | 105 | +0.0% | +0.1% | **+0.1%** | -31 |
+| d | 120 | +1.0% | +2.2% | **+3.4%** | -39 |
+| e | 134 | +0.6% | +1.4% | **+2.2%** | -39 |
+| j | 129 | +0.7% | +1.5% | **+2.1%** | -40 |
+| f | 210 | +0.5% | +1.2% | **+2.0%** | -69 |
+| h | 120 | +0.5% | +0.9% | **+1.4%** | -43 |
+| c | 189 | +0.3% | +0.7% | **+1.3%** | -59 |
+| i | 234 | +0.1% | +0.3% | **+0.6%** | -70 |
+| a | 105 | +0.0% | +0.0% | **+0.1%** | -31 |
 
 **Findings**:
 1. **CR and basal have OPPOSITE optimal magnitudes**: basal needs conservative
@@ -189,12 +189,12 @@ cycles improve grades?
 
 | Pattern | Count | Mean Grade Score |
 |---------|:-----:|:----------------:|
-| bolus_dominant+correction_heavy | 6 | 62.7 (C-B range) |
+| bolus_dominant+correction_heavy | 6 | 65.3 (C-B range) |
 | balanced | 2 | 48.9 (D-C range) |
 | bolus_dominant | 2 | 58.8 (C range) |
 | balanced+correction_heavy | 1 | 55.9 (C range) |
 
-**Basal fraction ↔ grade: r=-0.498** (moderate negative correlation)
+**Basal fraction ↔ grade: r=-0.406** (moderate negative correlation)
 
 **Findings**:
 1. **Higher basal fraction correlates with WORSE grades** — counter-intuitive

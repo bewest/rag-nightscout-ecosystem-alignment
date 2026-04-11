@@ -258,7 +258,7 @@ and double-dip rate (return to <70 in 3h). Defined four phenotypes:
 | f | 209 | 24 min | 28% | **36%** | 12% | Under-rescuer |
 | g | 286 | 14 min | 39% | 31% | 58% | Under-rescuer |
 | h | 200 | 15 min | 22% | **40%** | 36% | Under-rescuer |
-| i | 505 | **39 min** | 33% | **45%** | 10% | Under-rescuer |
+| i | 505 | **39 min** | 34% | **45%** | 10% | Under-rescuer |
 | j | 56 | 10 min | 14% | 27% | 55% | Well-managed |
 | k | 378 | 19 min | 0% | **53%** | 3% | Under-rescuer |
 
