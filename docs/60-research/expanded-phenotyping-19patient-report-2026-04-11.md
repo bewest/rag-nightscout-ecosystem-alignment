@@ -12,7 +12,7 @@ This report extends the 11-patient phenotyping suite (EXP-2081–2088) to a **19
 
 **Key results**:
 
-- **ISF increase generalizes across all AID systems** — top intervention for **15/19 patients** regardless of Loop, Trio, AAPS, or OpenAPS controller
+- **ISF increase generalizes across all AID systems** — top intervention for **14/19 patients** regardless of Loop, Trio, AAPS, or OpenAPS controller
 - **AID behavior phenotypes differ systematically by controller type**: Loop/Trio clusters into COMPENSATING (5/11) and PASSIVE (4/11) with high suspend rates; AAPS/OpenAPS clusters into BALANCED (5/8) and AGGRESSIVE (3/8) with lower suspend rates
 - **Only 5/19 (26%) meet both TIR≥70% AND TBR≤4%** — remarkably consistent with the 3/11 (27%) rate in the original cohort
 - **Supply-demand decomposition differs by controller architecture**: Loop/Trio patients are supply-dominant; AAPS/OpenAPS patients are demand-dominant, suggesting SMB delivery is more insulin-efficient but meal handling lags
@@ -49,9 +49,9 @@ The most striking cross-controller finding is the divergence in AID behavior phe
 
 | Finding (11-patient) | Confirmed by ODC? | Evidence |
 |-----------------------|:------------------:|----------|
-| ISF increase is top intervention | **Yes** | 6/8 ODC patients benefit most from ISF increase |
+| ISF increase is top intervention | **Yes** | 7/8 ODC patients benefit most from ISF increase |
 | CR universally too aggressive | **Partially** | 5/8 ODC patients have CR ratio <1.0; 3 have CR ≥1.0 (odc-39819048: 2.02, odc-86025410: 1.08, odc-84181797: 1.00) |
-| Supply RMSE > Demand RMSE | **No — reversed for AAPS** | 5/8 ODC patients are demand-dominant (Supply% < Demand%) |
+| Supply RMSE > Demand RMSE | **No — reversed for AAPS** | 6/8 ODC patients are demand-dominant (Supply% < Demand%) |
 | Basal drift is small | **Yes** | ODC basal drift range −0.89 to +0.36, comparable to Loop/Trio |
 | ~27% meet TIR+TBR targets | **Yes** | 2/8 ODC patients (25%) meet both targets vs 3/11 (27%) original |
 | 4 behavior phenotypes exist | **Yes, but distribution shifts** | Same phenotypes emerge but AAPS/OpenAPS clusters differently |
@@ -175,7 +175,7 @@ Full data:
 **Key findings**:
 
 - **Patient e still has the highest composite mismatch** (4.2/10), closely followed by odc-39819048 (4.0) — the only AAPS patient with MODERATE severity. odc-39819048's CR ratio of 2.02× (the only value >1.0 by a wide margin) indicates CR is set too conservatively, under-covering meals.
-- **CR ratio distribution differs by controller**: Loop/Trio patients have CR ratio 0.12–0.81× (all <1.0, meaning CR is too aggressive). Three AAPS/OpenAPS patients have CR ≥1.0 (odc-39819048: 2.02×, odc-49141524: 1.00×, odc-84181797: 1.00×, odc-86025410: 1.08×). This partially challenges the universal "CR too aggressive" finding from the 11-patient cohort.
+- **CR ratio distribution differs by controller**: Loop/Trio patients have CR ratio 0.12–0.81× (all <1.0, meaning CR is too aggressive). Four AAPS/OpenAPS patients have CR ≥1.0 (odc-39819048: 2.02×, odc-49141524: 1.00×, odc-84181797: 1.00×, odc-86025410: 1.08×). This partially challenges the universal "CR too aggressive" finding from the 11-patient cohort.
 - **No patient reaches HIGH severity (>5/10)** — this holds across all 19 patients and all controller types, confirming that AID loops universally mask extreme miscalibration.
 - **odc-86025410 has the lowest composite score** (1.2) — the best-calibrated settings in the entire cohort, despite only 68% TIR. With 374 days of OpenAPS data, this patient may represent naturally well-tuned settings with a different primary issue (hypo risk: LBGI 9.9).
 
@@ -209,9 +209,9 @@ Full data:
 
 **Key findings**:
 
-- **ISF increase is the top intervention for 15/19 patients** (79%) — up from 7/11 (64%) in the original cohort. This is the strongest cross-controller finding: profiles systematically underestimate insulin sensitivity regardless of AID system.
+- **ISF increase is the top intervention for 14/19 patients** (74%) — up from 7/11 (64%) in the original cohort. This is the strongest cross-controller finding: profiles systematically underestimate insulin sensitivity regardless of AID system.
 - **odc-39819048 has the largest single-intervention gain** (+8.1pp), surpassing patient i (+6.3pp) as the patient who would benefit most. Despite having 77% TIR already, the ISF correction would bring this patient to ~85% TIR.
-- **Only 4 patients have a different top intervention**: b and e (dawn_basal_ramp), d (dinner_cr), j and odc-84181797 (circadian_isf). These are the patients whose primary issue is circadian or meal-specific, not global ISF miscalibration.
+- **Only 5 patients have a different top intervention**: b and e (dawn_basal_ramp), d (dinner_cr), j and odc-84181797 (circadian_isf). These are the patients whose primary issue is circadian or meal-specific, not global ISF miscalibration.
 - **The gain range is wider with ODC data** (1.6–8.1pp vs 1.7–6.3pp) — suggesting more settings variability in the AAPS/OpenAPS population, possibly due to less standardized onboarding compared to Loop/Trio.
 
 ---
@@ -284,7 +284,7 @@ Full data:
 
 - **odc-86025410 provides the longest observation window** in the entire cohort (12 months, 374 days) — classifying as VARIABLE FLAT with a TIR range of 27.7% and near-zero slope (+0.002/month). This patient's TIR swings month-to-month but shows no systematic trend, suggesting stable-but-volatile glycemic control.
 - **5/12 analyzable patients are DECLINING** (a, g, i, k, odc-74077367) — the addition of odc-74077367 (7 months, OpenAPS) confirms that settings drift affects all AID systems, not just Loop/Trio.
-- **4/12 analyzable patients are IMPROVING** (b, e, f, h, odc-96254963) — odc-96254963 is improving at +0.018/month over 5 months on OpenAPS.
+- **5/12 analyzable patients are IMPROVING** (b, e, f, h, odc-96254963) — odc-96254963 is improving at +0.018/month over 5 months on OpenAPS.
 - **Clinical implication remains unchanged**: Settings are NOT static. Approximately 40% of patients show meaningful monthly decline regardless of controller type — periodic re-assessment is universally needed.
 
 ---
@@ -378,8 +378,8 @@ Full data:
 
 | Criteria | Loop/Trio (n=11) | AAPS/OpenAPS (n=8) | Total (n=19) |
 |----------|:----------------:|:------------------:|:------------:|
-| TIR ≥70% | 5 (45%) | 5 (63%) | 10 (53%) |
-| TBR ≤4% | 6 (55%) | 4 (50%) | 10 (53%) |
+| TIR ≥70% | 5 (45%) | 4 (50%) | 9 (47%) |
+| TBR ≤4% | 7 (64%) | 4 (50%) | 11 (58%) |
 | **Both TIR≥70% AND TBR≤4%** | **3 (27%)** | **2 (25%)** | **5 (26%)** |
 
 Patients meeting both targets: **d, g, j** (Loop/Trio) and **odc-61403732, odc-74077367** (AAPS/OpenAPS)
@@ -411,7 +411,7 @@ Patients meeting both targets: **d, g, j** (Loop/Trio) and **odc-61403732, odc-7
 
 Based on all experiments (EXP-2041–2088) across 19 patients and 4 controller types:
 
-1. **Increase ISF** (+20% minimum) → Prevents overcorrection; **top intervention for 79% of patients across ALL controller types**
+1. **Increase ISF** (+20% minimum) → Prevents overcorrection; **top intervention for 74% of patients across ALL controller types**
 2. **Reduce basal** (−12% population mean, Loop/Trio primarily) → Stops the suspension cycle
 3. **Adjust dinner CR** (50% more aggressive, controller-dependent) → Controls the hardest meal
 4. **Add dawn ramp** (+0.4–1.8 U/hr, onset 1–2am) → Prevents morning highs
@@ -474,7 +474,7 @@ This architectural difference means the **phased estimation approach** needs con
 
 ## Conclusions
 
-1. **ISF increase is the most universally impactful intervention across ALL AID systems** — top intervention for 15/19 patients (79%) regardless of Loop, Trio, AAPS, or OpenAPS controller. This is the strongest finding from the expanded cohort: profiles systematically underestimate insulin sensitivity, and this bias is controller-independent.
+1. **ISF increase is the most universally impactful intervention across ALL AID systems** — top intervention for 14/19 patients (74%) regardless of Loop, Trio, AAPS, or OpenAPS controller. This is the strongest finding from the expanded cohort: profiles systematically underestimate insulin sensitivity, and this bias is controller-independent.
 
 2. **AID behavior phenotypes are real but controller-correlated** — the 4-phenotype framework (Compensating, Passive, Aggressive, Balanced) holds in the expanded cohort, but phenotype distribution is strongly predicted by controller architecture. Loop/Trio's suspend-based design produces Compensating and Passive phenotypes; AAPS/OpenAPS's SMB design produces Balanced and Aggressive phenotypes.
 
