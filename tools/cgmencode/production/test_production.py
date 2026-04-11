@@ -35,6 +35,7 @@ from cgmencode.production.types import (
     Phenotype, MealWindow, SettingsParameter, MealResponseType,
     CompensationType, ConfidenceGrade,
     OptimalSettings, SettingScheduleEntry, SettingsOptimizationResult,
+    ControllerType, ControllerBehavior,
 )
 
 
@@ -1587,6 +1588,89 @@ class TestSettingsAdviceIntegration(unittest.TestCase):
         result = run_pipeline(patient)
         self.assertIsNotNone(result)
         self.assertEqual(result.patient_id, "test")
+
+
+# ── Controller-Specific Tests (EXP-2081) ─────────────────────────────
+
+class TestControllerTypes(unittest.TestCase):
+    """Test ControllerType and ControllerBehavior types."""
+
+    def test_controller_type_values(self):
+        self.assertEqual(set(ControllerType), {
+            ControllerType.LOOP, ControllerType.TRIO,
+            ControllerType.AAPS, ControllerType.OPENAPS,
+            ControllerType.UNKNOWN,
+        })
+
+    def test_controller_behavior_fields(self):
+        cb = ControllerBehavior(
+            controller=ControllerType.LOOP,
+            compensation_style="compensating")
+        self.assertEqual(cb.controller, ControllerType.LOOP)
+        self.assertEqual(cb.compensation_style, "compensating")
+        self.assertIsInstance(cb.settings_visibility, float)
+
+
+class TestControllerDetection(unittest.TestCase):
+    """Test controller detection logic."""
+
+    def test_detect_from_metadata(self):
+        from cgmencode.production.recommender import detect_controller_type
+        patient = make_patient(n=4320, with_insulin=True)
+        patient.metadata = {'controller': 'Loop'}
+        self.assertEqual(detect_controller_type(patient), ControllerType.LOOP)
+
+    def test_detect_aaps_from_metadata(self):
+        from cgmencode.production.recommender import detect_controller_type
+        patient = make_patient(n=4320, with_insulin=True)
+        patient.metadata = {'controller': 'AndroidAPS'}
+        self.assertEqual(detect_controller_type(patient), ControllerType.AAPS)
+
+    def test_detect_unknown_default(self):
+        from cgmencode.production.recommender import detect_controller_type
+        patient = make_patient(n=4320, with_insulin=True)
+        patient.metadata = {}
+        # Without high suspension, should be UNKNOWN
+        result = detect_controller_type(patient)
+        self.assertIsInstance(result, ControllerType)
+
+    def test_get_controller_behavior(self):
+        from cgmencode.production.recommender import get_controller_behavior
+        behavior = get_controller_behavior(ControllerType.LOOP)
+        self.assertEqual(behavior.compensation_style, "compensating")
+        self.assertLess(behavior.isf_trust, 0.5)
+
+    def test_adjust_confidence_reduces_for_loop(self):
+        from cgmencode.production.recommender import adjust_confidence_for_controller
+        recs = [SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction="increase", magnitude_pct=20.0,
+            current_value=50.0, suggested_value=60.0,
+            predicted_tir_delta=2.0, affected_hours=(0.0, 24.0),
+            confidence=0.8, evidence="test", rationale="test",
+        )]
+        adjusted = adjust_confidence_for_controller(recs, ControllerType.LOOP)
+        self.assertLess(adjusted[0].confidence, 0.8)
+
+    def test_openaps_higher_confidence_than_loop(self):
+        from cgmencode.production.recommender import adjust_confidence_for_controller
+        rec_loop = SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction="increase", magnitude_pct=20.0,
+            current_value=50.0, suggested_value=60.0,
+            predicted_tir_delta=2.0, affected_hours=(0.0, 24.0),
+            confidence=0.8, evidence="test", rationale="test",
+        )
+        rec_oaps = SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction="increase", magnitude_pct=20.0,
+            current_value=50.0, suggested_value=60.0,
+            predicted_tir_delta=2.0, affected_hours=(0.0, 24.0),
+            confidence=0.8, evidence="test", rationale="test",
+        )
+        adjust_confidence_for_controller([rec_loop], ControllerType.LOOP)
+        adjust_confidence_for_controller([rec_oaps], ControllerType.OPENAPS)
+        self.assertGreater(rec_oaps.confidence, rec_loop.confidence)
 
 
 # ── Runner ────────────────────────────────────────────────────────────

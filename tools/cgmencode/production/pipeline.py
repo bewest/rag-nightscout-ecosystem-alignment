@@ -21,6 +21,7 @@ import numpy as np
 
 from .types import (
     PatientData, PipelineResult, OnboardingState,
+    ControllerType,
 )
 from .data_quality import clean_glucose
 from .metabolic_engine import compute_metabolic_state, _extract_hours, estimate_dia_discrepancy
@@ -32,7 +33,7 @@ from .patient_onboarding import get_onboarding_state
 from .meal_detector import detect_meal_events, build_meal_history, classify_all_meal_responses, classify_meal_archetypes
 from .meal_predictor import build_timing_models, predict_next_meal, MealMLModel
 from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented, advise_circadian_isf, advise_context_cr
-from .recommender import generate_recommendations
+from .recommender import generate_recommendations, detect_controller_type, get_controller_behavior, adjust_confidence_for_controller
 from .clinical_rules import (
     generate_clinical_report, compute_correction_energy,
     assess_correction_timing, assess_aid_compensation,
@@ -312,6 +313,9 @@ def run_pipeline(patient: PatientData,
 
     # ── Stage 6: Settings Advisor ─────────────────────────────────
     settings_recs = None
+    controller_type = detect_controller_type(patient)
+    controller_behavior = get_controller_behavior(controller_type)
+
     if patient.days_of_data >= 3.0:
         try:
             settings_recs = generate_settings_advice(
@@ -328,8 +332,20 @@ def run_pipeline(patient: PatientData,
                     settings_recs = []
                 settings_recs.extend(isf_segment_recs)
                 settings_recs.sort(key=lambda r: abs(r.predicted_tir_delta), reverse=True)
+
+            # Adjust confidence based on controller behavior (EXP-2081)
+            if settings_recs:
+                settings_recs = adjust_confidence_for_controller(
+                    settings_recs, controller_type)
         except Exception as e:
             warnings.append(f"Settings advisor failed: {e}")
+
+    if controller_type != ControllerType.UNKNOWN:
+        warnings.append(
+            f"Controller detected: {controller_type.value} "
+            f"({controller_behavior.compensation_style}). "
+            f"Settings visibility: {controller_behavior.settings_visibility:.0%}."
+        )
 
     # ── Stage 7: Action Recommendations ───────────────────────────
     recommendations = generate_recommendations(

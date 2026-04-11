@@ -24,6 +24,7 @@ from .types import (
     ActionRecommendation, ClinicalReport, HypoAlert, HypoPhenotype,
     MealHistory, MealPrediction, MetabolicState,
     PatientProfile, PipelineResult, SettingsRecommendation,
+    ControllerType, ControllerBehavior,
 )
 
 
@@ -170,5 +171,179 @@ def generate_recommendations(
 
     # Sort: priority first, then by predicted impact
     recs.sort(key=lambda r: (r.priority, -abs(r.predicted_tir_delta)))
+
+    return recs
+
+
+# ── Controller-Specific Behavior (EXP-2081) ──────────────────────────
+
+# EXP-2081: 19 patients, 4 controllers. Each controller has a distinct
+# compensation style that affects how much we can trust observed metrics.
+#
+# Loop/Trio: aggressive suspension (38-96% zero delivery), COMPENSATING/PASSIVE
+#   → Observed ISF and metabolic data heavily influenced by loop suspension
+#   → Settings errors are MASKED — patient may be fine even with wrong ISF
+#   → Recommendation confidence should be LOWER
+#
+# AAPS: moderate suspension, BALANCED
+#   → Better settings visibility, reasonable trust in observed data
+#
+# OpenAPS: SMB + high temp basal, AGGRESSIVE/most settings-transparent
+#   → Best settings visibility, highest recommendation confidence
+
+_CONTROLLER_PROFILES = {
+    ControllerType.LOOP: ControllerBehavior(
+        controller=ControllerType.LOOP,
+        compensation_style="compensating",
+        suspension_pct=0.55,          # 38-76% zero delivery (median ~55%)
+        settings_visibility=0.3,
+        isf_trust=0.3,
+        cr_trust=0.4,
+        recommendation_notes=(
+            "Loop uses aggressive temp basal suspension to prevent lows. "
+            "This masks ISF errors: observed effective ISF may be 1.5-2.2× "
+            "higher than profile due to loop compensation. Settings changes "
+            "may show <1% TIR impact because Loop re-compensates. "
+            "Focus recommendations on CR and pre-bolus timing."
+        ),
+    ),
+    ControllerType.TRIO: ControllerBehavior(
+        controller=ControllerType.TRIO,
+        compensation_style="passive",
+        suspension_pct=0.45,
+        settings_visibility=0.35,
+        isf_trust=0.35,
+        cr_trust=0.45,
+        recommendation_notes=(
+            "Trio (oref1 on iOS) also compensates via temp basal but uses "
+            "SMB for upward corrections. Settings visibility is slightly "
+            "better than Loop. ISF changes may have more visible effect "
+            "due to SMB dosing, but basal changes remain largely masked."
+        ),
+    ),
+    ControllerType.AAPS: ControllerBehavior(
+        controller=ControllerType.AAPS,
+        compensation_style="balanced",
+        suspension_pct=0.30,
+        settings_visibility=0.6,
+        isf_trust=0.6,
+        cr_trust=0.6,
+        recommendation_notes=(
+            "AAPS provides balanced automation with moderate temp basal "
+            "and optional SMB. Settings are more visible than Loop/Trio. "
+            "ISF and CR recommendations have moderate confidence. "
+            "DynISF feature may already be auto-adjusting ISF."
+        ),
+    ),
+    ControllerType.OPENAPS: ControllerBehavior(
+        controller=ControllerType.OPENAPS,
+        compensation_style="aggressive",
+        suspension_pct=0.20,
+        settings_visibility=0.7,
+        isf_trust=0.7,
+        cr_trust=0.65,
+        recommendation_notes=(
+            "OpenAPS (oref0/oref1 on rigs) is the most settings-transparent "
+            "controller. Autosens provides real-time ISF scaling. "
+            "Observed metrics closely reflect actual settings accuracy. "
+            "Recommendations have highest confidence of all controllers."
+        ),
+    ),
+    ControllerType.UNKNOWN: ControllerBehavior(
+        controller=ControllerType.UNKNOWN,
+        compensation_style="unknown",
+        suspension_pct=0.0,
+        settings_visibility=0.5,
+        isf_trust=0.5,
+        cr_trust=0.5,
+        recommendation_notes=(
+            "Controller not identified. Using conservative defaults. "
+            "Settings recommendations have moderate confidence."
+        ),
+    ),
+}
+
+
+def detect_controller_type(patient: 'PatientData') -> ControllerType:
+    """Detect AID controller from patient metadata or data patterns.
+
+    Detection heuristics (in priority order):
+    1. Explicit metadata field (patient.metadata['controller'])
+    2. DeviceStatus structure patterns
+    3. Basal delivery patterns (suspension fraction)
+
+    Args:
+        patient: PatientData with optional metadata.
+
+    Returns:
+        ControllerType enum.
+    """
+    # Check explicit metadata
+    meta = getattr(patient, 'metadata', {}) or {}
+    controller_str = meta.get('controller', meta.get('pump', '')).lower()
+
+    if 'loop' in controller_str and 'open' not in controller_str:
+        return ControllerType.LOOP
+    if 'trio' in controller_str:
+        return ControllerType.TRIO
+    if 'aaps' in controller_str or 'androidaps' in controller_str:
+        return ControllerType.AAPS
+    if 'openaps' in controller_str or 'oref' in controller_str:
+        return ControllerType.OPENAPS
+
+    # Heuristic: suspension fraction
+    if patient.basal_rate is not None:
+        basal = patient.basal_rate
+        valid = basal[np.isfinite(basal)]
+        if len(valid) > 288:
+            suspension_frac = float(np.mean(valid == 0))
+            if suspension_frac > 0.60:
+                return ControllerType.LOOP  # Very high suspension → Loop
+            elif suspension_frac > 0.40:
+                return ControllerType.TRIO  # Moderate-high → Trio
+            elif suspension_frac > 0.15:
+                return ControllerType.AAPS  # Moderate → AAPS
+
+    return ControllerType.UNKNOWN
+
+
+def get_controller_behavior(controller: ControllerType) -> ControllerBehavior:
+    """Get the behavior profile for a controller type."""
+    return _CONTROLLER_PROFILES.get(controller, _CONTROLLER_PROFILES[ControllerType.UNKNOWN])
+
+
+def adjust_confidence_for_controller(
+    recs: list[SettingsRecommendation],
+    controller: ControllerType,
+) -> list[SettingsRecommendation]:
+    """Adjust recommendation confidence based on controller behavior.
+
+    Research (EXP-2081): Loop masks ISF errors so effectively that
+    changing ISF produces <1% TIR impact. AAPS/OpenAPS are more
+    settings-transparent.
+
+    This does NOT modify the recommendations — it adjusts confidence
+    scores to reflect how much we trust the observed data.
+
+    Args:
+        recs: list of SettingsRecommendation.
+        controller: detected controller type.
+
+    Returns:
+        Same list with adjusted confidence scores.
+    """
+    behavior = get_controller_behavior(controller)
+
+    for rec in recs:
+        if rec.parameter.value in ('isf', 'ISF'):
+            rec.confidence *= behavior.isf_trust
+        elif rec.parameter.value in ('cr', 'CR'):
+            rec.confidence *= behavior.cr_trust
+        else:
+            rec.confidence *= behavior.settings_visibility
+
+        # Add controller note to evidence
+        if behavior.recommendation_notes and controller != ControllerType.UNKNOWN:
+            rec.evidence += f" [Controller: {controller.value}]"
 
     return recs

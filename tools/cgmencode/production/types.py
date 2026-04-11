@@ -225,6 +225,39 @@ class OptimizationPhase(str, Enum):
     PERSONALIZE = "personalize"                # Calibrated: per-patient tuning
 
 
+class ControllerType(str, Enum):
+    """AID controller type (EXP-2081, validated on 19 patients, 4 controllers).
+
+    Different controllers have distinct compensation behaviors:
+    - Loop/Trio: COMPENSATING/PASSIVE — aggressive suspension, masks settings errors
+    - AAPS: BALANCED — moderate suspension, best settings visibility
+    - OpenAPS: AGGRESSIVE — SMB + high temp basal, most settings-transparent
+
+    Affects how much trust to place in observed ISF/CR vs profile values.
+    """
+    LOOP = "Loop"
+    TRIO = "Trio"
+    AAPS = "AAPS"
+    OPENAPS = "OpenAPS"
+    UNKNOWN = "unknown"
+
+
+@dataclass
+class ControllerBehavior:
+    """Controller-specific behavior profile (EXP-2081).
+
+    Characterizes how a specific AID controller compensates for
+    settings errors, informing recommendation confidence and strategy.
+    """
+    controller: ControllerType
+    compensation_style: str           # "compensating", "passive", "balanced", "aggressive"
+    suspension_pct: float = 0.0       # % time at zero delivery
+    settings_visibility: float = 0.5  # 0-1: how much observed metrics reflect true settings
+    isf_trust: float = 0.5           # 0-1: how much to trust observed effective ISF
+    cr_trust: float = 0.5            # 0-1: how much to trust observed effective CR
+    recommendation_notes: str = ""    # controller-specific guidance
+
+
 # ── Input Data ────────────────────────────────────────────────────────
 
 MMOL_TO_MGDL = 18.0182
