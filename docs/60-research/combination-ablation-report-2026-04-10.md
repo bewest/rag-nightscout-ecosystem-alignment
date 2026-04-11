@@ -65,7 +65,7 @@ The validated SOTA from EXP-1211 (R²=0.781 ensemble+AR, 5-fold CV) stands — i
 |--------|---------|-------|
 | **2h (24)** | **0.523** | **baseline** |
 | 3h (36) | 0.522 | −0.001 |
-| 4h (48) | 0.511 | −0.012 |
+| 4h (48) | 0.511 | −0.011 |
 
 **Verdict**: 2h is optimal. Longer windows add more features (diluting signal) and include older glucose data that's less relevant for 1-hour prediction. The 4h window (48 glucose values) makes the feature vector too large relative to signal.
 
