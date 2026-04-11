@@ -81,7 +81,7 @@ Since the current experiments operate on correction events (not the grid array d
 | Metric | JSON Path | Parquet Path | Speedup |
 |--------|-----------|--------------|---------|
 | Load 11 patients | ~180s | 16.4s | **11×** |
-| Single patient grid | ~18s | 0.08s | **216×** |
+| Single patient grid | ~18s | 0.08s | **225×** |
 | Full experiment suite (12 exp) | ~hours | 24.7s | **~100×** |
 
 ## Implications
@@ -115,4 +115,4 @@ The corrected IOB/COB data for patient b enables future experiments that:
 
 ## Conclusion
 
-The parquet data path is a **drop-in replacement** for the JSON path. It reproduces all experiment results identically while providing 11-216× performance improvement. The oref0 IOB/COB fix is structurally correct and prepares patient b for future IOB-dependent analysis, but has zero impact on current experiment findings because they use bolus-event-based correction detection rather than grid IOB features.
+The parquet data path is a **drop-in replacement** for the JSON path. It reproduces all experiment results identically while providing 11-225× performance improvement. The oref0 IOB/COB fix is structurally correct and prepares patient b for future IOB-dependent analysis, but has zero impact on current experiment findings because they use bolus-event-based correction detection rather than grid IOB features.
