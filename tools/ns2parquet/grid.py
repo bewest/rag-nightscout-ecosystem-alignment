@@ -83,6 +83,7 @@ def build_grid(data_path: str, patient_id: str,
     required = ['entries.json', 'treatments.json', 'devicestatus.json', 'profile.json']
     for f in required:
         if not (data_dir / f).exists():
+            logger.info('build_grid(%s): missing %s', patient_id, f)
             if verbose:
                 print(f'  SKIP: missing {f} in {data_path}')
             return None
@@ -92,21 +93,45 @@ def build_grid(data_path: str, patient_id: str,
         entries = json.load(f)
 
     cgm_times, cgm_values, cgm_dirs, cgm_rates = [], [], [], []
+    n_non_sgv = 0
+    n_no_ts = 0
+    n_bad_sgv = 0
     for e in entries:
         if e.get('type') != 'sgv' or 'sgv' not in e:
+            n_non_sgv += 1
             continue
         if 'date' in e:
-            ts = pd.Timestamp(e['date'], unit='ms', tz='UTC')
+            try:
+                ts = pd.Timestamp(e['date'], unit='ms', tz='UTC')
+            except Exception:
+                n_no_ts += 1
+                continue
         elif 'dateString' in e:
-            ts = pd.Timestamp(e['dateString'])
+            try:
+                ts = pd.Timestamp(e['dateString'])
+            except Exception:
+                n_no_ts += 1
+                continue
         else:
+            n_no_ts += 1
+            continue
+        try:
+            sgv_val = float(e['sgv'])
+        except (ValueError, TypeError):
+            n_bad_sgv += 1
             continue
         cgm_times.append(ts)
-        cgm_values.append(float(e['sgv']))
+        cgm_values.append(sgv_val)
         cgm_dirs.append(e.get('direction', ''))
         cgm_rates.append(e.get('trendRate', np.nan))
 
+    if n_no_ts > 0 or n_bad_sgv > 0:
+        logger.info('build_grid(%s) entries: %d total, %d non-sgv, '
+                     '%d bad_ts, %d bad_sgv',
+                     patient_id, len(entries), n_non_sgv, n_no_ts, n_bad_sgv)
+
     if not cgm_times:
+        logger.warning('build_grid(%s): no CGM data in %s', patient_id, data_path)
         if verbose:
             print(f'  SKIP: no CGM data in {data_path}')
         return None
@@ -259,18 +284,27 @@ def build_grid(data_path: str, patient_id: str,
     sensor_start_times = []
     suspension_times = []
 
+    n_tx_no_ts = 0
+    n_tx_bad_ts = 0
+    n_tx_out_of_range = 0
     for tx in treatments:
         et = tx.get('eventType', '')
         ts_str = tx.get('created_at') or tx.get('timestamp')
         if not ts_str:
+            n_tx_no_ts += 1
             continue
-        ts = pd.Timestamp(ts_str)
+        try:
+            ts = pd.Timestamp(ts_str)
+        except Exception:
+            n_tx_bad_ts += 1
+            continue
         if ts.tzinfo is None:
             ts = ts.tz_localize('UTC')
         else:
             ts = ts.tz_convert('UTC')
         ts = ts.round('5min')
         if ts not in df.index:
+            n_tx_out_of_range += 1
             continue
 
         # Capture ALL insulin delivery (SMB, Bolus, Correction Bolus, etc.)
@@ -320,6 +354,12 @@ def build_grid(data_path: str, patient_id: str,
                     # 1.0 = Temporary Target, 2.0 = Temporary Override
                     otype = 1.0 if et == 'Temporary Target' else 2.0
                     df.iloc[slot_idx:end_idx, df.columns.get_loc('override_type')] = otype
+
+    if n_tx_no_ts > 0 or n_tx_bad_ts > 0:
+        logger.info('build_grid(%s) treatments: %d total, '
+                     'no_ts=%d, bad_ts=%d, out_of_range=%d',
+                     patient_id, len(treatments),
+                     n_tx_no_ts, n_tx_bad_ts, n_tx_out_of_range)
 
     site_change_times.sort()
     sensor_start_times.sort()

@@ -40,9 +40,35 @@ def _parse_ts(record: dict, *fields) -> Optional[pd.Timestamp]:
             if ts.tzinfo is None:
                 ts = ts.tz_localize('UTC')
             return ts.tz_convert('UTC')
-        except Exception:
+        except Exception as exc:
+            logger.debug('Unparseable timestamp field=%s val=%r: %s',
+                         field, val, exc)
             continue
     return None
+
+
+def _safe_float(value, field_name: str = '') -> Optional[float]:
+    """Convert to float, returning None and logging on failure."""
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (ValueError, TypeError) as exc:
+        logger.debug('Cannot convert %s=%r to float: %s',
+                     field_name, value, exc)
+        return None
+
+
+def _safe_int(value, field_name: str = '') -> Optional[int]:
+    """Convert to int, returning None and logging on failure."""
+    if value is None:
+        return None
+    try:
+        return int(value)
+    except (ValueError, TypeError) as exc:
+        logger.debug('Cannot convert %s=%r to int: %s',
+                     field_name, value, exc)
+        return None
 
 
 def _detect_controller(device: str) -> str:
@@ -120,50 +146,79 @@ def normalize_entries(records: List[Dict], patient_id: str) -> pd.DataFrame:
     """Normalize raw Nightscout entries JSON → flat DataFrame.
 
     Handles SGV, MBG, and calibration records. Deduplicates by _id.
+
+    Sets df.attrs['quality'] with skip counts so callers can assess
+    data completeness.
     """
     rows = []
     seen_ids = set()
+    n_dup = 0
+    n_no_ts = 0
+    n_bad_value = 0
 
     for e in records:
         eid = e.get('_id')
         if eid and eid in seen_ids:
+            n_dup += 1
             continue
         if eid:
             seen_ids.add(eid)
 
         ts = _parse_ts(e, 'date', 'dateString', 'sysTime')
         if ts is None:
+            n_no_ts += 1
             continue
 
         entry_type = e.get('type', 'sgv')
+        sgv = _safe_float(e.get('sgv'), 'sgv') if entry_type == 'sgv' else None
+        mbg = _safe_float(e.get('mbg'), 'mbg') if entry_type == 'mbg' else None
+        if entry_type == 'sgv' and sgv is None and 'sgv' in e:
+            n_bad_value += 1
+
         rows.append({
             'patient_id': patient_id,
             '_id': eid,
             'type': entry_type,
             'date': ts,
-            'sgv': float(e['sgv']) if entry_type == 'sgv' and 'sgv' in e else None,
-            'mbg': float(e['mbg']) if entry_type == 'mbg' and 'mbg' in e else None,
+            'sgv': sgv,
+            'mbg': mbg,
             'direction': e.get('direction'),
-            'noise': int(e['noise']) if 'noise' in e and e['noise'] is not None else None,
-            'filtered': float(e['filtered']) if 'filtered' in e and e['filtered'] is not None else None,
-            'unfiltered': float(e['unfiltered']) if 'unfiltered' in e and e['unfiltered'] is not None else None,
-            'delta': float(e['delta']) if 'delta' in e and e['delta'] is not None else None,
-            'rssi': int(e['rssi']) if 'rssi' in e and e['rssi'] is not None else None,
-            'trend': int(e['trend']) if 'trend' in e and e['trend'] is not None else None,
-            'trend_rate': float(e['trendRate']) if 'trendRate' in e and e['trendRate'] is not None else None,
+            'noise': _safe_int(e.get('noise'), 'noise'),
+            'filtered': _safe_float(e.get('filtered'), 'filtered'),
+            'unfiltered': _safe_float(e.get('unfiltered'), 'unfiltered'),
+            'delta': _safe_float(e.get('delta'), 'delta'),
+            'rssi': _safe_int(e.get('rssi'), 'rssi'),
+            'trend': _safe_int(e.get('trend'), 'trend'),
+            'trend_rate': _safe_float(e.get('trendRate'), 'trendRate'),
             'device': e.get('device'),
-            'utc_offset': int(e['utcOffset']) if 'utcOffset' in e and e['utcOffset'] is not None else None,
+            'utc_offset': _safe_int(e.get('utcOffset'), 'utcOffset'),
         })
 
+    quality = {
+        'total_records': len(records),
+        'accepted': len(rows),
+        'skipped_duplicate': n_dup,
+        'skipped_no_timestamp': n_no_ts,
+        'bad_value_conversion': n_bad_value,
+    }
+    if n_no_ts > 0 or n_bad_value > 0:
+        logger.info('normalize_entries(%s): %d/%d accepted '
+                     '(dup=%d, no_ts=%d, bad_val=%d)',
+                     patient_id, len(rows), len(records),
+                     n_dup, n_no_ts, n_bad_value)
+
     if not rows:
-        return pd.DataFrame(columns=[
+        df = pd.DataFrame(columns=[
             'patient_id', '_id', 'type', 'date', 'sgv', 'mbg', 'direction',
             'noise', 'filtered', 'unfiltered', 'delta', 'rssi', 'trend',
             'trend_rate', 'device', 'utc_offset',
         ])
+        df.attrs['quality'] = quality
+        return df
 
     df = pd.DataFrame(rows)
     df = df.sort_values('date').reset_index(drop=True)
+    df.attrs['quality'] = quality
     return df
 
 
@@ -176,19 +231,25 @@ def normalize_treatments(records: List[Dict], patient_id: str) -> pd.DataFrame:
     - Unit conversion (duration, absorption time)
     - SMB detection (multi-step)
     - Deduplication by _id
+
+    Sets df.attrs['quality'] with skip counts.
     """
     rows = []
     seen_ids = set()
+    n_dup = 0
+    n_no_ts = 0
 
     for tx in records:
         tid = tx.get('_id')
         if tid and tid in seen_ids:
+            n_dup += 1
             continue
         if tid:
             seen_ids.add(tid)
 
         ts = _parse_ts(tx, 'created_at', 'timestamp', 'date')
         if ts is None:
+            n_no_ts += 1
             continue
 
         device = tx.get('enteredBy', '') or tx.get('device', '') or ''
@@ -197,40 +258,54 @@ def normalize_treatments(records: List[Dict], patient_id: str) -> pd.DataFrame:
             '_id': tid,
             'event_type': tx.get('eventType', ''),
             'created_at': ts,
-            'insulin': float(tx['insulin']) if tx.get('insulin') else None,
-            'programmed': float(tx['programmed']) if tx.get('programmed') else None,
+            'insulin': _safe_float(tx.get('insulin'), 'insulin'),
+            'programmed': _safe_float(tx.get('programmed'), 'programmed'),
             'is_smb': _is_smb(tx),
             'is_automatic': bool(tx.get('automatic', False)),
             'bolus_type': tx.get('bolusType'),
             'insulin_type': tx.get('insulinType') or tx.get('insulintype'),
-            'carbs': float(tx['carbs']) if tx.get('carbs') else None,
+            'carbs': _safe_float(tx.get('carbs'), 'carbs'),
             'absorption_time_min': _absorption_to_minutes(tx, device),
             'food_type': tx.get('foodType'),
-            'fat': float(tx['fat']) if tx.get('fat') else None,
-            'protein': float(tx['protein']) if tx.get('protein') else None,
-            'rate': float(tx['rate']) if 'rate' in tx and tx['rate'] is not None else (
-                float(tx['absolute']) if 'absolute' in tx and tx['absolute'] is not None else None),
+            'fat': _safe_float(tx.get('fat'), 'fat'),
+            'protein': _safe_float(tx.get('protein'), 'protein'),
+            'rate': _safe_float(tx.get('rate'), 'rate') if tx.get('rate') is not None else (
+                _safe_float(tx.get('absolute'), 'absolute')),
             'duration_min': _duration_to_minutes(tx, device),
-            'percent': float(tx['percent']) if tx.get('percent') is not None else None,
+            'percent': _safe_float(tx.get('percent'), 'percent'),
             'temp_type': tx.get('temp'),
-            'target_top': float(tx['targetTop']) if tx.get('targetTop') else None,
-            'target_bottom': float(tx['targetBottom']) if tx.get('targetBottom') else None,
+            'target_top': _safe_float(tx.get('targetTop'), 'targetTop'),
+            'target_bottom': _safe_float(tx.get('targetBottom'), 'targetBottom'),
             'reason': tx.get('reason'),
-            'glucose': float(tx['glucose']) if tx.get('glucose') else None,
+            'glucose': _safe_float(tx.get('glucose'), 'glucose'),
             'glucose_type': tx.get('glucoseType'),
             'entered_by': tx.get('enteredBy'),
             'device': tx.get('device'),
             'notes': tx.get('notes'),
-            'utc_offset': int(tx['utcOffset']) if 'utcOffset' in tx and tx['utcOffset'] is not None else None,
+            'utc_offset': _safe_int(tx.get('utcOffset'), 'utcOffset'),
             'identifier': tx.get('identifier'),
             'sync_identifier': tx.get('syncIdentifier'),
         })
 
+    quality = {
+        'total_records': len(records),
+        'accepted': len(rows),
+        'skipped_duplicate': n_dup,
+        'skipped_no_timestamp': n_no_ts,
+    }
+    if n_no_ts > 0:
+        logger.info('normalize_treatments(%s): %d/%d accepted '
+                     '(dup=%d, no_ts=%d)',
+                     patient_id, len(rows), len(records), n_dup, n_no_ts)
+
     if not rows:
-        return pd.DataFrame()
+        df = pd.DataFrame()
+        df.attrs['quality'] = quality
+        return df
 
     df = pd.DataFrame(rows)
     df = df.sort_values('created_at').reset_index(drop=True)
+    df.attrs['quality'] = quality
     return df
 
 
@@ -349,19 +424,26 @@ def normalize_devicestatus(records: List[Dict], patient_id: str) -> pd.DataFrame
     """Normalize raw Nightscout devicestatus JSON → flat DataFrame.
 
     Detects Loop vs oref0 structure and flattens accordingly.
+
+    Sets df.attrs['quality'] with skip counts.
     """
     rows = []
     seen_ids = set()
+    n_dup = 0
+    n_no_ts = 0
+    n_minimal = 0
 
     for ds in records:
         did = ds.get('_id')
         if did and did in seen_ids:
+            n_dup += 1
             continue
         if did:
             seen_ids.add(did)
 
         ts = _parse_ts(ds, 'created_at', 'timestamp')
         if ts is None:
+            n_no_ts += 1
             continue
 
         device = ds.get('device', '')
@@ -379,12 +461,13 @@ def normalize_devicestatus(records: List[Dict], patient_id: str) -> pd.DataFrame
         else:
             # Minimal record — just pump/uploader info
             fields = {k: None for k in _extract_loop_ds({}).keys()}
+            n_minimal += 1
 
         # Pump info (common structure)
         pump = ds.get('pump', {}) or {}
         batt = pump.get('battery', {})
         if isinstance(batt, dict):
-            pump_battery = float(batt['percent']) if 'percent' in batt else None
+            pump_battery = _safe_float(batt.get('percent'), 'pump_battery_pct')
         else:
             pump_battery = None
 
@@ -394,16 +477,14 @@ def normalize_devicestatus(records: List[Dict], patient_id: str) -> pd.DataFrame
                 pump_clock = pd.Timestamp(pump['clock'])
                 if pump_clock.tzinfo is None:
                     pump_clock = pump_clock.tz_localize('UTC')
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug('Unparseable pump clock %r: %s', pump['clock'], exc)
 
         # Uploader info
         uploader = ds.get('uploader', {}) or {}
-        uploader_battery = (
-            float(uploader.get('battery', ds.get('uploaderBattery', np.nan)))
-        )
-        if np.isnan(uploader_battery):
-            uploader_battery = None
+        uploader_battery = _safe_float(
+            uploader.get('battery', ds.get('uploaderBattery')),
+            'uploader_battery_pct')
 
         row = {
             'patient_id': patient_id,
@@ -413,19 +494,35 @@ def normalize_devicestatus(records: List[Dict], patient_id: str) -> pd.DataFrame
             'controller': controller,
             **fields,
             'pump_battery_pct': pump_battery,
-            'pump_reservoir': float(pump['reservoir']) if 'reservoir' in pump else None,
+            'pump_reservoir': _safe_float(pump.get('reservoir'), 'pump_reservoir'),
             'pump_status': pump.get('status', {}).get('status') if isinstance(pump.get('status'), dict) else None,
             'pump_clock': pump_clock,
             'uploader_battery_pct': uploader_battery,
-            'utc_offset': int(ds['utcOffset']) if 'utcOffset' in ds and ds['utcOffset'] is not None else None,
+            'utc_offset': _safe_int(ds.get('utcOffset'), 'utcOffset'),
         }
         rows.append(row)
 
+    quality = {
+        'total_records': len(records),
+        'accepted': len(rows),
+        'skipped_duplicate': n_dup,
+        'skipped_no_timestamp': n_no_ts,
+        'minimal_records': n_minimal,
+    }
+    if n_no_ts > 0 or n_minimal > 0:
+        logger.info('normalize_devicestatus(%s): %d/%d accepted '
+                     '(dup=%d, no_ts=%d, minimal=%d)',
+                     patient_id, len(rows), len(records),
+                     n_dup, n_no_ts, n_minimal)
+
     if not rows:
-        return pd.DataFrame()
+        df = pd.DataFrame()
+        df.attrs['quality'] = quality
+        return df
 
     df = pd.DataFrame(rows)
     df = df.sort_values('created_at').reset_index(drop=True)
+    df.attrs['quality'] = quality
     return df
 
 
