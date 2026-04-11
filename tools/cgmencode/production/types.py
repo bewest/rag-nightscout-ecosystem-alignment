@@ -182,6 +182,36 @@ class RescuePhenotype(str, Enum):
     OVER_RESCUER = "over_rescuer"         # Excess rescue, rebound hyperglycemia
 
 
+class HypoPhenotype(str, Enum):
+    """Hypoglycemia mechanism phenotype (EXP-2281, validated on 11 patients).
+
+    Two distinct hypo phenotypes require different interventions:
+    - Over-correction: bolus-driven, starts >130 mg/dL, rapid descent
+      → Fix: reduce ISF, increase pre-bolus time, reduce CR
+    - Chronic-low: basal-driven, starts <120 mg/dL, gradual drift
+      → Fix: reduce basal rate, raise target, check overnight basal
+
+    Distribution: 7/11 over-correction, 4/11 chronic-low.
+    64-82% of hypos are preventable through settings optimization.
+    38% cause rebound hyperglycemia.
+    """
+    OVER_CORRECTION = "over_correction"   # Bolus-driven, starts high, rapid drop
+    CHRONIC_LOW = "chronic_low"           # Basal-driven, starts near range, slow drift
+    MIXED = "mixed"                       # Both mechanisms present
+    UNKNOWN = "unknown"                   # Insufficient data to classify
+
+
+class ResponderType(str, Enum):
+    """Insulin response speed phenotype (EXP-2355, validated on 11 patients).
+
+    8/11 patients are slow responders (onset >40 min). This affects
+    optimal pre-bolus timing and DIA settings.
+    """
+    FAST = "fast"       # Onset <25 min (0/11 in study)
+    MEDIUM = "medium"   # Onset 25-40 min (3/11 in study)
+    SLOW = "slow"       # Onset >40 min (8/11 in study)
+
+
 class OptimizationPhase(str, Enum):
     """Three-phase optimization sequence (EXP-1765).
 
@@ -341,6 +371,7 @@ class HypoAlert:
     lead_time_estimate: Optional[float] = None  # minutes before hypo
     supply_demand_imbalance: Optional[float] = None  # flux signal
     confidence: Optional[float] = None  # prediction confidence
+    hypo_phenotype: Optional['HypoPhenotype'] = None  # EXP-2281 phenotype
 
 
 # ── Clinical Decision Support ─────────────────────────────────────────
@@ -594,13 +625,45 @@ class CorrectionEnergy:
 
 @dataclass
 class BolusTimingSafety:
-    """Correction bolus spacing analysis for IOB stacking risk."""
+    """Correction bolus spacing analysis for IOB stacking risk.
+
+    AID-aware stacking assessment (EXP-2357): In closed-loop AID systems,
+    high IOB is PROTECTIVE (RR<1 for all 11 patients) because the loop
+    compensates by suspending basal delivery. The classic stacking concern
+    from MDI/manual pumping is largely obsolete with AID.
+
+    safety_flag is set only for NON-AID patients or when the loop is
+    demonstrably not compensating.
+    """
     total_corrections: int            # number of correction boluses detected
     stacking_events: int              # corrections <4h apart
     stacking_fraction: float          # stacking_events / total_corrections
     min_interval_hours: Optional[float] = None  # shortest interval
     mean_interval_hours: Optional[float] = None
-    safety_flag: bool = False         # True if stacking is concerning (>25%)
+    safety_flag: bool = False         # True if stacking is concerning
+    is_aid_managed: bool = True       # True if AID loop compensates (EXP-2357)
+    interpretation: str = ""
+
+
+@dataclass
+class DIADiscrepancy:
+    """Duration of Insulin Action discrepancy analysis (EXP-2351–2358).
+
+    Two DIA estimates differ 3-5×:
+    - IOB decay DIA (2.8-3.8h): pump's modeled insulin activity curve
+    - Glucose response DIA (5-20h): actual glucose effect duration
+
+    The pump model underestimates insulin's glucose effect for most
+    patients. This matters for dosing calculations that assume insulin
+    effect is "finished" after DIA.
+    """
+    iob_dia_hours: float              # DIA from IOB decay (pump model)
+    glucose_dia_hours: Optional[float] = None  # DIA from glucose response
+    discrepancy_ratio: Optional[float] = None  # glucose_dia / iob_dia
+    responder_type: Optional['ResponderType'] = None  # fast/medium/slow
+    onset_minutes: Optional[float] = None  # time to first glucose drop
+    nadir_minutes: Optional[float] = None  # time to maximum effect
+    isf_ratio: Optional[float] = None  # effective ISF / profile ISF
     interpretation: str = ""
 
 
@@ -743,6 +806,9 @@ class PipelineResult:
     natural_experiments: Optional[object] = None  # NaturalExperimentCensus (avoid circular import)
     # Settings optimization (EXP-1701)
     optimal_settings: Optional[SettingsOptimizationResult] = None
+    # Autoresearch productionization (EXP-2261–2358)
+    dia_discrepancy: Optional[DIADiscrepancy] = None
+    prediction_bias_mgdl: Optional[float] = None  # systematic bias at 30min (EXP-2331)
     pipeline_latency_ms: float = 0.0
     warnings: List[str] = field(default_factory=list)
 

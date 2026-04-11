@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from .types import MetabolicState, PatientData, PatientProfile
+from .types import MetabolicState, PatientData, PatientProfile, DIADiscrepancy, ResponderType
 
 
 # Hill equation parameters for hepatic production (from continuous_pk.py)
@@ -204,3 +204,167 @@ def _median_schedule_value(schedule: list, default: float = 50.0) -> float:
         if v is not None:
             values.append(float(v))
     return float(np.median(values)) if values else default
+
+
+# ── DIA Discrepancy Estimation (EXP-2351–2358) ──────────────────────
+
+# IOB DIA: pump's modeled insulin activity (2.8-3.8h across patients)
+# Glucose DIA: actual glucose response duration (5-20h across patients)
+# Discrepancy ratio: glucose_dia / iob_dia (typically 1.5-5×)
+
+# Population defaults from EXP-2351 (11-patient study)
+_DEFAULT_IOB_DIA_HOURS = 3.3      # median IOB decay DIA
+_SLOW_ONSET_THRESHOLD_MIN = 40.0  # onset >40 min → slow responder
+
+
+def estimate_dia_discrepancy(patient: PatientData,
+                             metabolic: MetabolicState,
+                             ) -> DIADiscrepancy:
+    """Estimate DIA discrepancy between IOB decay and glucose response.
+
+    The pump's insulin model decays faster than insulin's actual glucose
+    effect. This function estimates both DIAs and reports the discrepancy.
+
+    IOB DIA: estimated from IOB curve half-life (pump model).
+    Glucose DIA: estimated from correction bolus response duration.
+
+    Research finding (EXP-2351): IOB DIA = 2.8-3.8h, glucose DIA = 5-20h.
+    8/11 patients are slow responders (onset >40 min).
+
+    Args:
+        patient: PatientData with IOB and glucose.
+        metabolic: MetabolicState from compute_metabolic_state.
+
+    Returns:
+        DIADiscrepancy with both DIA estimates and responder type.
+    """
+    profile = patient.profile
+
+    # Extract profile DIA (if available) or use population default
+    profile_dia = getattr(profile, 'dia_hours', None)
+    if profile_dia is None or profile_dia <= 0:
+        profile_dia = 5.0  # Nightscout default
+
+    # ── IOB decay DIA estimation ──────────────────────────────────
+    iob_dia = _DEFAULT_IOB_DIA_HOURS
+    if patient.has_insulin_data and len(patient.iob) > 288:
+        iob = np.nan_to_num(patient.iob.astype(np.float64), nan=0.0)
+        # Estimate half-life from IOB autocorrelation
+        iob_nz = iob[iob > 0.1]
+        if len(iob_nz) > 100:
+            # Use the IOB decay curve: find where IOB drops to 10% of peak
+            # after a bolus. Approximate from IOB distribution percentiles.
+            p90 = float(np.percentile(iob_nz, 90))
+            # Steps where IOB goes from high to 10% of p90
+            high_mask = iob > p90 * 0.9
+            if np.sum(high_mask) > 10:
+                # Simple half-life estimate from high IOB decay
+                segments = np.diff(np.where(high_mask)[0])
+                if len(segments) > 5:
+                    median_duration = float(np.median(segments[segments > 1]))
+                    iob_dia = min(max(median_duration * 5 / 60 * 2.5, 2.0), 6.0)
+
+    # ── Glucose response DIA estimation ───────────────────────────
+    # From correction bolus analysis: find boluses during high BG,
+    # measure how long until glucose effect diminishes
+    glucose_dia = None
+    onset_min = None
+    nadir_min = None
+    isf_ratio = None
+
+    glucose = np.nan_to_num(patient.glucose.astype(np.float64), nan=120.0)
+    isf = _median_schedule_value(profile.isf_mgdl(), default=50.0)
+
+    if patient.has_insulin_data and patient.bolus is not None:
+        bolus = np.nan_to_num(patient.bolus.astype(np.float64), nan=0.0)
+        N = len(glucose)
+
+        correction_drops = []
+        onset_times = []
+        nadir_times = []
+
+        for i in range(N - 72):  # need 6h post-bolus window
+            if bolus[i] < 0.3 or glucose[i] < 150:
+                continue
+            # Skip if there are carbs nearby (want pure corrections)
+            if patient.carbs is not None:
+                carbs_nearby = np.nan_to_num(patient.carbs[max(0,i-6):i+6], nan=0.0)
+                if float(np.sum(carbs_nearby)) > 1.0:
+                    continue
+
+            pre_bg = float(glucose[i])
+            # Find onset: first step where BG drops >1 mg/dL from pre
+            onset = None
+            for j in range(1, min(36, N - i)):
+                if glucose[i + j] < pre_bg - 1.0:
+                    onset = j * 5  # minutes
+                    break
+
+            # Find nadir in 6h window
+            window = glucose[i:i+72]
+            nadir_idx = int(np.argmin(window))
+            nadir_bg = float(window[nadir_idx])
+            drop = pre_bg - nadir_bg
+
+            if drop > 10 and nadir_idx > 0:
+                correction_drops.append(drop / bolus[i])  # mg/dL per unit
+                nadir_times.append(nadir_idx * 5)
+                if onset is not None:
+                    onset_times.append(onset)
+
+                # Find when glucose returns to 90% of pre-BG
+                for j in range(nadir_idx + 1, min(len(window), 72)):
+                    if window[j] > pre_bg - drop * 0.1:
+                        # This is the glucose response duration
+                        glucose_dia_candidate = j * 5 / 60  # hours
+                        break
+
+        if correction_drops:
+            effective_isf = float(np.median(correction_drops))
+            isf_ratio = effective_isf / isf if isf > 0 else None
+
+        if nadir_times:
+            nadir_min = float(np.median(nadir_times))
+            # Glucose DIA ≈ 2.5× time to nadir (exponential decay heuristic)
+            glucose_dia = nadir_min * 2.5 / 60  # hours
+
+        if onset_times:
+            onset_min = float(np.median(onset_times))
+
+    # ── Responder type classification ─────────────────────────────
+    responder = ResponderType.SLOW  # default (8/11 in EXP-2355)
+    if onset_min is not None:
+        if onset_min < 25:
+            responder = ResponderType.FAST
+        elif onset_min <= _SLOW_ONSET_THRESHOLD_MIN:
+            responder = ResponderType.MEDIUM
+
+    # ── Discrepancy ratio and interpretation ──────────────────────
+    discrepancy = None
+    interp_parts = [f"IOB decay DIA: {iob_dia:.1f}h"]
+
+    if glucose_dia is not None:
+        discrepancy = glucose_dia / iob_dia if iob_dia > 0 else None
+        interp_parts.append(f"Glucose response DIA: {glucose_dia:.1f}h")
+        if discrepancy is not None and discrepancy > 1.5:
+            interp_parts.append(
+                f"Discrepancy: {discrepancy:.1f}× — insulin affects glucose "
+                f"much longer than the pump model assumes."
+            )
+    else:
+        interp_parts.append("Glucose response DIA: insufficient correction data.")
+
+    interp_parts.append(f"Responder type: {responder.value}")
+    if isf_ratio is not None:
+        interp_parts.append(f"Effective ISF ratio: {isf_ratio:.2f}×")
+
+    return DIADiscrepancy(
+        iob_dia_hours=iob_dia,
+        glucose_dia_hours=glucose_dia,
+        discrepancy_ratio=discrepancy,
+        responder_type=responder,
+        onset_minutes=onset_min,
+        nadir_minutes=nadir_min,
+        isf_ratio=isf_ratio,
+        interpretation=" | ".join(interp_parts),
+    )

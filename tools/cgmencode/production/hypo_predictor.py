@@ -25,7 +25,7 @@ from typing import List, Optional
 
 import numpy as np
 
-from .types import HypoAlert, MetabolicState, RescuePhenotype
+from .types import HypoAlert, HypoPhenotype, MetabolicState, RescuePhenotype
 
 
 # Default alert threshold (from EXP-695)
@@ -166,6 +166,9 @@ def predict_hypo(glucose: np.ndarray,
         steps_to_hypo = (bg - HYPO_LEVEL_1) / abs(trend_per_step)
         lead_time = float(steps_to_hypo * 5.0)  # minutes
 
+    # ── Hypo phenotype classification (EXP-2281) ──────────────────
+    phenotype = _classify_hypo_phenotype_instant(bg, trend_per_step, metabolic)
+
     return HypoAlert(
         probability=probability,
         horizon_minutes=horizon_minutes,
@@ -173,7 +176,8 @@ def predict_hypo(glucose: np.ndarray,
         should_alert=(probability > threshold),
         lead_time_estimate=lead_time,
         supply_demand_imbalance=float(flux_signal) if metabolic else None,
-        confidence=min(1.0, lookback / 12.0),  # confidence scales with available data
+        confidence=min(1.0, lookback / 12.0),
+        hypo_phenotype=phenotype,
     )
 
 
@@ -398,3 +402,137 @@ def classify_rescue_phenotype(glucose: np.ndarray,
         return RescuePhenotype.UNDER_RESCUER
     else:
         return RescuePhenotype.APPROPRIATE_RESCUER
+
+
+# ── Hypo Phenotype Classification (EXP-2281) ────────────────────────
+
+# Over-correction: bolus-driven hypos starting from high BG (>130 mg/dL)
+_OVERCORRECTION_START_BG = 130.0
+# Chronic-low: basal-driven hypos starting near range (<120 mg/dL)
+_CHRONIC_LOW_START_BG = 120.0
+# Minimum descent rate for over-correction (mg/dL per 5-min step)
+_RAPID_DESCENT_RATE = -2.0
+
+
+def _classify_hypo_phenotype_instant(bg: float,
+                                     trend_per_step: float,
+                                     metabolic: Optional[MetabolicState],
+                                     ) -> Optional[HypoPhenotype]:
+    """Classify current hypo risk by phenotype (instant/real-time).
+
+    Uses current BG, trend, and metabolic state to determine which
+    hypo phenotype the patient is approaching:
+
+    Over-correction (7/11 patients): starts >130, rapid descent,
+    bolus-driven, demand > supply.
+
+    Chronic-low (4/11 patients): starts <120, gradual drift,
+    basal-driven, near-balanced flux.
+
+    Args:
+        bg: current glucose (mg/dL).
+        trend_per_step: glucose change per 5-min step.
+        metabolic: optional metabolic state for flux analysis.
+
+    Returns:
+        HypoPhenotype or None if not at risk.
+    """
+    # Only classify if approaching or in hypo range
+    if bg > 150 and trend_per_step >= 0:
+        return None
+
+    # Check flux context
+    demand_dominant = False
+    if metabolic is not None and len(metabolic.net_flux) > 6:
+        recent_net = float(np.mean(metabolic.net_flux[-6:]))
+        demand_dominant = recent_net < -0.5  # insulin winning
+
+    if bg > _OVERCORRECTION_START_BG and trend_per_step < _RAPID_DESCENT_RATE:
+        return HypoPhenotype.OVER_CORRECTION
+    elif bg < _CHRONIC_LOW_START_BG and trend_per_step > _RAPID_DESCENT_RATE:
+        if demand_dominant:
+            return HypoPhenotype.OVER_CORRECTION
+        return HypoPhenotype.CHRONIC_LOW
+    elif bg < 100:
+        if demand_dominant:
+            return HypoPhenotype.OVER_CORRECTION
+        return HypoPhenotype.CHRONIC_LOW
+    return None
+
+
+def classify_hypo_phenotype_population(glucose: np.ndarray,
+                                       bolus: Optional[np.ndarray] = None,
+                                       ) -> HypoPhenotype:
+    """Classify patient's dominant hypo phenotype from history (EXP-2281).
+
+    Analyzes all hypo episodes to determine if the patient predominantly
+    experiences over-correction or chronic-low hypos.
+
+    Over-correction (7/11): BG >130 → rapid fall → <70, bolus-triggered.
+    Chronic-low (4/11): BG <120 → gradual drift → <70, basal-driven.
+
+    Args:
+        glucose: (N,) full glucose history.
+        bolus: (N,) optional bolus data for trigger detection.
+
+    Returns:
+        Dominant HypoPhenotype for the patient.
+    """
+    bg = np.nan_to_num(glucose.astype(np.float64), nan=120.0)
+    N = len(bg)
+
+    overcorrection_count = 0
+    chronic_low_count = 0
+
+    i = 0
+    while i < N - 12:
+        if bg[i] >= HYPO_LEVEL_1:
+            i += 1
+            continue
+
+        # Found hypo entry — look back for pre-hypo BG
+        lookback = min(i, 24)  # 2 hours before
+        if lookback < 3:
+            i += 12
+            continue
+
+        pre_bg = float(np.max(bg[i - lookback:i]))
+        # Check if there was a rapid descent
+        if lookback >= 6:
+            descent_rate = (bg[i] - bg[i - 6]) / 6.0  # rate over 30 min
+        else:
+            descent_rate = 0.0
+
+        # Check for bolus trigger
+        had_bolus = False
+        if bolus is not None:
+            bolus_window = np.nan_to_num(bolus[max(0, i - 24):i], nan=0.0)
+            had_bolus = float(np.sum(bolus_window)) > 0.3
+
+        if pre_bg > _OVERCORRECTION_START_BG and (descent_rate < _RAPID_DESCENT_RATE or had_bolus):
+            overcorrection_count += 1
+        elif pre_bg < _CHRONIC_LOW_START_BG:
+            chronic_low_count += 1
+        else:
+            # Ambiguous — classify by descent rate
+            if descent_rate < _RAPID_DESCENT_RATE:
+                overcorrection_count += 1
+            else:
+                chronic_low_count += 1
+
+        # Skip past this episode
+        while i < N and bg[i] < 80:
+            i += 1
+        i += 12  # minimum gap
+
+    total = overcorrection_count + chronic_low_count
+    if total == 0:
+        return HypoPhenotype.UNKNOWN
+
+    oc_frac = overcorrection_count / total
+    if oc_frac > 0.65:
+        return HypoPhenotype.OVER_CORRECTION
+    elif oc_frac < 0.35:
+        return HypoPhenotype.CHRONIC_LOW
+    else:
+        return HypoPhenotype.MIXED

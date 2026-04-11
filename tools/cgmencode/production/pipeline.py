@@ -23,7 +23,7 @@ from .types import (
     PatientData, PipelineResult, OnboardingState,
 )
 from .data_quality import clean_glucose
-from .metabolic_engine import compute_metabolic_state, _extract_hours
+from .metabolic_engine import compute_metabolic_state, _extract_hours, estimate_dia_discrepancy
 from .event_detector import classify_risk_simple
 from .hypo_predictor import predict_hypo, calibrate_threshold
 from .clinical_rules import generate_clinical_report
@@ -339,6 +339,21 @@ def run_pipeline(patient: PatientData,
         meal_history=meal_history,
     )
 
+    # ── Stage 8: DIA Discrepancy Analysis (EXP-2351–2358) ─────────
+    dia_discrepancy = None
+    if metabolic is not None and patient.has_insulin_data:
+        try:
+            dia_discrepancy = estimate_dia_discrepancy(patient, metabolic)
+            if dia_discrepancy.discrepancy_ratio and dia_discrepancy.discrepancy_ratio > 2.0:
+                warnings.append(
+                    f"DIA discrepancy: glucose response DIA "
+                    f"({dia_discrepancy.glucose_dia_hours:.1f}h) is "
+                    f"{dia_discrepancy.discrepancy_ratio:.1f}× longer than "
+                    f"IOB decay DIA ({dia_discrepancy.iob_dia_hours:.1f}h)."
+                )
+        except Exception as e:
+            warnings.append(f"DIA discrepancy analysis failed: {e}")
+
     # ── Assemble result ───────────────────────────────────────────
     elapsed = (time.perf_counter() - start) * 1000.0
 
@@ -363,6 +378,7 @@ def run_pipeline(patient: PatientData,
         forecast=forecast,
         natural_experiments=natural_experiments,
         optimal_settings=optimal_settings,
+        dia_discrepancy=dia_discrepancy,
         pipeline_latency_ms=elapsed,
         warnings=warnings,
     )
