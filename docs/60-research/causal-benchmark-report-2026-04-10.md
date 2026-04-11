@@ -51,7 +51,7 @@ Our previous SOTA was R²=0.581 (EXP-1128), achieved with an XGBoost→LSTM pipe
 ### Diagnosis
 
 - **Enhanced features** consistently help: +0.023 mean, **all 11 patients improve**
-- **LSTM pipeline** consistently hurts: −0.068 mean, **0/11 patients improve in CV**
+- **LSTM pipeline** consistently hurts: −0.068 mean, **1/11 patients improve in CV** (patient c: +0.004)
 - Patient k: catastrophic −0.510 from LSTM (tiny well-controlled dataset)
 - Patient j: −0.093 from LSTM (small dataset, high variance)
 - The single-split R²=0.581 was an artifact of the LSTM memorizing the specific temporal boundary
