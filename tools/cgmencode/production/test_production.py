@@ -2109,3 +2109,149 @@ class TestThreeWindowRoutingIntegration(unittest.TestCase):
                                f"{mae_progression[i+1][0]}={h_next}")
 
 
+
+
+# ── ISF Non-Linearity Advisory Tests (EXP-2511) ─────────────────────
+
+class TestISFNonlinearityTypes(unittest.TestCase):
+    """Type-level tests for ISF non-linearity constants."""
+
+    def test_population_beta_value(self):
+        """Population β should be ~0.9 per EXP-2511."""
+        from cgmencode.production.settings_advisor import _POPULATION_ISF_BETA
+        self.assertAlmostEqual(_POPULATION_ISF_BETA, 0.9, places=1)
+
+    def test_dose_threshold_positive(self):
+        """Dose threshold must be > 0."""
+        from cgmencode.production.settings_advisor import _ISF_NONLINEARITY_DOSE_THRESHOLD
+        self.assertGreater(_ISF_NONLINEARITY_DOSE_THRESHOLD, 0)
+
+
+class TestISFNonlinearityFunction(unittest.TestCase):
+    """Functional tests for advise_isf_nonlinearity."""
+
+    def _make_clinical(self, mean_glucose=180.0):
+        from cgmencode.production.types import ClinicalReport
+        cr = ClinicalReport.__new__(ClinicalReport)
+        cr.mean_glucose = mean_glucose
+        cr.isf_discrepancy = 2.0
+        cr.effective_isf = 100.0
+        cr.profile_isf = 50.0
+        return cr
+
+    def _make_profile(self, isf=50.0):
+        from cgmencode.production.types import PatientProfile
+        return PatientProfile(
+            basal_schedule=[{'time': '00:00', 'value': 0.8}],
+            isf_schedule=[{'time': '00:00', 'value': isf}],
+            cr_schedule=[{'time': '00:00', 'value': 10.0}],
+            dia_hours=5.0,
+        )
+
+    def test_returns_none_insufficient_data(self):
+        """No advisory with < MIN_DATA_DAYS."""
+        from cgmencode.production.settings_advisor import advise_isf_nonlinearity
+        result = advise_isf_nonlinearity(
+            self._make_clinical(), self._make_profile(), days_of_data=1.0)
+        self.assertIsNone(result)
+
+    def test_returns_none_small_corrections(self):
+        """No advisory when typical correction <= threshold."""
+        from cgmencode.production.settings_advisor import advise_isf_nonlinearity
+        bolus = np.array([0.5, 0.8, 1.0, 0.7, 0.9])
+        result = advise_isf_nonlinearity(
+            self._make_clinical(), self._make_profile(),
+            bolus=bolus, days_of_data=7.0)
+        self.assertIsNone(result)
+
+    def test_fires_for_large_corrections(self):
+        """Advisory should fire when typical correction > threshold."""
+        from cgmencode.production.settings_advisor import advise_isf_nonlinearity
+        bolus = np.array([2.5, 3.0, 2.0, 2.8, 3.5, 2.2])
+        result = advise_isf_nonlinearity(
+            self._make_clinical(), self._make_profile(),
+            bolus=bolus, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.parameter.value, 'isf')
+        self.assertIn('non-linearity', result.evidence.lower())
+        self.assertIn('EXP-2511', result.evidence)
+
+    def test_penalty_increases_with_dose(self):
+        """Larger doses should show greater effectiveness penalty."""
+        from cgmencode.production.settings_advisor import advise_isf_nonlinearity
+        bolus_2u = np.array([2.0, 2.0, 2.0, 2.0, 2.0])
+        bolus_4u = np.array([4.0, 4.0, 4.0, 4.0, 4.0])
+        r2 = advise_isf_nonlinearity(
+            self._make_clinical(), self._make_profile(),
+            bolus=bolus_2u, days_of_data=7.0)
+        r4 = advise_isf_nonlinearity(
+            self._make_clinical(), self._make_profile(),
+            bolus=bolus_4u, days_of_data=7.0)
+        self.assertIsNotNone(r2)
+        self.assertIsNotNone(r4)
+        # 4U should have greater penalty than 2U
+        self.assertGreater(r4.magnitude_pct, r2.magnitude_pct)
+
+    def test_split_dose_improvement_positive(self):
+        """Split dose should always be better than single dose."""
+        from cgmencode.production.settings_advisor import advise_isf_nonlinearity
+        bolus = np.array([3.0, 3.0, 3.0, 3.0, 3.0])
+        result = advise_isf_nonlinearity(
+            self._make_clinical(), self._make_profile(),
+            bolus=bolus, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        # predicted_tir_delta should be positive (improvement from splitting)
+        self.assertGreater(result.predicted_tir_delta, 0)
+
+    def test_fallback_estimation_from_clinical(self):
+        """Should estimate dose from ISF and mean glucose when no bolus data."""
+        from cgmencode.production.settings_advisor import advise_isf_nonlinearity
+        # mean_glucose=220, target~120, ISF=50 → dose ≈ (220-120)/50 = 2.0U
+        result = advise_isf_nonlinearity(
+            self._make_clinical(mean_glucose=220.0),
+            self._make_profile(isf=50.0),
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+
+    def test_no_fire_low_mean_glucose(self):
+        """Should NOT fire when mean glucose is near target (small corrections)."""
+        from cgmencode.production.settings_advisor import advise_isf_nonlinearity
+        result = advise_isf_nonlinearity(
+            self._make_clinical(mean_glucose=130.0),
+            self._make_profile(isf=50.0),
+            days_of_data=7.0)
+        self.assertIsNone(result)
+
+
+class TestISFNonlinearityIntegration(unittest.TestCase):
+    """Integration: non-linearity advisory in generate_settings_advice."""
+
+    def test_bolus_kwarg_accepted(self):
+        """generate_settings_advice should accept bolus kwarg."""
+        from cgmencode.production.settings_advisor import generate_settings_advice
+        from cgmencode.production.types import ClinicalReport, PatientProfile
+
+        glucose = np.full(288, 150.0)
+        hours = np.linspace(0, 24, 288, endpoint=False)
+        profile = PatientProfile(
+            basal_schedule=[{'time': '00:00', 'value': 0.8}],
+            isf_schedule=[{'time': '00:00', 'value': 50.0}],
+            cr_schedule=[{'time': '00:00', 'value': 10.0}],
+            dia_hours=5.0,
+        )
+        clinical = ClinicalReport.__new__(ClinicalReport)
+        clinical.mean_glucose = 150.0
+        clinical.isf_discrepancy = None
+        clinical.effective_isf = None
+        clinical.profile_isf = 50.0
+        clinical.cr_score = None
+        clinical.tir_70_180 = 0.7
+        clinical.time_below_54 = 0.0
+        clinical.time_below_70 = 0.02
+
+        bolus = np.array([3.0, 2.5, 3.0, 2.0, 2.5])
+        recs = generate_settings_advice(
+            glucose, None, hours, clinical, profile, 7.0,
+            bolus=bolus)
+        # Should not raise — bolus kwarg is accepted
+        self.assertIsInstance(recs, list)

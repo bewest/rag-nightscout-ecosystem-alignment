@@ -345,6 +345,137 @@ def advise_isf(clinical: ClinicalReport,
     )
 
 
+# ── ISF Non-Linearity Advisory (EXP-2511–2518) ──────────────────────
+
+# Population power-law exponent: ISF(dose) = ISF_base × dose^(-β)
+# β = 0.899 means a 2U correction is 46% less effective per unit than 1U.
+# 17/17 patients show improved prediction with power-law ISF (+53% MAE).
+_POPULATION_ISF_BETA = 0.9
+_ISF_NONLINEARITY_DOSE_THRESHOLD = 1.5  # warn when typical correction > this
+
+
+def advise_isf_nonlinearity(
+    clinical: ClinicalReport,
+    profile: PatientProfile,
+    bolus: Optional[np.ndarray] = None,
+    days_of_data: float = 0.0,
+) -> Optional[SettingsRecommendation]:
+    """Generate advisory when correction doses show diminishing returns.
+
+    Research: EXP-2511–2518. ISF follows power-law ISF(dose) = ISF_base × dose^(-β)
+    with population β = 0.9. This means larger corrections are progressively less
+    effective per unit of insulin. A 2U correction achieves only ~1.07× the glucose
+    drop of a 1U correction (2^0.1 ≈ 1.07), not 2×.
+
+    The advisory fires when:
+    - There is enough data (>= MIN_DATA_DAYS)
+    - The patient's typical correction dose exceeds 1.5U
+
+    If no bolus data is available, falls back to estimating typical correction
+    from ISF and glucose excursion patterns.
+    """
+    if days_of_data < MIN_DATA_DAYS:
+        return None
+
+    # Estimate typical correction dose
+    typical_dose = _estimate_typical_correction_dose(
+        clinical, profile, bolus)
+
+    if typical_dose is None or typical_dose <= _ISF_NONLINEARITY_DOSE_THRESHOLD:
+        return None
+
+    beta = _POPULATION_ISF_BETA
+
+    # Compute the effectiveness penalty
+    # At dose=1, ISF = ISF_base. At dose=d, ISF = ISF_base * d^(-β)
+    # Per-unit effectiveness at dose d relative to 1U: d^(-β)
+    effectiveness_at_typical = typical_dose ** (-beta)
+    penalty_pct = (1.0 - effectiveness_at_typical) * 100.0
+
+    # What split-dose would achieve: 2 × half-dose corrections
+    half_dose = typical_dose / 2.0
+    # Total drop single: ISF_base * typical^(1-β)
+    # Total drop split:  2 * ISF_base * half^(1-β)
+    # Ratio: 2 * (half/typical)^(1-β) = 2 * 0.5^(1-β)
+    split_ratio = 2.0 * (0.5 ** (1.0 - beta))
+    split_improvement_pct = (split_ratio - 1.0) * 100.0
+
+    isf_vals = [e.get('value', e.get('sensitivity', 50))
+                for e in profile.isf_mgdl()]
+    current_isf = (float(np.median([float(v) for v in isf_vals]))
+                   if isf_vals else 50.0)
+
+    # ISF at the typical dose vs at 1U
+    isf_at_1u = current_isf  # profile ISF is calibrated at ~1U scale
+    isf_at_typical = isf_at_1u * effectiveness_at_typical
+
+    return SettingsRecommendation(
+        parameter=SettingsParameter.ISF,
+        direction="decrease",
+        magnitude_pct=round(penalty_pct, 0),
+        current_value=current_isf,
+        suggested_value=round(isf_at_typical, 0),
+        predicted_tir_delta=round(split_improvement_pct * 0.3, 1),
+        affected_hours=(0.0, 24.0),
+        confidence=min(0.6, days_of_data / HIGH_CONFIDENCE_DAYS),
+        evidence=(
+            f"ISF non-linearity (EXP-2511): typical correction dose "
+            f"{typical_dose:.1f}U is {penalty_pct:.0f}% less effective "
+            f"per unit than 1U (power-law β={beta}). "
+            f"Splitting into 2×{half_dose:.1f}U would be "
+            f"~{split_improvement_pct:.0f}% more effective total."
+        ),
+        rationale=(
+            f"Correction doses above {_ISF_NONLINEARITY_DOSE_THRESHOLD}U "
+            f"show diminishing returns. At {typical_dose:.1f}U, each unit "
+            f"achieves only {isf_at_typical:.0f} mg/dL drop vs "
+            f"{isf_at_1u:.0f} mg/dL at 1U. Consider: (1) splitting large "
+            f"corrections into smaller doses spaced 30+ min apart, "
+            f"(2) using ISF={isf_at_typical:.0f} for doses ≥{typical_dose:.0f}U. "
+            f"This is a pharmacokinetic property (β={beta}), not circadian."
+        ),
+    )
+
+
+def _estimate_typical_correction_dose(
+    clinical: ClinicalReport,
+    profile: PatientProfile,
+    bolus: Optional[np.ndarray] = None,
+) -> Optional[float]:
+    """Estimate the typical correction bolus dose for this patient.
+
+    Uses bolus data if available, otherwise estimates from ISF and
+    typical glucose excursions above target.
+    """
+    if bolus is not None:
+        # Filter to correction-sized boluses (> 0.3U, < 10U)
+        corrections = bolus[(bolus > 0.3) & (bolus < 10.0)]
+        if len(corrections) >= 5:
+            return float(np.median(corrections))
+
+    # Fallback: estimate from ISF and typical high-glucose excursion
+    isf_vals = [e.get('value', e.get('sensitivity', 50))
+                for e in profile.isf_mgdl()]
+    if not isf_vals:
+        return None
+
+    current_isf = float(np.median([float(v) for v in isf_vals]))
+    if current_isf <= 0:
+        return None
+
+    # Typical correction: (mean glucose - target) / ISF
+    target = profile.target_range[1] if hasattr(profile, 'target_range') else 120.0
+    mean_glucose = getattr(clinical, 'mean_glucose', None)
+    if mean_glucose is None:
+        return None
+
+    excursion = max(0.0, mean_glucose - target)
+    if excursion < 10.0:
+        return None
+
+    return excursion / current_isf
+
+
 def analyze_periods(glucose: np.ndarray,
                     metabolic: Optional[MetabolicState],
                     hours: np.ndarray,
@@ -533,6 +664,7 @@ def generate_settings_advice(glucose: np.ndarray,
                              profile: PatientProfile,
                              days_of_data: float,
                              carbs: Optional[np.ndarray] = None,
+                             bolus: Optional[np.ndarray] = None,
                              iob: Optional[np.ndarray] = None,
                              cob: Optional[np.ndarray] = None,
                              actual_basal: Optional[np.ndarray] = None,
@@ -546,6 +678,7 @@ def generate_settings_advice(glucose: np.ndarray,
     - Basal assessment (EXP-693)
     - CR effectiveness (EXP-694)
     - ISF discrepancy (EXP-747)
+    - ISF non-linearity warning (EXP-2511–2518)
     - Circadian ISF 2-zone (EXP-2271)
     - Context-aware CR by time of day (EXP-2341)
     - Overnight drift basal assessment (EXP-2371–2378)
@@ -558,6 +691,7 @@ def generate_settings_advice(glucose: np.ndarray,
         profile: current therapy profile.
         days_of_data: data coverage.
         carbs: (N,) optional carb data for context-aware CR.
+        bolus: (N,) optional bolus data for ISF non-linearity assessment.
         iob: (N,) optional IOB for overnight clean-night filtering.
         cob: (N,) optional COB for overnight clean-night filtering.
         actual_basal: (N,) optional actual basal rate for loop workload.
@@ -581,6 +715,12 @@ def generate_settings_advice(glucose: np.ndarray,
     isf_rec = advise_isf(clinical, profile, days_of_data)
     if isf_rec:
         recs.append(isf_rec)
+
+    # ISF non-linearity advisory (EXP-2511–2518)
+    nonlinear_rec = advise_isf_nonlinearity(
+        clinical, profile, bolus=bolus, days_of_data=days_of_data)
+    if nonlinear_rec:
+        recs.append(nonlinear_rec)
 
     # Circadian ISF: 2-zone day/night split (EXP-2271)
     circadian_isf_recs = advise_circadian_isf(
