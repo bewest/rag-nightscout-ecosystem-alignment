@@ -14,7 +14,7 @@ This analysis synthesizes all prior research batches into a unified patient phen
 
 **Key findings:**
 - **Three distinct clusters** emerge: high-TIR/high-risk (2), typical AID users (6), and high-variability (3)
-- **Reduce hypoglycemia is the #1 priority** for 10/11 patients (3 critical, 7 high)
+- **Reduce hypoglycemia is the #1 priority** for 10/11 patients (4 critical, 6 high)
 - **Risk stratification**: 3 HIGH (c, h, i), 5 MODERATE (a, e, f, g, k), 3 LOW (b, d, j)
 - **Algorithm matching**: 5 patients → Loop, 2 → Trio, 4 → oref1/AAPS
 - **Most similar pair**: c–e (d=1.54); **most different**: i–k (d=6.84)
