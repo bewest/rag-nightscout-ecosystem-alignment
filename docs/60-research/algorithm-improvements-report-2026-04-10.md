@@ -121,11 +121,11 @@ Having established that static settings corrections yield minimal TIR improvemen
 
 | Pattern | Count | % | Description |
 |---------|-------|---|-------------|
-| **Delayed rise** | **2,138** | **49%** | Peak after 1 hour |
-| Minimal | 1,278 | 29% | Spike <30 mg/dL |
-| Spike & return | 708 | 16% | Sharp peak <1h, returns to baseline |
-| Sustained high | 68 | 2% | Still >50 mg/dL above baseline at 3h |
-| Double peak | 44 | 1% | Two distinct peaks |
+| **Delayed rise** | **2,152** | **49%** | Peak after 1 hour |
+| Minimal | 1,379 | 32% | Spike <30 mg/dL |
+| Spike & return | 723 | 17% | Sharp peak <1h, returns to baseline |
+| Sustained high | 72 | 2% | Still >50 mg/dL above baseline at 3h |
+| Double peak | 37 | 1% | Two distinct peaks |
 
 **The dominant pattern is delayed rise (49%)** — glucose peaks AFTER 1 hour post-meal. This is not the "spike-and-return" pattern that most AID algorithms are designed to handle.
 
