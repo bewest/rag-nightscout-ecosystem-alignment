@@ -57,7 +57,7 @@ patient on validation set.
 | i       | 0.701 | 0.699 | 0.709    | 0.5 | +0.008 |
 | j       | 0.424 | 0.497 | 0.514    | 0.3 | +0.090 |
 | k       | 0.367 | 0.331 | 0.372    | 0.7 | +0.006 |
-| **Mean**| 0.505 | 0.495 | **0.513**|     | **+0.008** |
+| **Mean**| 0.505 | 0.495 | **0.531**|     | **+0.026** |
 
 **Finding**: Modest but consistent gain (10/11 positive). Optimal α varies
 widely (0.1–1.0), confirming Ridge and CNN capture complementary patterns.
@@ -81,14 +81,14 @@ target patient for 10 epochs with reduced learning rate (1/10th).
 | i       | 0.699       | 0.640  | **0.713**  | +0.013  |
 | j       | 0.451       | 0.416  | **0.526**  | +0.075  |
 | k       | 0.256       | −1.369 | **0.343**  | +0.087  |
-| **Mean**| 0.490       | 0.387  | **0.508**  | **+0.018** |
+| **Mean**| 0.490       | 0.342  | **0.508**  | **+0.018** |
 
 **Finding**: Fine-tuning beats per-patient CNN for 9/11 patients. Biggest
 wins on data-scarce (j: +0.075) and high-noise (k: +0.087) patients where
 cross-patient pretraining provides useful inductive bias. Patient h
 catastrophically fails — its physiology is too idiosyncratic for transfer.
 
-**Insight**: LOPO alone is poor (mean 0.387 vs 0.490 per-patient), but
+**Insight**: LOPO alone is poor (mean 0.342 vs 0.490 per-patient), but
 fine-tuning recovers and exceeds per-patient, showing cross-patient
 initialization finds a better loss basin than random initialization.
 
@@ -112,7 +112,7 @@ Train all 4 architectures per patient, route to best on validation.
 
 **Oracle mean R²**: 0.531
 
-**Architecture wins**: Ridge=3, CNN-glucose=3, dual_branch=4, CNN-physics=0
+**Architecture wins**: Ridge=4, CNN-glucose=3, dual_branch=4, CNN-physics=0
 
 **Finding**: No single architecture dominates. The oracle selector gains
 +0.006 over always-dual-branch. CNN-physics never wins when others are
