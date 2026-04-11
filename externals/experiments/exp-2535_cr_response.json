@@ -1,0 +1,1041 @@
+{
+  "exp_2535a": {
+    "total_meals": 7991,
+    "total_bolused": 7009,
+    "pct_bolused": 87.7,
+    "carb_distribution": {
+      "mean": 34.8,
+      "median": 28.0,
+      "p25": 15.0,
+      "p75": 45.0
+    },
+    "patient_summary": {
+      "a": {
+        "total_meals": 514,
+        "meals_with_bolus": 514,
+        "pct_bolused": 100.0,
+        "mean_carbs": 17.2,
+        "median_carbs": 15.0,
+        "profile_cr": 4.0,
+        "size_distribution": {
+          "small": 297,
+          "medium": 199,
+          "large": 18,
+          "very_large": 0
+        },
+        "sufficient_data": true
+      },
+      "b": {
+        "total_meals": 776,
+        "meals_with_bolus": 680,
+        "pct_bolused": 87.6,
+        "mean_carbs": 61.0,
+        "median_carbs": 40.0,
+        "profile_cr": 12.100000381469727,
+        "size_distribution": {
+          "small": 155,
+          "medium": 282,
+          "large": 188,
+          "very_large": 151
+        },
+        "sufficient_data": true
+      },
+      "c": {
+        "total_meals": 348,
+        "meals_with_bolus": 293,
+        "pct_bolused": 84.2,
+        "mean_carbs": 20.8,
+        "median_carbs": 20.0,
+        "profile_cr": 4.0,
+        "size_distribution": {
+          "small": 128,
+          "medium": 217,
+          "large": 3,
+          "very_large": 0
+        },
+        "sufficient_data": true
+      },
+      "d": {
+        "total_meals": 337,
+        "meals_with_bolus": 287,
+        "pct_bolused": 85.2,
+        "mean_carbs": 27.9,
+        "median_carbs": 25.0,
+        "profile_cr": 14.0,
+        "size_distribution": {
+          "small": 132,
+          "medium": 154,
+          "large": 50,
+          "very_large": 1
+        },
+        "sufficient_data": true
+      },
+      "e": {
+        "total_meals": 316,
+        "meals_with_bolus": 304,
+        "pct_bolused": 96.2,
+        "mean_carbs": 36.8,
+        "median_carbs": 35.0,
+        "profile_cr": 3.0,
+        "size_distribution": {
+          "small": 15,
+          "medium": 279,
+          "large": 21,
+          "very_large": 1
+        },
+        "sufficient_data": true
+      },
+      "f": {
+        "total_meals": 314,
+        "meals_with_bolus": 310,
+        "pct_bolused": 98.7,
+        "mean_carbs": 55.2,
+        "median_carbs": 50.0,
+        "profile_cr": 5.0,
+        "size_distribution": {
+          "small": 9,
+          "medium": 136,
+          "large": 144,
+          "very_large": 25
+        },
+        "sufficient_data": true
+      },
+      "g": {
+        "total_meals": 722,
+        "meals_with_bolus": 655,
+        "pct_bolused": 90.7,
+        "mean_carbs": 33.0,
+        "median_carbs": 30.0,
+        "profile_cr": 8.5,
+        "size_distribution": {
+          "small": 214,
+          "medium": 384,
+          "large": 110,
+          "very_large": 14
+        },
+        "sufficient_data": true
+      },
+      "h": {
+        "total_meals": 235,
+        "meals_with_bolus": 231,
+        "pct_bolused": 98.3,
+        "mean_carbs": 44.8,
+        "median_carbs": 40.0,
+        "profile_cr": 10.0,
+        "size_distribution": {
+          "small": 40,
+          "medium": 104,
+          "large": 78,
+          "very_large": 13
+        },
+        "sufficient_data": true
+      },
+      "i": {
+        "total_meals": 100,
+        "meals_with_bolus": 95,
+        "pct_bolused": 95.0,
+        "mean_carbs": 47.3,
+        "median_carbs": 47.5,
+        "profile_cr": 10.0,
+        "size_distribution": {
+          "small": 6,
+          "medium": 44,
+          "large": 50,
+          "very_large": 0
+        },
+        "sufficient_data": true
+      },
+      "j": {
+        "total_meals": 189,
+        "meals_with_bolus": 149,
+        "pct_bolused": 78.8,
+        "mean_carbs": 67.6,
+        "median_carbs": 80.0,
+        "profile_cr": 5.0,
+        "size_distribution": {
+          "small": 41,
+          "medium": 4,
+          "large": 127,
+          "very_large": 17
+        },
+        "sufficient_data": true
+      },
+      "k": {
+        "total_meals": 72,
+        "meals_with_bolus": 69,
+        "pct_bolused": 95.8,
+        "mean_carbs": 16.1,
+        "median_carbs": 15.0,
+        "profile_cr": 10.0,
+        "size_distribution": {
+          "small": 49,
+          "medium": 23,
+          "large": 0,
+          "very_large": 0
+        },
+        "sufficient_data": true
+      },
+      "odc-39819048": {
+        "total_meals": 35,
+        "meals_with_bolus": 15,
+        "pct_bolused": 42.9,
+        "mean_carbs": 45.9,
+        "median_carbs": 31.0,
+        "profile_cr": 8.0,
+        "size_distribution": {
+          "small": 5,
+          "medium": 18,
+          "large": 9,
+          "very_large": 3
+        },
+        "sufficient_data": true
+      },
+      "odc-49141524": {
+        "total_meals": 0,
+        "meals_with_bolus": 0,
+        "pct_bolused": 0,
+        "mean_carbs": 0,
+        "median_carbs": 0,
+        "profile_cr": 8.0,
+        "size_distribution": {
+          "small": 0,
+          "medium": 0,
+          "large": 0,
+          "very_large": 0
+        },
+        "sufficient_data": false
+      },
+      "odc-58680324": {
+        "total_meals": 34,
+        "meals_with_bolus": 19,
+        "pct_bolused": 55.9,
+        "mean_carbs": 34.4,
+        "median_carbs": 30.0,
+        "profile_cr": 4.199999809265137,
+        "size_distribution": {
+          "small": 13,
+          "medium": 11,
+          "large": 10,
+          "very_large": 0
+        },
+        "sufficient_data": true
+      },
+      "odc-61403732": {
+        "total_meals": 20,
+        "meals_with_bolus": 7,
+        "pct_bolused": 35.0,
+        "mean_carbs": 36.0,
+        "median_carbs": 30.0,
+        "profile_cr": 9.0,
+        "size_distribution": {
+          "small": 8,
+          "medium": 6,
+          "large": 6,
+          "very_large": 0
+        },
+        "sufficient_data": true
+      },
+      "odc-74077367": {
+        "total_meals": 1237,
+        "meals_with_bolus": 1152,
+        "pct_bolused": 93.1,
+        "mean_carbs": 31.5,
+        "median_carbs": 25.0,
+        "profile_cr": 7.0,
+        "size_distribution": {
+          "small": 363,
+          "medium": 660,
+          "large": 197,
+          "very_large": 17
+        },
+        "sufficient_data": true
+      },
+      "odc-84181797": {
+        "total_meals": 0,
+        "meals_with_bolus": 0,
+        "pct_bolused": 0,
+        "mean_carbs": 0,
+        "median_carbs": 0,
+        "profile_cr": 9.0,
+        "size_distribution": {
+          "small": 0,
+          "medium": 0,
+          "large": 0,
+          "very_large": 0
+        },
+        "sufficient_data": false
+      },
+      "odc-86025410": {
+        "total_meals": 1883,
+        "meals_with_bolus": 1507,
+        "pct_bolused": 80.0,
+        "mean_carbs": 25.2,
+        "median_carbs": 23.0,
+        "profile_cr": 33.0,
+        "size_distribution": {
+          "small": 762,
+          "medium": 932,
+          "large": 184,
+          "very_large": 5
+        },
+        "sufficient_data": true
+      },
+      "odc-96254963": {
+        "total_meals": 859,
+        "meals_with_bolus": 722,
+        "pct_bolused": 84.1,
+        "mean_carbs": 38.9,
+        "median_carbs": 33.0,
+        "profile_cr": 8.0,
+        "size_distribution": {
+          "small": 168,
+          "medium": 406,
+          "large": 263,
+          "very_large": 22
+        },
+        "sufficient_data": true
+      }
+    }
+  },
+  "exp_2535b": {
+    "n_bolused_meals": 7005,
+    "population": {
+      "cr_ratio_mean": 1.465,
+      "cr_ratio_median": 1.067,
+      "cr_ratio_std": 2.034
+    },
+    "patient_results": {
+      "a": {
+        "n_meals": 514,
+        "profile_cr": 4.0,
+        "effective_cr_mean": 3.71,
+        "effective_cr_median": 3.27,
+        "effective_cr_std": 4.13,
+        "cr_ratio_mean": 0.916,
+        "cr_ratio_median": 0.803,
+        "interpretation": "well-matched"
+      },
+      "b": {
+        "n_meals": 679,
+        "profile_cr": 12.100000381469727,
+        "effective_cr_mean": 16.99,
+        "effective_cr_median": 13.79,
+        "effective_cr_std": 11.37,
+        "cr_ratio_mean": 1.731,
+        "cr_ratio_median": 1.427,
+        "interpretation": "under-dosing"
+      },
+      "c": {
+        "n_meals": 292,
+        "profile_cr": 4.0,
+        "effective_cr_mean": 6.69,
+        "effective_cr_median": 4.44,
+        "effective_cr_std": 18.15,
+        "cr_ratio_mean": 1.536,
+        "cr_ratio_median": 1.001,
+        "interpretation": "under-dosing"
+      },
+      "d": {
+        "n_meals": 287,
+        "profile_cr": 14.0,
+        "effective_cr_mean": 14.03,
+        "effective_cr_median": 12.27,
+        "effective_cr_std": 9.24,
+        "cr_ratio_mean": 1.002,
+        "cr_ratio_median": 0.876,
+        "interpretation": "well-matched"
+      },
+      "e": {
+        "n_meals": 304,
+        "profile_cr": 3.0,
+        "effective_cr_mean": 4.24,
+        "effective_cr_median": 3.21,
+        "effective_cr_std": 6.18,
+        "cr_ratio_mean": 1.414,
+        "cr_ratio_median": 1.071,
+        "interpretation": "under-dosing"
+      },
+      "f": {
+        "n_meals": 310,
+        "profile_cr": 5.0,
+        "effective_cr_mean": 5.65,
+        "effective_cr_median": 5.15,
+        "effective_cr_std": 2.81,
+        "cr_ratio_mean": 1.15,
+        "cr_ratio_median": 1.049,
+        "interpretation": "under-dosing"
+      },
+      "g": {
+        "n_meals": 655,
+        "profile_cr": 8.5,
+        "effective_cr_mean": 9.8,
+        "effective_cr_median": 8.64,
+        "effective_cr_std": 5.79,
+        "cr_ratio_mean": 1.244,
+        "cr_ratio_median": 1.07,
+        "interpretation": "under-dosing"
+      },
+      "h": {
+        "n_meals": 231,
+        "profile_cr": 10.0,
+        "effective_cr_mean": 9.72,
+        "effective_cr_median": 9.47,
+        "effective_cr_std": 3.01,
+        "cr_ratio_mean": 0.972,
+        "cr_ratio_median": 0.947,
+        "interpretation": "well-matched"
+      },
+      "i": {
+        "n_meals": 94,
+        "profile_cr": 10.0,
+        "effective_cr_mean": 8.69,
+        "effective_cr_median": 8.96,
+        "effective_cr_std": 4.08,
+        "cr_ratio_mean": 0.911,
+        "cr_ratio_median": 0.906,
+        "interpretation": "well-matched"
+      },
+      "j": {
+        "n_meals": 149,
+        "profile_cr": 5.0,
+        "effective_cr_mean": 5.82,
+        "effective_cr_median": 5.69,
+        "effective_cr_std": 1.2,
+        "cr_ratio_mean": 1.021,
+        "cr_ratio_median": 0.976,
+        "interpretation": "well-matched"
+      },
+      "k": {
+        "n_meals": 69,
+        "profile_cr": 10.0,
+        "effective_cr_mean": 14.4,
+        "effective_cr_median": 10.71,
+        "effective_cr_std": 17.2,
+        "cr_ratio_mean": 1.44,
+        "cr_ratio_median": 1.071,
+        "interpretation": "under-dosing"
+      },
+      "odc-39819048": {
+        "n_meals": 15,
+        "profile_cr": 8.0,
+        "effective_cr_mean": 17.02,
+        "effective_cr_median": 14.21,
+        "effective_cr_std": 8.23,
+        "cr_ratio_mean": 2.127,
+        "cr_ratio_median": 1.776,
+        "interpretation": "under-dosing"
+      },
+      "odc-58680324": {
+        "n_meals": 19,
+        "profile_cr": 4.5,
+        "effective_cr_mean": 7.01,
+        "effective_cr_median": 5.22,
+        "effective_cr_std": 3.79,
+        "cr_ratio_mean": 1.819,
+        "cr_ratio_median": 1.366,
+        "interpretation": "under-dosing"
+      },
+      "odc-61403732": {
+        "n_meals": 7,
+        "profile_cr": 8.5,
+        "effective_cr_mean": 14.36,
+        "effective_cr_median": 16.8,
+        "effective_cr_std": 3.6,
+        "cr_ratio_mean": 1.703,
+        "cr_ratio_median": 1.976,
+        "interpretation": "under-dosing"
+      },
+      "odc-74077367": {
+        "n_meals": 1152,
+        "profile_cr": 7.0,
+        "effective_cr_mean": 14.57,
+        "effective_cr_median": 8.11,
+        "effective_cr_std": 24.52,
+        "cr_ratio_mean": 2.081,
+        "cr_ratio_median": 1.158,
+        "interpretation": "under-dosing"
+      },
+      "odc-86025410": {
+        "n_meals": 1506,
+        "profile_cr": 33.0,
+        "effective_cr_mean": 49.02,
+        "effective_cr_median": 42.86,
+        "effective_cr_std": 28.18,
+        "cr_ratio_mean": 1.485,
+        "cr_ratio_median": 1.299,
+        "interpretation": "under-dosing"
+      },
+      "odc-96254963": {
+        "n_meals": 722,
+        "profile_cr": 8.0,
+        "effective_cr_mean": 11.16,
+        "effective_cr_median": 8.14,
+        "effective_cr_std": 19.83,
+        "cr_ratio_mean": 1.395,
+        "cr_ratio_median": 1.017,
+        "interpretation": "under-dosing"
+      }
+    }
+  },
+  "exp_2535c": {
+    "size_category_results": {
+      "small": {
+        "n": 2405,
+        "mean_carbs": 10.8,
+        "mean_bg_rise": 59.4,
+        "rise_per_gram": 5.502,
+        "mean_peak_time_min": 108.0,
+        "mean_bolus": 1.31,
+        "pct_bolused": 75.3
+      },
+      "medium": {
+        "n": 3859,
+        "mean_carbs": 30.7,
+        "mean_bg_rise": 76.5,
+        "rise_per_gram": 2.491,
+        "mean_peak_time_min": 111.0,
+        "mean_bolus": 3.51,
+        "pct_bolused": 91.7
+      },
+      "large": {
+        "n": 1458,
+        "mean_carbs": 65.9,
+        "mean_bg_rise": 90.9,
+        "rise_per_gram": 1.379,
+        "mean_peak_time_min": 125.0,
+        "mean_bolus": 7.06,
+        "pct_bolused": 95.9
+      },
+      "very_large": {
+        "n": 269,
+        "mean_carbs": 138.9,
+        "mean_bg_rise": 81.8,
+        "rise_per_gram": 0.589,
+        "mean_peak_time_min": 124.0,
+        "mean_bolus": 11.69,
+        "pct_bolused": 97.4
+      }
+    },
+    "patient_dose_response": {
+      "a": {
+        "rise_per_gram_by_size": {
+          "small": 4.15,
+          "medium": 1.77,
+          "large": 1.18,
+          "very_large": null
+        },
+        "trend": "decreasing"
+      },
+      "b": {
+        "rise_per_gram_by_size": {
+          "small": 4.97,
+          "medium": 2.13,
+          "large": 1.01,
+          "very_large": 0.44
+        },
+        "trend": "decreasing"
+      },
+      "c": {
+        "rise_per_gram_by_size": {
+          "small": 4.46,
+          "medium": 2.79,
+          "large": 3.09,
+          "very_large": null
+        },
+        "trend": "decreasing"
+      },
+      "d": {
+        "rise_per_gram_by_size": {
+          "small": 4.43,
+          "medium": 2.12,
+          "large": 1.28,
+          "very_large": null
+        },
+        "trend": "decreasing"
+      },
+      "e": {
+        "rise_per_gram_by_size": {
+          "small": 5.63,
+          "medium": 1.91,
+          "large": 1.19,
+          "very_large": null
+        },
+        "trend": "decreasing"
+      },
+      "f": {
+        "rise_per_gram_by_size": {
+          "small": 3.96,
+          "medium": 2.28,
+          "large": 1.82,
+          "very_large": 0.98
+        },
+        "trend": "decreasing"
+      },
+      "g": {
+        "rise_per_gram_by_size": {
+          "small": 6.15,
+          "medium": 2.75,
+          "large": 1.77,
+          "very_large": 1.28
+        },
+        "trend": "decreasing"
+      },
+      "h": {
+        "rise_per_gram_by_size": {
+          "small": 2.08,
+          "medium": 1.6,
+          "large": 1.03,
+          "very_large": 0.69
+        },
+        "trend": "decreasing"
+      },
+      "i": {
+        "rise_per_gram_by_size": {
+          "small": 3.06,
+          "medium": 2.68,
+          "large": 2.4,
+          "very_large": null
+        },
+        "trend": "decreasing"
+      },
+      "j": {
+        "rise_per_gram_by_size": {
+          "small": 6.57,
+          "medium": 1.22,
+          "large": 0.69,
+          "very_large": 0.71
+        },
+        "trend": "decreasing"
+      },
+      "k": {
+        "rise_per_gram_by_size": {
+          "small": 1.52,
+          "medium": 1.14,
+          "large": null,
+          "very_large": null
+        },
+        "trend": "decreasing"
+      },
+      "odc-39819048": {
+        "rise_per_gram_by_size": {
+          "small": null,
+          "medium": 2.34,
+          "large": 1.86,
+          "very_large": 0.55
+        },
+        "trend": "decreasing"
+      },
+      "odc-58680324": {
+        "rise_per_gram_by_size": {
+          "small": 2.97,
+          "medium": 0.88,
+          "large": 0.56,
+          "very_large": null
+        },
+        "trend": "decreasing"
+      },
+      "odc-61403732": {
+        "rise_per_gram_by_size": {
+          "small": null,
+          "medium": null,
+          "large": 1.04,
+          "very_large": null
+        },
+        "trend": "insufficient"
+      },
+      "odc-74077367": {
+        "rise_per_gram_by_size": {
+          "small": 3.77,
+          "medium": 2.08,
+          "large": 1.35,
+          "very_large": 0.94
+        },
+        "trend": "decreasing"
+      },
+      "odc-86025410": {
+        "rise_per_gram_by_size": {
+          "small": 5.95,
+          "medium": 3.19,
+          "large": 2.1,
+          "very_large": 0.85
+        },
+        "trend": "decreasing"
+      },
+      "odc-96254963": {
+        "rise_per_gram_by_size": {
+          "small": 3.67,
+          "medium": 1.95,
+          "large": 1.12,
+          "very_large": 0.6
+        },
+        "trend": "decreasing"
+      }
+    },
+    "nonlinearity_correlation": -0.3
+  },
+  "exp_2535d": {
+    "population": {
+      "mean_delta_4h": 1.8,
+      "std_delta_4h": 89.0
+    },
+    "patient_results": {
+      "a": {
+        "n_meals": 491,
+        "mean_pre_bg": 279.3,
+        "mean_bg_4h": 203.2,
+        "mean_delta_4h": -76.2,
+        "profile_cr": 4.0,
+        "ideal_cr": 4.2,
+        "adjustment_pct": 5.7,
+        "verdict": "CR too low"
+      },
+      "b": {
+        "n_meals": 664,
+        "mean_pre_bg": 177.1,
+        "mean_bg_4h": 186.1,
+        "mean_delta_4h": 9.0,
+        "profile_cr": 12.100000381469727,
+        "ideal_cr": 13.6,
+        "adjustment_pct": 12.6,
+        "verdict": "adequate"
+      },
+      "c": {
+        "n_meals": 278,
+        "mean_pre_bg": 234.2,
+        "mean_bg_4h": 149.6,
+        "mean_delta_4h": -84.6,
+        "profile_cr": 4.0,
+        "ideal_cr": 6.2,
+        "adjustment_pct": 54.9,
+        "verdict": "CR too low"
+      },
+      "d": {
+        "n_meals": 280,
+        "mean_pre_bg": 143.0,
+        "mean_bg_4h": 161.2,
+        "mean_delta_4h": 18.2,
+        "profile_cr": 14.0,
+        "ideal_cr": 10.4,
+        "adjustment_pct": -25.5,
+        "verdict": "slightly high"
+      },
+      "e": {
+        "n_meals": 288,
+        "mean_pre_bg": 143.6,
+        "mean_bg_4h": 156.3,
+        "mean_delta_4h": 12.7,
+        "profile_cr": 3.0,
+        "ideal_cr": 3.3,
+        "adjustment_pct": 11.2,
+        "verdict": "slightly high"
+      },
+      "f": {
+        "n_meals": 291,
+        "mean_pre_bg": 191.3,
+        "mean_bg_4h": 198.1,
+        "mean_delta_4h": 6.8,
+        "profile_cr": 5.0,
+        "ideal_cr": 5.0,
+        "adjustment_pct": -0.5,
+        "verdict": "adequate"
+      },
+      "g": {
+        "n_meals": 624,
+        "mean_pre_bg": 136.7,
+        "mean_bg_4h": 157.0,
+        "mean_delta_4h": 20.3,
+        "profile_cr": 8.5,
+        "ideal_cr": 8.2,
+        "adjustment_pct": -3.1,
+        "verdict": "CR too high"
+      },
+      "h": {
+        "n_meals": 221,
+        "mean_pre_bg": 151.5,
+        "mean_bg_4h": 113.8,
+        "mean_delta_4h": -37.7,
+        "profile_cr": 10.0,
+        "ideal_cr": 10.6,
+        "adjustment_pct": 6.1,
+        "verdict": "CR too low"
+      },
+      "i": {
+        "n_meals": 91,
+        "mean_pre_bg": 170.4,
+        "mean_bg_4h": 182.2,
+        "mean_delta_4h": 11.8,
+        "profile_cr": 10.0,
+        "ideal_cr": 7.1,
+        "adjustment_pct": -28.6,
+        "verdict": "slightly high"
+      },
+      "j": {
+        "n_meals": 146,
+        "mean_pre_bg": 152.9,
+        "mean_bg_4h": 147.3,
+        "mean_delta_4h": -5.7,
+        "profile_cr": 5.0,
+        "ideal_cr": 5.8,
+        "adjustment_pct": 15.2,
+        "verdict": "adequate"
+      },
+      "k": {
+        "n_meals": 67,
+        "mean_pre_bg": 98.8,
+        "mean_bg_4h": 97.1,
+        "mean_delta_4h": -1.7,
+        "profile_cr": 10.0,
+        "ideal_cr": 11.8,
+        "adjustment_pct": 18.2,
+        "verdict": "adequate"
+      },
+      "odc-39819048": {
+        "n_meals": 15,
+        "mean_pre_bg": 104.2,
+        "mean_bg_4h": 130.7,
+        "mean_delta_4h": 26.5,
+        "profile_cr": 8.0,
+        "ideal_cr": 12.6,
+        "adjustment_pct": 57.6,
+        "verdict": "CR too high"
+      },
+      "odc-58680324": {
+        "n_meals": 19,
+        "mean_pre_bg": 118.2,
+        "mean_bg_4h": 111.3,
+        "mean_delta_4h": -6.9,
+        "profile_cr": 4.5,
+        "ideal_cr": 5.8,
+        "adjustment_pct": 28.6,
+        "verdict": "adequate"
+      },
+      "odc-61403732": {
+        "n_meals": 7,
+        "mean_pre_bg": 97.3,
+        "mean_bg_4h": 129.0,
+        "mean_delta_4h": 31.7,
+        "profile_cr": 8.5,
+        "ideal_cr": 11.7,
+        "adjustment_pct": 38.1,
+        "verdict": "CR too high"
+      },
+      "odc-74077367": {
+        "n_meals": 1148,
+        "mean_pre_bg": 119.4,
+        "mean_bg_4h": 136.7,
+        "mean_delta_4h": 17.3,
+        "profile_cr": 7.0,
+        "ideal_cr": 8.2,
+        "adjustment_pct": 17.4,
+        "verdict": "slightly high"
+      },
+      "odc-86025410": {
+        "n_meals": 1480,
+        "mean_pre_bg": 139.8,
+        "mean_bg_4h": 158.2,
+        "mean_delta_4h": 18.3,
+        "profile_cr": 33.0,
+        "ideal_cr": 30.3,
+        "adjustment_pct": -8.2,
+        "verdict": "slightly high"
+      },
+      "odc-96254963": {
+        "n_meals": 639,
+        "mean_pre_bg": 141.2,
+        "mean_bg_4h": 147.7,
+        "mean_delta_4h": 6.5,
+        "profile_cr": 8.0,
+        "ideal_cr": 8.4,
+        "adjustment_pct": 5.5,
+        "verdict": "adequate"
+      }
+    }
+  },
+  "exp_2535e": {
+    "population": {
+      "overall_tir": 72.6,
+      "postmeal_tir_1h": 63.5,
+      "postmeal_tir_2h": 61.4,
+      "postmeal_tir_3h": 61.3,
+      "postmeal_tir_4h": 61.9
+    },
+    "tir_by_meal_size": {
+      "small": 65.4,
+      "medium": 62.0,
+      "large": 57.8,
+      "very_large": 51.6
+    },
+    "patient_results": {
+      "a": {
+        "n_meals": 514,
+        "overall_tir": 55.8,
+        "postmeal_tir_1h": 9.3,
+        "postmeal_tir_2h": 18.8,
+        "postmeal_tir_3h": 24.0,
+        "postmeal_tir_4h": 28.2,
+        "delta_tir_1h": -46.5,
+        "delta_tir_4h": -27.6
+      },
+      "b": {
+        "n_meals": 776,
+        "overall_tir": 56.7,
+        "postmeal_tir_1h": 52.2,
+        "postmeal_tir_2h": 51.2,
+        "postmeal_tir_3h": 51.3,
+        "postmeal_tir_4h": 51.1,
+        "delta_tir_1h": -4.5,
+        "delta_tir_4h": -5.6
+      },
+      "c": {
+        "n_meals": 348,
+        "overall_tir": 61.6,
+        "postmeal_tir_1h": 23.9,
+        "postmeal_tir_2h": 30.7,
+        "postmeal_tir_3h": 37.8,
+        "postmeal_tir_4h": 43.2,
+        "delta_tir_1h": -37.7,
+        "delta_tir_4h": -18.4
+      },
+      "d": {
+        "n_meals": 337,
+        "overall_tir": 79.2,
+        "postmeal_tir_1h": 75.9,
+        "postmeal_tir_2h": 69.4,
+        "postmeal_tir_3h": 66.5,
+        "postmeal_tir_4h": 67.4,
+        "delta_tir_1h": -3.3,
+        "delta_tir_4h": -11.8
+      },
+      "e": {
+        "n_meals": 316,
+        "overall_tir": 65.4,
+        "postmeal_tir_1h": 70.0,
+        "postmeal_tir_2h": 65.3,
+        "postmeal_tir_3h": 65.2,
+        "postmeal_tir_4h": 65.4,
+        "delta_tir_1h": 4.6,
+        "delta_tir_4h": 0.0
+      },
+      "f": {
+        "n_meals": 314,
+        "overall_tir": 65.5,
+        "postmeal_tir_1h": 35.7,
+        "postmeal_tir_2h": 33.6,
+        "postmeal_tir_3h": 33.6,
+        "postmeal_tir_4h": 34.9,
+        "delta_tir_1h": -29.8,
+        "delta_tir_4h": -30.7
+      },
+      "g": {
+        "n_meals": 722,
+        "overall_tir": 75.2,
+        "postmeal_tir_1h": 73.7,
+        "postmeal_tir_2h": 68.2,
+        "postmeal_tir_3h": 67.1,
+        "postmeal_tir_4h": 67.2,
+        "delta_tir_1h": -1.5,
+        "delta_tir_4h": -8.0
+      },
+      "h": {
+        "n_meals": 235,
+        "overall_tir": 85.0,
+        "postmeal_tir_1h": 66.6,
+        "postmeal_tir_2h": 70.4,
+        "postmeal_tir_3h": 74.4,
+        "postmeal_tir_4h": 77.2,
+        "delta_tir_1h": -18.4,
+        "delta_tir_4h": -7.8
+      },
+      "i": {
+        "n_meals": 100,
+        "overall_tir": 59.9,
+        "postmeal_tir_1h": 41.4,
+        "postmeal_tir_2h": 34.4,
+        "postmeal_tir_3h": 33.5,
+        "postmeal_tir_4h": 34.9,
+        "delta_tir_1h": -18.5,
+        "delta_tir_4h": -25.0
+      },
+      "j": {
+        "n_meals": 189,
+        "overall_tir": 81.0,
+        "postmeal_tir_1h": 79.0,
+        "postmeal_tir_2h": 78.1,
+        "postmeal_tir_3h": 76.4,
+        "postmeal_tir_4h": 75.2,
+        "delta_tir_1h": -2.0,
+        "delta_tir_4h": -5.8
+      },
+      "k": {
+        "n_meals": 72,
+        "overall_tir": 95.1,
+        "postmeal_tir_1h": 98.3,
+        "postmeal_tir_2h": 98.5,
+        "postmeal_tir_3h": 98.5,
+        "postmeal_tir_4h": 97.9,
+        "delta_tir_1h": 3.2,
+        "delta_tir_4h": 2.7
+      },
+      "odc-39819048": {
+        "n_meals": 35,
+        "overall_tir": 77.0,
+        "postmeal_tir_1h": 84.0,
+        "postmeal_tir_2h": 74.4,
+        "postmeal_tir_3h": 70.1,
+        "postmeal_tir_4h": 73.3,
+        "delta_tir_1h": 6.9,
+        "delta_tir_4h": -3.7
+      },
+      "odc-58680324": {
+        "n_meals": 34,
+        "overall_tir": 81.5,
+        "postmeal_tir_1h": 88.8,
+        "postmeal_tir_2h": 86.8,
+        "postmeal_tir_3h": 87.1,
+        "postmeal_tir_4h": 88.3,
+        "delta_tir_1h": 7.3,
+        "delta_tir_4h": 6.8
+      },
+      "odc-61403732": {
+        "n_meals": 20,
+        "overall_tir": 94.4,
+        "postmeal_tir_1h": 81.9,
+        "postmeal_tir_2h": 90.0,
+        "postmeal_tir_3h": 89.1,
+        "postmeal_tir_4h": 88.6,
+        "delta_tir_1h": -12.4,
+        "delta_tir_4h": -5.8
+      },
+      "odc-74077367": {
+        "n_meals": 1237,
+        "overall_tir": 86.1,
+        "postmeal_tir_1h": 86.4,
+        "postmeal_tir_2h": 83.5,
+        "postmeal_tir_3h": 81.7,
+        "postmeal_tir_4h": 81.6,
+        "delta_tir_1h": 0.4,
+        "delta_tir_4h": -4.5
+      },
+      "odc-86025410": {
+        "n_meals": 1883,
+        "overall_tir": 68.4,
+        "postmeal_tir_1h": 67.2,
+        "postmeal_tir_2h": 62.0,
+        "postmeal_tir_3h": 60.8,
+        "postmeal_tir_4h": 61.0,
+        "delta_tir_1h": -1.2,
+        "delta_tir_4h": -7.4
+      },
+      "odc-96254963": {
+        "n_meals": 859,
+        "overall_tir": 66.8,
+        "postmeal_tir_1h": 68.3,
+        "postmeal_tir_2h": 66.9,
+        "postmeal_tir_3h": 66.2,
+        "postmeal_tir_4h": 66.1,
+        "delta_tir_1h": 1.5,
+        "delta_tir_4h": -0.7
+      }
+    }
+  }
+}
