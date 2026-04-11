@@ -67,18 +67,18 @@ The combined effect is modest on TIR (+0.6pp) but substantial on safety: TBR dec
 | Patient | Onset (min) | Standard | Δ | Peak (min) | Standard | Δ | Events |
 |---------|------------|----------|---|-----------|----------|---|--------|
 | a | 40 | 15 | +25 | 265 | 75 | +190 | 85 |
-| b | 38 | 15 | +22 | 322 | 75 | +248 | 10 |
+| b | 38 | 15 | +23 | 322 | 75 | +247 | 10 |
 | c | 50 | 15 | +35 | 235 | 75 | +160 | 852 |
 | d | 30 | 15 | +15 | 310 | 75 | +235 | 545 |
 | e | 50 | 15 | +35 | 280 | 75 | +205 | 1,348 |
 | f | 50 | 15 | +35 | 285 | 75 | +210 | 121 |
 | g | 50 | 15 | +35 | 260 | 75 | +185 | 201 |
-| h | 15 | 15 | 0 | 188 | 75 | +112 | 36 |
+| h | 15 | 15 | 0 | 188 | 75 | +113 | 36 |
 | i | 45 | 15 | +30 | 275 | 75 | +200 | 3,021 |
 | k | 20 | 15 | +5 | 260 | 75 | +185 | 27 |
 
 **Finding**: Insulin acts **much slower** than standard models assume:
-- **Onset**: median 40min (range 15–50), vs modeled 15min — 2.7× slower
+- **Onset**: median 42.5min (range 15–50), vs modeled 15min — 2.8× slower
 - **Peak effect**: median 270min (range 188–322), vs modeled 75min — 3.6× slower
 
 Only patient h matches the standard onset timing. Patient b has the slowest peak (322min = 5.4 hours).
