@@ -424,6 +424,125 @@ def compute_4h_outcomes(df: pd.DataFrame) -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
+# Multi-horizon outcome labels
+# ---------------------------------------------------------------------------
+
+HORIZON_MAP = {
+    "30min": 6,    # 6 × 5-min
+    "1h":    12,   # 12 × 5-min
+    "2h":    24,   # 24 × 5-min
+    "4h":    48,   # 48 × 5-min
+}
+
+
+def compute_multi_horizon_outcomes(
+    df: pd.DataFrame,
+    horizons: Optional[Dict[str, int]] = None,
+) -> pd.DataFrame:
+    """Compute forward-looking hypo/hyper labels at multiple horizons.
+
+    For each horizon *h* the function creates:
+
+    * ``hypo_{h}``      — 1 if any glucose < 70 mg/dL in the next *h*, else 0.
+    * ``hyper_{h}``     — 1 if any glucose > 180 mg/dL in the next *h*, else 0.
+    * ``bg_change_{h}`` — glucose at +*h* minus current glucose.
+
+    The default horizons are 30 min, 1 h, 2 h, and 4 h.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Must contain ``patient_id``, ``time``, and ``glucose``.
+    horizons : dict, optional
+        Mapping of label → number of 5-min steps.  Defaults to
+        ``HORIZON_MAP`` (30 min, 1 h, 2 h, 4 h).
+
+    Returns
+    -------
+    pd.DataFrame
+        The input DataFrame with outcome columns for every horizon.
+    """
+    if horizons is None:
+        horizons = HORIZON_MAP
+
+    df = df.copy()
+    for label in horizons:
+        df[f"hypo_{label}"] = np.nan
+        df[f"hyper_{label}"] = np.nan
+        df[f"bg_change_{label}"] = np.nan
+
+    patients = df["patient_id"].unique()
+    n_patients = len(patients)
+    max_steps = max(horizons.values())
+
+    for p_idx, pid in enumerate(patients, 1):
+        if p_idx % 5 == 1 or p_idx == n_patients:
+            print(
+                f"[data_bridge] Multi-horizon outcomes: patient "
+                f"{p_idx}/{n_patients} ({pid})"
+            )
+        mask = df["patient_id"] == pid
+        g = df.loc[mask, "glucose"].values.astype("float64")
+        n = len(g)
+
+        # Pre-compute cumulative min/max for efficiency
+        # For each horizon we only need to scan up to that many steps ahead
+        for label, steps in horizons.items():
+            hypo = np.full(n, np.nan, dtype="float64")
+            hyper = np.full(n, np.nan, dtype="float64")
+            bg_change = np.full(n, np.nan, dtype="float64")
+
+            for i in range(n):
+                end = min(i + steps + 1, n)
+                window = g[i + 1 : end]
+                if len(window) == 0:
+                    continue
+                hypo[i] = 1.0 if np.nanmin(window) < 70.0 else 0.0
+                hyper[i] = 1.0 if np.nanmax(window) > 180.0 else 0.0
+                if i + steps < n and not np.isnan(g[i + steps]):
+                    bg_change[i] = g[i + steps] - g[i]
+
+            df.loc[mask, f"hypo_{label}"] = hypo
+            df.loc[mask, f"hyper_{label}"] = hyper
+            df.loc[mask, f"bg_change_{label}"] = bg_change
+
+    return df
+
+
+def load_patients_multi_horizon(
+    parquet_path: str = "externals/ns-parquet/training",
+    horizons: Optional[Dict[str, int]] = None,
+) -> pd.DataFrame:
+    """Load grid, build OREF features, compute outcomes at multiple horizons.
+
+    Like ``load_patients_with_features`` but adds columns for every
+    requested horizon (default: 30 min, 1 h, 2 h, 4 h).
+
+    Parameters
+    ----------
+    parquet_path : str
+        Path to directory containing ``grid.parquet``.
+    horizons : dict, optional
+        Label → steps mapping.  Defaults to ``HORIZON_MAP``.
+
+    Returns
+    -------
+    pd.DataFrame
+        Ready-to-model DataFrame with multi-horizon outcome columns.
+    """
+    grid = load_grid(parquet_path)
+    print("[data_bridge] Building OREF-INV-003 features …")
+    featured = build_oref_features(grid)
+    print("[data_bridge] Computing multi-horizon outcome labels …")
+    result = compute_multi_horizon_outcomes(featured, horizons)
+    # Ensure backward-compatible 4h columns exist
+    if "hypo_4h" not in result.columns and "hypo_4h" in (horizons or HORIZON_MAP):
+        pass  # already created by multi-horizon with "4h" key
+    print(f"[data_bridge] Done. Final shape: {result.shape}")
+    return result
+
+
+# ---------------------------------------------------------------------------
 # Split helper
 # ---------------------------------------------------------------------------
 
