@@ -462,3 +462,46 @@ class TestBuildOrefWithPK:
         """Default (use_pk=False) should produce same results as before."""
         result = build_oref_features(grid, use_pk=False)
         assert set(OREF_FEATURES).issubset(result.columns)
+
+    def test_pk_activity_not_circular(self, grid):
+        """PK activity should NOT be derived from glucose_roc (anti-circularity).
+
+        The approximation has iob_activity = -glucose_roc / ISF (r ≈ -0.86),
+        which is circular: it conflates insulin + food + noise. PK activity is
+        computed from insulin delivery alone and should have |r| < 0.3 with
+        glucose_roc.
+        """
+        result = build_oref_features(grid, use_pk=True)
+        act = result['iob_activity'].dropna()
+        roc = grid.loc[act.index, 'glucose_roc'].fillna(0)
+        valid = np.isfinite(act) & np.isfinite(roc)
+        r = np.corrcoef(act[valid], roc[valid])[0, 1]
+        assert abs(r) < 0.30, \
+            f"PK activity should not be circular (r={r:.3f} with glucose_roc)"
+
+
+class TestPatientDIA:
+    """Tests for per-patient DIA loading."""
+
+    def test_dia_loaded(self):
+        from tools.oref_inv_003_replication.data_bridge import _load_patient_dia
+        dia = _load_patient_dia()
+        assert len(dia) > 0, "Should load at least some DIAs"
+
+    def test_loop_patients_dia_6(self):
+        """Loop patients a-k should have DIA=6.0h."""
+        from tools.oref_inv_003_replication.data_bridge import _load_patient_dia
+        dia = _load_patient_dia()
+        for pid in ['a', 'b', 'c', 'e', 'f', 'g']:
+            if pid in dia:
+                assert dia[pid] == 6.0, \
+                    f"Patient {pid} DIA should be 6.0, got {dia[pid]}"
+
+    def test_odc_patients_vary(self):
+        """ODC patients should have varying DIA (5-7h)."""
+        from tools.oref_inv_003_replication.data_bridge import _load_patient_dia
+        dia = _load_patient_dia()
+        odc_dias = [v for k, v in dia.items() if k.startswith('odc-')]
+        if odc_dias:
+            assert len(set(odc_dias)) > 1, \
+                "ODC patients should have different DIA values"

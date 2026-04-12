@@ -184,6 +184,29 @@ def assess_patient_quality(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(records).set_index("patient_id")
 
 
+def _load_patient_dia(parquet_path: str = "externals/ns-parquet/training") -> dict:
+    """Load per-patient DIA (hours) from profiles.parquet.
+
+    Returns dict mapping patient_id → dia_hours. Falls back to 6.0 if
+    the profiles file is missing or a patient has no DIA recorded.
+    """
+    p = Path(parquet_path)
+    if p.is_dir():
+        p = p / "profiles.parquet"
+    if not p.exists():
+        return {}
+
+    try:
+        prof = pd.read_parquet(p, columns=["patient_id", "dia_hours"])
+        # Use the most common DIA per patient (handles profile changes)
+        dia = prof.groupby("patient_id")["dia_hours"].agg(
+            lambda s: s.mode().iloc[0] if len(s.mode()) > 0 else 6.0
+        )
+        return dia.to_dict()
+    except Exception:
+        return {}
+
+
 # ---------------------------------------------------------------------------
 # Loading helpers
 # ---------------------------------------------------------------------------
@@ -440,11 +463,15 @@ def build_oref_features(grid_df: pd.DataFrame, *,
             'pk_bgi':       'reason_BGI',
         }
 
+        # Load per-patient DIA from profiles (default 6.0h if not found)
+        _patient_dia = _load_patient_dia()
+
         pk_frames = []
         pk_orig_indices = []
         for pid, grp in df.groupby("patient_id"):
+            dia = _patient_dia.get(pid, 6.0)
             try:
-                pk = compute_pk_for_patient(grp, verbose=False)
+                pk = compute_pk_for_patient(grp, dia_hours=dia, verbose=False)
                 pk_frames.append(pk)
                 pk_orig_indices.append(grp.index)
             except Exception as exc:
@@ -457,12 +484,17 @@ def build_oref_features(grid_df: pd.DataFrame, *,
         if pk_frames:
             replaced = 0
             for pk_col, oref_col in _pk_to_oref.items():
+                any_found = False
                 for pk_df, orig_idx in zip(pk_frames, pk_orig_indices):
                     if pk_col in pk_df.columns:
                         df.loc[orig_idx, oref_col] = pk_df[pk_col].values
-                replaced += 1
+                        any_found = True
+                if any_found:
+                    replaced += 1
+            dia_summary = {pid: _patient_dia.get(pid, 6.0)
+                           for pid in df['patient_id'].unique()}
             print(f"[data_bridge] PK bridge: replaced {replaced}/5 approximated features "
-                  f"for {len(pk_frames)} patients")
+                  f"for {len(pk_frames)} patients (DIA: {dia_summary})")
 
     # ------------------------------------------------------------------
     # Sanity: ensure all 32 features are present
