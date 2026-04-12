@@ -888,6 +888,68 @@ class TestODCLoaderConversion(unittest.TestCase):
         self.assertEqual(result[0]['eventType'], 'Temp Basal')
         self.assertEqual(result[0]['rate'], 1.5)
         self.assertEqual(result[0]['duration'], 30)
+        self.assertEqual(result[0]['temp'], 'absolute')
+        self.assertNotIn('percent', result[0])
+
+    def test_temp_basals_percentage(self):
+        """TemporaryBasals with isAbsolute=False stores percent, not rate."""
+        from tools.ns2parquet.odc_loader import _convert_temp_basals
+        records = [
+            {'date': 1000, 'isAbsolute': False, 'percentRate': 360,
+             'durationInMinutes': 30},
+            {'date': 2000, 'isAbsolute': False, 'percentRate': 50,
+             'durationInMinutes': 60},
+        ]
+        result = _convert_temp_basals(records)
+        self.assertEqual(len(result), 2)
+        # Percentage temp basals must NOT store rate — grid.py resolves later
+        self.assertNotIn('rate', result[0])
+        self.assertEqual(result[0]['percent'], 360.0)
+        self.assertEqual(result[0]['temp'], 'percent')
+        self.assertNotIn('rate', result[1])
+        self.assertEqual(result[1]['percent'], 50.0)
+
+    def test_temp_basals_mixed_absolute_and_percentage(self):
+        """Mixed absolute + percentage temp basals in same patient."""
+        from tools.ns2parquet.odc_loader import _convert_temp_basals
+        records = [
+            {'date': 1000, 'isAbsolute': True, 'absoluteRate': 2.0,
+             'durationInMinutes': 30},
+            {'date': 2000, 'isAbsolute': False, 'percentRate': 200,
+             'durationInMinutes': 30},
+            {'date': 3000, 'isAbsolute': True, 'absoluteRate': 0.0,
+             'durationInMinutes': 30},
+        ]
+        result = _convert_temp_basals(records)
+        self.assertEqual(len(result), 3)
+        # First: absolute
+        self.assertEqual(result[0]['rate'], 2.0)
+        self.assertEqual(result[0]['temp'], 'absolute')
+        self.assertNotIn('percent', result[0])
+        # Second: percentage — no rate, has percent
+        self.assertNotIn('rate', result[1])
+        self.assertEqual(result[1]['percent'], 200.0)
+        self.assertEqual(result[1]['temp'], 'percent')
+        # Third: absolute suspension
+        self.assertEqual(result[2]['rate'], 0.0)
+        self.assertEqual(result[2]['temp'], 'absolute')
+
+    def test_temp_basals_percentage_never_stored_as_rate(self):
+        """Percentage values must never appear in rate field (regression)."""
+        from tools.ns2parquet.odc_loader import _convert_temp_basals
+        # This is the exact pattern that caused the original bug:
+        # 360% was stored as rate=360 U/hr instead of percent=360
+        records = [
+            {'date': 1000, 'isAbsolute': False, 'percentRate': 360,
+             'durationInMinutes': 30},
+        ]
+        result = _convert_temp_basals(records)
+        self.assertEqual(len(result), 1)
+        tx = result[0]
+        # The critical assertion: rate must NOT be 360
+        self.assertNotIn('rate', tx,
+                         'Percentage temp basal must not store value in rate field')
+        self.assertEqual(tx['percent'], 360.0)
 
     def test_temp_targets_converted(self):
         """TempTargets → Temporary Target treatments."""
@@ -2311,6 +2373,134 @@ class TestGridDtypeAndAlignment(unittest.TestCase):
         if self.grid is None:
             self.skipTest('grid not built')
         self.assertEqual(self.grid.shape[1], EXPECTED_GRID_COLS)
+
+
+# ── Percentage temp basal grid resolution tests ─────────────────────────
+
+class TestPercentageTempBasalGrid(unittest.TestCase):
+    """Verify grid correctly resolves percentage-based temp basals.
+
+    This tests the end-to-end flow:
+      1. odc_loader stores temp='percent' + percent=value (no rate)
+      2. grid.py defers resolution until scheduled basal is known
+      3. actual_basal_rate = percent × scheduled / 100
+
+    Regression test for the bug where percentage values (e.g., 360)
+    were stored directly as U/hr rates.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """Create synthetic patient with percentage temp basals."""
+        cls._tmpdir = tempfile.mkdtemp(prefix='ns2pq_pct_tb_')
+
+        base_ts = pd.Timestamp('2024-01-01T00:00:00Z')
+
+        # Entries: 4 hours of BG at 5-min intervals
+        entries = []
+        for i in range(48):
+            ts = base_ts + pd.Timedelta(minutes=5 * i)
+            entries.append({
+                'type': 'sgv', 'sgv': 120, 'direction': 'Flat',
+                'dateString': ts.isoformat(),
+                'date': int(ts.timestamp() * 1000),
+            })
+
+        # Profile with scheduled basal of 1.0 U/hr
+        profile = [{
+            'defaultProfile': 'Default',
+            'store': {'Default': {
+                'basal': [{'time': '00:00', 'value': 1.0, 'timeAsSeconds': 0}],
+                'carbratio': [{'time': '00:00', 'value': 10, 'timeAsSeconds': 0}],
+                'sens': [{'time': '00:00', 'value': 40, 'timeAsSeconds': 0}],
+                'target_low': [{'time': '00:00', 'value': 100, 'timeAsSeconds': 0}],
+                'target_high': [{'time': '00:00', 'value': 120, 'timeAsSeconds': 0}],
+                'dia': 5, 'timezone': 'UTC', 'units': 'mg/dl',
+            }},
+        }]
+
+        # Treatments: mix of absolute and percentage temp basals
+        treatments = [
+            # 00:00-00:30: absolute 2.0 U/hr (normal oref0/Loop style)
+            {'eventType': 'Temp Basal', 'rate': 2.0, 'duration': 30,
+             'created_at': (base_ts).isoformat(), 'temp': 'absolute'},
+            # 00:30-01:30: 200% of scheduled (AAPS percentage from odc_loader)
+            {'eventType': 'Temp Basal', 'percent': 200.0, 'duration': 60,
+             'created_at': (base_ts + pd.Timedelta(minutes=30)).isoformat(),
+             'temp': 'percent'},
+            # 01:30-02:00: 50% of scheduled (reduced delivery)
+            {'eventType': 'Temp Basal', 'percent': 50.0, 'duration': 30,
+             'created_at': (base_ts + pd.Timedelta(minutes=90)).isoformat(),
+             'temp': 'percent'},
+            # 02:00-02:30: NS-export style — percent field but no temp marker
+            {'eventType': 'Temp Basal', 'rate': 150, 'percent': 150, 'duration': 30,
+             'created_at': (base_ts + pd.Timedelta(minutes=120)).isoformat()},
+        ]
+
+        # Minimal devicestatus
+        devicestatus = [
+            {'created_at': base_ts.isoformat(),
+             'loop': {'iob': {'iob': 0.5}, 'predicted': {'values': [120]*36}},
+             'pump': {'battery': {'percent': 80}},
+             'device': 'loop://test'},
+        ]
+
+        for name, data in [('entries', entries), ('treatments', treatments),
+                           ('profile', profile), ('devicestatus', devicestatus)]:
+            with open(os.path.join(cls._tmpdir, f'{name}.json'), 'w') as f:
+                json.dump(data, f)
+
+        from tools.ns2parquet.grid import build_grid
+        cls.grid = build_grid(cls._tmpdir, 'pct_tb_test')
+        cls.base_ts = base_ts
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls._tmpdir, ignore_errors=True)
+
+    def _row_at(self, offset_min):
+        """Get grid row at base_ts + offset_min minutes."""
+        ts = self.base_ts + pd.Timedelta(minutes=offset_min)
+        rows = self.grid[self.grid['time'] == ts]
+        self.assertEqual(len(rows), 1, f'Expected 1 row at t+{offset_min}min')
+        return rows.iloc[0]
+
+    def test_absolute_temp_basal_stored_directly(self):
+        """Absolute temp basals should use rate value directly."""
+        row = self._row_at(5)
+        # scheduled=1.0, absolute rate=2.0
+        self.assertAlmostEqual(row['actual_basal_rate'], 2.0, places=2)
+
+    def test_percentage_temp_resolved_to_absolute(self):
+        """200% of 1.0 U/hr scheduled → 2.0 U/hr actual."""
+        row = self._row_at(35)
+        expected = 200.0 * 1.0 / 100.0  # = 2.0 U/hr
+        self.assertAlmostEqual(row['actual_basal_rate'], expected, places=2,
+                               msg='200% of 1.0 U/hr should be 2.0 U/hr')
+
+    def test_percentage_50_reduces_rate(self):
+        """50% of 1.0 U/hr scheduled → 0.5 U/hr actual."""
+        row = self._row_at(95)
+        expected = 50.0 * 1.0 / 100.0  # = 0.5 U/hr
+        self.assertAlmostEqual(row['actual_basal_rate'], expected, places=2,
+                               msg='50% of 1.0 U/hr should be 0.5 U/hr')
+
+    def test_ns_export_percent_without_temp_marker(self):
+        """NS-export: rate=150, percent=150, no temp → resolved as 150%."""
+        row = self._row_at(125)
+        expected = 150.0 * 1.0 / 100.0  # = 1.5 U/hr
+        self.assertAlmostEqual(row['actual_basal_rate'], expected, places=2,
+                               msg='NS-export percent=150 should resolve to 1.5 U/hr, not 150')
+
+    def test_no_impossible_rates(self):
+        """No actual_basal_rate should exceed 10× scheduled (sanity)."""
+        ratio = self.grid['actual_basal_rate'].max() / 1.0  # scheduled = 1.0
+        self.assertLess(ratio, 10.0,
+                        f'Max actual/scheduled ratio {ratio:.0f}x suggests unresolved percentage')
+
+    def test_temp_percent_column_dropped(self):
+        """Internal _temp_percent column should not appear in final grid."""
+        self.assertNotIn('_temp_percent', self.grid.columns)
 
 
 # ── CGM gap tests ───────────────────────────────────────────────────────
