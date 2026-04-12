@@ -3811,3 +3811,252 @@ class TestLoopQualityPipelineIntegration(unittest.TestCase):
         patient = make_patient(with_insulin=False)
         result = run_pipeline(patient, skip_patterns=True)
         self.assertIsNone(result.loop_quality)
+
+
+# ── Profile Generator Tests (WS-2) ──────────────────────────────────
+
+class TestProfileGeneratorTypes(unittest.TestCase):
+    """Type and structure tests for profile_generator.py."""
+
+    def test_generated_profile_fields(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        gp = GeneratedProfile(
+            basal_blocks=[{'hour': 0, 'value': 0.8, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            isf_blocks=[{'hour': 0, 'value': 50.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            cr_blocks=[{'hour': 0, 'value': 10.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+        )
+        self.assertEqual(gp.dia_hours, 5.0)
+        self.assertEqual(gp.units, 'mg/dL')
+        self.assertIsInstance(gp.warnings, list)
+
+    def test_import_from_package(self):
+        from cgmencode.production import generate_profile, generate_all_formats, GeneratedProfile
+        self.assertTrue(callable(generate_profile))
+        self.assertTrue(callable(generate_all_formats))
+
+
+class TestProfileGeneratorOref0(unittest.TestCase):
+    """Test oref0 format output."""
+
+    def _make_profile(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        return GeneratedProfile(
+            basal_blocks=[
+                {'hour': 0, 'value': 0.8, 'period': 'overnight', 'confidence': 'high', 'change_pct': 10.0},
+                {'hour': 6, 'value': 1.0, 'period': 'morning', 'confidence': 'medium', 'change_pct': 5.0},
+                {'hour': 14, 'value': 0.9, 'period': 'afternoon', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            isf_blocks=[
+                {'hour': 0, 'value': 60.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 20.0},
+                {'hour': 10, 'value': 45.0, 'period': 'midday', 'confidence': 'medium', 'change_pct': -10.0},
+            ],
+            cr_blocks=[
+                {'hour': 0, 'value': 12.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            dia_hours=6.0,
+            target_low=100.0,
+            target_high=120.0,
+        )
+
+    def test_oref0_has_basalprofile(self):
+        p = self._make_profile().to_oref0()
+        self.assertIn('basalprofile', p)
+        self.assertEqual(len(p['basalprofile']), 3)
+
+    def test_oref0_basal_minutes(self):
+        p = self._make_profile().to_oref0()
+        self.assertEqual(p['basalprofile'][0]['minutes'], 0)
+        self.assertEqual(p['basalprofile'][1]['minutes'], 360)  # 6h * 60
+        self.assertEqual(p['basalprofile'][0]['start'], '00:00:00')
+
+    def test_oref0_isf_sensitivities(self):
+        p = self._make_profile().to_oref0()
+        self.assertIn('isfProfile', p)
+        sens = p['isfProfile']['sensitivities']
+        self.assertEqual(len(sens), 2)
+        self.assertEqual(sens[0]['sensitivity'], 60.0)
+        self.assertEqual(sens[0]['offset'], 0)
+        self.assertEqual(sens[1]['endOffset'], 1440)
+
+    def test_oref0_dia_clamped(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        p = GeneratedProfile(
+            basal_blocks=[{'hour': 0, 'value': 1.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            isf_blocks=[{'hour': 0, 'value': 50.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            cr_blocks=[{'hour': 0, 'value': 10.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            dia_hours=15.0,  # exceeds max
+        )
+        out = p.to_oref0()
+        self.assertLessEqual(out['dia'], 12.0)
+
+    def test_oref0_carb_ratios(self):
+        p = self._make_profile().to_oref0()
+        self.assertIn('carb_ratios', p)
+        self.assertEqual(p['carb_ratios']['schedule'][0]['ratio'], 12.0)
+
+    def test_oref0_bg_targets(self):
+        p = self._make_profile().to_oref0()
+        self.assertEqual(p['bg_targets']['targets'][0]['low'], 100.0)
+        self.assertEqual(p['bg_targets']['targets'][0]['high'], 120.0)
+
+
+class TestProfileGeneratorLoop(unittest.TestCase):
+    """Test Loop format output."""
+
+    def _make_profile(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        return GeneratedProfile(
+            basal_blocks=[
+                {'hour': 0, 'value': 0.8, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+                {'hour': 8, 'value': 0.6, 'period': 'morning', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            isf_blocks=[
+                {'hour': 0, 'value': 50.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            cr_blocks=[
+                {'hour': 0, 'value': 10.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+        )
+
+    def test_loop_uses_seconds(self):
+        p = self._make_profile().to_loop()
+        items = p['basalRateSchedule']['items']
+        self.assertEqual(items[0]['startTime'], 0)
+        self.assertEqual(items[1]['startTime'], 28800)  # 8h * 3600
+
+    def test_loop_has_effect_duration(self):
+        p = self._make_profile().to_loop()
+        self.assertEqual(p['insulinModelSettings']['effectDuration'], 5.0 * 3600)
+
+    def test_loop_has_sensitivity_schedule(self):
+        p = self._make_profile().to_loop()
+        self.assertIn('insulinSensitivitySchedule', p)
+        self.assertEqual(p['insulinSensitivitySchedule']['items'][0]['value'], 50.0)
+
+    def test_loop_has_target_range(self):
+        p = self._make_profile().to_loop()
+        self.assertIn('glucoseTargetRangeSchedule', p)
+
+
+class TestProfileGeneratorTrio(unittest.TestCase):
+    """Test Trio format output."""
+
+    def _make_profile(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        return GeneratedProfile(
+            basal_blocks=[
+                {'hour': 0, 'value': 0.8, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            isf_blocks=[
+                {'hour': 0, 'value': 50.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+                {'hour': 12, 'value': 40.0, 'period': 'midday', 'confidence': 'medium', 'change_pct': -20.0},
+            ],
+            cr_blocks=[
+                {'hour': 0, 'value': 10.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+        )
+
+    def test_trio_dual_time(self):
+        """Trio has both minutes offset AND HH:MM:SS string."""
+        p = self._make_profile().to_trio()
+        basal = p['basalprofile'][0]
+        self.assertEqual(basal['minutes'], 0)
+        self.assertEqual(basal['start'], '00:00:00')
+
+    def test_trio_isf_has_offset_and_start(self):
+        p = self._make_profile().to_trio()
+        isf = p['isfProfile']['sensitivities']
+        self.assertEqual(isf[1]['offset'], 720)  # 12h * 60
+        self.assertEqual(isf[1]['start'], '12:00:00')
+
+    def test_trio_units(self):
+        p = self._make_profile().to_trio()
+        self.assertEqual(p['isfProfile']['units'], 'mg/dl')
+
+
+class TestProfileGeneratorNightscout(unittest.TestCase):
+    """Test Nightscout ProfileSet format."""
+
+    def _make_profile(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        return GeneratedProfile(
+            basal_blocks=[
+                {'hour': 0, 'value': 0.8, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+                {'hour': 18, 'value': 1.1, 'period': 'evening', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            isf_blocks=[
+                {'hour': 0, 'value': 50.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            cr_blocks=[
+                {'hour': 0, 'value': 10.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+        )
+
+    def test_ns_has_profile_set(self):
+        p = self._make_profile().to_nightscout()
+        self.assertIn('defaultProfile', p)
+        self.assertEqual(p['defaultProfile'], 'Default')
+        self.assertIn('store', p)
+        self.assertIn('Default', p['store'])
+
+    def test_ns_basal_hhmm(self):
+        p = self._make_profile().to_nightscout()
+        basal = p['store']['Default']['basal']
+        self.assertEqual(basal[0]['time'], '00:00')
+        self.assertEqual(basal[1]['time'], '18:00')
+
+    def test_ns_sens_has_time_as_seconds(self):
+        p = self._make_profile().to_nightscout()
+        sens = p['store']['Default']['sens']
+        self.assertEqual(sens[0]['timeAsSeconds'], 0)
+
+    def test_ns_values_are_strings(self):
+        """Nightscout stores numeric values as strings."""
+        p = self._make_profile().to_nightscout()
+        basal = p['store']['Default']['basal']
+        self.assertIsInstance(basal[0]['value'], str)
+
+
+class TestProfileGeneratorConstraints(unittest.TestCase):
+    """Test physiological constraint enforcement."""
+
+    def test_clamp_basal(self):
+        from cgmencode.production.profile_generator import _clamp
+        self.assertEqual(_clamp(0.01, 'basal_rate'), 0.025)
+        self.assertEqual(_clamp(15.0, 'basal_rate'), 10.0)
+        self.assertEqual(_clamp(1.0, 'basal_rate'), 1.0)
+
+    def test_clamp_isf(self):
+        from cgmencode.production.profile_generator import _clamp
+        self.assertEqual(_clamp(5.0, 'isf'), 10.0)
+        self.assertEqual(_clamp(600.0, 'isf'), 500.0)
+
+    def test_clamp_cr(self):
+        from cgmencode.production.profile_generator import _clamp
+        self.assertEqual(_clamp(1.0, 'cr'), 3.0)
+        self.assertEqual(_clamp(200.0, 'cr'), 150.0)
+
+
+class TestProfileGeneratorJSON(unittest.TestCase):
+    """Test JSON serialization."""
+
+    def _make_profile(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        return GeneratedProfile(
+            basal_blocks=[{'hour': 0, 'value': 0.8, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            isf_blocks=[{'hour': 0, 'value': 50.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            cr_blocks=[{'hour': 0, 'value': 10.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+        )
+
+    def test_to_json_all_formats(self):
+        import json
+        p = self._make_profile()
+        for fmt in ['oref0', 'loop', 'trio', 'nightscout']:
+            s = p.to_json(fmt)
+            parsed = json.loads(s)
+            self.assertIsInstance(parsed, dict)
+
+    def test_to_json_invalid_format(self):
+        p = self._make_profile()
+        with self.assertRaises(ValueError):
+            p.to_json('invalid')
