@@ -1115,6 +1115,17 @@ _POPULATION_K_NIGHT = 3.8   # median night k from EXP-2588
 _POPULATION_CSF = 2.0       # mg/dL per gram carb (decoupled from ISF/CR)
 
 
+def _estimate_csf_from_tir(tir: float) -> float:
+    """Estimate per-patient CSF from TIR (EXP-2598).
+
+    EXP-2598 found CSF correlates with TIR (r=-0.655): lower TIR patients
+    need higher CSF. Linear fit from 9 patients:
+      CSF ≈ 7.5 - 5.5 × TIR  (clamped to [1.0, 6.5])
+    """
+    csf = 7.5 - 5.5 * tir
+    return float(np.clip(csf, 1.0, 6.5))
+
+
 def _extract_correction_windows(
     glucose: np.ndarray,
     hours: np.ndarray,
