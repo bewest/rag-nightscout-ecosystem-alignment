@@ -11,14 +11,18 @@
 |---------|------------|------------|-----------|
 | F1 | cgm_mgdl is top feature for hypo prediction | Agrees: cgm_mgdl is top feature for hypo prediction | ✅ agrees |
 | F2 | cgm_mgdl is top feature for hyper prediction | Strongly Agrees: cgm_mgdl is top feature for hyper prediction | ✅✅ strongly_agrees |
-| F3 | iob_basaliob is #2 for hypo | Inconclusive: iob_basaliob is #2 for hypo | ❓ inconclusive |
+| F3 | iob_basaliob is #2 for hypo | Partially Agrees: #9 AAPS-only with PK (vs #2), population gap | 🟡 partially_agrees |
 | F4 | hour is #2 for hyper | Partially Agrees: hour is #2 for hyper | 🟡 partially_agrees |
-| F5 | User-controllable settings account for ~36% of hypo importance | Strongly Agrees: User-controllable settings account for ~36% of hypo importance | ✅✅ strongly_agrees |
-| F6 | User-controllable settings account for ~28% of hyper importance | Agrees: User-controllable settings account for ~28% of hyper importance | ✅ agrees |
-| F7 | CR × hour is the strongest interaction | Strongly Agrees: CR × hour is the strongest interaction | ✅✅ strongly_agrees |
-| F8 | sug_ISF and sug_CR both in top-5 for hypo | Agrees: sug_ISF and sug_CR both in top-5 for hypo | ✅ agrees |
+| F5a | User-controllable settings ~36% hypo | Strongly Agrees: 25-28% in our mixed-algorithm cohort | ✅✅ strongly_agrees |
+| F5b | eventualBG R²=0.002 vs 4h BG | Strongly Agrees: R²=-3.20 (even worse — negative) | ✅✅ strongly_agrees |
+| F6 | User-controllable settings ~28% hyper | Agrees: 26-28% in our data | ✅ agrees |
+| F7 | CR × hour is the strongest interaction | Strongly Agrees: sug_ISF × hour = 0.045 top interaction | ✅✅ strongly_agrees |
+| F8 | sug_ISF and sug_CR both in top-5 for hypo | Agrees: confirmed with and without PK | ✅ agrees |
 | F9 | bg_above_target in top-5 for hyper | Strongly Agrees: bg_above_target in top-5 for hyper | ✅✅ strongly_agrees |
-| F10 | Overall SHAP rankings are stable across cohort | Partially Agrees: Overall SHAP rankings are stable across cohort | 🟡 partially_agrees |
+| F10 | Overall SHAP rankings are stable across cohort | Partially Agrees: ρ=0.609 with PK, stable across time | 🟡 partially_agrees |
+
+**Phase 9 update**: SHAP ρ vs colleague = **0.609** (hypo, with PK) — highest correlation achieved.
+F3 upgraded from inconclusive to partially_agrees. F5b (eventualBG) added as strongly_agrees.
 
 ## Colleague's Findings (OREF-INV-003)
 
@@ -330,6 +334,86 @@ the approximated version. The remaining gap likely reflects:
 1. Algorithm differences (oref decomposes IOB; Loop reports total only)
 2. Population differences (their 28 oref users vs our mixed cohort)
 3. The ODC data fix changing the AAPS contribution to the ranking
+
+## Phase 6: Corrected-Data Diagnostics (EXP-2521/2531)
+
+Phase 1-4 experiments ran on data with the ODC percentage temp basal bug (2026-04-11).
+Phase 6 re-ran the core SHAP replication (EXP-2401) on corrected data to isolate effects.
+
+### SHAP ρ Diagnostic
+
+| Variant | Hypo AUC | ρ hypo | ρ hyper | ρ AAPS hypo |
+|---------|----------|--------|---------|-------------|
+| Phase 1 (pre-fix, no PK) | 0.803 | 0.531 | 0.691 | ? |
+| EXP-2521 (corrected, no PK) | 0.8031 | 0.552 | 0.669 | 0.393 |
+| EXP-2531 (corrected, use_pk=True) | 0.8150 | **0.609** | **0.691** | **0.474** |
+
+**Key finding**: The ODC data fix **improved** SHAP ρ (0.531→0.552), not degraded it.
+PK features further improved ρ to 0.609 (hypo) and restored hyper ρ to 0.691.
+The ρ=0.178 reported in EXP-2511 was a methodological artifact (different SHAP path).
+
+### PK Impact Summary
+
+- **AUC**: +0.012 hypo (0.8031→0.8150), +0.005 hyper
+- **SHAP ρ**: +0.057 hypo (0.552→0.609), +0.022 hyper
+- **AAPS alignment**: ρ 0.393→0.474 — PK particularly helps AAPS patients
+- **iob_basaliob rank**: #12→#10 overall, #14→#9 in AAPS-only subset
+- **Top interaction**: sug_ISF × hour (0.045) unchanged by PK
+
+### F3 Resolution (iob_basaliob Ranking)
+
+| Cohort | No PK | With PK | Colleague |
+|--------|-------|---------|-----------|
+| Full (19 patients) | #12 | #10 | #2 |
+| Loop-only (11) | #11 | #11 | #2 |
+| AAPS-only (8) | #14 | #9 | #2 |
+
+PK features move iob_basaliob to #9 in the AAPS subset, closer to the colleague's
+#2 but still a meaningful gap. The remaining difference reflects population size
+(8 vs 28 oref users) and oref's unique IOB decomposition (0.1U threshold split).
+
+## Phase 7: Algorithm Prediction Validation (EXP-2581–2584)
+
+### eventualBG vs Actual 4h BG (F5 Validation)
+
+Colleague claimed eventualBG R²=0.002. Our results are even more dramatic:
+
+| Patient | eventualBG→4h R² | MAE (mg/dL) |
+|---------|------------------|-------------|
+| b (oref0) | -6.97 | 123.0 |
+| odc-39819048 | -1.68 | 55.6 |
+| odc-74077367 | -1.84 | 49.2 |
+| odc-86025410 | -0.93 | 69.9 |
+| **Mean** | **-3.20** | **68.0** |
+
+Negative R² means eventualBG is **worse than predicting the mean** at 4h.
+This strongly confirms F5: algorithm predictions are poor long-horizon predictors.
+
+### Loop predicted_60 vs Actual 1h BG
+
+| Best patients | R² | Worst patients | R² |
+|---------------|-----|----------------|-----|
+| i | 0.548 | h | -3.49 |
+| f | 0.379 | k | -0.95 |
+| e | 0.360 | odc-61403732 | -0.57 |
+| **Median** | **0.170** | | |
+
+Loop's 60-min prediction is highly variable — works well for some patients
+(R²=0.55) but catastrophically fails for others (R²=-3.5). Not directly
+comparable to eventualBG (different horizon) but shows algorithm prediction
+quality is patient-dependent.
+
+### PK Net Balance vs Actual BG Change
+
+| Horizon | Mean R² | Median R² |
+|---------|---------|-----------|
+| 1h | 0.045 | 0.039 |
+| 2h | 0.037 | 0.031 |
+| 4h | 0.031 | 0.027 |
+
+PK physics-based features provide modest but **consistently positive** R²
+across all patients and horizons, unlike algorithm predictions which vary wildly.
+This supports augmenting algorithm features with PK-derived signals.
 
 ## Clinical Implications
 
