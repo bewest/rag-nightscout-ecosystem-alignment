@@ -1635,6 +1635,53 @@ def advise_loop_workload(
     )]
 
 
+def _consolidate_recommendations(
+    recs: List[SettingsRecommendation],
+) -> List[SettingsRecommendation]:
+    """Resolve contradictory recommendations for the same parameter.
+
+    When multiple advisories recommend opposite directions for the same
+    parameter in overlapping time windows, keep only the direction with
+    higher total weighted score (confidence × |predicted_tir_delta|).
+
+    EXP-2597 found 15 contradictions across 7/9 patients, primarily ISF
+    advisories (sim-based says decrease, correction-based says increase).
+    """
+    from collections import defaultdict
+
+    # Group by parameter
+    groups: dict = defaultdict(list)
+    for r in recs:
+        p = r.parameter.value if hasattr(r.parameter, 'value') else str(r.parameter)
+        groups[p].append(r)
+
+    consolidated = []
+    for param, param_recs in groups.items():
+        if len(param_recs) <= 1:
+            consolidated.extend(param_recs)
+            continue
+
+        # Check for directional conflicts
+        directions = set(r.direction for r in param_recs)
+        if len(directions) <= 1:
+            consolidated.extend(param_recs)
+            continue
+
+        # Conflict exists — compute weighted score per direction
+        dir_scores: dict = defaultdict(float)
+        dir_recs: dict = defaultdict(list)
+        for r in param_recs:
+            score = r.confidence * abs(r.predicted_tir_delta)
+            dir_scores[r.direction] += score
+            dir_recs[r.direction].append(r)
+
+        # Keep only the winning direction
+        winning_dir = max(dir_scores, key=dir_scores.get)
+        consolidated.extend(dir_recs[winning_dir])
+
+    return consolidated
+
+
 def generate_settings_advice(glucose: np.ndarray,
                              metabolic: Optional[MetabolicState],
                              hours: np.ndarray,
@@ -1818,6 +1865,12 @@ def generate_settings_advice(glucose: np.ndarray,
                        f"U/hr) between 00:00-06:00. Glucose drifts "
                        f"{overnight.drift_mg_dl_per_hour:+.1f} mg/dL/hr overnight."),
         ))
+
+    # Consolidate contradictory recommendations (EXP-2597)
+    # Multiple advisories can produce opposite directions for the same
+    # parameter. Group by parameter and resolve conflicts by keeping
+    # the higher weighted-score (confidence × |delta|) direction.
+    recs = _consolidate_recommendations(recs)
 
     # Sort by predicted impact
     recs.sort(key=lambda r: abs(r.predicted_tir_delta), reverse=True)
