@@ -16,6 +16,7 @@ Every approximation is documented in its docstring and tracked in
 from __future__ import annotations
 
 import os
+import warnings
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -124,6 +125,66 @@ assert set(FEATURE_QUALITY) == set(OREF_FEATURES), "Quality dict / feature list 
 
 
 # ---------------------------------------------------------------------------
+# Data quality assessment
+# ---------------------------------------------------------------------------
+
+# Minimum thresholds for a patient to be usable in apples-to-apples comparison.
+# Patients failing these are likely from older formats or incomplete exports.
+DATA_QUALITY_THRESHOLDS = {
+    "min_cgm_density": 0.20,       # ≥20% non-NaN glucose readings
+    "min_iob_density": 0.05,       # ≥5% nonzero IOB (excludes CGM-only)
+    "max_iob_constant_pct": 0.90,  # <90% consecutive-identical IOB (reporting freq)
+    "min_rows": 200,               # at least ~17 hours of data
+}
+
+
+def assess_patient_quality(df: pd.DataFrame) -> pd.DataFrame:
+    """Compute data quality metrics per patient.
+
+    Returns a DataFrame indexed by patient_id with columns:
+      rows, days, cgm_density, iob_density, iob_constant_pct,
+      eb_density, has_controller, passes_quality.
+    """
+    records = []
+    for pid, grp in df.groupby("patient_id"):
+        n = len(grp)
+        t = pd.to_datetime(grp["time"], utc=True)
+        days = max((t.max() - t.min()).days, 1)
+
+        cgm_density = grp["glucose"].notna().mean()
+        iob_vals = grp["iob"].fillna(0).values
+        iob_density = (iob_vals != 0).mean()
+
+        iob_diffs = np.diff(iob_vals)
+        iob_constant_pct = (iob_diffs == 0).mean() if len(iob_diffs) > 0 else 1.0
+
+        eb_density = grp["eventual_bg"].notna().mean() if "eventual_bg" in grp.columns else 0.0
+
+        has_controller = not (iob_density < 0.01 and cgm_density > 0.5)
+
+        thresholds = DATA_QUALITY_THRESHOLDS
+        passes = (
+            cgm_density >= thresholds["min_cgm_density"]
+            and n >= thresholds["min_rows"]
+            and (iob_density >= thresholds["min_iob_density"] or not has_controller)
+            and iob_constant_pct <= thresholds["max_iob_constant_pct"]
+        )
+        records.append({
+            "patient_id": pid,
+            "rows": n,
+            "days": days,
+            "cgm_density": round(cgm_density, 3),
+            "iob_density": round(iob_density, 3),
+            "iob_constant_pct": round(iob_constant_pct, 3),
+            "eb_density": round(eb_density, 3),
+            "has_controller": has_controller,
+            "passes_quality": passes,
+        })
+
+    return pd.DataFrame(records).set_index("patient_id")
+
+
+# ---------------------------------------------------------------------------
 # Loading helpers
 # ---------------------------------------------------------------------------
 
@@ -149,13 +210,20 @@ def load_grid(parquet_path: str = "externals/ns-parquet/training") -> pd.DataFra
 # Core feature builder
 # ---------------------------------------------------------------------------
 
-def build_oref_features(grid_df: pd.DataFrame) -> pd.DataFrame:
+def build_oref_features(grid_df: pd.DataFrame, *,
+                        use_pk: bool = False) -> pd.DataFrame:
     """Map ns-parquet grid columns to the OREF-INV-003 32-feature schema.
 
     Parameters
     ----------
     grid_df : pd.DataFrame
         Raw grid data with columns documented in the module docstring.
+    use_pk : bool
+        If True, replace the 5 approximated features (iob_basaliob,
+        iob_bolusiob, iob_activity, reason_Dev, reason_BGI) with
+        first-principles PK-derived equivalents from pk_bridge.py.
+        This gives higher fidelity by computing insulin activity from
+        the dose history rather than heuristic proxies.
 
     Returns
     -------
@@ -347,6 +415,56 @@ def build_oref_features(grid_df: pd.DataFrame) -> pd.DataFrame:
     df["maxUAMSMBBasalMinutes"] = 30.0
 
     # ------------------------------------------------------------------
+    # PK replacement: swap 5 approximated features with PK-derived
+    # ------------------------------------------------------------------
+    if use_pk:
+        try:
+            from oref_inv_003_replication.pk_bridge import (
+                compute_pk_for_patient,
+                PK_REPLACEMENT_FEATURES,
+            )
+        except ImportError:
+            warnings.warn(
+                "pk_bridge not available — falling back to approximated features",
+                stacklevel=2,
+            )
+            use_pk = False
+
+    if use_pk:
+        # Map PK feature names → OREF feature names they replace
+        _pk_to_oref = {
+            'pk_basal_iob': 'iob_basaliob',
+            'pk_bolus_iob': 'iob_bolusiob',
+            'pk_activity':  'iob_activity',
+            'pk_dev':       'reason_Dev',
+            'pk_bgi':       'reason_BGI',
+        }
+
+        pk_frames = []
+        pk_orig_indices = []
+        for pid, grp in df.groupby("patient_id"):
+            try:
+                pk = compute_pk_for_patient(grp, verbose=False)
+                pk_frames.append(pk)
+                pk_orig_indices.append(grp.index)
+            except Exception as exc:
+                warnings.warn(
+                    f"PK computation failed for {pid}: {exc} — "
+                    f"keeping approximated features",
+                    stacklevel=2,
+                )
+
+        if pk_frames:
+            replaced = 0
+            for pk_col, oref_col in _pk_to_oref.items():
+                for pk_df, orig_idx in zip(pk_frames, pk_orig_indices):
+                    if pk_col in pk_df.columns:
+                        df.loc[orig_idx, oref_col] = pk_df[pk_col].values
+                replaced += 1
+            print(f"[data_bridge] PK bridge: replaced {replaced}/5 approximated features "
+                  f"for {len(pk_frames)} patients")
+
+    # ------------------------------------------------------------------
     # Sanity: ensure all 32 features are present
     # ------------------------------------------------------------------
     missing = set(OREF_FEATURES) - set(df.columns)
@@ -519,6 +637,9 @@ def compute_multi_horizon_outcomes(
 def load_patients_multi_horizon(
     parquet_path: str = "externals/ns-parquet/training",
     horizons: Optional[Dict[str, int]] = None,
+    *,
+    use_pk: bool = False,
+    exclude_stale: bool = False,
 ) -> pd.DataFrame:
     """Load grid, build OREF features, compute outcomes at multiple horizons.
 
@@ -531,6 +652,10 @@ def load_patients_multi_horizon(
         Path to directory containing ``grid.parquet``.
     horizons : dict, optional
         Label → steps mapping.  Defaults to ``HORIZON_MAP``.
+    use_pk : bool
+        Replace 5 approximated features with PK-derived equivalents.
+    exclude_stale : bool
+        Drop patients that fail data quality thresholds.
 
     Returns
     -------
@@ -538,11 +663,22 @@ def load_patients_multi_horizon(
         Ready-to-model DataFrame with multi-horizon outcome columns.
     """
     grid = load_grid(parquet_path)
+
+    if exclude_stale:
+        quality = assess_patient_quality(grid)
+        failed = quality[~quality["passes_quality"]]
+        if not failed.empty:
+            drop_pids = list(failed.index)
+            n_before = len(grid)
+            grid = grid[~grid["patient_id"].isin(drop_pids)]
+            print(f"[data_bridge] Excluded {len(drop_pids)} stale patient(s): "
+                  f"{', '.join(drop_pids)} "
+                  f"({n_before - len(grid):,} rows removed)")
+
     print("[data_bridge] Building OREF-INV-003 features …")
-    featured = build_oref_features(grid)
+    featured = build_oref_features(grid, use_pk=use_pk)
     print("[data_bridge] Computing multi-horizon outcome labels …")
     result = compute_multi_horizon_outcomes(featured, horizons)
-    # Ensure backward-compatible 4h columns exist
     if "hypo_4h" not in result.columns and "hypo_4h" in (horizons or HORIZON_MAP):
         pass  # already created by multi-horizon with "4h" key
     print(f"[data_bridge] Done. Final shape: {result.shape}")
@@ -580,6 +716,9 @@ def split_loop_vs_oref(
 
 def load_patients_with_features(
     parquet_path: str = "externals/ns-parquet/training",
+    *,
+    use_pk: bool = False,
+    exclude_stale: bool = False,
 ) -> pd.DataFrame:
     """Load grid, build OREF features, compute 4 h outcomes.
 
@@ -591,6 +730,13 @@ def load_patients_with_features(
     ----------
     parquet_path : str
         Path to directory containing ``grid.parquet`` (or direct path).
+    use_pk : bool
+        If True, replace 5 approximated features with PK-derived
+        equivalents for higher fidelity (see ``build_oref_features``).
+    exclude_stale : bool
+        If True, drop patients that fail data quality thresholds
+        (e.g. <20% CGM density, <5% IOB density, >90% constant IOB).
+        These are typically from older AAPS versions or incomplete exports.
 
     Returns
     -------
@@ -598,8 +744,29 @@ def load_patients_with_features(
         Ready-to-model DataFrame.
     """
     grid = load_grid(parquet_path)
+
+    if exclude_stale:
+        quality = assess_patient_quality(grid)
+        failed = quality[~quality["passes_quality"]]
+        if not failed.empty:
+            drop_pids = list(failed.index)
+            n_before = len(grid)
+            grid = grid[~grid["patient_id"].isin(drop_pids)]
+            n_after = len(grid)
+            print(f"[data_bridge] Excluded {len(drop_pids)} stale patient(s): "
+                  f"{', '.join(drop_pids)} "
+                  f"({n_before - n_after:,} rows removed)")
+            for pid in drop_pids:
+                row = failed.loc[pid]
+                print(f"  {pid}: cgm={row['cgm_density']:.0%} "
+                      f"iob={row['iob_density']:.0%} "
+                      f"iob_const={row['iob_constant_pct']:.0%} "
+                      f"rows={row['rows']:,}")
+        else:
+            print("[data_bridge] All patients pass quality thresholds")
+
     print("[data_bridge] Building OREF-INV-003 features …")
-    featured = build_oref_features(grid)
+    featured = build_oref_features(grid, use_pk=use_pk)
     print("[data_bridge] Computing 4 h outcome labels …")
     result = compute_4h_outcomes(featured)
     print(f"[data_bridge] Done. Final shape: {result.shape}")

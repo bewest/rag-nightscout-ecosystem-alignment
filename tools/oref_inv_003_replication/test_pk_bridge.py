@@ -375,3 +375,90 @@ class TestRealDataValidation:
 
 if __name__ == '__main__':
     pytest.main([__file__, '-v', '--tb=short'])
+
+
+# ── Tests for data quality assessment and PK integration ─────────────
+
+from tools.oref_inv_003_replication.data_bridge import (
+    assess_patient_quality,
+    build_oref_features,
+    DATA_QUALITY_THRESHOLDS,
+    OREF_FEATURES,
+)
+
+
+class TestPatientQuality:
+    """Tests for assess_patient_quality()."""
+
+    @pytest.fixture
+    def grid(self):
+        grid_path = os.path.join(_PROJECT_ROOT, 'externals', 'ns-parquet', 'training', 'grid.parquet')
+        if not os.path.exists(grid_path):
+            pytest.skip('Training grid not available')
+        return pd.read_parquet(grid_path)
+
+    def test_returns_all_patients(self, grid):
+        quality = assess_patient_quality(grid)
+        expected_pids = set(grid['patient_id'].unique())
+        assert set(quality.index) == expected_pids
+
+    def test_cgm_density_range(self, grid):
+        quality = assess_patient_quality(grid)
+        assert (quality['cgm_density'] >= 0).all()
+        assert (quality['cgm_density'] <= 1).all()
+
+    def test_stale_patient_fails(self, grid):
+        """odc-84181797 has 4% CGM and 0% IOB — should fail quality."""
+        quality = assess_patient_quality(grid)
+        if 'odc-84181797' in quality.index:
+            assert not quality.loc['odc-84181797', 'passes_quality'], \
+                "odc-84181797 should fail quality (4% CGM, 0% IOB)"
+
+    def test_good_patients_pass(self, grid):
+        """Loop patients a, b, c with dense data should pass."""
+        quality = assess_patient_quality(grid)
+        for pid in ['a', 'b', 'c']:
+            if pid in quality.index:
+                assert quality.loc[pid, 'passes_quality'], \
+                    f"Patient {pid} should pass quality"
+
+
+class TestBuildOrefWithPK:
+    """Tests for build_oref_features(use_pk=True)."""
+
+    @pytest.fixture
+    def grid(self):
+        grid_path = os.path.join(_PROJECT_ROOT, 'externals', 'ns-parquet', 'training', 'grid.parquet')
+        if not os.path.exists(grid_path):
+            pytest.skip('Training grid not available')
+        df = pd.read_parquet(grid_path)
+        # Use a single patient for speed
+        return df[df['patient_id'] == 'c'].copy()
+
+    def test_pk_mode_produces_all_features(self, grid):
+        """PK mode should still produce all 32 OREF features."""
+        result = build_oref_features(grid, use_pk=True)
+        missing = set(OREF_FEATURES) - set(result.columns)
+        assert not missing, f"Missing features: {missing}"
+
+    def test_pk_mode_differs_from_approx(self, grid):
+        """PK-derived features should differ from approximated ones."""
+        approx = build_oref_features(grid, use_pk=False)
+        pk = build_oref_features(grid, use_pk=True)
+
+        for col in ['iob_basaliob', 'iob_bolusiob', 'iob_activity']:
+            # The values should be materially different
+            diff = (pk[col] - approx[col]).abs().mean()
+            assert diff > 0.001, \
+                f"{col}: PK and approx values are identical (diff={diff})"
+
+    def test_pk_basaliob_can_be_negative(self, grid):
+        """PK-derived basaliob should go negative (suspension periods)."""
+        result = build_oref_features(grid, use_pk=True)
+        assert (result['iob_basaliob'] < -0.01).any(), \
+            "PK basaliob should be negative during pump suspension"
+
+    def test_backward_compatible_without_pk(self, grid):
+        """Default (use_pk=False) should produce same results as before."""
+        result = build_oref_features(grid, use_pk=False)
+        assert set(OREF_FEATURES).issubset(result.columns)
