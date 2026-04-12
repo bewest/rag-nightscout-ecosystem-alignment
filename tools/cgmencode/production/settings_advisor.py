@@ -39,6 +39,12 @@ from .types import (
     PeriodMetrics, PatternProfile,
 )
 from .metabolic_engine import _FAST_TAU_HOURS, _PERSISTENT_FRACTION
+from .forward_simulator import (
+    forward_simulate as _fwd_simulate,
+    TherapySettings as _TherapySettings,
+    InsulinEvent as _InsulinEvent,
+    CarbEvent as _CarbEvent,
+)
 
 
 # Physics simulation parameters
@@ -839,6 +845,244 @@ def advise_isf_segmented(glucose: np.ndarray,
     return recs
 
 
+# ── Forward Sim Joint ISF×CR Optimization (EXP-2562/2567/2568) ────────
+
+# Grid parameters for joint optimization
+_JOINT_ISF_GRID = [0.5, 0.7, 0.9, 1.0, 1.1, 1.3, 1.5]
+_JOINT_CR_GRID = [1.0, 1.4, 1.8, 2.0, 2.2, 2.5, 3.0]
+_MIN_MEAL_WINDOWS = 10
+_MEAL_CARB_THRESHOLD = 10.0   # grams
+_MEAL_BOLUS_THRESHOLD = 0.1   # units
+_SIM_DURATION_HOURS = 4.0
+_SIM_WINDOW_STEPS = 48        # 4h × 12 steps/h
+
+
+def _extract_meal_windows_from_arrays(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    bolus: np.ndarray,
+    carbs: np.ndarray,
+    iob: np.ndarray,
+    profile: PatientProfile,
+    max_windows: int = 50,
+) -> list:
+    """Extract meal windows from time-aligned arrays for forward sim.
+
+    Finds points where carbs > threshold and bolus > threshold, then
+    extracts 4-hour windows of glucose data for simulation comparison.
+    """
+    N = len(glucose)
+    meal_mask = (carbs > _MEAL_CARB_THRESHOLD) & (bolus > _MEAL_BOLUS_THRESHOLD)
+    meal_indices = np.where(meal_mask)[0]
+
+    # Extract profile values (median across schedule entries)
+    isf_vals = [e.get('value', e.get('sensitivity', 50))
+                for e in profile.isf_mgdl()]
+    cr_vals = [e.get('value', e.get('carbratio', 10))
+               for e in profile.cr_schedule]
+    basal_vals = [e.get('value', e.get('rate', 0.8))
+                  for e in profile.basal_schedule]
+    median_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
+    median_cr = float(np.median([float(v) for v in cr_vals])) if cr_vals else 10.0
+    median_basal = float(np.median([float(v) for v in basal_vals])) if basal_vals else 0.8
+
+    windows = []
+    for idx in meal_indices:
+        if idx + _SIM_WINDOW_STEPS >= N:
+            continue
+        window_glucose = glucose[idx:idx + _SIM_WINDOW_STEPS]
+        if np.sum(np.isnan(window_glucose)) > 5:
+            continue
+        if np.isnan(glucose[idx]):
+            continue
+
+        windows.append({
+            'g': float(glucose[idx]),
+            'b': float(bolus[idx]),
+            'c': float(carbs[idx]),
+            'iob': float(iob[idx]) if not np.isnan(iob[idx]) else 0.0,
+            'h': float(hours[idx]),
+            'isf': median_isf,
+            'cr': median_cr,
+            'basal': median_basal,
+        })
+        if len(windows) >= max_windows:
+            break
+
+    return windows
+
+
+def _evaluate_joint_settings(windows: list, isf_mult: float, cr_mult: float) -> Optional[float]:
+    """Evaluate a single ISF×CR multiplier pair across meal windows.
+
+    Returns mean TIR (70-180 mg/dL) as a fraction, or None if evaluation fails.
+    """
+    tirs = []
+    for w in windows:
+        try:
+            s = _TherapySettings(
+                isf=w['isf'] * isf_mult,
+                cr=w['cr'] * cr_mult,
+                basal_rate=w['basal'],
+                dia_hours=5.0,
+            )
+            r = _fwd_simulate(
+                initial_glucose=w['g'], settings=s,
+                duration_hours=_SIM_DURATION_HOURS,
+                start_hour=w['h'],
+                bolus_events=[_InsulinEvent(0, w['b'])],
+                carb_events=[_CarbEvent(0, w['c'])],
+                initial_iob=w['iob'],
+                noise_std=0, seed=42,
+            )
+            gluc = np.array(r.glucose)
+            tirs.append(float(np.mean((gluc >= 70) & (gluc <= 180))))
+        except Exception:
+            pass
+    return float(np.mean(tirs)) if tirs else None
+
+
+def advise_forward_sim_optimization(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    profile: PatientProfile,
+    bolus: Optional[np.ndarray] = None,
+    carbs: Optional[np.ndarray] = None,
+    iob: Optional[np.ndarray] = None,
+    days_of_data: float = 0.0,
+) -> List[SettingsRecommendation]:
+    """Generate ISF/CR recommendations using forward sim joint optimization.
+
+    Research basis:
+      - EXP-2562: Forward sim counterfactuals validated (ISF+20%→+2.1pp TIR)
+      - EXP-2567: CR optimal ~2× profile (mean 2.10, median 2.00)
+      - EXP-2568: Joint ISF×CR adds +8.9pp synergy vs single-axis
+      - EXP-2569: Validated for DIRECTION only, NOT magnitude predictions
+
+    Extracts meal windows from patient data, runs 7×7 joint ISF×CR grid
+    search using the forward simulator, and generates directional
+    recommendations for settings adjustments.
+
+    NOTE: predicted_tir_delta values are DIRECTIONAL INDICATORS, not
+    calibrated magnitude predictions. The forward sim cannot predict
+    absolute TIR improvement (EXP-2569: MAE=0.409).
+
+    Args:
+        glucose: (N,) cleaned glucose at 5-min intervals.
+        hours: (N,) fractional hours.
+        profile: current therapy profile with ISF, CR, basal.
+        bolus: (N,) bolus insulin per step.
+        carbs: (N,) carb intake per step.
+        iob: (N,) insulin on board per step.
+        days_of_data: data coverage in days.
+
+    Returns:
+        List of SettingsRecommendation (0-2 items: ISF and/or CR).
+    """
+    if bolus is None or carbs is None or iob is None:
+        return []
+    if days_of_data < MIN_DATA_DAYS:
+        return []
+
+    windows = _extract_meal_windows_from_arrays(
+        glucose, hours, bolus, carbs, iob, profile
+    )
+    if len(windows) < _MIN_MEAL_WINDOWS:
+        return []
+
+    # Run joint grid search
+    best_tir = -1.0
+    best_isf, best_cr = 1.0, 1.0
+    baseline_tir = _evaluate_joint_settings(windows, 1.0, 1.0)
+    if baseline_tir is None:
+        return []
+
+    for isf_m in _JOINT_ISF_GRID:
+        for cr_m in _JOINT_CR_GRID:
+            tir = _evaluate_joint_settings(windows, isf_m, cr_m)
+            if tir is not None and tir > best_tir:
+                best_tir = tir
+                best_isf = isf_m
+                best_cr = cr_m
+
+    recs = []
+    confidence = min(1.0, days_of_data / HIGH_CONFIDENCE_DAYS) * min(1.0, len(windows) / 30)
+
+    # ISF recommendation (if optimal differs from current)
+    if abs(best_isf - 1.0) > 0.05:
+        isf_vals = [e.get('value', e.get('sensitivity', 50))
+                    for e in profile.isf_mgdl()]
+        current_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
+        suggested_isf = current_isf * best_isf
+        direction = "decrease" if best_isf < 1.0 else "increase"
+        magnitude = abs(best_isf - 1.0) * 100
+
+        # Directional delta — NOT a calibrated prediction
+        isf_only_tir = _evaluate_joint_settings(windows, best_isf, 1.0)
+        isf_delta = ((isf_only_tir or baseline_tir) - baseline_tir) * 100
+
+        recs.append(SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction=direction,
+            magnitude_pct=round(magnitude, 0),
+            current_value=current_isf,
+            suggested_value=round(suggested_isf, 1),
+            predicted_tir_delta=round(isf_delta, 1),
+            affected_hours=(0.0, 24.0),
+            confidence=round(confidence, 2),
+            evidence=(
+                f"Forward sim joint optimization (EXP-2568): optimal ISF "
+                f"multiplier {best_isf:.1f}× across {len(windows)} meal "
+                f"windows. Joint optimal: ISF×{best_isf}, CR×{best_cr}."
+            ),
+            rationale=(
+                f"{direction.capitalize()} ISF by {magnitude:.0f}% "
+                f"(from {current_isf:.0f} to {suggested_isf:.0f} mg/dL/U). "
+                f"Forward sim analysis of meal responses suggests corrections "
+                f"are {'too aggressive' if best_isf < 1.0 else 'too weak'} "
+                f"at current settings."
+            ),
+        ))
+
+    # CR recommendation (if optimal differs from current)
+    if abs(best_cr - 1.0) > 0.05:
+        cr_vals = [e.get('value', e.get('carbratio', 10))
+                   for e in profile.cr_schedule]
+        current_cr = float(np.median([float(v) for v in cr_vals])) if cr_vals else 10.0
+        suggested_cr = current_cr * best_cr
+        direction = "increase" if best_cr > 1.0 else "decrease"
+        magnitude = abs(best_cr - 1.0) * 100
+
+        cr_only_tir = _evaluate_joint_settings(windows, 1.0, best_cr)
+        cr_delta = ((cr_only_tir or baseline_tir) - baseline_tir) * 100
+
+        recs.append(SettingsRecommendation(
+            parameter=SettingsParameter.CR,
+            direction=direction,
+            magnitude_pct=round(magnitude, 0),
+            current_value=current_cr,
+            suggested_value=round(suggested_cr, 1),
+            predicted_tir_delta=round(cr_delta, 1),
+            affected_hours=(0.0, 24.0),
+            confidence=round(confidence, 2),
+            evidence=(
+                f"Forward sim joint optimization (EXP-2568): optimal CR "
+                f"multiplier {best_cr:.1f}× across {len(windows)} meal "
+                f"windows. Joint optimal: ISF×{best_isf}, CR×{best_cr}. "
+                f"Population finding: effective CR ≈ 2× profile CR (EXP-2567)."
+            ),
+            rationale=(
+                f"{direction.capitalize()} CR by {magnitude:.0f}% "
+                f"(from {current_cr:.0f} to {suggested_cr:.0f} g/U). "
+                f"Forward sim analysis suggests meal boluses are "
+                f"{'too large' if best_cr > 1.0 else 'too small'} "
+                f"relative to actual glucose response."
+            ),
+        ))
+
+    return recs
+
+
 def generate_settings_advice(glucose: np.ndarray,
                              metabolic: Optional[MetabolicState],
                              hours: np.ndarray,
@@ -869,6 +1113,7 @@ def generate_settings_advice(glucose: np.ndarray,
     - Overnight drift basal assessment (EXP-2371–2378)
     - Correction threshold (EXP-2528)
     - CR adequacy analysis (EXP-2535/2536)
+    - Forward sim joint ISF×CR optimization (EXP-2562/2567/2568)
 
     Args:
         glucose: (N,) cleaned glucose.
@@ -942,6 +1187,14 @@ def generate_settings_advice(glucose: np.ndarray,
     if meal_events is not None:
         adequacy_recs = advise_cr_adequacy(meal_events, profile)
         recs.extend(adequacy_recs)
+
+    # Forward sim joint ISF×CR optimization (EXP-2562/2567/2568)
+    if bolus is not None and carbs is not None and iob is not None:
+        fwd_recs = advise_forward_sim_optimization(
+            glucose, hours, profile,
+            bolus=bolus, carbs=carbs, iob=iob,
+            days_of_data=days_of_data)
+        recs.extend(fwd_recs)
 
     # Overnight drift assessment (EXP-2371–2378)
     overnight = assess_overnight_drift(
