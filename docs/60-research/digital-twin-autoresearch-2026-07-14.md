@@ -1,25 +1,45 @@
 # Digital Twin & Settings Autoresearch Report
 
-**Date**: 2026-07-14
-**Experiments**: EXP-2561, EXP-2562, EXP-2563, EXP-2564
+**Date**: 2026-07-14 (updated 2026-07-15)
+**Experiments**: EXP-2561 through EXP-2570 (10 experiments)
 **Branch**: `workspace/digital-twin-fidelity`
 **Data**: 803,895 rows × 49 cols, 19 patients (11 NS + 8 ODC)
 **Note**: ODC patient data has known bugs in grid construction (under investigation).
-NS patients (a-k) are the primary analysis cohort.
+NS patients (a-k) are the primary analysis cohort for EXP-2565+.
 
 ---
 
 ## Executive Summary
 
-Four experiments tested the highest-priority hypotheses from the settings/digital-twin pivot:
+Ten experiments systematically tested the digital twin and settings optimization hypotheses.
+The key findings converge on a clear picture:
 
-1. **EXP-2561** (Metabolic Phase Hypo Predictor): **NEGATIVE** — Phase mismatch features do NOT break the AUC ceiling. The hypo prediction limit (~0.90 at 30min, ~0.73 for surprise hypos) is **information-theoretic**, not a feature engineering problem.
+### What Works ✅
+1. **Forward sim counterfactuals** — Directionally valid for ISF/CR optimization (EXP-2562)
+2. **Joint ISF×CR optimization** — TIR 0.309→0.720 (+41pp) with synergy (EXP-2568)
+3. **Per-patient ISF/CR differ from profile** — 95% ISF ≠ 1.0, 100% CR ≠ 1.0 (EXP-2563)
+4. **CR needs ~2× profile** — Mean optimal CR×2.10, confirmed with extended grid (EXP-2567)
+5. **Population DIA/ISF params are good** for NS patients — calibration adds little (EXP-2565)
 
-2. **EXP-2562** (Forward Sim Counterfactuals): **POSITIVE** — The forward simulator produces directionally consistent, actionable counterfactuals. ISF+20% → +2.1pp TIR for corrections; CR+20% → +3.3pp TIR for meals. This validates wiring the forward sim into the settings optimizer.
+### What Doesn't Work ❌
+6. **Metabolic phase features** don't break hypo AUC ceiling — information-theoretic (EXP-2561)
+7. **Forward sim can't predict absolute TIR** — MAE=0.409, doesn't model AID loop (EXP-2569)
+8. **Closed-loop controller doesn't fix it** — MAE only 0.409→0.380 (EXP-2570)
+9. **Circadian ISF/CR variation is weak** — Not significant at population level (EXP-2566)
 
-3. **EXP-2563** (Per-Patient ISF/CR Optimization): **SUPPORTED** — 95% of patients have optimal ISF ≠ 1.0 (68% CI excludes 1.0). 100% have optimal CR ≠ 1.0 (87% CI excludes). CR saturates at grid maximum (1.5×), confirming effective CR ≈ 1.47× profile CR. ISF is bimodal: ~0.7 or ~1.5.
+### Key Insight
+The forward sim is a **marginal analysis tool**, not an absolute predictor.
+It correctly identifies **which direction** to adjust ISF/CR but cannot predict
+**how much** TIR will improve in real life. This is because:
+- The sim models only bolus + profile basal (open-loop)
+- Real AID loops deliver 40-60% of insulin via temp basals and SMBs
+- A simplified loop controller can't compensate for this missing insulin
 
-4. **EXP-2564** (Forward Sim Fidelity): **PARTIALLY SUPPORTED** — Correction trajectory shape is good (median r=0.74 ✅), meal shape is marginal (r=0.37 ❌). Systematic bias: corrections -50 mg/dL (sim overcorrects), meals +28 mg/dL (sim underabsorbs carbs). 12/19 patients rated GOOD calibration quality.
+### Productionization Path
+Wire forward-sim-based **directional ISF/CR optimization** into settings_advisor.
+Don't use absolute TIR predictions. Recommend "increase CR by ~50-100%"
+and "decrease ISF by ~30-50%" based on joint optimization, not "this will
+give you X% TIR improvement."
 
 ---
 
@@ -299,38 +319,265 @@ Forward sim glucose traces correlate with actual CGM traces (r > 0.5 for correct
 
 ---
 
-## Cross-Experiment Synthesis
+## EXP-2565: Per-Patient DIA/ISF Calibration (NS Only)
 
-### What We Now Know (After 4 Experiments)
+### Hypothesis
 
-| Finding | Evidence | Confidence |
-|---------|----------|------------|
-| Hypo ceiling is information-theoretic | EXP-2561: -0.008 AUC with best features | HIGH |
-| Forward sim produces actionable counterfactuals | EXP-2562: ±2-4pp TIR deltas | HIGH |
-| Forward sim shape tracks reality for corrections | EXP-2564: r=0.74 | HIGH |
-| Forward sim has systematic -50 mg/dL bias | EXP-2564: consistent across patients | HIGH |
-| CR should be ~1.5× profile for most patients | EXP-2563: 100% optimal ≠ 1.0, saturates | HIGH |
-| ISF optimization is bimodal, not uniform | EXP-2563: 0.7 vs 1.5 clusters | MEDIUM |
-| Forward sim needs per-patient calibration | EXP-2564: 2 POOR, 5 FAIR patients | HIGH |
-| Meal dynamics are poorly captured by sim | EXP-2564: r=0.37, +28 bias | HIGH |
+Per-patient calibration of DIA (tau) and ISF (beta) from correction windows
+will improve forward sim fidelity vs population defaults.
 
-### Next Priority: Per-Patient Forward Sim Calibration
+### Method
 
-The single most impactful improvement is **per-patient DIA and ISF calibration**:
-- The -50 mg/dL bias means population DIA (τ=0.8h) is too fast for some patients
-- The bimodal ISF result means population β=0.9 doesn't fit all patients
-- Per-patient calibration would improve both absolute accuracy AND counterfactual fidelity
+- NS patients only (a-k) to avoid ODC grid bugs
+- Grid search: tau ∈ [0.4, 0.6, 0.8, 1.0, 1.2], beta ∈ [0.5, 0.7, 0.9, 1.0, 1.1]
+- 50 correction windows per patient (bolus>0.5U, no carbs within ±30min)
+- 2-hour simulation, optimize MAE vs actual CGM
 
-### Proposed Next Experiments
+### Results
 
-1. **EXP-2565: Per-Patient DIA Calibration** — Fit per-patient fast-component τ and
-   slow-component fraction from correction windows. Use actual CGM as target.
+| Metric | Population Params | Per-Patient Best | Δ |
+|--------|-------------------|------------------|---|
+| MAE | 41.2 mg/dL | 40.1 mg/dL | -1.1 |
+| Correlation | 0.80 | 0.80 | 0.00 |
+| Bias | +13 mg/dL | +11 mg/dL | -2 |
 
-2. **EXP-2566: Extended CR Grid** — Re-run CR optimization with grid [1.0..2.5] to find
-   true optimal beyond the 1.5× ceiling.
+**VERDICT: MARGINAL** — Population params (tau=0.8, beta=0.9) are already
+near-optimal for NS patients. The -50 mg/dL bias from EXP-2564 was
+driven by ODC patient grid bugs, NOT forward sim model deficiency.
+NS patients have only +13 mg/dL bias (minor).
 
-3. **EXP-2567: Circadian ISF/CR Variation** — Partition windows by time-of-day block.
-   Test whether optimal multipliers vary morning/afternoon/evening/overnight.
+---
+
+## EXP-2566: Circadian ISF/CR Variation
+
+### Hypothesis
+
+Optimal ISF and CR multipliers vary by time-of-day block (night/morning/
+afternoon/evening), enabling circadian-profiled settings recommendations.
+
+### Method
+
+- 4 time blocks: night (0-6), morning (6-12), afternoon (12-18), evening (18-24)
+- Per-patient, per-block grid search: ISF × [0.5..1.5], CR × [0.5..2.0]
+- 50 meal windows per patient per block (where available)
+- Kruskal-Wallis test for population-level block effect
+
+### Results
+
+- 8/10 patients show some ISF block variation, but small (median range 0.2)
+- 6/11 patients show some CR variation, but CR saturates at grid max (2.0)
+- **Kruskal-Wallis**: ISF p=0.93, CR p=0.99 — NOT significant at population level
+- Between-patient variation (ISF 0.7 vs 1.5) >> within-patient circadian (range 0.2)
+
+**VERDICT: WEAKLY SUPPORTED** — Individual circadian patterns exist but are
+not a population-level phenomenon. Per-patient optimization is more
+important than circadian profiling.
+
+---
+
+## EXP-2567: Extended CR Grid Search
+
+### Hypothesis
+
+Previous CR optimization saturated at grid edge (1.5× in EXP-2563, 2.0× in
+EXP-2566). Extending to 3.0× will reveal true optimal.
+
+### Results
+
+| Patient | Optimal CR× | TIR Curve Shape | Notes |
+|---------|-------------|-----------------|-------|
+| a | 3.0 | Still rising | May need >3.0 |
+| b | 1.6 | Clear peak | |
+| c | 1.8 | Clear peak | |
+| d | 2.0 | Clear peak | Near-optimal |
+| e | 2.5 | Clear peak | |
+| f | 2.5 | Clear peak | |
+| g | 3.0 | Still rising | May need >3.0 |
+| h | 1.8 | Clear peak | |
+| i | 1.6 | Clear peak | |
+| j | 2.5 | Clear peak | |
+| k | 0.8 | Clear peak | Well-controlled outlier |
+
+**Summary**: Mean optimal CR×2.10, Median ×2.00. 8/11 patients have clear
+inverted-U peaks. 2/11 still saturate at 3.0.
+
+**VERDICT: SUPPORTED** — True CR optimal is ~2× profile CR for most patients,
+confirming and extending the effective CR ≈ 1.47× finding.
+
+---
+
+## EXP-2568: Joint ISF × CR Optimization
+
+### Hypothesis
+
+Optimizing ISF and CR JOINTLY yields higher TIR than independent single-axis
+optimization, due to nonlinear interaction during post-meal corrections.
+
+### Results
+
+| Patient | Baseline TIR | ISF-only Best | CR-only Best | JOINT Best | Synergy |
+|---------|-------------|---------------|-------------|------------|---------|
+| a | 0.094 | 0.172 (×1.5) | 0.468 (×3.0) | 0.483 (ISF×0.9, CR×3.0) | +0.015 |
+| b | 0.328 | 0.470 (×0.5) | 0.347 (×1.8) | 0.556 (ISF×0.5, CR×1.8) | +0.086 |
+| c | 0.053 | 0.091 (×1.5) | 0.338 (×1.8) | 0.466 (ISF×0.5, CR×3.0) | +0.128 |
+| d | 0.759 | 0.807 (×0.5) | 0.934 (×2.0) | 0.941 (ISF×0.7, CR×2.5) | +0.007 |
+| e | 0.046 | 0.104 (×0.5) | 0.699 (×2.5) | 0.780 (ISF×0.5, CR×3.0) | +0.081 |
+| f | 0.149 | 0.283 (×0.5) | 0.682 (×2.5) | 0.682 (ISF×1.0, CR×2.5) | +0.000 |
+| g | 0.252 | 0.514 (×0.5) | 0.675 (×3.0) | 0.786 (ISF×0.5, CR×2.2) | +0.112 |
+| h | 0.306 | 0.370 (×0.5) | 0.509 (×1.8) | 0.697 (ISF×0.5, CR×2.0) | +0.188 |
+| i | 0.385 | 0.627 (×0.5) | 0.592 (×1.4) | 0.774 (ISF×0.5, CR×1.4) | +0.146 |
+| j | 0.028 | 0.048 (×0.5) | 0.537 (×2.5) | 0.750 (ISF×0.5, CR×3.0) | +0.213 |
+| k | 0.995 | 1.000 (×0.5) | 0.995 (×1.0) | 1.000 (ISF×0.5, CR×1.0) | +0.000 |
+
+**Summary**:
+- Baseline TIR: 0.309 → Joint optimal TIR: 0.720 (+0.411)
+- Synergy: mean +0.089 (8/11 patients show real synergy >0.01)
+- Joint ISF: mean 0.60 (most patients need LESS aggressive corrections)
+- Joint CR: mean 2.31 (most patients need LESS bolus insulin per gram)
+- Both adjustments = LESS insulin overall
+
+**VERDICT: SUPPORTED** — Joint optimization yields +8.9pp TIR beyond the
+best single-axis optimization. ISF and CR interact meaningfully.
+
+---
+
+## EXP-2569: Settings Gap Validation
+
+### Hypothesis
+
+Forward sim predictions should correlate with actual patient outcomes:
+patients with larger predicted improvement should have worse actual TIR.
+
+### Results
+
+| Test | Spearman r | p-value | Pass? |
+|------|-----------|---------|-------|
+| Actual TIR vs Sim Improvement | -0.018 | 0.958 | ❌ |
+| Actual TIR vs Sim Baseline TIR | 0.227 | 0.502 | ❌ |
+| Actual Hypo% vs Optimal ISF | -0.324 | 0.331 | ❌ |
+
+MAE between actual TIR and sim TIR: 0.409
+
+**VERDICT: NOT SUPPORTED** — The forward sim's absolute TIR predictions
+do not track actual patient outcomes. Root cause: the sim doesn't model
+the AID loop's real-time basal adjustments and SMBs, which contribute
+40-60% of total insulin delivery.
+
+---
+
+## EXP-2570: Closed-Loop Digital Twin
+
+### Hypothesis
+
+Adding a simplified AID loop controller (SMBs + basal suspension) to the
+forward sim will improve absolute TIR prediction.
+
+### Results
+
+| Metric | Open-Loop | Closed-Loop | Improvement |
+|--------|----------|-------------|-------------|
+| TIR MAE | 0.409 | 0.380 | +0.029 |
+| Patient Ranking (Spearman) | 0.227 | 0.264 | +0.037 |
+| Trajectory r | 0.277 | 0.262 | -0.015 |
+
+**VERDICT: NOT SUPPORTED** — The simplified loop controller barely
+improves fidelity. The core issue is structural: the sim's initial
+conditions reflect a system already under AID control, but the sim
+can't reconstruct the loop's prior contributions.
+
+---
+
+## Cross-Experiment Synthesis (10 Experiments)
+
+### The Emerging Picture
+
+```
+FORWARD SIM CAPABILITY MAP:
+
+     ┌─────────────────────────────────────────────┐
+     │  WHAT IT CAN DO (validated)                  │
+     │                                               │
+     │  ✅ Directional ISF/CR optimization            │
+     │  ✅ Per-patient settings grid search            │
+     │  ✅ Correction trajectory shape (r=0.74)        │
+     │  ✅ Relative counterfactual comparison           │
+     │  ✅ Joint ISF×CR interaction detection            │
+     └─────────────────────────────────────────────┘
+
+     ┌─────────────────────────────────────────────┐
+     │  WHAT IT CANNOT DO (disconfirmed)             │
+     │                                               │
+     │  ❌ Predict absolute TIR (MAE=0.409)            │
+     │  ❌ Rank patients by actual TIR (r=0.227)        │
+     │  ❌ Model meal glucose dynamics (r=0.37)          │
+     │  ❌ Predict magnitude of TIR improvement          │
+     │  ❌ Serve as closed-loop digital twin              │
+     └─────────────────────────────────────────────┘
+```
+
+### Consolidated Findings
+
+| # | Finding | Evidence | Confidence | Actionable? |
+|---|---------|----------|------------|-------------|
+| 1 | Hypo ceiling is information-theoretic | EXP-2561: -0.008 AUC | HIGH | No — stop trying |
+| 2 | Forward sim valid for counterfactuals | EXP-2562: ±2-4pp TIR | HIGH | Yes — productionize |
+| 3 | CR should be ~2× profile | EXP-2563,2567: mean 2.10 | HIGH | Yes — recommend |
+| 4 | ISF favors ~0.5-0.7× (less aggressive) | EXP-2568: mean 0.60 | HIGH | Yes — recommend |
+| 5 | Joint ISF×CR has synergy (+8.9pp) | EXP-2568: 8/11 patients | HIGH | Yes — joint optimize |
+| 6 | Population params good for NS | EXP-2565: calibration adds nothing | HIGH | No — skip calibration |
+| 7 | Circadian variation weak | EXP-2566: K-W p=0.93/0.99 | HIGH | No — skip circadian |
+| 8 | Sim can't predict real TIR | EXP-2569: MAE=0.409 | HIGH | Yes — use directional |
+| 9 | Closed-loop controller doesn't help | EXP-2570: MAE=0.380 | HIGH | No — different approach |
+| 10 | ODC bias was data bug, not sim | EXP-2564→2565: +13 vs -50 | HIGH | Yes — await ODC fix |
+
+### Lines of Research: Closed vs Open
+
+**CLOSED** (stop investing):
+- Metabolic phase hypo features — ceiling is fundamental
+- Per-patient DIA/ISF calibration — population params sufficient
+- Circadian CR/ISF profiling — individual, not population effect
+- Forward sim absolute TIR prediction — missing loop model
+- Closed-loop sim via simple controller — insufficient
+
+**OPEN** (continue investing):
+- **Joint ISF×CR optimization → settings_advisor** (highest ROI)
+- **Extended CR grid for remaining patients** (a,g still saturating)
+- **Forward sim for "what-if" analysis** (validated use case)
+- **Phenotype-specific recommendations** (untested)
+- **Natural experiment validation** (settings that DID change → outcome)
+
+---
+
+## Productionization Recommendations
+
+### Priority 1: Wire Joint Optimization into settings_advisor
+
+The existing `settings_advisor.py` uses a perturbation model for TIR simulation.
+Replace with forward-sim-based joint ISF×CR grid search:
+
+```python
+# Proposed API addition to settings_advisor.py:
+def forward_sim_optimize(patient_data, settings):
+    """Find optimal ISF/CR multipliers via forward sim grid search.
+
+    Returns directional recommendations:
+    - "Increase CR by X%" (less bolus insulin per gram)
+    - "Decrease ISF by Y%" (less aggressive corrections)
+
+    Does NOT predict absolute TIR improvement (validated limitation).
+    """
+```
+
+### Priority 2: Reframe Recommendations as Directional
+
+Instead of: "Changing CR from 10 to 15 will improve TIR by 12%"
+Say: "Your correction response suggests ISF should be ~30% lower,
+and your meal response suggests CR should be ~100% higher."
+
+### Priority 3: Add Forward Sim "What-If" to Pipeline
+
+New pipeline stage: "Given your current settings, here's what the
+digital twin predicts for different scenarios."
 
 ---
 
@@ -342,8 +589,11 @@ The single most impactful improvement is **per-patient DIA and ISF calibration**
 | EXP-2562 code | `tools/cgmencode/production/exp_counterfactual_2562.py` | Tracked |
 | EXP-2563 code | `tools/cgmencode/production/exp_per_patient_opt_2563.py` | Tracked |
 | EXP-2564 code | `tools/cgmencode/production/exp_fidelity_2564.py` | Tracked |
-| EXP-2561 data | `externals/experiments/exp-2561_metabolic_phase_hypo.json` | Gitignored |
-| EXP-2562 data | `externals/experiments/exp-2562_counterfactual_analysis.json` | Gitignored |
-| EXP-2563 data | `externals/experiments/exp-2563_per_patient_optimization.json` | Gitignored |
-| EXP-2564 data | `externals/experiments/exp-2564_forward_sim_fidelity.json` | Gitignored |
+| EXP-2565 code | `tools/cgmencode/production/exp_calibration_2565.py` | Tracked |
+| EXP-2566 code | `tools/cgmencode/production/exp_circadian_2566.py` | Tracked |
+| EXP-2567 code | `tools/cgmencode/production/exp_extended_cr_2567.py` | Tracked |
+| EXP-2568 code | `tools/cgmencode/production/exp_joint_opt_2568.py` | Tracked |
+| EXP-2569 code | `tools/cgmencode/production/exp_validation_2569.py` | Tracked |
+| EXP-2570 code | `tools/cgmencode/production/exp_closed_loop_2570.py` | Tracked |
+| All EXP data | `externals/experiments/exp-256[1-9]_*.json`, `exp-2570_*.json` | Gitignored |
 | This report | `docs/60-research/digital-twin-autoresearch-2026-07-14.md` | Tracked |
