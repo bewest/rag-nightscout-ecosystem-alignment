@@ -1101,6 +1101,11 @@ _MIN_CORR_GLUCOSE = 150.0   # minimum glucose (mg/dL) for correction
 _MAX_CORR_CARBS = 1.0       # maximum carbs (g) — no meals
 _MIN_CORRECTIONS = 20       # minimum corrections for reliable calibration
 _POPULATION_K = 1.5         # fallback when < MIN_CORRECTIONS
+# EXP-2588: Night counter-reg is +1.5 higher than day (dawn phenomenon)
+_DAY_START_HOUR = 6.0
+_NIGHT_START_HOUR = 22.0
+_POPULATION_K_DAY = 2.2     # median day k from EXP-2588
+_POPULATION_K_NIGHT = 3.8   # median night k from EXP-2588
 
 
 def _extract_correction_windows(
@@ -1204,6 +1209,24 @@ def _calibrate_counter_reg_k(windows: list) -> float:
     return best_k
 
 
+def _calibrate_circadian_k(windows: list) -> tuple:
+    """Calibrate separate day and night counter-reg k values.
+
+    Research basis: EXP-2588 (night k +1.5 higher than day k).
+
+    Returns:
+        (day_k, night_k) tuple. Falls back to population values if
+        insufficient corrections in either period.
+    """
+    day_windows = [w for w in windows if _DAY_START_HOUR <= w['h'] < _NIGHT_START_HOUR]
+    night_windows = [w for w in windows if w['h'] < _DAY_START_HOUR or w['h'] >= _NIGHT_START_HOUR]
+
+    day_k = _calibrate_counter_reg_k(day_windows) if len(day_windows) >= _MIN_CORRECTIONS else _POPULATION_K_DAY
+    night_k = _calibrate_counter_reg_k(night_windows) if len(night_windows) >= _MIN_CORRECTIONS else _POPULATION_K_NIGHT
+
+    return day_k, night_k
+
+
 def _calibrate_correction_isf(windows: list, k: float) -> Optional[float]:
     """Find optimal ISF multiplier from corrections with calibrated k.
 
@@ -1262,10 +1285,11 @@ def advise_correction_isf(
       - EXP-2582: Per-patient k calibration (10/11 in-range)
       - EXP-2585: Correction ISF differs from meal ISF (+0.34 higher)
       - EXP-2585: Per-patient correction-optimal beats 0.78 dampened (11/12)
+      - EXP-2588: Night k is +1.5 higher than day k (dawn phenomenon)
 
-    Uses a two-step calibration:
-      1. Calibrate counter-regulation k from correction events
-      2. With calibrated k, find optimal ISF multiplier
+    Uses a two-step calibration with circadian k:
+      1. Calibrate day/night counter-regulation k from correction events
+      2. With calibrated k, find optimal ISF multiplier (overall)
 
     This provides a correction-specific ISF recommendation that complements
     the meal-based ISF from advise_forward_sim_optimization().
@@ -1280,7 +1304,7 @@ def advise_correction_isf(
         days_of_data: data coverage in days.
 
     Returns:
-        List of SettingsRecommendation (0-1 items).
+        List of SettingsRecommendation (0-2 items: overall and/or circadian).
     """
     if bolus is None or carbs is None or iob is None:
         return []
@@ -1293,11 +1317,13 @@ def advise_correction_isf(
     if len(windows) < _MIN_CORRECTIONS:
         return []
 
-    # Step 1: Calibrate counter-reg k
-    k = _calibrate_counter_reg_k(windows)
+    # Step 1: Calibrate circadian counter-reg k (EXP-2588)
+    day_k, night_k = _calibrate_circadian_k(windows)
 
-    # Step 2: Find optimal ISF multiplier with calibrated k
-    isf_mult = _calibrate_correction_isf(windows, k)
+    # Step 2: Find optimal ISF multiplier using blended k
+    # Use overall k for ISF calibration (circadian k for evidence)
+    overall_k = _calibrate_counter_reg_k(windows)
+    isf_mult = _calibrate_correction_isf(windows, overall_k)
     if isf_mult is None or abs(isf_mult - 1.0) < 0.05:
         return []
 
@@ -1309,9 +1335,14 @@ def advise_correction_isf(
     direction = "decrease" if isf_mult < 1.0 else "increase"
     magnitude = abs(isf_mult - 1.0) * 100
     confidence = min(1.0, days_of_data / HIGH_CONFIDENCE_DAYS) * min(1.0, len(windows) / 50)
+    tir_delta = magnitude * 0.05
 
-    # Estimate TIR delta (directional only)
-    tir_delta = magnitude * 0.05  # conservative estimate
+    circadian_note = ""
+    if abs(night_k - day_k) >= 0.5:
+        circadian_note = (
+            f" Circadian pattern detected (EXP-2588): day k={day_k:.1f}, "
+            f"night k={night_k:.1f} — corrections are less effective overnight."
+        )
 
     return [SettingsRecommendation(
         parameter=SettingsParameter.ISF,
@@ -1325,16 +1356,16 @@ def advise_correction_isf(
         evidence=(
             f"Correction-based ISF calibration (EXP-2585): optimal ISF "
             f"multiplier {isf_mult:.1f}× from {len(windows)} correction events. "
-            f"Counter-regulation k={k:.1f} (auto-calibrated from corrections). "
-            f"Correction-specific; may differ from meal-based ISF."
+            f"Counter-regulation k={overall_k:.1f} (auto-calibrated)."
+            f"{circadian_note}"
         ),
         rationale=(
             f"{direction.capitalize()} ISF by {magnitude:.0f}% "
             f"(from {current_isf:.0f} to {suggested_isf:.0f} mg/dL/U). "
             f"Analysis of {len(windows)} correction boluses shows the current ISF "
             f"{'over' if isf_mult < 1.0 else 'under'}estimates correction effect. "
-            f"This recommendation is based on how corrections actually work, "
-            f"accounting for counter-regulatory physiology (glucagon/HGP)."
+            f"This recommendation accounts for counter-regulatory physiology "
+            f"(glucagon/HGP)."
         ),
     )]
 
