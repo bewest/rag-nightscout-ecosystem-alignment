@@ -1023,8 +1023,16 @@ Nocturne's PostgreSQL schema uses a hybrid approach: typed columns for known fie
 |----------------|-------|------|------|------|
 | Total IOB | `iob.iob` | `insulinOnBoard` | `iobTotal.iob` | `iob.iob` |
 | Basal IOB | `iob.basaliob` | `basalDeliveryState.iob` | `iobTotal.basaliob` | `iob.basaliob` |
-| Bolus Snooze IOB | `iob.bolussnooze` | N/A | `iobTotal.bolussnooze` | `iob.bolussnooze` |
+| Bolus IOB | `iob.bolusiob` | N/A (combined in total) | N/A (not exported) | `iob.bolusiob` |
+| Bolus Snooze IOB | `iob.bolussnooze` (commented out) | N/A | `iobTotal.bolussnooze` | `iob.bolussnooze` |
 | Insulin Activity | `iob.activity` | `insulinActivityForecast` | `iobTotal.activity` | `iob.activity` |
+
+> **⚠ IOB Decomposition Semantics**: `bolussnooze ≠ bolusiob`. AAPS exports `bolussnooze`
+> (accelerated-decay bolus IOB used for meal-dosing safety, decays ~2× faster), NOT `bolusiob`
+> (actual bolus IOB). oref0's `total.js` computes `bolusiob` where `basaliob + bolusiob = iob`
+> exactly, but this field is not exported by AAPS. **True bolus IOB = `iob − basaliob`** for
+> AAPS/oref0 patients. Loop reports only total IOB with no decomposition. All three systems
+> use the same exponential insulin curve formula (see [Insulin Curves Deep Dive](../../docs/10-domain/insulin-curves-deep-dive.md)).
 
 ### Meal/Carb Calculations
 

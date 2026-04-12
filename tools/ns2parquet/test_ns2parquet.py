@@ -2248,6 +2248,87 @@ class TestExtractLoopDS(unittest.TestCase):
         self.assertAlmostEqual(result['enacted_smb'], 0.3)
 
 
+class TestIOBFieldSemantics(unittest.TestCase):
+    """Verify IOB decomposition fields match cross-system semantics.
+
+    The three AID systems report IOB differently:
+      - Loop:  total IOB only (no decomposition)
+      - oref0: iob + basaliob + bolusiob  (basaliob + bolusiob = iob)
+      - AAPS:  iob + basaliob + bolussnooze  (bolussnooze ≠ bolusiob)
+
+    AAPS's 'bolussnooze' is an accelerated-decay safety metric, NOT actual
+    bolus IOB. True bolus IOB = iob - basaliob.
+
+    The parquet column is named 'bolussnooze' to match AAPS semantics.
+
+    References:
+      - externals/oref0/lib/iob/total.js:80-98
+      - externals/AndroidAPS/core/interfaces/.../IobTotal.kt
+      - externals/LoopWorkspace/LoopKit/.../DoseEntry.swift:114
+    """
+
+    def test_loop_ds_has_no_iob_decomposition(self):
+        """Loop reports only total IOB — basal_iob and bolussnooze should be None."""
+        from tools.ns2parquet.normalize import _extract_loop_ds
+        ds = {'loop': {'iob': {'iob': 3.5}, 'cob': {'cob': 10}}}
+        result = _extract_loop_ds(ds)
+        self.assertAlmostEqual(result['iob'], 3.5)
+        self.assertIsNone(result['basal_iob'])
+        self.assertIsNone(result['bolussnooze'])
+
+    def test_oref0_ds_maps_basaliob(self):
+        """oref0/AAPS basaliob → basal_iob (NET basal IOB, can be negative)."""
+        from tools.ns2parquet.normalize import _extract_oref0_ds
+        ds = {'openaps': {
+            'iob': [{'iob': 2.0, 'basaliob': -0.5, 'bolussnooze': 0.3,
+                      'activity': 0.01}],
+            'suggested': {'bg': 120},
+        }}
+        result = _extract_oref0_ds(ds)
+        self.assertAlmostEqual(result['iob'], 2.0)
+        self.assertAlmostEqual(result['basal_iob'], -0.5)
+        self.assertAlmostEqual(result['bolussnooze'], 0.3)
+
+    def test_oref0_ds_bolussnooze_not_bolusiob(self):
+        """bolussnooze is accelerated-decay, NOT true bolus IOB.
+
+        True bolus IOB = iob - basaliob = 2.0 - (-0.5) = 2.5
+        But bolussnooze = 0.3 (much less, because it decays faster).
+        """
+        from tools.ns2parquet.normalize import _extract_oref0_ds
+        ds = {'openaps': {
+            'iob': [{'iob': 2.0, 'basaliob': -0.5, 'bolussnooze': 0.3,
+                      'activity': 0.01}],
+            'suggested': {},
+        }}
+        result = _extract_oref0_ds(ds)
+        true_bolus_iob = result['iob'] - result['basal_iob']
+        self.assertAlmostEqual(true_bolus_iob, 2.5)
+        self.assertNotAlmostEqual(result['bolussnooze'], true_bolus_iob,
+                                  msg="bolussnooze should NOT equal true bolus IOB")
+
+    def test_oref0_ds_missing_bolussnooze(self):
+        """If AAPS doesn't provide bolussnooze, field should be None."""
+        from tools.ns2parquet.normalize import _extract_oref0_ds
+        ds = {'openaps': {
+            'iob': [{'iob': 1.0, 'basaliob': 0.2, 'activity': 0.005}],
+            'suggested': {},
+        }}
+        result = _extract_oref0_ds(ds)
+        self.assertAlmostEqual(result['iob'], 1.0)
+        self.assertAlmostEqual(result['basal_iob'], 0.2)
+        self.assertIsNone(result['bolussnooze'])
+
+    def test_schema_uses_bolussnooze_not_bolus_iob(self):
+        """Parquet schema must use 'bolussnooze' (not misleading 'bolus_iob')."""
+        from tools.ns2parquet.schemas import DEVICESTATUS_SCHEMA
+        names = DEVICESTATUS_SCHEMA.names
+        self.assertIn('bolussnooze', names,
+                      "Schema should have 'bolussnooze' column")
+        self.assertNotIn('bolus_iob', names,
+                         "Schema must NOT have 'bolus_iob' — renamed to 'bolussnooze'")
+
+
 # ── To-bool conversion tests ───────────────────────────────────────────
 
 class TestToBool(unittest.TestCase):
