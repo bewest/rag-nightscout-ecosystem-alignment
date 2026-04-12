@@ -319,6 +319,7 @@ def forward_simulate(
     noise_std: float = 0.0,
     seed: Optional[int] = None,
     metabolic_basal_rate: Optional[float] = None,
+    counter_reg_k: float = 0.0,
 ) -> SimulationResult:
     """Run forward glucose simulation from initial conditions.
 
@@ -344,6 +345,12 @@ def forward_simulate(
             If None, defaults to settings.basal_rate (assuming current
             settings are correct). Set this to compare different basal
             rates against the same patient physiology.
+        counter_reg_k: Counter-regulation strength (0=disabled, default).
+            When glucose drops rapidly, an opposing upward force is added
+            proportional to the rate of change, mimicking glucagon and
+            hepatic glucose production. EXP-2579: k=1.1 reduces 2.5×
+            overestimation to within 10% for corrections. Glucagon-only:
+            only opposes drops, not rises.
 
     Returns:
         SimulationResult with glucose, IOB, COB, supply, demand traces.
@@ -493,6 +500,14 @@ def forward_simulate(
         if noise_std > 0:
             dBG += rng.normal(0, noise_std)
 
+        # ── Counter-regulation (EXP-2579) ─────────────────────────
+        # Derivative-dependent opposing force mimicking glucagon and
+        # hepatic glucose production. When glucose drops rapidly, the
+        # body releases glucagon and increases HGP, opposing the drop.
+        # Glucagon-only: only opposes drops (dBG < 0), not rises.
+        if counter_reg_k > 0.0 and dBG < 0.0:
+            dBG *= 1.0 / (1.0 + counter_reg_k)
+
         glucose[t] = np.clip(glucose[t - 1] + dBG, _MIN_BG, _MAX_BG)
 
     return SimulationResult(
@@ -521,6 +536,7 @@ def compare_scenarios(
     baseline_label: str = "Baseline",
     modified_label: str = "Modified",
     metabolic_basal_rate: Optional[float] = None,
+    counter_reg_k: float = 0.0,
 ) -> ScenarioComparison:
     """Simulate two scenarios side-by-side for comparison.
 
@@ -561,6 +577,7 @@ def compare_scenarios(
         initial_iob=initial_iob,
         seed=seed,
         metabolic_basal_rate=met_basal,
+        counter_reg_k=counter_reg_k,
     )
 
     modified = forward_simulate(
@@ -573,6 +590,7 @@ def compare_scenarios(
         initial_iob=initial_iob,
         seed=seed,
         metabolic_basal_rate=met_basal,
+        counter_reg_k=counter_reg_k,
     )
 
     return ScenarioComparison(
