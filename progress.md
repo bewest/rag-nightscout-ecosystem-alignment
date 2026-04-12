@@ -166,3 +166,36 @@ testable prediction curves (IOB, ZT, COB, UAM) now have <0.02 mg/dL avg MAE.
 - `447b97d` (A16): UAM assessment
 - `7a7fee5` (apex): UAM formula port to Swift
 
+
+### Digital Twin Forward Sim Phase 4: Basal Adequacy, Meal Response & CSF Calibration (2026-07-15)
+
+Extended the forward simulator calibration with 8 experiments (EXP-2589–2596)
+and 3 productionizations, bringing total advisories to 14.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2589 Basal adequacy | `exp_basal_adequacy_2589.py` | Quadrant analysis for closed-loop |
+| EXP-2590 Dawn phenomenon | `exp_dawn_phenomenon_2590.py` | Selection bias kills EGP measurement |
+| EXP-2591 IOB-corrected EGP | `exp_iob_corrected_egp_2591.py` | 6/9 patients have positive EGP |
+| EXP-2592 Dual-pathway sim | `exp_dual_pathway_sim_2592.py` | Complexity ceiling (closes line) |
+| EXP-2593 Loop workload | `exp_loop_workload_2593.py` | 9/12 basal too high (systematic) |
+| EXP-2594 Meal response | `exp_meal_response_2594.py` | Sim ranks r=0.917, peaks -54 mg/dL |
+| EXP-2595 Carb calibration | `exp_carb_calibration_2595.py` | Root cause: ISF/CR coupling |
+| EXP-2596 Decoupled CSF | `exp_decoupled_csf_2596.py` | CSF=2.0 sweet spot (r=0.933, 53%) |
+| Research report update | `digital-twin-autoresearch-2026-07-14.md` | Phase 4 added |
+
+**Key Findings**:
+- Overnight basal quadrant analysis invented (glucose slope × net basal direction)
+- 9/12 patients have scheduled basal systematically too high
+- Forward sim is a ranking tool (r=0.88-0.92), not magnitude predictor
+- ISF and CSF serve different purposes; coupling via ISF/CR kills meal prediction
+- Population CSF=2.0 mg/dL/g is the optimal decoupled value
+
+**Productionized**: quadrant advisory (#13), workload advisory (#14), decoupled CSF
+**Gaps Identified**: GAP-SIM-001 (magnitude accuracy), GAP-BASAL-001 (systematic overestimation)
+**Tests**: 348 passing throughout
+
+**Source Files Analyzed**:
+- `tools/cgmencode/production/settings_advisor.py` (14 advisories)
+- `tools/cgmencode/production/forward_simulator.py` (carb_sensitivity decoupling)
+- `externals/ns-parquet/training/grid.parquet` (270 meal events, 9 patients)

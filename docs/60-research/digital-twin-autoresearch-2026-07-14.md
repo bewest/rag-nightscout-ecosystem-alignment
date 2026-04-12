@@ -894,3 +894,134 @@ Mean Δk = +1.5 (night - day). Consistent with dawn phenomenon / overnight HGP.
 **Practical**: Forward sim should use time-specific k:
 - Day (06-22): lower k (mean 3.1, median 2.2)
 - Night (22-06): higher k (mean 4.5, median 3.8)
+
+---
+
+## Phase 4: Basal Adequacy, Meal Response & Sim Calibration (EXP-2589–2596)
+
+### EXP-2589: Overnight Basal Adequacy — Quadrant Analysis (CONFIRMED)
+
+Naive basal assessment fails for closed-loop patients because the loop constantly
+adjusts. Invented **quadrant analysis**: glucose slope × net basal direction.
+
+| Quadrant | Slope | Loop Action | Assessment | Patients |
+|----------|-------|-------------|------------|----------|
+| Rising + Adding | ↑ | Increases | BASAL TOO LOW | a, f |
+| Rising + Cutting | ↑ | Suspends | DAWN PHENOMENON | d, i |
+| Falling + Cutting | ↓ | Suspends | BASAL TOO HIGH | c, e, g |
+| Flat + Cutting | → | Suspends | BASAL SLIGHTLY HIGH | k |
+
+**Productionized**: `advise_overnight_basal_quadrant()` — 13th advisory.
+
+### EXP-2590: Dawn Phenomenon Quantification (NOT CONFIRMED)
+
+Attempted to measure endogenous glucose production (EGP) from loop
+suspension windows (actual_basal ≈ 0, no carbs/bolus). ALL hypotheses
+NOT CONFIRMED because of **selection bias**: the loop suspends BECAUSE
+glucose is dropping. Measured slope always negative (-21 mg/dL/h).
+Residual IOB (mean 2.8U) further confounds.
+
+**Lesson**: Cannot directly measure EGP from suspension windows.
+
+### EXP-2591: IOB-Corrected EGP (H1 CONFIRMED)
+
+Applied IOB correction: `true_EGP = measured_slope + IOB × ISF / (DIA/2)`.
+After correction, 6/9 patients show positive EGP ≥ 3 mg/dL/h.
+Population mean corrected EGP = +28.4 mg/dL/h.
+Patient k (TIR 95%, k=0): corrected EGP ≈ 0 (perfectly balanced).
+
+### EXP-2592: Dual-Pathway ISF + Circadian k Full-Day Sim (NOT CONFIRMED)
+
+Added dual-pathway ISF (correction vs meal) and circadian k to full-day sim.
+Neither improves TIR prediction. Rank correlation r=0.883 unchanged.
+
+**Conclusion**: Full-day sim is at ceiling. Added complexity yields no benefit.
+Closes the full-day sim complexity research line.
+
+### EXP-2593: Loop Workload as Settings Quality Metric (H2 CONFIRMED)
+
+Analyzed loop behavior (actual vs scheduled basal) across all hours.
+
+**Key finding: 9/12 patients have scheduled basal too high.**
+The AID loop consistently cuts basal (cutting 74-99% of the time for
+most patients). Directional bias is the primary clinically actionable signal.
+
+| Bias | Patients | Avg TIR | Interpretation |
+|------|----------|---------|----------------|
+| Positive (>0.1) | a, f | 60.7% | Basal too low |
+| Negative (<-0.1) | 9 patients | 71.8% | Basal too high |
+| Neutral | odc-86025410 | 68.4% | Adequate |
+
+Workload vs TIR: r=-0.371 (not significant). The loop successfully compensates,
+so high workload doesn't predict poor TIR.
+
+**Productionized**: `advise_loop_workload()` — 14th advisory.
+
+### EXP-2594: Post-Meal Response Simulation (H3, H4 CONFIRMED)
+
+Evaluated sim accuracy for 270 post-meal events (4h windows).
+
+| Metric | Value |
+|--------|-------|
+| Mean peak error | 57.8 mg/dL |
+| Peak within 30 mg/dL | 39.6% |
+| Patient ranking | r=0.917 (p=0.001) |
+| Small meal accuracy | 53% within 30 |
+| Large meal accuracy | 8% within 30 |
+
+**Critical finding**: sim underestimates excursions by 54 mg/dL.
+The sim is excellent for RANKING but not absolute peak prediction.
+
+### EXP-2595: Carb Absorption Model Sweep (H2 CONFIRMED)
+
+**Root cause identified**: ISF×0.5 + CR×2.0 reduces carb sensitivity
+(CSF = ISF/CR) to 25% of profile. A 50g meal with 5U bolus:
+profile net = 0 mg/dL, calibrated net = -62 mg/dL.
+
+### EXP-2596: Decoupled Carb Sensitivity Factor (H1, H3 CONFIRMED)
+
+| CSF (mg/dL/g) | Peak Error | Within 30 | Rank r |
+|----------------|-----------|-----------|--------|
+| 1.0 (coupled) | 58.3 | 47% | 0.967 |
+| **2.0 (sweet spot)** | **46.4** | **53%** | **0.933** |
+| 3.0 (optimal peak) | 42.6 | 53% | 0.867 |
+| 5.0 (profile) | 56.8 | 34% | 0.650 |
+
+**Productionized**: `_POPULATION_CSF = 2.0` in forward sim evaluator.
+
+---
+
+## Summary: What Works (Productionized Features)
+
+1. Joint ISF×CR optimization with 0.78 dampening (EXP-2568)
+2. Counter-regulation model: `dBG *= 1/(1+k)` (EXP-2579)
+3. Per-patient k calibration from corrections (EXP-2582)
+4. Circadian k: day=2.2, night=3.8 (EXP-2588)
+5. Correction-specific ISF calibration (EXP-2585)
+6. Overnight basal quadrant analysis (EXP-2589)
+7. Loop workload basal assessment (EXP-2593)
+8. Decoupled carb sensitivity CSF=2.0 (EXP-2596)
+9. ISF non-linearity detection (EXP-2511-2518)
+10. Correction threshold analysis (EXP-2528)
+11. Circadian ISF 2-zone + 4-block profiled (EXP-2271)
+12. Context-aware CR by time of day (EXP-2341)
+13. CR adequacy analysis (EXP-2535/2536)
+14. Forward sim joint optimization evaluator (EXP-2562/2567)
+
+Total: **14 settings advisories** in `generate_settings_advice()`.
+
+## Closed Research Lines
+
+- Full-day sim complexity (dual ISF, circadian k don't help) — EXP-2592
+- EGP from suspension windows (selection bias) — EXP-2590
+- Carb absorption timing (absorption hours irrelevant) — EXP-2595
+- K prediction from TIR (too weak for cold start) — EXP-2584
+- Per-patient DIA, metabolic phase hypo, circadian profiling
+- Absolute TIR prediction, closed-loop sim, phenotype→direction
+
+## Key Architectural Insights
+
+1. **Forward sim is a ranking tool, not an absolute predictor.**
+2. **ISF and CSF serve different purposes.** Coupling them via ISF/CR kills meal prediction.
+3. **Closed-loop patients need quadrant analysis**, not single-metric assessment.
+4. **Scheduled basals are systematically too high** across population (9/12 patients).
