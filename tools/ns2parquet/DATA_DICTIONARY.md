@@ -96,8 +96,8 @@ Flattened AID controller state. Handles both Loop and oref0/AAPS/Trio structures
 | `device` | string | ✓ | loop://iPhone, openaps://model, etc. |
 | `controller` | string | ✓ | loop, openaps, trio (detected from device) |
 | `iob` | float | ✓ | units |
-| `basal_iob` | float | ✓ | IOB from temp basals (oref0) |
-| `bolus_iob` | float | ✓ | IOB from boluses (oref0 bolussnooze) |
+| `basal_iob` | float | ✓ | NET basal IOB: actual−scheduled (oref0/AAPS basaliob). Can be negative during suspension. |
+| `bolussnooze` | float | ✓ | AAPS accelerated-decay bolus IOB (safety metric, ≠ true bolus IOB). True bolus IOB = `iob − basal_iob`. |
 | `cob` | float | ✓ | grams |
 | `bg` | int16 | ✓ | current BG per algorithm (mg/dL) |
 | `eventual_bg` | int16 | ✓ | predicted eventual BG (mg/dL) |

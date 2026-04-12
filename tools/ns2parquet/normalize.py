@@ -342,7 +342,7 @@ def _extract_loop_ds(ds: dict) -> dict:
     return {
         'iob': float(iob_data['iob']) if 'iob' in iob_data else None,
         'basal_iob': None,
-        'bolus_iob': None,
+        'bolussnooze': None,
         'cob': float(cob_data.get('cob', 0)) if cob_data else None,
         'bg': None,
         'eventual_bg': None,
@@ -401,12 +401,10 @@ def _extract_oref0_ds(ds: dict) -> dict:
     return {
         'iob': float(iob_data.get('iob', 0)) if iob_data else None,
         'basal_iob': float(iob_data.get('basaliob', 0)) if 'basaliob' in iob_data else None,
-        # Note: AAPS exports 'bolussnooze' (accelerated-decay bolus IOB for
-        # meal-dosing safety), NOT 'bolusiob'. oref0 has bolusiob in total.js
-        # but AAPS IobTotal.kt only exports bolussnooze. True bolus IOB can
-        # be computed as: iob - basaliob. The PK bridge provides a correct
-        # decomposition from first principles.
-        'bolus_iob': float(iob_data.get('bolussnooze', 0)) if 'bolussnooze' in iob_data else None,
+        # AAPS exports 'bolussnooze' (accelerated-decay bolus IOB for
+        # meal-dosing safety), NOT 'bolusiob'. True bolus IOB = iob - basaliob.
+        # The PK bridge provides a correct decomposition from first principles.
+        'bolussnooze': float(iob_data.get('bolussnooze', 0)) if 'bolussnooze' in iob_data else None,
         'cob': float(suggested.get('COB', 0)) if 'COB' in suggested else None,
         'bg': int(suggested['bg']) if 'bg' in suggested else None,
         'eventual_bg': int(suggested['eventualBG']) if 'eventualBG' in suggested else None,
