@@ -1,0 +1,201 @@
+{
+  "exp_id": "EXP-2562",
+  "hypothesis": "Forward simulator counterfactuals reveal actionable settings changes",
+  "timestamp": "2026-04-12 18:07:46 UTC",
+  "runtime_seconds": 18.512004613876343,
+  "sub_experiments": [
+    {
+      "exp_id": "EXP-2562a",
+      "window_type": "correction",
+      "n_patients": 19,
+      "n_windows": 735,
+      "counterfactuals": [
+        {
+          "scenario": "ISF+20%",
+          "n_windows": 735,
+          "baseline_tir": 46.468253968253975,
+          "modified_tir": 48.52418745275889,
+          "tir_delta": 2.055933484504912,
+          "baseline_tbr": 0.0,
+          "modified_tbr": 0.0018896447467876038,
+          "tbr_delta": 0.0018896447467876038,
+          "mean_glucose_delta": -3.1728086339019015,
+          "n_improved": 250,
+          "n_worsened": 1,
+          "improvement_rate": 0.3401360544217687
+        },
+        {
+          "scenario": "ISF-20%",
+          "n_windows": 735,
+          "baseline_tir": 46.468253968253975,
+          "modified_tir": 44.21579743008314,
+          "tir_delta": -2.252456538170833,
+          "baseline_tbr": 0.0,
+          "modified_tbr": 0.0,
+          "tbr_delta": 0.0,
+          "mean_glucose_delta": 3.172808633901902,
+          "n_improved": 0,
+          "n_worsened": 241,
+          "improvement_rate": 0.0
+        },
+        {
+          "scenario": "ISF+40%",
+          "n_windows": 735,
+          "baseline_tir": 46.468253968253975,
+          "modified_tir": 50.719954648526084,
+          "tir_delta": 4.2517006802721085,
+          "baseline_tbr": 0.0,
+          "modified_tbr": 0.024565381708238847,
+          "tbr_delta": 0.024565381708238847,
+          "mean_glucose_delta": -6.345617267803804,
+          "n_improved": 291,
+          "n_worsened": 1,
+          "improvement_rate": 0.39591836734693875
+        }
+      ],
+      "best_scenario": "ISF+40%",
+      "best_tir_delta": 4.2517006802721085,
+      "conclusion": "Best: ISF+40% \u2192 +4.3pp TIR"
+    },
+    {
+      "exp_id": "EXP-2562b",
+      "window_type": "meal",
+      "n_patients": 19,
+      "n_windows": 761,
+      "counterfactuals": [
+        {
+          "scenario": "CR+20%",
+          "n_windows": 761,
+          "baseline_tir": 21.619031975470875,
+          "modified_tir": 24.90418309242225,
+          "tir_delta": 3.2851511169513756,
+          "baseline_tbr": 0.2025843188786684,
+          "modified_tbr": 0.21353482260183965,
+          "tbr_delta": 0.010950503723171245,
+          "mean_glucose_delta": -13.439031760911352,
+          "n_improved": 239,
+          "n_worsened": 4,
+          "improvement_rate": 0.3140604467805519
+        },
+        {
+          "scenario": "CR-20%",
+          "n_windows": 761,
+          "baseline_tir": 21.619031975470875,
+          "modified_tir": 18.205212439772225,
+          "tir_delta": -3.41381953569865,
+          "baseline_tbr": 0.2025843188786684,
+          "modified_tbr": 0.1724704336399474,
+          "tbr_delta": -0.030113885238720994,
+          "mean_glucose_delta": 16.130477867990827,
+          "n_improved": 8,
+          "n_worsened": 255,
+          "improvement_rate": 0.010512483574244415
+        },
+        {
+          "scenario": "PreBolus+15min",
+          "n_windows": 761,
+          "baseline_tir": 21.619031975470875,
+          "modified_tir": 20.05310994305738,
+          "tir_delta": -1.5659220324134964,
+          "baseline_tbr": 0.2025843188786684,
+          "modified_tbr": 0.18889618922470433,
+          "tbr_delta": -0.01368812965396407,
+          "mean_glucose_delta": 6.332474755819804,
+          "n_improved": 4,
+          "n_worsened": 97,
+          "improvement_rate": 0.005256241787122208
+        },
+        {
+          "scenario": "PreBolus+30min",
+          "n_windows": 761,
+          "baseline_tir": 21.619031975470875,
+          "modified_tir": 20.05310994305738,
+          "tir_delta": -1.5659220324134964,
+          "baseline_tbr": 0.2025843188786684,
+          "modified_tbr": 0.18889618922470433,
+          "tbr_delta": -0.01368812965396407,
+          "mean_glucose_delta": 6.332474755819804,
+          "n_improved": 4,
+          "n_worsened": 97,
+          "improvement_rate": 0.005256241787122208
+        }
+      ],
+      "best_scenario": "CR+20%",
+      "best_tir_delta": 3.2851511169513756,
+      "conclusion": "Best: CR+20% \u2192 +3.3pp TIR"
+    },
+    {
+      "exp_id": "EXP-2562c",
+      "window_type": "overnight",
+      "n_patients": 19,
+      "n_windows": 136,
+      "counterfactuals": [
+        {
+          "scenario": "Basal+20%",
+          "n_windows": 136,
+          "baseline_tir": 88.40379901960785,
+          "modified_tir": 88.31188725490198,
+          "tir_delta": -0.09191176470586981,
+          "baseline_tbr": 4.427083333333334,
+          "modified_tbr": 4.427083333333334,
+          "tbr_delta": 0.0,
+          "mean_glucose_delta": 0.3644757221021682,
+          "n_improved": 0,
+          "n_worsened": 6,
+          "improvement_rate": 0.0
+        },
+        {
+          "scenario": "Basal-20%",
+          "n_windows": 136,
+          "baseline_tir": 88.40379901960785,
+          "modified_tir": 88.48805147058823,
+          "tir_delta": 0.08425245098038658,
+          "baseline_tbr": 4.427083333333334,
+          "modified_tbr": 4.427083333333334,
+          "tbr_delta": 0.0,
+          "mean_glucose_delta": -0.4526599318784141,
+          "n_improved": 5,
+          "n_worsened": 0,
+          "improvement_rate": 0.03676470588235294
+        },
+        {
+          "scenario": "Basal+10%",
+          "n_windows": 136,
+          "baseline_tir": 88.40379901960785,
+          "modified_tir": 88.3578431372549,
+          "tir_delta": -0.04595588235294201,
+          "baseline_tbr": 4.427083333333334,
+          "modified_tbr": 4.427083333333334,
+          "tbr_delta": 0.0,
+          "mean_glucose_delta": 0.19164719000483088,
+          "n_improved": 0,
+          "n_worsened": 4,
+          "improvement_rate": 0.0
+        },
+        {
+          "scenario": "Basal-10%",
+          "n_windows": 136,
+          "baseline_tir": 88.40379901960785,
+          "modified_tir": 88.4344362745098,
+          "tir_delta": 0.03063725490196134,
+          "baseline_tbr": 4.427083333333334,
+          "modified_tbr": 4.427083333333334,
+          "tbr_delta": 0.0,
+          "mean_glucose_delta": -0.2138814001952237,
+          "n_improved": 3,
+          "n_worsened": 0,
+          "improvement_rate": 0.022058823529411766
+        }
+      ],
+      "best_scenario": "Basal-20%",
+      "best_tir_delta": 0.08425245098038658,
+      "conclusion": "Best: Basal-20% \u2192 +0.1pp TIR"
+    }
+  ],
+  "overall_conclusion": "Forward simulator produced counterfactuals across 1632 windows. TIR deltas range -3.4 to +4.3pp.",
+  "next_steps": [
+    "Compare forward_sim TIR predictions to actual observed TIR",
+    "Integrate best counterfactuals into settings_optimizer",
+    "Generate per-patient personalized recommendations"
+  ]
+}

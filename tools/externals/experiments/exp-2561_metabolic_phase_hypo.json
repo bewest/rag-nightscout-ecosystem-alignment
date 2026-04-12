@@ -1,0 +1,951 @@
+{
+  "exp_id": "EXP-2561",
+  "hypothesis": "Metabolic phase mismatch predicts hypo beyond glucose trajectory",
+  "timestamp": "2026-04-12 18:04:57 UTC",
+  "runtime_seconds": 146.64485812187195,
+  "sub_experiments": [
+    {
+      "exp_id": "EXP-2561a",
+      "horizon_minutes": 30,
+      "n_patients": 19,
+      "n_windows": 667084,
+      "n_hypo_events": 46652,
+      "hypo_rate": 0.06993422117754286,
+      "auc_glucose_only": 0.9537431476719993,
+      "auc_glucose_plus_phase": 0.9518984499210783,
+      "auc_phase_only": 0.8260687853048185,
+      "per_patient_auc": {
+        "a": {
+          "glucose_only": 0.9826181086637201,
+          "glucose_plus_phase": 0.9828890044566027,
+          "phase_only": 0.9167443759914052
+        },
+        "b": {
+          "glucose_only": 0.9612089182720804,
+          "glucose_plus_phase": 0.9595689994347478,
+          "phase_only": 0.7495983959892859
+        },
+        "c": {
+          "glucose_only": 0.9686379798214453,
+          "glucose_plus_phase": 0.9692423443131258,
+          "phase_only": 0.8954367758515549
+        },
+        "d": {
+          "glucose_only": 0.9093170998815457,
+          "glucose_plus_phase": 0.8989607312875757,
+          "phase_only": 0.7900031848557316
+        },
+        "e": {
+          "glucose_only": 0.9641157350300533,
+          "glucose_plus_phase": 0.9627034098432297,
+          "phase_only": 0.882915674148333
+        },
+        "f": {
+          "glucose_only": 0.9495688168333909,
+          "glucose_plus_phase": 0.9503681640884125,
+          "phase_only": 0.8573731215892306
+        },
+        "g": {
+          "glucose_only": 0.9653507855933419,
+          "glucose_plus_phase": 0.9657650279354679,
+          "phase_only": 0.8780949512488544
+        },
+        "h": {
+          "glucose_only": 0.9399718226117078,
+          "glucose_plus_phase": 0.9426977910478627,
+          "phase_only": 0.7999560536145902
+        },
+        "i": {
+          "glucose_only": 0.9829242457447586,
+          "glucose_plus_phase": 0.9847328176348343,
+          "phase_only": 0.9579175889188382
+        },
+        "j": {
+          "glucose_only": 0.9661153519932146,
+          "glucose_plus_phase": 0.8632209499575912,
+          "phase_only": 0.5
+        },
+        "k": {
+          "glucose_only": 0.9175941053277925,
+          "glucose_plus_phase": 0.9057931463552016,
+          "phase_only": 0.6030443406714865
+        },
+        "odc-39819048": {
+          "glucose_only": 0.9451994022602036,
+          "glucose_plus_phase": 0.9511067525917624,
+          "phase_only": 0.8547212104230877
+        },
+        "odc-49141524": {
+          "glucose_only": 0.9317786475320722,
+          "glucose_plus_phase": 0.9288432267884323,
+          "phase_only": 0.870732767993042
+        },
+        "odc-58680324": {
+          "glucose_only": 0.8978181818181818,
+          "glucose_plus_phase": 0.8483636363636364,
+          "phase_only": 0.7921363636363636
+        },
+        "odc-61403732": {
+          "glucose_only": 0.9234432234432234,
+          "glucose_plus_phase": 0.7476190476190476,
+          "phase_only": 0.4527472527472527
+        },
+        "odc-74077367": {
+          "glucose_only": 0.9698794325595298,
+          "glucose_plus_phase": 0.9709365671062153,
+          "phase_only": 0.8510922072015852
+        },
+        "odc-84181797": {
+          "glucose_only": 0.9459518124593009,
+          "glucose_plus_phase": 0.9296722378988496,
+          "phase_only": 0.8243976557412633
+        },
+        "odc-86025410": {
+          "glucose_only": 0.9211753777246313,
+          "glucose_plus_phase": 0.9183976037877021,
+          "phase_only": 0.6719857583506396
+        },
+        "odc-96254963": {
+          "glucose_only": 0.9278660709308308,
+          "glucose_plus_phase": 0.9304972918506229,
+          "phase_only": 0.6653438114314756
+        }
+      },
+      "top_features": [
+        [
+          "glucose",
+          0.12147651006711409
+        ],
+        [
+          "projected_30",
+          0.11677852348993288
+        ],
+        [
+          "basal_excess",
+          0.10134228187919463
+        ],
+        [
+          "glucose_min_30",
+          0.09463087248322148
+        ],
+        [
+          "glucose_accel",
+          0.06644295302013423
+        ],
+        [
+          "glucose_mean_30",
+          0.053020134228187916
+        ],
+        [
+          "iob_cob_ratio",
+          0.05167785234899329
+        ],
+        [
+          "hour_sin",
+          0.04496644295302014
+        ],
+        [
+          "phase_integral_120",
+          0.04429530201342282
+        ],
+        [
+          "phase_duration",
+          0.042281879194630875
+        ],
+        [
+          "glucose_std_30",
+          0.040268456375838924
+        ],
+        [
+          "hour_cos",
+          0.03825503355704698
+        ],
+        [
+          "phase_integral_30",
+          0.03355704697986577
+        ],
+        [
+          "glucose_roc",
+          0.032885906040268455
+        ],
+        [
+          "glucose_mean_60",
+          0.026845637583892617
+        ]
+      ],
+      "auc_delta": -0.0018446977509209983,
+      "conclusion": "NEUTRAL: -0.002 AUC (no meaningful difference)"
+    },
+    {
+      "exp_id": "EXP-2561b",
+      "horizon_minutes": 60,
+      "n_patients": 19,
+      "n_windows": 666970,
+      "n_hypo_events": 65628,
+      "hypo_rate": 0.09839722926068639,
+      "auc_glucose_only": 0.9051077072082309,
+      "auc_glucose_plus_phase": 0.8989853548713787,
+      "auc_phase_only": 0.7856185133422023,
+      "per_patient_auc": {
+        "a": {
+          "glucose_only": 0.9675546034964712,
+          "glucose_plus_phase": 0.9682992716068217,
+          "phase_only": 0.9064665263237028
+        },
+        "b": {
+          "glucose_only": 0.87921127767694,
+          "glucose_plus_phase": 0.8690566758317937,
+          "phase_only": 0.7265469072013114
+        },
+        "c": {
+          "glucose_only": 0.9259406242552518,
+          "glucose_plus_phase": 0.9262569578646581,
+          "phase_only": 0.8608385038024923
+        },
+        "d": {
+          "glucose_only": 0.8596905140104443,
+          "glucose_plus_phase": 0.8359497582735507,
+          "phase_only": 0.736094413471621
+        },
+        "e": {
+          "glucose_only": 0.9120024430297865,
+          "glucose_plus_phase": 0.9087023537583514,
+          "phase_only": 0.8222739093489152
+        },
+        "f": {
+          "glucose_only": 0.8840438777043093,
+          "glucose_plus_phase": 0.8894660633626519,
+          "phase_only": 0.8171823668068486
+        },
+        "g": {
+          "glucose_only": 0.911926229978317,
+          "glucose_plus_phase": 0.9121342314349806,
+          "phase_only": 0.8334389675809584
+        },
+        "h": {
+          "glucose_only": 0.8781339371983867,
+          "glucose_plus_phase": 0.8770452889982233,
+          "phase_only": 0.7647013748147052
+        },
+        "i": {
+          "glucose_only": 0.9626553438615366,
+          "glucose_plus_phase": 0.9674518165056694,
+          "phase_only": 0.9345065453006631
+        },
+        "j": {
+          "glucose_only": 0.90890352286112,
+          "glucose_plus_phase": 0.7240282685512368,
+          "phase_only": 0.5
+        },
+        "k": {
+          "glucose_only": 0.8714097422874298,
+          "glucose_plus_phase": 0.8292599166785395,
+          "phase_only": 0.5202251089698879
+        },
+        "odc-39819048": {
+          "glucose_only": 0.8960265140538974,
+          "glucose_plus_phase": 0.8940343378730803,
+          "phase_only": 0.8028470008693132
+        },
+        "odc-49141524": {
+          "glucose_only": 0.8368283776734481,
+          "glucose_plus_phase": 0.8414188836724048,
+          "phase_only": 0.8049730481655364
+        },
+        "odc-58680324": {
+          "glucose_only": 0.7166839916839917,
+          "glucose_plus_phase": 0.781964656964657,
+          "phase_only": 0.7504158004158004
+        },
+        "odc-61403732": {
+          "glucose_only": 0.8914988814317674,
+          "glucose_plus_phase": 0.7639821029082774,
+          "phase_only": 0.44966442953020136
+        },
+        "odc-74077367": {
+          "glucose_only": 0.9176804089792671,
+          "glucose_plus_phase": 0.917018043115979,
+          "phase_only": 0.8015394022201224
+        },
+        "odc-84181797": {
+          "glucose_only": 0.9020315423683507,
+          "glucose_plus_phase": 0.8825180433039295,
+          "phase_only": 0.5923549852980486
+        },
+        "odc-86025410": {
+          "glucose_only": 0.8569732721984553,
+          "glucose_plus_phase": 0.8492689629903281,
+          "phase_only": 0.6617378315991375
+        },
+        "odc-96254963": {
+          "glucose_only": 0.8721651016020855,
+          "glucose_plus_phase": 0.875381133349582,
+          "phase_only": 0.6111237921843213
+        }
+      },
+      "top_features": [
+        [
+          "projected_30",
+          0.12550066755674233
+        ],
+        [
+          "glucose",
+          0.102803738317757
+        ],
+        [
+          "basal_excess",
+          0.09746328437917223
+        ],
+        [
+          "glucose_min_30",
+          0.07476635514018691
+        ],
+        [
+          "iob_cob_ratio",
+          0.06542056074766354
+        ],
+        [
+          "glucose_accel",
+          0.06408544726301736
+        ],
+        [
+          "hour_sin",
+          0.06275033377837116
+        ],
+        [
+          "phase_duration",
+          0.056074766355140186
+        ],
+        [
+          "phase_integral_120",
+          0.050734312416555405
+        ],
+        [
+          "glucose_mean_30",
+          0.04138851802403204
+        ],
+        [
+          "glucose_std_30",
+          0.03938584779706275
+        ],
+        [
+          "glucose_roc",
+          0.03471295060080107
+        ],
+        [
+          "hour_cos",
+          0.03204272363150868
+        ],
+        [
+          "phase_integral_60",
+          0.030040053404539385
+        ],
+        [
+          "phase_integral_30",
+          0.02870493991989319
+        ]
+      ],
+      "auc_delta": -0.00612235233685221,
+      "conclusion": "NEGATIVE: -0.006 AUC (phase features hurt)"
+    },
+    {
+      "exp_id": "EXP-2561c",
+      "horizon_minutes": 120,
+      "n_patients": 19,
+      "n_windows": 666752,
+      "n_hypo_events": 99376,
+      "hypo_rate": 0.149044922249952,
+      "auc_glucose_only": 0.8222272245368116,
+      "auc_glucose_plus_phase": 0.8154004625279971,
+      "auc_phase_only": 0.7204109009677853,
+      "per_patient_auc": {
+        "a": {
+          "glucose_only": 0.8863021506266644,
+          "glucose_plus_phase": 0.8862014728119011,
+          "phase_only": 0.8269096669682416
+        },
+        "b": {
+          "glucose_only": 0.7456449573424069,
+          "glucose_plus_phase": 0.7140348071746488,
+          "phase_only": 0.6841111199950249
+        },
+        "c": {
+          "glucose_only": 0.8368165001950926,
+          "glucose_plus_phase": 0.8429759889330775,
+          "phase_only": 0.7919481942648251
+        },
+        "d": {
+          "glucose_only": 0.7898897553049545,
+          "glucose_plus_phase": 0.796780414042787,
+          "phase_only": 0.6981226422656293
+        },
+        "e": {
+          "glucose_only": 0.8137678960252588,
+          "glucose_plus_phase": 0.814341318405277,
+          "phase_only": 0.7218999266882276
+        },
+        "f": {
+          "glucose_only": 0.8215109082919959,
+          "glucose_plus_phase": 0.8188893182913077,
+          "phase_only": 0.7530469101554849
+        },
+        "g": {
+          "glucose_only": 0.814160445432311,
+          "glucose_plus_phase": 0.8197037634018178,
+          "phase_only": 0.7409672138694963
+        },
+        "h": {
+          "glucose_only": 0.7685980371587756,
+          "glucose_plus_phase": 0.7868190083222603,
+          "phase_only": 0.652767676061263
+        },
+        "i": {
+          "glucose_only": 0.9007524518369713,
+          "glucose_plus_phase": 0.9183191089583121,
+          "phase_only": 0.8841063600327075
+        },
+        "j": {
+          "glucose_only": 0.7363306010928963,
+          "glucose_plus_phase": 0.6646762295081967,
+          "phase_only": 0.5
+        },
+        "k": {
+          "glucose_only": 0.8178379732075749,
+          "glucose_plus_phase": 0.7169672981350541,
+          "phase_only": 0.4476494868727493
+        },
+        "odc-39819048": {
+          "glucose_only": 0.7322186948853614,
+          "glucose_plus_phase": 0.681142857142857,
+          "phase_only": 0.6199223985890652
+        },
+        "odc-49141524": {
+          "glucose_only": 0.7730790491984522,
+          "glucose_plus_phase": 0.8219798443679041,
+          "phase_only": 0.6345197091465749
+        },
+        "odc-58680324": {
+          "glucose_only": 0.7419985775248933,
+          "glucose_plus_phase": 0.6852477477477478,
+          "phase_only": 0.6951013513513514
+        },
+        "odc-61403732": {
+          "glucose_only": 0.7251732101616628,
+          "glucose_plus_phase": 0.6944765204003078,
+          "phase_only": 0.4959584295612009
+        },
+        "odc-74077367": {
+          "glucose_only": 0.8234063603407907,
+          "glucose_plus_phase": 0.8297453202795158,
+          "phase_only": 0.7341649791738002
+        },
+        "odc-84181797": {
+          "glucose_only": 0.9026382422608837,
+          "glucose_plus_phase": 0.8915298537940047,
+          "phase_only": 0.6027934329821122
+        },
+        "odc-86025410": {
+          "glucose_only": 0.7669512236926744,
+          "glucose_plus_phase": 0.7575214487216899,
+          "phase_only": 0.6282552322263604
+        },
+        "odc-96254963": {
+          "glucose_only": 0.8109072742783863,
+          "glucose_plus_phase": 0.7985184641801426,
+          "phase_only": 0.5725363659580942
+        }
+      },
+      "top_features": [
+        [
+          "basal_excess",
+          0.12767379679144386
+        ],
+        [
+          "projected_30",
+          0.11029411764705882
+        ],
+        [
+          "glucose",
+          0.08422459893048129
+        ],
+        [
+          "phase_duration",
+          0.07286096256684492
+        ],
+        [
+          "glucose_min_30",
+          0.06483957219251336
+        ],
+        [
+          "hour_sin",
+          0.06216577540106952
+        ],
+        [
+          "iob_cob_ratio",
+          0.06016042780748663
+        ],
+        [
+          "glucose_accel",
+          0.052807486631016046
+        ],
+        [
+          "glucose_std_30",
+          0.04679144385026738
+        ],
+        [
+          "phase_integral_120",
+          0.04679144385026738
+        ],
+        [
+          "hour_cos",
+          0.04344919786096257
+        ],
+        [
+          "glucose_roc",
+          0.03676470588235294
+        ],
+        [
+          "glucose_mean_30",
+          0.03609625668449198
+        ],
+        [
+          "dist_to_70",
+          0.02874331550802139
+        ],
+        [
+          "phase_integral_30",
+          0.02807486631016043
+        ]
+      ],
+      "auc_delta": -0.006826762008814491,
+      "conclusion": "NEGATIVE: -0.007 AUC (phase features hurt)"
+    },
+    {
+      "exp_id": "EXP-2561d",
+      "horizon_minutes": 60,
+      "n_patients": 19,
+      "n_windows": 387519,
+      "n_hypo_events": 8504,
+      "hypo_rate": 0.021944730451926228,
+      "auc_glucose_only": 0.7670621920758984,
+      "auc_glucose_plus_phase": 0.7566652981330164,
+      "auc_phase_only": 0.6904379663960747,
+      "per_patient_auc": {
+        "a": {
+          "glucose_only": 0.9469488415965628,
+          "glucose_plus_phase": 0.9030269535786781,
+          "phase_only": 0.7524438562337292
+        },
+        "b": {
+          "glucose_only": 0.5835560026405959,
+          "glucose_plus_phase": 0.5514628063667704,
+          "phase_only": 0.4417549484978991
+        },
+        "c": {
+          "glucose_only": 0.8318488529014845,
+          "glucose_plus_phase": 0.8387694761378972,
+          "phase_only": 0.740715249662618
+        },
+        "d": {
+          "glucose_only": 0.7504601455443016,
+          "glucose_plus_phase": 0.6783276768235595,
+          "phase_only": 0.5251377776832071
+        },
+        "e": {
+          "glucose_only": 0.8478707627118645,
+          "glucose_plus_phase": 0.8474629237288135,
+          "phase_only": 0.6836175847457626
+        },
+        "f": {
+          "glucose_only": 0.7319644839067703,
+          "glucose_plus_phase": 0.6840366495855668,
+          "phase_only": 0.6906215316315205
+        },
+        "g": {
+          "glucose_only": 0.861137158124772,
+          "glucose_plus_phase": 0.8671360360325014,
+          "phase_only": 0.7735060675373998
+        },
+        "h": {
+          "glucose_only": 0.8108470467234793,
+          "glucose_plus_phase": 0.8055116808698208,
+          "phase_only": 0.7266704011166618
+        },
+        "i": {
+          "glucose_only": 0.9233776957848845,
+          "glucose_plus_phase": 0.9497125424550791,
+          "phase_only": 0.9070141607042506
+        },
+        "j": {
+          "glucose_only": 0.8036253776435045,
+          "glucose_plus_phase": 0.9400805639476335,
+          "phase_only": 0.5
+        },
+        "k": {
+          "glucose_only": 0.7003950554351982,
+          "glucose_plus_phase": 0.7518796992481203,
+          "phase_only": 0.5797757104625972
+        },
+        "odc-39819048": {
+          "glucose_only": 0.906938584153774,
+          "glucose_plus_phase": 0.8745897796530708,
+          "phase_only": 0.8251289263947491
+        },
+        "odc-49141524": {
+          "glucose_only": 0.45422535211267606,
+          "glucose_plus_phase": 0.448356807511737,
+          "phase_only": 0.8219315895372233
+        },
+        "odc-58680324": {
+          "glucose_only": NaN,
+          "glucose_plus_phase": NaN,
+          "phase_only": NaN
+        },
+        "odc-61403732": {
+          "glucose_only": NaN,
+          "glucose_plus_phase": NaN,
+          "phase_only": NaN
+        },
+        "odc-74077367": {
+          "glucose_only": 0.7850423778520733,
+          "glucose_plus_phase": 0.7750564549240425,
+          "phase_only": 0.6030009091442313
+        },
+        "odc-84181797": {
+          "glucose_only": NaN,
+          "glucose_plus_phase": NaN,
+          "phase_only": NaN
+        },
+        "odc-86025410": {
+          "glucose_only": 0.6015132132061465,
+          "glucose_plus_phase": 0.5895500288343144,
+          "phase_only": 0.5199768928191708
+        },
+        "odc-96254963": {
+          "glucose_only": 0.6017835657724854,
+          "glucose_plus_phase": 0.6043290043290043,
+          "phase_only": 0.5460801125621071
+        }
+      },
+      "top_features": [
+        [
+          "basal_excess",
+          0.12785072563925362
+        ],
+        [
+          "phase_duration",
+          0.0884588804422944
+        ],
+        [
+          "iob_cob_ratio",
+          0.0884588804422944
+        ],
+        [
+          "projected_30",
+          0.07671043538355218
+        ],
+        [
+          "hour_sin",
+          0.07256392536281962
+        ],
+        [
+          "phase_integral_120",
+          0.06841741534208708
+        ],
+        [
+          "glucose_min_30",
+          0.06772633033863165
+        ],
+        [
+          "hour_cos",
+          0.06565307532826538
+        ],
+        [
+          "phase_integral_60",
+          0.051831375259156875
+        ],
+        [
+          "glucose",
+          0.04561161022805805
+        ],
+        [
+          "glucose_accel",
+          0.036627505183137524
+        ],
+        [
+          "phase_integral_30",
+          0.035245335176226675
+        ],
+        [
+          "glucose_roc",
+          0.0304077401520387
+        ],
+        [
+          "glucose_mean_60",
+          0.028334485141672427
+        ],
+        [
+          "glucose_std_30",
+          0.026952315134761574
+        ]
+      ],
+      "auc_delta": -0.010396893942882013,
+      "conclusion": "NEGATIVE: -0.010 AUC (phase features hurt)"
+    },
+    {
+      "exp_id": "EXP-2561e-WC",
+      "horizon_minutes": 60,
+      "n_patients": 7,
+      "n_windows": 214292,
+      "n_hypo_events": 10138,
+      "hypo_rate": 0.04730927892781812,
+      "auc_glucose_only": 0.8972260296734046,
+      "auc_glucose_plus_phase": 0.8812921492526113,
+      "auc_phase_only": 0.7844836811634701,
+      "per_patient_auc": {
+        "b": {
+          "glucose_only": 0.87921127767694,
+          "glucose_plus_phase": 0.8690566758317937,
+          "phase_only": 0.7265469072013114
+        },
+        "d": {
+          "glucose_only": 0.8596905140104443,
+          "glucose_plus_phase": 0.8359497582735507,
+          "phase_only": 0.736094413471621
+        },
+        "e": {
+          "glucose_only": 0.9120024430297865,
+          "glucose_plus_phase": 0.9087023537583514,
+          "phase_only": 0.8222739093489152
+        },
+        "j": {
+          "glucose_only": 0.90890352286112,
+          "glucose_plus_phase": 0.7240282685512368,
+          "phase_only": 0.5
+        },
+        "odc-49141524": {
+          "glucose_only": 0.8368283776734481,
+          "glucose_plus_phase": 0.8414188836724048,
+          "phase_only": 0.8049730481655364
+        },
+        "odc-61403732": {
+          "glucose_only": 0.8914988814317674,
+          "glucose_plus_phase": 0.7639821029082774,
+          "phase_only": 0.44966442953020136
+        },
+        "odc-74077367": {
+          "glucose_only": 0.9176804089792671,
+          "glucose_plus_phase": 0.917018043115979,
+          "phase_only": 0.8015394022201224
+        }
+      },
+      "top_features": [
+        [
+          "glucose",
+          0.12148876404494383
+        ],
+        [
+          "projected_30",
+          0.08146067415730338
+        ],
+        [
+          "phase_duration",
+          0.08146067415730338
+        ],
+        [
+          "phase_integral_120",
+          0.0723314606741573
+        ],
+        [
+          "hour_sin",
+          0.06882022471910113
+        ],
+        [
+          "iob_cob_ratio",
+          0.06811797752808989
+        ],
+        [
+          "hour_cos",
+          0.061095505617977525
+        ],
+        [
+          "glucose_min_30",
+          0.05758426966292135
+        ],
+        [
+          "basal_excess",
+          0.05196629213483146
+        ],
+        [
+          "glucose_accel",
+          0.04845505617977528
+        ],
+        [
+          "phase_integral_60",
+          0.046348314606741575
+        ],
+        [
+          "phase_integral_30",
+          0.042837078651685394
+        ],
+        [
+          "glucose_std_30",
+          0.037219101123595506
+        ],
+        [
+          "glucose_mean_30",
+          0.033707865168539325
+        ],
+        [
+          "demand_mgdl",
+          0.02247191011235955
+        ]
+      ],
+      "auc_delta": -0.015933880420793245,
+      "conclusion": "NEGATIVE: -0.016 AUC (phase features hurt)"
+    },
+    {
+      "exp_id": "EXP-2561e-HP",
+      "horizon_minutes": 60,
+      "n_patients": 12,
+      "n_windows": 452678,
+      "n_hypo_events": 55490,
+      "hypo_rate": 0.1225816143042074,
+      "auc_glucose_only": 0.9022597559451231,
+      "auc_glucose_plus_phase": 0.8974765895907292,
+      "auc_phase_only": 0.7685727906399754,
+      "per_patient_auc": {
+        "a": {
+          "glucose_only": 0.9675546034964712,
+          "glucose_plus_phase": 0.9682992716068217,
+          "phase_only": 0.9064665263237028
+        },
+        "c": {
+          "glucose_only": 0.9259406242552518,
+          "glucose_plus_phase": 0.9262569578646581,
+          "phase_only": 0.8608385038024923
+        },
+        "f": {
+          "glucose_only": 0.8840438777043093,
+          "glucose_plus_phase": 0.8894660633626519,
+          "phase_only": 0.8171823668068486
+        },
+        "g": {
+          "glucose_only": 0.911926229978317,
+          "glucose_plus_phase": 0.9121342314349806,
+          "phase_only": 0.8334389675809584
+        },
+        "h": {
+          "glucose_only": 0.8781339371983867,
+          "glucose_plus_phase": 0.8770452889982233,
+          "phase_only": 0.7647013748147052
+        },
+        "i": {
+          "glucose_only": 0.9626553438615366,
+          "glucose_plus_phase": 0.9674518165056694,
+          "phase_only": 0.9345065453006631
+        },
+        "k": {
+          "glucose_only": 0.8714097422874298,
+          "glucose_plus_phase": 0.8292599166785395,
+          "phase_only": 0.5202251089698879
+        },
+        "odc-39819048": {
+          "glucose_only": 0.8960265140538974,
+          "glucose_plus_phase": 0.8940343378730803,
+          "phase_only": 0.8028470008693132
+        },
+        "odc-58680324": {
+          "glucose_only": 0.7166839916839917,
+          "glucose_plus_phase": 0.781964656964657,
+          "phase_only": 0.7504158004158004
+        },
+        "odc-84181797": {
+          "glucose_only": 0.9020315423683507,
+          "glucose_plus_phase": 0.8825180433039295,
+          "phase_only": 0.5923549852980486
+        },
+        "odc-86025410": {
+          "glucose_only": 0.8569732721984553,
+          "glucose_plus_phase": 0.8492689629903281,
+          "phase_only": 0.6617378315991375
+        },
+        "odc-96254963": {
+          "glucose_only": 0.8721651016020855,
+          "glucose_plus_phase": 0.875381133349582,
+          "phase_only": 0.6111237921843213
+        }
+      },
+      "top_features": [
+        [
+          "projected_30",
+          0.13016949152542373
+        ],
+        [
+          "glucose",
+          0.09966101694915254
+        ],
+        [
+          "glucose_min_30",
+          0.0840677966101695
+        ],
+        [
+          "basal_excess",
+          0.07796610169491526
+        ],
+        [
+          "phase_duration",
+          0.07389830508474576
+        ],
+        [
+          "hour_sin",
+          0.06372881355932203
+        ],
+        [
+          "glucose_accel",
+          0.05898305084745763
+        ],
+        [
+          "phase_integral_120",
+          0.05898305084745763
+        ],
+        [
+          "iob_cob_ratio",
+          0.05627118644067797
+        ],
+        [
+          "glucose_mean_30",
+          0.04271186440677966
+        ],
+        [
+          "glucose_std_30",
+          0.03932203389830508
+        ],
+        [
+          "hour_cos",
+          0.03661016949152542
+        ],
+        [
+          "phase_integral_60",
+          0.03254237288135593
+        ],
+        [
+          "glucose_roc",
+          0.029152542372881354
+        ],
+        [
+          "phase_integral_30",
+          0.02711864406779661
+        ]
+      ],
+      "auc_delta": -0.0047831663543939085,
+      "conclusion": "NEUTRAL: -0.005 AUC (no meaningful difference)"
+    }
+  ],
+  "overall_conclusion": "HYPOTHESIS NOT SUPPORTED: Phase features add -0.008 AUC. The hypo ceiling is not a feature problem \u2014 it is information-theoretic. Consider external data (activity, stress) or different framing.",
+  "next_steps": [
+    "Explore activity/accelerometer data integration",
+    "Test meal announcement timing as predictor",
+    "Accept hypo ceiling and focus on settings optimization instead"
+  ]
+}
