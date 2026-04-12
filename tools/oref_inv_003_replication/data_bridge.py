@@ -410,8 +410,15 @@ def compute_4h_outcomes(df: pd.DataFrame) -> pd.DataFrame:
                 hypo[i] = np.nan
                 hyper[i] = np.nan
                 continue
-            hypo[i] = 1.0 if np.nanmin(window) < 70.0 else 0.0
-            hyper[i] = 1.0 if np.nanmax(window) > 180.0 else 0.0
+            # All-NaN window means no CGM data in the forward horizon —
+            # the label is unknown, not "no event".
+            valid_vals = window[~np.isnan(window)]
+            if len(valid_vals) == 0:
+                hypo[i] = np.nan
+                hyper[i] = np.nan
+                continue
+            hypo[i] = 1.0 if valid_vals.min() < 70.0 else 0.0
+            hyper[i] = 1.0 if valid_vals.max() > 180.0 else 0.0
             # bg_change_4h requires a reading at exactly +48 steps
             if i + STEPS_4H < n and not np.isnan(g[i + STEPS_4H]):
                 bg_change[i] = g[i + STEPS_4H] - g[i]
