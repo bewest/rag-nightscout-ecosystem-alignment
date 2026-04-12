@@ -855,6 +855,9 @@ _MEAL_CARB_THRESHOLD = 10.0   # grams
 _MEAL_BOLUS_THRESHOLD = 0.1   # units
 _SIM_DURATION_HOURS = 4.0
 _SIM_WINDOW_STEPS = 48        # 4h × 12 steps/h
+# EXP-2572: sim overshoots correction drops by ~22% (actual/sim = 0.78).
+# Dampen ISF recommendations toward 1.0 by this factor.
+_ISF_BIAS_DAMPENING = 0.78
 
 
 def _extract_meal_windows_from_arrays(
@@ -1010,12 +1013,14 @@ def advise_forward_sim_optimization(
 
     # ISF recommendation (if optimal differs from current)
     if abs(best_isf - 1.0) > 0.05:
+        # EXP-2572: dampen ISF deviation to account for 22% sim overestimation
+        dampened_isf = 1.0 + (best_isf - 1.0) * _ISF_BIAS_DAMPENING
         isf_vals = [e.get('value', e.get('sensitivity', 50))
                     for e in profile.isf_mgdl()]
         current_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
-        suggested_isf = current_isf * best_isf
-        direction = "decrease" if best_isf < 1.0 else "increase"
-        magnitude = abs(best_isf - 1.0) * 100
+        suggested_isf = current_isf * dampened_isf
+        direction = "decrease" if dampened_isf < 1.0 else "increase"
+        magnitude = abs(dampened_isf - 1.0) * 100
 
         # Directional delta — NOT a calibrated prediction
         isf_only_tir = _evaluate_joint_settings(windows, best_isf, 1.0)
@@ -1032,15 +1037,16 @@ def advise_forward_sim_optimization(
             confidence=round(confidence, 2),
             evidence=(
                 f"Forward sim joint optimization (EXP-2568): optimal ISF "
-                f"multiplier {best_isf:.1f}× across {len(windows)} meal "
+                f"multiplier {best_isf:.1f}× (dampened to {dampened_isf:.2f}× "
+                f"per EXP-2572 bias correction) across {len(windows)} meal "
                 f"windows. Joint optimal: ISF×{best_isf}, CR×{best_cr}."
             ),
             rationale=(
                 f"{direction.capitalize()} ISF by {magnitude:.0f}% "
                 f"(from {current_isf:.0f} to {suggested_isf:.0f} mg/dL/U). "
                 f"Forward sim analysis of meal responses suggests corrections "
-                f"are {'too aggressive' if best_isf < 1.0 else 'too weak'} "
-                f"at current settings."
+                f"are {'too aggressive' if dampened_isf < 1.0 else 'too weak'} "
+                f"at current settings. Recommendation dampened for sim bias."
             ),
         ))
 
