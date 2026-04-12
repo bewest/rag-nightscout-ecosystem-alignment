@@ -2,7 +2,7 @@
 
 **Experiment**: EXP-SYNTH  
 **Phase**: Synthesis (OREF-INV-003 cross-analysis)  
-**Date**: 2026-04-11  
+**Date**: 2026-04-12  
 **Script**: `synth_report.py`  
 
 ## Comparison Summary
@@ -134,20 +134,6 @@
 **Agreement**: partially_agrees
 **Prior work**: EXP-2401
 
-## Figures
-
-![Synthesis: Agreement Heatmap](../figures/fig_synth_agreement_heatmap.png)
-*Synthesis: Agreement Heatmap*
-
-![Synthesis: Auc Comparison](../figures/fig_synth_auc_comparison.png)
-*Synthesis: Auc Comparison*
-
-![Synthesis: Rank Scatter](../figures/fig_synth_rank_scatter.png)
-*Synthesis: Rank Scatter*
-
-![Synthesis: Transfer Gap](../figures/fig_synth_transfer_gap.png)
-*Synthesis: Transfer Gap*
-
 ## Methodology Notes
 
 This synthesis draws on experiments EXP-2401 through EXP-2498, covering three phases:
@@ -182,7 +168,7 @@ Of 10 core findings (F1–F10):
 
 ### Feature Importance (EXP-2401)
 
-Spearman ρ between OREF-INV-003's and our feature importance rankings: **ρ = 0.413**.
+Spearman ρ between OREF-INV-003's and our feature importance rankings: **ρ = 0.531**.
 
 Key observations:
 - cgm_mgdl consistently ranks in the top tier for both hypo and hyper prediction
