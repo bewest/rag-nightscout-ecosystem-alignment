@@ -122,7 +122,7 @@ SHAP and supply-demand **agree on WHICH features matter** (glucose, CR, ISF, thr
 - Time of day (hour) modulates meal response via CR × hour interaction
 
 ### Where They Disagree
-- **IOB features**: SHAP ranks them highly because they correlate with outcomes. But supply-demand reveals they are *consequences* of the algorithm, not independent causes. Removing IOB increases settings importance, confirming IOB mediates (absorbs) causal effects.
+- **IOB features**: SHAP ranks them highly because they correlate with outcomes. But supply-demand reveals they are *consequences* of the algorithm, not independent causes. Removing IOB shows mixed results: only 1/4 settings (ISF) gains importance (+2.5%), while CR, target, and threshold lose importance — suggesting IOB does not uniformly mediate causal effects of settings.
 - **cgm_mgdl dominance**: SHAP gives it ~48% importance. Supply-demand shows glucose is the *demand signal*, not an independent cause — it represents the problem, not the solution.
 
 ### Clinical Implications

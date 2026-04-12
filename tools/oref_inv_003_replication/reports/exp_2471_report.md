@@ -14,7 +14,7 @@
 | F-ablation | No ablation of PK feature groups performed | Best PK group: Meal timing (Δ=+0.018) | ↔️ not_comparable |
 | F-importance | Feature importance dominated by glucose target, ISF, and time features | PK features capture 34.4% of total importance | ↔️ not_comparable |
 | F-per-patient | Per-patient variation acknowledged but not decomposed by feature group | 18/19 patients improved with PK features | ↔️ not_comparable |
-| F-clinical | Settings advisors should focus on target, ISF, CR as top levers | Settings advisors should also consider: post-meal glucose momentum, IOB trajectory tracking, post-meal glucose momentum | 🟡 partially_agrees |
+| F-clinical | Settings advisors should focus on target, ISF, CR as top levers | Settings advisors should also consider: post-meal glucose momentum, IOB trajectory tracking, glucose acceleration | 🟡 partially_agrees |
 
 ## Colleague's Findings (OREF-INV-003)
 
@@ -80,9 +80,9 @@
 **Agreement**: not_comparable
 **Prior work**: EXP-2477
 
-### F-clinical: Settings advisors should also consider: post-meal glucose momentum, IOB trajectory tracking, post-meal glucose momentum 🟡
+### F-clinical: Settings advisors should also consider: post-meal glucose momentum, IOB trajectory tracking, glucose acceleration 🟡
 
-**Evidence**: PK enrichment adds 34.4% predictive power and benefits 18/19 patients. Clinically, post-meal glucose momentum, IOB trajectory tracking, post-meal glucose momentum could improve AID tuning by capturing individual pharmacokinetic variation that static settings miss. Circadian ISF patterns (from EXP-2351: insulin most effective at night for 5/10 patients) suggest time-varying ISF profiles deserve clinical attention.
+**Evidence**: PK enrichment adds 34.4% predictive power and benefits 18/19 patients. Clinically, post-meal glucose momentum, IOB trajectory tracking, glucose acceleration could improve AID tuning by capturing individual pharmacokinetic variation that static settings miss. Circadian ISF patterns (from EXP-2351: insulin most effective at night for 5/10 patients) suggest time-varying ISF profiles deserve clinical attention.
 **Agreement**: partially_agrees
 **Prior work**: EXP-2351, EXP-2475, EXP-2476
 
@@ -124,7 +124,7 @@ PK-enriched features improve hypo prediction beyond the colleague's 32-feature s
 
 3. **Patient heterogeneity**: 18/19 patients benefit from PK enrichment, with the best responder gaining Δ=+0.239 AUC. This supports personalized feature selection rather than one-size-fits-all models.
 
-4. **Clinical translation**: The most impactful PK features — post-meal glucose momentum, IOB trajectory tracking, post-meal glucose momentum — reflect individual pharmacological variation that static AID settings cannot capture. Future settings advisors should consider time-of-day ISF profiles and real-time IOB dynamics.
+4. **Clinical translation**: The most impactful PK features — post-meal glucose momentum, IOB trajectory tracking, glucose acceleration — reflect individual pharmacological variation that static AID settings cannot capture. Future settings advisors should consider time-of-day ISF profiles and real-time IOB dynamics.
 
 ### Implications for OREF-INV-003
 
