@@ -987,6 +987,10 @@ def main():
         "--label", type=str, default="",
         help="Label suffix for output files (e.g. 'verification')",
     )
+    parser.add_argument(
+        "--use-pk", action="store_true",
+        help="Replace 5 approximated IOB features with PK-derived equivalents",
+    )
     args = parser.parse_args()
 
     # Set module-level SHAP config from CLI
@@ -996,6 +1000,7 @@ def main():
     run_start = time.monotonic()
     print(f"[{_ts()}] EXP-2401 starting  data={args.data_path}  "
           f"shap_rows={SHAP_MAX_ROWS or 'ALL'}  "
+          f"use_pk={args.use_pk}  "
           f"label={args.label or '(default)'}")
 
     if args.figures:
@@ -1006,7 +1011,8 @@ def main():
     # Load data
     # ------------------------------------------------------------------
     print(f"[{_ts()}] Loading patient data from {args.data_path}...")
-    df = load_patients_with_features(parquet_path=args.data_path)
+    df = load_patients_with_features(parquet_path=args.data_path,
+                                     use_pk=args.use_pk)
     print(f"  Loaded {len(df):,} rows, {df['patient_id'].nunique()} patients  "
           f"mem={_mem_mb():.0f} MB")
 
@@ -1122,6 +1128,7 @@ def main():
     all_results["_meta"] = {
         "data_path": args.data_path,
         "shap_max_rows": SHAP_MAX_ROWS,
+        "use_pk": args.use_pk,
         "label": args.label,
         "total_rows": len(df),
         "n_patients": int(df["patient_id"].nunique()),
