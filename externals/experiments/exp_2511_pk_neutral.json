@@ -1,0 +1,420 @@
+{
+  "2511": {
+    "hypo_auc": 0.8031314206837546,
+    "hypo_std": 0.0006400374432469433,
+    "hyper_auc": 0.9007653712875763,
+    "hyper_std": 0.0008011741740976262,
+    "rho_hypo": 0.178021978021978,
+    "p_hypo": 0.5425969526062154,
+    "rho_hyper": -0.1043956043956044,
+    "p_hyper": 0.7343037452877025,
+    "ranking_hypo": {
+      "cgm_mgdl": 1,
+      "sug_ISF": 2,
+      "sug_current_target": 3,
+      "reason_minGuardBG": 4,
+      "reason_Dev": 5,
+      "bg_above_target": 6,
+      "hour": 7,
+      "sug_CR": 8,
+      "sug_rate": 9,
+      "sug_threshold": 10,
+      "sr_deviation": 11,
+      "iob_basaliob": 12,
+      "iob_activity": 13,
+      "iob_pct_max": 14,
+      "iob_iob": 15,
+      "sug_eventualBG": 16,
+      "direction_num": 17,
+      "reason_BGI": 18,
+      "sug_sensitivityRatio": 19,
+      "sug_COB": 20
+    },
+    "ranking_hyper": {
+      "cgm_mgdl": 1,
+      "sug_current_target": 2,
+      "bg_above_target": 3,
+      "hour": 4,
+      "sug_threshold": 5,
+      "sug_ISF": 6,
+      "sug_CR": 7,
+      "reason_Dev": 8,
+      "dynisf_x_sr": 9,
+      "sug_eventualBG": 10,
+      "reason_minGuardBG": 11,
+      "sug_rate": 12,
+      "iob_iob": 13,
+      "iob_pct_max": 14,
+      "iob_activity": 15,
+      "iob_bolusiob": 16,
+      "sug_COB": 17,
+      "reason_BGI": 18,
+      "dynisf_x_isf_ratio": 19,
+      "direction_num": 20
+    },
+    "n_features": 32,
+    "n_rows": 666934
+  },
+  "2512": {
+    "hypo_auc": 0.812618646469527,
+    "hypo_std": 0.0007442395796080545,
+    "hyper_auc": 0.9050574433513754,
+    "hyper_std": 0.0008838934909397643,
+    "rho_hypo": 0.221978021978022,
+    "p_hypo": 0.445629657953609,
+    "rho_hyper": -0.2351648351648352,
+    "p_hyper": 0.4183338961985915,
+    "ranking_hypo": {
+      "cgm_mgdl": 1,
+      "sug_ISF": 2,
+      "sug_current_target": 3,
+      "reason_minGuardBG": 4,
+      "bg_above_target": 5,
+      "pk_bgi": 6,
+      "pk_dev": 7,
+      "hour": 8,
+      "sug_CR": 9,
+      "pk_basal_iob": 10,
+      "pk_bolus_iob": 11,
+      "sr_deviation": 12,
+      "pk_activity": 13,
+      "sug_threshold": 14,
+      "sug_rate": 15,
+      "direction_num": 16,
+      "sug_eventualBG": 17,
+      "iob_pct_max": 18,
+      "sug_COB": 19,
+      "iob_iob": 20
+    },
+    "ranking_hyper": {
+      "cgm_mgdl": 1,
+      "sug_current_target": 2,
+      "bg_above_target": 3,
+      "hour": 4,
+      "sug_threshold": 5,
+      "pk_dev": 6,
+      "sug_ISF": 7,
+      "sug_CR": 8,
+      "pk_bgi": 9,
+      "dynisf_x_sr": 10,
+      "sug_eventualBG": 11,
+      "pk_bolus_iob": 12,
+      "reason_minGuardBG": 13,
+      "pk_activity": 14,
+      "iob_iob": 15,
+      "pk_basal_iob": 16,
+      "sug_rate": 17,
+      "direction_num": 18,
+      "sug_COB": 19,
+      "has_dynisf": 20
+    },
+    "pk_ranks_hypo": {
+      "pk_basal_iob": 10,
+      "pk_bolus_iob": 11,
+      "pk_activity": 13,
+      "pk_dev": 7,
+      "pk_bgi": 6
+    },
+    "n_features": 32
+  },
+  "2513": {
+    "hypo_auc": 0.8173499076498961,
+    "hypo_std": 0.0011184656375146816,
+    "hyper_auc": 0.9069019908361611,
+    "hyper_std": 0.0009156148097179223,
+    "ranking_hypo": {
+      "cgm_mgdl": 1,
+      "sug_ISF": 2,
+      "sug_current_target": 3,
+      "reason_minGuardBG": 4,
+      "bg_above_target": 5,
+      "pk_dev": 6,
+      "hour": 7,
+      "sug_CR": 8,
+      "pk_insulin_total": 9,
+      "pk_bolus_iob": 10,
+      "pk_net_balance": 11,
+      "pk_bgi": 12,
+      "pk_basal_iob": 13,
+      "pk_isf_curve": 14,
+      "sr_deviation": 15,
+      "pk_hepatic_prod": 16,
+      "direction_num": 17,
+      "sug_threshold": 18,
+      "sug_eventualBG": 19,
+      "pk_carb_accel": 20
+    },
+    "pk_in_top20": {
+      "pk_insulin_total": 9,
+      "pk_carb_accel": 20,
+      "pk_hepatic_prod": 16,
+      "pk_net_balance": 11,
+      "pk_isf_curve": 14
+    },
+    "n_features": 40
+  },
+  "2514": {
+    "hypo_auc": 0.8150759472867695,
+    "hypo_std": 0.0009442180553566713,
+    "hyper_auc": 0.9070202418830853,
+    "hyper_std": 0.0010170009684175962,
+    "ranking_hypo": {
+      "cgm_mgdl": 1,
+      "pk_isf_curve": 2,
+      "glucose_roc": 3,
+      "pk_insulin_total": 4,
+      "pk_bolus_iob": 5,
+      "pk_basal_iob": 6,
+      "time_sin": 7,
+      "time_cos": 8,
+      "pk_basal_ratio": 9,
+      "pk_net_balance": 10,
+      "pk_hepatic_prod": 11,
+      "glucose_accel": 12,
+      "pk_carb_rate": 13,
+      "pk_carb_accel": 14,
+      "pk_dev": 15,
+      "pk_bgi": 16,
+      "pk_activity": 17,
+      "pk_insulin_net": 18
+    },
+    "n_features": 18
+  },
+  "2515": {
+    "oref32": {
+      "loop_to_oref": 0.6518822022844697,
+      "oref_to_loop": 0.6523934544790745,
+      "mean_transfer": 0.652137828381772
+    },
+    "pk_only": {
+      "loop_to_oref": 0.6366681695017877,
+      "oref_to_loop": 0.662163155141856,
+      "mean_transfer": 0.6494156623218219
+    },
+    "transfer_delta": -0.0027221660599501263,
+    "n_loop_patients": 11,
+    "n_oref_patients": 8
+  },
+  "2516": {
+    "oref32": {
+      "rho": 0.178021978021978,
+      "p": 0.5425969526062154,
+      "top5": [
+        "cgm_mgdl",
+        "sug_ISF",
+        "sug_current_target",
+        "reason_minGuardBG",
+        "reason_Dev"
+      ]
+    },
+    "pk_replaced": {
+      "rho": 0.221978021978022,
+      "p": 0.445629657953609,
+      "top5": [
+        "cgm_mgdl",
+        "sug_ISF",
+        "sug_current_target",
+        "reason_minGuardBG",
+        "bg_above_target"
+      ]
+    },
+    "pk_only": {
+      "rho": 0.2571428571428572,
+      "p": 0.6227871720116619,
+      "top5": [
+        "cgm_mgdl",
+        "pk_isf_curve",
+        "glucose_roc",
+        "pk_insulin_total",
+        "pk_bolus_iob"
+      ]
+    }
+  },
+  "2517": {
+    "per_patient": {
+      "a": {
+        "auc_oref": 0.8427910509137869,
+        "auc_pk": 0.8753532850354114,
+        "delta": 0.03256223412162451,
+        "n_rows": 45793,
+        "hypo_rate": 0.18498460463389602,
+        "is_loop": true
+      },
+      "b": {
+        "auc_oref": 0.9035286133565551,
+        "auc_pk": 0.9370297002666762,
+        "delta": 0.0335010869101211,
+        "n_rows": 46446,
+        "hypo_rate": 0.10287215260732895,
+        "is_loop": true
+      },
+      "c": {
+        "auc_oref": 0.8191810601900175,
+        "auc_pk": 0.8575146343010381,
+        "delta": 0.038333574111020674,
+        "n_rows": 42830,
+        "hypo_rate": 0.28536072846135885,
+        "is_loop": true
+      },
+      "d": {
+        "auc_oref": 0.8662512249683272,
+        "auc_pk": 0.9154993262943313,
+        "delta": 0.0492481013260041,
+        "n_rows": 45292,
+        "hypo_rate": 0.08089728870440696,
+        "is_loop": true
+      },
+      "e": {
+        "auc_oref": 0.8279283259741973,
+        "auc_pk": 0.8819543932835718,
+        "delta": 0.05402606730937454,
+        "n_rows": 40440,
+        "hypo_rate": 0.17178536102868447,
+        "is_loop": true
+      },
+      "f": {
+        "auc_oref": 0.8327791390999045,
+        "auc_pk": 0.871454821090524,
+        "delta": 0.03867568199061944,
+        "n_rows": 46066,
+        "hypo_rate": 0.183454174445361,
+        "is_loop": true
+      },
+      "g": {
+        "auc_oref": 0.8138430544154908,
+        "auc_pk": 0.8487904330741584,
+        "delta": 0.034947378658667594,
+        "n_rows": 46131,
+        "hypo_rate": 0.2619496650842167,
+        "is_loop": true
+      },
+      "h": {
+        "auc_oref": 0.7947179921813649,
+        "auc_pk": 0.8695557798622877,
+        "delta": 0.07483778768092286,
+        "n_rows": 18526,
+        "hypo_rate": 0.4162798229515276,
+        "is_loop": true
+      },
+      "i": {
+        "auc_oref": 0.8465388778716724,
+        "auc_pk": 0.8840328776458822,
+        "delta": 0.03749399977420986,
+        "n_rows": 46382,
+        "hypo_rate": 0.4127894441809323,
+        "is_loop": true
+      },
+      "j": {
+        "auc_oref": 0.7322217287240605,
+        "auc_pk": 0.8130730676768687,
+        "delta": 0.08085133895280816,
+        "n_rows": 15867,
+        "hypo_rate": 0.14861032331253546,
+        "is_loop": true
+      },
+      "k": {
+        "auc_oref": 0.804555319075547,
+        "auc_pk": 0.8515875591673779,
+        "delta": 0.047032240091830935,
+        "n_rows": 45891,
+        "hypo_rate": 0.27205770194591533,
+        "is_loop": true
+      },
+      "odc-39819048": {
+        "auc_oref": 0.9277396497471653,
+        "auc_pk": 0.9548160355437232,
+        "delta": 0.02707638579655791,
+        "n_rows": 2922,
+        "hypo_rate": 0.4654346338124572,
+        "is_loop": false
+      },
+      "odc-49141524": {
+        "auc_oref": 0.9668748973642062,
+        "auc_pk": 0.9727288898166098,
+        "delta": 0.005853992452403589,
+        "n_rows": 3427,
+        "hypo_rate": 0.13948059527283338,
+        "is_loop": false
+      },
+      "odc-58680324": {
+        "auc_oref": 0.9896256794703352,
+        "auc_pk": 0.9921426179251359,
+        "delta": 0.002516938454800721,
+        "n_rows": 2613,
+        "hypo_rate": 0.21814006888633755,
+        "is_loop": false
+      },
+      "odc-61403732": {
+        "auc_oref": 0.9349695061971276,
+        "auc_pk": 0.9689618991409273,
+        "delta": 0.03399239294379974,
+        "n_rows": 2304,
+        "hypo_rate": 0.22135416666666666,
+        "is_loop": false
+      },
+      "odc-74077367": {
+        "auc_oref": 0.8655682875750087,
+        "auc_pk": 0.904663518341013,
+        "delta": 0.039095230766004296,
+        "n_rows": 60525,
+        "hypo_rate": 0.16991325898389095,
+        "is_loop": false
+      },
+      "odc-84181797": {
+        "auc_oref": 0.978744956109875,
+        "auc_pk": 0.9943092516687612,
+        "delta": 0.015564295558886165,
+        "n_rows": 1441,
+        "hypo_rate": 0.17904233171408743,
+        "is_loop": false
+      },
+      "odc-86025410": {
+        "auc_oref": 0.7739354042728607,
+        "auc_pk": 0.8097764810972216,
+        "delta": 0.035841076824360885,
+        "n_rows": 106057,
+        "hypo_rate": 0.2859311502305364,
+        "is_loop": false
+      },
+      "odc-96254963": {
+        "auc_oref": 0.8974239393900835,
+        "auc_pk": 0.9173512949125707,
+        "delta": 0.019927355522487256,
+        "n_rows": 47981,
+        "hypo_rate": 0.3092890935995498,
+        "is_loop": false
+      }
+    },
+    "n_improved": 19,
+    "n_total": 19,
+    "n_loop_improved": 11,
+    "n_loop_total": 11
+  },
+  "2518": {
+    "auc_comparison": {
+      "baseline_hypo": 0.8031314206837546,
+      "pk_replaced_hypo": 0.812618646469527,
+      "pk_augmented_hypo": 0.8173499076498961,
+      "pk_only_hypo": 0.8150759472867695,
+      "baseline_hyper": 0.9007653712875763,
+      "pk_replaced_hyper": 0.9050574433513754,
+      "pk_augmented_hyper": 0.9069019908361611,
+      "pk_only_hyper": 0.9070202418830853
+    },
+    "shap_rho_comparison": {
+      "baseline_rho_hypo": 0.178021978021978,
+      "pk_replaced_rho_hypo": 0.221978021978022
+    },
+    "transfer_delta": -0.0027221660599501263,
+    "per_patient_improved": 19,
+    "per_patient_total": 19,
+    "key_findings": {
+      "pk_replacement_helps": true,
+      "pk_replacement_auc_delta": 0.009487225785772324,
+      "pk_improves_rho": true,
+      "pk_rho_delta": 0.043956043956043994,
+      "pk_only_pct_of_baseline": 101.48724434076377,
+      "pk_transfers_better": false
+    }
+  }
+}

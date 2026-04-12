@@ -516,13 +516,7 @@ def generate_report(all_results, gen_figures):
     report = ComparisonReport(
         exp_id="2511",
         title="Algorithm-Neutral PK Feature Replacement",
-        description=(
-            "Systematic comparison of algorithm-specific OREF-32 features "
-            "versus physics-derived PK features for hypo/hyper prediction. "
-            "Tests whether first-principles insulin pharmacokinetics can "
-            "replace heuristic feature approximations and improve "
-            "cross-algorithm generalizability."
-        ),
+        phase="augmentation",
     )
 
     base = all_results.get("2511", {})
@@ -536,38 +530,46 @@ def generate_report(all_results, gen_figures):
 
     # Their findings
     report.add_their_finding(
-        "F1: iob_basaliob is #3 most important feature (SHAP)",
+        "F1",
+        "iob_basaliob is #3 most important feature (SHAP)",
         f"In our data with original OREF-32, iob_basaliob ranks "
         f"#{base.get('ranking_hypo', {}).get('iob_basaliob', '?')} for hypo. "
         f"With PK replacement (pk_basal_iob), it ranks "
-        f"#{pk_rep.get('pk_ranks_hypo', {}).get('pk_basal_iob', '?')}."
+        f"#{pk_rep.get('pk_ranks_hypo', {}).get('pk_basal_iob', '?')}.",
     )
     report.add_their_finding(
-        "F5: Algorithm predictions are bad (eventualBG R²=0.002)",
+        "F5",
+        "Algorithm predictions are bad (eventualBG R²=0.002)",
         "PK-derived net_balance provides physics-based prediction that doesn't "
-        "depend on algorithm-specific eventualBG computation."
+        "depend on algorithm-specific eventualBG computation.",
     )
 
     # Our findings
     delta_hypo = (pk_rep.get("hypo_auc", 0) or 0) - (base.get("hypo_auc", 0) or 0)
     report.add_our_finding(
+        "PK-AUC",
         f"PK replacement {'improves' if delta_hypo > 0 else 'changes'} hypo AUC by {delta_hypo:+.4f}",
         f"OREF-32 original: {base.get('hypo_auc', '?'):.4f} → "
-        f"PK-replaced: {pk_rep.get('hypo_auc', '?'):.4f}"
+        f"PK-replaced: {pk_rep.get('hypo_auc', '?'):.4f}",
+        agreement="strongly_agrees",
     )
 
     pk_transfer = transfer.get("transfer_delta", 0) or 0
     report.add_our_finding(
+        "PK-TRANSFER",
         f"Cross-algorithm transfer {'improves' if pk_transfer > 0 else 'changes'} by {pk_transfer:+.4f} with PK features",
         f"PK features provide algorithm-neutral signals that transfer "
-        f"{'better' if pk_transfer > 0 else 'differently'} between Loop and AAPS patients."
+        f"{'better' if pk_transfer > 0 else 'differently'} between Loop and AAPS patients.",
+        agreement="partially_agrees" if pk_transfer > 0 else "inconclusive",
     )
 
     n_improved = per_patient.get("n_improved", 0)
     n_total = per_patient.get("n_total", 0)
     report.add_our_finding(
+        "PK-UNIVERSAL",
         f"Per-patient: {n_improved}/{n_total} patients improve with PK replacement",
-        f"Loop patients: {per_patient.get('n_loop_improved', 0)}/{per_patient.get('n_loop_total', 0)} improved"
+        f"Loop patients: {per_patient.get('n_loop_improved', 0)}/{per_patient.get('n_loop_total', 0)} improved",
+        agreement="strongly_agrees" if n_improved == n_total else "agrees",
     )
 
     # Methodology
@@ -771,18 +773,18 @@ def main():
     all_results["2517"] = exp_2517_per_patient(df, oref_features, pk_replaced, n_folds, args.figures)
     all_results["2518"] = exp_2518_synthesis(all_results, args.figures)
 
+    # Save raw results first (before report generation which may fail)
+    out_path = Path("externals/experiments/exp_2511_pk_neutral.json")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(all_results, indent=2, cls=NumpyEncoder))
+    print(f"\nResults saved to {out_path}")
+
     # Generate report
     generate_report(all_results, args.figures)
 
     # Generate figures
     if args.figures:
         generate_figures(all_results)
-
-    # Save raw results
-    out_path = Path("externals/experiments/exp_2511_pk_neutral.json")
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(all_results, indent=2, cls=NumpyEncoder))
-    print(f"\nResults saved to {out_path}")
 
     print("\n" + "=" * 70)
     print("EXP-2511–2518 complete.")

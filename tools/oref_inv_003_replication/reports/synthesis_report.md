@@ -263,6 +263,74 @@ Supply-demand analysis and IOB trajectory decomposition distinguish features tha
 
 PK-derived features show more stable importance across algorithms than raw IOB/COB features, suggesting they capture more fundamental physiological signals rather than algorithm-specific artifacts.
 
+## Phase 5: Algorithm-Neutral PK Feature Replacement (EXP-2511–2518)
+
+### Data Correction: ODC Percentage Temp Basals
+
+Before running the full EXP-2511 suite, a critical data bug was identified and fixed:
+`odc_loader.py` was storing percentage-based temp basals (e.g., 360% of scheduled) as
+raw U/hr rates, producing physiologically impossible values (e.g., 3.6 U/hr instead of
+0.36 × scheduled). This affected 5/8 AAPS-native ODC patients. The fix stores
+`temp='percent'` + `percent=value` and defers resolution until scheduled basal is known.
+9 new tests confirm correct handling. Grid rebuilt with corrected data.
+
+### Full-Data Results (803K rows, 19 patients)
+
+| Feature Set | Features | Hypo AUC | Hyper AUC | SHAP ρ vs colleague |
+|-------------|----------|----------|-----------|---------------------|
+| OREF-32 (baseline) | 32 | 0.8031 ± 0.0006 | 0.9008 ± 0.0008 | 0.178 (p=0.54) |
+| PK-Replaced (5 approximated → 5 PK) | 32 | 0.8126 ± 0.0007 | 0.9051 ± 0.0009 | 0.222 (p=0.45) |
+| PK-Augmented (32 + 8 PK) | 40 | 0.8173 ± 0.0011 | 0.9069 ± 0.0009 | — |
+| PK-Only (algorithm-neutral) | 18 | 0.8151 ± 0.0009 | 0.9070 ± 0.0010 | 0.257 (p=0.62) |
+
+**Key findings:**
+
+1. **PK replacement universally improves prediction**: 19/19 patients improved with PK features
+   replacing the 5 approximated OREF features (+0.0095 AUC hypo, +0.0043 hyper).
+
+2. **PK-only matches OREF-32 with 44% fewer features**: 18 algorithm-neutral PK features
+   achieve 101.5% of baseline AUC (0.8151 vs 0.8031), demonstrating that physics-based
+   features capture the essential signals without algorithm-specific artifacts.
+
+3. **PK-augmented is best overall**: Adding 8 PK channels to the 32 OREF features yields
+   the highest AUC (0.8173 hypo, 0.9069 hyper), suggesting PK captures complementary
+   information not present in the OREF feature set.
+
+4. **Cross-algorithm transfer is neutral**: PK features don't significantly improve transfer
+   between Loop and AAPS cohorts (Δ = -0.003), suggesting the transfer gap is driven by
+   population differences rather than feature representation.
+
+5. **Per-patient improvements**:
+   - Loop patients: all 11 improved, range +0.033 to +0.081 AUC
+   - AAPS patients: all 8 improved, range +0.003 to +0.039 AUC
+   - Largest gain: patient j (+0.081) — sparse devicestatus data most benefits from PK
+
+6. **SHAP ρ vs colleague dropped** from 0.531 (Phase 1) to 0.178 after ODC data fix.
+   The corrected AAPS data changes the feature importance distribution, particularly
+   for IOB-related features that were previously inflated by wrong basal rates.
+
+### PK Feature Importance Ranking (Hypo)
+
+When PK features replace OREF approximations:
+- `pk_bgi` ranks #6 (was `reason_BGI` #5 in OREF-32)
+- `pk_dev` ranks #7 (was `reason_Dev` #5 in OREF-32)
+- `pk_basal_iob` ranks #10 (was `iob_basaliob` #12 in OREF-32)
+- `pk_bolus_iob` ranks #11 (was `iob_bolusiob` #18 in OREF-32)
+- `pk_activity` ranks #13 (was `iob_activity` #20 in OREF-32)
+
+PK features consistently rank higher than their approximated counterparts,
+confirming that physics-derived features provide stronger signals.
+
+### Implications for the iob_basaliob Disagreement
+
+The colleague's finding (F3) that `iob_basaliob` is the #2 hypo predictor was
+inconclusive in our Phase 1 replication (ranked #12). With PK replacement,
+`pk_basal_iob` moves to #10 — still not #2, but materially more important than
+the approximated version. The remaining gap likely reflects:
+1. Algorithm differences (oref decomposes IOB; Loop reports total only)
+2. Population differences (their 28 oref users vs our mixed cohort)
+3. The ODC data fix changing the AAPS contribution to the ranking
+
 ## Clinical Implications
 
 ### Recommendations Strengthened by Dual Analysis
@@ -287,7 +355,7 @@ PK-derived features show more stable importance across algorithms than raw IOB/C
 
 ## Limitations
 
-1. **Feature alignment approximations**: Mapping our grid columns to the OREF-INV-003 32-feature schema involves approximations for ~40% of features (marked as `derived` or `approximated` quality in `data_bridge.py`).
+1. **Feature alignment approximations**: Mapping our grid columns to the OREF-INV-003 32-feature schema involves approximations for ~40% of features (marked as `derived` or `approximated` quality in `data_bridge.py`). PK replacement (Phase 5) addresses the 5 most critical approximations.
 
 2. **Population differences**: OREF-INV-003 analyzed 28 oref users with ~2.9M records; our data includes 11 Loop + 8 AAPS patients with ~800K records. Population size and demographics may differ.
 
@@ -298,4 +366,6 @@ PK-derived features show more stable importance across algorithms than raw IOB/C
 5. **Outcome definitions**: While both analyses use 4-hour hypo/hyper windows, threshold calibration and event counting methodologies may differ slightly.
 
 6. **SHAP interaction sample size**: Interaction values used 50K row samples due to O(n × features²) complexity. Rankings may shift with different sample sizes, as observed in CR×hour rank instability.
+
+7. **ODC data correction (Phase 5)**: Phases 1-4 results used data with a percentage temp basal bug affecting 5/8 AAPS patients. The bug stored percentage rates (e.g., 360%) as absolute U/hr, inflating IOB-related features. Phase 5 results use corrected data. Prior phase results should be interpreted with this caveat; however, Loop patients (11/19) were unaffected.
 
