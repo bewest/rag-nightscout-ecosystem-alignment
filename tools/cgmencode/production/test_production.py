@@ -4156,3 +4156,188 @@ class TestPredictionValidatorExecution(unittest.TestCase):
         self.assertIn('Prediction Validation Report', report)
         self.assertIn('MAE', report)
         self.assertIn('Correlation', report)
+
+
+# ─── Forward Simulator Tests ──────────────────────────────────────────
+
+class TestForwardSimulator(unittest.TestCase):
+    """Tests for the forward simulation engine."""
+
+    def setUp(self):
+        from cgmencode.production.forward_simulator import (
+            forward_simulate, compare_scenarios, simulate_typical_day,
+            TherapySettings, InsulinEvent, CarbEvent,
+        )
+        self.forward_simulate = forward_simulate
+        self.compare_scenarios = compare_scenarios
+        self.simulate_typical_day = simulate_typical_day
+        self.TherapySettings = TherapySettings
+        self.InsulinEvent = InsulinEvent
+        self.CarbEvent = CarbEvent
+        self.settings = TherapySettings(isf=50, cr=10, basal_rate=0.8)
+
+    def test_steady_state_flat(self):
+        """At correct basal with no meals, glucose stays at initial."""
+        r = self.forward_simulate(120.0, self.settings, duration_hours=6.0, seed=42)
+        # Should stay very close to 120
+        self.assertAlmostEqual(r.glucose[-1], 120.0, delta=5.0)
+        self.assertAlmostEqual(r.mean_glucose, 120.0, delta=3.0)
+
+    def test_decay_toward_target(self):
+        """Starting high should decay toward 120."""
+        r = self.forward_simulate(200.0, self.settings, duration_hours=12.0, seed=42)
+        self.assertLess(r.glucose[-1], 200.0)
+        # Decay should bring it closer to 120
+        self.assertLess(r.glucose[-1], 180.0)
+
+    def test_correction_bolus_lowers(self):
+        """Correction bolus should lower glucose proportional to ISF."""
+        bolus_units = 1.6  # expect ~80 mg/dL drop at ISF=50
+        r = self.forward_simulate(200.0, self.settings, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(0, bolus_units)], seed=42)
+        drop = 200.0 - r.glucose[-1]
+        # Should drop significantly (not exact due to two-component split)
+        self.assertGreater(drop, 40)
+        self.assertLess(drop, 120)  # not too much
+
+    def test_meal_raises_glucose(self):
+        """Meal without bolus should raise glucose."""
+        r = self.forward_simulate(120.0, self.settings, duration_hours=4.0,
+            carb_events=[self.CarbEvent(30, 45)], seed=42)
+        self.assertGreater(r.glucose.max(), 150.0)
+
+    def test_meal_with_correct_bolus(self):
+        """Correctly bolused meal should spike then return near baseline."""
+        r = self.forward_simulate(120.0, self.settings, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(60, 4.5)],
+            carb_events=[self.CarbEvent(60, 45)], seed=42)
+        # Should spike
+        self.assertGreater(r.glucose.max(), 150.0)
+        # Should come back down (not necessarily to 120 due to persistent)
+        self.assertLess(r.glucose[-1], r.glucose.max())
+
+    def test_under_bolused_meal(self):
+        """Under-bolused meal should spike higher."""
+        r_correct = self.forward_simulate(120.0, self.settings, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(60, 4.5)],
+            carb_events=[self.CarbEvent(60, 45)], seed=42)
+        r_under = self.forward_simulate(120.0, self.settings, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(60, 3.0)],
+            carb_events=[self.CarbEvent(60, 45)], seed=42)
+        self.assertGreater(r_under.glucose.max(), r_correct.glucose.max())
+
+    def test_low_basal_raises(self):
+        """Basal below metabolic need should raise glucose."""
+        low = self.TherapySettings(isf=50, cr=10, basal_rate=0.5)
+        r = self.forward_simulate(120.0, low, duration_hours=6.0,
+            metabolic_basal_rate=0.8, seed=42)
+        self.assertGreater(r.glucose[-1], 120.0)
+
+    def test_high_basal_lowers(self):
+        """Basal above metabolic need should lower glucose."""
+        high = self.TherapySettings(isf=50, cr=10, basal_rate=1.1)
+        r = self.forward_simulate(120.0, high, duration_hours=6.0,
+            metabolic_basal_rate=0.8, seed=42)
+        self.assertLess(r.glucose[-1], 120.0)
+
+    def test_scenario_comparison(self):
+        """compare_scenarios should show basal rate effect."""
+        low = self.TherapySettings(isf=50, cr=10, basal_rate=0.5)
+        high = self.TherapySettings(isf=50, cr=10, basal_rate=1.1)
+        comp = self.compare_scenarios(120.0, low, high, duration_hours=6.0,
+            metabolic_basal_rate=0.8, seed=42)
+        # High basal should produce lower mean glucose
+        self.assertLess(comp.modified.mean_glucose, comp.baseline.mean_glucose)
+
+    def test_scenario_comparison_summary(self):
+        """Scenario summary should contain expected keys."""
+        comp = self.compare_scenarios(120.0, self.settings, self.settings,
+            duration_hours=4.0, seed=42)
+        s = comp.summary()
+        self.assertIn('baseline', s)
+        self.assertIn('modified', s)
+        self.assertIn('tir_delta_pp', s)
+
+    def test_typical_day(self):
+        """Typical day with meals should produce reasonable TIR."""
+        r = self.simulate_typical_day(self.settings, seed=42)
+        self.assertEqual(r.n_steps, 288)  # 24h × 12
+        self.assertGreater(r.tir, 0.3)  # At least 30% TIR
+        self.assertLess(r.tbr, 0.3)  # Not too much hypo
+
+    def test_simulation_result_properties(self):
+        """SimulationResult properties should be consistent."""
+        r = self.forward_simulate(120.0, self.settings, duration_hours=6.0, seed=42)
+        self.assertAlmostEqual(r.tir + r.tbr + r.tar, 1.0, places=5)
+        self.assertEqual(r.duration_hours, 6.0)
+        self.assertGreater(r.mean_glucose, 0)
+        self.assertGreaterEqual(r.cv, 0)
+
+    def test_noise_adds_variability(self):
+        """Noise parameter should increase CV."""
+        r_clean = self.forward_simulate(120.0, self.settings, duration_hours=6.0,
+            noise_std=0.0, seed=42)
+        r_noisy = self.forward_simulate(120.0, self.settings, duration_hours=6.0,
+            noise_std=2.0, seed=42)
+        self.assertGreater(r_noisy.cv, r_clean.cv)
+
+    def test_deterministic_with_seed(self):
+        """Same seed should produce identical results."""
+        r1 = self.forward_simulate(120.0, self.settings, duration_hours=4.0,
+            noise_std=1.0, seed=123)
+        r2 = self.forward_simulate(120.0, self.settings, duration_hours=4.0,
+            noise_std=1.0, seed=123)
+        np.testing.assert_array_equal(r1.glucose, r2.glucose)
+
+    def test_circadian_isf_schedule(self):
+        """Circadian ISF schedule should affect bolus response."""
+        # Night ISF = 30 (less sensitive), day ISF = 60 (more sensitive)
+        s = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+            isf_schedule=[(0, 30), (8, 60), (20, 30)])
+        # Night correction (start_hour=2) → ISF=30 → smaller drop per unit
+        r_night = self.forward_simulate(200.0, s, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(0, 1.0)], start_hour=2.0, seed=42)
+        # Day correction (start_hour=12) → ISF=60 → bigger drop per unit
+        r_day = self.forward_simulate(200.0, s, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(0, 1.0)], start_hour=12.0, seed=42)
+        drop_night = 200 - r_night.glucose[-1]
+        drop_day = 200 - r_day.glucose[-1]
+        self.assertGreater(drop_day, drop_night)
+
+    def test_glucose_stays_in_bounds(self):
+        """Glucose should never go below 39 or above 401."""
+        # Massive insulin → should hit floor
+        r = self.forward_simulate(80.0, self.settings, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(0, 20.0)], seed=42)
+        self.assertGreaterEqual(r.glucose.min(), 39.0)
+        # No insulin at all → should hit ceiling eventually? No, decay holds it
+        # Just verify clipping works
+        self.assertLessEqual(r.glucose.max(), 401.0)
+
+    def test_iob_trace(self):
+        """IOB should rise after bolus then decay."""
+        r = self.forward_simulate(120.0, self.settings, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(30, 3.0)], seed=42)
+        # IOB should peak shortly after bolus (step 6 = 30min)
+        peak_step = np.argmax(r.iob)
+        self.assertGreater(peak_step, 5)
+        self.assertLess(peak_step, 20)
+        # IOB at end should be much less than peak
+        self.assertLess(r.iob[-1], r.iob[peak_step])
+
+    def test_cob_trace(self):
+        """COB should appear at meal time then decrease."""
+        r = self.forward_simulate(120.0, self.settings, duration_hours=6.0,
+            carb_events=[self.CarbEvent(30, 60)], seed=42)
+        # COB should be >0 after meal (step 7 = 35min)
+        self.assertGreater(r.cob[8], 0)
+        # COB should be 0 after full absorption (3h = 36 steps after meal)
+        self.assertAlmostEqual(r.cob[-1], 0.0, places=1)
+
+    def test_therapy_settings_schedule_lookup(self):
+        """Schedule lookup should follow hour boundaries."""
+        s = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+            isf_schedule=[(0, 30), (8, 60), (20, 40)])
+        self.assertEqual(s.isf_at_hour(3.0), 30)
+        self.assertEqual(s.isf_at_hour(12.0), 60)
+        self.assertEqual(s.isf_at_hour(22.0), 40)

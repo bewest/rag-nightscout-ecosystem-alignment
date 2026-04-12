@@ -55,6 +55,11 @@ from .prediction_validator import (
     validate_patient, validate_batch, generate_validation_report,
     PredictionValidationResult, ValidationSummary,
 )
+from .forward_simulator import (
+    forward_simulate, compare_scenarios, simulate_typical_day,
+    TherapySettings, InsulinEvent, CarbEvent,
+    SimulationResult, ScenarioComparison,
+)
 from .patient_phenotyper import classify_patient_phenotype
 from .pipeline import run_pipeline, run_pipeline_batch
 from .validators import run_validation
