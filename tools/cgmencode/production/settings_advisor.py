@@ -923,11 +923,14 @@ def _evaluate_joint_settings(windows: list, isf_mult: float, cr_mult: float) -> 
     tirs = []
     for w in windows:
         try:
+            # Use decoupled CSF when carbs are present (EXP-2596)
+            csf = _POPULATION_CSF if w['c'] > 1.0 else None
             s = _TherapySettings(
                 isf=w['isf'] * isf_mult,
                 cr=w['cr'] * cr_mult,
                 basal_rate=w['basal'],
                 dia_hours=5.0,
+                carb_sensitivity=csf,
             )
             r = _fwd_simulate(
                 initial_glucose=w['g'], settings=s,
@@ -1106,6 +1109,10 @@ _DAY_START_HOUR = 6.0
 _NIGHT_START_HOUR = 22.0
 _POPULATION_K_DAY = 2.2     # median day k from EXP-2588
 _POPULATION_K_NIGHT = 3.8   # median night k from EXP-2588
+# EXP-2596: Decoupled carb sensitivity. When ISF is calibrated (×0.5),
+# coupled CSF = ISF/CR drops to 25% of profile — carbs barely register.
+# Optimal decoupled CSF = 2.0 (sweet spot: r=0.933 ranking + 53% peaks).
+_POPULATION_CSF = 2.0       # mg/dL per gram carb (decoupled from ISF/CR)
 
 
 def _extract_correction_windows(
