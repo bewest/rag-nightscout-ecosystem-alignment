@@ -1014,44 +1014,11 @@ def advise_forward_sim_optimization(
     recs = []
     confidence = min(1.0, days_of_data / HIGH_CONFIDENCE_DAYS) * min(1.0, len(windows) / 30)
 
-    # ISF recommendation (if optimal differs from current)
-    if abs(best_isf - 1.0) > 0.05:
-        # EXP-2572: dampen ISF deviation to account for 22% sim overestimation
-        dampened_isf = 1.0 + (best_isf - 1.0) * _ISF_BIAS_DAMPENING
-        isf_vals = [e.get('value', e.get('sensitivity', 50))
-                    for e in profile.isf_mgdl()]
-        current_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
-        suggested_isf = current_isf * dampened_isf
-        direction = "decrease" if dampened_isf < 1.0 else "increase"
-        magnitude = abs(dampened_isf - 1.0) * 100
-
-        # Directional delta — NOT a calibrated prediction
-        isf_only_tir = _evaluate_joint_settings(windows, best_isf, 1.0)
-        isf_delta = ((isf_only_tir or baseline_tir) - baseline_tir) * 100
-
-        recs.append(SettingsRecommendation(
-            parameter=SettingsParameter.ISF,
-            direction=direction,
-            magnitude_pct=round(magnitude, 0),
-            current_value=current_isf,
-            suggested_value=round(suggested_isf, 1),
-            predicted_tir_delta=round(isf_delta, 1),
-            affected_hours=(0.0, 24.0),
-            confidence=round(confidence, 2),
-            evidence=(
-                f"Forward sim joint optimization (EXP-2568): optimal ISF "
-                f"multiplier {best_isf:.1f}× (dampened to {dampened_isf:.2f}× "
-                f"per EXP-2572 bias correction) across {len(windows)} meal "
-                f"windows. Joint optimal: ISF×{best_isf}, CR×{best_cr}."
-            ),
-            rationale=(
-                f"{direction.capitalize()} ISF by {magnitude:.0f}% "
-                f"(from {current_isf:.0f} to {suggested_isf:.0f} mg/dL/U). "
-                f"Forward sim analysis of meal responses suggests corrections "
-                f"are {'too aggressive' if dampened_isf < 1.0 else 'too weak'} "
-                f"at current settings. Recommendation dampened for sim bias."
-            ),
-        ))
+    # NOTE (EXP-2601/2602): ISF recommendation REMOVED from sim optimization.
+    # The ISF multiplier from the grid search is a SIM CALIBRATION parameter
+    # (ISF×0.5 needed for ranking accuracy), NOT a clinical recommendation.
+    # Clinical ISF should come from advise_correction_isf() which uses actual
+    # correction bolus outcomes, not from the sim calibration multiplier.
 
     # CR recommendation (if optimal differs from current)
     if abs(best_cr - 1.0) > 0.05:
