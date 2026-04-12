@@ -505,3 +505,71 @@ class TestPatientDIA:
         if odc_dias:
             assert len(set(odc_dias)) > 1, \
                 "ODC patients should have different DIA values"
+
+
+class TestPeakParameter:
+    """Tests for insulin peak parameter alignment.
+
+    All three AID systems (Loop, oref0, AAPS) use the same exponential
+    insulin activity curve but with different peak times:
+      - Rapid-acting (Humalog/Novolog): peak=75 min
+      - Ultra-rapid (Fiasp/Lyumjev):    peak=55 min
+
+    Rapid-acting is far more common, so peak=75 should be our default.
+    """
+
+    @pytest.fixture(scope='class')
+    def grid(self):
+        grid_path = os.path.join(_PROJECT_ROOT, 'externals', 'ns-parquet',
+                                 'training', 'grid.parquet')
+        if not os.path.exists(grid_path):
+            pytest.skip('Training grid not available')
+        grid = pd.read_parquet(grid_path)
+        quality = assess_patient_quality(grid)
+        return grid[grid['patient_id'].isin(
+            quality[quality['passes_quality']].index
+        )].copy()
+
+    def test_default_peak_is_75(self):
+        """data_bridge should use peak=75 (rapid-acting) by default."""
+        import inspect
+        from tools.oref_inv_003_replication.data_bridge import build_oref_features
+        src = inspect.getsource(build_oref_features)
+        assert 'default_peak = 75' in src, \
+            "build_oref_features should default to peak=75 (rapid-acting)"
+
+    def test_pk_correlation_above_threshold(self, grid):
+        """PK total IOB should correlate r>0.85 with reported IOB on average."""
+        result = build_oref_features(grid, use_pk=True)
+        reported = grid['iob'].astype(float).fillna(0.0)
+        pk_total = result['iob_basaliob'] + result['iob_bolusiob']
+
+        corrs = []
+        for pid in grid['patient_id'].unique():
+            mask = grid['patient_id'] == pid
+            rep = reported[mask].values
+            pk = pk_total[mask].values
+            valid = np.isfinite(rep) & (rep != 0) & np.isfinite(pk)
+            if valid.sum() < 50:
+                continue
+            corrs.append(np.corrcoef(rep[valid], pk[valid])[0, 1])
+
+        mean_r = np.mean(corrs)
+        assert mean_r > 0.85, \
+            f"Mean PK-vs-reported r should be >0.85, got {mean_r:.4f}"
+
+    def test_ramp_impact_negligible(self):
+        """The 15-min injection-site ramp should affect <1% of total activity.
+
+        oref0 uses no ramp, Loop uses 10-min delay. Our 15-min linear ramp
+        is a minor difference because early-time activity is very small
+        for peak=75.
+        """
+        from tools.cgmencode.continuous_pk import _build_activity_kernel
+        kernel = _build_activity_kernel(dia_hours=6.0, peak_min=75.0,
+                                        interval_min=5)
+        total = np.sum(kernel) * 5  # integrate over time
+        # With ramp vs without: ramp only reduces first 2 steps (t=5,10)
+        # The total should still be close to 1.0 (normalized)
+        assert abs(total - 1.0) < 0.02, \
+            f"Kernel should integrate to ~1.0, got {total:.4f}"

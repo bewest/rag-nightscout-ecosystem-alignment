@@ -466,12 +466,20 @@ def build_oref_features(grid_df: pd.DataFrame, *,
         # Load per-patient DIA from profiles (default 6.0h if not found)
         _patient_dia = _load_patient_dia()
 
+        # Peak activity time: 75 min for rapid-acting (Humalog/Novolog/NovoRapid),
+        # 55 min for ultra-rapid (Fiasp/Lyumjev).  Same formula across Loop
+        # (ExponentialInsulinModelPreset.swift), oref0 (calculate.js), and
+        # AAPS (InsulinOrefBasePlugin.kt).  Default to 75 (most common).
+        default_peak = 75.0
+
         pk_frames = []
         pk_orig_indices = []
         for pid, grp in df.groupby("patient_id"):
             dia = _patient_dia.get(pid, 6.0)
             try:
-                pk = compute_pk_for_patient(grp, dia_hours=dia, verbose=False)
+                pk = compute_pk_for_patient(
+                    grp, dia_hours=dia, peak_min=default_peak, verbose=False,
+                )
                 pk_frames.append(pk)
                 pk_orig_indices.append(grp.index)
             except Exception as exc:
