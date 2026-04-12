@@ -257,6 +257,17 @@ class ControllerType(str, Enum):
     UNKNOWN = "unknown"
 
 
+class PatientPhenotype(str, Enum):
+    """Patient glycemic phenotype (EXP-2541).
+
+    Two-cluster classification based on glycemic outcomes.
+    Controller type does not predict phenotype (p=0.18).
+    """
+    WELL_CONTROLLED = "well_controlled"   # TIR≥70%, TBR<4%
+    HYPO_PRONE = "hypo_prone"            # Higher TBR, lower TIR
+    UNKNOWN = "unknown"                   # Insufficient data
+
+
 @dataclass
 class ControllerBehavior:
     """Controller-specific behavior profile (EXP-2081).
@@ -936,6 +947,39 @@ class HypoRiskResult:
     recommended_action: str     # human-readable guidance
 
 
+@dataclass
+class LoopQualityResult:
+    """Loop/controller quality assessment (EXP-2538/2540).
+
+    Evaluates how effectively the AID controller manages glucose,
+    identifying hypos it caused vs prevented and excursions it failed
+    to address.
+    """
+    hypo_episodes: int                    # total hypo episodes found
+    loop_caused_hypos: int                # hypos preceded by loop insulin increase
+    loop_caused_fraction: float           # loop_caused / hypo_episodes
+    median_reaction_time_min: float       # median time loop reduced before hypo
+    high_excursions: int                  # episodes > 250 mg/dL
+    unaddressed_excursions: int           # >250 with no bolus/SMB in prior 30min
+    unaddressed_fraction: float           # unaddressed / high_excursions
+    aggression_ratio: float               # actual basal multiplier at >200 vs <120
+    overall_grade: str                    # "good", "fair", "poor"
+    evidence: str                         # human-readable summary
+
+
+@dataclass
+class PatientPhenotypeResult:
+    """Patient phenotype classification result (EXP-2541)."""
+    phenotype: PatientPhenotype
+    confidence: float           # 0-1, based on data days and pattern clarity
+    tir: float                  # time in range (70-180) as fraction
+    tbr: float                  # time below range (<70) as fraction
+    tar: float                  # time above range (>180) as fraction
+    hypo_events_per_day: float  # number of hypo episodes per day
+    cv: float                   # coefficient of variation of glucose
+    evidence: str               # human-readable explanation
+
+
 # ── Complete Pipeline Result ──────────────────────────────────────────
 
 @dataclass
@@ -973,6 +1017,10 @@ class PipelineResult:
     loop_workload: Optional[LoopWorkloadReport] = None
     # Hypo early warning (EXP-2539)
     hypo_risk: Optional[HypoRiskResult] = None
+    # Patient phenotyping (EXP-2541)
+    phenotype: Optional[PatientPhenotypeResult] = None
+    # Loop quality assessment (EXP-2538/2540)
+    loop_quality: Optional[LoopQualityResult] = None  # EXP-2538
     pipeline_latency_ms: float = 0.0
     warnings: List[str] = field(default_factory=list)
 

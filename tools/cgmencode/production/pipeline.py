@@ -38,6 +38,7 @@ from .meal_predictor import build_timing_models, predict_next_meal, MealMLModel
 from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented, advise_circadian_isf, advise_context_cr, assess_overnight_drift, compute_loop_workload
 from .recommender import generate_recommendations, detect_controller_type, get_controller_behavior, adjust_confidence_for_controller
 from .hypo_risk import compute_hypo_risk
+from .patient_phenotyper import classify_patient_phenotype
 from .loop_quality import assess_loop_quality
 from .clinical_rules import (
     generate_clinical_report, compute_correction_energy,
@@ -582,7 +583,16 @@ def run_pipeline(patient: PatientData,
         except Exception as e:
             warnings.append(f"Hypo risk assessment failed: {e}")
 
-    # ── Stage 10: Loop Quality Assessment (EXP-2538/2540) ─────────
+    # ── Stage 10: Patient Phenotyping (EXP-2541) ───────────────────
+    phenotype_result = None
+    if patient.days_of_data >= 3.0:
+        try:
+            phenotype_result = classify_patient_phenotype(
+                cleaned.glucose, hours, patient.days_of_data)
+        except Exception as e:
+            warnings.append(f"Patient phenotyping failed: {e}")
+
+    # ── Stage 11: Loop Quality Assessment (EXP-2538/2540) ─────────
     loop_quality_result = None
     if patient.days_of_data >= 3.0 and patient.basal_rate is not None:
         try:
@@ -632,6 +642,7 @@ def run_pipeline(patient: PatientData,
         overnight_assessment=overnight_assessment,
         loop_workload=loop_workload,
         hypo_risk=hypo_risk_result,
+        phenotype=phenotype_result,
         loop_quality=loop_quality_result,
         pipeline_latency_ms=elapsed,
         warnings=warnings,
