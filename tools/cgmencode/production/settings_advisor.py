@@ -1089,6 +1089,256 @@ def advise_forward_sim_optimization(
     return recs
 
 
+# ── Correction-Based ISF Calibration (EXP-2579/2582/2585) ─────────────
+
+# Counter-regulation model parameters
+_CR_K_GRID = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 7.0]
+_CORR_ISF_GRID = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 2.0]
+_CORR_SIM_HOURS = 2.0
+_CORR_SIM_STEPS = int(_CORR_SIM_HOURS * 12)
+_MIN_CORR_BOLUS = 0.5       # minimum bolus (U) to qualify as correction
+_MIN_CORR_GLUCOSE = 150.0   # minimum glucose (mg/dL) for correction
+_MAX_CORR_CARBS = 1.0       # maximum carbs (g) — no meals
+_MIN_CORRECTIONS = 20       # minimum corrections for reliable calibration
+_POPULATION_K = 1.5         # fallback when < MIN_CORRECTIONS
+
+
+def _extract_correction_windows(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    bolus: np.ndarray,
+    carbs: np.ndarray,
+    iob: np.ndarray,
+    profile: PatientProfile,
+    max_windows: int = 200,
+) -> list:
+    """Extract correction bolus events with 2h glucose follow-up.
+
+    Corrections are boluses ≥0.5U at glucose ≥150 with <1g carbs.
+    """
+    isf_vals = [e.get('value', e.get('sensitivity', 50))
+                for e in profile.isf_mgdl()]
+    cr_vals = [e.get('value', e.get('carbratio', 10))
+               for e in profile.cr_schedule]
+    basal_vals = [e.get('value', e.get('rate', 0.8))
+                  for e in profile.basal_schedule]
+    median_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
+    median_cr = float(np.median([float(v) for v in cr_vals])) if cr_vals else 10.0
+    median_basal = float(np.median([float(v) for v in basal_vals])) if basal_vals else 0.8
+
+    N = len(glucose)
+    windows = []
+    for i in range(N - _CORR_SIM_STEPS):
+        if bolus[i] < _MIN_CORR_BOLUS or glucose[i] < _MIN_CORR_GLUCOSE:
+            continue
+        if carbs[i] > _MAX_CORR_CARBS:
+            continue
+        if np.isnan(glucose[i]):
+            continue
+        wg = glucose[i : i + _CORR_SIM_STEPS]
+        valid_count = np.sum(~np.isnan(wg))
+        if valid_count < _CORR_SIM_STEPS * 0.6:
+            continue
+        actual_end = float(np.nanmean(wg[-3:]))
+        if np.isnan(actual_end):
+            continue
+        actual_drop = actual_end - float(glucose[i])
+
+        windows.append({
+            'g': float(glucose[i]),
+            'b': float(bolus[i]),
+            'iob': float(iob[i]) if not np.isnan(iob[i]) else 0.0,
+            'h': float(hours[i]),
+            'isf': median_isf,
+            'cr': median_cr,
+            'basal': median_basal,
+            'actual_drop': actual_drop,
+        })
+        if len(windows) >= max_windows:
+            break
+
+    return windows
+
+
+def _calibrate_counter_reg_k(windows: list) -> float:
+    """Find optimal counter-regulation k from correction windows.
+
+    Sweeps k values and finds the one where actual/sim drop ratio ≈ 1.0.
+
+    Research basis: EXP-2582 (per-patient k calibration).
+    """
+    if len(windows) < _MIN_CORRECTIONS:
+        return _POPULATION_K
+
+    best_k = _POPULATION_K
+    best_dist = float('inf')
+
+    for k in _CR_K_GRID:
+        ratios = []
+        for w in windows:
+            try:
+                s = _TherapySettings(
+                    isf=w['isf'], cr=w['cr'],
+                    basal_rate=w['basal'], dia_hours=5.0,
+                )
+                r = _fwd_simulate(
+                    initial_glucose=w['g'], settings=s,
+                    duration_hours=_CORR_SIM_HOURS, start_hour=w['h'],
+                    bolus_events=[_InsulinEvent(0, w['b'])],
+                    carb_events=[], initial_iob=w['iob'],
+                    noise_std=0, seed=42, counter_reg_k=k,
+                )
+                sim_drop = r.glucose[-1] - w['g']
+                if abs(sim_drop) > 1.0:
+                    ratios.append(w['actual_drop'] / sim_drop)
+            except Exception:
+                pass
+
+        if len(ratios) >= 10:
+            mean_ratio = float(np.mean(ratios))
+            dist = abs(mean_ratio - 1.0)
+            if dist < best_dist:
+                best_dist = dist
+                best_k = k
+
+    return best_k
+
+
+def _calibrate_correction_isf(windows: list, k: float) -> Optional[float]:
+    """Find optimal ISF multiplier from corrections with calibrated k.
+
+    Returns ISF multiplier that minimizes MAE between sim and actual drops.
+
+    Research basis: EXP-2585 (correction-based ISF calibration).
+    """
+    if len(windows) < _MIN_CORRECTIONS:
+        return None
+
+    best_mult = 1.0
+    best_mae = float('inf')
+
+    for isf_m in _CORR_ISF_GRID:
+        errors = []
+        for w in windows:
+            try:
+                s = _TherapySettings(
+                    isf=w['isf'] * isf_m, cr=w['cr'],
+                    basal_rate=w['basal'], dia_hours=5.0,
+                )
+                r = _fwd_simulate(
+                    initial_glucose=w['g'], settings=s,
+                    duration_hours=_CORR_SIM_HOURS, start_hour=w['h'],
+                    bolus_events=[_InsulinEvent(0, w['b'])],
+                    carb_events=[], initial_iob=w['iob'],
+                    noise_std=0, seed=42, counter_reg_k=k,
+                )
+                sim_drop = r.glucose[-1] - w['g']
+                errors.append(abs(w['actual_drop'] - sim_drop))
+            except Exception:
+                pass
+
+        if errors:
+            mae = float(np.mean(errors))
+            if mae < best_mae:
+                best_mae = mae
+                best_mult = isf_m
+
+    return best_mult
+
+
+def advise_correction_isf(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    profile: PatientProfile,
+    bolus: Optional[np.ndarray] = None,
+    carbs: Optional[np.ndarray] = None,
+    iob: Optional[np.ndarray] = None,
+    days_of_data: float = 0.0,
+) -> List[SettingsRecommendation]:
+    """Generate ISF recommendation from correction bolus analysis.
+
+    Research basis:
+      - EXP-2579: Counter-regulation model reduces 2.5× overestimation
+      - EXP-2582: Per-patient k calibration (10/11 in-range)
+      - EXP-2585: Correction ISF differs from meal ISF (+0.34 higher)
+      - EXP-2585: Per-patient correction-optimal beats 0.78 dampened (11/12)
+
+    Uses a two-step calibration:
+      1. Calibrate counter-regulation k from correction events
+      2. With calibrated k, find optimal ISF multiplier
+
+    This provides a correction-specific ISF recommendation that complements
+    the meal-based ISF from advise_forward_sim_optimization().
+
+    Args:
+        glucose: (N,) cleaned glucose at 5-min intervals.
+        hours: (N,) fractional hours.
+        profile: current therapy profile.
+        bolus: (N,) bolus insulin per step.
+        carbs: (N,) carb intake per step.
+        iob: (N,) insulin on board per step.
+        days_of_data: data coverage in days.
+
+    Returns:
+        List of SettingsRecommendation (0-1 items).
+    """
+    if bolus is None or carbs is None or iob is None:
+        return []
+    if days_of_data < MIN_DATA_DAYS:
+        return []
+
+    windows = _extract_correction_windows(
+        glucose, hours, bolus, carbs, iob, profile
+    )
+    if len(windows) < _MIN_CORRECTIONS:
+        return []
+
+    # Step 1: Calibrate counter-reg k
+    k = _calibrate_counter_reg_k(windows)
+
+    # Step 2: Find optimal ISF multiplier with calibrated k
+    isf_mult = _calibrate_correction_isf(windows, k)
+    if isf_mult is None or abs(isf_mult - 1.0) < 0.05:
+        return []
+
+    # Build recommendation
+    isf_vals = [e.get('value', e.get('sensitivity', 50))
+                for e in profile.isf_mgdl()]
+    current_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
+    suggested_isf = current_isf * isf_mult
+    direction = "decrease" if isf_mult < 1.0 else "increase"
+    magnitude = abs(isf_mult - 1.0) * 100
+    confidence = min(1.0, days_of_data / HIGH_CONFIDENCE_DAYS) * min(1.0, len(windows) / 50)
+
+    # Estimate TIR delta (directional only)
+    tir_delta = magnitude * 0.05  # conservative estimate
+
+    return [SettingsRecommendation(
+        parameter=SettingsParameter.ISF,
+        direction=direction,
+        magnitude_pct=round(magnitude, 0),
+        current_value=current_isf,
+        suggested_value=round(suggested_isf, 1),
+        predicted_tir_delta=round(tir_delta, 1),
+        affected_hours=(0.0, 24.0),
+        confidence=round(confidence, 2),
+        evidence=(
+            f"Correction-based ISF calibration (EXP-2585): optimal ISF "
+            f"multiplier {isf_mult:.1f}× from {len(windows)} correction events. "
+            f"Counter-regulation k={k:.1f} (auto-calibrated from corrections). "
+            f"Correction-specific; may differ from meal-based ISF."
+        ),
+        rationale=(
+            f"{direction.capitalize()} ISF by {magnitude:.0f}% "
+            f"(from {current_isf:.0f} to {suggested_isf:.0f} mg/dL/U). "
+            f"Analysis of {len(windows)} correction boluses shows the current ISF "
+            f"{'over' if isf_mult < 1.0 else 'under'}estimates correction effect. "
+            f"This recommendation is based on how corrections actually work, "
+            f"accounting for counter-regulatory physiology (glucagon/HGP)."
+        ),
+    )]
+
+
 def generate_settings_advice(glucose: np.ndarray,
                              metabolic: Optional[MetabolicState],
                              hours: np.ndarray,
@@ -1120,6 +1370,7 @@ def generate_settings_advice(glucose: np.ndarray,
     - Correction threshold (EXP-2528)
     - CR adequacy analysis (EXP-2535/2536)
     - Forward sim joint ISF×CR optimization (EXP-2562/2567/2568)
+    - Correction-based ISF calibration (EXP-2579/2582/2585)
 
     Args:
         glucose: (N,) cleaned glucose.
@@ -1201,6 +1452,14 @@ def generate_settings_advice(glucose: np.ndarray,
             bolus=bolus, carbs=carbs, iob=iob,
             days_of_data=days_of_data)
         recs.extend(fwd_recs)
+
+    # Correction-based ISF calibration (EXP-2579/2582/2585)
+    if bolus is not None and carbs is not None and iob is not None:
+        corr_isf_recs = advise_correction_isf(
+            glucose, hours, profile,
+            bolus=bolus, carbs=carbs, iob=iob,
+            days_of_data=days_of_data)
+        recs.extend(corr_isf_recs)
 
     # Overnight drift assessment (EXP-2371–2378)
     overnight = assess_overnight_drift(
