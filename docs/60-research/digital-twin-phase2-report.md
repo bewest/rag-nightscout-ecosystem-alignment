@@ -13,7 +13,7 @@ definitive proof of superiority over oref0/Loop.
 
 | Workstream | Hypotheses | Result | Key Metric |
 |------------|-----------|--------|------------|
-| WS-5: Delayed Carbs | 4 tested | 3/4 pass | Peak shift: 15min → 75-115min |
+| WS-5: Delayed Carbs | 4 tested | 3/4 pass | Peak shift: 15min → 45-115min |
 | WS-6: Power-Law ISF | 4 tested | 2/4 pass | 4U nadir: 79→167 mg/dL |
 | WS-7: Controller | — | DEFERRED | Requires proof vs oref0/Loop |
 
