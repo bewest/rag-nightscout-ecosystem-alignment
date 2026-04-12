@@ -22,8 +22,11 @@ Usage:
 import argparse
 import json
 import os
+import resource
 import sys
+import time
 import warnings
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -62,6 +65,16 @@ try:
     HAS_SHAP = True
 except ImportError:
     HAS_SHAP = False
+
+
+def _mem_mb():
+    """Current RSS in MB."""
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
+
+
+def _ts():
+    """Short UTC timestamp for log lines."""
+    return datetime.now(timezone.utc).strftime("%H:%M:%S")
 
 warnings.filterwarnings("ignore", category=UserWarning, module="lightgbm")
 
@@ -115,6 +128,10 @@ for cat, feats in FEATURE_CATEGORIES.items():
 
 FIGURES_DIR = Path("tools/oref_inv_003_replication/figures")
 RESULTS_DIR = Path("externals/experiments")
+
+# Configurable at runtime via --shap-rows CLI arg
+SHAP_MAX_ROWS = 50000
+SHAP_CHUNK_SIZE = 10000
 
 # ---------------------------------------------------------------------------
 # LightGBM helpers
@@ -183,31 +200,71 @@ def train_and_evaluate(X, y, is_classifier=True, label="model"):
     return model, {metric_name: metric_val, "n": len(y)}
 
 
-def compute_shap_importance(model, X, use_interactions=False, max_rows=50000):
-    """Compute mean |SHAP| importance per feature. Falls back to gain."""
+def compute_shap_importance(model, X, use_interactions=False, max_rows=None,
+                            chunk_size=None):
+    """Compute mean |SHAP| importance per feature with progress diagnostics.
+
+    When *max_rows* is large, SHAP values are computed in chunks of
+    *chunk_size* rows so that progress, ETA and memory can be reported
+    during long runs.
+    """
+    if max_rows is None:
+        max_rows = SHAP_MAX_ROWS
+    if chunk_size is None:
+        chunk_size = SHAP_CHUNK_SIZE
     features = list(X.columns)
     interaction_values = None
 
     if HAS_SHAP:
         try:
             explainer = shap.TreeExplainer(model)
-            if len(X) > max_rows:
+            if max_rows and len(X) > max_rows:
                 X_sample = X.sample(n=max_rows, random_state=42)
             else:
                 X_sample = X
+                max_rows = len(X)
+
+            n_total = len(X_sample)
+            print(f"  [{_ts()}] SHAP values: {n_total:,} rows "
+                  f"(chunk={chunk_size:,}, ~{n_total // chunk_size + 1} "
+                  f"chunks)  mem={_mem_mb():.0f} MB")
 
             if use_interactions:
                 try:
+                    t0 = time.monotonic()
                     interaction_values = explainer.shap_interaction_values(
                         X_sample
                     )
+                    elapsed = time.monotonic() - t0
+                    print(f"  [{_ts()}] SHAP interactions done in "
+                          f"{elapsed:.0f}s  mem={_mem_mb():.0f} MB")
                 except Exception:
                     pass
 
-            shap_values = explainer.shap_values(X_sample)
-            # For binary classifiers, shap_values may be a list of two arrays
-            if isinstance(shap_values, list):
-                shap_values = shap_values[1]  # positive class
+            # --- Chunked SHAP values with progress ---
+            t0 = time.monotonic()
+            chunks = []
+            for start in range(0, n_total, chunk_size):
+                end = min(start + chunk_size, n_total)
+                chunk_vals = explainer.shap_values(X_sample.iloc[start:end])
+                if isinstance(chunk_vals, list):
+                    chunk_vals = chunk_vals[1]
+                chunks.append(chunk_vals)
+
+                done = end
+                elapsed = time.monotonic() - t0
+                rate = done / elapsed if elapsed > 0 else 0
+                eta = (n_total - done) / rate if rate > 0 else 0
+                pct = done / n_total * 100
+                print(f"  [{_ts()}] SHAP progress: {done:,}/{n_total:,} "
+                      f"({pct:.0f}%)  {rate:.0f} rows/s  "
+                      f"ETA {eta:.0f}s  mem={_mem_mb():.0f} MB")
+
+            shap_values = np.vstack(chunks)
+            total_time = time.monotonic() - t0
+            print(f"  [{_ts()}] SHAP complete: {n_total:,} rows in "
+                  f"{total_time:.0f}s ({n_total/total_time:.0f} rows/s)")
+
             mean_abs = np.mean(np.abs(shap_values), axis=0)
             importance = dict(zip(features, mean_abs.tolist()))
             method = "shap"
@@ -918,7 +975,28 @@ def main():
         "--tiny", action="store_true",
         help="Use only 2 patients for quick testing",
     )
+    parser.add_argument(
+        "--data-path", type=str, default="externals/ns-parquet/training",
+        help="Path to parquet data directory (default: training set)",
+    )
+    parser.add_argument(
+        "--shap-rows", type=int, default=50000,
+        help="Max rows for SHAP sampling (0 = use all, default: 50000)",
+    )
+    parser.add_argument(
+        "--label", type=str, default="",
+        help="Label suffix for output files (e.g. 'verification')",
+    )
     args = parser.parse_args()
+
+    # Set module-level SHAP config from CLI
+    global SHAP_MAX_ROWS
+    SHAP_MAX_ROWS = args.shap_rows if args.shap_rows > 0 else None
+
+    run_start = time.monotonic()
+    print(f"[{_ts()}] EXP-2401 starting  data={args.data_path}  "
+          f"shap_rows={SHAP_MAX_ROWS or 'ALL'}  "
+          f"label={args.label or '(default)'}")
 
     if args.figures:
         FIGURES_DIR.mkdir(parents=True, exist_ok=True)
@@ -927,9 +1005,10 @@ def main():
     # ------------------------------------------------------------------
     # Load data
     # ------------------------------------------------------------------
-    print("Loading patient data...")
-    df = load_patients_with_features()
-    print(f"  Loaded {len(df)} rows, {df['patient_id'].nunique()} patients")
+    print(f"[{_ts()}] Loading patient data from {args.data_path}...")
+    df = load_patients_with_features(parquet_path=args.data_path)
+    print(f"  Loaded {len(df):,} rows, {df['patient_id'].nunique()} patients  "
+          f"mem={_mem_mb():.0f} MB")
 
     if args.tiny:
         keep = sorted(df["patient_id"].unique())[:2]
@@ -1035,18 +1114,30 @@ def main():
     # ------------------------------------------------------------------
     # Save
     # ------------------------------------------------------------------
-    print("\nSaving results...")
+    print(f"\n[{_ts()}] Saving results...")
     report.save()
 
-    results_path = RESULTS_DIR / "exp_2401_replication.json"
+    suffix = f"_{args.label}" if args.label else ""
+    results_path = RESULTS_DIR / f"exp_2401_replication{suffix}.json"
+    all_results["_meta"] = {
+        "data_path": args.data_path,
+        "shap_max_rows": SHAP_MAX_ROWS,
+        "label": args.label,
+        "total_rows": len(df),
+        "n_patients": int(df["patient_id"].nunique()),
+        "wall_time_s": round(time.monotonic() - run_start, 1),
+    }
     with open(results_path, "w") as f:
         json.dump(all_results, f, indent=2, cls=NumpyEncoder)
     print(f"  JSON: {results_path}")
 
     # Summary
-    print("\n" + "=" * 60)
-    print("EXP-2401 COMPLETE")
-    print("=" * 60)
+    wall = time.monotonic() - run_start
+    h, m = int(wall // 3600), int((wall % 3600) // 60)
+    print(f"\n{'=' * 60}")
+    print(f"EXP-2401 COMPLETE  [{_ts()}]  wall={h}h{m:02d}m  "
+          f"mem={_mem_mb():.0f} MB")
+    print(f"{'=' * 60}")
     if "exp_2408" in all_results:
         s = all_results["exp_2408"]
         print(
@@ -1054,10 +1145,9 @@ def main():
             f"Agreed: {s.get('agreed', '?')}  "
             f"Disagreed: {s.get('disagreed', '?')}"
         )
-    if HAS_SHAP:
-        print("  SHAP: TreeExplainer (full)")
-    else:
-        print("  SHAP: gain fallback (install shap for full analysis)")
+    print(f"  Data: {args.data_path} ({len(df):,} rows)")
+    print(f"  SHAP: {'TreeExplainer' if HAS_SHAP else 'gain fallback'} "
+          f"(max_rows={SHAP_MAX_ROWS or 'ALL'})")
     print()
 
 

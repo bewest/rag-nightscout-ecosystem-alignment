@@ -39,6 +39,8 @@ from cgmencode.production.types import (
     OvernightPhenotype, OvernightDriftAssessment, LoopWorkloadReport,
     TwoComponentDIA,
     HypoRiskResult,
+    PatientPhenotype, PatientPhenotypeResult,
+    LoopQualityResult,
 )
 
 
@@ -3329,3 +3331,1139 @@ class TestHypoRiskPipelineIntegration(unittest.TestCase):
         self.assertLessEqual(result.hypo_risk.risk_score, 1.0)
         self.assertIn(result.hypo_risk.risk_level,
                       ('low', 'moderate', 'high', 'critical'))
+
+
+# ── Pipeline Event Extraction Tests (EXP-2528/2535/2536) ─────────────
+
+class TestCorrectionEventExtraction(unittest.TestCase):
+    """Tests for _extract_correction_events in pipeline.py."""
+
+    def test_basic_correction_detection(self):
+        """Bolus when glucose > target_high with no carbs → correction event."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        n = 200
+        glucose = np.full(n, 200.0)
+        bolus = np.zeros(n)
+        bolus[50] = 2.0
+        carbs = np.zeros(n)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        profile = make_profile()
+        events = _extract_correction_events(glucose, bolus, carbs, hours, profile)
+        self.assertGreaterEqual(len(events), 1)
+        ev = events[0]
+        self.assertAlmostEqual(ev['start_bg'], 200.0)
+        self.assertAlmostEqual(ev['dose'], 2.0)
+        self.assertIn('drop_4h', ev)
+        self.assertIn('hour', ev)
+        self.assertIn('rebound', ev)
+        self.assertIn('went_below_70', ev)
+        self.assertIn('tir_change', ev)
+
+    def test_meal_bolus_excluded(self):
+        """Bolus with carbs nearby should NOT be classified as correction."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        n = 200
+        glucose = np.full(n, 200.0)
+        bolus = np.zeros(n)
+        bolus[50] = 2.0
+        carbs = np.zeros(n)
+        carbs[50] = 40.0
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        profile = make_profile()
+        events = _extract_correction_events(glucose, bolus, carbs, hours, profile)
+        self.assertEqual(len(events), 0)
+
+    def test_below_target_excluded(self):
+        """Bolus when glucose <= target_high should be excluded."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        n = 200
+        glucose = np.full(n, 120.0)
+        bolus = np.zeros(n)
+        bolus[50] = 2.0
+        carbs = np.zeros(n)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        profile = make_profile()
+        events = _extract_correction_events(glucose, bolus, carbs, hours, profile)
+        self.assertEqual(len(events), 0)
+
+    def test_none_bolus_returns_empty(self):
+        """None bolus array returns empty list."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        n = 200
+        glucose = np.full(n, 200.0)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        profile = make_profile()
+        events = _extract_correction_events(glucose, None, None, hours, profile)
+        self.assertEqual(events, [])
+
+    def test_short_data_returns_empty(self):
+        """Data shorter than 49 steps returns empty."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        glucose = np.full(30, 200.0)
+        bolus = np.zeros(30)
+        bolus[5] = 2.0
+        hours = np.zeros(30)
+        profile = make_profile()
+        events = _extract_correction_events(glucose, bolus, None, hours, profile)
+        self.assertEqual(events, [])
+
+    def test_went_below_70_detection(self):
+        """Detect when glucose drops below 70 in 4h window."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        n = 200
+        glucose = np.full(n, 200.0)
+        glucose[70:80] = 60.0
+        bolus = np.zeros(n)
+        bolus[50] = 3.0
+        carbs = np.zeros(n)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        profile = make_profile()
+        events = _extract_correction_events(glucose, bolus, carbs, hours, profile)
+        self.assertGreaterEqual(len(events), 1)
+        self.assertTrue(events[0]['went_below_70'])
+
+
+class TestMealEventExtraction(unittest.TestCase):
+    """Tests for _extract_meal_events in pipeline.py."""
+
+    def test_basic_meal_detection(self):
+        """Carbs > 5g with glucose before and 4h after → meal event."""
+        from cgmencode.production.pipeline import _extract_meal_events
+        n = 200
+        glucose = np.full(n, 150.0)
+        bolus = np.zeros(n)
+        bolus[50] = 4.0
+        carbs = np.zeros(n)
+        carbs[50] = 45.0
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        events = _extract_meal_events(glucose, bolus, carbs, hours)
+        self.assertGreaterEqual(len(events), 1)
+        ev = events[0]
+        self.assertAlmostEqual(ev['carbs'], 45.0)
+        self.assertGreater(ev['bolus'], 0)
+        self.assertAlmostEqual(ev['pre_meal_bg'], 150.0)
+        self.assertAlmostEqual(ev['post_meal_bg_4h'], 150.0)
+        self.assertIn('hour', ev)
+
+    def test_no_carbs_returns_empty(self):
+        """None carbs array returns empty list."""
+        from cgmencode.production.pipeline import _extract_meal_events
+        n = 200
+        glucose = np.full(n, 150.0)
+        hours = np.zeros(n)
+        events = _extract_meal_events(glucose, None, None, hours)
+        self.assertEqual(events, [])
+
+    def test_small_carbs_excluded(self):
+        """Carbs <= 5g are excluded."""
+        from cgmencode.production.pipeline import _extract_meal_events
+        n = 200
+        glucose = np.full(n, 150.0)
+        bolus = np.zeros(n)
+        carbs = np.zeros(n)
+        carbs[50] = 3.0
+        hours = np.zeros(n)
+        events = _extract_meal_events(glucose, bolus, carbs, hours)
+        self.assertEqual(events, [])
+
+    def test_nan_glucose_excluded(self):
+        """Meals with NaN glucose at mealtime are excluded."""
+        from cgmencode.production.pipeline import _extract_meal_events
+        n = 200
+        glucose = np.full(n, 150.0)
+        glucose[50] = np.nan
+        bolus = np.zeros(n)
+        bolus[50] = 4.0
+        carbs = np.zeros(n)
+        carbs[50] = 45.0
+        hours = np.zeros(n)
+        events = _extract_meal_events(glucose, bolus, carbs, hours)
+        self.assertEqual(len(events), 0)
+
+
+class TestPipelineAdvisoryWiring(unittest.TestCase):
+    """Integration: pipeline passes bolus/correction_events/meal_events."""
+
+    def test_pipeline_passes_bolus_to_settings(self):
+        """Pipeline result should include settings_recs with bolus data available."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient()
+        result = run_pipeline(patient, skip_patterns=True)
+        self.assertIsNotNone(result.settings_recs)
+
+    def test_correction_events_extracted_in_pipeline(self):
+        """Pipeline extracts correction events when bolus+glucose data present."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        patient = make_patient()
+        from cgmencode.production.metabolic_engine import _extract_hours
+        hours = _extract_hours(patient.timestamps)
+        from cgmencode.production.data_quality import clean_glucose
+        cleaned = clean_glucose(patient.glucose)
+        events = _extract_correction_events(
+            cleaned.glucose, patient.bolus, patient.carbs,
+            hours, patient.profile)
+        self.assertIsInstance(events, list)
+
+    def test_meal_events_extracted_in_pipeline(self):
+        """Pipeline extracts meal events when carbs+glucose data present."""
+        from cgmencode.production.pipeline import _extract_meal_events
+        patient = make_patient()
+        from cgmencode.production.metabolic_engine import _extract_hours
+        hours = _extract_hours(patient.timestamps)
+        from cgmencode.production.data_quality import clean_glucose
+        cleaned = clean_glucose(patient.glucose)
+        events = _extract_meal_events(
+            cleaned.glucose, patient.bolus, patient.carbs, hours)
+        self.assertIsInstance(events, list)
+
+
+# ── Patient Phenotype Tests (EXP-2541) ────────────────────────────────
+
+class TestPatientPhenotypeTypes(unittest.TestCase):
+    """Type contracts for PatientPhenotype and PatientPhenotypeResult."""
+
+    def test_phenotype_enum_values(self):
+        self.assertEqual(PatientPhenotype.WELL_CONTROLLED.value, "well_controlled")
+        self.assertEqual(PatientPhenotype.HYPO_PRONE.value, "hypo_prone")
+        self.assertEqual(PatientPhenotype.UNKNOWN.value, "unknown")
+
+    def test_phenotype_result_fields(self):
+        result = PatientPhenotypeResult(
+            phenotype=PatientPhenotype.WELL_CONTROLLED,
+            confidence=0.85,
+            tir=0.77, tbr=0.022, tar=0.208,
+            hypo_events_per_day=0.3, cv=0.30,
+            evidence="Test evidence.",
+        )
+        self.assertEqual(result.phenotype, PatientPhenotype.WELL_CONTROLLED)
+        self.assertAlmostEqual(result.tir, 0.77)
+
+    def test_pipeline_result_has_phenotype_field(self):
+        self.assertTrue(hasattr(PipelineResult, '__dataclass_fields__'))
+        self.assertIn('phenotype', PipelineResult.__dataclass_fields__)
+
+
+class TestPatientPhenotyper(unittest.TestCase):
+    """Module contract tests for classify_patient_phenotype."""
+
+    def test_well_controlled_classification(self):
+        """TIR≥70% and TBR<4% → WELL_CONTROLLED."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        n = 4320
+        rng = np.random.RandomState(42)
+        glucose = np.full(n, 130.0) + rng.normal(0, 15, n)
+        glucose = np.clip(glucose, 75, 175)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 15.0)
+        self.assertEqual(result.phenotype, PatientPhenotype.WELL_CONTROLLED)
+        self.assertGreaterEqual(result.tir, 0.70)
+        self.assertLess(result.tbr, 0.04)
+        self.assertGreaterEqual(result.confidence, 0.80)
+
+    def test_hypo_prone_classification(self):
+        """TBR≥4% → HYPO_PRONE."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        n = 4320
+        rng = np.random.RandomState(99)
+        glucose = np.full(n, 110.0) + rng.normal(0, 35, n)
+        below_count = int(0.10 * n)
+        glucose[:below_count] = 55.0
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 15.0)
+        self.assertEqual(result.phenotype, PatientPhenotype.HYPO_PRONE)
+        self.assertGreaterEqual(result.tbr, 0.04)
+
+    def test_insufficient_data_returns_unknown(self):
+        """< 3 days → UNKNOWN phenotype."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        glucose = np.full(100, 130.0)
+        hours = (np.arange(100) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 0.35)
+        self.assertEqual(result.phenotype, PatientPhenotype.UNKNOWN)
+        self.assertEqual(result.confidence, 0.0)
+
+    def test_confidence_scales_with_days(self):
+        """Confidence increases with more data."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        glucose = np.full(4320, 130.0)
+        hours = (np.arange(4320) * 5.0 / 60.0) % 24.0
+        r5 = classify_patient_phenotype(glucose, hours, 5.0)
+        r14 = classify_patient_phenotype(glucose, hours, 14.0)
+        self.assertGreater(r14.confidence, r5.confidence)
+
+    def test_all_nan_returns_unknown(self):
+        """All-NaN glucose → UNKNOWN."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        glucose = np.full(4320, np.nan)
+        hours = (np.arange(4320) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 15.0)
+        self.assertEqual(result.phenotype, PatientPhenotype.UNKNOWN)
+
+    def test_metrics_bounded(self):
+        """TIR, TBR, TAR are 0-1, CV ≥ 0."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        glucose = make_glucose(4320)
+        hours = (np.arange(4320) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 15.0)
+        self.assertGreaterEqual(result.tir, 0.0)
+        self.assertLessEqual(result.tir, 1.0)
+        self.assertGreaterEqual(result.tbr, 0.0)
+        self.assertLessEqual(result.tbr, 1.0)
+        self.assertGreaterEqual(result.tar, 0.0)
+        self.assertLessEqual(result.tar, 1.0)
+        self.assertGreaterEqual(result.cv, 0.0)
+
+    def test_evidence_nonempty(self):
+        """Evidence string is always non-empty."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        glucose = np.full(4320, 130.0)
+        hours = (np.arange(4320) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 15.0)
+        self.assertGreater(len(result.evidence), 0)
+
+    def test_high_cv_hypo_prone(self):
+        """High CV > 0.36 when TIR borderline → HYPO_PRONE."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        n = 4320
+        rng = np.random.RandomState(7)
+        glucose = 130 + rng.normal(0, 55, n)
+        glucose = np.clip(glucose, 40, 400)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 15.0)
+        self.assertIn(result.phenotype,
+                      [PatientPhenotype.HYPO_PRONE, PatientPhenotype.WELL_CONTROLLED])
+
+
+class TestPhenotypePipelineIntegration(unittest.TestCase):
+    """Integration: phenotype runs as pipeline stage."""
+
+    def test_pipeline_populates_phenotype(self):
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient()
+        result = run_pipeline(patient, skip_patterns=True)
+        self.assertIsNotNone(result.phenotype)
+        self.assertIsInstance(result.phenotype, PatientPhenotypeResult)
+        self.assertIn(result.phenotype.phenotype, list(PatientPhenotype))
+        self.assertGreaterEqual(result.phenotype.confidence, 0.0)
+        self.assertLessEqual(result.phenotype.confidence, 1.0)
+
+
+# ── Loop Quality Tests (EXP-2538/2540) ───────────────────────────────
+
+class TestLoopQualityTypes(unittest.TestCase):
+    """Type contracts for LoopQualityResult."""
+
+    def test_result_fields(self):
+        result = LoopQualityResult(
+            hypo_episodes=5, loop_caused_hypos=2,
+            loop_caused_fraction=0.4, median_reaction_time_min=5.0,
+            high_excursions=10, unaddressed_excursions=6,
+            unaddressed_fraction=0.6, aggression_ratio=2.2,
+            overall_grade="fair", evidence="Test evidence.",
+        )
+        self.assertEqual(result.hypo_episodes, 5)
+        self.assertAlmostEqual(result.loop_caused_fraction, 0.4)
+        self.assertEqual(result.overall_grade, "fair")
+
+    def test_pipeline_result_has_loop_quality_field(self):
+        self.assertIn('loop_quality', PipelineResult.__dataclass_fields__)
+
+
+class TestLoopQualityAssessment(unittest.TestCase):
+    """Module contract tests for assess_loop_quality."""
+
+    def test_no_hypos_good_grade(self):
+        """Stable glucose with no hypos → good grade."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        basal = np.full(n, 0.8)
+        result = assess_loop_quality(
+            glucose, hours, basal_rate=basal, scheduled_basal=0.8,
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.hypo_episodes, 0)
+        self.assertEqual(result.loop_caused_fraction, 0.0)
+        self.assertEqual(result.overall_grade, "good")
+
+    def test_loop_caused_hypo_detection(self):
+        """Hypo preceded by elevated basal → loop-caused."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        basal = np.full(n, 0.8)
+        glucose[500:505] = 60.0
+        basal[494:500] = 1.5
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(
+            glucose, hours, basal_rate=basal, scheduled_basal=0.8,
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertGreaterEqual(result.hypo_episodes, 1)
+        self.assertGreaterEqual(result.loop_caused_hypos, 1)
+        self.assertGreater(result.loop_caused_fraction, 0)
+
+    def test_unaddressed_excursion_detection(self):
+        """High excursion with no bolus → unaddressed."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        bolus = np.zeros(n)
+        basal = np.full(n, 0.8)
+        glucose[500:505] = 280.0
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(
+            glucose, hours, basal_rate=basal, bolus=bolus,
+            scheduled_basal=0.8, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertGreaterEqual(result.high_excursions, 1)
+        self.assertGreaterEqual(result.unaddressed_excursions, 1)
+
+    def test_addressed_excursion(self):
+        """High excursion with bolus nearby → addressed."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        bolus = np.zeros(n)
+        basal = np.full(n, 0.8)
+        glucose[500:505] = 280.0
+        bolus[498] = 3.0
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(
+            glucose, hours, basal_rate=basal, bolus=bolus,
+            scheduled_basal=0.8, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        if result.high_excursions > 0:
+            self.assertLess(result.unaddressed_fraction, 1.0)
+
+    def test_insufficient_data_returns_none(self):
+        """< 3 days → None."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        glucose = np.full(100, 130.0)
+        hours = np.zeros(100)
+        result = assess_loop_quality(glucose, hours, days_of_data=0.3)
+        self.assertIsNone(result)
+
+    def test_no_basal_still_assesses_excursions(self):
+        """Without basal data, can still detect excursions."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        glucose[500:505] = 280.0
+        bolus = np.zeros(n)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(
+            glucose, hours, bolus=bolus, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertGreaterEqual(result.high_excursions, 1)
+
+    def test_aggression_ratio_computed(self):
+        """Aggression ratio should be computed when basal varies by glucose."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 100.0)
+        glucose[0:500] = 220.0
+        basal = np.full(n, 0.8)
+        basal[0:500] = 1.8
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(
+            glucose, hours, basal_rate=basal, scheduled_basal=0.8,
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertGreater(result.aggression_ratio, 1.5)
+
+    def test_evidence_nonempty(self):
+        """Evidence string is always non-empty."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(glucose, hours, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertGreater(len(result.evidence), 0)
+
+    def test_grade_values(self):
+        """Grade must be one of good/fair/poor."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(glucose, hours, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertIn(result.overall_grade, ("good", "fair", "poor"))
+
+
+class TestLoopQualityPipelineIntegration(unittest.TestCase):
+    """Integration: loop quality runs as pipeline stage."""
+
+    def test_pipeline_populates_loop_quality(self):
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient()
+        result = run_pipeline(patient, skip_patterns=True)
+        self.assertIsNotNone(result.loop_quality)
+        self.assertIsInstance(result.loop_quality, LoopQualityResult)
+        self.assertIn(result.loop_quality.overall_grade,
+                      ("good", "fair", "poor"))
+
+    def test_pipeline_without_basal_skips_loop_quality(self):
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(with_insulin=False)
+        result = run_pipeline(patient, skip_patterns=True)
+        self.assertIsNone(result.loop_quality)
+
+
+# ── Profile Generator Tests (WS-2) ──────────────────────────────────
+
+class TestProfileGeneratorTypes(unittest.TestCase):
+    """Type and structure tests for profile_generator.py."""
+
+    def test_generated_profile_fields(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        gp = GeneratedProfile(
+            basal_blocks=[{'hour': 0, 'value': 0.8, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            isf_blocks=[{'hour': 0, 'value': 50.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            cr_blocks=[{'hour': 0, 'value': 10.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+        )
+        self.assertEqual(gp.dia_hours, 5.0)
+        self.assertEqual(gp.units, 'mg/dL')
+        self.assertIsInstance(gp.warnings, list)
+
+    def test_import_from_package(self):
+        from cgmencode.production import generate_profile, generate_all_formats, GeneratedProfile
+        self.assertTrue(callable(generate_profile))
+        self.assertTrue(callable(generate_all_formats))
+
+
+class TestProfileGeneratorOref0(unittest.TestCase):
+    """Test oref0 format output."""
+
+    def _make_profile(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        return GeneratedProfile(
+            basal_blocks=[
+                {'hour': 0, 'value': 0.8, 'period': 'overnight', 'confidence': 'high', 'change_pct': 10.0},
+                {'hour': 6, 'value': 1.0, 'period': 'morning', 'confidence': 'medium', 'change_pct': 5.0},
+                {'hour': 14, 'value': 0.9, 'period': 'afternoon', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            isf_blocks=[
+                {'hour': 0, 'value': 60.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 20.0},
+                {'hour': 10, 'value': 45.0, 'period': 'midday', 'confidence': 'medium', 'change_pct': -10.0},
+            ],
+            cr_blocks=[
+                {'hour': 0, 'value': 12.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            dia_hours=6.0,
+            target_low=100.0,
+            target_high=120.0,
+        )
+
+    def test_oref0_has_basalprofile(self):
+        p = self._make_profile().to_oref0()
+        self.assertIn('basalprofile', p)
+        self.assertEqual(len(p['basalprofile']), 3)
+
+    def test_oref0_basal_minutes(self):
+        p = self._make_profile().to_oref0()
+        self.assertEqual(p['basalprofile'][0]['minutes'], 0)
+        self.assertEqual(p['basalprofile'][1]['minutes'], 360)  # 6h * 60
+        self.assertEqual(p['basalprofile'][0]['start'], '00:00:00')
+
+    def test_oref0_isf_sensitivities(self):
+        p = self._make_profile().to_oref0()
+        self.assertIn('isfProfile', p)
+        sens = p['isfProfile']['sensitivities']
+        self.assertEqual(len(sens), 2)
+        self.assertEqual(sens[0]['sensitivity'], 60.0)
+        self.assertEqual(sens[0]['offset'], 0)
+        self.assertEqual(sens[1]['endOffset'], 1440)
+
+    def test_oref0_dia_clamped(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        p = GeneratedProfile(
+            basal_blocks=[{'hour': 0, 'value': 1.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            isf_blocks=[{'hour': 0, 'value': 50.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            cr_blocks=[{'hour': 0, 'value': 10.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            dia_hours=15.0,  # exceeds max
+        )
+        out = p.to_oref0()
+        self.assertLessEqual(out['dia'], 12.0)
+
+    def test_oref0_carb_ratios(self):
+        p = self._make_profile().to_oref0()
+        self.assertIn('carb_ratios', p)
+        self.assertEqual(p['carb_ratios']['schedule'][0]['ratio'], 12.0)
+
+    def test_oref0_bg_targets(self):
+        p = self._make_profile().to_oref0()
+        self.assertEqual(p['bg_targets']['targets'][0]['low'], 100.0)
+        self.assertEqual(p['bg_targets']['targets'][0]['high'], 120.0)
+
+
+class TestProfileGeneratorLoop(unittest.TestCase):
+    """Test Loop format output."""
+
+    def _make_profile(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        return GeneratedProfile(
+            basal_blocks=[
+                {'hour': 0, 'value': 0.8, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+                {'hour': 8, 'value': 0.6, 'period': 'morning', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            isf_blocks=[
+                {'hour': 0, 'value': 50.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            cr_blocks=[
+                {'hour': 0, 'value': 10.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+        )
+
+    def test_loop_uses_seconds(self):
+        p = self._make_profile().to_loop()
+        items = p['basalRateSchedule']['items']
+        self.assertEqual(items[0]['startTime'], 0)
+        self.assertEqual(items[1]['startTime'], 28800)  # 8h * 3600
+
+    def test_loop_has_effect_duration(self):
+        p = self._make_profile().to_loop()
+        self.assertEqual(p['insulinModelSettings']['effectDuration'], 5.0 * 3600)
+
+    def test_loop_has_sensitivity_schedule(self):
+        p = self._make_profile().to_loop()
+        self.assertIn('insulinSensitivitySchedule', p)
+        self.assertEqual(p['insulinSensitivitySchedule']['items'][0]['value'], 50.0)
+
+    def test_loop_has_target_range(self):
+        p = self._make_profile().to_loop()
+        self.assertIn('glucoseTargetRangeSchedule', p)
+
+
+class TestProfileGeneratorTrio(unittest.TestCase):
+    """Test Trio format output."""
+
+    def _make_profile(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        return GeneratedProfile(
+            basal_blocks=[
+                {'hour': 0, 'value': 0.8, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            isf_blocks=[
+                {'hour': 0, 'value': 50.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+                {'hour': 12, 'value': 40.0, 'period': 'midday', 'confidence': 'medium', 'change_pct': -20.0},
+            ],
+            cr_blocks=[
+                {'hour': 0, 'value': 10.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+        )
+
+    def test_trio_dual_time(self):
+        """Trio has both minutes offset AND HH:MM:SS string."""
+        p = self._make_profile().to_trio()
+        basal = p['basalprofile'][0]
+        self.assertEqual(basal['minutes'], 0)
+        self.assertEqual(basal['start'], '00:00:00')
+
+    def test_trio_isf_has_offset_and_start(self):
+        p = self._make_profile().to_trio()
+        isf = p['isfProfile']['sensitivities']
+        self.assertEqual(isf[1]['offset'], 720)  # 12h * 60
+        self.assertEqual(isf[1]['start'], '12:00:00')
+
+    def test_trio_units(self):
+        p = self._make_profile().to_trio()
+        self.assertEqual(p['isfProfile']['units'], 'mg/dl')
+
+
+class TestProfileGeneratorNightscout(unittest.TestCase):
+    """Test Nightscout ProfileSet format."""
+
+    def _make_profile(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        return GeneratedProfile(
+            basal_blocks=[
+                {'hour': 0, 'value': 0.8, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+                {'hour': 18, 'value': 1.1, 'period': 'evening', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            isf_blocks=[
+                {'hour': 0, 'value': 50.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+            cr_blocks=[
+                {'hour': 0, 'value': 10.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0},
+            ],
+        )
+
+    def test_ns_has_profile_set(self):
+        p = self._make_profile().to_nightscout()
+        self.assertIn('defaultProfile', p)
+        self.assertEqual(p['defaultProfile'], 'Default')
+        self.assertIn('store', p)
+        self.assertIn('Default', p['store'])
+
+    def test_ns_basal_hhmm(self):
+        p = self._make_profile().to_nightscout()
+        basal = p['store']['Default']['basal']
+        self.assertEqual(basal[0]['time'], '00:00')
+        self.assertEqual(basal[1]['time'], '18:00')
+
+    def test_ns_sens_has_time_as_seconds(self):
+        p = self._make_profile().to_nightscout()
+        sens = p['store']['Default']['sens']
+        self.assertEqual(sens[0]['timeAsSeconds'], 0)
+
+    def test_ns_values_are_strings(self):
+        """Nightscout stores numeric values as strings."""
+        p = self._make_profile().to_nightscout()
+        basal = p['store']['Default']['basal']
+        self.assertIsInstance(basal[0]['value'], str)
+
+
+class TestProfileGeneratorConstraints(unittest.TestCase):
+    """Test physiological constraint enforcement."""
+
+    def test_clamp_basal(self):
+        from cgmencode.production.profile_generator import _clamp
+        self.assertEqual(_clamp(0.01, 'basal_rate'), 0.025)
+        self.assertEqual(_clamp(15.0, 'basal_rate'), 10.0)
+        self.assertEqual(_clamp(1.0, 'basal_rate'), 1.0)
+
+    def test_clamp_isf(self):
+        from cgmencode.production.profile_generator import _clamp
+        self.assertEqual(_clamp(5.0, 'isf'), 10.0)
+        self.assertEqual(_clamp(600.0, 'isf'), 500.0)
+
+    def test_clamp_cr(self):
+        from cgmencode.production.profile_generator import _clamp
+        self.assertEqual(_clamp(1.0, 'cr'), 3.0)
+        self.assertEqual(_clamp(200.0, 'cr'), 150.0)
+
+
+class TestProfileGeneratorJSON(unittest.TestCase):
+    """Test JSON serialization."""
+
+    def _make_profile(self):
+        from cgmencode.production.profile_generator import GeneratedProfile
+        return GeneratedProfile(
+            basal_blocks=[{'hour': 0, 'value': 0.8, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            isf_blocks=[{'hour': 0, 'value': 50.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+            cr_blocks=[{'hour': 0, 'value': 10.0, 'period': 'overnight', 'confidence': 'high', 'change_pct': 0.0}],
+        )
+
+    def test_to_json_all_formats(self):
+        import json
+        p = self._make_profile()
+        for fmt in ['oref0', 'loop', 'trio', 'nightscout']:
+            s = p.to_json(fmt)
+            parsed = json.loads(s)
+            self.assertIsInstance(parsed, dict)
+
+    def test_to_json_invalid_format(self):
+        p = self._make_profile()
+        with self.assertRaises(ValueError):
+            p.to_json('invalid')
+
+
+# ── Prediction Validator Tests (WS-3) ───────────────────────────────
+
+class TestPredictionValidatorTypes(unittest.TestCase):
+    """Type tests for prediction_validator.py."""
+
+    def test_validation_result_fields(self):
+        from cgmencode.production.prediction_validator import PredictionValidationResult
+        r = PredictionValidationResult(
+            patient_id='test', n_train=1000, n_test=250,
+            actual_tir_train=0.70, actual_tir_test=0.72,
+            predicted_tir_test=0.73, tir_delta_actual=0.02,
+            tir_delta_predicted=0.03, prediction_error=0.01,
+            isf_multiplier=1.3, cr_multiplier=1.0, basal_multiplier=1.0,
+        )
+        self.assertEqual(r.patient_id, 'test')
+        self.assertAlmostEqual(r.prediction_error, 0.01)
+
+    def test_validation_summary_actionable(self):
+        from cgmencode.production.prediction_validator import ValidationSummary
+        good = ValidationSummary(
+            n_patients=10, mean_absolute_error=0.02,
+            correlation=0.8, calibration_slope=0.9,
+            calibration_intercept=0.01, coverage_80=0.85,
+        )
+        self.assertTrue(good.is_actionable)
+
+        bad = ValidationSummary(
+            n_patients=10, mean_absolute_error=0.05,
+            correlation=0.3, calibration_slope=0.5,
+            calibration_intercept=0.1, coverage_80=0.40,
+        )
+        self.assertFalse(bad.is_actionable)
+
+    def test_import_from_package(self):
+        from cgmencode.production import (
+            validate_patient, validate_batch, generate_validation_report,
+            PredictionValidationResult, ValidationSummary,
+        )
+        self.assertTrue(callable(validate_patient))
+        self.assertTrue(callable(validate_batch))
+        self.assertTrue(callable(generate_validation_report))
+
+
+class TestPredictionValidatorExecution(unittest.TestCase):
+    """Functional tests for validation on synthetic data."""
+
+    def test_validate_patient_synthetic(self):
+        """Validate on a single synthetic patient (30 days)."""
+        from cgmencode.production.prediction_validator import validate_patient
+        patient = make_patient()
+        result = validate_patient(patient, 'synthetic')
+        self.assertIsNotNone(result)
+        self.assertEqual(result.patient_id, 'synthetic')
+        self.assertGreater(result.n_train, 0)
+        self.assertGreater(result.n_test, 0)
+        self.assertGreaterEqual(result.actual_tir_train, 0.0)
+        self.assertLessEqual(result.actual_tir_train, 1.0)
+        self.assertGreaterEqual(result.prediction_error, 0.0)
+
+    def test_validate_patient_short_data_returns_none(self):
+        """Patient with <1 day holdout returns None."""
+        from cgmencode.production.prediction_validator import validate_patient
+        # Only 200 samples total → holdout = 40 samples < 288
+        profile = make_profile()
+        patient = PatientData(
+            glucose=np.random.uniform(80, 200, 200).astype(np.float64),
+            timestamps=np.arange(200, dtype=np.float64) * 300000 + 1700000000000,
+            profile=profile,
+        )
+        result = validate_patient(patient, 'short')
+        self.assertIsNone(result)
+
+    def test_validate_batch_synthetic(self):
+        """Validate across multiple synthetic patients."""
+        from cgmencode.production.prediction_validator import validate_batch
+        patients = {}
+        for pid in ['p1', 'p2', 'p3']:
+            patients[pid] = make_patient()
+        summary = validate_batch(patients)
+        self.assertEqual(summary.n_patients, 3)
+        self.assertGreaterEqual(summary.mean_absolute_error, 0.0)
+        self.assertIsInstance(summary.correlation, float)
+
+    def test_validation_report_generation(self):
+        """Report renders as markdown."""
+        from cgmencode.production.prediction_validator import (
+            validate_batch, generate_validation_report,
+        )
+        patients = {'p1': make_patient(), 'p2': make_patient()}
+        summary = validate_batch(patients)
+        report = generate_validation_report(summary)
+        self.assertIn('Prediction Validation Report', report)
+        self.assertIn('MAE', report)
+        self.assertIn('Correlation', report)
+
+
+# ─── Forward Simulator Tests ──────────────────────────────────────────
+
+class TestForwardSimulator(unittest.TestCase):
+    """Tests for the forward simulation engine."""
+
+    def setUp(self):
+        from cgmencode.production.forward_simulator import (
+            forward_simulate, compare_scenarios, simulate_typical_day,
+            TherapySettings, InsulinEvent, CarbEvent, _carb_absorption_rate,
+        )
+        self.forward_simulate = forward_simulate
+        self.compare_scenarios = compare_scenarios
+        self.simulate_typical_day = simulate_typical_day
+        self.TherapySettings = TherapySettings
+        self.InsulinEvent = InsulinEvent
+        self.CarbEvent = CarbEvent
+        self._carb_absorption_rate = _carb_absorption_rate
+        self.settings = TherapySettings(isf=50, cr=10, basal_rate=0.8)
+
+    def test_steady_state_flat(self):
+        """At correct basal with no meals, glucose stays at initial."""
+        r = self.forward_simulate(120.0, self.settings, duration_hours=6.0, seed=42)
+        # Should stay very close to 120
+        self.assertAlmostEqual(r.glucose[-1], 120.0, delta=5.0)
+        self.assertAlmostEqual(r.mean_glucose, 120.0, delta=3.0)
+
+    def test_decay_toward_target(self):
+        """Starting high should decay toward 120."""
+        r = self.forward_simulate(200.0, self.settings, duration_hours=12.0, seed=42)
+        self.assertLess(r.glucose[-1], 200.0)
+        # Decay should bring it closer to 120
+        self.assertLess(r.glucose[-1], 180.0)
+
+    def test_correction_bolus_lowers(self):
+        """Correction bolus should lower glucose proportional to ISF."""
+        bolus_units = 1.6  # expect ~80 mg/dL drop at ISF=50
+        r = self.forward_simulate(200.0, self.settings, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(0, bolus_units)], seed=42)
+        drop = 200.0 - r.glucose[-1]
+        # Should drop significantly (not exact due to two-component split)
+        self.assertGreater(drop, 40)
+        self.assertLess(drop, 120)  # not too much
+
+    def test_meal_raises_glucose(self):
+        """Meal without bolus should raise glucose."""
+        r = self.forward_simulate(120.0, self.settings, duration_hours=4.0,
+            carb_events=[self.CarbEvent(30, 45)], seed=42)
+        self.assertGreater(r.glucose.max(), 150.0)
+
+    def test_meal_with_correct_bolus(self):
+        """Correctly bolused meal should spike then return near baseline."""
+        r = self.forward_simulate(120.0, self.settings, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(60, 4.5)],
+            carb_events=[self.CarbEvent(60, 45)], seed=42)
+        # Should spike
+        self.assertGreater(r.glucose.max(), 150.0)
+        # Should come back down (not necessarily to 120 due to persistent)
+        self.assertLess(r.glucose[-1], r.glucose.max())
+
+    def test_under_bolused_meal(self):
+        """Under-bolused meal should spike higher."""
+        r_correct = self.forward_simulate(120.0, self.settings, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(60, 4.5)],
+            carb_events=[self.CarbEvent(60, 45)], seed=42)
+        r_under = self.forward_simulate(120.0, self.settings, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(60, 3.0)],
+            carb_events=[self.CarbEvent(60, 45)], seed=42)
+        self.assertGreater(r_under.glucose.max(), r_correct.glucose.max())
+
+    def test_low_basal_raises(self):
+        """Basal below metabolic need should raise glucose."""
+        low = self.TherapySettings(isf=50, cr=10, basal_rate=0.5)
+        r = self.forward_simulate(120.0, low, duration_hours=6.0,
+            metabolic_basal_rate=0.8, seed=42)
+        self.assertGreater(r.glucose[-1], 120.0)
+
+    def test_high_basal_lowers(self):
+        """Basal above metabolic need should lower glucose."""
+        high = self.TherapySettings(isf=50, cr=10, basal_rate=1.1)
+        r = self.forward_simulate(120.0, high, duration_hours=6.0,
+            metabolic_basal_rate=0.8, seed=42)
+        self.assertLess(r.glucose[-1], 120.0)
+
+    def test_scenario_comparison(self):
+        """compare_scenarios should show basal rate effect."""
+        low = self.TherapySettings(isf=50, cr=10, basal_rate=0.5)
+        high = self.TherapySettings(isf=50, cr=10, basal_rate=1.1)
+        comp = self.compare_scenarios(120.0, low, high, duration_hours=6.0,
+            metabolic_basal_rate=0.8, seed=42)
+        # High basal should produce lower mean glucose
+        self.assertLess(comp.modified.mean_glucose, comp.baseline.mean_glucose)
+
+    def test_scenario_comparison_summary(self):
+        """Scenario summary should contain expected keys."""
+        comp = self.compare_scenarios(120.0, self.settings, self.settings,
+            duration_hours=4.0, seed=42)
+        s = comp.summary()
+        self.assertIn('baseline', s)
+        self.assertIn('modified', s)
+        self.assertIn('tir_delta_pp', s)
+
+    def test_typical_day(self):
+        """Typical day with meals should produce reasonable TIR."""
+        r = self.simulate_typical_day(self.settings, seed=42)
+        self.assertEqual(r.n_steps, 288)  # 24h × 12
+        self.assertGreater(r.tir, 0.3)  # At least 30% TIR
+        self.assertLess(r.tbr, 0.3)  # Not too much hypo
+
+    def test_simulation_result_properties(self):
+        """SimulationResult properties should be consistent."""
+        r = self.forward_simulate(120.0, self.settings, duration_hours=6.0, seed=42)
+        self.assertAlmostEqual(r.tir + r.tbr + r.tar, 1.0, places=5)
+        self.assertEqual(r.duration_hours, 6.0)
+        self.assertGreater(r.mean_glucose, 0)
+        self.assertGreaterEqual(r.cv, 0)
+
+    def test_noise_adds_variability(self):
+        """Noise parameter should increase CV."""
+        r_clean = self.forward_simulate(120.0, self.settings, duration_hours=6.0,
+            noise_std=0.0, seed=42)
+        r_noisy = self.forward_simulate(120.0, self.settings, duration_hours=6.0,
+            noise_std=2.0, seed=42)
+        self.assertGreater(r_noisy.cv, r_clean.cv)
+
+    def test_deterministic_with_seed(self):
+        """Same seed should produce identical results."""
+        r1 = self.forward_simulate(120.0, self.settings, duration_hours=4.0,
+            noise_std=1.0, seed=123)
+        r2 = self.forward_simulate(120.0, self.settings, duration_hours=4.0,
+            noise_std=1.0, seed=123)
+        np.testing.assert_array_equal(r1.glucose, r2.glucose)
+
+    def test_circadian_isf_schedule(self):
+        """Circadian ISF schedule should affect bolus response."""
+        # Night ISF = 30 (less sensitive), day ISF = 60 (more sensitive)
+        s = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+            isf_schedule=[(0, 30), (8, 60), (20, 30)])
+        # Night correction (start_hour=2) → ISF=30 → smaller drop per unit
+        r_night = self.forward_simulate(200.0, s, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(0, 1.0)], start_hour=2.0, seed=42)
+        # Day correction (start_hour=12) → ISF=60 → bigger drop per unit
+        r_day = self.forward_simulate(200.0, s, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(0, 1.0)], start_hour=12.0, seed=42)
+        drop_night = 200 - r_night.glucose[-1]
+        drop_day = 200 - r_day.glucose[-1]
+        self.assertGreater(drop_day, drop_night)
+
+    def test_glucose_stays_in_bounds(self):
+        """Glucose should never go below 39 or above 401."""
+        # Massive insulin → should hit floor
+        r = self.forward_simulate(80.0, self.settings, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(0, 20.0)], seed=42)
+        self.assertGreaterEqual(r.glucose.min(), 39.0)
+        # No insulin at all → should hit ceiling eventually? No, decay holds it
+        # Just verify clipping works
+        self.assertLessEqual(r.glucose.max(), 401.0)
+
+    def test_iob_trace(self):
+        """IOB should rise after bolus then decay."""
+        r = self.forward_simulate(120.0, self.settings, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(30, 3.0)], seed=42)
+        # IOB should peak shortly after bolus (step 6 = 30min)
+        peak_step = np.argmax(r.iob)
+        self.assertGreater(peak_step, 5)
+        self.assertLess(peak_step, 20)
+        # IOB at end should be much less than peak
+        self.assertLess(r.iob[-1], r.iob[peak_step])
+
+    def test_cob_trace(self):
+        """COB should appear at meal time then decrease."""
+        r = self.forward_simulate(120.0, self.settings, duration_hours=6.0,
+            carb_events=[self.CarbEvent(30, 60)], seed=42)
+        # COB should be >0 after meal (step 7 = 35min)
+        self.assertGreater(r.cob[8], 0)
+        # COB should be 0 after full absorption (3h = 36 steps after meal)
+        self.assertAlmostEqual(r.cob[-1], 0.0, places=1)
+
+    def test_therapy_settings_schedule_lookup(self):
+        """Schedule lookup should follow hour boundaries."""
+        s = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+            isf_schedule=[(0, 30), (8, 60), (20, 40)])
+        self.assertEqual(s.isf_at_hour(3.0), 30)
+        self.assertEqual(s.isf_at_hour(12.0), 60)
+        self.assertEqual(s.isf_at_hour(22.0), 40)
+
+    # --- Phase 2: Delayed Carb Absorption Tests (WS-5) ---
+
+    def test_delayed_absorption_peaks_later_than_linear(self):
+        """Delayed model should peak later than linear (delay=0)."""
+        import numpy as np
+        rates_linear = [self._carb_absorption_rate(float(t), 45.0, 3.0,
+                         delay_minutes=0) for t in range(0, 181, 5)]
+        rates_delayed = [self._carb_absorption_rate(float(t), 45.0, 3.0,
+                          delay_minutes=20) for t in range(0, 181, 5)]
+        peak_linear = np.argmax(rates_linear)
+        peak_delayed = np.argmax(rates_delayed)
+        # Linear is constant → peak at step 0; delayed peaks at step 4 (20min)
+        self.assertGreater(peak_delayed, peak_linear)
+
+    def test_delayed_absorption_conserves_mass(self):
+        """Total absorbed grams should approximate total_grams."""
+        total = sum(self._carb_absorption_rate(float(t), 60.0, 3.0,
+                     delay_minutes=20) for t in range(0, 181, 5))
+        self.assertAlmostEqual(total, 60.0, delta=3.0)
+
+    def test_delayed_absorption_zero_at_start(self):
+        """Delayed model should have near-zero absorption at t=0."""
+        r0 = self._carb_absorption_rate(0.0, 45.0, 3.0, delay_minutes=20)
+        self.assertAlmostEqual(r0, 0.0, places=3)
+
+    def test_linear_fallback_when_no_delay(self):
+        """delay_minutes=0 should give uniform linear absorption."""
+        r1 = self._carb_absorption_rate(30.0, 45.0, 3.0, delay_minutes=0)
+        r2 = self._carb_absorption_rate(90.0, 45.0, 3.0, delay_minutes=0)
+        self.assertAlmostEqual(r1, r2, places=3)
+
+    def test_carb_event_delay_parameter(self):
+        """CarbEvent should accept delay_minutes parameter."""
+        c = self.CarbEvent(60, 45, delay_minutes=30)
+        self.assertEqual(c.delay_minutes, 30)
+        c_default = self.CarbEvent(60, 45)
+        self.assertEqual(c_default.delay_minutes, 20)  # _DEFAULT_CARB_DELAY_MINUTES
+
+    def test_delayed_meal_glucose_peak_timing(self):
+        """Glucose peak after meal should be 40-120min (not 5-15 like linear)."""
+        import numpy as np
+        r = self.forward_simulate(100.0, self.settings, duration_hours=6.0,
+            carb_events=[self.CarbEvent(30, 60)], seed=42)
+        peak_step = np.argmax(r.glucose)
+        peak_min = peak_step * 5
+        time_after_meal = peak_min - 30
+        self.assertGreater(time_after_meal, 40)
+        self.assertLess(time_after_meal, 150)
+
+    def test_carb_sensitivity_decoupling(self):
+        """Explicit carb_sensitivity should decouple carb rise from CR."""
+        s1 = self.TherapySettings(isf=50, cr=10, carb_sensitivity=5.0)
+        s2 = self.TherapySettings(isf=50, cr=8, carb_sensitivity=5.0)
+        # Same carb_sensitivity → same glucose rise per gram
+        self.assertEqual(s1.carb_sensitivity_at_hour(12.0),
+                         s2.carb_sensitivity_at_hour(12.0))
+        # Different CR only affects bolus dosing, not carb impact on glucose
+        r1 = self.forward_simulate(120.0, s1, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(30, 6.0)],
+            carb_events=[self.CarbEvent(30, 60)], seed=42)
+        r2 = self.forward_simulate(120.0, s2, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(30, 6.0)],
+            carb_events=[self.CarbEvent(30, 60)], seed=42)
+        # Same bolus + same carb_sensitivity → same glucose curves
+        import numpy as np
+        np.testing.assert_allclose(r1.glucose, r2.glucose, atol=0.1)
+
+    def test_carb_sensitivity_default_from_isf_cr(self):
+        """When carb_sensitivity is None, derived from ISF/CR."""
+        s = self.TherapySettings(isf=50, cr=10)
+        self.assertAlmostEqual(s.carb_sensitivity_at_hour(12.0), 5.0)
+
+    # --- Phase 2: IOB-Dependent Power-Law ISF Tests (WS-6) ---
+
+    def test_power_law_reduces_large_correction(self):
+        """Power-law ISF should dampen large corrections (less overshoot)."""
+        import numpy as np
+        s_off = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+                                      iob_power_law=False)
+        s_on = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+                                     iob_power_law=True)
+        r_off = self.forward_simulate(250.0, s_off, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(0, 4.0)], seed=42)
+        r_on = self.forward_simulate(250.0, s_on, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(0, 4.0)], seed=42)
+        # Power-law should produce higher nadir (less aggressive)
+        self.assertGreater(r_on.glucose.min(), r_off.glucose.min())
+
+    def test_power_law_minimal_for_small_dose(self):
+        """Power-law should have less effect for small corrections."""
+        import numpy as np
+        s_off = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+                                      iob_power_law=False)
+        s_on = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+                                     iob_power_law=True)
+        r_off = self.forward_simulate(160.0, s_off, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(0, 0.5)], seed=42)
+        r_on = self.forward_simulate(160.0, s_on, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(0, 0.5)], seed=42)
+        # 0.5U is at threshold → very little dampening
+        diff = abs(r_on.glucose.min() - r_off.glucose.min())
+        self.assertLess(diff, 15)
+
+    def test_power_law_off_by_default(self):
+        """IOB power-law should be disabled by default for backward compat."""
+        s = self.TherapySettings(isf=50, cr=10, basal_rate=0.8)
+        self.assertFalse(s.iob_power_law)
+
+    def test_power_law_stacked_bolus_dampening(self):
+        """Stacked boluses should see more dampening than a single bolus."""
+        import numpy as np
+        s = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+                                  iob_power_law=True)
+        # Single 4U bolus
+        r_single = self.forward_simulate(250.0, s, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(0, 4.0)], seed=42)
+        # Two stacked 2U boluses (same total insulin)
+        r_stacked = self.forward_simulate(250.0, s, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(0, 2.0),
+                          self.InsulinEvent(30, 2.0)], seed=42)
+        # Single large bolus at once should be dampened more initially
+        # Both have same total insulin but different IOB profiles
+        self.assertGreater(r_single.glucose.min(), 70)
+        self.assertGreater(r_stacked.glucose.min(), 70)

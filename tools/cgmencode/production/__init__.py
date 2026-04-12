@@ -50,6 +50,16 @@ from .natural_experiment_detector import (
     NaturalExperimentType, MealConfig,
 )
 from .settings_optimizer import optimize_settings
+from .profile_generator import generate_profile, generate_all_formats, GeneratedProfile
+from .prediction_validator import (
+    validate_patient, validate_batch, generate_validation_report,
+    PredictionValidationResult, ValidationSummary,
+)
+from .forward_simulator import (
+    forward_simulate, compare_scenarios, simulate_typical_day,
+    TherapySettings, InsulinEvent, CarbEvent,
+    SimulationResult, ScenarioComparison,
+)
 from .patient_phenotyper import classify_patient_phenotype
 from .pipeline import run_pipeline, run_pipeline_batch
 from .validators import run_validation
@@ -88,6 +98,11 @@ __all__ = [
     # Settings Optimization (EXP-1701)
     'optimize_settings',
     'OptimalSettings', 'SettingScheduleEntry', 'SettingsOptimizationResult',
+    # Profile Generation (WS-2)
+    'generate_profile', 'generate_all_formats', 'GeneratedProfile',
+    # Prediction Validation (WS-3)
+    'validate_patient', 'validate_batch', 'generate_validation_report',
+    'PredictionValidationResult', 'ValidationSummary',
     # Validation
     'run_validation',
 ]
