@@ -1518,6 +1518,116 @@ def advise_overnight_basal_quadrant(
     )]
 
 
+def advise_loop_workload(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    profile: "PatientProfile",
+    actual_basal: Optional[np.ndarray] = None,
+    days_of_data: float = 7.0,
+) -> List[SettingsRecommendation]:
+    """Assess basal adequacy from full-day loop workload analysis (EXP-2593).
+
+    Uses the AID loop's own behavior (actual vs scheduled basal) across
+    all hours to detect systematic basal mismatch. This complements the
+    overnight-only quadrant analysis with a whole-day view.
+
+    Key finding from EXP-2593: 9/12 patients have scheduled basal too
+    high (loop consistently cuts). Directional bias is the primary signal.
+
+    Returns at most one recommendation.
+    """
+    if actual_basal is None:
+        return []
+
+    if days_of_data < 3:
+        return []
+
+    # Get scheduled basal
+    basal_vals = [e.get("value", e.get("rate", 0.8))
+                  for e in profile.basal_schedule]
+    sched_basal = float(np.median([float(v) for v in basal_vals])) if basal_vals else 0.8
+
+    if sched_basal <= 0:
+        return []
+
+    # Filter to valid points (both glucose and actual_basal present)
+    valid = ~np.isnan(glucose) & ~np.isnan(actual_basal) & (actual_basal >= 0)
+    if valid.sum() < 200:
+        return []
+
+    actual = actual_basal[valid]
+    g = glucose[valid]
+
+    # Core workload metrics
+    net = actual - sched_basal
+    directional_bias = float(np.mean(net / sched_basal))
+    suspension_frac = float(np.mean(actual < 0.01))
+    adding_frac = float(np.mean(net > 0.05))
+    cutting_frac = float(np.mean(net < -0.05))
+
+    # TIR for context
+    tir = float(np.mean((g >= 70) & (g <= 180)))
+
+    # Classification: combine bias direction with TIR
+    # Strong bias (>0.1 in magnitude) + poor TIR → settings need change
+    # Strong bias + good TIR → loop compensating, change optional
+    _BIAS_THRESHOLD = 0.2  # 20% deviation from scheduled
+    _TIR_OK = 0.70  # 70% TIR considered acceptable
+
+    if abs(directional_bias) < _BIAS_THRESHOLD:
+        return []  # Basal adequately matched
+
+    if directional_bias > _BIAS_THRESHOLD:
+        # Loop consistently ADDS → basal too low
+        direction = "increase"
+        pct = min(40.0, abs(directional_bias) * 50)
+        confidence = 0.70 if tir < _TIR_OK else 0.50
+        assessment = "BASAL TOO LOW"
+        note = (f"Loop adds insulin {adding_frac:.0%} of the time "
+                f"(directional bias: +{directional_bias:.0%}).")
+    else:
+        # Loop consistently CUTS → basal too high
+        direction = "decrease"
+        pct = min(40.0, abs(directional_bias) * 50)
+        confidence = 0.65 if tir < _TIR_OK else 0.45
+        assessment = "BASAL TOO HIGH"
+        note = (f"Loop cuts insulin {cutting_frac:.0%} of the time, "
+                f"suspends {suspension_frac:.0%} "
+                f"(directional bias: {directional_bias:+.0%}).")
+
+    # Lower confidence if TIR is already good (loop is compensating fine)
+    if tir >= _TIR_OK:
+        note += (f" TIR is already {tir:.0%} — the loop is compensating "
+                 f"successfully. Adjustment optional but would reduce loop workload.")
+
+    suggested = sched_basal * (1.0 + pct / 100.0) if direction == "increase" else \
+                sched_basal * (1.0 - pct / 100.0)
+    suggested = round(max(0.05, suggested), 2)
+    predicted_delta = round(pct * 0.03, 1) if tir < _TIR_OK else round(pct * 0.01, 1)
+
+    return [SettingsRecommendation(
+        parameter=SettingsParameter.BASAL_RATE,
+        direction=direction,
+        magnitude_pct=round(pct, 0),
+        current_value=sched_basal,
+        suggested_value=suggested,
+        predicted_tir_delta=predicted_delta,
+        affected_hours=(0, 24),
+        confidence=round(confidence, 2),
+        evidence=(
+            f"Loop workload analysis (EXP-2593): {assessment}. {note} "
+            f"Analysis based on {valid.sum()} samples over {days_of_data:.0f} days."
+        ),
+        rationale=(
+            f"{direction.capitalize()} basal by {pct:.0f}% "
+            f"(from {sched_basal:.2f} to {suggested:.2f} U/hr) across all hours. "
+            f"The AID loop's systematic {direction.replace('increase','adding').replace('decrease','cutting')} "
+            f"indicates scheduled basal {'understates' if direction == 'increase' else 'overstates'} "
+            f"metabolic need."
+        ),
+    )]
+
+
 def generate_settings_advice(glucose: np.ndarray,
                              metabolic: Optional[MetabolicState],
                              hours: np.ndarray,
@@ -1647,6 +1757,14 @@ def generate_settings_advice(glucose: np.ndarray,
             actual_basal=actual_basal,
             days_of_data=days_of_data)
         recs.extend(quadrant_recs)
+
+    # Loop workload basal analysis (EXP-2593)
+    if actual_basal is not None:
+        workload_recs = advise_loop_workload(
+            glucose, hours, profile,
+            actual_basal=actual_basal,
+            days_of_data=days_of_data)
+        recs.extend(workload_recs)
 
     # Overnight drift assessment (EXP-2371–2378)
     overnight = assess_overnight_drift(
