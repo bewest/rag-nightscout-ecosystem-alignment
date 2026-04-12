@@ -21,7 +21,7 @@
 | F9 | bg_above_target in top-5 for hyper | Strongly Agrees: bg_above_target in top-5 for hyper | ✅✅ strongly_agrees |
 | F10 | Overall SHAP rankings are stable across cohort | Partially Agrees: ρ=0.609 with PK, stable across time | 🟡 partially_agrees |
 
-**Phase 9 update**: SHAP ρ vs colleague = **0.609** (hypo, with PK) — highest correlation achieved.
+**Phase 9 update**: SHAP ρ vs colleague = **0.679** (hypo, optimized DIA) — highest correlation achieved.
 F3 upgraded from inconclusive to partially_agrees. F5b (eventualBG) added as strongly_agrees.
 
 ## Colleague's Findings (OREF-INV-003)
@@ -346,7 +346,8 @@ Phase 6 re-ran the core SHAP replication (EXP-2401) on corrected data to isolate
 |---------|----------|--------|---------|-------------|
 | Phase 1 (pre-fix, no PK) | 0.803 | 0.531 | 0.691 | ? |
 | EXP-2521 (corrected, no PK) | 0.8031 | 0.552 | 0.669 | 0.393 |
-| EXP-2531 (corrected, use_pk=True) | 0.8150 | **0.609** | **0.691** | **0.474** |
+| EXP-2531 (corrected, use_pk=True) | 0.8150 | 0.609 | 0.691 | 0.474 |
+| EXP-2541 (optimized DIA, PK) | 0.8144 | **0.679** | 0.600 | — |
 
 **Key finding**: The ODC data fix **improved** SHAP ρ (0.531→0.552), not degraded it.
 PK features further improved ρ to 0.609 (hypo) and restored hyper ρ to 0.691.
@@ -414,6 +415,66 @@ quality is patient-dependent.
 PK physics-based features provide modest but **consistently positive** R²
 across all patients and horizons, unlike algorithm predictions which vary wildly.
 This supports augmenting algorithm features with PK-derived signals.
+
+## Phase 8: Per-Patient DIA Optimization (EXP-2541–2544)
+
+### Key Question
+
+Profile DIA defaults (5-6h) far exceed measured IOB decay from EXP-2353 (2.8-3.8h).
+Does personalized DIA improve prediction or SHAP alignment?
+
+### DIA Grid Search Results (EXP-2541)
+
+| Patient | Profile DIA | EXP-2353 DIA | Optimal DIA | AUC Gain |
+|---------|-------------|--------------|-------------|----------|
+| d | 6.0h | 3.6h | 4.0h | +0.001 |
+| j | 3.0h | — | 6.0h | +0.020 |
+| odc-61403732 | 7.0h | — | 5.0h | +0.027 |
+| odc-84181797 | 5.0h | — | 3.0h | +0.001 |
+| **16 others** | 5-6h | 2.8-3.8h | **6.0h** | 0.000 |
+
+**Surprise**: 16/19 patients have optimal prediction DIA = 6.0h (profile default).
+Measured IOB decay (2.8-3.8h) is the *wrong* DIA for prediction.
+
+### DIA Source Comparison (EXP-2542)
+
+| DIA Source | Mean DIA | Hypo AUC | Δ vs profile |
+|------------|----------|----------|--------------|
+| optimal | 5.6h | 0.8144 | +0.0003 |
+| profile | 5.6h | 0.8141 | baseline |
+| fixed_5.0 | 5.0h | 0.8137 | -0.0004 |
+| fixed_3.3 | 3.3h | 0.8105 | **-0.0035** |
+| exp2353 | 4.2h | 0.8105 | **-0.0036** |
+
+**Conclusion**: Shorter DIA *hurts* prediction. The PK convolution kernel benefits from
+a wider influence window — more historical insulin context improves the LightGBM model,
+even though the actual pharmacodynamic effect is shorter.
+
+### SHAP with Optimized DIA (EXP-2543)
+
+| DIA Source | ρ hypo | ρ hyper | iob_basaliob rank |
+|------------|--------|---------|-------------------|
+| optimal (5.6h mean) | **0.679** | 0.600 | #9 |
+| exp2353 (4.2h mean) | 0.666 | 0.635 | #10 |
+| EXP-2531 baseline | 0.609 | 0.691 | #10 |
+
+**New best ρ = 0.679** (hypo) with optimized DIA — up from 0.609 baseline.
+The iob_basaliob rank holds at #9, consistent with AAPS-only analysis.
+
+### DIA Sensitivity (EXP-2544)
+
+17/19 patients are DIA-sensitive (AUC range > 0.015 across DIA grid).
+Mean AUC range = 0.034 — DIA choice matters, but the optimum is consistently
+at longer (5-6h) rather than shorter (2.8-3.8h) values.
+
+### Interpretation: Predictive DIA ≠ Pharmacodynamic DIA
+
+This resolves an apparent paradox:
+- **Pharmacodynamic DIA** (EXP-2353): 2.8-3.8h — how fast insulin effect decays
+- **Predictive DIA**: 5-6h — how much insulin history improves risk prediction
+- These measure different things: the prediction model benefits from seeing
+  insulin delivered 5-6h ago even though its direct BG effect has faded,
+  because that history is informative about the patient's metabolic state.
 
 ## Clinical Implications
 
