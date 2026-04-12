@@ -1,10 +1,10 @@
 # Digital Twin & Settings Autoresearch Report
 
-**Date**: 2026-07-14 (updated 2026-07-15)
-**Experiments**: EXP-2561 through EXP-2570 (10 experiments)
+**Date**: 2026-07-14 (updated 2026-07-15, counter-reg series 2026-04-12)
+**Experiments**: EXP-2561 through EXP-2583 (23 experiments)
 **Branch**: `workspace/digital-twin-fidelity`
 **Data**: 803,895 rows × 49 cols, 19 patients (11 NS + 8 ODC)
-**Note**: ODC patient data has known bugs in grid construction (under investigation).
+**Note**: ODC patient data fixed (percentage temp basals, bolussnooze rename).
 NS patients (a-k) are the primary analysis cohort for EXP-2565+.
 
 ---
@@ -20,6 +20,8 @@ The key findings converge on a clear picture:
 3. **Per-patient ISF/CR differ from profile** — 95% ISF ≠ 1.0, 100% CR ≠ 1.0 (EXP-2563)
 4. **CR needs ~2× profile** — Mean optimal CR×2.10, confirmed with extended grid (EXP-2567)
 5. **Population DIA/ISF params are good** for NS patients — calibration adds little (EXP-2565)
+6. **Counter-regulation model** — Reduces 2.5× overestimation to ~1.0× (EXP-2579-2582)
+7. **Per-patient k calibration** — 10/11 patients in-range, TIR predicts optimal k (EXP-2582)
 
 ### What Doesn't Work ❌
 6. **Metabolic phase features** don't break hypo AUC ceiling — information-theoretic (EXP-2561)
@@ -716,24 +718,91 @@ target). The sim lacks this mechanism entirely.
 ### Calibration Series Synthesis
 
 ```
-ROOT CAUSE: The forward sim's insulin→glucose model is structurally
-~2.5× too aggressive because it lacks derivative-dependent counter-
-regulation (glucagon response to falling glucose).
+ROOT CAUSE RESOLVED: The forward sim's insulin→glucose model was 2.5×
+too aggressive because it lacked derivative-dependent counter-regulation.
 
-Four calibration hypotheses tested and ALL rejected:
-  ❌ Persistent component tuning    (EXP-2576)
-  ❌ Loop basal counteraction        (EXP-2577)
-  ❌ Mean-reversion strengthening    (EXP-2578)
-  ❌ Fast tau adjustment             (EXP-2576)
+EXP-2579-2582 added and calibrated this missing component:
+  ✅ Derivative counter-regulation (EXP-2579): 85% improvement
+  ✅ Integrated into forward_simulate() (EXP-2581): k=1.5 optimal
+  ✅ Per-patient calibration (EXP-2582): 5/11 → 10/11 in-range
+  ✗  Does NOT help meals (EXP-2583): counter-reg is correction-specific
 
-The overestimation is IRREDUCIBLE within the current model structure.
-Real counter-regulation is a DERIVATIVE-DEPENDENT response (glucagon
-released when glucose drops fast), not a TARGET-SEEKING mechanism
-(decay toward 120). Adding this would require a fundamentally new
-model component.
+The model: dBG *= 1/(1+k) when dBG < 0 (inside integration loop).
+At k=1.5, glucose drops are dampened to 40% of raw value, matching
+real physiology where glucagon/HGP oppose falling glucose.
 
-PRACTICAL RESOLUTION: The ISF dampening factor (0.78 from EXP-2572)
-in advise_forward_sim_optimization() is the correct empirical fix.
-The sim remains valid for DIRECTIONAL recommendations. For magnitude
-predictions, a separate model (or the dampening factor) is needed.
+Per-patient k ranges from 0.0 (patient h, TIR=85%) to 7.0 (patient c,
+TIR=62%). TIR is the strongest predictor of optimal k (r=-0.64):
+well-controlled patients need less counter-regulation.
+
+PRACTICAL RESOLUTION:
+- counter_reg_k=1.5 for population-level correction analysis
+- Per-patient k calibrated from ≥15 correction events
+- Do NOT use counter-reg for meal predictions or TIR optimization
+- The ISF dampening factor (0.78) remains valid for meal-based optimization
 ```
+
+---
+
+## Counter-Regulation Series (EXP-2579–2583)
+
+### EXP-2579: Derivative-Dependent Counter-Regulation (CONFIRMED)
+
+Added glucose-rate-dependent opposing force: when glucose drops, add upward
+force proportional to rate of change. Post-hoc implementation.
+
+- k=1.2 (additive model): ratio 0.39→1.09, 85% improvement
+- k=0.8: ratio=0.73, MAE=57.5 (vs baseline MAE=90.1)
+- Symmetric (also dampen rises) nearly identical at k<1.0, unstable at k>1.2
+- Per-patient: d/e/f/g well-calibrated, c anomalous (negative ratio)
+
+### EXP-2580: Joint ISF×CR Optimization with Counter-Reg (CONFIRMED)
+
+Re-ran EXP-2568 with post-hoc counter-regulation applied:
+- Without counter-reg: mean optimal ISF = ×0.60 (artifact)
+- With counter-reg:    mean optimal ISF = ×1.26 (realistic)
+- 9/11 patients have optimal ISF ≥ 0.8
+
+The ISF×0.5 artifact is fully explained by missing counter-regulation.
+
+### EXP-2581: Integrated Counter-Regulation Calibration (CONFIRMED)
+
+Production change: added `counter_reg_k` parameter to forward_simulate().
+Multiplicative dampening: dBG *= 1/(1+k) when dBG < 0.
+
+Calibration (458 corrections, 11 patients):
+- k=1.5: ratio@2h = 0.92 (was 0.39), 86% improvement
+- k=2.0: ratio@2h = 1.09 (slightly over)
+- MAE: 90.1 → 58.0 (36% reduction)
+- 4/11 patients in [0.7, 1.3] range with population k
+
+### EXP-2582: Per-Patient Counter-Regulation (CONFIRMED)
+
+Per-patient k calibration: 5/11 → 10/11 in-range (dramatic improvement).
+
+| Patient | Best k | Ratio@2h | TIR  | Notes |
+|---------|--------|----------|------|-------|
+| a       | 2.0    | 0.972    | 56%  | |
+| b       | 3.0    | 1.005    | 57%  | |
+| c       | 7.0    | 1.122    | 62%  | Extreme: glucose barely drops |
+| d       | 1.5    | 0.943    | 79%  | Population k is optimal |
+| e       | 1.5    | 1.074    | 65%  | Population k is optimal |
+| f       | 1.0    | 0.979    | 66%  | |
+| g       | 1.0    | 0.963    | 75%  | |
+| h       | 0.0    | 0.829    | 85%  | No counter-reg needed! |
+| i       | 3.0    | 0.949    | 60%  | |
+| j       | 0.0    | 1.914    | 81%  | Too few events (n=8) |
+| k       | 0.0    | 1.143    | 95%  | Too few events (n=8) |
+
+TIR → optimal k correlation: r=-0.64 (well-controlled patients need less)
+
+### EXP-2583: Counter-Reg Meal Validation (NOT CONFIRMED)
+
+Counter-regulation does NOT improve meal predictions (-2.1% MAE change).
+Reason: during meals, insulin SHOULD bring glucose down from the peak.
+Counter-reg inappropriately dampens this desired post-meal drop.
+
+Counter-regulation is correction-specific physiology:
+- Glucagon responds to hypoglycemia risk (rapid glucose drops)
+- NOT to normal post-meal insulin action
+- Practical: use counter_reg_k only for correction analysis
