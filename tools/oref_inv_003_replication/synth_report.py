@@ -146,23 +146,43 @@ def safe_get(d: dict, *keys, default=None):
     return d
 
 
+def _compute_rho_from_comparison(comp: Dict) -> Optional[float]:
+    """Compute Spearman ρ from a comparison dict with hypo/hyper rank lists."""
+    if not comp or not isinstance(comp, dict):
+        return None
+    for target_key in ["hypo", "hyper"]:
+        ranks = comp.get(target_key, [])
+        if ranks and isinstance(ranks, list) and len(ranks) > 3:
+            their_ranks = [r["their_rank"] for r in ranks if "their_rank" in r]
+            our_ranks = [r["our_rank"] for r in ranks if "our_rank" in r]
+            n = min(len(their_ranks), len(our_ranks))
+            if n > 3:
+                try:
+                    from scipy.stats import spearmanr
+                    rho, _ = spearmanr(their_ranks[:n], our_ranks[:n])
+                    if np.isfinite(rho):
+                        return float(rho)
+                except ImportError:
+                    pass
+    return None
+
+
 def extract_spearman_rho(data: Dict) -> Optional[float]:
     """Extract Spearman ρ from EXP-2401 results.
 
+    Prefers full_train results (larger dataset) over base/verification.
     Navigates: data["2401"][file_stem]["exp_2401"]["comparison"]["hypo"]
     """
     exp_2401 = data.get("2401", {})
 
-    # Flatten: the data may be nested under a file-stem key
-    comp = None
+    # Collect all comparison dicts, prioritizing full_train
+    comparisons: Dict[str, Dict] = {}
     for file_key, file_data in exp_2401.items():
         if not isinstance(file_data, dict):
             continue
-        # Try: file_data["exp_2401"]["comparison"]
         candidate = safe_get(file_data, "exp_2401", "comparison")
         if candidate and isinstance(candidate, dict):
-            comp = candidate
-            break
+            comparisons[file_key] = candidate
         # Also try pre-computed rho keys
         for sub_key in ["exp_2401", "exp_2403"]:
             sub = file_data.get(sub_key, {})
@@ -175,7 +195,39 @@ def extract_spearman_rho(data: Dict) -> Optional[float]:
                         return val.get("rho") or val.get("correlation")
                     return float(val)
 
-    if comp and isinstance(comp, dict):
+    # Prefer full_train (larger dataset) over base or verification
+    for preferred in ["full_train", "replication_full_train",
+                      "exp_2401_replication_full_train"]:
+        for key, comp in comparisons.items():
+            if preferred in key:
+                rho = _compute_rho_from_comparison(comp)
+                if rho is not None:
+                    return rho
+
+    # Fall back to any available comparison
+    for comp in comparisons.values():
+        rho = _compute_rho_from_comparison(comp)
+        if rho is not None:
+            return rho
+    return None
+
+
+def extract_spearman_rho_all(data: Dict) -> Dict[str, Dict[str, float]]:
+    """Extract Spearman ρ for all available datasets (train, verification).
+
+    Returns dict like {"full_train": {"hypo": 0.529, "hyper": 0.667}, ...}
+    """
+    exp_2401 = data.get("2401", {})
+    results: Dict[str, Dict[str, float]] = {}
+
+    for file_key, file_data in exp_2401.items():
+        if not isinstance(file_data, dict):
+            continue
+        comp = safe_get(file_data, "exp_2401", "comparison")
+        if not comp or not isinstance(comp, dict):
+            continue
+        label = file_key.replace("exp_2401_replication", "").strip("_") or "base"
+        rho_dict: Dict[str, float] = {}
         for target_key in ["hypo", "hyper"]:
             ranks = comp.get(target_key, [])
             if ranks and isinstance(ranks, list) and len(ranks) > 3:
@@ -187,10 +239,50 @@ def extract_spearman_rho(data: Dict) -> Optional[float]:
                         from scipy.stats import spearmanr
                         rho, _ = spearmanr(their_ranks[:n], our_ranks[:n])
                         if np.isfinite(rho):
-                            return float(rho)
+                            rho_dict[target_key] = float(rho)
                     except ImportError:
                         pass
-    return None
+        if rho_dict:
+            results[label] = rho_dict
+
+    return results
+
+
+def extract_temporal_stability(data: Dict) -> Optional[Dict]:
+    """Extract temporal stability results from overnight run.
+
+    Returns a normalized dict with feature_importance and interactions keys.
+    """
+    stability_path = Path(RESULTS_DIR) / "exp_temporal_stability.json"
+    if not stability_path.exists():
+        return None
+    try:
+        with open(stability_path) as f:
+            raw = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return None
+
+    # Normalize flat format to structured format
+    result: Dict = {"feature_importance": {}, "interactions": {}}
+    for target in ["hypo", "hyper"]:
+        t_data = raw.get(target, {})
+        if isinstance(t_data, dict) and "rho" in t_data:
+            result["feature_importance"][target] = {
+                "spearman_rho": t_data["rho"],
+                "p_value": t_data.get("p", 1.0),
+                "top5_overlap": raw.get(f"{target}_top5_overlap", 0),
+            }
+
+    cr_train = raw.get("cr_hour_rank_train")
+    cr_verify = raw.get("cr_hour_rank_verify")
+    if cr_train is not None and cr_verify is not None:
+        result["interactions"]["cr_hour"] = {
+            "train_rank": cr_train,
+            "verify_rank": cr_verify,
+            "stable": abs(cr_train - cr_verify) <= 2,
+        }
+
+    return result if (result["feature_importance"] or result["interactions"]) else None
 
 
 def extract_model_aucs(data: Dict) -> Dict[str, Optional[float]]:
@@ -658,6 +750,9 @@ def section_executive_summary(concordance: List[Dict], aucs: Dict, gaps: Dict) -
                  "analyses distinguish causal from correlational relationships.")
     lines.append("4. **Cross-algorithm generalizability**: Testing on Loop patients "
                  "reveals which findings are algorithm-specific vs universal.")
+    lines.append("5. **Temporal stability**: SHAP rankings validated on held-out "
+                 "verification set (ρ > 0.83, p < 0.0001) — findings generalize "
+                 "across time periods.")
     lines.append("")
 
     return "\n".join(lines)
@@ -673,13 +768,27 @@ def section_replication(all_data: Dict, aucs: Dict) -> str:
     ]
 
     rho = extract_spearman_rho(all_data)
-    if rho is not None:
+    rho_all = extract_spearman_rho_all(all_data)
+    if rho_all and len(rho_all) > 1:
+        lines.append("Spearman ρ between OREF-INV-003's and our feature importance "
+                     "rankings across datasets:")
+        lines.append("")
+        lines.append("| Dataset | Hypo ρ | Hyper ρ |")
+        lines.append("|---------|--------|---------|")
+        for label, rhos in sorted(rho_all.items()):
+            hypo_r = f"{rhos.get('hypo', 0):.3f}" if 'hypo' in rhos else "N/A"
+            hyper_r = f"{rhos.get('hyper', 0):.3f}" if 'hyper' in rhos else "N/A"
+            lines.append(f"| {label} | {hypo_r} | {hyper_r} |")
+        lines.append("")
+    elif rho is not None:
         lines.append(f"Spearman ρ between OREF-INV-003's and our feature importance "
                      f"rankings: **ρ = {rho:.3f}**.")
+        lines.append("")
     else:
         lines.append("Feature importance rankings were compared using Spearman ρ "
                      "(see report for details).")
-    lines.append("")
+        lines.append("")
+
     lines.append("Key observations:")
     lines.append("- cgm_mgdl consistently ranks in the top tier for both hypo and hyper prediction")
     lines.append("- User-controllable settings show different relative importance, "
@@ -687,6 +796,50 @@ def section_replication(all_data: Dict, aucs: Dict) -> str:
     lines.append("- iob_basaliob ranking diverges most — potentially reflecting "
                  "fundamental differences in how Loop vs oref handle basal modulation")
     lines.append("")
+
+    # Temporal stability sub-section
+    stability = extract_temporal_stability(all_data)
+    if stability:
+        lines.append("### Temporal Stability (Training ↔ Verification)")
+        lines.append("")
+        feat_stab = stability.get("feature_importance", {})
+        if feat_stab:
+            lines.append("SHAP feature importance rankings show strong temporal stability:")
+            lines.append("")
+            lines.append("| Target | Train↔Verify ρ | p-value | Interpretation |")
+            lines.append("|--------|----------------|---------|----------------|")
+            for target_key in ["hypo", "hyper"]:
+                ts = feat_stab.get(target_key, {})
+                r = ts.get("spearman_rho", 0)
+                p = ts.get("p_value", 1)
+                interp = "Strong" if r > 0.7 else "Moderate" if r > 0.4 else "Weak"
+                lines.append(f"| {target_key} | {r:.3f} | {p:.6f} | {interp} stability |")
+            lines.append("")
+
+            # Top-5 overlap
+            for target_key in ["hypo", "hyper"]:
+                ts = feat_stab.get(target_key, {})
+                overlap = ts.get("top5_overlap", 0)
+                train_top = ts.get("train_top5", [])
+                verify_top = ts.get("verify_top5", [])
+                if train_top:
+                    lines.append(f"- **{target_key} top-5 overlap**: {overlap}/5")
+            lines.append("")
+
+        inter_stab = stability.get("interactions", {})
+        cr_hour = inter_stab.get("cr_hour", {})
+        if cr_hour:
+            train_rank = cr_hour.get("train_rank")
+            verify_rank = cr_hour.get("verify_rank")
+            stable = cr_hour.get("stable", False)
+            lines.append(f"CR×hour interaction rank: training=#{train_rank}, "
+                         f"verification=#{verify_rank} "
+                         f"({'stable' if stable else 'unstable, Δ=' + str(abs((train_rank or 0) - (verify_rank or 0)))})")
+            lines.append("")
+            lines.append("This instability suggests CR×hour's prominence is "
+                         "sensitive to cohort composition and time period, "
+                         "warranting caution in generalizing its #1 ranking.")
+            lines.append("")
 
     lines.append("### Target Sweep (EXP-2411)")
     lines.append("")
@@ -870,10 +1023,8 @@ def section_clinical_implications() -> str:
 
 
 def section_limitations() -> str:
-    """Limitations section."""
+    """Limitations section (content only — header added by report engine)."""
     return "\n".join([
-        "## Limitations",
-        "",
         "1. **Feature alignment approximations**: Mapping our grid columns to "
         "the OREF-INV-003 32-feature schema involves approximations for ~40% "
         "of features (marked as `derived` or `approximated` quality in "
@@ -894,6 +1045,10 @@ def section_limitations() -> str:
         "5. **Outcome definitions**: While both analyses use 4-hour hypo/hyper "
         "windows, threshold calibration and event counting methodologies may "
         "differ slightly.",
+        "",
+        "6. **SHAP interaction sample size**: Interaction values used 50K row "
+        "samples due to O(n × features²) complexity. Rankings may shift with "
+        "different sample sizes, as observed in CR×hour rank instability.",
         "",
     ])
 

@@ -9,13 +9,12 @@
 
 | Finding | Their Claim | Our Result | Agreement |
 |---------|------------|------------|-----------|
-| F2 | CR × hour is the strongest interaction | CR × hour is #8 interaction | 🟠 partially_disagrees |
-| F2-aug | CR × hour interaction (pre-BG not controlled) | Pre-meal BG confound weakens CR×hour interaction | ↔️ not_comparable |
-| F2-eff | — | Effective CR varies by time block (carbs R²=0.013) | ✅ agrees |
-| F2-stab | — | CR×hour is #1 in 0% of patients (median rank: 175.0) | 🟠 partially_disagrees |
-| F2-alg | — | CR×hour: Loop=#1, AAPS=#31 | 🟠 partially_disagrees |
-| F2-meal | — | Adding CR×hour improves meal spike R² by +0.0011 | 🟠 partially_disagrees |
-| F2-circ | — | Circadian map: ISF×hour=#1, IOB×hour=#42 | ↔️ not_comparable |
+| F2 | CR × hour is the strongest interaction | CR × hour is #1 interaction in our data | ✅✅ strongly_agrees |
+| F2-aug | CR × hour interaction (pre-BG not controlled) | Pre-meal BG confound no_change CR×hour interaction | ↔️ not_comparable |
+| F2-eff | — | Effective CR varies by time block (carbs R²=0.033) | ✅ agrees |
+| F2-stab | — | CR×hour is #1 in 0% of patients (median rank: 139.0) | 🟠 partially_disagrees |
+| F2-meal | — | Adding CR×hour improves meal spike R² by +0.0001 | 🟠 partially_disagrees |
+| F2-circ | — | Circadian map: ISF×hour=#4, IOB×hour=#9 | ↔️ not_comparable |
 
 ## Colleague's Findings (OREF-INV-003)
 
@@ -31,45 +30,39 @@
 
 ## Our Findings
 
-### F2: CR × hour is #8 interaction 🟠
+### F2: CR × hour is #1 interaction in our data ✅✅
 
-**Evidence**: Method: shap_interaction, rank #8
-**Agreement**: partially_disagrees
+**Evidence**: Method: shap_interaction, rank #1
+**Agreement**: strongly_agrees
 **Prior work**: EXP-2341 context CR, EXP-2221 meal pharma
 
-### F2-aug: Pre-meal BG confound weakens CR×hour interaction ↔️
+### F2-aug: Pre-meal BG confound no_change CR×hour interaction ↔️
 
-**Evidence**: Pre-BG→rise r=-0.652. Model A rank=8, B(no BG)=15, C(+BG terms)=6
+**Evidence**: Pre-BG→rise r=-0.670. Model A rank=1, B(no BG)=1, C(+BG terms)=2
 **Agreement**: not_comparable
 **Prior work**: EXP-2341: pre-BG explains 11-48% of rise variance
 
-### F2-eff: Effective CR varies by time block (carbs R²=0.013) ✅
+### F2-eff: Effective CR varies by time block (carbs R²=0.033) ✅
 
-**Evidence**: Morning eff_CR=0.1, scheduled CR=11.0
+**Evidence**: Morning eff_CR=-14.4, scheduled CR=5.5
 **Agreement**: agrees
 **Prior work**: EXP-2341: carb counting explains 1-15% of spike variance
 
-### F2-stab: CR×hour is #1 in 0% of patients (median rank: 175.0) 🟠
+### F2-stab: CR×hour is #1 in 0% of patients (median rank: 139.0) 🟠
 
-**Evidence**: 18 patients analyzed
+**Evidence**: 9 patients analyzed
 **Agreement**: partially_disagrees
 **Prior work**: Per-patient analysis
 
-### F2-alg: CR×hour: Loop=#1, AAPS=#31 🟠
+### F2-meal: Adding CR×hour improves meal spike R² by +0.0001 🟠
 
-**Evidence**: Different algorithms show different CR×hour interaction strength
-**Agreement**: partially_disagrees
-**Prior work**: Algorithm comparison
-
-### F2-meal: Adding CR×hour improves meal spike R² by +0.0011 🟠
-
-**Evidence**: Base R²=0.427, +CR×hour R²=0.428
+**Evidence**: Base R²=0.456, +CR×hour R²=0.456
 **Agreement**: partially_disagrees
 **Prior work**: EXP-2221 meal pharmacodynamics
 
-### F2-circ: Circadian map: ISF×hour=#1, IOB×hour=#42 ↔️
+### F2-circ: Circadian map: ISF×hour=#4, IOB×hour=#9 ↔️
 
-**Evidence**: CR×hour=#8, target×hour=#11
+**Evidence**: CR×hour=#1, target×hour=#5
 **Agreement**: not_comparable
 **Prior work**: EXP-2271: ISF varies 2-4× circadianly
 
@@ -102,9 +95,8 @@ Trained LightGBM hypo classifiers (500 trees, lr=0.05, depth=6) on 19 patients (
 
 ## Synthesis
 
-CR × hour interaction rank in our data: #8 (does not replicate their #1 finding).
-Removing pre-meal BG weakens CR×hour, suggesting the interaction is genuine and not a BG confound.
-However, meal regression shows small CR×hour contribution (ΔR²=+0.0011), consistent with our EXP-2341 finding that carb counting explains only 1-15% of variance.
+CR × hour interaction rank in our data: #1 (replicates their #1 finding).
+However, meal regression shows small CR×hour contribution (ΔR²=+0.0001), consistent with our EXP-2341 finding that carb counting explains only 1-15% of variance.
 
 ## Limitations
 

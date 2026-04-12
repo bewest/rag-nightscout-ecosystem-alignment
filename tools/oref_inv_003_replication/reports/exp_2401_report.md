@@ -2,7 +2,7 @@
 
 **Experiment**: EXP-2401  
 **Phase**: Replication (OREF-INV-003 cross-analysis)  
-**Date**: 2026-04-11  
+**Date**: 2026-04-12  
 **Script**: `exp_repl_2401.py`  
 
 ## Comparison Summary
@@ -10,14 +10,14 @@
 | Finding | Their Claim | Our Result | Agreement |
 |---------|------------|------------|-----------|
 | F1 | cgm_mgdl is top feature for hypo prediction | Confirmed: cgm_mgdl is top feature for hypo prediction | 🟡 partially_agrees |
-| F2 | cgm_mgdl is top feature for hyper prediction | Confirmed: cgm_mgdl is top feature for hyper prediction | 🟡 partially_agrees |
+| F2 | cgm_mgdl is top feature for hyper prediction | Confirmed: cgm_mgdl is top feature for hyper prediction | ✅✅ strongly_agrees |
 | F3 | iob_basaliob is #2 for hypo | Confirmed: iob_basaliob is #2 for hypo | ❌ disagrees |
 | F4 | hour is #2 for hyper | Confirmed: hour is #2 for hyper | 🟡 partially_agrees |
-| F5 | User-controllable settings account for ~36% of hypo importance | Confirmed: User-controllable settings account for ~36% of hypo importance | ❌ disagrees |
+| F5 | User-controllable settings account for ~36% of hypo importance | Confirmed: User-controllable settings account for ~36% of hypo importance | 🟡 partially_agrees |
 | F6 | User-controllable settings account for ~28% of hyper importance | Confirmed: User-controllable settings account for ~28% of hyper importance | ✅ agrees |
-| F7 | CR × hour is the strongest interaction | Confirmed: CR × hour is the strongest interaction | ❌ disagrees |
+| F7 | CR × hour is the strongest interaction | Confirmed: CR × hour is the strongest interaction | ✅✅ strongly_agrees |
 | F8 | sug_ISF and sug_CR both in top-5 for hypo | Confirmed: sug_ISF and sug_CR both in top-5 for hypo | 🟡 partially_agrees |
-| F9 | bg_above_target in top-5 for hyper | Confirmed: bg_above_target in top-5 for hyper | ❌ disagrees |
+| F9 | bg_above_target in top-5 for hyper | Confirmed: bg_above_target in top-5 for hyper | ✅✅ strongly_agrees |
 | F10 | Overall SHAP rankings are stable across cohort | Confirmed: Overall SHAP rankings are stable across cohort | 🟡 partially_agrees |
 
 ## Colleague's Findings (OREF-INV-003)
@@ -80,57 +80,57 @@
 **Agreement**: partially_agrees
 **Prior work**: EXP-2401 analysis
 
-### F2: Confirmed: cgm_mgdl is top feature for hyper prediction 🟡
+### F2: Confirmed: cgm_mgdl is top feature for hyper prediction ✅✅
 
-**Evidence**: cgm_mgdl is #2 hyper
-**Agreement**: partially_agrees
+**Evidence**: cgm_mgdl is #1 hyper (36.2%)
+**Agreement**: strongly_agrees
 **Prior work**: EXP-2401 analysis
 
 ### F3: Confirmed: iob_basaliob is #2 for hypo ❌
 
-**Evidence**: iob_basaliob is #14 hypo
+**Evidence**: iob_basaliob is #19 hypo
 **Agreement**: disagrees
 **Prior work**: EXP-2401 analysis
 
 ### F4: Confirmed: hour is #2 for hyper 🟡
 
-**Evidence**: hour is #1 hyper
+**Evidence**: hour is #3 hyper
 **Agreement**: partially_agrees
 **Prior work**: EXP-2401 analysis
 
-### F5: Confirmed: User-controllable settings account for ~36% of hypo importance ❌
+### F5: Confirmed: User-controllable settings account for ~36% of hypo importance 🟡
 
-**Evidence**: User-ctrl hypo = 17.8% (theirs ~36%)
-**Agreement**: disagrees
+**Evidence**: User-ctrl hypo = 22.6% (theirs ~36%)
+**Agreement**: partially_agrees
 **Prior work**: EXP-2401 analysis
 
 ### F6: Confirmed: User-controllable settings account for ~28% of hyper importance ✅
 
-**Evidence**: User-ctrl hyper = 20.3% (theirs ~28%)
+**Evidence**: User-ctrl hyper = 27.1% (theirs ~28%)
 **Agreement**: agrees
 **Prior work**: EXP-2401 analysis
 
-### F7: Confirmed: CR × hour is the strongest interaction ❌
+### F7: Confirmed: CR × hour is the strongest interaction ✅✅
 
-**Evidence**: CR × hour is #7
-**Agreement**: disagrees
+**Evidence**: CR × hour is #1 interaction
+**Agreement**: strongly_agrees
 **Prior work**: EXP-2401 analysis
 
 ### F8: Confirmed: sug_ISF and sug_CR both in top-5 for hypo 🟡
 
-**Evidence**: ISF #5, CR #8 (one in top-5)
+**Evidence**: ISF #6, CR #5 (one in top-5)
 **Agreement**: partially_agrees
 **Prior work**: EXP-2401 analysis
 
-### F9: Confirmed: bg_above_target in top-5 for hyper ❌
+### F9: Confirmed: bg_above_target in top-5 for hyper ✅✅
 
-**Evidence**: bg_above_target #13 hyper
-**Agreement**: disagrees
+**Evidence**: bg_above_target #4 hyper
+**Agreement**: strongly_agrees
 **Prior work**: EXP-2401 analysis
 
 ### F10: Confirmed: Overall SHAP rankings are stable across cohort 🟡
 
-**Evidence**: Median CV=0.66 (moderate stability)
+**Evidence**: Median CV=0.88 (moderate stability)
 **Agreement**: partially_agrees
 **Prior work**: EXP-2401 analysis
 
@@ -156,24 +156,24 @@
 
 ## Methodology Notes
 
-Trained LightGBM models (500 trees, lr=0.05, depth=6) on 19 patients (11 Loop + 8 AAPS/ODC). Computed SHAP feature importance using TreeExplainer (gain fallback). Compared rankings with OREF-INV-003's 28-user oref cohort via Spearman rank correlation.
+Trained LightGBM models (500 trees, lr=0.05, depth=6) on 19 patients (11 Loop + 8 AAPS/ODC). Computed SHAP feature importance using TreeExplainer (shap). Compared rankings with OREF-INV-003's 28-user oref cohort via Spearman rank correlation.
 
 ## Synthesis
 
 ## Replication Summary
 
 - **F1** (partially_agrees): cgm_mgdl is #2 hypo (top-3 but not #1)
-- **F2** (partially_agrees): cgm_mgdl is #2 hyper
-- **F3** (disagrees): iob_basaliob is #14 hypo
-- **F4** (partially_agrees): hour is #1 hyper
-- **F5** (disagrees): User-ctrl hypo = 17.8% (theirs ~36%)
-- **F6** (agrees): User-ctrl hyper = 20.3% (theirs ~28%)
-- **F7** (disagrees): CR × hour is #7
-- **F8** (partially_agrees): ISF #5, CR #8 (one in top-5)
-- **F9** (disagrees): bg_above_target #13 hyper
-- **F10** (partially_agrees): Median CV=0.66 (moderate stability)
+- **F2** (strongly_agrees): cgm_mgdl is #1 hyper (36.2%)
+- **F3** (disagrees): iob_basaliob is #19 hypo
+- **F4** (partially_agrees): hour is #3 hyper
+- **F5** (partially_agrees): User-ctrl hypo = 22.6% (theirs ~36%)
+- **F6** (agrees): User-ctrl hyper = 27.1% (theirs ~28%)
+- **F7** (strongly_agrees): CR × hour is #1 interaction
+- **F8** (partially_agrees): ISF #6, CR #5 (one in top-5)
+- **F9** (strongly_agrees): bg_above_target #4 hyper
+- **F10** (partially_agrees): Median CV=0.88 (moderate stability)
 
-**Overall**: 6/10 findings replicated, 4 disagreed, 0 inconclusive.
+**Overall**: 9/10 findings replicated, 1 disagreed, 0 inconclusive.
 
 ## Limitations
 
