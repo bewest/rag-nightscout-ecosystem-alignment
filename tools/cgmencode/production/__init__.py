@@ -51,6 +51,10 @@ from .natural_experiment_detector import (
 )
 from .settings_optimizer import optimize_settings
 from .profile_generator import generate_profile, generate_all_formats, GeneratedProfile
+from .prediction_validator import (
+    validate_patient, validate_batch, generate_validation_report,
+    PredictionValidationResult, ValidationSummary,
+)
 from .patient_phenotyper import classify_patient_phenotype
 from .pipeline import run_pipeline, run_pipeline_batch
 from .validators import run_validation
@@ -91,6 +95,9 @@ __all__ = [
     'OptimalSettings', 'SettingScheduleEntry', 'SettingsOptimizationResult',
     # Profile Generation (WS-2)
     'generate_profile', 'generate_all_formats', 'GeneratedProfile',
+    # Prediction Validation (WS-3)
+    'validate_patient', 'validate_batch', 'generate_validation_report',
+    'PredictionValidationResult', 'ValidationSummary',
     # Validation
     'run_validation',
 ]

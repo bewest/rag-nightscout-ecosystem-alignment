@@ -4060,3 +4060,99 @@ class TestProfileGeneratorJSON(unittest.TestCase):
         p = self._make_profile()
         with self.assertRaises(ValueError):
             p.to_json('invalid')
+
+
+# ── Prediction Validator Tests (WS-3) ───────────────────────────────
+
+class TestPredictionValidatorTypes(unittest.TestCase):
+    """Type tests for prediction_validator.py."""
+
+    def test_validation_result_fields(self):
+        from cgmencode.production.prediction_validator import PredictionValidationResult
+        r = PredictionValidationResult(
+            patient_id='test', n_train=1000, n_test=250,
+            actual_tir_train=0.70, actual_tir_test=0.72,
+            predicted_tir_test=0.73, tir_delta_actual=0.02,
+            tir_delta_predicted=0.03, prediction_error=0.01,
+            isf_multiplier=1.3, cr_multiplier=1.0, basal_multiplier=1.0,
+        )
+        self.assertEqual(r.patient_id, 'test')
+        self.assertAlmostEqual(r.prediction_error, 0.01)
+
+    def test_validation_summary_actionable(self):
+        from cgmencode.production.prediction_validator import ValidationSummary
+        good = ValidationSummary(
+            n_patients=10, mean_absolute_error=0.02,
+            correlation=0.8, calibration_slope=0.9,
+            calibration_intercept=0.01, coverage_80=0.85,
+        )
+        self.assertTrue(good.is_actionable)
+
+        bad = ValidationSummary(
+            n_patients=10, mean_absolute_error=0.05,
+            correlation=0.3, calibration_slope=0.5,
+            calibration_intercept=0.1, coverage_80=0.40,
+        )
+        self.assertFalse(bad.is_actionable)
+
+    def test_import_from_package(self):
+        from cgmencode.production import (
+            validate_patient, validate_batch, generate_validation_report,
+            PredictionValidationResult, ValidationSummary,
+        )
+        self.assertTrue(callable(validate_patient))
+        self.assertTrue(callable(validate_batch))
+        self.assertTrue(callable(generate_validation_report))
+
+
+class TestPredictionValidatorExecution(unittest.TestCase):
+    """Functional tests for validation on synthetic data."""
+
+    def test_validate_patient_synthetic(self):
+        """Validate on a single synthetic patient (30 days)."""
+        from cgmencode.production.prediction_validator import validate_patient
+        patient = make_patient()
+        result = validate_patient(patient, 'synthetic')
+        self.assertIsNotNone(result)
+        self.assertEqual(result.patient_id, 'synthetic')
+        self.assertGreater(result.n_train, 0)
+        self.assertGreater(result.n_test, 0)
+        self.assertGreaterEqual(result.actual_tir_train, 0.0)
+        self.assertLessEqual(result.actual_tir_train, 1.0)
+        self.assertGreaterEqual(result.prediction_error, 0.0)
+
+    def test_validate_patient_short_data_returns_none(self):
+        """Patient with <1 day holdout returns None."""
+        from cgmencode.production.prediction_validator import validate_patient
+        # Only 200 samples total → holdout = 40 samples < 288
+        profile = make_profile()
+        patient = PatientData(
+            glucose=np.random.uniform(80, 200, 200).astype(np.float64),
+            timestamps=np.arange(200, dtype=np.float64) * 300000 + 1700000000000,
+            profile=profile,
+        )
+        result = validate_patient(patient, 'short')
+        self.assertIsNone(result)
+
+    def test_validate_batch_synthetic(self):
+        """Validate across multiple synthetic patients."""
+        from cgmencode.production.prediction_validator import validate_batch
+        patients = {}
+        for pid in ['p1', 'p2', 'p3']:
+            patients[pid] = make_patient()
+        summary = validate_batch(patients)
+        self.assertEqual(summary.n_patients, 3)
+        self.assertGreaterEqual(summary.mean_absolute_error, 0.0)
+        self.assertIsInstance(summary.correlation, float)
+
+    def test_validation_report_generation(self):
+        """Report renders as markdown."""
+        from cgmencode.production.prediction_validator import (
+            validate_batch, generate_validation_report,
+        )
+        patients = {'p1': make_patient(), 'p2': make_patient()}
+        summary = validate_batch(patients)
+        report = generate_validation_report(summary)
+        self.assertIn('Prediction Validation Report', report)
+        self.assertIn('MAE', report)
+        self.assertIn('Correlation', report)
