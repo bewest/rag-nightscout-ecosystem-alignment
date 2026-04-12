@@ -2,20 +2,20 @@
 
 **Experiment**: EXP-2421  
 **Phase**: Replication (OREF-INV-003 cross-analysis)  
-**Date**: 2026-04-11  
+**Date**: 2026-04-12  
 **Script**: `tools/oref_inv_003_replication/exp_repl_2421.py`  
 
 ## Comparison Summary
 
 | Finding | Their Claim | Our Result | Agreement |
 |---------|------------|------------|-----------|
-| F2 | CR × hour is the strongest interaction | CR × hour is #7 interaction | 🟠 partially_disagrees |
+| F2 | CR × hour is the strongest interaction | CR × hour is #8 interaction | 🟠 partially_disagrees |
 | F2-aug | CR × hour interaction (pre-BG not controlled) | Pre-meal BG confound weakens CR×hour interaction | ↔️ not_comparable |
 | F2-eff | — | Effective CR varies by time block (carbs R²=0.013) | ✅ agrees |
-| F2-stab | — | CR×hour is #1 in 0% of patients (median rank: 51.5) | 🟠 partially_disagrees |
-| F2-alg | — | CR×hour: Loop=#3, AAPS=#42 | 🟠 partially_disagrees |
+| F2-stab | — | CR×hour is #1 in 0% of patients (median rank: 175.0) | 🟠 partially_disagrees |
+| F2-alg | — | CR×hour: Loop=#1, AAPS=#31 | 🟠 partially_disagrees |
 | F2-meal | — | Adding CR×hour improves meal spike R² by +0.0011 | 🟠 partially_disagrees |
-| F2-circ | — | Circadian map: ISF×hour=#4, IOB×hour=#11 | ↔️ not_comparable |
+| F2-circ | — | Circadian map: ISF×hour=#1, IOB×hour=#42 | ↔️ not_comparable |
 
 ## Colleague's Findings (OREF-INV-003)
 
@@ -31,15 +31,15 @@
 
 ## Our Findings
 
-### F2: CR × hour is #7 interaction 🟠
+### F2: CR × hour is #8 interaction 🟠
 
-**Evidence**: Method: gain_product_proxy, rank #7
+**Evidence**: Method: shap_interaction, rank #8
 **Agreement**: partially_disagrees
 **Prior work**: EXP-2341 context CR, EXP-2221 meal pharma
 
 ### F2-aug: Pre-meal BG confound weakens CR×hour interaction ↔️
 
-**Evidence**: Pre-BG→rise r=-0.652. Model A rank=7, B(no BG)=9, C(+BG terms)=18
+**Evidence**: Pre-BG→rise r=-0.652. Model A rank=8, B(no BG)=15, C(+BG terms)=6
 **Agreement**: not_comparable
 **Prior work**: EXP-2341: pre-BG explains 11-48% of rise variance
 
@@ -49,13 +49,13 @@
 **Agreement**: agrees
 **Prior work**: EXP-2341: carb counting explains 1-15% of spike variance
 
-### F2-stab: CR×hour is #1 in 0% of patients (median rank: 51.5) 🟠
+### F2-stab: CR×hour is #1 in 0% of patients (median rank: 175.0) 🟠
 
 **Evidence**: 18 patients analyzed
 **Agreement**: partially_disagrees
 **Prior work**: Per-patient analysis
 
-### F2-alg: CR×hour: Loop=#3, AAPS=#42 🟠
+### F2-alg: CR×hour: Loop=#1, AAPS=#31 🟠
 
 **Evidence**: Different algorithms show different CR×hour interaction strength
 **Agreement**: partially_disagrees
@@ -67,9 +67,9 @@
 **Agreement**: partially_disagrees
 **Prior work**: EXP-2221 meal pharmacodynamics
 
-### F2-circ: Circadian map: ISF×hour=#4, IOB×hour=#11 ↔️
+### F2-circ: Circadian map: ISF×hour=#1, IOB×hour=#42 ↔️
 
-**Evidence**: CR×hour=#7, target×hour=#3
+**Evidence**: CR×hour=#8, target×hour=#11
 **Agreement**: not_comparable
 **Prior work**: EXP-2271: ISF varies 2-4× circadianly
 
@@ -98,11 +98,11 @@
 
 ## Methodology Notes
 
-Trained LightGBM hypo classifiers (500 trees, lr=0.05, depth=6) on 19 patients (11 Loop + 8 AAPS/ODC). Computed pairwise interaction strengths via gain product proxy. Augmented with pre-meal BG confound analysis, effective CR calculation, and meal-centric regression models.
+Trained LightGBM hypo classifiers (500 trees, lr=0.05, depth=6) on 19 patients (11 Loop + 8 AAPS/ODC). Computed pairwise interaction strengths via SHAP interaction values. Augmented with pre-meal BG confound analysis, effective CR calculation, and meal-centric regression models.
 
 ## Synthesis
 
-CR × hour interaction rank in our data: #7 (does not replicate their #1 finding).
+CR × hour interaction rank in our data: #8 (does not replicate their #1 finding).
 Removing pre-meal BG weakens CR×hour, suggesting the interaction is genuine and not a BG confound.
 However, meal regression shows small CR×hour contribution (ΔR²=+0.0011), consistent with our EXP-2341 finding that carb counting explains only 1-15% of variance.
 
