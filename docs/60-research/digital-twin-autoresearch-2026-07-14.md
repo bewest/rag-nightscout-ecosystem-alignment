@@ -487,7 +487,7 @@ can't reconstruct the loop's prior contributions.
 
 ---
 
-## Cross-Experiment Synthesis (12 Experiments)
+## Cross-Experiment Synthesis (18 Experiments)
 
 ### The Emerging Picture
 
@@ -540,6 +540,12 @@ FORWARD SIM CAPABILITY MAP:
 | 10 | ODC bias was data bug, not sim | EXP-2564→2565: +13 vs -50 | HIGH | Yes — await ODC fix |
 | 11 | Phenotype doesn't predict opt direction | EXP-2571: ISF↓/CR↑ universal | HIGH | No — direction is universal |
 | 12 | Sim overshoots corrections by 22% | EXP-2572: actual/sim=0.78 | HIGH | Yes — dampen ISF recs |
+| 13 | Meal-size CR not significant | EXP-2573: K-W p=0.34 | MEDIUM | No — too much per-patient var |
+| 14 | Basal optimization is artifact | EXP-2574: all optimal at grid min | HIGH | No — same overestimation |
+| 15 | Sim is 61% too potent at 2h | EXP-2575: ratio=0.39 | HIGH | Yes — structural limitation |
+| 16 | Persistent fraction irrelevant | EXP-2576: all fractions equally bad | HIGH | No — wrong mechanism |
+| 17 | Loop counteraction not the cause | EXP-2577: actual=scheduled effect | HIGH | No — basal-neutrality cancels |
+| 18 | Counter-regulatory decay wrong type | EXP-2578: more decay = worse | HIGH | No — need derivative model |
 
 ### Lines of Research: Closed vs Open
 
@@ -550,13 +556,19 @@ FORWARD SIM CAPABILITY MAP:
 - Forward sim absolute TIR prediction — missing loop model
 - Closed-loop sim via simple controller — insufficient
 - Phenotype→optimization direction — direction is universal
+- Meal-size-dependent CR — not statistically significant
+- Overnight basal optimization via sim — same overestimation artifact
+- Persistent fraction tuning — no effect on predictions
+- Loop basal counteraction — basal-neutrality cancels
+- Counter-regulatory decay tuning — wrong mechanism type
+- Forward sim insulin magnitude calibration — structural, not parametric
 
 **OPEN** (continue investing):
 - **Joint ISF×CR optimization → settings_advisor** (DONE — productionized)
-- **ISF bias correction** — dampen ISF recommendations by sim overshoot factor
-- **Extended CR grid for remaining patients** (a,g still saturating)
+- **ISF bias correction** (DONE — dampening factor 0.78 applied)
+- **Derivative-dependent counter-regulation model** — would fix structural overestimation
 - **Natural experiment validation** (settings that DID change → outcome)
-- **Meal-size-dependent CR** — large meals need different CR per EXP-2535
+- **Sensitivity ratio analysis** — does autosens explain ISF discrepancy?
 
 ---
 
@@ -602,7 +614,13 @@ predicts for different user-defined scenarios.
 | EXP-2570 code | `tools/cgmencode/production/exp_closed_loop_2570.py` | Tracked |
 | EXP-2571 code | `tools/cgmencode/production/exp_phenotype_opt_2571.py` | Tracked |
 | EXP-2572 code | `tools/cgmencode/production/exp_isf_artifact_2572.py` | Tracked |
-| All EXP data | `externals/experiments/exp-256[1-9]_*.json`, `exp-257[0-2]_*.json` | Gitignored |
+| EXP-2573 code | `tools/cgmencode/production/exp_meal_size_cr_2573.py` | Tracked |
+| EXP-2574 code | `tools/cgmencode/production/exp_overnight_basal_2574.py` | Tracked |
+| EXP-2575 code | `tools/cgmencode/production/exp_insulin_cal_2575.py` | Tracked |
+| EXP-2576 code | `tools/cgmencode/production/exp_persistent_cal_2576.py` | Tracked |
+| EXP-2577 code | `tools/cgmencode/production/exp_loop_counteraction_2577.py` | Tracked |
+| EXP-2578 code | `tools/cgmencode/production/exp_decay_cal_2578.py` | Tracked |
+| All EXP data | `externals/experiments/exp-25[6-7]?_*.json` | Gitignored |
 | This report | `docs/60-research/digital-twin-autoresearch-2026-07-14.md` | Tracked |
 
 ---
@@ -646,5 +664,76 @@ likely comes from:
 
 **Impact on Productionization**: The `advise_forward_sim_optimization()` advisory
 should be interpreted as DIRECTIONAL only. Magnitude recommendations (e.g., "reduce
-ISF by 50%") should be tempered by the ~22% sim bias. A dampening factor could be
-applied, or recommendations could be capped (e.g., max ISF reduction 30%).
+ISF by 50%") should be tempered by the ~22% sim bias. A dampening factor of 0.78
+has been applied to ISF recommendations in the productionized code.
+
+---
+
+## Calibration Series: EXP-2573–2578
+
+### EXP-2573: Meal-Size CR (NOT SUPPORTED)
+
+Small=CR×1.76, Medium=CR×2.05, Large=CR×2.20. Trend consistent with EXP-2535 CR
+nonlinearity but Kruskal-Wallis p=0.34 — not statistically significant. Per-patient
+variation too high to support meal-size-dependent CR recommendations.
+
+### EXP-2574: Overnight Basal (ARTIFACT)
+
+All 5 patients show optimal basal×0.5 (grid minimum) with UNCHANGED glucose range.
+Same systematic insulin overestimation as ISF×0.5. Confirms the sim overestimation
+is uniform across ISF, CR, and basal axes.
+
+### EXP-2575: Insulin Calibration (CONFIRMED — 61% too potent)
+
+Horizon analysis across 538 corrections:
+- 30min: ratio=-0.05 (sim says drop, glucose actually rises)
+- 60min: ratio=0.19 (sim 5× too aggressive)
+- 120min: ratio=0.39 (sim 2.5× too aggressive)
+
+Overestimation increases with time → persistent component accumulates too much.
+
+### EXP-2576: Persistent Fraction Calibration (NO EFFECT)
+
+Parameter sweep: persistent=[0-0.37], tau=[0.5-2.0h]. ALL combinations produce
+2.7-3.5× overestimation. Tau has zero effect on output (not used by forward_simulate).
+More persistent fraction actually REDUCES overestimation (shifts concentrated fast
+effect to diffuse 12h persistent effect).
+
+### EXP-2577: Loop Basal Counteraction (NOT CONFIRMED)
+
+Using actual AID loop basal rates vs scheduled: ZERO difference. The sim's basal-
+neutrality model cancels both sides (excess = delivered - need = bolus regardless).
+Population basal reduction during corrections is only 12%, explaining at most 20%
+of the 61% overestimation.
+
+### EXP-2578: Counter-Regulatory Decay (NOT EFFECTIVE)
+
+Increasing decay rate [0.005-0.15] WORSENS MAE (89→108). The decay pushes glucose
+TOWARD 120 during corrections from >150, amplifying predicted drops. Real counter-
+regulation is derivative-dependent (opposes glucose CHANGES, not deviations from
+target). The sim lacks this mechanism entirely.
+
+### Calibration Series Synthesis
+
+```
+ROOT CAUSE: The forward sim's insulin→glucose model is structurally
+~2.5× too aggressive because it lacks derivative-dependent counter-
+regulation (glucagon response to falling glucose).
+
+Four calibration hypotheses tested and ALL rejected:
+  ❌ Persistent component tuning    (EXP-2576)
+  ❌ Loop basal counteraction        (EXP-2577)
+  ❌ Mean-reversion strengthening    (EXP-2578)
+  ❌ Fast tau adjustment             (EXP-2576)
+
+The overestimation is IRREDUCIBLE within the current model structure.
+Real counter-regulation is a DERIVATIVE-DEPENDENT response (glucagon
+released when glucose drops fast), not a TARGET-SEEKING mechanism
+(decay toward 120). Adding this would require a fundamentally new
+model component.
+
+PRACTICAL RESOLUTION: The ISF dampening factor (0.78 from EXP-2572)
+in advise_forward_sim_optimization() is the correct empirical fix.
+The sim remains valid for DIRECTIONAL recommendations. For magnitude
+predictions, a separate model (or the dampening factor) is needed.
+```
