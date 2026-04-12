@@ -1,7 +1,7 @@
 # Digital Twin & Settings Autoresearch Report
 
-**Date**: 2026-07-14 (updated 2026-07-15, counter-reg series 2026-04-12)
-**Experiments**: EXP-2561 through EXP-2583 (23 experiments)
+**Date**: 2026-07-14 (updated 2026-07-15, extended series 2026-04-12)
+**Experiments**: EXP-2561 through EXP-2588 (28 experiments)
 **Branch**: `workspace/digital-twin-fidelity`
 **Data**: 803,895 rows × 49 cols, 19 patients (11 NS + 8 ODC)
 **Note**: ODC patient data fixed (percentage temp basals, bolussnooze rename).
@@ -22,6 +22,9 @@ The key findings converge on a clear picture:
 5. **Population DIA/ISF params are good** for NS patients — calibration adds little (EXP-2565)
 6. **Counter-regulation model** — Reduces 2.5× overestimation to ~1.0× (EXP-2579-2582)
 7. **Per-patient k calibration** — 10/11 patients in-range, TIR predicts optimal k (EXP-2582)
+8. **Correction ISF calibration** — Dual-pathway ISF beats 0.78 dampened 11/12 patients (EXP-2585)
+9. **Circadian counter-reg** — Night k is +1.5 higher than day k (dawn phenomenon, EXP-2588)
+10. **Cross-cohort generalization** — Counter-reg works on both NS and ODC patients (EXP-2584)
 
 ### What Doesn't Work ❌
 6. **Metabolic phase features** don't break hypo AUC ceiling — information-theoretic (EXP-2561)
@@ -806,3 +809,88 @@ Counter-regulation is correction-specific physiology:
 - Glucagon responds to hypoglycemia risk (rapid glucose drops)
 - NOT to normal post-meal insulin action
 - Practical: use counter_reg_k only for correction analysis
+
+---
+
+## Extended Validation & Generalization (EXP-2584–2588)
+
+### EXP-2584: ODC Cohort Counter-Reg + Sensitivity Ratio (CONFIRMED / NOT CONFIRMED)
+
+Counter-reg model generalizes to ODC patients. Sensitivity ratio does NOT help.
+
+| Patient | k | Corrections | Ratio@k |
+|---------|---|-------------|---------|
+| odc-74077367 | 2.5 | 1495 | 1.016 |
+| odc-86025410 | 0.5 | 580 | 1.139 |
+| odc-96254963 | 2.0 | 287 | 1.058 |
+
+Cross-cohort: ODC median k=2.0 vs NS median k=1.5 — consistent ranges.
+
+Sensitivity ratio (autosens) finding: incorporating `sensitivity_ratio` into ISF
+actually WORSENED accuracy for odc-74077367 (ratio 0.970→0.916). Autosens captures
+short-term insulin sensitivity variation, which is orthogonal to the counter-
+regulation phenomenon. They should not be conflated.
+
+### EXP-2585: Correction-Based ISF Calibration (CONFIRMED)
+
+With calibrated k, correction-optimal ISF differs from meal-optimal ISF.
+
+| Pathway | Mean ISF Mult | Median |
+|---------|---------------|--------|
+| Correction (with k) | 0.86 | 0.80 |
+| Meal (without k) | 0.52 | 0.50 |
+| Difference | +0.34 | +0.30 |
+
+Per-patient correction-optimal beats 0.78 dampened heuristic: 11/12 patients.
+Two patient regimes:
+- **Counter-reg dominant** (c: k=7, ISF×2.0): physiology absorbs overestimation
+- **ISF dominant** (b,e,g: k low, ISF×0.5): ISF dampening still needed
+
+**Productionized**: `advise_correction_isf()` added to `settings_advisor.py`.
+Two-step calibration: (1) calibrate k from corrections, (2) find optimal ISF with k.
+
+### EXP-2586: Full-Day Simulation Validation (PARTIAL / CONFIRMED)
+
+Full-day sim with calibrated parameters predicts TIR directionally.
+
+| Configuration | Mean TIR Error | Rank Correlation |
+|---------------|----------------|------------------|
+| Default (no calibration) | 0.201 | 0.543 |
+| Counter-reg only | 0.221 | 0.616 |
+| Full calibration | 0.204 | 0.623 |
+
+9/14 patients within 20% TIR error. Patient j is extreme outlier (MAE=175).
+Full calibration improves ranking correlation: predicts which patients have higher TIR.
+Validates directional settings guidance (not magnitude-calibrated).
+
+### EXP-2587: TIR-Based k Prediction (NOT CONFIRMED)
+
+Cannot predict optimal k from glucose metrics (TIR, CV, etc.) with 14 patients.
+Best single-feature LOO MAE=1.16 (TIR), barely beats population median (1.21).
+Multi-feature models overfit catastrophically.
+
+**Conclusion**: Population median k=1.5 is the optimal fallback for cold start.
+Direct correction calibration is essential when corrections are available.
+
+### EXP-2588: Circadian Counter-Regulation (CONFIRMED)
+
+Night k is systematically higher than day k. Counter-regulation is stronger overnight.
+
+| Patient | Day k | Night k | Δk |
+|---------|-------|---------|-----|
+| a | 1.0 | 7.0 | +6.0 |
+| b | 7.0 | 10.0 | +3.0 |
+| c | 4.0 | 5.0 | +1.0 |
+| d | 1.0 | 7.0 | +6.0 |
+| e | 7.0 | 7.0 | 0.0 |
+| f | 0.5 | 1.0 | +0.5 |
+| g | 5.0 | 2.0 | -3.0 |
+| h | 0.0 | 1.5 | +1.5 |
+| i | 7.0 | 10.0 | +3.0 |
+
+Summary: 6/12 night higher, 2/12 day higher, 4/12 similar.
+Mean Δk = +1.5 (night - day). Consistent with dawn phenomenon / overnight HGP.
+
+**Practical**: Forward sim should use time-specific k:
+- Day (06-22): lower k (mean 3.1, median 2.2)
+- Night (22-06): higher k (mean 4.5, median 3.8)
