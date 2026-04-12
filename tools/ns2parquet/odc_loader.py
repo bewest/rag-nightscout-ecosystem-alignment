@@ -152,22 +152,42 @@ def _convert_treatments(records: List[dict]) -> List[dict]:
 
 
 def _convert_temp_basals(records: List[dict]) -> List[dict]:
-    """Convert ODC TemporaryBasals → Nightscout Temp Basal treatments."""
+    """Convert ODC TemporaryBasals → Nightscout Temp Basal treatments.
+
+    AAPS temp basals come in two forms (isAbsolute flag):
+      - Absolute: absoluteRate is in U/hr, use directly
+      - Percentage: percentRate is % of scheduled (e.g., 360 = 360%),
+        must be converted to absolute using scheduled basal profile.
+
+    We store both `rate` (absolute U/hr when available) and `percent`/`temp`
+    fields so grid.py can handle the conversion using the basal schedule.
+    """
     treatments = []
     for r in records:
         date_ms = r.get('date')
         if date_ms is None:
             continue
-        rate = r.get('absoluteRate') if r.get('isAbsolute') else r.get('percentRate')
-        if rate is None:
-            continue
-        treatments.append({
+        is_absolute = r.get('isAbsolute', True)
+        tx = {
             'eventType': 'Temp Basal',
             'created_at': _epoch_to_iso(date_ms),
-            'rate': float(rate),
             'duration': float(r.get('durationInMinutes', 0)),
             'device': 'openaps://AndroidAPS',
-        })
+        }
+        if is_absolute:
+            abs_rate = r.get('absoluteRate')
+            if abs_rate is None:
+                continue
+            tx['rate'] = float(abs_rate)
+            tx['temp'] = 'absolute'
+        else:
+            pct = r.get('percentRate')
+            if pct is None:
+                continue
+            tx['percent'] = float(pct)
+            tx['temp'] = 'percent'
+            # Do NOT set 'rate' — grid.py will compute it from percent × scheduled
+        treatments.append(tx)
     return treatments
 
 

@@ -270,6 +270,7 @@ def build_grid(data_path: str, patient_id: str,
     df['bolus_smb'] = 0.0
     df['carbs'] = 0.0
     df['temp_rate'] = np.nan
+    df['_temp_percent'] = np.nan  # percentage temps resolved after schedule computed
     df['exercise_active'] = 0.0
     df['override_active'] = 0.0
     df['override_type'] = 0.0
@@ -310,14 +311,23 @@ def build_grid(data_path: str, patient_id: str,
 
         if (tx.get('carbs') or 0) > 0:
             df.loc[ts, 'carbs'] += float(tx['carbs'])
-        if et == 'Temp Basal' and 'rate' in tx:
-            rate = float(tx['rate'])
+        if et == 'Temp Basal' and ('rate' in tx or 'percent' in tx):
             dur_min = float(tx.get('duration', 5))
             n_slots = max(1, int(dur_min / 5))
             slot_idx = df.index.get_loc(ts)
             if isinstance(slot_idx, int):
                 end_idx = min(slot_idx + n_slots, len(df))
-                df.iloc[slot_idx:end_idx, df.columns.get_loc('temp_rate')] = rate
+                if (tx.get('temp') == 'percent' or
+                        ('percent' in tx and tx.get('percent') is not None
+                         and 'absolute' not in tx)):
+                    # Percentage-based: store in _temp_percent, resolve after
+                    # scheduled basal is computed (percent × scheduled / 100).
+                    # Detected via: temp='percent' (AAPS-native from odc_loader)
+                    # OR percent field present without absolute (NS-export format)
+                    df.iloc[slot_idx:end_idx, df.columns.get_loc('_temp_percent')] = float(tx['percent'])
+                else:
+                    rate = float(tx['rate'])
+                    df.iloc[slot_idx:end_idx, df.columns.get_loc('temp_rate')] = rate
 
         if et == 'Site Change':
             site_change_times.append(pd.Timestamp(ts_str))
@@ -438,6 +448,19 @@ def build_grid(data_path: str, patient_id: str,
     for i, ts in enumerate(local_index):
         sec_of_day = ts.hour * 3600 + ts.minute * 60 + ts.second
         scheduled[i] = _lookup_schedule(sec_of_day, basal_schedule)
+
+    # Resolve percentage-based temp basals → absolute rates
+    # AAPS can store temp basals as percentages of scheduled (e.g., 360 = 360%)
+    # Must be resolved after scheduled basal is known.
+    pct_mask = df['_temp_percent'].notna()
+    if pct_mask.any():
+        df.loc[pct_mask, 'temp_rate'] = df.loc[pct_mask, '_temp_percent'] * scheduled[pct_mask] / 100.0
+        if verbose:
+            n_pct = pct_mask.sum()
+            print(f'  Resolved {n_pct} percentage-based temp basal slots '
+                  f'(e.g., {df.loc[pct_mask, "_temp_percent"].median():.0f}% '
+                  f'→ {df.loc[pct_mask, "temp_rate"].median():.2f} U/hr)')
+    df = df.drop(columns=['_temp_percent'])
 
     df['temp_rate'] = df['temp_rate'].ffill()
     df['temp_rate'] = df['temp_rate'].fillna(pd.Series(scheduled, index=df.index))
