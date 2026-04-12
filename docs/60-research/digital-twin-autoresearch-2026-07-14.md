@@ -1025,3 +1025,74 @@ Total: **14 settings advisories** in `generate_settings_advice()`.
 2. **ISF and CSF serve different purposes.** Coupling them via ISF/CR kills meal prediction.
 3. **Closed-loop patients need quadrant analysis**, not single-metric assessment.
 4. **Scheduled basals are systematically too high** across population (9/12 patients).
+
+---
+
+## Phase 5: Ensemble Validation & Quality Scoring (EXP-2597–2600)
+
+### EXP-2597: Settings Report Card — Ensemble Advisory Validation
+
+Ran all 14 advisories on 9 FULL patients to test ensemble behavior.
+
+**Before consolidation**: 15 contradictions across 7/9 patients (ISF advisories
+gave opposite directions — sim says decrease, corrections say increase).
+
+**Fix**: Added `_consolidate_recommendations()` — groups by parameter, keeps
+direction with higher weighted score (confidence × |delta|).
+
+**After consolidation**: 0 contradictions. TIR-deficit correlation improved
+from r=0.767 to r=0.933.
+
+### EXP-2598: Per-Patient CSF Calibration from Meal Events
+
+Calibrated CSF per-patient using 70/30 train/val on meal events.
+
+| Metric | Population (CSF=2.0) | Per-Patient |
+|--------|---------------------|-------------|
+| Mean rank r | 0.342 | 0.403 |
+| MAE improved | — | 7/9 patients |
+| Ranking improved | — | 5/9 patients |
+
+CSF correlates with TIR (r=-0.655): lower TIR → higher optimal CSF.
+TIR-based cold-start: `CSF ≈ 7.5 - 5.5 × TIR`.
+
+### EXP-2599: Unified Sequential Calibration Pipeline (NEGATIVE)
+
+Sequential calibration (basal→ISF→CSF→k) **underperforms default settings**.
+
+Root cause: basal_mult = actual/scheduled hits 0.3 floor for 8/9 patients.
+In closed-loop systems, actual delivery reflects **loop compensation**, not
+metabolic need. This cascades and distorts all downstream steps.
+
+**Closes the 'sequential calibration' research line.**
+
+### EXP-2600: Composite Settings Quality Score
+
+SQS = 100 - Σ(|delta| × confidence) — single metric for settings alignment.
+
+| Patient | SQS | TIR |
+|---------|-----|-----|
+| k | 92.4 | 95.1% |
+| d | 88.6 | 79.2% |
+| c | 77.4 | 61.6% |
+| f | 78.2 | 65.5% |
+| g | 78.2 | 75.2% |
+| a | 67.6 | 55.8% |
+| e | 59.4 | 65.4% |
+| b | 57.9 | 56.7% |
+| i | 57.8 | 59.9% |
+
+**SQS vs TIR: r=0.833 (p=0.005)** — validated as clinical quality metric.
+
+### Productionized in Phase 5
+
+15. Recommendation consolidation — resolves contradictions
+16. Settings Quality Score (SQS) — composite 0-100 metric
+17. TIR-based CSF cold-start estimation
+
+Total: **17 productionized features** in settings_advisor.py.
+
+## Updated Closed Lines
+
+- Sequential calibration pipeline (basal→ISF→CSF→k) — EXP-2599
+  - Actual/scheduled basal ratio ≠ metabolic need in closed-loop
