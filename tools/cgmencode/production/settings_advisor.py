@@ -1370,6 +1370,154 @@ def advise_correction_isf(
     )]
 
 
+# ── Overnight Basal Quadrant Analysis (EXP-2589) ────────────────────
+#
+# In closed-loop systems, glucose drift alone is insufficient for basal
+# assessment because the loop actively modifies basal delivery. The
+# quadrant analysis combines glucose slope with net basal (actual -
+# scheduled) to distinguish basal inadequacy from dawn phenomenon:
+#
+# | Glucose  | Net Basal | Assessment              |
+# |----------|-----------|-------------------------|
+# | Rising   | Positive  | BASAL TOO LOW           |
+# | Rising   | Negative  | DAWN PHENOMENON         |
+# | Flat     | Positive  | BASAL SLIGHTLY LOW      |
+# | Flat     | Negative  | BASAL SLIGHTLY HIGH     |
+# | Falling  | Negative  | BASAL TOO HIGH          |
+# | Falling  | Positive  | OVERCORRECTION          |
+
+_OVERNIGHT_QUADRANT_START = 0.0
+_OVERNIGHT_QUADRANT_END = 6.0
+_SLOPE_FLAT_THRESHOLD = 3.0  # mg/dL/h — within ±3 is "flat"
+_NET_BASAL_THRESHOLD = 0.1   # U/h — within ±0.1 is "neutral"
+_MIN_OVERNIGHT_POINTS = 36   # 3 hours of 5-min data
+
+
+def advise_overnight_basal_quadrant(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    profile: "PatientProfile",
+    actual_basal: Optional[np.ndarray] = None,
+    days_of_data: float = 7.0,
+) -> List[SettingsRecommendation]:
+    """Assess overnight basal using quadrant analysis (EXP-2589).
+
+    Requires actual_basal data (from loop telemetry). Without it, falls
+    back to glucose-only assessment (less reliable for closed-loop).
+
+    Returns at most one recommendation for overnight basal rate.
+    """
+    if actual_basal is None:
+        return []
+
+    if days_of_data < 3:
+        return []
+
+    # Extract overnight windows (00-06)
+    night_mask = hours < _OVERNIGHT_QUADRANT_END
+    g_night = glucose[night_mask]
+    h_night = hours[night_mask]
+    ab_night = actual_basal[night_mask]
+
+    # Get scheduled basal
+    basal_vals = [e.get("value", e.get("rate", 0.8))
+                  for e in profile.basal_schedule]
+    sched_basal = float(np.median([float(v) for v in basal_vals])) if basal_vals else 0.8
+
+    # Filter to valid glucose readings
+    valid = ~np.isnan(g_night) & ~np.isnan(ab_night)
+    if valid.sum() < _MIN_OVERNIGHT_POINTS:
+        return []
+
+    g_valid = g_night[valid]
+    h_valid = h_night[valid]
+    ab_valid = ab_night[valid]
+
+    # Glucose slope via linear regression
+    slope, _ = np.polyfit(h_valid, g_valid, 1)
+
+    # Net basal: actual - scheduled
+    net_basal = float(np.mean(ab_valid) - sched_basal)
+
+    # Suspension fraction
+    suspend_frac = float((ab_valid < 0.05).mean())
+
+    # Quadrant classification
+    if slope > _SLOPE_FLAT_THRESHOLD and net_basal > _NET_BASAL_THRESHOLD:
+        quadrant = "rising_adding"
+        assessment = "BASAL TOO LOW"
+        direction = "increase"
+        # Suggest increasing by the ratio of loop compensation
+        pct_increase = min(50.0, abs(net_basal / sched_basal) * 100) if sched_basal > 0 else 10.0
+        confidence = 0.75
+    elif slope > _SLOPE_FLAT_THRESHOLD and net_basal < -_NET_BASAL_THRESHOLD:
+        quadrant = "rising_cutting"
+        assessment = "DAWN PHENOMENON"
+        # Dawn phenomenon: loop can't help. Recommend modest basal increase
+        # specifically for 03-06 window.
+        direction = "increase"
+        pct_increase = min(30.0, slope * 2.0)  # proportional to rise rate
+        confidence = 0.50  # lower confidence — dawn is complex
+    elif slope < -_SLOPE_FLAT_THRESHOLD and net_basal < -_NET_BASAL_THRESHOLD:
+        quadrant = "falling_cutting"
+        assessment = "BASAL TOO HIGH"
+        direction = "decrease"
+        pct_increase = min(40.0, abs(net_basal / sched_basal) * 100) if sched_basal > 0 else 10.0
+        confidence = 0.75
+    elif slope < -_SLOPE_FLAT_THRESHOLD and net_basal > _NET_BASAL_THRESHOLD:
+        quadrant = "falling_adding"
+        assessment = "OVERCORRECTION"
+        # Loop adding but glucose still falling — likely residual from correction
+        return []  # Not a basal issue
+    elif abs(slope) <= _SLOPE_FLAT_THRESHOLD and net_basal > _NET_BASAL_THRESHOLD:
+        quadrant = "flat_adding"
+        assessment = "BASAL SLIGHTLY LOW"
+        direction = "increase"
+        pct_increase = min(20.0, abs(net_basal / sched_basal) * 50) if sched_basal > 0 else 5.0
+        confidence = 0.60
+    elif abs(slope) <= _SLOPE_FLAT_THRESHOLD and net_basal < -_NET_BASAL_THRESHOLD:
+        quadrant = "flat_cutting"
+        assessment = "BASAL SLIGHTLY HIGH"
+        direction = "decrease"
+        pct_increase = min(20.0, abs(net_basal / sched_basal) * 50) if sched_basal > 0 else 5.0
+        confidence = 0.55
+    else:
+        # Flat glucose + neutral net basal = adequate
+        return []
+
+    suggested = sched_basal * (1.0 + pct_increase / 100.0) if direction == "increase" else \
+                sched_basal * (1.0 - pct_increase / 100.0)
+    suggested = round(max(0.05, suggested), 2)
+
+    dawn_note = ""
+    if quadrant == "rising_cutting":
+        dawn_note = (f" Dawn phenomenon detected: glucose rises {slope:+.1f} mg/dL/h "
+                     f"despite loop suspension ({suspend_frac:.0%} of overnight). "
+                     f"Consider increasing 03-06 basal specifically.")
+
+    return [SettingsRecommendation(
+        parameter=SettingsParameter.BASAL_RATE,
+        direction=direction,
+        magnitude_pct=round(pct_increase, 0),
+        current_value=sched_basal,
+        suggested_value=suggested,
+        predicted_tir_delta=round(pct_increase * 0.05, 1),  # conservative
+        affected_hours=(_OVERNIGHT_QUADRANT_START, _OVERNIGHT_QUADRANT_END),
+        confidence=round(confidence, 2),
+        evidence=(
+            f"Overnight quadrant analysis (EXP-2589): {assessment}. "
+            f"Glucose slope {slope:+.1f} mg/dL/h, net basal {net_basal:+.2f} U/h, "
+            f"suspension {suspend_frac:.0%}. Quadrant: {quadrant}.{dawn_note}"
+        ),
+        rationale=(
+            f"{direction.capitalize()} overnight basal by {pct_increase:.0f}% "
+            f"(from {sched_basal:.2f} to {suggested:.2f} U/hr). "
+            f"In closed-loop, combining glucose direction with loop compensation "
+            f"direction provides more reliable basal assessment than glucose alone."
+        ),
+    )]
+
+
 def generate_settings_advice(glucose: np.ndarray,
                              metabolic: Optional[MetabolicState],
                              hours: np.ndarray,
@@ -1491,6 +1639,14 @@ def generate_settings_advice(glucose: np.ndarray,
             bolus=bolus, carbs=carbs, iob=iob,
             days_of_data=days_of_data)
         recs.extend(corr_isf_recs)
+
+    # Overnight basal quadrant analysis (EXP-2589)
+    if actual_basal is not None:
+        quadrant_recs = advise_overnight_basal_quadrant(
+            glucose, hours, profile,
+            actual_basal=actual_basal,
+            days_of_data=days_of_data)
+        recs.extend(quadrant_recs)
 
     # Overnight drift assessment (EXP-2371–2378)
     overnight = assess_overnight_drift(
