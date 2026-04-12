@@ -39,6 +39,8 @@ from cgmencode.production.types import (
     OvernightPhenotype, OvernightDriftAssessment, LoopWorkloadReport,
     TwoComponentDIA,
     HypoRiskResult,
+    PatientPhenotype, PatientPhenotypeResult,
+    LoopQualityResult,
 )
 
 
@@ -3329,3 +3331,483 @@ class TestHypoRiskPipelineIntegration(unittest.TestCase):
         self.assertLessEqual(result.hypo_risk.risk_score, 1.0)
         self.assertIn(result.hypo_risk.risk_level,
                       ('low', 'moderate', 'high', 'critical'))
+
+
+# ── Pipeline Event Extraction Tests (EXP-2528/2535/2536) ─────────────
+
+class TestCorrectionEventExtraction(unittest.TestCase):
+    """Tests for _extract_correction_events in pipeline.py."""
+
+    def test_basic_correction_detection(self):
+        """Bolus when glucose > target_high with no carbs → correction event."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        n = 200
+        glucose = np.full(n, 200.0)
+        bolus = np.zeros(n)
+        bolus[50] = 2.0
+        carbs = np.zeros(n)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        profile = make_profile()
+        events = _extract_correction_events(glucose, bolus, carbs, hours, profile)
+        self.assertGreaterEqual(len(events), 1)
+        ev = events[0]
+        self.assertAlmostEqual(ev['start_bg'], 200.0)
+        self.assertAlmostEqual(ev['dose'], 2.0)
+        self.assertIn('drop_4h', ev)
+        self.assertIn('hour', ev)
+        self.assertIn('rebound', ev)
+        self.assertIn('went_below_70', ev)
+        self.assertIn('tir_change', ev)
+
+    def test_meal_bolus_excluded(self):
+        """Bolus with carbs nearby should NOT be classified as correction."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        n = 200
+        glucose = np.full(n, 200.0)
+        bolus = np.zeros(n)
+        bolus[50] = 2.0
+        carbs = np.zeros(n)
+        carbs[50] = 40.0
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        profile = make_profile()
+        events = _extract_correction_events(glucose, bolus, carbs, hours, profile)
+        self.assertEqual(len(events), 0)
+
+    def test_below_target_excluded(self):
+        """Bolus when glucose <= target_high should be excluded."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        n = 200
+        glucose = np.full(n, 120.0)
+        bolus = np.zeros(n)
+        bolus[50] = 2.0
+        carbs = np.zeros(n)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        profile = make_profile()
+        events = _extract_correction_events(glucose, bolus, carbs, hours, profile)
+        self.assertEqual(len(events), 0)
+
+    def test_none_bolus_returns_empty(self):
+        """None bolus array returns empty list."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        n = 200
+        glucose = np.full(n, 200.0)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        profile = make_profile()
+        events = _extract_correction_events(glucose, None, None, hours, profile)
+        self.assertEqual(events, [])
+
+    def test_short_data_returns_empty(self):
+        """Data shorter than 49 steps returns empty."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        glucose = np.full(30, 200.0)
+        bolus = np.zeros(30)
+        bolus[5] = 2.0
+        hours = np.zeros(30)
+        profile = make_profile()
+        events = _extract_correction_events(glucose, bolus, None, hours, profile)
+        self.assertEqual(events, [])
+
+    def test_went_below_70_detection(self):
+        """Detect when glucose drops below 70 in 4h window."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        n = 200
+        glucose = np.full(n, 200.0)
+        glucose[70:80] = 60.0
+        bolus = np.zeros(n)
+        bolus[50] = 3.0
+        carbs = np.zeros(n)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        profile = make_profile()
+        events = _extract_correction_events(glucose, bolus, carbs, hours, profile)
+        self.assertGreaterEqual(len(events), 1)
+        self.assertTrue(events[0]['went_below_70'])
+
+
+class TestMealEventExtraction(unittest.TestCase):
+    """Tests for _extract_meal_events in pipeline.py."""
+
+    def test_basic_meal_detection(self):
+        """Carbs > 5g with glucose before and 4h after → meal event."""
+        from cgmencode.production.pipeline import _extract_meal_events
+        n = 200
+        glucose = np.full(n, 150.0)
+        bolus = np.zeros(n)
+        bolus[50] = 4.0
+        carbs = np.zeros(n)
+        carbs[50] = 45.0
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        events = _extract_meal_events(glucose, bolus, carbs, hours)
+        self.assertGreaterEqual(len(events), 1)
+        ev = events[0]
+        self.assertAlmostEqual(ev['carbs'], 45.0)
+        self.assertGreater(ev['bolus'], 0)
+        self.assertAlmostEqual(ev['pre_meal_bg'], 150.0)
+        self.assertAlmostEqual(ev['post_meal_bg_4h'], 150.0)
+        self.assertIn('hour', ev)
+
+    def test_no_carbs_returns_empty(self):
+        """None carbs array returns empty list."""
+        from cgmencode.production.pipeline import _extract_meal_events
+        n = 200
+        glucose = np.full(n, 150.0)
+        hours = np.zeros(n)
+        events = _extract_meal_events(glucose, None, None, hours)
+        self.assertEqual(events, [])
+
+    def test_small_carbs_excluded(self):
+        """Carbs <= 5g are excluded."""
+        from cgmencode.production.pipeline import _extract_meal_events
+        n = 200
+        glucose = np.full(n, 150.0)
+        bolus = np.zeros(n)
+        carbs = np.zeros(n)
+        carbs[50] = 3.0
+        hours = np.zeros(n)
+        events = _extract_meal_events(glucose, bolus, carbs, hours)
+        self.assertEqual(events, [])
+
+    def test_nan_glucose_excluded(self):
+        """Meals with NaN glucose at mealtime are excluded."""
+        from cgmencode.production.pipeline import _extract_meal_events
+        n = 200
+        glucose = np.full(n, 150.0)
+        glucose[50] = np.nan
+        bolus = np.zeros(n)
+        bolus[50] = 4.0
+        carbs = np.zeros(n)
+        carbs[50] = 45.0
+        hours = np.zeros(n)
+        events = _extract_meal_events(glucose, bolus, carbs, hours)
+        self.assertEqual(len(events), 0)
+
+
+class TestPipelineAdvisoryWiring(unittest.TestCase):
+    """Integration: pipeline passes bolus/correction_events/meal_events."""
+
+    def test_pipeline_passes_bolus_to_settings(self):
+        """Pipeline result should include settings_recs with bolus data available."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient()
+        result = run_pipeline(patient, skip_patterns=True)
+        self.assertIsNotNone(result.settings_recs)
+
+    def test_correction_events_extracted_in_pipeline(self):
+        """Pipeline extracts correction events when bolus+glucose data present."""
+        from cgmencode.production.pipeline import _extract_correction_events
+        patient = make_patient()
+        from cgmencode.production.metabolic_engine import _extract_hours
+        hours = _extract_hours(patient.timestamps)
+        from cgmencode.production.data_quality import clean_glucose
+        cleaned = clean_glucose(patient.glucose)
+        events = _extract_correction_events(
+            cleaned.glucose, patient.bolus, patient.carbs,
+            hours, patient.profile)
+        self.assertIsInstance(events, list)
+
+    def test_meal_events_extracted_in_pipeline(self):
+        """Pipeline extracts meal events when carbs+glucose data present."""
+        from cgmencode.production.pipeline import _extract_meal_events
+        patient = make_patient()
+        from cgmencode.production.metabolic_engine import _extract_hours
+        hours = _extract_hours(patient.timestamps)
+        from cgmencode.production.data_quality import clean_glucose
+        cleaned = clean_glucose(patient.glucose)
+        events = _extract_meal_events(
+            cleaned.glucose, patient.bolus, patient.carbs, hours)
+        self.assertIsInstance(events, list)
+
+
+# ── Patient Phenotype Tests (EXP-2541) ────────────────────────────────
+
+class TestPatientPhenotypeTypes(unittest.TestCase):
+    """Type contracts for PatientPhenotype and PatientPhenotypeResult."""
+
+    def test_phenotype_enum_values(self):
+        self.assertEqual(PatientPhenotype.WELL_CONTROLLED.value, "well_controlled")
+        self.assertEqual(PatientPhenotype.HYPO_PRONE.value, "hypo_prone")
+        self.assertEqual(PatientPhenotype.UNKNOWN.value, "unknown")
+
+    def test_phenotype_result_fields(self):
+        result = PatientPhenotypeResult(
+            phenotype=PatientPhenotype.WELL_CONTROLLED,
+            confidence=0.85,
+            tir=0.77, tbr=0.022, tar=0.208,
+            hypo_events_per_day=0.3, cv=0.30,
+            evidence="Test evidence.",
+        )
+        self.assertEqual(result.phenotype, PatientPhenotype.WELL_CONTROLLED)
+        self.assertAlmostEqual(result.tir, 0.77)
+
+    def test_pipeline_result_has_phenotype_field(self):
+        self.assertTrue(hasattr(PipelineResult, '__dataclass_fields__'))
+        self.assertIn('phenotype', PipelineResult.__dataclass_fields__)
+
+
+class TestPatientPhenotyper(unittest.TestCase):
+    """Module contract tests for classify_patient_phenotype."""
+
+    def test_well_controlled_classification(self):
+        """TIR≥70% and TBR<4% → WELL_CONTROLLED."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        n = 4320
+        rng = np.random.RandomState(42)
+        glucose = np.full(n, 130.0) + rng.normal(0, 15, n)
+        glucose = np.clip(glucose, 75, 175)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 15.0)
+        self.assertEqual(result.phenotype, PatientPhenotype.WELL_CONTROLLED)
+        self.assertGreaterEqual(result.tir, 0.70)
+        self.assertLess(result.tbr, 0.04)
+        self.assertGreaterEqual(result.confidence, 0.80)
+
+    def test_hypo_prone_classification(self):
+        """TBR≥4% → HYPO_PRONE."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        n = 4320
+        rng = np.random.RandomState(99)
+        glucose = np.full(n, 110.0) + rng.normal(0, 35, n)
+        below_count = int(0.10 * n)
+        glucose[:below_count] = 55.0
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 15.0)
+        self.assertEqual(result.phenotype, PatientPhenotype.HYPO_PRONE)
+        self.assertGreaterEqual(result.tbr, 0.04)
+
+    def test_insufficient_data_returns_unknown(self):
+        """< 3 days → UNKNOWN phenotype."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        glucose = np.full(100, 130.0)
+        hours = (np.arange(100) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 0.35)
+        self.assertEqual(result.phenotype, PatientPhenotype.UNKNOWN)
+        self.assertEqual(result.confidence, 0.0)
+
+    def test_confidence_scales_with_days(self):
+        """Confidence increases with more data."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        glucose = np.full(4320, 130.0)
+        hours = (np.arange(4320) * 5.0 / 60.0) % 24.0
+        r5 = classify_patient_phenotype(glucose, hours, 5.0)
+        r14 = classify_patient_phenotype(glucose, hours, 14.0)
+        self.assertGreater(r14.confidence, r5.confidence)
+
+    def test_all_nan_returns_unknown(self):
+        """All-NaN glucose → UNKNOWN."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        glucose = np.full(4320, np.nan)
+        hours = (np.arange(4320) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 15.0)
+        self.assertEqual(result.phenotype, PatientPhenotype.UNKNOWN)
+
+    def test_metrics_bounded(self):
+        """TIR, TBR, TAR are 0-1, CV ≥ 0."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        glucose = make_glucose(4320)
+        hours = (np.arange(4320) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 15.0)
+        self.assertGreaterEqual(result.tir, 0.0)
+        self.assertLessEqual(result.tir, 1.0)
+        self.assertGreaterEqual(result.tbr, 0.0)
+        self.assertLessEqual(result.tbr, 1.0)
+        self.assertGreaterEqual(result.tar, 0.0)
+        self.assertLessEqual(result.tar, 1.0)
+        self.assertGreaterEqual(result.cv, 0.0)
+
+    def test_evidence_nonempty(self):
+        """Evidence string is always non-empty."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        glucose = np.full(4320, 130.0)
+        hours = (np.arange(4320) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 15.0)
+        self.assertGreater(len(result.evidence), 0)
+
+    def test_high_cv_hypo_prone(self):
+        """High CV > 0.36 when TIR borderline → HYPO_PRONE."""
+        from cgmencode.production.patient_phenotyper import classify_patient_phenotype
+        n = 4320
+        rng = np.random.RandomState(7)
+        glucose = 130 + rng.normal(0, 55, n)
+        glucose = np.clip(glucose, 40, 400)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = classify_patient_phenotype(glucose, hours, 15.0)
+        self.assertIn(result.phenotype,
+                      [PatientPhenotype.HYPO_PRONE, PatientPhenotype.WELL_CONTROLLED])
+
+
+class TestPhenotypePipelineIntegration(unittest.TestCase):
+    """Integration: phenotype runs as pipeline stage."""
+
+    def test_pipeline_populates_phenotype(self):
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient()
+        result = run_pipeline(patient, skip_patterns=True)
+        self.assertIsNotNone(result.phenotype)
+        self.assertIsInstance(result.phenotype, PatientPhenotypeResult)
+        self.assertIn(result.phenotype.phenotype, list(PatientPhenotype))
+        self.assertGreaterEqual(result.phenotype.confidence, 0.0)
+        self.assertLessEqual(result.phenotype.confidence, 1.0)
+
+
+# ── Loop Quality Tests (EXP-2538/2540) ───────────────────────────────
+
+class TestLoopQualityTypes(unittest.TestCase):
+    """Type contracts for LoopQualityResult."""
+
+    def test_result_fields(self):
+        result = LoopQualityResult(
+            hypo_episodes=5, loop_caused_hypos=2,
+            loop_caused_fraction=0.4, median_reaction_time_min=5.0,
+            high_excursions=10, unaddressed_excursions=6,
+            unaddressed_fraction=0.6, aggression_ratio=2.2,
+            overall_grade="fair", evidence="Test evidence.",
+        )
+        self.assertEqual(result.hypo_episodes, 5)
+        self.assertAlmostEqual(result.loop_caused_fraction, 0.4)
+        self.assertEqual(result.overall_grade, "fair")
+
+    def test_pipeline_result_has_loop_quality_field(self):
+        self.assertIn('loop_quality', PipelineResult.__dataclass_fields__)
+
+
+class TestLoopQualityAssessment(unittest.TestCase):
+    """Module contract tests for assess_loop_quality."""
+
+    def test_no_hypos_good_grade(self):
+        """Stable glucose with no hypos → good grade."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        basal = np.full(n, 0.8)
+        result = assess_loop_quality(
+            glucose, hours, basal_rate=basal, scheduled_basal=0.8,
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.hypo_episodes, 0)
+        self.assertEqual(result.loop_caused_fraction, 0.0)
+        self.assertEqual(result.overall_grade, "good")
+
+    def test_loop_caused_hypo_detection(self):
+        """Hypo preceded by elevated basal → loop-caused."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        basal = np.full(n, 0.8)
+        glucose[500:505] = 60.0
+        basal[494:500] = 1.5
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(
+            glucose, hours, basal_rate=basal, scheduled_basal=0.8,
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertGreaterEqual(result.hypo_episodes, 1)
+        self.assertGreaterEqual(result.loop_caused_hypos, 1)
+        self.assertGreater(result.loop_caused_fraction, 0)
+
+    def test_unaddressed_excursion_detection(self):
+        """High excursion with no bolus → unaddressed."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        bolus = np.zeros(n)
+        basal = np.full(n, 0.8)
+        glucose[500:505] = 280.0
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(
+            glucose, hours, basal_rate=basal, bolus=bolus,
+            scheduled_basal=0.8, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertGreaterEqual(result.high_excursions, 1)
+        self.assertGreaterEqual(result.unaddressed_excursions, 1)
+
+    def test_addressed_excursion(self):
+        """High excursion with bolus nearby → addressed."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        bolus = np.zeros(n)
+        basal = np.full(n, 0.8)
+        glucose[500:505] = 280.0
+        bolus[498] = 3.0
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(
+            glucose, hours, basal_rate=basal, bolus=bolus,
+            scheduled_basal=0.8, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        if result.high_excursions > 0:
+            self.assertLess(result.unaddressed_fraction, 1.0)
+
+    def test_insufficient_data_returns_none(self):
+        """< 3 days → None."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        glucose = np.full(100, 130.0)
+        hours = np.zeros(100)
+        result = assess_loop_quality(glucose, hours, days_of_data=0.3)
+        self.assertIsNone(result)
+
+    def test_no_basal_still_assesses_excursions(self):
+        """Without basal data, can still detect excursions."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        glucose[500:505] = 280.0
+        bolus = np.zeros(n)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(
+            glucose, hours, bolus=bolus, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertGreaterEqual(result.high_excursions, 1)
+
+    def test_aggression_ratio_computed(self):
+        """Aggression ratio should be computed when basal varies by glucose."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 100.0)
+        glucose[0:500] = 220.0
+        basal = np.full(n, 0.8)
+        basal[0:500] = 1.8
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(
+            glucose, hours, basal_rate=basal, scheduled_basal=0.8,
+            days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertGreater(result.aggression_ratio, 1.5)
+
+    def test_evidence_nonempty(self):
+        """Evidence string is always non-empty."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(glucose, hours, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertGreater(len(result.evidence), 0)
+
+    def test_grade_values(self):
+        """Grade must be one of good/fair/poor."""
+        from cgmencode.production.loop_quality import assess_loop_quality
+        n = 2000
+        glucose = np.full(n, 130.0)
+        hours = (np.arange(n) * 5.0 / 60.0) % 24.0
+        result = assess_loop_quality(glucose, hours, days_of_data=7.0)
+        self.assertIsNotNone(result)
+        self.assertIn(result.overall_grade, ("good", "fair", "poor"))
+
+
+class TestLoopQualityPipelineIntegration(unittest.TestCase):
+    """Integration: loop quality runs as pipeline stage."""
+
+    def test_pipeline_populates_loop_quality(self):
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient()
+        result = run_pipeline(patient, skip_patterns=True)
+        self.assertIsNotNone(result.loop_quality)
+        self.assertIsInstance(result.loop_quality, LoopQualityResult)
+        self.assertIn(result.loop_quality.overall_grade,
+                      ("good", "fair", "poor"))
+
+    def test_pipeline_without_basal_skips_loop_quality(self):
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(with_insulin=False)
+        result = run_pipeline(patient, skip_patterns=True)
+        self.assertIsNone(result.loop_quality)

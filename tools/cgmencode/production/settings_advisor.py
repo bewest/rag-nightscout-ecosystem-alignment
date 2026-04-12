@@ -4,7 +4,8 @@ settings_advisor.py — Counterfactual TIR prediction for therapy changes.
 Research basis: EXP-693 (basal assessment), EXP-694 (CR effectiveness),
                EXP-747 (ISF discrepancy 2.91×), EXP-574/575 (counterfactual ISF/CR),
                EXP-2271 (circadian ISF 4.6-9×, 2-zone captures 61-90%),
-               EXP-2341 (context-aware CR: pre-BG + time + IOB, R²+0.28)
+               EXP-2341 (context-aware CR: pre-BG + time + IOB, R²+0.28),
+               EXP-2551 (two-component DIA + power-law ISF: MAE 0.30pp, r=0.933)
 
 Key innovation: uses the physics model to simulate "what if we changed
 this setting?" and predicts the TIR improvement that would result.
@@ -14,6 +15,11 @@ The clinical prediction loop:
   2. Simulate glucose trajectory with adjusted settings
   3. Predict TIR delta (improvement in time-in-range)
   4. State which time segments would improve and by how much
+
+Simulation model (validated in EXP-2551):
+  - Two-component DIA: fast decay (τ=0.8h, 63%) + persistent tail (τ=12h, 37%)
+  - Power-law ISF: effective_mult = mult^(1 - β), β=0.9
+  - Combined model: MAE=0.30pp, r=0.933 (vs 2.10pp/0.129 for single-decay)
 
 This enables confirmable predictions:
   "Increasing basal by 15% between 00:00-06:00 should improve overnight
@@ -32,12 +38,19 @@ from .types import (
     PatientProfile, SettingsParameter, SettingsRecommendation,
     PeriodMetrics, PatternProfile,
 )
+from .metabolic_engine import _FAST_TAU_HOURS, _PERSISTENT_FRACTION
 
 
 # Physics simulation parameters
 SIMULATION_STEPS = 288    # 1 day of 5-min intervals
 DECAY_TARGET = 120.0      # mg/dL equilibrium
 DECAY_RATE = 0.005        # per 5-min step
+
+# Two-component DIA simulation (validated EXP-2551)
+_FAST_TAU_STEPS = int(_FAST_TAU_HOURS * 12)        # 0.8h × 12 = ~10 steps
+_PERSISTENT_TAU_STEPS = int(12.0 * 12)              # 12h × 12 = 144 steps
+_FAST_FRACTION = 1.0 - _PERSISTENT_FRACTION          # 0.63
+_POWER_LAW_BETA = 0.9                                # from EXP-2511
 
 # Confidence thresholds
 MIN_DATA_DAYS = 3.0       # Minimum data for any recommendation
@@ -60,20 +73,19 @@ def simulate_tir_with_settings(glucose: np.ndarray,
                                basal_multiplier: float = 1.0,
                                hour_range: Optional[Tuple[float, float]] = None,
                                ) -> Tuple[float, float]:
-    """Simulate TIR under modified settings using perturbation model.
+    """Simulate TIR under modified settings using two-component DIA model.
 
     Uses a perturbation approach rather than full forward simulation to
-    avoid error accumulation over long time series. The key insight is
-    that changing a setting creates a per-step delta on glucose; we
-    apply that delta to the ACTUAL glucose trace with exponential decay
-    to account for the body's homeostatic response.
+    avoid error accumulation over long time series. The settings change
+    creates a per-step delta that propagates through two decay channels:
 
-    For ISF changes: the insulin effect per step changes by (isf_mult - 1)
-    For CR changes: carb absorption changes by (1/cr_mult - 1)
-    For basal changes: basal insulin effect changes by (basal_mult - 1)
+    1. Fast component (63%): τ=0.8h — captures immediate insulin action
+    2. Persistent component (37%): τ=12h — captures IOB underestimation
+       and loop basal compensation (validated EXP-2525/2534)
 
-    The perturbation decays with a half-life of ~2 hours (24 steps)
-    reflecting renal clearance and hepatic glucose production feedback.
+    Power-law ISF dampening (β=0.9 from EXP-2511) prevents overestimating
+    large ISF corrections. Without this, the persistent tail overamplifies
+    perturbations (Model B MAE=3.23pp vs Model C MAE=0.30pp in EXP-2551).
 
     Args:
         glucose: (N,) current glucose trajectory.
@@ -102,28 +114,38 @@ def simulate_tir_with_settings(glucose: np.ndarray,
     else:
         mask = np.ones(N, dtype=bool)
 
-    # Perturbation model: compute cumulative delta from settings change.
-    # Each timestep where mask applies gets a perturbation from the
-    # difference in metabolic flux. The perturbation decays exponentially
-    # with half-life ~2h (homeostatic feedback).
-    DECAY_HALF_LIFE_STEPS = 24  # 2 hours at 5-min intervals
-    decay_factor = np.exp(-np.log(2) / DECAY_HALF_LIFE_STEPS)
+    # Two-component decay factors
+    fast_decay = np.exp(-1.0 / max(_FAST_TAU_STEPS, 1))
+    persistent_decay = np.exp(-1.0 / _PERSISTENT_TAU_STEPS)
 
-    delta = np.zeros(N)
+    # Power-law ISF dampening: effective_mult = mult^(1 - β)
+    if isf_multiplier > 0:
+        effective_isf_mult = isf_multiplier ** (1.0 - _POWER_LAW_BETA)
+    else:
+        effective_isf_mult = 1.0
+
+    delta_fast = np.zeros(N)
+    delta_persistent = np.zeros(N)
+
     for t in range(1, N):
-        # Carry forward decayed perturbation
-        delta[t] = delta[t - 1] * decay_factor
+        delta_fast[t] = delta_fast[t - 1] * fast_decay
+        delta_persistent[t] = delta_persistent[t - 1] * persistent_decay
 
         if mask[t]:
             s = float(supply[t - 1]) if np.isfinite(supply[t - 1]) else 0.0
             d = float(demand[t - 1]) if np.isfinite(demand[t - 1]) else 0.0
 
-            # ISF change: more sensitive → each unit of demand drops BG more
-            demand_delta = d * (isf_multiplier * basal_multiplier - 1.0)
+            # ISF change with power-law dampening
+            demand_delta = d * (effective_isf_mult * basal_multiplier - 1.0)
             # CR change: higher CR → less glucose rise per carb
             supply_delta = s * (1.0 / max(cr_multiplier, 0.1) - 1.0)
-            # Net perturbation: supply goes up, demand goes up → BG goes down
-            delta[t] += supply_delta - demand_delta
+            # Net perturbation split into two channels
+            step_pert = supply_delta - demand_delta
+            delta_fast[t] += step_pert * _FAST_FRACTION
+            delta_persistent[t] += step_pert * _PERSISTENT_FRACTION
+
+    # Combined perturbation
+    delta = delta_fast + delta_persistent
 
     # Apply perturbation to actual glucose
     sim_bg = np.clip(bg + delta, 40.0, 400.0)

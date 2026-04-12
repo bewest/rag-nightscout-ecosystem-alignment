@@ -28,7 +28,8 @@ def _compute_confidence(days_of_data: float) -> float:
     if days_of_data < 3.0:
         return 0.0
     if days_of_data < 7.0:
-        return 0.4 + 0.1 * days_of_data
+        # Linear from 0.4 at 3 days to 0.7 at 7 days
+        return 0.4 + 0.3 * (days_of_data - 3.0) / 4.0
     if days_of_data < 14.0:
         return 0.7
     return 0.85
