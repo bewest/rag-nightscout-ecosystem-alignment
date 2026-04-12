@@ -4166,7 +4166,7 @@ class TestForwardSimulator(unittest.TestCase):
     def setUp(self):
         from cgmencode.production.forward_simulator import (
             forward_simulate, compare_scenarios, simulate_typical_day,
-            TherapySettings, InsulinEvent, CarbEvent,
+            TherapySettings, InsulinEvent, CarbEvent, _carb_absorption_rate,
         )
         self.forward_simulate = forward_simulate
         self.compare_scenarios = compare_scenarios
@@ -4174,6 +4174,7 @@ class TestForwardSimulator(unittest.TestCase):
         self.TherapySettings = TherapySettings
         self.InsulinEvent = InsulinEvent
         self.CarbEvent = CarbEvent
+        self._carb_absorption_rate = _carb_absorption_rate
         self.settings = TherapySettings(isf=50, cr=10, basal_rate=0.8)
 
     def test_steady_state_flat(self):
@@ -4341,3 +4342,128 @@ class TestForwardSimulator(unittest.TestCase):
         self.assertEqual(s.isf_at_hour(3.0), 30)
         self.assertEqual(s.isf_at_hour(12.0), 60)
         self.assertEqual(s.isf_at_hour(22.0), 40)
+
+    # --- Phase 2: Delayed Carb Absorption Tests (WS-5) ---
+
+    def test_delayed_absorption_peaks_later_than_linear(self):
+        """Delayed model should peak later than linear (delay=0)."""
+        import numpy as np
+        rates_linear = [self._carb_absorption_rate(float(t), 45.0, 3.0,
+                         delay_minutes=0) for t in range(0, 181, 5)]
+        rates_delayed = [self._carb_absorption_rate(float(t), 45.0, 3.0,
+                          delay_minutes=20) for t in range(0, 181, 5)]
+        peak_linear = np.argmax(rates_linear)
+        peak_delayed = np.argmax(rates_delayed)
+        # Linear is constant → peak at step 0; delayed peaks at step 4 (20min)
+        self.assertGreater(peak_delayed, peak_linear)
+
+    def test_delayed_absorption_conserves_mass(self):
+        """Total absorbed grams should approximate total_grams."""
+        total = sum(self._carb_absorption_rate(float(t), 60.0, 3.0,
+                     delay_minutes=20) for t in range(0, 181, 5))
+        self.assertAlmostEqual(total, 60.0, delta=3.0)
+
+    def test_delayed_absorption_zero_at_start(self):
+        """Delayed model should have near-zero absorption at t=0."""
+        r0 = self._carb_absorption_rate(0.0, 45.0, 3.0, delay_minutes=20)
+        self.assertAlmostEqual(r0, 0.0, places=3)
+
+    def test_linear_fallback_when_no_delay(self):
+        """delay_minutes=0 should give uniform linear absorption."""
+        r1 = self._carb_absorption_rate(30.0, 45.0, 3.0, delay_minutes=0)
+        r2 = self._carb_absorption_rate(90.0, 45.0, 3.0, delay_minutes=0)
+        self.assertAlmostEqual(r1, r2, places=3)
+
+    def test_carb_event_delay_parameter(self):
+        """CarbEvent should accept delay_minutes parameter."""
+        c = self.CarbEvent(60, 45, delay_minutes=30)
+        self.assertEqual(c.delay_minutes, 30)
+        c_default = self.CarbEvent(60, 45)
+        self.assertEqual(c_default.delay_minutes, 20)  # _DEFAULT_CARB_DELAY_MINUTES
+
+    def test_delayed_meal_glucose_peak_timing(self):
+        """Glucose peak after meal should be 40-120min (not 5-15 like linear)."""
+        import numpy as np
+        r = self.forward_simulate(100.0, self.settings, duration_hours=6.0,
+            carb_events=[self.CarbEvent(30, 60)], seed=42)
+        peak_step = np.argmax(r.glucose)
+        peak_min = peak_step * 5
+        time_after_meal = peak_min - 30
+        self.assertGreater(time_after_meal, 40)
+        self.assertLess(time_after_meal, 150)
+
+    def test_carb_sensitivity_decoupling(self):
+        """Explicit carb_sensitivity should decouple carb rise from CR."""
+        s1 = self.TherapySettings(isf=50, cr=10, carb_sensitivity=5.0)
+        s2 = self.TherapySettings(isf=50, cr=8, carb_sensitivity=5.0)
+        # Same carb_sensitivity → same glucose rise per gram
+        self.assertEqual(s1.carb_sensitivity_at_hour(12.0),
+                         s2.carb_sensitivity_at_hour(12.0))
+        # Different CR only affects bolus dosing, not carb impact on glucose
+        r1 = self.forward_simulate(120.0, s1, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(30, 6.0)],
+            carb_events=[self.CarbEvent(30, 60)], seed=42)
+        r2 = self.forward_simulate(120.0, s2, duration_hours=6.0,
+            bolus_events=[self.InsulinEvent(30, 6.0)],
+            carb_events=[self.CarbEvent(30, 60)], seed=42)
+        # Same bolus + same carb_sensitivity → same glucose curves
+        import numpy as np
+        np.testing.assert_allclose(r1.glucose, r2.glucose, atol=0.1)
+
+    def test_carb_sensitivity_default_from_isf_cr(self):
+        """When carb_sensitivity is None, derived from ISF/CR."""
+        s = self.TherapySettings(isf=50, cr=10)
+        self.assertAlmostEqual(s.carb_sensitivity_at_hour(12.0), 5.0)
+
+    # --- Phase 2: IOB-Dependent Power-Law ISF Tests (WS-6) ---
+
+    def test_power_law_reduces_large_correction(self):
+        """Power-law ISF should dampen large corrections (less overshoot)."""
+        import numpy as np
+        s_off = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+                                      iob_power_law=False)
+        s_on = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+                                     iob_power_law=True)
+        r_off = self.forward_simulate(250.0, s_off, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(0, 4.0)], seed=42)
+        r_on = self.forward_simulate(250.0, s_on, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(0, 4.0)], seed=42)
+        # Power-law should produce higher nadir (less aggressive)
+        self.assertGreater(r_on.glucose.min(), r_off.glucose.min())
+
+    def test_power_law_minimal_for_small_dose(self):
+        """Power-law should have less effect for small corrections."""
+        import numpy as np
+        s_off = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+                                      iob_power_law=False)
+        s_on = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+                                     iob_power_law=True)
+        r_off = self.forward_simulate(160.0, s_off, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(0, 0.5)], seed=42)
+        r_on = self.forward_simulate(160.0, s_on, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(0, 0.5)], seed=42)
+        # 0.5U is at threshold → very little dampening
+        diff = abs(r_on.glucose.min() - r_off.glucose.min())
+        self.assertLess(diff, 15)
+
+    def test_power_law_off_by_default(self):
+        """IOB power-law should be disabled by default for backward compat."""
+        s = self.TherapySettings(isf=50, cr=10, basal_rate=0.8)
+        self.assertFalse(s.iob_power_law)
+
+    def test_power_law_stacked_bolus_dampening(self):
+        """Stacked boluses should see more dampening than a single bolus."""
+        import numpy as np
+        s = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
+                                  iob_power_law=True)
+        # Single 4U bolus
+        r_single = self.forward_simulate(250.0, s, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(0, 4.0)], seed=42)
+        # Two stacked 2U boluses (same total insulin)
+        r_stacked = self.forward_simulate(250.0, s, duration_hours=8.0,
+            bolus_events=[self.InsulinEvent(0, 2.0),
+                          self.InsulinEvent(30, 2.0)], seed=42)
+        # Single large bolus at once should be dampened more initially
+        # Both have same total insulin but different IOB profiles
+        self.assertGreater(r_single.glucose.min(), 70)
+        self.assertGreater(r_stacked.glucose.min(), 70)

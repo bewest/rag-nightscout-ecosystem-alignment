@@ -53,8 +53,11 @@ _POWER_LAW_BETA = 0.9  # from EXP-2511 (causal validation, 17/17 patients)
 # Insulin activity curve parameters
 _DEFAULT_DIA_HOURS = 5.0
 
-# Carb absorption
+# Carb absorption (EXP-1931-1938: 18× overestimation with linear model)
 _DEFAULT_CARB_ABSORPTION_HOURS = 3.0
+_DEFAULT_CARB_DELAY_MINUTES = 20.0  # τ=20min from EXP-1932 (population mean)
+_DEFAULT_CARB_PEAK_MINUTES = 71.0   # from EXP-1934 (population mean)
+_IOB_POWER_LAW_THRESHOLD = 0.5      # apply power-law dampening when IOB > this
 _MIN_BG = 39.0
 _MAX_BG = 401.0
 
@@ -75,6 +78,7 @@ class CarbEvent:
     time_minutes: float  # minutes from simulation start
     grams: float         # grams of carbohydrate
     absorption_hours: float = _DEFAULT_CARB_ABSORPTION_HOURS
+    delay_minutes: float = _DEFAULT_CARB_DELAY_MINUTES  # gut delay τ
 
 
 @dataclass
@@ -85,9 +89,20 @@ class TherapySettings:
     Single values are treated as flat schedules.
     """
     isf: float = 50.0   # mg/dL per Unit (can be overridden by schedule)
-    cr: float = 10.0    # grams per Unit
+    cr: float = 10.0    # grams per Unit (used for auto-bolus dosing)
     basal_rate: float = 0.8  # U/hr (default flat rate)
     dia_hours: float = _DEFAULT_DIA_HOURS
+
+    # Carb sensitivity: mg/dL glucose rise per gram carb.
+    # If None, derived from ISF/CR (backward compatible).
+    # Set explicitly to decouple carb physics from dosing CR.
+    # Research: EXP-2341-2348 showed CR explains ~0% of rise variance.
+    carb_sensitivity: Optional[float] = None
+
+    # IOB-dependent power-law ISF dampening.
+    # When True, ISF is reduced for high IOB: ISF_eff = ISF × min(1, IOB^(-β))
+    # Research: EXP-2511-2518, β=0.9, 17/17 patients, +59% MAE reduction.
+    iob_power_law: bool = False
 
     # Circadian schedules: list of (hour, value). If empty, use flat value.
     isf_schedule: List[Tuple[float, float]] = field(default_factory=list)
@@ -102,6 +117,18 @@ class TherapySettings:
 
     def basal_at_hour(self, hour: float) -> float:
         return _schedule_value_at(self.basal_schedule, hour, self.basal_rate)
+
+    def carb_sensitivity_at_hour(self, hour: float) -> float:
+        """Glucose rise per gram of carb (mg/dL/g).
+
+        If carb_sensitivity is explicitly set, use that (decoupled from CR).
+        Otherwise derive from ISF/CR for backward compatibility.
+        """
+        if self.carb_sensitivity is not None:
+            return self.carb_sensitivity
+        isf = self.isf_at_hour(hour)
+        cr = self.cr_at_hour(hour)
+        return isf / max(cr, 1.0)
 
 
 @dataclass
@@ -238,17 +265,44 @@ def _insulin_activity_curve(t_minutes: float, dia_hours: float) -> float:
 
 def _carb_absorption_rate(t_minutes: float,
                           total_grams: float,
-                          absorption_hours: float) -> float:
+                          absorption_hours: float,
+                          delay_minutes: float = _DEFAULT_CARB_DELAY_MINUTES,
+                          ) -> float:
     """Grams of carbs absorbed in current 5-min step.
 
-    Linear absorption model: constant rate over absorption window.
+    Delayed absorption model (EXP-1931-1938):
+      rate(t) ∝ (t/t_peak) × exp(1 - t/t_peak)
+
+    This gamma-like curve produces:
+      - Zero absorption at t=0 (gut delay)
+      - Peak absorption at t = delay_minutes
+      - Gradual exponential tail to absorption_hours
+      - Total absorption ≈ total_grams
+
+    Research: Current linear model overestimates by 18× (EXP-1931).
+    Real peak glucose at 71min (EXP-1934). Absorption peak earlier (~45min).
+
+    Falls back to linear model if delay_minutes <= 0 (backward compat).
     Returns grams absorbed in this single step.
     """
     abs_minutes = absorption_hours * 60.0
     if t_minutes < 0 or t_minutes >= abs_minutes or total_grams <= 0:
         return 0.0
-    # Constant absorption rate
-    rate_per_min = total_grams / abs_minutes
+
+    # Backward compat: linear model when no delay
+    if delay_minutes <= 0:
+        rate_per_min = total_grams / abs_minutes
+        return rate_per_min * _STEP_MINUTES
+
+    # Gamma-like shape: peaks at t_peak = delay_minutes
+    # rate(t) = A × (t/t_peak) × exp(1 - t/t_peak)
+    # Integral from 0 to ∞ = A × t_peak × e
+    # So A = total_grams / (t_peak × e) for normalization
+    t_peak = max(delay_minutes, 1.0)
+    ratio = t_minutes / t_peak
+    raw = ratio * np.exp(1.0 - ratio)
+    normalization = t_peak * np.e  # analytical integral
+    rate_per_min = total_grams * raw / normalization
     return rate_per_min * _STEP_MINUTES
 
 
@@ -380,7 +434,15 @@ def forward_simulate(
         excess_absorption = total_absorption - basal_absorption
 
         # ── Fast demand: excess absorption × ISF × fast fraction ──
-        demand_fast = excess_absorption * isf_at_t * _FAST_FRACTION
+        # Apply IOB-dependent power-law ISF dampening if enabled
+        # Research: EXP-2511-2518, β=0.9, 17/17 patients
+        # When IOB is high, each additional unit is less effective
+        effective_isf = isf_at_t
+        if settings.iob_power_law and iob > _IOB_POWER_LAW_THRESHOLD:
+            dampening = (iob / _IOB_POWER_LAW_THRESHOLD) ** (-_POWER_LAW_BETA)
+            effective_isf = isf_at_t * dampening
+
+        demand_fast = excess_absorption * effective_isf * _FAST_FRACTION
 
         # ── Persistent demand: cumulative excess in 12h window ────
         # The persistent component represents the "extra" glucose
@@ -394,7 +456,7 @@ def forward_simulate(
             - np.sum(basal_need_per_step[start_step:t + 1])
         )
         if total_excess_12h > 0.01:
-            persistent_demand = (total_excess_12h * isf_at_t
+            persistent_demand = (total_excess_12h * effective_isf
                                  / persistent_window * _PERSISTENT_FRACTION)
         else:
             persistent_demand = 0.0
@@ -413,12 +475,14 @@ def forward_simulate(
             remaining_frac = max(0.0, 1.0 - elapsed / abs_min)
             cob += event.grams * remaining_frac
             carb_absorbed += _carb_absorption_rate(
-                elapsed, event.grams, event.absorption_hours
+                elapsed, event.grams, event.absorption_hours,
+                delay_minutes=event.delay_minutes,
             )
         cob_trace[t] = cob
 
-        # Carb rise: grams absorbed / CR → units equivalent → × ISF
-        carb_rise = (carb_absorbed / max(cr_at_t, 1.0)) * isf_at_t
+        # Carb rise: use carb_sensitivity (decoupled from CR if set)
+        csf = settings.carb_sensitivity_at_hour(hour)
+        carb_rise = carb_absorbed * csf
         supply_trace[t] = carb_rise
 
         # ── Decay toward equilibrium ──────────────────────────────
