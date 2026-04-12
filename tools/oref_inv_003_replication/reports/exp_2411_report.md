@@ -58,7 +58,7 @@
 
 ### F4: Loop crossover: 80.8 mg/dL ❓
 
-**Evidence**: Sub-group target sweeps: Loop crossover: 80.8 mg/dL. Algorithm gap: N/A mg/dL. Crossover difference warrants further investigation.
+**Evidence**: Sub-group target sweeps: Loop crossover: 80.8 mg/dL. Algorithm gap could not be computed (transfer model unavailable). Crossover difference warrants further investigation.
 **Agreement**: inconclusive
 **Prior work**: EXP-2414
 
@@ -88,9 +88,9 @@ Four sub-experiments provide complementary views:
 
 ## Synthesis
 
-The target-as-strongest-lever finding replicates in our independent dataset. Our retrained LightGBM places the hypo/hyper crossover at 82.8 mg/dL (theirs: 92.5 mg/dL), while their pre-trained model applied to our data yields N/A mg/dL — a reassuring convergence.
+The target-as-strongest-lever finding replicates in our independent dataset. Our retrained LightGBM places the hypo/hyper crossover at 82.8 mg/dL (theirs: 92.5 mg/dL). The transfer experiment (EXP-2412) could not produce a crossover — the colleague's pre-trained model was unavailable or yielded constant predictions on our data.
 
-Per-patient analysis (EXP-2413) reveals meaningful heterogeneity: individual crossovers span N/A–N/A mg/dL across 0 patients, suggesting that a single universal target recommendation may not be optimal for all individuals.
+Per-patient analysis (EXP-2413) attempted individual crossover estimation for 18 patients, but no valid crossovers could be computed (all NaN), likely due to insufficient per-patient sample sizes for stable hypo/hyper rate curves. Further investigation with larger per-patient datasets is needed to assess individual heterogeneity.
 
 The tradeoff shape is consistent across Loop and oref algorithms (EXP-2414), suggesting this is a fundamental property of closed-loop insulin delivery rather than an algorithm-specific effect. The monotonic decrease in hypo rate with increasing target is the expected result of how AID systems use target as a setpoint: higher targets reduce insulin delivery, lowering hypo risk at the cost of increased hyperglycemia.
 
