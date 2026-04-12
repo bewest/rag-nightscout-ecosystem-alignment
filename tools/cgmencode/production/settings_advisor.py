@@ -2941,3 +2941,25 @@ def prioritize_recommendations(recs: List[SettingsRecommendation],
         return (p, -abs(rec.predicted_tir_delta))
 
     return sorted(recs, key=sort_key)
+
+
+# ── Settings Quality Score (EXP-2600) ────────────────────────────────
+
+def compute_settings_quality_score(
+    recs: List[SettingsRecommendation],
+) -> float:
+    """Compute composite Settings Quality Score (SQS) from recommendations.
+
+    SQS = 100 - Σ(|predicted_tir_delta| × confidence) for all recs.
+    Higher score (0-100) = better settings alignment with metabolic needs.
+
+    EXP-2600 validated: SQS vs TIR r=0.833 (p=0.005) across 9 patients.
+
+    Args:
+        recs: consolidated recommendations from generate_settings_advice().
+
+    Returns:
+        SQS as float in [0, 100].
+    """
+    total = sum(abs(r.predicted_tir_delta) * r.confidence for r in recs)
+    return max(0.0, min(100.0, 100.0 - total))
