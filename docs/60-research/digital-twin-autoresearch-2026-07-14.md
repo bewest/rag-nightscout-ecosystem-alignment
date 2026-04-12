@@ -487,7 +487,7 @@ can't reconstruct the loop's prior contributions.
 
 ---
 
-## Cross-Experiment Synthesis (10 Experiments)
+## Cross-Experiment Synthesis (12 Experiments)
 
 ### The Emerging Picture
 
@@ -513,6 +513,15 @@ FORWARD SIM CAPABILITY MAP:
      │  ❌ Predict magnitude of TIR improvement          │
      │  ❌ Serve as closed-loop digital twin              │
      └─────────────────────────────────────────────┘
+
+     ┌─────────────────────────────────────────────┐
+     │  CALIBRATION CAUTION (EXP-2572)               │
+     │                                               │
+     │  ⚠️ Sim overshoots corrections by ~22%          │
+     │  ⚠️ ISF×0.5 partially artifact of this bias      │
+     │  ⚠️ True ISF correction ≈ 0.78×, not 0.50×       │
+     │  ⚠️ Recommendations should be dampened             │
+     └─────────────────────────────────────────────┘
 ```
 
 ### Consolidated Findings
@@ -522,13 +531,15 @@ FORWARD SIM CAPABILITY MAP:
 | 1 | Hypo ceiling is information-theoretic | EXP-2561: -0.008 AUC | HIGH | No — stop trying |
 | 2 | Forward sim valid for counterfactuals | EXP-2562: ±2-4pp TIR | HIGH | Yes — productionize |
 | 3 | CR should be ~2× profile | EXP-2563,2567: mean 2.10 | HIGH | Yes — recommend |
-| 4 | ISF favors ~0.5-0.7× (less aggressive) | EXP-2568: mean 0.60 | HIGH | Yes — recommend |
+| 4 | ISF favors ~0.5-0.7× (less aggressive) | EXP-2568: mean 0.60 | MEDIUM | Yes — but temper (see #12) |
 | 5 | Joint ISF×CR has synergy (+8.9pp) | EXP-2568: 8/11 patients | HIGH | Yes — joint optimize |
 | 6 | Population params good for NS | EXP-2565: calibration adds nothing | HIGH | No — skip calibration |
 | 7 | Circadian variation weak | EXP-2566: K-W p=0.93/0.99 | HIGH | No — skip circadian |
 | 8 | Sim can't predict real TIR | EXP-2569: MAE=0.409 | HIGH | Yes — use directional |
 | 9 | Closed-loop controller doesn't help | EXP-2570: MAE=0.380 | HIGH | No — different approach |
 | 10 | ODC bias was data bug, not sim | EXP-2564→2565: +13 vs -50 | HIGH | Yes — await ODC fix |
+| 11 | Phenotype doesn't predict opt direction | EXP-2571: ISF↓/CR↑ universal | HIGH | No — direction is universal |
+| 12 | Sim overshoots corrections by 22% | EXP-2572: actual/sim=0.78 | HIGH | Yes — dampen ISF recs |
 
 ### Lines of Research: Closed vs Open
 
@@ -538,46 +549,40 @@ FORWARD SIM CAPABILITY MAP:
 - Circadian CR/ISF profiling — individual, not population effect
 - Forward sim absolute TIR prediction — missing loop model
 - Closed-loop sim via simple controller — insufficient
+- Phenotype→optimization direction — direction is universal
 
 **OPEN** (continue investing):
-- **Joint ISF×CR optimization → settings_advisor** (highest ROI)
+- **Joint ISF×CR optimization → settings_advisor** (DONE — productionized)
+- **ISF bias correction** — dampen ISF recommendations by sim overshoot factor
 - **Extended CR grid for remaining patients** (a,g still saturating)
-- **Forward sim for "what-if" analysis** (validated use case)
-- **Phenotype-specific recommendations** (untested)
 - **Natural experiment validation** (settings that DID change → outcome)
+- **Meal-size-dependent CR** — large meals need different CR per EXP-2535
 
 ---
 
-## Productionization Recommendations
+## Productionization Status
 
-### Priority 1: Wire Joint Optimization into settings_advisor
+### ✅ DONE: Joint Optimization in settings_advisor (Priority 1)
 
-The existing `settings_advisor.py` uses a perturbation model for TIR simulation.
-Replace with forward-sim-based joint ISF×CR grid search:
+`advise_forward_sim_optimization()` added to `settings_advisor.py` (~200 LOC).
+Performs 7×7 ISF×CR grid search via forward simulator over real meal windows.
+Wired into `generate_settings_advice()` pipeline. Integration test confirms:
+- Patient d: ISF↓50% + CR↑200%
+- Patient i: ISF↓50% + CR↑40%
+- Patient k (well-controlled): 0 recommendations
 
-```python
-# Proposed API addition to settings_advisor.py:
-def forward_sim_optimize(patient_data, settings):
-    """Find optimal ISF/CR multipliers via forward sim grid search.
+**CAVEAT** (EXP-2572): Sim overshoots corrections by ~22%. ISF magnitude
+recommendations should be interpreted conservatively. Direction is reliable.
 
-    Returns directional recommendations:
-    - "Increase CR by X%" (less bolus insulin per gram)
-    - "Decrease ISF by Y%" (less aggressive corrections)
+### ✅ DONE: Directional Framing (Priority 2)
 
-    Does NOT predict absolute TIR improvement (validated limitation).
-    """
-```
+Recommendations are framed directionally ("consider reducing ISF", "consider
+increasing CR") with `predicted_tir_delta` for relative comparison only.
 
-### Priority 2: Reframe Recommendations as Directional
+### Priority 3: Forward Sim "What-If" Scenarios
 
-Instead of: "Changing CR from 10 to 15 will improve TIR by 12%"
-Say: "Your correction response suggests ISF should be ~30% lower,
-and your meal response suggests CR should be ~100% higher."
-
-### Priority 3: Add Forward Sim "What-If" to Pipeline
-
-New pipeline stage: "Given your current settings, here's what the
-digital twin predicts for different scenarios."
+Not yet implemented. Would add a pipeline stage showing what the digital twin
+predicts for different user-defined scenarios.
 
 ---
 
@@ -595,5 +600,51 @@ digital twin predicts for different scenarios."
 | EXP-2568 code | `tools/cgmencode/production/exp_joint_opt_2568.py` | Tracked |
 | EXP-2569 code | `tools/cgmencode/production/exp_validation_2569.py` | Tracked |
 | EXP-2570 code | `tools/cgmencode/production/exp_closed_loop_2570.py` | Tracked |
-| All EXP data | `externals/experiments/exp-256[1-9]_*.json`, `exp-2570_*.json` | Gitignored |
+| EXP-2571 code | `tools/cgmencode/production/exp_phenotype_opt_2571.py` | Tracked |
+| EXP-2572 code | `tools/cgmencode/production/exp_isf_artifact_2572.py` | Tracked |
+| All EXP data | `externals/experiments/exp-256[1-9]_*.json`, `exp-257[0-2]_*.json` | Gitignored |
 | This report | `docs/60-research/digital-twin-autoresearch-2026-07-14.md` | Tracked |
+
+---
+
+## EXP-2572: ISF Artifact Check (MIXED)
+
+**Hypothesis**: ISF×0.5 optimal finding is a forward sim artifact from systematic
+overestimation of insulin effectiveness.
+
+**Method**: Extracted 378 pure correction windows (bolus >0.5U, no carbs ±30min,
+glucose >150) across 11 NS patients. Compared actual 2h glucose drop to
+sim-predicted drop at ISF×1.0. Computed ratio = actual_drop / sim_drop.
+
+**Results**:
+
+| Patient | Corrections | Actual Drop | Sim Drop | Ratio | Interpretation |
+|---------|-------------|-------------|----------|-------|----------------|
+| a | 37 | 90 | 130 | 0.73 | NEUTRAL |
+| b | 44 | 62 | 144 | 0.50 | ARTIFACT |
+| c | 35 | 53 | 146 | 0.45 | ARTIFACT |
+| d | 42 | 54 | 65 | 0.87 | NEUTRAL |
+| e | 40 | 74 | 96 | 1.06 | NEUTRAL |
+| f | 44 | 90 | 122 | 0.74 | NEUTRAL |
+| g | 43 | 86 | 126 | 0.79 | NEUTRAL |
+| h | 41 | 104 | 116 | 1.03 | NEUTRAL |
+| i | 36 | 86 | 204 | 0.47 | ARTIFACT |
+| j | 8 | 98 | 59 | 2.05 | REAL |
+| k | 8 | 65 | 87 | 1.15 | NEUTRAL |
+
+- **Population ratio**: 0.78 (mean), 0.63 (median)
+- **Sim overshoots by ~22%** on average
+- 3 ARTIFACT, 7 NEUTRAL, 1 REAL
+
+**Interpretation**: The sim systematically overestimates correction drops by ~22%.
+This partially explains ISF×0.5 but doesn't fully account for it. The "true"
+correction factor would be ~ISF×0.78, not ISF×0.50. The remaining gap (0.78→0.50)
+likely comes from:
+1. Meal windows contributing to the joint optimization (different dynamics)
+2. Incomplete IOB accounting in the sim
+3. Possible real clinical signal
+
+**Impact on Productionization**: The `advise_forward_sim_optimization()` advisory
+should be interpreted as DIRECTIONAL only. Magnitude recommendations (e.g., "reduce
+ISF by 50%") should be tempered by the ~22% sim bias. A dampening factor could be
+applied, or recommendations could be capped (e.g., max ISF reduction 30%).

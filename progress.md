@@ -26,6 +26,50 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Digital Twin & Settings Autoresearch (2026-07-14/15)
+
+12 experiments (EXP-2561–2572) systematically tested digital twin and settings optimization hypotheses.
+1 production module updated. Branch: `workspace/digital-twin-fidelity`.
+
+### Key Results
+
+| EXP | Hypothesis | Verdict | Key Finding |
+|-----|-----------|---------|-------------|
+| 2561 | Metabolic phase hypo predictor | NEGATIVE | -0.008 AUC; ceiling is information-theoretic |
+| 2562 | Forward sim counterfactuals | POSITIVE | ISF+20%→+2.1pp, CR+20%→+3.3pp TIR |
+| 2563 | Per-patient ISF/CR optimization | SUPPORTED | 95% ISF≠1.0, 100% CR≠1.0 |
+| 2564 | Forward sim fidelity | PARTIAL | Correction r=0.74 ✅, meal r=0.37 ❌ |
+| 2565 | Per-patient DIA/ISF calibration | MARGINAL | Population params sufficient for NS |
+| 2566 | Circadian ISF/CR variation | WEAK | Not significant at population level |
+| 2567 | Extended CR grid [0.8-3.0] | SUPPORTED | Mean optimal CR×2.10, 8/11 clear peaks |
+| 2568 | Joint ISF×CR optimization | SUPPORTED | TIR 0.309→0.720 (+41pp), synergy +8.9pp |
+| 2569 | Sim TIR vs actual TIR | NOT SUPPORTED | MAE=0.409; sim can't predict absolute TIR |
+| 2570 | Closed-loop digital twin | NOT SUPPORTED | MAE 0.409→0.380; loop can't compensate |
+| 2571 | Phenotype→optimization direction | NOT SUPPORTED | ISF↓/CR↑ universal across phenotypes |
+| 2572 | ISF artifact check | MIXED | Sim overshoots 22%; ISF×0.5 partially artifact |
+
+### Productionization
+
+- **`advise_forward_sim_optimization()`** added to `settings_advisor.py` (EXP-2568 → production)
+- Joint 7×7 ISF×CR grid search via forward simulator
+- Directional recommendations only (NOT magnitude predictions)
+- All 348 production tests pass
+
+### Lines of Research Closed
+
+- Metabolic phase hypo features (ceiling is fundamental)
+- Per-patient DIA/ISF calibration (population params sufficient)
+- Circadian CR/ISF profiling (individual, not population effect)
+- Forward sim absolute TIR prediction (missing loop model)
+- Phenotype-based optimization direction (direction is universal)
+
+### Lines of Research Open
+
+- Extended CR grid for patients a,g (still saturating at 3.0)
+- ISF bias correction (sim overshoots 22% — needs dampening)
+- Meal-size-dependent CR optimization
+- Natural experiment validation (settings changes → outcome)
+
 ## E-Series: Strategic Clinical Classification Experiments (2026-07-12)
 
 Full-scale validation (11 patients, 5 seeds) of 8 clinical classification tasks.
