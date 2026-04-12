@@ -27,7 +27,10 @@ Usage:
 
 import argparse
 import json
+import resource
+import time
 import warnings
+from datetime import datetime, timezone
 from itertools import combinations
 from pathlib import Path
 
@@ -67,9 +70,23 @@ except ImportError:
 
 warnings.filterwarnings("ignore", category=UserWarning, module="lightgbm")
 
+
+def _mem_mb():
+    """Current RSS in MB."""
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
+
+
+def _ts():
+    """Short UTC timestamp for log lines."""
+    return datetime.now(timezone.utc).strftime("%H:%M:%S")
+
+
 RESULTS_PATH = Path("externals/experiments/exp_2421_cr_hour.json")
 FIGURES_DIR = Path("tools/oref_inv_003_replication/figures")
 RESULTS_DIR = Path("externals/experiments")
+
+# Configurable at runtime via CLI
+SHAP_INTERACTION_ROWS = 30000
 
 # Time blocks for circadian analysis
 TIME_BLOCKS = {
@@ -109,7 +126,7 @@ def train_hypo_model(X: pd.DataFrame, y: pd.Series,
 
 
 def compute_interaction_strengths(model, X: pd.DataFrame,
-                                  features: list, max_rows: int = 30000):
+                                  features: list, max_rows: int = None):
     """Compute pairwise interaction strengths.
 
     Uses SHAP interaction values if available; falls back to gain-based
@@ -124,14 +141,23 @@ def compute_interaction_strengths(model, X: pd.DataFrame,
     matrix : np.ndarray or None
         Full interaction matrix (n_features × n_features) if SHAP, else None.
     """
+    if max_rows is None:
+        max_rows = SHAP_INTERACTION_ROWS
     if HAS_SHAP:
         try:
             explainer = shap.TreeExplainer(model)
-            X_sample = X.sample(n=min(max_rows, len(X)), random_state=42)
-            print(f"    Computing SHAP interactions on {len(X_sample)} rows...")
+            n_sample = min(max_rows, len(X))
+            X_sample = X.sample(n=n_sample, random_state=42)
+            n_feat = len(features)
+            print(f"    [{_ts()}] SHAP interactions: {n_sample:,} rows × "
+                  f"{n_feat} features  mem={_mem_mb():.0f} MB")
+            t0 = time.monotonic()
             iv = explainer.shap_interaction_values(X_sample)
+            elapsed = time.monotonic() - t0
             if isinstance(iv, list):
                 iv = iv[1]
+            print(f"    [{_ts()}] SHAP interactions done: {elapsed:.0f}s  "
+                  f"({n_sample/elapsed:.0f} rows/s)  mem={_mem_mb():.0f} MB")
 
             n_feat = len(features)
             mean_abs = np.mean(np.abs(iv), axis=0)
@@ -1074,20 +1100,40 @@ def main():
                         help="Generate comparison figures")
     parser.add_argument("--tiny", action="store_true",
                         help="Use only 2 patients for quick testing")
+    parser.add_argument(
+        "--data-path", type=str, default="externals/ns-parquet/training",
+        help="Path to parquet data directory (default: training set)",
+    )
+    parser.add_argument(
+        "--shap-rows", type=int, default=30000,
+        help="Max rows for SHAP interaction sampling (default: 30000)",
+    )
+    parser.add_argument(
+        "--label", type=str, default="",
+        help="Label suffix for output files (e.g. 'verification')",
+    )
     args = parser.parse_args()
 
+    # Set module-level config
+    global SHAP_INTERACTION_ROWS
+    SHAP_INTERACTION_ROWS = args.shap_rows
+
+    run_start = time.monotonic()
     print("=" * 70)
     print("EXP-2421–2428: CR × Hour Interaction Replication")
     print("=" * 70)
+    print(f"[{_ts()}] data={args.data_path}  shap_rows={SHAP_INTERACTION_ROWS}  "
+          f"label={args.label or '(default)'}")
 
     if args.figures:
         FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     # Load data
-    print("Loading patient data...")
-    df = load_patients_with_features()
-    print(f"  Loaded {len(df):,} rows, {df['patient_id'].nunique()} patients")
+    print(f"[{_ts()}] Loading patient data from {args.data_path}...")
+    df = load_patients_with_features(parquet_path=args.data_path)
+    print(f"  Loaded {len(df):,} rows, {df['patient_id'].nunique()} patients  "
+          f"mem={_mem_mb():.0f} MB")
 
     if args.tiny:
         keep = sorted(df["patient_id"].unique())[:2]
@@ -1107,35 +1153,56 @@ def main():
     # Run sub-experiments
     all_results = {}
 
-    all_results["exp_2421"] = run_2421(X, y_hypo, features, args.figures)
-    all_results["exp_2422"] = run_2422(df, features, args.figures)
-    all_results["exp_2423"] = run_2423(df, args.figures)
-    all_results["exp_2424"] = run_2424(df, features, args.figures)
-    all_results["exp_2425"] = run_2425(df, features, args.figures)
-    all_results["exp_2426"] = run_2426(X, y_hypo, features, args.figures)
-    all_results["exp_2427"] = run_2427(df, features, args.figures)
+    for name, func, func_args in [
+        ("exp_2421", run_2421, (X, y_hypo, features, args.figures)),
+        ("exp_2422", run_2422, (df, features, args.figures)),
+        ("exp_2423", run_2423, (df, args.figures)),
+        ("exp_2424", run_2424, (df, features, args.figures)),
+        ("exp_2425", run_2425, (df, features, args.figures)),
+        ("exp_2426", run_2426, (X, y_hypo, features, args.figures)),
+        ("exp_2427", run_2427, (df, features, args.figures)),
+    ]:
+        sub_start = time.monotonic()
+        all_results[name] = func(*func_args)
+        sub_elapsed = time.monotonic() - sub_start
+        wall_so_far = time.monotonic() - run_start
+        print(f"  [{_ts()}] {name} done in {sub_elapsed:.0f}s  "
+              f"(total {wall_so_far:.0f}s)  mem={_mem_mb():.0f} MB")
+
     all_results["exp_2428"] = run_2428(all_results, args.figures)
 
     # Save JSON results
-    RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(RESULTS_PATH, "w") as f:
+    suffix = f"_{args.label}" if args.label else ""
+    results_path = RESULTS_DIR / f"exp_2421_cr_hour{suffix}.json"
+    all_results["_meta"] = {
+        "data_path": args.data_path,
+        "shap_interaction_rows": SHAP_INTERACTION_ROWS,
+        "label": args.label,
+        "total_rows": len(df),
+        "n_patients": int(df["patient_id"].nunique()),
+        "wall_time_s": round(time.monotonic() - run_start, 1),
+    }
+    results_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(results_path, "w") as f:
         json.dump(all_results, f, indent=2, cls=NumpyEncoder)
-    print(f"\nResults saved to {RESULTS_PATH}")
+    print(f"\n[{_ts()}] Results saved to {results_path}")
 
     # Summary
-    print("\n" + "=" * 60)
-    print("EXP-2421 COMPLETE")
-    print("=" * 60)
+    wall = time.monotonic() - run_start
+    h, m = int(wall // 3600), int((wall % 3600) // 60)
+    print(f"\n{'=' * 60}")
+    print(f"EXP-2421 COMPLETE  [{_ts()}]  wall={h}h{m:02d}m  "
+          f"mem={_mem_mb():.0f} MB")
+    print(f"{'=' * 60}")
     r = all_results.get("exp_2421", {})
     print(f"  CR × hour rank: #{r.get('cr_hour_rank', '?')}")
     print(f"  Method: {r.get('method', '?')}")
     s = all_results.get("exp_2428", {})
     print(f"  Agreement: {s.get('agreement', '?')}")
     print(f"  Confound effect: {s.get('confound_effect', '?')}")
-    if HAS_SHAP:
-        print("  SHAP: TreeExplainer (full)")
-    else:
-        print("  SHAP: gain fallback (install shap for full analysis)")
+    print(f"  Data: {args.data_path} ({len(df):,} rows)")
+    print(f"  SHAP: {'TreeExplainer' if HAS_SHAP else 'gain fallback'} "
+          f"(interaction_rows={SHAP_INTERACTION_ROWS})")
     print()
 
 
