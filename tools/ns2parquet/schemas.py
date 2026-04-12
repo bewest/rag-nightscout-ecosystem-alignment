@@ -84,8 +84,8 @@ DEVICESTATUS_SCHEMA = pa.schema([
     pa.field('controller', pa.string()),      # loop, openaps, trio (detected from device)
     # IOB / COB
     pa.field('iob', pa.float32()),            # total insulin on board (U)
-    pa.field('basal_iob', pa.float32()),      # IOB from temp basals (oref0)
-    pa.field('bolus_iob', pa.float32()),      # IOB from boluses (oref0 bolussnooze)
+    pa.field('basal_iob', pa.float32()),      # NET basal IOB: actual-scheduled (oref0 basaliob)
+    pa.field('bolus_iob', pa.float32()),      # AAPS bolussnooze (≠ bolusiob; accelerated decay)
     pa.field('cob', pa.float32()),            # carbs on board (g)
     # Algorithm output
     pa.field('bg', pa.int16()),               # current BG per algorithm (mg/dL)
