@@ -29,6 +29,7 @@ from .types import (
     GlycemicGrade, BasalAssessment, EventType, OnboardingPhase, Phenotype,
     MealWindow, SettingsParameter,
     OptimalSettings, SettingScheduleEntry, SettingsOptimizationResult,
+    PatientPhenotype, PatientPhenotypeResult,
 )
 from .data_quality import clean_glucose, detect_spikes, interpolate_spikes
 from .metabolic_engine import compute_metabolic_state
@@ -49,6 +50,7 @@ from .natural_experiment_detector import (
     NaturalExperimentType, MealConfig,
 )
 from .settings_optimizer import optimize_settings
+from .patient_phenotyper import classify_patient_phenotype
 from .pipeline import run_pipeline, run_pipeline_batch
 from .validators import run_validation
 
@@ -63,6 +65,8 @@ __all__ = [
     'BolusTimingSafety', 'AIDCompensation', 'CompensationType',
     'GlycemicGrade', 'BasalAssessment', 'EventType', 'OnboardingPhase', 'Phenotype',
     'MealWindow', 'SettingsParameter',
+    # Patient phenotyping (EXP-2541)
+    'PatientPhenotype', 'PatientPhenotypeResult', 'classify_patient_phenotype',
     # Pipeline
     'run_pipeline', 'run_pipeline_batch',
     # Individual modules
