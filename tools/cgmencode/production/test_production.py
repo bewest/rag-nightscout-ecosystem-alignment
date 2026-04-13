@@ -4819,3 +4819,158 @@ class TestSafetyClamp(unittest.TestCase):
         result = apply_safety_clamp(recs)
         self.assertEqual(result[0].magnitude_pct, 25.0)  # clamped
         self.assertEqual(result[1].magnitude_pct, 10.0)  # preserved
+
+
+class TestAdvisoryDeduplication(unittest.TestCase):
+    """Tests for _deduplicate_same_direction (EXP-2627)."""
+
+    def test_merges_same_param_same_direction(self):
+        from cgmencode.production.settings_advisor import _deduplicate_same_direction
+        recs = [
+            SettingsRecommendation(
+                parameter=SettingsParameter.CR,
+                direction="decrease",
+                magnitude_pct=20.0,
+                current_value=10.0,
+                suggested_value=8.0,
+                predicted_tir_delta=2.0,
+                affected_hours=(6, 12),
+                confidence=0.8,
+                evidence="Block 1. test",
+                rationale="test",
+            ),
+            SettingsRecommendation(
+                parameter=SettingsParameter.CR,
+                direction="decrease",
+                magnitude_pct=10.0,
+                current_value=10.0,
+                suggested_value=9.0,
+                predicted_tir_delta=1.0,
+                affected_hours=(12, 18),
+                confidence=0.6,
+                evidence="Block 2. test",
+                rationale="test",
+            ),
+        ]
+        result = _deduplicate_same_direction(recs)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0].parameter, SettingsParameter.CR)
+        self.assertEqual(result[0].direction, "decrease")
+        self.assertAlmostEqual(result[0].predicted_tir_delta, 3.0)
+        self.assertIn("Consolidated from 2", result[0].evidence)
+
+    def test_preserves_different_params(self):
+        from cgmencode.production.settings_advisor import _deduplicate_same_direction
+        recs = [
+            SettingsRecommendation(
+                parameter=SettingsParameter.CR,
+                direction="decrease",
+                magnitude_pct=15.0,
+                current_value=10.0,
+                suggested_value=8.5,
+                predicted_tir_delta=1.5,
+                affected_hours=(0, 24),
+                confidence=0.8,
+                evidence="test",
+                rationale="test",
+            ),
+            SettingsRecommendation(
+                parameter=SettingsParameter.ISF,
+                direction="decrease",
+                magnitude_pct=20.0,
+                current_value=50.0,
+                suggested_value=40.0,
+                predicted_tir_delta=2.0,
+                affected_hours=(0, 24),
+                confidence=0.7,
+                evidence="test",
+                rationale="test",
+            ),
+        ]
+        result = _deduplicate_same_direction(recs)
+        self.assertEqual(len(result), 2)
+
+    def test_preserves_different_directions(self):
+        from cgmencode.production.settings_advisor import _deduplicate_same_direction
+        recs = [
+            SettingsRecommendation(
+                parameter=SettingsParameter.ISF,
+                direction="increase",
+                magnitude_pct=15.0,
+                current_value=50.0,
+                suggested_value=57.5,
+                predicted_tir_delta=1.5,
+                affected_hours=(0, 12),
+                confidence=0.8,
+                evidence="test",
+                rationale="test",
+            ),
+            SettingsRecommendation(
+                parameter=SettingsParameter.ISF,
+                direction="decrease",
+                magnitude_pct=10.0,
+                current_value=50.0,
+                suggested_value=45.0,
+                predicted_tir_delta=1.0,
+                affected_hours=(12, 24),
+                confidence=0.6,
+                evidence="test",
+                rationale="test",
+            ),
+        ]
+        result = _deduplicate_same_direction(recs)
+        self.assertEqual(len(result), 2)
+
+    def test_weighted_average_magnitude(self):
+        from cgmencode.production.settings_advisor import _deduplicate_same_direction
+        recs = [
+            SettingsRecommendation(
+                parameter=SettingsParameter.CR,
+                direction="decrease",
+                magnitude_pct=20.0,
+                current_value=10.0,
+                suggested_value=8.0,
+                predicted_tir_delta=2.0,
+                affected_hours=(0, 8),
+                confidence=1.0,
+                evidence="High conf. test",
+                rationale="test",
+            ),
+            SettingsRecommendation(
+                parameter=SettingsParameter.CR,
+                direction="decrease",
+                magnitude_pct=10.0,
+                current_value=10.0,
+                suggested_value=9.0,
+                predicted_tir_delta=1.0,
+                affected_hours=(8, 16),
+                confidence=0.0,
+                evidence="Zero conf. test",
+                rationale="test",
+            ),
+        ]
+        result = _deduplicate_same_direction(recs)
+        self.assertEqual(len(result), 1)
+        # With weight 1.0 and 0.0, should be 20.0 (only high-conf counts)
+        self.assertAlmostEqual(result[0].magnitude_pct, 20.0, places=0)
+
+    def test_single_advisory_unchanged(self):
+        from cgmencode.production.settings_advisor import _deduplicate_same_direction
+        recs = [
+            SettingsRecommendation(
+                parameter=SettingsParameter.BASAL_RATE,
+                direction="increase",
+                magnitude_pct=15.0,
+                current_value=1.0,
+                suggested_value=1.15,
+                predicted_tir_delta=1.2,
+                affected_hours=(0, 24),
+                confidence=0.7,
+                evidence="test",
+                rationale="test",
+            ),
+        ]
+        result = _deduplicate_same_direction(recs)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0].magnitude_pct, 15.0)
+        self.assertNotIn("Consolidated", result[0].evidence)

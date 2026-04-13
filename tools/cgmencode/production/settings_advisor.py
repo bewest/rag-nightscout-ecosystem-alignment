@@ -1801,6 +1801,66 @@ def _consolidate_recommendations(
     return consolidated
 
 
+def _deduplicate_same_direction(
+    recs: List[SettingsRecommendation],
+) -> List[SettingsRecommendation]:
+    """Merge same-parameter same-direction advisories into one.
+
+    EXP-2627: Per-block CR/ISF advisories fire 3-5 times per patient.
+    Merging reduces advisory count by 52% (6.8→3.2) without losing
+    information. Direction agreement is 100% within groups.
+
+    Strategy:
+    - confidence-weighted average magnitude
+    - sum of predicted_tir_delta (blocks contribute independently)
+    - max confidence from group
+    - annotated with source count and magnitude range
+    """
+    from collections import defaultdict
+
+    groups: dict = defaultdict(list)
+    for r in recs:
+        p = r.parameter.value if hasattr(r.parameter, 'value') else str(r.parameter)
+        key = (p, r.direction)
+        groups[key].append(r)
+
+    deduped = []
+    for (param, direction), group in groups.items():
+        if len(group) == 1:
+            deduped.append(group[0])
+            continue
+
+        weights = np.array([r.confidence for r in group])
+        mags = np.array([r.magnitude_pct for r in group])
+        avg_mag = float(np.average(mags, weights=weights)) if weights.sum() > 0 else float(np.mean(mags))
+
+        total_delta = sum(r.predicted_tir_delta for r in group)
+        max_conf = max(r.confidence for r in group)
+
+        all_hours = [(r.affected_hours[0], r.affected_hours[1]) for r in group]
+        min_h = min(h[0] for h in all_hours)
+        max_h = max(h[1] for h in all_hours)
+
+        mag_range = f"{min(mags):.0f}-{max(mags):.0f}%"
+        merged = SettingsRecommendation(
+            parameter=group[0].parameter,
+            direction=direction,
+            magnitude_pct=round(avg_mag, 1),
+            current_value=group[0].current_value,
+            suggested_value=group[0].suggested_value,
+            predicted_tir_delta=round(total_delta, 1),
+            affected_hours=(min_h, max_h),
+            confidence=max_conf,
+            evidence=(f"Consolidated from {len(group)} time-block advisories "
+                      f"(range: {mag_range}). "
+                      + group[0].evidence.split('.')[0] + '.'),
+            rationale=group[0].rationale,
+        )
+        deduped.append(merged)
+
+    return deduped
+
+
 def generate_settings_advice(glucose: np.ndarray,
                              metabolic: Optional[MetabolicState],
                              hours: np.ndarray,
@@ -2013,6 +2073,9 @@ def generate_settings_advice(glucose: np.ndarray,
     # parameter. Group by parameter and resolve conflicts by keeping
     # the higher weighted-score (confidence × |delta|) direction.
     recs = _consolidate_recommendations(recs)
+
+    # Deduplicate same-parameter same-direction advisories (EXP-2627)
+    recs = _deduplicate_same_direction(recs)
 
     # Apply confidence tier based on data days (EXP-2622)
     recs = apply_confidence_tier_to_recommendations(recs, days_of_data)
