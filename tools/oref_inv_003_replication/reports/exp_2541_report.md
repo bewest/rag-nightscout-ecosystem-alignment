@@ -50,7 +50,7 @@ measuring hypo and hyper AUC at each point.
 | odc-86025410 | 6.0 | 5.0 | 0.032 | Longer preferred |
 | odc-96254963 | **5.0** | 5.0 | 0.021 | Profile = optimal |
 
-**Result**: 16/19 patients have optimal DIA = 6.0h (the maximum on the grid).
+**Result**: 15/19 patients have optimal DIA = 6.0h (the maximum on the grid).
 Mean optimal DIA = 5.6h.
 
 ### EXP-2542: DIA Source Comparison (Cohort Level)
@@ -58,10 +58,10 @@ Mean optimal DIA = 5.6h.
 | DIA Source | Mean DIA (h) | Hypo AUC | Hyper AUC | Δ vs Profile |
 |-----------|-------------|---------|---------|-------------|
 | **optimal** | 5.6 | **0.8144** | 0.9041 | **+0.0003** |
-| profile | 5.5 | 0.8141 | 0.9041 | baseline |
+| profile | 5.6 | 0.8141 | 0.9041 | baseline |
 | fixed_5.0 | 5.0 | 0.8137 | 0.9038 | −0.0004 |
 | fixed_3.3 | 3.3 | 0.8105 | 0.9026 | −0.0036 |
-| exp2353 | 3.2 | 0.8105 | 0.9032 | **−0.0036** |
+| exp2353 | 4.2 | 0.8105 | 0.9032 | **−0.0036** |
 
 **Key insight**: EXP-2353 measured DIA (pharmacodynamic, 2.8–3.8h) performs **worst**.
 Profile defaults (5–6h) are near-optimal for prediction.
@@ -138,7 +138,7 @@ because it truncates this valuable historical context.
 1. **Quick grid**: 6 DIA values tested; full grid (13 values) might reveal finer optima
 2. **EXP-2353 off-grid**: Measured DIA values (3.8, 3.2, etc.) don't align with grid
    points, so EXP-2542 uses exact values but EXP-2541 grid shows NaN for these
-3. **Maximum at boundary**: 16/19 optimal at 6.0h suggests the true optimum may be higher;
+3. **Maximum at boundary**: 15/19 optimal at 6.0h suggests the true optimum may be higher;
    grid should extend to 7-8h in future work
 4. **Peak fixed**: All patients use peak=75min; insulin type (Humalog vs Fiasp) affects peak
 5. **Population**: Still 11 Loop + 8 AAPS; iob_basaliob gap to #2 persists

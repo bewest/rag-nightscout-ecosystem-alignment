@@ -342,7 +342,7 @@ will improve forward sim fidelity vs population defaults.
 
 | Metric | Population Params | Per-Patient Best | Δ |
 |--------|-------------------|------------------|---|
-| MAE | 41.2 mg/dL | 40.1 mg/dL | -1.1 |
+| MAE | 41.4 mg/dL | 42.6 mg/dL | +1.2 |
 | Correlation | 0.80 | 0.80 | 0.00 |
 | Bias | +13 mg/dL | +11 mg/dL | -2 |
 
@@ -655,7 +655,7 @@ sim-predicted drop at ISF×1.0. Computed ratio = actual_drop / sim_drop.
 | j | 8 | 98 | 59 | 2.05 | REAL |
 | k | 8 | 65 | 87 | 1.15 | NEUTRAL |
 
-- **Population ratio**: 0.78 (mean), 0.63 (median)
+- **Population ratio**: 0.78 (mean), 0.79 (median)
 - **Sim overshoots by ~22%** on average
 - 3 ARTIFACT, 7 NEUTRAL, 1 REAL
 
