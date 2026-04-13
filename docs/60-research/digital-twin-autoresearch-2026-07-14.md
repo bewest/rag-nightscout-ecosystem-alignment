@@ -1427,3 +1427,85 @@ and CR recommendations.
 - Glycogen state model for overnight sim (research-grade, not production)
 - Advisory minimum data requirements (how many days needed?)
 - Advisory consolidation (overlapping CR/ISF advisors)
+
+---
+
+## Phase 9: Validation, Overrides & Advisory Maturity (EXP-2620–2622)
+
+### Loop Prediction Validation (EXP-2620) — ALL NOT CONFIRMED
+
+Compared our ISF calibration to the loop's own 30-min predictions.
+Key finding: **universal positive bias** — ALL 17 patients show loop
+predictions LOWER than actual glucose (+0.8 to +6.0 mg/dL). The loop
+consistently over-predicts insulin effect.
+
+This validates the existence of counter-regulation as a systematic
+force the loop doesn't model. Our `counter_reg_k` captures this.
+However, ISF miscalibration does NOT predict the bias direction
+(r=-0.066), meaning the bias is structural, not settings-dependent.
+
+Loop MAE at 30min ranges 9.9–32.9 mg/dL across patients.
+
+### Override ISF Impact (EXP-2621) — H1 CONFIRMED ✓ → PRODUCTIONIZED
+
+**8/12 patients show ISF differs ≥0.15 during override periods.**
+
+| Patient | ISF (override) | ISF (normal) | Δ | n_on/n_off |
+|---------|---------------|-------------|------|------------|
+| i | 1.47 | 1.27 | 0.20 | 1317/702 |
+| c | 1.35 | 1.15 | 0.20 | 81/850 |
+| e | 1.30 | 1.13 | 0.17 | 167/572 |
+| odc-86025410 | 0.27 | 0.63 | 0.36 | 5/273 |
+
+Override ISF tends HIGHER than non-override (less insulin effect).
+Productionized as `advise_override_isf()` in settings_advisor.py.
+
+Exercise: only 1/16 patients uses exercise mode → untestable.
+Filtering overrides doesn't reduce overall ISF CV (H3 not confirmed).
+
+### Advisory Convergence (EXP-2622) — H2 CONFIRMED ✓ → PRODUCTIONIZED
+
+**CR stabilizes within 21 days for 8/12 patients (67%).**
+
+| Days | ISF within 10% | CR within 10% | Direction correct |
+|------|---------------|--------------|-------------------|
+| 7 | 4/12 (33%) | 5/12 (42%) | 7/8 (87.5%) |
+| 14 | 7/12 (58%) | 5/12 (42%) | — |
+| 21 | 5/12 (42%) | 8/12 (67%) | — |
+| 30 | 5/12 (42%) | 5/12 (42%) | — |
+| 45 | 7/12 (58%) | 7/12 (58%) | — |
+| 90 | 10/12 (83%) | 9/12 (75%) | — |
+
+Key insight: **Direction is reliable at 7 days** (87.5% correct).
+Patient i is an outlier (ISF drifts 1.95→1.39 over 180d — genuine
+physiological change, not sampling noise).
+
+Productionized as confidence tiers in `generate_settings_advice()`:
+- 7d: direction-only (confidence × 0.5)
+- 14d: preliminary (× 0.7)
+- 21d: stable CR (ISF × 0.8)
+- 30d+: full confidence
+
+### Productionization Summary
+
+Advisory count: **17** (up from 15). Test count: **360** (up from 348).
+
+New advisories:
+1. `advise_override_isf()` — Detects ISF split during overrides
+2. `compute_advisory_confidence_tier()` — Data-dependent confidence
+3. `apply_confidence_tier_to_recommendations()` — Auto-applied in pipeline
+
+### Closed Lines (Phase 9)
+
+- Loop prediction error as ISF validation — EXP-2620 (structural bias)
+- Exercise ISF impact — EXP-2621 (only 1 patient has data)
+- Override filtering for variance reduction — EXP-2621 (doesn't help)
+- More corrections = faster convergence — EXP-2622 (no correlation)
+
+### Open Research Lines
+
+- Per-patient metabolic context (EXP-2619: patient g prototype)
+- Glycogen state model for forward sim (research-grade)
+- Multi-feature ISF prediction (regression vs individual features)
+- Loop workload as metabolic state proxy
+- Advisory consolidation (17 advisories may overlap)

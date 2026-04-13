@@ -287,3 +287,24 @@ and metabolic state effects on insulin sensitivity.
 **Closed Research Lines** (cumulative: 23 lines closed):
 - Circadian CR, actual delivery sim, suspension windows,
   8h+ sim, universal metabolic context
+
+### Phase 9: Validation, Overrides & Advisory Maturity (2026-07-16)
+
+Loop prediction validation, override ISF detection, and advisory
+convergence analysis. Two findings productionized.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2620 | `exp_loop_prediction_validation_2620.py` | Universal positive bias in loop predictions |
+| EXP-2621 | `exp_override_exercise_2621.py` | 8/12 show ISF split during overrides → productionized |
+| EXP-2622 | `exp_advisory_convergence_2622.py` | CR stable by 21d, direction by 7d → productionized |
+| Productionized | `settings_advisor.py` | 2 new advisories, 12 new tests (360 total) |
+
+**Productionized**:
+- `advise_override_isf()` — ISF split detection during overrides
+- `compute_advisory_confidence_tier()` — Data-dependent confidence tiers
+- Advisory count: 17 (up from 15), test count: 360 (up from 348)
+
+**Closed Research Lines** (cumulative: 27 lines closed):
+- Loop prediction as ISF validation, exercise ISF, override filtering,
+  corrections→convergence speed
