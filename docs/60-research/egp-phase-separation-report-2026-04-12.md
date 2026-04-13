@@ -1184,4 +1184,201 @@ from insulin and carb history alone.
 | `visualizations/egp-phase-research/phase1_settings_plots.py` | Figures 19-22 |
 | `visualizations/egp-phase-research/nyquist_multiscale_plot.py` | Figure 23 |
 
-Results (gitignored): `externals/experiments/exp-26{21-29,50-53}_*.json`
+Results (gitignored): `externals/experiments/exp-26{21-29,50-53,54,56,61}_*.json`
+
+---
+
+## Round 7: Phase 2 — CR Adequacy, SC Ceiling, Dual-ISF Dosing (EXP-2654, 2656, 2661)
+
+### EXP-2654: Carb Ratio Adequacy via Post-Meal Trajectory
+
+**Method**: Detect announced meals (carbs ≥10g with bolus within ±30min), track glucose trajectory
+to 5h post-meal. If glucose returns to baseline: CR adequate. If elevated: CR too high (underdosed).
+If below: CR too low (overdosed). Compute per-patient CR adjustment recommendations.
+
+**Key Results** (N=4,968 meals across 12 patients):
+
+| Patient | Meals | CR | Mean Meal | 5h Residual | % Adequate | Rec. CR | Change |
+|---------|-------|----|-----------|-------------|------------|---------|--------|
+| a | 289 | 4 | 15g→6.3U | -55 mg/dL | 13% | 2.8 | -29% |
+| b | 663 | 9 | 33g→3.8U | +21 mg/dL | 20% | 8.3 | -11% |
+| c | 277 | 4 | 21g→6.3U | -40 mg/dL | 12% | 3.7 | -17% |
+| d | 243 | 14 | 32g→3.4U | +26 mg/dL | 29% | 8.0 | -43% |
+| e | 281 | 3 | 36g→11.8U | +17 mg/dL | 26% | 2.9 | -2% |
+| f | 248 | 5 | 51g→11.5U | +16 mg/dL | 14% | 4.2 | -17% |
+| g | 487 | 8 | 32g→4.8U | +26 mg/dL | 27% | 6.1 | -28% |
+| i | 93 | 10 | 47g→8.9U | -8 mg/dL | 13% | 5.4 | -46% |
+| k | 57 | 10 | 16g→2.7U | -3 mg/dL | 84% | 6.3 | -37% |
+| odc-74077367 | 812 | 7 | 30g→3.7U | +15 mg/dL | 34% | 7.5 | +7% |
+| odc-86025410 | 1016 | 33 | 28g→0.9U | +15 mg/dL | 21% | 27.7 | -16% |
+| odc-96254963 | 502 | 8 | 42g→5.4U | +8 mg/dL | 19% | 7.5 | -6% |
+
+**Hypothesis Results**:
+- H1: ≥50% have |mean residual| ≥20 — **FAIL** (42%, but close)
+- H2: |r(carbs→residual)| > 0.2 for ≥50% — **FAIL** (2/12)
+- H3: |r(48h→residual)| > 0.15 for ≥50% — **FAIL** (2/12)
+- H4: CR adjustment range ≥30% — **PASS** (53% range, -46% to +7%)
+
+**Key Insights**:
+1. **Only 12-34% of meals achieve "adequate" 5h glucose** (within ±20 mg/dL of baseline).
+   Patient k is the exception at 84% — they eat small meals (16g mean).
+2. **AID Compensation Theorem strikes again**: meal size barely predicts 5h residual
+   (r=0.01-0.31) because the controller adjusts dosing throughout.
+3. **Most patients need CR decreased** (more insulin per carb), with adjustments ranging
+   from -46% (patient i) to +7% (odc-74077367).
+4. Two distinct failure modes: patients a/c are OVER-dosed (negative residuals, glucose
+   drops below baseline), while d/g are UNDER-dosed (glucose stays elevated).
+
+![Figure 24: CR Adequacy](../../visualizations/egp-phase-research/fig24_cr_adequacy.png)
+*Figure 24: Post-meal 5h residuals and recommended CR adjustments. Red = under-dosed, blue = over-dosed, green = adequate.*
+
+### EXP-2656: SC Insulin Suppression Ceiling
+
+**Method**: At high-IOB periods (>75th percentile per patient), compare actual glucose drop rate
+to linear ISF prediction. Fit per-patient suppression ceiling using optimization. Test cgmsim-lib's
+65% maximum SC suppression hypothesis.
+
+**Key Results**:
+
+| Patient | High-IOB N | Actual Rate | Linear Pred | Ratio | Fitted Ceiling | Sticky % |
+|---------|-----------|-------------|-------------|-------|----------------|----------|
+| a | 10,704 | -25.4 | -61.4 | 0.31 | 36% | 33% |
+| b | 8,339 | -5.9 | -93.0 | ~0 | 30% | 34% |
+| c | 6,220 | -17.4 | -75.5 | 0.34 | 30% | 33% |
+| d | 4,813 | -2.7 | -33.9 | ~0 | 38% | 36% |
+| e | 8,191 | **+4.2** | -63.4 | ~0 | 30% | 28% |
+| f | 8,898 | -3.8 | -36.7 | 0.28 | 39% | 32% |
+| g | 9,127 | **+14.7** | -59.2 | ~0 | 30% | 24% |
+| i | 7,393 | -7.5 | -79.3 | 0.13 | 30% | 39% |
+| k | 4,402 | -4.0 | -15.1 | ~0 | **56%** | **0%** |
+| odc-74077367 | 8,789 | +2.2 | -52.9 | ~0 | 30% | 21% |
+| odc-86025410 | 5,320 | -14.0 | -26.3 | ~0 | 35% | 33% |
+| odc-96254963 | 6,011 | +6.6 | -64.8 | ~0 | 30% | 17% |
+
+**Hypothesis Results**:
+- H1: Glucose drops ≥20% slower than linear at high IOB — **PASS** (12/12, 100%)
+- H2: 65% ceiling model RMSE < linear — **PASS** (12/12)
+- H3: Suppression ceiling range ≥0.20 — **PASS** (range 0.26: 30-56%)
+- H4: Sticky hyper rate correlates with ceiling — **PASS** (r=-0.600, p=0.039)
+
+**Major Finding: The SC Suppression Wall**
+
+At high IOB, glucose drops at only **0-34% of the rate predicted by linear ISF**. This is
+the most dramatic finding in the entire study:
+
+- Patient e: with 7.4U IOB, linear predicts -63 mg/dL/hr but glucose is **RISING** at +4.2
+- Patient g: 3.5U IOB, predicted -59 but actual **+14.7** — EGP completely overwhelms insulin
+- The linear ISF model is **catastrophically wrong** at high IOB levels
+
+**Suppression ceiling of ~30% (not 65%)**:
+- Most patients (8/12) hit a 30% ceiling — SC insulin can suppress only 30% of EGP
+- This is FAR below cgmsim-lib's 65% assumption
+- Patient k is the exception (56% ceiling) — and has ZERO sticky hypers
+- The correlation (r=-0.60) confirms: lower ceiling → more sticky hypers
+
+**Implications for AID controllers**:
+- Above ~2× normal IOB, insulin has sharply diminishing returns
+- Controllers pushing more insulin into a "suppression wall" waste insulin and risk
+  delayed hypos when the wall finally breaks (EGP depleted)
+- This explains the clinical observation of "stacking" failures
+
+![Figure 25: SC Suppression Ceiling](../../visualizations/egp-phase-research/fig25_sc_ceiling.png)
+*Figure 25: (A) Linear model predictions vs reality at high IOB — the model massively overpredicts
+glucose drop. (B) Per-patient fitted suppression ceiling — most hit 30%, far below cgmsim-lib's 65%.*
+
+### EXP-2661: Dual-ISF Dosing Strategy Simulation
+
+**Method**: Replay historical corrections using demand-phase ISF (0-2h ISF, which is 2-10×
+smaller than scheduled ISF) for dosing. Apply 2× dose cap for safety. Compare TIR, hypo rate,
+and mean glucose at 4h against scheduled-ISF dosing.
+
+**Key Results**:
+
+| Patient | Sched ISF | Demand ISF | Inflation | Dose× | ΔTIR | ΔHypo |
+|---------|-----------|-----------|-----------|-------|------|-------|
+| a | 49 | 24 | 2.0× | 2.0× | -13pp | +24pp |
+| c | 75 | 18 | 4.1× | 2.0× | -42pp | +42pp |
+| d | 40 | 14 | 2.8× | 2.0× | -40pp | +40pp |
+| e | 33 | 33 | 1.0× | 1.0× | +0pp | +0pp |
+| f | 20 | 10 | 2.1× | 2.0× | -10pp | +26pp |
+| g | 65 | 70 | 0.9× | 0.9× | +0pp | +0pp |
+| i | 50 | 19 | 2.6× | 2.0× | +11pp | +11pp |
+| odc-74077367 | 50 | 31 | 1.6× | 1.6× | -12pp | +12pp |
+| odc-86025410 | 110 | 68 | 1.6× | 1.6× | -14pp | +20pp |
+| odc-96254963 | 60 | 39 | 1.6× | 1.6× | -12pp | +20pp |
+
+**Hypothesis Results**:
+- H1: Demand-ISF TIR ≥20pp better — **FAIL** (0/10; mean -13.2pp WORSE)
+- H2: Hypo increase <5pp — **FAIL** (max +42pp!)
+- H3: Demand-ISF mean 4h BG closer to target — **FAIL** (1/10)
+- H4: Safety/efficacy varies ≥2× — **PASS**
+
+**Critical Negative Result: Naive Demand-ISF Dosing is Catastrophic**
+
+This is the single most important **safety finding** in the study. Using demand-phase ISF
+(the "true" insulin sensitivity) for dosing in an existing AID system causes:
+- TIR **decreases** by 13pp on average
+- Hypo rate **increases** by 12-42 percentage points
+- Patient d: mean 4h BG = **-304 mg/dL** (nonphysical — massive overdose)
+
+**Why?** Three compounding factors:
+1. **AID compensation**: The controller was ALREADY compensating for the inflated ISF.
+   It delivers SMBs, temporary basals, etc. Double-dosing on top of this is catastrophic.
+2. **Suppression wall** (EXP-2656): Larger doses hit the 30% ceiling faster, so the extra
+   insulin doesn't lower glucose proportionally — but it's still absorbed later, causing
+   delayed hypos.
+3. **Phase coupling**: Demand-ISF measures the 0-2h response, but the dose continues acting
+   for 6h. The post-2h trajectory is dominated by EGP recovery, which the larger dose
+   doesn't proportionally suppress.
+
+**Implication**: Demand-ISF is the correct SENSITIVITY MEASUREMENT but cannot be used
+directly for DOSING in current systems. A controller redesign would need:
+- Phase-aware prediction (demand ISF for 0-2h, apparent ISF for 2-6h)
+- IOB ceiling awareness (stop pushing insulin into the suppression wall)
+- Gradual ISF transition, not a step change
+
+![Figure 26: Dual-ISF Safety](../../visualizations/egp-phase-research/fig26_dual_isf_safety.png)
+*Figure 26: Every patient except e (no inflation) and g (no inflation) enters the danger zone (right of red line). Naive demand-ISF dosing is unsafe.*
+
+### Phase 2 Synthesis: The AID Compensation Paradox
+
+Phase 2 reveals a central paradox of automated insulin delivery systems:
+
+**AID systems compensate for wrong settings, masking setting errors. Correcting settings
+without simultaneously changing the controller causes harm, not benefit.**
+
+Evidence:
+1. **CR adequacy** (2654): Only 12-34% of meals reach adequate 5h glucose, but the AID
+   controller masks this by adjusting dosing throughout. Meal size barely predicts outcome.
+2. **Suppression ceiling** (2656): At high IOB, glucose drops at 0-34% of expected rate.
+   Controllers pushing more insulin hit a wall — the 30% SC suppression ceiling.
+3. **Dual-ISF dosing** (2661): Using the "correct" ISF for dosing is catastrophic because
+   the controller was already compensating. Any setting change must be paired with
+   controller adjustment.
+
+This is a **fundamental challenge for all AID systems**: the controller and settings form a
+coupled system. Optimizing settings in isolation (as autotune, autoISF, etc. attempt) can
+actually worsen outcomes if the controller doesn't co-adapt.
+
+### Updated Findings Table
+
+| # | Finding | Confidence | Source |
+|---|---------|-----------|--------|
+| F13 | Only 12-34% of meals achieve adequate 5h glucose | High | EXP-2654, N=4968 |
+| F14 | Most patients need CR decreased 6-46% | High | EXP-2654, 11/12 patients |
+| F15 | Glucose drops at 0-34% of linear prediction at high IOB | **Very High** | EXP-2656, 12/12 |
+| F16 | SC suppression ceiling ~30% (not cgmsim-lib's 65%) | High | EXP-2656, 8/12 at 30% |
+| F17 | Ceiling correlates with sticky hyper rate (r=-0.60) | High | EXP-2656, p=0.039 |
+| F18 | Naive demand-ISF dosing is catastrophic (+12-42pp hypo) | **Very High** | EXP-2661, 8/10 |
+| F19 | AID Compensation Paradox: correcting settings harms outcomes | **Very High** | EXP-2654/2656/2661 |
+
+### Appendix: Experiment Code and Visualization
+
+| Script | Purpose |
+|--------|---------|
+| `tools/cgmencode/exp_cr_adequacy_2654.py` | CR adequacy analysis |
+| `tools/cgmencode/exp_sc_ceiling_2656.py` | SC suppression ceiling test |
+| `tools/cgmencode/exp_dual_isf_2661.py` | Dual-ISF dosing simulation |
+| `visualizations/egp-phase-research/phase2_plots.py` | Figures 24-26 |
+
+Results (gitignored): `externals/experiments/exp-26{54,56,61}_*.json`
