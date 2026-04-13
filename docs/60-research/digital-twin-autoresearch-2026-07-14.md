@@ -1621,3 +1621,121 @@ original magnitude for transparency. Wired into `generate_settings_advice()`.
 - ISF non-linearity produces extreme magnitudes → safety clamp mitigates
 - Patient i ISF drift (1.95→1.39 over 180d): genuine or data artifact?
 - Forward sim glycogen model: needed for >2h simulation accuracy
+
+### EXP-2627: Advisory Deduplication
+
+**Question**: Can same-parameter same-direction advisories be merged?
+
+**Result**: ALL 4 CONFIRMED.
+- 52.3% advisory count reduction (6.8 → 3.2 mean)
+- 100% direction agreement within same-parameter groups
+- SQS↔TIR correlation IMPROVES with dedup (r=0.647 vs 0.632)
+
+**Productionized**: `_deduplicate_same_direction()` in settings_advisor.py.
+Merges same-parameter same-direction advisories into one with weighted
+average magnitude and summed TIR delta. 371 tests pass.
+
+### EXP-2628: Autosens vs ISF Calibration
+
+**Question**: Does loop's sensitivity_ratio predict our ISF calibration?
+
+**Result**: DATA LIMITED. Only 1/9 patients (b) has autosens data.
+For patient b: autosens does NOT correlate with per-window ISF
+(r=-0.102). They measure different things:
+- Autosens: CV=8.8%, heavily smoothed long-term trend
+- Per-window ISF: CV=69.4%, captures real correction-by-correction variation
+
+**Implication**: Autosens and ISF calibration are complementary.
+The loop's autosens is a stable but imprecise signal; our calibration
+captures the actual physiological variation but is noisy per-window.
+
+### Final Phase 10 Summary
+
+| EXP | Title | Hypotheses | Confirmed | Productionized |
+|-----|-------|------------|-----------|----------------|
+| 2623 | Multi-Feature ISF | 4 | 1/4 | No (closes line) |
+| 2624 | Advisory Audit | 4 | 4/4 | N/A (validation) |
+| 2625 | ODC Cross-Val | 4 | 4/4 | N/A (validation) |
+| 2626 | Safety Guardrails | 3 | 3/3 | Yes (safety clamp) |
+| 2627 | Deduplication | 4 | 4/4 | Yes (merge same-dir) |
+| 2628 | Autosens Validation | 3 | 1/3 | No (data-limited) |
+
+**Totals**: 22 hypotheses tested, 17 confirmed (77%).
+**Productionized**: 2 new features (safety clamp, deduplication).
+**Closed**: 4 research lines (per-window ISF, multi-feature ISF,
+loop workload ratio, autosens-as-ISF-proxy).
+
+---
+
+## Cumulative Research Summary
+
+### Experiment Statistics (EXP-2561–2628)
+
+| Phase | EXP Range | Experiments | Hypotheses | Confirmed | Rate |
+|-------|-----------|-------------|------------|-----------|------|
+| 1-3 | 2561-2571 | 11 | ~25 | ~12 | 48% |
+| 4-5 | 2572-2583 | 12 | ~30 | ~15 | 50% |
+| 6 | 2584-2588 | 5 | ~12 | ~6 | 50% |
+| 7 | 2589-2614 | 26 | ~35 | ~18 | 51% |
+| 8 | 2615-2619 | 5 | 14 | 3 | 21% |
+| 9 | 2620-2622 | 3 | 9 | 4 | 44% |
+| 10 | 2623-2628 | 6 | 22 | 17 | 77% |
+
+**Total**: 68 experiments, ~147 hypotheses, ~75 confirmed (51%).
+
+### Production Advisory Pipeline — Final State
+
+19 features in `generate_settings_advice()`:
+
+1. Basal assessment (EXP-693)
+2. CR effectiveness (EXP-694)
+3. ISF discrepancy (EXP-747)
+4. ISF non-linearity warning (EXP-2511)
+5. Circadian ISF 2-zone (EXP-2271)
+6. Circadian ISF 4-block (EXP-2271)
+7. Context-aware CR (EXP-2341)
+8. Overnight drift basal (EXP-2371)
+9. Correction threshold (EXP-2528)
+10. CR adequacy (EXP-2535)
+11. CR meal-response (EXP-2607)
+12. Per-block CR (EXP-2608)
+13. Correction ISF (EXP-2585)
+14. Joint ISF×CR (EXP-2582)
+15. Hypo risk warning (EXP-2539)
+16. Override ISF (EXP-2621)
+17. Confidence tiers (EXP-2622)
+18. Safety clamp (EXP-2626)
+19. Advisory deduplication (EXP-2627)
+
+### Validated Across
+
+- 9 Nightscout patients (NS)
+- 7 OpenDiaspora Collective patients (ODC)
+- 371 unit tests
+- SQS↔TIR r=0.647 (p=0.007)
+- Zero contradictions across 16 patients
+
+### Key Structural Findings
+
+1. **Forward sim sweet spot**: 2h correction windows only. >2h fails (no glycogen/HGP model).
+2. **ISF variance**: 84-97% unexplained by available features (EXP-2623). Stochastic biology dominates.
+3. **Loop delivery confound**: Loop delivery is a function of glucose trajectory (reactive). Cannot feed into open-loop sim (EXP-2616).
+4. **Universal loop bias**: ALL patients show loop predictions lower than actual glucose (EXP-2620). Validates counter-reg model.
+5. **Autosens ≠ ISF calibration**: Different things, complementary (EXP-2628).
+
+### Closed Research Lines (34 total)
+
+All prior lines from checkpoints 001-005, plus:
+- Circadian CR (EXP-2615)
+- Actual delivery sim (EXP-2616)
+- Suspension natural experiments (EXP-2617)
+- 8h Nyquist windows (EXP-2618)
+- Universal metabolic context (EXP-2619 partial)
+- Loop prediction as ISF proxy (EXP-2620)
+- Exercise ISF (data unavailable, EXP-2621)
+- Override filtering (EXP-2621)
+- Corrections→convergence speed (EXP-2622)
+- Per-window ISF prediction (EXP-2623)
+- Multi-feature ISF regression (EXP-2623)
+- Loop workload ratio as ISF predictor (EXP-2623)
+- Autosens as ISF proxy (EXP-2628)

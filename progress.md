@@ -334,3 +334,16 @@ forward sim lacks glycogen model for >2h accuracy.
 
 **Closed Research Lines**: Per-window ISF prediction, multi-feature ISF,
 loop workload ratio as ISF predictor (3 new closures, 30 total).
+
+### Phase 10 Addendum: EXP-2627-2628 (2026-07-15)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2627 | `tools/cgmencode/production/exp_deduplication_2627.py` | 52% reduction, 100% direction agreement |
+| EXP-2628 | `tools/cgmencode/production/exp_autosens_validation_2628.py` | Autosens ≠ ISF calibration |
+| Deduplication | `tools/cgmencode/production/settings_advisor.py` | _deduplicate_same_direction(), 371 tests |
+| Final report | `docs/60-research/digital-twin-autoresearch-2026-07-14.md` | Cumulative research summary |
+
+**Cumulative totals**: 68 experiments, ~147 hypotheses, ~75 confirmed (51%).
+19 production features. 371 tests. 34 closed research lines.
+Validated across 16 patients from 2 independent sources.
