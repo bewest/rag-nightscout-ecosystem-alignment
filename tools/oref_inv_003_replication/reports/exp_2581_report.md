@@ -45,7 +45,7 @@ Our result is even more extreme (−3.20 vs 0.002), likely because:
 |--------|-------|
 | Mean R² (1h) | −0.156 |
 | Median R² (1h) | 0.170 |
-| Per-patient MAE | 23–47 mg/dL |
+| Per-patient MAE | 14–53 mg/dL |
 
 **Interpretation**: Loop's 60-minute prediction (`predicted_60`) performs better than
 eventualBG but is still poor on average (negative mean R²). The positive median
@@ -108,7 +108,7 @@ demonstrating that the value is in the feature representation, not point predict
 - **PK prediction**: `pk_net_balance` from `pk_bridge.py`
 - **R² computation**: scikit-learn `r2_score(y_true, y_pred)` — penalizes variance
 - **Horizons**: 1h, 2h, 4h actual future BG from entries
-- **Patients**: 8 AAPS/oref0 for eventualBG; 11 Loop for predicted_60
+- **Patients**: 8 AAPS/oref0 for eventualBG; 17 Loop+AAPS for predicted_60
 
 ## Limitations
 

@@ -55,7 +55,7 @@
 
 **Models**: LightGBM classifiers (500 trees, depth 6, subsample 0.8), 5-fold stratified CV, SHAP TreeExplainer for feature importance.
 
-**Data**: 803K rows, 19 patients (11 Loop, 8 AAPS). 4h binary hypo (<70 mg/dL) and hyper (>180 mg/dL) outcomes.
+**Data**: 667K rows, 19 patients (11 Loop, 8 AAPS). 4h binary hypo (<70 mg/dL) and hyper (>180 mg/dL) outcomes.
 
 ## Limitations
 

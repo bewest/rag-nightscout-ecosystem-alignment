@@ -29,7 +29,7 @@ adding PK features (EXP-2531) or DIA optimization (EXP-2541).
 | Hypo AUC | 0.8031 | 0.8031 | ±0.000 |
 | Hyper AUC | 0.9008 | 0.9008 | ±0.000 |
 | SHAP ρ (hypo) | 0.531 | **0.552** | **+0.021** |
-| SHAP ρ (hyper) | 0.645 | **0.669** | **+0.024** |
+| SHAP ρ (hyper) | 0.691 | **0.669** | **−0.022** |
 | AAPS-only ρ (hypo) | — | 0.393 | — |
 | iob_basaliob rank | #10 | #12 | −2 |
 
@@ -80,7 +80,7 @@ well as the mixed cohort, possibly due to smaller sample size or data quality is
 - **Model**: LightGBM (500 trees, lr=0.05, depth=6, subsample=0.8)
 - **CV**: 5-fold stratified
 - **SHAP**: TreeExplainer, 50K row sample
-- **Data**: 803K rows, 19 patients (11 Loop, 8 AAPS/ODC)
+- **Data**: 667K rows, 19 patients (11 Loop, 8 AAPS/ODC)
 - **Outcomes**: 4h binary hypo (<70 mg/dL) and hyper (>180 mg/dL)
 
 ## Limitations

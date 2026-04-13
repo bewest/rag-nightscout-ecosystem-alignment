@@ -41,12 +41,12 @@ first-principles insulin modeling for both prediction accuracy and SHAP alignmen
 | 2 | sug_ISF | 10.99% | = (was #2) |
 | 3 | sug_current_target | 7.98% | = (was #3) |
 | 4 | reason_minGuardBG | 7.60% | = (was #4) |
-| 5 | reason_Dev | 5.93% | = (was #5) |
-| 6 | bg_above_target | 6.01% | = (was #6) |
+| 5 | bg_above_target | 6.01% | ↑ from #6 |
+| 6 | reason_Dev | 5.93% | ↓ from #5 |
 | 7 | reason_BGI | **5.46%** | ↑ from #9 |
-| 8 | hour | 5.12% | ↓ from #7 |
-| 9 | sug_CR | 4.21% | ↓ from #8 |
-| 10 | iob_basaliob | **3.45%** | ↑ from #12 |
+| 8 | hour | 5.25% | ↓ from #7 |
+| 9 | sug_CR | 4.10% | ↓ from #8 |
+| 10 | iob_basaliob | **3.60%** | ↑ from #12 |
 
 ## Key Findings
 
@@ -106,7 +106,7 @@ pk_bolus_ratio, pk_time_since_bolus, pk_active_carbs
 - **CV**: 5-fold stratified
 - **SHAP**: TreeExplainer, 50K row sample
 - **PK parameters**: DIA from patient profiles (5-6h), peak=75min (rapid-acting)
-- **Data**: 803K rows, 19 patients (11 Loop, 8 AAPS/ODC)
+- **Data**: 667K rows, 19 patients (11 Loop, 8 AAPS/ODC)
 
 ## Limitations
 
