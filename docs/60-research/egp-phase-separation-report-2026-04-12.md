@@ -1063,7 +1063,7 @@ prior bolus 2h, pre-BG ≥120), compute:
 | Patient | Events | Sched ISF | Demand ISF | Apparent ISF | Inflation | Best@2h | Best@4h |
 |---------|--------|-----------|------------|--------------|-----------|---------|---------|
 | a | 102 | 49 | 19 | 50 | 2.6× | demand | demand |
-| c | 51 | 75 | 20 | 91 | 4.6× | demand | demand |
+| c | 51 | 75 | 20 | 91 | 4.5× | demand | demand |
 | e | 42 | 33 | 5 | 46 | 9.9× | demand | demand |
 | f | 102 | 20 | 10 | 22 | 2.1× | demand | demand |
 | i | 48 | 50 | 5 | 37 | 7.3× | demand | demand |
@@ -1095,7 +1095,7 @@ vs 2-block (day/night) vs 6-block ISF profiles.
 
 **Results**:
 - **H1 PASS** (90%): 9/10 patients have ≥30% ISF variation across time blocks
-- **H2 FAIL**: 2-block profiles reduce RMSE ≥10% for only 2/10 patients
+- **H2 FAIL**: 2-block profiles reduce RMSE ≥10% for 0/10 patients
 - **H3 FAIL**: Dawn (04-08h) is NOT the lowest ISF block — **12-16h (afternoon)** is 
   lowest for 4/10 patients
 
@@ -1128,18 +1128,18 @@ net_energy_48h, mean_bg_48h (supply).
 | Net energy balance | 0.037 | d (0.111) | odc-96254963 (0.002) |
 
 **Hypotheses**:
-- **H1 FAIL**: Mean combined R² = 0.133, not ≥0.25
+- **H1 FAIL**: Mean combined R² = 0.141, not ≥0.25
 - **H2 FAIL**: Supply adds only +0.018 mean incremental R² (range: -0.233 to +0.118)
 - **H3 PASS**: 48h carbs ≥ 96h for 5/7 patients (consistent with EXP-2627)
 - **H4 PASS**: Net energy balance better than raw carbs for 4/7 patients
 - **H5 PASS**: Demand/supply ratio varies 157× across patients
 
-**Key insight**: Even with Nyquist-correct windows, **87% of overnight drift variance is 
+**Key insight**: Even with Nyquist-correct windows, **86% of overnight drift variance is 
 unexplained** — "metabolic weather" from unmeasured factors (counter-regulation hormones, 
 physical activity, stress, sleep quality). The demand/supply balance is REAL but WEAK and 
 highly patient-specific. For some patients (a, d, f), supply features add 7-12% incremental 
 R²; for others, supply is irrelevant or harmful. This calibrates expectations: **any 
-basal/ISF/CR recommendation system faces a hard ceiling of ~13% explainable variance** 
+basal/ISF/CR recommendation system faces a hard ceiling of ~14% explainable variance** 
 from insulin and carb history alone.
 
 ![Nyquist multi-scale](../../visualizations/egp-phase-research/fig23_nyquist_multiscale.png)
@@ -1154,7 +1154,7 @@ from insulin and carb history alone.
 | Demand ISF wins at ALL horizons | 0-4h+ | Use for dosing AND prediction |
 | 90% have circadian ISF variation | ≥30% range | But no universal pattern |
 | Afternoon has lowest ISF | 12-16h | Not dawn as commonly assumed |
-| Multi-scale R² = 13% | Hard ceiling | 87% is unmeasured metabolic weather |
+| Multi-scale R² = 14% | Hard ceiling | 86% is unmeasured metabolic weather |
 | Supply adds +1.8% mean R² | Patient-specific | Not a universal predictor |
 | Demand/supply ratio varies 157× | Across patients | One-size-fits-all models fail |
 
