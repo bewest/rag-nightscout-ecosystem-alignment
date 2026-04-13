@@ -1,7 +1,7 @@
-# EGP Phase Separation Research — Rounds 1 & 2 Report
+# EGP Phase Separation Research — Complete Report
 
-**Date**: 2026-04-12
-**Experiments**: EXP-2621, EXP-2622, EXP-2623, EXP-2624
+**Date**: 2026-04-12 (updated 2026-04-13)
+**Experiments**: EXP-2621 through EXP-2626
 **Data**: 9 patients, ~180 days each, 5-min resolution (803K rows)
 **Branch**: `workspace/digital-twin-fidelity`
 
@@ -466,3 +466,263 @@ All in `visualizations/egp-phase-research/`.
    incorrect DIA settings will shift nadir timing and confound EGP estimation
 5. **Multi-compartment EGP model** — fast glycogenolysis + slow gluconeogenesis
    may explain per-patient variation better than single-rate model
+
+---
+
+## Round 4: Supply/Demand Asymmetry Synthesis (EXP-2626)
+
+### Motivation
+
+Rounds 1-3 established that EGP is real, measurable, and per-patient-variable.
+Round 4 asks the three key questions:
+
+1. **Does this impact our understanding of supply/demand symmetry in diabetes data?**
+2. **Can we make concrete recommendations for basal, ISF, and CR schedules?**
+3. **Can we design better AID controllers using these findings?**
+
+### Experiment: EXP-2626 Asymmetry Synthesis
+
+For each of the 214 correction events across 6 patients, we decomposed the
+glucose trajectory into three phases:
+
+| Phase | Time Window | Driver | Rate |
+|-------|-------------|--------|------|
+| **Demand** | 0 → 2h | Insulin action | 24 mg/dL/hr (median) |
+| **Transition** | 2h → nadir (3.5h) | EGP suppressed + residual insulin | Combined |
+| **Recovery** | nadir → 6h+ | EGP reassertion | 17 mg/dL/hr (median) |
+
+**Key finding: 54% of the total glucose drop from a correction occurs AFTER 2h** —
+in the EGP-suppressed phase, not the primary insulin demand phase. IOB at nadir
+is only 13%, meaning most insulin has already been absorbed but glucose is still
+falling because EGP hasn't yet recovered.
+
+### Figure 10: Three-Phase Correction Model
+
+![Three-Phase Correction Model](../../visualizations/egp-phase-research/fig10_three_phase_correction.png)
+
+The left panel shows an idealized correction trajectory with the three phases
+color-coded. The dotted red line shows what current AID controllers predict —
+they expect the nadir near the insulin peak (1.25h) and a flat trajectory after.
+Reality shows a 2.25h phase lag, where glucose continues dropping after
+insulin activity peaks because EGP is actively suppressed by portal insulin.
+
+The right panel shows the pie chart: 46% of the correction effect is demand-driven
+(insulin directly), while 54% is from EGP suppression amplifying the drop.
+
+### Impact on Supply/Demand Symmetry
+
+**Supply and demand in type 1 diabetes are fundamentally asymmetric:**
+
+```
+SUPPLY (EGP)                          DEMAND (Insulin)
+────────────                          ────────────────
+Timescale: 10-72h dynamics            Timescale: 6h DIA
+Response lag: 2-6h to reassert        Peak action: 1.25h
+Rate: ~18 mg/dL/hr base              Rate: ISF-scaled
+Suppression: proportional to portal   Clearance: first-order exponential
+    insulin concentration                 decay (τ=101.8min)
+Recovery: Hill-curve, gradual         Offset: immediate via IOB
+```
+
+This asymmetry means:
+
+1. **Corrections are "too effective"** — the apparent ISF from watching a
+   correction (250→130 mg/dL from 2U = ISF 60) includes ~54% contribution
+   from EGP suppression. The TRUE insulin-only ISF is lower (~28 in this
+   example). Controllers using the apparent ISF for prediction will
+   over-estimate the next correction.
+
+2. **Post-correction "rebounds" are not failures** — when glucose rises at
+   4-6h after a correction, controllers often interpret this as the correction
+   failing and may dose more insulin. In reality, this is EGP recovering at
+   its physiological rate (17 mg/dL/hr median). The correction worked perfectly;
+   the glucose rise is normal hepatic resumption.
+
+3. **Insulin stacking risk is real but misunderstood** — the danger isn't that
+   corrections overlap (IOB handles that). The danger is that each correction
+   suppresses EGP for 3.5h, and if you stack corrections, you extend the
+   suppression window. When EGP finally recovers, it all comes at once.
+
+### Per-Patient ISF Analysis
+
+**Figure 11: ISF Decomposition — Why One Number Is Not Enough**
+
+![ISF Decomposition](../../visualizations/egp-phase-research/fig11_isf_decomposition.png)
+
+Each patient has FOUR different ISF values, each correct for different purposes:
+
+| ISF Type | Definition | Use Case |
+|----------|------------|----------|
+| **Scheduled** | User/clinician configured | Current pump setting |
+| **Apparent** | Total glucose drop / bolus | What corrections seem to achieve |
+| **EGP-Corrected** | Apparent × (1 / (1 + inflation)) | True insulin-only effect |
+| **Demand-Phase** | Drop in first 2h / (bolus × IOB used) | Immediate correction sizing |
+
+Per-patient ISF inflation from EGP:
+
+| Patient | Scheduled | Apparent | EGP-Corrected | Inflation | Assessment |
+|---------|-----------|----------|---------------|-----------|------------|
+| a | 49 | 39 | 24 | **+66%** | ISF inflated by EGP |
+| c | 75 | 56 | 19 | **+188%** | Severely inflated (6 events) |
+| e | 33 | 35 | 33 | +5% | ISF approximately correct |
+| f | 20 | 17 | 10 | **+84%** | ISF inflated by EGP |
+| g | 65 | 68 | 71 | -3% | ISF correct (fast nadir) |
+| i | 50 | 26 | 19 | **+38%** | ISF inflated by EGP |
+
+**67% of patients (4/6) have ISF inflated ≥15% by EGP suppression.**
+
+### Per-Patient Settings Recommendations
+
+**Figure 12: Settings Recommendations Dashboard**
+
+![Settings Recommendations](../../visualizations/egp-phase-research/fig12_settings_recommendations.png)
+
+Concrete recommendations from EGP analysis:
+
+| Patient | Basal | ISF | Notes |
+|---------|-------|-----|-------|
+| **a** | ↑ 0.30 → 0.53 U/hr | ↓ Review lower | Recovery 22 mg/dL/hr > base EGP |
+| **c** | ↑ 1.40 → 1.68 U/hr | ↓ Review lower | Only 6 events — confirm with more data |
+| **e** | ↑ 2.40 → 3.08 U/hr | → No change | Day/night split: 51 vs 39 mg/dL/hr |
+| **f** | ↑? 1.40 → 1.52 U/hr | ↓ Review lower | Moderate EGP recovery (8 mg/dL/hr) |
+| **g** | ↑? 0.60 → 0.68 U/hr | → No change | Fast nadir (2.3h) = minimal EGP effect |
+| **i** | → 2.50 maintain | ↓ Review lower | **Dramatic**: day +37 vs night -4.5 |
+
+**Circadian findings**: Patients e and i show clinically significant day/night
+splits. Patient i's night recovery is actually **negative** (-4.5 mg/dL/hr),
+suggesting nighttime EGP is nearly zero — the insulin is doing all the work.
+This patient likely needs significantly different day and night basal rates.
+
+### AID Controller Implications
+
+**Figure 13: What Controllers Miss**
+
+![Controller Error](../../visualizations/egp-phase-research/fig13_controller_error.png)
+
+We analyzed how Loop, oref0/AAPS, and Trio handle ISF in their prediction
+and dosing algorithms:
+
+| Feature | Loop | oref0/AAPS | Trio | Our Finding |
+|---------|------|------------|------|-------------|
+| **ISF for dosing vs prediction** | Same | Same (DynISF: different) | Same | Should be different |
+| **EGP recovery modeling** | None | None | Defined but unused | 17 mg/dL/hr median |
+| **Nadir timing** | ~insulin peak | ~insulin peak | ~insulin peak | 3.5h (2.25h lag) |
+| **Post-correction rebound** | Not modeled | Not modeled | Not modeled | EGP recovery, not failure |
+
+**Notable discovery**: Trio's codebase defines an `EGPSchedule` class
+(`LoopKit/EGPSchedule.swift`) as `basalSchedule × ISF`, acknowledging the
+concept of endogenous glucose production — but it is **not used** in the
+active dosing algorithm. The infrastructure exists for EGP-aware control.
+
+#### Proposed Controller Improvements
+
+1. **Dual-ISF Correction Sizing**
+   - Use *demand-phase ISF* (first 2h only) for correction dose calculation
+   - Use *apparent ISF* for glucose prediction over the full DIA window
+   - This prevents over-dosing: the controller calculates how many units are
+     needed based on the *immediate* insulin effect, not the total (which
+     includes EGP suppression that's a bonus, not a target)
+
+2. **EGP Recovery Term in Prediction**
+   - After any correction bolus, add a positive glucose term beginning at
+     `patient.nadir_hours` (median 3.5h) with slope `patient.recovery_rate`
+   - This prevents controllers from interpreting EGP recovery as correction
+     failure and stacking additional insulin
+   - Patient-specific: recovery rates range 4.7 to 44.8 mg/dL/hr
+
+3. **Circadian EGP Profiles**
+   - For patients with significant day/night split (e, i), the controller
+     should use different EGP assumptions for overnight vs daytime corrections
+   - Patient i: daytime corrections will "rebound" strongly (+37 mg/dL/hr);
+     nighttime corrections will not (-4.5 mg/dL/hr, continued suppression)
+   - This could prevent overnight lows from aggressive nighttime correction
+     stacking and daytime highs from under-correcting
+
+4. **Glycogen-Aware Basal Prediction**
+   - 48h carb history → overnight drift correlation (r=-0.303 from EXP-2622)
+   - After high-carb days, glycogen stores are replete → stronger EGP →
+     higher effective basal need
+   - After low-carb/fasting days, glycogen depleted → weaker EGP →
+     lower effective basal need
+
+### Summary of All Findings
+
+| Finding | Source | Confidence | Implication |
+|---------|--------|------------|-------------|
+| Glucose nadir at 3.5h (not 1.25h) | EXP-2624, N=214 | **High** | All controllers wrong about timing |
+| 54% of correction drop is EGP suppression | EXP-2626, N=214 | **High** | ISF systematically inflated |
+| Recovery ≈ base EGP (17 vs 18 mg/dL/hr) | EXP-2624/2626 | **High** | Recovery IS EGP, not something else |
+| 67% of patients have ISF inflated ≥15% | EXP-2625, N=6 | **Moderate** | Most patients' ISF is wrong |
+| Day/night EGP split in 2/6 patients | EXP-2625, N=6 | **Moderate** | Circadian basal adjustment needed |
+| 48h carbs → drift correlation | EXP-2622, N≈500 nights | **Moderate** | Multi-day carb context matters |
+| Spectral EGP-band is only 3.6-8.6% | EXP-2621, N=9 | **High (null)** | Circadian model already captures most |
+| No controller models EGP recovery | Controller analysis | **High** | Gap in all 3 major systems |
+| Trio has unused EGPSchedule | Code analysis | **High** | Infrastructure exists, needs activation |
+
+### Null and Disconfirmed Findings
+
+1. **EGP-band spectral power is NOT dominant** (EXP-2621): Only 3.6-8.6% of
+   residual variance. The existing 4-harmonic circadian model already absorbs
+   most of the EGP variation. EGP is best measured from *natural experiments*
+   (corrections), not spectral decomposition.
+
+2. **Night-to-night EGP is NOT persistent** (EXP-2622 H2): Autocorrelation ≈ 0.
+   Each night's EGP is independent, driven by that day's carb/insulin history,
+   not a persistent metabolic state.
+
+3. **Per-patient recovery slope does NOT correlate with basal rate** (EXP-2625 H1):
+   r=0.085. This is actually informative: it means recovery rate measures something
+   DIFFERENT from what basal rate captures. Recovery measures EGP *capacity*;
+   basal rate is the *current matching* against it. Mismatch → basal adjustment.
+
+4. **Meal masking does NOT consistently enrich EGP** (EXP-2623): Works for
+   high-meal patients (patient a: 9.6×) but not for low-meal patients. The
+   signal is bimodal, suggesting meal count itself is a phenotypic marker.
+
+### Avenues for Further Research
+
+1. **Validate on ODC patients** — 8 additional patients with varying DIA (3-7h).
+   Must normalize by configured DIA. Incorrect DIA settings will shift nadir
+   timing and confound EGP estimation.
+
+2. **Multi-compartment EGP model** — Glycogenolysis (fast, 0.5-2h recovery) vs
+   gluconeogenesis (slow, 6-72h adaptation). Patient g's fast nadir (2.3h) may
+   reflect glycogenolysis-dominant metabolism; patient i's slow recovery (4.7
+   mg/dL/hr) may reflect gluconeogenesis-dominant.
+
+3. **Forward simulator integration** — Add EGP recovery term to
+   `forward_simulator.py` and test whether it improves 4-6h prediction accuracy.
+   Current sim is 2.5× too potent for corrections (actual/sim ratio=0.39 at 2h);
+   EGP suppression may explain ~54% of this discrepancy.
+
+4. **Trio EGPSchedule activation** — Prototype using Trio's existing infrastructure
+   with per-patient parameters from this analysis. Test in simulation against
+   historical glucose data.
+
+5. **ISF stacking analysis** — Measure whether rapid correction stacking (multiple
+   boluses within 3.5h) produces deeper-than-predicted nadirs due to cumulative
+   EGP suppression.
+
+6. **Meal-EGP interaction** — After meals, both insulin and carbs are present.
+   Does EGP suppression from bolus insulin interact with carb-driven glycogen
+   storage? This could explain why post-meal "second rise" is often seen at
+   3-4h (carb absorption done + EGP not yet recovered).
+
+---
+
+## Experiment Code & Data
+
+| File | Purpose |
+|------|---------|
+| `tools/cgmencode/exp_residual_census_2621.py` | Spectral decomposition |
+| `tools/cgmencode/exp_egp_trajectory_2622.py` | Overnight drift + glycogen |
+| `tools/cgmencode/exp_post_meal_egp_2623.py` | Meal masking + EGP extraction |
+| `tools/cgmencode/exp_correction_egp_2624.py` | Correction recovery dynamics |
+| `tools/cgmencode/exp_egp_settings_2625.py` | Per-patient EGP profiles |
+| `tools/cgmencode/exp_asymmetry_synthesis_2626.py` | Asymmetry synthesis |
+| `visualizations/egp-phase-research/round1_plots.py` | Figures 1-4 |
+| `visualizations/egp-phase-research/round2_plots.py` | Figures 5-6 |
+| `visualizations/egp-phase-research/round3_plots.py` | Figures 7-9 |
+| `visualizations/egp-phase-research/synthesis_plots.py` | Figures 10-13 |
+
+Results (gitignored): `externals/experiments/exp-26{21-26}_*.json`
