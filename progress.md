@@ -199,3 +199,32 @@ and 3 productionizations, bringing total advisories to 14.
 - `tools/cgmencode/production/settings_advisor.py` (14 advisories)
 - `tools/cgmencode/production/forward_simulator.py` (carb_sensitivity decoupling)
 - `externals/ns-parquet/training/grid.parquet` (270 meal events, 9 patients)
+
+### Digital Twin Autoresearch Phase 5-6 (2026-07-15)
+
+Advisory system validation and ISF fix across 6 experiments (EXP-2601–2606).
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2601 | `exp_dose_response_2601.py` | CRITICAL: ISF advisory magnitude inflated by sim calibration |
+| EXP-2602 | `exp_isf_comparison_2602.py` | Correction-based ISF is clinically correct |
+| EXP-2603 | `exp_circadian_isf_2603.py` | Circadian ISF varies 70-125% but direction is patient-specific |
+| EXP-2604 | `exp_basal_adequacy_2604.py` | NEGATIVE: closed-loop confound masks basal adequacy |
+| EXP-2605 | `exp_temporal_stability_2605.py` | ALL CONFIRMED: r=0.968 SQS stability |
+| EXP-2606 | `exp_outcome_validation_2606.py` | SQS vs TIR r=0.726 (validated post-fix) |
+| ISF fix | `settings_advisor.py` | Removed sim ISF, correction-based only |
+| SQS update | `settings_advisor.py` | magnitude_pct basis (was tir_delta) |
+
+**Key Findings**:
+- ISF×0.5 sim calibration should NOT be used as clinical recommendation
+- Advisory system is temporally stable (r=0.968 across halves)
+- SQS with magnitude-based formula correlates with TIR (r=0.726)
+- Overnight basal adequacy doesn't work for closed-loop (loop compensates)
+- Circadian ISF direction is patient-specific, not universal
+
+**Gaps Identified**: GAP-SIM-006 (sim calibration ≠ clinical recommendation)
+
+**Productionized**: 19 features total (ISF source fix, SQS formula update)
+
+**Source Files Modified**:
+- `tools/cgmencode/production/settings_advisor.py` (19 productionized features)

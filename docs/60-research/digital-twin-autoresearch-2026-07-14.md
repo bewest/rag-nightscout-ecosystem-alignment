@@ -1096,3 +1096,106 @@ Total: **17 productionized features** in settings_advisor.py.
 
 - Sequential calibration pipeline (basal→ISF→CSF→k) — EXP-2599
   - Actual/scheduled basal ratio ≠ metabolic need in closed-loop
+
+---
+
+## Phase 6: Advisory System Validation & ISF Fix (EXP-2601–2606)
+
+### Critical Discovery: ISF Advisory Magnitude Problem (EXP-2601)
+
+Dose-response simulation revealed that applying the top advisory recommendation
+**worsened** TIR for 8/9 patients. Root cause: the sim-based ISF advisory used
+`ISF×0.5` (a calibration parameter for ranking accuracy) as a clinical
+recommendation, causing double-application of the calibration multiplier.
+
+**Fix applied**: Removed ISF from `advise_forward_sim_optimization()`. ISF
+recommendations now come exclusively from `advise_correction_isf()` which
+uses actual correction bolus outcomes.
+
+After fix: 5/9 patients have optimal dose = 100% (vs 1/9 before).
+
+### EXP-2602: Correction-Based vs Sim-Based ISF Comparison
+
+Compared three ISF methods across 9 patients:
+
+| Method | Mean MAE | Best for N patients |
+|--------|----------|---------------------|
+| A) Sim-based (ISF×0.5) | varies | 6/9 |
+| B) Correction-based | varies | 3/9 |
+| C) Profile ISF | highest | 0/9 |
+
+Sim has lower MAE because counter-reg k absorbs ISF discrepancy. But the
+**correction-based ISF is clinically correct** for recommendations. Patient i:
+effective ISF=58.5, profile=50 → should INCREASE (not decrease as sim says).
+
+### EXP-2603: Circadian ISF Profiling
+
+| Finding | Value |
+|---------|-------|
+| H1: ISF range ≥20% across time blocks | **CONFIRMED** (7/8 patients) |
+| H2: Night ISF < Day ISF | **NOT CONFIRMED** (3/7 only) |
+| H3: Per-block beats global | **NOT CONFIRMED** (4/8) |
+
+Circadian ISF variation is real (70-125% range) but **direction is
+patient-specific**, not universal. Counter-reg k and ISF are partially
+confounded — the sim cannot separate them reliably.
+
+### EXP-2604: Overnight Basal Adequacy (NEGATIVE)
+
+All hypotheses NOT CONFIRMED. **Closed-loop confound**: the loop actively
+compensates basal rates, so scheduled basal ≠ delivered basal. Glucose drift
+reflects loop performance, not basal adequacy. Only patients with poor control
+(a: +23.6 mg/dL/hr) show signal.
+
+**CLOSES overnight basal adequacy research line for closed-loop patients.**
+
+### EXP-2605: Advisory Temporal Stability — ALL CONFIRMED
+
+| Hypothesis | Result |
+|------------|--------|
+| H1: Same direction H1↔H2 | **CONFIRMED** (8/9 patients) |
+| H2: SQS correlation H1↔H2 | **CONFIRMED** (r=0.968) |
+| H3: Magnitude CV < 30% | **CONFIRMED** (8/9 patients) |
+
+**Strong evidence** that the advisory system produces trustworthy, reproducible
+recommendations across time. Only patient b showed direction instability
+(ISF→CR switch between halves).
+
+### EXP-2606: Retrospective Outcome Validation
+
+Post-ISF-fix validation of advisory system vs glycemic outcomes:
+
+| Metric | Value |
+|--------|-------|
+| SQS vs TIR | r=0.726 (p=0.027) — **CONFIRMED** |
+| ISF distance vs TIR | r=-0.080 — NOT CONFIRMED |
+| Total distance vs TIR | r=-0.689 (p=0.04) — **CONFIRMED** |
+| SQS vs TBR | r=-0.458 (correct direction) |
+
+Updated SQS formula: `100 - Σ(magnitude_pct × confidence × 0.15)` — uses
+magnitude directly instead of poorly-calibrated tir_delta.
+
+### Productionized in Phase 6
+
+18. ISF advisory source fix — correction-based only (removed sim ISF)
+19. SQS formula update — magnitude-based (r=0.726 vs TIR)
+
+Total: **19 productionized features** in settings_advisor.py.
+
+### Updated Closed Lines
+
+- Sim-based ISF clinical recommendations — EXP-2601/2602
+  - ISF×0.5 is a calibration parameter, not a clinical recommendation
+- Universal "night ISF is lower" rule — EXP-2603
+  - Direction is patient-specific, requires per-patient calibration
+- Overnight basal adequacy for closed-loop — EXP-2604
+  - Loop compensation masks basal inadequacy
+- Sequential calibration pipeline — EXP-2599 (from Phase 5)
+
+### Open Research Lines
+
+- Advisory dose-response with corrected ISF (verify fix end-to-end)
+- Per-patient circadian ISF profiles (data quantity challenge)
+- Online adaptation / drift detection
+- Circadian CR profile generation
+- 4-harmonic basal model for open-loop patients
