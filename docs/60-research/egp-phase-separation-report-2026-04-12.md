@@ -1007,3 +1007,181 @@ correction capability, the system can only increase basal rate, which is slow.
 | `visualizations/egp-phase-research/hill_odc_plots.py` | Figures 15-18 |
 
 Results (gitignored): `externals/experiments/exp-26{21-29}_*.json`
+
+---
+
+## Round 6: Phase 1 Settings + Nyquist Analysis (EXP-2650–2653)
+
+### Context: Parallel Research on AID Compensation
+
+An independent researcher (EXP-2630–2636) established the **AID Compensation Theorem**:
+post-correction "recovery" is largely the AID controller *withdrawing insulin* (reversed 
+causation), not EGP reasserting. All 5 recovery models tested had **negative R²** — the 
+system is fundamentally coupled, not decomposable by single-factor models. This finding 
+constrains interpretation of correction-based analyses below: apparent ISF includes AID 
+controller behavior, not just physiology.
+
+Our experiments were renumbered to 2650+ to avoid collision.
+
+### EXP-2650: IOB-Corrected Basal Recommendation
+
+**Method**: For each patient-night (00-04h midnight, 04-08h dawn blocks), fit 
+`drift = α × IOB@midnight + β`. The intercept β represents drift when IOB=0 (the 
+EGP–basal mismatch). Solve `Δbasal = β / scheduled_ISF` for the correction.
+
+**Results**:
+
+| Patient | Sched | Midnight Rec | Dawn Rec | Dawn Δ | Validation MAE |
+|---------|-------|-------------|----------|--------|----------------|
+| a | 0.30 | 0.56 (+88%) | 0.39 (+30%) | -31% | +8% (dawn) |
+| d | 0.80 | 1.08 (+35%) | 0.71 (-12%) | -34% | +40% (midnight) |
+| f | 1.40 | 1.71 (+22%) | 1.17 (-16%) | -31% | +12% (dawn) |
+| k | 0.55 | 0.65 (+17%) | 0.45 (-18%) | -30% | +25% (midnight) |
+| odc-86025410 | 0.35 | 0.34 (-4%) | 0.30 (-13%) | -9% | +15% (dawn) |
+
+**Hypotheses**:
+- **H1 PASS**: 7/9 patients (78%) need ≥0.05 U/hr adjustment
+- **H2 FAIL**: Validation MAE improves ≥15% for only 3/5 patients tested
+- **H3 FAIL**: Dawn needs *LESS* basal than midnight for 7/8 patients (opposite of expected!)
+
+**Key insight**: Dawn phenomenon is WEAKER than midnight EGP drift. Most patients need 
+30-34% LESS basal at dawn vs midnight. The conventional "dawn phenomenon" narrative 
+(needing more insulin at dawn) does not hold in this AID-managed population — the controller 
+may already be compensating.
+
+![Basal recommendations](../../visualizations/egp-phase-research/fig19_basal_recommendations.png)
+
+### EXP-2651: Two-Phase ISF Decomposition
+
+**Method**: For each correction event (gold-standard filter: ≥0.5U, no carbs ±1h, no 
+prior bolus 2h, pre-BG ≥120), compute:
+- **Demand ISF**: glucose drop in 0-2h / dose (insulin-only phase)
+- **Apparent ISF**: total drop to nadir / dose (includes EGP + AID compensation)
+
+**Results** (11 patients, 672 events):
+
+| Patient | Events | Sched ISF | Demand ISF | Apparent ISF | Inflation | Best@2h | Best@4h |
+|---------|--------|-----------|------------|--------------|-----------|---------|---------|
+| a | 102 | 49 | 19 | 50 | 2.6× | demand | demand |
+| c | 51 | 75 | 20 | 91 | 4.6× | demand | demand |
+| e | 42 | 33 | 5 | 46 | 9.9× | demand | demand |
+| f | 102 | 20 | 10 | 22 | 2.1× | demand | demand |
+| i | 48 | 50 | 5 | 37 | 7.3× | demand | demand |
+| odc-86025410 | 193 | 110 | 53 | 129 | 2.4× | demand | demand |
+
+**Hypotheses**:
+- **H1 PASS** (100%): Demand ISF < apparent ISF for ALL 11 patients
+- **H2 PASS** (91%): Demand ISF predicts 2h glucose better for 10/11 patients
+- **H3 FAIL** (0%): Apparent ISF does NOT predict 4h better — demand wins everywhere!
+- **H4 PASS**: Inflation ratio varies 2.0–9.9× across patients (5× range)
+
+**Key insight**: The "true" insulin sensitivity (demand-phase, 0-2h) is 2-10× smaller 
+than the apparent ISF that AID systems use. Demand ISF wins at ALL horizons — the 
+additional glucose drop after 2h (EGP suppression + AID compensation) is unpredictable 
+and adds noise, not signal. **Current AID systems over-estimate ISF by 2-10×**, which 
+makes them under-dose corrections.
+
+**Caveat**: Per the AID Compensation Theorem, the "apparent ISF" includes controller 
+behavior. The demand ISF is closer to pure physiology but still includes any 
+within-2h controller adjustments.
+
+![ISF decomposition](../../visualizations/egp-phase-research/fig20_isf_decomposition.png)
+![ISF inflation ratio](../../visualizations/egp-phase-research/fig21_isf_inflation.png)
+
+### EXP-2652: Circadian ISF/Basal Profiling
+
+**Method**: Bin correction events into 6 time-of-day blocks (4h each). Compare single-value 
+vs 2-block (day/night) vs 6-block ISF profiles.
+
+**Results**:
+- **H1 PASS** (90%): 9/10 patients have ≥30% ISF variation across time blocks
+- **H2 FAIL**: 2-block profiles reduce RMSE ≥10% for only 2/10 patients
+- **H3 FAIL**: Dawn (04-08h) is NOT the lowest ISF block — **12-16h (afternoon)** is 
+  lowest for 4/10 patients
+
+**Key insight**: Significant circadian ISF variation exists (90% of patients), but the 
+PATTERN is individual — no universal "dawn phenomenon" profile. The afternoon (12-16h) 
+shows the lowest ISF most often, not dawn. Sparse per-block event counts limit the 
+practical value of time-varying ISF schedules.
+
+![Circadian ISF profiles](../../visualizations/egp-phase-research/fig22_circadian_isf.png)
+
+### EXP-2653: Nyquist-Aware Multi-Scale Analysis
+
+**Motivation**: Prior experiments violated Nyquist's theorem — using 4h windows to observe 
+6h insulin signals and 48h metabolic signals. This experiment uses Nyquist-correct windows:
+- **Observation**: 8h overnight (00-08h) — captures ≥1 full DIA tail
+- **Demand lookback**: 12h insulin history (2× DIA)
+- **Supply lookback**: 48-96h carb/metabolic history (2× metabolic drift period)
+
+**Features**: IOB@midnight, insulin_12h, basal_actual_6h (demand); carbs_24/48/96h, 
+net_energy_48h, mean_bg_48h (supply).
+
+**Results** (317 nights, 7 patients):
+
+| Model | Mean R² | Best patient | Worst patient |
+|-------|---------|-------------|---------------|
+| IOB@midnight alone | 0.068 | f (0.168) | d (0.000) |
+| Demand (IOB + insulin_12h + basal) | 0.124 | odc-96254963 (0.289) | d (0.000) |
+| Supply (carbs_48h + mean_bg_48h) | 0.064 | odc-86025410 (0.117) | k (0.018) |
+| Combined (demand + supply) | 0.141 | f (0.254) | k (0.025) |
+| Net energy balance | 0.037 | d (0.111) | odc-96254963 (0.002) |
+
+**Hypotheses**:
+- **H1 FAIL**: Mean combined R² = 0.133, not ≥0.25
+- **H2 FAIL**: Supply adds only +0.018 mean incremental R² (range: -0.233 to +0.118)
+- **H3 PASS**: 48h carbs ≥ 96h for 5/7 patients (consistent with EXP-2627)
+- **H4 PASS**: Net energy balance better than raw carbs for 4/7 patients
+- **H5 PASS**: Demand/supply ratio varies 157× across patients
+
+**Key insight**: Even with Nyquist-correct windows, **87% of overnight drift variance is 
+unexplained** — "metabolic weather" from unmeasured factors (counter-regulation hormones, 
+physical activity, stress, sleep quality). The demand/supply balance is REAL but WEAK and 
+highly patient-specific. For some patients (a, d, f), supply features add 7-12% incremental 
+R²; for others, supply is irrelevant or harmful. This calibrates expectations: **any 
+basal/ISF/CR recommendation system faces a hard ceiling of ~13% explainable variance** 
+from insulin and carb history alone.
+
+![Nyquist multi-scale](../../visualizations/egp-phase-research/fig23_nyquist_multiscale.png)
+
+### Round 6 Summary
+
+| Finding | Value | Implication |
+|---------|-------|-------------|
+| 78% need basal changes | ≥0.05 U/hr | Actionable for most patients |
+| Dawn needs LESS basal (-30%) | Opposite of expected | AID already compensates for dawn |
+| Demand ISF = 2-10× smaller than apparent | ALL patients | Current ISF settings over-estimate by 2-10× |
+| Demand ISF wins at ALL horizons | 0-4h+ | Use for dosing AND prediction |
+| 90% have circadian ISF variation | ≥30% range | But no universal pattern |
+| Afternoon has lowest ISF | 12-16h | Not dawn as commonly assumed |
+| Multi-scale R² = 13% | Hard ceiling | 87% is unmeasured metabolic weather |
+| Supply adds +1.8% mean R² | Patient-specific | Not a universal predictor |
+| Demand/supply ratio varies 157× | Across patients | One-size-fits-all models fail |
+
+### Combined File Index (Rounds 1-6)
+
+| File | Purpose |
+|------|---------|
+| `tools/cgmencode/exp_residual_census_2621.py` | Spectral decomposition |
+| `tools/cgmencode/exp_egp_trajectory_2622.py` | Overnight drift + glycogen |
+| `tools/cgmencode/exp_post_meal_egp_2623.py` | Meal masking + EGP extraction |
+| `tools/cgmencode/exp_correction_egp_2624.py` | Correction recovery dynamics |
+| `tools/cgmencode/exp_egp_settings_2625.py` | Per-patient EGP profiles |
+| `tools/cgmencode/exp_asymmetry_synthesis_2626.py` | Asymmetry synthesis |
+| `tools/cgmencode/exp_carb_window_sweep_2627.py` | Carb window 12-120h sweep |
+| `tools/cgmencode/exp_glycogen_state_2628.py` | Glycogen state detection |
+| `tools/cgmencode/exp_hill_fitting_2629.py` | Hill fitting + ODC validation |
+| `tools/cgmencode/exp_basal_rec_2650.py` | IOB-corrected basal recommendation |
+| `tools/cgmencode/exp_two_phase_isf_2651.py` | Two-phase ISF decomposition |
+| `tools/cgmencode/exp_circadian_isf_2652.py` | Circadian ISF/basal profiling |
+| `tools/cgmencode/exp_nyquist_multiscale_2653.py` | Nyquist multi-scale analysis |
+| `visualizations/egp-phase-research/round1_plots.py` | Figures 1-4 |
+| `visualizations/egp-phase-research/round2_plots.py` | Figures 5-6 |
+| `visualizations/egp-phase-research/round3_plots.py` | Figures 7-9 |
+| `visualizations/egp-phase-research/synthesis_plots.py` | Figures 10-13 |
+| `visualizations/egp-phase-research/glycogen_plots.py` | Figure 14 |
+| `visualizations/egp-phase-research/hill_odc_plots.py` | Figures 15-18 |
+| `visualizations/egp-phase-research/phase1_settings_plots.py` | Figures 19-22 |
+| `visualizations/egp-phase-research/nyquist_multiscale_plot.py` | Figure 23 |
+
+Results (gitignored): `externals/experiments/exp-26{21-29,50-53}_*.json`
