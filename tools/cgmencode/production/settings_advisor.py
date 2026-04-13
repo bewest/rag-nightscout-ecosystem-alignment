@@ -2917,10 +2917,16 @@ def compute_settings_quality_score(
 ) -> float:
     """Compute composite Settings Quality Score (SQS) from recommendations.
 
-    SQS = 100 - Σ(|predicted_tir_delta| × confidence) for all recs.
+    SQS = 100 - Σ(magnitude_pct × confidence × 0.15) for all recs.
     Higher score (0-100) = better settings alignment with metabolic needs.
 
-    EXP-2600 validated: SQS vs TIR r=0.833 (p=0.005) across 9 patients.
+    EXP-2600: Original formula (tir_delta × confidence) correlated r=0.833.
+    EXP-2606: After ISF fix, switched to magnitude_pct basis because
+    correction-based ISF's tir_delta is poorly calibrated. Total distance
+    (sum of magnitude_pct) validated r=-0.689 with TIR (p=0.04).
+
+    The 0.15 scaling factor maps magnitude_pct × confidence to a 0-100
+    SQS range with good discrimination.
 
     Args:
         recs: consolidated recommendations from generate_settings_advice().
@@ -2928,5 +2934,5 @@ def compute_settings_quality_score(
     Returns:
         SQS as float in [0, 100].
     """
-    total = sum(abs(r.predicted_tir_delta) * r.confidence for r in recs)
+    total = sum(r.magnitude_pct * r.confidence * 0.15 for r in recs)
     return max(0.0, min(100.0, 100.0 - total))
