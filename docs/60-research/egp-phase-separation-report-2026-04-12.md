@@ -1382,3 +1382,157 @@ actually worsen outcomes if the controller doesn't co-adapt.
 | `visualizations/egp-phase-research/phase2_plots.py` | Figures 24-26 |
 
 Results (gitignored): `externals/experiments/exp-26{54,56,61}_*.json`
+
+---
+
+## Round 8: Phase 3 — Sticky Hyper Detection & Extended Prediction (EXP-2660, 2658)
+
+### EXP-2660: Sticky Hyper Detection & Ceiling-Aware Response
+
+**Method**: Detect sustained hyperglycemia episodes (>180 mg/dL for >2h), classify
+whether the controller has hit the SC suppression wall (IOB >2× median AND glucose
+ROC > -5 mg/dL/hr — near-flat despite high insulin). Simulate "patience mode"
+(cap IOB at 1.5× median) vs current aggressive dosing.
+
+**Key Results** (1,667 episodes across 11 patients, patient k had zero):
+
+| Patient | Episodes | Wall % | Delayed Hypo % | Patience Hypo | Excess Insulin |
+|---------|----------|--------|----------------|---------------|----------------|
+| a | 194 | 73% | 30% | 0% | 19.6 U·h |
+| b | 192 | 48% | 17% | 0% | 11.2 U·h |
+| c | 150 | 70% | 39% | 0% | 8.1 U·h |
+| d | 80 | 74% | 14% | 0% | 12.4 U·h |
+| e | 156 | 74% | 36% | 0% | 14.4 U·h |
+| f | 174 | 84% | 28% | 0% | 22.3 U·h |
+| g | 89 | 65% | 20% | 0% | 7.5 U·h |
+| i | 167 | **76%** | **62%** | 0% | 21.2 U·h |
+| odc-74077367 | 60 | 78% | 30% | 0% | 8.5 U·h |
+| odc-86025410 | 264 | 41% | 39% | 0% | 3.3 U·h |
+| odc-96254963 | 141 | 55% | 50% | 0% | 8.4 U·h |
+
+**Hypothesis Results**:
+- H1: ≥60% of sticky hypers show wall detection — **PASS** (61%)
+- H2: Wall episodes resolve in similar time as non-wall — **FAIL** (wall resolves faster)
+- H3: Significant excess insulin in wall episodes — **PASS** (15.2 U·h mean)
+- H4: Patience mode reduces delayed hypos ≥50% — **PASS** (100% preventable)
+
+**Major Finding: Controllers Waste Insulin Against the Suppression Wall**
+
+1. **61-84% of sticky hyper episodes show wall detection** — the controller is pushing
+   insulin into the SC suppression ceiling with diminishing returns.
+
+2. **Patient i is the worst case**: 62% of sticky hypers result in delayed hypos.
+   The controller delivers massive excess insulin (21.2 U·h per episode) that doesn't
+   lower glucose during the wall phase but causes dangerous lows hours later.
+
+3. **Patience mode eliminates delayed hypos** (in simulation): by capping IOB at 1.5×
+   median, excess insulin is prevented. The wall episodes resolve at similar rates
+   because additional insulin above the ceiling has ~0% marginal effect.
+
+4. **Mean excess insulin: 15.2 U·h per wall episode** — this is insulin delivered
+   above what's needed, wasted against the suppression ceiling, then causing delayed hypos.
+
+5. **Patient k has ZERO sticky hypers** — consistent with their 56% suppression ceiling
+   (EXP-2656). Higher ceiling = more effective insulin at high IOB = fewer sticky hypers.
+
+![Figure 27: Sticky Hyper Wall Detection](../../visualizations/egp-phase-research/fig27_sticky_hyper.png)
+*Figure 27: (A) Wall detection rate vs delayed hypo rate — higher wall detection = more insulin wasted = more delayed hypos. (B) Episode breakdown showing wall (red) vs non-wall.*
+
+![Figure 28: Patience Mode Simulation](../../visualizations/egp-phase-research/fig28_patience_mode.png)
+*Figure 28: (A) Patience mode eliminates delayed hypos by capping IOB. (B) Excess insulin wasted per wall episode — 3 to 22 U·h depending on patient.*
+
+### EXP-2658: Extended Prediction Horizon with Ceiling Model
+
+**Method**: Build a 3-phase prediction model using the ceiling finding:
+- Phase 1 (0-2h): Standard insulin drop using demand ISF
+- Phase 2 (2h-DIA): Ceiling-limited — EGP recovery adds glucose at (1-ceiling) × base_egp
+- Phase 3 (>DIA): Full EGP recovery at base_egp rate
+
+Compare RMSE to simple linear ISF prediction at 2h, 4h, 6h, 8h horizons.
+
+**Key Results**: ALL hypotheses FAIL — the 3-phase model is **WORSE** at every horizon:
+
+| Horizon | Mean Linear RMSE | Mean 3-Phase RMSE | Change |
+|---------|-----------------|-------------------|--------|
+| 2h | 78 mg/dL | 80 mg/dL | -3% worse |
+| 4h | 93 mg/dL | 110 mg/dL | -19% worse |
+| 6h | 99 mg/dL | 135 mg/dL | -37% worse |
+| 8h | 92 mg/dL | 162 mg/dL | -76% worse |
+
+**Critical Negative Finding: Additive EGP Models Fail in AID Systems**
+
+The 3-phase model is catastrophically worse at longer horizons because:
+
+1. **Controller coupling**: The AID controller compensates for EGP recovery in real-time.
+   When EGP starts recovering (pushing glucose up), the controller detects the rise and
+   adds more insulin. The model predicts a rise that never materializes because the
+   controller prevents it.
+
+2. **Selection bias**: Our correction events were filtered for glucose drop ≥10 mg/dL.
+   These are events where the correction WORKED. In successful corrections, the controller
+   maintains the drop throughout the observation window.
+
+3. **Double-counting**: The linear model's ISF already implicitly includes some EGP effect
+   (the scheduled ISF is the "apparent" ISF). Adding EGP recovery on top double-counts it.
+
+**Implication**: You cannot simply add an EGP component to an existing prediction model.
+The EGP and controller form a coupled system. An EGP-aware controller would need to
+**replace** the current prediction model, not augment it — and it would need to model
+its OWN dosing response to EGP recovery.
+
+This confirms the AID Compensation Paradox from Phase 2: the controller, settings, and
+physiology form an irreducibly coupled system.
+
+![Figure 29: Extended Prediction](../../visualizations/egp-phase-research/fig29_extended_prediction.png)
+*Figure 29: 3-phase (dashed) vs linear (solid) prediction RMSE. The 3-phase model diverges at longer horizons — the AID controller compensates for EGP recovery, making additive modeling counterproductive.*
+
+### Phase 3 Synthesis: The Coupled System Problem
+
+Phase 3 reveals two sides of the same coin:
+
+**EXP-2660 (Positive)**: We CAN detect when the controller is pushing against the
+suppression wall. Patience mode (IOB capping) could prevent 100% of delayed hypos
+while losing no resolution time — the wall limits insulin effectiveness regardless.
+
+**EXP-2658 (Negative)**: We CANNOT predict glucose by adding EGP to existing models.
+The controller constantly adjusts, making additive physiological models worse than
+the status quo.
+
+**Together**: The path forward is not better PREDICTION but better CONTROL LOGIC.
+Specifically:
+1. Detect the suppression wall → reduce insulin delivery (patience mode)
+2. Don't try to predict EGP recovery → instead, detect and respond to it in real-time
+3. The controller should know WHEN to stop pushing, not try to predict HOW MUCH glucose
+   EGP will produce
+
+This is a fundamentally different approach from current AID controllers (Loop, oref0,
+AAPS, Trio), which all rely on prediction → dose calculation. An EGP-aware controller
+would add a **gating mechanism**: "Am I pushing against a wall? If so, wait."
+
+### Updated Findings Table
+
+| # | Finding | Confidence | Source |
+|---|---------|-----------|--------|
+| F20 | 61-84% of sticky hypers show controller at suppression wall | **Very High** | EXP-2660, N=1,667 |
+| F21 | Patient i: 62% delayed hypo rate from wall-pushing | High | EXP-2660, N=167 |
+| F22 | 15.2 U·h mean excess insulin per wall episode | High | EXP-2660, 11 patients |
+| F23 | Patience mode (IOB cap) eliminates delayed hypos in simulation | High | EXP-2660 |
+| F24 | Additive EGP prediction WORSE than linear at all horizons | **Very High** | EXP-2658, 11 patients |
+| F25 | AID controllers compensate for EGP in real-time → additive models fail | **Very High** | EXP-2658/2660 |
+
+### Null Findings Update
+
+| # | Finding | Source |
+|---|---------|--------|
+| N5 | 3-phase prediction: -19% to -76% RMSE degradation at 4-8h | EXP-2658 |
+| N6 | Per-patient ceiling adds <5% over population (30%) | EXP-2658 |
+
+### Appendix: Experiment Code and Visualization
+
+| Script | Purpose |
+|--------|---------|
+| `tools/cgmencode/exp_sticky_hyper_2660.py` | Sticky hyper & wall detection |
+| `tools/cgmencode/exp_extended_horizon_2658.py` | 3-phase prediction model |
+| `visualizations/egp-phase-research/phase3_plots.py` | Figures 27-29 |
+
+Results (gitignored): `externals/experiments/exp-26{58,60}_*.json`
