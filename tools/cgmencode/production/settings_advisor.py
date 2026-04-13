@@ -1020,43 +1020,16 @@ def advise_forward_sim_optimization(
     # Clinical ISF should come from advise_correction_isf() which uses actual
     # correction bolus outcomes, not from the sim calibration multiplier.
 
-    # CR recommendation (if optimal differs from current)
-    if abs(best_cr - 1.0) > 0.05:
-        cr_vals = [e.get('value', e.get('carbratio', 10))
-                   for e in profile.cr_schedule]
-        current_cr = float(np.median([float(v) for v in cr_vals])) if cr_vals else 10.0
-        suggested_cr = current_cr * best_cr
-        direction = "increase" if best_cr > 1.0 else "decrease"
-        magnitude = abs(best_cr - 1.0) * 100
+    # NOTE (EXP-2610): CR recommendation ALSO REMOVED from sim optimization.
+    # The sim CR always converges to extreme values (0.5× in independent search,
+    # or 3.0× in joint search with ISF×0.5) because the simplified absorption
+    # model requires both ISF and CR to be halved/doubled for calibration.
+    # The sim CR is a CALIBRATION ARTIFACT, not a clinical recommendation.
+    # Clinical CR should come from advise_effective_cr() which uses actual
+    # meal-bolus glucose response outcomes (EXP-2609: effective CR validated,
+    # H2 and H3 confirmed, dawn CR tighter for 6/9 patients).
 
-        cr_only_tir = _evaluate_joint_settings(windows, 1.0, best_cr)
-        cr_delta = ((cr_only_tir or baseline_tir) - baseline_tir) * 100
-
-        recs.append(SettingsRecommendation(
-            parameter=SettingsParameter.CR,
-            direction=direction,
-            magnitude_pct=round(magnitude, 0),
-            current_value=current_cr,
-            suggested_value=round(suggested_cr, 1),
-            predicted_tir_delta=round(cr_delta, 1),
-            affected_hours=(0.0, 24.0),
-            confidence=round(confidence, 2),
-            evidence=(
-                f"Forward sim joint optimization (EXP-2568): optimal CR "
-                f"multiplier {best_cr:.1f}× across {len(windows)} meal "
-                f"windows. Joint optimal: ISF×{best_isf}, CR×{best_cr}. "
-                f"Population finding: effective CR ≈ 2× profile CR (EXP-2567)."
-            ),
-            rationale=(
-                f"{direction.capitalize()} CR by {magnitude:.0f}% "
-                f"(from {current_cr:.0f} to {suggested_cr:.0f} g/U). "
-                f"Forward sim analysis suggests meal boluses are "
-                f"{'too large' if best_cr > 1.0 else 'too small'} "
-                f"relative to actual glucose response."
-            ),
-        ))
-
-    return recs
+    return []
 
 
 # ── Correction-Based ISF Calibration (EXP-2579/2582/2585) ─────────────
@@ -1351,6 +1324,172 @@ def advise_correction_isf(
             f"{'over' if isf_mult < 1.0 else 'under'}estimates correction effect. "
             f"This recommendation accounts for counter-regulatory physiology "
             f"(glucagon/HGP)."
+        ),
+    )]
+
+
+# ── Effective CR from Meal Response (EXP-2609/2610) ──────────────────
+
+_MEAL_MIN_CARBS = 10.0      # grams — minimum meal size
+_MEAL_MIN_BOLUS = 0.5       # units — minimum bolus with meal
+_MEAL_POST_WINDOW = 36      # 3 hours at 5-min intervals
+_MEAL_MAX_EXTRA_CARBS = 5.0 # max additional carbs in window
+_MIN_MEAL_EVENTS = 10       # minimum meals for reliable CR
+
+
+def _extract_meal_response_windows(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    bolus: np.ndarray,
+    carbs: np.ndarray,
+    profile: PatientProfile,
+    max_windows: int = 100,
+) -> list:
+    """Extract clean meal events with 3h glucose follow-up.
+
+    Returns list of dicts with: carbs, bolus, hour, pre_glucose,
+    peak_rise, post_tir, profile_isf, profile_cr, effective_cr.
+    """
+    isf_vals = [e.get('value', e.get('sensitivity', 50))
+                for e in profile.isf_mgdl()]
+    cr_vals = [e.get('value', e.get('carbratio', 10))
+               for e in profile.cr_schedule]
+    median_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
+    median_cr = float(np.median([float(v) for v in cr_vals])) if cr_vals else 10.0
+
+    N = len(glucose)
+    windows = []
+    for i in range(N - _MEAL_POST_WINDOW):
+        if carbs[i] < _MEAL_MIN_CARBS or bolus[i] < _MEAL_MIN_BOLUS:
+            continue
+        if np.isnan(glucose[i]):
+            continue
+
+        post = glucose[i:i + _MEAL_POST_WINDOW]
+        valid = ~np.isnan(post)
+        if np.sum(valid) < _MEAL_POST_WINDOW * 0.5:
+            continue
+
+        # Skip contaminated windows
+        extra = np.nansum(carbs[i + 1:i + _MEAL_POST_WINDOW])
+        if extra > _MEAL_MAX_EXTRA_CARBS:
+            continue
+
+        pre_g = float(glucose[i])
+        peak_rise = float(np.nanmax(post) - pre_g)
+        post_valid = post[valid]
+        post_tir = float(np.mean((post_valid >= 70) & (post_valid <= 180)))
+
+        # Effective CR: carbs / (glucose_from_carbs / ISF)
+        # glucose_from_carbs = peak_rise + bolus_effect (what rise would be without insulin)
+        glucose_from_carbs = peak_rise + float(bolus[i]) * median_isf
+        if glucose_from_carbs > 0 and median_isf > 0:
+            effective_insulin = glucose_from_carbs / median_isf
+            effective_cr = float(carbs[i]) / effective_insulin if effective_insulin > 0 else None
+        else:
+            effective_cr = None
+
+        if effective_cr is not None and 0.5 < effective_cr < 100:
+            windows.append({
+                "carbs": float(carbs[i]),
+                "bolus": float(bolus[i]),
+                "hour": float(hours[i]) if hours is not None else 12.0,
+                "pre_glucose": pre_g,
+                "peak_rise": peak_rise,
+                "post_tir": post_tir,
+                "profile_cr": median_cr,
+                "effective_cr": effective_cr,
+                "cr_ratio": effective_cr / median_cr,
+            })
+
+        if len(windows) >= max_windows:
+            break
+
+    return windows
+
+
+def advise_effective_cr(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    profile: PatientProfile,
+    bolus: Optional[np.ndarray] = None,
+    carbs: Optional[np.ndarray] = None,
+    days_of_data: float = 0.0,
+) -> List[SettingsRecommendation]:
+    """Generate CR recommendations from actual meal-bolus glucose response.
+
+    Research basis:
+      - EXP-2609: Effective CR differs from profile for 5/9 patients
+      - EXP-2609 H2: Dawn CR is tighter (lower) for 6/9 patients
+      - EXP-2609 H3: Correct-bolused meals have +7.8pp TIR vs under-bolused
+      - EXP-2610: Sim CR (always 0.5×) is calibration artifact, not clinical
+
+    Computes effective CR from meal response analysis: how many grams of
+    carbs does each unit of insulin actually cover, based on post-meal
+    glucose trajectory.
+
+    Args:
+        glucose: (N,) cleaned glucose at 5-min intervals.
+        hours: (N,) fractional hours.
+        profile: current therapy profile.
+        bolus: (N,) bolus insulin per step.
+        carbs: (N,) carb intake per step.
+        days_of_data: data coverage in days.
+
+    Returns:
+        List of SettingsRecommendation (0-1 items for CR adjustment).
+    """
+    if bolus is None or carbs is None:
+        return []
+    if days_of_data < MIN_DATA_DAYS:
+        return []
+
+    windows = _extract_meal_response_windows(
+        glucose, hours, bolus, carbs, profile
+    )
+    if len(windows) < _MIN_MEAL_EVENTS:
+        return []
+
+    # Compute median effective CR
+    effective_crs = [w["effective_cr"] for w in windows]
+    cr_ratios = [w["cr_ratio"] for w in windows]
+    median_eff_cr = float(np.median(effective_crs))
+    median_ratio = float(np.median(cr_ratios))
+
+    # Need at least 15% difference to recommend
+    if abs(median_ratio - 1.0) < 0.15:
+        return []
+
+    cr_vals = [e.get('value', e.get('carbratio', 10))
+               for e in profile.cr_schedule]
+    current_cr = float(np.median([float(v) for v in cr_vals])) if cr_vals else 10.0
+
+    direction = "increase" if median_ratio > 1.0 else "decrease"
+    magnitude = abs(median_ratio - 1.0) * 100
+    confidence = min(1.0, days_of_data / HIGH_CONFIDENCE_DAYS) * min(1.0, len(windows) / 30)
+    tir_delta = magnitude * 0.05
+
+    return [SettingsRecommendation(
+        parameter=SettingsParameter.CR,
+        direction=direction,
+        magnitude_pct=round(magnitude, 0),
+        current_value=current_cr,
+        suggested_value=round(median_eff_cr, 1),
+        predicted_tir_delta=round(tir_delta, 1),
+        affected_hours=(0.0, 24.0),
+        confidence=round(confidence, 2),
+        evidence=(
+            f"Effective CR from meal response (EXP-2609): median effective "
+            f"CR={median_eff_cr:.1f} g/U from {len(windows)} meal events "
+            f"(profile CR={current_cr:.1f}). Ratio={median_ratio:.2f}×."
+        ),
+        rationale=(
+            f"{direction.capitalize()} CR by {magnitude:.0f}% "
+            f"(from {current_cr:.0f} to {median_eff_cr:.0f} g/U). "
+            f"Analysis of {len(windows)} meal-bolus events shows actual "
+            f"carb coverage is {median_ratio:.0%} of the current profile CR. "
+            f"Meals are systematically "
+            f"{'over' if median_ratio > 1.0 else 'under'}-bolused."
         ),
     )]
 
@@ -1781,6 +1920,14 @@ def generate_settings_advice(glucose: np.ndarray,
             bolus=bolus, carbs=carbs, iob=iob,
             days_of_data=days_of_data)
         recs.extend(corr_isf_recs)
+
+    # Effective CR from meal response (EXP-2609/2610)
+    if bolus is not None and carbs is not None:
+        eff_cr_recs = advise_effective_cr(
+            glucose, hours, profile,
+            bolus=bolus, carbs=carbs,
+            days_of_data=days_of_data)
+        recs.extend(eff_cr_recs)
 
     # Overnight basal quadrant analysis (EXP-2589)
     if actual_basal is not None:
