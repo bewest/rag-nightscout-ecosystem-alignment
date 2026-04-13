@@ -369,7 +369,7 @@ afternoon/evening), enabling circadian-profiled settings recommendations.
 
 ### Results
 
-- 8/10 patients show some ISF block variation, but small (median range 0.2)
+- 8/11 patients show some ISF block variation, but small (median range 0.2)
 - 6/11 patients show some CR variation, but CR saturates at grid max (2.0)
 - **Kruskal-Wallis**: ISF p=0.93, CR p=0.99 — NOT significant at population level
 - Between-patient variation (ISF 0.7 vs 1.5) >> within-patient circadian (range 0.2)
