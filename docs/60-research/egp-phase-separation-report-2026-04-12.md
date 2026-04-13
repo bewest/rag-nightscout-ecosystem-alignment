@@ -793,6 +793,9 @@ The Hill model explains too little variance for per-patient fitting to matter
 at this level of noise. Better approach: use correction recovery slopes as
 EGP rate proxy, not direct Hill fitting.
 
+![Per-Patient Hill Curves](../../visualizations/egp-phase-research/fig15_hill_curves.png)
+*Figure 15: Per-patient Hill suppression curves vs population model.*
+
 #### Part 2: ODC Overnight Drift Validation
 
 **H2 — PASS (2/3 ODC patients)**: IOB@midnight predicts overnight drift better
@@ -820,6 +823,9 @@ very stable overnight behavior (drift_std may be too small).
 IOB>carbs. Patients d and k have constant IOB@midnight (r=NaN), meaning
 their AID systems maintain very stable overnight IOB. This is actually a
 *success* of their controllers, not a failure of the analysis.
+
+![ODC Validation](../../visualizations/egp-phase-research/fig16_odc_validation.png)
+*Figure 16: ODC validation — IOB@midnight vs overnight drift correlations.*
 
 #### Part 3: Sticky Hyper EGP Signature
 
@@ -851,6 +857,9 @@ only 3.2 mg/dL/hr of EGP. The fact that glucose is *rising* means either:
 2. Peripheral insulin sensitivity is severely reduced (muscle not taking up glucose)
 
 Both suggest the population Hill parameters are wrong for this patient.
+
+![Sticky Hypers](../../visualizations/egp-phase-research/fig17_sticky_hypers.png)
+*Figure 17: Sticky hyper IOB ratios and glucose behavior per patient.*
 
 **odc-86025410** is unique: only 0.5U IOB during sticky hypers (baseline is 0.1U).
 This basal-only patient has 225 episodes — nearly 1 per 1.7 days. Without bolus
@@ -899,6 +908,9 @@ correction capability, the system can only increase basal rate, which is slow.
   hyper correction.
 
 ### Figures
+
+![Hill Parameter Distribution](../../visualizations/egp-phase-research/fig18_hill_distribution.png)
+*Figure 18: Cross-population Hill parameter distribution.*
 
 | Figure | Description |
 |--------|-------------|
