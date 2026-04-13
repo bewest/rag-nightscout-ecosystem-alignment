@@ -1814,6 +1814,7 @@ def generate_settings_advice(glucose: np.ndarray,
                              actual_basal: Optional[np.ndarray] = None,
                              correction_events: Optional[List[dict]] = None,
                              meal_events: Optional[List[dict]] = None,
+                             override_active: Optional[np.ndarray] = None,
                              ) -> List[SettingsRecommendation]:
     """Generate all applicable settings recommendations.
 
@@ -1833,6 +1834,8 @@ def generate_settings_advice(glucose: np.ndarray,
     - CR adequacy analysis (EXP-2535/2536)
     - Forward sim joint ISF×CR optimization (EXP-2562/2567/2568)
     - Correction-based ISF calibration (EXP-2579/2582/2585)
+    - Override ISF split detection (EXP-2621)
+    - Advisory confidence tier (EXP-2622)
 
     Args:
         glucose: (N,) cleaned glucose.
@@ -1851,6 +1854,8 @@ def generate_settings_advice(glucose: np.ndarray,
         meal_events: optional list of meal event dicts for CR adequacy
             analysis (EXP-2535/2536). Each dict: carbs, bolus, pre_meal_bg,
             post_meal_bg_4h, hour.
+        override_active: (N,) optional binary override active flag for
+            override ISF split analysis (EXP-2621).
 
     Returns:
         List of SettingsRecommendation, sorted by predicted_tir_delta descending.
@@ -1947,6 +1952,16 @@ def generate_settings_advice(glucose: np.ndarray,
             days_of_data=days_of_data)
         recs.extend(workload_recs)
 
+    # Override ISF split detection (EXP-2621)
+    if (override_active is not None and bolus is not None
+            and carbs is not None):
+        override_recs = advise_override_isf(
+            glucose, hours, profile,
+            bolus=bolus, carbs=carbs,
+            override_active=override_active,
+            days_of_data=days_of_data)
+        recs.extend(override_recs)
+
     # Overnight drift assessment (EXP-2371–2378)
     overnight = assess_overnight_drift(
         glucose, hours, profile, days_of_data,
@@ -1998,6 +2013,9 @@ def generate_settings_advice(glucose: np.ndarray,
     # parameter. Group by parameter and resolve conflicts by keeping
     # the higher weighted-score (confidence × |delta|) direction.
     recs = _consolidate_recommendations(recs)
+
+    # Apply confidence tier based on data days (EXP-2622)
+    recs = apply_confidence_tier_to_recommendations(recs, days_of_data)
 
     # Sort by predicted impact
     recs.sort(key=lambda r: abs(r.predicted_tir_delta), reverse=True)
@@ -3096,3 +3114,209 @@ def compute_settings_quality_score(
         for r in recs
     )
     return max(0.0, min(100.0, 100.0 - total))
+
+
+# ── Override ISF Advisory (EXP-2621) ─────────────────────────────────
+
+# EXP-2621: 8/12 patients show ISF differs ≥0.15 during override periods.
+# Override ISF tends HIGHER than non-override (less insulin effect).
+# Productionized as informational advisory: helps users understand how
+# their override settings interact with ISF calibration.
+_OVERRIDE_ISF_MIN_CORRECTIONS = 5
+_OVERRIDE_ISF_MIN_DIFF = 0.15
+
+
+def advise_override_isf(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    profile: PatientProfile,
+    *,
+    bolus: np.ndarray,
+    carbs: np.ndarray,
+    override_active: np.ndarray,
+    days_of_data: float,
+) -> List[SettingsRecommendation]:
+    """Detect ISF split between override and non-override periods.
+
+    EXP-2621 confirmed that 8/12 patients show ISF differs by ≥0.15
+    during override-active periods. This advisory informs users that
+    their effective ISF may vary with override usage.
+
+    Args:
+        glucose: (N,) glucose values.
+        hours: (N,) fractional hours.
+        profile: current therapy profile.
+        bolus: (N,) bolus values.
+        carbs: (N,) carb values.
+        override_active: (N,) binary override active flag.
+        days_of_data: data coverage.
+
+    Returns:
+        List of SettingsRecommendation (0 or 1).
+    """
+    if days_of_data < 7:
+        return []
+
+    isf_schedule = profile.isf_mgdl()
+    if not isf_schedule:
+        return []
+    profile_isf = float(np.median([float(e.get('value', e.get('sensitivity', 50)))
+                                    for e in isf_schedule]))
+    if profile_isf <= 0:
+        return []
+
+    n = min(len(glucose), len(bolus), len(carbs), len(override_active))
+    glucose = glucose[:n]
+    bolus = bolus[:n]
+    carbs = carbs[:n]
+    override_active = override_active[:n]
+
+    # Find correction boluses (bolus > 0.5, carbs ≤ 1, glucose > 150)
+    corr_mask = (
+        (bolus > 0.5) &
+        (carbs <= 1) &
+        (glucose > 150) &
+        np.isfinite(glucose)
+    )
+
+    def _isf_ratios_for_mask(mask):
+        ratios = []
+        indices = np.where(mask)[0]
+        for idx in indices:
+            if idx + 23 >= n:
+                continue
+            window = glucose[idx:idx + 24]
+            if np.sum(np.isnan(window)) > 5:
+                continue
+            actual_drop = window[0] - window[-1]
+            expected_drop = bolus[idx] * profile_isf
+            if expected_drop > 0:
+                ratio = actual_drop / expected_drop
+                if 0.1 < ratio < 5.0:
+                    ratios.append(ratio)
+        return ratios
+
+    on_mask = corr_mask & (override_active > 0)
+    off_mask = corr_mask & (override_active == 0)
+
+    ratios_on = _isf_ratios_for_mask(on_mask)
+    ratios_off = _isf_ratios_for_mask(off_mask)
+
+    if (len(ratios_on) < _OVERRIDE_ISF_MIN_CORRECTIONS or
+            len(ratios_off) < _OVERRIDE_ISF_MIN_CORRECTIONS):
+        return []
+
+    median_on = float(np.median(ratios_on))
+    median_off = float(np.median(ratios_off))
+    diff = abs(median_on - median_off)
+
+    if diff < _OVERRIDE_ISF_MIN_DIFF:
+        return []
+
+    pct_override = float(np.mean(override_active > 0)) * 100
+    direction = "increase" if median_on > median_off else "decrease"
+    magnitude = round(diff / median_off * 100, 0)
+
+    confidence = min(0.9, 0.4 + 0.05 * min(len(ratios_on), 20))
+
+    return [SettingsRecommendation(
+        parameter=SettingsParameter.ISF,
+        direction=direction,
+        magnitude_pct=magnitude,
+        current_value=profile_isf,
+        suggested_value=round(profile_isf * median_on, 1),
+        predicted_tir_delta=round(magnitude * 0.03, 1),
+        affected_hours=(0.0, 24.0),
+        confidence=confidence,
+        evidence=(f"Override ISF analysis (EXP-2621): ISF ratio during overrides "
+                  f"= {median_on:.2f} vs {median_off:.2f} without overrides "
+                  f"(n={len(ratios_on)}/{len(ratios_off)}, Δ={diff:.2f}). "
+                  f"Overrides active {pct_override:.0f}% of time."),
+        rationale=(f"Your insulin sensitivity differs by {diff:.2f} ({magnitude:.0f}%) "
+                   f"during override periods. Consider whether your override settings "
+                   f"need adjustment to match this observed ISF difference."),
+    )]
+
+
+# ── Advisory Confidence Tier (EXP-2622) ──────────────────────────────
+
+# EXP-2622: CR stable by 21d (67%), ISF by 14-30d, direction by 7d (87%).
+# Confidence tiers based on data days:
+#   DIRECTION (7d): direction-only advisory (87% correct)
+#   PRELIMINARY (14d): magnitude advisory with uncertainty
+#   STABLE (21d): stable CR advisory
+#   FULL (30d+): stable ISF+CR advisory
+
+_CONFIDENCE_TIERS = {
+    'direction_only': 7,
+    'preliminary': 14,
+    'stable_cr': 21,
+    'full': 30,
+}
+
+
+def compute_advisory_confidence_tier(days_of_data: float) -> str:
+    """Return confidence tier based on days of available data.
+
+    EXP-2622 validated convergence rates:
+      - 7 days: ISF direction correct 87.5% of the time
+      - 14 days: ISF magnitude within 10% for 58% of patients
+      - 21 days: CR magnitude within 10% for 67% of patients
+      - 30+ days: Both ISF and CR stable for majority of patients
+
+    Args:
+        days_of_data: total days of glucose+insulin data available.
+
+    Returns:
+        Tier name: 'insufficient', 'direction_only', 'preliminary',
+        'stable_cr', or 'full'.
+    """
+    if days_of_data < 7:
+        return 'insufficient'
+    if days_of_data < 14:
+        return 'direction_only'
+    if days_of_data < 21:
+        return 'preliminary'
+    if days_of_data < 30:
+        return 'stable_cr'
+    return 'full'
+
+
+def apply_confidence_tier_to_recommendations(
+    recs: List[SettingsRecommendation],
+    days_of_data: float,
+) -> List[SettingsRecommendation]:
+    """Adjust recommendation confidence based on data availability tier.
+
+    EXP-2622: With fewer days of data, ISF and CR estimates are less
+    stable. This applies a confidence penalty:
+      - direction_only (7-14d): confidence × 0.5, keep direction only
+      - preliminary (14-21d): confidence × 0.7
+      - stable_cr (21-30d): ISF confidence × 0.8, CR unchanged
+      - full (30d+): no penalty
+
+    Args:
+        recs: list of recommendations from generate_settings_advice().
+        days_of_data: total days of data available.
+
+    Returns:
+        Modified list with adjusted confidence values.
+    """
+    tier = compute_advisory_confidence_tier(days_of_data)
+
+    if tier == 'full':
+        return recs
+
+    for rec in recs:
+        if tier == 'direction_only':
+            rec.confidence = round(rec.confidence * 0.5, 2)
+            rec.evidence += " [LOW DATA: direction-only advisory, <14 days]"
+        elif tier == 'preliminary':
+            rec.confidence = round(rec.confidence * 0.7, 2)
+            rec.evidence += " [PRELIMINARY: 14-21 days of data]"
+        elif tier == 'stable_cr':
+            if rec.parameter == SettingsParameter.ISF:
+                rec.confidence = round(rec.confidence * 0.8, 2)
+                rec.evidence += " [ISF may still be converging, <30 days]"
+
+    return recs
