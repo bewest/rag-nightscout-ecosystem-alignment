@@ -1312,3 +1312,118 @@ Total: **23 productionized features** in settings_advisor.py.
 - Multi-day minimum data requirements
 - Open-loop patient advisory validation
 - Per-patient β estimation (IOB power-law)
+
+---
+
+## Phase 8: Timescale Deconfounding & Metabolic Context (EXP-2615–2619)
+
+### The Timescale Problem
+
+Our forward sim calibration used 2h windows, but insulin has DIA=5h with a
+12h persistent tail. Literature review revealed an even deeper timescale
+hierarchy:
+
+| Timescale | Process | Sim models it? |
+|-----------|---------|----------------|
+| 0.8h | Fast insulin component (63%) | ✅ Yes |
+| 5h | Insulin DIA | ✅ Partially |
+| 12h | Persistent tail (37%) | ✅ Model exists |
+| 12-24h | Glycogen depletion (fasting) | ❌ No |
+| 24-48h | Glycogen repletion (feeding) | ❌ No |
+| 40-72h | Metabolic shift (glycogenolysis→GNG) | ❌ No |
+
+The sim has NO model of metabolic demand (glycogen state, HGP,
+gluconeogenesis). At 2h, the bolus dominates so this doesn't matter.
+At 8h+, metabolic demand dominates and the sim fails catastrophically.
+
+### Circadian CR (EXP-2615) — ALL NOT CONFIRMED
+
+Dawn CR < evening in 8/12 patients (direction exists) but:
+- Mean CR nearly identical (7.2 vs 7.1, p=0.96)
+- R² improvement = 0 for all patients
+- **CLOSES circadian CR line**
+
+### Actual Delivery Sim (EXP-2616) — H2, H3 CONFIRMED
+
+Discovered massive loop adjustments:
+- SMB patients: **65-88% basal reduction** + 9-34 U/day micro-boluses
+- Loop delivers fundamentally different insulin than scheduled
+
+But feeding actual delivery into sim makes MAE **WORSE** because:
+- Loop SMBs are **reactive** (delivered in response to glucose trajectory)
+- Open-loop sim can't model adaptive delivery
+- counter_reg_k ≈ insulin accounting error (H2: 10/12 within 15%)
+
+**Structural finding**: Closed-loop confound is fundamental — loop delivery
+is a FUNCTION of glucose trajectory, not independent of it.
+
+### Suspension Windows (EXP-2617) — ALL NOT CONFIRMED
+
+Loop suspends basal 47-69% of the time (very aggressive AID loops).
+But suspension-window calibration is NOT cleaner:
+- ISF varies wildly between window types
+- Same 0.3 floor problem
+- Loop's reactive delivery creates correlations even during suspension
+
+### 8h Overnight Windows (EXP-2618) — ALL NOT CONFIRMED, Nyquist-violated
+
+8h windows (DIA × 1.6, respecting Nyquist):
+- ISF hits **0.3 floor for ALL patients** (sim overpredicts insulin)
+- 8h MAE worse than 2h for every patient
+- k goes UP (4.9 vs 3.4) — MORE counter-reg needed at longer timescales
+- Supply vs glucose is **positively** correlated (reactive loop confound)
+
+**Root cause**: The sim has no metabolic demand model. Over 8h, endogenous
+glucose production (from glycogen, gluconeogenesis) is the dominant glucose
+driver, not insulin action. The sim knows only about supply (insulin).
+
+### Multi-Day Metabolic Context (EXP-2619) — H2 CONFIRMED
+
+Per-window ISF varies 53-108% CV across patients. Can multi-day metabolic
+context explain this variance?
+
+**6/9 patients show meaningful ISF split** between high/low carb periods:
+- Patient g: **R²=0.227** (p=0.0001) — 24h carbs explains 23% of ISF variance
+- Patient f: R²=0.184 (p=0.0006) — 48h mean glucose best predictor
+- Patient i: R²=0.145 (p=0.003) — glucose variability best
+- Patient k: R²=0.139 (p=0.003) — glucose variability best
+
+But the signal is:
+1. **Patient-specific** — different features matter for different patients
+2. **Modest** — explains 5-23% of variance (not the dominant driver)
+3. **Mixed direction** — 3 match glycogen theory, 3 opposite
+4. **No universal feature** — glucose_std, mean_glucose, cum_carbs each win
+   for different patients
+
+### What This Phase Established
+
+**The forward sim's valid regime is 2h correction windows.** At this
+timescale, the correction bolus is the dominant signal, loop behavior is
+predictable (usually suspended), and the sim achieves useful accuracy
+(MAE 15-65 mg/dL). Beyond 2h, unmeasured metabolic demand overwhelms
+the insulin signal.
+
+For longer timescales, the sim would need:
+1. A glycogen state model (fill level affects HGP rate)
+2. A gluconeogenesis model (activated after glycogen depletion)
+3. A dawn phenomenon model (circadian HGP variation)
+4. Proper IOB initialization (carry-over from prior periods)
+
+These are beyond the scope of a settings advisory tool. The clinical value
+is in the 2h correction-window calibration, which produces actionable ISF
+and CR recommendations.
+
+### Closed Lines (Phase 8)
+
+- Circadian CR advisory — EXP-2615 (effect too small)
+- Actual delivery sim — EXP-2616 (reactive SMB confound)
+- Suspension-window calibration — EXP-2617 (not cleaner)
+- 8h+ sim windows — EXP-2618 (no metabolic demand model)
+- Universal metabolic context feature — EXP-2619 (patient-specific)
+
+### Open Research Lines
+
+- Per-patient metabolic context feature (patient g as prototype: 24h carbs → ISF)
+- Glycogen state model for overnight sim (research-grade, not production)
+- Advisory minimum data requirements (how many days needed?)
+- Advisory consolidation (overlapping CR/ISF advisors)

@@ -262,3 +262,28 @@ and several negative results that closed research lines.
 
 **Closed Research Lines** (cumulative: 18 lines closed):
 - Sim CR recommendations, pre-bolus timing, ISF grid refinement, drift detection
+
+### Phase 8: Timescale Deconfounding & Metabolic Context (2026-07-16)
+
+Systematic investigation of timescale hierarchy, loop deconfounding,
+and metabolic state effects on insulin sensitivity.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2615 | `exp_circadian_cr_2615.py` | Dawn CR effect too small (p=0.96) |
+| EXP-2616 | `exp_actual_delivery_2616.py` | Loop adjusts basal 65-88%, reactive SMB confound |
+| EXP-2617 | `exp_suspension_natural_2617.py` | Suspension windows not cleaner |
+| EXP-2618 | `exp_long_window_2618.py` | 8h sim fails: no metabolic demand model |
+| EXP-2619 | `exp_metabolic_context_2619.py` | 6/9 show ISF split by carb history, patient-specific |
+
+**Key Findings**:
+- Forward sim valid regime: 2h correction windows ONLY
+- Beyond 2h, unmeasured metabolic demand (glycogen, HGP) overwhelms insulin signal
+- counter_reg_k absorbs both physiology AND insulin accounting errors
+- Closed-loop confound is structural: loop delivery is FUNCTION of glucose
+- Metabolic context explains 5-23% of ISF variance (patient-specific)
+- Glycogen cycling operates on 24-72h timescale (literature + data confirm)
+
+**Closed Research Lines** (cumulative: 23 lines closed):
+- Circadian CR, actual delivery sim, suspension windows,
+  8h+ sim, universal metabolic context
