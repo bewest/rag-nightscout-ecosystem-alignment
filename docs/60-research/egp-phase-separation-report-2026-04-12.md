@@ -1201,12 +1201,12 @@ If below: CR too low (overdosed). Compute per-patient CR adjustment recommendati
 | Patient | Meals | CR | Mean Meal | 5h Residual | % Adequate | Rec. CR | Change |
 |---------|-------|----|-----------|-------------|------------|---------|--------|
 | a | 289 | 4 | 15g→6.3U | -55 mg/dL | 13% | 2.8 | -29% |
-| b | 663 | 9 | 33g→3.8U | +21 mg/dL | 20% | 8.3 | -11% |
-| c | 277 | 4 | 21g→6.3U | -40 mg/dL | 12% | 3.7 | -17% |
+| b | 663 | 9.4 | 33g→3.8U | +21 mg/dL | 20% | 8.3 | -11% |
+| c | 277 | 4.5 | 21g→6.3U | -40 mg/dL | 12% | 3.7 | -17% |
 | d | 243 | 14 | 32g→3.4U | +26 mg/dL | 29% | 8.0 | -43% |
 | e | 281 | 3 | 36g→11.8U | +17 mg/dL | 26% | 2.9 | -2% |
 | f | 248 | 5 | 51g→11.5U | +16 mg/dL | 14% | 4.2 | -17% |
-| g | 487 | 8 | 32g→4.8U | +26 mg/dL | 27% | 6.1 | -28% |
+| g | 487 | 8.5 | 32g→4.8U | +26 mg/dL | 27% | 6.1 | -28% |
 | i | 93 | 10 | 47g→8.9U | -8 mg/dL | 13% | 5.4 | -46% |
 | k | 57 | 10 | 16g→2.7U | -3 mg/dL | 84% | 6.3 | -37% |
 | odc-74077367 | 812 | 7 | 30g→3.7U | +15 mg/dL | 34% | 7.5 | +7% |
@@ -1411,14 +1411,14 @@ ROC > -5 mg/dL/hr — near-flat despite high insulin). Simulate "patience mode"
 | odc-96254963 | 141 | 55% | 50% | 0% | 8.4 U·h |
 
 **Hypothesis Results**:
-- H1: ≥60% of sticky hypers show wall detection — **PASS** (61%)
+- H1: ≥60% of sticky hypers show wall detection — **PASS** (65%)
 - H2: Wall episodes resolve in similar time as non-wall — **FAIL** (wall resolves faster)
 - H3: Significant excess insulin in wall episodes — **PASS** (15.2 U·h mean)
 - H4: Patience mode reduces delayed hypos ≥50% — **PASS** (100% preventable)
 
 **Major Finding: Controllers Waste Insulin Against the Suppression Wall**
 
-1. **61-84% of sticky hyper episodes show wall detection** — the controller is pushing
+1. **41-84% of sticky hyper episodes show wall detection** — the controller is pushing
    insulin into the SC suppression ceiling with diminishing returns.
 
 2. **Patient i is the worst case**: 62% of sticky hypers result in delayed hypos.
