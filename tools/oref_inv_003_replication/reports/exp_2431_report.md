@@ -2,9 +2,9 @@
 
 **Experiment**: EXP-2431  
 **Phase**: Replication (OREF-INV-003 cross-analysis)  
-**Date**: 2026-04-11  
+**Date**: 2026-04-13  
 **Script**: `tools/oref_inv_003_replication/exp_repl_2431.py`  
-**Data provenance**: ⚠️ Pre-ODC-fix. AAPS/ODC patients used percentage temp basals stored as raw U/hr rates. See EXP-2521 for corrected-data rerun.
+**Data provenance**: ✅ Post-ODC-fix (re-run 2026-04-13). Results supersede pre-fix Phase 1-4 runs.
 
 ## Comparison Summary
 
@@ -77,7 +77,7 @@ We trained LightGBM hypo/hyper classifiers with the same architecture as the col
 
 ## Synthesis
 
-The prediction model replication shows that LightGBM hypo/hyper classifiers achieve similar performance on our independent data compared to the colleague's results. Our 5-fold hypo AUC=0.80 (theirs: 0.83), LOPO hypo AUC=0.67 (theirs: 0.67). The within-patient leakage gap of 0.13 is comparable to their 0.16 gap, confirming temporal leakage in stratified CV. Per-patient calibration has mixed effects on prediction reliability, consistent with their finding.
+The prediction model replication shows that LightGBM hypo/hyper classifiers achieve similar performance on our independent data compared to the colleague's results. Our 5-fold hypo AUC=0.80 (theirs: 0.83), LOPO hypo AUC=0.67 (theirs: 0.67). The within-patient leakage gap of 0.13 is comparable to their 0.16 gap, confirming temporal leakage in stratified CV. Per-patient calibration improves prediction reliability, consistent with their finding.
 
 ## Limitations
 

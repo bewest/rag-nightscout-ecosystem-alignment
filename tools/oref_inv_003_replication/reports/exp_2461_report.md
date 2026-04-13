@@ -2,18 +2,18 @@
 
 **Experiment**: EXP-2461  
 **Phase**: Contrast (OREF-INV-003 cross-analysis)  
-**Date**: 2026-04-11  
+**Date**: 2026-04-13  
 **Script**: `tools/oref_inv_003_replication/exp_repl_2461.py`  
-**Data provenance**: ⚠️ Pre-ODC-fix. AAPS/ODC patients used percentage temp basals stored as raw U/hr rates. See EXP-2521 for corrected-data rerun.
+**Data provenance**: ✅ Post-ODC-fix (re-run 2026-04-13). Results supersede pre-fix Phase 1-4 runs.
 
 ## Comparison Summary
 
 | Finding | Their Claim | Our Result | Agreement |
 |---------|------------|------------|-----------|
-| F-iob | iob_basaliob has 8.4% SHAP importance for hypo prediction; negative basalIOB correlates with lower hypo risk | High IOB is PROTECTIVE: RR(Q4 vs Q1)=0.946 (CI: 0.935–0.957), 9/19 patients show RR<1 | 🟡 partially_agrees |
+| F-iob | iob_basaliob has 8.4% SHAP importance for hypo prediction; negative basalIOB correlates with lower hypo risk | High IOB is PROTECTIVE: RR(Q4 vs Q1)=0.692 (CI: 0.684–0.700), 13/19 patients show RR<1 | 🟡 partially_agrees |
 | F-iob-causal | basalIOB importance is correlational (SHAP) | Causal direction: glucose→IOB→hypo, not IOB→hypo | 🟡 partially_agrees |
 | F-trajectory | IOB trajectory before hypo not explicitly analysed | IOB is falling in the 2h before hypo (Δ=-1.616 U, n=28208 events) | ↔️ not_comparable |
-| F-decomp | basalIOB is the key IOB component (8.4% SHAP importance for hypo) | IOB decomposition: bolusIOB is most protective; totalIOB RR=0.937, AUC=0.539; basalIOB RR=0.952, AUC=0.537; bolusIOB RR=0.925, AUC=0.545; activity RR=1.818, AUC=0.422 | 🟠 partially_disagrees |
+| F-decomp | basalIOB is the key IOB component (8.4% SHAP importance for hypo) | IOB decomposition: total IOB is most protective; totalIOB RR=0.709, AUC=0.577; basalIOB RR=0.730, AUC=0.574; bolusIOB RR=0.717, AUC=0.583; activity RR=1.375, AUC=0.429 | 🟠 partially_disagrees |
 | F-circadian | Hypo risk varies 5–20× by hour of day (F10) | IOB protective effect varies by time of day: more protective at night (night RR=0.607, afternoon RR=0.740) | ✅ agrees |
 
 ## Colleague's Findings (OREF-INV-003)
@@ -45,33 +45,33 @@
 
 ## Our Findings
 
-### F-iob: High IOB is PROTECTIVE: RR(Q4 vs Q1)=0.946 (CI: 0.935–0.957), 9/19 patients show RR<1 🟡
+### F-iob: High IOB is PROTECTIVE: RR(Q4 vs Q1)=0.692 (CI: 0.684–0.700), 13/19 patients show RR<1 🟡
 
-**Evidence**: Relative risk analysis on our independent dataset of 19 patients. Per-patient breakdown: a: RR=1.094 (CI: 1.053–1.138); b: RR=1.150 (CI: 1.090–1.214); c: RR=1.232 (CI: 1.195–1.271); d: RR=0.744 (CI: 0.699–0.791); e: RR=1.071 (CI: 1.026–1.118); f: RR=0.639 (CI: 0.614–0.665); g: RR=1.060 (CI: 1.028–1.094); h: RR=1.433 (CI: 1.375–1.494); i: RR=0.706 (CI: 0.690–0.722); j: RR=N/A (CI: N/A–N/A); k: RR=0.739 (CI: 0.717–0.762); odc-39819048: RR=0.763 (CI: 0.705–0.825); odc-49141524: RR=0.539 (CI: 0.432–0.674); odc-58680324: RR=2.626 (CI: 2.250–3.066); odc-61403732: RR=2.569 (CI: 2.184–3.022); odc-74077367: RR=0.785 (CI: 0.758–0.814); odc-84181797: RR=0.000 (CI: N/A–N/A); odc-86025410: RR=1.059 (CI: 1.038–1.080); odc-96254963: RR=0.945 (CI: 0.920–0.970). Their SHAP finding and our RR finding describe the SAME phenomenon: the AID loop delivers more insulin when it is safe, so high IOB correlates with low hypo risk.
+**Evidence**: Relative risk analysis on our independent dataset of 19 patients. Per-patient breakdown: a: RR=0.969 (CI: 0.933–1.007); b: RR=1.011 (CI: 0.959–1.067); c: RR=0.921 (CI: 0.894–0.949); d: RR=0.562 (CI: 0.527–0.598); e: RR=0.919 (CI: 0.881–0.959); f: RR=0.547 (CI: 0.525–0.569); g: RR=0.903 (CI: 0.876–0.931); h: RR=1.022 (CI: 0.988–1.057); i: RR=0.607 (CI: 0.594–0.621); j: RR=N/A (CI: N/A–N/A); k: RR=0.614 (CI: 0.596–0.633); odc-39819048: RR=0.763 (CI: 0.705–0.825); odc-49141524: RR=0.539 (CI: 0.432–0.674); odc-58680324: RR=2.322 (CI: 1.991–2.709); odc-61403732: RR=1.538 (CI: 1.313–1.803); odc-74077367: RR=0.775 (CI: 0.748–0.803); odc-84181797: RR=0.000 (CI: N/A–N/A); odc-86025410: RR=1.060 (CI: 1.040–1.081); odc-96254963: RR=0.910 (CI: 0.886–0.934). Their SHAP finding and our RR finding describe the SAME phenomenon: the AID loop delivers more insulin when it is safe, so high IOB correlates with low hypo risk.
 **Agreement**: partially_agrees
 **Prior work**: EXP-2351, EXP-2463
 
 ### F-iob-causal: Causal direction: glucose→IOB→hypo, not IOB→hypo 🟡
 
-**Evidence**: Point-biserial correlations: IOB change→hypo r=-0.0579 (p=0.00e); glucose change→hypo r=-0.1372 (p=0.00e). Glucose→IOB Pearson r=0.3277 (p=0.00e). Stronger predictor: Glucose change. The causal chain is: falling glucose triggers AID suspension → IOB drops → hypo follows. High IOB is a MARKER of safety, not a cause.
+**Evidence**: Point-biserial correlations: IOB change→hypo r=-0.0580 (p=0.00e); glucose change→hypo r=-0.1372 (p=0.00e). Glucose→IOB Pearson r=0.3278 (p=0.00e). Stronger predictor: Glucose change. The causal chain is: falling glucose triggers AID suspension → IOB drops → hypo follows. High IOB is a MARKER of safety, not a cause.
 **Agreement**: partially_agrees
 **Prior work**: EXP-2464
 
 ### F-trajectory: IOB is falling in the 2h before hypo (Δ=-1.616 U, n=28208 events) ↔️
 
-**Evidence**: Mean IOB 2h before hypo: 0.539 U; 2h before normal BG: 1.222 U. IOB trend in the 2h window: -1.616 U (dropping — consistent with AID suspension preceding hypo). This temporal signature supports the causal chain: glucose falling → AID suspends → IOB drops → hypo follows.
+**Evidence**: Mean IOB 2h before hypo: 0.539 U; 2h before normal BG: 1.139 U. IOB trend in the 2h window: -1.616 U (dropping — consistent with AID suspension preceding hypo). This temporal signature supports the causal chain: glucose falling → AID suspends → IOB drops → hypo follows.
 **Agreement**: not_comparable
 **Prior work**: EXP-2462
 
-### F-decomp: IOB decomposition: bolusIOB is most protective; totalIOB RR=0.937, AUC=0.539; basalIOB RR=0.952, AUC=0.537; bolusIOB RR=0.925, AUC=0.545; activity RR=1.818, AUC=0.422 🟠
+### F-decomp: IOB decomposition: total IOB is most protective; totalIOB RR=0.709, AUC=0.577; basalIOB RR=0.730, AUC=0.574; bolusIOB RR=0.717, AUC=0.583; activity RR=1.375, AUC=0.429 🟠
 
-**Evidence**: Component-level RR (above-median vs below-median split): totalIOB RR=0.937, AUC=0.539; basalIOB RR=0.952, AUC=0.537; bolusIOB RR=0.925, AUC=0.545; activity RR=1.818, AUC=0.422. total IOB is more protective than basalIOB alone, suggesting their emphasis on basalIOB may be incomplete.
+**Evidence**: Component-level RR (above-median vs below-median split): totalIOB RR=0.709, AUC=0.577; basalIOB RR=0.730, AUC=0.574; bolusIOB RR=0.717, AUC=0.583; activity RR=1.375, AUC=0.429. total IOB is more protective than basalIOB alone, suggesting their emphasis on basalIOB may be incomplete.
 **Agreement**: partially_disagrees
 **Prior work**: EXP-2466
 
 ### F-circadian: IOB protective effect varies by time of day: more protective at night (night RR=0.607, afternoon RR=0.740) ✅
 
-**Evidence**: Circadian breakdown: night: RR=0.607, hypo=22.6%; morning: RR=0.675, hypo=24.5%; afternoon: RR=0.740, hypo=23.0%; evening: RR=0.756, hypo=23.9%. IOB is more protective at night vs afternoon. This interacts with their F10 finding: the 5–20× variation in hypo rate by hour may partly reflect circadian changes in IOB dynamics and insulin sensitivity.
+**Evidence**: Circadian breakdown: night: RR=0.607, hypo=22.6%; morning: RR=0.675, hypo=24.6%; afternoon: RR=0.740, hypo=23.0%; evening: RR=0.756, hypo=23.9%. IOB is more protective at night vs afternoon. This interacts with their F10 finding: the 5–20× variation in hypo rate by hour may partly reflect circadian changes in IOB dynamics and insulin sensitivity.
 **Agreement**: agrees
 **Prior work**: EXP-2467
 
@@ -111,9 +111,9 @@ We reconcile OREF-INV-003's SHAP-based finding that `iob_basaliob` is an 8.4% hy
 
 Both analyses identify the same phenomenon but interpret it through different lenses. Their SHAP importance correctly identifies basalIOB as a strong hypo predictor (8.4% importance). Our RR analysis adds causal direction: high IOB is protective BECAUSE the AID loop delivered insulin only when safe. This is the **AID Compensation Theorem** in action: the loop's own behavior creates a protective correlation between IOB and outcomes.
 
-**Key convergence**: RR(Q4 vs Q1) = 0.946 (CI: 0.935–0.957), with 9/19 patients showing RR<1. The IOB trajectory analysis (EXP-2462) confirms IOB is falling before hypo events (Δ=-1.616 U), consistent with AID suspension preceding hypoglycemia.
+**Key convergence**: RR(Q4 vs Q1) = 0.692 (CI: 0.684–0.700), with 13/19 patients showing RR<1. The IOB trajectory analysis (EXP-2462) confirms IOB is falling before hypo events (Δ=-1.616 U), consistent with AID suspension preceding hypoglycemia.
 
-**IOB decomposition** (EXP-2466): totalIOB RR=0.937, AUC=0.539; basalIOB RR=0.952, AUC=0.537; bolusIOB RR=0.925, AUC=0.545; activity RR=1.818, AUC=0.422. Total IOB may be a stronger protective signal than basalIOB alone.
+**IOB decomposition** (EXP-2466): totalIOB RR=0.709, AUC=0.577; basalIOB RR=0.730, AUC=0.574; bolusIOB RR=0.717, AUC=0.583; activity RR=1.375, AUC=0.429. Total IOB may be a stronger protective signal than basalIOB alone.
 
 **Circadian modulation** (EXP-2467): The IOB protective effect is not constant across the day. Night RR=0.607 vs afternoon RR=0.740 This interacts with their F10 (5–20× hourly hypo variation).
 

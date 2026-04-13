@@ -2,8 +2,8 @@
 
 **Experiment**: EXP-2451  
 **Phase**: Contrast (OREF-INV-003 cross-analysis)  
-**Date**: 2026-04-11  
-**Data provenance**: ⚠️ Pre-ODC-fix. AAPS/ODC patients used percentage temp basals stored as raw U/hr rates. See EXP-2521 for corrected-data rerun.
+**Date**: 2026-04-13  
+**Data provenance**: ✅ Post-ODC-fix (re-run 2026-04-13). Results supersede pre-fix Phase 1-4 runs.
 
 ## Comparison Summary
 
@@ -46,7 +46,7 @@
 
 ### AID-comp: AID Compensation Theorem: algorithm masks wrong basals 🟡
 
-**Evidence**: TIR stays acceptable even with basals too high because the algorithm compensates (basalIOB-TIR r=-0.315). Wrong basals increase IOB volatility and reduce safety margins.
+**Evidence**: TIR stays acceptable even with basals too high because the algorithm compensates (basalIOB-TIR r=-0.312). Wrong basals increase IOB volatility and reduce safety margins.
 **Agreement**: partially_agrees
 **Prior work**: EXP-1971, EXP-2456
 
