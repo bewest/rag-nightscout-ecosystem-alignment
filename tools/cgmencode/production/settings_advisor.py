@@ -2017,6 +2017,9 @@ def generate_settings_advice(glucose: np.ndarray,
     # Apply confidence tier based on data days (EXP-2622)
     recs = apply_confidence_tier_to_recommendations(recs, days_of_data)
 
+    # Apply safety clamp (EXP-2626)
+    recs = apply_safety_clamp(recs)
+
     # Sort by predicted impact
     recs.sort(key=lambda r: abs(r.predicted_tir_delta), reverse=True)
     return recs
@@ -3318,5 +3321,44 @@ def apply_confidence_tier_to_recommendations(
             if rec.parameter == SettingsParameter.ISF:
                 rec.confidence = round(rec.confidence * 0.8, 2)
                 rec.evidence += " [ISF may still be converging, <30 days]"
+
+    return recs
+
+
+# ── Safety Clamp (EXP-2626) ──────────────────────────────────────────
+
+# EXP-2626: 36% of advisories exceed 25% magnitude. 7/10 extreme
+# advisories (>50%) come from ISF-related advisors. Clinical best
+# practice limits settings changes to 10-15% per adjustment cycle.
+# Clamping at 25% preserves ranking for 15/16 patients.
+MAX_SAFE_MAGNITUDE_PCT = 25.0
+
+
+def apply_safety_clamp(
+    recs: List[SettingsRecommendation],
+    max_magnitude_pct: float = MAX_SAFE_MAGNITUDE_PCT,
+) -> List[SettingsRecommendation]:
+    """Clamp advisory magnitudes to a clinically safe maximum.
+
+    EXP-2626: Large single-step settings changes (>25%) are clinically
+    risky. This function caps magnitude_pct at max_magnitude_pct while
+    preserving direction and ranking. Clamped advisories are annotated
+    so the user knows the full magnitude was larger.
+
+    Args:
+        recs: list of recommendations from generate_settings_advice().
+        max_magnitude_pct: maximum allowed magnitude (default 25%).
+
+    Returns:
+        Modified list with clamped magnitude values.
+    """
+    for rec in recs:
+        if rec.magnitude_pct > max_magnitude_pct:
+            original = rec.magnitude_pct
+            rec.magnitude_pct = max_magnitude_pct
+            rec.evidence += (
+                f" [CLAMPED from {original:.0f}% to {max_magnitude_pct:.0f}%"
+                f" — stage over multiple adjustment cycles]"
+            )
 
     return recs

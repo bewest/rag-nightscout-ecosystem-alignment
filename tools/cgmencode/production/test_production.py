@@ -4693,3 +4693,129 @@ class TestAdvisoryConfidenceTier(unittest.TestCase):
         self.assertAlmostEqual(result[0].confidence, 0.64)
         # CR should NOT be penalized
         self.assertAlmostEqual(result[1].confidence, 0.8)
+
+
+class TestSafetyClamp(unittest.TestCase):
+    """Tests for apply_safety_clamp (EXP-2626)."""
+
+    def test_clamp_reduces_large_magnitude(self):
+        from cgmencode.production.settings_advisor import apply_safety_clamp
+        rec = SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction="decrease",
+            magnitude_pct=68.0,
+            current_value=50.0,
+            suggested_value=16.0,
+            predicted_tir_delta=26.0,
+            affected_hours=(0, 24),
+            confidence=0.6,
+            evidence="ISF non-linearity",
+            rationale="test",
+        )
+        result = apply_safety_clamp([rec])
+        self.assertEqual(result[0].magnitude_pct, 25.0)
+        self.assertIn("CLAMPED from 68%", result[0].evidence)
+
+    def test_clamp_preserves_small_magnitude(self):
+        from cgmencode.production.settings_advisor import apply_safety_clamp
+        rec = SettingsRecommendation(
+            parameter=SettingsParameter.CR,
+            direction="decrease",
+            magnitude_pct=15.0,
+            current_value=10.0,
+            suggested_value=8.5,
+            predicted_tir_delta=1.5,
+            affected_hours=(0, 24),
+            confidence=0.8,
+            evidence="test",
+            rationale="test",
+        )
+        result = apply_safety_clamp([rec])
+        self.assertEqual(result[0].magnitude_pct, 15.0)
+        self.assertNotIn("CLAMPED", result[0].evidence)
+
+    def test_clamp_preserves_direction(self):
+        from cgmencode.production.settings_advisor import apply_safety_clamp
+        rec = SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction="increase",
+            magnitude_pct=100.0,
+            current_value=50.0,
+            suggested_value=100.0,
+            predicted_tir_delta=5.0,
+            affected_hours=(0, 24),
+            confidence=1.0,
+            evidence="test",
+            rationale="test",
+        )
+        result = apply_safety_clamp([rec])
+        self.assertEqual(result[0].direction, "increase")
+        self.assertEqual(result[0].magnitude_pct, 25.0)
+
+    def test_clamp_custom_threshold(self):
+        from cgmencode.production.settings_advisor import apply_safety_clamp
+        rec = SettingsRecommendation(
+            parameter=SettingsParameter.BASAL_RATE,
+            direction="decrease",
+            magnitude_pct=20.0,
+            current_value=1.0,
+            suggested_value=0.8,
+            predicted_tir_delta=1.0,
+            affected_hours=(0, 24),
+            confidence=0.5,
+            evidence="test",
+            rationale="test",
+        )
+        result = apply_safety_clamp([rec], max_magnitude_pct=15.0)
+        self.assertEqual(result[0].magnitude_pct, 15.0)
+        self.assertIn("CLAMPED from 20%", result[0].evidence)
+
+    def test_clamp_at_boundary(self):
+        from cgmencode.production.settings_advisor import apply_safety_clamp
+        rec = SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction="decrease",
+            magnitude_pct=25.0,
+            current_value=50.0,
+            suggested_value=37.5,
+            predicted_tir_delta=2.0,
+            affected_hours=(0, 24),
+            confidence=0.8,
+            evidence="test",
+            rationale="test",
+        )
+        result = apply_safety_clamp([rec])
+        self.assertEqual(result[0].magnitude_pct, 25.0)
+        self.assertNotIn("CLAMPED", result[0].evidence)
+
+    def test_clamp_multiple_recs(self):
+        from cgmencode.production.settings_advisor import apply_safety_clamp
+        recs = [
+            SettingsRecommendation(
+                parameter=SettingsParameter.ISF,
+                direction="decrease",
+                magnitude_pct=68.0,
+                current_value=50.0,
+                suggested_value=16.0,
+                predicted_tir_delta=26.0,
+                affected_hours=(0, 24),
+                confidence=0.6,
+                evidence="big change",
+                rationale="test",
+            ),
+            SettingsRecommendation(
+                parameter=SettingsParameter.CR,
+                direction="decrease",
+                magnitude_pct=10.0,
+                current_value=10.0,
+                suggested_value=9.0,
+                predicted_tir_delta=1.0,
+                affected_hours=(0, 24),
+                confidence=0.8,
+                evidence="small change",
+                rationale="test",
+            ),
+        ]
+        result = apply_safety_clamp(recs)
+        self.assertEqual(result[0].magnitude_pct, 25.0)  # clamped
+        self.assertEqual(result[1].magnitude_pct, 10.0)  # preserved
