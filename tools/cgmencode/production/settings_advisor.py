@@ -3066,16 +3066,19 @@ def compute_settings_quality_score(
 ) -> float:
     """Compute composite Settings Quality Score (SQS) from recommendations.
 
-    SQS = 100 - Σ(magnitude_pct × confidence × 0.15) for all recs.
+    SQS = 100 - Σ(magnitude_pct × confidence × weight × 0.15) for all recs.
     Higher score (0-100) = better settings alignment with metabolic needs.
 
-    EXP-2600: Original formula (tir_delta × confidence) correlated r=0.833.
-    EXP-2606: After ISF fix, switched to magnitude_pct basis because
-    correction-based ISF's tir_delta is poorly calibrated. Total distance
-    (sum of magnitude_pct) validated r=-0.689 with TIR (p=0.04).
+    Parameter weights (EXP-2613):
+      ISF: 2.0× (most impactful for TIR outcomes)
+      CR:  1.0× (less direct impact)
+      Basal: 1.5× (moderate impact)
+      Other: 1.0× (default)
 
-    The 0.15 scaling factor maps magnitude_pct × confidence to a 0-100
-    SQS range with good discrimination.
+    EXP-2600: Original formula r=0.833. EXP-2606: magnitude basis r=0.726.
+    EXP-2613: Weighted formula r=0.603 (best of 6 candidates after effective
+    CR addition). ISF weighting 2× improves discrimination because ISF
+    changes have more direct impact on glycemic variability.
 
     Args:
         recs: consolidated recommendations from generate_settings_advice().
@@ -3083,5 +3086,13 @@ def compute_settings_quality_score(
     Returns:
         SQS as float in [0, 100].
     """
-    total = sum(r.magnitude_pct * r.confidence * 0.15 for r in recs)
+    _PARAM_WEIGHTS = {
+        SettingsParameter.ISF: 2.0,
+        SettingsParameter.CR: 1.0,
+        SettingsParameter.BASAL_RATE: 1.5,
+    }
+    total = sum(
+        r.magnitude_pct * r.confidence * 0.15 * _PARAM_WEIGHTS.get(r.parameter, 1.0)
+        for r in recs
+    )
     return max(0.0, min(100.0, 100.0 - total))
