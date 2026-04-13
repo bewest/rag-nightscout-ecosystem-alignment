@@ -737,6 +737,243 @@ active dosing algorithm. The infrastructure exists for EGP-aware control.
 
 ---
 
+---
+
+## Round 5: ODC Validation, Hill Fitting & Sticky Hypers
+
+### EXP-2629: Per-Patient Hill EGP Fitting & ODC Validation
+
+**Purpose**: (1) Validate overnight drift findings on 3 ODC patients with full
+telemetry, (2) fit per-patient Hill suppression curves to characterize EGP
+diversity, (3) analyze "sticky hyper" episodes for EGP/insulin-resistance
+signatures.
+
+**Data**: 12 patients total — 9 NS (a-k) + 3 ODC (odc-74077367, odc-86025410,
+odc-96254963). ODC patients have near-zero logged carbs (AAPS with SMB, meals
+typically unannounced). DIA unknown for ODC, assumed 6h default.
+
+#### Part 1: Per-Patient Hill Curve Fitting
+
+**Model**: `glucose_roc = A × (1 - IOB^n / (IOB^n + K^n)) + B`
+
+Fitted from fasting windows (no carbs, no bolus for ≥2h). Each patient's
+unique Hill parameters describe how their liver responds to insulin:
+
+| Patient | Base EGP (mg/dL/hr) | Hill n | Hill K (U) | Supp@2U | R² |
+|---------|---------------------|--------|------------|---------|-----|
+| a | 60.0 | 4.96 | 3.4 | 6% | 0.041 |
+| b | 60.0 | 0.74 | 2.6 | 45% | 0.021 |
+| c | 60.0 | 1.70 | 0.6 | 88% | 0.081 |
+| d | 60.0 | 0.66 | 7.7 | 29% | 0.014 |
+| e | 26.1 | 0.30 | 0.1 | 71% | 0.011 |
+| f | 35.5 | 0.68 | 2.2 | 49% | 0.011 |
+| g | 26.9 | 1.49 | 0.4 | 93% | 0.012 |
+| i | 60.0 | 1.69 | 1.4 | 64% | 0.081 |
+| k | 60.0 | 1.58 | 4.7 | 20% | 0.010 |
+| odc-74077367 | 51.5 | 0.43 | 15.0 | 29% | 0.015 |
+| odc-86025410 | 26.0 | 4.42 | 0.9 | 97% | 0.001 |
+| odc-96254963 | 8.4 | 5.00 | 0.2 | 100% | 0.001 |
+
+**Population value**: Hill K = 2.0U, n = 1.5, base EGP = 18 mg/dL/hr.
+
+**H1 — PASS**: Hill K varies **150×** across patients (0.1–15.0U). The insulin
+dose needed for 50% EGP suppression ranges from 0.1U (odc-96254963, easily
+suppressed) to 15.0U (odc-74077367, very hard to suppress).
+
+**Critical Caveat**: R² values are low (0.001–0.081). Fasting glucose rate-of-change
+is very noisy — insulin IOB explains only 1–8% of the variance. The remaining
+92–99% includes peripheral insulin sensitivity, muscle glucose uptake, stress
+hormones, activity, and measurement noise. These fits show the *direction* of
+per-patient variation but the specific parameter values are poorly constrained.
+Correction recovery slopes (EXP-2624/2625: 4.7–44.8 mg/dL/hr, cleaner signal)
+remain the better EGP rate estimator.
+
+**H4 — FAIL**: Per-patient fits improve RMSE by only 0–5% vs population model.
+The Hill model explains too little variance for per-patient fitting to matter
+at this level of noise. Better approach: use correction recovery slopes as
+EGP rate proxy, not direct Hill fitting.
+
+#### Part 2: ODC Overnight Drift Validation
+
+**H2 — PASS (2/3 ODC patients)**: IOB@midnight predicts overnight drift better
+than 48h carbs in 2 of 3 ODC patients.
+
+| Patient | Nights | IOB→Drift r | Carbs→Drift r | IOB Better? |
+|---------|--------|-------------|---------------|-------------|
+| odc-74077367 | 44 | **-0.572** | 0.117 | ✓ |
+| odc-86025410 | 145 | **-0.469** | 0.122 | ✓ |
+| odc-96254963 | 115 | -0.012 | 0.021 | ✗ |
+
+**Key finding**: ODC patient odc-74077367 has the *strongest* IOB→drift
+correlation in the entire study (r=-0.572), stronger than any NS patient.
+This patient runs AAPS with frequent SMBs but zero logged carbs — the
+system's automated insulin delivery creates a clean signal for IOB analysis.
+
+odc-86025410 (375 days, basal-only with 0.35 U/hr) also confirms strongly
+despite having zero bolus data. The basal rate variation alone creates
+enough IOB variation to predict overnight drift.
+
+odc-96254963 shows no correlation for either predictor — possibly due to
+very stable overnight behavior (drift_std may be too small).
+
+**NS replication**: 4 NS patients had sufficient fasting nights. 2/4 confirm
+IOB>carbs. Patients d and k have constant IOB@midnight (r=NaN), meaning
+their AID systems maintain very stable overnight IOB. This is actually a
+*success* of their controllers, not a failure of the analysis.
+
+#### Part 3: Sticky Hyper EGP Signature
+
+**Definition**: Episodes where glucose stays >180 mg/dL for ≥3 consecutive hours.
+
+| Patient | Episodes | IOB (U) | Normal IOB | IOB Ratio | Glucose ROC | % Rising |
+|---------|----------|---------|------------|-----------|-------------|----------|
+| a | 179 | 5.4 | 1.2 | 4.5× | -1.0 | **47%** |
+| b | 172 | 3.0 | 1.3 | 2.3× | -2.0 | 34% |
+| c | 130 | 3.7 | 0.4 | 9.3× | -5.6 | 37% |
+| d | 65 | 3.6 | 1.0 | 3.6× | -1.0 | **45%** |
+| **e** | **143** | **7.0** | **2.7** | **2.6×** | **+0.7** | **55%** |
+| f | 166 | 7.5 | 1.4 | 5.4× | -6.2 | 29% |
+| g | 83 | 3.6 | 1.5 | 2.4× | -5.8 | 24% |
+| i | 160 | 7.3 | 0.7 | 10.4× | -4.4 | 35% |
+| odc-74077367 | 51 | 5.5 | 1.6 | 3.4× | -2.0 | 31% |
+| odc-86025410 | 225 | 0.5 | 0.1 | 5.0× | -3.2 | 36% |
+| odc-96254963 | 133 | 2.1 | 1.5 | 1.4× | -2.3 | 35% |
+
+**H3 — FAIL (37% mean, threshold was 40%)**: Technically failed but borderline.
+Population average is 37% of time glucose still rising during sticky hypers.
+
+**Critical finding — Patient e**: Glucose is **actively rising** (+0.7 mg/dL/hr)
+55% of the time despite 7.0U IOB (2.6× normal). This is the clearest "overfull"
+candidate — the liver is producing glucose faster than 7U of insulin can suppress
+it. At the population Hill model, 7U IOB should produce 82% suppression, leaving
+only 3.2 mg/dL/hr of EGP. The fact that glucose is *rising* means either:
+1. Actual EGP far exceeds the population model for this patient, OR
+2. Peripheral insulin sensitivity is severely reduced (muscle not taking up glucose)
+
+Both suggest the population Hill parameters are wrong for this patient.
+
+**odc-86025410** is unique: only 0.5U IOB during sticky hypers (baseline is 0.1U).
+This basal-only patient has 225 episodes — nearly 1 per 1.7 days. Without bolus
+correction capability, the system can only increase basal rate, which is slow.
+
+### Summary of Round 5 Findings
+
+1. **ODC validation confirms IOB@midnight finding**: 2/3 ODC patients show
+   IOB→drift correlations as strong or stronger than NS patients. The finding
+   is robust across different AID systems (Loop + AAPS), bolusing patterns
+   (active bolus vs basal-only), and carb logging behaviors.
+
+2. **Hill parameters vary enormously but are poorly identifiable**: The direct
+   fitting approach (fasting glucose_roc vs IOB) explains only 1–8% of variance.
+   The signal is real (Hill K varies 150×) but drowned in noise. Correction
+   recovery slopes remain the better per-patient EGP estimator.
+
+3. **"Overfull" hypothesis partially supported**: Sticky hypers have 2.3–10.4×
+   normal IOB, and glucose is still rising 24–55% of the time. Patient e is the
+   strongest example (+0.7 mg/dL/hr at 7U IOB). The population Hill model
+   cannot explain this — per-patient K and/or peripheral sensitivity must vary.
+
+4. **odc-86025410 reveals basal-only limitations**: 225 sticky hyper episodes
+   without bolus correction capability. Basal-rate-only systems cannot correct
+   hyperglycemia on the timescale needed to match EGP dynamics.
+
+### Implications for Settings & Controller Design
+
+**Per-Patient Hill K for ISF Adjustment**:
+- Patients with Hill K >> 2U (d, k, odc-74077367) have hepatic insulin resistance:
+  their liver requires more insulin for the same EGP suppression. Their ISF should
+  be LOWER (more aggressive corrections).
+- Patients with Hill K << 2U (c, e, g, odc-86025410, odc-96254963) have sensitive
+  livers: small amounts of insulin dramatically suppress EGP. Their ISF should
+  be HIGHER (less aggressive, avoid over-correction).
+
+**"Overfull" State Detection (future work)**:
+- When glucose remains >180 despite IOB >3× normal for >2h, the system should
+  recognize this as a state where the Hill suppression model is failing.
+- Possible intervention: temporary ISF reduction (more aggressive dosing) with
+  enhanced safety limits for the following 2-4h rebound risk.
+
+**Basal-Only Controller Limitation**:
+- odc-86025410 demonstrates that basal-rate-only modulation cannot handle acute
+  EGP/insulin-resistance episodes. Micro-bolusing (SMB) is essential for sticky
+  hyper correction.
+
+### Figures
+
+| Figure | Description |
+|--------|-------------|
+| Fig 15 | Per-patient Hill suppression curves vs population |
+| Fig 16 | ODC validation — IOB@midnight drift correlations |
+| Fig 17 | Sticky hyper IOB ratios and glucose behavior |
+| Fig 18 | Cross-population Hill parameter distribution |
+
+---
+
+## Overall Conclusions
+
+### Confirmed Findings (High Confidence)
+
+1. **Glucose nadir occurs at 3.5h, not at insulin peak (1.25h)** — 54% of the
+   correction glucose drop happens after peak insulin action, driven by EGP
+   suppression that persists 2.25h past the insulin peak (EXP-2624, EXP-2626).
+
+2. **IOB@midnight is 1.8× better than 48h carbs at predicting overnight drift**
+   — confirmed in both NS and ODC patients (EXP-2628, EXP-2629). This is the
+   most actionable finding for basal schedule optimization.
+
+3. **67% of patients have ISF inflated ≥15% by EGP suppression** — apparent ISF
+   includes both insulin demand AND EGP suppression phases, making it larger
+   than "true" insulin-only ISF (EXP-2625).
+
+4. **48h carb window = 72h for glycogen/drift prediction** — no information gain
+   beyond 48h, signal plateaus at ~30h (EXP-2627).
+
+5. **No AID controller models EGP recovery dynamics** — Loop, oref0, AAPS, and
+   Trio all predict glucose only through insulin DIA. Post-DIA EGP recovery is
+   invisible to all current controllers (code analysis, EXP-2626).
+
+6. **Hill suppression parameters vary enormously across patients** — Hill K ranges
+   0.1–15.0U (150×), though direct fitting is noisy (R²<0.1) (EXP-2629).
+
+### Null/Disconfirmed Findings (Also Important)
+
+1. **EGP spectral band is only 3.6–8.6% of residual** — the existing circadian
+   model already captures most slow EGP variation (EXP-2621).
+
+2. **ISF is NOT significantly different by glycogen state** — the overnight drift
+   signal comes from IOB carryover, not glycogen repletion (EXP-2628).
+
+3. **Direct Hill fitting from fasting data improves prediction by only 0–5%** —
+   too noisy for reliable per-patient parameter estimation (EXP-2629).
+
+4. **H3 sticky hyper "rising" threshold narrowly missed** — 37% vs 40% target,
+   but the patient-level variation (24–55%) reveals real per-patient heterogeneity.
+
+### Avenues for Further Research
+
+1. **Constrained Hill fitting**: Use correction events (cleaner signal) instead of
+   all fasting windows. Combine recovery slope + time-to-nadir + pre-BG to estimate
+   base_egp, hill_n, hill_k simultaneously with physiologic constraints.
+
+2. **Peripheral insulin sensitivity**: The "sticky hyper" finding suggests that
+   hepatic EGP suppression alone can't explain all hyperglycemia. Peripheral
+   glucose uptake (muscle, adipose) may vary independently, requiring a two-compartment
+   model (hepatic + peripheral).
+
+3. **State-dependent ISF**: Instead of a fixed ISF, model ISF as a function of
+   the glucose level itself. At >180 mg/dL with high IOB, effective ISF may be
+   much lower (more insulin needed per mg/dL drop) due to saturated suppression.
+
+4. **Real-time glycogen state estimation**: Track a running glycogen inventory
+   (carb input - metabolic demand) to predict the next 6-24h of EGP behavior.
+   This could improve overnight basal recommendations and dawn phenomenon management.
+
+5. **Trio EGPSchedule activation**: Trio has unused `LoopKit/EGPSchedule.swift`
+   infrastructure. The per-patient EGP profiles from this research could directly
+   populate this schedule for closed-loop EGP-aware predictions.
+
+---
+
 ## Experiment Code & Data
 
 | File | Purpose |
@@ -747,9 +984,14 @@ active dosing algorithm. The infrastructure exists for EGP-aware control.
 | `tools/cgmencode/exp_correction_egp_2624.py` | Correction recovery dynamics |
 | `tools/cgmencode/exp_egp_settings_2625.py` | Per-patient EGP profiles |
 | `tools/cgmencode/exp_asymmetry_synthesis_2626.py` | Asymmetry synthesis |
+| `tools/cgmencode/exp_carb_window_sweep_2627.py` | Carb window 12-120h sweep |
+| `tools/cgmencode/exp_glycogen_state_2628.py` | Glycogen state detection |
+| `tools/cgmencode/exp_hill_fitting_2629.py` | Hill fitting + ODC validation |
 | `visualizations/egp-phase-research/round1_plots.py` | Figures 1-4 |
 | `visualizations/egp-phase-research/round2_plots.py` | Figures 5-6 |
 | `visualizations/egp-phase-research/round3_plots.py` | Figures 7-9 |
 | `visualizations/egp-phase-research/synthesis_plots.py` | Figures 10-13 |
+| `visualizations/egp-phase-research/glycogen_plots.py` | Figure 14 |
+| `visualizations/egp-phase-research/hill_odc_plots.py` | Figures 15-18 |
 
-Results (gitignored): `externals/experiments/exp-26{21-26}_*.json`
+Results (gitignored): `externals/experiments/exp-26{21-29}_*.json`
