@@ -65,10 +65,10 @@ fraction of residual variance falls in the EGP frequency band (>8h periods).
    - The overnight block has MORE events than any individual meal block
 
 5. **Spectral band distribution** (population mean):
-   - Ultra-low (>24h): 1.3%
-   - EGP (8-24h): 5.3%
+   - Ultra-low (>24h): 2.3%
+   - EGP (8-24h): 3.0%
    - Meal (3-8h): 5.2%
-   - High-freq (<3h): 88.2%
+   - High-freq (<3h): 89.5%
 
 **Interpretation**: The EGP signal is NOT easily separable from meals via FFT of
 the full residual. This may be because: (a) the circadian model already absorbs
@@ -133,7 +133,7 @@ EGP rate, then correlate with prior-day carb loads and glycogen proxy.
 1. **EGP is NOT a dominant signal in the residual spectrum**. The pre-existing
    circadian model (4-harmonic fit in metabolic_engine.py) likely already captures
    most EGP variation. The residual after circadian subtraction is dominated by
-   high-frequency noise (88%), not slow EGP oscillations.
+   high-frequency noise (90%), not slow EGP oscillations.
 
 2. **Overnight "meals" are NOT phantom micro-events**. They have substantial
    estimated carb sizes (>5g in 90% of cases), suggesting either genuine
