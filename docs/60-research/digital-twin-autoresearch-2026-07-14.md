@@ -1509,3 +1509,115 @@ New advisories:
 - Multi-feature ISF prediction (regression vs individual features)
 - Loop workload as metabolic state proxy
 - Advisory consolidation (17 advisories may overlap)
+
+---
+
+## Phase 10: Validation & Production Hardening (EXP-2623–2626)
+
+Phase 10 shifted from exploration to validation. Having built 17 advisories
+across 9 phases, we tested whether they work reliably, generalize to unseen
+patients, and are clinically safe. The result: the pipeline is validated
+and production-hardened.
+
+### EXP-2623: Multi-Feature ISF Prediction
+
+**Question**: Can multi-feature regression explain more per-window ISF
+variance than individual features?
+
+**Result**: H1 CONFIRMED (multi always beats single, 8/8), but H2 NOT
+CONFIRMED (mean R²=0.076 — only 7.6% explained). Best features:
+`current_bg` (5/8 patients), `mean_glucose` (6/8 in best-3 subsets),
+`carb_insulin_ratio` (5/8). Workload ratio adds nothing (max ΔR²=0.015).
+
+**Implication**: 84–97% of per-window ISF variance is driven by unmeasured
+factors (exercise, stress, sleep, stochastic biology). **CLOSES per-window
+ISF prediction research line.** The productionized overall ISF ratio
+(EXP-2582/2585) captures all actionable signal.
+
+### EXP-2624: Advisory Consolidation Audit
+
+**Question**: Do 17 advisories work together coherently on real patient data?
+
+**Result**: ALL 4 CONFIRMED across 9 NS patients.
+- Mean 7.2 advisories per patient (range 4–9, manageable)
+- Zero contradictions (no same-parameter opposite-direction advice)
+- CR dominates top-3 consistently (17/9 appearances)
+- SQS correlates with actual TIR (Spearman r=0.717, p=0.030)
+
+**Key observation**: Per-block CR advisory fires 3–5 times per patient
+(verbose but directionally consistent). ISF discrepancy suggests extreme
+magnitudes (±68–100%).
+
+### EXP-2625: ODC Patient Cross-Validation
+
+**Question**: Does the advisory pipeline generalize to 7 unseen ODC patients?
+
+**Result**: ALL 4 CONFIRMED.
+- ODC mean=6.3 advisories (within 1 SD of NS mean=7.2)
+- SQS vs TIR positive (r=0.393)
+- CR/ISF dominate top-3 in 6/7 ODC patients
+- Zero contradictions
+
+**Implication**: The pipeline works on independent patients without
+modification. Validated across 16 patients from 2 sources.
+
+### EXP-2626: Safety Guardrails
+
+**Question**: Are advisory magnitudes clinically safe?
+
+**Result**: ALL 3 CONFIRMED.
+- 36% of advisories exceed 25% magnitude (problem is real)
+- 7/10 extreme advisories (>50%) come from ISF advisors
+- Clamping at 25% preserves top-3 ranking for 15/16 patients
+
+**Productionized**: `apply_safety_clamp()` added to settings_advisor.py.
+Caps magnitude at 25% per cycle, annotates clamped advisories with
+original magnitude for transparency. Wired into `generate_settings_advice()`.
+366 tests pass.
+
+### Phase 10 Summary Table
+
+| EXP | Title | Hypotheses | Confirmed | Productionized |
+|-----|-------|------------|-----------|----------------|
+| 2623 | Multi-Feature ISF | 4 | 1/4 | No (closes line) |
+| 2624 | Advisory Audit | 4 | 4/4 | N/A (validation) |
+| 2625 | ODC Cross-Val | 4 | 4/4 | N/A (validation) |
+| 2626 | Safety Guardrails | 3 | 3/3 | Yes (safety clamp) |
+
+### Closed Research Lines (Phase 10)
+
+- Per-window ISF prediction (EXP-2623: R²=7.6%, unmeasured factors dominate)
+- Multi-feature regression for ISF (no universal feature set)
+- Loop workload ratio as ISF predictor (ΔR²≤0.015)
+
+### Production Advisory Pipeline — Final State
+
+18 advisories (17 + safety clamp layer), validated across 16 patients:
+
+| Advisory | Source | Type |
+|----------|--------|------|
+| Basal assessment | EXP-693 | Metabolic |
+| CR effectiveness | EXP-694 | Metabolic |
+| ISF discrepancy | EXP-747 | Calibration |
+| ISF non-linearity | EXP-2511 | Warning |
+| Circadian ISF 2-zone | EXP-2271 | Profiling |
+| Circadian ISF 4-block | EXP-2271 | Profiling |
+| Context-aware CR | EXP-2341 | Profiling |
+| Overnight drift basal | EXP-2371 | Calibration |
+| Correction threshold | EXP-2528 | Safety |
+| CR adequacy | EXP-2535 | Calibration |
+| CR meal-response | EXP-2607 | Calibration |
+| Per-block CR | EXP-2608 | Profiling |
+| Correction ISF | EXP-2585 | Calibration |
+| Joint ISF×CR | EXP-2582 | Calibration |
+| Hypo risk warning | EXP-2539 | Safety |
+| Override ISF | EXP-2621 | Context |
+| Confidence tiers | EXP-2622 | Quality |
+| Safety clamp | EXP-2626 | Safety |
+
+### Remaining Open Questions
+
+- Advisory deduplication: per-block CR fires 3–5 times → could merge
+- ISF non-linearity produces extreme magnitudes → safety clamp mitigates
+- Patient i ISF drift (1.95→1.39 over 180d): genuine or data artifact?
+- Forward sim glycogen model: needed for >2h simulation accuracy

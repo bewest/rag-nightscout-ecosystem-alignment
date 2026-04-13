@@ -308,3 +308,29 @@ convergence analysis. Two findings productionized.
 **Closed Research Lines** (cumulative: 27 lines closed):
 - Loop prediction as ISF validation, exercise ISF, override filtering,
   corrections→convergence speed
+
+### Phase 10: Validation & Production Hardening (2026-07-15)
+
+Shifted from exploration to validation. Tested whether 17 advisories work
+coherently, generalize to unseen patients, and are clinically safe.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2623 | `tools/cgmencode/production/exp_multi_feature_isf_2623.py` | R²=7.6%, closes ISF prediction line |
+| EXP-2624 | `tools/cgmencode/production/exp_advisory_audit_2624.py` | 0 contradictions, SQS↔TIR r=0.717 |
+| EXP-2625 | `tools/cgmencode/production/exp_odc_crossval_2625.py` | Generalizes to 7 ODC patients |
+| EXP-2626 | `tools/cgmencode/production/exp_safety_guardrails_2626.py` | 36% exceed 25%, safety clamp added |
+| Safety clamp | `tools/cgmencode/production/settings_advisor.py` | apply_safety_clamp(), 366 tests pass |
+| Research report | `docs/60-research/digital-twin-autoresearch-2026-07-14.md` | Phase 10 section |
+
+**Key Findings**:
+- Advisory pipeline validated across 16 patients (9 NS + 7 ODC)
+- Zero contradictions, consistent priority (CR > ISF > basal)
+- Settings Quality Score correlates with TIR (r=0.717, p=0.030)
+- Safety clamp caps magnitudes at 25% per cycle
+
+**Gaps Identified**: Advisory deduplication (per-block CR fires 3-5x),
+forward sim lacks glycogen model for >2h accuracy.
+
+**Closed Research Lines**: Per-window ISF prediction, multi-feature ISF,
+loop workload ratio as ISF predictor (3 new closures, 30 total).
