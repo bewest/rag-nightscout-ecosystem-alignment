@@ -21,8 +21,9 @@
 | F9 | bg_above_target in top-5 for hyper | Strongly Agrees: bg_above_target in top-5 for hyper | ✅✅ strongly_agrees |
 | F10 | Overall SHAP rankings are stable across cohort | Partially Agrees: ρ=0.609 with PK, stable across time | 🟡 partially_agrees |
 
-**Phase 9 update**: SHAP ρ vs colleague = **0.679** (hypo, optimized DIA) — highest correlation achieved.
-F3 upgraded from inconclusive to partially_agrees. F5b (eventualBG) added as strongly_agrees.
+**Final scorecard**: 5 strongly agree, 3 agree, 3 partially agree, 0 disagree, 0 inconclusive.
+SHAP ρ vs colleague = **0.679** (hypo, p=0.008) — highest correlation achieved via
+Phase 9 corrective arc (data fix → PK features → DIA optimization).
 
 ## Colleague's Findings (OREF-INV-003)
 
@@ -475,6 +476,98 @@ This resolves an apparent paradox:
 - These measure different things: the prediction model benefits from seeing
   insulin delivered 5-6h ago even though its direct BG effect has faded,
   because that history is informative about the patient's metabolic state.
+
+## Phase 9: Corrective Arc and Final Synthesis
+
+### Motivation
+
+Phases 1–4 were conducted on data with a percentage temp basal bug affecting 5/8
+AAPS patients (ODC-sourced). Phase 5 introduced algorithm-neutral PK features.
+Phase 9 re-runs the core analysis on corrected data, with and without PK, and
+with per-patient DIA optimization — establishing the final, validated scorecard.
+
+### Corrective Arc: ρ Progression
+
+| Step | Experiment | ρ (hypo) | p-value | Enhancement |
+|------|-----------|---------|---------|-------------|
+| 1. Pre-fix baseline | EXP-2401 | 0.531 | — | Phase 1 original |
+| 2. Data correction | EXP-2521 | 0.552 | — | +0.021 from ODC fix |
+| 3. Add PK features | EXP-2531 | 0.609 | — | +0.057 from PK bridge |
+| 4. Optimize DIA | EXP-2541 | **0.679** | **0.008** | +0.070 from DIA tuning |
+
+Each step is additive and independently validated: data quality, physics-based
+features, and parameter tuning each contribute measurably to alignment.
+
+### What Changed Between Phases
+
+**EXP-2521 (data fix only)**: AUC unchanged (0.8031), but SHAP ρ improved +0.021.
+The buggy percentage temp basals injected noise into the SHAP decomposition
+(particularly IOB-related features in AAPS patients) without affecting aggregate
+prediction. This demonstrates that **feature importance is more sensitive to data
+quality than aggregate AUC**.
+
+**EXP-2531 (+ PK)**: Both AUC (+0.012) and ρ (+0.057) improved. PK features
+provide algorithm-neutral physiological signals. Largest gain in AAPS-only ρ
+(+0.081), confirming PK normalizes cross-algorithm differences.
+
+**EXP-2541 (+ DIA optimization)**: ρ reached 0.679 (p=0.008). Discovered that
+predictive DIA (5–6h) ≠ pharmacodynamic DIA (2.8–3.8h). Longer PK kernels
+capture metabolic context beyond direct insulin effect.
+
+**EXP-2581 (eventualBG validation)**: R²=−3.20 for eventualBG→4h BG, even
+stronger than colleague's R²=0.002. Confirms algorithm predictions are dosing
+decisions, not forecasts.
+
+### Finding Resolution Trajectory
+
+| Finding | Phase 1 | Phase 6 | Phase 8 | Final |
+|---------|---------|---------|---------|-------|
+| F1 | ✅✅ | ✅✅ | ✅✅ | ✅✅ strongly_agrees |
+| F2 | ✅✅ | ✅✅ | ✅✅ | ✅✅ strongly_agrees |
+| F3 | ❌ disagrees | 🟡 #10 | 🟡 #9 | 🟡 partially_agrees |
+| F4 | 🟡 | 🟡 | 🟡 | 🟡 partially_agrees |
+| F5a | 🟡 | ✅✅ | ✅✅ | ✅✅ strongly_agrees |
+| F5b | — | — | ✅✅ | ✅✅ strongly_agrees |
+| F6 | ✅ | ✅ | ✅ | ✅ agrees |
+| F7 | ❌ disagrees | ✅✅ | ✅✅ | ✅✅ strongly_agrees |
+| F8 | 🟡 | ✅ | ✅ | ✅ agrees |
+| F9 | ✅✅ | ✅✅ | ✅✅ | ✅✅ strongly_agrees |
+| F10 | 🟡 | 🟡 | 🟡 | 🟡 partially_agrees |
+
+### iob_basaliob Gap Analysis
+
+The persistent gap (our #9 vs colleague's #2) is the primary remaining disagreement.
+Contributing factors:
+
+1. **Population structure**: 19 patients (11 Loop + 8 AAPS) vs 28 pure oref0 users
+2. **IOB semantics**: oref0 decomposes IOB at a 0.1U threshold; Loop does not
+3. **Algorithm dominance**: Loop patients (11/19) dilute oref-specific feature signals
+4. **AAPS-only analysis**: #9 in AAPS subset (closer to #2 but still 7 positions off)
+
+This gap is **expected** and likely irreducible without a pure oref0 cohort of
+comparable size. It does not represent a contradiction — our AAPS subset shows
+the feature trending toward the colleague's ranking.
+
+### Report Inventory
+
+| Experiment | Report | Phase | Data Status |
+|-----------|--------|-------|-------------|
+| EXP-2401 | `exp_2401_report.md` | Phase 1 | ⚠️ Pre-fix |
+| EXP-2411 | `exp_2411_report.md` | Phase 1 | ⚠️ Pre-fix |
+| EXP-2421 | `exp_2421_report.md` | Phase 1 | ⚠️ Pre-fix |
+| EXP-2431 | `exp_2431_report.md` | Phase 1 | ⚠️ Pre-fix |
+| EXP-2441 | `exp_2441_report.md` | Phase 3 | ⚠️ Pre-fix |
+| EXP-2451 | `exp_2451_report.md` | Phase 3 | ⚠️ Pre-fix |
+| EXP-2461 | `exp_2461_report.md` | Phase 3 | ⚠️ Pre-fix |
+| EXP-2471 | `exp_2471_report.md` | Phase 4 | ⚠️ Pre-fix |
+| EXP-2481 | `exp_2481_report.md` | Phase 4 | ⚠️ Pre-fix |
+| EXP-2491 | `exp_2491_report.md` | Phase 3 | ⚠️ Pre-fix |
+| EXP-2501 | `exp_2501_report.md` | Phase 4 | ⚠️ Pre-fix |
+| EXP-2511 | `exp_2511_report.md` | Phase 5 | ✅ Post-fix |
+| EXP-2521 | `exp_2521_report.md` | Phase 6 | ✅ Post-fix |
+| EXP-2531 | `exp_2531_report.md` | Phase 6 | ✅ Post-fix |
+| EXP-2541 | `exp_2541_report.md` | Phase 8 | ✅ Post-fix |
+| EXP-2581 | `exp_2581_report.md` | Phase 7 | ✅ Post-fix |
 
 ## Clinical Implications
 

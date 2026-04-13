@@ -4,6 +4,7 @@
 **Phase**: Synthesis (OREF-INV-003 cross-analysis)  
 **Date**: 2026-04-11  
 **Script**: `exp_repl_2481.py`  
+**Data provenance**: ⚠️ Pre-ODC-fix. AAPS/ODC patients used percentage temp basals stored as raw U/hr rates. See EXP-2521 for corrected-data rerun.
 
 ## Comparison Summary
 

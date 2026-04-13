@@ -3,6 +3,7 @@
 **Experiment**: EXP-2451  
 **Phase**: Contrast (OREF-INV-003 cross-analysis)  
 **Date**: 2026-04-11  
+**Data provenance**: ⚠️ Pre-ODC-fix. AAPS/ODC patients used percentage temp basals stored as raw U/hr rates. See EXP-2521 for corrected-data rerun.
 
 ## Comparison Summary
 

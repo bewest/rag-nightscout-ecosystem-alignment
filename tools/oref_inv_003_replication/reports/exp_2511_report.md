@@ -1,8 +1,10 @@
 # Algorithm-Neutral PK Feature Replacement
 
-**Experiment**: 2511  
-**Phase**: Augmentation (OREF-INV-003 cross-analysis)  
-**Date**: 2026-04-12  
+**Experiment**: EXP-2511 (sub-experiments: 2511–2518)
+**Phase**: Augmentation (Phase 5)
+**Date**: 2026-04-12
+**Script**: `exp_repl_2511.py`
+**Data provenance**: Post-ODC-fix; PK features via `pk_bridge.py`
 
 ## Comparison Summary
 
