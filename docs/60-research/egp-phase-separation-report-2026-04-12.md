@@ -58,17 +58,26 @@ fraction of residual variance falls in the EGP frequency band (>8h periods).
    - Patient b: 0 detected events (very well-controlled or no residual bursts)
    - Patient a: 2.4 events/day, 40% unannounced (moderate)
 
+![Unannounced Fraction vs Spectral EGP](../../visualizations/egp-phase-research/fig4_unannounced_vs_spectral.png)
+*Figure 4: Unannounced fraction vs EGP spectral power across patients.*
+
 4. **Meal distribution across time blocks** (patient a, representative):
    - Overnight: 1.0/day — surprisingly high
    - Breakfast: 0.5/day
    - Dinner: 0.3/day
    - The overnight block has MORE events than any individual meal block
 
+![Meal Census by Block](../../visualizations/egp-phase-research/fig1_meal_census_by_block.png)
+*Figure 1: Detected events/day by time-of-day block.*
+
 5. **Spectral band distribution** (population mean):
    - Ultra-low (>24h): 2.3%
    - EGP (8-24h): 3.0%
    - Meal (3-8h): 5.2%
    - High-freq (<3h): 89.5%
+
+![Spectral Bands](../../visualizations/egp-phase-research/fig2_spectral_bands.png)
+*Figure 2: Spectral power distribution per patient.*
 
 **Interpretation**: The EGP signal is NOT easily separable from meals via FFT of
 the full residual. This may be because: (a) the circadian model already absorbs
@@ -112,6 +121,9 @@ EGP rate, then correlate with prior-day carb loads and glycogen proxy.
    Only patient f shows meaningful persistence (r=0.28). This argues against a
    strong slowly-varying EGP state — OR the overnight drift measure is too noisy
    (σ=13 mg/dL/hr) to detect the signal. The signal-to-noise ratio is poor.
+
+![Glycogen vs Drift](../../visualizations/egp-phase-research/fig3_glycogen_vs_drift.png)
+*Figure 3: Prior carbs & glycogen proxy vs overnight drift.*
 
 5. **Only 4/9 patients have sufficient clean overnight windows**:
    - a: 33 windows, mean drift +4.5 mg/dL/hr (rising glucose)
@@ -205,6 +217,9 @@ to measure EGP-band enrichment.
 patients who eat 2+ meals/day (a, k), masking reveals **dramatic EGP enrichment**
 (5-10×). This is a bimodal signal: masking only helps when there are meals to mask.
 
+![EGP Enrichment](../../visualizations/egp-phase-research/fig5_egp_enrichment.png)
+*Figure 5: EGP-band power comparison — full residual vs meal-masked.*
+
 ### EXP-2624: Insulin Demand Phase Lag vs EGP Recovery
 
 **Method**: Identify "correction natural experiments" — bolus events with no carbs
@@ -260,6 +275,9 @@ The median recovery slope of **16.8 mg/dL/hr** is remarkably close to the
 theoretical base EGP rate of **≈18 mg/dL/hr** (1.5 mg/dL/5min from the Hill
 equation model in `metabolic_engine.py:45-78`). This strongly suggests
 post-correction recovery IS the EGP supply signal, uncontaminated by meals.
+
+![Correction Recovery](../../visualizations/egp-phase-research/fig6_correction_recovery.png)
+*Figure 6: Correction nadir timing & post-nadir recovery slope.*
 
 ### Negative Correlation: Hepatic Insulin Sensitivity
 
@@ -357,6 +375,9 @@ EGP measurement to derive individual settings recommendations.
 | H2 | ISF inflation ≥15% in ≥50% | ≥50% | 67% (4/6) | **PASS** |
 | H3 | Nadir timing σ≥0.5h | σ ≥ 0.5h | σ=0.48h | **FAIL** (borderline) |
 
+![Per-Patient EGP Profiles](../../visualizations/egp-phase-research/fig7_per_patient_egp_profiles.png)
+*Figure 7: Per-patient recovery slope, nadir timing, and ISF inflation.*
+
 ### Key Per-Patient Findings
 
 **Patient a** — High EGP, low basal, large ISF inflation:
@@ -383,6 +404,9 @@ EGP measurement to derive individual settings recommendations.
 - Suggests fundamentally different day/night metabolic states requiring
   time-of-day–specific basal rates
 
+![Circadian EGP](../../visualizations/egp-phase-research/fig8_circadian_egp.png)
+*Figure 8: Day vs night EGP recovery & dawn effect per patient.*
+
 ### Why H1 Failed: Basal ≠ EGP Recovery
 
 Recovery slope does NOT correlate with scheduled basal (r=0.085) because
@@ -394,6 +418,9 @@ Recovery slope does NOT correlate with scheduled basal (r=0.085) because
 The LACK of correlation is itself informative: if basal perfectly matched EGP
 for all patients, recovery would be near-zero universally. The variation IS
 the signal — it identifies who needs basal adjustment.
+
+![Basal vs EGP](../../visualizations/egp-phase-research/fig9_basal_vs_egp.png)
+*Figure 9: Basal demand rate vs EGP recovery (matching condition).*
 
 ### EGP-Corrected ISF: Practical Impact
 
