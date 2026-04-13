@@ -1456,8 +1456,10 @@ def advise_effective_cr(
     median_eff_cr = float(np.median(effective_crs))
     median_ratio = float(np.median(cr_ratios))
 
-    # Need at least 15% difference to recommend
-    if abs(median_ratio - 1.0) < 0.15:
+    # Need at least 20% difference to recommend (conservative threshold)
+    # Note: the effective CR calculation depends on profile ISF, which may
+    # be miscalibrated. Using 20% avoids false recommendations.
+    if abs(median_ratio - 1.0) < 0.20:
         return []
 
     cr_vals = [e.get('value', e.get('carbratio', 10))
