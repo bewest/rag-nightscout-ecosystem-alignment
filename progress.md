@@ -26,6 +26,118 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## EGP Deconfounding & Recovery Model Comparison (2026-04-13/14)
+
+Two rounds of autoresearch testing whether EGP or any single-factor model can improve
+AID post-correction predictions. 7 experiments (EXP-2629–2635) across 219 properly-filtered
+correction events from 9 patients.
+
+### Key Results
+
+| EXP | Hypothesis | Verdict | Key Finding |
+|-----|-----------|---------|-------------|
+| 2629 | AID Compensation Cascade | PASS (H1) | IOB drops 55% before hypo crossing |
+| 2630 | EGP vs AID Deconfounding | COUPLED | Sum=34 vs actual=4.1 mg/dL/hr, loop gain=8.3× |
+| 2634 | 5-Model Recovery Comparison | ALL FAIL | All R² negative (−2.4 to −3.2); Hill EGP worst |
+| 2635 | Recovery Attribution | IOB r=−0.07 | Only bolus size significant (r=−0.31, negative) |
+
+### Research Lines Closed
+
+- ❌ EGP as additive prediction term (WORST model, R² = −3.2)
+- ❌ IOB decay as recovery driver (r = −0.068, no correlation)
+- ❌ Glycogen/48h carbs → recovery (r = −0.15, wrong direction)
+- ❌ Circadian recovery (p = 0.85, no effect)
+- ❌ ALL single-factor physiological models (all R² < 0)
+
+### Reports & Figures
+
+| Deliverable | Location |
+|-------------|----------|
+| Round 1 Report | `docs/60-research/egp-deconfounding-report-2026-04-13.md` |
+| Round 2 Report (Revised) | `docs/60-research/egp-calibration-report-2026-04-13.md` |
+| Figures 19–24 | `visualizations/egp-deconfounding/fig19-24*.png` |
+| Figures 29–31 | `visualizations/egp-deconfounding/fig29-31*.png` |
+
+### GAP-EGP-004/005/006
+
+- GAP-EGP-004: No single recovery model works (all R² < 0)
+- GAP-EGP-005: IOB decay does not drive recovery (r = −0.068)
+- GAP-EGP-006: Bolus-size-dependent ISF needed (r = −0.307)
+
+## Dose-Dependent ISF & Methodology Validation (2026-04-13, Rounds 3–4)
+
+Two rounds continuing EGP deconfounding: Round 3 discovered dose-dependent ISF as the
+strongest signal; Round 4 validated methodology and characterized per-patient curves.
+5 experiments (EXP-2636–2640), 8 figures (fig32–39), 2 reports.
+
+### Key Results
+
+| EXP | Hypothesis | Verdict | Key Finding |
+|-----|-----------|---------|-------------|
+| 2636 | Dose-Dependent ISF | CONFIRMED | r = −0.56, ISF = 100→22 mg/dL/U (4.6× range) |
+| 2637 | Stacking Worsens Outcomes | REFUTED | AID compensates, CV diff −5.6% (p=0.28) |
+| 2638 | Controller Predictability | UNPREDICTABLE | R² = 0.074, oscillates at 1.42h |
+| 2639 | Sampling Robustness | ALL PASS | Bootstrap CI [−0.67, −0.44], survives subsampling |
+| 2640 | Per-Patient ISF Curves | LOG MODEL | 5/6 patients log-ISF, LOO all r < −0.49 |
+
+### New Discoveries
+
+- **Logarithmic ISF**: ISF ≈ 50 − 28 × ln(dose_U), universal across patients
+- **Cross-patient convergence**: CV = 8–9% at matched doses (1.5–3.0U)
+- **Methodology validated**: Block bootstrap, subsampling, LOO all confirm findings
+- **48h carb effects underpowered**: Need N=347 vs our N=219
+
+### GAP-EGP-007/008/009
+
+- GAP-EGP-007: ISF is dose-dependent with logarithmic scaling
+- GAP-EGP-008: Glucose drop ceiling (~140 mg/dL population average, up to 340 individual)
+- GAP-EGP-009: Cross-patient ISF convergence at medium doses (universal correction factor feasible)
+
+### Reports & Figures
+
+| Deliverable | Location |
+|-------------|----------|
+| Round 3 Report | `docs/60-research/egp-dose-isf-report-2026-04-13.md` |
+| Round 4 Report | `docs/60-research/egp-methodology-validation-report-2026-04-13.md` |
+| Figures 32–35 | `visualizations/egp-deconfounding/fig32-35*.png` |
+| Figures 36–39 | `visualizations/egp-deconfounding/fig36-39*.png` |
+
+## Descriptive-Prescriptive Paradox (2026-04-13, Round 5)
+
+Tests whether dose-dependent ISF can improve correction dosing. Reveals a fundamental
+paradox: the best descriptive model is the worst prescriptive one.
+
+### Key Results
+
+| EXP | Hypothesis | Verdict | Key Finding |
+|-----|-----------|---------|-------------|
+| 2641 | Forward Sim Log-ISF | PARTIAL | Per-patient log MAE=59 (30% better), but all R² < 0 |
+| 2642 | Retrospective Dose Audit | ALL FAIL | Log-ISF recommends 2.3× optimal dose; fixed ISF closer |
+
+### Core Discovery
+
+Apparent ISF from corrections is an **emergent closed-loop property** that includes the
+AID controller's response (basal withdrawal). Using it for dosing creates a circular
+dependency: changing the dose changes the controller response, invalidating the ISF.
+
+- Fixed ISF + controller feedback is near-optimal
+- 16% hypo rate is from irreducible per-event variability, not systematic ISF error
+- Controller gain ~8× means the controller, not the bolus, drives glucose trajectory
+
+### GAP-EGP-010/011
+
+- GAP-EGP-010: Apparent ISF is emergent (closed-loop), not intrinsic (cannot be used for dosing)
+- GAP-EGP-011: Per-event ISF variability irreducibly high (all models R² < 0)
+
+### Reports & Figures
+
+| Deliverable | Location |
+|-------------|----------|
+| Round 5 Report | `docs/60-research/egp-prescriptive-paradox-report-2026-04-13.md` |
+| Figures 40–43 | `visualizations/egp-deconfounding/fig40-43*.png` |
+
+---
+
 ## Digital Twin & Settings Autoresearch (2026-07-14/15)
 
 12 experiments (EXP-2561–2572) systematically tested digital twin and settings optimization hypotheses.
