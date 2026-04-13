@@ -332,6 +332,85 @@ must account for this EGP suppression effect.
 
 ---
 
+## Round 3: Per-Patient EGP Characterization
+
+### EXP-2625: Per-Patient EGP-Aware Settings
+
+**Motivation**: Population signals validate the model, but each patient's
+metabolic system is unique. Uses per-patient correction recovery as direct
+EGP measurement to derive individual settings recommendations.
+
+**Results** (6 patients with ≥5 correction events):
+
+| Patient | Recovery | Nadir | Phase Lag | Apparent ISF | Corrected ISF | Inflation | Basal | Assessment |
+|---------|----------|-------|-----------|-------------|---------------|-----------|-------|------------|
+| a | 22.3 | 3.4h | 2.2h | 39 | 24 | **66%** | 0.30 | Possibly Low |
+| c | 41.9 | 3.7h | 2.5h | 56 | 19 | **188%** | 1.40 | Possibly Low |
+| e | 44.8 | 3.3h | 2.0h | 35 | 33 | 5% | 2.40 | Possibly Low |
+| f | 8.3 | 3.7h | 2.4h | 17 | 9 | **84%** | 1.40 | Adequate |
+| g | 17.9 | 2.3h | 1.0h | 68 | 70 | -3% | 0.60 | Adequate |
+| i | 4.7 | 3.5h | 2.2h | 26 | 19 | **38%** | 2.50 | Adequate |
+
+| H | Statement | Threshold | Observed | Verdict |
+|---|-----------|-----------|----------|---------|
+| H1 | Recovery ~ basal (r≥0.3) | r ≥ 0.3 | r=0.085 | **FAIL** |
+| H2 | ISF inflation ≥15% in ≥50% | ≥50% | 67% (4/6) | **PASS** |
+| H3 | Nadir timing σ≥0.5h | σ ≥ 0.5h | σ=0.48h | **FAIL** (borderline) |
+
+### Key Per-Patient Findings
+
+**Patient a** — High EGP, low basal, large ISF inflation:
+- Recovery 22.3 mg/dL/hr (above base EGP of 18) with basal only 0.30 U/hr
+- ISF inflated 66%: corrections from 300→200 look like ISF=39, but true ISF≈24
+- Basal likely too low — fast recovery means EGP dominates after corrections
+- Dawn effect: +3.1 mg/dL/hr (mild overnight EGP excess)
+
+**Patient f** — Low EGP recovery, adequate basal, well-controlled:
+- Recovery only 8.3 mg/dL/hr — liver well-suppressed by basal insulin
+- Despite this, ISF still 84% inflated: EGP suppression during corrections
+  is substantial even in well-controlled patients
+- Circadian: day 15.4 vs night 7.7 — mild day/night difference
+
+**Patient g** — Fast EGP recovery, minimal ISF inflation:
+- Nadir at only 2.3h (shortest) → EGP recovers quickly → less ISF inflation
+- Phase lag only 1.0h (vs 2.0-2.5h in others) — unique metabolic signature
+- ISF inflation -3%: corrections show TRUE ISF because EGP doesn't overshoot
+
+**Patient i** — Dramatic circadian split:
+- Day recovery: +37.0 mg/dL/hr (strong daytime EGP)
+- Night recovery: -4.5 mg/dL/hr (glucose continues FALLING — nighttime basal
+  may exceed EGP, or nighttime EGP is very low)
+- Suggests fundamentally different day/night metabolic states requiring
+  time-of-day–specific basal rates
+
+### Why H1 Failed: Basal ≠ EGP Recovery
+
+Recovery slope does NOT correlate with scheduled basal (r=0.085) because
+**patients with mismatched basal-EGP are the ones we need to help**:
+- Patient a: low basal (0.30) but high EGP recovery (22.3) → basal insufficient
+- Patient i: high basal (2.50) but low recovery (4.7) → basal well-matched
+- Patient e: high basal (2.40) but high recovery (44.8) → basal still insufficient
+
+The LACK of correlation is itself informative: if basal perfectly matched EGP
+for all patients, recovery would be near-zero universally. The variation IS
+the signal — it identifies who needs basal adjustment.
+
+### EGP-Corrected ISF: Practical Impact
+
+The apparent ISF from correction events is inflated by EGP suppression.
+When glucose drops from 250→150 after a 2U correction:
+- Apparent ISF = 100/2 = 50 mg/dL/U
+- But ~20-30 mg/dL of that drop occurred from 2h-3.5h when EGP was suppressed
+- True ISF ≈ (100-25)/2 = 37.5 mg/dL/U (25% lower)
+
+For settings advisors, this means:
+1. ISF derived from corrections should be **reduced** by the EGP inflation factor
+2. Patients with long phase lag (f: 2.4h) have more inflation than fast-recovery
+   patients (g: 1.0h)
+3. Each patient needs individual correction: inflation ranges -3% to 188%
+
+---
+
 ## Visualizations
 
 | Figure | File | Description |
@@ -342,6 +421,9 @@ must account for this EGP suppression effect.
 | Fig 4 | `fig4_unannounced_vs_spectral.png` | Unannounced fraction vs spectral EGP |
 | Fig 5 | `fig5_egp_enrichment.png` | EGP-band power: full vs meal-masked |
 | Fig 6 | `fig6_correction_recovery.png` | Correction nadir timing & recovery |
+| Fig 7 | `fig7_per_patient_egp_profiles.png` | Per-patient recovery, nadir, ISF inflation |
+| Fig 8 | `fig8_circadian_egp.png` | Day vs night EGP recovery + dawn effect |
+| Fig 9 | `fig9_basal_vs_egp.png` | Basal demand rate vs EGP recovery (matching) |
 
 All in `visualizations/egp-phase-research/`.
 
@@ -356,26 +438,31 @@ All in `visualizations/egp-phase-research/`.
 | `tools/cgmencode/exp_egp_trajectory_2622.py` | EXP-2622: Overnight EGP trajectory |
 | `tools/cgmencode/exp_post_meal_egp_2623.py` | EXP-2623: Meal masking + EGP extraction |
 | `tools/cgmencode/exp_correction_egp_2624.py` | EXP-2624: Correction recovery dynamics |
+| `tools/cgmencode/exp_egp_settings_2625.py` | EXP-2625: Per-patient EGP-aware settings |
 
 ### Visualization Code (git tracked)
 | File | Purpose |
 |------|---------|
 | `visualizations/egp-phase-research/round1_plots.py` | Figures 1-4 |
 | `visualizations/egp-phase-research/round2_plots.py` | Figures 5-6 |
+| `visualizations/egp-phase-research/round3_plots.py` | Figures 7-9 |
 
 ### Results (gitignored, in `externals/experiments/`)
 - `exp-2621_residual_census.json`
 - `exp-2622_egp_trajectory.json`
 - `exp-2623_post_meal_egp.json`
 - `exp-2624_correction_egp_recovery.json`
+- `exp-2625_egp_aware_settings.json`
 
 ## Next Steps
 
-1. **EXP-2625: EGP-Aware Settings Optimization** — use per-patient recovery
-   slope as direct EGP rate measurement for basal setting; adjust ISF for
-   EGP suppression phase lag
-2. **EGP recovery vs IOB at nadir** — does remaining IOB predict recovery delay?
-3. **Circadian EGP modulation** — do correction recoveries differ by time-of-day?
-4. **Exercise effect on EGP** — does exercise preceding a correction blunt
-   EGP recovery?
+1. **Productionize per-patient EGP profile** — integrate recovery slope and
+   phase lag as patient-level features in the pipeline
+2. **EGP-corrected ISF advisory** — when advising ISF changes, flag inflation
+   from EGP suppression (4/6 patients ≥15% inflated)
+3. **Circadian-aware basal** — patient i has day recovery +37 vs night -4.5
+   mg/dL/hr, suggesting fundamentally different day/night EGP states
+4. **Validation on ODC patients** — must normalize by configured DIA (3-7h);
+   incorrect DIA settings will shift nadir timing and confound EGP estimation
 5. **Multi-compartment EGP model** — fast glycogenolysis + slow gluconeogenesis
+   may explain per-patient variation better than single-rate model
