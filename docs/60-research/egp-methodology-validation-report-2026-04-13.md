@@ -95,12 +95,12 @@ Of 9 patients, 6 have sufficient events (≥5) for curve fitting:
 
 | Patient | N | Linear r | Linear slope | Log r | Best model | ISF range |
 |---------|---|----------|-------------|-------|------------|-----------|
-| a | 79 | −0.469* | −10.3 | −0.476* | log | 4–338 |
-| c | 6 | −0.603 | −3.2 | −0.618 | log | 44–68 |
-| e | 10 | −0.385 | −8.3 | −0.348 | linear | 5–184 |
-| f | 91 | −0.652* | −5.1 | −0.662* | log | 3–184 |
-| g | 6 | +0.671 | +189.8 | +0.678 | log | 54–213 |
-| i | 20 | −0.713* | −7.5 | −0.728* | log | 5–141 |
+| a | 79 | −0.469* | −10.3 | −0.597* | log | 4–338 |
+| c | 6 | −0.603 | −3.2 | −0.624 | log | 44–68 |
+| e | 10 | −0.385 | −8.3 | −0.297 | linear | 5–184 |
+| f | 91 | −0.652* | −5.1 | −0.819* | log | 3–184 |
+| g | 6 | +0.671 | +189.8 | +0.721 | log | 54–213 |
+| i | 20 | −0.713* | −7.5 | −0.815* | log | 5–141 |
 
 *\* p < 0.05*
 
@@ -206,9 +206,9 @@ Based on these results, we update the ISF scaling model from linear to logarithm
 **Updated**: ISF = a + b × ln(dose_U)
 
 Where per-patient fits show:
-- Patient 'a': ISF = 56.3 + (−31.8) × ln(dose) → At 1U: 56, at 3U: 21, at 5U: 5
-- Patient 'f': ISF = 45.3 + (−26.2) × ln(dose) → At 1U: 45, at 3U: 16, at 5U: 3
-- Patient 'i': ISF = 39.5 + (−27.2) × ln(dose) → At 1U: 40, at 3U: 10, at 5U: −4 (floor needed)
+- Patient 'a': ISF = 93.0 + (−43.7) × ln(dose) → At 1U: 93, at 3U: 45, at 5U: 23
+- Patient 'f': ISF = 95.2 + (−36.3) × ln(dose) → At 1U: 95, at 3U: 55, at 5U: 37
+- Patient 'i': ISF = 78.5 + (−29.6) × ln(dose) → At 1U: 79, at 3U: 46, at 5U: 31
 
 **Population estimate**: ISF ≈ 50 − 28 × ln(dose_U), with ISF floored at zero.
 
@@ -260,7 +260,7 @@ This logarithmic form captures the rapid ISF decline at low doses and the floor 
 
 **GAP-EGP-007** (updated): ISF is dose-dependent with **logarithmic** scaling (not linear). Population equation: ISF ≈ 50 − 28 × ln(dose_U). Validated via block bootstrap CI [−0.67, −0.44], leave-one-out (all r < −0.49), and independent subsampling (r strengthens to −0.615).
 
-**GAP-EGP-009** (new): Per-patient ISF intercepts and slopes vary (intercept 39–56, slope −26 to −32), but cross-patient CV at matched doses is only 8–9% in the 1.5–3.0U range. A universal correction factor may suffice for most patients.
+**GAP-EGP-009** (new): Per-patient ISF intercepts and slopes vary (intercept 55–95, slope −44 to −9 for 5/6 fitted patients), but cross-patient CV at matched doses is only 8–9% in the 1.5–3.0U range. A universal correction factor may suffice for most patients.
 
 ![Figure 39: Round 4 Synthesis](../../visualizations/egp-deconfounding/fig39_synthesis.png)
 

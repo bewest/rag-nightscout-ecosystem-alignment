@@ -114,7 +114,7 @@ For large boluses (≥3U), the controller withdraws basal aggressively, reducing
 
 Of the 48 over-correction/hypo events:
 - Population log-ISF would have dosed ≥10% less in only **2%** of cases
-- Per-patient log-ISF would have dosed ≥10% less in only **29%** of cases
+- Per-patient log-ISF would have dosed ≥10% less in only **27%** of cases
 - Most over-corrections cannot be prevented by dose adjustment because they result from variability (ISF changes from event to event), not systematic bias
 
 ### 3.5 Dose-Bin Insights
@@ -143,7 +143,7 @@ This is the **AID Compensation Theorem** from Round 1 in action: the controller 
 | # | Hypothesis | Result | Evidence |
 |---|-----------|--------|----------|
 | H1 | Log-ISF reduces MAE by >15% | **FAIL** | Pop log: 9%. Per-patient: 30% (but per-patient passes) |
-| H2 | Improvement in ≥3U bin | **PASS** | Fixed MAE=105 → Log MAE=94 |
+| H2 | Improvement in ≥3U bin | **PASS** | Fixed MAE=105 → Pop log MAE=94, Per-patient MAE=70 |
 | H3 | Over-prediction < 40% | **PASS** | Pop log: 16% (was 61%) |
 | H4 | Per-patient < 10% better than pop | **FAIL** | 23% better (individual curves matter) |
 
@@ -154,7 +154,7 @@ This is the **AID Compensation Theorem** from Round 1 in action: the controller 
 | H1 | Fixed ISF >30% over-dose at ≥3U | **FAIL** | Mean ratio 0.74 (UNDER-doses) |
 | H2 | Per-patient log within ±25% >60% | **FAIL** | Only 16% |
 | H3 | Over-correction >3× at ≥3U vs <2U | **FAIL** | Ratio 0.8× (LESS over-correction) |
-| H4 | Log prevents >40% over-corrections | **FAIL** | Only 29% |
+| H4 | Log prevents >40% over-corrections | **FAIL** | Only 27% |
 
 **7 of 8 hypotheses fail** — this is the clearest negative result in the research program.
 
