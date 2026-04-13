@@ -1199,3 +1199,116 @@ Total: **19 productionized features** in settings_advisor.py.
 - Online adaptation / drift detection
 - Circadian CR profile generation
 - 4-harmonic basal model for open-loop patients
+
+---
+
+## Phase 7: Advisory Hardening & Effective CR (EXP-2607–2614)
+
+### Cross-Controller Validation (EXP-2607) — ALL CONFIRMED
+
+Strongest external validation: tested advisory on 5 ODC patients
+(different AID controller) alongside 9 NS patients.
+
+| Hypothesis | Result |
+|------------|--------|
+| H1: ODC SQS vs TIR r≥0.5 | r=0.534 — **CONFIRMED** |
+| H2: Direction distribution within 40pp | NS=67%/ODC=80% — **CONFIRMED** |
+| H3: Combined SQS vs TIR r≥0.6 | r=0.689 (p=0.006) — **CONFIRMED** |
+
+Advisory system generalizes across AID controllers.
+
+### Settings Drift Detection (EXP-2608) — MOSTLY NEGATIVE
+
+Tracked advisory across 30-day blocks per patient:
+
+- H1 NOT CONFIRMED: Only 1/12 patients shows ISF magnitude trend
+  - Root cause: ISF recommendation capped at 25% for most patients
+  - Advisory too coarse-grained for drift detection
+- H3 CONFIRMED: Drift patients have higher CV (46% vs 37%)
+
+Patient `a` shows genuine ISF drift: magnitude decreases 72%→61% over 6 months.
+
+### Effective CR from Meal Response (EXP-2609) — H2, H3 CONFIRMED
+
+Computed effective carb ratio from actual meal-bolus glucose response:
+
+| Patient | Profile CR | Effective CR | Ratio | Direction |
+|---------|-----------|-------------|-------|-----------|
+| a | 4.0 | 2.8 | 0.70 | Under-bolused |
+| b | 7.8 | 9.4 | 1.08 | Near-correct |
+| d | 14.0 | 7.9 | 0.57 | Severely under-bolused |
+| f | 5.0 | 3.8 | 0.77 | Under-bolused |
+| i | 10.0 | 6.2 | 0.65 | Under-bolused |
+
+- H2 CONFIRMED: 6/9 have tighter dawn CR (dawn phenomenon in carb sensitivity)
+- H3 CONFIRMED: Correct-bolused meals have +7.8pp TIR vs under-bolused
+- 5/9 patients are systematically under-bolused (effective CR < profile CR)
+
+### CR Method Comparison (EXP-2610) — H1 CONFIRMED
+
+**Critical finding**: Sim-optimized CR always hits 0.5× floor — same calibration
+artifact as ISF×0.5! Both methods are correlated (r=0.934) but sim CR is
+systematically too low.
+
+→ **Removed sim CR from advisory** (same fix as ISF removal)
+→ **Added `advise_effective_cr()`** using meal response data
+
+### Pre-Bolus Timing (EXP-2611) — ALL NOT CONFIRMED
+
+Selection bias: patients pre-bolus for harder meals, making pre-bolused
+meals appear worse. Mean TIR difference: -7.2pp (wrong direction!).
+**CLOSES pre-bolus timing analysis from observational data**.
+
+### Post-CR Validation (EXP-2612)
+
+After adding effective CR and removing sim CR:
+- Combined SQS vs TIR: r=0.548 (p=0.043) — still significant
+- SQS degraded from r=0.726 because old sim CR had high magnitudes that
+  accidentally penalized the right patients
+
+### SQS Formula Optimization (EXP-2613) — H2, H3 CONFIRMED
+
+Tested 6 SQS formulas to recover lost correlation:
+
+| Formula | All r | NS r |
+|---------|-------|------|
+| current (uniform) | 0.546 | 0.529 |
+| **weighted (ISF 2×)** | **0.603** | **0.563** |
+| top_only | 0.467 | 0.483 |
+| sqrt | 0.548 | 0.532 |
+| max_mag | 0.475 | 0.408 |
+| n_plus_mag | 0.492 | 0.488 |
+
+→ **Updated SQS to ISF-weighted formula** (r=0.603, p=0.022)
+
+### ISF Grid Refinement (EXP-2614) — ALL NOT CONFIRMED
+
+Finer ISF grid (0.05 step) doesn't help: 5/9 patients hit grid BOUNDARY
+(4 at 2.0×, 1 at 0.5×). Grid needs extension, not refinement. ISF
+multiplier is a sim calibration parameter — larger doesn't mean worse.
+**CLOSES ISF grid refinement research line**.
+
+### Productionized in Phase 7
+
+20. Effective CR advisory — `advise_effective_cr()` from meal response
+21. Removed sim CR from advisory (same calibration artifact as ISF)
+22. SQS weighted formula — ISF 2×, basal 1.5×, CR 1×
+23. Effective CR threshold at 20% (conservative due to ISF dependency)
+
+Total: **23 productionized features** in settings_advisor.py.
+
+### Updated Closed Lines (Phase 7)
+
+- Sim-based CR recommendations — EXP-2610 (0.5× floor artifact)
+- Pre-bolus timing from observational data — EXP-2611 (selection bias)
+- ISF grid refinement — EXP-2614 (boundary problem, not resolution)
+- Settings drift detection — EXP-2608 (advisory too coarse)
+
+### Open Research Lines
+
+- Circadian CR advisory (dawn CR tighter for 6/9 patients — EXP-2609)
+- Extended ISF grid (to 3.0+) — may improve sim calibration
+- Advisory consolidation (multiple overlapping CR/ISF advisors)
+- Multi-day minimum data requirements
+- Open-loop patient advisory validation
+- Per-patient β estimation (IOB power-law)

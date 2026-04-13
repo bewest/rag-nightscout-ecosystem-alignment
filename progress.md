@@ -228,3 +228,37 @@ Advisory system validation and ISF fix across 6 experiments (EXP-2601–2606).
 
 **Source Files Modified**:
 - `tools/cgmencode/production/settings_advisor.py` (19 productionized features)
+
+### Phase 7: Advisory Hardening & Effective CR (2026-07-16)
+
+Cross-controller validation, effective CR from meal response, SQS optimization,
+and several negative results that closed research lines.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2607 | `exp_odc_validation_2607.py` | Cross-controller valid: combined r=0.689 (p=0.006, n=14) |
+| EXP-2608 | `exp_drift_detection_2608.py` | Advisory too coarse for drift detection |
+| EXP-2609 | `exp_effective_cr_2609.py` | Effective CR: 5/9 under-bolused, dawn CR tighter for 6/9 |
+| EXP-2610 | `exp_cr_comparison_2610.py` | Sim CR = 0.5× artifact (same as ISF). r=0.934 with effective CR |
+| EXP-2611 | `exp_prebolus_timing_2611.py` | Selection bias: pre-bolus ≠ better outcomes in observational data |
+| EXP-2612 | `exp_post_cr_validation_2612.py` | Post-fix SQS still significant (p=0.043) |
+| EXP-2613 | `exp_sqs_optimization_2613.py` | Weighted SQS (ISF 2×) best: r=0.603 (p=0.022) |
+| EXP-2614 | `exp_isf_refinement_2614.py` | Grid boundary problem, not resolution |
+
+**Key Findings**:
+- Advisory system generalizes across AID controllers (NS + ODC)
+- Sim CR has same 0.5× calibration artifact as ISF — removed from advisory
+- Effective CR from meal response is actionable: +7.8pp TIR for correct bolusing
+- ISF weighted 2× in SQS formula gives best TIR correlation
+- Pre-bolus timing confounded by meal selection bias
+- ISF grid needs extension not refinement (5/9 hit boundary)
+
+**Gaps Identified**: Overlapping CR advisors need consolidation
+
+**Productionized**: 23 features total (+4: effective CR, sim CR removal, SQS weighted, CR threshold)
+
+**Source Files Modified**:
+- `tools/cgmencode/production/settings_advisor.py` (23 productionized features)
+
+**Closed Research Lines** (cumulative: 18 lines closed):
+- Sim CR recommendations, pre-bolus timing, ISF grid refinement, drift detection
