@@ -44,12 +44,6 @@
 ![Prediction R² across horizons: Loop, eventualBG, and naive baseline](../figures/fig_2441_prediction_r2.png)
 *Prediction R² across horizons: Loop, eventualBG, and naive baseline*
 
-![Prediction bias distribution at 30min (replicating EXP-2331)](../figures/fig_2441_bias_profile.png)
-*Prediction bias distribution at 30min (replicating EXP-2331)*
-
-![Prediction bias decomposed by current BG range](../figures/fig_2441_bias_by_range.png)
-*Prediction bias decomposed by current BG range*
-
 ![AID Compensation Theorem: correcting bias is dangerous](../figures/fig_2441_aid_compensation.png)
 *AID Compensation Theorem: correcting bias is dangerous*
 
@@ -58,9 +52,6 @@
 
 ![Per-patient prediction R² and TIR correlation](../figures/fig_2441_per_patient_quality.png)
 *Per-patient prediction R² and TIR correlation*
-
-![How much context explains prediction bias](../figures/fig_2441_context_r2.png)
-*How much context explains prediction bias*
 
 ## Methodology Notes
 

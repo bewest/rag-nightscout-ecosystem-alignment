@@ -137,22 +137,22 @@
 
 ## Figures
 
-![fig 2401 per patient stability](../figures/tools/oref_inv_003_replication/figures/fig_2401_per_patient_stability.png)
+![fig 2401 per patient stability](../figures/fig_2401_per_patient_stability.png)
 *fig 2401 per patient stability*
 
-![fig 2401 loop vs oref comparison](../figures/tools/oref_inv_003_replication/figures/fig_2401_loop_vs_oref_comparison.png)
+![fig 2401 loop vs oref comparison](../figures/fig_2401_loop_vs_oref_comparison.png)
 *fig 2401 loop vs oref comparison*
 
-![fig 2401 category split](../figures/tools/oref_inv_003_replication/figures/fig_2401_category_split.png)
+![fig 2401 category split](../figures/fig_2401_category_split.png)
 *fig 2401 category split*
 
-![fig 2401 rank scatter](../figures/tools/oref_inv_003_replication/figures/fig_2401_rank_scatter.png)
+![fig 2401 rank scatter](../figures/fig_2401_rank_scatter.png)
 *fig 2401 rank scatter*
 
-![fig 2401 shap comparison hyper](../figures/tools/oref_inv_003_replication/figures/fig_2401_shap_comparison_hyper.png)
+![fig 2401 shap comparison hyper](../figures/fig_2401_shap_comparison_hyper.png)
 *fig 2401 shap comparison hyper*
 
-![fig 2401 shap comparison hypo](../figures/tools/oref_inv_003_replication/figures/fig_2401_shap_comparison_hypo.png)
+![fig 2401 shap comparison hypo](../figures/fig_2401_shap_comparison_hypo.png)
 *fig 2401 shap comparison hypo*
 
 ## Methodology Notes

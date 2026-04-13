@@ -26,7 +26,7 @@ The most actionable finding: **bad days are not random — they cluster**. This 
 
 **Hypothesis**: Standard variability metrics reveal distinct patient profiles with different intervention needs.
 
-![Variability Metrics](figures/var-fig01-metrics.png)
+![Variability Metrics](figures/var-fig01-spectral-bands.png)
 
 **Results**:
 
@@ -58,7 +58,7 @@ The most actionable finding: **bad days are not random — they cluster**. This 
 
 **Hypothesis**: Bad days have identifiable characteristics that differ from good days.
 
-![Day Types](figures/var-fig02-day-types.png)
+![Day Types](figures/var-fig02-supply-demand.png)
 
 **Method**: Classified days as "good" (TIR ≥70% AND TBR <4%) or "bad" (TIR <50% OR TBR ≥10%).
 
@@ -93,7 +93,7 @@ The most actionable finding: **bad days are not random — they cluster**. This 
 
 **Hypothesis**: Some hours of the day are more variable/unpredictable than others.
 
-![Circadian Stability](figures/var-fig03-circadian.png)
+![Circadian Stability](figures/var-fig03-harmonic-isf.png)
 
 **Results**:
 
@@ -121,7 +121,7 @@ The most actionable finding: **bad days are not random — they cluster**. This 
 
 **Hypothesis**: Day-of-week affects glycemic control (e.g., weekend effect).
 
-![Weekly Patterns](figures/var-fig04-weekly.png)
+![Weekly Patterns](figures/var-fig04-autocorrelation.png)
 
 **Results**:
 
@@ -149,7 +149,7 @@ This confirms EXP-1132 from earlier research: **weekly patterns are not a reliab
 
 **Hypothesis**: Good and bad days cluster — control quality is persistent, not random.
 
-![Streak Analysis](figures/var-fig05-streaks.png)
+![Streak Analysis](figures/var-fig05-meal-regularity.png)
 
 **Results**:
 
@@ -183,7 +183,7 @@ This confirms EXP-1132 from earlier research: **weekly patterns are not a reliab
 
 **Hypothesis**: Information-theoretic measures reveal how much structure exists in glucose traces.
 
-![Entropy and Predictability](figures/var-fig06-entropy.png)
+![Entropy and Predictability](figures/var-fig06-monte-carlo.png)
 
 **Results**:
 
@@ -217,7 +217,7 @@ This confirms EXP-1132 from earlier research: **weekly patterns are not a reliab
 
 **Hypothesis**: Dietary or behavioral factors explain cross-patient variability differences.
 
-![Variability Drivers](figures/var-fig07-drivers.png)
+![Variability Drivers](figures/var-fig07-information-scale.png)
 
 **Correlation with CV**:
 
@@ -245,7 +245,7 @@ This confirms EXP-1132 from earlier research: **weekly patterns are not a reliab
 
 **Hypothesis**: Temporal patterns in daily TIR can identify patients needing different interventions.
 
-![Actionable Patterns](figures/var-fig08-patterns.png)
+![Actionable Patterns](figures/var-fig08-attribution.png)
 
 **Results**:
 
