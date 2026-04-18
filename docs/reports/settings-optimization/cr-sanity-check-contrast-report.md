@@ -98,7 +98,9 @@ The plausibility score (0–1) measures how well all period medians fall within 
 
 ## 3. How to Read the Figures
 
-Each per-patient figure (`fig_cr_contrast_{id}.png`) contains three panels:
+Each per-patient figure (`fig_cr_contrast_{id}.png`) contains three panels. Here is patient c as a reference example:
+
+![Patient c — CR Sanity Check](../../../visualizations/cr-sanity-check/fig_cr_contrast_c.png)
 
 ### Top-Left: Meal Period Distribution (Bar Chart)
 
@@ -145,6 +147,68 @@ Shows median meal size (with P25–P75 whiskers) at three representative CRs: 0.
 **Key finding**: 6 of 10 evaluable patients (60%) have profile CRs within 20% of the best-fit — suggesting most profiles are already reasonably calibrated. Two patients (b, k) have profiles approximately 2× too high, which would cause the AID to significantly under-bolus for meals. One patient (g) may have a profile that is too low (1.5× under the best-fit), though this could also reflect the excursion filter removing too many small-excursion meals from a well-controlled patient.
 
 [SOURCE: `externals/experiments/exp-2670_cr_sanity_check.json`]
+
+### All Patient Figures
+
+<details>
+<summary>Patient a — Near-optimal (0.8×)</summary>
+
+![Patient a](../../../visualizations/cr-sanity-check/fig_cr_contrast_a.png)
+</details>
+
+<details>
+<summary>Patient b — Profile 2× too high (0.5×)</summary>
+
+![Patient b](../../../visualizations/cr-sanity-check/fig_cr_contrast_b.png)
+</details>
+
+<details>
+<summary>Patient c — Near-optimal (0.9×) ✓</summary>
+
+![Patient c](../../../visualizations/cr-sanity-check/fig_cr_contrast_c.png)
+</details>
+
+<details>
+<summary>Patient d — Slightly low (1.1×)</summary>
+
+![Patient d](../../../visualizations/cr-sanity-check/fig_cr_contrast_d.png)
+</details>
+
+<details>
+<summary>Patient e — Near-optimal (0.8×)</summary>
+
+![Patient e](../../../visualizations/cr-sanity-check/fig_cr_contrast_e.png)
+</details>
+
+<details>
+<summary>Patient f — Near-optimal (0.9×) ✓</summary>
+
+![Patient f](../../../visualizations/cr-sanity-check/fig_cr_contrast_f.png)
+</details>
+
+<details>
+<summary>Patient g — Profile too low (1.5×)</summary>
+
+![Patient g](../../../visualizations/cr-sanity-check/fig_cr_contrast_g.png)
+</details>
+
+<details>
+<summary>Patient h — Perfectly calibrated (1.0×) ✓</summary>
+
+![Patient h](../../../visualizations/cr-sanity-check/fig_cr_contrast_h.png)
+</details>
+
+<details>
+<summary>Patient i — Perfectly calibrated (1.0×) ✓</summary>
+
+![Patient i](../../../visualizations/cr-sanity-check/fig_cr_contrast_i.png)
+</details>
+
+<details>
+<summary>Patient k — Profile likely too high (0.5×) ⚠ low-N</summary>
+
+![Patient k](../../../visualizations/cr-sanity-check/fig_cr_contrast_k.png)
+</details>
 
 ---
 
@@ -193,6 +257,8 @@ Best examples:
 
 ### 6.1 Patient c — The Validation Case
 
+![Patient c — CR Sanity Check](../../../visualizations/cr-sanity-check/fig_cr_contrast_c.png)
+
 Patient c is the primary validation case because anecdotal experience is available: ~1.8–2.6 meals/day (depending on meal boundary definition), lunch typically 40–60g, dinner typically 70–200g (with dessert).
 
 **Detected**: 275 meals over 180 days = **1.5 meals/day**  
@@ -221,6 +287,8 @@ The combined dinner + snack estimate at profile would be approximately 29 + 42 =
 
 ### 6.2 Patient b — Profile Too Aggressive
 
+![Patient b — CR Sanity Check](../../../visualizations/cr-sanity-check/fig_cr_contrast_b.png)
+
 Profile CR = 12.1, Best-fit CR = 6.1 (0.5× profile), **2.7 meals/day, 487 events**
 
 At profile, dinner median = 203g [155–247] — this means the *typical* dinner is being scored as 203g of carbs. Unless this patient routinely eats very large pasta/rice dishes, this is implausible.
@@ -233,6 +301,8 @@ The meal count of 2.7/day (up from 5.2/day before filtering) is now plausible �
 
 ### 6.3 Patient f — Near-Perfect Calibration
 
+![Patient f — CR Sanity Check](../../../visualizations/cr-sanity-check/fig_cr_contrast_f.png)
+
 Profile CR = 5.0, Best-fit CR = 4.5 (0.9×), **1.8 meals/day, 322 events**
 
 The plausibility curve peaks near the profile value. At profile: lunch median sizes and dinner sizes fall within or near the typical ranges. The 0.9× best-fit represents a marginal difference that may not justify a change.
@@ -240,6 +310,8 @@ The plausibility curve peaks near the profile value. At profile: lunch median si
 Patient f had the cleanest spectral signature in preliminary analysis: three distinct peaks at 1, 2, and 3 cycles/day corresponding to a classic 3-meal circadian pattern.
 
 ### 6.4 Patient k — Hidden Miscalibration (Low Confidence)
+
+![Patient k — CR Sanity Check](../../../visualizations/cr-sanity-check/fig_cr_contrast_k.png)
 
 Profile CR = 10, Best-fit CR = 5.0 (0.5×), **0.3 meals/day, 62 events** ⚠
 
@@ -249,11 +321,15 @@ The directional signal (profile is too high) is strong — the monotonically dec
 
 ### 6.5 Patient h — Low Meal Frequency, Perfect CR
 
+![Patient h — CR Sanity Check](../../../visualizations/cr-sanity-check/fig_cr_contrast_h.png)
+
 Profile CR = 10, Best-fit CR = 10 (1.0×), **0.7 meals/day, 126 events**
 
 The low count reflects tight AID control rather than infrequent eating — only 167 of 414 READY-gated peaks passed the excursion filter. The flat plausibility curve (0.70–0.75 across the range) is consistent with few scored events, but the peak at 1.0× confirms the profile is correctly calibrated.
 
 ### 6.6 Patient g — Profile May Be Too Low
+
+![Patient g — CR Sanity Check](../../../visualizations/cr-sanity-check/fig_cr_contrast_g.png)
 
 Profile CR = 8.5, Best-fit CR = 12.8 (1.5×), **2.2 meals/day, 394 events**
 
