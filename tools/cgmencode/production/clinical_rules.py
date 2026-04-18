@@ -1369,3 +1369,268 @@ def detect_insulin_saturation(
         patience_mode_eligible=wall_pct > 10,
         iob_cap_suggestion=round(_PATIENCE_CAP_RATIO * median_iob, 2),
     )
+
+
+# ── SC Suppression Ceiling Estimation (EXP-2656/2667) ────────────────
+
+# Hill equation parameters from EXP-2656 population fits
+_HILL_N = 1.5          # Hill coefficient (shape)
+_HILL_K = 2.0          # IOB at 50% suppression (Units)
+_BASE_EGP = 18.0       # mg/dL/hr baseline hepatic glucose output
+_MIN_HIGH_IOB_POINTS = 30  # minimum high-IOB data points for fitting
+
+
+def compute_sc_ceiling(
+    glucose: np.ndarray,
+    iob: np.ndarray,
+    scheduled_isf: float = 50.0,
+    dia_hours: float = 6.0,
+) -> Optional[dict]:
+    """Estimate per-patient SC insulin suppression ceiling (EXP-2656/2667).
+
+    Fits a Hill equation ceiling model to high-IOB periods where insulin
+    has diminishing glucose-lowering returns. The ceiling represents the
+    maximum fraction of hepatic EGP that SC insulin can suppress.
+
+    Research findings:
+    - Population median ceiling: 20% (demand-ISF basis, EXP-2667)
+    - Range: 10–56% across patients
+    - At ceiling, ~80% of hepatic EGP remains active
+    - Ceiling correlates with sticky hyper rate (r=−0.60, EXP-2656)
+    - Ceiling model fits better than linear at high IOB (2–22% RMSE improvement)
+
+    Args:
+        glucose: (N,) glucose values (mg/dL), 5-min intervals.
+        iob: (N,) insulin-on-board values (Units).
+        scheduled_isf: profile ISF (mg/dL/U) for linear prediction.
+        dia_hours: duration of insulin action (hours).
+
+    Returns:
+        dict with fitted_ceiling, fitted_base_egp, linear_rmse,
+        ceiling_rmse, improvement_pct, n_high_iob_points.
+        None if insufficient data.
+    """
+    if iob is None or len(glucose) < 48:
+        return None
+
+    valid_mask = np.isfinite(iob) & np.isfinite(glucose)
+    valid_iob = iob[valid_mask]
+    if len(valid_iob) < 24:
+        return None
+
+    iob_nonzero = valid_iob[valid_iob > 0.1]
+    if len(iob_nonzero) < 12:
+        return None
+    median_iob = float(np.median(iob_nonzero))
+    if median_iob < 0.01:
+        return None
+
+    # Compute glucose ROC (mg/dL/hr) — 15-min smoothed
+    roc = np.full_like(glucose, np.nan)
+    for i in range(3, len(glucose)):
+        if np.isfinite(glucose[i]) and np.isfinite(glucose[i - 3]):
+            roc[i] = (glucose[i] - glucose[i - 3]) / 0.25
+
+    # Select high-IOB periods (>2× median)
+    high_mask = (valid_mask & (iob > _WALL_IOB_RATIO * median_iob) &
+                 np.isfinite(roc))
+    n_high = int(np.sum(high_mask))
+    if n_high < _MIN_HIGH_IOB_POINTS:
+        return None
+
+    high_iob = iob[high_mask]
+    actual_roc = roc[high_mask]
+
+    # Linear model: predicted ROC = -IOB × ISF / DIA
+    linear_pred = -high_iob * scheduled_isf / dia_hours
+    linear_rmse = float(np.sqrt(np.mean((actual_roc - linear_pred) ** 2)))
+
+    # Hill suppression model
+    def _hill_suppression(iob_vals, max_supp):
+        iob_abs = np.abs(iob_vals)
+        supp = iob_abs ** _HILL_N / (iob_abs ** _HILL_N + _HILL_K ** _HILL_N)
+        return np.minimum(supp, max_supp)
+
+    # Grid search for ceiling (avoid scipy dependency for production)
+    best_ceiling = 0.3
+    best_egp = _BASE_EGP
+    best_sse = float('inf')
+
+    for ceiling_candidate in np.arange(0.05, 1.01, 0.05):
+        for egp_candidate in [12.0, 15.0, 18.0, 21.0, 25.0, 30.0]:
+            supp = _hill_suppression(high_iob, ceiling_candidate)
+            egp_residual = egp_candidate * (1.0 - supp)
+            ceiling_pred = linear_pred + egp_residual
+            sse = float(np.sum((actual_roc - ceiling_pred) ** 2))
+            if sse < best_sse:
+                best_sse = sse
+                best_ceiling = ceiling_candidate
+                best_egp = egp_candidate
+
+    # Final RMSE with best params
+    supp = _hill_suppression(high_iob, best_ceiling)
+    egp_residual = best_egp * (1.0 - supp)
+    ceiling_pred = linear_pred + egp_residual
+    ceiling_rmse = float(np.sqrt(np.mean((actual_roc - ceiling_pred) ** 2)))
+
+    improvement_pct = 0.0
+    if linear_rmse > 0:
+        improvement_pct = (linear_rmse - ceiling_rmse) / linear_rmse * 100
+
+    return {
+        'fitted_ceiling': round(best_ceiling, 2),
+        'fitted_base_egp': round(best_egp, 1),
+        'linear_rmse': round(linear_rmse, 1),
+        'ceiling_rmse': round(ceiling_rmse, 1),
+        'improvement_pct': round(improvement_pct, 1),
+        'n_high_iob_points': n_high,
+        'median_iob': round(median_iob, 2),
+    }
+
+
+# ── Dose-Response ISF Curve Fitting (EXP-2636/2640) ──────────────────
+
+_MIN_DOSE_EVENTS = 5   # minimum correction events per patient
+_MIN_BOLUS_U = 0.3     # minimum bolus size
+_MIN_PRE_BG = 150      # minimum pre-correction BG
+_CARB_EXCLUSION_STEPS = 6  # ±30 min carb exclusion window
+
+
+def compute_dose_response_isf(
+    glucose: np.ndarray,
+    bolus: np.ndarray,
+    carbs: Optional[np.ndarray] = None,
+    profile: Optional[PatientProfile] = None,
+) -> Optional[dict]:
+    """Fit per-patient dose-response ISF curve (EXP-2636/2640).
+
+    ISF is logarithmically dose-dependent: ISF ≈ a + b × ln(dose).
+    The log model captures receptor saturation kinetics and fits 5/6
+    patients better than linear.
+
+    Research findings:
+    - Population r = −0.56, p < 10⁻¹⁹ (strongest signal in research program)
+    - ISF compresses 4.6× from small (<0.75U) to large (≥3U) corrections
+    - Log model: ISF ≈ 50 − 28 × ln(dose_U) (population)
+    - Cross-patient CV = 8–9% at matched doses (1.5–3.0U)
+    - LOO: all r < −0.49 (robust, not outlier-driven)
+    - Bootstrap CI [−0.67, −0.44]
+
+    Args:
+        glucose: (N,) glucose values (mg/dL), 5-min intervals.
+        bolus: (N,) bolus units per interval.
+        carbs: (N,) optional carb data for contamination filtering.
+        profile: PatientProfile for ISF comparison.
+
+    Returns:
+        dict with linear/log/sqrt fits, best_model, n_events, profile_ratio.
+        None if insufficient correction events.
+    """
+    if bolus is None:
+        return None
+
+    bolus_vals = np.nan_to_num(bolus, nan=0.0)
+    carb_vals = np.nan_to_num(carbs, nan=0.0) if carbs is not None else None
+
+    # Extract isolated correction events
+    correction_indices = np.where(bolus_vals >= _MIN_BOLUS_U)[0]
+    events = []
+
+    for idx in correction_indices:
+        pre_bg = float(glucose[idx]) if np.isfinite(glucose[idx]) else 0.0
+        if pre_bg < _MIN_PRE_BG:
+            continue
+
+        dose = float(bolus_vals[idx])
+
+        # Exclude events near carbs
+        if carb_vals is not None:
+            carb_window = carb_vals[max(0, idx - _CARB_EXCLUSION_STEPS):
+                                   min(len(carb_vals), idx + _CARB_EXCLUSION_STEPS)]
+            if np.sum(carb_window) > 2.0:
+                continue
+
+        # Exclude events near other boluses (3h window)
+        future_bolus_window = bolus_vals[idx + 1:min(idx + 36, len(bolus_vals))]
+        if np.any(future_bolus_window > 0.5):
+            continue
+
+        # Measure 3h glucose drop
+        post_end = min(idx + 36, len(glucose))
+        if post_end - idx < 12:
+            continue
+        post_window = glucose[idx:post_end]
+        valid_post = post_window[np.isfinite(post_window)]
+        if len(valid_post) < 6:
+            continue
+
+        nadir = float(np.nanmin(post_window))
+        drop = pre_bg - nadir  # positive = glucose fell
+        if drop < 5:
+            continue  # skip trivial corrections
+
+        apparent_isf = drop / dose
+        events.append({'dose': dose, 'drop': drop, 'isf': apparent_isf})
+
+    if len(events) < _MIN_DOSE_EVENTS:
+        return None
+
+    doses = np.array([e['dose'] for e in events])
+    isfs = np.array([e['isf'] for e in events])
+
+    # Three model fits
+    from scipy import stats as _stats
+
+    result = {'n_events': len(events)}
+
+    # Linear: ISF = a + b × dose
+    sl, ic, r_lin, p_lin, _ = _stats.linregress(doses, isfs)
+    result['linear'] = {
+        'slope': round(sl, 2), 'intercept': round(ic, 1),
+        'r': round(r_lin, 3), 'p': round(p_lin, 6),
+    }
+
+    # Log: ISF = a + b × ln(dose)
+    log_doses = np.log(np.maximum(doses, 0.01))
+    sl_log, ic_log, r_log, p_log, _ = _stats.linregress(log_doses, isfs)
+    result['log'] = {
+        'slope': round(sl_log, 2), 'intercept': round(ic_log, 1),
+        'r': round(r_log, 3), 'p': round(p_log, 6),
+    }
+
+    # Sqrt: ISF = a + b × √dose
+    sqrt_doses = np.sqrt(doses)
+    sl_sq, ic_sq, r_sq, p_sq, _ = _stats.linregress(sqrt_doses, isfs)
+    result['sqrt'] = {
+        'slope': round(sl_sq, 2), 'intercept': round(ic_sq, 1),
+        'r': round(r_sq, 3), 'p': round(p_sq, 6),
+    }
+
+    # Best model by |r|
+    models = {'linear': abs(r_lin), 'log': abs(r_log), 'sqrt': abs(r_sq)}
+    result['best_model'] = max(models, key=models.get)
+    result['best_r'] = round(max(models.values()), 3)
+
+    # Dose-matched predictions at standard doses
+    standard_doses = [0.5, 1.0, 1.5, 2.0, 3.0, 5.0]
+    dose_range = (float(doses.min()), float(doses.max()))
+    result['dose_range'] = [round(dose_range[0], 1), round(dose_range[1], 1)]
+
+    predictions = {}
+    for d in standard_doses:
+        if dose_range[0] <= d <= dose_range[1]:
+            predictions[str(d)] = round(ic_log + sl_log * np.log(d), 1)
+    result['isf_at_dose'] = predictions
+
+    # Profile comparison
+    sched_isf = 50.0
+    if profile is not None and profile.isf_schedule:
+        vals = [e.get('value', e.get('sensitivity', 50))
+                for e in profile.isf_schedule]
+        sched_isf = float(np.median([float(v) for v in vals])) if vals else 50.0
+    result['scheduled_isf'] = round(sched_isf, 1)
+    median_isf = float(np.median(isfs))
+    result['median_apparent_isf'] = round(median_isf, 1)
+    result['profile_ratio'] = round(median_isf / sched_isf, 2) if sched_isf > 0 else 1.0
+
+    return result

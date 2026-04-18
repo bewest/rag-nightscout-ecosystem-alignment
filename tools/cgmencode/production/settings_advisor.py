@@ -1968,6 +1968,10 @@ def generate_settings_advice(glucose: np.ndarray,
     - Correction-based ISF calibration (EXP-2579/2582/2585)
     - Override ISF split detection (EXP-2621)
     - Advisory confidence tier (EXP-2622)
+    - Carb context overnight (EXP-2627/2628)
+    - Response-curve ISF (EXP-1301)
+    - SC suppression ceiling (EXP-2656/2667)
+    - Dose-response ISF curves (EXP-2636/2640)
 
     Args:
         glucose: (N,) cleaned glucose.
@@ -2119,8 +2123,40 @@ def generate_settings_advice(glucose: np.ndarray,
             patience_rec = advise_patience_mode(sat, days_of_data)
             if patience_rec:
                 recs.append(patience_rec)
+            # SC ceiling advisory (EXP-2656/2667) — uses saturation result
+            ceiling_rec = advise_sc_ceiling(
+                glucose, iob, profile, days_of_data,
+                saturation=sat)
+            if ceiling_rec:
+                recs.append(ceiling_rec)
         except Exception:
             pass  # graceful fallback — saturation detection is optional
+
+    # Carb context overnight advisory (EXP-2627/2628)
+    if carbs is not None:
+        carb_ctx_rec = advise_carb_context_overnight(
+            glucose, hours, carbs, profile, days_of_data,
+            iob=iob, cob=cob)
+        if carb_ctx_rec:
+            recs.append(carb_ctx_rec)
+
+    # Response-curve ISF advisory (EXP-1301)
+    if bolus is not None:
+        rc_rec = advise_response_curve_isf(
+            glucose, hours, profile,
+            bolus=bolus, basal_rate=actual_basal,
+            days_of_data=days_of_data)
+        if rc_rec:
+            recs.append(rc_rec)
+
+    # Dose-response ISF advisory (EXP-2636/2640)
+    if bolus is not None:
+        dr_rec = advise_dose_response_isf(
+            glucose, hours, profile,
+            bolus=bolus, carbs=carbs,
+            days_of_data=days_of_data)
+        if dr_rec:
+            recs.append(dr_rec)
 
     # Overnight drift assessment (EXP-2371–2378, EXP-2622 48h carbs)
     overnight = assess_overnight_drift(
@@ -3725,4 +3761,394 @@ def advise_isf_dual_phase(
                    f"CI [{dual_phase.demand_ci_low:.0f}–{dual_phase.demand_ci_high:.0f}]. "
                    f"Multi-factor ISF estimation validated: dose-dependent "
                    f"r=-0.56 (EXP-2640), response-curve R²=0.805 (EXP-1301)."),
+    )
+
+
+# ── Carb Context Overnight Advisory (EXP-2627/2628) ──────────────────
+
+# 48h carb history modulates overnight drift via hepatic glycogen loading.
+# Exponential accumulator (τ=24h) correlates r=-0.303 with overnight drift.
+# This advisory exposes the glycogen proxy as a standalone diagnostic.
+
+_GLYCOGEN_TAU_STEPS = 288     # τ=24h × 12 steps/hr
+_GLYCOGEN_DECAY = 1.0 - 1.0 / max(_GLYCOGEN_TAU_STEPS, 1)
+_LOW_GLYCOGEN_THRESHOLD = 100.0   # grams/48h — risk of glycogen depletion
+_HIGH_GLYCOGEN_THRESHOLD = 300.0  # grams/48h — well-loaded
+
+
+def advise_carb_context_overnight(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    carbs: Optional[np.ndarray],
+    profile: PatientProfile,
+    days_of_data: float,
+    iob: Optional[np.ndarray] = None,
+    cob: Optional[np.ndarray] = None,
+) -> Optional[SettingsRecommendation]:
+    """Warn when low 48h carb intake explains overnight glucose drift (EXP-2627/2628).
+
+    Hepatic glycogen depletion from low carb intake causes rising overnight
+    glucose independent of basal rate settings. This advisory prevents
+    unnecessary basal increases by identifying glycogen-related drift.
+
+    Research findings:
+    - 48h carb window: r=-0.303 with overnight drift (57% stronger than 24h)
+    - Exponential accumulator tau=24h: r=-0.28 (glycogen timescale)
+    - Low carbs (<100g/48h) + rising overnight BG -> likely glycogen, not basal
+    - High carbs (>300g/48h) + falling overnight BG -> glycogen-loaded EGP
+    """
+    if carbs is None or days_of_data < MIN_DATA_DAYS:
+        return None
+
+    carb_vals = np.nan_to_num(carbs, nan=0.0)
+    bg = np.nan_to_num(glucose.astype(np.float64), nan=120.0)
+
+    # Compute exponential glycogen accumulator (tau=24h)
+    accum = np.zeros(len(carb_vals))
+    for i in range(1, len(carb_vals)):
+        accum[i] = accum[i - 1] * _GLYCOGEN_DECAY + carb_vals[i]
+
+    # Extract overnight segments (00:00-06:00) and their glycogen state
+    overnight_drifts = []
+    overnight_glycogen = []
+    _48H_STEPS = 576
+
+    steps_per_day = 288
+    n_days = len(glucose) // steps_per_day
+
+    for day in range(n_days):
+        day_start = day * steps_per_day
+        night_start = day_start
+        night_end = min(day_start + 72, len(glucose))
+
+        if night_end - night_start < 36:
+            continue
+
+        night_bg = bg[night_start:night_end]
+        valid = np.isfinite(night_bg) & (night_bg > 30)
+        if np.sum(valid) < 20:
+            continue
+
+        if iob is not None:
+            night_iob = iob[night_start:night_end]
+            if np.nanmean(night_iob) > 0.5:
+                continue
+        if cob is not None:
+            night_cob = cob[night_start:night_end]
+            if np.nanmean(night_cob) > 5.0:
+                continue
+
+        t_hrs = np.arange(np.sum(valid)) * (5.0 / 60.0)
+        if len(t_hrs) < 10:
+            continue
+        slope, _ = np.polyfit(t_hrs, night_bg[valid], 1)
+        overnight_drifts.append(slope)
+
+        lookback_start = max(0, night_start - _48H_STEPS)
+        preceding_carbs = float(np.sum(carb_vals[lookback_start:night_start]))
+        overnight_glycogen.append(preceding_carbs)
+
+    if len(overnight_drifts) < 3:
+        return None
+
+    mean_drift = float(np.mean(overnight_drifts))
+    mean_carbs_48h = float(np.mean(overnight_glycogen))
+
+    is_low_carb_rising = (mean_carbs_48h < _LOW_GLYCOGEN_THRESHOLD and
+                          mean_drift > 2.0)
+    is_high_carb_falling = (mean_carbs_48h > _HIGH_GLYCOGEN_THRESHOLD and
+                            mean_drift < -2.0)
+
+    if not is_low_carb_rising and not is_high_carb_falling:
+        return None
+
+    confidence = min(0.6, days_of_data / HIGH_CONFIDENCE_DAYS)
+
+    if is_low_carb_rising:
+        return SettingsRecommendation(
+            parameter=SettingsParameter.BASAL_RATE,
+            direction="informational",
+            magnitude_pct=0.0,
+            current_value=0.0,
+            suggested_value=0.0,
+            predicted_tir_delta=0.0,
+            affected_hours=(0.0, 6.0),
+            confidence=confidence,
+            evidence=(f"48h carb context (EXP-2627): mean {mean_carbs_48h:.0f}g/48h "
+                      f"preceding {len(overnight_drifts)} clean nights. "
+                      f"Overnight drift {mean_drift:+.1f} mg/dL/hr. "
+                      f"Low carbs correlate with rising BG (r=-0.303)."),
+            rationale=(f"Low carb intake ({mean_carbs_48h:.0f}g/48h) likely "
+                       f"causes rising overnight glucose via glycogen depletion "
+                       f"(EXP-2628: tau=24h exponential accumulator). Consider "
+                       f"whether drift is dietary before adjusting basal rate."),
+        )
+    else:
+        return SettingsRecommendation(
+            parameter=SettingsParameter.BASAL_RATE,
+            direction="informational",
+            magnitude_pct=0.0,
+            current_value=0.0,
+            suggested_value=0.0,
+            predicted_tir_delta=0.0,
+            affected_hours=(0.0, 6.0),
+            confidence=confidence,
+            evidence=(f"48h carb context (EXP-2627): mean {mean_carbs_48h:.0f}g/48h "
+                      f"preceding {len(overnight_drifts)} clean nights. "
+                      f"Overnight drift {mean_drift:+.1f} mg/dL/hr."),
+            rationale=(f"High carb intake ({mean_carbs_48h:.0f}g/48h) with "
+                       f"falling overnight glucose -- glycogen-loaded hepatic "
+                       f"output reduces overnight BG. Drift may normalize "
+                       f"with consistent carb intake."),
+        )
+
+
+# ── Response-Curve ISF Advisory (EXP-1301) ───────────────────────────
+
+def advise_response_curve_isf(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    profile: PatientProfile,
+    bolus: Optional[np.ndarray] = None,
+    basal_rate: Optional[np.ndarray] = None,
+    days_of_data: float = 0.0,
+) -> Optional[SettingsRecommendation]:
+    """Report ISF from exponential response-curve fitting (EXP-1301).
+
+    Fits BG(t) = BG_start - amplitude * (1 - exp(-t/tau)) to each correction
+    event and computes ISF = amplitude / dose. R2 = 0.805 population average.
+
+    Also classifies responder type via tau:
+    - Fast responders: tau ~ 1.5h (rapid insulin action)
+    - Slow responders: tau ~ 4.0h (delayed insulin action)
+
+    NOTE: Returns APPARENT ISF (includes AID compensation + EGP suppression).
+    Use demand-phase ISF (advise_isf_dual_phase) for true insulin sensitivity.
+    This advisory is informational -- complements demand ISF with tau classification.
+    """
+    if bolus is None or days_of_data < 7.0:
+        return None
+
+    try:
+        from cgmencode.production.clinical_rules import compute_response_curve_isf
+        result = compute_response_curve_isf(glucose, bolus, basal_rate, profile)
+    except Exception:
+        return None
+
+    if not result or result.get('n_corrections', 0) < 3:
+        return None
+
+    isf = result.get('isf', 0)
+    tau = result.get('tau_hours', 2.0)
+    r2 = result.get('r2', 0)
+    n_corr = result.get('n_corrections', 0)
+    dampening = result.get('aid_dampening_pct', 0)
+
+    if isf <= 0:
+        return None
+
+    responder_type = "fast" if tau < 2.5 else "slow"
+
+    isf_vals = [e.get('value', e.get('sensitivity', 50))
+                for e in profile.isf_schedule]
+    sched_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
+    ratio = isf / sched_isf if sched_isf > 0 else 1.0
+
+    confidence = min(0.6, days_of_data / HIGH_CONFIDENCE_DAYS) * min(1.0, r2 / 0.5)
+
+    return SettingsRecommendation(
+        parameter=SettingsParameter.ISF,
+        direction="informational",
+        magnitude_pct=0.0,
+        current_value=sched_isf,
+        suggested_value=sched_isf,
+        predicted_tir_delta=0.0,
+        affected_hours=(0.0, 24.0),
+        confidence=round(confidence, 2),
+        evidence=(f"Response-curve ISF (EXP-1301): {n_corr} corrections, "
+                  f"ISF={isf:.0f} mg/dL/U, tau={tau:.1f}h ({responder_type} "
+                  f"responder), R2={r2:.2f}. AID dampening: {dampening:.0f}%. "
+                  f"Profile ISF={sched_isf:.0f}, ratio={ratio:.2f}x."),
+        rationale=(f"Response-curve fitting yields apparent ISF of "
+                   f"{isf:.0f} mg/dL/U (tau={tau:.1f}h, {responder_type} "
+                   f"responder). This is {ratio:.1f}x the profile ISF "
+                   f"({sched_isf:.0f}). NOTE: Apparent ISF includes AID "
+                   f"compensation (EXP-2651: 2-10x inflation). Use "
+                   f"demand-phase ISF for dosing targets."),
+    )
+
+
+# ── SC Suppression Ceiling Advisory (EXP-2656/2667) ──────────────────
+
+def advise_sc_ceiling(
+    glucose: np.ndarray,
+    iob: np.ndarray,
+    profile: PatientProfile,
+    days_of_data: float,
+    saturation: Optional['SaturationAssessment'] = None,
+) -> Optional[SettingsRecommendation]:
+    """Report per-patient SC insulin suppression ceiling (EXP-2656/2667).
+
+    SC insulin can suppress at most ~20% (median) of hepatic EGP. At this
+    ceiling, additional insulin has diminishing glucose-lowering returns,
+    explaining sticky hypers and delayed hypos from IOB stacking.
+
+    Research findings:
+    - Population median ceiling: 20% (demand-ISF basis, EXP-2667)
+    - Range: 10-56% across patients
+    - Ceiling correlates with sticky hyper rate (r=-0.60)
+    - Ceiling model improves RMSE 2-22% over linear at high IOB
+    """
+    if iob is None or days_of_data < 7.0:
+        return None
+
+    isf_vals = [e.get('value', e.get('sensitivity', 50))
+                for e in profile.isf_schedule]
+    sched_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
+
+    try:
+        from cgmencode.production.clinical_rules import compute_sc_ceiling
+        ceiling = compute_sc_ceiling(glucose, iob,
+                                     scheduled_isf=sched_isf,
+                                     dia_hours=profile.dia_hours or 6.0)
+    except Exception:
+        return None
+
+    if ceiling is None:
+        return None
+
+    fitted = ceiling['fitted_ceiling']
+    improvement = ceiling['improvement_pct']
+    n_pts = ceiling['n_high_iob_points']
+
+    if improvement < 1.0:
+        return None
+
+    confidence = min(0.5, days_of_data / HIGH_CONFIDENCE_DAYS)
+
+    wall_note = ""
+    if saturation is not None and saturation.patience_mode_eligible:
+        wall_note = (f" Wall episodes: {saturation.wall_pct:.0f}% of high-BG "
+                     f"time. Patience mode eligible (IOB cap: "
+                     f"{saturation.iob_cap_suggestion:.1f}U).")
+
+    return SettingsRecommendation(
+        parameter=SettingsParameter.ISF,
+        direction="informational",
+        magnitude_pct=0.0,
+        current_value=sched_isf,
+        suggested_value=sched_isf,
+        predicted_tir_delta=0.0,
+        affected_hours=(0.0, 24.0),
+        confidence=round(confidence, 2),
+        evidence=(f"SC ceiling analysis (EXP-2656/2667): fitted ceiling "
+                  f"= {fitted:.0%} EGP suppression, "
+                  f"RMSE improvement = {improvement:.1f}% over linear, "
+                  f"N = {n_pts} high-IOB points.{wall_note}"),
+        rationale=(f"SC insulin can suppress at most {fitted:.0%} of "
+                   f"hepatic glucose production for this patient. At high "
+                   f"IOB (>{ceiling['median_iob']:.1f}U), additional insulin "
+                   f"has diminishing returns -- {1 - fitted:.0%} of EGP "
+                   f"remains active regardless. This explains sticky "
+                   f"hypers and delayed hypo risk from IOB stacking."),
+    )
+
+
+# ── Dose-Response ISF Advisory (EXP-2636/2640) ──────────────────────
+
+def advise_dose_response_isf(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    profile: PatientProfile,
+    bolus: Optional[np.ndarray] = None,
+    carbs: Optional[np.ndarray] = None,
+    days_of_data: float = 0.0,
+) -> Optional[SettingsRecommendation]:
+    """Report dose-dependent ISF curve and split-dose recommendation (EXP-2640).
+
+    ISF compresses logarithmically with dose: ISF ~ a + b * ln(dose).
+    Large corrections (>=3U) yield 4.6x lower apparent ISF than small (<0.75U)
+    due to AID basal withdrawal, glucose drop ceiling, and EGP saturation.
+
+    Clinical implication: Large corrections are less efficient per-unit.
+    Splitting a 4U correction into 2x2U may be more effective.
+
+    Research findings:
+    - Population r = -0.56, p < 10^-19
+    - Log model wins 5/6 patients
+    - Bootstrap CI [-0.67, -0.44]
+    - Cross-patient CV = 8-9% at matched doses
+    """
+    if bolus is None or days_of_data < 7.0:
+        return None
+
+    try:
+        from cgmencode.production.clinical_rules import compute_dose_response_isf
+        result = compute_dose_response_isf(glucose, bolus, carbs, profile)
+    except Exception:
+        return None
+
+    if result is None:
+        return None
+
+    best_model = result['best_model']
+    best_r = result['best_r']
+    n_events = result['n_events']
+    log_fit = result.get('log', {})
+    dose_range = result.get('dose_range', [0, 0])
+    isf_at_dose = result.get('isf_at_dose', {})
+
+    if best_r < 0.25:
+        return None
+
+    sched_isf = result.get('scheduled_isf', 50.0)
+    confidence = min(0.5, days_of_data / HIGH_CONFIDENCE_DAYS) * min(1.0, best_r / 0.5)
+
+    dose_summary = ", ".join(
+        f"{d}U->{isf:.0f}" for d, isf in isf_at_dose.items()
+    )
+
+    split_note = ""
+    if '1.0' in isf_at_dose and '3.0' in isf_at_dose:
+        ratio = isf_at_dose['1.0'] / isf_at_dose['3.0'] if isf_at_dose['3.0'] > 0 else 1
+        if ratio > 1.5:
+            split_note = (f" Split-dose recommendation: corrections >=3U are "
+                          f"{ratio:.1f}x less efficient per-unit than 1U. "
+                          f"Consider splitting large corrections.")
+
+    direction = "informational"
+    magnitude = 0.0
+    suggested = sched_isf
+    tir_delta = 0.0
+
+    median_isf = result.get('median_apparent_isf', sched_isf)
+    profile_ratio = result.get('profile_ratio', 1.0)
+    if abs(profile_ratio - 1.0) > 0.3 and best_r > 0.35:
+        if profile_ratio > 1.3:
+            direction = "increase"
+        elif profile_ratio < 0.7:
+            direction = "decrease"
+        magnitude = abs(profile_ratio - 1.0) * 100
+        suggested = round(median_isf, 0)
+        tir_delta = round(magnitude * 0.03, 1)
+
+    return SettingsRecommendation(
+        parameter=SettingsParameter.ISF,
+        direction=direction,
+        magnitude_pct=round(magnitude, 0),
+        current_value=sched_isf,
+        suggested_value=suggested,
+        predicted_tir_delta=tir_delta,
+        affected_hours=(0.0, 24.0),
+        confidence=round(confidence, 2),
+        evidence=(f"Dose-response ISF (EXP-2640): {n_events} corrections, "
+                  f"best model={best_model} (|r|={best_r:.2f}), "
+                  f"dose range [{dose_range[0]:.1f}-{dose_range[1]:.1f}U]. "
+                  f"ISF at dose: {dose_summary}.{split_note}"),
+        rationale=(f"ISF varies with correction dose ({best_model} model, "
+                   f"|r|={best_r:.2f}). Larger corrections yield lower "
+                   f"apparent ISF due to AID basal withdrawal, glucose drop "
+                   f"ceiling, and EGP saturation (EXP-2636). "
+                   f"Log model: ISF ~ {log_fit.get('intercept', 50):.0f} "
+                   f"+ ({log_fit.get('slope', -28):.0f}) * ln(dose)."),
     )

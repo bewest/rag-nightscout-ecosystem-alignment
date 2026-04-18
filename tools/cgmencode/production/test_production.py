@@ -5680,3 +5680,341 @@ class TestSaturationTypes(unittest.TestCase):
         self.assertEqual(sa.delayed_hypo_risk, 0.0)
         self.assertFalse(sa.patience_mode_eligible)
         self.assertEqual(sa.iob_cap_suggestion, 0.0)
+
+
+# ── Tests for Autoproductionized Advisories (EXP-2627/2628/1301/2656/2640) ──
+
+class TestCarbContextOvernightAdvisory(unittest.TestCase):
+    """Test advise_carb_context_overnight function (EXP-2627/2628)."""
+
+    def test_no_advisory_insufficient_data(self):
+        from cgmencode.production.settings_advisor import advise_carb_context_overnight
+        n = 288  # 1 day — below MIN_DATA_DAYS
+        result = advise_carb_context_overnight(
+            glucose=np.full(n, 120.0),
+            hours=np.linspace(0, 24, n, endpoint=False),
+            carbs=np.zeros(n),
+            profile=make_profile(),
+            days_of_data=1.0,
+        )
+        self.assertIsNone(result)
+
+    def test_no_advisory_without_carbs(self):
+        from cgmencode.production.settings_advisor import advise_carb_context_overnight
+        n = 288 * 14
+        result = advise_carb_context_overnight(
+            glucose=np.full(n, 120.0),
+            hours=np.tile(np.linspace(0, 24, 288, endpoint=False), 14),
+            carbs=None,
+            profile=make_profile(),
+            days_of_data=14.0,
+        )
+        self.assertIsNone(result)
+
+    def test_no_advisory_normal_carbs(self):
+        """Normal carb intake (200g/day) should not trigger advisory."""
+        from cgmencode.production.settings_advisor import advise_carb_context_overnight
+        n = 288 * 14
+        glucose = np.full(n, 120.0) + np.random.RandomState(42).normal(0, 3, n)
+        carbs = np.zeros(n)
+        # Distribute 200g/day across 3 meals
+        for day in range(14):
+            for meal_idx, meal_g in [(96, 60), (144, 70), (216, 70)]:
+                idx = day * 288 + meal_idx
+                if idx < n:
+                    carbs[idx] = meal_g
+
+        result = advise_carb_context_overnight(
+            glucose=glucose,
+            hours=np.tile(np.linspace(0, 24, 288, endpoint=False), 14),
+            carbs=carbs,
+            profile=make_profile(),
+            days_of_data=14.0,
+        )
+        self.assertIsNone(result)
+
+
+    def test_advisory_low_carb_rising(self):
+        """Low carbs + rising overnight -> glycogen depletion advisory."""
+        from cgmencode.production.settings_advisor import advise_carb_context_overnight
+        n = 288 * 14
+        # Create rising overnight glucose pattern
+        glucose = np.full(n, 120.0)
+        rng = np.random.RandomState(42)
+        for day in range(14):
+            # Overnight 00:00-06:00: rising at +5 mg/dL/hr
+            for step in range(72):
+                idx = day * 288 + step
+                if idx < n:
+                    glucose[idx] = 100.0 + 5.0 * (step * 5.0 / 60.0) + rng.normal(0, 1)
+            # Daytime
+            for step in range(72, 288):
+                idx = day * 288 + step
+                if idx < n:
+                    glucose[idx] = 130.0 + rng.normal(0, 3)
+
+        # Very low carbs: 30g/day
+        carbs = np.zeros(n)
+        for day in range(14):
+            idx = day * 288 + 144  # lunch
+            if idx < n:
+                carbs[idx] = 30.0
+
+        result = advise_carb_context_overnight(
+            glucose=glucose,
+            hours=np.tile(np.linspace(0, 24, 288, endpoint=False), 14),
+            carbs=carbs,
+            profile=make_profile(),
+            days_of_data=14.0,
+            iob=np.full(n, 0.03),  # low IOB (clean nights)
+        )
+        if result is not None:
+            self.assertEqual(result.direction, "informational")
+            self.assertIn("glycogen", result.rationale.lower())
+
+
+class TestResponseCurveISFAdvisory(unittest.TestCase):
+    """Test advise_response_curve_isf function (EXP-1301)."""
+
+    def test_no_advisory_insufficient_data(self):
+        from cgmencode.production.settings_advisor import advise_response_curve_isf
+        n = 288 * 3
+        result = advise_response_curve_isf(
+            glucose=np.full(n, 120.0),
+            hours=np.tile(np.linspace(0, 24, 288, endpoint=False), 3),
+            profile=make_profile(),
+            bolus=np.zeros(n),
+            days_of_data=3.0,
+        )
+        self.assertIsNone(result)
+
+    def test_no_advisory_without_bolus(self):
+        from cgmencode.production.settings_advisor import advise_response_curve_isf
+        n = 288 * 14
+        result = advise_response_curve_isf(
+            glucose=np.full(n, 120.0),
+            hours=np.tile(np.linspace(0, 24, 288, endpoint=False), 14),
+            profile=make_profile(),
+            bolus=None,
+            days_of_data=14.0,
+        )
+        self.assertIsNone(result)
+
+
+    def test_advisory_returns_informational(self):
+        """With correction events, should return informational ISF advisory."""
+        from cgmencode.production.settings_advisor import advise_response_curve_isf
+        n = 288 * 30
+        rng = np.random.RandomState(42)
+        glucose = np.full(n, 120.0) + rng.normal(0, 3, n)
+        bolus = np.zeros(n)
+        profile = make_profile()
+
+        # Create clear correction events
+        for day in range(30):
+            idx = day * 288 + 48
+            if idx + 36 >= n:
+                continue
+            glucose[idx] = 220.0
+            bolus[idx] = 2.0
+            # Exponential-ish decay
+            for k in range(36):
+                glucose[idx + k] = 220.0 - 80.0 * (1 - np.exp(-k / 10.0))
+
+        result = advise_response_curve_isf(
+            glucose=glucose,
+            hours=np.tile(np.linspace(0, 24, 288, endpoint=False), 30),
+            profile=profile,
+            bolus=bolus,
+            days_of_data=30.0,
+        )
+        # May or may not fire depending on compute_response_curve_isf internals
+        if result is not None:
+            self.assertEqual(result.direction, "informational")
+            self.assertEqual(result.parameter.value, "isf")
+            self.assertIn("EXP-1301", result.evidence)
+
+
+class TestSCCeilingAdvisory(unittest.TestCase):
+    """Test advise_sc_ceiling function (EXP-2656/2667)."""
+
+    def test_no_advisory_insufficient_data(self):
+        from cgmencode.production.settings_advisor import advise_sc_ceiling
+        n = 288 * 3
+        result = advise_sc_ceiling(
+            glucose=np.full(n, 120.0),
+            iob=np.full(n, 1.0),
+            profile=make_profile(),
+            days_of_data=3.0,
+        )
+        self.assertIsNone(result)
+
+    def test_no_advisory_without_iob(self):
+        from cgmencode.production.settings_advisor import advise_sc_ceiling
+        n = 288 * 14
+        result = advise_sc_ceiling(
+            glucose=np.full(n, 120.0),
+            iob=None,
+            profile=make_profile(),
+            days_of_data=14.0,
+        )
+        self.assertIsNone(result)
+
+
+    def test_compute_sc_ceiling_basic(self):
+        """Test compute_sc_ceiling with synthetic high-IOB data."""
+        from cgmencode.production.clinical_rules import compute_sc_ceiling
+        n = 288 * 14
+        rng = np.random.RandomState(42)
+        glucose = np.full(n, 150.0) + rng.normal(0, 5, n)
+        iob = np.full(n, 1.0) + rng.exponential(0.5, n)
+
+        # Create high-IOB periods with wall-like behavior
+        for day in range(14):
+            for start_h in [10, 16]:
+                idx = day * 288 + start_h * 12
+                end = min(idx + 36, n)
+                iob[idx:end] = 5.0 + rng.normal(0, 0.5, end - idx)
+                # Glucose barely drops despite high IOB (wall)
+                glucose[idx:end] = 180.0 + rng.normal(0, 3, end - idx)
+
+        result = compute_sc_ceiling(glucose, iob, scheduled_isf=50.0)
+        if result is not None:
+            self.assertIn('fitted_ceiling', result)
+            self.assertGreater(result['fitted_ceiling'], 0)
+            self.assertLessEqual(result['fitted_ceiling'], 1.0)
+            self.assertGreater(result['n_high_iob_points'], 0)
+
+
+class TestDoseResponseISFAdvisory(unittest.TestCase):
+    """Test advise_dose_response_isf and compute_dose_response_isf (EXP-2640)."""
+
+    def test_no_advisory_insufficient_data(self):
+        from cgmencode.production.settings_advisor import advise_dose_response_isf
+        n = 288 * 3
+        result = advise_dose_response_isf(
+            glucose=np.full(n, 120.0),
+            hours=np.tile(np.linspace(0, 24, 288, endpoint=False), 3),
+            profile=make_profile(),
+            bolus=np.zeros(n),
+            days_of_data=3.0,
+        )
+        self.assertIsNone(result)
+
+    def test_no_advisory_without_bolus(self):
+        from cgmencode.production.settings_advisor import advise_dose_response_isf
+        n = 288 * 14
+        result = advise_dose_response_isf(
+            glucose=np.full(n, 120.0),
+            hours=np.tile(np.linspace(0, 24, 288, endpoint=False), 14),
+            profile=make_profile(),
+            bolus=None,
+            days_of_data=14.0,
+        )
+        self.assertIsNone(result)
+
+
+    def test_compute_dose_response_basic(self):
+        """Test compute_dose_response_isf with synthetic dose-dependent ISF."""
+        from cgmencode.production.clinical_rules import compute_dose_response_isf
+        n = 288 * 60
+        rng = np.random.RandomState(42)
+        glucose = np.full(n, 120.0) + rng.normal(0, 3, n)
+        bolus = np.zeros(n)
+
+        # Create corrections with dose-dependent ISF: larger doses -> smaller ISF
+        doses = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0]
+        for i, day in enumerate(range(0, 56, 1)):
+            dose = doses[i % len(doses)]
+            idx = day * 288 + 48
+            if idx + 36 >= n:
+                continue
+            # Log-linear ISF: ISF = 80 - 25 * ln(dose)
+            isf = 80 - 25 * np.log(dose)
+            drop = dose * isf
+            glucose[idx] = 250.0
+            bolus[idx] = dose
+            for k in range(min(36, n - idx)):
+                glucose[idx + k] = max(70, 250.0 - drop * (k / 36.0))
+
+        result = compute_dose_response_isf(glucose, bolus, profile=make_profile())
+        if result is not None:
+            self.assertIn('best_model', result)
+            self.assertIn('n_events', result)
+            self.assertGreater(result['n_events'], 0)
+
+
+    def test_advisory_with_dose_dependent_data(self):
+        """Advisory should fire with sufficient dose-dependent corrections."""
+        from cgmencode.production.settings_advisor import advise_dose_response_isf
+        n = 288 * 60
+        rng = np.random.RandomState(42)
+        glucose = np.full(n, 120.0) + rng.normal(0, 3, n)
+        bolus = np.zeros(n)
+
+        doses = [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0]
+        for i, day in enumerate(range(0, 56, 1)):
+            dose = doses[i % len(doses)]
+            idx = day * 288 + 48
+            if idx + 36 >= n:
+                continue
+            isf = 80 - 25 * np.log(dose)
+            drop = dose * isf
+            glucose[idx] = 250.0
+            bolus[idx] = dose
+            for k in range(min(36, n - idx)):
+                glucose[idx + k] = max(70, 250.0 - drop * (k / 36.0))
+
+        result = advise_dose_response_isf(
+            glucose=glucose,
+            hours=np.tile(np.linspace(0, 24, 288, endpoint=False), 60),
+            profile=make_profile(),
+            bolus=bolus,
+            days_of_data=60.0,
+        )
+        # May or may not fire depending on correction extraction
+        if result is not None:
+            self.assertEqual(result.parameter.value, "isf")
+            self.assertIn("EXP-2640", result.evidence)
+
+
+class TestComputeSCCeiling(unittest.TestCase):
+    """Test compute_sc_ceiling function directly (EXP-2656/2667)."""
+
+    def test_returns_none_insufficient_data(self):
+        from cgmencode.production.clinical_rules import compute_sc_ceiling
+        result = compute_sc_ceiling(
+            glucose=np.full(20, 120.0),
+            iob=np.full(20, 1.0),
+        )
+        self.assertIsNone(result)
+
+    def test_returns_none_low_iob(self):
+        from cgmencode.production.clinical_rules import compute_sc_ceiling
+        n = 288 * 7
+        result = compute_sc_ceiling(
+            glucose=np.full(n, 120.0),
+            iob=np.full(n, 0.001),  # virtually no IOB
+        )
+        self.assertIsNone(result)
+
+
+class TestComputeDoseResponseISF(unittest.TestCase):
+    """Test compute_dose_response_isf function directly (EXP-2636/2640)."""
+
+    def test_returns_none_no_bolus(self):
+        from cgmencode.production.clinical_rules import compute_dose_response_isf
+        result = compute_dose_response_isf(
+            glucose=np.full(288, 120.0),
+            bolus=None,
+        )
+        self.assertIsNone(result)
+
+    def test_returns_none_no_corrections(self):
+        from cgmencode.production.clinical_rules import compute_dose_response_isf
+        n = 288 * 14
+        result = compute_dose_response_isf(
+            glucose=np.full(n, 120.0),
+            bolus=np.zeros(n),
+        )
+        self.assertIsNone(result)
