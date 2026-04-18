@@ -14,7 +14,7 @@
 2. [**Optimization Sequencing — Fix Order Matters**](#2-optimization-sequencing--fix-order-matters)
 3. [ISF Optimization — The Dominant Lever](#3-isf-optimization--the-dominant-lever)
 4. [Basal Rate Optimization](#4-basal-rate-optimization) *(includes §4.5: Comparison with oref0 Autotune)*
-5. [Carb Ratio Optimization](#5-carb-ratio-optimization)
+5. [Carb Ratio Optimization](#5-carb-ratio-optimization) *(includes §5.8: Carb Entry Reliability — What's Safe vs Compromised)*
 6. [Correction Threshold Advisory](#6-correction-threshold-advisory)
 7. [Controller-Specific Behavior](#7-controller-specific-behavior)
 8. [Profile Generation & Export](#8-profile-generation--export)
@@ -595,6 +595,110 @@ Dinner is the hardest meal to dose (highest excursion, 77.3 mg/dL mean, 53.6% hi
 **Dinner/breakfast ISF ratio**: 1.9×. The same carbs spike nearly 2× more at dinner than breakfast due to lower afternoon ISF combined with dawn phenomenon amplifying morning meal impact.  
 [SOURCE: `docs/60-research/circadian-therapy-report-2026-04-10.md` — EXP-2054]
 
+### 5.8 Carb Entry Reliability — What's Safe vs Compromised
+
+> **⚠ CRITICAL CAVEAT: All CR calculations in §5.1–5.7 depend on user-entered carb values, which are unreliable.**
+
+**Clinical reality**: Patients are typically trained to eat 75g carb meals on a regimented injection schedule. Real-world meals are commonly 40g–100g+. Yet the announced meal carb entries in this dataset are "centered ~20–30g" — a fraction of actual intake.  
+[SOURCE: `docs/60-research/meal-characterization-report-2026-04-10.md:94` — "Announced meals: bell-shaped, centered ~20–30g, tight distribution"]
+
+**The data confirms most meals are unannounced**: UAM (unannounced meals detected via physics residuals) accounts for **39% of all natural experiment windows** (19,916 of 50,810) — nearly 5× more than announced meals (8%, 4,065). The census conclusion: "the majority of glucose management happens without carb entries."  
+[SOURCE: `natural_experiment_detector.py:20–21`]  
+[SOURCE: `docs/60-research/natural-experiments-census-report-2026-04-09.md:20–21,341`]
+
+#### Dependency chain: which optimizations trust carb entries?
+
+| Optimization | Uses entered carbs? | Mechanism | Risk |
+|-------------|---------------------|-----------|------|
+| **Basal** (§4) | **No** | Overnight drift on clean nights (IOB<0.5U, COB<5g, 00–06h) — filters for *absence* of carbs | ✅ **Immune** |
+| **ISF** (§3) | **No** | Correction windows require `carbs[±30min] < 1g` — filters for *absence* of carbs | ✅ **Immune** |
+| **Optimization sequencing** (§2) | **No** | Uses CV and TIR from glucose alone | ✅ **Immune** |
+| **CR effective/profile ratio** (§5.1) | **Yes** | `effective_CR = entered_carbs / (bolus + excursion/ISF)` | 🔴 **Compromised** |
+| **CR schedule extraction** (§5.4) | **Yes** | `eff_cr = carbs_g / total_insulin` from NE meal windows | 🔴 **Compromised** |
+| **CR adequacy advisory** (§5.2) | **Indirectly** | Simulation-based (`advise_cr()`), but triggers on `cr_score` which depends on entered carbs | 🟡 **Partially affected** |
+| **15–30g sweet spot** (§12) | **Yes** | Bins by entered carbs, not actual carbs — a "15g entered" meal might be 60g actual | 🔴 **Compromised** |
+| **Nonlinearity cancellation** (§5.6) | **Partially** | The cancellation result (CR×ISF ≈ linear) holds regardless of carb counting accuracy — it's about the *ratio* of nonlinearities | 🟡 **Result survives** |
+
+[SOURCE: `natural_experiment_detector.py:355` — `carb_events = np.where(carbs >= meal_config.min_carbs)[0]` — meals detected from entered carbs only]  
+[SOURCE: `settings_optimizer.py:325–336` — CR calculation uses `m.get('carbs_g')` from NE meal measurements]  
+[SOURCE: `settings_optimizer.py:634` — `meals = census.filter_by_type(NaturalExperimentType.MEAL)` — only announced meals used for CR]  
+[SOURCE: `natural_experiment_detector.py:469–488` — UAM detection is physics-based but UAM windows carry no carb estimate usable for CR]
+
+#### Why basal and ISF are safe
+
+The pipeline's basal and ISF paths are well-designed precisely because they **don't trust carb entries**:
+
+- **Fasting detection** requires `carb_activity < 1g` over the prior 3 hours — this works whether or not meals are logged, because it looks for the *absence* of entries AND the absence of glucose rises.  
+  [SOURCE: `natural_experiment_detector.py:44,279–280`]
+
+- **Correction detection** requires `carbs[±30min] < 1g` — explicitly excludes any window near a carb entry. If a patient ate but didn't log, the correction window might be contaminated (glucose not dropping cleanly due to food absorption), but this shows up as poor curve fit (low R²) and gets down-weighted by the quality score.  
+  [SOURCE: `natural_experiment_detector.py:422–424`]
+
+- **Overnight drift** uses 00:00–06:00 windows — patients rarely eat during sleep, so the signal is clean regardless of logging habits.  
+  [SOURCE: `settings_advisor.py:2736–2742`]
+
+#### Why CR is fundamentally compromised
+
+The core CR equation — `effective_CR = carbs_g / (bolus_U + excursion_mg_dl / ISF)` — requires knowing actual grams consumed. If a patient eats 75g but enters 25g:
+
+- **Entered-carb CR** = 25 / (bolus + excursion/ISF)
+- **Actual CR** = 75 / (bolus + excursion/ISF) = **3× higher**
+
+The finding that "effective CR = 1.47× profile CR (patients under-dose)" (§5.1) has an alternative interpretation: **patients may be dosing correctly for what they actually eat, and the 1.47× ratio reflects systematic carb under-counting rather than conservative CR settings.**  
+[SOURCE: `docs/60-research/therapy-settings-synthesis-2026-04-11.md:92` — "This could reflect conservative CR settings, carb under-counting, or both"]
+
+#### The structural gap: detected meals aren't connected to CR optimization
+
+The pipeline **detects** unannounced meals via physics residuals (`_detect_uam()`) — correctly identifying 39% of all glucose events as unexplained rises. It also has **multiple carb estimation algorithms** from extensive R&D:
+
+| Algorithm | Median Estimate | Correlation w/ Entered | What It Measures |
+|-----------|----------------|------------------------|------------------|
+| Physics residual | 22.6g | r = 0.093 | Total unexplained glucose rise |
+| oref0 deviation | 21.8g | **r = 0.368 (best)** | COB-predicted vs actual deviation |
+| Glucose excursion | 7.8g | r = 0.263 | Peak-to-trough amplitude |
+| Loop IRC | 5.6g | r = 0.334 | Insulin-attributed carb absorption |
+
+[SOURCE: `docs/60-research/meal-data-science-synthesis-2026-04-09.md:108–116` — EXP-1341, 12,060 meals]
+
+The synthesis recommends: "physics for detection, oref0 for magnitude" as an ensemble.  
+[SOURCE: `docs/60-research/meal-data-science-synthesis-2026-04-09.md:121`]
+
+**For patient c specifically**, the pipeline detects **2.6 meals/day** on READY days using the physics-based demand-weighted detector — including dessert events (18% of dinners, ~123 min after dinner). A 72-configuration benchmark (EXP-1569) tested hysteresis from 15–180 min, finding the optimal "knee" at **5g/150min** (1.51 meals/day) for universal use and **≥18g/90min** for therapy-grade analysis.  
+[SOURCE: `docs/60-research/non-bolusing-robustness-report-2026-04-07.md:424` — "2.6 meals/day median on READY days"]  
+[SOURCE: `docs/60-research/non-bolusing-robustness-report-2026-04-07.md:408` — "dessert...mean gap of 123 minutes"]  
+[SOURCE: `docs/60-research/natural-experiments-benchmark-report-2026-04-09.md:20–26` — 72-config grid]  
+[SOURCE: `docs/60-research/meal-data-science-synthesis-2026-04-09.md:32` — knee at 5g/150min]
+
+**However, none of this is plumbed into the settings optimizer.** The gap:
+
+1. **UAM windows have no `carbs_g` field**: measurements include `peak_residual`, `mean_residual`, `bg_rise`, but no carb estimate.  
+   [SOURCE: `natural_experiment_detector.py:517–530`]
+
+2. **Carb estimation algorithms exist but aren't connected**: The 4 algorithms above (EXP-1341) run in research scripts, not in the production NE detector or settings optimizer.
+
+3. **`_extract_cr_schedule()` only processes `MEAL` type** (entered-carb events), not `UAM` type.  
+   [SOURCE: `settings_optimizer.py:634`]
+
+4. **Circular dependency (partially solvable)**: Converting glucose rise to grams requires CR — the thing we're optimizing. But the oref0 deviation method uses IOB-model-predicted deviation, which breaks the circularity by using ISF (already optimized in prior phase) rather than CR. This is the same approach oref0 autotune uses for CSF tuning.  
+   [SOURCE: `externals/oref0/lib/autotune/index.js:336–377` — CSF from deviation/mealCarbs]
+
+**The actionable gap**: The meal detection R&D (72 configs, 4 estimation algorithms, dessert detection, 2.6 meals/day for patient c) is mature research that could substantially improve CR optimization — but it needs to be plumbed into the production `_extract_cr_schedule()` path, using detected meals + estimated carbs instead of (or in addition to) entered carbs. The oref0 deviation estimator (best correlation, r=0.368) could provide the carb magnitude needed to break the circularity, since ISF is optimized before CR in the sequencing protocol (§2).
+
+#### Practical implications
+
+1. **Basal and ISF recommendations from this pipeline can be trusted** — they don't depend on carb entry accuracy.
+
+2. **CR recommendations should be treated as directional at best** — the magnitude is unreliable because the carb numerator is suspect. A recommendation to "decrease CR by 15%" might be correct in direction (meals do spike) but wrong in magnitude.
+
+3. **The "15–30g sweet spot" finding should be reframed**: it shows that *small entered-carb meals* have the best TIR, which likely reflects either (a) genuinely small snacks that are well-handled by the AID, or (b) larger meals that were under-counted to ~20g where the AID happened to compensate well — not a recommendation to eat 15–30g meals. Real-world meals are commonly 40–100g+; patients are clinically trained on 75g regimented meals.
+
+4. **oref0 autotune has the same limitation**: its CR tuning uses `totalMealCarbs` from treatment entries.  
+   [SOURCE: `externals/oref0/lib/autotune/index.js:336–395`]
+
+5. **Post-meal glucose excursion is a carb-independent CR signal**: the `advise_cr()` simulation path (§5.2) uses TIR during meal hours, which doesn't directly require accurate carb counts — it observes whether post-meal glucose returns to range. This is the more robust CR approach, though its trigger (`cr_score < 40`) still depends on entered-carb calculations.
+
+6. **Connecting detected meals to CR optimization is the highest-impact integration gap** in the pipeline. The research exists (EXP-1341, EXP-1569, EXP-486); it just needs to be wired into the production path.
+
 ---
 
 ## 6. Correction Threshold Advisory
@@ -834,9 +938,10 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 |---------|----------------------|----------|----------|
 | Two-component DIA (fast τ=0.8h + 37% persistent) | Needs AID firmware changes | R²=0.827 (EXP-2525) | Medium |
 | Split-dose recommendation (87% theoretical improvement) | Empirically confounded (0.39×); needs RCT | EXP-2522 | Low |
-| 15–30g meal sweet spot (best post-meal TIR) | Lifestyle guidance, not settings change | EXP-2537d | Medium |
+| 15–30g meal sweet spot (best post-meal TIR) | ⚠ Based on entered carbs, not actual carbs (see §5.8). Real meals are 40–100g+ | EXP-2537d | Low (reframe) |
 | Loop workload metric (18/19 saturated) | Insight, not actionable | EXP-2391 | Low |
 | CR × ISF cancellation | Confirms linear dosing — no action needed | EXP-2537a | Low |
+| **Detected-meal → CR integration** | **Mature R&D not yet plumbed into production CR path (see §5.8)** | **EXP-1341, 1569, 486** | **High** |
 | Patience mode (cap SMBs when IOB>2×median) | Saves 34–82% SMBs, reduces hypos 0.1–2.0pp | EXP-2662 | Medium |
 | SC suppression ceiling (~30% of hepatic EGP) | Correlates with sticky hypers (r=−0.60) | EXP-2656 | Medium |
 | Demand-phase ISF (2–10× smaller than apparent ISF) | Wins at all prediction horizons but dosing paradox applies | EXP-2651 | Medium |
