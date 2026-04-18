@@ -2111,6 +2111,17 @@ def generate_settings_advice(glucose: np.ndarray,
         if dp_rec:
             recs.append(dp_rec)
 
+    # Patience mode advisory (EXP-2662) — cap SMBs during wall episodes
+    if iob is not None:
+        try:
+            from cgmencode.production.clinical_rules import detect_insulin_saturation
+            sat = detect_insulin_saturation(glucose, iob)
+            patience_rec = advise_patience_mode(sat, days_of_data)
+            if patience_rec:
+                recs.append(patience_rec)
+        except Exception:
+            pass  # graceful fallback — saturation detection is optional
+
     # Overnight drift assessment (EXP-2371–2378, EXP-2622 48h carbs)
     overnight = assess_overnight_drift(
         glucose, hours, profile, days_of_data,
