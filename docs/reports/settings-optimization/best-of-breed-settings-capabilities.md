@@ -1025,7 +1025,7 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Forward sim accuracy | MAE=0.30pp, r=0.933 | `settings_advisor.py:22–23` | 2551 |
 | Hypo rate floor | ~16% irreducible | `egp-prescriptive-paradox-report-2026-04-13.md` | 2641 |
 | Natural experiment census | 50,810 windows | `natural_experiment_detector.py:1–22` | 1551 |
-| Production test coverage | 418 tests, 88 classes (unit 33s / integration 148s) | `test_production.py` | — |
+| Production test coverage | 418 tests, 85 classes (unit 33s / integration 148s) | `test_production.py` | — |
 
 ---
 
