@@ -508,7 +508,8 @@ def run_pipeline(patient: PatientData,
                 cob=patient.cob, actual_basal=patient.basal_rate,
                 bolus=patient.bolus,
                 correction_events=correction_events,
-                meal_events=meal_events)
+                meal_events=meal_events,
+                dual_phase_isf=dual_phase_isf)
 
             # ISF segmentation recommendations (EXP-765)
             isf_segment_recs = advise_isf_segmented(

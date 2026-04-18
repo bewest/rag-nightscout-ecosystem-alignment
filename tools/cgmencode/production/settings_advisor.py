@@ -1946,6 +1946,7 @@ def generate_settings_advice(glucose: np.ndarray,
                              correction_events: Optional[List[dict]] = None,
                              meal_events: Optional[List[dict]] = None,
                              override_active: Optional[np.ndarray] = None,
+                             dual_phase_isf: Optional['DualPhaseISF'] = None,
                              ) -> List[SettingsRecommendation]:
     """Generate all applicable settings recommendations.
 
@@ -1993,10 +1994,9 @@ def generate_settings_advice(glucose: np.ndarray,
     """
     recs = []
 
-    # Compute demand-phase ISF early — used by advise_isf() and
-    # advise_isf_dual_phase() (EXP-2651)
-    dual_phase_isf = None
-    if bolus is not None:
+    # Use pre-computed demand-phase ISF if provided, otherwise compute
+    # (avoids redundant computation when called from pipeline)
+    if dual_phase_isf is None and bolus is not None:
         try:
             from cgmencode.production.clinical_rules import compute_demand_isf
             dual_phase_isf = compute_demand_isf(glucose, bolus, profile,
