@@ -45,6 +45,7 @@ from scipy import stats
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 PARQUET = Path("externals/ns-parquet/training/grid.parquet")
+DS_PARQUET = Path("externals/ns-parquet/training/devicestatus.parquet")
 RESULTS_DIR = Path("externals/experiments"); RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 OUTFILE = RESULTS_DIR / "exp-2669_wall_resolution_mechanism.json"
 VIZ_DIR = Path("visualizations/wall-resolution-mechanism"); VIZ_DIR.mkdir(parents=True, exist_ok=True)
@@ -58,8 +59,26 @@ RESOLUTION_WINDOW_H = 4  # look 4h forward for resolution
 DEMAND_PHASE_H = 2  # 0-2h is demand phase
 
 
-def _classify_controller(pid, pdf):
-    """Classify controller type."""
+def _load_controller_map():
+    """Load actual AID controller identity from devicestatus parquet."""
+    if not DS_PARQUET.exists():
+        return {}
+    ds = pd.read_parquet(DS_PARQUET, columns=["patient_id", "controller"])
+    ctrl_map = {}
+    for pid in ds["patient_id"].unique():
+        ctrls = ds.loc[ds["patient_id"] == pid, "controller"].dropna().unique()
+        if len(ctrls) == 1:
+            ctrl_map[pid] = ctrls[0]
+        elif len(ctrls) > 1:
+            ctrl_map[pid] = "/".join(sorted(ctrls))
+    return ctrl_map
+
+
+def _classify_controller(pid, pdf, controller_map=None):
+    """Classify controller type from devicestatus metadata.
+
+    Falls back to SMB-ratio heuristic only when metadata is missing.
+    """
     n = len(pdf)
     iob = pdf["iob"].fillna(0).values
     iob_pct = float((iob > 0.1).sum() / n * 100)
@@ -68,12 +87,16 @@ def _classify_controller(pid, pdf):
         return None
     smb = int((pdf["bolus_smb"].fillna(0) > 0).sum())
     bol = int((pdf["bolus"].fillna(0) > 0).sum())
-    basal_mod = (pdf["actual_basal_rate"] != pdf["scheduled_basal_rate"]).sum() / n
-    if smb > 0 and smb > bol * 0.3:
-        return "SMB-AID"
-    elif basal_mod > 0.5:
-        return "Loop/TBR"
-    return "Hybrid"
+    has_smb = smb > 0 and smb > bol * 0.3
+
+    actual = (controller_map or {}).get(pid)
+    if actual and "trio" in actual:
+        return "Trio/AB" if has_smb else "Trio/TBR"
+    elif actual == "openaps":
+        return "AAPS/SMB" if has_smb else "AAPS/TBR"
+    elif actual == "loop":
+        return "Loop/AB" if has_smb else "Loop/TBR"
+    return "SMB-AID" if has_smb else "TBR"
 
 
 def _find_wall_episodes(glucose, iob, roc, med_iob):
@@ -176,10 +199,10 @@ def _non_wall_high_iob_roc(glucose, iob, roc, med_iob, wall_mask):
     return roc[hi] * STEPS_PER_HOUR
 
 
-def _analyze_patient(pid, pdf):
+def _analyze_patient(pid, pdf, controller_map=None):
     """Full patient analysis."""
     pdf = pdf.sort_values("time").reset_index(drop=True)
-    ctrl = _classify_controller(pid, pdf)
+    ctrl = _classify_controller(pid, pdf, controller_map)
     if ctrl is None:
         return None
 
@@ -553,12 +576,13 @@ def main():
     print("=" * 70)
 
     df = pd.read_parquet(PARQUET)
+    controller_map = _load_controller_map()
     results = {}
 
     for pid in sorted(df["patient_id"].unique()):
         pdf = df[df["patient_id"] == pid].copy()
         if len(pdf) < 200: continue
-        r = _analyze_patient(pid, pdf)
+        r = _analyze_patient(pid, pdf, controller_map)
         if r is None:
             print("  {}: excluded".format(pid)); continue
         print("  {:8s} {} ({}d) ep={} ep/d={} dur={:.1f}h resolved={:.0f}% unacc={:.1f}% dg2h={:+.0f}".format(

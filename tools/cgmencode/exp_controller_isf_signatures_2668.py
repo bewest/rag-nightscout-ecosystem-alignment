@@ -33,6 +33,7 @@ from scipy import stats
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 PARQUET = Path("externals/ns-parquet/training/grid.parquet")
+DS_PARQUET = Path("externals/ns-parquet/training/devicestatus.parquet")
 RESULTS_DIR = Path("externals/experiments"); RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 OUTFILE = RESULTS_DIR / "exp-2668_controller_isf_signatures.json"
 VIZ_DIR = Path("visualizations/controller-isf-signatures"); VIZ_DIR.mkdir(parents=True, exist_ok=True)
@@ -43,8 +44,27 @@ MIN_DOSE = 0.5; MIN_PRE_BG = 120; CARB_EXCLUSION_H = 1.0; DEMAND_STEPS = 24
 ISOLATION_WINDOWS = [2, 3, 4, 6, 8, 10, 12]
 
 
-def _classify_controller(pid, pdf):
-    """Classify patient's AID controller type from telemetry."""
+def _load_controller_map():
+    """Load actual AID controller identity from devicestatus parquet."""
+    if not DS_PARQUET.exists():
+        return {}
+    ds = pd.read_parquet(DS_PARQUET, columns=["patient_id", "controller"])
+    ctrl_map = {}
+    for pid in ds["patient_id"].unique():
+        ctrls = ds.loc[ds["patient_id"] == pid, "controller"].dropna().unique()
+        if len(ctrls) == 1:
+            ctrl_map[pid] = ctrls[0]
+        elif len(ctrls) > 1:
+            ctrl_map[pid] = "/".join(sorted(ctrls))
+    return ctrl_map
+
+
+def _classify_controller(pid, pdf, controller_map=None):
+    """Classify patient's AID controller type from devicestatus metadata.
+
+    Uses actual controller metadata when available, falling back to
+    SMB-ratio heuristic only when metadata is missing.
+    """
     n = len(pdf)
     iob = pdf["iob"].fillna(0).values
     iob_pct = float((iob > 0.1).sum() / n * 100)
@@ -53,16 +73,20 @@ def _classify_controller(pid, pdf):
     bol = int((pdf["bolus"].fillna(0) > 0).sum())
     basal_mod = (pdf["actual_basal_rate"] != pdf["scheduled_basal_rate"]).sum() / n
     days = (pdf["time"].max() - pdf["time"].min()).total_seconds() / 86400
+    has_smb = smb > bol * 0.3
 
     if iob_pct < 5 or loop_pct < 5:
         return None, {}  # T4: excluded
 
-    if smb > 0 and smb > bol * 0.3:
-        ctrl = "SMB-AID"
-    elif basal_mod > 0.5:
-        ctrl = "Loop/TBR"
+    actual = (controller_map or {}).get(pid)
+    if actual and "trio" in actual:
+        ctrl = "Trio/AB" if has_smb else "Trio/TBR"
+    elif actual == "openaps":
+        ctrl = "AAPS/SMB" if has_smb else "AAPS/TBR"
+    elif actual == "loop":
+        ctrl = "Loop/AB" if has_smb else "Loop/TBR"
     else:
-        ctrl = "Hybrid"
+        ctrl = "SMB-AID" if has_smb else "TBR"
 
     meta = {
         "ctrl": ctrl, "days": round(days), "iob_pct": round(iob_pct, 1),
@@ -126,10 +150,10 @@ def _bolus_spacing_analysis(pdf):
     }
 
 
-def _analyze_patient(pid, pdf):
+def _analyze_patient(pid, pdf, controller_map=None):
     """Full per-patient analysis."""
     pdf = pdf.sort_values("time").reset_index(drop=True)
-    ctrl, meta = _classify_controller(pid, pdf)
+    ctrl, meta = _classify_controller(pid, pdf, controller_map)
     if ctrl is None:
         return None
 
@@ -439,12 +463,13 @@ def main():
     print("=" * 70)
 
     df = pd.read_parquet(PARQUET)
+    controller_map = _load_controller_map()
     results = {}
 
     for pid in sorted(df["patient_id"].unique()):
         pdf = df[df["patient_id"] == pid].copy()
         if len(pdf) < 200: continue
-        r = _analyze_patient(pid, pdf)
+        r = _analyze_patient(pid, pdf, controller_map)
         if r is None:
             print("  {}: excluded".format(pid)); continue
         print("  {:8s} {} ({}d) gap_med={:.1f}h >6h={:.1f}% ISF@6h={} stab={} iso/day@6h={:.2f}".format(

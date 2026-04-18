@@ -1,0 +1,1319 @@
+{
+  "experiment": "EXP-2668",
+  "title": "Per-Controller Demand ISF Signatures",
+  "hypotheses": {
+    "H1": "False",
+    "H2": "False",
+    "H3": true,
+    "H4": true,
+    "H5": true
+  },
+  "patients": {
+    "a": {
+      "ctrl": "Loop/TBR",
+      "days": 180,
+      "iob_pct": 77.5,
+      "loop_pct": 85.3,
+      "smb_count": 0,
+      "bol_count": 881,
+      "smb_per_day": 0.0,
+      "bol_per_day": 4.9,
+      "basal_mod_pct": 99.5,
+      "spacing": {
+        "n_boluses": 870,
+        "median_gap_h": 1.58,
+        "mean_gap_h": 4.96,
+        "p25_gap_h": 0.5,
+        "p75_gap_h": 5.67,
+        "pct_gap_lt_2h": 55.6,
+        "pct_gap_lt_4h": 68.8,
+        "pct_gap_lt_6h": 75.7,
+        "pct_gap_gt_6h": 23.9
+      },
+      "sweep": {
+        "2": {
+          "n": 71,
+          "median": 28.5,
+          "mean": 41.6,
+          "cv": 101.4,
+          "iqr": 27.1
+        },
+        "3": {
+          "n": 59,
+          "median": 30.4,
+          "mean": 44.0,
+          "cv": 99.1,
+          "iqr": 29.1
+        },
+        "4": {
+          "n": 51,
+          "median": 30.0,
+          "mean": 43.5,
+          "cv": 103.4,
+          "iqr": 31.4
+        },
+        "6": {
+          "n": 42,
+          "median": 31.2,
+          "mean": 42.7,
+          "cv": 91.5,
+          "iqr": 23.2
+        },
+        "8": {
+          "n": 35,
+          "median": 28.5,
+          "mean": 40.1,
+          "cv": 99.8,
+          "iqr": 21.3
+        },
+        "10": {
+          "n": 28,
+          "median": 27.0,
+          "mean": 43.2,
+          "cv": 101.9,
+          "iqr": 24.8
+        },
+        "12": {
+          "n": 22,
+          "median": 25.4,
+          "mean": 43.9,
+          "cv": 110.4,
+          "iqr": 29.8
+        }
+      },
+      "best_w": 6,
+      "best_isf": 31.2,
+      "stability_range": 1.23,
+      "stability_cv": 6.5,
+      "iso_per_day": {
+        "2": 0.39,
+        "3": 0.33,
+        "4": 0.28,
+        "6": 0.23,
+        "8": 0.19,
+        "10": 0.16,
+        "12": 0.12
+      }
+    },
+    "b": {
+      "ctrl": "Trio/AB",
+      "days": 180,
+      "iob_pct": 73.6,
+      "loop_pct": 89.0,
+      "smb_count": 9075,
+      "bol_count": 10748,
+      "smb_per_day": 50.4,
+      "bol_per_day": 59.7,
+      "basal_mod_pct": 99.3,
+      "spacing": {
+        "n_boluses": 3848,
+        "median_gap_h": 0.42,
+        "mean_gap_h": 1.12,
+        "p25_gap_h": 0.08,
+        "p75_gap_h": 1.17,
+        "pct_gap_lt_2h": 85.3,
+        "pct_gap_lt_4h": 94.4,
+        "pct_gap_lt_6h": 97.1,
+        "pct_gap_gt_6h": 2.9
+      },
+      "sweep": {
+        "2": {
+          "n": 3,
+          "median": 18.0,
+          "mean": 20.6,
+          "cv": 47.9,
+          "iqr": 11.9
+        },
+        "3": {
+          "n": 0,
+          "median": null
+        },
+        "4": {
+          "n": 0,
+          "median": null
+        },
+        "6": {
+          "n": 0,
+          "median": null
+        },
+        "8": {
+          "n": 0,
+          "median": null
+        },
+        "10": {
+          "n": 0,
+          "median": null
+        },
+        "12": {
+          "n": 0,
+          "median": null
+        }
+      },
+      "best_w": 2,
+      "best_isf": 18.0,
+      "stability_range": null,
+      "stability_cv": null,
+      "iso_per_day": {
+        "2": 0.02,
+        "3": 0.0,
+        "4": 0.0,
+        "6": 0.0,
+        "8": 0.0,
+        "10": 0.0,
+        "12": 0.0
+      }
+    },
+    "c": {
+      "ctrl": "Loop/AB",
+      "days": 180,
+      "iob_pct": 54.2,
+      "loop_pct": 81.9,
+      "smb_count": 10173,
+      "bol_count": 10425,
+      "smb_per_day": 56.5,
+      "bol_per_day": 57.9,
+      "basal_mod_pct": 99.2,
+      "spacing": {
+        "n_boluses": 3302,
+        "median_gap_h": 0.17,
+        "mean_gap_h": 1.31,
+        "p25_gap_h": 0.08,
+        "p75_gap_h": 1.08,
+        "pct_gap_lt_2h": 81.1,
+        "pct_gap_lt_4h": 90.5,
+        "pct_gap_lt_6h": 95.0,
+        "pct_gap_gt_6h": 4.8
+      },
+      "sweep": {
+        "2": {
+          "n": 27,
+          "median": 50.8,
+          "mean": 62.8,
+          "cv": 73.6,
+          "iqr": 49.5
+        },
+        "3": {
+          "n": 19,
+          "median": 38.2,
+          "mean": 58.4,
+          "cv": 79.7,
+          "iqr": 52.2
+        },
+        "4": {
+          "n": 12,
+          "median": 31.9,
+          "mean": 54.6,
+          "cv": 81.9,
+          "iqr": 52.2
+        },
+        "6": {
+          "n": 4,
+          "median": 31.4,
+          "mean": 46.2,
+          "cv": 71.2,
+          "iqr": 30.7
+        },
+        "8": {
+          "n": 1,
+          "median": null
+        },
+        "10": {
+          "n": 1,
+          "median": null
+        },
+        "12": {
+          "n": 1,
+          "median": null
+        }
+      },
+      "best_w": 6,
+      "best_isf": 31.4,
+      "stability_range": 1.62,
+      "stability_cv": 20.5,
+      "iso_per_day": {
+        "2": 0.15,
+        "3": 0.11,
+        "4": 0.07,
+        "6": 0.02,
+        "8": 0.01,
+        "10": 0.01,
+        "12": 0.01
+      }
+    },
+    "d": {
+      "ctrl": "Loop/AB",
+      "days": 180,
+      "iob_pct": 56.1,
+      "loop_pct": 65.9,
+      "smb_count": 11359,
+      "bol_count": 11849,
+      "smb_per_day": 63.1,
+      "bol_per_day": 65.8,
+      "basal_mod_pct": 99.2,
+      "spacing": {
+        "n_boluses": 2689,
+        "median_gap_h": 0.33,
+        "mean_gap_h": 1.61,
+        "p25_gap_h": 0.08,
+        "p75_gap_h": 1.42,
+        "pct_gap_lt_2h": 82.9,
+        "pct_gap_lt_4h": 93.2,
+        "pct_gap_lt_6h": 96.3,
+        "pct_gap_gt_6h": 3.6
+      },
+      "sweep": {
+        "2": {
+          "n": 9,
+          "median": 26.0,
+          "mean": 33.2,
+          "cv": 94.5,
+          "iqr": 26.8
+        },
+        "3": {
+          "n": 4,
+          "median": 18.5,
+          "mean": 19.9,
+          "cv": 66.1,
+          "iqr": 19.8
+        },
+        "4": {
+          "n": 2,
+          "median": null
+        },
+        "6": {
+          "n": 2,
+          "median": null
+        },
+        "8": {
+          "n": 1,
+          "median": null
+        },
+        "10": {
+          "n": 0,
+          "median": null
+        },
+        "12": {
+          "n": 0,
+          "median": null
+        }
+      },
+      "best_w": 2,
+      "best_isf": 26.0,
+      "stability_range": null,
+      "stability_cv": null,
+      "iso_per_day": {
+        "2": 0.05,
+        "3": 0.02,
+        "4": 0.01,
+        "6": 0.01,
+        "8": 0.01,
+        "10": 0.0,
+        "12": 0.0
+      }
+    },
+    "e": {
+      "ctrl": "Loop/AB",
+      "days": 158,
+      "iob_pct": 73.1,
+      "loop_pct": 87.7,
+      "smb_count": 11389,
+      "bol_count": 11856,
+      "smb_per_day": 72.2,
+      "bol_per_day": 75.2,
+      "basal_mod_pct": 99.5,
+      "spacing": {
+        "n_boluses": 4198,
+        "median_gap_h": 0.08,
+        "mean_gap_h": 0.9,
+        "p25_gap_h": 0.08,
+        "p75_gap_h": 0.92,
+        "pct_gap_lt_2h": 85.8,
+        "pct_gap_lt_4h": 95.3,
+        "pct_gap_lt_6h": 98.4,
+        "pct_gap_gt_6h": 1.5
+      },
+      "sweep": {
+        "2": {
+          "n": 23,
+          "median": 24.7,
+          "mean": 35.6,
+          "cv": 109.9,
+          "iqr": 34.3
+        },
+        "3": {
+          "n": 11,
+          "median": 23.1,
+          "mean": 34.8,
+          "cv": 115.7,
+          "iqr": 34.3
+        },
+        "4": {
+          "n": 5,
+          "median": 8.8,
+          "mean": 18.9,
+          "cv": 92.1,
+          "iqr": 15.6
+        },
+        "6": {
+          "n": 3,
+          "median": 7.5,
+          "mean": 6.8,
+          "cv": 28.9,
+          "iqr": 2.3
+        },
+        "8": {
+          "n": 3,
+          "median": 7.5,
+          "mean": 6.8,
+          "cv": 28.9,
+          "iqr": 2.3
+        },
+        "10": {
+          "n": 3,
+          "median": 7.5,
+          "mean": 6.8,
+          "cv": 28.9,
+          "iqr": 2.3
+        },
+        "12": {
+          "n": 3,
+          "median": 7.5,
+          "mean": 6.8,
+          "cv": 28.9,
+          "iqr": 2.3
+        }
+      },
+      "best_w": 6,
+      "best_isf": 7.5,
+      "stability_range": 3.29,
+      "stability_cv": 59.1,
+      "iso_per_day": {
+        "2": 0.15,
+        "3": 0.07,
+        "4": 0.03,
+        "6": 0.02,
+        "8": 0.02,
+        "10": 0.02,
+        "12": 0.02
+      }
+    },
+    "f": {
+      "ctrl": "Loop/TBR",
+      "days": 180,
+      "iob_pct": 65.6,
+      "loop_pct": 87.2,
+      "smb_count": 0,
+      "bol_count": 541,
+      "smb_per_day": 0.0,
+      "bol_per_day": 3.0,
+      "basal_mod_pct": 100.0,
+      "spacing": {
+        "n_boluses": 540,
+        "median_gap_h": 3.5,
+        "mean_gap_h": 8.0,
+        "p25_gap_h": 1.42,
+        "p75_gap_h": 12.67,
+        "pct_gap_lt_2h": 34.0,
+        "pct_gap_lt_4h": 53.2,
+        "pct_gap_lt_6h": 63.1,
+        "pct_gap_gt_6h": 36.5
+      },
+      "sweep": {
+        "2": {
+          "n": 90,
+          "median": 12.3,
+          "mean": 16.9,
+          "cv": 101.0,
+          "iqr": 12.5
+        },
+        "3": {
+          "n": 68,
+          "median": 11.4,
+          "mean": 15.6,
+          "cv": 102.9,
+          "iqr": 9.5
+        },
+        "4": {
+          "n": 55,
+          "median": 10.5,
+          "mean": 14.2,
+          "cv": 102.5,
+          "iqr": 9.6
+        },
+        "6": {
+          "n": 38,
+          "median": 8.1,
+          "mean": 14.3,
+          "cv": 112.1,
+          "iqr": 9.5
+        },
+        "8": {
+          "n": 24,
+          "median": 7.3,
+          "mean": 9.6,
+          "cv": 66.2,
+          "iqr": 6.9
+        },
+        "10": {
+          "n": 21,
+          "median": 7.7,
+          "mean": 10.2,
+          "cv": 64.3,
+          "iqr": 7.0
+        },
+        "12": {
+          "n": 17,
+          "median": 8.1,
+          "mean": 10.7,
+          "cv": 66.3,
+          "iqr": 9.6
+        }
+      },
+      "best_w": 6,
+      "best_isf": 8.1,
+      "stability_range": 1.68,
+      "stability_cv": 19.9,
+      "iso_per_day": {
+        "2": 0.5,
+        "3": 0.38,
+        "4": 0.31,
+        "6": 0.21,
+        "8": 0.13,
+        "10": 0.12,
+        "12": 0.09
+      }
+    },
+    "g": {
+      "ctrl": "Loop/AB",
+      "days": 180,
+      "iob_pct": 75.7,
+      "loop_pct": 89.0,
+      "smb_count": 9726,
+      "bol_count": 10848,
+      "smb_per_day": 54.0,
+      "bol_per_day": 60.3,
+      "basal_mod_pct": 99.7,
+      "spacing": {
+        "n_boluses": 2496,
+        "median_gap_h": 0.33,
+        "mean_gap_h": 1.73,
+        "p25_gap_h": 0.08,
+        "p75_gap_h": 2.17,
+        "pct_gap_lt_2h": 73.9,
+        "pct_gap_lt_4h": 86.5,
+        "pct_gap_lt_6h": 93.1,
+        "pct_gap_gt_6h": 6.7
+      },
+      "sweep": {
+        "2": {
+          "n": 16,
+          "median": 82.9,
+          "mean": 85.4,
+          "cv": 52.8,
+          "iqr": 49.7
+        },
+        "3": {
+          "n": 5,
+          "median": 85.9,
+          "mean": 103.1,
+          "cv": 46.2,
+          "iqr": 21.8
+        },
+        "4": {
+          "n": 4,
+          "median": 90.9,
+          "mean": 107.4,
+          "cv": 48.7,
+          "iqr": 51.1
+        },
+        "6": {
+          "n": 1,
+          "median": null
+        },
+        "8": {
+          "n": 1,
+          "median": null
+        },
+        "10": {
+          "n": 1,
+          "median": null
+        },
+        "12": {
+          "n": 1,
+          "median": null
+        }
+      },
+      "best_w": 2,
+      "best_isf": 82.9,
+      "stability_range": 1.1,
+      "stability_cv": 3.8,
+      "iso_per_day": {
+        "2": 0.09,
+        "3": 0.03,
+        "4": 0.02,
+        "6": 0.01,
+        "8": 0.01,
+        "10": 0.01,
+        "12": 0.01
+      }
+    },
+    "h": {
+      "ctrl": "Loop/AB",
+      "days": 180,
+      "iob_pct": 51.0,
+      "loop_pct": 80.3,
+      "smb_count": 7828,
+      "bol_count": 8412,
+      "smb_per_day": 43.5,
+      "bol_per_day": 46.8,
+      "basal_mod_pct": 98.5,
+      "spacing": {
+        "n_boluses": 1485,
+        "median_gap_h": 0.96,
+        "mean_gap_h": 2.91,
+        "p25_gap_h": 0.08,
+        "p75_gap_h": 3.25,
+        "pct_gap_lt_2h": 62.5,
+        "pct_gap_lt_4h": 79.4,
+        "pct_gap_lt_6h": 87.1,
+        "pct_gap_gt_6h": 12.7
+      },
+      "sweep": {
+        "2": {
+          "n": 9,
+          "median": 66.2,
+          "mean": 82.8,
+          "cv": 58.1,
+          "iqr": 62.7
+        },
+        "3": {
+          "n": 5,
+          "median": 66.2,
+          "mean": 84.1,
+          "cv": 55.5,
+          "iqr": 13.6
+        },
+        "4": {
+          "n": 4,
+          "median": 61.7,
+          "mean": 87.4,
+          "cv": 59.0,
+          "iqr": 38.4
+        },
+        "6": {
+          "n": 1,
+          "median": null
+        },
+        "8": {
+          "n": 1,
+          "median": null
+        },
+        "10": {
+          "n": 1,
+          "median": null
+        },
+        "12": {
+          "n": 1,
+          "median": null
+        }
+      },
+      "best_w": 2,
+      "best_isf": 66.2,
+      "stability_range": 1.07,
+      "stability_cv": 3.3,
+      "iso_per_day": {
+        "2": 0.05,
+        "3": 0.03,
+        "4": 0.02,
+        "6": 0.01,
+        "8": 0.01,
+        "10": 0.01,
+        "12": 0.01
+      }
+    },
+    "i": {
+      "ctrl": "Loop/AB",
+      "days": 180,
+      "iob_pct": 59.0,
+      "loop_pct": 88.2,
+      "smb_count": 13724,
+      "bol_count": 14148,
+      "smb_per_day": 76.2,
+      "bol_per_day": 78.6,
+      "basal_mod_pct": 99.6,
+      "spacing": {
+        "n_boluses": 6179,
+        "median_gap_h": 0.17,
+        "mean_gap_h": 0.7,
+        "p25_gap_h": 0.08,
+        "p75_gap_h": 0.42,
+        "pct_gap_lt_2h": 92.3,
+        "pct_gap_lt_4h": 96.3,
+        "pct_gap_lt_6h": 97.8,
+        "pct_gap_gt_6h": 2.2
+      },
+      "sweep": {
+        "2": {
+          "n": 26,
+          "median": 18.5,
+          "mean": 29.6,
+          "cv": 90.0,
+          "iqr": 23.6
+        },
+        "3": {
+          "n": 15,
+          "median": 18.0,
+          "mean": 28.8,
+          "cv": 92.0,
+          "iqr": 27.8
+        },
+        "4": {
+          "n": 10,
+          "median": 18.5,
+          "mean": 34.3,
+          "cv": 87.6,
+          "iqr": 44.9
+        },
+        "6": {
+          "n": 8,
+          "median": 30.2,
+          "mean": 40.7,
+          "cv": 74.0,
+          "iqr": 51.0
+        },
+        "8": {
+          "n": 5,
+          "median": 62.0,
+          "mean": 58.1,
+          "cv": 43.3,
+          "iqr": 41.8
+        },
+        "10": {
+          "n": 5,
+          "median": 62.0,
+          "mean": 58.1,
+          "cv": 43.3,
+          "iqr": 41.8
+        },
+        "12": {
+          "n": 5,
+          "median": 62.0,
+          "mean": 58.1,
+          "cv": 43.3,
+          "iqr": 41.8
+        }
+      },
+      "best_w": 6,
+      "best_isf": 30.2,
+      "stability_range": 3.44,
+      "stability_cv": 52.9,
+      "iso_per_day": {
+        "2": 0.14,
+        "3": 0.08,
+        "4": 0.06,
+        "6": 0.04,
+        "8": 0.03,
+        "10": 0.03,
+        "12": 0.03
+      }
+    },
+    "k": {
+      "ctrl": "Loop/AB",
+      "days": 179,
+      "iob_pct": 55.2,
+      "loop_pct": 61.5,
+      "smb_count": 10547,
+      "bol_count": 11979,
+      "smb_per_day": 58.9,
+      "bol_per_day": 66.9,
+      "basal_mod_pct": 97.3,
+      "spacing": {
+        "n_boluses": 2866,
+        "median_gap_h": 0.42,
+        "mean_gap_h": 1.49,
+        "p25_gap_h": 0.08,
+        "p75_gap_h": 1.42,
+        "pct_gap_lt_2h": 82.2,
+        "pct_gap_lt_4h": 94.4,
+        "pct_gap_lt_6h": 96.9,
+        "pct_gap_gt_6h": 3.0
+      },
+      "sweep": {
+        "2": {
+          "n": 2,
+          "median": null
+        },
+        "3": {
+          "n": 1,
+          "median": null
+        },
+        "4": {
+          "n": 1,
+          "median": null
+        },
+        "6": {
+          "n": 0,
+          "median": null
+        },
+        "8": {
+          "n": 0,
+          "median": null
+        },
+        "10": {
+          "n": 0,
+          "median": null
+        },
+        "12": {
+          "n": 0,
+          "median": null
+        }
+      },
+      "best_w": 2,
+      "best_isf": null,
+      "stability_range": null,
+      "stability_cv": null,
+      "iso_per_day": {
+        "2": 0.01,
+        "3": 0.01,
+        "4": 0.01,
+        "6": 0.0,
+        "8": 0.0,
+        "10": 0.0,
+        "12": 0.0
+      }
+    },
+    "odc-39819048": {
+      "ctrl": "AAPS/SMB",
+      "days": 10,
+      "iob_pct": 69.9,
+      "loop_pct": 99.7,
+      "smb_count": 408,
+      "bol_count": 428,
+      "smb_per_day": 40.2,
+      "bol_per_day": 42.2,
+      "basal_mod_pct": 99.8,
+      "spacing": {
+        "n_boluses": 210,
+        "median_gap_h": 0.25,
+        "mean_gap_h": 1.16,
+        "p25_gap_h": 0.08,
+        "p75_gap_h": 1.33,
+        "pct_gap_lt_2h": 81.8,
+        "pct_gap_lt_4h": 92.8,
+        "pct_gap_lt_6h": 96.7,
+        "pct_gap_gt_6h": 3.3
+      },
+      "sweep": {
+        "2": {
+          "n": 0,
+          "median": null
+        },
+        "3": {
+          "n": 0,
+          "median": null
+        },
+        "4": {
+          "n": 0,
+          "median": null
+        },
+        "6": {
+          "n": 0,
+          "median": null
+        },
+        "8": {
+          "n": 0,
+          "median": null
+        },
+        "10": {
+          "n": 0,
+          "median": null
+        },
+        "12": {
+          "n": 0,
+          "median": null
+        }
+      },
+      "best_w": 2,
+      "best_isf": null,
+      "stability_range": null,
+      "stability_cv": null,
+      "iso_per_day": {
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "6": 0.0,
+        "8": 0.0,
+        "10": 0.0,
+        "12": 0.0
+      }
+    },
+    "odc-49141524": {
+      "ctrl": "AAPS/SMB",
+      "days": 12,
+      "iob_pct": 27.4,
+      "loop_pct": 33.4,
+      "smb_count": 327,
+      "bol_count": 344,
+      "smb_per_day": 27.2,
+      "bol_per_day": 28.6,
+      "basal_mod_pct": 100.0,
+      "spacing": {
+        "n_boluses": 137,
+        "median_gap_h": 0.08,
+        "mean_gap_h": 2.11,
+        "p25_gap_h": 0.08,
+        "p75_gap_h": 0.75,
+        "pct_gap_lt_2h": 87.5,
+        "pct_gap_lt_4h": 90.4,
+        "pct_gap_lt_6h": 94.1,
+        "pct_gap_gt_6h": 5.9
+      },
+      "sweep": {
+        "2": {
+          "n": 3,
+          "median": 33.8,
+          "mean": 27.9,
+          "cv": 39.2,
+          "iqr": 12.4
+        },
+        "3": {
+          "n": 3,
+          "median": 33.8,
+          "mean": 27.9,
+          "cv": 39.2,
+          "iqr": 12.4
+        },
+        "4": {
+          "n": 3,
+          "median": 33.8,
+          "mean": 27.9,
+          "cv": 39.2,
+          "iqr": 12.4
+        },
+        "6": {
+          "n": 3,
+          "median": 33.8,
+          "mean": 27.9,
+          "cv": 39.2,
+          "iqr": 12.4
+        },
+        "8": {
+          "n": 3,
+          "median": 33.8,
+          "mean": 27.9,
+          "cv": 39.2,
+          "iqr": 12.4
+        },
+        "10": {
+          "n": 3,
+          "median": 33.8,
+          "mean": 27.9,
+          "cv": 39.2,
+          "iqr": 12.4
+        },
+        "12": {
+          "n": 3,
+          "median": 33.8,
+          "mean": 27.9,
+          "cv": 39.2,
+          "iqr": 12.4
+        }
+      },
+      "best_w": 6,
+      "best_isf": 33.8,
+      "stability_range": 1.0,
+      "stability_cv": 0.0,
+      "iso_per_day": {
+        "2": 0.25,
+        "3": 0.25,
+        "4": 0.25,
+        "6": 0.25,
+        "8": 0.25,
+        "10": 0.25,
+        "12": 0.25
+      }
+    },
+    "odc-58680324": {
+      "ctrl": "AAPS/TBR",
+      "days": 11,
+      "iob_pct": 39.6,
+      "loop_pct": 50.9,
+      "smb_count": 0,
+      "bol_count": 45,
+      "smb_per_day": 0.0,
+      "bol_per_day": 4.3,
+      "basal_mod_pct": 61.2,
+      "spacing": {
+        "n_boluses": 44,
+        "median_gap_h": 1.75,
+        "mean_gap_h": 3.44,
+        "p25_gap_h": 0.67,
+        "p75_gap_h": 4.71,
+        "pct_gap_lt_2h": 51.2,
+        "pct_gap_lt_4h": 69.8,
+        "pct_gap_lt_6h": 83.7,
+        "pct_gap_gt_6h": 16.3
+      },
+      "sweep": {
+        "2": {
+          "n": 4,
+          "median": 63.2,
+          "mean": 64.5,
+          "cv": 71.8,
+          "iqr": 73.8
+        },
+        "3": {
+          "n": 4,
+          "median": 63.2,
+          "mean": 64.5,
+          "cv": 71.8,
+          "iqr": 73.8
+        },
+        "4": {
+          "n": 3,
+          "median": 33.5,
+          "mean": 44.6,
+          "cv": 80.2,
+          "iqr": 42.8
+        },
+        "6": {
+          "n": 2,
+          "median": null
+        },
+        "8": {
+          "n": 1,
+          "median": null
+        },
+        "10": {
+          "n": 1,
+          "median": null
+        },
+        "12": {
+          "n": 1,
+          "median": null
+        }
+      },
+      "best_w": 2,
+      "best_isf": 63.2,
+      "stability_range": 1.89,
+      "stability_cv": 26.3,
+      "iso_per_day": {
+        "2": 0.36,
+        "3": 0.36,
+        "4": 0.27,
+        "6": 0.18,
+        "8": 0.09,
+        "10": 0.09,
+        "12": 0.09
+      }
+    },
+    "odc-61403732": {
+      "ctrl": "AAPS/SMB",
+      "days": 11,
+      "iob_pct": 34.6,
+      "loop_pct": 43.5,
+      "smb_count": 356,
+      "bol_count": 375,
+      "smb_per_day": 31.1,
+      "bol_per_day": 32.8,
+      "basal_mod_pct": 83.9,
+      "spacing": {
+        "n_boluses": 122,
+        "median_gap_h": 0.17,
+        "mean_gap_h": 0.95,
+        "p25_gap_h": 0.08,
+        "p75_gap_h": 1.08,
+        "pct_gap_lt_2h": 81.0,
+        "pct_gap_lt_4h": 95.9,
+        "pct_gap_lt_6h": 97.5,
+        "pct_gap_gt_6h": 2.5
+      },
+      "sweep": {
+        "2": {
+          "n": 0,
+          "median": null
+        },
+        "3": {
+          "n": 0,
+          "median": null
+        },
+        "4": {
+          "n": 0,
+          "median": null
+        },
+        "6": {
+          "n": 0,
+          "median": null
+        },
+        "8": {
+          "n": 0,
+          "median": null
+        },
+        "10": {
+          "n": 0,
+          "median": null
+        },
+        "12": {
+          "n": 0,
+          "median": null
+        }
+      },
+      "best_w": 2,
+      "best_isf": null,
+      "stability_range": null,
+      "stability_cv": null,
+      "iso_per_day": {
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "6": 0.0,
+        "8": 0.0,
+        "10": 0.0,
+        "12": 0.0
+      }
+    },
+    "odc-74077367": {
+      "ctrl": "AAPS/TBR",
+      "days": 212,
+      "iob_pct": 74.8,
+      "loop_pct": 97.9,
+      "smb_count": 0,
+      "bol_count": 13892,
+      "smb_per_day": 0.0,
+      "bol_per_day": 65.4,
+      "basal_mod_pct": 98.5,
+      "spacing": {
+        "n_boluses": 4805,
+        "median_gap_h": 0.33,
+        "mean_gap_h": 1.06,
+        "p25_gap_h": 0.08,
+        "p75_gap_h": 1.17,
+        "pct_gap_lt_2h": 85.1,
+        "pct_gap_lt_4h": 94.2,
+        "pct_gap_lt_6h": 96.7,
+        "pct_gap_gt_6h": 3.3
+      },
+      "sweep": {
+        "2": {
+          "n": 14,
+          "median": 40.0,
+          "mean": 48.3,
+          "cv": 65.8,
+          "iqr": 28.9
+        },
+        "3": {
+          "n": 5,
+          "median": 41.2,
+          "mean": 37.7,
+          "cv": 52.5,
+          "iqr": 23.1
+        },
+        "4": {
+          "n": 3,
+          "median": 51.1,
+          "mean": 39.8,
+          "cv": 62.3,
+          "iqr": 28.7
+        },
+        "6": {
+          "n": 0,
+          "median": null
+        },
+        "8": {
+          "n": 0,
+          "median": null
+        },
+        "10": {
+          "n": 0,
+          "median": null
+        },
+        "12": {
+          "n": 0,
+          "median": null
+        }
+      },
+      "best_w": 2,
+      "best_isf": 40.0,
+      "stability_range": 1.28,
+      "stability_cv": 11.3,
+      "iso_per_day": {
+        "2": 0.07,
+        "3": 0.02,
+        "4": 0.01,
+        "6": 0.0,
+        "8": 0.0,
+        "10": 0.0,
+        "12": 0.0
+      }
+    },
+    "odc-86025410": {
+      "ctrl": "AAPS/TBR",
+      "days": 375,
+      "iob_pct": 31.8,
+      "loop_pct": 47.7,
+      "smb_count": 0,
+      "bol_count": 3508,
+      "smb_per_day": 0.0,
+      "bol_per_day": 9.4,
+      "basal_mod_pct": 64.2,
+      "spacing": {
+        "n_boluses": 1795,
+        "median_gap_h": 2.92,
+        "mean_gap_h": 5.0,
+        "p25_gap_h": 1.58,
+        "p75_gap_h": 6.17,
+        "pct_gap_lt_2h": 34.3,
+        "pct_gap_lt_4h": 62.7,
+        "pct_gap_lt_6h": 74.4,
+        "pct_gap_gt_6h": 25.6
+      },
+      "sweep": {
+        "2": {
+          "n": 146,
+          "median": 72.0,
+          "mean": 99.6,
+          "cv": 89.2,
+          "iqr": 85.8
+        },
+        "3": {
+          "n": 73,
+          "median": 72.0,
+          "mean": 102.1,
+          "cv": 97.8,
+          "iqr": 63.0
+        },
+        "4": {
+          "n": 38,
+          "median": 84.0,
+          "mean": 113.1,
+          "cv": 102.0,
+          "iqr": 97.0
+        },
+        "6": {
+          "n": 21,
+          "median": 73.6,
+          "mean": 82.6,
+          "cv": 65.7,
+          "iqr": 57.5
+        },
+        "8": {
+          "n": 8,
+          "median": 74.2,
+          "mean": 69.4,
+          "cv": 42.0,
+          "iqr": 51.4
+        },
+        "10": {
+          "n": 4,
+          "median": 80.0,
+          "mean": 75.6,
+          "cv": 38.5,
+          "iqr": 49.5
+        },
+        "12": {
+          "n": 3,
+          "median": 101.5,
+          "mean": 81.3,
+          "cv": 38.9,
+          "iqr": 34.5
+        }
+      },
+      "best_w": 6,
+      "best_isf": 73.6,
+      "stability_range": 1.41,
+      "stability_cv": 12.4,
+      "iso_per_day": {
+        "2": 0.39,
+        "3": 0.19,
+        "4": 0.1,
+        "6": 0.06,
+        "8": 0.02,
+        "10": 0.01,
+        "12": 0.01
+      }
+    },
+    "odc-96254963": {
+      "ctrl": "AAPS/TBR",
+      "days": 183,
+      "iob_pct": 55.8,
+      "loop_pct": 79.4,
+      "smb_count": 0,
+      "bol_count": 1653,
+      "smb_per_day": 0.0,
+      "bol_per_day": 9.0,
+      "basal_mod_pct": 86.5,
+      "spacing": {
+        "n_boluses": 1235,
+        "median_gap_h": 2.0,
+        "mean_gap_h": 3.55,
+        "p25_gap_h": 0.83,
+        "p75_gap_h": 4.75,
+        "pct_gap_lt_2h": 49.5,
+        "pct_gap_lt_4h": 68.5,
+        "pct_gap_lt_6h": 81.8,
+        "pct_gap_gt_6h": 17.9
+      },
+      "sweep": {
+        "2": {
+          "n": 51,
+          "median": 45.8,
+          "mean": 59.8,
+          "cv": 76.8,
+          "iqr": 55.6
+        },
+        "3": {
+          "n": 39,
+          "median": 45.8,
+          "mean": 59.3,
+          "cv": 79.7,
+          "iqr": 58.7
+        },
+        "4": {
+          "n": 32,
+          "median": 44.2,
+          "mean": 55.1,
+          "cv": 81.3,
+          "iqr": 48.9
+        },
+        "6": {
+          "n": 22,
+          "median": 46.6,
+          "mean": 52.4,
+          "cv": 76.4,
+          "iqr": 47.4
+        },
+        "8": {
+          "n": 12,
+          "median": 26.8,
+          "mean": 54.8,
+          "cv": 92.1,
+          "iqr": 61.8
+        },
+        "10": {
+          "n": 5,
+          "median": 25.1,
+          "mean": 44.3,
+          "cv": 89.5,
+          "iqr": 24.1
+        },
+        "12": {
+          "n": 2,
+          "median": null
+        }
+      },
+      "best_w": 6,
+      "best_isf": 46.6,
+      "stability_range": 1.86,
+      "stability_cv": 23.8,
+      "iso_per_day": {
+        "2": 0.28,
+        "3": 0.21,
+        "4": 0.17,
+        "6": 0.12,
+        "8": 0.07,
+        "10": 0.03,
+        "12": 0.01
+      }
+    }
+  }
+}
