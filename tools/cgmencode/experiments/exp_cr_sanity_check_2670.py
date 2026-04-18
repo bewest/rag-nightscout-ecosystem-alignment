@@ -48,8 +48,15 @@ MEAL_PERIODS = {
     'snack': (0, 5),    # late night / early morning
 }
 
+# Dessert hysteresis: merge events within this window (min) after dinner
+# into the dinner total. EXP-486 found 18% of dinners have dessert at
+# mean gap 123 min. Patient c data shows median gap 170 min, so we
+# extend to 180 min to capture the majority of dessert events.
+DESSERT_MERGE_WINDOW_MIN = 180
+
 # Typical meal size ranges (g) for face-validity check
 # Based on dietitian training: 75g regimented meals, real-world variation
+# Dinner range includes dessert (merged via hysteresis)
 TYPICAL_RANGES = {
     'breakfast': (20, 60),
     'lunch': (40, 75),
@@ -73,6 +80,7 @@ class MealEvent:
     is_announced: bool
     quality: float
     source: str                 # 'MEAL' or 'UAM'
+    start_idx: int = 0          # index in dataframe for temporal proximity
 
 
 @dataclass
@@ -103,39 +111,80 @@ def classify_meal_period(hour: float) -> str:
     return 'snack'
 
 
-def extract_meal_events(census, profile_cr: float, min_quality: float = 0.3) -> List[MealEvent]:
+def merge_desserts(events: List[MealEvent]) -> List[MealEvent]:
+    """Merge dessert/snack events that follow dinner within hysteresis window.
+
+    EXP-486 found ~18% of dinners have dessert, mean gap 123min.
+    Patient c data shows median gap 170min.
+
+    Uses start_idx proximity (in 5-min steps) for same-day matching,
+    not hour-of-day which would incorrectly merge across days.
+    """
+    if not events:
+        return events
+
+    merge_steps = int(DESSERT_MERGE_WINDOW_MIN / 5)  # 180min / 5 = 36 steps
+    dinners = [e for e in events if e.period == 'dinner']
+    merged_ids = set()
+
+    for dinner in dinners:
+        for e in events:
+            if id(e) in merged_ids or id(e) == id(dinner):
+                continue
+            if e.period != 'snack':
+                continue
+            # Check temporal proximity via start_idx (5-min steps)
+            gap_steps = e.start_idx - dinner.start_idx
+            if 0 < gap_steps <= merge_steps:
+                dinner.carbs_estimated_g += e.carbs_estimated_g
+                dinner.excursion_mg_dl = max(dinner.excursion_mg_dl, e.excursion_mg_dl)
+                dinner.bolus_u += e.bolus_u
+                merged_ids.add(id(e))
+
+    return [e for e in events if id(e) not in merged_ids]
+
+
+def extract_meal_events(census, profile_cr: float, min_quality: float = 0.5) -> List[MealEvent]:
     """Extract meal events from NE census for CR contrast analysis.
 
     Includes:
-      - MEAL windows with carbs_estimated_g
-      - UAM windows with subtype='meal' and carbs_estimated_g >= 5g
+      - MEAL windows with carbs_estimated_g >= 10g
+      - UAM windows with subtype='meal' and carbs_estimated_g >= 15g
+    Higher thresholds than CR optimizer to focus on substantial meals
+    that patients can verify against anecdotal experience.
+
+    Applies dessert merge: events within DESSERT_MERGE_WINDOW_MIN of a
+    dinner event are folded into that dinner (summing carbs), matching
+    the EXP-486 finding that ~18% of dinners have dessert at ~123min gap.
     """
     events = []
 
     for exp in census.experiments:
         m = exp.measurements
         if exp.exp_type.value == 'meal':
-            cg = m.get('carbs_estimated_g')
-            if cg is None or cg < 1.0:
+            # Prefer residual-estimated carbs; fall back to entered carbs
+            cg = m.get('carbs_estimated_g') or m.get('carbs_g', 0)
+            if cg is None or cg < 10.0:
                 continue
             if exp.quality < min_quality:
                 continue
             events.append(MealEvent(
                 hour=exp.hour_of_day,
                 period=classify_meal_period(exp.hour_of_day),
-                carbs_estimated_g=cg,
+                carbs_estimated_g=float(cg),
                 excursion_mg_dl=m.get('excursion_mg_dl', 0),
                 bolus_u=m.get('bolus_u', 0),
                 pre_meal_bg=m.get('pre_meal_bg'),
                 is_announced=m.get('is_announced', True),
                 quality=exp.quality,
                 source='MEAL',
+                start_idx=exp.start_idx,
             ))
         elif exp.exp_type.value == 'uam':
             if m.get('subtype') != 'meal':
                 continue
             cg = m.get('carbs_estimated_g')
-            if cg is None or cg < 5.0:
+            if cg is None or cg < 15.0:
                 continue
             if exp.quality < min_quality:
                 continue
@@ -149,8 +198,10 @@ def extract_meal_events(census, profile_cr: float, min_quality: float = 0.3) -> 
                 is_announced=False,
                 quality=exp.quality,
                 source='UAM',
+                start_idx=exp.start_idx,
             ))
-    return events
+
+    return merge_desserts(events)
 
 
 def compute_period_stats(carbs_list: List[float]) -> Dict:
@@ -438,19 +489,30 @@ def generate_cr_contrast_figure(result: CRContrastResult, output_path: str = Non
 
 
 def main():
-    """Run CR sanity check against NS patient cohort."""
+    """Run CR sanity check against NS patient cohort.
+
+    Uses EXP-483 supply×demand throughput meal detector with
+    precondition gating (READY days only), then estimates meal sizes
+    via residual-integral method. This is the same approach that
+    produces ~2.6 meals/day on READY days (population median).
+    """
     t0 = time.time()
     print('=' * 70)
     print('EXP-2670: CR Sanity-Check Contrast Visualization')
+    print('  Method: Supply×Demand throughput peaks (EXP-483)')
+    print('  Sizing: Residual-integral carb estimation (EXP-748/753)')
     print('=' * 70)
 
     try:
         import pandas as pd
-        from cgmencode.production.natural_experiment_detector import (
-            _detect_meals, _detect_uam, MealConfig,
-            NaturalExperimentCensus, NaturalExperiment,
+        from cgmencode.exp_metabolic_441 import compute_supply_demand
+        from cgmencode.exp_refined_483 import (
+            detect_meals_demand_weighted, assess_day_readiness
         )
-        from cgmencode.production.metabolic_engine import compute_metabolic_state
+        from cgmencode.production.natural_experiment_detector import (
+            NaturalExperiment, NaturalExperimentType,
+            NaturalExperimentCensus,
+        )
     except ImportError as e:
         print(f'  Import error: {e}')
         print('  Run from project root with PYTHONPATH=tools')
@@ -460,7 +522,6 @@ def main():
     df = pd.read_parquet('externals/ns-parquet/training/grid.parquet')
 
     all_results = {}
-    mc = MealConfig.medium()
 
     for pid in NS_PATIENTS:
         print(f'\n  Patient {pid}:')
@@ -471,48 +532,117 @@ def main():
 
         profile_cr = float(pdf['scheduled_cr'].median())
         profile_isf = float(pdf['scheduled_isf'].median())
-        days = len(pdf) / 288.0
+        profile_basal = float(pdf['scheduled_basal_rate'].median())
+        N = len(pdf)
+        days = N / 288.0
 
-        glucose = pdf['glucose'].values.astype(float)
-        carbs = np.nan_to_num(pdf['carbs'].values.astype(float), nan=0.0)
-        bolus = np.nan_to_num(pdf['bolus'].values.astype(float), nan=0.0)
-        timestamps = np.arange(len(pdf)) * 300_000  # 5min intervals in ms
+        # Set datetime index + attrs for supply-demand computation
+        pdf.index = pd.to_datetime(pdf['time'])
+        pdf.attrs['cr_schedule'] = [{'value': profile_cr}]
+        pdf.attrs['isf_schedule'] = [{'value': profile_isf}]
+        pdf.attrs['basal_schedule'] = [{'value': profile_basal}]
 
-        # Detect MEAL windows
-        experiments = _detect_meals(glucose, bolus, carbs, timestamps, mc,
-                                    profile_isf=profile_isf,
-                                    profile_cr=profile_cr)
+        bg_col = 'glucose'
+        bg = pdf[bg_col].values.astype(np.float64)
 
-        # Try to detect UAM windows (needs net_flux from metabolic engine)
-        try:
-            from cgmencode.production.types import PatientProfile
-            # Compute simple net_flux: basal contribution
-            basal = np.nan_to_num(pdf['scheduled_basal_rate'].values.astype(float), nan=0.0)
-            # Simplified net_flux from insulin action
-            net_flux = np.zeros(len(glucose))
-            net_flux[1:] = -basal[:-1] * profile_isf / 12.0  # rough BGI from basal
-            uam_exps = _detect_uam(glucose, carbs, bolus, net_flux, timestamps,
-                                   profile_isf=profile_isf,
-                                   profile_cr=profile_cr)
-            experiments.extend(uam_exps)
-        except Exception as e:
-            print(f'    UAM detection skipped: {e}')
+        # Compute supply×demand metabolic flux
+        sd = compute_supply_demand(pdf, calibrate=True)
+
+        # Detect meals via demand-weighted peaks
+        peaks, dem_smooth = detect_meals_demand_weighted(pdf, None)
+
+        # Compute residual for carb estimation
+        dbg = np.zeros(N)
+        valid = ~np.isnan(bg)
+        dbg[1:] = np.where(valid[1:] & valid[:-1], bg[1:] - bg[:-1], 0)
+        residual = dbg - sd['net']
+
+        # READY-day gating: only peaks on days with good telemetry
+        dates = pdf.index.date
+        unique_dates = sorted(set(dates))
+        ready_peaks = []
+        for d in unique_dates:
+            mask = dates == d
+            idx = np.where(mask)[0]
+            readiness = assess_day_readiness(bg[idx], sd['demand'][idx])
+            if readiness['ready']:
+                day_start, day_end = idx[0], idx[-1] + 1
+                ready_peaks.extend(p for p in peaks if day_start <= p < day_end)
+
+        print(f'    Raw peaks: {len(peaks)} ({len(peaks)/days:.1f}/day), '
+              f'READY-gated: {len(ready_peaks)}')
+
+        # Build NE census from demand peaks with carb estimation
+        experiments = []
+        for p in ready_peaks:
+            hour = pdf.index[p].hour + pdf.index[p].minute / 60.0
+
+            # Pre-meal BG
+            pre_start = max(0, p - 6)
+            pre_bg = float(np.nanmean(bg[pre_start:p])) if not np.all(np.isnan(bg[pre_start:p])) else 120.0
+
+            # Post-meal window (4h = 48 steps)
+            end = min(N, p + 48)
+            post_bg = bg[p:end]
+            peak_bg = float(np.nanmax(post_bg)) if np.any(~np.isnan(post_bg)) else pre_bg
+            excursion = peak_bg - pre_bg
+
+            # Residual-integral carb estimation
+            r_end = min(N, end + 36)  # extend 3h for absorption tail
+            resid_seg = residual[p:r_end]
+            valid_resid = resid_seg[np.isfinite(resid_seg)]
+            if len(valid_resid) > 6:
+                resid_integral = float(np.sum(valid_resid))
+                carbs_est = abs(resid_integral) * profile_cr / max(profile_isf, 1.0)
+                carbs_est = round(max(0.0, carbs_est), 1)
+            else:
+                carbs_est = None
+
+            # Bolus nearby (±15 min = ±3 steps)
+            bolus_arr = np.nan_to_num(pdf['bolus'].values.astype(float), nan=0.0)
+            bolus_window = bolus_arr[max(0, p - 3):min(N, p + 3)]
+            meal_bolus = float(np.nansum(bolus_window))
+
+            # Entered carbs nearby
+            carbs_arr = np.nan_to_num(pdf['carbs'].values.astype(float), nan=0.0)
+            carb_window = carbs_arr[max(0, p - 6):min(N, p + 6)]
+            entered_carbs = float(np.nansum(carb_window))
+
+            # Use best available carb estimate
+            best_carbs = carbs_est if carbs_est and carbs_est > 3.0 else (
+                entered_carbs if entered_carbs > 3.0 else None)
+            if best_carbs is None or best_carbs < 5.0:
+                continue
+
+            experiments.append(NaturalExperiment(
+                exp_type=NaturalExperimentType.MEAL,
+                start_idx=p, end_idx=end,
+                duration_minutes=(end - p) * 5,
+                hour_of_day=hour,
+                quality=0.8,
+                measurements={
+                    'carbs_estimated_g': best_carbs,
+                    'carbs_entered_g': entered_carbs,
+                    'excursion_mg_dl': round(excursion, 1),
+                    'bolus_u': round(meal_bolus, 2),
+                    'pre_meal_bg': round(pre_bg, 1),
+                    'peak_bg': round(peak_bg, 1),
+                    'is_announced': meal_bolus > 0.1 or entered_carbs > 3.0,
+                },
+            ))
+
+        print(f'    Meals with carb estimates: {len(experiments)} '
+              f'({len(experiments)/days:.1f}/day)')
 
         # Build census
-        by_type = {}
-        for e in experiments:
-            key = e.exp_type.value
-            by_type[key] = by_type.get(key, 0) + 1
-        qualities = [e.quality for e in experiments]
-
+        by_type = {'meal': len(experiments)}
         census = NaturalExperimentCensus(
             experiments=experiments,
             total_detected=len(experiments),
             by_type=by_type,
-            quality_mean=round(float(np.mean(qualities)), 3) if qualities else 0.0,
+            quality_mean=0.8,
             days_analyzed=round(days, 1),
             per_day_rate=round(len(experiments) / max(days, 0.01), 1),
-            meal_config=mc,
         )
 
         result = cr_contrast_analysis(
@@ -549,7 +679,9 @@ def main():
         json.dump({
             'exp_id': 'EXP-2670',
             'purpose': 'CR sanity check via meal size contrast',
-            'method': 'Linear rescaling of residual-integral carb estimates',
+            'method': 'Supply×Demand throughput peaks (EXP-483) + '
+                      'residual-integral carb estimation (EXP-748/753)',
+            'gating': 'READY days only (CGM ≥70%, insulin ≥10%)',
             'typical_ranges': TYPICAL_RANGES,
             'cr_multipliers': CR_MULTIPLIERS,
             'patients': all_results,

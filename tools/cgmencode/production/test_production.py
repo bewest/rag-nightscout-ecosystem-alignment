@@ -6247,7 +6247,7 @@ class TestCRSanityCheckContrast(unittest.TestCase):
                 'carbs_estimated_g': 50.0, 'excursion_mg_dl': 60.0,
                 'bolus_u': 4.0, 'pre_meal_bg': 110.0, 'is_announced': True}},
             {'hour': 18.5, 'type': 'uam', 'measurements': {
-                'subtype': 'meal', 'carbs_estimated_g': 40.0,
+                'subtype': 'meal', 'carbs_estimated_g': 45.0,
                 'excursion_mg_dl': 55.0, 'bolus_u': 0.0,
                 'pre_meal_bg': 120.0, 'is_announced': False,
                 'peak_residual': 3.0, 'mean_residual': 2.0,
@@ -6332,3 +6332,83 @@ class TestCRSanityCheckContrast(unittest.TestCase):
         self.assertIn('Profile CR: 10.0', table)
         self.assertIn('BEST', table)
         self.assertIn('Lunch', table.lower() + table)
+
+    def test_dessert_merge(self):
+        """Snack events within 180min of dinner should merge into dinner."""
+        sys.path.insert(0, str(PROJECT_ROOT / "tools" / "cgmencode" / "experiments"))
+        from exp_cr_sanity_check_2670 import cr_contrast_analysis
+
+        from cgmencode.production.natural_experiment_detector import (
+            NaturalExperiment, NaturalExperimentType, NaturalExperimentCensus
+        )
+        # Dinner at idx=0 (19:00) + dessert at idx=30 (22:30, 150min later)
+        # 22:30 classifies as "snack" (outside 17-22 dinner range)
+        experiments = [
+            NaturalExperiment(
+                exp_type=NaturalExperimentType.MEAL,
+                start_idx=0, end_idx=48,
+                duration_minutes=240, hour_of_day=19.0, quality=0.8,
+                measurements={'carbs_estimated_g': 60.0, 'excursion_mg_dl': 80.0,
+                              'bolus_u': 5.0, 'pre_meal_bg': 110.0,
+                              'is_announced': True}),
+            NaturalExperiment(
+                exp_type=NaturalExperimentType.MEAL,
+                start_idx=30, end_idx=60,  # 30 steps × 5min = 150min later
+                duration_minutes=150, hour_of_day=22.5, quality=0.8,
+                measurements={'carbs_estimated_g': 25.0, 'excursion_mg_dl': 40.0,
+                              'bolus_u': 2.0, 'pre_meal_bg': 130.0,
+                              'is_announced': True}),
+        ]
+        census = NaturalExperimentCensus(
+            experiments=experiments, total_detected=2,
+            by_type={'meal': 2}, quality_mean=0.8,
+            days_analyzed=1.0, per_day_rate=2.0,
+        )
+        result = cr_contrast_analysis(
+            census, profile_cr=10.0, profile_isf=40.0,
+            patient_id='test', days_analyzed=1.0,
+            cr_multipliers=[1.0],
+        )
+        # Dessert merged into dinner: 1 dinner (60+25=85g), 0 snacks
+        self.assertEqual(result.n_meals, 1)
+        dinner_n = result.cr_sweep['1.0x']['periods']['dinner']['n']
+        self.assertEqual(dinner_n, 1)
+        dinner_median = result.cr_sweep['1.0x']['periods']['dinner']['median']
+        self.assertAlmostEqual(dinner_median, 85.0, places=0)
+
+    def test_dessert_no_merge_far(self):
+        """Snack events >180min from dinner should NOT merge."""
+        sys.path.insert(0, str(PROJECT_ROOT / "tools" / "cgmencode" / "experiments"))
+        from exp_cr_sanity_check_2670 import cr_contrast_analysis
+
+        from cgmencode.production.natural_experiment_detector import (
+            NaturalExperiment, NaturalExperimentType, NaturalExperimentCensus
+        )
+        experiments = [
+            NaturalExperiment(
+                exp_type=NaturalExperimentType.MEAL,
+                start_idx=0, end_idx=48,
+                duration_minutes=240, hour_of_day=18.0, quality=0.8,
+                measurements={'carbs_estimated_g': 60.0, 'excursion_mg_dl': 80.0,
+                              'bolus_u': 5.0, 'pre_meal_bg': 110.0,
+                              'is_announced': True}),
+            NaturalExperiment(
+                exp_type=NaturalExperimentType.MEAL,
+                start_idx=288, end_idx=336,  # next day entirely
+                duration_minutes=240, hour_of_day=1.0, quality=0.8,
+                measurements={'carbs_estimated_g': 20.0, 'excursion_mg_dl': 30.0,
+                              'bolus_u': 1.0, 'pre_meal_bg': 100.0,
+                              'is_announced': True}),
+        ]
+        census = NaturalExperimentCensus(
+            experiments=experiments, total_detected=2,
+            by_type={'meal': 2}, quality_mean=0.8,
+            days_analyzed=1.0, per_day_rate=2.0,
+        )
+        result = cr_contrast_analysis(
+            census, profile_cr=10.0, profile_isf=40.0,
+            patient_id='test', days_analyzed=1.0,
+            cr_multipliers=[1.0],
+        )
+        # No merge: 1 dinner + 1 snack
+        self.assertEqual(result.n_meals, 2)
