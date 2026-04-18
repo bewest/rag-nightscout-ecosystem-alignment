@@ -624,7 +624,75 @@ def _make_validation_note(
     return ". ".join(parts) + "." if parts else ""
 
 
-# ── Public API ────────────────────────────────────────────────────────
+# ── Dose-Dependent ISF Analysis (EXP-2636/2640) ─────────────────────
+
+def _compute_dose_isf_correlation(
+    corrections: List[NaturalExperiment],
+) -> Optional[Dict]:
+    """Compute dose-dependent ISF statistics from correction windows.
+
+    Research basis: EXP-2640 — ISF ≈ 50 − 28 × ln(dose_U), r = −0.56.
+    Dose-dependent ISF is universal: larger corrections have lower effective
+    ISF per unit due to hepatic EGP suppression saturation (EXP-2656).
+
+    Returns dict with correlation, log-model fit, and per-bin medians,
+    or None if insufficient data.
+    """
+    pairs = []  # (dose, isf)
+    for w in corrections:
+        m = w.measurements
+        dose = _safe_val(m.get('bolus_u'))
+        isf = (_safe_val(m.get('demand_isf'))
+               or _safe_val(m.get('curve_isf'))
+               or _safe_val(m.get('simple_isf')))
+        if (dose is not None and dose >= 0.3 and
+                isf is not None and ISF_RANGE[0] < isf < ISF_RANGE[1]):
+            pairs.append((dose, isf))
+
+    if len(pairs) < 10:
+        return None
+
+    doses = np.array([p[0] for p in pairs])
+    isfs = np.array([p[1] for p in pairs])
+
+    # Pearson correlation
+    if np.std(doses) < 1e-6 or np.std(isfs) < 1e-6:
+        return None
+    r = float(np.corrcoef(doses, isfs)[0, 1])
+
+    # Log-model fit: ISF = a + b × ln(dose)
+    log_doses = np.log(np.maximum(doses, 0.1))
+    try:
+        b, a = np.polyfit(log_doses, isfs, 1)
+    except (np.linalg.LinAlgError, ValueError):
+        b, a = 0.0, float(np.median(isfs))
+
+    # Dose-stratified bins
+    bins = [
+        ('<1U', doses < 1.0),
+        ('1-2U', (doses >= 1.0) & (doses < 2.0)),
+        ('2-3U', (doses >= 2.0) & (doses < 3.0)),
+        ('≥3U', doses >= 3.0),
+    ]
+    stratified = {}
+    for label, mask in bins:
+        bin_isfs = isfs[mask]
+        if len(bin_isfs) >= 3:
+            stratified[label] = {
+                'median_isf': round(float(np.median(bin_isfs)), 1),
+                'n': int(len(bin_isfs)),
+            }
+
+    return {
+        'r': round(r, 3),
+        'n_corrections': len(pairs),
+        'log_model_intercept': round(float(a), 1),
+        'log_model_slope': round(float(b), 1),
+        'dose_stratified_isf': stratified,
+        'significant': r < -0.2 and len(pairs) >= 15,
+    }
+
+
 
 def optimize_settings(
     census: NaturalExperimentCensus,
@@ -663,6 +731,21 @@ def optimize_settings(
     basal_schedule = _extract_basal_schedule(fasting, overnight, profile)
     isf_schedule = _extract_isf_schedule(corrections, profile)
     cr_schedule = _extract_cr_schedule(meals, profile)
+
+    # Dose-dependent ISF analysis (EXP-2636/2640)
+    dose_isf = _compute_dose_isf_correlation(corrections)
+    if dose_isf and dose_isf.get('significant'):
+        strat = dose_isf.get('dose_stratified_isf', {})
+        bins_str = ", ".join(
+            f"{k}: {v['median_isf']} (n={v['n']})"
+            for k, v in strat.items())
+        w.append(
+            f"Dose-dependent ISF detected (r={dose_isf['r']}, "
+            f"n={dose_isf['n_corrections']}): "
+            f"ISF ≈ {dose_isf['log_model_intercept']} + "
+            f"{dose_isf['log_model_slope']}×ln(dose). "
+            f"Bins: {bins_str}. "
+            f"Larger corrections are less effective per unit (EXP-2640).")
 
     # Grade overall confidence
     grade, total_evidence = _grade_overall_confidence(
