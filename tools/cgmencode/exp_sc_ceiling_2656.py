@@ -28,6 +28,7 @@ HYPOTHESES:
   H4: Sticky hyper rate correlates with distance from suppression ceiling (r > 0.3)
 """
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -38,14 +39,11 @@ from scipy import stats, optimize
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-PARQUET = Path("externals/ns-parquet/training/grid.parquet")
+DEFAULT_PARQUET = Path("externals/ns-parquet/training/grid.parquet")
 RESULTS_DIR = Path("externals/experiments")
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 OUTFILE = RESULTS_DIR / "exp-2656_sc_ceiling.json"
 
-NS_PATIENTS = ["a", "b", "c", "d", "e", "f", "g", "i", "k"]
-ODC_FULL = ["odc-74077367", "odc-86025410", "odc-96254963"]
-ALL_PATIENTS = NS_PATIENTS + ODC_FULL
 STEPS_PER_HOUR = 12
 DIA_HOURS = 6.0
 
@@ -187,16 +185,31 @@ def _analyze_patient(pid, pdf):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="EXP-2656: SC Insulin Suppression Ceiling Test")
+    parser.add_argument("--parquet", type=Path, default=DEFAULT_PARQUET,
+                        help="Path to grid.parquet (default: %(default)s)")
+    args = parser.parse_args()
+
     print("=" * 70)
     print("EXP-2656: SC Insulin Suppression Ceiling Test")
+    print(f"  Data: {args.parquet}")
     print("=" * 70)
 
-    df_all = pd.read_parquet(PARQUET)
+    if not args.parquet.exists():
+        print(f"ERROR: {args.parquet} not found", file=sys.stderr)
+        sys.exit(1)
+
+    df_all = pd.read_parquet(args.parquet)
+    ALL_PATIENTS = sorted(df_all["patient_id"].unique())
+    print(f"  Found {len(ALL_PATIENTS)} patients in dataset")
+
+    has_controller = "controller" in df_all.columns
     results = {}
 
     for pid in ALL_PATIENTS:
         pdf = df_all[df_all["patient_id"] == pid].copy()
         if len(pdf) < 200:
+            print(f"\n  {pid}: skipped (only {len(pdf)} readings)")
             continue
 
         r = _analyze_patient(pid, pdf)
@@ -205,6 +218,11 @@ def main():
             continue
 
         prefix = "[ODC]" if pid.startswith("odc") else "[NS] "
+        if has_controller:
+            ctrl = pdf["controller"].dropna().mode()
+            ctrl_tag = str(ctrl.iloc[0]) if len(ctrl) > 0 else "unknown"
+            prefix = f"[{ctrl_tag}]"
+            r["controller"] = ctrl_tag
         print(f"\n  {prefix} {pid} (N={r['n_high_iob']} high-IOB periods, "
               f"threshold={r['high_iob_threshold']:.1f}U):")
         print(f"    Actual rate: {r['mean_actual_rate']:+.1f} mg/dL/hr, "

@@ -50,6 +50,19 @@ def per_patient_curves(events):
         isfs = np.array([e['apparent_isf'] for e in evts])
         drops = np.array([e['drop'] for e in evts])
 
+        # Filter out NaN/Inf values
+        valid_mask = np.isfinite(boluses) & np.isfinite(isfs) & np.isfinite(drops)
+        if valid_mask.sum() < 2:
+            curves[pid] = {
+                'n_events': n, 'n_valid': 0, 'insufficient': True,
+                'data': {'bolus_u': [], 'apparent_isf': [], 'drop': []},
+            }
+            continue
+        boluses = boluses[valid_mask]
+        isfs = isfs[valid_mask]
+        drops = drops[valid_mask]
+        n = len(boluses)
+
         curve = {
             'n_events': n,
             'bolus_range': [round(float(boluses.min()), 2), round(float(boluses.max()), 2)],
@@ -127,9 +140,15 @@ def leave_one_out(events):
         subset = [e for e in events if e['patient_id'] != exclude_pid]
         b = np.array([e['bolus_u'] for e in subset])
         i = np.array([e['apparent_isf'] for e in subset])
+        # Filter NaN/Inf
+        mask = np.isfinite(b) & np.isfinite(i)
+        b, i = b[mask], i[mask]
+        if len(b) < 3:
+            results[exclude_pid] = {'n_remaining': len(b), 'r': 0.0, 'p': 1.0}
+            continue
         r, p = stats.pearsonr(b, i)
         results[exclude_pid] = {
-            'n_remaining': len(subset),
+            'n_remaining': len(b),
             'r': round(float(r), 4),
             'p': round(float(p), 8),
         }

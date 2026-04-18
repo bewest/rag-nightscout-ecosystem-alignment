@@ -38,6 +38,7 @@ H3: Apparent ISF predicts 4h glucose better than demand ISF (lower RMSE)
 H4: The ISF inflation ratio varies ≥1.5× across patients
 """
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -46,20 +47,27 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-PARQUET = Path("externals/ns-parquet/training/grid.parquet")
+DEFAULT_PARQUET = Path("externals/ns-parquet/training/grid.parquet")
 RESULTS_DIR = Path("externals/experiments")
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 OUTFILE = RESULTS_DIR / "exp-2651_two_phase_isf.json"
 
-NS_PATIENTS = ["a", "b", "c", "d", "e", "f", "g", "i", "k"]
-ODC_FULL = ["odc-74077367", "odc-86025410", "odc-96254963"]
-ALL_PATIENTS = NS_PATIENTS + ODC_FULL
 STEPS_PER_HOUR = 12
+
+# Isolation tiers (EXP-2666: 6h is optimal for DIA=6h Nyquist compliance)
+_STRICT_PRIOR_BOLUS_H = 6.0
+_LAX_PRIOR_BOLUS_H = 2.0
+_MIN_EVENTS = 5
 
 
 def _extract_correction_events(pdf, min_dose=0.5, min_pre_bg=120, carb_window_h=1.0,
-                                prior_bolus_h=2.0, min_drop=10):
-    """Extract clean correction bolus events for ISF analysis."""
+                                prior_bolus_h=6.0, min_drop=10):
+    """Extract clean correction bolus events for ISF analysis.
+
+    Uses 6h prior-bolus isolation by default (Nyquist-correct for DIA=6h,
+    validated in EXP-2666). Caller can pass prior_bolus_h=2.0 as fallback
+    for SMB-heavy patients with insufficient strict events.
+    """
     pdf = pdf.sort_values("time").reset_index(drop=True)
     glucose = pdf["glucose"].values.astype(np.float64)
     bolus = pdf["bolus"].fillna(0).values.astype(np.float64)
@@ -228,29 +236,65 @@ def _analyze_patient(pid, events, scheduled_isf):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="EXP-2651: Two-Phase ISF Decomposition")
+    parser.add_argument("--parquet", type=Path, default=DEFAULT_PARQUET,
+                        help="Path to grid.parquet (default: %(default)s)")
+    args = parser.parse_args()
+
     print("=" * 70)
     print("EXP-2651: Two-Phase ISF Decomposition")
+    print(f"  Data: {args.parquet}")
     print("=" * 70)
 
-    df = pd.read_parquet(PARQUET)
+    if not args.parquet.exists():
+        print(f"ERROR: {args.parquet} not found", file=sys.stderr)
+        sys.exit(1)
+
+    df = pd.read_parquet(args.parquet)
+
+    # Discover all patients in the dataset
+    all_patients = sorted(df["patient_id"].unique())
+    print(f"  Found {len(all_patients)} patients in dataset")
+
+    # Detect controller column for stratification
+    has_controller = "controller" in df.columns
+    if has_controller:
+        print("  Controller column detected — will stratify results")
+
     results = {}
 
-    for pid in ALL_PATIENTS:
+    for pid in all_patients:
         pdf = df[df["patient_id"] == pid].sort_values("time").reset_index(drop=True)
         if len(pdf) < 288 * 14:
             continue
 
-        scheduled_isf = float(pdf["scheduled_isf"].dropna().median())
-        events = _extract_correction_events(pdf)
+        scheduled_isf = float(pdf["scheduled_isf"].dropna().median()) if "scheduled_isf" in pdf.columns else 50.0
+
+        # Tiered isolation: try 6h (Nyquist-correct), fall back to 2h
+        events = _extract_correction_events(pdf, prior_bolus_h=_STRICT_PRIOR_BOLUS_H)
+        isolation_used = _STRICT_PRIOR_BOLUS_H
+        if len(events) < _MIN_EVENTS:
+            events = _extract_correction_events(pdf, prior_bolus_h=_LAX_PRIOR_BOLUS_H)
+            isolation_used = _LAX_PRIOR_BOLUS_H
 
         r = _analyze_patient(pid, events, scheduled_isf)
         if r is None:
             print(f"  {pid}: insufficient correction events ({len(events)})")
             continue
 
+        r["isolation_h"] = isolation_used
+        if isolation_used < _STRICT_PRIOR_BOLUS_H:
+            r["data_quality_note"] = (
+                f"Reduced to {isolation_used}h isolation (SMB-heavy patient). "
+                "Prior boluses may contaminate demand ISF estimate.")
+        if has_controller:
+            ctrl = pdf["controller"].dropna().mode()
+            r["controller"] = str(ctrl.iloc[0]) if len(ctrl) > 0 else "unknown"
+
         results[pid] = r
         p = r["prediction"]
-        print(f"\n  {pid} ({r['n_events']} events, nadir {r['median_nadir_time_h']:.1f}h):")
+        iso_tag = f" [{isolation_used}h iso]" if isolation_used < _STRICT_PRIOR_BOLUS_H else ""
+        print(f"\n  {pid} ({r['n_events']} events, nadir {r['median_nadir_time_h']:.1f}h){iso_tag}:")
         print(f"    ISF: scheduled={scheduled_isf:.0f}, demand(2h)={r['demand_isf']:.0f}, "
               f"apparent={r['apparent_isf']:.0f}, inflation={r['inflation_ratio']:.2f}×")
         print(f"    2h RMSE: demand={p['rmse_2h_demand']:.1f}, apparent={p['rmse_2h_apparent']:.1f}, "
@@ -314,8 +358,33 @@ def main():
     print("    For PREDICTION (>3h):  Use apparent ISF (total drop/dose)")
     print("    For SAFETY CHECKS:     Use scheduled ISF (conservative)")
 
+    # Controller stratification (if available)
+    if any("controller" in r for r in results.values()):
+        print("\n" + "=" * 70)
+        print("CONTROLLER STRATIFICATION")
+        print("=" * 70)
+        by_ctrl = {}
+        for pid, r in results.items():
+            ctrl = r.get("controller", "unknown")
+            by_ctrl.setdefault(ctrl, []).append(r)
+        for ctrl, pts in sorted(by_ctrl.items()):
+            inflations = [r["inflation_ratio"] for r in pts if not np.isnan(r["inflation_ratio"])]
+            demands = [r["demand_isf"] for r in pts]
+            print(f"  {ctrl} (n={len(pts)}): "
+                  f"median demand ISF={np.median(demands):.0f}, "
+                  f"median inflation={np.median(inflations):.2f}×")
+
+    # Save metadata about data source
+    output = {
+        "experiment": "EXP-2651",
+        "parquet_source": str(args.parquet),
+        "n_patients_analyzed": len(results),
+        "n_patients_in_dataset": len(all_patients),
+        "patients": results,
+    }
+
     with open(OUTFILE, "w") as f:
-        json.dump(results, f, indent=2, default=str)
+        json.dump(output, f, indent=2, default=str)
     print(f"\nResults saved to {OUTFILE}")
 
 

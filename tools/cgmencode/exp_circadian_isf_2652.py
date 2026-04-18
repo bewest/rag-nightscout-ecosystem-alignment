@@ -22,6 +22,7 @@ H2: 2-block (day/night) profiles reduce correction RMSE ≥10% vs single-value
 H3: Dawn block (04-08h) has the lowest effective ISF (most aggressive correction needed)
 """
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -30,18 +31,20 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-PARQUET = Path("externals/ns-parquet/training/grid.parquet")
+DEFAULT_PARQUET = Path("externals/ns-parquet/training/grid.parquet")
 RESULTS_DIR = Path("externals/experiments")
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 OUTFILE = RESULTS_DIR / "exp-2652_circadian_profiling.json"
 
-NS_PATIENTS = ["a", "b", "c", "d", "e", "f", "g", "i", "k"]
-ODC_FULL = ["odc-74077367", "odc-86025410", "odc-96254963"]
-ALL_PATIENTS = NS_PATIENTS + ODC_FULL
 STEPS_PER_HOUR = 12
 
-# Time blocks
-BLOCKS = [
+# Isolation tiers (EXP-2666: 6h optimal for DIA=6h Nyquist compliance)
+_STRICT_PRIOR_BOLUS_H = 6.0
+_LAX_PRIOR_BOLUS_H = 2.0
+_MIN_EVENTS = 5
+
+# Time blocks — 6-block (4h) kept as secondary analysis
+BLOCKS_4H = [
     ("00-04", 0, 4),
     ("04-08", 4, 8),
     ("08-12", 8, 12),
@@ -50,12 +53,22 @@ BLOCKS = [
     ("20-24", 20, 24),
 ]
 
-DAY_BLOCKS = ["08-12", "12-16", "16-20"]
-NIGHT_BLOCKS = ["20-24", "00-04", "04-08"]
+# Primary analysis: 12h blocks (Nyquist-correct for DIA=6h, per EXP-2665)
+BLOCKS_12H = [
+    ("day_08_20", 8, 20),
+    ("night_20_08", 20, 8),   # wraps midnight
+]
+
+DAY_BLOCKS_4H = ["08-12", "12-16", "16-20"]
+NIGHT_BLOCKS_4H = ["20-24", "00-04", "04-08"]
 
 
-def _extract_correction_events_with_time(pdf):
-    """Extract correction events with time-of-day info."""
+def _extract_correction_events_with_time(pdf, prior_bolus_h=6.0):
+    """Extract correction events with time-of-day info.
+
+    Uses 6h prior-bolus isolation by default (Nyquist-correct for DIA=6h,
+    EXP-2666). Caller can reduce to 2h for SMB-heavy patients.
+    """
     pdf = pdf.sort_values("time").reset_index(drop=True)
     t = pd.to_datetime(pdf["time"])
     hours = t.dt.hour.values
@@ -64,7 +77,7 @@ def _extract_correction_events_with_time(pdf):
     carbs = pdf["carbs"].fillna(0).values.astype(np.float64)
 
     carb_window = STEPS_PER_HOUR
-    prior_window = 2 * STEPS_PER_HOUR
+    prior_window = int(prior_bolus_h * STEPS_PER_HOUR)
     post_4h = 4 * STEPS_PER_HOUR
 
     events = []
@@ -109,16 +122,20 @@ def _extract_correction_events_with_time(pdf):
             continue
 
         hour = int(hours[i])
-        # Map to block
-        block = None
-        for bname, bstart, bend in BLOCKS:
+        # Map to 4h block (secondary)
+        block_4h = None
+        for bname, bstart, bend in BLOCKS_4H:
             if bstart <= hour < bend:
-                block = bname
+                block_4h = bname
                 break
+
+        # Map to 12h block (primary, Nyquist-correct)
+        block_12h = "day_08_20" if 8 <= hour < 20 else "night_20_08"
 
         events.append({
             "hour": hour,
-            "block": block,
+            "block": block_12h,
+            "block_4h": block_4h,
             "pre_bg": float(glucose[i]),
             "dose": float(bolus[i]),
             "bg_2h": float(bg_2h),
@@ -134,17 +151,29 @@ def _extract_correction_events_with_time(pdf):
 
 
 def _analyze_patient(pid, events, scheduled_isf):
-    """Circadian ISF profiling for one patient."""
+    """Circadian ISF profiling for one patient.
+
+    Primary analysis uses 12h day/night blocks (Nyquist-correct for DIA=6h).
+    Secondary analysis uses 4h blocks for finer granularity.
+    """
     if len(events) < 10:
         return None
 
     edf = pd.DataFrame(events)
     global_isf = float(edf["apparent_isf"].median())
 
-    # Per-block ISF
+    # ── Primary: 12h blocks (Nyquist-correct) ──────────────────
+    day_events = edf[edf["block"] == "day_08_20"]
+    night_events = edf[edf["block"] == "night_20_08"]
+    day_isf = float(day_events["apparent_isf"].median()) if len(day_events) >= 5 else np.nan
+    night_isf = float(night_events["apparent_isf"].median()) if len(night_events) >= 5 else np.nan
+    day_demand = float(day_events["demand_isf"].median()) if len(day_events) >= 5 else np.nan
+    night_demand = float(night_events["demand_isf"].median()) if len(night_events) >= 5 else np.nan
+
+    # ── Secondary: 4h blocks (informational, sub-Nyquist) ─────
     block_results = {}
-    for bname, _, _ in BLOCKS:
-        bdf = edf[edf["block"] == bname]
+    for bname, _, _ in BLOCKS_4H:
+        bdf = edf[edf["block_4h"] == bname]
         if len(bdf) < 3:
             block_results[bname] = {"n": 0, "isf": np.nan}
             continue
@@ -169,14 +198,7 @@ def _analyze_patient(pid, events, scheduled_isf):
         isf_variation = 1.0
         isf_range_pct = 0.0
 
-    # Day vs night ISF
-    day_events = edf[edf["block"].isin(DAY_BLOCKS)]
-    night_events = edf[edf["block"].isin(NIGHT_BLOCKS)]
-    day_isf = float(day_events["apparent_isf"].median()) if len(day_events) >= 5 else np.nan
-    night_isf = float(night_events["apparent_isf"].median()) if len(night_events) >= 5 else np.nan
-
-    # Prediction accuracy: single ISF vs 2-block vs per-block
-    # Single: predict bg_2h = pre_bg - dose × global_isf
+    # Prediction accuracy: single ISF vs 2-block (12h) vs per-block (4h)
     valid = edf.dropna(subset=["bg_2h"])
     if len(valid) < 10:
         return None
@@ -184,23 +206,23 @@ def _analyze_patient(pid, events, scheduled_isf):
     pred_single = valid["pre_bg"] - valid["dose"] * global_isf
     rmse_single = float(np.sqrt(np.mean((valid["bg_2h"] - pred_single) ** 2)))
 
-    # 2-block (day/night)
+    # 2-block (12h day/night) — primary
     if not np.isnan(day_isf) and not np.isnan(night_isf):
         pred_2block = valid.apply(
-            lambda r: r["pre_bg"] - r["dose"] * (day_isf if r["block"] in DAY_BLOCKS else night_isf),
+            lambda r: r["pre_bg"] - r["dose"] * (day_isf if r["block"] == "day_08_20" else night_isf),
             axis=1
         )
         rmse_2block = float(np.sqrt(np.mean((valid["bg_2h"] - pred_2block) ** 2)))
     else:
         rmse_2block = rmse_single
 
-    # Per-block ISF
-    def _block_isf(block):
-        br = block_results.get(block, {})
+    # Per-block ISF (4h) — secondary
+    def _block_isf(block_4h):
+        br = block_results.get(block_4h, {})
         return br.get("isf", global_isf) if br.get("n", 0) >= 3 else global_isf
 
     pred_perblock = valid.apply(
-        lambda r: r["pre_bg"] - r["dose"] * _block_isf(r["block"]),
+        lambda r: r["pre_bg"] - r["dose"] * _block_isf(r["block_4h"]),
         axis=1
     )
     rmse_perblock = float(np.sqrt(np.mean((valid["bg_2h"] - pred_perblock) ** 2)))
@@ -221,14 +243,18 @@ def _analyze_patient(pid, events, scheduled_isf):
         "global_isf": global_isf,
         "day_isf": day_isf,
         "night_isf": night_isf,
+        "day_demand_isf": day_demand,
+        "night_demand_isf": night_demand,
+        "day_n": len(day_events),
+        "night_n": len(night_events),
         "isf_variation": float(isf_variation),
         "isf_range_pct": float(isf_range_pct),
-        "blocks": block_results,
+        "blocks_4h": block_results,
         "lowest_isf_block": lowest_block[0] if lowest_block[0] else "N/A",
         "prediction": {
             "rmse_single": rmse_single,
-            "rmse_2block": rmse_2block,
-            "rmse_perblock": rmse_perblock,
+            "rmse_2block_12h": rmse_2block,
+            "rmse_perblock_4h": rmse_perblock,
             "improvement_2block_pct": float(improvement_2block),
             "improvement_perblock_pct": float(improvement_perblock),
         },
@@ -236,25 +262,52 @@ def _analyze_patient(pid, events, scheduled_isf):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="EXP-2652: Circadian ISF/Basal Profiling")
+    parser.add_argument("--parquet", type=Path, default=DEFAULT_PARQUET,
+                        help="Path to grid.parquet (default: %(default)s)")
+    args = parser.parse_args()
+
     print("=" * 70)
     print("EXP-2652: Circadian ISF/Basal Profiling")
+    print(f"  Data: {args.parquet}")
+    print(f"  Primary blocks: 12h day/night (Nyquist-correct for DIA=6h)")
+    print(f"  Secondary blocks: 4h (informational)")
     print("=" * 70)
 
-    df = pd.read_parquet(PARQUET)
+    if not args.parquet.exists():
+        print(f"ERROR: {args.parquet} not found", file=sys.stderr)
+        sys.exit(1)
+
+    df = pd.read_parquet(args.parquet)
+    all_patients = sorted(df["patient_id"].unique())
+    print(f"  Found {len(all_patients)} patients in dataset")
+
+    has_controller = "controller" in df.columns
     results = {}
 
-    for pid in ALL_PATIENTS:
+    for pid in all_patients:
         pdf = df[df["patient_id"] == pid].sort_values("time").reset_index(drop=True)
         if len(pdf) < 288 * 14:
             continue
 
-        scheduled_isf = float(pdf["scheduled_isf"].dropna().median())
-        events = _extract_correction_events_with_time(pdf)
+        scheduled_isf = float(pdf["scheduled_isf"].dropna().median()) if "scheduled_isf" in pdf.columns else 50.0
+
+        # Tiered isolation: 6h (Nyquist-correct) → 2h fallback
+        events = _extract_correction_events_with_time(pdf, prior_bolus_h=_STRICT_PRIOR_BOLUS_H)
+        isolation_used = _STRICT_PRIOR_BOLUS_H
+        if len(events) < _MIN_EVENTS:
+            events = _extract_correction_events_with_time(pdf, prior_bolus_h=_LAX_PRIOR_BOLUS_H)
+            isolation_used = _LAX_PRIOR_BOLUS_H
 
         r = _analyze_patient(pid, events, scheduled_isf)
         if r is None:
             print(f"  {pid}: insufficient data ({len(events)} events)")
             continue
+
+        r["isolation_h"] = isolation_used
+        if has_controller:
+            ctrl = pdf["controller"].dropna().mode()
+            r["controller"] = str(ctrl.iloc[0]) if len(ctrl) > 0 else "unknown"
 
         results[pid] = r
         p = r["prediction"]
@@ -262,14 +315,14 @@ def main():
         print(f"    Global ISF: {r['global_isf']:.0f}, Day: {r['day_isf']:.0f}, "
               f"Night: {r['night_isf']:.0f}, Variation: {r['isf_variation']:.2f}×")
         print(f"    Lowest ISF block: {r['lowest_isf_block']}")
-        print(f"    RMSE: single={p['rmse_single']:.1f}, 2-block={p['rmse_2block']:.1f} "
+        print(f"    RMSE: single={p['rmse_single']:.1f}, 2-block(12h)={p['rmse_2block_12h']:.1f} "
               f"({p['improvement_2block_pct']:+.1f}%), "
-              f"6-block={p['rmse_perblock']:.1f} ({p['improvement_perblock_pct']:+.1f}%)")
+              f"6-block(4h)={p['rmse_perblock_4h']:.1f} ({p['improvement_perblock_pct']:+.1f}%)")
 
-        # Show per-block ISF
-        print(f"    Blocks: ", end="")
-        for bname, _, _ in BLOCKS:
-            bi = r["blocks"].get(bname, {})
+        # Show per-block ISF (4h, informational)
+        print(f"    Blocks(4h): ", end="")
+        for bname, _, _ in BLOCKS_4H:
+            bi = r["blocks_4h"].get(bname, {})
             if bi.get("n", 0) >= 3:
                 print(f"{bname}={bi['isf']:.0f}({bi['n']})", end="  ")
             else:
@@ -292,15 +345,15 @@ def main():
     print(f"      {high_var}/{len(patients)} ({h1_pct:.0f}%)")
     print(f"      → {'PASS' if h1_pct >= 50 else 'FAIL'}")
 
-    # H2: 2-block reduces RMSE ≥10%
+    # H2: 2-block (12h) reduces RMSE ≥10%
     good_2block = sum(1 for r in patients if r["prediction"]["improvement_2block_pct"] >= 10)
     h2_pct = good_2block / len(patients) * 100
     improvements = sorted([r["prediction"]["improvement_2block_pct"] for r in patients], reverse=True)
-    print(f"\n  H2: 2-block profile reduces RMSE ≥10% for ≥50% of patients")
+    print(f"\n  H2: 12h day/night profile reduces RMSE ≥10% for ≥50% of patients")
     print(f"      Improvements: {[f'{i:+.0f}%' for i in improvements]}")
     print(f"      → {'PASS' if h2_pct >= 50 else 'FAIL'}")
 
-    # H3: Dawn block has lowest ISF
+    # H3: Dawn block has lowest ISF (4h analysis, informational)
     dawn_lowest = sum(1 for r in patients if r["lowest_isf_block"] == "04-08")
     lowest_blocks = [r["lowest_isf_block"] for r in patients]
     from collections import Counter
@@ -312,8 +365,16 @@ def main():
     print(f"      Most common lowest: {most_common[0]} ({most_common[1]} patients)")
     print(f"      → {'PASS' if dawn_lowest == most_common[1] else 'FAIL'}")
 
+    output = {
+        "experiment": "EXP-2652",
+        "parquet_source": str(args.parquet),
+        "n_patients_analyzed": len(results),
+        "primary_block_size": "12h (Nyquist-correct for DIA=6h)",
+        "patients": results,
+    }
+
     with open(OUTFILE, "w") as f:
-        json.dump(results, f, indent=2, default=str)
+        json.dump(output, f, indent=2, default=str)
     print(f"\nResults saved to {OUTFILE}")
 
 

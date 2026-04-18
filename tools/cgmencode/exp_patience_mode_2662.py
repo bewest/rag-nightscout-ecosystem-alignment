@@ -17,15 +17,15 @@ Hypotheses:
   H3: Total insulin decreases ≥5% (less waste)
   H4: Net TIR (70-180) improves ≥2pp (hypo reduction > hyper increase)
 """
+import argparse
 import json, sys
 from pathlib import Path
 import numpy as np
 import pandas as pd
 
-GRID = Path("externals/ns-parquet/training/grid.parquet")
+DEFAULT_GRID = Path("externals/ns-parquet/training/grid.parquet")
 OUT = Path("externals/experiments/exp-2662_patience_mode.json")
-FULL_PATIENTS = ["a", "b", "c", "d", "e", "f", "g", "i", "k",
-                 "odc-74077367", "odc-86025410", "odc-96254963"]
+MIN_READINGS = 288 * 14  # 14 days at 5-min intervals
 
 
 def compute_baseline_metrics(glucose):
@@ -102,17 +102,37 @@ def simulate_patience_mode(pdf, median_iob, cap_ratio=1.5):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="EXP-2662: Patience Mode Controller Simulation")
+    parser.add_argument("--parquet", type=Path, default=DEFAULT_GRID,
+                        help="Path to grid.parquet (default: %(default)s)")
+    args = parser.parse_args()
+
     print("=" * 70)
     print("EXP-2662: Patience Mode Controller Simulation (Capstone)")
+    print(f"  Data: {args.parquet}")
     print("=" * 70)
 
-    df = pd.read_parquet(GRID)
+    if not args.parquet.exists():
+        print(f"ERROR: {args.parquet} not found", file=sys.stderr)
+        sys.exit(1)
+
+    df = pd.read_parquet(args.parquet)
+    all_patients = sorted(df["patient_id"].unique())
+    print(f"  Found {len(all_patients)} patients in dataset")
+
+    has_controller = "controller" in df.columns
     results = {}
 
-    for pid in FULL_PATIENTS:
+    for pid in all_patients:
         pdf = df[df["patient_id"] == pid].sort_values("time").copy()
 
+        # Minimum data guard: require at least 14 days
+        if len(pdf) < MIN_READINGS:
+            print(f"  {pid}: skipped (only {len(pdf)} readings, need {MIN_READINGS})")
+            continue
+
         if "iob" not in pdf.columns or pdf["iob"].isna().all():
+            print(f"  {pid}: skipped (no IOB data)")
             continue
 
         glucose = pdf["glucose"].values
@@ -152,6 +172,10 @@ def main():
         wall_periods = int(np.sum(wall))
 
         tag = "[ODC]" if pid.startswith("odc") else "[NS] "
+        if has_controller:
+            ctrl = pdf["controller"].dropna().mode()
+            ctrl_tag = str(ctrl.iloc[0]) if len(ctrl) > 0 else "unknown"
+            tag = f"[{ctrl_tag}]"
         print(f"\n  {tag} {pid} (N={baseline['n']}, median IOB={median_iob:.1f}U):")
         print(f"    Wall periods: {wall_pct:.1f}% of time ({wall_periods} readings)")
         print(f"    SMBs prevented: {total_prevented:.1f}U ({prevented_pct:.0f}% of total SMBs)")
@@ -183,6 +207,9 @@ def main():
             "delayed_hypo_baseline": delayed_hypo_baseline,
             "delayed_hypo_patience": delayed_hypo_modified,
         }
+        if has_controller:
+            ctrl = pdf["controller"].dropna().mode()
+            results[pid]["controller"] = str(ctrl.iloc[0]) if len(ctrl) > 0 else "unknown"
 
     # Hypothesis testing
     print("\n" + "=" * 70)
