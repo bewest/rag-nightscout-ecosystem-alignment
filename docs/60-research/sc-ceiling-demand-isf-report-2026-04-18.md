@@ -106,7 +106,7 @@ EXP-2656 found SC insulin suppresses at most ~30% of hepatic EGP, explaining sti
 | H1 | **PASS** | At high IOB, glucose drops >20% slower than linear model predicts |
 | H2 | **PASS** | Ceiling model RMSE < linear RMSE for majority of patients |
 | H3 | **PASS** | Demand-ISF ceiling beats scheduled-ISF ceiling |
-| H4 | SKIP | Per-patient ceiling correlates with sticky hyper rate (|r|>0.3) |
+| H4 | FAIL | Per-patient ceiling correlates with sticky hyper rate (|r|>0.3) |
 | H5 | FAIL | Wall episodes predict glucose plateau (mean 2h change < 10 mg/dL) |
 
 ## 10. Clinical Implications
