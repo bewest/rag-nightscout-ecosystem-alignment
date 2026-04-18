@@ -1,7 +1,7 @@
 # EGP Research Synthesis: Evidence Review and Corrective Reframing
 
 **Date**: 2026-04-18  
-**Scope**: EXP-2621 through EXP-2662 (42 experiments)  
+**Scope**: EXP-2621 through EXP-2662 (32 experiments)  
 **Patients**: 12 (9 NS + 3 ODC), 1,838 patient-days  
 **Status**: Errata and synthesis — supersedes over-generalized claims in earlier reports  
 
@@ -91,7 +91,7 @@ trying to predict the post-nadir recovery rate from a single factor.
 
 ## 3. What the Preponderance of Evidence Actually Shows
 
-The 42 experiments produced strong, validated, actionable findings for per-patient
+The 32 experiments produced strong, validated, actionable findings for per-patient
 parameter recovery. Here is the complete evidence inventory:
 
 ### 3.1 Dose-Dependent ISF (EXP-2636, 2639, 2640)

@@ -14,9 +14,9 @@ Across 32 experiments analyzing correction bolus dynamics in closed-loop AID sys
 
 1. **Diabetes physiology**: The glucose nadir after a correction occurs at 3.5 hours (not at the 1.25h insulin peak), driven by a hepatic EGP suppression phase lag. ISF is logarithmically dose-dependent (4.6× compression). SC insulin can suppress at most ~30% of hepatic EGP. The glucose system has 48-hour metabolic memory.
 
-2. **Data science methodology**: Analyzing closed-loop medical device data requires fundamentally different methods than open-system observational studies. We discovered the Prescriptive Paradox (best descriptive model = worst prescriber), reverse causation via feedback (IOB-hypo correlation is backwards), and the AID Compensation Theorem (forces are coupled, not additive).
+2. **Data science methodology**: Analyzing closed-loop medical device data requires fundamentally different methods than open-system observational studies. We discovered the Prescriptive Paradox (best descriptive model = worst prescriber), reverse causation via feedback (IOB-hypo correlation is backwards), and that AID controller forces are coupled, not additive — though this coupling only invalidates single-factor decomposition, not multi-factor parameter recovery (see §2.3).
 
-3. **Basal rate optimization**: Overnight glucose drift on clean nights remains the most robust basal assessment method. The AID Compensation Paradox invalidated more sophisticated approaches. Conservative ±10% adjustments win; basal-first sequencing yields +40–90% TIR improvement.
+3. **Basal rate optimization**: Overnight glucose drift on clean nights remains the most robust basal assessment method. Single-factor AID compensation invalidated naive decomposition approaches, but IOB@midnight remains a valid predictor within clean-night windows (see §4.1). Conservative ±10% adjustments win; basal-first sequencing yields +40–90% TIR improvement.
 
 ---
 
@@ -133,9 +133,9 @@ Across 32 experiments analyzing correction bolus dynamics in closed-loop AID sys
 
 ---
 
-### 2.3 The AID Compensation Theorem
+### 2.3 AID Compensation: Coupled Forces (Not a General Theorem)
 
-**Finding (EXP-2629, EXP-2630)**: In closed-loop AID systems, the controller absorbs all single-factor signals, making decomposition impossible:
+**Finding (EXP-2629, EXP-2630)**: In closed-loop AID systems, the controller absorbs all single-factor signals, making single-factor decomposition impossible. However, multi-factor approaches (dose-dependent ISF, circadian profiling, phase decomposition) succeed — see the corrective evidence synthesis for the full picture:
 
 - **Reverse causation**: High IOB does NOT protect against hypos. The AID controller withdraws insulin when glucose falls, causing BOTH low IOB and glucose recovery simultaneously. IOB drops 55% BEFORE the hypo crossing (not after).
 - **Non-additive forces**: Decomposing recovery into Hill EGP + counter-regulation + AID withdrawal yields a sum of 34 mg/dL/hr, but actual recovery is 4 mg/dL/hr (8× discrepancy). The forces oppose each other through feedback.
@@ -268,7 +268,7 @@ Basal rate methodology evolved through 7 stages across the research program:
 | Overnight series | 2371–2378 | Linear drift + phenotyping | 5 phenotype classification |
 | Forward sim | 2574–2604 | Grid search + counter-reg k=3.8 | Sim r=0.74 on non-meal periods |
 | Direct EGP | 2590 | Loop suspension windows → raw EGP | Model-free measurement |
-| IOB-corrected | 2650 | drift = α×IOB@midnight + β | Most sophisticated |
+| IOB-corrected | 2650 | drift = α×IOB@midnight + β | Sophisticated; valid within clean-night filter |
 
 ### 4.2 The Production Winner: Overnight Drift on Clean Nights
 
@@ -299,7 +299,7 @@ The EGP deconfounding experiments (2621–2662) invalidated the theoretical basi
 |----------------|-------------|
 | Circadian basal profiles (EXP-2271) | Contaminated by AID controller behavior |
 | Recovery slope ↔ basal (EXP-2625) | r = 0.085, FAIL — no correlation |
-| IOB-corrected basal (EXP-2650) | IOB dynamics confounded by AID withdrawal |
+| IOB-corrected basal (EXP-2650) | IOB@midnight predicts drift (r = −0.29 to −0.77) within clean-night windows, but generalizing IOB dynamics beyond filtered windows is confounded by AID withdrawal |
 | Any single-factor model (EXP-2634) | All R² < 0 — worse than mean |
 | EGP-aware settings (EXP-2625) | ISF inflated 25–188% by EGP suppression |
 
