@@ -121,7 +121,12 @@ def assess_basal(glucose: np.ndarray,
         if np.sum(overnight_mask) >= 12:  # at least 1 hour
             overnight_bg = glucose[overnight_mask]
         else:
-            overnight_bg = glucose
+            # Fallback: relaxed overnight (time-only, ignore IOB/COB)
+            relaxed_mask = (hours >= 0) & (hours < 6)
+            if np.sum(relaxed_mask) >= 12:
+                overnight_bg = glucose[relaxed_mask]
+            else:
+                overnight_bg = glucose
     else:
         overnight_bg = glucose
 
@@ -227,17 +232,15 @@ def compute_apparent_isf(glucose: np.ndarray,
                         profile: PatientProfile) -> Optional[float]:
     """Estimate apparent ISF from observed correction bolus responses.
 
-    PRESCRIPTIVE PARADOX WARNING (EXP-2641/2642):
-    This returns the APPARENT ISF, which includes AID controller
+    NOTE: This returns the APPARENT ISF, which includes AID controller
     amplification (basal withdrawal, SMB cancellation) and EGP suppression.
     Apparent ISF is 2–10× larger than true demand-phase ISF (EXP-2651).
-    DO NOT use apparent ISF to recommend ISF changes — this creates a
-    circular dependency where changing the setting changes the controller
-    behavior that generated the measurement. "Fixed ISF + feedback is
-    near-optimal" (EXP-2642).
+    Use compute_demand_isf() for the true insulin effect (0–2h).
 
-    Research finding: effective ISF is 2.91× profile ISF because
-    AID systems compensate for inaccurate settings (EXP-747).
+    For ISF recommendations, use demand-phase ISF with conservative steps.
+    Multi-factor methods validated: dose-dependent r=-0.56 (EXP-2640),
+    response-curve R²=0.805 (EXP-1301). Apparent ISF alone is not
+    suitable as an ISF target (EXP-747: effective ISF is 2.91× profile).
 
     Returns:
         Estimated apparent ISF (mg/dL per Unit), or None if insufficient data.
@@ -285,11 +288,11 @@ def compute_response_curve_isf(glucose: np.ndarray,
                                ) -> dict:
     """AID-aware ISF estimation via response-curve fitting (EXP-1601–1608).
 
-    PRESCRIPTIVE PARADOX NOTE (EXP-2641/2642): This returns an APPARENT
-    ISF that includes AID controller compensation. Even with AID dampening
-    detection, the resulting ISF conflates demand-phase insulin action with
-    EGP suppression (EXP-2651: apparent ISF is 2–10× inflated). Use
-    compute_demand_isf() for the true insulin effect (0–2h only).
+    NOTE: This returns an APPARENT ISF that includes AID controller
+    compensation. Even with AID dampening detection, the resulting ISF
+    conflates demand-phase insulin action with EGP suppression (EXP-2651:
+    apparent ISF is 2–10× inflated). Use compute_demand_isf() for the
+    true insulin effect (0–2h only).
 
     The naive drop/dose method underestimates ISF because AID loops
     reduce basal during 92-100% of correction windows, dampening the
@@ -1061,10 +1064,10 @@ def compute_demand_isf(glucose: np.ndarray,
     It is 2–10× smaller than apparent ISF and wins at ALL prediction
     horizons (both 2h and 4h).
 
-    PRESCRIPTIVE PARADOX WARNING (EXP-2641/2642):
-    Neither demand nor apparent ISF should be used to directly set
-    ISF in the AID profile. "Fixed ISF + feedback is near-optimal."
-    This function provides INFORMATIONAL output for clinician review.
+    CORRECTED 2026-04-18: Demand-phase ISF IS suitable for conservative
+    ISF recommendations (multi-factor methods validated: EXP-2640 r=-0.56,
+    EXP-1301 R²=0.805). Apparent ISF alone should NOT be used directly.
+    Recommend conservative steps (25%) toward demand-phase ISF.
 
     Args:
         glucose: (N,) glucose values (mg/dL), 5-min intervals.
@@ -1241,7 +1244,7 @@ def detect_insulin_saturation(
                             roc[j] > _WALL_ROC_THRESHOLD):
                         wall_steps += 1
                         excess_u = max(0, iob[j] - _PATIENCE_CAP_RATIO * median_iob)
-                        excess_insulin += excess_u * (5.0 / 360.0)  # per-step contribution
+                        excess_insulin += excess_u  # IOB is a stock (U on board), not flow
 
                 if wall_steps > episode_len * 0.3:  # wall in >30% of episode
                     n_wall_episodes += 1
@@ -1254,6 +1257,20 @@ def detect_insulin_saturation(
         episode_len = len(glucose) - episode_start
         if episode_len >= _HIGH_GLUCOSE_DURATION:
             n_high_episodes += 1
+            total_high_steps += episode_len
+
+            # Wall detection for final episode
+            wall_steps = 0
+            for j in range(episode_start, len(glucose)):
+                if (np.isfinite(iob[j]) and np.isfinite(roc[j]) and
+                        iob[j] > _WALL_IOB_RATIO * median_iob and
+                        roc[j] > _WALL_ROC_THRESHOLD):
+                    wall_steps += 1
+                    excess_u = max(0, iob[j] - _PATIENCE_CAP_RATIO * median_iob)
+                    excess_insulin += excess_u
+            if wall_steps > episode_len * 0.3:
+                n_wall_episodes += 1
+            total_wall_steps += wall_steps
 
     if n_high_episodes == 0:
         return SaturationAssessment(

@@ -5076,7 +5076,8 @@ class TestComputeDemandISF(unittest.TestCase):
         glucose, bolus = self._make_correction_glucose(n_corrections=10)
         result = compute_demand_isf(glucose, bolus, make_profile())
         self.assertIsNotNone(result)
-        self.assertIn("prescriptive paradox", result.paradox_warning.lower())
+        # Corrected: warning now references demand-phase ISF and validation
+        self.assertIn("demand-phase", result.paradox_warning.lower())
 
 
 class TestDetectInsulinSaturation(unittest.TestCase):
@@ -5204,12 +5205,11 @@ class TestAssessBasalCleanNight(unittest.TestCase):
         self.assertEqual(result, BasalAssessment.APPROPRIATE)
 
 
-class TestAdviseISFDefanged(unittest.TestCase):
-    """Test that advise_isf is now informational-only."""
+class TestAdviseISF(unittest.TestCase):
+    """Test advise_isf: demand-phase ISF targeting with apparent fallback."""
 
-    def test_advise_isf_returns_informational(self):
-        from cgmencode.production.settings_advisor import advise_isf
-        clinical = ClinicalReport(
+    def _make_clinical(self, effective_isf=150.0, isf_discrepancy=3.0):
+        return ClinicalReport(
             grade=GlycemicGrade.B,
             risk_score=40.0,
             tir=0.60,
@@ -5220,34 +5220,129 @@ class TestAdviseISFDefanged(unittest.TestCase):
             cv=30.0,
             basal_assessment=BasalAssessment.APPROPRIATE,
             cr_score=50.0,
-            effective_isf=150.0,  # 3× profile ISF of 50
-            isf_discrepancy=3.0,
+            effective_isf=effective_isf,
+            isf_discrepancy=isf_discrepancy,
         )
-        result = advise_isf(clinical, make_profile(), days_of_data=14.0)
+
+    def test_without_dual_phase_returns_informational(self):
+        """Without demand-phase data, apparent discrepancy is informational."""
+        from cgmencode.production.settings_advisor import advise_isf
+        result = advise_isf(self._make_clinical(), make_profile(), days_of_data=14.0)
         self.assertIsNotNone(result)
         self.assertEqual(result.direction, "informational")
         self.assertEqual(result.magnitude_pct, 0.0)
-        self.assertEqual(result.suggested_value, result.current_value)
-        self.assertIn("PRESCRIPTIVE PARADOX", result.rationale)
+        self.assertIn("DEPRECATED", result.evidence)
 
-    def test_advise_isf_low_discrepancy_returns_none(self):
+    def test_with_dual_phase_returns_actionable(self):
+        """With demand-phase ISF, produces actionable recommendation."""
         from cgmencode.production.settings_advisor import advise_isf
-        clinical = ClinicalReport(
-            grade=GlycemicGrade.A,
-            risk_score=20.0,
-            tir=0.80,
-            tbr=0.01,
-            tar=0.19,
-            mean_glucose=120.0,
-            gmi=6.0,
-            cv=25.0,
-            basal_assessment=BasalAssessment.APPROPRIATE,
-            cr_score=70.0,
-            effective_isf=55.0,
-            isf_discrepancy=1.1,  # < 1.5 threshold
+        from cgmencode.production.types import DualPhaseISF
+        dual = DualPhaseISF(
+            demand_isf=30.0, apparent_isf=150.0, inflation_ratio=5.0,
+            n_corrections=20, confidence='high',
+            demand_ci_low=25.0, demand_ci_high=35.0, scheduled_isf=50.0,
         )
-        result = advise_isf(clinical, make_profile(), days_of_data=14.0)
+        result = advise_isf(self._make_clinical(), make_profile(),
+                            days_of_data=14.0, dual_phase=dual)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.direction, "decrease")
+        self.assertGreater(result.magnitude_pct, 0.0)
+        # 50 + (30-50)*0.25 = 45
+        self.assertAlmostEqual(result.suggested_value, 45.0, places=0)
+        self.assertIn("Demand-phase ISF", result.evidence)
+        self.assertIn("DEPRECATED", result.evidence)  # apparent ISF noted as deprecated
+
+    def test_dual_phase_low_confidence_returns_none(self):
+        """Low confidence demand-phase → no recommendation."""
+        from cgmencode.production.settings_advisor import advise_isf
+        from cgmencode.production.types import DualPhaseISF
+        dual = DualPhaseISF(
+            demand_isf=30.0, apparent_isf=150.0, inflation_ratio=5.0,
+            n_corrections=6, confidence='low',
+            demand_ci_low=15.0, demand_ci_high=45.0, scheduled_isf=50.0,
+        )
+        result = advise_isf(self._make_clinical(), make_profile(),
+                            days_of_data=14.0, dual_phase=dual)
         self.assertIsNone(result)
+
+    def test_dual_phase_small_gap_returns_none(self):
+        """When demand ISF is close to profile ISF, no recommendation."""
+        from cgmencode.production.settings_advisor import advise_isf
+        from cgmencode.production.types import DualPhaseISF
+        dual = DualPhaseISF(
+            demand_isf=48.0, apparent_isf=100.0, inflation_ratio=2.1,
+            n_corrections=15, confidence='medium',
+            demand_ci_low=40.0, demand_ci_high=56.0, scheduled_isf=50.0,
+        )
+        # gap = 48 - 50 = -2, gap_pct = 4% < 15% threshold
+        result = advise_isf(self._make_clinical(), make_profile(),
+                            days_of_data=14.0, dual_phase=dual)
+        self.assertIsNone(result)
+
+    def test_low_discrepancy_without_dual_phase_returns_none(self):
+        from cgmencode.production.settings_advisor import advise_isf
+        result = advise_isf(
+            self._make_clinical(effective_isf=55.0, isf_discrepancy=1.1),
+            make_profile(), days_of_data=14.0)
+        self.assertIsNone(result)
+
+    def test_confidence_scales_with_data(self):
+        """Confidence should scale with data days."""
+        from cgmencode.production.settings_advisor import advise_isf
+        from cgmencode.production.types import DualPhaseISF
+        dual = DualPhaseISF(
+            demand_isf=30.0, apparent_isf=150.0, inflation_ratio=5.0,
+            n_corrections=25, confidence='high',
+            demand_ci_low=25.0, demand_ci_high=35.0, scheduled_isf=50.0,
+        )
+        result = advise_isf(self._make_clinical(), make_profile(),
+                            days_of_data=30.0, dual_phase=dual)
+        self.assertIsNotNone(result)
+        self.assertGreater(result.confidence, 0.5)
+
+
+class TestExcessInsulinCalculation(unittest.TestCase):
+    """Verify excess_insulin_u is sum of excess IOB (stock), not flow."""
+
+    def test_excess_insulin_is_stock_not_flow(self):
+        from cgmencode.production.clinical_rules import detect_insulin_saturation
+        n = 288 * 7  # 7 days
+        glucose = np.full(n, 120.0)
+        iob = np.full(n, 1.0)
+        roc = np.zeros(n)
+
+        # Create a 2h wall episode: high BG, high IOB, flat ROC
+        ep_start = 288  # day 2
+        ep_len = 24  # 2 hours
+        glucose[ep_start:ep_start + ep_len] = 220.0
+        iob[ep_start:ep_start + ep_len] = 5.0  # well above 2× median
+        roc[ep_start:ep_start + ep_len] = 0.5  # positive = not dropping
+
+        result = detect_insulin_saturation(glucose, iob, roc)
+        if result is not None and result.excess_insulin_u > 0:
+            # Excess above patience cap: 5.0 - 2*1.0 = 3.0 per step
+            # Over ~24 wall steps, should be >> 1.0 (was 0.67 with bug)
+            self.assertGreater(result.excess_insulin_u, 1.0)
+
+
+class TestCleanNightFallback(unittest.TestCase):
+    """Verify tiered fallback for clean-night basal assessment."""
+
+    def test_fallback_to_relaxed_overnight(self):
+        """When clean-night has <12 samples, should try relaxed overnight."""
+        from cgmencode.production.clinical_rules import assess_basal
+        n = 288 * 3  # 3 days
+        # Stable glucose — should assess as APPROPRIATE
+        glucose = np.full(n, 110.0)
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 3)
+        # IOB always > 0.5, so clean-night filter eliminates all
+        iob = np.full(n, 2.0)
+        cob = np.zeros(n)
+
+        result = assess_basal(glucose, hours=hours, iob=iob, cob=cob)
+        # Should NOT use all-day data; should fallback to relaxed overnight
+        # With stable glucose at 110, should assess as APPROPRIATE
+        self.assertEqual(result, BasalAssessment.APPROPRIATE)
 
 
 class TestAdvisePatienceMode(unittest.TestCase):
@@ -5338,7 +5433,7 @@ class TestAdviseISFDualPhase(unittest.TestCase):
         result = advise_isf_dual_phase(dp, days_of_data=14.0)
         self.assertIsNone(result)
 
-    def test_informational_report(self):
+    def test_actionable_when_gap_significant(self):
         from cgmencode.production.settings_advisor import advise_isf_dual_phase
         from cgmencode.production.types import DualPhaseISF
         dp = DualPhaseISF(
@@ -5353,9 +5448,9 @@ class TestAdviseISFDualPhase(unittest.TestCase):
         )
         result = advise_isf_dual_phase(dp, days_of_data=14.0)
         self.assertIsNotNone(result)
-        self.assertEqual(result.direction, "informational")
-        self.assertEqual(result.magnitude_pct, 0.0)
-        self.assertIn("NO CHANGE RECOMMENDED", result.rationale)
+        # With demand=15, scheduled=50, gap=70% → actionable
+        self.assertEqual(result.direction, "decrease")
+        self.assertGreater(result.magnitude_pct, 0.0)
         self.assertIn("3.3", result.evidence)
 
     def test_extreme_inflation_labeled(self):
@@ -5397,7 +5492,7 @@ class TestDualPhaseISFType(unittest.TestCase):
         self.assertEqual(dp.demand_isf, 15.0)
         self.assertEqual(dp.apparent_isf, 50.0)
         self.assertEqual(dp.confidence, 'low')  # default
-        self.assertIn("prescriptive paradox", dp.paradox_warning.lower())
+        self.assertIn("demand-phase", dp.paradox_warning.lower())
 
     def test_defaults(self):
         from cgmencode.production.types import DualPhaseISF

@@ -469,6 +469,7 @@ def run_pipeline(patient: PatientData,
 
     # ── Stage 6: Settings Advisor ─────────────────────────────────
     settings_recs = None
+    dual_phase_isf = None
     controller_type = detect_controller_type(patient)
     controller_behavior = get_controller_behavior(controller_type)
     overnight_assessment = None
@@ -490,6 +491,14 @@ def run_pipeline(patient: PatientData,
         warnings.append(f"Meal event extraction failed: {e}")
 
     if patient.days_of_data >= 3.0:
+        # Compute demand-phase ISF (EXP-2651) — stored in PipelineResult
+        try:
+            from cgmencode.production.clinical_rules import compute_demand_isf
+            dual_phase_isf = compute_demand_isf(
+                cleaned.glucose, patient.bolus, patient.profile)
+        except Exception as e:
+            warnings.append(f"Demand-phase ISF computation failed: {e}")
+
         try:
             settings_recs = generate_settings_advice(
                 cleaned.glucose, metabolic, hours,
@@ -646,6 +655,7 @@ def run_pipeline(patient: PatientData,
         loop_quality=loop_quality_result,
         pipeline_latency_ms=elapsed,
         warnings=warnings,
+        dual_phase_isf=dual_phase_isf,
     )
 
 

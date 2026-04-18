@@ -243,13 +243,12 @@ def _extract_isf_schedule(
     Research basis: EXP-1703 — ISF from BG delta / bolus dose.
     Uses curve_isf (exponential fit) when available, falls back to simple_isf.
 
-    PRESCRIPTIVE PARADOX CAVEAT (EXP-2641/2642):
-    Both curve_isf and simple_isf are APPARENT ISF values that include AID
-    controller compensation (2–10× inflation, EXP-2651). Recommendations
-    based on apparent ISF risk the prescriptive paradox. Demand-phase ISF
-    (0–2h, key='demand_isf') is preferred when available, though even
-    demand ISF should be applied conservatively. "Fixed ISF + feedback is
-    near-optimal" (EXP-2642).
+    NOTE: Both curve_isf and simple_isf are APPARENT ISF values that
+    include AID controller compensation (2–10× inflation, EXP-2651).
+    Demand-phase ISF (0–2h, key='demand_isf') is preferred when available.
+    Multi-factor ISF methods validated: dose-dependent r=-0.56 (EXP-2640),
+    response-curve R²=0.805 (EXP-1301), circadian 10-20% RMSE (EXP-2652).
+    Conservative steps (25%) toward demand-phase ISF are appropriate.
     """
     schedule = []
     all_isf_vals = []  # fallback pool

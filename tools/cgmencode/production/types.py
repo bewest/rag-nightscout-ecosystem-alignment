@@ -988,15 +988,15 @@ class PatientPhenotypeResult:
 class DualPhaseISF:
     """Demand-phase vs apparent ISF analysis (EXP-2651).
 
-    PRESCRIPTIVE PARADOX WARNING (EXP-2641/2642):
-    Apparent ISF includes AID controller amplification (2–10×). Using it
-    to change ISF settings creates a circular dependency — the controller
-    will compensate differently, invalidating the recommendation.
-    "Fixed ISF + feedback is near-optimal."
+    CORRECTED 2026-04-18 (egp-evidence-synthesis-report):
+    Apparent ISF includes AID controller amplification (2–10×). It should
+    NOT be used directly as an ISF target. However, demand-phase ISF
+    (0–2h drop/dose) measures the true insulin effect before EGP
+    suppression and IS suitable for conservative ISF recommendations.
 
-    Demand-phase ISF (0–2h drop/dose) measures the true insulin effect
-    before EGP suppression. Apparent ISF (full drop/dose) conflates
-    insulin action with hepatic glucose output suppression.
+    Multi-factor ISF methods validated: dose-dependent r=-0.56 (EXP-2640),
+    response-curve R²=0.805 (EXP-1301), circadian 10-20% RMSE (EXP-2652).
+    What fails is single-factor post-nadir recovery prediction (EXP-2634).
     """
     demand_isf: float                    # 0–2h drop per unit (mg/dL/U)
     apparent_isf: float                  # full correction drop per unit (mg/dL/U)
@@ -1008,9 +1008,9 @@ class DualPhaseISF:
     scheduled_isf: float = 0.0           # profile ISF for comparison
     paradox_warning: str = (
         "Apparent ISF is NOT true insulin sensitivity — it includes AID "
-        "controller compensation and EGP suppression. Recommending ISF "
-        "changes based on apparent ISF risks the prescriptive paradox "
-        "(EXP-2641): best descriptive model = 2.3× overdose."
+        "controller compensation and EGP suppression. Use demand-phase ISF "
+        "(0–2h) for conservative recommendations. Multi-factor ISF methods "
+        "validated: EXP-2640 r=-0.56, EXP-1301 R²=0.805."
     )
 
 
