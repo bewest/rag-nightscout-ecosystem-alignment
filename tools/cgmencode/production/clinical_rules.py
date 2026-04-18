@@ -1060,82 +1060,130 @@ def compute_three_ceilings(glucose: np.ndarray,
 compute_effective_isf = compute_apparent_isf
 
 
-# ── Demand-Phase ISF (EXP-2651) ──────────────────────────────────────
+# ── Demand-Phase ISF (EXP-2651, 2663-2666) ──────────────────────────
 
 # Demand phase = 0–2h post-bolus (24 steps at 5min intervals)
 _DEMAND_PHASE_STEPS = 24
 _MIN_DEMAND_CORRECTIONS = 5
+# Isolation tiers (EXP-2666: 6h is optimal, 2h is minimum viable)
+_STRICT_PRIOR_BOLUS_H = 6.0   # Nyquist-correct for DIA=6h
+_LAX_PRIOR_BOLUS_H = 2.0      # Fallback for SMB-heavy patients
+_CARB_EXCLUSION_H = 1.0       # ±1h carb-free zone
+_MIN_PRE_BG = 120              # mg/dL minimum for correction
+_MIN_DOSE = 0.5                # Units minimum bolus
+_MIN_DROP = 10                 # mg/dL minimum total drop
+_STEPS_PER_HOUR = 12
+
+
+def _extract_demand_events(glucose, bolus_vals, carbs_vals,
+                           prior_bolus_h, n_total):
+    """Extract isolated correction events with specified isolation window.
+
+    Uses EXP-2663 gold-standard method: glucose at exactly 2h (not nadir
+    in 0-2h window), carb exclusion zone, prior-bolus isolation.
+    """
+    prior_window = int(prior_bolus_h * _STEPS_PER_HOUR)
+    carb_window = int(_CARB_EXCLUSION_H * _STEPS_PER_HOUR)
+    post_window = 5 * _STEPS_PER_HOUR  # 5h for apparent ISF nadir search
+
+    demand_isfs = []
+    apparent_isfs = []
+
+    for i in range(prior_window, n_total - _DEMAND_PHASE_STEPS):
+        if bolus_vals[i] < _MIN_DOSE:
+            continue
+        pre_bg = float(glucose[i]) if np.isfinite(glucose[i]) else np.nan
+        if not np.isfinite(pre_bg) or pre_bg < _MIN_PRE_BG:
+            continue
+
+        dose = float(bolus_vals[i])
+
+        # No prior bolus within isolation window
+        if np.nansum(bolus_vals[max(0, i - prior_window):i]) > 0.3:
+            continue
+
+        # No carbs within ± exclusion zone
+        if carbs_vals is not None:
+            cs = max(0, i - carb_window)
+            ce = min(n_total, i + carb_window)
+            if np.nansum(carbs_vals[cs:ce]) > 2:
+                continue
+
+        # Demand ISF: glucose at exactly 2h (EXP-2663 method)
+        idx_2h = i + _DEMAND_PHASE_STEPS
+        if idx_2h >= n_total or np.isnan(glucose[idx_2h]):
+            continue
+        drop_2h = pre_bg - float(glucose[idx_2h])
+
+        # Find nadir in 1-5h for apparent ISF
+        nadir_start = i + _STEPS_PER_HOUR
+        nadir_end = min(i + post_window, n_total)
+        search = glucose[nadir_start:nadir_end]
+        valid = ~np.isnan(search)
+        if valid.sum() < 6:
+            continue
+        total_drop = pre_bg - float(np.nanmin(search))
+
+        if total_drop < _MIN_DROP:
+            continue
+
+        if drop_2h > 5 and dose > 0:
+            demand_isfs.append(drop_2h / dose)
+        if total_drop > 5 and dose > 0:
+            apparent_isfs.append(total_drop / dose)
+
+    return demand_isfs, apparent_isfs
 
 
 def compute_demand_isf(glucose: np.ndarray,
                        bolus: np.ndarray,
-                       profile: PatientProfile) -> Optional[DualPhaseISF]:
+                       profile: PatientProfile,
+                       carbs: Optional[np.ndarray] = None) -> Optional[DualPhaseISF]:
     """Compute dual-phase ISF: demand (0–2h) vs apparent (full drop).
 
-    Research (EXP-2651): Demand-phase ISF measures the true insulin
-    effect before EGP suppression begins (nadir at 3.5h, EXP-2624).
-    It is 2–10× smaller than apparent ISF and wins at ALL prediction
-    horizons (both 2h and 4h).
+    Uses EXP-2663-2666 validated methodology:
+    - Glucose at exactly 2h for demand drop (not nadir in 0-2h window)
+    - 6h prior-bolus isolation (Nyquist-correct for DIA=6h, EXP-2666)
+    - ±1h carb exclusion zone (EXP-2663 gold standard)
+    - Tiered fallback: 6h → 2h isolation for SMB-heavy patients
 
-    CORRECTED 2026-04-18: Demand-phase ISF IS suitable for conservative
-    ISF recommendations (multi-factor methods validated: EXP-2640 r=-0.56,
-    EXP-1301 R²=0.805). Apparent ISF alone should NOT be used directly.
-    Recommend conservative steps (25%) toward demand-phase ISF.
+    Validated properties: demand ISF is dose-INDEPENDENT (|r|=0.156),
+    circadian-FLAT (-4.7% from profiling), stable at 6h (rho=0.964).
+    Use a single constant per patient.
 
     Args:
         glucose: (N,) glucose values (mg/dL), 5-min intervals.
         bolus: (N,) bolus units per interval.
         profile: PatientProfile for scheduled ISF comparison.
+        carbs: (N,) optional carbs per interval for exclusion filtering.
 
     Returns:
-        DualPhaseISF with both ISF values and inflation ratio,
+        DualPhaseISF with both ISF values and isolation metadata,
         or None if insufficient correction events.
     """
     if bolus is None:
         return None
 
     bolus_vals = np.nan_to_num(bolus, nan=0.0)
-    correction_indices = np.where(bolus_vals > 0.5)[0]
+    carbs_vals = np.nan_to_num(carbs, nan=0.0) if carbs is not None else None
+    n_total = len(glucose)
 
-    if len(correction_indices) < _MIN_DEMAND_CORRECTIONS:
-        return None
+    # Tier 1: strict 6h isolation (Nyquist-correct)
+    demand_isfs, apparent_isfs = _extract_demand_events(
+        glucose, bolus_vals, carbs_vals, _STRICT_PRIOR_BOLUS_H, n_total)
+    isolation_used = _STRICT_PRIOR_BOLUS_H
+    quality_note = ''
 
-    demand_isfs = []
-    apparent_isfs = []
-
-    for idx in correction_indices:
-        pre_bg = float(glucose[idx]) if np.isfinite(glucose[idx]) else np.nan
-        if not np.isfinite(pre_bg) or pre_bg < 120:
-            continue
-
-        dose = float(bolus_vals[idx])
-        if dose < 0.1:
-            continue
-
-        # Demand phase: 0–2h (24 steps)
-        demand_end = min(idx + _DEMAND_PHASE_STEPS, len(glucose))
-        if demand_end - idx < 12:
-            continue
-
-        demand_window = glucose[idx:demand_end]
-        valid_demand = demand_window[np.isfinite(demand_window)]
-        if len(valid_demand) < 6:
-            continue
-
-        demand_drop = pre_bg - float(np.nanmin(valid_demand))
-        if demand_drop > 5:
-            demand_isfs.append(demand_drop / dose)
-
-        # Apparent phase: full 4h window (48 steps)
-        apparent_end = min(idx + 48, len(glucose))
-        apparent_window = glucose[idx:apparent_end]
-        valid_apparent = apparent_window[np.isfinite(apparent_window)]
-        if len(valid_apparent) < 12:
-            continue
-
-        apparent_drop = pre_bg - float(np.nanmin(valid_apparent))
-        if apparent_drop > 5:
-            apparent_isfs.append(apparent_drop / dose)
+    # Tier 2: fall back to 2h if insufficient strict events
+    if len(demand_isfs) < _MIN_DEMAND_CORRECTIONS:
+        demand_isfs, apparent_isfs = _extract_demand_events(
+            glucose, bolus_vals, carbs_vals, _LAX_PRIOR_BOLUS_H, n_total)
+        isolation_used = _LAX_PRIOR_BOLUS_H
+        if len(demand_isfs) >= _MIN_DEMAND_CORRECTIONS:
+            quality_note = (
+                f'Reduced to {_LAX_PRIOR_BOLUS_H}h isolation '
+                f'(SMB-heavy patient). Prior boluses may contaminate '
+                f'demand ISF estimate. Treat with caution.')
 
     if len(demand_isfs) < _MIN_DEMAND_CORRECTIONS:
         return None
@@ -1152,7 +1200,10 @@ def compute_demand_isf(glucose: np.ndarray,
         ]
         ci_low = float(np.percentile(boot_medians, 2.5))
         ci_high = float(np.percentile(boot_medians, 97.5))
-        conf = 'high' if len(demand_isfs) >= 20 else 'medium'
+        if isolation_used >= _STRICT_PRIOR_BOLUS_H:
+            conf = 'high' if len(demand_isfs) >= 20 else 'medium'
+        else:
+            conf = 'medium' if len(demand_isfs) >= 20 else 'low'
     else:
         ci_low = demand_med * 0.7
         ci_high = demand_med * 1.3
@@ -1173,6 +1224,8 @@ def compute_demand_isf(glucose: np.ndarray,
         demand_ci_low=round(ci_low, 1),
         demand_ci_high=round(ci_high, 1),
         scheduled_isf=round(sched_isf, 1),
+        isolation_h=isolation_used,
+        data_quality_note=quality_note,
     )
 
 

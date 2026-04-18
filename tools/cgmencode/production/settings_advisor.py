@@ -1999,7 +1999,8 @@ def generate_settings_advice(glucose: np.ndarray,
     if bolus is not None:
         try:
             from cgmencode.production.clinical_rules import compute_demand_isf
-            dual_phase_isf = compute_demand_isf(glucose, bolus, profile)
+            dual_phase_isf = compute_demand_isf(glucose, bolus, profile,
+                                                carbs=carbs)
         except Exception:
             pass  # graceful fallback — advise_isf will use informational mode
 

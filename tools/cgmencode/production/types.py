@@ -990,7 +990,7 @@ class PatientPhenotypeResult:
 
 @dataclass
 class DualPhaseISF:
-    """Demand-phase vs apparent ISF analysis (EXP-2651).
+    """Demand-phase vs apparent ISF analysis (EXP-2651, 2663-2666).
 
     CORRECTED 2026-04-18 (egp-evidence-synthesis-report):
     Apparent ISF includes AID controller amplification (2–10×). It should
@@ -998,9 +998,15 @@ class DualPhaseISF:
     (0–2h drop/dose) measures the true insulin effect before EGP
     suppression and IS suitable for conservative ISF recommendations.
 
-    Multi-factor ISF methods validated: dose-dependent r=-0.56 (EXP-2640),
-    response-curve R²=0.805 (EXP-1301), circadian 10-20% RMSE (EXP-2652).
-    What fails is single-factor post-nadir recovery prediction (EXP-2634).
+    Validated properties (EXP-2663-2666):
+    - Dose-INDEPENDENT: |r|=0.156 (673 events, 11 patients, LOO 100%)
+    - Circadian-FLAT: profiling worsens prediction by -4.7%
+    - Stable at 6h isolation: rank preservation rho=0.964
+    - Use a single constant per patient; no dose curves or circadian schedules.
+
+    Extraction requires 6h prior-bolus isolation (Nyquist for DIA=6h).
+    SMB-heavy patients may have insufficient isolated events; tiered
+    fallback to 2h isolation is used with reduced confidence.
     """
     demand_isf: float                    # 0–2h drop per unit (mg/dL/U)
     apparent_isf: float                  # full correction drop per unit (mg/dL/U)
@@ -1010,6 +1016,8 @@ class DualPhaseISF:
     demand_ci_low: float = 0.0           # bootstrap CI lower bound
     demand_ci_high: float = 0.0          # bootstrap CI upper bound
     scheduled_isf: float = 0.0           # profile ISF for comparison
+    isolation_h: float = 0.0             # prior-bolus isolation actually used (hours)
+    data_quality_note: str = ''          # per-patient data quality notes
     paradox_warning: str = (
         "Apparent ISF is NOT true insulin sensitivity — it includes AID "
         "controller compensation and EGP suppression. Use demand-phase ISF "

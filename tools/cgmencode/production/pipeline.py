@@ -495,7 +495,8 @@ def run_pipeline(patient: PatientData,
         try:
             from cgmencode.production.clinical_rules import compute_demand_isf
             dual_phase_isf = compute_demand_isf(
-                cleaned.glucose, patient.bolus, patient.profile)
+                cleaned.glucose, patient.bolus, patient.profile,
+                carbs=patient.carbs)
         except Exception as e:
             warnings.append(f"Demand-phase ISF computation failed: {e}")
 

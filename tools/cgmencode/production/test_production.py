@@ -5079,6 +5079,85 @@ class TestComputeDemandISF(unittest.TestCase):
         # Corrected: warning now references demand-phase ISF and validation
         self.assertIn("demand-phase", result.paradox_warning.lower())
 
+    def test_strict_isolation_reported(self):
+        """With well-separated corrections (gap=100=8.3h), 6h isolation succeeds."""
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        glucose, bolus = self._make_correction_glucose(
+            n_corrections=10, gap=100)  # 8.3h apart → passes 6h isolation
+        result = compute_demand_isf(glucose, bolus, make_profile())
+        self.assertIsNotNone(result)
+        self.assertEqual(result.isolation_h, 6.0)
+        self.assertEqual(result.data_quality_note, '')
+
+    def test_fallback_to_lax_isolation_with_smb(self):
+        """With closely-spaced boluses mimicking SMBs, falls back to 2h isolation."""
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        # Create corrections with gap=50 (4.2h) — too close for 6h, ok for 2h
+        glucose, bolus = self._make_correction_glucose(
+            n_corrections=15, gap=50, base_bg=200.0,
+            demand_drop=30.0, apparent_drop=80.0, dose=2.0)
+        result = compute_demand_isf(glucose, bolus, make_profile())
+        self.assertIsNotNone(result)
+        self.assertEqual(result.isolation_h, 2.0)
+        self.assertIn('Reduced to 2.0h isolation', result.data_quality_note)
+
+    def test_carb_exclusion_filters_events(self):
+        """Corrections with nearby carbs are excluded."""
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        glucose, bolus = self._make_correction_glucose(
+            n_corrections=10, gap=100)
+        # Add carbs near every correction → all should be excluded
+        carbs = np.zeros_like(glucose)
+        for i in range(10):
+            idx = 20 + i * 100
+            carbs[idx + 5] = 30.0  # 25min after bolus (within ±1h)
+        result = compute_demand_isf(glucose, bolus, make_profile(), carbs=carbs)
+        self.assertIsNone(result)  # All events excluded
+
+    def test_carb_exclusion_partial(self):
+        """Only corrections near carbs are excluded; clean ones remain."""
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        glucose, bolus = self._make_correction_glucose(
+            n_corrections=10, gap=100)
+        carbs = np.zeros_like(glucose)
+        # Contaminate first 4 corrections only
+        for i in range(4):
+            idx = 20 + i * 100
+            carbs[idx + 5] = 30.0
+        result = compute_demand_isf(glucose, bolus, make_profile(), carbs=carbs)
+        self.assertIsNotNone(result)  # 6 clean corrections remain
+        self.assertGreaterEqual(result.n_corrections, 5)
+        self.assertLessEqual(result.n_corrections, 7)
+
+    def test_no_carbs_array_still_works(self):
+        """Without carbs array, function works (backward compatible)."""
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        glucose, bolus = self._make_correction_glucose(n_corrections=10)
+        result = compute_demand_isf(glucose, bolus, make_profile())
+        self.assertIsNotNone(result)
+        self.assertGreaterEqual(result.n_corrections, 5)
+
+    def test_new_fields_populated(self):
+        """DualPhaseISF has isolation_h and data_quality_note fields."""
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        glucose, bolus = self._make_correction_glucose(n_corrections=10)
+        result = compute_demand_isf(glucose, bolus, make_profile())
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result.isolation_h, float)
+        self.assertIsInstance(result.data_quality_note, str)
+        self.assertGreater(result.isolation_h, 0)
+
+    def test_confidence_downgraded_at_lax_isolation(self):
+        """At 2h fallback, confidence is capped at 'medium' even with many events."""
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        glucose, bolus = self._make_correction_glucose(
+            n_corrections=30, gap=50, base_bg=200.0,
+            demand_drop=30.0, apparent_drop=80.0, dose=2.0)
+        result = compute_demand_isf(glucose, bolus, make_profile())
+        if result is not None and result.isolation_h == 2.0:
+            # Even with 30 corrections, confidence should be capped at 'medium'
+            self.assertIn(result.confidence, ('low', 'medium'))
+
 
 class TestDetectInsulinSaturation(unittest.TestCase):
     """Test detect_insulin_saturation from clinical_rules."""
