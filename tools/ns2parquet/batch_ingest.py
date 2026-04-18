@@ -22,11 +22,23 @@ After ingestion, a ``manifest.json`` is written with per-patient metadata
 import argparse
 import csv
 import json
+import signal
 import sys
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import List, Tuple, Optional
+
+# Per-site timeout (seconds).  Prevents infinite hangs on unresponsive servers.
+_SITE_TIMEOUT = 300  # 5 minutes
+
+
+class _SiteTimeout(Exception):
+    """Raised when a single site takes too long."""
+
+
+def _alarm_handler(signum, frame):
+    raise _SiteTimeout('site ingest timed out')
 
 
 def parse_csv(csv_path: str) -> List[Tuple[str, str]]:
@@ -48,10 +60,26 @@ def parse_csv(csv_path: str) -> List[Tuple[str, str]]:
     return rows
 
 
+def _existing_patients(output: str) -> set:
+    """Return set of patient_ids already present in the output grid."""
+    grid_path = Path(output) / 'grid.parquet'
+    if not grid_path.exists():
+        return set()
+    try:
+        import pyarrow.parquet as pq
+        t = pq.read_table(grid_path, columns=['patient_id'])
+        return set(t.column('patient_id').to_pylist())
+    except Exception:
+        return set()
+
+
 def batch_ingest(csv_path: str, days: int, output: str,
                  quiet: bool = False, skip_grid: bool = False,
-                 dry_run: bool = False) -> dict:
+                 dry_run: bool = False, resume: bool = True) -> dict:
     """Ingest every site in *csv_path* into *output* directory.
+
+    When *resume* is True (default), patients already in the output
+    parquet are skipped automatically.
 
     Returns a manifest dict with per-patient metadata.
     """
@@ -63,8 +91,12 @@ def batch_ingest(csv_path: str, days: int, output: str,
         print(f'ERROR: No valid rows in {csv_path}', file=sys.stderr)
         return {}
 
+    already_done = _existing_patients(output) if resume else set()
+
     if not quiet:
         print(f'Batch ingest: {len(rows)} sites, {days} days each')
+        if already_done:
+            print(f'Resuming: {len(already_done)} patients already ingested')
         print(f'Output: {output}/')
         print()
 
@@ -76,6 +108,17 @@ def batch_ingest(csv_path: str, days: int, output: str,
     for idx, (annotation, raw_url) in enumerate(rows, 1):
         base_url, token = parse_ns_url(raw_url)
         opaque_id = _generate_opaque_id(base_url)
+
+        if opaque_id in already_done:
+            if not quiet:
+                print(f'[{idx}/{len(rows)}] {opaque_id}  SKIP (already ingested)')
+            manifest_patients.append({
+                'patient_id': opaque_id,
+                'annotation': annotation,
+                'status': 'already-ingested',
+            })
+            results['skip'] += 1
+            continue
 
         if not quiet:
             print(f'[{idx}/{len(rows)}] {opaque_id}  '
@@ -104,11 +147,22 @@ def batch_ingest(csv_path: str, days: int, output: str,
         )
 
         try:
-            rc = cmd_ingest(ingest_args)
-            if rc and rc != 0:
-                raise RuntimeError(f'ingest returned {rc}')
-            results['ok'] += 1
-            status = 'ok'
+            old_handler = signal.signal(signal.SIGALRM, _alarm_handler)
+            signal.alarm(_SITE_TIMEOUT)
+            try:
+                rc = cmd_ingest(ingest_args)
+                if rc and rc != 0:
+                    raise RuntimeError(f'ingest returned {rc}')
+                results['ok'] += 1
+                status = 'ok'
+            finally:
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, old_handler)
+        except _SiteTimeout:
+            if not quiet:
+                print(f'  TIMEOUT: skipping after {_SITE_TIMEOUT}s')
+            results['fail'] += 1
+            status = f'timeout after {_SITE_TIMEOUT}s'
         except Exception as e:
             if not quiet:
                 print(f'  ERROR: {e}')
