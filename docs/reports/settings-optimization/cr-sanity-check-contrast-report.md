@@ -114,9 +114,9 @@ The blue line shows plausibility score (y-axis, 0–1) across the CR sweep (x-ax
 
 **Three curve shapes to recognize**:
 
-- **Bell-shaped peak near profile** → Profile CR is well-calibrated. The peak indicates the CR where meal sizes most closely match typical portions. (Patients c, f, g, h, i)
+- **Bell-shaped peak near profile** → Profile CR is well-calibrated. The peak indicates the CR where meal sizes most closely match typical portions. (Patients c, f, h, i)
 - **Monotonic decrease from left** → Profile CR is too high (too many g/U). Even at 0.5× profile, meals still look large, suggesting the true CR is much lower. (Patients b, k)
-- **Peak to the right of profile** → Profile CR is slightly too low. Meals at profile look small; a higher CR makes them more realistic. (Patient d)
+- **Monotonically increasing / plateau to the right** → Profile CR is too low. Meals at profile look small; a higher CR makes them more realistic. (Patients d, g)
 
 ### Bottom: Meal Size Comparison (Grouped Bar Chart)
 
@@ -144,7 +144,7 @@ Shows median meal size (with P25–P75 whiskers) at three representative CRs: 0.
 
 > **Meal count interpretation**: Counts are now filtered by overnight mask (0–5h excluded) and glucose excursion gate (≥30 mg/dL rise required). All patients land between 0.3 and 2.7 meals/day, well within the plausible range for most adults. Patients with very low counts (h at 0.7, k at 0.3) have AID systems that effectively blunt glucose excursions — fewer detectable rises means fewer events pass the ≥30 mg/dL gate. Patient k's 62 events should be treated as directional only. Patients eating 3+ meals but not seeing that count likely have tight control where the AID prevents excursions from reaching the threshold.
 
-**Key finding**: 6 of 10 evaluable patients (60%) have profile CRs within 20% of the best-fit — suggesting most profiles are already reasonably calibrated. Two patients (b, k) have profiles approximately 2× too high, which would cause the AID to significantly under-bolus for meals. One patient (g) may have a profile that is too low (1.5× under the best-fit), though this could also reflect the excursion filter removing too many small-excursion meals from a well-controlled patient.
+**Key finding**: 7 of 10 evaluable patients (70%) have profile CRs within 20% of the best-fit — suggesting most profiles are already reasonably calibrated. Two patients (b, k) have profiles approximately 2× too high, which would cause the AID to significantly under-bolus for meals. One patient (g) may have a profile that is too low (1.5× under the best-fit), though this could also reflect the excursion filter removing too many small-excursion meals from a well-controlled patient.
 
 [SOURCE: `externals/experiments/exp-2670_cr_sanity_check.json`]
 
@@ -232,7 +232,7 @@ The 11 patients cluster into four distinct patterns:
 Best examples:
 - **Patient c**: Best-fit CR = 4.0 (0.9× profile of 4.5). 1.5 meals/day, 275 events. At profile, lunch = 41g [23–62] — within the expected 40–60g range. The small difference (4.0 vs 4.5) may not justify a change, but confirms the profile direction.
 - **Patient f**: Best-fit CR = 4.5 (0.9× profile of 5.0). 1.8 meals/day, 322 events. Dinner-heavy distribution (129 of 322).
-- **Patient a**: Best-fit CR = 3.2 (0.8× profile of 4.0). 2.2 meals/day, 404 events — the largest sample in this archetype, after overnight and excursion filtering removed 63% of raw demand peaks.
+- **Patient a**: Best-fit CR = 3.2 (0.8× profile of 4.0). 2.2 meals/day, 404 events — the largest sample in this archetype, after overnight and excursion filtering removed 66% of raw demand peaks.
 
 ### Archetype 3: Profile Too High (b, k) — "Halve the CR"
 
@@ -245,7 +245,7 @@ Best examples:
 
 ### Archetype 4: Profile Too Low (d, g) — "Bump It Up"
 
-**Plausibility curve**: Peak to the right of profile line.  
+**Plausibility curve**: Monotonically increasing or plateau to the right of profile line.  
 **Interpretation**: At profile CR, meals look small. A higher CR makes sizes more realistic.
 
 - **Patient d**: Profile CR=14, best-fit CR=15.4 (1.1×). Modest increase. 1.3 meals/day, 243 events.
@@ -271,9 +271,9 @@ Patient c is the primary validation case because anecdotal experience is availab
 |----|-----|-----------|-------|--------|-------|-----|
 | 0.7× | 3.1 | 22 [14–29] | 29 [16–43] | 20 [13–38] | 30 [17–42] | — |
 | 0.9× | 4.0 | 28 [18–37] | 37 [21–56] | 26 [16–48] | 38 [22–55] | **0.792** ◀ |
-| 1.0× | 4.5 | 31 [20–41] | 41 [23–62] | 29 [18–54] | 42 [24–61] | 0.780 |
-| 1.3× | 5.9 | 40 [26–53] | 53 [30–80] | 37 [24–70] | 55 [31–79] | 0.750 |
-| 1.5× | 6.8 | 46 [30–62] | 62 [35–93] | 43 [27–80] | 63 [36–91] | 0.700 |
+| 1.0× | 4.5 | 31 [20–41] | 41 [23–62] | 29 [18–54] | 42 [24–61] | 0.791 |
+| 1.3× | 5.9 | 40 [26–53] | 53 [30–80] | 37 [24–70] | 55 [31–79] | 0.728 |
+| 1.5× | 6.8 | 46 [30–62] | 62 [35–93] | 43 [27–80] | 63 [36–91] | 0.715 |
 
 **Validation against anecdotal experience**:
 - **Lunch at profile (CR=4.5)**: 41g [23–62] — **matches the expected 40–60g** ✓
@@ -315,7 +315,7 @@ Patient f had the cleanest spectral signature in preliminary analysis: three dis
 
 Profile CR = 10, Best-fit CR = 5.0 (0.5×), **0.3 meals/day, 62 events** ⚠
 
-Patient k's AID is exceptionally effective at blunting glucose excursions: of 915 READY-gated demand peaks, 716 (78%) were filtered by the ≥30 mg/dL excursion gate, leaving only 62 events. At profile: breakfast = 128g [111–178], lunch = 93g [82–141] — unrealistically large. At best-fit CR=5: breakfast = 64g [56–89], lunch = 46g [41–70] — more plausible.
+Patient k's AID is exceptionally effective at blunting glucose excursions: of 915 READY-gated demand peaks, 716 (78%) were filtered by the ≥30 mg/dL excursion gate, leaving 199 peaks; after dessert merge and minimum carb thresholds, 62 events remained. At profile: breakfast = 128g [111–178], lunch = 93g [82–141] — unrealistically large. At best-fit CR=5: breakfast = 64g [56–89], lunch = 46g [41–70] — more plausible.
 
 The directional signal (profile is too high) is strong — the monotonically decreasing plausibility curve is unambiguous. However, the very small sample (62 events over 180 days) means the absolute best-fit value should be treated with caution.
 
