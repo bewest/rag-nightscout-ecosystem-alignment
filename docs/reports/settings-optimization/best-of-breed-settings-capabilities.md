@@ -244,13 +244,15 @@ ISF correction contributes **85% of predicted TIR gain** from settings optimizat
 > **⚠ CRITICAL CAVEAT — The Prescriptive Paradox (see §11.1)**
 >
 > All "effective ISF" values in this section are **apparent ISF**: total glucose
-> drop divided by bolus dose. This apparent ISF includes the AID controller's
-> compensatory basal suspension/withdrawal — it is an **emergent property of the
+> drop divided by bolus dose. This apparent ISF is an **emergent property of the
 > closed-loop system**, not the patient's true insulin sensitivity.
 >
-> ```
-> Apparent ISF = true ISF × (1 + controller_amplification_factor)
-> ```
+> Two effects are at work: (1) profile ISFs are genuinely too low — patients
+> are more insulin-sensitive than their profiles say; (2) the AID controller
+> **opposes** large corrections by suspending basal to prevent overshooting,
+> which **reduces** the glucose drop and deflates apparent ISF at higher doses.
+> The dose-dependent interaction means apparent ISF varies with correction size
+> and cannot be extracted as a single number for dosing.
 >
 > The paradox (EXP-2641/2642, 2026-04-13): the model that best *describes*
 > correction drops (per-patient log-ISF, bias = −3 mg/dL) is the **worst
@@ -258,7 +260,7 @@ ISF correction contributes **85% of predicted TIR gain** from settings optimizat
 > feedback is near-optimal." Do **NOT** use apparent ISF values directly for
 > dosing.
 >
-> [SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:95,111,188,220`]
+> [SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:95,111,129,171–174,188,220`]
 >
 > The production advisory (`advise_isf()`) predates this finding. It uses
 > conservative 25%-per-cycle steps toward apparent ISF, which may itself need
@@ -293,7 +295,7 @@ These values show **how much the controller is compensating**, not the patient's
 
 [SOURCE: `docs/60-research/natural-experiments-settings-optimization-report.md` — EXP-1703 table]
 
-**Interpretation**: Patient c's apparent ISF of 171 means "1U of correction + controller compensation together drop glucose ~171 mg/dL." It does **NOT** mean the patient's ISF setting should be 171. The true physiological ISF is lower — the rest is the controller withdrawing basal insulin to help the correction along.
+**Interpretation**: Patient c's apparent ISF of 171 reflects two things: (1) the profile ISF of 75 is genuinely too conservative — the patient really is more insulin-sensitive than the profile says, and (2) for small corrections where the controller barely intervenes, the apparent ISF approaches the true physiological ISF. For larger corrections, the controller **opposes** the bolus by suspending basal and cancelling SMBs to prevent overshooting low — this **reduces** the glucose drop, making apparent ISF per unit **smaller** at higher doses (the power-law effect, §3.2). The 171 is an average across all correction sizes. It should NOT be used as an ISF setting because: (a) changing ISF changes bolus size, which changes controller response, creating a circular dependency, (b) the dose-dependent nonlinearity means 171 is only accurate for small doses, and (c) the AID's real-time feedback already compensates — "fixed ISF + controller feedback is near-optimal" (EXP-2642).
 
 ### 3.2 Power-Law Dose-Response (ISF Nonlinearity)
 
@@ -664,12 +666,18 @@ Where `excess_insulin = total_absorption − scheduled_basal_absorption`.
 The model that best *describes* correction glucose drops (per-patient log-ISF, bias = −3 mg/dL) is the **worst prescriber** (recommends 2.3× the optimal dose).  
 [SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:95`]
 
-**Why**: Apparent ISF = true ISF × (1 + controller_amplification). The total glucose drop after a correction includes:
-1. The bolus's direct insulin effect (true ISF)
-2. The AID controller's basal withdrawal/suspension (amplification)
+**Why**: The apparent ISF is an emergent property of the closed-loop system, not the patient's intrinsic insulin sensitivity. Two effects interact:
 
-So when patient c's corrections produce 171 mg/dL/U apparent drops, most of that is Loop suspending basal to help the correction. The patient's true ISF is much smaller — the controller is doing the heavy lifting.  
-[SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:99–111`]
+1. **Profile ISF is genuinely too low** — patients are more insulin-sensitive than their profiles say (this is the dominant factor in the 2.91× ratio)
+2. **The controller opposes large corrections** — when a bolus drives glucose down, the AID suspends basal and cancels SMBs to prevent overshooting low. This **reduces** the total glucose drop, making apparent ISF per unit **smaller** for large doses
+
+The dose-dependent interaction creates a paradox:
+- For **small doses** (<1U): controller barely intervenes → apparent ISF ≈ true ISF (large)
+- For **large doses** (≥3U): controller aggressively suspends → apparent ISF deflated (small)
+- A log-ISF model captures this dose dependence descriptively (bias = −3), but if used to *calculate* doses, it recommends 2.3× the optimal dose because it doesn't account for the controller's real-time response to the dose it's recommending
+
+Large corrections have a **lower** over-correction rate (20%) than medium ones (27.5%) precisely because the controller absorbs the excess — converting potential hypos into mere under-corrections.  
+[SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:99–111,129,171–174`]
 
 **Conclusions from EXP-2641/2642**:
 1. "Fixed ISF + controller feedback is near-optimal" — the AID compensates in real-time  
