@@ -51,6 +51,6 @@ from .schemas import (                                      # noqa: F401
 from .constants import MMOLL_TO_MGDL, DIRECTION_MAP, normalize_timezone  # noqa: F401
 from .ns_fetch import (                                     # noqa: F401
     fetch_json, fetch_entries, fetch_treatments,
-    fetch_devicestatus, load_ns_url,
+    fetch_devicestatus, load_ns_url, parse_ns_url,
 )
 from .cli import build_manifest                             # noqa: F401

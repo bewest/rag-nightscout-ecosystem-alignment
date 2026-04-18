@@ -34,10 +34,40 @@ def load_ns_url(env_path: str) -> str:
     raise ValueError(f'NS_URL not found in {env_path}')
 
 
-def fetch_json(url: str, params: Optional[dict] = None) -> any:
-    """Fetch JSON from a URL with optional query parameters."""
-    if params:
-        qs = urllib.parse.urlencode(params)
+def parse_ns_url(url: str) -> tuple:
+    """Split a Nightscout URL into (base_url, token_or_none).
+
+    Handles URLs like ``https://site.example.com/?token=abc-123`` by
+    extracting the token from query params and returning the clean base URL.
+
+    Returns:
+        (base_url, token) — base_url has no trailing slash or query string;
+        token is ``None`` when the URL carries no ``?token=`` parameter.
+    """
+    parsed = urllib.parse.urlparse(url.strip())
+    qs = urllib.parse.parse_qs(parsed.query)
+    token = qs.get('token', [None])[0]
+    # Rebuild URL without query string
+    clean = urllib.parse.urlunparse((
+        parsed.scheme, parsed.netloc, parsed.path.rstrip('/'), '', '', '',
+    ))
+    return clean.rstrip('/'), token
+
+
+def fetch_json(url: str, params: Optional[dict] = None,
+               token: Optional[str] = None) -> any:
+    """Fetch JSON from a URL with optional query parameters.
+
+    Args:
+        url: Full URL (should not contain ``?token=``; use *token* param).
+        params: Extra query-string parameters.
+        token: Nightscout readable token (appended as ``&token=…``).
+    """
+    all_params = dict(params or {})
+    if token:
+        all_params['token'] = token
+    if all_params:
+        qs = urllib.parse.urlencode(all_params)
         url = f'{url}?{qs}'
     req = urllib.request.Request(url, headers={'Accept': 'application/json'})
     with urllib.request.urlopen(req, timeout=30) as resp:
@@ -48,11 +78,12 @@ def _fetch_windowed(base_url: str, endpoint: str, id_field: str,
                     sort_field: str, start, end,
                     date_mode: str = 'iso',
                     verbose: bool = False,
-                    label: str = '') -> List[Dict]:
+                    label: str = '',
+                    token: Optional[str] = None) -> List[Dict]:
     """Fetch records in 7-day windows with deduplication.
 
     Args:
-        base_url: Nightscout base URL
+        base_url: Nightscout base URL (no trailing slash, no query string).
         endpoint: API path (e.g., '/api/v1/entries.json')
         id_field: Field name for deduplication (typically '_id')
         sort_field: Field to sort results by
@@ -61,6 +92,7 @@ def _fetch_windowed(base_url: str, endpoint: str, id_field: str,
         date_mode: 'epoch' for epoch milliseconds, 'iso' for ISO 8601 strings
         verbose: Print progress
         label: Display label for progress messages
+        token: Nightscout readable token (passed through to each request).
 
     Returns:
         Deduplicated, sorted list of records
@@ -82,7 +114,7 @@ def _fetch_windowed(base_url: str, endpoint: str, id_field: str,
                 'find[date][$lt]': int(cursor),
                 'count': 10000,
             }
-            chunk = fetch_json(f'{base_url}{endpoint}', params)
+            chunk = fetch_json(f'{base_url}{endpoint}', params, token=token)
             if verbose:
                 print(f' {len(chunk)} records')
             all_records.extend(chunk)
@@ -102,7 +134,7 @@ def _fetch_windowed(base_url: str, endpoint: str, id_field: str,
                 'find[created_at][$lt]': cursor.strftime('%Y-%m-%dT%H:%M:%S.000Z'),
                 'count': 10000,
             }
-            chunk = fetch_json(f'{base_url}{endpoint}', params)
+            chunk = fetch_json(f'{base_url}{endpoint}', params, token=token)
             if verbose:
                 print(f' {len(chunk)} records')
             all_records.extend(chunk)
@@ -122,30 +154,33 @@ def _fetch_windowed(base_url: str, endpoint: str, id_field: str,
 
 
 def fetch_entries(base_url: str, start_ms: int, end_ms: int,
-                  verbose: bool = False) -> List[Dict]:
+                  verbose: bool = False,
+                  token: Optional[str] = None) -> List[Dict]:
     """Fetch CGM entries in 7-day windows (NS has a 10K record limit)."""
     return _fetch_windowed(
         base_url, '/api/v1/entries.json', '_id', 'date',
         start_ms, end_ms, date_mode='epoch',
-        verbose=verbose, label='entries',
+        verbose=verbose, label='entries', token=token,
     )
 
 
 def fetch_treatments(base_url: str, start_dt: datetime, end_dt: datetime,
-                     verbose: bool = False) -> List[Dict]:
+                     verbose: bool = False,
+                     token: Optional[str] = None) -> List[Dict]:
     """Fetch treatments in 7-day windows."""
     return _fetch_windowed(
         base_url, '/api/v1/treatments.json', '_id', 'created_at',
         start_dt, end_dt, date_mode='iso',
-        verbose=verbose, label='treatments',
+        verbose=verbose, label='treatments', token=token,
     )
 
 
 def fetch_devicestatus(base_url: str, start_dt: datetime, end_dt: datetime,
-                       verbose: bool = False) -> List[Dict]:
+                       verbose: bool = False,
+                       token: Optional[str] = None) -> List[Dict]:
     """Fetch devicestatus in 7-day windows."""
     return _fetch_windowed(
         base_url, '/api/v1/devicestatus.json', '_id', 'created_at',
         start_dt, end_dt, date_mode='iso',
-        verbose=verbose, label='devicestatus',
+        verbose=verbose, label='devicestatus', token=token,
     )

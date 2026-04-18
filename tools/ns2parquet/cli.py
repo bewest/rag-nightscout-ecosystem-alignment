@@ -285,7 +285,6 @@ def cmd_convert_all(args):
 
 def cmd_ingest(args):
     """Fetch from live Nightscout API and convert to Parquet."""
-    # Reuse ns_fetch patterns
     import urllib.request
     import urllib.parse
     from datetime import datetime, timedelta, timezone
@@ -293,21 +292,27 @@ def cmd_ingest(args):
     verbose = not args.quiet
     output = args.output
 
-    # Resolve URL
+    # Resolve URL — strip token from query string so path construction works
+    from .ns_fetch import parse_ns_url
+
     if args.env:
         with open(args.env) as f:
             for line in f:
                 line = line.strip()
                 if line.startswith('NS_URL='):
-                    base_url = line.split('=', 1)[1].strip().strip('"').strip("'").rstrip('/')
+                    raw_url = line.split('=', 1)[1].strip().strip('"').strip("'")
                     break
             else:
                 print(f'ERROR: NS_URL not found in {args.env}', file=sys.stderr)
                 return 1
     else:
-        base_url = args.url.rstrip('/')
+        raw_url = args.url
 
-    # Generate or use patient ID
+    base_url, url_token = parse_ns_url(raw_url)
+    # Explicit --token flag overrides token embedded in URL
+    token = getattr(args, 'token', None) or url_token
+
+    # Generate or use patient ID — hash the clean base URL (token-free)
     if args.patient_id:
         patient_id = args.patient_id
     else:
@@ -315,6 +320,8 @@ def cmd_ingest(args):
 
     if verbose:
         print(f'Ingesting {args.days} days from {base_url}')
+        if token:
+            print(f'  Using token: {token[:8]}…')
         print(f'Patient ID: {patient_id}'
               f'{" (auto-generated)" if not args.patient_id else ""}')
 
@@ -331,7 +338,7 @@ def cmd_ingest(args):
     if verbose:
         print(f'Fetching site status/settings...')
     try:
-        status = fetch_json(f'{base_url}/api/v1/status.json')
+        status = fetch_json(f'{base_url}/api/v1/status.json', token=token)
     except Exception as e:
         if verbose:
             print(f'  WARNING: Could not fetch status: {e}')
@@ -339,19 +346,22 @@ def cmd_ingest(args):
 
     if verbose:
         print(f'Fetching entries...')
-    entries = fetch_entries(base_url, start_ms, now_ms, verbose=verbose)
+    entries = fetch_entries(base_url, start_ms, now_ms, verbose=verbose,
+                            token=token)
 
     if verbose:
         print(f'Fetching treatments...')
-    treatments = fetch_treatments(base_url, start, now, verbose=verbose)
+    treatments = fetch_treatments(base_url, start, now, verbose=verbose,
+                                   token=token)
 
     if verbose:
         print(f'Fetching devicestatus...')
-    devicestatus = fetch_devicestatus(base_url, start, now, verbose=verbose)
+    devicestatus = fetch_devicestatus(base_url, start, now, verbose=verbose,
+                                       token=token)
 
     if verbose:
         print(f'Fetching profile...')
-    profile = fetch_json(f'{base_url}/api/v1/profile.json')
+    profile = fetch_json(f'{base_url}/api/v1/profile.json', token=token)
 
     # Write temp JSON then convert
     import tempfile
@@ -810,6 +820,8 @@ def main():
     url_group = p_ing.add_mutually_exclusive_group(required=True)
     url_group.add_argument('--url', help='Nightscout site URL')
     url_group.add_argument('--env', help='Path to env file with NS_URL=...')
+    p_ing.add_argument('--token',
+        help='Nightscout readable token (overrides token in URL query string)')
     p_ing.add_argument('--days', type=int, default=90,
         help='Days of history to fetch (default: 90)')
     p_ing.add_argument('--patient-id', '-p',
