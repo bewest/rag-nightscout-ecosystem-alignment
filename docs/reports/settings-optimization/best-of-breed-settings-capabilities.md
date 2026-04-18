@@ -62,21 +62,50 @@ The production pipeline is an 11-stage linear chain with graceful degradation fo
 ISF correction contributes **85% of predicted TIR gain** from settings optimization.  
 [SOURCE: `settings_optimizer.py:71` — `TIR_COEFF_ISF = 0.85`]
 
-### 2.1 ISF Discrepancy Detection
+> **⚠ CRITICAL CAVEAT — The Prescriptive Paradox (see §10.1)**
+>
+> All "effective ISF" values in this section are **apparent ISF**: total glucose
+> drop divided by bolus dose. This apparent ISF includes the AID controller's
+> compensatory basal suspension/withdrawal — it is an **emergent property of the
+> closed-loop system**, not the patient's true insulin sensitivity.
+>
+> ```
+> Apparent ISF = true ISF × (1 + controller_amplification_factor)
+> ```
+>
+> The paradox (EXP-2641/2642, 2026-04-13): the model that best *describes*
+> correction drops (per-patient log-ISF, bias = −3 mg/dL) is the **worst
+> prescriber** (recommends 2.3× the optimal dose). "Fixed ISF + controller
+> feedback is near-optimal." Do **NOT** use apparent ISF values directly for
+> dosing.
+>
+> [SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:95,111,188,220`]
+>
+> The production advisory (`advise_isf()`) predates this finding. It uses
+> conservative 25%-per-cycle steps toward apparent ISF, which may itself need
+> revision. The mismatch data below is retained as a **diagnostic signal** (how
+> hard is the controller working?) rather than a dosing target.
+
+### 2.1 ISF Discrepancy Detection (Diagnostic, Not Prescriptive)
 
 **Function**: `advise_isf()` in `settings_advisor.py:327–373`
 
-**Finding**: Effective ISF is **2.91× profile ISF** on average across all patients. 100% of patients have ISF underestimated (effective ISF is always higher than profile).  
+**Observation**: Apparent ISF is **2.91× profile ISF** on average across all patients. 100% of patients show the controller amplifying corrections beyond what the profile ISF would predict.  
 [SOURCE: `settings_advisor.py:332` — "effective ISF is 2.91× profile ISF on average (EXP-747)"]  
 [SOURCE: `docs/60-research/natural-experiments-settings-optimization-report.md` — EXP-1703: mean mismatch 2.30×, 7,534 corrections]
 
-**Mechanism**: Conservative recommendation — moves ISF **25%** toward observed effective value per cycle.  
-[SOURCE: `settings_advisor.py:347` — `adjustment_pct = 25.0`]
+**Current mechanism**: Conservative recommendation — moves ISF **25%** toward observed apparent value per cycle. For patient c (profile 75, apparent 171): suggests 75 → 99, **not** 75 → 171.  
+[SOURCE: `settings_advisor.py:345–348` — `adjustment_pct = 25.0`, `suggested = current_isf + gap * 0.25`]
 
-**Per-patient ISF mismatch (from EXP-1703)**:
+**⚠ Open question**: Even the 25% step targets an apparent ISF inflated by controller compensation (see §10.1). The paradox report concludes "stop trying to model ISF better for dosing" — the AID feedback loop already compensates in real time. This advisory may need revision.  
+[SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:220`]
 
-| Patient | Profile ISF | Effective ISF | Mismatch | N corrections |
-|---------|-------------|---------------|----------|---------------|
+**Per-patient apparent ISF vs profile (from EXP-1703)**:
+
+These values show **how much the controller is compensating**, not the patient's true ISF. A high ratio means the AID is doing more work to achieve corrections than the profile expects.
+
+| Patient | Profile ISF | Apparent ISF | Ratio (controller load) | N corrections |
+|---------|-------------|--------------|------------------------|---------------|
 | a | 48.6 | 62.2 | 1.28× | 151 |
 | c | 75.0 | 171.0 | 2.28× | 1,164 |
 | d | 40.0 | 145.7 | 3.64× | 809 |
@@ -84,6 +113,8 @@ ISF correction contributes **85% of predicted TIR gain** from settings optimizat
 | i | 50.0 | 156.3 | 3.13× | 3,241 |
 
 [SOURCE: `docs/60-research/natural-experiments-settings-optimization-report.md` — EXP-1703 table]
+
+**Interpretation**: Patient c's apparent ISF of 171 means "1U of correction + controller compensation together drop glucose ~171 mg/dL." It does **NOT** mean the patient's ISF setting should be 171. The true physiological ISF is lower — the rest is the controller withdrawing basal insulin to help the correction along.
 
 ### 2.2 Power-Law Dose-Response (ISF Nonlinearity)
 
@@ -449,10 +480,25 @@ Where `excess_insulin = total_absorption − scheduled_basal_absorption`.
 
 ### 10.1 The Descriptive-Prescriptive Paradox (EXP-2641/2642)
 
-The model that best *describes* correction glucose drops (per-patient log-ISF, bias = −3 mg/dL) is the **worst prescriber** (recommends 2.3× the optimal dose). The apparent ISF measured from corrections includes the AID controller's compensatory response (basal withdrawal, suspension). "Fixed ISF + feedback loop is near-optimal."  
-[SOURCE: `docs/60-research/egp-prescriptive-paradox-report-2026-04-13.md:1–100`]
+> **This is the single most important finding in the entire research program.**
 
-**Implication**: Do not naively use observed ISF for dosing. The production pipeline uses **conservative 25% adjustment per cycle** rather than full ISF correction.
+The model that best *describes* correction glucose drops (per-patient log-ISF, bias = −3 mg/dL) is the **worst prescriber** (recommends 2.3× the optimal dose).  
+[SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:95`]
+
+**Why**: Apparent ISF = true ISF × (1 + controller_amplification). The total glucose drop after a correction includes:
+1. The bolus's direct insulin effect (true ISF)
+2. The AID controller's basal withdrawal/suspension (amplification)
+
+So when patient c's corrections produce 171 mg/dL/U apparent drops, most of that is Loop suspending basal to help the correction. The patient's true ISF is much smaller — the controller is doing the heavy lifting.  
+[SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:99–111`]
+
+**Conclusions from EXP-2641/2642**:
+1. "Fixed ISF + controller feedback is near-optimal" — the AID compensates in real-time  
+2. "Stop trying to model ISF better for dosing" — per-event variability dominates (R² = −0.19)  
+3. The remaining ~16% hypo rate is irreducible event-to-event variability, not systematic ISF error  
+[SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:188,192,220`]
+
+**Impact on §2 (ISF Optimization)**: The EXP-747/1703 "effective ISF" data (§2.1) predates this finding. Those values are useful as a **diagnostic** (how hard is the controller working?) but should NOT be interpreted as ISF targets. The production `advise_isf()` uses conservative 25% steps but may itself need revision given this paradox. See the caveat box at the top of §2.
 
 ### 10.2 AID Compensation Theorem (EXP-2629/2630)
 
@@ -493,7 +539,7 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 
 | Metric | Value | Source File | EXP |
 |--------|-------|------------|-----|
-| ISF universal underestimation | 2.3× mean (1.2–4.3×) | `natural-experiments-settings-optimization-report.md` | 1703 |
+| ISF apparent/profile ratio | 2.3× mean (1.2–4.3×) ⚠ includes controller compensation | `natural-experiments-settings-optimization-report.md` | 1703 |
 | ISF power-law β | 0.9 | `settings_advisor.py:381` | 2511 |
 | ISF circadian range | 2–9× within-day | `settings_advisor.py:6` | 2271 |
 | CR effective/profile ratio | 1.47× (under-dosing) | `therapy-settings-synthesis-2026-04-11.md:88` | 2535b |
