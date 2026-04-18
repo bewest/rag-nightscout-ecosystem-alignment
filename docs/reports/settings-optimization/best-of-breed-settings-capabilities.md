@@ -60,7 +60,7 @@ The production pipeline is an 11-stage linear chain with graceful degradation fo
 
 ## 2. Optimization Sequencing — Fix Order Matters
 
-> **7/11 patients are harmed by optimizing in the wrong order.** (EXP-1765)
+> **6/11 patients are harmed by optimizing in the wrong order.** (EXP-1765)
 
 Settings optimization is NOT a single-pass adjustment. The production pipeline implements a **3-phase sequence** where the patient's current glucose variability determines what to fix first. This is the single most important architectural decision in the pipeline.  
 [SOURCE: `settings_advisor.py:3068–3103` — `determine_optimization_phase()`]  
@@ -151,8 +151,8 @@ Loop/Trio patients spend 52% of time in supply-dominated windows (loop suspendin
 | Magnitude | Mean TIR Change | Overcorrections |
 |-----------|:---------------:|:---------------:|
 | **Conservative (±10%)** | **−1.2%** | **0** |
-| Moderate (±20%) | −2.7% | 0 |
-| Aggressive (±30%) | −3.1% | 0 |
+| Moderate (±20%) | −2.6% | 0 |
+| Aggressive (±30%) | −3.2% | 0 |
 
 [SOURCE: `therapy-actionable-recommendations-report-2026-04-10.md:198–221` — EXP-1416]
 
@@ -431,7 +431,7 @@ Every 5-minute glucose data point is classified into one of 4 buckets:
 | **ISFGlucose** | BGI < −¼ × basalBGI AND avgDelta ≤ 0 | ISF tuning |
 | **basalGlucose** | Everything else (basal insulin dominates) | Basal tuning |
 
-[SOURCE: `externals/oref0/lib/autotune-prep/categorize.js:331–367`]
+[SOURCE: `externals/oref0/lib/autotune-prep/categorize.js:298–367`]
 
 Key detail: if meals are properly logged (≥1h carb absorption data), UAM deviations are **reclassified as basal**. If meals are NOT logged, UAM data pollutes the basal bucket (top 50% discarded as safety measure).  
 [SOURCE: `externals/oref0/lib/autotune-prep/categorize.js:398–418`]
@@ -852,7 +852,7 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Sequencing** | | | |
 | CV threshold for phase transition | 28% | `settings_advisor.py:3071` | 1765 |
 | Patients needing variability-first | 9/11 | `settings_advisor.py:3082` | 1765 |
-| Patients harmed by wrong order | 7/11 | `settings_advisor.py:3077` | 1765 |
+| Patients harmed by wrong order | 6/11 | `settings_advisor.py:3077` | 1765 |
 | Combined optimization ceiling | +17.6% TIR | `clinical_rules.py:978` | 1765 |
 | Sequential vs simultaneous gain | +40–90% vs +15–25% | `therapy-comprehensive-campaign-report:197` | 1479 |
 | Basal as top action | 10/11 patients | `therapy-pipeline-validation-report:213` | 1386 |

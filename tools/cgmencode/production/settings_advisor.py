@@ -3074,7 +3074,7 @@ _CV_THRESHOLD = 28.0  # %
 def determine_optimization_phase(glucose: np.ndarray) -> OptimizationPhase:
     """Determine which optimization phase a patient needs (EXP-1765).
 
-    Three-phase sequence (order matters — 7/11 patients harmed by wrong order):
+    Three-phase sequence (order matters — 6/11 patients harmed by wrong order):
     1. REDUCE_VARIABILITY (CV > 28%): break cascades, reduce overnight swings
     2. CENTER (CV ≤ 28%): adjust ISF, CR, basal rates to center glucose
     3. PERSONALIZE: per-patient tuning of all parameters
