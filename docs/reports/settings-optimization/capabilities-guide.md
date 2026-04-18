@@ -38,23 +38,23 @@ Each capability is rated by maturity level:
 
 | Capability | Maturity | Evidence | Module |
 |-----------|----------|----------|--------|
-| **Optimization sequencing** (§2) | 🟢 Production | EXP-1765, 1479, 1386 | `settings_advisor.py` |
-| **Basal adequacy** (§3) | 🟢 Production | EXP-2371, 2375, 2052 | `settings_advisor.py`, `settings_optimizer.py` |
-| **ISF discrepancy detection** (§4) | 🟢 Production | EXP-747, 1703 | `settings_advisor.py` |
-| **ISF power-law nonlinearity** (§4) | 🟢 Production | EXP-2511, 2523 | `settings_advisor.py` |
-| **Circadian ISF** (§4) | 🟢 Production | EXP-2271, 2051 | `settings_advisor.py` |
+| **Optimization sequencing** (§2) | 🟢 Production | EXP-1765, 1479, 1386 | `advisor/_pipeline.py` |
+| **Basal adequacy** (§3) | 🟢 Production | EXP-2371, 2375, 2052 | `advisor/_basal_advisors.py`, `settings_optimizer.py` |
+| **ISF discrepancy detection** (§4) | 🟢 Production | EXP-747, 1703 | `advisor/_isf_advisors.py` |
+| **ISF power-law nonlinearity** (§4) | 🟢 Production | EXP-2511, 2523 | `advisor/_isf_advisors.py` |
+| **Circadian ISF** (§4) | 🟢 Production | EXP-2271, 2051 | `advisor/_isf_advisors.py` |
 | **Demand-phase ISF** (§4) | 🟢 Production | EXP-2651, 2663–2666 | `clinical_rules.py` |
-| **CR adequacy** (§5) | 🟢 Production | EXP-2535b, 1705 | `settings_advisor.py` |
-| **Correction threshold** (§6) | 🟢 Production | EXP-2526c, 2528 | `settings_advisor.py` |
+| **CR adequacy** (§5) | 🟢 Production | EXP-2535b, 1705 | `advisor/_cr_advisors.py` |
+| **Correction threshold** (§6) | 🟢 Production | EXP-2526c, 2528 | `advisor/_pipeline.py` |
 | **Controller-specific trust** (§7) | 🟢 Production | EXP-2624 | `recommender.py` |
 | **Profile export** (§8) | 🟢 Production | — | `profile_generator.py` |
-| **Safety guardrails** (§9) | 🟢 Production | EXP-2624, 2626 | `settings_advisor.py`, `settings_optimizer.py` |
+| **Safety guardrails** (§9) | 🟢 Production | EXP-2624, 2626 | `advisor/_pipeline.py`, `settings_optimizer.py` |
 | **SC suppression ceiling** | 🟢 Production | EXP-2656, 2660 | `clinical_rules.py` |
-| **Patience mode advisory** | 🟢 Production | EXP-2662 | `settings_advisor.py` |
+| **Patience mode advisory** | 🟢 Production | EXP-2662 | `advisor/_isf_advisors.py` |
 | **Stacking prevention** | 🟢 Production | EXP-2624 | `clinical_rules.py` |
 | **Forward simulation** (§10) | 🟡 Beta | EXP-2525, 2534, 2551 | `forward_simulator.py` |
 | **Detected-meal CR** | 🟡 Partial | EXP-1341, 1569 | `settings_optimizer.py` |
-| **Context-aware CR** | 🔬 Research | EXP-2341 | `settings_advisor.py` |
+| **Context-aware CR** | 🔬 Research | EXP-2341 | `advisor/_cr_advisors.py` |
 | **Split-dose recommendation** | ❌ Disproved | EXP-2522 | — |
 | **Circadian demand ISF** | ❌ Disproved | EXP-2664–2666 | — |
 
@@ -288,7 +288,7 @@ Detects when insulin delivery hits a ceiling where additional insulin has dimini
 
 ### Patience Mode Advisory
 
-**Function**: `advise_patience_mode()` in `settings_advisor.py`
+**Function**: `advise_patience_mode()` in `advisor/_isf_advisors.py`
 
 Recommends capping SMB delivery when insulin is likely saturating. Fires when IOB > 2× median AND glucose not dropping fast.
 

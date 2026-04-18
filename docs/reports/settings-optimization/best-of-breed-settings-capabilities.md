@@ -63,8 +63,8 @@ The production pipeline is an 11-stage linear chain with graceful degradation fo
 > **6/11 patients are harmed by optimizing in the wrong order.** (EXP-1765)
 
 Settings optimization is NOT a single-pass adjustment. The production pipeline implements a **3-phase sequence** where the patient's current glucose variability determines what to fix first. This is the single most important architectural decision in the pipeline.  
-[SOURCE: `settings_advisor.py:3312` — `determine_optimization_phase()`]  
-[SOURCE: `settings_advisor.py:3344` — `prioritize_recommendations()`]
+[SOURCE: `advisor/_pipeline.py:763` — `determine_optimization_phase()`]  
+[SOURCE: `advisor/_pipeline.py:795` — `prioritize_recommendations()`]
 
 ### 2.1 The Three Phases
 
@@ -74,18 +74,18 @@ Settings optimization is NOT a single-pass adjustment. The production pipeline i
 | **CENTER** | CV ≤ 28%, TIR < 70% | ISF → CR → Basal | Shift mean glucose into range |
 | **PERSONALIZE** | CV ≤ 28%, TIR ≥ 70% | Impact-sorted (any order) | Fine-tune all parameters |
 
-[SOURCE: `settings_advisor.py:3316–3318` — phase definitions]  
-[SOURCE: `settings_advisor.py:3309` — CV threshold logic]
+[SOURCE: `advisor/_pipeline.py:767–769` — phase definitions]  
+[SOURCE: `advisor/_pipeline.py:760` — CV threshold logic]
 
 **CV threshold = 28%**. Above 28%, reducing variability (primarily via basal) yields more TIR gain than centering mean glucose. Below 28%, centering (primarily via ISF/CR) becomes dominant.  
-[SOURCE: `settings_advisor.py:3309` — `_CV_THRESHOLD = 28.0`]  
+[SOURCE: `advisor/_pipeline.py:760` — `_CV_THRESHOLD = 28.0`]  
 [SOURCE: `centering-dynamics-report-2026-04-10.md:318,545`]
 
 **Finding**: 9/11 patients need variability reduction BEFORE centering.  
-[SOURCE: `settings_advisor.py:3320` — "9/11 patients need variability reduction BEFORE centering"]
+[SOURCE: `advisor/_pipeline.py:771` — "9/11 patients need variability reduction BEFORE centering"]
 
 **Combined ceiling**: Maximum achievable TIR improvement from all settings optimization = **+17.6%**.  
-[SOURCE: `settings_advisor.py:3321` — "Combined ceiling: +17.6% TIR"]  
+[SOURCE: `advisor/_pipeline.py:772` — "Combined ceiling: +17.6% TIR"]  
 [SOURCE: `clinical_rules.py:978` — "Algorithm ceiling (EXP-1765): +17.6% TIR maximum"]
 
 ### 2.2 Phase Priority Maps
@@ -98,7 +98,7 @@ CENTER:             { ISF: 0, CR: 1, BASAL: 2 }    # ISF first
 PERSONALIZE:        (keep impact-sorted order)       # Any order
 ```
 
-[SOURCE: `settings_advisor.py:3363–3374`]
+[SOURCE: `advisor/_pipeline.py:837–888`]
 
 **Why basal first in Phase 1**: Basal affects the baseline 24/7. Fixing it stabilizes the foundation around which CR and ISF operate, making subsequent adjustments more predictable. Sequential optimization (basal → CR → ISF) yields **+40–90% improvement** for multi-flag patients vs only **+15–25%** for simultaneous adjustment.  
 [SOURCE: `therapy-comprehensive-campaign-report-2026-04-10.md:197–206` — EXP-1479]
@@ -201,11 +201,11 @@ The **single best signal** for basal adequacy is overnight glucose drift on clea
 - Window: 00:00–06:00  
 - IOB < 0.5 U, COB < 5 g  
 - Minimum 3 clean nights for assessment  
-[SOURCE: `settings_advisor.py:2926–2932` — `_CLEAN_NIGHT_IOB_MAX`, `_CLEAN_NIGHT_COB_MAX`, `_MIN_CLEAN_NIGHTS`]
+[SOURCE: `advisor/_basal_advisors.py:407–413` — `_CLEAN_NIGHT_IOB_MAX`, `_CLEAN_NIGHT_COB_MAX`, `_MIN_CLEAN_NIGHTS`]
 
 **Step 2 — Measure linear drift** per night:
 - Linear regression: `slope = np.polyfit(time, glucose, 1)[0]` → drift in mg/dL/hr  
-[SOURCE: `settings_advisor.py:3054–3056`]
+[SOURCE: `advisor/_basal_advisors.py:542–543`]
 
 **Step 3 — Classify overnight phenotype**:
 
@@ -218,8 +218,8 @@ The **single best signal** for basal adequacy is overnight glucose drift on clea
 | **Loop-dependent** | suspension > 40% of overnight | Decrease basal (loop over-compensating) |
 | **Mixed** | std(drifts) > 2 × mean\|drift\| | Investigate further |
 
-[SOURCE: `settings_advisor.py:2935–2940` — thresholds]  
-[SOURCE: `settings_advisor.py:3088–3105` — classification logic]
+[SOURCE: `advisor/_basal_advisors.py:415–421` — thresholds]  
+[SOURCE: `advisor/_basal_advisors.py:576–593` — classification logic]
 
 **Step 4 — Compute basal adjustment**:
 - Adjustment (U/hr) = median_drift / profile_ISF  
@@ -231,7 +231,7 @@ The **single best signal** for basal adequacy is overnight glucose drift on clea
 - Compare pre-04:00 vs post-04:00 glucose within each night  
 - Dawn rise > 15 mg/dL → dawn phenomenon present  
 - 6/19 patients affected; only 6 AM shows genuine under-basaling  
-[SOURCE: `settings_advisor.py:3059–3072`]  
+[SOURCE: `advisor/_basal_advisors.py:548–560`]  
 [SOURCE: `circadian-therapy-report-2026-04-10.md` — EXP-2052]
 
 ---
@@ -269,14 +269,14 @@ ISF correction contributes **85% of predicted TIR gain** from settings optimizat
 
 ### 3.1 ISF Discrepancy Detection (Diagnostic, Not Prescriptive)
 
-**Function**: `advise_isf()` in `settings_advisor.py:327–373`
+**Function**: `advise_isf()` in `advisor/_isf_advisors.py:77–186`
 
 **Observation**: Apparent ISF is **2.91× profile ISF** on average across all patients. 100% of patients show the controller amplifying corrections beyond what the profile ISF would predict.  
-[SOURCE: `settings_advisor.py:332` — "effective ISF is 2.91× profile ISF on average (EXP-747)"]  
+[SOURCE: `advisor/_isf_advisors.py:107` — "effective ISF is 2.91× profile ISF on average (EXP-747)"]  
 [SOURCE: `docs/60-research/natural-experiments-settings-optimization-report.md` — EXP-1703: mean mismatch 2.30×, 7,534 corrections]
 
 **Current mechanism**: Conservative recommendation — moves ISF **25%** toward observed apparent value per cycle. For patient c (profile 75, apparent 171): suggests 75 → 99, **not** 75 → 171.  
-[SOURCE: `settings_advisor.py:345–348` — `adjustment_pct = 25.0`, `suggested = current_isf + gap * 0.25`]
+[SOURCE: `advisor/_isf_advisors.py:114–115` — `step_frac = 0.25`, `suggested = current_isf + gap * step_frac`]
 
 **⚠ Open question**: Even the 25% step targets an apparent ISF inflated by controller compensation (see §11.1). The paradox report concludes "stop trying to model ISF better for dosing" — the AID feedback loop already compensates in real time. This advisory may need revision.  
 [SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:220`]
@@ -299,14 +299,14 @@ These values show **how much the controller is compensating**, not the patient's
 
 ### 3.2 Power-Law Dose-Response (ISF Nonlinearity)
 
-**Function**: `advise_isf_nonlinearity()` in `settings_advisor.py:385–465`
+**Function**: `advise_isf_nonlinearity()` in `advisor/_isf_advisors.py:189–275`
 
 **Model**: ISF(dose) = ISF_base × dose^(−β), where **β = 0.9** (population).  
-[SOURCE: `settings_advisor.py:435` — `_POPULATION_ISF_BETA = 0.9`]  
-[SOURCE: `settings_advisor.py:59` — `_POWER_LAW_BETA = 0.9  # from EXP-2511`]
+[SOURCE: `advisor/_isf_advisors.py:185` — `_POPULATION_ISF_BETA = 0.9`]  
+[SOURCE: `advisor/_simulation.py:34` — `_POWER_LAW_BETA = 0.9  # from EXP-2511`]
 
 **Clinical meaning**: A 2U correction is **46% less effective per unit** than 1U. A 3U correction achieves only ~1.1× the glucose drop of 1U, not 3×.  
-[SOURCE: `settings_advisor.py:393–396`]
+[SOURCE: `advisor/_isf_advisors.py:197–199`]
 
 **Causal validation**: 4 independent methods (stratification, propensity matching, matched pairs, BG strata). 17/17 patients with sufficient corrections show the effect (p<0.0001).  
 [SOURCE: `docs/60-research/therapy-settings-synthesis-2026-04-11.md:36–37` — EXP-2523]
@@ -316,15 +316,15 @@ These values show **how much the controller is compensating**, not the patient's
 [SOURCE: `docs/60-research/therapy-settings-synthesis-2026-04-11.md:269` — EXP-2522b "empirically 0.39×"]
 
 **Fires when**: Typical correction dose > 1.5U and ≥3 days of data.  
-[SOURCE: `settings_advisor.py:382` — `_ISF_NONLINEARITY_DOSE_THRESHOLD = 1.5`]  
-[SOURCE: `settings_advisor.py:62` — `MIN_DATA_DAYS = 3.0`]
+[SOURCE: `advisor/_isf_advisors.py:186` — `_ISF_NONLINEARITY_DOSE_THRESHOLD = 1.5`]  
+[SOURCE: `advisor/_simulation.py:37` — `MIN_DATA_DAYS = 3.0`]
 
 ### 3.3 Circadian ISF Variation
 
-**Functions**: `advise_circadian_isf()`, `advise_circadian_isf_profiled()` in `settings_advisor.py`
+**Functions**: `advise_circadian_isf()`, `advise_circadian_isf_profiled()` in `advisor/_isf_advisors.py`
 
 **Finding**: ISF varies **2–9× within a single day** across patients. A 2-zone day/night schedule captures 61–90% of the benefit.  
-[SOURCE: `settings_advisor.py:6` — "EXP-2271 (circadian ISF 4.6-9×, 2-zone captures 61-90%)"]
+[SOURCE: `advisor/_isf_advisors.py:894` — "EXP-2271: 2-zone (day/night) captures 61-90% of circadian ISF benefit"]
 
 **Population circadian profile (EXP-2051)**:
 
@@ -342,10 +342,10 @@ These values show **how much the controller is compensating**, not the patient's
 
 ### 3.4 Time-Segmented ISF
 
-**Function**: `advise_isf_segmented()` in `settings_advisor.py:767–845`
+**Function**: `advise_isf_segmented()` in `advisor/_isf_advisors.py:316–416`
 
 **Triggers**: When ISF variation >50% across day and ≥7 days of data. Recommends 2–4 ISF segments for time periods where ISF differs >20% from average.  
-[SOURCE: `settings_advisor.py:793–794` — `if patterns.isf_variation_pct < 50.0: return []` and `if days_of_data < 7.0: return []`]
+[SOURCE: `advisor/_isf_advisors.py:349–350` — `if patterns.isf_variation_pct < 50.0: return []` and `if days_of_data < 7.0: return []`]
 
 ### 3.5 Natural Experiment ISF Extraction
 
@@ -366,10 +366,10 @@ These values show **how much the controller is compensating**, not the patient's
 
 ### 4.1 Overnight Drift Assessment
 
-**Function**: `assess_overnight_drift()` in `settings_advisor.py`
+**Function**: `assess_overnight_drift()` in `advisor/_basal_advisors.py`
 
 **Phenotypes**: Classifies patients into 5 overnight phenotypes: stable, under-basaled, over-basaled, dawn phenomenon, loop-dependent.  
-[SOURCE: `settings_advisor.py` — `OvernightPhenotype` enum]
+[SOURCE: `advisor/_basal_advisors.py` — `OvernightPhenotype` enum]
 
 **Finding**: 18/19 patients are miscalibrated. Only 1 patient (j) is well-calibrated. Mean overnight basal suspension rate is 60%. 14/19 patients are suspension-dominant (Loop primarily suspends basal rather than increasing it).  
 [SOURCE: `docs/60-research/therapy-settings-synthesis-2026-04-11.md:161–164` — EXP-2371]  
@@ -380,15 +380,15 @@ These values show **how much the controller is compensating**, not the patient's
 
 ### 4.2 Basal Adequacy Advisory
 
-**Function**: `advise_basal()` in `settings_advisor.py:169–265`
+**Function**: `advise_basal()` in `advisor/_basal_advisors.py:47–167`
 
 **Method**: Uses overnight (00:00–06:00) glucose drift to assess basal adequacy. Simulates TIR with 10%, 15%, and 20% basal adjustments.  
-[SOURCE: `settings_advisor.py:201–211` — grid search over `[0.10, 0.15, 0.20]`]
+[SOURCE: `advisor/_basal_advisors.py:78–98` — grid search over `[0.10, 0.15, 0.20]`]
 
 **Output**: Direction (increase/decrease), magnitude (%), current and suggested values, predicted TIR delta, confidence score.
 
 **Minimum data**: 3 days for any recommendation, 14 days for full confidence.  
-[SOURCE: `settings_advisor.py:62–63` — `MIN_DATA_DAYS = 3.0`, `HIGH_CONFIDENCE_DAYS = 14.0`]
+[SOURCE: `advisor/_simulation.py:37–38` — `MIN_DATA_DAYS = 3.0`, `HIGH_CONFIDENCE_DAYS = 14.0`]
 
 ### 4.3 Natural Experiment Basal Extraction
 
@@ -477,8 +477,8 @@ The "deviation" at each point = actual glucose change (avgDelta) minus expected 
 
 [SOURCE: `externals/oref0/lib/autotune/index.js:210–293` — autotune basal algorithm]  
 [SOURCE: `externals/oref0/lib/autotune-prep/categorize.js:331–418` — data categorization]  
-[SOURCE: `settings_advisor.py:2926–2932` — clean night criteria]  
-[SOURCE: `settings_advisor.py:201–211` — our basal adjustment grid search]  
+[SOURCE: `advisor/_basal_advisors.py:407–413` — clean night criteria]  
+[SOURCE: `advisor/_basal_advisors.py:78–98` — our basal adjustment grid search]  
 [SOURCE: `settings_optimizer.py:48–54` — our 5 time periods]  
 [SOURCE: `docs/60-research/autotune-uam-characterization-report.md:174–179` — autotune convergence speed]
 
@@ -497,18 +497,18 @@ The "deviation" at each point = actual glucose change (avgDelta) minus expected 
 #### 4.5.4 What Our Pipeline Does Better
 
 1. **AID compensation awareness**: Autotune's deviations are contaminated by controller behavior — if the loop suspends basal to prevent a low, autotune "sees" a positive deviation and may incorrectly *increase* the scheduled basal for that hour. Our quadrant analysis (§2.7, slope × net-basal) explicitly separates controller-caused from settings-caused glucose movements. The loop-dependent phenotype (suspension > 40%) triggers a different recommendation path.  
-[SOURCE: `settings_advisor.py:3088–3105` — loop-dependent classification]  
+[SOURCE: `advisor/_basal_advisors.py:576–593` — loop-dependent classification]  
 [SOURCE: `docs/60-research/autotune-uam-characterization-report.md:169` — "Cannot discover: True effective ISF masked by AID compensation"]
 
 2. **Circadian ISF/CR**: Autotune outputs a **single ISF scalar** and a **single CR scalar**. Our pipeline captures 2–9× within-day ISF variation and per-period CR differences. For patients with strong circadian patterns (67% of patients have ISF inflated ≥15% by time-of-day effects), a single scalar is systematically wrong for several hours of the day.  
 [SOURCE: `externals/oref0/lib/autotune/index.js:535` — `isfProfile.sensitivities[0].sensitivity = ISF` — single scalar]  
-[SOURCE: `settings_advisor.py:6` — "EXP-2271 (circadian ISF 4.6-9×)"]
+[SOURCE: `advisor/_isf_advisors.py:894` — "EXP-2271 (circadian ISF 4.6-9×)"]
 
 3. **Prescriptive paradox awareness**: The pipeline's central finding (EXP-2641/2642) is that observed correction behavior cannot be directly used for dosing because apparent ISF is an emergent closed-loop property. Autotune uses observed ISF deviations directly to adjust ISF — this is the exact pattern the paradox warns against. In practice, autotune's 20% blend rate + ±20% caps limit the damage, but the approach is fundamentally confounded.  
 [SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:95,188`]
 
 4. **Optimization sequencing**: The pipeline enforces a specific fix order (CV>28% → basal first; else ISF first; TIR≥70% → personalize). Autotune tunes basal, ISF, and CR simultaneously in every run, which our research shows yields +15–25% TIR gain vs +40–90% for sequential optimization.  
-[SOURCE: `settings_advisor.py:3312–3381` — optimization sequence]  
+[SOURCE: `advisor/_pipeline.py:763–888` — optimization sequence]  
 [SOURCE: `docs/60-research/therapy-comprehensive-campaign-report-2026-04-10.md:197` — EXP-1479]
 
 5. **Statistical confidence**: Our pipeline uses bootstrap confidence intervals (1,000 resamples) and requires minimum evidence thresholds (10+ windows for high confidence). Autotune applies adjustments with as few as 1 data point for an hour, relying on the 20% blend rate for safety.  
@@ -541,7 +541,7 @@ The two approaches are **not competing** — they solve different problems:
 
 ### 5.1 CR Adequacy Assessment
 
-**Function**: `advise_cr_adequacy()` in `settings_advisor.py`
+**Function**: `advise_cr_adequacy()` in `advisor/_cr_advisors.py`
 
 **Finding**: Effective CR = **1.47× profile CR** (population mean). Patients systematically under-dose meals — they use 47% more carbs per unit of insulin than their profile says.  
 [SOURCE: `docs/60-research/therapy-settings-synthesis-2026-04-11.md:88` — EXP-2535b]
@@ -551,20 +551,20 @@ The two approaches are **not competing** — they solve different problems:
 
 ### 5.2 CR Effectiveness Simulation
 
-**Function**: `advise_cr()` in `settings_advisor.py:268–324`
+**Function**: `advise_cr()` in `advisor/_cr_advisors.py:35–101`
 
 **Method**: Uses CR effectiveness score and post-meal excursion analysis. Simulates TIR with 10%, 15%, 20% CR adjustments during meal hours (5:00–21:00).  
-[SOURCE: `settings_advisor.py:292–296` — grid search, `hour_range=(5.0, 21.0)`]
+[SOURCE: `advisor/_cr_advisors.py:59–63` — grid search, `hour_range=(5.0, 21.0)`]
 
 **Trigger**: Fires when CR score < 40/100 (poor).  
-[SOURCE: `settings_advisor.py:281` — `if clinical.cr_score >= 40: return None`]
+[SOURCE: `advisor/_cr_advisors.py:48` — `if clinical.cr_score >= 40: return None`]
 
 ### 5.3 Context-Aware CR
 
-**Function**: `advise_context_cr()` in `settings_advisor.py`
+**Function**: `advise_context_cr()` in `advisor/_cr_advisors.py`
 
 **Research**: EXP-2341. Using pre-meal BG + time-of-day + IOB as context improves CR prediction R² by +0.28.  
-[SOURCE: `settings_advisor.py:7` — "EXP-2341 (context-aware CR: pre-BG + time + IOB, R²+0.28)"]
+[SOURCE: `advisor/_cr_advisors.py:435` — "EXP-2341: Carbs explain <16% of glucose rise"]
 
 ### 5.4 Natural Experiment CR Extraction
 
@@ -635,7 +635,7 @@ The pipeline's basal and ISF paths are well-designed precisely because they **do
   [SOURCE: `natural_experiment_detector.py:422–424`]
 
 - **Overnight drift** uses 00:00–06:00 windows — patients rarely eat during sleep, so the signal is clean regardless of logging habits.  
-  [SOURCE: `settings_advisor.py:2926–2932`]
+  [SOURCE: `advisor/_basal_advisors.py:407–413`]
 
 #### Why CR is fundamentally compromised
 
@@ -705,18 +705,18 @@ The synthesis recommends: "physics for detection, oref0 for magnitude" as an ens
 
 ## 6. Correction Threshold Advisory
 
-**Function**: `advise_correction_threshold()` in `settings_advisor.py:523–664`
+**Function**: `advise_correction_threshold()` in `advisor/_pipeline.py:70–173`
 
 **Finding**: Population optimal correction threshold ≈ **166 mg/dL**. Per-patient range: 130–290 mg/dL.  
-[SOURCE: `settings_advisor.py:571` — `_POPULATION_CORRECTION_THRESHOLD = 166`]  
-[SOURCE: `settings_advisor.py:572` — `_CORRECTION_THRESHOLD_RANGE = (130, 290)`]
+[SOURCE: `advisor/_pipeline.py:59` — `_POPULATION_CORRECTION_THRESHOLD = 166`]  
+[SOURCE: `advisor/_pipeline.py:60` — `_CORRECTION_THRESHOLD_RANGE = (130, 290)`]
 
 **Evidence**: Corrections from BG 130–180 rebound **75% of the time**. This is regression to the mean, NOT counter-regulation — higher nadirs rebound MORE.  
 [SOURCE: `docs/60-research/therapy-settings-synthesis-2026-04-11.md:59–61` — EXP-2526c]
 
 **Per-patient calibration**: When ≥10 correction events available, scans BG bins (130–290, 10 mg/dL steps) to find per-patient zero-crossing for net benefit.  
-[SOURCE: `settings_advisor.py:578` — `_MIN_CORRECTION_EVENTS = 10`]  
-[SOURCE: `settings_advisor.py:687–723` — `_compute_patient_threshold()`]
+[SOURCE: `advisor/_pipeline.py:66` — `_MIN_CORRECTION_EVENTS = 10`]  
+[SOURCE: `advisor/_pipeline.py:175–212` — `_compute_patient_threshold()`]
 
 ---
 
@@ -818,7 +818,7 @@ Maximum ±50% basal change from profile value.
 | ISF segmented | 7 days | 14 days |
 | Correction threshold (per-patient) | 10 events | 50 events |
 
-[SOURCE: `settings_advisor.py:62–63`, `settings_advisor.py:519–520`]
+[SOURCE: `advisor/_simulation.py:37–38`, `advisor/_pipeline.py:66–67`]
 
 ### 9.6 Prediction Bias: Do NOT Correct
 
@@ -847,11 +847,11 @@ Maximum ±50% basal change from profile value.
 ### 10.2 Power-Law ISF Dampening
 
 effective_isf_mult = isf_multiplier^(1 − β), where β = 0.9.  
-[SOURCE: `settings_advisor.py:128–131`]  
+[SOURCE: `advisor/_simulation.py:102–105`]  
 [SOURCE: `forward_simulator.py:51` — `_POWER_LAW_BETA = 0.9`]
 
 Prevents overestimating large ISF corrections. Without this, the persistent tail overamplifies perturbations (Model B MAE=3.23pp vs Model C MAE=0.30pp).  
-[SOURCE: `settings_advisor.py:92–94`]
+[SOURCE: `advisor/_simulation.py:67–69`]
 
 ### 10.3 Carb Absorption Model
 
@@ -882,7 +882,7 @@ Where `excess_insulin = total_absorption − scheduled_basal_absorption`.
 | MAE | 0.30 pp | 2.10 pp |
 | r | 0.933 | 0.129 |
 
-[SOURCE: `settings_advisor.py:22–23`]
+[SOURCE: `advisor/_simulation.py:1` — "Physics simulation for counterfactual TIR prediction (EXP-2551)"]
 
 ---
 
@@ -985,9 +985,9 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Metric | Value | Source File | EXP |
 |--------|-------|------------|-----|
 | **Sequencing** | | | |
-| CV threshold for phase transition | 28% | `settings_advisor.py:3309` | 1765 |
-| Patients needing variability-first | 9/11 | `settings_advisor.py:3320` | 1765 |
-| Patients harmed by wrong order | 6/11 | `settings_advisor.py:3315` | 1765 |
+| CV threshold for phase transition | 28% | `advisor/_pipeline.py:760` | 1765 |
+| Patients needing variability-first | 9/11 | `advisor/_pipeline.py:771` | 1765 |
+| Patients harmed by wrong order | 6/11 | `advisor/_pipeline.py:766` | 1765 |
 | Combined optimization ceiling | +17.6% TIR | `clinical_rules.py:978` | 1765 |
 | Sequential vs simultaneous gain | +40–90% vs +15–25% | `therapy-comprehensive-campaign-report:197` | 1479 |
 | Basal as top action | 10/11 patients | `therapy-pipeline-validation-report:213` | 1386 |
@@ -997,8 +997,8 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Projected hypo reduction | −50% (0.88→0.44/day) | `settings-simulation-report:241` | 2248 |
 | **ISF** | | | |
 | ISF apparent/profile ratio | 2.3× mean (1.2–4.3×) ⚠ includes controller compensation | `natural-experiments-settings-optimization-report.md` | 1703 |
-| ISF power-law β | 0.9 | `settings_advisor.py:381` | 2511 |
-| ISF circadian range | 2–9× within-day | `settings_advisor.py:6` | 2271 |
+| ISF power-law β | 0.9 | `advisor/_isf_advisors.py:185` | 2511 |
+| ISF circadian range | 2–9× within-day | `advisor/_isf_advisors.py:894` | 2271 |
 | ISF share of TIR gain | 85% | `settings_optimizer.py:71` | 1717 |
 | **CR** | | | |
 | CR effective/profile ratio | 1.47× (under-dosing) | `therapy-settings-synthesis-2026-04-11.md:88` | 2535b |
@@ -1006,8 +1006,8 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Basal** | | | |
 | Basal miscalibrated | 18/19 patients | `therapy-settings-synthesis-2026-04-11.md:161` | 2371 |
 | Loop suspension rate | 52–96% (median 55%) | `recommender.py:198` | 2081 |
-| Clean night criteria | IOB<0.5U, COB<5g | `settings_advisor.py:2926–2927` | 2375 |
-| Drift stable threshold | ±3 mg/dL/hr | `settings_advisor.py:2935` | 2371 |
+| Clean night criteria | IOB<0.5U, COB<5g | `advisor/_basal_advisors.py:407–408` | 2375 |
+| Drift stable threshold | ±3 mg/dL/hr | `advisor/_basal_advisors.py:416` | 2371 |
 | Dawn phenomenon prevalence | 6/19 patients | `circadian-therapy-report:EXP-2052` | 2375 |
 | Basal clamp | ±50% max | `settings_optimizer.py:64` | — |
 | **oref0 Autotune Comparison** | | | |
@@ -1016,15 +1016,15 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Autotune ISF: single scalar | 1 value (no circadian) | `oref0/lib/autotune/index.js:535` | — |
 | Autotune convergence | 5–10 iterations for large errors | `autotune-uam-characterization-report.md:178` | — |
 | Autotune data buckets | 4 (basal/ISF/CSF/UAM) | `oref0/lib/autotune-prep/categorize.js:447–452` | — |
-| Our circadian ISF advantage | 2–9× vs single scalar | `settings_advisor.py:6` | 2271 |
+| Our circadian ISF advantage | 2–9× vs single scalar | `advisor/_isf_advisors.py:894` | 2271 |
 | Sequential vs simultaneous (autotune-relevant) | +40–90% vs +15–25% | `therapy-comprehensive-campaign-report:197` | 1479 |
 | **Other** | | | |
-| Optimal correction threshold | 166 mg/dL (130–290) | `settings_advisor.py:571–572` | 2528 |
+| Optimal correction threshold | 166 mg/dL (130–290) | `advisor/_pipeline.py:59–60` | 2528 |
 | Population DIA | 6.0h (vs 5h assumed) | `therapy-operationalization-report-2026-04-10.md` | 1334 |
 | Combined predicted TIR gain | +2.8% | `settings_optimizer.py:70–72` | 1717 |
 | Advisory audit contradictions | 0/16 patients | `exp_advisory_audit_2624.py` | 2624 |
 | Safety clamp per cycle | 25% max | `exp_safety_guardrails_2626.py:10` | 2626 |
-| Forward sim accuracy | MAE=0.30pp, r=0.933 | `settings_advisor.py:22–23` | 2551 |
+| Forward sim accuracy | MAE=0.30pp, r=0.933 | `advisor/_simulation.py:69` | 2551 |
 | Hypo rate floor | ~16% irreducible | `egp-prescriptive-paradox-report-2026-04-13.md` | 2641 |
 | Natural experiment census | 50,810 windows | `natural_experiment_detector.py:1–22` | 1551 |
 | Production test coverage | 448 tests, 93 classes | `test_production.py` | — |
@@ -1042,8 +1042,8 @@ To verify any claim in this report:
 3. **Experiment scripts**: R&D scripts are at `tools/cgmencode/exp_*_NNNN.py`. Production validation scripts are at `tools/cgmencode/production/exp_*.py`. Each contains hypotheses in the docstring and results in the output JSON.
 
 4. **Cross-reference paths**:
-   - Claim about ISF β=0.9 → `settings_advisor.py:381` → `settings_advisor.py:59` → `forward_simulator.py:51` → `therapy-settings-synthesis-2026-04-11.md:33` → `exp_dose_isf.py` (EXP-2511)
-   - Claim about correction threshold 166 → `settings_advisor.py:512` → `exp_correction_threshold.py` (EXP-2528) → `therapy-settings-synthesis-2026-04-11.md:63`
+   - Claim about ISF β=0.9 → `advisor/_isf_advisors.py:185` → `advisor/_simulation.py:34` → `forward_simulator.py:51` → `therapy-settings-synthesis-2026-04-11.md:33` → `exp_dose_isf.py` (EXP-2511)
+   - Claim about correction threshold 166 → `advisor/_pipeline.py:59` → `exp_correction_threshold.py` (EXP-2528) → `therapy-settings-synthesis-2026-04-11.md:63`
    - Claim about controller trust → `recommender.py:194–264` → `exp_advisory_audit_2624.py` (EXP-2624)
 
 5. **Experiment output data**: JSON results are at `externals/experiments/exp-NNNN_*.json` (gitignored but reproducible from scripts).
