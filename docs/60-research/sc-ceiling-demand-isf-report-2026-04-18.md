@@ -16,22 +16,22 @@ EXP-2656 found SC insulin suppresses at most ~30% of hepatic EGP, explaining sti
 | Patient | Tier | Ctrl | Days | Demand ISF | Sched ISF | Isolation |
 |---------|------|------|------|-----------|----------|-----------|
 | a | T2 | Loop/TBR | 180 | 31 | 49 | 6.0h (N=42) |
-| b | T1 | SMB-AID | 180 | --- | 95 | --- |
-| c | T1 | SMB-AID | 180 | 51 | 75 | 2.0h (N=27) |
-| d | T1 | SMB-AID | 180 | 26 | 40 | 2.0h (N=9) |
-| e | T1 | SMB-AID | 158 | 25 | 33 | 2.0h (N=23) |
+| b | T1 | Trio/AB | 180 | --- | 95 | --- |
+| c | T1 | Loop/AB | 180 | 51 | 75 | 2.0h (N=27) |
+| d | T1 | Loop/AB | 180 | 26 | 40 | 2.0h (N=9) |
+| e | T1 | Loop/AB | 158 | 25 | 33 | 2.0h (N=23) |
 | f | T2 | Loop/TBR | 180 | 8 | 20 | 6.0h (N=38) |
-| g | T1 | SMB-AID | 180 | 83 | 65 | 2.0h (N=16) |
-| h | T1 | SMB-AID | 180 | 66 | 90 | 2.0h (N=9) |
-| i | T1 | SMB-AID | 180 | 30 | 50 | 6.0h (N=8) |
-| k | T1 | SMB-AID | 179 | --- | 25 | --- |
-| odc-39819048 | T3 | SMB-AID | 10 | --- | 40 | --- |
-| odc-49141524 | T3 | SMB-AID | 12 | --- | 60 | --- |
-| odc-58680324 | T3 | Loop/TBR | 11 | --- | 33 | --- |
-| odc-61403732 | T3 | SMB-AID | 11 | --- | 55 | --- |
-| odc-74077367 | T2 | Loop/TBR | 212 | 40 | 50 | 2.0h (N=14) |
-| odc-86025410 | T2 | Loop/TBR | 375 | 74 | 110 | 6.0h (N=21) |
-| odc-96254963 | T2 | Loop/TBR | 183 | 47 | 60 | 6.0h (N=22) |
+| g | T1 | Loop/AB | 180 | 83 | 65 | 2.0h (N=16) |
+| h | T1 | Loop/AB | 180 | 66 | 90 | 2.0h (N=9) |
+| i | T1 | Loop/AB | 180 | 30 | 50 | 6.0h (N=8) |
+| k | T1 | Loop/AB | 179 | --- | 25 | --- |
+| odc-39819048 | T3 | AAPS/SMB | 10 | --- | 40 | --- |
+| odc-49141524 | T3 | AAPS/SMB | 12 | --- | 60 | --- |
+| odc-58680324 | T3 | AAPS/TBR | 11 | --- | 33 | --- |
+| odc-61403732 | T3 | AAPS/SMB | 11 | --- | 55 | --- |
+| odc-74077367 | T2 | AAPS/TBR | 212 | 40 | 50 | 2.0h (N=14) |
+| odc-86025410 | T2 | AAPS/TBR | 375 | 74 | 110 | 6.0h (N=21) |
+| odc-96254963 | T2 | AAPS/TBR | 183 | 47 | 60 | 6.0h (N=22) |
 
 ## 3. Demand vs Scheduled ISF
 

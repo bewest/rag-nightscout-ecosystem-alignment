@@ -40,6 +40,7 @@ from scipy import stats, optimize
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 PARQUET = Path("externals/ns-parquet/training/grid.parquet")
+DS_PARQUET = Path("externals/ns-parquet/training/devicestatus.parquet")
 RESULTS_DIR = Path("externals/experiments")
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 OUTFILE = RESULTS_DIR / "exp-2667_sc_ceiling_demand_isf.json"
@@ -107,8 +108,27 @@ def _extract_demand_isf(pdf, prior_bolus_h):
     return None, len(isfs)
 
 
-def _classify(pid, pdf):
-    """Classify patient into data quality tier."""
+def _load_controller_map():
+    """Load actual AID controller identity from devicestatus parquet."""
+    if not DS_PARQUET.exists():
+        return {}
+    ds = pd.read_parquet(DS_PARQUET, columns=["patient_id", "controller"])
+    ctrl_map = {}
+    for pid in ds["patient_id"].unique():
+        ctrls = ds.loc[ds["patient_id"] == pid, "controller"].dropna().unique()
+        if len(ctrls) == 1:
+            ctrl_map[pid] = ctrls[0]
+        elif len(ctrls) > 1:
+            ctrl_map[pid] = "/".join(sorted(ctrls))
+    return ctrl_map
+
+
+def _classify(pid, pdf, controller_map=None):
+    """Classify patient into data quality tier and AID controller label.
+
+    Uses actual controller metadata from devicestatus when available,
+    falling back to SMB-ratio heuristic only when metadata is missing.
+    """
     n = len(pdf)
     iob = pdf["iob"].fillna(0).values
     iob_pct = float((iob > 0.1).sum() / n * 100)
@@ -116,6 +136,7 @@ def _classify(pid, pdf):
     smb = int((pdf["bolus_smb"].fillna(0) > 0).sum())
     bol = int((pdf["bolus"].fillna(0) > 0).sum())
     days = (pdf["time"].max() - pdf["time"].min()).total_seconds() / 86400
+    has_smb = smb > bol * 0.3
 
     if iob_pct < MIN_IOB_ACTIVE_PCT or loop_pct < MIN_LOOP_PCT:
         tier = 4
@@ -128,14 +149,23 @@ def _classify(pid, pdf):
     else:
         tier = 3
 
-    ctrl = "SMB-AID" if smb > bol * 0.3 else "Loop/TBR"
+    # Determine controller label from metadata, then dosing strategy
+    actual = (controller_map or {}).get(pid)
+    if actual and "trio" in actual:
+        ctrl = "Trio/AB" if has_smb else "Trio/TBR"
+    elif actual == "openaps":
+        ctrl = "AAPS/SMB" if has_smb else "AAPS/TBR"
+    elif actual == "loop":
+        ctrl = "Loop/AB" if has_smb else "Loop/TBR"
+    else:
+        ctrl = "SMB-AID" if has_smb else "TBR"
     return tier, ctrl, iob_pct, loop_pct, days
 
 
-def _analyze(pid, pdf):
+def _analyze(pid, pdf, controller_map=None):
     """Analyze one patient for SC suppression ceiling."""
     pdf = pdf.sort_values("time").reset_index(drop=True)
-    tier, ctrl, iob_pct, loop_pct, days = _classify(pid, pdf)
+    tier, ctrl, iob_pct, loop_pct, days = _classify(pid, pdf, controller_map)
     if tier == 4:
         return None
 
@@ -658,13 +688,14 @@ def main():
     print("=" * 70)
 
     df = pd.read_parquet(PARQUET)
+    controller_map = _load_controller_map()
     results = {}
 
     for pid in sorted(df["patient_id"].unique()):
         pdf = df[df["patient_id"] == pid].copy()
         if len(pdf) < 200:
             continue
-        r = _analyze(pid, pdf)
+        r = _analyze(pid, pdf, controller_map)
         if r is None:
             print("  {}: excluded".format(pid))
             continue
