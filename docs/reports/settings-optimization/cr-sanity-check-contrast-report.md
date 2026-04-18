@@ -122,8 +122,8 @@ Shows median meal size (with P25–P75 whiskers) at three representative CRs: 0.
 
 | Patient | Profile CR | Best-Fit CR | Ratio | Meals/Day | n | Verdict |
 |---------|-----------|-------------|-------|-----------|---|---------|
-| **a** | 4.0 | 3.6 | 0.9× | 6.0 | 1081 | Near-optimal |
-| **b** | 12.1 | 6.1 | 0.5× | 5.2 | 939 | **Profile 2× too high** |
+| **a** | 4.0 | 3.6 | 0.9× | 6.0 ⚠ | 1081 | Near-optimal (count suspect) |
+| **b** | 12.1 | 6.1 | 0.5× | 5.2 ⚠ | 939 | **Profile 2× too high** (count suspect) |
 | **c** | 4.5 | 4.0 | 0.9× | 2.6 | 461 | Near-optimal ✓ |
 | **d** | 14.0 | 16.8 | 1.2× | 3.9 | 707 | Slightly low |
 | **e** | 3.0 | 2.7 | 0.9× | 4.3 | 678 | Near-optimal |
@@ -133,6 +133,8 @@ Shows median meal size (with P25–P75 whiskers) at three representative CRs: 0.
 | **i** | 10.0 | 10.0 | 1.0× | 4.1 | 740 | **Perfectly calibrated** ✓ |
 | **j** | 6.0 | — | — | 0.0 | 0 | No READY days (data gap) |
 | **k** | 10.0 | 5.0 | 0.5× | 4.8 | 857 | **Profile 2× too high** |
+
+> **⚠ Meal count caveat**: Counts >5 meals/day are likely detector over-counting (overnight hepatic peaks, multi-course meal splitting) rather than genuine eating events. Counts in the 1.8–2.6 range are both reasonable depending on how meal boundaries are defined — 1.8 captures only substantial announced meals while 2.6 includes smaller events and dessert-merged dinners. The CR contrast analysis remains useful for patients with high counts (the *relative* plausibility curve shape is informative even when absolute counts are inflated) but the meal-count column should not be taken at face value for patients marked ⚠.
 
 **Key finding**: 7 of 10 evaluable patients (70%) have profile CRs within 20% of the best-fit — suggesting most profiles are already reasonably calibrated. Two patients (b, k) have profiles approximately 2× too high, which would cause the AID to significantly under-bolus for meals.
 
@@ -153,10 +155,12 @@ Best examples:
 - **Patient f**: Best-fit CR = 5.0, profile CR = 5.0 (exact match). At profile, lunch medians are 26g [18–47] and dinner 52g [31–88] — realistic for a moderate eater.
 - **Patient i**: Best-fit CR = 10.0 = profile. Very sharp bell peak with steep decline on both sides — strong signal that the profile is correct.
 
-### Archetype 2: Near-Optimal (a, e, g) — "Small Adjustment"
+### Archetype 2: Near-Optimal (e, g) — "Small Adjustment"
 
 **Plausibility curve**: Bell-shaped with peak within 0.8–0.9× of profile.  
 **Interpretation**: Profile is close but marginally too high. A 10–20% reduction would optimize plausibility.
+
+Patient a (best-fit 0.9×) also falls here directionally, but its 6.0 meals/day count is likely over-detection, which dilutes per-meal sizes and may pull the best-fit lower than the true optimum.
 
 Best example:
 - **Patient c**: Best-fit CR = 4.0 (0.9× profile of 4.5). At profile, lunch = 47g [25–67] — within the expected 40–60g range. Breakfast = 31g [20–42]. The small difference (4.0 vs 4.5) may not justify a change, but confirms the profile direction.
@@ -264,19 +268,21 @@ The supply×demand method recovers the correct count because it detects meals fr
 
 ### 7.2 Population Meal Frequency
 
-| Patient | Meals/Day | Interpretation |
-|---------|-----------|----------------|
-| h | 1.7 | Low frequency — possible intermittent fasting |
-| c | 2.6 | Classic 3-meal pattern (some days 2, some 3) |
-| d | 3.9 | Standard 3 meals + snack |
-| i | 4.1 | 3 meals + afternoon snack |
-| e | 4.3 | Active snacker |
-| g, f | 4.4–4.5 | Multi-course/snacking pattern |
-| k | 4.8 | Frequent eater |
-| b | 5.2 | Grazer pattern |
-| a | 6.0 | Very frequent eating/grazing |
+| Patient | Meals/Day | Confidence | Interpretation |
+|---------|-----------|------------|----------------|
+| h | 1.7 | ✓ | Low frequency — possible intermittent fasting |
+| c | 2.6 | ✓ | Classic 2–3 meal pattern (validated against anecdotal) |
+| d | 3.9 | ✓ | Standard 3 meals + snack |
+| i | 4.1 | ✓ | 3 meals + afternoon snack |
+| e | 4.3 | ✓ | 3 meals + snacking |
+| g, f | 4.4–4.5 | ✓ | Multi-course or snacking pattern |
+| k | 4.8 | ✓ | Frequent eater — upper bound of plausible |
+| b | 5.2 | ⚠ | **Likely over-detection** — overnight/hepatic peaks inflating count |
+| a | 6.0 | ⚠ | **Likely over-detection** — 6 meals/day is implausible for most adults |
 
-The range (1.7–6.0) is realistic. The demand-weighted detector counts all metabolic meal events, including UAM. Patients who don't bolus (letting the AID handle meals via SMB/temp basal) will show higher counts because every glucose excursion generates a demand peak.
+Counts ≤5/day are plausible (3 meals + 1–2 snacks). Counts >5/day almost certainly include false positives from overnight hepatic glucose production peaks that the demand-weighted detector mistakes for meals. Both 1.8/day (carb-entry detection) and 2.6/day (supply×demand) are reasonable for patient c — they measure different things: 1.8 counts substantial announced meals, while 2.6 includes smaller metabolic events and dessert-merged dinners. The "right" count depends on what definition of "meal" is most useful for the clinical question.
+
+The CR plausibility curves for ⚠-flagged patients are still directionally informative (the curve shape indicates whether the profile is too high or too low) but the absolute meal sizes are diluted by the extra events, potentially biasing the best-fit CR toward lower values.
 
 ---
 
