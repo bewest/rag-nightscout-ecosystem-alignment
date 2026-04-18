@@ -1,1 +1,5 @@
 [tool.pytest.ini_options]
+markers = [
+    "unit: fast tests — no pipeline calls (~35s)",
+    "integration: pipeline integration tests (~160s)",
+]
