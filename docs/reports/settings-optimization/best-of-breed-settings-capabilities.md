@@ -111,7 +111,7 @@ ISF correction contributes **85% of predicted TIR gain** from settings optimizat
 
 **Functions**: `advise_circadian_isf()`, `advise_circadian_isf_profiled()` in `settings_advisor.py`
 
-**Finding**: ISF varies **2–4× within a single day** (up to 9× in extreme patients). A 2-zone day/night schedule captures 61–90% of the benefit.  
+**Finding**: ISF varies **2–9× within a single day** across patients. A 2-zone day/night schedule captures 61–90% of the benefit.  
 [SOURCE: `settings_advisor.py:6` — "EXP-2271 (circadian ISF 4.6-9×, 2-zone captures 61-90%)"]
 
 **Population circadian profile (EXP-2051)**:
@@ -208,7 +208,7 @@ Dawn phenomenon windows detected when fasting 4–8 AM glucose acceleration exce
 
 **Function**: `advise_cr_adequacy()` in `settings_advisor.py`
 
-**Finding**: Effective CR = **1.47× profile CR** (population median). Patients systematically under-dose meals — they use 47% more carbs per unit of insulin than their profile says.  
+**Finding**: Effective CR = **1.47× profile CR** (population mean). Patients systematically under-dose meals — they use 47% more carbs per unit of insulin than their profile says.  
 [SOURCE: `docs/60-research/therapy-settings-synthesis-2026-04-11.md:88` — EXP-2535b]
 
 **From earlier research** (EXP-1705): Effective CR = 73% of profile CR (looking from the other direction — the profile CR is 27% too aggressive). 3,847 meal windows analyzed.  
@@ -254,7 +254,7 @@ CR is individually nonlinear (sub-linear absorption: larger meals have less BG r
 
 ### 4.7 Circadian CR Pattern
 
-Breakfast is the hardest meal to dose (highest excursion, 58.2 mg/dL mean). Dinner excursions are 77.3 mg/dL — worst period. Lunch is best-controlled (46.3 mg/dL).  
+Dinner is the hardest meal to dose (highest excursion, 77.3 mg/dL mean, 53.6% high). Breakfast excursions are 58.2 mg/dL (borderline). Lunch is best-controlled (46.3 mg/dL).  
 [SOURCE: `docs/60-research/therapy-operationalization-report-2026-04-10.md` — EXP-1336]
 
 **Dinner/breakfast ISF ratio**: 1.9×. The same carbs spike nearly 2× more at dinner than breakfast due to lower afternoon ISF combined with dawn phenomenon amplifying morning meal impact.  

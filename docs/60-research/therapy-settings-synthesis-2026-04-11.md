@@ -85,7 +85,7 @@ EXP-2527 showed that simple before/after TIR comparison is **fatally confounded*
 
 | Property | Value | Source |
 |----------|-------|--------|
-| Population CR ratio (effective/profile) | **1.47** (median) | EXP-2535b |
+| Population CR ratio (effective/profile) | **1.47** (mean) | EXP-2535b |
 | Interpretation | Systematic under-dosing — patients use 47% more carbs per unit than profile says | EXP-2535b |
 | Per-patient range | 0.85–2.3× | EXP-2535b |
 
