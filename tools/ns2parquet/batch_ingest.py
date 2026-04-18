@@ -144,25 +144,271 @@ def batch_ingest(csv_path: str, days: int, output: str,
     return manifest
 
 
+# ── Chronological split & merge ──────────────────────────────────────
+
+# Collections and the timestamp column used for chronological splitting.
+_TIME_COL = {
+    'grid': 'time',
+    'entries': 'date',
+    'treatments': 'created_at',
+    'devicestatus': 'created_at',
+    'profiles': None,           # profiles are atemporal — go to training only
+    'settings': None,           # site-level — training only
+}
+
+# Minimum days of data needed for a patient to warrant a verification split.
+_MIN_DAYS_FOR_SPLIT = 30
+
+
+def split_chronological(input_dir: str, output_dir: str,
+                        train_frac: float = 0.8,
+                        quiet: bool = False) -> dict:
+    """Split flat ingested parquet into training/ and verification/ subsets.
+
+    For each patient in each collection, rows are sorted by time and the
+    first *train_frac* go to ``output_dir/training/``, the remainder to
+    ``output_dir/verification/``.  Patients with fewer than
+    ``_MIN_DAYS_FOR_SPLIT`` days are placed entirely in training.
+
+    Returns per-patient summary dict.
+    """
+    import pandas as pd
+    from .writer import write_parquet
+
+    input_path = Path(input_dir)
+    train_out = str(Path(output_dir) / 'training')
+    verif_out = str(Path(output_dir) / 'verification')
+    Path(train_out).mkdir(parents=True, exist_ok=True)
+    Path(verif_out).mkdir(parents=True, exist_ok=True)
+
+    patient_summary = {}
+
+    for pf in sorted(input_path.glob('*.parquet')):
+        collection = pf.stem
+        time_col = _TIME_COL.get(collection)
+        df = pd.read_parquet(pf)
+
+        if 'patient_id' not in df.columns or time_col is None:
+            # Atemporal / no patient_id — training only
+            write_parquet(df, train_out, collection, append=True,
+                          verbose=False)
+            if not quiet:
+                print(f'  {collection}: {len(df):,} rows → training (no split)')
+            continue
+
+        train_frames = []
+        verif_frames = []
+
+        for pid, pat in df.groupby('patient_id'):
+            pat = pat.sort_values(time_col)
+
+            # Compute duration
+            try:
+                t_min = pd.Timestamp(pat[time_col].min())
+                t_max = pd.Timestamp(pat[time_col].max())
+                days = (t_max - t_min).total_seconds() / 86400
+            except Exception:
+                days = 0
+
+            if days < _MIN_DAYS_FOR_SPLIT:
+                train_frames.append(pat)
+                if not quiet:
+                    print(f'  {collection}/{pid}: {len(pat):,} rows, '
+                          f'{days:.0f}d → training only (< {_MIN_DAYS_FOR_SPLIT}d)')
+                patient_summary.setdefault(pid, {})['days'] = days
+                patient_summary[pid]['split'] = 'training-only'
+                continue
+
+            split_idx = int(len(pat) * train_frac)
+            train_frames.append(pat.iloc[:split_idx])
+            verif_frames.append(pat.iloc[split_idx:])
+
+            if not quiet:
+                split_date = pat.iloc[split_idx][time_col]
+                print(f'  {collection}/{pid}: {len(pat):,} rows, '
+                      f'{days:.0f}d → {split_idx} train / '
+                      f'{len(pat)-split_idx} verif '
+                      f'(split at {str(split_date)[:10]})')
+            patient_summary.setdefault(pid, {})['days'] = days
+            patient_summary[pid]['split'] = f'{train_frac:.0%}/{1-train_frac:.0%}'
+
+        if train_frames:
+            write_parquet(pd.concat(train_frames, ignore_index=True),
+                          train_out, collection, append=True, verbose=False)
+        if verif_frames:
+            write_parquet(pd.concat(verif_frames, ignore_index=True),
+                          verif_out, collection, append=True, verbose=False)
+
+    return patient_summary
+
+
+def merge_into_terrarium(staging_dir: str,
+                         terrarium_dir: str = 'externals/ns-parquet',
+                         quiet: bool = False) -> None:
+    """Merge split staging data into the existing terrarium.
+
+    Reads ``staging_dir/training/`` and ``staging_dir/verification/``,
+    appends into ``terrarium_dir/training/`` and
+    ``terrarium_dir/verification/`` respectively, with deduplication.
+    """
+    import pandas as pd
+    from .writer import write_parquet, _dedup_key
+
+    for subset in ('training', 'verification'):
+        src = Path(staging_dir) / subset
+        dst = Path(terrarium_dir) / subset
+        if not src.exists():
+            continue
+        dst.mkdir(parents=True, exist_ok=True)
+
+        for pf in sorted(src.glob('*.parquet')):
+            collection = pf.stem
+            new_df = pd.read_parquet(pf)
+            dst_pf = dst / f'{collection}.parquet'
+
+            if dst_pf.exists():
+                existing = pd.read_parquet(dst_pf)
+                merged = pd.concat([existing, new_df], ignore_index=True)
+                # Dedup
+                dedup_cols = _dedup_key(collection)
+                valid = [c for c in dedup_cols if c in merged.columns]
+                if valid:
+                    before = len(merged)
+                    merged = merged.drop_duplicates(subset=valid, keep='last')
+                    deduped = before - len(merged)
+                else:
+                    deduped = 0
+                if not quiet:
+                    extra = f' ({deduped} dupes removed)' if deduped else ''
+                    print(f'  {subset}/{collection}: '
+                          f'{len(existing):,} + {len(new_df):,} '
+                          f'→ {len(merged):,}{extra}')
+                write_parquet(merged, str(dst), collection,
+                              append=False, verbose=False)
+            else:
+                if not quiet:
+                    print(f'  {subset}/{collection}: {len(new_df):,} rows (new)')
+                write_parquet(new_df, str(dst), collection,
+                              append=False, verbose=False)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Batch-ingest Nightscout sites from a CSV file')
-    parser.add_argument('--csv', required=True,
+    sub = parser.add_subparsers(dest='command')
+
+    # ── ingest ──
+    p_ing = sub.add_parser('ingest',
+        help='Fetch all sites in a CSV into flat parquet')
+    p_ing.add_argument('--csv', required=True,
         help='Path to CSV file (formula, url)')
-    parser.add_argument('--days', type=int, default=90,
+    p_ing.add_argument('--days', type=int, default=90,
         help='Days of history per site (default: 90)')
-    parser.add_argument('--output', '-o', default='externals/ns-parquet-dynisf',
+    p_ing.add_argument('--output', '-o', default='externals/ns-parquet-dynisf',
         help='Output directory for Parquet files')
-    parser.add_argument('--skip-grid', action='store_true',
+    p_ing.add_argument('--skip-grid', action='store_true',
         help='Skip building the research grid')
-    parser.add_argument('--quiet', '-q', action='store_true')
-    parser.add_argument('--dry-run', action='store_true',
+    p_ing.add_argument('--quiet', '-q', action='store_true')
+    p_ing.add_argument('--dry-run', action='store_true',
         help='Parse CSV and show what would be ingested without fetching')
 
+    # ── split ──
+    p_split = sub.add_parser('split',
+        help='Chronological train/verification split on flat parquet')
+    p_split.add_argument('--input', '-i', required=True,
+        help='Flat parquet directory from ingest step')
+    p_split.add_argument('--output', '-o', required=True,
+        help='Output directory (will contain training/ + verification/)')
+    p_split.add_argument('--train-frac', type=float, default=0.8,
+        help='Fraction of data for training (default: 0.8)')
+    p_split.add_argument('--quiet', '-q', action='store_true')
+
+    # ── merge ──
+    p_merge = sub.add_parser('merge',
+        help='Merge split staging data into the main terrarium')
+    p_merge.add_argument('--staging', '-s', required=True,
+        help='Staging directory (with training/ + verification/)')
+    p_merge.add_argument('--terrarium', '-t',
+        default='externals/ns-parquet',
+        help='Main terrarium directory (default: externals/ns-parquet)')
+    p_merge.add_argument('--quiet', '-q', action='store_true')
+
+    # ── pipeline (ingest → split → merge) ──
+    p_pipe = sub.add_parser('pipeline',
+        help='Full pipeline: ingest → split → merge into terrarium')
+    p_pipe.add_argument('--csv', required=True,
+        help='Path to CSV file (formula, url)')
+    p_pipe.add_argument('--days', type=int, default=90,
+        help='Days of history per site (default: 90)')
+    p_pipe.add_argument('--terrarium', '-t',
+        default='externals/ns-parquet',
+        help='Main terrarium directory')
+    p_pipe.add_argument('--staging', '-s',
+        default='externals/ns-parquet-dynisf',
+        help='Staging directory for intermediate files')
+    p_pipe.add_argument('--train-frac', type=float, default=0.8,
+        help='Fraction of data for training (default: 0.8)')
+    p_pipe.add_argument('--skip-grid', action='store_true')
+    p_pipe.add_argument('--quiet', '-q', action='store_true')
+    p_pipe.add_argument('--dry-run', action='store_true')
+
     args = parser.parse_args()
-    batch_ingest(args.csv, args.days, args.output,
-                 quiet=args.quiet, skip_grid=args.skip_grid,
-                 dry_run=args.dry_run)
+
+    if args.command == 'ingest' or args.command is None:
+        # Backwards compat: bare invocation = ingest
+        if args.command is None:
+            # Re-parse with legacy flags
+            parser.add_argument('--csv', required=True)
+            parser.add_argument('--days', type=int, default=90)
+            parser.add_argument('--output', '-o',
+                                default='externals/ns-parquet-dynisf')
+            parser.add_argument('--skip-grid', action='store_true')
+            parser.add_argument('--quiet', '-q', action='store_true')
+            parser.add_argument('--dry-run', action='store_true')
+            args = parser.parse_args()
+        batch_ingest(args.csv, args.days, args.output,
+                     quiet=args.quiet, skip_grid=args.skip_grid,
+                     dry_run=args.dry_run)
+
+    elif args.command == 'split':
+        print(f'Splitting {args.input} → {args.output}/')
+        summary = split_chronological(
+            args.input, args.output,
+            train_frac=args.train_frac, quiet=args.quiet)
+        print(f'\n{len(summary)} patients split.')
+
+    elif args.command == 'merge':
+        print(f'Merging {args.staging} → {args.terrarium}/')
+        merge_into_terrarium(
+            args.staging, args.terrarium, quiet=args.quiet)
+        print('Merge complete.')
+
+    elif args.command == 'pipeline':
+        staging = args.staging
+        split_dir = staging + '-split'
+
+        # Step 1: Ingest
+        if not args.dry_run:
+            batch_ingest(args.csv, args.days, staging,
+                         quiet=args.quiet, skip_grid=args.skip_grid)
+        else:
+            batch_ingest(args.csv, args.days, staging,
+                         quiet=args.quiet, dry_run=True)
+            return
+
+        # Step 2: Split
+        print(f'\n{"═" * 60}')
+        print(f'Splitting → {split_dir}/')
+        print(f'{"═" * 60}')
+        split_chronological(staging, split_dir,
+                            train_frac=args.train_frac, quiet=args.quiet)
+
+        # Step 3: Merge into terrarium
+        print(f'\n{"═" * 60}')
+        print(f'Merging into terrarium → {args.terrarium}/')
+        print(f'{"═" * 60}')
+        merge_into_terrarium(split_dir, args.terrarium, quiet=args.quiet)
+        print('\nPipeline complete.')
 
 
 if __name__ == '__main__':
