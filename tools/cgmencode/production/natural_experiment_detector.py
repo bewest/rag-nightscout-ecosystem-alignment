@@ -515,9 +515,21 @@ def _detect_corrections(glucose: np.ndarray, bolus: np.ndarray,
 
 
 def _detect_uam(glucose: np.ndarray, carbs: np.ndarray,
+                bolus: np.ndarray,
                 net_flux: np.ndarray,
-                timestamps: np.ndarray) -> List[NaturalExperiment]:
-    """Detect unannounced meal (UAM) windows from physics residuals."""
+                timestamps: np.ndarray,
+                profile_isf: float = 50.0,
+                profile_cr: float = 10.0) -> List[NaturalExperiment]:
+    """Detect unannounced meal (UAM) windows from physics residuals.
+
+    Enriches UAM windows with CR-relevant fields (carbs_estimated_g,
+    bolus_u, excursion_mg_dl) so the CR optimizer can use them.
+
+    Carb estimation uses the same residual-integral method as MEAL windows
+    (EXP-748/753, oref0 deviation). Note: for zero-bolus UAM events, the
+    effective CR calculation is circular (estimated carbs depend on profile
+    CR). This still yields a useful correction factor (true_CR / profile_CR).
+    """
     N = min(len(glucose), len(net_flux))
     experiments = []
 
@@ -561,19 +573,47 @@ def _detect_uam(glucose: np.ndarray, carbs: np.ndarray,
         q_signal = min(mean_res / 3.0, 1.0)
         quality = 0.3 * q_duration + 0.4 * q_signal + 0.3 * coverage
 
+        # Pre-meal BG and excursion (for CR optimizer)
+        pre_bg = float(seg_bg[0]) if np.isfinite(seg_bg[0]) else float(np.nanmean(seg_bg[:3]))
+        peak_bg = float(np.nanmax(seg_bg))
+        excursion = peak_bg - pre_bg if np.isfinite(pre_bg) else bg_rise
+
+        # Bolus within UAM window (reactive boluses)
+        bolus_window = bolus[max(0, start - 3):min(len(bolus), end + 3)]
+        uam_bolus = float(np.nansum(bolus_window))
+
+        # Residual-integral carb estimation (same method as MEAL, EXP-748/753)
+        carbs_estimated = None
+        r_end = min(N, end + 36)  # extend 3h for absorption tail
+        resid_seg = residual[start:r_end]
+        valid_resid = resid_seg[np.isfinite(resid_seg)]
+        if len(valid_resid) > 6:
+            resid_integral = float(np.sum(valid_resid))
+            carbs_estimated = abs(resid_integral) * profile_cr / max(profile_isf, 1.0)
+            carbs_estimated = round(max(0.0, carbs_estimated), 1)
+
+        measurements = {
+            'subtype': subtype,
+            'peak_residual': round(peak_res, 2),
+            'mean_residual': round(mean_res, 2),
+            'bg_rise_mg_dl': round(bg_rise, 1),
+            'cgm_coverage': round(coverage, 3),
+            'pre_meal_bg': round(pre_bg, 1) if np.isfinite(pre_bg) else None,
+            'peak_bg': round(peak_bg, 1),
+            'excursion_mg_dl': round(excursion, 1),
+            'bolus_u': round(uam_bolus, 2),
+            'is_announced': False,
+        }
+        if carbs_estimated is not None:
+            measurements['carbs_estimated_g'] = carbs_estimated
+
         experiments.append(NaturalExperiment(
             exp_type=NaturalExperimentType.UAM,
             start_idx=start, end_idx=end,
             duration_minutes=duration,
             hour_of_day=hour,
             quality=round(quality, 3),
-            measurements={
-                'subtype': subtype,
-                'peak_residual': round(peak_res, 2),
-                'mean_residual': round(mean_res, 2),
-                'bg_rise_mg_dl': round(bg_rise, 1),
-                'cgm_coverage': round(coverage, 3),
-            }
+            measurements=measurements,
         ))
     return experiments
 
@@ -847,7 +887,10 @@ def detect_natural_experiments(
     if metabolic is not None:
         net_flux = metabolic.net_flux if hasattr(metabolic, 'net_flux') else None
         if net_flux is not None and len(net_flux) > 0:
-            experiments.extend(_detect_uam(glucose, carbs, net_flux, timestamps))
+            experiments.extend(_detect_uam(glucose, carbs, bolus, net_flux,
+                                          timestamps,
+                                          profile_isf=meal_isf,
+                                          profile_cr=meal_cr))
             experiments.extend(_detect_exercise(glucose, bolus, net_flux, timestamps))
 
     # AID response (needs basal_rate)

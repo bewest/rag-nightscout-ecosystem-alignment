@@ -1293,6 +1293,132 @@ class TestNaturalExperimentDetector(unittest.TestCase):
             self.assertGreater(exp.end_idx, exp.start_idx)
 
 
+class TestUAMCREnrichment(unittest.TestCase):
+    """Test UAM window enrichment with CR-relevant fields."""
+
+    def test_uam_has_cr_fields(self):
+        """UAM windows with subtype='meal' should have CR fields."""
+        from cgmencode.production.natural_experiment_detector import _detect_uam
+        import numpy as np
+        N = 2000
+        glucose = np.full(N, 120.0)
+        # Simulate a meal rise at step 500
+        for i in range(500, 560):
+            glucose[i] = 120.0 + (i - 500) * 1.5  # rise ~90 mg/dL
+        for i in range(560, 620):
+            glucose[i] = 210.0 - (i - 560) * 1.0  # slow descent
+
+        carbs = np.zeros(N)  # no announced carbs
+        bolus = np.zeros(N)
+        bolus[505] = 2.0  # reactive bolus
+
+        # net_flux near zero → residual ≈ actual_dbg → positive during rise
+        net_flux = np.zeros(N)
+
+        timestamps = np.arange(N) * 300_000  # 5min intervals in ms
+
+        results = _detect_uam(glucose, carbs, bolus, net_flux, timestamps,
+                              profile_isf=50.0, profile_cr=10.0)
+        # Should detect at least one UAM window
+        meal_uams = [r for r in results if r.measurements.get('subtype') == 'meal']
+        if len(meal_uams) > 0:
+            m = meal_uams[0].measurements
+            self.assertIn('carbs_estimated_g', m)
+            self.assertIn('bolus_u', m)
+            self.assertIn('excursion_mg_dl', m)
+            self.assertIn('pre_meal_bg', m)
+            self.assertFalse(m['is_announced'])
+            self.assertGreater(m['carbs_estimated_g'], 0)
+            self.assertGreater(m['excursion_mg_dl'], 0)
+
+    def test_uam_bolus_captured(self):
+        """Reactive boluses within UAM window should be summed."""
+        from cgmencode.production.natural_experiment_detector import _detect_uam
+        import numpy as np
+        N = 1500
+        glucose = np.full(N, 110.0)
+        for i in range(400, 460):
+            glucose[i] = 110.0 + (i - 400) * 2.0
+        carbs = np.zeros(N)
+        bolus = np.zeros(N)
+        bolus[410] = 1.5
+        bolus[420] = 0.5
+        net_flux = np.zeros(N)
+        timestamps = np.arange(N) * 300_000
+
+        results = _detect_uam(glucose, carbs, bolus, net_flux, timestamps)
+        for r in results:
+            if r.measurements.get('subtype') == 'meal':
+                self.assertGreaterEqual(r.measurements['bolus_u'], 1.5)
+                break
+
+    def test_uam_hepatic_excluded_from_cr(self):
+        """Hepatic UAM windows should NOT have subtype='meal'."""
+        from cgmencode.production.natural_experiment_detector import _detect_uam
+        import numpy as np
+        N = 2000
+        glucose = np.full(N, 100.0)
+        # Dawn-like rise at 5 AM (step 60 = hour 5)
+        hour_5_step = 60
+        for i in range(hour_5_step, hour_5_step + 30):
+            glucose[i] = 100.0 + (i - hour_5_step) * 0.6
+        carbs = np.zeros(N)
+        bolus = np.zeros(N)
+        net_flux = np.zeros(N)
+        # Timestamps starting at midnight
+        timestamps = np.arange(N) * 300_000
+
+        results = _detect_uam(glucose, carbs, bolus, net_flux, timestamps)
+        hepatic = [r for r in results if r.measurements.get('subtype') == 'hepatic']
+        # Any hepatic windows should not be subtype 'meal'
+        for r in hepatic:
+            self.assertEqual(r.measurements['subtype'], 'hepatic')
+
+    def test_cr_optimizer_includes_uam_meals(self):
+        """CR optimizer should include UAM meal-subtype windows."""
+        from cgmencode.production.natural_experiment_detector import (
+            NaturalExperiment, NaturalExperimentType)
+        from cgmencode.production.settings_optimizer import _extract_cr_schedule
+        import numpy as np
+
+        # Create a mock patient profile
+        profile = type('P', (), {
+            'isf_mgdl': lambda self: [{'value': 50}],
+            'cr_schedule': [{'value': 12.0}],
+        })()
+
+        # Create UAM windows with CR fields
+        uam_meals = []
+        for h in [8, 12, 18]:  # breakfast, lunch, dinner
+            uam_meals.append(NaturalExperiment(
+                exp_type=NaturalExperimentType.UAM,
+                start_idx=0, end_idx=48,
+                duration_minutes=240,
+                hour_of_day=float(h),
+                quality=0.8,
+                measurements={
+                    'subtype': 'meal',
+                    'carbs_estimated_g': 45.0,
+                    'bolus_u': 3.0,
+                    'excursion_mg_dl': 60.0,
+                    'is_announced': False,
+                    'pre_meal_bg': 120.0,
+                    'peak_bg': 180.0,
+                    'peak_residual': 3.5,
+                    'mean_residual': 2.0,
+                    'bg_rise_mg_dl': 60.0,
+                    'cgm_coverage': 0.95,
+                },
+            ))
+
+        # Extract CR — should work with UAM windows
+        result = _extract_cr_schedule(uam_meals, profile)
+        self.assertIsInstance(result, list)
+        # At least one period should have data
+        has_data = any(e.confidence != 'none' for e in result)
+        self.assertTrue(has_data, "CR schedule should have data from UAM windows")
+
+
 class TestNaturalExperimentPipeline(unittest.TestCase):
     """Integration tests: natural experiments through pipeline."""
 

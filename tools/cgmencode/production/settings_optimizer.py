@@ -725,12 +725,27 @@ def optimize_settings(
     corrections = census.filter_by_type(NaturalExperimentType.CORRECTION)
     meals = census.filter_by_type(NaturalExperimentType.MEAL)
 
+    # Include meal-subtype UAM windows (enriched with carbs_estimated_g)
+    # Exclude hepatic/artifact subtypes which aren't real meals
+    uam_meals = [w for w in census.filter_by_type(NaturalExperimentType.UAM)
+                 if w.measurements.get('subtype') == 'meal'
+                 and w.measurements.get('carbs_estimated_g') is not None
+                 and w.measurements.get('carbs_estimated_g', 0) >= 5]
+    all_meals = meals + uam_meals
+
     w = []
 
     # Extract optimal schedules
     basal_schedule = _extract_basal_schedule(fasting, overnight, profile)
     isf_schedule = _extract_isf_schedule(corrections, profile)
-    cr_schedule = _extract_cr_schedule(meals, profile)
+    cr_schedule = _extract_cr_schedule(all_meals, profile)
+
+    if uam_meals:
+        w.append(
+            f"CR analysis includes {len(uam_meals)} unannounced meal windows "
+            f"(of {len(all_meals)} total) with physics-estimated carbs. "
+            f"Zero-bolus UAM events use circular estimation (true_CR/profile_CR "
+            f"ratio only). Announced meals are preferred when available.")
 
     # Dose-dependent ISF analysis (EXP-2636/2640)
     dose_isf = _compute_dose_isf_correlation(corrections)
