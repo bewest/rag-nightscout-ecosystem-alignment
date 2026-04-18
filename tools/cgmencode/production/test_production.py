@@ -5585,7 +5585,7 @@ class TestAdviseISFDualPhase(unittest.TestCase):
         result = advise_isf_dual_phase(dp, days_of_data=14.0)
         self.assertIsNone(result)
 
-    def test_actionable_when_gap_significant(self):
+    def test_informational_when_gap_significant(self):
         from cgmencode.production.settings_advisor import advise_isf_dual_phase
         from cgmencode.production.types import DualPhaseISF
         dp = DualPhaseISF(
@@ -5600,9 +5600,9 @@ class TestAdviseISFDualPhase(unittest.TestCase):
         )
         result = advise_isf_dual_phase(dp, days_of_data=14.0)
         self.assertIsNotNone(result)
-        # With demand=15, scheduled=50, gap=70% → actionable
-        self.assertEqual(result.direction, "decrease")
-        self.assertGreater(result.magnitude_pct, 0.0)
+        # Dual-phase is always informational — advise_isf() is the actionable path
+        self.assertEqual(result.direction, "informational")
+        self.assertEqual(result.magnitude_pct, 0.0)
         self.assertIn("3.3", result.evidence)
 
     def test_extreme_inflation_labeled(self):

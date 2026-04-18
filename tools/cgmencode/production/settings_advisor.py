@@ -3655,16 +3655,15 @@ def advise_isf_dual_phase(
     dual_phase: 'DualPhaseISF',
     days_of_data: float = 0.0,
 ) -> Optional[SettingsRecommendation]:
-    """Generate dual-phase ISF report with conservative recommendation (EXP-2651).
+    """Generate INFORMATIONAL dual-phase ISF report (EXP-2651).
 
     Reports both demand-phase ISF (0–2h, true insulin effect) and apparent
-    ISF (full correction drop, includes AID + EGP). When the scheduled ISF
-    is far from demand-phase ISF, provides a conservative recommendation.
+    ISF (full correction drop, includes AID + EGP). Always informational —
+    advise_isf() is the sole actionable ISF recommendation path.
 
-    CORRECTED 2026-04-18: Multi-factor ISF models succeed (dose-dependent
-    r=-0.56, response-curve R²=0.805). Demand-phase ISF is 2–10× more
-    accurate than apparent ISF for dosing (EXP-2651). Conservative steps
-    toward demand-phase ISF are appropriate.
+    This separation avoids duplicate/conflicting ISF recommendations:
+    advise_isf() emits the actionable step, this function provides the
+    detailed analysis context (inflation ratio, severity, CI bounds).
 
     Args:
         dual_phase: DualPhaseISF from compute_demand_isf().
@@ -3685,30 +3684,20 @@ def advise_isf_dual_phase(
         else "normal"
     )
 
-    # When scheduled ISF is far from demand ISF, suggest conservative step
+    # Dual-phase report is INFORMATIONAL only — advise_isf() is the sole
+    # actionable ISF recommendation path (avoids duplicate/conflicting recs).
     sched = dual_phase.scheduled_isf or 50.0
     demand = dual_phase.demand_isf
     gap = demand - sched
     gap_pct = abs(gap / sched) * 100 if sched > 0 else 0
 
-    if gap_pct > 20 and dual_phase.confidence in ('medium', 'high'):
-        direction = "decrease" if gap < 0 else "increase"
-        step_pct = min(25.0, gap_pct * 0.5)  # half the gap, max 25%
-        suggested = sched + gap * 0.25
-        delta = min(2.0, gap_pct * 0.1)
-    else:
-        direction = "informational"
-        step_pct = 0.0
-        suggested = sched
-        delta = 0.0
-
     return SettingsRecommendation(
         parameter=SettingsParameter.ISF,
-        direction=direction,
-        magnitude_pct=round(step_pct, 1),
+        direction="informational",
+        magnitude_pct=0.0,
         current_value=sched,
-        suggested_value=round(suggested, 0),
-        predicted_tir_delta=round(delta, 1),
+        suggested_value=sched,
+        predicted_tir_delta=0.0,
         affected_hours=(0.0, 24.0),
         confidence=confidence,
         evidence=(f"Dual-phase ISF analysis (N={dual_phase.n_corrections}): "
