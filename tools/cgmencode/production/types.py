@@ -982,6 +982,73 @@ class PatientPhenotypeResult:
 
 # ── Complete Pipeline Result ──────────────────────────────────────────
 
+# ── Dual-Phase ISF (EXP-2651, EXP-2641) ──────────────────────────────
+
+@dataclass
+class DualPhaseISF:
+    """Demand-phase vs apparent ISF analysis (EXP-2651).
+
+    PRESCRIPTIVE PARADOX WARNING (EXP-2641/2642):
+    Apparent ISF includes AID controller amplification (2–10×). Using it
+    to change ISF settings creates a circular dependency — the controller
+    will compensate differently, invalidating the recommendation.
+    "Fixed ISF + feedback is near-optimal."
+
+    Demand-phase ISF (0–2h drop/dose) measures the true insulin effect
+    before EGP suppression. Apparent ISF (full drop/dose) conflates
+    insulin action with hepatic glucose output suppression.
+    """
+    demand_isf: float                    # 0–2h drop per unit (mg/dL/U)
+    apparent_isf: float                  # full correction drop per unit (mg/dL/U)
+    inflation_ratio: float               # apparent / demand (typically 2–10×)
+    n_corrections: int                   # number of correction events analyzed
+    confidence: str = 'low'              # 'low', 'medium', 'high'
+    demand_ci_low: float = 0.0           # bootstrap CI lower bound
+    demand_ci_high: float = 0.0          # bootstrap CI upper bound
+    scheduled_isf: float = 0.0           # profile ISF for comparison
+    paradox_warning: str = (
+        "Apparent ISF is NOT true insulin sensitivity — it includes AID "
+        "controller compensation and EGP suppression. Recommending ISF "
+        "changes based on apparent ISF risks the prescriptive paradox "
+        "(EXP-2641): best descriptive model = 2.3× overdose."
+    )
+
+
+# ── Insulin Saturation Detection (EXP-2660/2662) ─────────────────────
+
+class SaturationLevel(str, Enum):
+    """Insulin saturation assessment (EXP-2660)."""
+    NONE = 'none'                        # no saturation detected
+    MILD = 'mild'                        # occasional wall episodes
+    MODERATE = 'moderate'                # frequent wall episodes (>20%)
+    SEVERE = 'severe'                    # dominant pattern (>40%)
+
+
+@dataclass
+class SaturationAssessment:
+    """Insulin saturation / wall detection assessment (EXP-2660/2662).
+
+    Wall detection: IOB > 2×median AND glucose ROC > −5 mg/dL/hr.
+    When the controller hits the SC suppression ceiling (~30% of hepatic
+    EGP), additional insulin has negligible glucose-lowering effect.
+
+    Research findings:
+    - 61–84% of sticky hypers show wall detection
+    - Patience mode (cap IOB at 1.5×median during walls) saves 34–82% SMBs
+    - Delayed hypo reduction with patience mode: 0.1–2.0 pp
+    - Max hyper increase with patience mode: +2.1 pp
+    """
+    level: SaturationLevel
+    wall_pct: float                      # % of high-glucose time at wall
+    n_wall_episodes: int                 # number of wall episodes detected
+    n_high_glucose_episodes: int         # total high-glucose episodes
+    median_iob: float                    # patient's median IOB (reference)
+    excess_insulin_u: float = 0.0        # estimated wasted insulin (Units)
+    delayed_hypo_risk: float = 0.0       # 0–1, fraction with post-wall hypo
+    patience_mode_eligible: bool = False  # True if wall_pct > 10%
+    iob_cap_suggestion: float = 0.0      # suggested IOB cap (Units)
+
+
 @dataclass
 class PipelineResult:
     """Complete output from a single pipeline run."""
@@ -1021,6 +1088,10 @@ class PipelineResult:
     phenotype: Optional[PatientPhenotypeResult] = None
     # Loop quality assessment (EXP-2538/2540)
     loop_quality: Optional[LoopQualityResult] = None  # EXP-2538
+    # Dual-phase ISF analysis (EXP-2651)
+    dual_phase_isf: Optional[DualPhaseISF] = None
+    # Saturation detection (EXP-2660/2662)
+    saturation: Optional[SaturationAssessment] = None
     pipeline_latency_ms: float = 0.0
     warnings: List[str] = field(default_factory=list)
 

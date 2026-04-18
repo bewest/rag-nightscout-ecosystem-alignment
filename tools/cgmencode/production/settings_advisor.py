@@ -327,10 +327,17 @@ def advise_cr(glucose: np.ndarray,
 def advise_isf(clinical: ClinicalReport,
                profile: PatientProfile,
                days_of_data: float) -> Optional[SettingsRecommendation]:
-    """Generate ISF recommendation based on discrepancy analysis.
+    """Generate ISF discrepancy WARNING (not an active recommendation).
 
-    Research finding: effective ISF is 2.91× profile ISF on average (EXP-747).
-    Large discrepancies indicate the AID is compensating for wrong settings.
+    PRESCRIPTIVE PARADOX (EXP-2641/2642):
+    The observed "effective ISF" (2.91× profile, EXP-747) is an APPARENT
+    value that includes AID controller amplification and EGP suppression.
+    Adjusting ISF toward this value creates a circular dependency — the
+    controller will change its behavior, potentially worsening outcomes.
+    The best descriptor (log-ISF) causes 2.3× overdose when prescribed.
+
+    This function now generates an INFORMATIONAL warning rather than an
+    active settings recommendation. "Fixed ISF + feedback is near-optimal."
     """
     if days_of_data < MIN_DATA_DAYS:
         return None
@@ -342,34 +349,30 @@ def advise_isf(clinical: ClinicalReport,
     current_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
     effective = clinical.effective_isf or current_isf
 
-    # Conservative recommendation: move ISF toward effective ISF by 25%
-    gap = effective - current_isf
-    adjustment_pct = 25.0
-    suggested = current_isf + gap * (adjustment_pct / 100.0)
-
-    # Predicted TIR impact: reducing AID compensation should smooth control
-    # Conservative estimate: each 10% ISF correction → ~2pp TIR gain
-    predicted_delta = min(5.0, abs(gap / current_isf) * 20.0)
-
-    confidence = min(0.7, days_of_data / HIGH_CONFIDENCE_DAYS)
+    # INFORMATIONAL ONLY — do not recommend full correction
+    # The discrepancy reflects AID compensation, not a settings error
+    confidence = min(0.3, days_of_data / HIGH_CONFIDENCE_DAYS)  # low confidence cap
 
     return SettingsRecommendation(
         parameter=SettingsParameter.ISF,
-        direction="increase" if gap > 0 else "decrease",
-        magnitude_pct=adjustment_pct,
+        direction="informational",
+        magnitude_pct=0.0,  # no active recommendation
         current_value=current_isf,
-        suggested_value=round(suggested, 0),
-        predicted_tir_delta=round(predicted_delta, 1),
+        suggested_value=current_isf,  # suggest keeping current
+        predicted_tir_delta=0.0,
         affected_hours=(0.0, 24.0),
         confidence=confidence,
-        evidence=(f"Effective ISF is {clinical.isf_discrepancy:.1f}× profile ISF "
+        evidence=(f"Apparent ISF is {clinical.isf_discrepancy:.1f}× profile ISF "
                   f"({effective:.0f} vs {current_isf:.0f} mg/dL/U). "
-                  f"AID compensating for settings mismatch."),
-        rationale=(f"Adjust ISF by {adjustment_pct:.0f}% toward observed effective "
-                   f"value (from {current_isf:.0f} to {suggested:.0f} mg/dL/U). "
-                   f"This reduces AID over-compensation and may smooth control. "
-                   f"Predicted TIR improvement: +{predicted_delta:.1f}pp. "
-                   f"Confirmable within 2 weeks of stable use."),
+                  f"This reflects AID controller compensation, not true "
+                  f"insulin sensitivity (EXP-2651: demand ISF is 2–10× "
+                  f"smaller than apparent ISF)."),
+        rationale=(f"PRESCRIPTIVE PARADOX WARNING (EXP-2641/2642): "
+                   f"Adjusting ISF toward the apparent value ({effective:.0f}) "
+                   f"risks 2.3× overdosing because the AID controller will "
+                   f"change its compensation. 'Fixed ISF + feedback is "
+                   f"near-optimal.' Review dual-phase ISF analysis for "
+                   f"clinician assessment."),
     )
 
 
@@ -3425,3 +3428,134 @@ def apply_safety_clamp(
             )
 
     return recs
+
+
+# ── Patience Mode Advisory (EXP-2660/2662) ────────────────────────────
+
+
+def advise_patience_mode(
+    saturation: 'SaturationAssessment',
+    days_of_data: float = 0.0,
+) -> Optional[SettingsRecommendation]:
+    """Recommend patience mode when insulin saturation is detected (EXP-2662).
+
+    When the SC suppression ceiling is reached (~30% of hepatic EGP,
+    EXP-2656), additional SMBs have negligible glucose-lowering effect
+    but increase delayed hypo risk. Patience mode caps IOB at 1.5×median
+    during wall episodes.
+
+    Research findings (EXP-2662):
+    - Saves 34–82% of SMBs during wall episodes
+    - Max hyper increase: +2.1 pp (acceptable trade-off)
+    - Delayed hypo reduction: 0.1–2.0 pp
+    - 61–84% of sticky hypers show wall detection (EXP-2660)
+
+    Args:
+        saturation: SaturationAssessment from detect_insulin_saturation().
+        days_of_data: data coverage for confidence scaling.
+
+    Returns:
+        SettingsRecommendation for patience mode, or None if not eligible.
+    """
+    if saturation is None or not saturation.patience_mode_eligible:
+        return None
+
+    if days_of_data < 3.0:
+        return None
+
+    confidence = min(0.7, days_of_data / 14.0)
+
+    # Scale predicted benefit by severity
+    if saturation.level.value == 'severe':
+        predicted_smb_savings = '60–82%'
+        predicted_delta = 1.5
+    elif saturation.level.value == 'moderate':
+        predicted_smb_savings = '40–60%'
+        predicted_delta = 1.0
+    else:
+        predicted_smb_savings = '34–40%'
+        predicted_delta = 0.5
+
+    return SettingsRecommendation(
+        parameter=SettingsParameter.ISF,  # closest parameter (affects dosing)
+        direction="informational",
+        magnitude_pct=0.0,
+        current_value=saturation.median_iob,
+        suggested_value=saturation.iob_cap_suggestion,
+        predicted_tir_delta=round(predicted_delta, 1),
+        affected_hours=(0.0, 24.0),
+        confidence=confidence,
+        evidence=(f"Insulin saturation detected: {saturation.wall_pct:.0f}% of "
+                  f"high-glucose time at wall ({saturation.n_wall_episodes} "
+                  f"episodes of {saturation.n_high_glucose_episodes} total). "
+                  f"Excess insulin: ~{saturation.excess_insulin_u:.1f}U wasted. "
+                  f"SC suppression ceiling reached (EXP-2656/2660)."),
+        rationale=(f"PATIENCE MODE (EXP-2662): Cap IOB at "
+                   f"{saturation.iob_cap_suggestion:.1f}U "
+                   f"(1.5× median IOB of {saturation.median_iob:.1f}U) during "
+                   f"wall episodes. Saves {predicted_smb_savings} of SMBs with "
+                   f"≤+2.1pp hyper increase. Additional insulin at the SC "
+                   f"suppression ceiling has negligible glucose-lowering effect "
+                   f"but increases delayed hypo risk."),
+    )
+
+
+# ── Dual-Phase ISF Advisory (EXP-2651) ───────────────────────────────
+
+
+def advise_isf_dual_phase(
+    dual_phase: 'DualPhaseISF',
+    days_of_data: float = 0.0,
+) -> Optional[SettingsRecommendation]:
+    """Generate INFORMATIONAL dual-phase ISF report (EXP-2651).
+
+    Reports both demand-phase ISF (0–2h, true insulin effect) and apparent
+    ISF (full correction drop, includes AID + EGP). Does NOT recommend
+    changing ISF — provides analysis for clinician review.
+
+    PRESCRIPTIVE PARADOX (EXP-2641/2642): Recommending ISF changes based
+    on either value creates circular dependencies. "Fixed ISF + feedback
+    is near-optimal."
+
+    Args:
+        dual_phase: DualPhaseISF from compute_demand_isf().
+        days_of_data: data coverage for confidence scaling.
+
+    Returns:
+        INFORMATIONAL SettingsRecommendation, or None.
+    """
+    if dual_phase is None or dual_phase.n_corrections < 5:
+        return None
+
+    confidence = min(0.5, days_of_data / 14.0)
+
+    inflation_severity = (
+        "extreme" if dual_phase.inflation_ratio > 5.0
+        else "high" if dual_phase.inflation_ratio > 3.0
+        else "moderate" if dual_phase.inflation_ratio > 2.0
+        else "normal"
+    )
+
+    return SettingsRecommendation(
+        parameter=SettingsParameter.ISF,
+        direction="informational",
+        magnitude_pct=0.0,
+        current_value=dual_phase.scheduled_isf,
+        suggested_value=dual_phase.scheduled_isf,  # no change recommended
+        predicted_tir_delta=0.0,
+        affected_hours=(0.0, 24.0),
+        confidence=confidence,
+        evidence=(f"Dual-phase ISF analysis (N={dual_phase.n_corrections}): "
+                  f"Demand ISF (0–2h) = {dual_phase.demand_isf:.0f} mg/dL/U, "
+                  f"Apparent ISF (full) = {dual_phase.apparent_isf:.0f} mg/dL/U, "
+                  f"Inflation ratio = {dual_phase.inflation_ratio:.1f}× "
+                  f"({inflation_severity}). "
+                  f"Scheduled ISF = {dual_phase.scheduled_isf:.0f} mg/dL/U."),
+        rationale=(f"INFORMATIONAL — NO CHANGE RECOMMENDED. "
+                   f"Demand ISF ({dual_phase.demand_isf:.0f}) reflects true "
+                   f"insulin effect (0–2h). Apparent ISF ({dual_phase.apparent_isf:.0f}) "
+                   f"is inflated {dual_phase.inflation_ratio:.1f}× by AID controller "
+                   f"compensation and EGP suppression (EXP-2651). "
+                   f"CI [{dual_phase.demand_ci_low:.0f}–{dual_phase.demand_ci_high:.0f}]. "
+                   f"Review with clinician. {dual_phase.paradox_warning}"),
+    )

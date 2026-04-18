@@ -23,6 +23,7 @@ from .types import (
     FidelityGrade, GlycemicGrade, MetabolicState, PatientProfile,
     SettingsParameter,
     AIDCompensation, BolusTimingSafety, CompensationType, CorrectionEnergy,
+    DualPhaseISF, SaturationAssessment, SaturationLevel,
 )
 
 
@@ -77,25 +78,46 @@ def grade_glycemic_control(tir: float, tbr: float) -> GlycemicGrade:
 
 def assess_basal(glucose: np.ndarray,
                  metabolic: Optional[MetabolicState] = None,
-                 hours: Optional[np.ndarray] = None) -> BasalAssessment:
+                 hours: Optional[np.ndarray] = None,
+                 iob: Optional[np.ndarray] = None,
+                 cob: Optional[np.ndarray] = None) -> BasalAssessment:
     """Assess basal rate adequacy from overnight glucose behavior.
 
     Uses the actual glucose slope during fasting hours (00:00-06:00) as
-    the primary signal. For AID patients, the metabolic net_flux includes
-    loop adjustments and is NOT a reliable indicator of programmed basal
-    adequacy — the slope of actual glucose is more reliable.
+    the primary signal. When IOB/COB arrays are provided, filters to
+    clean nights (IOB < 0.5U, COB < 5g) to avoid contamination from
+    residual dinner bolus or late snacks (EXP-2375).
+
+    For AID patients, the metabolic net_flux includes loop adjustments
+    and is NOT a reliable indicator of programmed basal adequacy — the
+    slope of actual glucose is more reliable.
 
     Args:
         glucose: (N,) glucose values.
         metabolic: optional metabolic state (not used for primary assessment).
         hours: (N,) fractional hours for overnight window selection.
+        iob: (N,) optional insulin-on-board for clean-night filtering.
+        cob: (N,) optional carbs-on-board for clean-night filtering.
 
     Returns:
         BasalAssessment enum.
     """
+    # Clean-night thresholds (from settings_advisor.py:2736, EXP-2375)
+    CLEAN_IOB_MAX = 0.5   # Units
+    CLEAN_COB_MAX = 5.0   # grams
+
     if hours is not None:
         # Select overnight fasting window (midnight to 6 AM)
         overnight_mask = (hours >= 0) & (hours < 6)
+
+        # Apply clean-night filtering when IOB/COB available
+        if iob is not None:
+            iob_clean = np.nan_to_num(iob, nan=0.0)
+            overnight_mask = overnight_mask & (iob_clean < CLEAN_IOB_MAX)
+        if cob is not None:
+            cob_clean = np.nan_to_num(cob, nan=0.0)
+            overnight_mask = overnight_mask & (cob_clean < CLEAN_COB_MAX)
+
         if np.sum(overnight_mask) >= 12:  # at least 1 hour
             overnight_bg = glucose[overnight_mask]
         else:
@@ -200,16 +222,25 @@ def score_cr_effectiveness(glucose: np.ndarray,
     return float(np.mean(excursion_scores)) if excursion_scores else 50.0
 
 
-def compute_effective_isf(glucose: np.ndarray,
-                          bolus: np.ndarray,
-                          profile: PatientProfile) -> Optional[float]:
-    """Estimate effective ISF from observed correction bolus responses.
+def compute_apparent_isf(glucose: np.ndarray,
+                        bolus: np.ndarray,
+                        profile: PatientProfile) -> Optional[float]:
+    """Estimate apparent ISF from observed correction bolus responses.
+
+    PRESCRIPTIVE PARADOX WARNING (EXP-2641/2642):
+    This returns the APPARENT ISF, which includes AID controller
+    amplification (basal withdrawal, SMB cancellation) and EGP suppression.
+    Apparent ISF is 2–10× larger than true demand-phase ISF (EXP-2651).
+    DO NOT use apparent ISF to recommend ISF changes — this creates a
+    circular dependency where changing the setting changes the controller
+    behavior that generated the measurement. "Fixed ISF + feedback is
+    near-optimal" (EXP-2642).
 
     Research finding: effective ISF is 2.91× profile ISF because
     AID systems compensate for inaccurate settings (EXP-747).
 
     Returns:
-        Estimated effective ISF (mg/dL per Unit), or None if insufficient data.
+        Estimated apparent ISF (mg/dL per Unit), or None if insufficient data.
     """
     # Find correction boluses (bolus with no nearby carbs)
     if bolus is None:
@@ -1001,3 +1032,251 @@ def compute_three_ceilings(glucose: np.ndarray,
         'headroom': headroom,
         'theoretical_best_tir': min(1.0, current_tir + headroom),
     }
+
+
+# Backwards compatibility alias
+compute_effective_isf = compute_apparent_isf
+
+
+# ── Demand-Phase ISF (EXP-2651) ──────────────────────────────────────
+
+# Demand phase = 0–2h post-bolus (24 steps at 5min intervals)
+_DEMAND_PHASE_STEPS = 24
+_MIN_DEMAND_CORRECTIONS = 5
+
+
+def compute_demand_isf(glucose: np.ndarray,
+                       bolus: np.ndarray,
+                       profile: PatientProfile) -> Optional[DualPhaseISF]:
+    """Compute dual-phase ISF: demand (0–2h) vs apparent (full drop).
+
+    Research (EXP-2651): Demand-phase ISF measures the true insulin
+    effect before EGP suppression begins (nadir at 3.5h, EXP-2624).
+    It is 2–10× smaller than apparent ISF and wins at ALL prediction
+    horizons (both 2h and 4h).
+
+    PRESCRIPTIVE PARADOX WARNING (EXP-2641/2642):
+    Neither demand nor apparent ISF should be used to directly set
+    ISF in the AID profile. "Fixed ISF + feedback is near-optimal."
+    This function provides INFORMATIONAL output for clinician review.
+
+    Args:
+        glucose: (N,) glucose values (mg/dL), 5-min intervals.
+        bolus: (N,) bolus units per interval.
+        profile: PatientProfile for scheduled ISF comparison.
+
+    Returns:
+        DualPhaseISF with both ISF values and inflation ratio,
+        or None if insufficient correction events.
+    """
+    if bolus is None:
+        return None
+
+    bolus_vals = np.nan_to_num(bolus, nan=0.0)
+    correction_indices = np.where(bolus_vals > 0.5)[0]
+
+    if len(correction_indices) < _MIN_DEMAND_CORRECTIONS:
+        return None
+
+    demand_isfs = []
+    apparent_isfs = []
+
+    for idx in correction_indices:
+        pre_bg = float(glucose[idx]) if np.isfinite(glucose[idx]) else np.nan
+        if not np.isfinite(pre_bg) or pre_bg < 120:
+            continue
+
+        dose = float(bolus_vals[idx])
+        if dose < 0.1:
+            continue
+
+        # Demand phase: 0–2h (24 steps)
+        demand_end = min(idx + _DEMAND_PHASE_STEPS, len(glucose))
+        if demand_end - idx < 12:
+            continue
+
+        demand_window = glucose[idx:demand_end]
+        valid_demand = demand_window[np.isfinite(demand_window)]
+        if len(valid_demand) < 6:
+            continue
+
+        demand_drop = pre_bg - float(np.nanmin(valid_demand))
+        if demand_drop > 5:
+            demand_isfs.append(demand_drop / dose)
+
+        # Apparent phase: full 4h window (48 steps)
+        apparent_end = min(idx + 48, len(glucose))
+        apparent_window = glucose[idx:apparent_end]
+        valid_apparent = apparent_window[np.isfinite(apparent_window)]
+        if len(valid_apparent) < 12:
+            continue
+
+        apparent_drop = pre_bg - float(np.nanmin(valid_apparent))
+        if apparent_drop > 5:
+            apparent_isfs.append(apparent_drop / dose)
+
+    if len(demand_isfs) < _MIN_DEMAND_CORRECTIONS:
+        return None
+
+    demand_med = float(np.median(demand_isfs))
+    apparent_med = float(np.median(apparent_isfs)) if apparent_isfs else demand_med
+
+    # Bootstrap CI for demand ISF
+    if len(demand_isfs) >= 10:
+        rng = np.random.default_rng(42)
+        boot_medians = [
+            float(np.median(rng.choice(demand_isfs, size=len(demand_isfs), replace=True)))
+            for _ in range(1000)
+        ]
+        ci_low = float(np.percentile(boot_medians, 2.5))
+        ci_high = float(np.percentile(boot_medians, 97.5))
+        conf = 'high' if len(demand_isfs) >= 20 else 'medium'
+    else:
+        ci_low = demand_med * 0.7
+        ci_high = demand_med * 1.3
+        conf = 'low'
+
+    inflation = apparent_med / max(demand_med, 0.01)
+
+    # Scheduled ISF
+    isf_vals = [e.get('value', e.get('sensitivity', 50)) for e in profile.isf_mgdl()]
+    sched_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
+
+    return DualPhaseISF(
+        demand_isf=round(demand_med, 1),
+        apparent_isf=round(apparent_med, 1),
+        inflation_ratio=round(inflation, 2),
+        n_corrections=len(demand_isfs),
+        confidence=conf,
+        demand_ci_low=round(ci_low, 1),
+        demand_ci_high=round(ci_high, 1),
+        scheduled_isf=round(sched_isf, 1),
+    )
+
+
+# ── Insulin Saturation Detection (EXP-2660/2662) ─────────────────────
+
+# Wall detection thresholds from EXP-2660 (validated on 2,602 episodes)
+_WALL_IOB_RATIO = 2.0         # IOB must be > 2× median
+_WALL_ROC_THRESHOLD = -5.0    # glucose ROC must be > -5 mg/dL/hr (barely falling)
+_HIGH_GLUCOSE_THRESHOLD = 180  # mg/dL — sticky hyper threshold
+_HIGH_GLUCOSE_DURATION = 24    # 24 × 5min = 2h sustained
+_PATIENCE_CAP_RATIO = 1.5     # IOB cap at 1.5× median when wall detected
+
+
+def detect_insulin_saturation(
+    glucose: np.ndarray,
+    iob: np.ndarray,
+    hours: Optional[np.ndarray] = None,
+) -> Optional[SaturationAssessment]:
+    """Detect insulin saturation (wall) episodes (EXP-2660).
+
+    Wall detection: periods where IOB > 2×median AND glucose is barely
+    falling (ROC > -5 mg/dL/hr) despite high insulin. Indicates the SC
+    suppression ceiling (~30% of hepatic EGP, EXP-2656) has been reached.
+
+    Research findings:
+    - 61–84% of sticky hypers show wall detection
+    - Wall episodes resolve in similar time regardless of additional insulin
+    - Patience mode (cap IOB at 1.5×) saves 34–82% SMBs (EXP-2662)
+
+    Args:
+        glucose: (N,) glucose values (mg/dL), 5-min intervals.
+        iob: (N,) insulin-on-board values (Units).
+        hours: (N,) optional fractional hours (unused, for API consistency).
+
+    Returns:
+        SaturationAssessment, or None if insufficient data.
+    """
+    if iob is None or len(glucose) < 48:
+        return None
+
+    valid_iob = iob[np.isfinite(iob)]
+    if len(valid_iob) < 24:
+        return None
+
+    median_iob = float(np.median(valid_iob))
+    if median_iob < 0.01:
+        return None
+
+    # Compute glucose ROC (mg/dL/hr) — 15-min smoothed
+    roc = np.full_like(glucose, np.nan)
+    for i in range(3, len(glucose)):
+        if np.isfinite(glucose[i]) and np.isfinite(glucose[i - 3]):
+            roc[i] = (glucose[i] - glucose[i - 3]) / 0.25  # 15min = 0.25h
+
+    # Find high-glucose episodes (>180 for ≥2h)
+    high_mask = glucose > _HIGH_GLUCOSE_THRESHOLD
+    n_high_episodes = 0
+    n_wall_episodes = 0
+    total_wall_steps = 0
+    total_high_steps = 0
+    excess_insulin = 0.0
+
+    # Episode detection via run-length
+    in_episode = False
+    episode_start = 0
+
+    for i in range(len(glucose)):
+        if high_mask[i] and not in_episode:
+            episode_start = i
+            in_episode = True
+        elif not high_mask[i] and in_episode:
+            episode_len = i - episode_start
+            if episode_len >= _HIGH_GLUCOSE_DURATION:
+                n_high_episodes += 1
+                total_high_steps += episode_len
+
+                # Check for wall within this episode
+                wall_steps = 0
+                for j in range(episode_start, i):
+                    if (np.isfinite(iob[j]) and np.isfinite(roc[j]) and
+                            iob[j] > _WALL_IOB_RATIO * median_iob and
+                            roc[j] > _WALL_ROC_THRESHOLD):
+                        wall_steps += 1
+                        excess_u = max(0, iob[j] - _PATIENCE_CAP_RATIO * median_iob)
+                        excess_insulin += excess_u * (5.0 / 360.0)  # per-step contribution
+
+                if wall_steps > episode_len * 0.3:  # wall in >30% of episode
+                    n_wall_episodes += 1
+                total_wall_steps += wall_steps
+
+            in_episode = False
+
+    # Handle episode at end of array
+    if in_episode:
+        episode_len = len(glucose) - episode_start
+        if episode_len >= _HIGH_GLUCOSE_DURATION:
+            n_high_episodes += 1
+
+    if n_high_episodes == 0:
+        return SaturationAssessment(
+            level=SaturationLevel.NONE,
+            wall_pct=0.0,
+            n_wall_episodes=0,
+            n_high_glucose_episodes=0,
+            median_iob=round(median_iob, 2),
+        )
+
+    wall_pct = (total_wall_steps / max(total_high_steps, 1)) * 100.0
+
+    if wall_pct > 40:
+        level = SaturationLevel.SEVERE
+    elif wall_pct > 20:
+        level = SaturationLevel.MODERATE
+    elif wall_pct > 5:
+        level = SaturationLevel.MILD
+    else:
+        level = SaturationLevel.NONE
+
+    return SaturationAssessment(
+        level=level,
+        wall_pct=round(wall_pct, 1),
+        n_wall_episodes=n_wall_episodes,
+        n_high_glucose_episodes=n_high_episodes,
+        median_iob=round(median_iob, 2),
+        excess_insulin_u=round(excess_insulin, 1),
+        delayed_hypo_risk=0.0,  # requires post-episode analysis
+        patience_mode_eligible=wall_pct > 10,
+        iob_cap_suggestion=round(_PATIENCE_CAP_RATIO * median_iob, 2),
+    )

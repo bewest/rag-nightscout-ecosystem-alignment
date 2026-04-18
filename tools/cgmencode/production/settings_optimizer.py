@@ -242,15 +242,25 @@ def _extract_isf_schedule(
 
     Research basis: EXP-1703 — ISF from BG delta / bolus dose.
     Uses curve_isf (exponential fit) when available, falls back to simple_isf.
-    Key finding: ISF universally underestimated 2.3× across all patients.
+
+    PRESCRIPTIVE PARADOX CAVEAT (EXP-2641/2642):
+    Both curve_isf and simple_isf are APPARENT ISF values that include AID
+    controller compensation (2–10× inflation, EXP-2651). Recommendations
+    based on apparent ISF risk the prescriptive paradox. Demand-phase ISF
+    (0–2h, key='demand_isf') is preferred when available, though even
+    demand ISF should be applied conservatively. "Fixed ISF + feedback is
+    near-optimal" (EXP-2642).
     """
     schedule = []
     all_isf_vals = []  # fallback pool
 
     # Pre-compute all valid ISF values for fallback
+    # Prefer demand_isf (0–2h) over curve_isf (full drop) per EXP-2651
     for w in corrections:
         m = w.measurements
-        isf = _safe_val(m.get('curve_isf')) or _safe_val(m.get('simple_isf'))
+        isf = (_safe_val(m.get('demand_isf'))
+               or _safe_val(m.get('curve_isf'))
+               or _safe_val(m.get('simple_isf')))
         if isf is not None and ISF_RANGE[0] < isf < ISF_RANGE[1]:
             all_isf_vals.append(isf)
 
@@ -267,7 +277,10 @@ def _extract_isf_schedule(
             if _period_for_hour(w.hour_of_day) != period_name:
                 continue
             m = w.measurements
-            isf = _safe_val(m.get('curve_isf')) or _safe_val(m.get('simple_isf'))
+            # Prefer demand_isf (0–2h) per EXP-2651
+            isf = (_safe_val(m.get('demand_isf'))
+                   or _safe_val(m.get('curve_isf'))
+                   or _safe_val(m.get('simple_isf')))
             if isf is not None and ISF_RANGE[0] < isf < ISF_RANGE[1]:
                 isf_vals.append(isf)
 
