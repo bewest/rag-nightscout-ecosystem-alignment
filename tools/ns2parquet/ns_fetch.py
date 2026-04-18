@@ -15,12 +15,22 @@ Usage (as library):
 """
 
 import json
+import logging
 import time
+import urllib.error
 import urllib.request
 import urllib.parse
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import List, Dict, Optional
+
+logger = logging.getLogger(__name__)
+
+# Retry configuration
+_MAX_RETRIES = 3
+_RETRY_BACKOFF = [2, 5, 15]          # seconds between retries
+_RETRYABLE_CODES = {429, 500, 502, 503, 504}  # HTTP codes worth retrying
+_INTER_REQUEST_SLEEP = 1.5           # seconds between windowed requests
 
 
 def load_ns_url(env_path: str) -> str:
@@ -58,6 +68,9 @@ def fetch_json(url: str, params: Optional[dict] = None,
                token: Optional[str] = None) -> any:
     """Fetch JSON from a URL with optional query parameters.
 
+    Retries on transient HTTP errors (429, 5xx) with exponential backoff.
+    Raises immediately on auth errors (401, 403) since retrying won't help.
+
     Args:
         url: Full URL (should not contain ``?token=``; use *token* param).
         params: Extra query-string parameters.
@@ -66,12 +79,36 @@ def fetch_json(url: str, params: Optional[dict] = None,
     all_params = dict(params or {})
     if token:
         all_params['token'] = token
+    full_url = url
     if all_params:
         qs = urllib.parse.urlencode(all_params)
-        url = f'{url}?{qs}'
-    req = urllib.request.Request(url, headers={'Accept': 'application/json'})
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        return json.loads(resp.read().decode())
+        full_url = f'{url}?{qs}'
+    req = urllib.request.Request(full_url, headers={'Accept': 'application/json'})
+
+    last_exc = None
+    for attempt in range(_MAX_RETRIES + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                return json.loads(resp.read().decode())
+        except urllib.error.HTTPError as e:
+            if e.code in _RETRYABLE_CODES and attempt < _MAX_RETRIES:
+                wait = _RETRY_BACKOFF[min(attempt, len(_RETRY_BACKOFF) - 1)]
+                logger.info('HTTP %d on %s — retry %d/%d in %ds',
+                            e.code, url, attempt + 1, _MAX_RETRIES, wait)
+                time.sleep(wait)
+                last_exc = e
+                continue
+            raise  # 401, 403, 404, etc. — don't retry
+        except (urllib.error.URLError, OSError, TimeoutError) as e:
+            if attempt < _MAX_RETRIES:
+                wait = _RETRY_BACKOFF[min(attempt, len(_RETRY_BACKOFF) - 1)]
+                logger.info('Network error on %s — retry %d/%d in %ds: %s',
+                            url, attempt + 1, _MAX_RETRIES, wait, e)
+                time.sleep(wait)
+                last_exc = e
+                continue
+            raise
+    raise last_exc  # pragma: no cover
 
 
 def _fetch_windowed(base_url: str, endpoint: str, id_field: str,
@@ -119,7 +156,7 @@ def _fetch_windowed(base_url: str, endpoint: str, id_field: str,
                 print(f' {len(chunk)} records')
             all_records.extend(chunk)
             cursor -= window
-            time.sleep(0.5)
+            time.sleep(_INTER_REQUEST_SLEEP)
     else:
         window = timedelta(days=7)
         cursor = end
@@ -139,7 +176,7 @@ def _fetch_windowed(base_url: str, endpoint: str, id_field: str,
                 print(f' {len(chunk)} records')
             all_records.extend(chunk)
             cursor -= window
-            time.sleep(0.5)
+            time.sleep(_INTER_REQUEST_SLEEP)
 
     # Deduplicate by id_field
     seen = set()

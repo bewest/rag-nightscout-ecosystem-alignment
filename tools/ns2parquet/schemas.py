@@ -130,6 +130,15 @@ DEVICESTATUS_SCHEMA = pa.schema([
     # Algorithm reason text
     pa.field('reason', pa.large_string()),    # oref0 reason string
     pa.field('utc_offset', pa.int16()),
+    # oref0/Trio algorithm settings (from openaps.suggested)
+    pa.field('algorithm_isf', pa.float32()),  # ISF the algorithm is using (mg/dL/U)
+    pa.field('algorithm_cr', pa.float32()),   # CR the algorithm is using (g/U)
+    pa.field('algorithm_tdd', pa.float32()),  # Total Daily Dose (U)
+    pa.field('algorithm_version', pa.string()),  # oref0 version string
+    # Extended IOB decomposition (from openaps.iob)
+    pa.field('bolus_iob', pa.float32()),      # IOB from boluses only (U)
+    pa.field('insulin_activity', pa.float32()),  # insulin activity rate (U/hr)
+    pa.field('net_basal_insulin', pa.float32()),  # net basal insulin accumulation (U)
 ])
 
 # ── Profiles (expanded therapy schedules) ───────────────────────────────
@@ -220,6 +229,13 @@ GRID_SCHEMA = pa.schema([
     pa.field('eventual_bg', pa.float32()),          # predicted eventual BG (mg/dL)
     pa.field('sensitivity_ratio', pa.float32()),    # autosens ratio (1.0 = normal)
     pa.field('insulin_req', pa.float32()),          # insulin required (U)
+    # Algorithm settings (from openaps.suggested — Trio/AAPS DynISF)
+    pa.field('algorithm_isf', pa.float32()),        # ISF the algorithm uses (mg/dL/U)
+    pa.field('algorithm_cr', pa.float32()),         # CR the algorithm uses (g/U)
+    pa.field('algorithm_tdd', pa.float32()),        # Total Daily Dose (U)
+    # Extended IOB decomposition (from openaps.iob)
+    pa.field('bolus_iob', pa.float32()),            # IOB from boluses only (U)
+    pa.field('insulin_activity', pa.float32()),     # insulin activity rate (U/hr)
     # Profile-derived
     pa.field('scheduled_isf', pa.float32()),
     pa.field('scheduled_cr', pa.float32()),

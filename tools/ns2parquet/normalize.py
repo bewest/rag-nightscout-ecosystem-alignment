@@ -371,6 +371,14 @@ def _extract_loop_ds(ds: dict) -> dict:
         'override_name': override.get('name'),
         'override_multiplier': float(override['multiplier']) if 'multiplier' in override else None,
         'reason': None,
+        # Not available in Loop devicestatus
+        'algorithm_isf': None,
+        'algorithm_cr': None,
+        'algorithm_tdd': None,
+        'algorithm_version': loop.get('version'),
+        'bolus_iob': None,
+        'insulin_activity': None,
+        'net_basal_insulin': None,
     }
 
 
@@ -398,7 +406,12 @@ def _extract_oref0_ds(ds: dict) -> dict:
             break
 
     # oref0 durations are in MINUTES (no conversion needed)
-    return {
+    # target_bg: Trio uses 'current_target', AAPS/oref0 uses 'targetBG'
+    target_bg = (suggested.get('targetBG') or suggested.get('current_target'))
+    # suggested SMB: oref0 uses 'units', some builds use 'SMBunits'
+    suggested_smb = (suggested.get('units') or suggested.get('SMBunits'))
+
+    result = {
         'iob': float(iob_data.get('iob', 0)) if iob_data else None,
         'basal_iob': float(iob_data.get('basaliob', 0)) if 'basaliob' in iob_data else None,
         # AAPS exports 'bolussnooze' (accelerated-decay bolus IOB for
@@ -408,12 +421,12 @@ def _extract_oref0_ds(ds: dict) -> dict:
         'cob': float(suggested.get('COB', 0)) if 'COB' in suggested else None,
         'bg': int(suggested['bg']) if 'bg' in suggested else None,
         'eventual_bg': int(suggested['eventualBG']) if 'eventualBG' in suggested else None,
-        'target_bg': int(suggested['targetBG']) if 'targetBG' in suggested else None,
+        'target_bg': int(target_bg) if target_bg is not None else None,
         'sensitivity_ratio': float(suggested['sensitivityRatio']) if 'sensitivityRatio' in suggested else None,
         'insulin_req': float(suggested['insulinReq']) if 'insulinReq' in suggested else None,
         'suggested_rate': float(suggested['rate']) if 'rate' in suggested else None,
         'suggested_duration_min': float(suggested['duration']) if 'duration' in suggested else None,
-        'suggested_smb': float(suggested['units']) if 'units' in suggested else None,
+        'suggested_smb': float(suggested_smb) if suggested_smb is not None else None,
         'enacted_rate': float(enacted['rate']) if 'rate' in enacted else None,
         'enacted_duration_min': float(enacted['duration']) if 'duration' in enacted else None,
         'enacted_smb': float(enacted.get('units', 0)) if enacted else None,
@@ -427,13 +440,39 @@ def _extract_oref0_ds(ds: dict) -> dict:
         'pred_uam_30': _pred_at('UAM', 6),
         'pred_zt_30': _pred_at('ZT', 6),
         'loop_failure_reason': None,
-        'loop_version': None,
-        'recommended_bolus': None,
+        'loop_version': openaps.get('version'),
+        'recommended_bolus': float(openaps['recommendedBolus']) if 'recommendedBolus' in openaps else None,
         'override_active': None,
         'override_name': None,
         'override_multiplier': None,
         'reason': suggested.get('reason'),
+        # Algorithm settings (oref0/Trio DynISF)
+        'algorithm_isf': float(suggested['ISF']) if 'ISF' in suggested else None,
+        'algorithm_cr': float(suggested['CR']) if 'CR' in suggested else None,
+        'algorithm_tdd': float(suggested['TDD']) if 'TDD' in suggested else None,
+        'algorithm_version': openaps.get('version'),
+        # Extended IOB decomposition
+        'bolus_iob': float(iob_data['bolusiob']) if 'bolusiob' in iob_data else None,
+        'insulin_activity': float(iob_data['activity']) if 'activity' in iob_data else None,
+        'net_basal_insulin': float(iob_data['netbasalinsulin']) if 'netbasalinsulin' in iob_data else None,
     }
+
+    # ── mmol/L → mg/dL conversion for algorithm output fields ──
+    # The `units` setting is unreliable (some sites report mg/dl but have
+    # mmol/L algorithm ISF).  Heuristic: ISF < 15 is definitely mmol/L.
+    _isf = result.get('algorithm_isf')
+    if _isf is not None and _isf < 15:
+        result['algorithm_isf'] = round(_isf * MMOLL_TO_MGDL, 1)
+        # target_bg is also in mmol/L when algorithm ISF is
+        if result.get('target_bg') is not None and result['target_bg'] < 30:
+            result['target_bg'] = round(result['target_bg'] * MMOLL_TO_MGDL)
+        # bg and eventual_bg too
+        if result.get('bg') is not None and result['bg'] < 30:
+            result['bg'] = round(result['bg'] * MMOLL_TO_MGDL)
+        if result.get('eventual_bg') is not None and result['eventual_bg'] < 30:
+            result['eventual_bg'] = round(result['eventual_bg'] * MMOLL_TO_MGDL)
+
+    return result
 
 
 def normalize_devicestatus(records: List[Dict], patient_id: str) -> pd.DataFrame:

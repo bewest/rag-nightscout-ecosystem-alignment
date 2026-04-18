@@ -163,6 +163,8 @@ def build_grid(data_path: str, patient_id: str,
         'hypo_risk', 'recommended_bolus', 'enacted_rate', 'enacted_bolus',
         'pump_battery', 'pump_reservoir',
         'eventual_bg', 'sensitivity_ratio', 'insulin_req',
+        'algorithm_isf', 'algorithm_cr', 'algorithm_tdd',
+        'bolus_iob', 'insulin_activity',
     ]}
 
     for ds in devicestatus:
@@ -233,9 +235,19 @@ def build_grid(data_path: str, patient_id: str,
 
         # oref0 algorithm context (Trio/AAPS/OpenAPS)
         _suggested = (openaps.get('suggested', {}) or {}) if openaps and isinstance(openaps, dict) else {}
+        _iob_data = (openaps.get('iob', {}) or {}) if openaps and isinstance(openaps, dict) else {}
+        if isinstance(_iob_data, list) and _iob_data:
+            _iob_data = _iob_data[0]
         ds_data['eventual_bg'].append(float(_suggested['eventualBG']) if 'eventualBG' in _suggested else np.nan)
         ds_data['sensitivity_ratio'].append(float(_suggested['sensitivityRatio']) if 'sensitivityRatio' in _suggested else np.nan)
         ds_data['insulin_req'].append(float(_suggested['insulinReq']) if 'insulinReq' in _suggested else np.nan)
+        # DynISF/oref0 algorithm settings
+        ds_data['algorithm_isf'].append(float(_suggested['ISF']) if 'ISF' in _suggested else np.nan)
+        ds_data['algorithm_cr'].append(float(_suggested['CR']) if 'CR' in _suggested else np.nan)
+        ds_data['algorithm_tdd'].append(float(_suggested['TDD']) if 'TDD' in _suggested else np.nan)
+        # Extended IOB decomposition
+        ds_data['bolus_iob'].append(float(_iob_data['bolusiob']) if 'bolusiob' in _iob_data else np.nan)
+        ds_data['insulin_activity'].append(float(_iob_data['activity']) if 'activity' in _iob_data else np.nan)
 
     if ds_data['ts']:
         ds_df = pd.DataFrame({k: v for k, v in ds_data.items() if k != 'ts'},
@@ -247,10 +259,11 @@ def build_grid(data_path: str, patient_id: str,
 
         for col in ds_grouped.columns:
             df[col] = ds_grouped[col]
-            if col != 'hypo_risk':
-                df[col] = df[col].interpolate(limit=6)
-            else:
+            if col in ('hypo_risk', 'algorithm_isf', 'algorithm_cr',
+                        'algorithm_tdd'):
                 df[col] = df[col].ffill(limit=6)
+            else:
+                df[col] = df[col].interpolate(limit=6)
 
     # Fill IOB/COB defaults
     for col in ['iob', 'cob']:
@@ -605,6 +618,8 @@ def build_grid(data_path: str, patient_id: str,
         'loop_hypo_risk', 'loop_recommended',
         'loop_enacted_rate', 'loop_enacted_bolus',
         'eventual_bg', 'sensitivity_ratio', 'insulin_req',
+        'algorithm_isf', 'algorithm_cr', 'algorithm_tdd',
+        'bolus_iob', 'insulin_activity',
         'scheduled_isf', 'scheduled_cr', 'glucose_vs_target',
         'pump_battery', 'pump_reservoir',
         'sensor_phase', 'suspension_time_min',

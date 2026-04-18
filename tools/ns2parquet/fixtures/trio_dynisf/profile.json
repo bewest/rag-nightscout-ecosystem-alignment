@@ -1,0 +1,1542 @@
+[
+  {
+    "_id": "fixture_prof_000",
+    "units": "mg/dl",
+    "isAPNSProduction": true,
+    "defaultProfile": "Default",
+    "deviceToken": "d55d85bf90d3c9c8fa428350d726f4c33a7d7aef9f539fdd38c3226e46cae196",
+    "enteredBy": "Trio",
+    "store": {
+      "Profile0": {
+        "units": "mg/dl",
+        "timezone": "America/New_York",
+        "dia": 10,
+        "target_low": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 100
+          },
+          {
+            "time": "03:00",
+            "timeAsSeconds": 10800,
+            "value": 100
+          },
+          {
+            "time": "06:00",
+            "timeAsSeconds": 21600,
+            "value": 90
+          }
+        ],
+        "target_high": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 100
+          },
+          {
+            "time": "03:00",
+            "timeAsSeconds": 10800,
+            "value": 100
+          },
+          {
+            "time": "06:00",
+            "timeAsSeconds": 21600,
+            "value": 90
+          }
+        ],
+        "sens": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 90
+          },
+          {
+            "time": "02:30",
+            "timeAsSeconds": 9000,
+            "value": 100
+          },
+          {
+            "time": "09:30",
+            "timeAsSeconds": 34200,
+            "value": 115
+          },
+          {
+            "time": "13:30",
+            "timeAsSeconds": 48600,
+            "value": 90
+          },
+          {
+            "time": "19:30",
+            "timeAsSeconds": 70200,
+            "value": 105
+          }
+        ],
+        "carbs_hr": 20,
+        "basal": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 0.35
+          },
+          {
+            "time": "03:00",
+            "timeAsSeconds": 10800,
+            "value": 0.25
+          },
+          {
+            "time": "14:00",
+            "timeAsSeconds": 50400,
+            "value": 0.35
+          }
+        ],
+        "delay": 0,
+        "carbratio": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 19
+          },
+          {
+            "time": "09:30",
+            "timeAsSeconds": 34200,
+            "value": 38
+          },
+          {
+            "time": "17:30",
+            "timeAsSeconds": 63000,
+            "value": 34
+          }
+        ]
+      }
+    },
+    "startDate": "2026-04-13T02:58:11.019Z",
+    "bundleIdentifier": "org.nightscout.GSLNR9RJSR.trio",
+    "overridePresets": [
+      {
+        "duration": 120,
+        "percentage": 100,
+        "name": "School afternoons"
+      },
+      {
+        "duration": 180,
+        "percentage": 130,
+        "name": "130% \ud83d\udcaa, target 80, 3hr run time",
+        "target": 80
+      },
+      {
+        "duration": 60,
+        "percentage": 130,
+        "name": "130% 1 hr",
+        "target": 80
+      },
+      {
+        "duration": 300,
+        "percentage": 75,
+        "name": "Less aggressive ",
+        "target": 120
+      },
+      {
+        "duration": 150,
+        "percentage": 115,
+        "name": "115%  for 2.5 hrs"
+      },
+      {
+        "duration": 240,
+        "percentage": 150,
+        "name": "150%",
+        "target": 85
+      }
+    ],
+    "teamID": "GSLNR9RJSR",
+    "expirationDate": "2026-07-11T09:23:06.000Z",
+    "mills": 1776049091000,
+    "created_at": "2026-04-13T02:58:11.395Z"
+  },
+  {
+    "_id": "fixture_prof_001",
+    "store": {
+      "Profile0": {
+        "target_low": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 100
+          },
+          {
+            "timeAsSeconds": 10800,
+            "time": "03:00",
+            "value": 100
+          },
+          {
+            "timeAsSeconds": 21600,
+            "time": "06:00",
+            "value": 90
+          }
+        ],
+        "basal": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 0.35
+          },
+          {
+            "timeAsSeconds": 10800,
+            "time": "03:00",
+            "value": 0.25
+          },
+          {
+            "timeAsSeconds": 50400,
+            "time": "14:00",
+            "value": 0.35
+          }
+        ],
+        "dia": 10,
+        "target_high": [
+          {
+            "timeAsSeconds": 0,
+            "value": 100,
+            "time": "00:00"
+          },
+          {
+            "timeAsSeconds": 10800,
+            "value": 100,
+            "time": "03:00"
+          },
+          {
+            "value": 90,
+            "time": "06:00",
+            "timeAsSeconds": 21600
+          }
+        ],
+        "carbratio": [
+          {
+            "value": 19,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          },
+          {
+            "value": 38,
+            "time": "09:30",
+            "timeAsSeconds": 34200
+          },
+          {
+            "value": 34,
+            "timeAsSeconds": 63000,
+            "time": "17:30"
+          }
+        ],
+        "timezone": "America/New_York",
+        "units": "mg/dl",
+        "delay": 0,
+        "sens": [
+          {
+            "value": 90,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          },
+          {
+            "timeAsSeconds": 9000,
+            "time": "02:30",
+            "value": 100
+          },
+          {
+            "timeAsSeconds": 34200,
+            "time": "09:30",
+            "value": 115
+          },
+          {
+            "timeAsSeconds": 48600,
+            "time": "13:30",
+            "value": 90
+          },
+          {
+            "timeAsSeconds": 70200,
+            "time": "19:30",
+            "value": 105
+          }
+        ],
+        "carbs_hr": 20
+      }
+    },
+    "expirationDate": "2026-07-04T08:20:43.000Z",
+    "mills": 1775473011000,
+    "enteredBy": "Trio",
+    "deviceToken": "d55d85bf90d3c9c8fa428350d726f4c33a7d7aef9f539fdd38c3226e46cae196",
+    "isAPNSProduction": true,
+    "units": "mg/dl",
+    "bundleIdentifier": "org.nightscout.GSLNR9RJSR.trio",
+    "overridePresets": [
+      {
+        "name": "School afternoons",
+        "duration": 120,
+        "percentage": 100
+      },
+      {
+        "name": "130% \ud83d\udcaa, target 80, 3hr run time",
+        "duration": 180,
+        "percentage": 130,
+        "target": 80
+      },
+      {
+        "name": "130% 1 hr",
+        "duration": 60,
+        "percentage": 130,
+        "target": 80
+      },
+      {
+        "name": "Less aggressive ",
+        "duration": 300,
+        "percentage": 75,
+        "target": 120
+      },
+      {
+        "name": "115%  for 2.5 hrs",
+        "duration": 150,
+        "percentage": 115
+      },
+      {
+        "name": "150%",
+        "duration": 240,
+        "percentage": 150,
+        "target": 85
+      }
+    ],
+    "teamID": "GSLNR9RJSR",
+    "defaultProfile": "Default",
+    "startDate": "2026-04-06T10:56:51.152Z",
+    "created_at": "2026-04-06T10:56:51.220Z"
+  },
+  {
+    "_id": "fixture_prof_002",
+    "store": {
+      "Profile0": {
+        "dia": 10,
+        "delay": 0,
+        "target_high": [
+          {
+            "time": "00:00",
+            "value": 100,
+            "timeAsSeconds": 0
+          },
+          {
+            "time": "03:00",
+            "value": 100,
+            "timeAsSeconds": 10800
+          },
+          {
+            "time": "06:00",
+            "value": 90,
+            "timeAsSeconds": 21600
+          }
+        ],
+        "carbs_hr": 20,
+        "target_low": [
+          {
+            "time": "00:00",
+            "value": 100,
+            "timeAsSeconds": 0
+          },
+          {
+            "time": "03:00",
+            "value": 100,
+            "timeAsSeconds": 10800
+          },
+          {
+            "time": "06:00",
+            "value": 90,
+            "timeAsSeconds": 21600
+          }
+        ],
+        "timezone": "America/New_York",
+        "units": "mg/dl",
+        "basal": [
+          {
+            "value": 0.35,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          },
+          {
+            "value": 0.25,
+            "time": "03:00",
+            "timeAsSeconds": 10800
+          },
+          {
+            "value": 0.35,
+            "time": "14:00",
+            "timeAsSeconds": 50400
+          }
+        ],
+        "sens": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 90
+          },
+          {
+            "time": "02:30",
+            "timeAsSeconds": 9000,
+            "value": 110
+          },
+          {
+            "time": "09:30",
+            "timeAsSeconds": 34200,
+            "value": 115
+          },
+          {
+            "time": "13:30",
+            "timeAsSeconds": 48600,
+            "value": 90
+          },
+          {
+            "time": "19:30",
+            "timeAsSeconds": 70200,
+            "value": 105
+          }
+        ],
+        "carbratio": [
+          {
+            "timeAsSeconds": 0,
+            "value": 19,
+            "time": "00:00"
+          },
+          {
+            "timeAsSeconds": 34200,
+            "value": 38,
+            "time": "09:30"
+          },
+          {
+            "time": "17:30",
+            "value": 34,
+            "timeAsSeconds": 63000
+          }
+        ]
+      }
+    },
+    "overridePresets": [
+      {
+        "name": "School afternoons",
+        "percentage": 100,
+        "duration": 120
+      },
+      {
+        "name": "130% \ud83d\udcaa, target 80, 3hr run time",
+        "percentage": 130,
+        "duration": 180,
+        "target": 80
+      },
+      {
+        "name": "130% 1 hr",
+        "percentage": 130,
+        "duration": 60,
+        "target": 80
+      },
+      {
+        "name": "Less aggressive ",
+        "percentage": 75,
+        "duration": 300,
+        "target": 120
+      },
+      {
+        "duration": 150,
+        "name": "115%  for 2.5 hrs",
+        "percentage": 115
+      },
+      {
+        "duration": 240,
+        "name": "150%",
+        "target": 85,
+        "percentage": 150
+      }
+    ],
+    "startDate": "2026-04-06T10:40:48.071Z",
+    "mills": 1775472048000,
+    "isAPNSProduction": true,
+    "defaultProfile": "Default",
+    "enteredBy": "Trio",
+    "units": "mg/dl",
+    "teamID": "GSLNR9RJSR",
+    "bundleIdentifier": "org.nightscout.GSLNR9RJSR.trio",
+    "deviceToken": "d55d85bf90d3c9c8fa428350d726f4c33a7d7aef9f539fdd38c3226e46cae196",
+    "expirationDate": "2026-07-04T08:20:43.000Z",
+    "created_at": "2026-04-06T10:40:48.206Z"
+  },
+  {
+    "_id": "fixture_prof_003",
+    "bundleIdentifier": "org.nightscout.GSLNR9RJSR.trio",
+    "store": {
+      "Profile0": {
+        "sens": [
+          {
+            "timeAsSeconds": 0,
+            "value": 90,
+            "time": "00:00"
+          },
+          {
+            "timeAsSeconds": 9000,
+            "value": 110,
+            "time": "02:30"
+          },
+          {
+            "timeAsSeconds": 34200,
+            "value": 135,
+            "time": "09:30"
+          },
+          {
+            "timeAsSeconds": 48600,
+            "value": 90,
+            "time": "13:30"
+          },
+          {
+            "timeAsSeconds": 70200,
+            "value": 105,
+            "time": "19:30"
+          }
+        ],
+        "basal": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 0.35
+          },
+          {
+            "timeAsSeconds": 10800,
+            "time": "03:00",
+            "value": 0.25
+          },
+          {
+            "timeAsSeconds": 50400,
+            "time": "14:00",
+            "value": 0.35
+          }
+        ],
+        "target_low": [
+          {
+            "timeAsSeconds": 0,
+            "value": 100,
+            "time": "00:00"
+          },
+          {
+            "timeAsSeconds": 10800,
+            "value": 100,
+            "time": "03:00"
+          },
+          {
+            "timeAsSeconds": 21600,
+            "value": 90,
+            "time": "06:00"
+          }
+        ],
+        "carbratio": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 19
+          },
+          {
+            "timeAsSeconds": 34200,
+            "time": "09:30",
+            "value": 38
+          },
+          {
+            "timeAsSeconds": 63000,
+            "time": "17:30",
+            "value": 34
+          }
+        ],
+        "target_high": [
+          {
+            "timeAsSeconds": 0,
+            "value": 100,
+            "time": "00:00"
+          },
+          {
+            "timeAsSeconds": 10800,
+            "value": 100,
+            "time": "03:00"
+          },
+          {
+            "timeAsSeconds": 21600,
+            "value": 90,
+            "time": "06:00"
+          }
+        ],
+        "carbs_hr": 20,
+        "delay": 0,
+        "dia": 10,
+        "timezone": "America/New_York",
+        "units": "mg/dl"
+      }
+    },
+    "enteredBy": "Trio",
+    "startDate": "2026-04-06T10:40:31.633Z",
+    "mills": 1775472031000,
+    "defaultProfile": "Default",
+    "teamID": "GSLNR9RJSR",
+    "expirationDate": "2026-07-04T08:20:43.000Z",
+    "isAPNSProduction": true,
+    "overridePresets": [
+      {
+        "duration": 120,
+        "percentage": 100,
+        "name": "School afternoons"
+      },
+      {
+        "duration": 180,
+        "percentage": 130,
+        "target": 80,
+        "name": "130% \ud83d\udcaa, target 80, 3hr run time"
+      },
+      {
+        "name": "130% 1 hr",
+        "duration": 60,
+        "target": 80,
+        "percentage": 130
+      },
+      {
+        "name": "Less aggressive ",
+        "duration": 300,
+        "target": 120,
+        "percentage": 75
+      },
+      {
+        "name": "115%  for 2.5 hrs",
+        "duration": 150,
+        "percentage": 115
+      },
+      {
+        "target": 85,
+        "name": "150%",
+        "duration": 240,
+        "percentage": 150
+      }
+    ],
+    "units": "mg/dl",
+    "deviceToken": "d55d85bf90d3c9c8fa428350d726f4c33a7d7aef9f539fdd38c3226e46cae196",
+    "created_at": "2026-04-06T10:40:32.022Z"
+  },
+  {
+    "_id": "fixture_prof_004",
+    "isAPNSProduction": true,
+    "defaultProfile": "Default",
+    "expirationDate": "2026-07-04T08:20:43.000Z",
+    "store": {
+      "Profile0": {
+        "delay": 0,
+        "dia": 10,
+        "sens": [
+          {
+            "value": 90,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          },
+          {
+            "value": 110,
+            "time": "02:30",
+            "timeAsSeconds": 9000
+          },
+          {
+            "value": 135,
+            "time": "09:30",
+            "timeAsSeconds": 34200
+          },
+          {
+            "value": 100,
+            "time": "13:30",
+            "timeAsSeconds": 48600
+          },
+          {
+            "value": 105,
+            "time": "19:30",
+            "timeAsSeconds": 70200
+          }
+        ],
+        "basal": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 0.35
+          },
+          {
+            "time": "03:00",
+            "timeAsSeconds": 10800,
+            "value": 0.25
+          },
+          {
+            "time": "14:00",
+            "timeAsSeconds": 50400,
+            "value": 0.35
+          }
+        ],
+        "carbs_hr": 20,
+        "timezone": "America/New_York",
+        "target_low": [
+          {
+            "value": 100,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          },
+          {
+            "value": 100,
+            "time": "03:00",
+            "timeAsSeconds": 10800
+          },
+          {
+            "value": 90,
+            "time": "06:00",
+            "timeAsSeconds": 21600
+          }
+        ],
+        "target_high": [
+          {
+            "value": 100,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          },
+          {
+            "value": 100,
+            "time": "03:00",
+            "timeAsSeconds": 10800
+          },
+          {
+            "value": 90,
+            "time": "06:00",
+            "timeAsSeconds": 21600
+          }
+        ],
+        "units": "mg/dl",
+        "carbratio": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 19
+          },
+          {
+            "time": "09:30",
+            "timeAsSeconds": 34200,
+            "value": 38
+          },
+          {
+            "time": "17:30",
+            "timeAsSeconds": 63000,
+            "value": 34
+          }
+        ]
+      }
+    },
+    "overridePresets": [
+      {
+        "name": "School afternoons",
+        "percentage": 100,
+        "duration": 120
+      },
+      {
+        "name": "130% \ud83d\udcaa, target 80, 3hr run time",
+        "target": 80,
+        "percentage": 130,
+        "duration": 180
+      },
+      {
+        "name": "130% 1 hr",
+        "target": 80,
+        "percentage": 130,
+        "duration": 60
+      },
+      {
+        "name": "Less aggressive ",
+        "target": 120,
+        "percentage": 75,
+        "duration": 300
+      },
+      {
+        "name": "115%  for 2.5 hrs",
+        "percentage": 115,
+        "duration": 150
+      },
+      {
+        "name": "150%",
+        "target": 85,
+        "percentage": 150,
+        "duration": 240
+      }
+    ],
+    "teamID": "GSLNR9RJSR",
+    "enteredBy": "Trio",
+    "bundleIdentifier": "org.nightscout.GSLNR9RJSR.trio",
+    "units": "mg/dl",
+    "mills": 1775398494000,
+    "startDate": "2026-04-05T14:14:54.460Z",
+    "deviceToken": "d55d85bf90d3c9c8fa428350d726f4c33a7d7aef9f539fdd38c3226e46cae196",
+    "created_at": "2026-04-05T14:14:55.036Z"
+  },
+  {
+    "_id": "fixture_prof_005",
+    "enteredBy": "Trio",
+    "mills": 1775397320000,
+    "startDate": "2026-04-05T13:55:20.755Z",
+    "defaultProfile": "Default",
+    "bundleIdentifier": "org.nightscout.GSLNR9RJSR.trio",
+    "overridePresets": [
+      {
+        "percentage": 100,
+        "duration": 120,
+        "name": "School afternoons"
+      },
+      {
+        "percentage": 130,
+        "target": 80,
+        "duration": 180,
+        "name": "130% \ud83d\udcaa, target 80, 3hr run time"
+      },
+      {
+        "percentage": 130,
+        "target": 80,
+        "duration": 60,
+        "name": "130% 1 hr"
+      },
+      {
+        "percentage": 75,
+        "target": 120,
+        "duration": 300,
+        "name": "Less aggressive "
+      },
+      {
+        "percentage": 115,
+        "duration": 150,
+        "name": "115%  for 2.5 hrs"
+      },
+      {
+        "percentage": 150,
+        "target": 85,
+        "duration": 240,
+        "name": "150%"
+      }
+    ],
+    "deviceToken": "d55d85bf90d3c9c8fa428350d726f4c33a7d7aef9f539fdd38c3226e46cae196",
+    "store": {
+      "Profile0": {
+        "carbs_hr": 20,
+        "target_low": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 100
+          },
+          {
+            "time": "03:00",
+            "timeAsSeconds": 10800,
+            "value": 100
+          },
+          {
+            "time": "06:00",
+            "timeAsSeconds": 21600,
+            "value": 90
+          }
+        ],
+        "dia": 10,
+        "delay": 0,
+        "sens": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 90
+          },
+          {
+            "time": "02:30",
+            "timeAsSeconds": 9000,
+            "value": 110
+          },
+          {
+            "time": "09:30",
+            "timeAsSeconds": 34200,
+            "value": 135
+          },
+          {
+            "time": "13:30",
+            "timeAsSeconds": 48600,
+            "value": 100
+          },
+          {
+            "time": "19:30",
+            "value": 105,
+            "timeAsSeconds": 70200
+          }
+        ],
+        "timezone": "America/New_York",
+        "basal": [
+          {
+            "time": "00:00",
+            "value": 0.35,
+            "timeAsSeconds": 0
+          },
+          {
+            "time": "03:00",
+            "value": 0.25,
+            "timeAsSeconds": 10800
+          },
+          {
+            "time": "14:00",
+            "value": 0.35,
+            "timeAsSeconds": 50400
+          }
+        ],
+        "target_high": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 100
+          },
+          {
+            "time": "03:00",
+            "timeAsSeconds": 10800,
+            "value": 100
+          },
+          {
+            "time": "06:00",
+            "timeAsSeconds": 21600,
+            "value": 90
+          }
+        ],
+        "units": "mg/dl",
+        "carbratio": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 19
+          },
+          {
+            "time": "09:30",
+            "timeAsSeconds": 34200,
+            "value": 38
+          },
+          {
+            "timeAsSeconds": 63000,
+            "value": 34,
+            "time": "17:30"
+          }
+        ]
+      }
+    },
+    "isAPNSProduction": true,
+    "units": "mg/dl",
+    "teamID": "GSLNR9RJSR",
+    "expirationDate": "2026-07-04T08:20:43.000Z",
+    "created_at": "2026-04-05T13:55:21.238Z"
+  },
+  {
+    "_id": "fixture_prof_006",
+    "deviceToken": "d55d85bf90d3c9c8fa428350d726f4c33a7d7aef9f539fdd38c3226e46cae196",
+    "mills": 1774802288000,
+    "store": {
+      "Profile0": {
+        "dia": 10,
+        "basal": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 0.35
+          },
+          {
+            "timeAsSeconds": 10800,
+            "time": "03:00",
+            "value": 0.25
+          },
+          {
+            "timeAsSeconds": 50400,
+            "time": "14:00",
+            "value": 0.35
+          }
+        ],
+        "target_high": [
+          {
+            "value": 100,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          },
+          {
+            "value": 100,
+            "timeAsSeconds": 10800,
+            "time": "03:00"
+          },
+          {
+            "value": 90,
+            "timeAsSeconds": 21600,
+            "time": "06:00"
+          }
+        ],
+        "timezone": "America/New_York",
+        "sens": [
+          {
+            "value": 90,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          },
+          {
+            "value": 110,
+            "timeAsSeconds": 9000,
+            "time": "02:30"
+          },
+          {
+            "value": 135,
+            "timeAsSeconds": 34200,
+            "time": "09:30"
+          },
+          {
+            "value": 100,
+            "timeAsSeconds": 48600,
+            "time": "13:30"
+          },
+          {
+            "value": 105,
+            "timeAsSeconds": 70200,
+            "time": "19:30"
+          }
+        ],
+        "target_low": [
+          {
+            "value": 100,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          },
+          {
+            "value": 100,
+            "timeAsSeconds": 10800,
+            "time": "03:00"
+          },
+          {
+            "value": 90,
+            "timeAsSeconds": 21600,
+            "time": "06:00"
+          }
+        ],
+        "carbratio": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 19
+          },
+          {
+            "timeAsSeconds": 34200,
+            "time": "09:30",
+            "value": 38
+          },
+          {
+            "timeAsSeconds": 63000,
+            "time": "17:30",
+            "value": 34
+          }
+        ],
+        "units": "mg/dl",
+        "delay": 0,
+        "carbs_hr": 20
+      }
+    },
+    "isAPNSProduction": true,
+    "enteredBy": "Trio",
+    "teamID": "GSLNR9RJSR",
+    "startDate": "2026-03-29T16:38:08.116Z",
+    "defaultProfile": "Default",
+    "overridePresets": [
+      {
+        "name": "School afternoons",
+        "percentage": 100,
+        "duration": 120
+      },
+      {
+        "name": "130% \ud83d\udcaa, target 80, 3hr run time",
+        "target": 80,
+        "percentage": 130,
+        "duration": 180
+      },
+      {
+        "name": "130% 1 hr",
+        "target": 80,
+        "percentage": 130,
+        "duration": 60
+      },
+      {
+        "name": "Less aggressive ",
+        "target": 120,
+        "percentage": 75,
+        "duration": 300
+      },
+      {
+        "name": "115%  for 2.5 hrs",
+        "percentage": 115,
+        "duration": 150
+      },
+      {
+        "name": "150%",
+        "target": 85,
+        "percentage": 150,
+        "duration": 240
+      }
+    ],
+    "units": "mg/dl",
+    "bundleIdentifier": "org.nightscout.GSLNR9RJSR.trio",
+    "expirationDate": "2026-06-27T08:17:53.000Z",
+    "created_at": "2026-03-29T16:38:08.501Z"
+  },
+  {
+    "_id": "fixture_prof_007",
+    "enteredBy": "Trio",
+    "mills": 1774309731000,
+    "units": "mg/dl",
+    "store": {
+      "Profile0": {
+        "delay": 0,
+        "carbs_hr": 20,
+        "target_low": [
+          {
+            "value": 100,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          },
+          {
+            "value": 100,
+            "time": "03:00",
+            "timeAsSeconds": 10800
+          },
+          {
+            "value": 90,
+            "time": "06:00",
+            "timeAsSeconds": 21600
+          }
+        ],
+        "dia": 10,
+        "sens": [
+          {
+            "value": 90,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          },
+          {
+            "value": 110,
+            "time": "02:30",
+            "timeAsSeconds": 9000
+          },
+          {
+            "value": 135,
+            "time": "09:30",
+            "timeAsSeconds": 34200
+          },
+          {
+            "time": "13:30",
+            "timeAsSeconds": 48600,
+            "value": 100
+          },
+          {
+            "time": "19:30",
+            "timeAsSeconds": 70200,
+            "value": 105
+          }
+        ],
+        "units": "mg/dl",
+        "carbratio": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 19
+          },
+          {
+            "time": "09:30",
+            "timeAsSeconds": 34200,
+            "value": 38
+          },
+          {
+            "time": "17:30",
+            "timeAsSeconds": 63000,
+            "value": 34
+          }
+        ],
+        "timezone": "America/New_York",
+        "basal": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 0.35
+          },
+          {
+            "time": "03:00",
+            "timeAsSeconds": 10800,
+            "value": 0.25
+          },
+          {
+            "time": "14:00",
+            "timeAsSeconds": 50400,
+            "value": 0.35
+          }
+        ],
+        "target_high": [
+          {
+            "value": 100,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          },
+          {
+            "time": "03:00",
+            "value": 100,
+            "timeAsSeconds": 10800
+          },
+          {
+            "time": "06:00",
+            "value": 90,
+            "timeAsSeconds": 21600
+          }
+        ]
+      }
+    },
+    "bundleIdentifier": "org.nightscout.GSLNR9RJSR.trio",
+    "expirationDate": "2026-06-21T23:13:47.000Z",
+    "startDate": "2026-03-23T23:48:51.277Z",
+    "overridePresets": [
+      {
+        "name": "School afternoons",
+        "duration": 120,
+        "percentage": 100
+      },
+      {
+        "target": 80,
+        "name": "130% \ud83d\udcaa, target 80, 3hr run time",
+        "duration": 180,
+        "percentage": 130
+      },
+      {
+        "target": 80,
+        "name": "130% 1 hr",
+        "duration": 60,
+        "percentage": 130
+      },
+      {
+        "target": 120,
+        "name": "Less aggressive ",
+        "duration": 300,
+        "percentage": 75
+      },
+      {
+        "name": "115%  for 2.5 hrs",
+        "duration": 150,
+        "percentage": 115
+      },
+      {
+        "target": 85,
+        "name": "150%",
+        "duration": 240,
+        "percentage": 150
+      }
+    ],
+    "deviceToken": "d55d85bf90d3c9c8fa428350d726f4c33a7d7aef9f539fdd38c3226e46cae196",
+    "isAPNSProduction": true,
+    "teamID": "GSLNR9RJSR",
+    "defaultProfile": "Default",
+    "created_at": "2026-03-23T23:48:52.283Z"
+  },
+  {
+    "_id": "fixture_prof_008",
+    "expirationDate": "2026-06-21T23:13:47.000Z",
+    "teamID": "GSLNR9RJSR",
+    "isAPNSProduction": false,
+    "deviceToken": "d45c28a40cd59b7aee731930900f5d7a1f3b1a51f87050a6a2ea5207948492fb",
+    "startDate": "2026-03-23T23:48:51.101Z",
+    "overridePresets": [
+      {
+        "name": "School afternoons",
+        "duration": 120,
+        "percentage": 100
+      },
+      {
+        "target": 80,
+        "name": "130% \ud83d\udcaa, target 80, 3hr run time",
+        "duration": 180,
+        "percentage": 130
+      },
+      {
+        "target": 80,
+        "name": "130% 1 hr",
+        "duration": 60,
+        "percentage": 130
+      },
+      {
+        "target": 120,
+        "name": "Less aggressive ",
+        "duration": 300,
+        "percentage": 75
+      },
+      {
+        "name": "115%  for 2.5 hrs",
+        "duration": 150,
+        "percentage": 115
+      },
+      {
+        "target": 85,
+        "name": "150%",
+        "duration": 240,
+        "percentage": 150
+      }
+    ],
+    "enteredBy": "Trio",
+    "store": {
+      "Profile0": {
+        "timezone": "America/New_York",
+        "delay": 0,
+        "sens": [
+          {
+            "value": 90,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          },
+          {
+            "value": 110,
+            "timeAsSeconds": 9000,
+            "time": "02:30"
+          },
+          {
+            "value": 135,
+            "timeAsSeconds": 34200,
+            "time": "09:30"
+          },
+          {
+            "time": "13:30",
+            "timeAsSeconds": 48600,
+            "value": 100
+          },
+          {
+            "time": "19:30",
+            "timeAsSeconds": 70200,
+            "value": 105
+          }
+        ],
+        "basal": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 0.35
+          },
+          {
+            "time": "03:00",
+            "timeAsSeconds": 10800,
+            "value": 0.25
+          },
+          {
+            "time": "14:00",
+            "timeAsSeconds": 50400,
+            "value": 0.35
+          }
+        ],
+        "carbratio": [
+          {
+            "time": "00:00",
+            "timeAsSeconds": 0,
+            "value": 19
+          },
+          {
+            "time": "09:30",
+            "timeAsSeconds": 34200,
+            "value": 38
+          },
+          {
+            "time": "17:30",
+            "timeAsSeconds": 63000,
+            "value": 34
+          }
+        ],
+        "target_low": [
+          {
+            "value": 100,
+            "time": "00:00",
+            "timeAsSeconds": 0
+          },
+          {
+            "value": 100,
+            "time": "03:00",
+            "timeAsSeconds": 10800
+          },
+          {
+            "value": 90,
+            "time": "06:00",
+            "timeAsSeconds": 21600
+          }
+        ],
+        "dia": 10,
+        "target_high": [
+          {
+            "time": "00:00",
+            "value": 100,
+            "timeAsSeconds": 0
+          },
+          {
+            "time": "03:00",
+            "value": 100,
+            "timeAsSeconds": 10800
+          },
+          {
+            "time": "06:00",
+            "value": 90,
+            "timeAsSeconds": 21600
+          }
+        ],
+        "units": "mg/dl",
+        "carbs_hr": 20
+      }
+    },
+    "mills": 1774309731000,
+    "units": "mg/dl",
+    "defaultProfile": "Default",
+    "bundleIdentifier": "org.nightscout.GSLNR9RJSR.trio",
+    "created_at": "2026-03-23T23:48:52.510Z"
+  },
+  {
+    "_id": "fixture_prof_009",
+    "deviceToken": "d45c28a40cd59b7aee731930900f5d7a1f3b1a51f87050a6a2ea5207948492fb",
+    "teamID": "GSLNR9RJSR",
+    "store": {
+      "Profile0": {
+        "basal": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 0.35
+          },
+          {
+            "timeAsSeconds": 10800,
+            "time": "03:00",
+            "value": 0.25
+          },
+          {
+            "timeAsSeconds": 50400,
+            "time": "14:00",
+            "value": 0.35
+          }
+        ],
+        "dia": 10,
+        "sens": [
+          {
+            "value": 90,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          },
+          {
+            "value": 110,
+            "timeAsSeconds": 9000,
+            "time": "02:30"
+          },
+          {
+            "value": 135,
+            "timeAsSeconds": 34200,
+            "time": "09:30"
+          },
+          {
+            "value": 100,
+            "timeAsSeconds": 48600,
+            "time": "13:30"
+          },
+          {
+            "value": 105,
+            "timeAsSeconds": 70200,
+            "time": "19:30"
+          }
+        ],
+        "target_high": [
+          {
+            "value": 100,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          },
+          {
+            "value": 100,
+            "timeAsSeconds": 10800,
+            "time": "03:00"
+          },
+          {
+            "value": 90,
+            "timeAsSeconds": 21600,
+            "time": "06:00"
+          }
+        ],
+        "target_low": [
+          {
+            "value": 100,
+            "timeAsSeconds": 0,
+            "time": "00:00"
+          },
+          {
+            "value": 100,
+            "timeAsSeconds": 10800,
+            "time": "03:00"
+          },
+          {
+            "value": 90,
+            "timeAsSeconds": 21600,
+            "time": "06:00"
+          }
+        ],
+        "delay": 0,
+        "carbratio": [
+          {
+            "timeAsSeconds": 0,
+            "time": "00:00",
+            "value": 19
+          },
+          {
+            "timeAsSeconds": 34200,
+            "time": "09:30",
+            "value": 38
+          },
+          {
+            "timeAsSeconds": 63000,
+            "time": "17:30",
+            "value": 34
+          }
+        ],
+        "carbs_hr": 20,
+        "units": "mg/dl",
+        "timezone": "America/New_York"
+      }
+    },
+    "mills": 1773692353000,
+    "enteredBy": "Trio",
+    "units": "mg/dl",
+    "defaultProfile": "Default",
+    "bundleIdentifier": "org.nightscout.GSLNR9RJSR.trio",
+    "startDate": "2026-03-16T20:19:13.065Z",
+    "isAPNSProduction": false,
+    "overridePresets": [
+      {
+        "percentage": 100,
+        "duration": 120,
+        "name": "School afternoons"
+      },
+      {
+        "target": 80,
+        "duration": 180,
+        "percentage": 130,
+        "name": "130% \ud83d\udcaa, target 80, 3hr run time"
+      },
+      {
+        "target": 80,
+        "duration": 60,
+        "percentage": 130,
+        "name": "130% 1 hr"
+      },
+      {
+        "target": 120,
+        "duration": 300,
+        "percentage": 75,
+        "name": "Less aggressive "
+      },
+      {
+        "name": "115%  for 2.5 hrs",
+        "duration": 150,
+        "percentage": 115
+      },
+      {
+        "name": "150%",
+        "duration": 240,
+        "target": 85,
+        "percentage": 150
+      }
+    ],
+    "expirationDate": "2026-11-28T20:40:04.000Z",
+    "created_at": "2026-03-16T20:19:13.126Z"
+  }
+]

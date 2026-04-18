@@ -25,6 +25,7 @@ import json
 import signal
 import sys
 import time
+import urllib.error
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import List, Tuple, Optional
@@ -73,13 +74,43 @@ def _existing_patients(output: str) -> set:
         return set()
 
 
+def _auth_failed_patients(output: str) -> set:
+    """Return set of patient_ids that failed with auth errors (401/403).
+
+    These should NOT be retried without fresh tokens.  Checks both the
+    ``error_kind`` field (new format) and the ``status`` string (old format).
+    """
+    manifest_path = Path(output) / 'manifest.json'
+    if not manifest_path.exists():
+        return set()
+    try:
+        m = json.load(open(manifest_path))
+        result = set()
+        for p in m.get('patients', []):
+            if p.get('error_kind') == 'auth':
+                result.add(p['patient_id'])
+            elif any(k in p.get('status', '').lower()
+                     for k in ('403', '401', 'forbidden', 'unauthorized')):
+                result.add(p['patient_id'])
+        return result
+    except Exception:
+        return set()
+
+
 def batch_ingest(csv_path: str, days: int, output: str,
                  quiet: bool = False, skip_grid: bool = False,
-                 dry_run: bool = False, resume: bool = True) -> dict:
+                 dry_run: bool = False, resume: bool = True,
+                 retry_network: bool = False,
+                 site_timeout: int = _SITE_TIMEOUT,
+                 keep_json: str = None) -> dict:
     """Ingest every site in *csv_path* into *output* directory.
 
     When *resume* is True (default), patients already in the output
     parquet are skipped automatically.
+
+    When *retry_network* is True, only sites that previously failed with
+    network errors (timeouts, connection issues) are retried.  Sites that
+    failed with auth errors (401/403) are skipped — they need fresh tokens.
 
     Returns a manifest dict with per-patient metadata.
     """
@@ -92,11 +123,15 @@ def batch_ingest(csv_path: str, days: int, output: str,
         return {}
 
     already_done = _existing_patients(output) if resume else set()
+    auth_failed = _auth_failed_patients(output) if retry_network else set()
 
     if not quiet:
         print(f'Batch ingest: {len(rows)} sites, {days} days each')
         if already_done:
             print(f'Resuming: {len(already_done)} patients already ingested')
+        if auth_failed:
+            print(f'Skipping: {len(auth_failed)} patients with auth errors '
+                  f'(need fresh tokens)')
         print(f'Output: {output}/')
         print()
 
@@ -116,6 +151,19 @@ def batch_ingest(csv_path: str, days: int, output: str,
                 'patient_id': opaque_id,
                 'annotation': annotation,
                 'status': 'already-ingested',
+            })
+            results['skip'] += 1
+            continue
+
+        if retry_network and opaque_id in auth_failed:
+            if not quiet:
+                print(f'[{idx}/{len(rows)}] {opaque_id}  SKIP (auth error — '
+                      f'needs fresh token)')
+            manifest_patients.append({
+                'patient_id': opaque_id,
+                'annotation': annotation,
+                'status': 'auth-skip',
+                'error_kind': 'auth',
             })
             results['skip'] += 1
             continue
@@ -144,51 +192,107 @@ def batch_ingest(csv_path: str, days: int, output: str,
             output=output,
             skip_grid=skip_grid,
             quiet=quiet,
+            keep_json=keep_json,
         )
 
         try:
             old_handler = signal.signal(signal.SIGALRM, _alarm_handler)
-            signal.alarm(_SITE_TIMEOUT)
+            signal.alarm(site_timeout)
             try:
                 rc = cmd_ingest(ingest_args)
                 if rc and rc != 0:
                     raise RuntimeError(f'ingest returned {rc}')
                 results['ok'] += 1
                 status = 'ok'
+                error_kind = None
             finally:
                 signal.alarm(0)
                 signal.signal(signal.SIGALRM, old_handler)
         except _SiteTimeout:
             if not quiet:
-                print(f'  TIMEOUT: skipping after {_SITE_TIMEOUT}s')
+                print(f'  TIMEOUT: skipping after {site_timeout}s')
             results['fail'] += 1
-            status = f'timeout after {_SITE_TIMEOUT}s'
+            status = f'timeout after {site_timeout}s'
+            error_kind = 'network'
+        except urllib.error.HTTPError as e:
+            if not quiet:
+                print(f'  HTTP {e.code}: {e.reason}')
+            results['fail'] += 1
+            status = f'http-{e.code}: {e.reason}'
+            error_kind = 'auth' if e.code in (401, 403) else 'network'
+        except (urllib.error.URLError, OSError, TimeoutError) as e:
+            if not quiet:
+                print(f'  NETWORK ERROR: {e}')
+            results['fail'] += 1
+            status = f'network: {e}'
+            error_kind = 'network'
         except Exception as e:
             if not quiet:
                 print(f'  ERROR: {e}')
             results['fail'] += 1
             status = f'error: {e}'
+            # Classify: if the string contains 403/401/Forbidden, it's auth
+            err_str = str(e).lower()
+            if '403' in err_str or '401' in err_str or 'forbidden' in err_str:
+                error_kind = 'auth'
+            else:
+                error_kind = 'network'
 
         manifest_patients.append({
             'patient_id': opaque_id,
             'annotation': annotation,
             'status': status,
+            **(dict(error_kind=error_kind) if error_kind else {}),
         })
 
-        # Be polite to remote servers
-        time.sleep(1.0)
+        # Be polite to remote servers — longer pause after failures
+        if status == 'ok':
+            time.sleep(3.0)
+        else:
+            time.sleep(5.0)
 
-    # Write manifest
+    # Write manifest — merge with existing to preserve error classifications
+    manifest_path = Path(output) / 'manifest.json'
+
+    # Load existing patient data to preserve info from previous runs
+    existing_by_id = {}
+    if manifest_path.exists():
+        try:
+            old = json.load(open(manifest_path))
+            for p in old.get('patients', []):
+                existing_by_id[p['patient_id']] = p
+        except Exception:
+            pass
+
+    # Merge: new results take priority, but carry forward old data for
+    # patients that were skipped this run
+    merged_patients = []
+    seen = set()
+    for p in manifest_patients:
+        pid = p['patient_id']
+        seen.add(pid)
+        if p.get('status') in ('already-ingested', 'auth-skip'):
+            # Preserve the richer entry from a previous run
+            merged_patients.append(existing_by_id.get(pid, p))
+        else:
+            merged_patients.append(p)
+    # Carry forward any patients from old manifest not in this CSV
+    for pid, old_p in existing_by_id.items():
+        if pid not in seen:
+            merged_patients.append(old_p)
+
     manifest = {
         'built': datetime.now(timezone.utc).isoformat(),
         'source': f'batch_ingest({Path(csv_path).name})',
         'days_requested': days,
-        'patients': manifest_patients,
+        'patients': merged_patients,
         'totals': results,
     }
-    manifest_path = Path(output) / 'manifest.json'
-    with open(manifest_path, 'w') as f:
-        json.dump(manifest, f, indent=2)
+
+    if not dry_run:
+        with open(manifest_path, 'w') as f:
+            json.dump(manifest, f, indent=2)
+
     if not quiet:
         print()
         print(f'Done: {results["ok"]} ok, {results["fail"]} failed, '
@@ -346,6 +450,63 @@ def merge_into_terrarium(staging_dir: str,
                               append=False, verbose=False)
 
 
+def reconvert_from_json(json_dir: str, output: str,
+                        skip_grid: bool = False,
+                        quiet: bool = False) -> None:
+    """Rebuild parquet from previously staged JSON directories.
+
+    Expects ``json_dir`` to contain subdirectories named by patient ID,
+    each with entries.json, treatments.json, devicestatus.json, etc.
+    This allows offline re-conversion after schema/normalization changes
+    without hitting the Nightscout servers again.
+    """
+    import shutil
+    from .cli import cmd_convert
+
+    json_path = Path(json_dir)
+    patient_dirs = sorted(
+        d for d in json_path.iterdir()
+        if d.is_dir() and (d / 'entries.json').exists()
+    )
+    if not patient_dirs:
+        print(f'No patient JSON directories found in {json_dir}',
+              file=sys.stderr)
+        return
+
+    # Clear old parquet output so we get a clean rebuild
+    out_path = Path(output)
+    for pq_file in out_path.glob('*.parquet'):
+        pq_file.unlink()
+
+    if not quiet:
+        print(f'Reconverting {len(patient_dirs)} patients from {json_dir}/')
+        print(f'Output: {output}/')
+        print()
+
+    ok = 0
+    for idx, pdir in enumerate(patient_dirs, 1):
+        patient_id = pdir.name
+        if not quiet:
+            print(f'[{idx}/{len(patient_dirs)}] {patient_id}')
+        try:
+            conv_args = argparse.Namespace(
+                input=str(pdir),
+                patient_id=patient_id,
+                output=output,
+                append=True,
+                quiet=quiet,
+                skip_grid=skip_grid,
+                opaque_ids=False,
+            )
+            cmd_convert(conv_args)
+            ok += 1
+        except Exception as e:
+            print(f'  ERROR: {e}', file=sys.stderr)
+
+    if not quiet:
+        print(f'\nReconverted {ok}/{len(patient_dirs)} patients → {output}/')
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Batch-ingest Nightscout sites from a CSV file')
@@ -365,6 +526,22 @@ def main():
     p_ing.add_argument('--quiet', '-q', action='store_true')
     p_ing.add_argument('--dry-run', action='store_true',
         help='Parse CSV and show what would be ingested without fetching')
+    p_ing.add_argument('--retry-network', action='store_true',
+        help='Retry only network-failed sites; skip auth errors (403)')
+    p_ing.add_argument('--site-timeout', type=int, default=_SITE_TIMEOUT,
+        help=f'Per-site timeout in seconds (default: {_SITE_TIMEOUT})')
+    p_ing.add_argument('--keep-json',
+        help='Persist raw JSON to this directory (enables offline reconvert)')
+
+    # ── reconvert ──
+    p_reconv = sub.add_parser('reconvert',
+        help='Rebuild parquet from previously staged JSON (offline)')
+    p_reconv.add_argument('--json-dir', required=True,
+        help='Directory containing patient JSON subdirectories')
+    p_reconv.add_argument('--output', '-o', default='externals/ns-parquet-dynisf',
+        help='Output directory for Parquet files')
+    p_reconv.add_argument('--skip-grid', action='store_true')
+    p_reconv.add_argument('--quiet', '-q', action='store_true')
 
     # ── split ──
     p_split = sub.add_parser('split',
@@ -422,7 +599,10 @@ def main():
             args = parser.parse_args()
         batch_ingest(args.csv, args.days, args.output,
                      quiet=args.quiet, skip_grid=args.skip_grid,
-                     dry_run=args.dry_run)
+                     dry_run=args.dry_run,
+                     retry_network=getattr(args, 'retry_network', False),
+                     site_timeout=getattr(args, 'site_timeout', _SITE_TIMEOUT),
+                     keep_json=getattr(args, 'keep_json', None))
 
     elif args.command == 'split':
         print(f'Splitting {args.input} → {args.output}/')
@@ -436,6 +616,10 @@ def main():
         merge_into_terrarium(
             args.staging, args.terrarium, quiet=args.quiet)
         print('Merge complete.')
+
+    elif args.command == 'reconvert':
+        reconvert_from_json(args.json_dir, args.output,
+                            skip_grid=args.skip_grid, quiet=args.quiet)
 
     elif args.command == 'pipeline':
         staging = args.staging

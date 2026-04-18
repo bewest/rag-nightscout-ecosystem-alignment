@@ -363,29 +363,57 @@ def cmd_ingest(args):
         print(f'Fetching profile...')
     profile = fetch_json(f'{base_url}/api/v1/profile.json', token=token)
 
-    # Write temp JSON then convert
+    # Write JSON -- to persistent dir if --keep-json, else temp
     import tempfile
-    with tempfile.TemporaryDirectory() as tmpdir:
-        for name, data in [('entries', entries), ('treatments', treatments),
-                           ('devicestatus', devicestatus), ('profile', profile)]:
-            with open(Path(tmpdir) / f'{name}.json', 'w') as f:
-                json.dump(data, f)
 
-        # Save site settings if available
-        if status:
-            with open(Path(tmpdir) / 'settings.json', 'w') as f:
-                json.dump(status, f)
+    keep_json = getattr(args, 'keep_json', None)
+    if keep_json:
+        json_dir = str(Path(keep_json) / patient_id)
+        os.makedirs(json_dir, exist_ok=True)
+        _ctx = None
+    else:
+        _ctx = tempfile.TemporaryDirectory()
+        json_dir = _ctx.__enter__()
+
+    try:
+        # Check if cached JSON exists (skip API fetch entirely)
+        cached = (keep_json
+                  and all((Path(json_dir) / f'{n}.json').exists()
+                          for n in ('entries', 'treatments', 'devicestatus')))
+        if cached:
             if verbose:
-                settings = status.get('settings', {})
-                site_units = settings.get('units', '?')
-                enabled = settings.get('enable', [])
-                has_pump = any(p in enabled for p in ['pump', 'iob', 'loop', 'openaps'])
-                mode = 'AID/pump' if has_pump else 'MDI/CGM-only'
-                print(f'  Site: units={site_units}, mode={mode}, '
-                      f'plugins={len(enabled)}')
+                print(f'  Using cached JSON from {json_dir}')
+            settings_path = Path(json_dir) / 'settings.json'
+            if settings_path.exists():
+                with open(settings_path) as f:
+                    status = json.load(f)
+                if verbose:
+                    site_settings = status.get('settings', {})
+                    site_units = site_settings.get('units', '?')
+                    enabled = site_settings.get('enable', [])
+                    has_pump = any(p in enabled for p in ['pump', 'iob', 'loop', 'openaps'])
+                    mode = 'AID/pump' if has_pump else 'MDI/CGM-only'
+                    print(f'  Site: units={site_units}, mode={mode}, '
+                          f'plugins={len(enabled)}')
+        else:
+            for name, data in [('entries', entries), ('treatments', treatments),
+                                ('devicestatus', devicestatus), ('profile', profile)]:
+                with open(Path(json_dir) / f'{name}.json', 'w') as f:
+                    json.dump(data, f)
+            if status:
+                with open(Path(json_dir) / 'settings.json', 'w') as f:
+                    json.dump(status, f)
+                if verbose:
+                    s = status.get('settings', {})
+                    site_units = s.get('units', '?')
+                    enabled = s.get('enable', [])
+                    has_pump = any(p in enabled for p in ['pump', 'iob', 'loop', 'openaps'])
+                    mode = 'AID/pump' if has_pump else 'MDI/CGM-only'
+                    print(f'  Site: units={site_units}, mode={mode}, '
+                          f'plugins={len(enabled)}')
 
         conv_args = argparse.Namespace(
-            input=tmpdir,
+            input=json_dir,
             patient_id=patient_id,
             output=output,
             append=True,
@@ -395,6 +423,9 @@ def cmd_ingest(args):
         )
 
         return cmd_convert(conv_args)
+    finally:
+        if _ctx is not None:
+            _ctx.__exit__(None, None, None)
 
 
 def cmd_merge(args):
@@ -830,6 +861,8 @@ def main():
         help='Output directory for Parquet files')
     p_ing.add_argument('--skip-grid', action='store_true',
         help='Skip building the research grid')
+    p_ing.add_argument('--keep-json',
+        help='Directory to persist raw JSON (enables offline re-conversion)')
     p_ing.add_argument('--quiet', '-q', action='store_true')
 
     # info
