@@ -699,6 +699,8 @@ The synthesis recommends: "physics for detection, oref0 for magnitude" as an ens
 
 6. **Connecting detected meals to CR optimization is the highest-impact integration gap** in the pipeline. The research exists (EXP-1341, EXP-1569, EXP-486); it just needs to be wired into the production path.
 
+> **UPDATE (2026-04-18)**: EXP-2670 partially addresses this gap with a CR sanity-check contrast tool that uses the supply×demand throughput detector (EXP-483) + residual-integral carb estimation + dessert merge (180-min hysteresis) to produce per-patient visualizations showing how estimated meal sizes change with CR. For patient c, this recovers the expected 2.6 meals/day and shows profile CR=4.5 is near-optimal (best-fit 4.0, 0.9×). See full report: [`docs/reports/settings-optimization/cr-sanity-check-contrast-report.md`](cr-sanity-check-contrast-report.md) and figures in `visualizations/cr-sanity-check/`.
+
 ---
 
 ## 6. Correction Threshold Advisory
