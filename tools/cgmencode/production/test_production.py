@@ -5345,6 +5345,79 @@ class TestCleanNightFallback(unittest.TestCase):
         self.assertEqual(result, BasalAssessment.APPROPRIATE)
 
 
+class TestOvernightDrift48hCarbs(unittest.TestCase):
+    """Test 48h carb history integration in assess_overnight_drift."""
+
+    def test_low_carbs_with_rising_drift_adds_glycogen_note(self):
+        from cgmencode.production.settings_advisor import assess_overnight_drift
+        n = 288 * 7  # 7 days
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 7)
+        # Rising overnight glucose (under-basaled pattern)
+        glucose = np.full(n, 130.0)
+        for day in range(7):
+            base = day * 288
+            for i in range(288):
+                if hours[base + i] < 6:
+                    glucose[base + i] = 130.0 + hours[base + i] * 5.0
+
+        # Very low carbs — only 10g/day for 7 days
+        carbs = np.zeros(n)
+        for day in range(7):
+            carbs[day * 288 + 144] = 10.0  # 10g at noon each day
+
+        result = assess_overnight_drift(
+            glucose, hours, make_profile(), 7.0, carbs=carbs)
+        if result is not None:
+            # Should have glycogen note about low preceding carbs
+            self.assertGreater(len(result.glycogen_note), 0)
+            self.assertIn("glycogen", result.glycogen_note.lower())
+
+    def test_no_carbs_has_zero_carbs_48h(self):
+        from cgmencode.production.settings_advisor import assess_overnight_drift
+        n = 288 * 7
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 7)
+        glucose = np.full(n, 110.0)
+        result = assess_overnight_drift(
+            glucose, hours, make_profile(), 7.0)
+        if result is not None:
+            self.assertEqual(result.carbs_48h_g, 0.0)
+            self.assertEqual(result.glycogen_note, '')
+
+
+class TestStackingPrevention35h(unittest.TestCase):
+    """Test 3.5h stacking threshold (EXP-2624 EGP nadir awareness)."""
+
+    def test_stacking_at_3h_flagged(self):
+        from cgmencode.production.clinical_rules import assess_correction_timing
+        n = 288 * 3
+        bolus = np.zeros(n)
+        glucose = np.full(n, 180.0)
+        timestamps = np.arange(n) * 5 * 60 * 1000  # 5-min in ms
+
+        # Two corrections 3h apart (< 3.5h threshold)
+        bolus[0] = 2.0
+        bolus[36] = 2.0   # 36 * 5min = 180min = 3h
+
+        result = assess_correction_timing(bolus, glucose, timestamps)
+        self.assertEqual(result.stacking_events, 1)
+        self.assertGreater(result.stacking_fraction, 0)
+        self.assertIn("3.5", result.interpretation)
+
+    def test_no_stacking_at_4h(self):
+        from cgmencode.production.clinical_rules import assess_correction_timing
+        n = 288 * 3
+        bolus = np.zeros(n)
+        glucose = np.full(n, 180.0)
+        timestamps = np.arange(n) * 5 * 60 * 1000
+
+        # Two corrections 4h apart (> 3.5h threshold)
+        bolus[0] = 2.0
+        bolus[48] = 2.0   # 48 * 5min = 240min = 4h
+
+        result = assess_correction_timing(bolus, glucose, timestamps)
+        self.assertEqual(result.stacking_events, 0)
+
+
 class TestAdvisePatienceMode(unittest.TestCase):
     """Test advise_patience_mode from settings_advisor."""
 

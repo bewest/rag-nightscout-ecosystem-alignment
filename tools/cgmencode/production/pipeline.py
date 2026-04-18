@@ -531,7 +531,7 @@ def run_pipeline(patient: PatientData,
             overnight_assessment = assess_overnight_drift(
                 cleaned.glucose, hours, patient.profile, patient.days_of_data,
                 iob=patient.iob, cob=patient.cob,
-                actual_basal=patient.basal_rate)
+                actual_basal=patient.basal_rate, carbs=patient.carbs)
         except Exception as e:
             warnings.append(f"Overnight drift assessment failed: {e}")
 

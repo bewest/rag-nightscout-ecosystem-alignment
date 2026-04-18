@@ -526,7 +526,12 @@ def assess_correction_timing(bolus: Optional[np.ndarray],
     """Analyze correction bolus spacing for IOB stacking risk.
 
     Flags when correction boluses (high BG + bolus, no meal) are
-    delivered <4h apart, which risks IOB stacking and subsequent hypos.
+    delivered <3.5h apart, which risks IOB stacking and subsequent hypos.
+
+    Research (EXP-2624): glucose nadir after correction is at 3.5h (not
+    at insulin peak ~1.25h) due to the EGP suppression phase lag. Re-
+    correcting before 3.5h stacks insulin while the first dose is still
+    producing its full glucose-lowering effect via EGP suppression.
 
     Args:
         bolus: (N,) bolus Units per interval.
@@ -561,42 +566,50 @@ def assess_correction_timing(bolus: Optional[np.ndarray],
         intervals.append(float(dt_ms) / 3_600_000.0)  # ms → hours
 
     intervals = np.array(intervals)
-    stacking = int(np.sum(intervals < 4.0))
+    # 3.5h threshold: glucose nadir is at 3.5h post-correction (EXP-2624)
+    _STACKING_THRESHOLD_H = 3.5
+    stacking = int(np.sum(intervals < _STACKING_THRESHOLD_H))
     stacking_frac = stacking / len(intervals) if len(intervals) > 0 else 0.0
 
     min_interval = float(np.min(intervals)) if len(intervals) > 0 else None
     mean_interval = float(np.mean(intervals)) if len(intervals) > 0 else None
 
-    # AID-aware stacking assessment (EXP-2357):
-    # In closed-loop AID, high IOB is PROTECTIVE (RR<1 for all 11 patients).
-    # The loop compensates by suspending basal delivery when IOB is high.
-    # The classic "stacking" warning from MDI/manual pumping is largely
-    # obsolete — only flag if the patient is NOT on AID.
+    # AID-aware stacking assessment (EXP-2357, EXP-2624):
+    # In closed-loop AID, the loop reduces basal during high-IOB periods.
+    # However, EGP suppression continues for 3.5h regardless — the loop
+    # cannot prevent the delayed glucose-lowering from the first dose.
     is_aid = True  # Default: assume AID (conservative — suppress false warnings)
     safety_flag = False
 
     if is_aid:
         if stacking_frac > 0.25:
             interp = (f"{stacking} of {len(intervals)} correction pairs ({stacking_frac*100:.0f}%) "
-                      f"are <4h apart. AID loop compensates by reducing basal delivery "
-                      f"during high-IOB periods (EXP-2357: RR<1 for all patients). "
-                      f"Monitor but low risk in closed-loop.")
+                      f"are <{_STACKING_THRESHOLD_H}h apart. Glucose nadir is at 3.5h "
+                      f"post-correction (EXP-2624: EGP suppression phase lag). "
+                      f"Even with AID basal reduction, re-correcting before nadir "
+                      f"stacks insulin while the first dose is still active. "
+                      f"Recommend waiting ≥3.5h between corrections.")
+            safety_flag = True  # Flag even for AID — EGP lag is not compensated
         elif stacking > 0:
-            interp = (f"{stacking} correction pair(s) <4h apart ({stacking_frac*100:.0f}%). "
-                      f"AID loop manages IOB overlap automatically.")
+            interp = (f"{stacking} correction pair(s) <{_STACKING_THRESHOLD_H}h apart "
+                      f"({stacking_frac*100:.0f}%). Glucose nadir is at 3.5h "
+                      f"(EXP-2624) — consider waiting for full effect.")
         else:
-            interp = "No correction stacking detected. Good bolus spacing."
+            interp = "No correction stacking detected. Good bolus spacing (≥3.5h)."
     else:
-        # Non-AID: traditional stacking warning
+        # Non-AID: traditional stacking warning with 3.5h awareness
         safety_flag = stacking_frac > 0.25
         if safety_flag:
             interp = (f"⚠ {stacking} of {len(intervals)} correction pairs ({stacking_frac*100:.0f}%) "
-                      f"are <4h apart. Risk of IOB stacking and subsequent lows.")
+                      f"are <{_STACKING_THRESHOLD_H}h apart. Glucose nadir is at 3.5h "
+                      f"post-correction (EXP-2624). Risk of IOB stacking and "
+                      f"subsequent lows. Wait ≥3.5h between corrections.")
         elif stacking > 0:
-            interp = (f"{stacking} correction pair(s) <4h apart ({stacking_frac*100:.0f}%). "
-                      f"Occasional stacking — monitor for post-correction lows.")
+            interp = (f"{stacking} correction pair(s) <{_STACKING_THRESHOLD_H}h apart "
+                      f"({stacking_frac*100:.0f}%). Wait ≥3.5h for full correction "
+                      f"effect (EXP-2624: EGP suppression phase lag).")
         else:
-            interp = "No correction stacking detected. Good bolus spacing."
+            interp = "No correction stacking detected. Good bolus spacing (≥3.5h)."
 
     return BolusTimingSafety(
         total_corrections=total,

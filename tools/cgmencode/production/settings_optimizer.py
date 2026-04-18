@@ -321,6 +321,12 @@ def _extract_cr_schedule(
 
     Research basis: EXP-1705 — effective CR = carbs / (bolus + excursion/ISF).
     Key finding: effective CR is 73% of profile (patients overbolusing).
+
+    Carb estimation fallback (EXP-748/753, oref0 deviation r=0.368):
+    When announced carbs are absent or implausible (<5g for a detected meal),
+    uses ``carbs_estimated_g`` from residual-integral sizing. This addresses
+    the reliability gap where only ~8% of meals have accurate carb entries
+    (EXP-2654) and 39% are fully unannounced.
     """
     profile_isf_mean = _profile_mean(profile.isf_mgdl(), 'value')
     if profile_isf_mean < 1:
@@ -334,7 +340,10 @@ def _extract_cr_schedule(
     # Pre-compute all valid CR values for fallback
     for w in meals:
         m = w.measurements
+        # Prefer announced carbs; fall back to physics-estimated carbs
         cg = _safe_val(m.get('carbs_g'))
+        if cg is None or cg < 5:
+            cg = _safe_val(m.get('carbs_estimated_g'))
         mb = _safe_val(m.get('bolus_u'))
         exc = _safe_val(m.get('excursion_mg_dl'))
         if (cg is not None and cg >= 5 and
@@ -358,7 +367,10 @@ def _extract_cr_schedule(
             if _period_for_hour(w.hour_of_day) != period_name:
                 continue
             m = w.measurements
+            # Prefer announced carbs; fall back to physics-estimated carbs
             cg = _safe_val(m.get('carbs_g'))
+            if cg is None or cg < 5:
+                cg = _safe_val(m.get('carbs_estimated_g'))
             mb = _safe_val(m.get('bolus_u'))
             exc = _safe_val(m.get('excursion_mg_dl'))
             if (cg is not None and cg >= 5 and

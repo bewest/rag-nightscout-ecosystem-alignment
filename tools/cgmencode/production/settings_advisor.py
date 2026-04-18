@@ -2110,10 +2110,10 @@ def generate_settings_advice(glucose: np.ndarray,
         if dp_rec:
             recs.append(dp_rec)
 
-    # Overnight drift assessment (EXP-2371–2378)
+    # Overnight drift assessment (EXP-2371–2378, EXP-2622 48h carbs)
     overnight = assess_overnight_drift(
         glucose, hours, profile, days_of_data,
-        iob=iob, cob=cob, actual_basal=actual_basal)
+        iob=iob, cob=cob, actual_basal=actual_basal, carbs=carbs)
     if overnight is not None and overnight.needs_adjustment:
         drift_direction = "increase" if overnight.drift_mg_dl_per_hour > 0 else "decrease"
         basal_vals = [e.get('value', e.get('rate', 0.8))
@@ -2856,6 +2856,7 @@ def assess_overnight_drift(
         iob: np.ndarray = None,
         cob: np.ndarray = None,
         actual_basal: np.ndarray = None,
+        carbs: np.ndarray = None,
         ) -> Optional[OvernightDriftAssessment]:
     """Assess basal adequacy from overnight glucose drift (EXP-2371–2378).
 
@@ -2866,6 +2867,12 @@ def assess_overnight_drift(
     Clean-night filtering is critical: residual dinner bolus IOB and late
     snack COB confound overnight glucose trends. Only nights with IOB < 0.5U
     and COB < 5g are used (EXP-2375).
+
+    48h carb history integration (EXP-2622/2627):
+    Preceding carb load modulates overnight drift via hepatic glycogen
+    loading. Low 48h carbs → glycogen depletion → rising overnight BG
+    (r=-0.303, +57% over 24h window). When drift co-occurs with low
+    preceding carbs, the cause may be glycogen rather than basal rate.
 
     Args:
         glucose: (N,) cleaned glucose values (mg/dL).
@@ -3039,6 +3046,45 @@ def assess_overnight_drift(
     drift_consistency = 1.0 - min(1.0, float(np.std(drifts)) / max(drift_abs, 1.0))
     confidence = float(base_conf * 0.7 + drift_consistency * 0.3)
 
+    # 48h carb history — glycogen proxy (EXP-2622/2627)
+    # τ=24h exponential accumulator; r=-0.303 with overnight drift
+    carbs_48h_g = 0.0
+    glycogen_note = ''
+    if carbs is not None:
+        carb_vals = np.nan_to_num(carbs, nan=0.0)
+        # Sum carbs in 48h rolling windows preceding each overnight segment
+        # Each step is 5 min; 48h = 576 steps
+        _48H_STEPS = 576
+        per_night_carbs = []
+        for idx in analysis_segments:
+            seg_start = idx[0] if len(idx) > 0 else 0
+            lookback_start = max(0, seg_start - _48H_STEPS)
+            # Sum grams in 48h before this overnight
+            preceding = float(np.sum(carb_vals[lookback_start:seg_start]))
+            per_night_carbs.append(preceding)
+
+        if per_night_carbs:
+            carbs_48h_g = float(np.mean(per_night_carbs))
+
+            # Interpret glycogen effect on drift
+            _LOW_CARB_48H = 100.0   # grams — below this, glycogen may be depleted
+            _HIGH_CARB_48H = 300.0  # grams — above this, glycogen is well-loaded
+            if carbs_48h_g < _LOW_CARB_48H and mean_drift > _DRIFT_STABLE_THRESHOLD:
+                glycogen_note = (
+                    f"Low preceding carbs ({carbs_48h_g:.0f}g/48h) may "
+                    f"contribute to rising overnight BG via glycogen "
+                    f"depletion (EXP-2622: r=-0.303). Consider whether "
+                    f"drift is dietary rather than basal rate.")
+                # Reduce confidence — drift may be glycogen, not basal
+                confidence *= 0.7
+            elif carbs_48h_g > _HIGH_CARB_48H and mean_drift < -_DRIFT_STABLE_THRESHOLD:
+                glycogen_note = (
+                    f"High preceding carbs ({carbs_48h_g:.0f}g/48h) with "
+                    f"falling overnight BG — glycogen-loaded hepatic output "
+                    f"is lower than typical. Drift may normalize with "
+                    f"consistent carb intake.")
+                confidence *= 0.8
+
     return OvernightDriftAssessment(
         phenotype=phenotype,
         drift_mg_dl_per_hour=round(mean_drift, 2),
@@ -3050,6 +3096,8 @@ def assess_overnight_drift(
         loop_suspension_pct=round(suspension_pct, 1),
         suggested_basal_change_pct=round(suggested_change_pct, 1),
         confidence=round(confidence, 2),
+        carbs_48h_g=round(carbs_48h_g, 0),
+        glycogen_note=glycogen_note,
     )
 
 

@@ -887,6 +887,8 @@ class OvernightDriftAssessment:
     - Only 1/19 patients is a "stable sleeper"
     - Dawn phenomenon present in 6/19 patients
     - Clean-night filtering is critical for accurate assessment
+    - 48h carb history (r=-0.303) modulates overnight drift via glycogen
+      loading (EXP-2622/2627): low-carb days → rising BG, high-carb → falling
     """
     phenotype: OvernightPhenotype
     drift_mg_dl_per_hour: float          # mean glucose drift (positive=rising)
@@ -898,6 +900,8 @@ class OvernightDriftAssessment:
     loop_suspension_pct: float = 0.0    # % of overnight where loop suspends basal
     suggested_basal_change_pct: float = 0.0  # recommended % change to basal
     confidence: float = 0.0             # 0-1, based on n_clean_nights and consistency
+    carbs_48h_g: float = 0.0            # mean 48h preceding carbs (grams)
+    glycogen_note: str = ''             # interpretation of carb history effect
 
     @property
     def needs_adjustment(self) -> bool:

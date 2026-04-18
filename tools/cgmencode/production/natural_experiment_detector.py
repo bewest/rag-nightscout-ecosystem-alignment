@@ -347,8 +347,23 @@ def _detect_overnight(glucose: np.ndarray, bolus: np.ndarray,
 
 def _detect_meals(glucose: np.ndarray, bolus: np.ndarray,
                   carbs: np.ndarray, timestamps: np.ndarray,
-                  meal_config: MealConfig) -> List[NaturalExperiment]:
-    """Detect glucose tolerance test windows (meals with observation)."""
+                  meal_config: MealConfig,
+                  residuals: Optional[np.ndarray] = None,
+                  profile_isf: float = 50.0,
+                  profile_cr: float = 10.0,
+                  ) -> List[NaturalExperiment]:
+    """Detect glucose tolerance test windows (meals with observation).
+
+    When ``residuals`` (from MetabolicState) are available, computes
+    ``carbs_estimated_g`` via residual-integral sizing — the same method
+    validated in ``meal_detector.detect_meal_events`` (EXP-748/753).
+    This gives a physics-based carb estimate for every meal, including
+    unannounced meals where ``carbs_g`` is unreliable.
+
+    The CR optimizer can then prefer ``carbs_estimated_g`` when announced
+    carbs are absent or implausible (EXP-2654: only 8% of meals have
+    reliable carb entries; oref0 deviation method r=0.368).
+    """
     N = len(glucose)
     experiments = []
 
@@ -383,6 +398,18 @@ def _detect_meals(glucose: np.ndarray, bolus: np.ndarray,
         meal_bolus = float(np.nansum(bolus_window))
         is_announced = meal_bolus > 0.1
 
+        # Residual-integral carb estimation (EXP-748/753, oref0 deviation method)
+        # Convert residual integral to grams: |∫residual| × CR / ISF
+        carbs_estimated = None
+        if residuals is not None:
+            r_end = min(N, end_idx + 36)  # extend 3h for absorption tail
+            resid_seg = residuals[meal_idx:r_end]
+            valid_resid = resid_seg[np.isfinite(resid_seg)]
+            if len(valid_resid) > 6:
+                resid_integral = float(np.sum(valid_resid))
+                carbs_estimated = abs(resid_integral) * profile_cr / max(profile_isf, 1.0)
+                carbs_estimated = round(max(0.0, carbs_estimated), 1)
+
         q_isolated = 1.0
         for c2 in clusters:
             if c2[0] != meal_idx and abs(c2[0] - meal_idx) < 24:
@@ -390,22 +417,26 @@ def _detect_meals(glucose: np.ndarray, bolus: np.ndarray,
                 break
         quality = 0.4 * coverage + 0.3 * q_isolated + 0.3 * (1.0 if is_announced else 0.6)
 
+        measurements = {
+            'carbs_g': round(total_carbs, 1),
+            'bolus_u': round(meal_bolus, 2),
+            'is_announced': is_announced,
+            'pre_meal_bg': round(pre_bg, 1) if not math.isnan(pre_bg) else None,
+            'peak_bg': round(peak_bg, 1),
+            'excursion_mg_dl': round(excursion, 1) if not math.isnan(excursion) else None,
+            'peak_time_min': peak_time_min,
+            'cgm_coverage': round(coverage, 3),
+        }
+        if carbs_estimated is not None:
+            measurements['carbs_estimated_g'] = carbs_estimated
+
         experiments.append(NaturalExperiment(
             exp_type=NaturalExperimentType.MEAL,
             start_idx=meal_idx, end_idx=end_idx,
             duration_minutes=(end_idx - meal_idx) * STEP_MINUTES,
             hour_of_day=_hour_from_timestamps(timestamps, meal_idx),
             quality=round(quality, 3),
-            measurements={
-                'carbs_g': round(total_carbs, 1),
-                'bolus_u': round(meal_bolus, 2),
-                'is_announced': is_announced,
-                'pre_meal_bg': round(pre_bg, 1) if not math.isnan(pre_bg) else None,
-                'peak_bg': round(peak_bg, 1),
-                'excursion_mg_dl': round(excursion, 1) if not math.isnan(excursion) else None,
-                'peak_time_min': peak_time_min,
-                'cgm_coverage': round(coverage, 3),
-            }
+            measurements=measurements,
         ))
     return experiments
 
@@ -442,10 +473,35 @@ def _detect_corrections(glucose: np.ndarray, bolus: np.ndarray,
         nadir = float(np.min(valid_seg)) if len(valid_seg) > 6 else None
         simple_isf = (start_bg - nadir) / bolus_size if nadir is not None else None
 
+        # Demand-phase ISF: 0–2h drop only (EXP-2651)
+        # Before EGP suppression kicks in (~3.5h), so pure insulin demand
+        demand_steps = min(24, len(valid_seg))  # 2h = 24 × 5-min steps
+        demand_isf = None
+        if demand_steps >= 6:
+            demand_seg = seg[:demand_steps]
+            valid_demand = demand_seg[~np.isnan(demand_seg)]
+            if len(valid_demand) >= 6:
+                demand_drop = float(valid_demand[0] - np.min(valid_demand))
+                if demand_drop >= MIN_CORRECTION_DELTA:
+                    demand_isf = demand_drop / bolus_size
+
         other_bolus = np.nansum(bolus[min(N, bi + 1):min(N, bi + 36)])
         q_isolated = 1.0 if other_bolus < 0.1 else 0.4
         q_fit = min(max(r2, 0), 1.0) if r2 is not None else 0.3
         quality = 0.3 * q_isolated + 0.3 * coverage + 0.4 * q_fit
+
+        measurements = {
+            'bolus_u': round(bolus_size, 2),
+            'start_bg': round(start_bg, 1),
+            'nadir_bg': round(nadir, 1) if nadir else None,
+            'simple_isf': round(simple_isf, 1) if simple_isf else None,
+            'curve_r2': round(r2, 3) if r2 else None,
+            'curve_isf': round(isf_est, 1) if isf_est else None,
+            'curve_tau': round(tau, 2) if tau else None,
+            'cgm_coverage': round(coverage, 3),
+        }
+        if demand_isf is not None:
+            measurements['demand_isf'] = round(demand_isf, 1)
 
         experiments.append(NaturalExperiment(
             exp_type=NaturalExperimentType.CORRECTION,
@@ -453,15 +509,7 @@ def _detect_corrections(glucose: np.ndarray, bolus: np.ndarray,
             duration_minutes=(obs_end - bi) * STEP_MINUTES,
             hour_of_day=_hour_from_timestamps(timestamps, bi),
             quality=round(quality, 3),
-            measurements={
-                'bolus_u': round(bolus_size, 2),
-                'start_bg': round(start_bg, 1),
-                'nadir_bg': round(nadir, 1) if nadir else None,
-                'simple_isf': round(simple_isf, 1) if simple_isf else None,
-                'curve_r2': round(r2, 3) if r2 else None,
-                'curve_isf': round(isf_est, 1) if isf_est else None,
-                'cgm_coverage': round(coverage, 3),
-            }
+            measurements=measurements,
         ))
     return experiments
 
@@ -760,10 +808,35 @@ def detect_natural_experiments(
 
     experiments: List[NaturalExperiment] = []
 
+    # Extract metabolic residuals and profile values for carb estimation
+    meal_residuals = None
+    meal_isf = 50.0
+    meal_cr = 10.0
+    if metabolic is not None:
+        residual = getattr(metabolic, 'residual', None)
+        if residual is not None and len(residual) > 0:
+            meal_residuals = residual
+    if patient.profile is not None:
+        isf_entries = patient.profile.isf_mgdl() if hasattr(patient.profile, 'isf_mgdl') else []
+        for e in isf_entries:
+            v = e.get('value') or e.get('sensitivity')
+            if v and v > 1:
+                meal_isf = float(v)
+                break
+        cr_entries = getattr(patient.profile, 'cr_schedule', []) or []
+        for e in cr_entries:
+            v = e.get('value') or e.get('carbratio')
+            if v and v > 1:
+                meal_cr = float(v)
+                break
+
     # BG-only detectors (always available)
     experiments.extend(_detect_fasting(glucose, bolus, carbs, timestamps))
     experiments.extend(_detect_overnight(glucose, bolus, carbs, hours, timestamps))
-    experiments.extend(_detect_meals(glucose, bolus, carbs, timestamps, mc))
+    experiments.extend(_detect_meals(glucose, bolus, carbs, timestamps, mc,
+                                     residuals=meal_residuals,
+                                     profile_isf=meal_isf,
+                                     profile_cr=meal_cr))
     experiments.extend(_detect_corrections(glucose, bolus, carbs, timestamps))
     experiments.extend(_detect_stable(glucose, bolus, carbs, timestamps))
 
