@@ -21,7 +21,7 @@ import numpy as np
 from .types import (
     BasalAssessment, ClinicalReport, ConfidenceGrade, FidelityAssessment,
     FidelityGrade, GlycemicGrade, MetabolicState, PatientProfile,
-    SettingsParameter,
+    SettingsParameter, TIR_LOW, TIR_HIGH,
     AIDCompensation, BolusTimingSafety, CompensationType, CorrectionEnergy,
     DualPhaseISF, SaturationAssessment, SaturationLevel,
 )
@@ -44,9 +44,9 @@ def assess_glycemic_control(glucose: np.ndarray) -> dict:
     if len(valid) == 0:
         return {'tir': 0, 'tbr': 0, 'tar': 0, 'mean_glucose': 0, 'gmi': 0, 'cv': 0}
 
-    tir = float(np.mean((valid >= 70) & (valid <= 180)))
-    tbr = float(np.mean(valid < 70))
-    tar = float(np.mean(valid > 180))
+    tir = float(np.mean((valid >= TIR_LOW) & (valid <= TIR_HIGH)))
+    tbr = float(np.mean(valid < TIR_LOW))
+    tar = float(np.mean(valid > TIR_HIGH))
     mean_bg = float(np.mean(valid))
     gmi = 3.31 + 0.02392 * mean_bg  # GMI formula (Bergenstal 2018)
     cv = float(np.std(valid) / mean_bg * 100) if mean_bg > 0 else 0.0
@@ -481,7 +481,7 @@ def compute_correction_energy(metabolic: MetabolicState,
         day_bg = glucose[start:end]
         valid = day_bg[np.isfinite(day_bg)]
         if len(valid) > 0:
-            daily_tir.append(float(np.mean((valid >= 70) & (valid <= 180))))
+            daily_tir.append(float(np.mean((valid >= TIR_LOW) & (valid <= TIR_HIGH))))
 
     mean_score = float(np.mean(daily_scores))
 
@@ -956,7 +956,7 @@ def generate_clinical_report(glucose: np.ndarray,
         overnight_bg = glucose[overnight_mask]
         valid = overnight_bg[np.isfinite(overnight_bg)]
         if len(valid) > 0:
-            overnight_tir = float(np.mean((valid >= 70) & (valid <= 180)))
+            overnight_tir = float(np.mean((valid >= TIR_LOW) & (valid <= TIR_HIGH)))
 
     recommendations = generate_recommendations(
         grade, basal, cr_score, metrics['tbr'], metrics['tar'], isf_discrepancy
@@ -1021,8 +1021,8 @@ def compute_three_ceilings(glucose: np.ndarray,
             'headroom': 0.0,
         }
 
-    current_tir = float(np.mean((valid >= 70) & (valid <= 180)))
-    current_tar = float(np.mean(valid > 180))
+    current_tir = float(np.mean((valid >= TIR_LOW) & (valid <= TIR_HIGH)))
+    current_tar = float(np.mean(valid > TIR_HIGH))
 
     # Kinetics ceiling (EXP-1731): 53.9% of TAR is unavoidable
     kinetics_unavoidable_frac = 0.539

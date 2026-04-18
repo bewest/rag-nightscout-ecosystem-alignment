@@ -19,6 +19,13 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 
 
+# ── Glycemic range constants (ADA/ATTD consensus) ────────────────────
+# These are the standard thresholds used throughout the pipeline for
+# TIR/TBR/TAR calculations. All values in mg/dL.
+TIR_LOW = 70.0    # Hypo threshold (mg/dL)
+TIR_HIGH = 180.0  # Hyper threshold (mg/dL)
+
+
 # ── Enums ─────────────────────────────────────────────────────────────
 
 class GlycemicGrade(str, Enum):
@@ -300,8 +307,8 @@ class PatientProfile:
     cr_schedule: List[Dict]        # [{time: "00:00", value: 10}, ...]
     basal_schedule: List[Dict]     # [{time: "00:00", value: 0.8}, ...]
     dia_hours: float = 5.0
-    target_low: float = 70.0
-    target_high: float = 180.0
+    target_low: float = TIR_LOW
+    target_high: float = TIR_HIGH
     units: str = 'mg/dL'          # 'mg/dL' or 'mmol/L'
 
     @property

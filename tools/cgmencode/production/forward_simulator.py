@@ -41,6 +41,7 @@ from .metabolic_engine import (
     _DECAY_TARGET,
     _DECAY_RATE,
 )
+from .types import TIR_LOW, TIR_HIGH
 
 
 # ── Constants ─────────────────────────────────────────────────────────
@@ -156,7 +157,7 @@ class SimulationResult:
         valid = self.glucose[np.isfinite(self.glucose)]
         if len(valid) == 0:
             return 0.0
-        return float(np.mean((valid >= 70) & (valid <= 180)))
+        return float(np.mean((valid >= TIR_LOW) & (valid <= TIR_HIGH)))
 
     @property
     def tbr(self) -> float:
@@ -164,7 +165,7 @@ class SimulationResult:
         valid = self.glucose[np.isfinite(self.glucose)]
         if len(valid) == 0:
             return 0.0
-        return float(np.mean(valid < 70))
+        return float(np.mean(valid < TIR_LOW))
 
     @property
     def tar(self) -> float:
@@ -172,7 +173,7 @@ class SimulationResult:
         valid = self.glucose[np.isfinite(self.glucose)]
         if len(valid) == 0:
             return 0.0
-        return float(np.mean(valid > 180))
+        return float(np.mean(valid > TIR_HIGH))
 
     @property
     def mean_glucose(self) -> float:

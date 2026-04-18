@@ -48,6 +48,12 @@ MEAL_PERIODS = {
     'snack': (0, 5),    # late night / early morning
 }
 
+# Meal quality filters — real meals cause glucose to RISE.
+# Overnight EGP / correction events have high demand but flat or falling
+# glucose (AID is fighting them). These thresholds separate the two.
+MIN_EXCURSION_MG_DL = 30   # ≥30 mg/dL rise in 2h post-peak
+OVERNIGHT_MASK = (0, 5)     # Exclude 0-5h (hepatic EGP, not dietary)
+
 # Dessert hysteresis: merge events within this window (min) after dinner
 # into the dinner total. EXP-486 found 18% of dinners have dessert at
 # mean gap 123 min. Patient c data shows median gap 170 min, so we
@@ -573,19 +579,40 @@ def main():
               f'READY-gated: {len(ready_peaks)}')
 
         # Build NE census from demand peaks with carb estimation
+        # Apply meal quality filters:
+        #   1. Overnight mask: exclude 0-5h (hepatic EGP, not dietary)
+        #   2. Glucose excursion ≥30 mg/dL: real meals cause BG to rise
         experiments = []
+        n_overnight_masked = 0
+        n_excursion_filtered = 0
         for p in ready_peaks:
             hour = pdf.index[p].hour + pdf.index[p].minute / 60.0
+
+            # Filter 1: Overnight mask
+            if OVERNIGHT_MASK[0] <= hour < OVERNIGHT_MASK[1]:
+                n_overnight_masked += 1
+                continue
 
             # Pre-meal BG
             pre_start = max(0, p - 6)
             pre_bg = float(np.nanmean(bg[pre_start:p])) if not np.all(np.isnan(bg[pre_start:p])) else 120.0
 
-            # Post-meal window (4h = 48 steps)
+            # Post-meal window (2h = 24 steps for excursion check)
             end = min(N, p + 48)
-            post_bg = bg[p:end]
-            peak_bg = float(np.nanmax(post_bg)) if np.any(~np.isnan(post_bg)) else pre_bg
+            post_2h = bg[p:min(N, p + 24)]
+            peak_bg = float(np.nanmax(post_2h)) if np.any(~np.isnan(post_2h)) else pre_bg
             excursion = peak_bg - pre_bg
+
+            # Filter 2: Glucose excursion — real meals cause BG rise ≥30
+            # Overnight EGP/correction events have high demand but flat BG
+            if excursion < MIN_EXCURSION_MG_DL:
+                n_excursion_filtered += 1
+                continue
+
+            # Extend for peak BG over full 4h window
+            post_4h = bg[p:end]
+            peak_bg_4h = float(np.nanmax(post_4h)) if np.any(~np.isnan(post_4h)) else peak_bg
+            excursion_4h = peak_bg_4h - pre_bg
 
             # Residual-integral carb estimation
             r_end = min(N, end + 36)  # extend 3h for absorption tail
@@ -623,14 +650,16 @@ def main():
                 measurements={
                     'carbs_estimated_g': best_carbs,
                     'carbs_entered_g': entered_carbs,
-                    'excursion_mg_dl': round(excursion, 1),
+                    'excursion_mg_dl': round(excursion_4h, 1),
                     'bolus_u': round(meal_bolus, 2),
                     'pre_meal_bg': round(pre_bg, 1),
-                    'peak_bg': round(peak_bg, 1),
+                    'peak_bg': round(peak_bg_4h, 1),
                     'is_announced': meal_bolus > 0.1 or entered_carbs > 3.0,
                 },
             ))
 
+        print(f'    Filtered: -{n_overnight_masked} overnight, '
+              f'-{n_excursion_filtered} low-excursion (<{MIN_EXCURSION_MG_DL} mg/dL)')
         print(f'    Meals with carb estimates: {len(experiments)} '
               f'({len(experiments)/days:.1f}/day)')
 

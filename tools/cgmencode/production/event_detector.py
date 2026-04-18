@@ -25,7 +25,7 @@ from typing import Dict, Optional, Tuple
 
 import numpy as np
 
-from .types import EventType, MetabolicState, RiskAssessment
+from .types import EventType, MetabolicState, RiskAssessment, TIR_LOW, TIR_HIGH
 
 
 # XGBoost optimal parameters (from event_classifier.py research)
@@ -177,9 +177,9 @@ def build_features(glucose: np.ndarray,
     for i in range(N):
         w = bg[max(0, i-12):i+1]
         if len(w) > 0:
-            feat[i, 46] = np.mean((w >= 70) & (w <= 180))  # tir_recent_60
-            feat[i, 47] = np.mean(w < 70)                  # tbr_recent_60
-            feat[i, 48] = np.mean(w > 180)                 # tar_recent_60
+            feat[i, 46] = np.mean((w >= TIR_LOW) & (w <= TIR_HIGH))  # tir_recent_60
+            feat[i, 47] = np.mean(w < TIR_LOW)                  # tbr_recent_60
+            feat[i, 48] = np.mean(w > TIR_HIGH)                 # tar_recent_60
 
     return feat
 

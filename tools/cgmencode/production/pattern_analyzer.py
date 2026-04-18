@@ -19,7 +19,7 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from .types import (CircadianFit, ExcursionType, HarmonicFit, MetabolicState,
+from .types import (CircadianFit, ExcursionType, HarmonicFit, MetabolicState, TIR_LOW, TIR_HIGH,
                     PatternProfile, Phenotype)
 
 
@@ -368,9 +368,9 @@ def detect_excursions(glucose: np.ndarray,
         tod_hour = (start_idx % STEPS_PER_DAY) / STEPS_PER_HOUR
 
         # Priority-ordered classification
-        if direction == 'fall' and end_bg < 70:
+        if direction == 'fall' and end_bg < TIR_LOW:
             exc_type = ExcursionType.HYPO_ENTRY.value
-        elif direction == 'rise' and start_bg < 70:
+        elif direction == 'rise' and start_bg < TIR_LOW:
             exc_type = ExcursionType.HYPO_RECOVERY.value
         elif direction == 'rise' and has_carbs:
             exc_type = ExcursionType.MEAL_RISE.value
@@ -637,7 +637,7 @@ def classify_phenotype(glucose: np.ndarray,
     day_bg = glucose[day_mask] if day_mask.any() else np.array([120.0])
 
     morning_mean = float(np.mean(morning_bg))
-    night_hypo_rate = float(np.mean(night_bg < 70))
+    night_hypo_rate = float(np.mean(night_bg < TIR_LOW))
     day_mean = float(np.mean(day_bg))
 
     if morning_mean > day_mean + 20:
@@ -686,8 +686,8 @@ def analyze_patterns(glucose: np.ndarray,
     valid_first = glucose[:mid][np.isfinite(glucose[:mid])]
     valid_second = glucose[mid:][np.isfinite(glucose[mid:])]
 
-    tir_first = float(np.mean((valid_first >= 70) & (valid_first <= 180))) if len(valid_first) > 0 else 0.5
-    tir_second = float(np.mean((valid_second >= 70) & (valid_second <= 180))) if len(valid_second) > 0 else 0.5
+    tir_first = float(np.mean((valid_first >= TIR_LOW) & (valid_first <= TIR_HIGH))) if len(valid_first) > 0 else 0.5
+    tir_second = float(np.mean((valid_second >= TIR_LOW) & (valid_second <= TIR_HIGH))) if len(valid_second) > 0 else 0.5
 
     delta_tir = tir_second - tir_first
     if delta_tir > 0.05:

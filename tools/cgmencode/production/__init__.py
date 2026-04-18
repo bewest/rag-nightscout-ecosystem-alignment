@@ -27,7 +27,7 @@ from .types import (
     MealResponse, MealResponseType, PeriodMetrics, CorrectionEnergy,
     BolusTimingSafety, AIDCompensation, CompensationType,
     GlycemicGrade, BasalAssessment, EventType, OnboardingPhase, Phenotype,
-    MealWindow, SettingsParameter,
+    MealWindow, SettingsParameter, TIR_LOW, TIR_HIGH,
     OptimalSettings, SettingScheduleEntry, SettingsOptimizationResult,
     PatientPhenotype, PatientPhenotypeResult,
 )

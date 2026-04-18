@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 from .types import (
     PatientData, PipelineResult, OnboardingState,
-    ControllerType,
+    ControllerType, TIR_LOW, TIR_HIGH,
 )
 from .data_quality import clean_glucose
 from .metabolic_engine import compute_metabolic_state, _extract_hours, estimate_dia_discrepancy, decompose_two_component_dia
@@ -102,7 +102,7 @@ def _extract_correction_events(
         drop = start_bg - end_bg
 
         # Check if glucose went below 70 in the window
-        went_below_70 = bool(np.nanmin(window) < 70.0)
+        went_below_70 = bool(np.nanmin(window) < TIR_LOW)
 
         # Rebound detection: find nadir, check if BG rose >30 above nadir after it
         nadir_val = float(np.nanmin(window))
@@ -126,7 +126,7 @@ def _extract_correction_events(
             v = arr[~np.isnan(arr)]
             if len(v) == 0:
                 return 0.0
-            return float(np.mean((v >= 70.0) & (v <= 180.0)))
+            return float(np.mean((v >= TIR_LOW) & (v <= TIR_HIGH)))
 
         tir_change = _tir_frac(post_window) - _tir_frac(pre_window)
 

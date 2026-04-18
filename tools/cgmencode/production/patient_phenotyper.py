@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from .types import PatientPhenotype, PatientPhenotypeResult
+from .types import PatientPhenotype, PatientPhenotypeResult, TIR_LOW, TIR_HIGH
 
 
 # ── Confidence calibration ────────────────────────────────────────────
@@ -105,9 +105,9 @@ def classify_patient_phenotype(
         )
 
     n = len(valid)
-    tir = float(np.sum((valid >= 70) & (valid <= 180)) / n)
-    tbr = float(np.sum(valid < 70) / n)
-    tar = float(np.sum(valid > 180) / n)
+    tir = float(np.sum((valid >= TIR_LOW) & (valid <= TIR_HIGH)) / n)
+    tbr = float(np.sum(valid < TIR_LOW) / n)
+    tar = float(np.sum(valid > TIR_HIGH) / n)
 
     mean_g = float(np.mean(valid))
     std_g = float(np.std(valid))

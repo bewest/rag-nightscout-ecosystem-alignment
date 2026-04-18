@@ -33,13 +33,12 @@ from .metabolic_engine import compute_metabolic_state, _extract_hours
 from .settings_advisor import simulate_tir_with_settings
 from .natural_experiment_detector import detect_natural_experiments
 from .settings_optimizer import optimize_settings
+from .types import TIR_LOW, TIR_HIGH
 
 
 # ── Thresholds ───────────────────────────────────────────────────────
 
 HOLDOUT_FRACTION = 0.20
-TIR_LOW = 70.0
-TIR_HIGH = 180.0
 MIN_HOLDOUT_SAMPLES = 288  # 1 day minimum
 
 
