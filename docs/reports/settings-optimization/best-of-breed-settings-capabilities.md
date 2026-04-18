@@ -13,7 +13,7 @@
 1. [Pipeline Architecture](#1-pipeline-architecture)
 2. [**Optimization Sequencing — Fix Order Matters**](#2-optimization-sequencing--fix-order-matters)
 3. [ISF Optimization — The Dominant Lever](#3-isf-optimization--the-dominant-lever)
-4. [Basal Rate Optimization](#4-basal-rate-optimization)
+4. [Basal Rate Optimization](#4-basal-rate-optimization) *(includes §4.5: Comparison with oref0 Autotune)*
 5. [Carb Ratio Optimization](#5-carb-ratio-optimization)
 6. [Correction Threshold Advisory](#6-correction-threshold-advisory)
 7. [Controller-Specific Behavior](#7-controller-specific-behavior)
@@ -412,6 +412,129 @@ Dawn phenomenon windows detected when fasting 4–8 AM glucose acceleration exce
 **Prevalence**: 6/19 patients show dawn phenomenon. Only 6am shows genuine under-basaling (+5 mg/dL/hr); all other daytime hours show over-basaling (−4 to −8 mg/dL/hr).  
 [SOURCE: `docs/60-research/circadian-therapy-report-2026-04-10.md` — EXP-2052]
 
+### 4.5 Comparison with oref0 Autotune
+
+oref0's autotune is the only widely-deployed automated settings optimizer in the AID ecosystem. It ships identically in AAPS (Kotlin port) and Trio (embedded JS). Loop has no autotune equivalent. Understanding how our pipeline compares — and where it differs — is essential.
+
+#### 4.5.1 How oref0 Autotune Works
+
+Autotune operates in two phases:
+
+**Phase 1 — Data Categorization** (`autotune-prep/categorize.js`):
+
+Every 5-minute glucose data point is classified into one of 4 buckets:
+
+| Bucket | Criterion | Used For |
+|--------|-----------|----------|
+| **CSFGlucose** (carb absorption) | COB > 0 AND absorbing | CR/CSF tuning |
+| **UAMGlucose** (unannounced meals) | IOB > 2 × currentBasal AND deviation > 0 | Fallback to basal or ISF |
+| **ISFGlucose** | BGI < −¼ × basalBGI AND avgDelta ≤ 0 | ISF tuning |
+| **basalGlucose** | Everything else (basal insulin dominates) | Basal tuning |
+
+[SOURCE: `externals/oref0/lib/autotune-prep/categorize.js:331–367`]
+
+Key detail: if meals are properly logged (≥1h carb absorption data), UAM deviations are **reclassified as basal**. If meals are NOT logged, UAM data pollutes the basal bucket (top 50% discarded as safety measure).  
+[SOURCE: `externals/oref0/lib/autotune-prep/categorize.js:398–418`]
+
+The "deviation" at each point = actual glucose change (avgDelta) minus expected insulin effect (BGI from IOB model). This isolates the unexplained glucose movement that settings should account for.  
+[SOURCE: `externals/oref0/lib/autotune-prep/categorize.js:223` — `deviation = avgDelta - BGI`]
+
+**Phase 2 — Settings Adjustment** (`autotune/index.js`):
+
+*Basal*: For each hour 0–23, sum all basalGlucose deviations for that hour → compute insulin needed: `basalNeeded = 0.2 × totalDeviation / ISF`. Spread adjustment across the prior 3 hours (accounting for insulin action lag). For decreases, adjust proportionally to existing rate (not fixed).  
+[SOURCE: `externals/oref0/lib/autotune/index.js:210–266`]
+
+*ISF*: Compute median ratio of (actual BG change / expected BGI) across all ISFGlucose points. Apply 20% blend: `newISF = 0.8 × currentISF + 0.2 × adjustedISF`.  
+[SOURCE: `externals/oref0/lib/autotune/index.js:446–529`]
+
+*CR*: Track insulin dosed vs carbs eaten from bolus to COB=0. Compute actual CR = carbs / totalInsulin. Apply 20% blend: `newCR = 0.8 × currentCR + 0.2 × fullNewCR`.  
+[SOURCE: `externals/oref0/lib/autotune/index.js:328–442`]
+
+*Safety caps*: All outputs clamped to `[pumpValue × autosens_min, pumpValue × autosens_max]` (defaults: 0.7–1.2× pump profile).  
+[SOURCE: `externals/oref0/lib/autotune/index.js:267–293`]
+
+*Gap filling*: Hours with no tuning data are interpolated: 80% current + 10% prior tuned hour + 10% next tuned hour.  
+[SOURCE: `externals/oref0/lib/autotune/index.js:296–323`]
+
+#### 4.5.2 Head-to-Head Comparison
+
+| Dimension | oref0 Autotune | Our Pipeline |
+|-----------|---------------|--------------|
+| **Signal for basal** | BG deviation from IOB model (all basalGlucose points, all hours) | Raw overnight glucose drift on clean nights (00:00–06:00, IOB<0.5U, COB<5g) |
+| **IOB awareness** | Yes — subtracts expected insulin effect at every data point | Filters for low IOB instead — clean nights require IOB<0.5U |
+| **Time resolution** | 24 hourly bins (one adjustment per hour) | 5 time periods: overnight/morning/midday/afternoon/evening |
+| **Adjustment rate** | 20% of needed change per iteration | Conservative ±10% per cycle (EXP-1416: wins 10/11 patients) |
+| **Safety caps** | ±20–30% of pump profile (autosens_min/max) | ±50% hard clamp, plus 25% safety cap per cycle |
+| **Convergence speed** | 5–10 iterations for large corrections | Immediate (one-shot), but graduated 4-step transition over 2–4 weeks |
+| **Data categorization** | Sophisticated: 4-bucket state machine isolates basal/ISF/CR/UAM signals | Clean-night filtering + natural experiment detector (fasting/meal/correction windows) |
+| **ISF approach** | Single scalar (one ISF for all hours) | Circadian (2–9× within-day variation, 2–4 zones), power-law dose-response |
+| **CR approach** | Single scalar, 20% blend | Per-period, context-aware (pre-BG + time + IOB), meal-size dependent |
+| **AID compensation** | Not modeled — unaware that loop behavior contaminates the deviation signal | Explicitly modeled — quadrant analysis detects loop-dependent phenotype; recommender adjusts trust per controller type |
+| **Prescriptive paradox** | Not addressed — uses observed deviations directly for adjustment | Central finding (EXP-2641/2642) — apparent ISF ≠ dosing ISF; fixed ISF + feedback is near-optimal |
+| **Dawn phenomenon** | Detected implicitly (hourly basal adjustment captures it) | Detected explicitly (pre/post-04:00 glucose comparison, prevalence tracked) |
+| **Minimum data** | 24h (1 day) — can run daily | 3 days minimum, 14 days for full confidence |
+| **Deployment** | Online (runs daily on rig) | Offline (batch retrospective analysis) |
+
+[SOURCE: `externals/oref0/lib/autotune/index.js:210–293` — autotune basal algorithm]  
+[SOURCE: `externals/oref0/lib/autotune-prep/categorize.js:331–418` — data categorization]  
+[SOURCE: `settings_advisor.py:2736–2742` — clean night criteria]  
+[SOURCE: `settings_advisor.py:201–211` — our basal adjustment grid search]  
+[SOURCE: `settings_optimizer.py:48–54` — our 5 time periods]  
+[SOURCE: `docs/60-research/autotune-uam-characterization-report.md:174–179` — autotune convergence speed]
+
+#### 4.5.3 What Autotune Does Better
+
+1. **Online daily operation**: Autotune runs automatically every day. Our pipeline requires manual batch runs on exported data. For ongoing maintenance, autotune's fire-and-forget model is superior.
+
+2. **24-hour coverage**: Autotune tunes basal for ALL 24 hours, including mid-day periods where our clean-night approach has no signal. For patients with significant mid-day basal needs (e.g., post-lunch insulin resistance), autotune captures signal we miss.
+
+3. **IOB-aware deviation**: By computing `deviation = actualΔBG − expectedBGI`, autotune isolates the basal-attributable glucose movement even during periods with non-trivial IOB. Our approach handles this by filtering for very low IOB (<0.5U) instead, which is simpler but discards valid data.
+
+4. **Proven safety record**: Autotune has run on thousands of patients across oref0/AAPS/Trio for years with ±20% caps. The conservative 20% blend rate is battle-tested. Our pipeline's safety comes from advisory-only (no automatic pump changes) but has no comparable deployment history.
+
+5. **Hourly granularity**: 24 hourly bins vs our 5 periods means autotune can capture finer circadian patterns in basal needs (though our ISF/CR circadian analysis is finer than autotune's single-scalar approach).
+
+#### 4.5.4 What Our Pipeline Does Better
+
+1. **AID compensation awareness**: Autotune's deviations are contaminated by controller behavior — if the loop suspends basal to prevent a low, autotune "sees" a positive deviation and may incorrectly *increase* the scheduled basal for that hour. Our quadrant analysis (§2.7, slope × net-basal) explicitly separates controller-caused from settings-caused glucose movements. The loop-dependent phenotype (suspension > 40%) triggers a different recommendation path.  
+[SOURCE: `settings_advisor.py:2898–2915` — loop-dependent classification]  
+[SOURCE: `docs/60-research/autotune-uam-characterization-report.md:169` — "Cannot discover: True effective ISF masked by AID compensation"]
+
+2. **Circadian ISF/CR**: Autotune outputs a **single ISF scalar** and a **single CR scalar**. Our pipeline captures 2–9× within-day ISF variation and per-period CR differences. For patients with strong circadian patterns (67% of patients have ISF inflated ≥15% by time-of-day effects), a single scalar is systematically wrong for several hours of the day.  
+[SOURCE: `externals/oref0/lib/autotune/index.js:535` — `isfProfile.sensitivities[0].sensitivity = ISF` — single scalar]  
+[SOURCE: `settings_advisor.py:6` — "EXP-2271 (circadian ISF 4.6-9×)"]
+
+3. **Prescriptive paradox awareness**: The pipeline's central finding (EXP-2641/2642) is that observed correction behavior cannot be directly used for dosing because apparent ISF is an emergent closed-loop property. Autotune uses observed ISF deviations directly to adjust ISF — this is the exact pattern the paradox warns against. In practice, autotune's 20% blend rate + ±20% caps limit the damage, but the approach is fundamentally confounded.  
+[SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:95,188`]
+
+4. **Optimization sequencing**: The pipeline enforces a specific fix order (CV>28% → basal first; else ISF first; TIR≥70% → personalize). Autotune tunes basal, ISF, and CR simultaneously in every run, which our research shows yields +15–25% TIR gain vs +40–90% for sequential optimization.  
+[SOURCE: `settings_advisor.py:3068–3143` — optimization sequence]  
+[SOURCE: `docs/60-research/therapy-comprehensive-campaign-report-2026-04-10.md:197` — EXP-1479]
+
+5. **Statistical confidence**: Our pipeline uses bootstrap confidence intervals (1,000 resamples) and requires minimum evidence thresholds (10+ windows for high confidence). Autotune applies adjustments with as few as 1 data point for an hour, relying on the 20% blend rate for safety.  
+[SOURCE: `settings_optimizer.py:65–67` — bootstrap]  
+[SOURCE: `externals/oref0/lib/autotune/index.js:229` — single-point per-hour adjustment]
+
+6. **Controller-specific tuning**: The recommender adjusts trust factors per controller type: Loop/Trio (suspend-dominant, 52% supply time) vs AAPS (SMB-dominant, 57% demand time) vs oref0 (moderate). Autotune is controller-agnostic — the same algorithm runs regardless of whether the loop primarily suspends or adds insulin.  
+[SOURCE: `recommender.py:194–264` — per-controller profiles]
+
+#### 4.5.5 Complementary Use — Best of Both
+
+The two approaches are **not competing** — they solve different problems:
+
+| Phase | Best Tool | Why |
+|-------|-----------|-----|
+| **Initial onboarding** (first 2 weeks) | oref0 autotune | Runs automatically, converges from any starting point, proven safe |
+| **Periodic deep review** (monthly) | Our pipeline | Retrospective analysis catches paradoxes and compensation that autotune can't see |
+| **Dawn phenomenon** | Either | Autotune captures it implicitly in hourly bins; our pipeline detects it explicitly |
+| **Circadian ISF/CR** | Our pipeline | Autotune's single scalar can't capture 2–9× within-day variation |
+| **Ongoing maintenance** | oref0 autotune | Daily fire-and-forget; our pipeline requires manual export/run |
+| **Clinical review** | Our pipeline | Counterfactual simulation, phenotyping, controller-aware diagnostics |
+
+[SOURCE: `docs/60-research/autotune-uam-characterization-report.md:197–206` — use case recommendations]
+
+**Ideal workflow**: Run autotune daily for automatic maintenance. Monthly, run our pipeline on the same data to detect AID compensation patterns, prescriptive paradoxes, and circadian opportunities that autotune's conservative single-scalar approach misses. Use the pipeline's optimization sequencing (§2) to decide which setting to change next, and autotune's proven deployment model to implement changes gradually.
+
 ---
 
 ## 5. Carb Ratio Optimization
@@ -752,6 +875,14 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Drift stable threshold | ±3 mg/dL/hr | `settings_advisor.py:2745` | 2371 |
 | Dawn phenomenon prevalence | 6/19 patients | `circadian-therapy-report:EXP-2052` | 2375 |
 | Basal clamp | ±50% max | `settings_optimizer.py:64` | — |
+| **oref0 Autotune Comparison** | | | |
+| Autotune blend rate | 20% per iteration | `oref0/lib/autotune/index.js:236` | — |
+| Autotune basal cap | ±20–30% of pump (autosens_min/max) | `oref0/lib/autotune/index.js:278–280` | — |
+| Autotune ISF: single scalar | 1 value (no circadian) | `oref0/lib/autotune/index.js:535` | — |
+| Autotune convergence | 5–10 iterations for large errors | `autotune-uam-characterization-report.md:178` | — |
+| Autotune data buckets | 4 (basal/ISF/CSF/UAM) | `oref0/lib/autotune-prep/categorize.js:447–452` | — |
+| Our circadian ISF advantage | 2–9× vs single scalar | `settings_advisor.py:6` | 2271 |
+| Sequential vs simultaneous (autotune-relevant) | +40–90% vs +15–25% | `therapy-comprehensive-campaign-report:197` | 1479 |
 | **Other** | | | |
 | Optimal correction threshold | 166 mg/dL (130–290) | `settings_advisor.py:512–513` | 2528 |
 | Population DIA | 6.0h (vs 5h assumed) | `therapy-operationalization-report-2026-04-10.md` | 1334 |
