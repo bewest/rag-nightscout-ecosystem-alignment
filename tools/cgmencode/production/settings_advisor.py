@@ -398,6 +398,11 @@ def advise_isf_nonlinearity(
     effective per unit of insulin. A 2U correction achieves only ~1.07× the glucose
     drop of a 1U correction (2^0.1 ≈ 1.07), not 2×.
 
+    PRESCRIPTIVE PARADOX NOTE (EXP-2641/2642): This dose-dependent effect is
+    consistent with the SC suppression ceiling (EXP-2656) and demand vs apparent
+    ISF split (EXP-2651). The advisory is INFORMATIONAL — split-dosing guidance
+    is safe because it doesn't change controller feedback dynamics.
+
     The advisory fires when:
     - There is enough data (>= MIN_DATA_DAYS)
     - The patient's typical correction dose exceeds 1.5U
@@ -779,6 +784,12 @@ def advise_isf_segmented(glucose: np.ndarray,
 
     Research: ISF varies 29.7% mean across time of day (EXP-765).
     When variation >50%, recommend 2-4 ISF segments for better control.
+
+    PRESCRIPTIVE PARADOX NOTE (EXP-2641/2642): Circadian ISF ratios are
+    observed APPARENT values that include time-varying AID compensation.
+    Circadian segmentation is safer than absolute ISF changes because it
+    adjusts relative ratios, not absolute magnitude. However, the underlying
+    ISF values still carry inflation from controller feedback (EXP-2651).
 
     Args:
         glucose, metabolic, hours: standard pipeline data.
@@ -1240,6 +1251,12 @@ def advise_correction_isf(
     days_of_data: float = 0.0,
 ) -> List[SettingsRecommendation]:
     """Generate ISF recommendation from correction bolus analysis.
+
+    PRESCRIPTIVE PARADOX NOTE (EXP-2641/2642): This function measures
+    APPARENT ISF from correction outcomes, which includes AID controller
+    compensation (2–10× inflation, EXP-2651). The counter-regulation model
+    partially corrects for this, but the resulting ISF is still an apparent
+    value. Use conservatively — "fixed ISF + feedback is near-optimal."
 
     Research basis:
       - EXP-2579: Counter-regulation model reduces 2.5× overestimation
@@ -2113,6 +2130,11 @@ def advise_circadian_isf(glucose: np.ndarray,
     2-zone split captures 61-90% of the benefit of fully time-varying ISF.
     Insulin is typically MORE effective at night (lower cortisol/GH).
 
+    PRESCRIPTIVE PARADOX NOTE (EXP-2641/2642): Day/night ISF ratios reflect
+    combined physiology + AID controller behavior. Relative splits (ratio-
+    preserving) are safer than absolute ISF changes. The underlying ISF
+    values carry inflation from controller feedback (EXP-2651).
+
     The approach:
     1. Compute effective ISF for day vs night periods
     2. If ratio >1.3×, recommend splitting the ISF schedule
@@ -2256,6 +2278,11 @@ def advise_circadian_isf_profiled(
     uses empirical correction-response data (BG drop per unit insulin) grouped
     into 4 time-of-day blocks to detect blocks where the profile ISF is
     significantly wrong.
+
+    PRESCRIPTIVE PARADOX NOTE (EXP-2641/2642): The 'drop_4h' measurement is
+    an APPARENT ISF that includes AID controller compensation and EGP
+    suppression (EXP-2651: apparent ISF is 2–10× inflated). Relative block-
+    to-block ratios are more reliable than absolute ISF values.
 
     Complements advise_circadian_isf() (2-zone residual method) by using
     direct correction outcomes. The two approaches may produce overlapping
@@ -3210,6 +3237,11 @@ def advise_override_isf(
     EXP-2621 confirmed that 8/12 patients show ISF differs by ≥0.15
     during override-active periods. This advisory informs users that
     their effective ISF may vary with override usage.
+
+    PRESCRIPTIVE PARADOX NOTE (EXP-2641/2642): Override vs non-override
+    ISF differences reflect combined physiology (exercise, stress) and
+    AID controller response. The advisory is INFORMATIONAL — override-
+    specific ISF tuning should be done carefully and conservatively.
 
     Args:
         glucose: (N,) glucose values.

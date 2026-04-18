@@ -285,6 +285,12 @@ def compute_response_curve_isf(glucose: np.ndarray,
                                ) -> dict:
     """AID-aware ISF estimation via response-curve fitting (EXP-1601–1608).
 
+    PRESCRIPTIVE PARADOX NOTE (EXP-2641/2642): This returns an APPARENT
+    ISF that includes AID controller compensation. Even with AID dampening
+    detection, the resulting ISF conflates demand-phase insulin action with
+    EGP suppression (EXP-2651: apparent ISF is 2–10× inflated). Use
+    compute_demand_isf() for the true insulin effect (0–2h only).
+
     The naive drop/dose method underestimates ISF because AID loops
     reduce basal during 92-100% of correction windows, dampening the
     observed BG drop. This method fits an exponential decay curve:

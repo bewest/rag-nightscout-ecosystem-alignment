@@ -4974,3 +4974,462 @@ class TestAdvisoryDeduplication(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].magnitude_pct, 15.0)
         self.assertNotIn("Consolidated", result[0].evidence)
+
+
+# ── Demand-Phase ISF Tests (EXP-2651) ──────────────────────────────────
+
+
+class TestComputeDemandISF(unittest.TestCase):
+    """Test compute_demand_isf from clinical_rules."""
+
+    def _make_correction_glucose(self, n_corrections=8, base_bg=200.0,
+                                 demand_drop=30.0, apparent_drop=80.0,
+                                 dose=2.0, gap=100):
+        """Build synthetic glucose with embedded corrections.
+
+        Each correction:
+        - starts at base_bg
+        - drops demand_drop in 0-2h (24 steps)
+        - drops apparent_drop total over 0-4h (48 steps)
+        - recovers afterward
+        """
+        n = n_corrections * gap + 100
+        glucose = np.full(n, 120.0)
+        bolus = np.zeros(n)
+
+        for i in range(n_corrections):
+            idx = 20 + i * gap
+            glucose[idx] = base_bg
+            bolus[idx] = dose
+
+            # Demand phase: linear drop over 24 steps
+            for s in range(1, min(25, n - idx)):
+                frac = s / 24.0
+                glucose[idx + s] = base_bg - demand_drop * frac
+
+            # Apparent phase: continue to full drop over steps 24-48
+            remaining = apparent_drop - demand_drop
+            for s in range(24, min(49, n - idx)):
+                frac = (s - 24) / 24.0
+                glucose[idx + s] = base_bg - demand_drop - remaining * frac
+
+            # Recovery after step 48
+            for s in range(48, min(gap, n - idx)):
+                glucose[idx + s] = base_bg - apparent_drop + (apparent_drop - 40) * min(1, (s - 48) / 30)
+
+        return glucose, bolus
+
+    def test_returns_none_with_no_bolus(self):
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        result = compute_demand_isf(make_glucose(500), None, make_profile())
+        self.assertIsNone(result)
+
+    def test_returns_none_with_few_corrections(self):
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        glucose = np.full(500, 120.0)
+        bolus = np.zeros(500)
+        # Only 2 corrections — less than _MIN_DEMAND_CORRECTIONS (5)
+        bolus[50] = 2.0; glucose[50] = 200.0
+        bolus[200] = 2.0; glucose[200] = 200.0
+        result = compute_demand_isf(glucose, bolus, make_profile())
+        self.assertIsNone(result)
+
+    def test_basic_dual_phase_isf(self):
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        glucose, bolus = self._make_correction_glucose(
+            n_corrections=10, base_bg=200.0,
+            demand_drop=30.0, apparent_drop=80.0, dose=2.0,
+        )
+        result = compute_demand_isf(glucose, bolus, make_profile())
+        self.assertIsNotNone(result)
+        # demand ISF ≈ 30/2 = 15 mg/dL/U
+        self.assertGreater(result.demand_isf, 5)
+        self.assertLess(result.demand_isf, 30)
+        # apparent ISF ≈ 80/2 = 40 mg/dL/U
+        self.assertGreater(result.apparent_isf, 20)
+        # inflation ratio > 1
+        self.assertGreater(result.inflation_ratio, 1.0)
+        self.assertGreaterEqual(result.n_corrections, 5)
+
+    def test_confidence_scales_with_events(self):
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        # 25 corrections → should get 'high' confidence
+        glucose, bolus = self._make_correction_glucose(
+            n_corrections=25, base_bg=200.0,
+            demand_drop=30.0, apparent_drop=80.0, dose=2.0, gap=80,
+        )
+        result = compute_demand_isf(glucose, bolus, make_profile())
+        self.assertIsNotNone(result)
+        self.assertEqual(result.confidence, 'high')
+
+    def test_low_bg_corrections_skipped(self):
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        glucose = np.full(1000, 100.0)  # all below 120 threshold
+        bolus = np.zeros(1000)
+        for i in range(10):
+            bolus[50 + i * 80] = 2.0
+        result = compute_demand_isf(glucose, bolus, make_profile())
+        self.assertIsNone(result)
+
+    def test_paradox_warning_present(self):
+        from cgmencode.production.clinical_rules import compute_demand_isf
+        glucose, bolus = self._make_correction_glucose(n_corrections=10)
+        result = compute_demand_isf(glucose, bolus, make_profile())
+        self.assertIsNotNone(result)
+        self.assertIn("prescriptive paradox", result.paradox_warning.lower())
+
+
+class TestDetectInsulinSaturation(unittest.TestCase):
+    """Test detect_insulin_saturation from clinical_rules."""
+
+    def test_returns_none_with_no_iob(self):
+        from cgmencode.production.clinical_rules import detect_insulin_saturation
+        result = detect_insulin_saturation(np.full(288, 150.0), None)
+        self.assertIsNone(result)
+
+    def test_returns_none_with_short_data(self):
+        from cgmencode.production.clinical_rules import detect_insulin_saturation
+        result = detect_insulin_saturation(np.full(10, 150.0), np.full(10, 1.0))
+        self.assertIsNone(result)
+
+    def test_no_saturation_normal_glucose(self):
+        from cgmencode.production.clinical_rules import detect_insulin_saturation
+        # Normal glucose — no high episodes
+        n = 288 * 7
+        glucose = np.full(n, 120.0)
+        iob = np.full(n, 1.0)
+        result = detect_insulin_saturation(glucose, iob)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.level.value, 'none')
+        self.assertEqual(result.n_high_glucose_episodes, 0)
+
+    def test_high_glucose_no_wall(self):
+        from cgmencode.production.clinical_rules import detect_insulin_saturation
+        # High glucose but IOB is low — no wall
+        n = 288
+        glucose = np.full(n, 200.0)  # high the whole time
+        iob = np.full(n, 0.5)  # low IOB (median = 0.5, 2× = 1.0)
+        result = detect_insulin_saturation(glucose, iob)
+        self.assertIsNotNone(result)
+        # IOB below 2× median means no wall steps
+        self.assertEqual(result.n_wall_episodes, 0)
+
+    def test_severe_saturation_detected(self):
+        from cgmencode.production.clinical_rules import detect_insulin_saturation
+        # Craft a scenario with clear wall episodes
+        n = 288 * 3
+        glucose = np.full(n, 120.0)  # base normal
+        iob = np.full(n, 1.0)  # median IOB = 1.0
+
+        # Insert 2 wall episodes: >180 for 3h with high IOB and flat glucose
+        for ep_start in [100, 500]:
+            for s in range(36):  # 3h = 36 steps
+                idx = ep_start + s
+                glucose[idx] = 220.0  # high
+                iob[idx] = 3.5  # > 2× median (2.0)
+
+        result = detect_insulin_saturation(glucose, iob)
+        self.assertIsNotNone(result)
+        self.assertGreater(result.n_high_glucose_episodes, 0)
+        self.assertTrue(result.patience_mode_eligible or result.wall_pct > 0)
+
+    def test_patience_mode_eligible_threshold(self):
+        from cgmencode.production.clinical_rules import detect_insulin_saturation
+        # Build data where wall_pct > 10%
+        n = 288 * 5
+        glucose = np.full(n, 130.0)
+        iob = np.full(n, 1.0)
+
+        # One prolonged high episode with all wall characteristics
+        for s in range(72):  # 6 hours
+            glucose[200 + s] = 250.0
+            iob[200 + s] = 4.0  # well above 2× median
+
+        result = detect_insulin_saturation(glucose, iob)
+        self.assertIsNotNone(result)
+        if result.n_high_glucose_episodes > 0:
+            self.assertIsInstance(result.patience_mode_eligible, bool)
+            self.assertGreater(result.iob_cap_suggestion, 0)
+
+
+class TestAssessBasalCleanNight(unittest.TestCase):
+    """Test clean-night filtering in assess_basal."""
+
+    def test_clean_night_filtering(self):
+        from cgmencode.production.clinical_rules import assess_basal
+        # Single night with clear rising glucose during clean hours
+        n = 288  # 1 day
+        hours = np.linspace(0, 24, n, endpoint=False)
+        glucose = np.full(n, 120.0)
+
+        # During overnight (0-6h), make glucose rise steadily
+        for i in range(n):
+            if 0 <= hours[i] < 6:
+                # ~+10 mg/dL/hr rise → slope_per_hour > 5 → TOO_LOW
+                glucose[i] = 100.0 + hours[i] * 10.0
+
+        iob = np.full(n, 0.1)  # clean IOB
+        cob = np.zeros(n)
+
+        result = assess_basal(glucose, hours=hours, iob=iob, cob=cob)
+        self.assertEqual(result, BasalAssessment.TOO_LOW)
+
+    def test_dirty_nights_filtered_out(self):
+        from cgmencode.production.clinical_rules import assess_basal
+        # Rising overnight glucose but all nights have high IOB → dirty
+        n = 288 * 3
+        hours = np.tile(np.linspace(0, 24, 288, endpoint=False), 3)
+        glucose = np.full(n, 120.0)
+
+        overnight_mask = (hours >= 0) & (hours < 6)
+        for i in range(n):
+            if overnight_mask[i]:
+                glucose[i] = 120.0 + (hours[i] * 15.0)
+
+        # High IOB everywhere → no clean samples
+        iob = np.full(n, 3.0)
+        cob = np.zeros(n)
+
+        result = assess_basal(glucose, hours=hours, iob=iob, cob=cob)
+        # Falls back to all data when no clean overnight samples exist
+        self.assertIsInstance(result, BasalAssessment)
+
+    def test_no_iob_cob_works_as_before(self):
+        from cgmencode.production.clinical_rules import assess_basal
+        # Without IOB/COB, should work the same as before (no filtering)
+        n = 288
+        hours = np.linspace(0, 24, n, endpoint=False)
+        glucose = np.full(n, 120.0)
+        result = assess_basal(glucose, hours=hours)
+        self.assertEqual(result, BasalAssessment.APPROPRIATE)
+
+
+class TestAdviseISFDefanged(unittest.TestCase):
+    """Test that advise_isf is now informational-only."""
+
+    def test_advise_isf_returns_informational(self):
+        from cgmencode.production.settings_advisor import advise_isf
+        clinical = ClinicalReport(
+            grade=GlycemicGrade.B,
+            risk_score=40.0,
+            tir=0.60,
+            tbr=0.02,
+            tar=0.38,
+            mean_glucose=160.0,
+            gmi=7.0,
+            cv=30.0,
+            basal_assessment=BasalAssessment.APPROPRIATE,
+            cr_score=50.0,
+            effective_isf=150.0,  # 3× profile ISF of 50
+            isf_discrepancy=3.0,
+        )
+        result = advise_isf(clinical, make_profile(), days_of_data=14.0)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.direction, "informational")
+        self.assertEqual(result.magnitude_pct, 0.0)
+        self.assertEqual(result.suggested_value, result.current_value)
+        self.assertIn("PRESCRIPTIVE PARADOX", result.rationale)
+
+    def test_advise_isf_low_discrepancy_returns_none(self):
+        from cgmencode.production.settings_advisor import advise_isf
+        clinical = ClinicalReport(
+            grade=GlycemicGrade.A,
+            risk_score=20.0,
+            tir=0.80,
+            tbr=0.01,
+            tar=0.19,
+            mean_glucose=120.0,
+            gmi=6.0,
+            cv=25.0,
+            basal_assessment=BasalAssessment.APPROPRIATE,
+            cr_score=70.0,
+            effective_isf=55.0,
+            isf_discrepancy=1.1,  # < 1.5 threshold
+        )
+        result = advise_isf(clinical, make_profile(), days_of_data=14.0)
+        self.assertIsNone(result)
+
+
+class TestAdvisePatienceMode(unittest.TestCase):
+    """Test advise_patience_mode from settings_advisor."""
+
+    def test_returns_none_when_not_eligible(self):
+        from cgmencode.production.settings_advisor import advise_patience_mode
+        from cgmencode.production.types import SaturationAssessment, SaturationLevel
+        sat = SaturationAssessment(
+            level=SaturationLevel.NONE,
+            wall_pct=0.0,
+            n_wall_episodes=0,
+            n_high_glucose_episodes=0,
+            median_iob=1.0,
+            patience_mode_eligible=False,
+        )
+        result = advise_patience_mode(sat, days_of_data=14.0)
+        self.assertIsNone(result)
+
+    def test_returns_none_with_insufficient_data(self):
+        from cgmencode.production.settings_advisor import advise_patience_mode
+        from cgmencode.production.types import SaturationAssessment, SaturationLevel
+        sat = SaturationAssessment(
+            level=SaturationLevel.SEVERE,
+            wall_pct=50.0,
+            n_wall_episodes=5,
+            n_high_glucose_episodes=6,
+            median_iob=1.5,
+            patience_mode_eligible=True,
+            iob_cap_suggestion=2.25,
+        )
+        result = advise_patience_mode(sat, days_of_data=1.0)
+        self.assertIsNone(result)
+
+    def test_severe_saturation_advisory(self):
+        from cgmencode.production.settings_advisor import advise_patience_mode
+        from cgmencode.production.types import SaturationAssessment, SaturationLevel
+        sat = SaturationAssessment(
+            level=SaturationLevel.SEVERE,
+            wall_pct=50.0,
+            n_wall_episodes=5,
+            n_high_glucose_episodes=6,
+            median_iob=1.5,
+            excess_insulin_u=4.2,
+            patience_mode_eligible=True,
+            iob_cap_suggestion=2.25,
+        )
+        result = advise_patience_mode(sat, days_of_data=14.0)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.direction, "informational")
+        self.assertIn("PATIENCE MODE", result.rationale)
+        self.assertIn("60–82%", result.rationale)
+        self.assertEqual(result.suggested_value, 2.25)
+
+    def test_moderate_saturation_advisory(self):
+        from cgmencode.production.settings_advisor import advise_patience_mode
+        from cgmencode.production.types import SaturationAssessment, SaturationLevel
+        sat = SaturationAssessment(
+            level=SaturationLevel.MODERATE,
+            wall_pct=25.0,
+            n_wall_episodes=3,
+            n_high_glucose_episodes=5,
+            median_iob=2.0,
+            excess_insulin_u=2.0,
+            patience_mode_eligible=True,
+            iob_cap_suggestion=3.0,
+        )
+        result = advise_patience_mode(sat, days_of_data=10.0)
+        self.assertIsNotNone(result)
+        self.assertIn("40–60%", result.rationale)
+
+
+class TestAdviseISFDualPhase(unittest.TestCase):
+    """Test advise_isf_dual_phase from settings_advisor."""
+
+    def test_returns_none_with_no_data(self):
+        from cgmencode.production.settings_advisor import advise_isf_dual_phase
+        result = advise_isf_dual_phase(None, days_of_data=14.0)
+        self.assertIsNone(result)
+
+    def test_returns_none_with_few_corrections(self):
+        from cgmencode.production.settings_advisor import advise_isf_dual_phase
+        from cgmencode.production.types import DualPhaseISF
+        dp = DualPhaseISF(
+            demand_isf=15.0, apparent_isf=50.0, inflation_ratio=3.3,
+            n_corrections=3,  # below threshold of 5
+        )
+        result = advise_isf_dual_phase(dp, days_of_data=14.0)
+        self.assertIsNone(result)
+
+    def test_informational_report(self):
+        from cgmencode.production.settings_advisor import advise_isf_dual_phase
+        from cgmencode.production.types import DualPhaseISF
+        dp = DualPhaseISF(
+            demand_isf=15.0,
+            apparent_isf=50.0,
+            inflation_ratio=3.3,
+            n_corrections=20,
+            confidence='high',
+            demand_ci_low=12.0,
+            demand_ci_high=18.0,
+            scheduled_isf=50.0,
+        )
+        result = advise_isf_dual_phase(dp, days_of_data=14.0)
+        self.assertIsNotNone(result)
+        self.assertEqual(result.direction, "informational")
+        self.assertEqual(result.magnitude_pct, 0.0)
+        self.assertIn("NO CHANGE RECOMMENDED", result.rationale)
+        self.assertIn("3.3", result.evidence)
+
+    def test_extreme_inflation_labeled(self):
+        from cgmencode.production.settings_advisor import advise_isf_dual_phase
+        from cgmencode.production.types import DualPhaseISF
+        dp = DualPhaseISF(
+            demand_isf=10.0,
+            apparent_isf=80.0,
+            inflation_ratio=8.0,  # > 5.0 → "extreme"
+            n_corrections=15,
+            confidence='medium',
+            demand_ci_low=7.0,
+            demand_ci_high=13.0,
+            scheduled_isf=50.0,
+        )
+        result = advise_isf_dual_phase(dp, days_of_data=14.0)
+        self.assertIsNotNone(result)
+        self.assertIn("extreme", result.evidence)
+
+
+class TestComputeApparentISFAlias(unittest.TestCase):
+    """Test that compute_effective_isf alias still works."""
+
+    def test_alias_exists(self):
+        from cgmencode.production.clinical_rules import compute_effective_isf
+        from cgmencode.production.clinical_rules import compute_apparent_isf
+        self.assertIs(compute_effective_isf, compute_apparent_isf)
+
+
+class TestDualPhaseISFType(unittest.TestCase):
+    """Test DualPhaseISF dataclass."""
+
+    def test_basic_instantiation(self):
+        from cgmencode.production.types import DualPhaseISF
+        dp = DualPhaseISF(
+            demand_isf=15.0, apparent_isf=50.0, inflation_ratio=3.3,
+            n_corrections=20,
+        )
+        self.assertEqual(dp.demand_isf, 15.0)
+        self.assertEqual(dp.apparent_isf, 50.0)
+        self.assertEqual(dp.confidence, 'low')  # default
+        self.assertIn("prescriptive paradox", dp.paradox_warning.lower())
+
+    def test_defaults(self):
+        from cgmencode.production.types import DualPhaseISF
+        dp = DualPhaseISF(
+            demand_isf=20.0, apparent_isf=60.0, inflation_ratio=3.0,
+            n_corrections=10,
+        )
+        self.assertEqual(dp.demand_ci_low, 0.0)
+        self.assertEqual(dp.demand_ci_high, 0.0)
+        self.assertEqual(dp.scheduled_isf, 0.0)
+
+
+class TestSaturationTypes(unittest.TestCase):
+    """Test SaturationLevel and SaturationAssessment types."""
+
+    def test_saturation_level_values(self):
+        from cgmencode.production.types import SaturationLevel
+        self.assertEqual(SaturationLevel.NONE.value, 'none')
+        self.assertEqual(SaturationLevel.MILD.value, 'mild')
+        self.assertEqual(SaturationLevel.MODERATE.value, 'moderate')
+        self.assertEqual(SaturationLevel.SEVERE.value, 'severe')
+
+    def test_saturation_assessment_defaults(self):
+        from cgmencode.production.types import SaturationAssessment, SaturationLevel
+        sa = SaturationAssessment(
+            level=SaturationLevel.NONE,
+            wall_pct=0.0,
+            n_wall_episodes=0,
+            n_high_glucose_episodes=0,
+            median_iob=1.0,
+        )
+        self.assertEqual(sa.excess_insulin_u, 0.0)
+        self.assertEqual(sa.delayed_hypo_risk, 0.0)
+        self.assertFalse(sa.patience_mode_eligible)
+        self.assertEqual(sa.iob_cap_suggestion, 0.0)
