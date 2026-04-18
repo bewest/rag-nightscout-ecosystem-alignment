@@ -939,19 +939,42 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 
 ## 12. Research-Only Findings (Not Yet Productionized)
 
-| Finding | Why Not Productionized | Evidence | Priority |
-|---------|----------------------|----------|----------|
-| Two-component DIA (fast τ=0.8h + 37% persistent) | Needs AID firmware changes | R²=0.827 (EXP-2525) | Medium |
-| Split-dose recommendation (87% theoretical improvement) | Empirically confounded (0.39×); needs RCT | EXP-2522 | Low |
-| 15–30g meal sweet spot (best post-meal TIR) | ⚠ Based on entered carbs, not actual carbs (see §5.8). Real meals are 40–100g+ | EXP-2537d | Low (reframe) |
-| Loop workload metric (18/19 saturated) | Insight, not actionable | EXP-2391 | Low |
-| CR × ISF cancellation | Confirms linear dosing — no action needed | EXP-2537a | Low |
-| **Detected-meal → CR integration** | **Mature R&D not yet plumbed into production CR path (see §5.8)** | **EXP-1341, 1569, 486** | **High** |
-| Patience mode (cap SMBs when IOB>2×median) | Saves 34–82% SMBs, reduces hypos 0.1–2.0pp | EXP-2662 | Medium |
-| SC suppression ceiling (~30% of hepatic EGP) | Correlates with sticky hypers (r=−0.60) | EXP-2656 | Medium |
-| Demand-phase ISF (2–10× smaller than apparent ISF) | Wins at all prediction horizons but dosing paradox applies | EXP-2651 | Medium |
+*Updated 2026-04-18. Items marked ✅ are now in production code.*
 
-[SOURCE: `docs/60-research/therapy-settings-synthesis-2026-04-11.md:239–248`]
+| Finding | Status | Evidence | Notes |
+|---------|--------|----------|-------|
+| Two-component DIA (fast τ=0.8h + 37% persistent) | ❌ Not productionized | R²=0.827 (EXP-2525) | Needs AID firmware changes |
+| Split-dose recommendation (87% theoretical improvement) | ❌ Not productionized | EXP-2522 | Empirically confounded (0.39×); needs RCT |
+| 15–30g meal sweet spot | ❌ Reframed | EXP-2537d | Based on entered carbs, not actual carbs (see §5.8). Real meals are 40–100g+ |
+| Loop workload metric (18/19 saturated) | ❌ Insight only | EXP-2391 | Not actionable |
+| CR × ISF cancellation | ❌ Insight only | EXP-2537a | Confirms linear dosing — no action needed |
+| **Demand-phase ISF** | ✅ **Productionized** | EXP-2651, 2663–2666 | `compute_demand_isf()` with 6h Nyquist-correct isolation, tiered fallback, carb exclusion. `advise_isf()` targets demand ISF with conservative 25% step. Demand ISF confirmed constant per patient (not dose-dependent, not circadian). |
+| **SC suppression ceiling detection** | ✅ **Productionized** | EXP-2656, 2660 | `detect_insulin_saturation()`: wall detection (IOB>2×median + ROC>-5), SaturationLevel tiers (NONE/MILD/MODERATE/SEVERE). |
+| **Patience mode advisory** | ✅ **Productionized** | EXP-2662 | `advise_patience_mode()` wired into `generate_settings_advice()`. Saves 34–82% SMBs, ≤+2.1pp hyper, reduces delayed hypos 0.1–2.0pp. |
+| **Detected-meal → CR (carbs_estimated_g)** | ⚠️ **Partially done** | EXP-1341, 1569, 748 | `_extract_cr_schedule()` falls back to `carbs_estimated_g` for MEAL windows with absent/small carb entries. **Gap**: UAM windows (truly unannounced) lack `carbs_estimated_g` and are not fed to CR optimizer. |
+| **48h carb history for overnight drift** | ✅ **Productionized** | EXP-2622, 2627 | `assess_overnight_drift()` accepts carbs param for glycogen context. |
+| **Stacking prevention** | ✅ **Productionized** | EXP-2624 | `assess_correction_timing()` threshold at 3.5h (EGP nadir timing). |
+| Circadian demand ISF | ❌ **Disproved** | EXP-2664, 2665, 2666 | Apparent ISF circadian variation is EGP-driven, not insulin sensitivity. Demand ISF is circadian-flat (−4.7% from profiling). |
+
+### 12.1 Bugs Found and Fixed During Production Review
+
+| Bug | Severity | Fix |
+|-----|----------|-----|
+| `compute_demand_isf()`: no prior-bolus isolation | High | Fixed (9e53ed8): 6h Nyquist-correct isolation window |
+| `advise_isf_dual_phase()`: `step_pct` reports 25% but `suggested` moves 17.5% | Medium | Fixed (14fcc7e): made function informational-only |
+| Duplicate ISF recommendations from `advise_isf()` + `advise_isf_dual_phase()` | Medium | Fixed (14fcc7e): `advise_isf()` is sole actionable path |
+| `detect_insulin_saturation()`: end-of-array episode dropped wall data | Medium | Fixed (56c360a): full wall detection for final episode |
+| `excess_insulin_u`: sums IOB stock across steps (overcounts) | Low | Documented — informational field, not used for dosing |
+
+### 12.2 Test Infrastructure
+
+| Suite | Tests | Time | Command |
+|-------|-------|------|---------|
+| Unit tests | 362 | 33s | `pytest -m unit` |
+| Integration tests | 56 | 148s | `pytest -m integration` |
+| Full suite | 418 | ~3 min | `pytest test_production.py` |
+
+[SOURCE: commits 4a8c282, 43ca8bc, ddeff89, 56c360a, 7e75da0, 9e53ed8, 14fcc7e, f79b175; EXP-2663–2666]
 
 ---
 
@@ -1002,7 +1025,7 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Forward sim accuracy | MAE=0.30pp, r=0.933 | `settings_advisor.py:22–23` | 2551 |
 | Hypo rate floor | ~16% irreducible | `egp-prescriptive-paradox-report-2026-04-13.md` | 2641 |
 | Natural experiment census | 50,810 windows | `natural_experiment_detector.py:1–22` | 1551 |
-| Production test coverage | 226 tests, 46 classes | `therapy-settings-synthesis-2026-04-11.md:237` | — |
+| Production test coverage | 418 tests, 88 classes (unit 33s / integration 148s) | `test_production.py` | — |
 
 ---
 
