@@ -10,19 +10,26 @@
 
 ## 1. Executive Summary
 
-Round 1 established the **AID Compensation Theorem** — IOB "protecting" against hypos
-is reversed causation from the controller withdrawing insulin — and showed recovery
-forces are **coupled, not additive** (sum = 34 mg/dL/hr vs actual = 4.1).
+Round 1 identified that the AID controller's insulin modulation is part of observed recovery
+dynamics — IOB decreases before hypo events because the controller reduces insulin delivery
+(standard closed-loop behavior) — and showed that post-correction recovery
+forces cannot be decomposed into independent **additive** terms (sum = 34 mg/dL/hr vs actual = 4.1).
+
+> **Corrected 2026-04-18**: Original framing ("AID Compensation Theorem") over-generalized
+> these findings. See `egp-evidence-synthesis-report-2026-04-18.md` for full evidence review.
 
 Round 2 asked: **Does ANY single-factor model explain post-correction recovery?**
 
 We tested 5 competing models (null, mean-reversion, IOB decay, biexponential decay,
 Hill EGP) and 4 attribution factors (IOB decay rate, 48h carbs, time of day, bolus size).
 
-**Answer: No single model works.** ALL 5 models have **negative R²** — they predict
-WORSE than simply guessing the mean glucose. The only significant predictor of recovery
-rate is bolus size, and it goes in the **wrong direction** (r = −0.31; larger boluses →
-slower recovery). IOB decay rate has zero correlation (r = −0.07). Circadian rhythm
+**Answer: No single-factor model predicts post-nadir recovery rate.** ALL 5 models have **negative R²** for this specific task — they predict
+WORSE than simply guessing the mean glucose. However, this applies to post-nadir recovery
+rate prediction from individual factors only. Multi-factor methods succeed: response-curve
+ISF fitting achieves R² = 0.805 (EXP-1301), dose-dependent ISF achieves r = −0.56 (EXP-2640).
+The only significant single predictor of recovery
+rate is bolus size, and it goes in the expected direction for dose-dependent ISF (r = −0.31; larger boluses →
+slower recovery, consistent with saturation kinetics). IOB decay rate has zero correlation (r = −0.07). Circadian rhythm
 contributes nothing (p = 0.85). 48h carbs are weakly negative (r = −0.15).
 
 The AID controller **absorbs all single-factor signals**, making the system fundamentally
@@ -228,7 +235,7 @@ aggressive. Both have n=2, so statistical reliability is low.
 
 | Question | Round 1 (EXP-2629/2630) | Round 2 (EXP-2634/2635) |
 |----------|------------------------|------------------------|
-| Are forces additive? | No: sum=34, actual=4.1 | No: ALL models R² < 0 |
+| Are forces additively decomposable? | No: sum=34, actual=4.1 | No: ALL single-factor models R² < 0 |
 | Is recovery from EGP? | Hill under-predicts by 2.1× | EGP is WORST model (R² = −3.2) |
 | Is recovery from IOB decay? | Not tested separately | No: r = −0.068 (zero correlation) |
 | Is it circadian? | Not tested | No: p = 0.85 |
@@ -323,10 +330,11 @@ even their open-loop contributions are small relative to noise — consistent wi
    that dose-dependent ISF adjustment (reduce ISF for larger corrections) would be
    more effective than any EGP model.
 
-5. **The "ringing" is already being dampened.** Round 1's AID Compensation Theorem
-   showed the controller is already compensating. The opportunity isn't to add a new
-   model — it's to reduce the controller's tendency to over-correct during the
-   recovery phase, which causes unnecessary oscillation.
+5. **The controller dynamics are quantifiable.** Round 1 showed the controller contributes
+   to observed recovery (AID-active = 7.6, suspended = 3.6 mg/dL/hr). The opportunity is
+   to use this quantification for controller-aware parameter estimation (multi-factor ISF,
+   phase decomposition) rather than to reduce oscillation alone. See
+   `egp-evidence-synthesis-report-2026-04-18.md` for validated multi-factor methods.
 
 ### GAP Updates
 

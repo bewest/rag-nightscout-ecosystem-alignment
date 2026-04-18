@@ -1,6 +1,6 @@
-# EGP Deconfounding: Supply, Demand, and the AID Compensation Theorem
+# EGP Deconfounding: Supply, Demand, and AID Controller Dynamics
 
-**Date**: 2026-04-13  
+**Date**: 2026-04-13 (corrected 2026-04-18)  
 **Experiments**: EXP-2624, EXP-2626, EXP-2629, EXP-2630  
 **Patients**: 9 (a-g, i, k) — FULL telemetry (insulin + glucose + settings)  
 **Data**: 803,895 5-minute intervals from `externals/ns-parquet/training/grid.parquet`
@@ -9,22 +9,28 @@
 
 ## Executive Summary
 
-Through first-principles analysis of real patient data, we have identified a fundamental 
-misattribution in AID (Automated Insulin Delivery) systems: **the apparent "protective" 
-effect of IOB against hypoglycemia is actually reversed causation — the AID controller 
-withdrawing insulin in response to falling glucose.** This observation, which we term the 
-**AID Compensation Theorem**, connects to deeper dynamics involving Endogenous Glucose 
-Production (EGP) that current AID controllers do not model.
+Through first-principles analysis of real patient data, we have identified that
+**the AID controller's insulin modulation is a significant component of observed
+post-correction glucose dynamics — the controller reduces insulin delivery in
+response to falling glucose, which is standard closed-loop behavior.** This
+observation, combined with deeper dynamics involving Endogenous Glucose
+Production (EGP) that current AID controllers do not explicitly model, means that
+post-correction recovery forces cannot be decomposed into independent additive terms.
+
+> **Corrected 2026-04-18**: The original framing used "reversed causation" and
+> "AID Compensation Theorem" language that over-generalized these narrow findings
+> into a claim that parameter recovery is impossible. Multi-factor methods succeed;
+> see `egp-evidence-synthesis-report-2026-04-18.md` for the full evidence review.
 
 Our key findings across 4 experiments and 14,228+ analyzed episodes:
 
 | Finding | Evidence | Implication |
 |---------|----------|-------------|
-| IOB drops 55% before hypo crossing | EXP-2629, N=2,602 episodes | AID is withdrawing, not IOB "protecting" |
+| IOB drops 55% before hypo crossing | EXP-2629, N=2,602 episodes | AID reduces insulin delivery when glucose falls (standard controller behavior) |
 | Glucose nadir at 3.5h, not 1.25h | EXP-2624, N=212 corrections | 2.25h phase lag from EGP suppression |
 | Recovery is 2.1× Hill EGP prediction | EXP-2629, ratio=2.09 | Counter-regulation contributes significantly |
 | AID-active recovery 2× suspended | EXP-2630, 7.6 vs 3.6 mg/dL/hr | AID withdrawal adds to observed recovery |
-| Forces are coupled, not additive | EXP-2630, sum=34 vs actual=4 | Simple decomposition fails |
+| Additive force decomposition fails | EXP-2630, sum=34 vs actual=4 | Multi-factor methods required (see §5 correction note) |
 
 ---
 
@@ -70,9 +76,13 @@ not direct insulin action. This means **ISF measured from corrections is inflate
 
 ---
 
-## 2. The AID Compensation Theorem
+## 2. AID Controller Dynamics
 
-### The Illusion: "High IOB Protects Against Lows"
+> **Corrected 2026-04-18**: This section originally used "AID Compensation Theorem" framing.
+> The observations below are valid but describe standard control-system behavior, not a theorem.
+> Parameter recovery succeeds via multi-factor methods (see `egp-evidence-synthesis-report-2026-04-18.md`).
+
+### The Observation: IOB Decreases Before Hypo Events
 
 A commonly observed correlation in AID data: higher IOB correlates with fewer 
 hypoglycemic events. The naive interpretation is that insulin on board somehow 
@@ -109,7 +119,7 @@ independently protecting against lows.
 
 ## 3. Ringing and Resonance
 
-The AID Compensation Theorem has a dynamic consequence: **ringing**. Because the 
+The AID controller dynamics have a dynamic consequence: **ringing**. Because the 
 controller and the body are both trying to control glucose — and they respond on 
 different timescales — oscillations emerge:
 
@@ -184,7 +194,7 @@ The sum (34.1) is **8× the actual** (4.1). This means the forces are actively
 when counter-regulation kicks in, the still-present insulin dampens it. The system 
 is a coupled oscillator, not a sum of independent effects.
 
-**This is the central finding**: you cannot model EGP, insulin, and AID compensation 
+**This is the central finding of EXP-2630**: you cannot model EGP, insulin, and AID compensation 
 independently and add them up. They form a **feedback loop** that must be modeled as 
 a coupled system.
 
@@ -241,8 +251,9 @@ Nightscout) model glucose using:
 2. **Post-correction rise is NOT a failed correction** — it's normal EGP recovery. 
    Adding more insulin to fight the "rebound" creates over-correction cascades.
 
-3. **IOB is not protective** — the correlation is an artifact of AID withdrawal. 
-   Don't use IOB level as a safety proxy; use glucose trend instead.
+3. **IOB correlation with hypos reflects controller behavior** — the AID controller reduces 
+   insulin delivery when glucose falls. This is standard closed-loop dynamics, not a causal
+   relationship between IOB and protection. Use glucose trend for safety decisions.
 
 4. **Recovery rate ≈ base EGP** — if a patient's post-correction rise matches 
    their estimated EGP (18 mg/dL/hr ± circadian), the correction worked correctly.
@@ -283,7 +294,7 @@ Terms that have emerged from this first-principles analysis:
 | **Apparent ISF** | Total correction drop ÷ bolus (includes EGP artifact) | "ISF" |
 | **EGP-corrected ISF** | Apparent ISF minus EGP suppression contribution | *(no equivalent)* |
 | **Demand-phase ISF** | ISF from first 2h only (pure insulin effect) | *(no equivalent)* |
-| **AID Compensation Theorem** | IOB-hypo correlation is reversed causation from AID withdrawal | "IOB protective" |
+| **AID Compensation Observation** | IOB-hypo correlation reflects AID insulin reduction during falling glucose (standard controller behavior) | *(sometimes misattributed to "IOB protective effect")* |
 | **Ringing** | Damped oscillation from AID withdraw/resume cycles | "glucose variability" |
 | **Counter-regulation** | Glucagon release proportional to glucose drop rate | *(not modeled in AID)* |
 | **Glycogen state** | 48h carb accumulation affecting overnight drift | *(not tracked)* |

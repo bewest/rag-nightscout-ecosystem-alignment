@@ -128,7 +128,7 @@ Of the 48 over-correction/hypo events:
 
 Counter-intuitively, **large corrections (≥3U) have a LOWER over-correction rate (20%) than medium corrections (1–2U: 27.5%)**. The AID controller protects against over-correction more effectively at large doses. But large corrections under-shoot by more (−37.7 excess drop), meaning the glucose doesn't come down as far as intended.
 
-This is the **AID Compensation Theorem** from Round 1 in action: the controller absorbs the excess insulin effect, converting potential hypos into mere under-corrections.
+This demonstrates the AID controller's compensatory behavior: the controller absorbs the excess insulin effect at large doses, converting potential hypos into mere under-corrections.
 
 ![Figure 42: Retrospective Audit](../../visualizations/egp-deconfounding/fig42_retrospective_audit.png)
 
@@ -213,38 +213,45 @@ A model can accurately describe what happens during corrections (per-patient log
 
 ### The Core Discovery
 
-**AID Compensation Theorem** (Rounds 1–5): In a closed-loop AID system, the controller absorbs all predictable physiological signals. Any measurable pattern in corrections is an emergent property of the controller-patient system, not an extractable parameter for improving dosing. The controller is already compensating for dose-dependent ISF, EGP, counter-regulation, and all other effects — that's its job, and it does it well enough that no open-loop model can improve on it.
+> **Corrected 2026-04-18** — the original "AID Compensation Theorem" was a tautological over-generalization. See `egp-evidence-synthesis-report-2026-04-18.md` for full evidence review.
+
+**AID Compensation Observation** (Rounds 1–5): In a closed-loop AID system, the controller's insulin modulation is part of the observed glucose dynamics. Post-correction recovery reflects coupled contributions that cannot be decomposed into independent additive terms (EXP-2630: sum = 34, actual = 4.1 mg/dL/hr). Simple single-factor models of post-nadir recovery rate fail (EXP-2634: all 5 models R² < 0). However, multi-factor methods successfully recover per-patient physical parameters: dose-dependent ISF (r = −0.56, EXP-2640), response-curve fitting (R² = 0.805, EXP-1301), circadian profiling (10–20% RMSE improvement, EXP-2652), and phase decomposition (EXP-2651). The controller's compensatory behavior is standard closed-loop dynamics, not a fundamental barrier to system identification.
 
 ### What This Means for the Nightscout Ecosystem
 
-1. **Stop trying to model ISF better for dosing**: The current approach (fixed ISF × controller feedback) is near-optimal. The remaining 16% hypo rate is from irreducible per-event variability, not from systematic ISF error.
+1. **Multi-factor ISF modeling works and should continue**: Dose-dependent ISF (r = −0.56), circadian ISF profiling (2–9× variation), and demand-phase ISF decomposition (2–10× more accurate than apparent ISF) all succeed within the closed-loop context. The remaining per-event variability (~16% hypo rate) is irreducible by any single-factor model, but multi-factor approaches reduce prediction error.
 
-2. **Dose-dependent ISF IS useful for**: Understanding correction dynamics, calibrating forward simulators, estimating therapeutic ranges, and education. It should NOT be used to compute bolus doses.
+2. **Dose-dependent ISF is useful for**: Understanding correction dynamics, calibrating forward simulators, estimating therapeutic ranges, informing dose-aware controller modifications, and education.
 
-3. **The 8× loop gain protects patients**: The AID controller amplifies its corrections by ~8× relative to what pure physiology would produce. This means the controller, not the bolus, is the primary determinant of glucose trajectory. Improving the controller's algorithms (damping, prediction horizon) would have more impact than improving ISF models.
+3. **The controller's loop gain is quantifiable**: AID-active recovery (7.6 mg/dL/hr) vs AID-suspended (3.6 mg/dL/hr) quantifies the controller's contribution. This is observable data for system identification, not an obstacle to it.
 
-4. **EGP research line is definitively closed**: Not only does EGP fail as a prediction term (R² = −3.2), but no physiological model can improve correction dosing because the controller already compensates for everything.
+4. **EGP research line remains open and productive**: EGP phase decomposition (54% of correction drop, 3.5h nadir), SC suppression ceiling (~30%), and patience mode (≥30% delayed hypo reduction) are among the program's most actionable findings. The EGP Hill model fails as a single-factor post-nadir predictor (R² = −3.2) but the underlying physiology is real and clinically relevant.
 
 ### GAP Updates
 
-**GAP-EGP-010** (new): Apparent ISF from corrections is an emergent closed-loop property. It describes the controller-patient system, not the patient's intrinsic insulin sensitivity. Cannot be used for dosing without accounting for controller response.
+**GAP-EGP-010** (revised 2026-04-18): Apparent ISF from corrections reflects both patient physiology and controller dynamics. Demand-phase ISF (0–2h drop, EXP-2651) isolates the insulin effect; dose-dependent ISF (EXP-2640) accounts for saturation kinetics. Both are recoverable from closed-loop data.
 
-**GAP-EGP-011** (new): Per-event ISF variability is irreducibly high (all models R² < 0). The 16% post-correction hypo rate cannot be systematically reduced through ISF model improvements. Requires either better controller algorithms or pre-correction glucose level limits.
+**GAP-EGP-011** (revised 2026-04-18): Per-event ISF variability is high for single-factor post-nadir prediction (all 5 models R² < 0, EXP-2634). Multi-factor approaches reduce prediction error: circadian profiling (10–20% RMSE improvement), dose-dependent scaling (r = −0.56), and response-curve fitting (R² = 0.805). The 16% post-correction hypo rate may be partially addressable through multi-factor models and controller modifications (e.g., patience mode, EXP-2662).
 
-### Research Lines CLOSED (Cumulative)
+### Research Lines Status (Updated 2026-04-18)
 
-| Line | Closed In | Reason |
-|------|-----------|--------|
-| EGP as prediction term | Round 2 | R² = −3.2, worst of 5 models |
-| IOB decay → recovery | Round 2 | r = −0.068 |
-| 48h carbs → recovery | Round 2 | r = −0.15, wrong direction |
-| Circadian recovery | Round 2 | p = 0.85 |
-| All single-factor models | Round 2 | All R² < 0 |
-| Linear ISF scaling | Round 4 | Log fits better (5/6 patients) |
-| Stacking worsens outcomes | Round 3 | AID compensates (p = 0.28) |
-| Controller predictable | Round 3 | R² = 0.074 |
-| **Log-ISF for dosing** | **Round 5** | **Descriptive ≠ prescriptive** |
-| **ISF model improvements → fewer hypos** | **Round 5** | **Per-event variability dominates** |
+> **Corrected**: Original table declared all ISF model improvements and EGP research "closed."
+> This was an over-generalization. Lines closed for SINGLE-FACTOR post-nadir prediction remain
+> closed; lines involving multi-factor parameter recovery are OPEN and productive.
+
+| Line | Status | Evidence |
+|------|--------|----------|
+| Single-factor post-nadir recovery models | CLOSED | All R² < 0 (EXP-2634) |
+| EGP Hill model as sole predictor | CLOSED | R² = −3.2 (EXP-2634) |
+| IOB decay rate → recovery | CLOSED | r = −0.068 (EXP-2635) |
+| Linear ISF scaling | CLOSED | Log fits better 5/6 patients (EXP-2640) |
+| Dose-dependent ISF estimation | **OPEN** | r = −0.56, validated (EXP-2640) |
+| Circadian ISF profiling | **OPEN** | 2–9× variation, 10–20% RMSE improvement (EXP-2652) |
+| Phase decomposition (demand vs apparent ISF) | **OPEN** | 2–10× ratio (EXP-2651) |
+| EGP suppression phase (3.5h nadir) | **OPEN** | N = 212, actionable for stacking prevention (EXP-2624) |
+| SC suppression ceiling | **OPEN** | r = −0.60 with sticky hyper rate (EXP-2656) |
+| Patience mode / wall detection | **OPEN** | ≥30% delayed hypo reduction (EXP-2662) |
+| Response-curve ISF fitting | **OPEN** | R² = 0.805 (EXP-1301) |
 
 ---
 

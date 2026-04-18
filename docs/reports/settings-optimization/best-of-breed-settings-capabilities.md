@@ -906,24 +906,29 @@ The dose-dependent interaction creates a paradox:
 Large corrections have a **lower** over-correction rate (20%) than medium ones (27.5%) precisely because the controller absorbs the excess — converting potential hypos into mere under-corrections.  
 [SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:99–111,129,171–174`]
 
-**Conclusions from EXP-2641/2642**:
-1. "Fixed ISF + controller feedback is near-optimal" — the AID compensates in real-time  
-2. "Stop trying to model ISF better for dosing" — per-event variability dominates (R² = −0.19)  
-3. The remaining ~16% hypo rate is irreducible event-to-event variability, not systematic ISF error  
+**Conclusions from EXP-2641/2642** (scoped correctly 2026-04-18):
+1. "Fixed ISF + controller feedback is a robust baseline" — but multi-factor ISF models improve on it  
+2. "Single-factor ISF models do not reduce per-event hypo rate" — per-event variability is high (R² = −0.19 for single factors)  
+3. The remaining ~16% hypo rate is partially addressable through multi-factor approaches (dose-dependent, circadian, phase-aware) and controller modifications (patience mode)  
 [SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:188,192,220`]
 
 **Impact on §3 (ISF Optimization)**: The EXP-747/1703 "effective ISF" data (§3.1) predates this finding. Those values are useful as a **diagnostic** (how hard is the controller working?) but should NOT be interpreted as ISF targets. The production `advise_isf()` uses conservative 25% steps but may itself need revision given this paradox. See the caveat box at the top of §3.
 
-### 11.2 AID Compensation Theorem (EXP-2629/2630)
+### 11.2 AID Compensation Observation (EXP-2629/2630)
 
-IOB-hypo correlation is **reversed causation**: IOB drops 55% before hypo crossing because the AID withdraws insulin. AID-active recovery = 7.6 vs suspended = 3.6 mg/dL/hr (p < 0.0001). Controller, settings, and physiology are **irreducibly coupled** — single-factor recovery models all have negative R².  
+> **Corrected 2026-04-18** — see `egp-evidence-synthesis-report-2026-04-18.md` for full review.
+
+The AID controller's insulin modulation is part of the observed glucose dynamics. IOB drops 55% before hypo crossing because the controller reduces insulin delivery when glucose falls — standard control-system behavior. AID-active recovery = 7.6 vs suspended = 3.6 mg/dL/hr (p < 0.0001), quantifying the controller's contribution to observed recovery. Post-correction recovery reflects coupled contributions from EGP reassertion, counter-regulation, residual insulin, and AID withdrawal — these cannot be decomposed into independent **additive** terms (sum = 34, actual = 4.1 mg/dL/hr). However, per-patient physical parameters CAN be recovered using multi-factor methods: dose-dependent ISF (r = −0.56, EXP-2640), response-curve fitting (R² = 0.805, EXP-1301), circadian profiling (EXP-2652), and phase decomposition (EXP-2651).  
 [SOURCE: `docs/60-research/egp-deconfounding-report-2026-04-13.md`]  
-[SOURCE: stored memory — "AID Compensation Paradox"]
+[SOURCE: `docs/60-research/egp-evidence-synthesis-report-2026-04-18.md`]
 
-### 11.3 All Recovery Models Fail (EXP-2634/2635)
+### 11.3 Post-Nadir Recovery Rate Is Multi-Factorial (EXP-2634/2635)
 
-All 5 recovery models (null, mean-reversion, IOB-decay, biexp-decay, Hill EGP) have negative R² (−2.4 to −3.2) on 219 properly-filtered corrections. Bolus size is the only significant predictor (r = −0.307, negative).  
-[SOURCE: stored memory — "ALL 5 recovery models have negative R²"]
+> **Corrected 2026-04-18** — original framing ("All Recovery Models Fail") over-generalized a narrow result.
+
+Five single-factor models (null, mean-reversion, IOB-decay, biexp-decay, Hill EGP) have negative R² (−2.4 to −3.2) when predicting **post-nadir recovery rate** on 219 corrections. This applies specifically to post-nadir recovery rate prediction from individual factors — not to ISF estimation or trajectory modeling more broadly. Response-curve ISF fitting achieves R² = 0.805 (EXP-1301); dose-dependent ISF achieves r = −0.56 (EXP-2640). Bolus size is the strongest single predictor of recovery dynamics (r = −0.307), consistent with the dose-dependent ISF finding.  
+[SOURCE: `docs/60-research/egp-calibration-report-2026-04-13.md`]  
+[SOURCE: `docs/60-research/egp-evidence-synthesis-report-2026-04-18.md`]
 
 ### 11.4 Irreducible Hypo Rate
 
