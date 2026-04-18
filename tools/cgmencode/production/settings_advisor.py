@@ -1947,6 +1947,7 @@ def generate_settings_advice(glucose: np.ndarray,
                              meal_events: Optional[List[dict]] = None,
                              override_active: Optional[np.ndarray] = None,
                              dual_phase_isf: Optional['DualPhaseISF'] = None,
+                             patterns: Optional['PatternProfile'] = None,
                              ) -> List[SettingsRecommendation]:
     """Generate all applicable settings recommendations.
 
@@ -1972,6 +1973,42 @@ def generate_settings_advice(glucose: np.ndarray,
     - Response-curve ISF (EXP-1301)
     - SC suppression ceiling (EXP-2656/2667)
     - Dose-response ISF curves (EXP-2636/2640)
+
+    ISF Advisory Decision Tree
+    ==========================
+    Multiple ISF advisories fire simultaneously and are resolved by the
+    consolidation pipeline (_consolidate → _deduplicate → tier → clamp).
+
+    ACTIONABLE advisories (may change settings):
+      advise_isf           - Primary ISF from clinical report (EXP-747).
+                             Fires always. Uses observed ISF vs profile.
+      advise_correction_isf - ISF from correction-only boluses (EXP-2579).
+                             Fires when bolus+carbs+iob available. Bootstrap CI.
+      advise_forward_sim   - Joint ISF×CR from forward simulation (EXP-2562).
+                             Fires when bolus+carbs+iob available. Highest TIR impact.
+      advise_circadian_isf - Day/night ISF split (EXP-2271). Fires always.
+                             Recommends 2-zone schedule when variation >50%.
+      advise_circadian_isf_profiled - 4-block ISF profile (EXP-2271).
+                             Fires always. Finer-grained than 2-zone.
+      advise_override_isf  - Exercise/stress ISF split (EXP-2621).
+                             Fires when override_active flag available.
+      advise_dose_response_isf - Dose-dependent ISF curve (EXP-2640).
+                             Fires when bolus available. Actionable only when
+                             profile ratio diverges >30%.
+
+    INFORMATIONAL advisories (direction="informational", no setting change):
+      advise_isf_nonlinearity   - Power-law ISF warning (EXP-2511).
+      advise_isf_dual_phase     - Demand vs apparent ISF (EXP-2651).
+      advise_response_curve_isf - Response-curve ISF + tau (EXP-1301).
+      advise_sc_ceiling         - SC suppression ceiling (EXP-2656).
+
+    Conflict resolution:
+      1. _consolidate_recommendations: Same parameter, opposite directions →
+         keep direction with higher weighted score (confidence × |delta|).
+      2. _deduplicate_same_direction: Same parameter, same direction →
+         merge into one (confidence-weighted avg magnitude, summed delta).
+      3. apply_confidence_tier: Grade A/B/C/D based on days_of_data.
+      4. apply_safety_clamp: Cap magnitude at safe limits.
 
     Args:
         glucose: (N,) cleaned glucose.
@@ -2047,6 +2084,13 @@ def generate_settings_advice(glucose: np.ndarray,
         correction_events=correction_events, profile=profile,
         days_of_data=days_of_data)
     recs.extend(circadian_profiled_recs)
+
+    # ISF segmentation from pattern analysis (EXP-765)
+    if patterns is not None:
+        isf_seg_recs = advise_isf_segmented(
+            glucose, metabolic, hours, clinical, profile, patterns,
+            days_of_data)
+        recs.extend(isf_seg_recs)
 
     # Context-aware CR by time of day (EXP-2341)
     if carbs is not None:

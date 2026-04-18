@@ -105,6 +105,8 @@ from cgmencode.production.test_production import (  # noqa: F401
     TestComputeApparentISFAlias,
     TestDualPhaseISFType,
     TestSaturationTypes,
+    # CR sanity check (EXP-2670)
+    TestCRSanityCheckContrast,
 )
 
 # Apply unit marker to all tests in this module

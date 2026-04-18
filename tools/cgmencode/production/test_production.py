@@ -6144,3 +6144,191 @@ class TestComputeDoseResponseISF(unittest.TestCase):
             bolus=np.zeros(n),
         )
         self.assertIsNone(result)
+
+
+class TestCRSanityCheckContrast(unittest.TestCase):
+    """Tests for EXP-2670 CR sanity-check contrast analysis.
+
+    Validates that the CR contrast tool correctly:
+    - Extracts meals from NE census
+    - Rescales carb estimates linearly with CR
+    - Computes plausibility scores
+    - Identifies best-fit CR
+    """
+
+    def _make_census(self, meals):
+        """Create a mock census from a list of meal dicts."""
+        from cgmencode.production.natural_experiment_detector import (
+            NaturalExperiment, NaturalExperimentType, NaturalExperimentCensus
+        )
+        experiments = []
+        for m in meals:
+            experiments.append(NaturalExperiment(
+                exp_type=NaturalExperimentType(m.get('type', 'meal')),
+                start_idx=0, end_idx=48,
+                duration_minutes=240,
+                hour_of_day=m['hour'],
+                quality=m.get('quality', 0.8),
+                measurements=m['measurements'],
+            ))
+        return NaturalExperimentCensus(
+            experiments=experiments,
+            total_detected=len(experiments),
+            by_type={'meal': sum(1 for m in meals if m.get('type', 'meal') == 'meal'),
+                     'uam': sum(1 for m in meals if m.get('type') == 'uam')},
+            quality_mean=0.8,
+            days_analyzed=30.0,
+            per_day_rate=len(experiments) / 30.0,
+        )
+
+    def test_linear_rescaling(self):
+        """Estimated carbs should scale linearly with CR multiplier."""
+        sys.path.insert(0, str(PROJECT_ROOT / "tools" / "cgmencode" / "experiments"))
+        from exp_cr_sanity_check_2670 import cr_contrast_analysis
+
+        census = self._make_census([
+            {'hour': 12.0, 'measurements': {
+                'carbs_estimated_g': 50.0, 'excursion_mg_dl': 60.0,
+                'bolus_u': 4.0, 'pre_meal_bg': 110.0, 'is_announced': True}},
+        ])
+
+        result = cr_contrast_analysis(
+            census, profile_cr=10.0, profile_isf=40.0,
+            patient_id='test', days_analyzed=1.0,
+            cr_multipliers=[0.5, 1.0, 2.0],
+        )
+        # At 0.5x: 50 * 0.5 = 25g; at 1.0x: 50g; at 2.0x: 100g
+        stats_05 = result.cr_sweep['0.5x']['periods']['lunch']
+        stats_10 = result.cr_sweep['1.0x']['periods']['lunch']
+        stats_20 = result.cr_sweep['2.0x']['periods']['lunch']
+        self.assertAlmostEqual(stats_05['median'], 25.0, places=0)
+        self.assertAlmostEqual(stats_10['median'], 50.0, places=0)
+        self.assertAlmostEqual(stats_20['median'], 100.0, places=0)
+
+    def test_meal_tally_cr_independent(self):
+        """Number of detected meals must not change with CR multiplier."""
+        sys.path.insert(0, str(PROJECT_ROOT / "tools" / "cgmencode" / "experiments"))
+        from exp_cr_sanity_check_2670 import cr_contrast_analysis
+
+        meals = [
+            {'hour': 7.0, 'measurements': {
+                'carbs_estimated_g': 30.0, 'excursion_mg_dl': 40.0,
+                'bolus_u': 2.0, 'pre_meal_bg': 100.0, 'is_announced': True}},
+            {'hour': 12.0, 'measurements': {
+                'carbs_estimated_g': 55.0, 'excursion_mg_dl': 65.0,
+                'bolus_u': 5.0, 'pre_meal_bg': 105.0, 'is_announced': True}},
+            {'hour': 19.0, 'measurements': {
+                'carbs_estimated_g': 80.0, 'excursion_mg_dl': 90.0,
+                'bolus_u': 7.0, 'pre_meal_bg': 115.0, 'is_announced': True}},
+        ]
+        census = self._make_census(meals)
+
+        result = cr_contrast_analysis(
+            census, profile_cr=10.0, profile_isf=40.0,
+            patient_id='test', days_analyzed=1.0,
+            cr_multipliers=[0.5, 1.0, 2.0],
+        )
+        self.assertEqual(result.n_meals, 3)
+        # Count is the same regardless of CR — it's a property of the result
+        for label in result.cr_sweep:
+            total = sum(
+                result.cr_sweep[label]['periods'][p]['n']
+                for p in ['breakfast', 'lunch', 'dinner', 'snack']
+            )
+            self.assertEqual(total, 3)
+
+    def test_uam_meals_included(self):
+        """UAM windows with subtype='meal' and carbs >= 5g should be included."""
+        sys.path.insert(0, str(PROJECT_ROOT / "tools" / "cgmencode" / "experiments"))
+        from exp_cr_sanity_check_2670 import cr_contrast_analysis
+
+        meals = [
+            {'hour': 12.0, 'type': 'meal', 'measurements': {
+                'carbs_estimated_g': 50.0, 'excursion_mg_dl': 60.0,
+                'bolus_u': 4.0, 'pre_meal_bg': 110.0, 'is_announced': True}},
+            {'hour': 18.5, 'type': 'uam', 'measurements': {
+                'subtype': 'meal', 'carbs_estimated_g': 40.0,
+                'excursion_mg_dl': 55.0, 'bolus_u': 0.0,
+                'pre_meal_bg': 120.0, 'is_announced': False,
+                'peak_residual': 3.0, 'mean_residual': 2.0,
+                'bg_rise_mg_dl': 55.0, 'cgm_coverage': 0.9,
+                'peak_bg': 175.0}},
+        ]
+        census = self._make_census(meals)
+        result = cr_contrast_analysis(
+            census, profile_cr=10.0, profile_isf=40.0,
+            patient_id='test', days_analyzed=1.0,
+        )
+        self.assertEqual(result.n_meals, 2)
+
+    def test_uam_hepatic_excluded(self):
+        """UAM windows with subtype='hepatic' should be excluded."""
+        sys.path.insert(0, str(PROJECT_ROOT / "tools" / "cgmencode" / "experiments"))
+        from exp_cr_sanity_check_2670 import cr_contrast_analysis
+
+        meals = [
+            {'hour': 12.0, 'type': 'meal', 'measurements': {
+                'carbs_estimated_g': 50.0, 'excursion_mg_dl': 60.0,
+                'bolus_u': 4.0, 'pre_meal_bg': 110.0, 'is_announced': True}},
+            {'hour': 5.5, 'type': 'uam', 'measurements': {
+                'subtype': 'hepatic', 'carbs_estimated_g': 15.0,
+                'excursion_mg_dl': 20.0, 'bolus_u': 0.0,
+                'pre_meal_bg': 100.0, 'is_announced': False,
+                'peak_residual': 2.0, 'mean_residual': 1.0,
+                'bg_rise_mg_dl': 20.0, 'cgm_coverage': 0.9,
+                'peak_bg': 120.0}},
+        ]
+        census = self._make_census(meals)
+        result = cr_contrast_analysis(
+            census, profile_cr=10.0, profile_isf=40.0,
+            patient_id='test', days_analyzed=1.0,
+        )
+        self.assertEqual(result.n_meals, 1)
+
+    def test_plausibility_scoring(self):
+        """Best-fit CR should have highest plausibility score."""
+        sys.path.insert(0, str(PROJECT_ROOT / "tools" / "cgmencode" / "experiments"))
+        from exp_cr_sanity_check_2670 import cr_contrast_analysis
+
+        # At profile CR=10, lunch=50g (within 40-75), dinner=80g (within 50-200)
+        # At 2.0x: lunch=100g (above 75), dinner=160g (within range)
+        # At 0.5x: lunch=25g (below 40), dinner=40g (below 50)
+        # So 1.0x should score highest
+        meals = [
+            {'hour': 12.0, 'measurements': {
+                'carbs_estimated_g': 50.0, 'excursion_mg_dl': 60.0,
+                'bolus_u': 4.0, 'pre_meal_bg': 110.0, 'is_announced': True}},
+            {'hour': 19.0, 'measurements': {
+                'carbs_estimated_g': 80.0, 'excursion_mg_dl': 70.0,
+                'bolus_u': 6.0, 'pre_meal_bg': 115.0, 'is_announced': True}},
+        ]
+        census = self._make_census(meals)
+        result = cr_contrast_analysis(
+            census, profile_cr=10.0, profile_isf=40.0,
+            patient_id='test', days_analyzed=1.0,
+            cr_multipliers=[0.5, 1.0, 2.0],
+        )
+        self.assertGreater(result.plausibility_scores['1.0x'],
+                           result.plausibility_scores['0.5x'])
+
+    def test_format_table_output(self):
+        """format_contrast_table should produce readable output."""
+        sys.path.insert(0, str(PROJECT_ROOT / "tools" / "cgmencode" / "experiments"))
+        from exp_cr_sanity_check_2670 import cr_contrast_analysis, format_contrast_table
+
+        meals = [
+            {'hour': 12.0, 'measurements': {
+                'carbs_estimated_g': 50.0, 'excursion_mg_dl': 60.0,
+                'bolus_u': 4.0, 'pre_meal_bg': 110.0, 'is_announced': True}},
+        ]
+        census = self._make_census(meals)
+        result = cr_contrast_analysis(
+            census, profile_cr=10.0, profile_isf=40.0,
+            patient_id='test', days_analyzed=1.0,
+            cr_multipliers=[0.5, 1.0, 2.0],
+        )
+        table = format_contrast_table(result)
+        self.assertIn('Patient test', table)
+        self.assertIn('Profile CR: 10.0', table)
+        self.assertIn('BEST', table)
+        self.assertIn('Lunch', table.lower() + table)

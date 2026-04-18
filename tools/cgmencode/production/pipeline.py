@@ -35,7 +35,7 @@ from .pattern_analyzer import analyze_patterns
 from .patient_onboarding import get_onboarding_state
 from .meal_detector import detect_meal_events, build_meal_history, classify_all_meal_responses, classify_meal_archetypes
 from .meal_predictor import build_timing_models, predict_next_meal, MealMLModel
-from .settings_advisor import generate_settings_advice, analyze_periods, advise_isf_segmented, advise_circadian_isf, advise_context_cr, assess_overnight_drift, compute_loop_workload
+from .settings_advisor import generate_settings_advice, analyze_periods, advise_circadian_isf, advise_context_cr, assess_overnight_drift, compute_loop_workload
 from .recommender import generate_recommendations, detect_controller_type, get_controller_behavior, adjust_confidence_for_controller
 from .hypo_risk import compute_hypo_risk
 from .patient_phenotyper import classify_patient_phenotype
@@ -509,17 +509,8 @@ def run_pipeline(patient: PatientData,
                 bolus=patient.bolus,
                 correction_events=correction_events,
                 meal_events=meal_events,
-                dual_phase_isf=dual_phase_isf)
-
-            # ISF segmentation recommendations (EXP-765)
-            isf_segment_recs = advise_isf_segmented(
-                cleaned.glucose, metabolic, hours,
-                clinical_report, patient.profile, patterns, patient.days_of_data)
-            if isf_segment_recs:
-                if settings_recs is None:
-                    settings_recs = []
-                settings_recs.extend(isf_segment_recs)
-                settings_recs.sort(key=lambda r: abs(r.predicted_tir_delta), reverse=True)
+                dual_phase_isf=dual_phase_isf,
+                patterns=patterns)
 
             # Adjust confidence based on controller behavior (EXP-2081)
             if settings_recs:

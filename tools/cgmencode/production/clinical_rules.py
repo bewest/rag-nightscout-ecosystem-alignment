@@ -933,7 +933,7 @@ def generate_clinical_report(glucose: np.ndarray,
                 isf_confidence_grade, isf_ci_width = grade_recommendation_confidence(
                     SettingsParameter.ISF, rc_result['isf_estimates'])
         else:
-            effective_isf = compute_effective_isf(glucose, bolus, profile)
+            effective_isf = compute_apparent_isf(glucose, bolus, profile)
     profile_isf_vals = [e.get('value', e.get('sensitivity', 50))
                         for e in profile.isf_mgdl() if e.get('value') or e.get('sensitivity')]
     profile_isf = float(np.median(profile_isf_vals)) if profile_isf_vals else None
@@ -1056,7 +1056,9 @@ def compute_three_ceilings(glucose: np.ndarray,
     }
 
 
-# Backwards compatibility alias
+# Deprecated alias — use compute_apparent_isf directly.
+# Apparent ISF is 2-10x inflated by AID compensation (EXP-2651);
+# prefer compute_demand_isf() for actionable recommendations.
 compute_effective_isf = compute_apparent_isf
 
 
