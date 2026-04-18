@@ -63,8 +63,8 @@ The production pipeline is an 11-stage linear chain with graceful degradation fo
 > **6/11 patients are harmed by optimizing in the wrong order.** (EXP-1765)
 
 Settings optimization is NOT a single-pass adjustment. The production pipeline implements a **3-phase sequence** where the patient's current glucose variability determines what to fix first. This is the single most important architectural decision in the pipeline.  
-[SOURCE: `settings_advisor.py:3068–3103` — `determine_optimization_phase()`]  
-[SOURCE: `settings_advisor.py:3106–3143` — `prioritize_recommendations()`]
+[SOURCE: `settings_advisor.py:3312` — `determine_optimization_phase()`]  
+[SOURCE: `settings_advisor.py:3344` — `prioritize_recommendations()`]
 
 ### 2.1 The Three Phases
 
@@ -74,18 +74,18 @@ Settings optimization is NOT a single-pass adjustment. The production pipeline i
 | **CENTER** | CV ≤ 28%, TIR < 70% | ISF → CR → Basal | Shift mean glucose into range |
 | **PERSONALIZE** | CV ≤ 28%, TIR ≥ 70% | Impact-sorted (any order) | Fine-tune all parameters |
 
-[SOURCE: `settings_advisor.py:3077–3083` — phase definitions]  
-[SOURCE: `settings_advisor.py:3098–3103` — CV threshold logic]
+[SOURCE: `settings_advisor.py:3316–3318` — phase definitions]  
+[SOURCE: `settings_advisor.py:3309` — CV threshold logic]
 
 **CV threshold = 28%**. Above 28%, reducing variability (primarily via basal) yields more TIR gain than centering mean glucose. Below 28%, centering (primarily via ISF/CR) becomes dominant.  
-[SOURCE: `settings_advisor.py:3071` — `_CV_THRESHOLD = 28.0`]  
+[SOURCE: `settings_advisor.py:3309` — `_CV_THRESHOLD = 28.0`]  
 [SOURCE: `centering-dynamics-report-2026-04-10.md:318,545`]
 
 **Finding**: 9/11 patients need variability reduction BEFORE centering.  
-[SOURCE: `settings_advisor.py:3082` — "9/11 patients need variability reduction BEFORE centering"]
+[SOURCE: `settings_advisor.py:3320` — "9/11 patients need variability reduction BEFORE centering"]
 
 **Combined ceiling**: Maximum achievable TIR improvement from all settings optimization = **+17.6%**.  
-[SOURCE: `settings_advisor.py:3083` — "Combined ceiling: +17.6% TIR"]  
+[SOURCE: `settings_advisor.py:3321` — "Combined ceiling: +17.6% TIR"]  
 [SOURCE: `clinical_rules.py:978` — "Algorithm ceiling (EXP-1765): +17.6% TIR maximum"]
 
 ### 2.2 Phase Priority Maps
@@ -98,7 +98,7 @@ CENTER:             { ISF: 0, CR: 1, BASAL: 2 }    # ISF first
 PERSONALIZE:        (keep impact-sorted order)       # Any order
 ```
 
-[SOURCE: `settings_advisor.py:3125–3136`]
+[SOURCE: `settings_advisor.py:3363–3374`]
 
 **Why basal first in Phase 1**: Basal affects the baseline 24/7. Fixing it stabilizes the foundation around which CR and ISF operate, making subsequent adjustments more predictable. Sequential optimization (basal → CR → ISF) yields **+40–90% improvement** for multi-flag patients vs only **+15–25%** for simultaneous adjustment.  
 [SOURCE: `therapy-comprehensive-campaign-report-2026-04-10.md:197–206` — EXP-1479]
@@ -201,11 +201,11 @@ The **single best signal** for basal adequacy is overnight glucose drift on clea
 - Window: 00:00–06:00  
 - IOB < 0.5 U, COB < 5 g  
 - Minimum 3 clean nights for assessment  
-[SOURCE: `settings_advisor.py:2736–2742` — `_CLEAN_NIGHT_IOB_MAX`, `_CLEAN_NIGHT_COB_MAX`, `_MIN_CLEAN_NIGHTS`]
+[SOURCE: `settings_advisor.py:2926–2932` — `_CLEAN_NIGHT_IOB_MAX`, `_CLEAN_NIGHT_COB_MAX`, `_MIN_CLEAN_NIGHTS`]
 
 **Step 2 — Measure linear drift** per night:
 - Linear regression: `slope = np.polyfit(time, glucose, 1)[0]` → drift in mg/dL/hr  
-[SOURCE: `settings_advisor.py:2864–2866`]
+[SOURCE: `settings_advisor.py:3054–3056`]
 
 **Step 3 — Classify overnight phenotype**:
 
@@ -218,8 +218,8 @@ The **single best signal** for basal adequacy is overnight glucose drift on clea
 | **Loop-dependent** | suspension > 40% of overnight | Decrease basal (loop over-compensating) |
 | **Mixed** | std(drifts) > 2 × mean\|drift\| | Investigate further |
 
-[SOURCE: `settings_advisor.py:2745–2750` — thresholds]  
-[SOURCE: `settings_advisor.py:2898–2915` — classification logic]
+[SOURCE: `settings_advisor.py:2935–2940` — thresholds]  
+[SOURCE: `settings_advisor.py:3088–3105` — classification logic]
 
 **Step 4 — Compute basal adjustment**:
 - Adjustment (U/hr) = median_drift / profile_ISF  
@@ -231,7 +231,7 @@ The **single best signal** for basal adequacy is overnight glucose drift on clea
 - Compare pre-04:00 vs post-04:00 glucose within each night  
 - Dawn rise > 15 mg/dL → dawn phenomenon present  
 - 6/19 patients affected; only 6 AM shows genuine under-basaling  
-[SOURCE: `settings_advisor.py:2869–2882`]  
+[SOURCE: `settings_advisor.py:3059–3072`]  
 [SOURCE: `circadian-therapy-report-2026-04-10.md` — EXP-2052]
 
 ---
@@ -302,7 +302,7 @@ These values show **how much the controller is compensating**, not the patient's
 **Function**: `advise_isf_nonlinearity()` in `settings_advisor.py:385–465`
 
 **Model**: ISF(dose) = ISF_base × dose^(−β), where **β = 0.9** (population).  
-[SOURCE: `settings_advisor.py:381` — `_POPULATION_ISF_BETA = 0.9`]  
+[SOURCE: `settings_advisor.py:435` — `_POPULATION_ISF_BETA = 0.9`]  
 [SOURCE: `settings_advisor.py:59` — `_POWER_LAW_BETA = 0.9  # from EXP-2511`]
 
 **Clinical meaning**: A 2U correction is **46% less effective per unit** than 1U. A 3U correction achieves only ~1.1× the glucose drop of 1U, not 3×.  
@@ -477,7 +477,7 @@ The "deviation" at each point = actual glucose change (avgDelta) minus expected 
 
 [SOURCE: `externals/oref0/lib/autotune/index.js:210–293` — autotune basal algorithm]  
 [SOURCE: `externals/oref0/lib/autotune-prep/categorize.js:331–418` — data categorization]  
-[SOURCE: `settings_advisor.py:2736–2742` — clean night criteria]  
+[SOURCE: `settings_advisor.py:2926–2932` — clean night criteria]  
 [SOURCE: `settings_advisor.py:201–211` — our basal adjustment grid search]  
 [SOURCE: `settings_optimizer.py:48–54` — our 5 time periods]  
 [SOURCE: `docs/60-research/autotune-uam-characterization-report.md:174–179` — autotune convergence speed]
@@ -497,7 +497,7 @@ The "deviation" at each point = actual glucose change (avgDelta) minus expected 
 #### 4.5.4 What Our Pipeline Does Better
 
 1. **AID compensation awareness**: Autotune's deviations are contaminated by controller behavior — if the loop suspends basal to prevent a low, autotune "sees" a positive deviation and may incorrectly *increase* the scheduled basal for that hour. Our quadrant analysis (§2.7, slope × net-basal) explicitly separates controller-caused from settings-caused glucose movements. The loop-dependent phenotype (suspension > 40%) triggers a different recommendation path.  
-[SOURCE: `settings_advisor.py:2898–2915` — loop-dependent classification]  
+[SOURCE: `settings_advisor.py:3088–3105` — loop-dependent classification]  
 [SOURCE: `docs/60-research/autotune-uam-characterization-report.md:169` — "Cannot discover: True effective ISF masked by AID compensation"]
 
 2. **Circadian ISF/CR**: Autotune outputs a **single ISF scalar** and a **single CR scalar**. Our pipeline captures 2–9× within-day ISF variation and per-period CR differences. For patients with strong circadian patterns (67% of patients have ISF inflated ≥15% by time-of-day effects), a single scalar is systematically wrong for several hours of the day.  
@@ -508,7 +508,7 @@ The "deviation" at each point = actual glucose change (avgDelta) minus expected 
 [SOURCE: `egp-prescriptive-paradox-report-2026-04-13.md:95,188`]
 
 4. **Optimization sequencing**: The pipeline enforces a specific fix order (CV>28% → basal first; else ISF first; TIR≥70% → personalize). Autotune tunes basal, ISF, and CR simultaneously in every run, which our research shows yields +15–25% TIR gain vs +40–90% for sequential optimization.  
-[SOURCE: `settings_advisor.py:3068–3143` — optimization sequence]  
+[SOURCE: `settings_advisor.py:3312–3381` — optimization sequence]  
 [SOURCE: `docs/60-research/therapy-comprehensive-campaign-report-2026-04-10.md:197` — EXP-1479]
 
 5. **Statistical confidence**: Our pipeline uses bootstrap confidence intervals (1,000 resamples) and requires minimum evidence thresholds (10+ windows for high confidence). Autotune applies adjustments with as few as 1 data point for an hour, relying on the 20% blend rate for safety.  
@@ -635,7 +635,7 @@ The pipeline's basal and ISF paths are well-designed precisely because they **do
   [SOURCE: `natural_experiment_detector.py:422–424`]
 
 - **Overnight drift** uses 00:00–06:00 windows — patients rarely eat during sleep, so the signal is clean regardless of logging habits.  
-  [SOURCE: `settings_advisor.py:2736–2742`]
+  [SOURCE: `settings_advisor.py:2926–2932`]
 
 #### Why CR is fundamentally compromised
 
@@ -708,15 +708,15 @@ The synthesis recommends: "physics for detection, oref0 for magnitude" as an ens
 **Function**: `advise_correction_threshold()` in `settings_advisor.py:523–664`
 
 **Finding**: Population optimal correction threshold ≈ **166 mg/dL**. Per-patient range: 130–290 mg/dL.  
-[SOURCE: `settings_advisor.py:512` — `_POPULATION_CORRECTION_THRESHOLD = 166`]  
-[SOURCE: `settings_advisor.py:513` — `_CORRECTION_THRESHOLD_RANGE = (130, 290)`]
+[SOURCE: `settings_advisor.py:571` — `_POPULATION_CORRECTION_THRESHOLD = 166`]  
+[SOURCE: `settings_advisor.py:572` — `_CORRECTION_THRESHOLD_RANGE = (130, 290)`]
 
 **Evidence**: Corrections from BG 130–180 rebound **75% of the time**. This is regression to the mean, NOT counter-regulation — higher nadirs rebound MORE.  
 [SOURCE: `docs/60-research/therapy-settings-synthesis-2026-04-11.md:59–61` — EXP-2526c]
 
 **Per-patient calibration**: When ≥10 correction events available, scans BG bins (130–290, 10 mg/dL steps) to find per-patient zero-crossing for net benefit.  
-[SOURCE: `settings_advisor.py:519` — `_MIN_CORRECTION_EVENTS = 10`]  
-[SOURCE: `settings_advisor.py:628–664` — `_compute_patient_threshold()`]
+[SOURCE: `settings_advisor.py:578` — `_MIN_CORRECTION_EVENTS = 10`]  
+[SOURCE: `settings_advisor.py:687–723` — `_compute_patient_threshold()`]
 
 ---
 
@@ -972,9 +972,9 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 
 | Suite | Tests | Time | Command |
 |-------|-------|------|---------|
-| Unit tests | 362 | 33s | `pytest -m unit` |
-| Integration tests | 56 | 148s | `pytest -m integration` |
-| Full suite | 418 | ~3 min | `pytest test_production.py` |
+| Full suite | 448 | ~3 min | `pytest test_production.py` |
+
+> **Note (2026-04-18)**: `test_unit.py` and `test_integration.py` are stub files — all 448 tests (93 classes) live in `test_production.py`. The unit/integration split via `@pytest.mark` is not yet functional.
 
 [SOURCE: commits 4a8c282, 43ca8bc, ddeff89, 56c360a, 7e75da0, 9e53ed8, 14fcc7e, f79b175; EXP-2663–2666]
 
@@ -985,9 +985,9 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Metric | Value | Source File | EXP |
 |--------|-------|------------|-----|
 | **Sequencing** | | | |
-| CV threshold for phase transition | 28% | `settings_advisor.py:3071` | 1765 |
-| Patients needing variability-first | 9/11 | `settings_advisor.py:3082` | 1765 |
-| Patients harmed by wrong order | 6/11 | `settings_advisor.py:3077` | 1765 |
+| CV threshold for phase transition | 28% | `settings_advisor.py:3309` | 1765 |
+| Patients needing variability-first | 9/11 | `settings_advisor.py:3320` | 1765 |
+| Patients harmed by wrong order | 6/11 | `settings_advisor.py:3315` | 1765 |
 | Combined optimization ceiling | +17.6% TIR | `clinical_rules.py:978` | 1765 |
 | Sequential vs simultaneous gain | +40–90% vs +15–25% | `therapy-comprehensive-campaign-report:197` | 1479 |
 | Basal as top action | 10/11 patients | `therapy-pipeline-validation-report:213` | 1386 |
@@ -1006,8 +1006,8 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Basal** | | | |
 | Basal miscalibrated | 18/19 patients | `therapy-settings-synthesis-2026-04-11.md:161` | 2371 |
 | Loop suspension rate | 52–96% (median 55%) | `recommender.py:198` | 2081 |
-| Clean night criteria | IOB<0.5U, COB<5g | `settings_advisor.py:2736–2737` | 2375 |
-| Drift stable threshold | ±3 mg/dL/hr | `settings_advisor.py:2745` | 2371 |
+| Clean night criteria | IOB<0.5U, COB<5g | `settings_advisor.py:2926–2927` | 2375 |
+| Drift stable threshold | ±3 mg/dL/hr | `settings_advisor.py:2935` | 2371 |
 | Dawn phenomenon prevalence | 6/19 patients | `circadian-therapy-report:EXP-2052` | 2375 |
 | Basal clamp | ±50% max | `settings_optimizer.py:64` | — |
 | **oref0 Autotune Comparison** | | | |
@@ -1019,7 +1019,7 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Our circadian ISF advantage | 2–9× vs single scalar | `settings_advisor.py:6` | 2271 |
 | Sequential vs simultaneous (autotune-relevant) | +40–90% vs +15–25% | `therapy-comprehensive-campaign-report:197` | 1479 |
 | **Other** | | | |
-| Optimal correction threshold | 166 mg/dL (130–290) | `settings_advisor.py:512–513` | 2528 |
+| Optimal correction threshold | 166 mg/dL (130–290) | `settings_advisor.py:571–572` | 2528 |
 | Population DIA | 6.0h (vs 5h assumed) | `therapy-operationalization-report-2026-04-10.md` | 1334 |
 | Combined predicted TIR gain | +2.8% | `settings_optimizer.py:70–72` | 1717 |
 | Advisory audit contradictions | 0/16 patients | `exp_advisory_audit_2624.py` | 2624 |
@@ -1027,7 +1027,7 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Forward sim accuracy | MAE=0.30pp, r=0.933 | `settings_advisor.py:22–23` | 2551 |
 | Hypo rate floor | ~16% irreducible | `egp-prescriptive-paradox-report-2026-04-13.md` | 2641 |
 | Natural experiment census | 50,810 windows | `natural_experiment_detector.py:1–22` | 1551 |
-| Production test coverage | 418 tests, 85 classes (unit 33s / integration 148s) | `test_production.py` | — |
+| Production test coverage | 448 tests, 93 classes | `test_production.py` | — |
 
 ---
 
