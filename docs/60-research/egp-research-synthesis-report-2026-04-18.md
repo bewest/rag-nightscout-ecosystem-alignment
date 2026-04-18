@@ -1,8 +1,8 @@
 # EGP Research Synthesis: Physiology, Data Science & Basal Optimization
 
 **Date**: 2026-04-18  
-**Experiments**: EXP-2621 through EXP-2662 (18 experiments)  
-**Patients**: 11 (9 Nightscout + 3 ODC)  
+**Experiments**: EXP-2621 through EXP-2662 (32 experiments)  
+**Patients**: 12 (9 Nightscout + 3 ODC)  
 **Data**: 1,838 patient-days, 219 validated corrections, 2,602 low-glucose episodes  
 **Source Reports**: egp-phase-separation-report, egp-calibration-report, egp-deconfounding-report, egp-prescriptive-paradox-report, egp-dose-isf-report, egp-methodology-validation-report (all 2026-04-12/13)
 
@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-Across 18 experiments analyzing correction bolus dynamics in closed-loop AID systems, this research produced three categories of findings:
+Across 32 experiments analyzing correction bolus dynamics in closed-loop AID systems, this research produced three categories of findings:
 
 1. **Diabetes physiology**: The glucose nadir after a correction occurs at 3.5 hours (not at the 1.25h insulin peak), driven by a hepatic EGP suppression phase lag. ISF is logarithmically dose-dependent (4.6× compression). SC insulin can suppress at most ~30% of hepatic EGP. The glucose system has 48-hour metabolic memory.
 
@@ -216,10 +216,10 @@ Using this observed model to prescribe new inputs assumes the feedback response 
 | Glycogen cycle | 48h | 96h | 48h window causes aliasing |
 | Circadian | 24h | 48h | 24h window has edge artifacts |
 
-With Nyquist-correct windows (8h observation, 12h insulin, 48h metabolic), the best achievable R² is 0.133 — meaning **87% of overnight drift is unmeasured** by standard features. Demand/supply contribution ratio varies 157× across patients.
+With Nyquist-correct windows (8h observation, 12h insulin, 48h metabolic), the best achievable pooled R² is 0.19 — meaning **81% of overnight drift is unmeasured** by standard features. Demand/supply contribution ratio varies 157× across patients.
 
 ![Figure 7: Nyquist Multi-Scale](../../visualizations/egp-synthesis/fig7_nyquist_multiscale.png)
-*Figure 7: (A) Pooled feature contributions — IOB alone explains more variance than 24h or 48h carbs. 87% remains unexplained. (B) Per-patient demand vs supply R² showing 157× variation.*
+*Figure 7: (A) Pooled feature contributions — IOB alone explains more variance than 24h or 48h carbs. 81% remains unexplained. (B) Per-patient demand vs supply R² showing 157× variation.*
 
 **Source**: `externals/experiments/exp-2653_nyquist_multiscale.json`
 
@@ -227,7 +227,7 @@ With Nyquist-correct windows (8h observation, 12h insulin, 48h metabolic), the b
 
 ### 3.4 Saturation Detection and Controller Strategy
 
-**Finding (EXP-2660, EXP-2662)**: When input↑ but output stays flat (insulin rising, glucose stuck high), the controller has hit a physiological wall. The "sticky hyper" signature — 61–84% of stuck-high episodes show wall detection — indicates that additional insulin is counterproductive.
+**Finding (EXP-2660, EXP-2662)**: When input↑ but output stays flat (insulin rising, glucose stuck high), the controller has hit a physiological wall. The "sticky hyper" signature — 41–84% of stuck-high episodes show wall detection — indicates that additional insulin is counterproductive.
 
 **Patience mode** (cap SMBs when IOB > 2× median AND glucose ROC > −5 mg/dL/5min) saves 34–82% of SMBs with only +2.1 percentage points maximum hyper increase, while reducing delayed hypos by 0.1–2.0 percentage points.
 
@@ -334,7 +334,7 @@ This means basal optimization is really about reducing controller workload — g
 ### 5.3 For Future Research
 
 1. **Dual-ISF controllers**: Using demand-phase ISF (smaller, 0–2h) for correction dosing and apparent ISF for prediction could improve correction success without increasing hypo risk
-2. **State-dependent EGP**: Tracking 48h carb accumulation as a glycogen proxy could improve overnight prediction (currently 87% of variance is unmeasured)
+2. **State-dependent EGP**: Tracking 48h carb accumulation as a glycogen proxy could improve overnight prediction (currently 81% of variance is unmeasured)
 3. **Cross-device methodology**: The reverse-causation detection toolkit and Nyquist-aware windowing approach applies to any closed-loop medical device analysis
 4. **Saturation-aware controllers**: Detecting the SC suppression ceiling in real-time could trigger patience mode automatically, reducing insulin waste and delayed hypos
 
@@ -369,11 +369,11 @@ This means basal optimization is really about reducing controller workload — g
 | 2650 | Basal Recommendation | IOB-corrected basal, dawn phenomenon in 50%+ |
 | 2651 | Two-Phase ISF | **Demand ISF 2–10× smaller than apparent** |
 | 2652 | Circadian Profiling | ISF varies 2–9× within day |
-| 2653 | Nyquist Multiscale | **87% of overnight drift unmeasured**, 157× patient variation |
+| 2653 | Nyquist Multiscale | **81% of overnight drift unmeasured** (pooled R²=0.19), 157× patient variation |
 | 2654 | CR Adequacy | Per-period CR analysis |
 | 2656 | SC Ceiling | **SC suppresses ≤30% EGP (not 65%)** |
 | 2658 | Extended Horizon | Additive EGP 19–76% WORSE at 4–8h |
-| 2660 | Sticky Hyper | 61–84% show wall detection |
+| 2660 | Sticky Hyper | 41–84% show wall detection |
 | 2661 | Dual ISF | Demand-ISF wins at ALL horizons |
 | 2662 | Patience Mode | **Saves 34–82% SMBs, +2.1pp max hyper** |
 

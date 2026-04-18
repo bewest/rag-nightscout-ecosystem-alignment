@@ -155,7 +155,7 @@ prediction RMSE by 10–20% over a single ISF value.
 
 | Metric | Value |
 |--------|-------|
-| Median nadir | 3.5h post-correction (N = 212 events, 9 patients) |
+| Median nadir | 3.5h post-correction (N = 212 events, 6 patients) |
 | Phase lag | 2.25h after insulin peak (1.25h) |
 | Recovery slope | 16.8 mg/dL/hr (median) ≈ base EGP rate (~18 mg/dL/hr) |
 | EGP contribution | ~54% of total correction drop is EGP suppression, not direct insulin demand |
@@ -169,7 +169,7 @@ EGP suppression during hours 2–3.5.
 
 | Metric | Value |
 |--------|-------|
-| Correlation | r = −0.45 to −0.57 (per-patient) |
+| Correlation | r = −0.29 to −0.77 (6 of 9 patients with data) |
 | Model | drift = α × IOB@midnight + β |
 | Validation | 80/20 split, held-out MAE reduction ≥15% |
 | Patients | 12 |
@@ -206,7 +206,7 @@ maximum useful correction dose — diminishing returns above ~3U.
 
 | Metric | Value |
 |--------|-------|
-| Delayed hypo reduction | ≥30% |
+| Delayed hypo reduction | 0–25% (max 24.6%; hypothesis target ≥30% FAILED) |
 | SMB savings | 34–82% during wall periods |
 | Wall detection | IOB > 2× median AND glucose ROC > −5 mg/dL/5min |
 | Trade-off | Modest increase in time-in-hyper; net TIR improvement ≥2pp |
@@ -326,10 +326,10 @@ was never explicitly resolved.
 | Dose-dependent ISF (log model) | EXP-2636/2640 | r = −0.56 | Dose-aware ISF for corrections of varying size |
 | Two-phase ISF decomposition | EXP-2651 | 2–10× ratio | Separating insulin demand from EGP suppression |
 | Circadian ISF profiling | EXP-2652 | 10–20% RMSE improvement | Time-of-day ISF variation |
-| IOB-corrected basal estimation | EXP-2650 | r = −0.45 to −0.57 | Overnight basal optimization |
+| IOB-corrected basal estimation | EXP-2650 | r = −0.29 to −0.77 | Overnight basal optimization |
 | 48h carb history integration | EXP-2622/2627 | r = −0.303 | Glycogen-aware overnight prediction |
 | SC suppression ceiling fitting | EXP-2656 | r = −0.60 (ceiling vs hyper rate) | Maximum effective dose, sticky hyper prediction |
-| Patience mode wall detection | EXP-2662 | ≥30% delayed hypo reduction | Real-time safety intervention |
+| Patience mode wall detection | EXP-2662 | 0–25% delayed hypo reduction | Real-time safety intervention |
 
 All of these methods work **within** the closed-loop context. They account for the
 controller's presence rather than pretending it doesn't exist.
