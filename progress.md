@@ -699,3 +699,30 @@ Model R² breakdown:
 **Implication**: AID controller dominates the correction trajectory. Manual bolus dose is nearly
 irrelevant — the "dose-dependent ISF" from EXP-2680 is a ratio artifact (constant drop / varying dose).
 ISF-based correction dosing may be nearly irrelevant in AID systems.
+
+### Controller vs Bolus Insulin — EXP-2682 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Controller vs bolus | `tools/cgmencode/exp_controller_vs_bolus_2682.py` | Neither bolus NOR total insulin predicts BG drop |
+| 5-panel dashboard | `visualizations/controller-vs-bolus/fig[1-5]_*.png` | Insulin, fraction, response, trajectory, models |
+
+**HEADLINE**: Total 2h insulin (R²=0.0007) predicts BG drop even LESS than bolus alone (R²=0.004).
+Trio delivers 4× OpenAPS insulin (8.3U vs 2.3U) for a SMALLER BG drop (64 vs 71 mg/dL).
+
+R² model comparison:
+- BG0: 0.141 — starting BG is the only meaningful predictor
+- Net basal excess: 0.011
+- Bolus dose: 0.004
+- IOB start: 0.001
+- Total 2h insulin: 0.001
+- Full model: 0.192
+
+**Bolus fraction of total 2h insulin**:
+- Loop: 58% (bolus-dominant correction)
+- OpenAPS: 42% (mixed)
+- Trio: 20% (controller-dominant — aggressive SMBs)
+
+**Implication**: 86% of BG drop variance is unexplained by ANY insulin measure.
+BG drop is dominated by physiological factors (EGP, carb absorption, exercise, stress)
+not by insulin dose — whether manual or controller-delivered.
