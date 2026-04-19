@@ -1022,3 +1022,180 @@ that the controller compensates through other channels when boluses are absent.
 2. **Meal vs correction event separation** — 53% of boluses are meal-related
 3. **Within-patient longitudinal analysis** — exploit settings changes as natural experiments
 4. **Cross-validation** with the 6 additional datasets still loading
+
+---
+
+## Phase 10: Causal Inference Toolkit (EXP-2695–2697)
+
+### EXP-2695: Propensity Score Matching for Causal Bolus Effect
+
+**47,045 matched pairs** (caliper=0.05, exact match on BG band, PS on 7 covariates).
+
+| Covariate | SMD Before | SMD After | Balanced? |
+|-----------|-----------|-----------|-----------|
+| BG₀ | 0.047 | 0.003 | ✅ |
+| ROC | **0.510** | **0.141** | ❌ residual |
+| IOB | 0.094 | 0.041 | ✅ |
+| Carbs prior | 0.002 | 0.007 | ✅ |
+| Hour | 0.077 | 0.038 | ✅ |
+
+**Average Treatment Effect on Treated (ATT):**
+
+| Horizon | ATT (mg/dL) | p-value | Interpretation |
+|---------|-------------|---------|----------------|
+| 30 min | **−11.8** | <0.001 | Bolus events drop 11.8 LESS (harder situations) |
+| 60 min | −8.0 | <0.001 | Gap narrowing as insulin acts |
+| 90 min | −4.0 | <0.001 | Controller compensation accumulating |
+| 120 min | **−1.2** | 0.009 | Nearly converged — controller offsets ~90% |
+
+ATT is **robust across calipers** (−1.2 at all tested widths 0.01–0.20).
+
+**Channel compensation (PS-matched events):**
+
+| Channel | Bolus group | No-bolus group | Δ |
+|---------|-------------|----------------|---|
+| SMBs (2h) | 2.35 U | 0.89 U | +1.46 U |
+| Excess basal | −3.60 U | −2.31 U | −1.29 U |
+| Net controller | | | **+0.17 U** |
+
+When a user boluses, the controller adds +1.46U of SMBs but suspends −1.29U of
+basal, for a **net additional +0.17U** — near-perfect offset. The controller
+operates as a closed-loop compensator: bolus in → basal out.
+
+**Key insight**: The −11.8 → −1.2 mg/dL ATT trajectory over 2h shows the controller
+**compensating for the disadvantage** of bolus events (harder situations). By 120 min,
+the bolus + controller have nearly equalized outcomes with the controller-only path.
+This doesn't mean boluses don't work — it means the controller adapts its strategy
+based on what the user does.
+
+### EXP-2696: Impulse Response Functions (Local Projection)
+
+Using Jordà (2005) Local Projections with BG history controls:
+
+**Bolus impulse response**: Peak −1.63 mg/dL at 105 min per 1U bolus.
+
+**Granger causality**: **15/15 patients significant** (p<0.05).
+Insulin delivery does temporally precede BG changes — the weakest form of
+causal evidence, but it holds universally.
+
+**Falsification test FAILS**: Pre-event coefficient = −5.948 (should be ≈0).
+This means BG was already changing systematically before the bolus, confirming
+that users bolus in response to BG trajectory. The temporal ordering (Granger)
+is real, but the causal identification is contaminated by anticipatory behavior.
+
+**Cross-correlation asymmetry**: The BG→Insulin (reactive) direction is stronger
+than Insulin→BG (causal), confirming the dominant relationship is the controller
+and user reacting to BG, not insulin driving BG.
+
+### EXP-2697: Within-Patient Variance Decomposition
+
+**Hierarchical variance decomposition (ANOVA)**:
+
+| Level | % of Variance | ICC | Implication |
+|-------|--------------|-----|-------------|
+| Between-patient | **1.9%** | 0.019 | Patients differ very little in mean BG drop |
+| Between-day | **14.2%** | — | Day-to-day variation (meals, activity, circadian) |
+| Within-day residual | **83.9%** | — | Stochastic glucose variation dominates |
+
+**Patient-specific bolus effects (forest plot)**:
+- All 21 patients have **negative** bolus coefficients (−2.1 to −29.7 mg/dL/U)
+- This is confounding by indication at the individual level
+- Even within a single patient, at the same starting BG, more bolus is given
+  when the situation is harder (meals, resistant highs)
+
+**Between-patient model**: R²=0.276 (settings + controller predict mean BG drop).
+
+**Within-patient day-level model**: R²=0.164 (demeaned BG₀, bolus, SMB, carbs predict
+day-to-day variation in BG drop after removing patient fixed effects).
+
+**Settings change natural experiments**: ISF barely changes within patients
+(range ≈ 0.1 mg/dL/U). ΔISF → ΔBG_drop: r=−0.144 (p=0.533) — no power to
+detect settings effects from natural variation.
+
+**Hierarchical R² summary**:
+
+| Level | R² | Interpretation |
+|-------|-----|---------------|
+| Event-level (all channels) | 0.296 | ~30% of individual events explained |
+| Day-level (within-patient) | 0.164 | Day patterns explain 16% of day variation |
+| Patient-level | 0.276 | 28% of between-patient differences explained |
+| Patient TIR | **0.702** | 70% of patient-level outcomes explained |
+
+**Key insight**: More aggregation → more explainable. Individual glucose events are
+83.9% stochastic, but patient-level outcomes are 70% predictable. This is the
+fundamental structure of AID data: noisy at the micro level, patterned at the macro level.
+
+---
+
+## Revised Grand Synthesis (27 experiments)
+
+### The Causal Identification Problem in Closed-Loop AID
+
+Three independent causal inference methods converge on the same conclusion:
+
+| Method | Finding | Limitation |
+|--------|---------|------------|
+| PS Matching (EXP-2695) | ATT = −1.2 mg/dL at 120m | ROC still imbalanced; controller compensates |
+| Local Projection (EXP-2696) | Peak −1.6 mg/dL/U; Granger 15/15 | Pre-trends fail (−5.9) |
+| Variance Decomp (EXP-2697) | 21/21 patients negative β | All reflect confounding by indication |
+
+**Observational data from closed-loop AID systems cannot identify causal treatment
+effects through standard econometric methods.** The fundamental barriers are:
+
+1. **Simultaneous co-intervention**: The controller adjusts basal, SMBs, and suspend
+   simultaneously with the user's bolus. No method can separate these when they
+   occur at the same time in response to the same signal.
+
+2. **Unobserved controller predictions**: The controller uses internal predictions
+   (eventual_bg, predicted curves) that are not fully captured in our 5-min grid.
+   These are confounders we cannot control for.
+
+3. **Anticipatory user behavior**: Users bolus in response to expected meals and
+   BG trends, not just current BG. The pre-trends failure (EXP-2696) confirms this.
+
+4. **Channel substitution**: The controller's near-perfect offset (+0.17U net when
+   user boluses) means that insulin delivery is a _system property_, not an
+   independent treatment.
+
+### What We CAN Conclude (with confidence)
+
+1. **Insulin Granger-causes BG changes** (15/15 patients, EXP-2696). The temporal
+   ordering is real even if the magnitude is confounded.
+
+2. **All insulin channels carry information** about BG outcomes (EXP-2690: R²=0.296
+   multi-factor vs 0.015 univariate). Multi-factor is mandatory.
+
+3. **The TIR gap is 70% decomposable** (EXP-2693). Patient physiology + algorithm
+   features + settings explain most of the outcome differences.
+
+4. **84% of event-level variance is stochastic** (EXP-2697). Individual BG events
+   are inherently unpredictable; aggregate patient outcomes are not.
+
+5. **Controller channel substitution is the dominant mechanism** (EXP-2694, 2695).
+   The controller is a closed-loop compensator that offsets user boluses with
+   basal suspension (+0.17U net from controller when user boluses).
+
+### What Would Be Needed for True Causal Estimates
+
+| Approach | Feasibility | Notes |
+|----------|-------------|-------|
+| Randomized trial | Unethical | Cannot randomize insulin in T1D |
+| Instrumental variables | Possible | Controller software updates as instruments |
+| Regression discontinuity | Possible | At controller threshold BG values |
+| Structural PK/PD models | Possible | Mechanistic simulation with known parameters |
+| Controller open-loop periods | Natural experiment | Compare open vs closed loop |
+
+### Methodological Lessons (Complete)
+
+| # | Lesson | Evidence |
+|---|--------|----------|
+| 1 | Never use single-factor in closed-loop | EXP-2680 R²=0.015 vs EXP-2690 R²=0.296 |
+| 2 | Negative coefficients = confounding, not harm | EXP-2692, 2695, 2697: all negative |
+| 3 | Controller substitutes between channels | EXP-2694: bolus → suspend + SMB |
+| 4 | PS matching insufficient for AID | EXP-2695: ATT converges to ~0, ROC imbalanced |
+| 5 | Granger holds but pre-trends fail | EXP-2696: temporal ordering ≠ causal magnitude |
+| 6 | 84% of event variance is stochastic | EXP-2697: ICC(patient) = 0.019 |
+| 7 | Patient selection confounds controllers | EXP-2693: CV_bg explains 11.9pp of TIR gap |
+| 8 | Aggregate more explainable than individual | EXP-2697: event R²=0.30, TIR R²=0.70 |
+| 9 | BG ≥ 180 floor required for corrections | EXP-2677: 57% negative ISF without |
+| 10 | IOB at hypo onset = controller response | EXP-2686: suspension is treatment, not cause |

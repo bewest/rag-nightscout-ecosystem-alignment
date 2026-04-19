@@ -942,3 +942,37 @@ This is the coupled system working as designed.
 Multi-factor decomposition is mandatory for AID analysis. Single-factor misleads.
 70% of patient-level TIR variance explained. 30% of event-level variance explained.
 Controller channel substitution is the primary reason observational analysis fails.
+
+### Causal Inference Toolkit — EXP-2695 to EXP-2697 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Propensity score matching | `tools/cgmencode/exp_causal_psm_2695.py` | ATT = −1.2 mg/dL at 120m; controller compensates ~90% |
+| Impulse response functions | `tools/cgmencode/exp_impulse_response_2696.py` | Granger 15/15 sig; pre-trends FAIL (−5.9) |
+| Variance decomposition | `tools/cgmencode/exp_variance_decomp_2697.py` | ICC=0.019; 84% stochastic; 21/21 negative β |
+| 18-panel visualizations | `visualizations/{causal-psm,impulse-response,variance-decomposition}/` | Complete causal analysis |
+
+**EXP-2695: Propensity Score Matching — Controller compensates ~90%**
+- 47,045 matched pairs (caliper=0.05, exact BG band match)
+- ATT: −11.8 (30m) → −8.0 (60m) → −4.0 (90m) → −1.2 (120m)
+- Channel substitution: user bolus → +1.46U SMB, −1.29U basal → net +0.17U
+- ROC still imbalanced after matching (SMD=0.141) — residual confounding
+
+**EXP-2696: Impulse Response — Granger yes, pre-trends fail**
+- Local Projection: peak −1.63 mg/dL/U at 105 min
+- Granger causality: 15/15 patients significant (insulin precedes BG change)
+- Falsification FAILS: pre-event β = −5.9 (users bolus in anticipation)
+- Cross-correlation: BG→insulin (reactive) stronger than insulin→BG (causal)
+
+**EXP-2697: Variance Decomposition — 84% stochastic**
+- Between-patient: 1.9%, Between-day: 14.2%, Within-day residual: 83.9%
+- All 21 patients have negative bolus coefficients (confounding within patients too)
+- Settings barely change (ISF range=0.1); no natural experiment power
+- Hierarchical R²: event=0.296, day=0.164, patient=0.276, TIR=0.702
+
+**Causal identification conclusion (27 experiments)**:
+Standard econometric methods (regression, PSM, local projection, Granger)
+CANNOT isolate causal treatment effects from observational closed-loop AID data.
+The controller's simultaneous co-intervention, unobserved predictions, and
+anticipatory user behavior create irreducible confounding. Structural PK/PD models,
+instrumental variables, or controller open-loop periods would be needed.
