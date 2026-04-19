@@ -821,3 +821,47 @@ consistent with less aggressive suspension (proportional control, not bang-bang)
 
 **DynISF formula within Trio**: log → 90.5% TIR / 5.1% hypo; sigmoid → 86.0% TIR / 3.3% hypo.
 Log formula is more aggressive (higher TIR but more hypos).
+
+### Null Model Benchmark — EXP-2687 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Null model | `tools/cgmencode/exp_null_model_2687.py` | No-bolus drop > bolus drop |
+| 6-panel dashboard | `visualizations/null-model/fig[1-6]_*.png` | Null, trajectory, treatment effect, dose-response |
+
+**BREAKTHROUGH**: No-bolus events at BG≥180 drop **MORE** than bolus events:
+- Bolus drop: 53 mg/dL (median)
+- No-bolus (null): 61.7 mg/dL
+- "Treatment effect": **−8.7 mg/dL** (negative — bolus events do worse!)
+
+**Null model accounts for 116.5% of bolus drop.** The AID controller alone handles
+high BG more effectively than user boluses. BUT see EXP-2689 for confounding analysis.
+
+### Within-Patient Temporal Trends — EXP-2688 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Temporal trends | `tools/cgmencode/exp_temporal_trends_2688.py` | No learning curve |
+| 5-panel dashboard | `visualizations/temporal-trends/fig[1-5]_*.png` | Weekly TIR, first/last, settings drift |
+
+**No learning curve detected**: TIR change first→last month = +0.9 pp (p=0.579).
+Only 3/22 patients show significant improvement. Settings tuning does not measurably
+improve outcomes. Controller algorithm dominates from the start.
+
+### Confounding by Indication — EXP-2689 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Confounding analysis | `tools/cgmencode/exp_confounding_2689.py` | Users bolus in harder situations |
+| 6-panel dashboard | `visualizations/confounding-analysis/fig[1-6]_*.png` | Pre-trajectory, carbs, matched |
+
+**Why bolus events drop less** (explains EXP-2687):
+1. **Pre-event trajectory**: Bolus pre-slope = +1.9 (rising), null = −0.4 (falling).
+   Users bolus when BG is going UP, not when already coming down.
+2. **53% of boluses are meal boluses** fighting incoming carbs (drop = 47 mg/dL).
+3. **IOB already higher at bolus events** (2.5U vs 1.8U) — controller was already maxed.
+4. **Correction-only boluses**: 58 mg/dL (closer to null 61, but still less).
+5. **Rising BG only**: bolus=48, null=46 → Δ=+2 (no treatment effect when BG rising).
+
+**Conclusion**: In AID systems, easy highs resolve on their own (controller handles).
+Users bolus in harder situations. True treatment effect of correction bolus ≈ 0.
