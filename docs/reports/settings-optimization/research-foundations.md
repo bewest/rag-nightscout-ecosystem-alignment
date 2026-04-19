@@ -151,6 +151,30 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Confounding analysis** | EXP-2689 | 2026-04 | Confounding by indication: rising BG → larger bolus → steeper drop |
 | **Multi-channel decomposition** | EXP-2690 | 2026-04 | R²=0.296 multivariate; bolus uniquely 7.3%, excess basal 6.4%, SMB 0.9% |
 | **Settings mediation** | EXP-2691 | 2026-04 | ISF→SMB rate→TIR mediation path; patient-level R²=0.335 |
+| **Per-channel dose-response** | EXP-2692 | 2026-04 | Non-linear dose-response per insulin channel |
+| **TIR gap decomposition** | EXP-2693 | 2026-04 | Decomposing time-in-range gaps by contributor |
+| **Time-resolved channels** | EXP-2694 | 2026-04 | Temporal dynamics of channel decomposition |
+| **Causal bolus effect (PSM)** | EXP-2695 | 2026-04 | Propensity score matching for causal inference |
+| **Impulse response functions** | EXP-2696 | 2026-04 | Insulin channel impulse responses |
+| **Within-patient variance** | EXP-2697 | 2026-04 | Variance decomposition within vs between patients |
+| **Deconfounding pipeline** | EXP-2698 | 2026-04 | oref0-inspired multi-factor deconfounding; R²=0.839 per-patient |
+| **ISF calibration** | EXP-2699 | 2026-04 | Per-patient ISF via deviation analysis; 21/21 dose-dependent; calibration ratio 14.5× |
+| **Parameter recovery** | EXP-2700 | 2026-04 | CR calibration + full parameter recovery pipeline |
+| **Predictive validation** | EXP-2701 | 2026-04 | 4-model comparison on 23 patients; model D wins vs flat ISF in 23/23 |
+| **Circadian demand ISF (expanded)** | EXP-2702 | 2026-04 | 22-patient circadian ISF replication |
+| **SC ceiling per patient** | EXP-2703 | 2026-04 | Per-patient SC absorption ceiling estimation |
+| **Glycogen state detection** | EXP-2704 | 2026-04 | Glycogen state proxy on 22-patient cohort |
+| **Midday ISF peak** | EXP-2705 | 2026-04 | Investigating midday ISF peak confound |
+| **SC ceiling dose-response slope** | EXP-2706 | 2026-04 | SC ceiling via dose-response slope |
+| **Glycogen confound** | EXP-2707 | 2026-04 | Glycogen confound analysis |
+| **BG-adjusted circadian ISF** | EXP-2708 | 2026-04 | Circadian variation 5.57× after BG adjustment vs 2.02× raw |
+| **SC ceiling BG-controlled** | EXP-2709 | 2026-04 | SC ceiling detected in all 6 BG bands |
+| **Multi-factor deconfounding** | EXP-2710 | 2026-04 | Comprehensive deconfounding model |
+| **Baseline return model** | EXP-2711 | 2026-04 | Supply-side quantification; bilateral R²=0.228 |
+| **Bilateral subtraction** | EXP-2712 | 2026-04 | Supply + demand ISF decomposition; supply=99.6% of total drop |
+| **Independence-corrected validation** | EXP-2714 | 2026-04 | Robustness after removing correlated features |
+| **Shrinkage circadian ISF** | EXP-2715 | 2026-04 | Shrinkage estimator for circadian ISF stability |
+| **β horizon sensitivity** | EXP-2716 | 2026-04 | SC ceiling β vanishes at longer prediction horizons |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 
@@ -172,7 +196,7 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Additive force decomposition | EXP-2634, 2635 | Sum = 34, actual = 4.1 — forces are coupled, not additive |
 | Single-factor recovery prediction | EXP-2634, 2635 | All 5 models negative R² on post-nadir recovery rate |
 | Naive bias correction | Recommender EXP | Harmful for 8/10 patients — removes defensive suspension |
-| **Individual-event ISF estimation** | EXP-2680–2683, 2690 | BG drop ≈74 mg/dL regardless of dose; ISF∝1/dose is a ratio artifact. 83.5% of BG drop variance is irreducible stochastic noise. However, multi-channel regression (EXP-2690) recovers R²=0.296 when controlling for all insulin channels simultaneously — bolus uniquely explains 7.3%. Individual-event ISF remains unreliable, but insulin IS measurably relevant in aggregate. |
+| **Individual-event ISF estimation** | EXP-2680–2683, 2690, 2711–2712 | BG drop ≈74 mg/dL regardless of dose; ISF∝1/dose is a ratio artifact. 83.5% of BG drop variance is irreducible stochastic noise. Multi-channel regression (EXP-2690) recovers R²=0.296 when controlling for all insulin channels simultaneously — bolus uniquely explains 7.3%. Bilateral decomposition (EXP-2712) shows supply (baseline return) accounts for 99.6% of total drop, insulin residual only 0.4%. Individual-event ISF remains unreliable, but insulin IS measurably relevant in aggregate via multi-channel and deconfounding approaches. |
 
 ---
 
