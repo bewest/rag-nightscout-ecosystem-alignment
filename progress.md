@@ -632,3 +632,19 @@ Validated across 16 patients from 2 independent sources.
 - BG floor filter dramatically reduces: ≥120→39%, ≥160→27%, ≥180→23%, ≥200→20%
 - Remaining ~20% at high BG is genuine AID compensation + regression to mean
 - METHODOLOGY FIX: All correction ISF extraction must require BG ≥ 150-180 mg/dL
+
+### BG Floor Sensitivity Analysis — EXP-2678 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Sensitivity analysis | `tools/cgmencode/exp_bg_floor_sensitivity_2678.py` | 3 key findings change with BG floor |
+| Summary figure | `visualizations/bg-floor-sensitivity/fig1_sensitivity_summary.png` | All 3 tests on one chart |
+
+**Key Findings**:
+- CIRCADIAN ISF: At BG≥180, p=0.0009 — genuine circadian signal MASKED by meal noise in EXP-2673
+  - BG≥0: p<0.001 (artifact from meal timing), BG≥120: p=0.82, BG≥150: p=0.15, BG≥180: p=0.0009
+- VARIANCE DECOMPOSITION: ROBUST — patient >> controller at all BG floors (0.4-3.8% controller)
+- DYNISF INFLATION: Lower with BG floor (1.2-1.8× vs 6.6× in EXP-2674) — earlier extremes from near-range corrections
+
+**Methodology revision**: EXP-2673's "no circadian signal" conclusion is QUALIFIED.
+True corrections (BG≥180) DO show circadian ISF variation. Must re-investigate.
