@@ -627,6 +627,16 @@ individual-event level.
 - **Focus on aggregate metrics** (TIR, time below 70, mean BG) rather than
   individual-event ISF estimation
 
+### 6. AID Controllers Mitigate Hypo Severity
+
+IOB near zero at hypo onset is not evidence of "insulin depletion" causing the hypo —
+it is evidence of the **controller's response**. The hypo was caused by insulin
+delivered ~2 hours earlier. The controller detected falling BG, suspended delivery, and
+depleted IOB by the time glucose crossed 70 mg/dL. This is the same AID compensation
+pattern seen throughout: **observed states at the time of an event reflect the
+controller's response, not the cause of the event.** More aggressive suspension
+strategies (Trio's bang-bang) correlate with shorter, shallower hypos.
+
 ---
 
 ## Source Files
@@ -644,6 +654,9 @@ individual-event level.
 - **EXP-2681**: `tools/cgmencode/exp_bg_drop_model_2681.py`
 - **EXP-2682**: `tools/cgmencode/exp_controller_vs_bolus_2682.py`
 - **EXP-2683**: `tools/cgmencode/exp_unexplained_variance_2683.py`
+- **EXP-2684**: `tools/cgmencode/exp_aggregate_outcomes_2684.py`
+- **EXP-2685**: `tools/cgmencode/exp_controller_strategy_2685.py`
+- **EXP-2686**: `tools/cgmencode/exp_safety_analysis_2686.py`
 - **Pipeline**: `tools/ns2parquet/grid.py` (grid construction + percent-fix)
 - **Data**: `externals/ns-parquet/training/grid.parquet` (1.3M rows, 49 columns)
 - **Manifest**: `externals/experiments/autoprepare-qualified.json`
@@ -662,3 +675,64 @@ Given the insulin irrelevance finding, the productive research directions shift:
    aggregate outcomes? (per-session, not per-event)
 5. **Safety analysis**: When does aggressive dosing (Trio ~4.8U) vs conservative
    (OpenAPS ~1.7U) lead to different hypo rates?
+
+---
+
+## Phase 6: Controller Strategy & Safety (EXP-2684–2686)
+
+### EXP-2684: Aggregate Outcome Modeling
+
+Individual correction events are unpredictable (83.5% irreducible variance), but
+**aggregate outcomes differ dramatically by controller**:
+
+| Controller | TIR (%) | Hypo (%) | Mean BG | TDD (U) |
+|------------|---------|----------|---------|---------|
+| Trio | 89.9 | 4.8 | 127 | 41.4 |
+| Loop | 73.3 | 4.0 | 155 | 37.6 |
+| OpenAPS | 68.4 | 6.3 | 161 | 21.1 |
+
+**Settings (ISF, CR, TDD) show zero correlation with TIR** (all r<0.2, p>0.2).
+Controller algorithm/strategy is the dominant factor.
+
+### EXP-2685: Controller Strategy Comparison
+
+| Metric | Loop | Trio | OpenAPS |
+|--------|------|------|---------|
+| % time suspended | 64.7% | 82.6% | 33.9% |
+| SMB delivery rate | 15.0% | 19.8% | 0% |
+| Mean SMB size | 0.26U | 0.32U | — |
+| % normal basal | 6% | 5% | 33% |
+
+**Loop/Trio are "bang-bang" controllers**: mostly suspended, with aggressive SMB bursts.
+**OpenAPS is proportional**: smooth basal modulation, no SMBs (likely oref0 without SMB enabled).
+Trio's more extreme bang-bang strategy achieves the best TIR.
+
+### EXP-2686: Safety Analysis
+
+**Clinical target (TIR≥70% AND hypo≤4%)**:
+- Trio: 5/10 (50%) — best
+- Loop: 3/9 (33%)
+- OpenAPS: 1/3 (33%)
+
+**IOB trajectory into hypo events (corrected interpretation)**:
+
+| Time before hypo | Loop IOB | Trio IOB (mean) |
+|------------------|----------|-----------------|
+| −120 min | 1.95U | 0.74U |
+| −60 min | 0.88U | 0.60U |
+| −30 min | 0.28U | 0.43U |
+| At hypo onset | −0.31U | 0.20U |
+
+**⚠️ Causal interpretation**: Hypos are **caused by insulin delivered earlier** (IOB at
+−120 min = 1.95U for Loop). The near-zero IOB **at** hypo onset is the **controller's
+response** — it detects falling BG and suspends insulin delivery, depleting IOB by the
+time glucose crosses 70 mg/dL. The controller **mitigates severity** of what would
+otherwise be deeper, longer hypoglycemia. Without AID suspension, these hypos would
+be worse.
+
+**OpenAPS hypos are deepest** (nadir 57 vs 62 mg/dL) and longest (25 min vs 15–20 min),
+consistent with its less aggressive suspension strategy (proportional, not bang-bang).
+
+**DynISF formula within Trio**: Log formula → 90.5% TIR / 5.1% hypo (more aggressive);
+Sigmoid → 86.0% TIR / 3.3% hypo (more conservative). The log formula pushes harder for
+TIR at the cost of higher hypo risk.

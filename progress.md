@@ -810,10 +810,14 @@ Trio's aggressive SMB + DynISF approach achieves better outcomes regardless of I
 - Loop: 3/9 (33%)
 - OpenAPS: 1/3 (33%)
 
-**IOB at hypo onset is near zero for ALL controllers** — hypos happen when
-controller has already suspended insulin. Not caused by aggressive dosing.
+**IOB at hypo onset is near zero for ALL controllers** — but this is the
+controller's RESPONSE (suspension), not the cause. Hypos are caused by insulin
+delivered earlier. Loop IOB trajectory into hypo: 1.95U → 0.88 → 0.28 → −0.31U
+over 2h. The controller detects falling BG and suspends, mitigating severity.
+Without AID suspension, hypos would be deeper and longer.
 
-**OpenAPS has deepest hypos** (nadir 57 vs 62) and longest (25min vs 15-20).
+**OpenAPS has deepest hypos** (nadir 57 vs 62) and longest (25min vs 15-20) —
+consistent with less aggressive suspension (proportional control, not bang-bang).
 
 **DynISF formula within Trio**: log → 90.5% TIR / 5.1% hypo; sigmoid → 86.0% TIR / 3.3% hypo.
 Log formula is more aggressive (higher TIR but more hypos).
