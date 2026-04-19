@@ -175,6 +175,12 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Independence-corrected validation** | EXP-2714 | 2026-04 | Robustness after removing correlated features |
 | **Shrinkage circadian ISF** | EXP-2715 | 2026-04 | Shrinkage estimator for circadian ISF stability |
 | **β horizon sensitivity** | EXP-2716 | 2026-04 | SC ceiling β vanishes at longer prediction horizons |
+| **Total insulin accounting** | EXP-2717 | 2026-04 | Supply-side contamination of ISF over variable DIA horizons |
+| **Phase decomposition** | EXP-2718 | 2026-04 | Correction phase: insulin activity vs BG response timing |
+| **Extended waterfall** | EXP-2719 | 2026-04 | Systematic subtraction pipeline for multi-factor ISF |
+| **Independent-event ISF** | EXP-2720 | 2026-04 | 29% lower MAE with independence-filtered events (48.5 vs 68.2) |
+| **Circadian shrinkage ISF** | EXP-2721 | 2026-04 | Flat ISF wins MAE (40.3 vs 41.9); circadian real but not helpful |
+| **Cross-controller normalization** | EXP-2722 | 2026-04 | η² reduced 55%, ISFs converge across controllers |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 
@@ -190,7 +196,7 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 
 | Hypothesis | Evidence | Why It Failed |
 |-----------|----------|---------------|
-| Circadian demand ISF | EXP-2664, 2665, 2666 | Apparent ISF circadian variation is EGP-driven, not insulin sensitivity. Demand ISF is circadian-flat (−4.7%) |
+| Circadian demand ISF | EXP-2664, 2665, 2666, 2721 | Apparent ISF circadian variation is EGP-driven, not insulin sensitivity. Demand ISF is circadian-flat (−4.7%). EXP-2721 confirms: flat ISF wins MAE (40.3 vs 41.9) — circadian signal is real but doesn't improve prediction |
 | Split-dose recommendation | EXP-2522 | 87% theoretical improvement, but empirically 0.39× due to glucose difficulty selection bias |
 | 15–30g meal sweet spot | EXP-2537d | Based on entered carbs, not actual carbs. Real meals are 40–100g+ |
 | Additive force decomposition | EXP-2634, 2635 | Sum = 34, actual = 4.1 — forces are coupled, not additive |
