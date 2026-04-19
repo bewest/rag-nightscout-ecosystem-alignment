@@ -230,7 +230,7 @@ BG_end = f(BG₀, time_block, dose, IOB, bolus_fraction, smb_fraction,
            basal_fraction, carbs_48h, patient_id)
 ```
 
-This is **6× better** than profile ISF and **2.2× better** than flat demand ISF.
+This is **~6× better** than profile ISF and **2.2× better** than flat demand ISF.
 
 The within-patient coefficient of variation drops from 1.356 to 1.087 (−19.8%),
 meaning predictions are both more accurate AND more precise.
