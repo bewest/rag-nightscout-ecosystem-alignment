@@ -57,7 +57,7 @@ Each capability is rated by maturity level:
 | **Context-aware CR** | 🔬 Research | EXP-2341 | `advisor/_cr_advisors.py` |
 | **Split-dose recommendation** | ❌ Disproved | EXP-2522 | — |
 | **Circadian demand ISF** | ❌ Disproved | EXP-2664–2666 | — |
-| **Individual-event ISF estimation** | ❌ Disproved | EXP-2680–2683 | — |
+| **Individual-event ISF estimation** | ❌ Disproved | EXP-2680–2683, 2690 | Multi-channel R²=0.296 but individual events still too noisy |
 
 **Legend**: 🟢 Production (validated, tested, in pipeline) · 🟡 Beta/Partial (functional but incomplete) · 🔬 Research (experimental) · ❌ Disproved (tried, doesn't work)
 
@@ -164,15 +164,18 @@ The demand-phase ISF (glucose drop in first 0–2 hours divided by dose) is:
 - **2–10× smaller** than apparent ISF
 - **Circadian-flat** (−4.7% from profiling — disproved)
 
-> **⚠️ Important caveat (EXP-2680–2683)**: At larger sample sizes (N=7986),
+> **⚠️ Important caveat (EXP-2680–2683, 2690–2691)**: At larger sample sizes (N=7986),
 > demand ISF IS dose-dependent (r=−0.418). EXP-2681 showed this is a **ratio
 > artifact**: BG drop ≈74 mg/dL regardless of dose, so ISF = drop/dose creates
 > artificial 1/dose dependence. 83.5% of BG drop variance is irreducible
-> stochastic noise (EXP-2683). The controller dominates correction trajectories,
-> rendering individual-event ISF estimation unreliable. Demand ISF remains useful
-> as a **per-patient aggregate** for relative comparisons and conservative
-> step-down recommendations, but should not be interpreted as a physiological
-> constant.
+> stochastic noise (EXP-2683). However, multi-channel regression (EXP-2690)
+> recovers R²=0.296 when controlling for all insulin channels simultaneously —
+> bolus uniquely explains 7.3%, excess basal 6.4%. Settings affect outcomes
+> through a mediation path: ISF → SMB rate → TIR (EXP-2691, R²=0.335).
+> Individual-event ISF estimation remains unreliable, but settings DO matter
+> through their effect on controller behavior. Demand ISF remains useful as a
+> **per-patient aggregate** for relative comparisons and conservative
+> step-down recommendations.
 
 The `advise_isf()` function uses conservative 25% steps toward the demand-phase value.
 

@@ -144,6 +144,13 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Controller vs bolus** | EXP-2682 | 2026-04 | Total insulin (bolus+controller) R²=0.001 for BG drop |
 | **Unexplained variance** | EXP-2683 | 2026-04 | 83.5% of BG drop variance is irreducible stochastic noise |
 | **Aggregate outcomes** | EXP-2684 | 2026-04 | Population-level outcome modeling |
+| **Controller strategy** | EXP-2685 | 2026-04 | Loop bang-bang vs Trio proportional vs OpenAPS SMB dosing strategies |
+| **Safety analysis** | EXP-2686 | 2026-04 | IOB at hypo onset ≈0 — controller suspension response, not cause |
+| **Null model benchmark** | EXP-2687 | 2026-04 | Patient-mean baseline for BG drop prediction |
+| **Temporal trends** | EXP-2688 | 2026-04 | Within-patient ISF stability over time |
+| **Confounding analysis** | EXP-2689 | 2026-04 | Confounding by indication: rising BG → larger bolus → steeper drop |
+| **Multi-channel decomposition** | EXP-2690 | 2026-04 | R²=0.296 multivariate; bolus uniquely 7.3%, excess basal 6.4%, SMB 0.9% |
+| **Settings mediation** | EXP-2691 | 2026-04 | ISF→SMB rate→TIR mediation path; patient-level R²=0.335 |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 
@@ -165,7 +172,7 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Additive force decomposition | EXP-2634, 2635 | Sum = 34, actual = 4.1 — forces are coupled, not additive |
 | Single-factor recovery prediction | EXP-2634, 2635 | All 5 models negative R² on post-nadir recovery rate |
 | Naive bias correction | Recommender EXP | Harmful for 8/10 patients — removes defensive suspension |
-| **Individual-event ISF estimation** | EXP-2680–2683 | BG drop ≈74 mg/dL regardless of dose; ISF∝1/dose is a ratio artifact. 83.5% of BG drop variance is irreducible stochastic noise. Controller dominates correction trajectory (total insulin R²=0.001) |
+| **Individual-event ISF estimation** | EXP-2680–2683, 2690 | BG drop ≈74 mg/dL regardless of dose; ISF∝1/dose is a ratio artifact. 83.5% of BG drop variance is irreducible stochastic noise. However, multi-channel regression (EXP-2690) recovers R²=0.296 when controlling for all insulin channels simultaneously — bolus uniquely explains 7.3%. Individual-event ISF remains unreliable, but insulin IS measurably relevant in aggregate. |
 
 ---
 
@@ -381,6 +388,23 @@ The demand-phase ISF (constant per patient) could replace apparent ISF as the AI
 | 2665 | Nyquist circadian ISF | Min block = 12h (DIA=6h) |
 | 2666 | Isolation sweep | 6h optimal, rank order rho=0.964 |
 | 2667 | SC ceiling + demand ISF | Combined validation, 17 patients |
+| 2668 | Tier-2 expanded cohort | 29 patients, demand ISF validation |
+| 2669 | DynISF characterization | 12 DynISF-v2 patients |
+| 2670 | CR sanity-check | Cohort-wide CR analysis |
+| 2671 | Cross-controller validation | Phase 1–3: controller strategy comparison |
+| 2672–2679 | BG floor, circadian deep-dives | BG≥180 filter effects, circadian ISF sub-analyses |
+| 2680 | Definitive demand ISF | N=7986, r=−0.418 (overturns EXP-2663) |
+| 2681 | BG drop direct modeling | BG drop ≈74 mg/dL regardless of dose |
+| 2682 | Controller vs bolus | Total insulin R²=0.001 for BG drop |
+| 2683 | Unexplained variance | 83.5% irreducible stochastic noise |
+| 2684 | Aggregate outcomes | Population-level TIR modeling |
+| 2685 | Controller strategy | Loop bang-bang vs Trio proportional vs OpenAPS SMB |
+| 2686 | Safety analysis | IOB≈0 at hypo onset = controller response |
+| 2687 | Null model benchmark | Patient-mean baseline for BG drop |
+| 2688 | Temporal trends | Within-patient ISF stability |
+| 2689 | Confounding analysis | Rising BG → larger bolus → steeper drop |
+| 2690 | Multi-channel decomposition | R²=0.296 multivariate; bolus 7.3%, basal 6.4% |
+| 2691 | Settings mediation | ISF→SMB→TIR path; patient R²=0.335 |
 
 ### Production Validation (101 scripts)
 
@@ -396,10 +420,10 @@ The production test suite (85 classes, 418 tests) validates all productionized c
 ## Methodology Notes
 
 ### Data Basis
-- **19 patients**: 11 Nightscout (a–k), 8 ODC (odc-*)
-- **1,838 patient-days**, 5-min CGM intervals
-- **50,810 natural experiment windows** (fasting, correction, meal, UAM)
-- **35K+ corrections**, **5K+ meals**
+- **43 patients**: 11 Nightscout (a–k), 8 ODC (odc-*), 12 DynISF-v2 (ns-*), others
+- **5-min CGM intervals** across all patients
+- **50,810+ natural experiment windows** (fasting, correction, meal, UAM)
+- **35K+ corrections**, **5K+ meals**, **7986 demand-phase events** (EXP-2680)
 - **AID controllers**: Loop/AB, Loop/TBR, Trio/AB, AAPS/SMB, AAPS/TBR (corrected 2026-04-18 from devicestatus metadata)
 
 ### Statistical Standards
