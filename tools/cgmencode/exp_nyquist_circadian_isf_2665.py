@@ -232,17 +232,25 @@ def analyze_blocks(events, block_defs, label):
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--parquet", default=str(PARQUET))
+    args = parser.parse_args()
+
+    parquet_path = Path(args.parquet)
+
     print("=" * 70)
     print("EXP-2665: Nyquist-Aware Circadian Demand ISF")
     print("=" * 70)
     print(f"DIA = {DIA_H}h → Nyquist min block = {2*DIA_H}h")
 
-    if not PARQUET.exists():
-        print(f"ERROR: {PARQUET} not found")
+    if not parquet_path.exists():
+        print(f"ERROR: {parquet_path} not found")
         sys.exit(1)
 
-    df = pd.read_parquet(PARQUET)
-    print(f"Loaded {len(df):,} rows")
+    df = pd.read_parquet(parquet_path)
+    ALL_PATIENTS = sorted(df["patient_id"].unique())
+    print(f"Loaded {len(df):,} rows, {len(ALL_PATIENTS)} patients")
 
     all_results = {}
 
