@@ -554,11 +554,11 @@ Even TOTAL insulin (bolus + controller) doesn't predict BG drop:
 
 | Controller | Bolus | Total 2h Insulin | Bolus % | BG Drop |
 |------------|-------|------------------|---------|---------|
-| Loop | 4.0U | 7.6U | 58% | 78 mg/dL |
-| Trio | 1.4U | 8.3U | 20% | 64 mg/dL |
-| OpenAPS | 1.0U | 2.3U | 42% | 71 mg/dL |
+| Loop | 4.0U | 5.1U | 78% | 78 mg/dL |
+| Trio | 1.4U | 4.8U | 29% | 64 mg/dL |
+| OpenAPS | 1.0U | 1.7U | 59% | 71 mg/dL |
 
-Trio delivers **4× the insulin** of OpenAPS for a **smaller BG drop**.
+Trio delivers **~3× the insulin** of OpenAPS for a **smaller BG drop**.
 Total insulin R²=0.0007 — even worse than bolus alone.
 
 ### EXP-2683: What Explains the 86% Unexplained Variance?
@@ -571,10 +571,11 @@ Total insulin R²=0.0007 — even worse than bolus alone.
 | BG₀ alone | 0.138 |
 | Regression to mean | 0.130 |
 | Patient FE | 0.028 |
+| Hour | 0.008 |
+| Dose | 0.004 |
+| IOB | 0.001 |
 | Glucose ROC | 0.000 |
 | Has carbs | 0.000 |
-| IOB | 0.001 |
-| Dose | 0.004 |
 
 - **Glucose momentum**: r=-0.036 (irrelevant)
 - **Concurrent carbs**: p=0.87 (no difference, despite 51% having carbs)
@@ -598,7 +599,7 @@ the user happened to give.
 ### 2. AID Controllers Dominate Correction Trajectories
 
 The controller's response (temp basals, SMBs) overwhelms the manual bolus. Trio delivers
-8.3U total insulin vs OpenAPS 2.3U, yet achieves similar BG drops. The controller "fills in"
+~4.8U total insulin vs OpenAPS ~1.7U, yet achieves similar BG drops. The controller "fills in"
 whatever the bolus doesn't provide, rendering individual bolus size nearly irrelevant.
 
 ### 3. BG Drop Is Primarily Regression to the Mean
@@ -654,10 +655,10 @@ Given the insulin irrelevance finding, the productive research directions shift:
 1. **Aggregate outcome modeling**: TIR, time-below-70, mean glucose as functions of
    controller settings (ISF, CR, basal rate) — not individual corrections
 2. **Controller strategy comparison**: How do Loop/Trio/OpenAPS achieve similar BG
-   outcomes with 4× different insulin delivery?
+   outcomes with ~3× different insulin delivery?
 3. **Regression to mean quantification**: Build a null model (BG → patient mean)
    to benchmark any "treatment effect" claims
 4. **Sensitivity ratio validation**: Does the controller's own SR correlate with
    aggregate outcomes? (per-session, not per-event)
-5. **Safety analysis**: When does aggressive dosing (Trio 8.3U) vs conservative
-   (OpenAPS 2.3U) lead to different hypo rates?
+5. **Safety analysis**: When does aggressive dosing (Trio ~4.8U) vs conservative
+   (OpenAPS ~1.7U) lead to different hypo rates?
