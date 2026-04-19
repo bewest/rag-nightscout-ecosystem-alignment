@@ -26,6 +26,35 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Expanded Cohort Experiment Validation (2026-04-18)
+
+Reran 5 priority experiments on expanded 31+12 patient cohort after robustness audit.
+Fixed Nyquist violations (2h→6h isolation, 4h→12h blocks), added NaN guards, parameterized
+parquet paths, and added controller stratification.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Expanded Cohort Report | `docs/60-research/expanded-cohort-validation-report-2026-04-18.md` | 3 findings strengthened, 3 weakened at larger N |
+| DynISF Characterization | `docs/60-research/dynisf-cohort-characterization-report-2026-04-18.md` | Cross-cohort reproducibility analysis |
+| EXP-2651 results | `externals/experiments/exp-2651_two_phase_isf*.json` | N=25+12, demand ISF wins 92-100% at 2h |
+| EXP-2652 results | `externals/experiments/exp-2652_circadian_profiling*.json` | N=18+10, 12h blocks modest improvement |
+| EXP-2656 results | `externals/experiments/exp-2656_sc_ceiling*.json` | N=29+12, 100% slower than linear |
+| EXP-2662 results | `externals/experiments/exp-2662_patience_mode*.json` | N=27+12, safe, 34-42% SMB savings |
+| EXP-2640 results | `externals/experiments/exp-2640_per_patient_isf.json` | N=6, log model 5/6, LOO stable |
+
+**Key Findings**:
+- Two-phase ISF: Universally replicated (25/25 + 12/12). Demand ISF 1.3-5.3× lower than apparent.
+- SC ceiling: 100% of patients slower than linear at high IOB. Ceiling range 30-56%.
+- Patience mode: Safe across all patients. Max hyper +2.1pp. Mean hypo -0.4pp.
+- Circadian 12h RMSE: Day/night split rarely improves prediction — signal detectable but weak.
+- SC ceiling ↔ sticky hyper correlation weakens: r=-0.29 at N=29 (was r=-0.60 at N=12).
+
+**Gaps Identified**: GAP-ALG-070 (circadian ISF insufficient RMSE gain for recommendation)
+
+**Source Files Analyzed**: 5 experiment scripts in `tools/cgmencode/exp_*`
+
+---
+
 ## Cross-Controller Validation & Autoprepare Gate (2026-04-19)
 
 Validated cross-controller data fidelity on expanded 31-patient dataset (Loop=9, Trio=13, 
