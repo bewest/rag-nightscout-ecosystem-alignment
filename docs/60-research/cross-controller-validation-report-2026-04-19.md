@@ -25,7 +25,7 @@ issues require mitigation before autoresearch proceeds.
 | Enacted rate (devicestatus) | ⚠️ FAIL | odc-96254963 percent-encoded; exclude or fix |
 | IOB decay semantics | ⚠️ CAUTION | AID-contaminated; not raw insulin kinetics |
 | Controller-specific fields | ℹ️ KNOWN | sensitivity\_ratio, eventual\_bg: Loop=0% by design |
-| Flagged patients | ⚠️ 7 of 31 | Exclude or qualify per experiment |
+| Flagged patients | ⚠️ 8 of 31 | Exclude or qualify per experiment |
 
 ---
 
@@ -188,7 +188,8 @@ Key patterns:
 | Patient | Controller | Issue | Recommendation |
 |---------|-----------|-------|----------------|
 | j | unknown | Zero IOB, COB, enacted rate | **EXCLUDE** from all analyses |
-| odc-84181797 | openaps | 4 devicestatus rows, IOB~0 | **EXCLUDE** — insufficient data |
+| h | loop | Low glucose coverage (<50% non-null) | Qualify: exclude from glucose-dependent analyses |
+| odc-84181797 | openaps | IOB mostly zero, low glucose coverage | Qualify: 139 days of data but poor field coverage |
 | odc-39819048 | openaps | 10 days of data | Qualify: short-span only |
 | odc-49141524 | openaps | 8 days, 35 carbs/day | Qualify: short-span, investigate carb anomaly |
 | odc-58680324 | openaps | 10 days | Qualify: short-span only |
@@ -205,10 +206,10 @@ After excluding flagged patients:
 
 | Controller | Qualified Patients | Total Days |
 |------------|-------------------|------------|
-| Loop | 9 (a, c, d, e, f, g, h, i, k) | ~1,350 |
+| Loop | 8 (a, c, d, e, f, g, i, k) | ~1,170 |
 | Trio | 12 (b, ns-* except c422) | ~1,800 |
 | OpenAPS | 3 (odc-74077367, odc-86025410, odc-96254963*) | ~750 |
-| **Total** | **24 patients** | **~3,900 days** |
+| **Total** | **23 patients** | **~3,720 days** |
 
 *odc-96254963: exclude from enacted\_rate analyses but safe for glucose/bolus/ISF
 
@@ -235,7 +236,9 @@ loop_predicted_30/60  → Available for all but different source (single curve v
 
 ### P0 — Must Fix
 
-1. **Patient exclusion list**: Codify {j, odc-84181797} as permanent exclusions.
+1. **Patient exclusion list**: Codify {j} as permanent exclusion.
+   Qualify {h} for low glucose coverage (<50% non-null).
+   Qualify {odc-84181797} for IOB mostly zero + low glucose coverage.
    Add short-span qualifier for {odc-39819048, odc-49141524, odc-58680324,
    odc-61403732}. Investigate ns-c422538aa12a.
 
