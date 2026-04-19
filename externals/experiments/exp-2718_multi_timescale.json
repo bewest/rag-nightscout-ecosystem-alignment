@@ -1,0 +1,44 @@
+{
+  "experiment": "EXP-2718",
+  "title": "Multi-Timescale Carb Features",
+  "n_events": 65425,
+  "n_patients": 21,
+  "timescale_r2": {
+    "2h": 0.000227,
+    "6h": 0.000508,
+    "12h": 0.001806,
+    "24h": 0.00581,
+    "48h": 0.00695,
+    "72h": 0.007499
+  },
+  "r2_base": 0.2173,
+  "r2_base_48": 0.2173,
+  "r2_base_72": 0.2174,
+  "r2_base_both": 0.2175,
+  "r2_supply_only": 0.0103,
+  "r2_demand_only": 0.2172,
+  "r2_full_supply": 0.2189,
+  "supply_increment": 0.0018,
+  "hypotheses": {
+    "H1": {
+      "description": "Timescales differ",
+      "pass": true
+    },
+    "H2": {
+      "description": "72h > 48h",
+      "pass": true,
+      "r2_48h": 0.00695,
+      "r2_72h": 0.007499
+    },
+    "H3": {
+      "description": "72h adds to multi-factor",
+      "pass": true,
+      "increment": 0.000136
+    },
+    "H4": {
+      "description": "Supply features >0.5%",
+      "pass": false,
+      "supply_r2": 0.0103
+    }
+  }
+}

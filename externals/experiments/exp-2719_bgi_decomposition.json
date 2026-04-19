@@ -1,0 +1,114 @@
+{
+  "experiment": "EXP-2719",
+  "title": "BGI-Decomposed Supply vs Demand",
+  "n_events": 11891,
+  "n_patients": 11,
+  "bgi_median": -216.6,
+  "deviation_median": 161.4,
+  "bgi_pct_of_drop": -385.5,
+  "corr_bgi_deviation": -0.941,
+  "corr_deviation_glycogen": 0.015,
+  "mae_demand_only": 46.3,
+  "mae_supply_demand": 5.5,
+  "per_patient": [
+    {
+      "patient_id": "ns-1ccae8a375b9",
+      "mae_demand": 47.3611171346091,
+      "mae_decomposed": 743.1725037805736,
+      "mae_model": 5.306086661250774,
+      "n": 120
+    },
+    {
+      "patient_id": "ns-554b16de7133",
+      "mae_demand": 45.01231614190334,
+      "mae_decomposed": 585.1886579915179,
+      "mae_model": 5.458877750197672,
+      "n": 600
+    },
+    {
+      "patient_id": "ns-6bef17b4c1ec",
+      "mae_demand": 49.097127772999144,
+      "mae_decomposed": 464.66181132756174,
+      "mae_model": 4.704398908436858,
+      "n": 2090
+    },
+    {
+      "patient_id": "ns-8b3c1b50793c",
+      "mae_demand": 46.33333333333334,
+      "mae_decomposed": 161.1340007185936,
+      "mae_model": 4.41710561015023,
+      "n": 503
+    },
+    {
+      "patient_id": "ns-8f3527d1ee40",
+      "mae_demand": 45.79897545870276,
+      "mae_decomposed": 577.4134988412261,
+      "mae_model": 6.887526246893017,
+      "n": 736
+    },
+    {
+      "patient_id": "ns-8ffa739b986b",
+      "mae_demand": 49.68181596549671,
+      "mae_decomposed": 547.1699987836182,
+      "mae_model": 5.420388480615266,
+      "n": 476
+    },
+    {
+      "patient_id": "ns-9b9a6a874e51",
+      "mae_demand": 45.290466014294,
+      "mae_decomposed": 344.76874981448054,
+      "mae_model": 8.068644464233984,
+      "n": 1810
+    },
+    {
+      "patient_id": "ns-a9ce2317bead",
+      "mae_demand": 43.27907188187541,
+      "mae_decomposed": 402.6799972355366,
+      "mae_model": 6.690749339802153,
+      "n": 1773
+    },
+    {
+      "patient_id": "ns-adde5f4af7ca",
+      "mae_demand": 50.281246121914535,
+      "mae_decomposed": 489.2551456667612,
+      "mae_model": 6.255341060865078,
+      "n": 2205
+    },
+    {
+      "patient_id": "ns-d444c120c23a",
+      "mae_demand": 60.266159394114,
+      "mae_decomposed": 387.3399975001812,
+      "mae_model": 5.058592683846825,
+      "n": 183
+    },
+    {
+      "patient_id": "ns-dde9e7c2e752",
+      "mae_demand": 29.68131706095903,
+      "mae_decomposed": 452.85000023338944,
+      "mae_model": 6.104613659893687,
+      "n": 1395
+    }
+  ],
+  "hypotheses": {
+    "H1": {
+      "description": "BGI-deviation weak corr",
+      "pass": false,
+      "r": -0.941
+    },
+    "H2": {
+      "description": "Deviation ~ glycogen",
+      "pass": false,
+      "r": 0.015
+    },
+    "H3": {
+      "description": "Circadian supply",
+      "pass": true
+    },
+    "H4": {
+      "description": "S+D better than D",
+      "pass": true,
+      "mae_demand": 46.3,
+      "mae_model": 5.5
+    }
+  }
+}
