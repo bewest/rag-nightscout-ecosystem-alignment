@@ -23,6 +23,9 @@ This methodology serves three distinct audiences with different deliverables.
 
 ## Part 1: DATA UNDERSTANDING — Glucose/Hepatic Physics Insights
 
+
+![BGI deviation analysis](../../visualizations/deconfounding-pipeline/fig1_bgi_deviation.png)
+
 ### What EGP Research Revealed (Not What We Expected)
 
 **The paradox**: EGP (Endogenous Glucose Production) models fail as predictors (Hill R²=−3.23), but EGP *research* produced the most valuable decompositions in the program.
@@ -67,11 +70,18 @@ Closed-loop AID data observes **dBG/dt = supply(t) − demand(t)**, but supply a
 
 ### Pipeline Validation
 
+
+![Full pipeline stages](../../visualizations/deconfounding-pipeline/fig4_full_pipeline.png)
+![BGI improvement through stages](../../visualizations/deconfounding-pipeline/fig2_bgi_improvement.png)
+
 The deconfounding pipeline achieves:
 - **Precision Grade A**: median 95% CI width = 4.2 mg/dL/U (all 21 patients stable)
 - **Accuracy**: 12/21 patients within 15 mg/dL/U of settings; 9/21 within 5
 
 ### Per-Patient ISF Extraction (22 patients)
+
+
+![ISF recovery per patient](../../visualizations/deconfounding-pipeline/fig5_isf_recovery.png)
 
 | Controller | Patients | Median ISF Inflation | Mean Bias | Mean CI Width | Key Finding |
 |------------|----------|---------------------|-----------|---------------|-------------|
@@ -114,6 +124,9 @@ CR ranges from 3.5 to 29.9 g/U across patients. All 22 patients have sufficient 
 ---
 
 ## Part 3: AID CONTROLLER R&D — Recommendations for Loop/Trio/AAPS
+
+
+![Category models by controller](../../visualizations/deconfounding-pipeline/fig3_category_models.png)
 
 ### Validated Findings → Controller Design Implications
 
@@ -258,6 +271,9 @@ The key principle: **mask out what you can't control, subtract what you can esti
 ---
 
 ## Part 5: NEXT EXPERIMENT PRIORITIES
+
+
+![Pipeline summary](../../visualizations/deconfounding-pipeline/fig6_summary.png)
 
 ### Tier 1: High Priority (directly improve all three goals)
 
