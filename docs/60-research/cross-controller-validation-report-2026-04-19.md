@@ -1292,3 +1292,62 @@ explainable. This opens the door for:
 2. **Parameter recovery**: Dose-dependent ISF (r=−0.699) from correction deviations
 3. **Autotune validation**: Compare our deviation-based ISF with oref0's autotune estimates
 4. **Multi-parameter optimization**: CR from meal deviations, basal from fasting deviations
+
+---
+
+## Phase 12: Per-Patient ISF Calibration (EXP-2699)
+
+### Motivation
+
+EXP-2698 showed BGI subtraction yields R²=0.839 for correction events. Now we use those
+deviations to **calibrate per-patient ISF** — finding the ISF that makes mean(deviation)→0.
+
+### Method
+
+1. Extract correction events (BG≥180, bolus>0.3U, no carbs): 59,756 events, 21 patients
+2. For each patient, fit: `observed_drop = ISF_calibrated × excess_insulin + baseline_drop`
+3. Compare ISF_calibrated to ISF_setting
+4. Analyze dose-dependence, circadian patterns, controller differences
+
+### Key Results
+
+**ISF Calibration Summary**:
+
+| Metric | Value |
+|--------|-------|
+| Mean ISF setting | 66.4 mg/dL/U |
+| Mean ISF calibrated (OLS) | 5.3 mg/dL/U |
+| Mean baseline BG drop | 56.5 mg/dL |
+| Calibration ratio (setting/true) | 14.5× |
+| Overestimated ISF | 20/21 patients |
+| Deviation SD reduction | 62.5% |
+
+**The Baseline Drop is the Dominant Finding**: When BG starts ≥180, it drops 56.5 mg/dL
+on average **regardless of insulin dose**. This is regression to mean — the body's
+homeostatic mechanisms (hepatic glucose normalization, ongoing scheduled basal) bring
+glucose back toward target without excess insulin.
+
+This means:
+- Patient ISF settings of ~66 mg/dL/U capture **apparent ISF** (total drop per unit)
+- The **true insulin-specific ISF** is only ~5 mg/dL/U (after removing baseline drop)
+- Settings are 14× inflated — worse than EXP-2651's 2-10× estimate
+
+**Why AID Systems Work Despite Wrong ISF**: The controller uses ISF to compute
+correction doses. With ISF=66, a BG of 250 → correction target 100 → needed drop 150 →
+dose = 150/66 = 2.3U. The BG drops ~56.5 (baseline) + 2.3×5.3 (insulin) = ~68.7 mg/dL.
+The controller then delivers more. The over-estimated ISF causes UNDER-dosing, which is
+safe — the feedback loop corrects via repeated small doses.
+
+**Dose-Dependent ISF**: r=−0.686 (pooled log model). ISF decreases with larger doses,
+consistent with EXP-2640. 11/21 patients individually significant (p<0.05).
+
+**Circadian ISF Variation**: Mean range 30.5 mg/dL across patients. Largest variation
+in Loop patients, consistent with EXP-2679.
+
+### Implications for AID Settings Optimization
+
+1. **ISF settings are NOT physiological ISF** — they are tuning parameters for the
+   feedback controller. Changing them to "true" ISF would cause massive overdosing.
+2. **The feedback loop IS the therapy** — settings just control aggressiveness
+3. **Baseline drop quantifies regression to mean** — essential for any ISF recovery
+4. **Dose-dependent ISF** is real but small in absolute terms
