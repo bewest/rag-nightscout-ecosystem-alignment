@@ -242,9 +242,9 @@ class BGISubtraction:
 
                 carbs_2h = float(np.nansum(carbs[i:i + h]))
 
-                hour = pd.Timestamp(times[i]).hour if hasattr(times[i], "hour") else 0
                 try:
-                    hour = pd.Timestamp(times[i], unit="ns").hour
+                    ts = pd.Timestamp(times[i])
+                    hour = ts.hour
                 except Exception:
                     hour = 0
 
