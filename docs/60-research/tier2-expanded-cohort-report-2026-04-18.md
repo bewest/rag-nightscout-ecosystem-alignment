@@ -115,7 +115,7 @@ BG drop ≥10 mg/dL.
 | 0.75–1.25U | 22 | 88.4 | 85.3 | 2.62 |
 | 1.25–2U | 26 | 69.5 | 105.1 | 3.24 |
 | 2–3U | 25 | 35.8 | 84.5 | 3.13 |
-| ≥3U | 82 | 21.2 | 134.7 | — |
+| ≥3U | 82 | 21.2 | 134.7 | 3.21 |
 
 The ISF monotonically *decreases* with dose — the opposite of the inflation hypothesis.
 
@@ -331,6 +331,7 @@ interventions**:
 
 - **Manual injection** (pen/syringe not logged to pump)
 - **Infusion site change** (restoring absorption at a fresh site)
+- **Hydration** (reduces blood glucose concentration with no insulin signal)
 - **Compression low artifacts** resolving (sensor, not true glucose)
 - **Exercise or activity** not captured in CGM data stream
 
@@ -366,7 +367,7 @@ dosing algorithm. Systems should:
 Fits per-patient dose→ISF curves using linear, log, and sqrt models. Downstream of
 EXP-2636 (uses same 175 correction events, 6h isolation).
 
-**Fitted patients**: 6 with sufficient events (≥10): a, f, i (original cohort) +
+**Fitted patients**: 6 with sufficient events (≥5): a, f, i (original cohort) +
 ns-8b3c1b50793c, odc-86025410, odc-96254963 (new).
 
 ### 6.2 Hypotheses and Results
@@ -388,8 +389,8 @@ ns-8b3c1b50793c, odc-86025410, odc-96254963 (new).
 | odc-86025410 | 21 | −0.264 | −0.311 | log |
 | odc-96254963 | 27 | −0.343 | −0.414 | log |
 
-*(Patient i has <10 events in this filtered dataset; included in H3/H4 aggregate but
-not shown individually.)*
+*(Patient i has 6 events in this filtered dataset; included in H3/H4 aggregate but
+not shown individually due to small sample.)*
 
 ### 6.4 Interpretation
 
@@ -553,8 +554,8 @@ of insulin dose-response in AID systems:
 
 ### 10.3 Source Code
 
-- `tools/cgmencode/exp_dose_dependent_isf_2636.py`
+- `tools/cgmencode/exp_dose_isf_2636.py`
 - `tools/cgmencode/exp_per_patient_isf_2640.py`
 - `tools/cgmencode/exp_demand_dose_dependence_2663.py`
-- `tools/cgmencode/exp_sc_ceiling_demand_2667.py`
+- `tools/cgmencode/exp_sc_ceiling_demand_isf_2667.py`
 - `tools/cgmencode/exp_wall_resolution_2669.py`
