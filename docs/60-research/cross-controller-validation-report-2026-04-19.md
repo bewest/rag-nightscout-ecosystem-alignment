@@ -714,21 +714,19 @@ Trio's more extreme bang-bang strategy achieves the best TIR.
 - Loop: 3/9 (33%)
 - OpenAPS: 1/3 (33%)
 
-**IOB trajectory into hypo events (corrected interpretation)**:
+**IOB at hypo onset vs overall (median)**:
 
-| Time before hypo | Loop IOB | Trio IOB (mean) |
-|------------------|----------|-----------------|
-| −120 min | 1.95U | 0.74U |
-| −60 min | 0.88U | 0.60U |
-| −30 min | 0.28U | 0.43U |
-| At hypo onset | −0.31U | 0.20U |
+| Controller | Overall IOB | IOB at Hypo Onset | Δ |
+|-----------|-------------|-------------------|---|
+| Loop | 0.69U | −0.03U | −0.72U |
+| Trio | 0.00U | 0.00U | 0.00U |
+| OpenAPS | 0.08U | 0.00U | −0.08U |
 
-**⚠️ Causal interpretation**: Hypos are **caused by insulin delivered earlier** (IOB at
-−120 min = 1.95U for Loop). The near-zero IOB **at** hypo onset is the **controller's
-response** — it detects falling BG and suspends insulin delivery, depleting IOB by the
-time glucose crosses 70 mg/dL. The controller **mitigates severity** of what would
-otherwise be deeper, longer hypoglycemia. Without AID suspension, these hypos would
-be worse.
+**⚠️ Causal interpretation**: Near-zero IOB **at** hypo onset does not mean "insulin
+depletion caused the hypo." Hypos are caused by insulin delivered earlier. The controller
+detects falling BG and suspends delivery, depleting IOB by the time glucose crosses 70
+mg/dL. Loop's large IOB drop (0.69→−0.03U) shows aggressive suspension. The controller
+**mitigates severity** — without AID suspension, hypos would be deeper and longer.
 
 **OpenAPS hypos are deepest** (nadir 57 vs 62 mg/dL) and longest (25 min vs 15–20 min),
 consistent with its less aggressive suspension strategy (proportional, not bang-bang).
