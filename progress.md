@@ -26,6 +26,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Wave-5: Robustness Check — What Survives Independence? (2026-04-19)
+
+Critical validation wave: tested all prior findings against statistical independence and horizon sensitivity.
+
+| EXP | Title | Verdicts | Key Finding |
+|-----|-------|----------|-------------|
+| 2714 | Independence Corrected | H1✓ H2✗ H3✓ H4✗ | R² survives (0.173), but SC ceiling β collapses (-0.04); 65K→6K independent events |
+| 2715 | Shrinkage Circadian | H1✗ H2✗ H3✗ H4✓ | Stability +159% (r: 0.24→0.61), but flat ISF still wins on MAE |
+| 2716 | β Horizon Sensitivity | H1✓ H2✗ H3✗ H4✗ | β DECREASES with horizon (0.31→0.006 at 6h); SC ceiling is transient PK |
+
+**Meta-Findings**:
+- Multi-factor deconfounding R² IS REAL (0.173, bootstrap CI [0.15, 0.29])
+- SC ceiling power-law is NOT robust — transient absorption bottleneck, not dose-response
+- GAP-ALG-073 RESOLVED: β=0.595 and β=0.9 are both horizon-dependent artifacts
+- 65K events are ~6K independent observations (lag-1 AC: 0.638→-0.051)
+- Shrinkage improves stability 159% even when MAE doesn't improve
+
+**Report**: `docs/60-research/wave5-robustness-check-report-2026-04-19.md`
+**Visualization**: `visualizations/wave5-synthesis/wave5_synthesis.png`
+
 ## Wave-4: Actionable Settings & Residual Analysis (2026-04-19)
 
 Three experiments translating deconfounding discoveries into actionable outputs.
