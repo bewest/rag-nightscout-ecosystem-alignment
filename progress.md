@@ -26,6 +26,35 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Deconfounding Pipeline Infrastructure & Three-Audience Report (2026-04-19)
+
+Built reusable deconfounding infrastructure (4 production modules) and validated against EXP-2698. Extracted settings for 22 patients. Wrote three-audience transition report covering data understanding, settings optimization, and AID controller R&D recommendations.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deconfounding strategies | `tools/cgmencode/production/deconfounding.py` | BGI subtraction, channel decomposition, event categorization, isolation, experiment presets |
+| Experiment base class | `tools/cgmencode/production/experiment_base.py` | Standard data loading, declarative pipeline, auto-validation |
+| R² Waterfall analysis | `tools/cgmencode/production/waterfall.py` | 5-stage R² (0.01→0.84), category models, controller splits, ISF recovery |
+| Accuracy/precision framework | `tools/cgmencode/production/accuracy_precision.py` | Precision Grade A (CI 4.2), accuracy varies by patient |
+| Integration test | `tools/cgmencode/production/test_waterfall_integration.py` | 6/6 scientific patterns, 8/11 quantitative, reproduces EXP-2698 |
+| Three-audience report | `docs/60-research/deconfounding-pipeline-report-2026-04-19.md` | Data understanding + settings optimization + controller R&D |
+| Waterfall visualization | `visualizations/waterfall-integration/waterfall_comparison.png` | Side-by-side R² comparison |
+
+**Key Findings**:
+- BGI subtraction is the dominant deconfounding lever (+0.31 R²; oref0 architecture validated)
+- All 3 insulin channels interchangeable for subtraction (~−124 to −131 mg/dL/U)
+- Precision Grade A across all patients (CI width 4.2 mg/dL/U); accuracy varies 0.3–2.8× ISF inflation
+- ISF inflation measurable per-patient: Loop median 1.1×, Trio 1.2×, OpenAPS 1.3×
+- Subtraction-over-exclusion keeps Trio/SMB data (exclusion yields ~0 events)
+- 12/21 patients have accurate ISF extraction (bias <15 mg/dL/U)
+- Trio basals well-calibrated (6/6 appropriate); Loop basals run high (3/4 too high)
+
+**Gaps Identified**: None new (infrastructure consolidates existing findings)
+
+**Source Files Analyzed**: EXP-2698, 45+ EGP/hepatic experiments catalogued, 22-patient settings extraction
+
+---
+
 ## Expanded Cohort Experiment Validation (2026-04-18)
 
 Reran 5 priority experiments on expanded 31+12 patient cohort after robustness audit.
