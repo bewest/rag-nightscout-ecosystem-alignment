@@ -56,8 +56,11 @@ Each capability is rated by maturity level:
 | **Detected-meal CR** | 🟡 Partial | EXP-1341, 1569 | `settings_optimizer.py` |
 | **Context-aware CR** | 🔬 Research | EXP-2341 | `advisor/_cr_advisors.py` |
 | **Split-dose recommendation** | ❌ Disproved | EXP-2522 | — |
-| **Circadian demand ISF** | ❌ Disproved | EXP-2664–2666 | — |
+| **Circadian demand ISF** | ❌ Disproved | EXP-2664–2666, 2721 | Flat ISF wins MAE (40.3 vs 41.9) — circadian real but not actionable |
 | **Individual-event ISF estimation** | ❌ Disproved | EXP-2680–2683, 2690 | Multi-channel R²=0.296 but individual events still too noisy |
+| **Cross-controller ISF normalization** | 🔬 Research | EXP-2722 | η² reduced 55%; enables controller-switching ISF transfer |
+| **Independent-event ISF extraction** | 🔬 Research | EXP-2720 | 29% lower MAE with independence-filtered events |
+| **Deconfounding pipeline** | 🔬 Research | EXP-2698, 2710–2712 | R²=0.228 bilateral; 0.839 per-patient deconfounding |
 
 **Legend**: 🟢 Production (validated, tested, in pipeline) · 🟡 Beta/Partial (functional but incomplete) · 🔬 Research (experimental) · ❌ Disproved (tried, doesn't work)
 
