@@ -776,3 +776,24 @@ OpenAPS uses similar insulin to Trio (43.9 U/day) but achieves the worst TIR.
 
 **Interpretation**: Controller algorithm strategy matters more than any individual setting.
 Trio's aggressive SMB + DynISF approach achieves better outcomes regardless of ISF/CR tuning.
+
+### Controller Decision-Making Strategy — EXP-2685 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Strategy comparison | `tools/cgmencode/exp_controller_strategy_2685.py` | Bang-bang vs proportional control |
+| 7-panel dashboard | `visualizations/controller-strategy/fig[1-7]_*.png` | Dosing, thresholds, reaction, basal, SMB, suspend, time-of-day |
+
+**HEADLINE**: Trio/Loop are "bang-bang" controllers (83%/65% suspended), OpenAPS is proportional (33% normal).
+
+| Strategy | Loop | Trio | OpenAPS |
+|----------|------|------|---------|
+| Basal suspended | 64.7% | 82.6% | 33.9% |
+| SMB rate | 15.0% | 19.8% | 0.0% |
+| Normal basal | 6% | 5% | 33% |
+| TIR achieved | 73.3% | 89.9% | 68.4% |
+
+- Trio/Loop: suspend basal most of the time, deliver bursts of SMBs when BG rises
+- OpenAPS (these sites): no SMBs, smooth basal modulation — likely oref0 without SMB enabled
+- 0-minute reaction time: Loop/Trio deliver SMBs at the SAME 5-min interval as BG≥150 crossing
+- Trio achieves best TIR with the most extreme bang-bang strategy
