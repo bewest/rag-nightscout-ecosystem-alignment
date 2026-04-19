@@ -58,7 +58,7 @@ The dose-dependent interaction creates a paradox:
 
 ### Impact on pipeline
 
-The production `advise_isf()` predates this finding. It uses conservative 25% steps toward apparent ISF, which provides a safe diagnostic signal. The demand-phase ISF (EXP-2651, 2663–2666) is the validated prescriptive target — it is dose-independent, circadian-flat, and constant per patient.
+The production `advise_isf()` predates this finding. It uses conservative 25% steps toward apparent ISF, which provides a safe diagnostic signal. The demand-phase ISF (EXP-2651, 2663–2666) was initially the validated prescriptive target — circadian-flat and useful as a per-patient aggregate. However, EXP-2680 (N=7986) showed demand ISF IS dose-dependent (r=−0.418), and EXP-2681 revealed this is a ratio artifact: BG drop ≈74 mg/dL regardless of dose. See §5 "Disproved" for details.
 
 ---
 
@@ -376,7 +376,7 @@ The demand-phase ISF (constant per patient) could replace apparent ISF as the AI
 | 2660 | Sticky hyper/wall detection | 61–84% show wall detection |
 | 2661 | Dual ISF (harm test) | Naive demand ISF → +12–42pp hypo |
 | 2662 | Patience mode | 34–82% SMB savings, ≤+2.1pp hyper |
-| 2663 | Demand dose-dependence | |r|=0.156 (dose-independent) |
+| 2663 | Demand dose-dependence | |r|=0.156 at N=23 (overturned by EXP-2680: r=−0.418 at N=7986) |
 | 2664 | Circadian demand ISF | ❌ Circadian-flat (−4.7%) |
 | 2665 | Nyquist circadian ISF | Min block = 12h (DIA=6h) |
 | 2666 | Isolation sweep | 6h optimal, rank order rho=0.964 |
