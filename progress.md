@@ -55,6 +55,34 @@ parquet paths, and added controller stratification.
 
 ---
 
+## Tier-2 Expanded Cohort: Dose-Dependence & Wall Resolution (2026-04-18)
+
+Reran 5 tier-2 experiments (EXP-2636/2640/2663/2667/2669) after robustness audit.
+Fixed 6h Nyquist isolation (was 2h), NaN guards on scipy, argparse parameterization,
+dynamic patient discovery from parquet.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Tier-2 Report | `docs/60-research/tier2-expanded-cohort-report-2026-04-18.md` | Demand ISF dose-independent, wall episodes 68% out-of-band |
+| EXP-2636 results | `externals/experiments/exp-2636_dose_dependent_isf*.json` | N=18+dynisf, 175 corrections, H4 PASS (19.2% RMSE improvement) |
+| EXP-2663 results | `externals/experiments/exp-2663_demand_dose_dependence.json` | N=23, demand |r|=0.097 — dose-INDEPENDENT |
+| EXP-2667 results | `externals/experiments/exp-2667_sc_ceiling_demand_isf.json` | N=29, demand-ISF ceiling beats scheduled-ISF |
+| EXP-2669 results | `externals/experiments/exp-2669_wall_resolution_mechanism.json` | N=24, 1763 episodes, 68% unaccounted resolution |
+| EXP-2640 results | `externals/experiments/exp-2640_per_patient_isf.json` | N=6 (3 new patients), log model wins 6/6 |
+
+**Key Findings**:
+- Demand-phase ISF is dose-INDEPENDENT (|r|=0.097) — constant per-patient ISF sufficient for dosing
+- SC ceiling model with demand ISF outperforms scheduled ISF (EXP-2667 H3 PASS)
+- 68% of wall resolutions show glucose drops without IOB increase — out-of-band interventions
+- EXP-2636 H1/H2 reversed at 6h isolation: larger boluses → LESS drop/unit (ISF deflation)
+- Resolution timing clusters at 2-4h (demand-phase cycle, 58.3% in 1.5-4.5h window)
+
+**Gaps Identified**: GAP-ALG-071 (out-of-band interventions invisible to telemetry, 68% confound)
+
+**Source Files Analyzed**: 5 experiment scripts in `tools/cgmencode/exp_*_26{36,40,63,67,69}.py`
+
+---
+
 ## Cross-Controller Validation & Autoprepare Gate (2026-04-19)
 
 Validated cross-controller data fidelity on expanded 31-patient dataset (Loop=9, Trio=13, 
