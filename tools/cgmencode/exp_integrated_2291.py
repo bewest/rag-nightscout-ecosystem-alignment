@@ -873,9 +873,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--figures', action='store_true')
     parser.add_argument('--tiny', action='store_true', help='Use tiny parquet for fast dev')
+    parser.add_argument('--parquet', default=None, help='Override parquet directory')
     args = parser.parse_args()
 
-    parquet_dir = 'externals/ns-parquet-tiny/training' if args.tiny else 'externals/ns-parquet/training'
+    parquet_dir = args.parquet or ('externals/ns-parquet-tiny/training' if args.tiny else 'externals/ns-parquet/training')
     print(f"Loading patients from {parquet_dir}...")
     patients = load_patients_parquet(parquet_dir)
     print(f"Loaded {len(patients)} patients\n")
