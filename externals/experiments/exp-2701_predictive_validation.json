@@ -1,0 +1,709 @@
+{
+  "experiment": "EXP-2701",
+  "title": "Predictive Validation on Expanded Dataset",
+  "dataset": {
+    "total_patients": 31,
+    "usable_patients": 24,
+    "excluded": [
+      {
+        "patient_id": "h",
+        "exclude_reason": "low glucose fill"
+      },
+      {
+        "patient_id": "j",
+        "exclude_reason": "unknown controller"
+      },
+      {
+        "patient_id": "odc-39819048",
+        "exclude_reason": "too few rows"
+      },
+      {
+        "patient_id": "odc-49141524",
+        "exclude_reason": "too few rows"
+      },
+      {
+        "patient_id": "odc-58680324",
+        "exclude_reason": "too few rows"
+      },
+      {
+        "patient_id": "odc-61403732",
+        "exclude_reason": "too few rows"
+      },
+      {
+        "patient_id": "odc-84181797",
+        "exclude_reason": "low glucose fill"
+      }
+    ],
+    "controller_distribution": {
+      "loop": 9,
+      "openaps": 3,
+      "trio": 12
+    },
+    "train_rows": 760175,
+    "test_rows": 323530
+  },
+  "pipeline_replication": {
+    "train_r2": {
+      "univariate": 0.0006852139314292849,
+      "multi_factor": 0.24775125072441173,
+      "bgi_subtraction": -0.2506653405939425
+    },
+    "test_r2": {
+      "univariate": 0.0006741488975445797,
+      "multi_factor": 0.2542351185561841,
+      "bgi_subtraction": -0.2399627924775265
+    },
+    "test_r2_by_controller": {
+      "loop": -0.22113363315295653,
+      "trio": -0.5679280145528993,
+      "openaps": 0.12837465324323127
+    }
+  },
+  "parameter_consistency": {
+    "loop": {
+      "n_patients": 8,
+      "isf_setting_median": 49.32104682922363,
+      "isf_calibrated_median": 4.333011935962763,
+      "calibration_ratio_median": 10.24251495818142,
+      "baseline_drop_median": -40.13498502018501
+    },
+    "trio": {
+      "n_patients": 12,
+      "isf_setting_median": 58.5,
+      "isf_calibrated_median": 5.429458026488022,
+      "calibration_ratio_median": 8.480958602111297,
+      "baseline_drop_median": -58.64137815145199
+    },
+    "openaps": {
+      "n_patients": 3,
+      "isf_setting_median": 60.0,
+      "isf_calibrated_median": 5.193219982200772,
+      "calibration_ratio_median": 9.713367290347778,
+      "baseline_drop_median": -42.93228621508126
+    }
+  },
+  "predictive_validation": {
+    "n_patients_tested": 23,
+    "median_mae": {
+      "A_flat_isf": 57.49252802405939,
+      "B_baseline_subtract": 71.37209947373276,
+      "C_calibrated_isf": 40.015574835946744,
+      "D_dose_dependent": 40.54722153376519
+    },
+    "median_r2": {
+      "A_flat_isf": -1.0222157586974094,
+      "B_baseline_subtract": -1.6064270821958617,
+      "C_calibrated_isf": -0.005215847555350317,
+      "D_dose_dependent": -0.013587070749908836
+    },
+    "model_D_wins": 23,
+    "wilcoxon_p_D_vs_A": 1.1920928955078125e-07,
+    "wilcoxon_p_B_vs_A": 0.9999948740005493,
+    "best_model_counts": {
+      "C: Calibrated": 12,
+      "D: Dose-dep": 11
+    }
+  },
+  "per_patient_predictions": [
+    {
+      "patient_id": "a",
+      "controller": "loop",
+      "n_test_corrections": 2227,
+      "mae_A_flat": 142.33049889055732,
+      "mae_B_baseline": 177.42173333986509,
+      "mae_C_calibrated": 54.004381109351755,
+      "mae_D_dosedep": 54.003349176417764,
+      "r2_A_flat": -4.572477005666743,
+      "r2_B_baseline": -7.0125645886903385,
+      "r2_C_calibrated": -0.01361761568225206,
+      "r2_D_dosedep": -0.013587070749908836,
+      "best_model": "D: Dose-dep"
+    },
+    {
+      "patient_id": "b",
+      "controller": "trio",
+      "n_test_corrections": 458,
+      "mae_A_flat": 39.73034924161356,
+      "mae_B_baseline": 41.37501032518241,
+      "mae_C_calibrated": 33.12856104984587,
+      "mae_D_dosedep": 33.11365481135795,
+      "r2_A_flat": -0.5170889570582688,
+      "r2_B_baseline": -0.8714138121550958,
+      "r2_C_calibrated": -0.06899270198207552,
+      "r2_D_dosedep": -0.06953442217024786,
+      "best_model": "D: Dose-dep"
+    },
+    {
+      "patient_id": "c",
+      "controller": "loop",
+      "n_test_corrections": 1254,
+      "mae_A_flat": 63.657142464160636,
+      "mae_B_baseline": 75.68311521634546,
+      "mae_C_calibrated": 52.465133969312795,
+      "mae_D_dosedep": 52.41474236534678,
+      "r2_A_flat": -0.5997144977376463,
+      "r2_B_baseline": -1.2960959926609172,
+      "r2_C_calibrated": -0.00448753742281327,
+      "r2_D_dosedep": -0.002430308622805244,
+      "best_model": "D: Dose-dep"
+    },
+    {
+      "patient_id": "d",
+      "controller": "loop",
+      "n_test_corrections": 976,
+      "mae_A_flat": 32.74346204297464,
+      "mae_B_baseline": 33.51792690998545,
+      "mae_C_calibrated": 26.040133463846843,
+      "mae_D_dosedep": 25.996481958569607,
+      "r2_A_flat": -0.48467207025653214,
+      "r2_B_baseline": -0.6302515253489387,
+      "r2_C_calibrated": -0.005912128123685578,
+      "r2_D_dosedep": -0.006664904013429007,
+      "best_model": "D: Dose-dep"
+    },
+    {
+      "patient_id": "e",
+      "controller": "loop",
+      "n_test_corrections": 1141,
+      "mae_A_flat": 61.54088728599035,
+      "mae_B_baseline": 65.92082688566617,
+      "mae_C_calibrated": 46.489079159018985,
+      "mae_D_dosedep": 46.58324393351876,
+      "r2_A_flat": -1.0222157586974094,
+      "r2_B_baseline": -1.5298259805667098,
+      "r2_C_calibrated": 0.0011975501451871873,
+      "r2_D_dosedep": -0.001887790404451417,
+      "best_model": "C: Calibrated"
+    },
+    {
+      "patient_id": "f",
+      "controller": "loop",
+      "n_test_corrections": 2315,
+      "mae_A_flat": 60.28878464647458,
+      "mae_B_baseline": 65.5291685005795,
+      "mae_C_calibrated": 57.53566990360405,
+      "mae_D_dosedep": 57.62270461525778,
+      "r2_A_flat": -0.09153930280774247,
+      "r2_B_baseline": -0.341680141270186,
+      "r2_C_calibrated": -0.0013449738628148467,
+      "r2_D_dosedep": -0.003416815193905798,
+      "best_model": "C: Calibrated"
+    },
+    {
+      "patient_id": "g",
+      "controller": "loop",
+      "n_test_corrections": 982,
+      "mae_A_flat": 57.49252802405939,
+      "mae_B_baseline": 52.60429364937242,
+      "mae_C_calibrated": 44.929722185060285,
+      "mae_D_dosedep": 45.271809889563336,
+      "r2_A_flat": -0.40037883595562884,
+      "r2_B_baseline": -0.38660645015573825,
+      "r2_C_calibrated": -0.0014740516359050826,
+      "r2_D_dosedep": -0.0066383787439574515,
+      "best_model": "C: Calibrated"
+    },
+    {
+      "patient_id": "i",
+      "controller": "loop",
+      "n_test_corrections": 2161,
+      "mae_A_flat": 88.75873957699176,
+      "mae_B_baseline": 102.38078560745912,
+      "mae_C_calibrated": 67.21145982018432,
+      "mae_D_dosedep": 67.52298697205534,
+      "r2_A_flat": -0.9605454528131958,
+      "r2_B_baseline": -1.6064270821958617,
+      "r2_C_calibrated": -0.0025372324498362797,
+      "r2_D_dosedep": -0.009568658858317702,
+      "best_model": "C: Calibrated"
+    },
+    {
+      "patient_id": "ns-1ccae8a375b9",
+      "controller": "trio",
+      "n_test_corrections": 41,
+      "mae_A_flat": 53.213414437887145,
+      "mae_B_baseline": 74.8528590673213,
+      "mae_C_calibrated": 32.55596149033205,
+      "mae_D_dosedep": 33.42770864479019,
+      "r2_A_flat": -1.086403328329002,
+      "r2_B_baseline": -2.978277383971303,
+      "r2_C_calibrated": 0.013103086303576261,
+      "r2_D_dosedep": -0.010638305274873305,
+      "best_model": "C: Calibrated"
+    },
+    {
+      "patient_id": "ns-554b16de7133",
+      "controller": "trio",
+      "n_test_corrections": 97,
+      "mae_A_flat": 41.244163429222056,
+      "mae_B_baseline": 55.216191488462144,
+      "mae_C_calibrated": 26.796384272011103,
+      "mae_D_dosedep": 26.846158385242575,
+      "r2_A_flat": -1.47695761340136,
+      "r2_B_baseline": -3.583243643759624,
+      "r2_C_calibrated": -0.06357019224066729,
+      "r2_D_dosedep": -0.06340616378068353,
+      "best_model": "C: Calibrated"
+    },
+    {
+      "patient_id": "ns-6bef17b4c1ec",
+      "controller": "trio",
+      "n_test_corrections": 232,
+      "mae_A_flat": 57.15419255523011,
+      "mae_B_baseline": 78.64967669115521,
+      "mae_C_calibrated": 30.476215073363957,
+      "mae_D_dosedep": 30.47441241077345,
+      "r2_A_flat": -2.174162555314593,
+      "r2_B_baseline": -4.92541523176731,
+      "r2_C_calibrated": -0.0006624041845624262,
+      "r2_D_dosedep": -0.0012575041349138782,
+      "best_model": "D: Dose-dep"
+    },
+    {
+      "patient_id": "ns-8b3c1b50793c",
+      "controller": "trio",
+      "n_test_corrections": 107,
+      "mae_A_flat": 42.978816235246505,
+      "mae_B_baseline": 42.94247544794521,
+      "mae_C_calibrated": 39.91528526226115,
+      "mae_D_dosedep": 41.22442974131424,
+      "r2_A_flat": -0.42962858490043776,
+      "r2_B_baseline": -0.7813818828722778,
+      "r2_C_calibrated": -0.11470051376516821,
+      "r2_D_dosedep": -0.20366143150982507,
+      "best_model": "C: Calibrated"
+    },
+    {
+      "patient_id": "ns-8f3527d1ee40",
+      "controller": "trio",
+      "n_test_corrections": 85,
+      "mae_A_flat": 55.15764735989711,
+      "mae_B_baseline": 78.78848541213303,
+      "mae_C_calibrated": 37.04988434762875,
+      "mae_D_dosedep": 37.515722867679884,
+      "r2_A_flat": -1.5299206814856192,
+      "r2_B_baseline": -3.656922787567513,
+      "r2_C_calibrated": -0.005215847555350317,
+      "r2_D_dosedep": -0.009639024642500438,
+      "best_model": "C: Calibrated"
+    },
+    {
+      "patient_id": "ns-8ffa739b986b",
+      "controller": "trio",
+      "n_test_corrections": 96,
+      "mae_A_flat": 82.20572992561695,
+      "mae_B_baseline": 112.97967209409804,
+      "mae_C_calibrated": 36.6166389086255,
+      "mae_D_dosedep": 36.4976060558445,
+      "r2_A_flat": -4.621597256702364,
+      "r2_B_baseline": -8.804832512164937,
+      "r2_C_calibrated": -0.0551869269058447,
+      "r2_D_dosedep": -0.06504777199451994,
+      "best_model": "D: Dose-dep"
+    },
+    {
+      "patient_id": "ns-9b9a6a874e51",
+      "controller": "trio",
+      "n_test_corrections": 350,
+      "mae_A_flat": 49.72761893076556,
+      "mae_B_baseline": 49.32841922317343,
+      "mae_C_calibrated": 40.015574835946744,
+      "mae_D_dosedep": 40.54722153376519,
+      "r2_A_flat": -0.4661476567961309,
+      "r2_B_baseline": -0.4963875746415245,
+      "r2_C_calibrated": -0.026672228244064566,
+      "r2_D_dosedep": -0.04390821989396598,
+      "best_model": "C: Calibrated"
+    },
+    {
+      "patient_id": "ns-a9ce2317bead",
+      "controller": "trio",
+      "n_test_corrections": 447,
+      "mae_A_flat": 50.784414763768645,
+      "mae_B_baseline": 58.59568177487337,
+      "mae_C_calibrated": 44.749869514780116,
+      "mae_D_dosedep": 45.73618520497799,
+      "r2_A_flat": -0.2336591822389833,
+      "r2_B_baseline": -0.7265950879551892,
+      "r2_C_calibrated": 0.010986053875208568,
+      "r2_D_dosedep": -0.0242926672606516,
+      "best_model": "C: Calibrated"
+    },
+    {
+      "patient_id": "ns-adde5f4af7ca",
+      "controller": "trio",
+      "n_test_corrections": 228,
+      "mae_A_flat": 52.6160863404514,
+      "mae_B_baseline": 57.23965886758559,
+      "mae_C_calibrated": 40.25722309299915,
+      "mae_D_dosedep": 39.95888932931333,
+      "r2_A_flat": -0.7126051712903663,
+      "r2_B_baseline": -1.1236477333208752,
+      "r2_C_calibrated": 0.0016858716395339313,
+      "r2_D_dosedep": 0.01071766079447889,
+      "best_model": "D: Dose-dep"
+    },
+    {
+      "patient_id": "ns-c422538aa12a",
+      "controller": "trio",
+      "n_test_corrections": 46,
+      "mae_A_flat": 102.59068987064505,
+      "mae_B_baseline": 155.8991980079959,
+      "mae_C_calibrated": 39.03465715860627,
+      "mae_D_dosedep": 38.42548760367776,
+      "r2_A_flat": -10.366591069548674,
+      "r2_B_baseline": -18.546352810146043,
+      "r2_C_calibrated": -0.14494033326154,
+      "r2_D_dosedep": -0.1145248255676079,
+      "best_model": "D: Dose-dep"
+    },
+    {
+      "patient_id": "ns-d444c120c23a",
+      "controller": "trio",
+      "n_test_corrections": 456,
+      "mae_A_flat": 62.665570648305376,
+      "mae_B_baseline": 76.16204249092839,
+      "mae_C_calibrated": 47.25793867861236,
+      "mae_D_dosedep": 43.326646935807105,
+      "r2_A_flat": -2.020364620202306,
+      "r2_B_baseline": -3.340060828451181,
+      "r2_C_calibrated": -0.4233141006882559,
+      "r2_D_dosedep": -0.1524921192748896,
+      "best_model": "D: Dose-dep"
+    },
+    {
+      "patient_id": "ns-dde9e7c2e752",
+      "controller": "loop",
+      "n_test_corrections": 302,
+      "mae_A_flat": 62.07284814864397,
+      "mae_B_baseline": 84.7165034363502,
+      "mae_C_calibrated": 32.3626428633789,
+      "mae_D_dosedep": 32.545163719326126,
+      "r2_A_flat": -4.329752824256951,
+      "r2_B_baseline": -6.941915635428957,
+      "r2_C_calibrated": -0.02551269491790764,
+      "r2_D_dosedep": -0.0420772299044323,
+      "best_model": "C: Calibrated"
+    },
+    {
+      "patient_id": "odc-74077367",
+      "controller": "openaps",
+      "n_test_corrections": 526,
+      "mae_A_flat": 56.22910001545817,
+      "mae_B_baseline": 59.21645804433753,
+      "mae_C_calibrated": 38.25593626696114,
+      "mae_D_dosedep": 37.8891577520261,
+      "r2_A_flat": -1.410771640876237,
+      "r2_B_baseline": -1.9851410267905814,
+      "r2_C_calibrated": 0.025874594076932045,
+      "r2_D_dosedep": 0.03144189393738206,
+      "best_model": "D: Dose-dep"
+    },
+    {
+      "patient_id": "odc-86025410",
+      "controller": "openaps",
+      "n_test_corrections": 1109,
+      "mae_A_flat": 64.17377058999081,
+      "mae_B_baseline": 71.37209947373276,
+      "mae_C_calibrated": 52.45915976666811,
+      "mae_D_dosedep": 51.75197527063847,
+      "r2_A_flat": -0.6669543390392862,
+      "r2_B_baseline": -1.071551048967589,
+      "r2_C_calibrated": -0.09871668928095456,
+      "r2_D_dosedep": -0.0588851096787939,
+      "best_model": "D: Dose-dep"
+    },
+    {
+      "patient_id": "odc-96254963",
+      "controller": "openaps",
+      "n_test_corrections": 554,
+      "mae_A_flat": 77.71579143501792,
+      "mae_B_baseline": 100.20295466176749,
+      "mae_C_calibrated": 46.97774843300624,
+      "mae_D_dosedep": 48.35830210694877,
+      "r2_A_flat": -1.6413037042665022,
+      "r2_B_baseline": -2.9897838608800558,
+      "r2_C_calibrated": 0.0323937926440111,
+      "r2_D_dosedep": -0.017821453660792796,
+      "best_model": "C: Calibrated"
+    }
+  ],
+  "per_patient_parameters": [
+    {
+      "patient_id": "a",
+      "controller": "loop",
+      "n_corrections": 5522,
+      "isf_setting": 48.642093658447266,
+      "isf_calibrated": -0.12075526737119356,
+      "baseline_drop": -39.619920724540926,
+      "calibration_ratio": NaN,
+      "r_linear": 0.0025112874069960454,
+      "r_log": 0.0023738812780603026,
+      "dose_dep_stronger": false
+    },
+    {
+      "patient_id": "b",
+      "controller": "trio",
+      "n_corrections": 969,
+      "isf_setting": 90.0,
+      "isf_calibrated": -4.051640661784558,
+      "baseline_drop": -29.468780704662006,
+      "calibration_ratio": NaN,
+      "r_linear": 0.03383776531386114,
+      "r_log": 0.03576275427353665,
+      "dose_dep_stronger": true
+    },
+    {
+      "patient_id": "c",
+      "controller": "loop",
+      "n_corrections": 2703,
+      "isf_setting": 75.0,
+      "isf_calibrated": -0.19191631113715413,
+      "baseline_drop": -52.80115508390257,
+      "calibration_ratio": NaN,
+      "r_linear": 0.0015013434450397614,
+      "r_log": 0.01596515877375672,
+      "dose_dep_stronger": true
+    },
+    {
+      "patient_id": "d",
+      "controller": "loop",
+      "n_corrections": 1535,
+      "isf_setting": 40.0,
+      "isf_calibrated": 6.886963675556851,
+      "baseline_drop": -33.011309915818224,
+      "calibration_ratio": 5.8080747749501915,
+      "r_linear": -0.08523099344109,
+      "r_log": -0.06015131004037339,
+      "dose_dep_stronger": false
+    },
+    {
+      "patient_id": "e",
+      "controller": "loop",
+      "n_corrections": 3605,
+      "isf_setting": 33.0,
+      "isf_calibrated": 0.7280874986078036,
+      "baseline_drop": -38.06231051956981,
+      "calibration_ratio": 45.32422279341455,
+      "r_linear": -0.016414579688218824,
+      "r_log": -0.02034207653229063,
+      "dose_dep_stronger": true
+    },
+    {
+      "patient_id": "f",
+      "controller": "loop",
+      "n_corrections": 5084,
+      "isf_setting": 21.0,
+      "isf_calibrated": 3.5974696723929953,
+      "baseline_drop": -40.6500493158291,
+      "calibration_ratio": 5.837436285051721,
+      "r_linear": -0.0697176009277242,
+      "r_log": -0.04090391285282152,
+      "dose_dep_stronger": false
+    },
+    {
+      "patient_id": "g",
+      "controller": "loop",
+      "n_corrections": 1307,
+      "isf_setting": 70.0,
+      "isf_calibrated": 5.317899318615379,
+      "baseline_drop": -52.4825821323241,
+      "calibration_ratio": 13.16309238028709,
+      "r_linear": -0.04202085269001023,
+      "r_log": 0.03436631303029276,
+      "dose_dep_stronger": false
+    },
+    {
+      "patient_id": "i",
+      "controller": "loop",
+      "n_corrections": 3496,
+      "isf_setting": 50.0,
+      "isf_calibrated": 5.068554199532532,
+      "baseline_drop": -43.685663458067886,
+      "calibration_ratio": 9.86474604624164,
+      "r_linear": -0.13358820482759284,
+      "r_log": -0.12160274637172022,
+      "dose_dep_stronger": false
+    },
+    {
+      "patient_id": "ns-1ccae8a375b9",
+      "controller": "trio",
+      "n_corrections": 150,
+      "isf_setting": 45.0,
+      "isf_calibrated": 6.3460848256270594,
+      "baseline_drop": -82.79192042246942,
+      "calibration_ratio": 7.0909862122042355,
+      "r_linear": -0.17794786740396437,
+      "r_log": -0.17369770137495938,
+      "dose_dep_stronger": false
+    },
+    {
+      "patient_id": "ns-554b16de7133",
+      "controller": "trio",
+      "n_corrections": 188,
+      "isf_setting": 63.0545654296875,
+      "isf_calibrated": 3.6330173601901863,
+      "baseline_drop": -64.70969987967541,
+      "calibration_ratio": 17.355976913467497,
+      "r_linear": -0.07552927852183841,
+      "r_log": -0.03295302589853199,
+      "dose_dep_stronger": false
+    },
+    {
+      "patient_id": "ns-6bef17b4c1ec",
+      "controller": "trio",
+      "n_corrections": 479,
+      "isf_setting": 63.0,
+      "isf_calibrated": -0.5987666113137118,
+      "baseline_drop": -61.26521810945965,
+      "calibration_ratio": NaN,
+      "r_linear": 0.01723826776590762,
+      "r_log": 0.018264216285416326,
+      "dose_dep_stronger": true
+    },
+    {
+      "patient_id": "ns-8b3c1b50793c",
+      "controller": "trio",
+      "n_corrections": 215,
+      "isf_setting": 11.0,
+      "isf_calibrated": -0.7278937305621711,
+      "baseline_drop": -53.70713612439105,
+      "calibration_ratio": NaN,
+      "r_linear": 0.0691286589037826,
+      "r_log": 0.18709640424600157,
+      "dose_dep_stronger": true
+    },
+    {
+      "patient_id": "ns-8f3527d1ee40",
+      "controller": "trio",
+      "n_corrections": 150,
+      "isf_setting": 62.0,
+      "isf_calibrated": 2.5211387376713814,
+      "baseline_drop": -69.07493605011342,
+      "calibration_ratio": 24.592061941527874,
+      "r_linear": -0.057610535596036176,
+      "r_log": 0.004514897416908135,
+      "dose_dep_stronger": false
+    },
+    {
+      "patient_id": "ns-8ffa739b986b",
+      "controller": "trio",
+      "n_corrections": 296,
+      "isf_setting": 55.0,
+      "isf_calibrated": 6.485115961573966,
+      "baseline_drop": -52.95291844710104,
+      "calibration_ratio": 8.480958602111297,
+      "r_linear": -0.1618980463353932,
+      "r_log": -0.1689839600041386,
+      "dose_dep_stronger": true
+    },
+    {
+      "patient_id": "ns-9b9a6a874e51",
+      "controller": "trio",
+      "n_corrections": 623,
+      "isf_setting": 100.0,
+      "isf_calibrated": 38.695990188390525,
+      "baseline_drop": -56.017538193444324,
+      "calibration_ratio": 2.5842470889917104,
+      "r_linear": -0.2801599114400205,
+      "r_log": -0.28497864411259416,
+      "dose_dep_stronger": true
+    },
+    {
+      "patient_id": "ns-a9ce2317bead",
+      "controller": "trio",
+      "n_corrections": 834,
+      "isf_setting": 55.0,
+      "isf_calibrated": 12.554304734239997,
+      "baseline_drop": -38.17729499488422,
+      "calibration_ratio": 4.38096741829085,
+      "r_linear": -0.11031956459987212,
+      "r_log": -0.13932842648452434,
+      "dose_dep_stronger": true
+    },
+    {
+      "patient_id": "ns-adde5f4af7ca",
+      "controller": "trio",
+      "n_corrections": 1111,
+      "isf_setting": 43.2374153137207,
+      "isf_calibrated": 4.512831227348984,
+      "baseline_drop": -61.78960902558865,
+      "calibration_ratio": 9.58099541850584,
+      "r_linear": -0.07763590109680045,
+      "r_log": -0.09204513674832104,
+      "dose_dep_stronger": true
+    },
+    {
+      "patient_id": "ns-c422538aa12a",
+      "controller": "trio",
+      "n_corrections": 138,
+      "isf_setting": 131.51380920410156,
+      "isf_calibrated": 12.01127020153765,
+      "baseline_drop": -66.2919798405281,
+      "calibration_ratio": 10.949200792041587,
+      "r_linear": -0.20385860042631376,
+      "r_log": -0.1831506968186023,
+      "dose_dep_stronger": false
+    },
+    {
+      "patient_id": "ns-d444c120c23a",
+      "controller": "trio",
+      "n_corrections": 1478,
+      "isf_setting": 50.0,
+      "isf_calibrated": 20.060079332551123,
+      "baseline_drop": -39.05802903517157,
+      "calibration_ratio": 2.4925125754047204,
+      "r_linear": -0.2134887146025135,
+      "r_log": -0.16495372303604436,
+      "dose_dep_stronger": false
+    },
+    {
+      "patient_id": "ns-dde9e7c2e752",
+      "controller": "loop",
+      "n_corrections": 715,
+      "isf_setting": 220.0,
+      "isf_calibrated": 20.71507717594457,
+      "baseline_drop": -34.24954245843748,
+      "calibration_ratio": 10.620283870121202,
+      "r_linear": -0.19436620231412158,
+      "r_log": -0.17100692863577888,
+      "dose_dep_stronger": false
+    },
+    {
+      "patient_id": "odc-74077367",
+      "controller": "openaps",
+      "n_corrections": 1092,
+      "isf_setting": 50.44365310668945,
+      "isf_calibrated": 5.193219982200772,
+      "baseline_drop": -53.51139124274967,
+      "calibration_ratio": 9.713367290347778,
+      "r_linear": -0.14213108687978837,
+      "r_log": -0.15004110922494526,
+      "dose_dep_stronger": true
+    },
+    {
+      "patient_id": "odc-86025410",
+      "controller": "openaps",
+      "n_corrections": 1690,
+      "isf_setting": 110.0,
+      "isf_calibrated": 30.934971574060683,
+      "baseline_drop": -42.93228621508126,
+      "calibration_ratio": 3.5558461638360197,
+      "r_linear": -0.19113643576505526,
+      "r_log": -0.12644385615393747,
+      "dose_dep_stronger": false
+    },
+    {
+      "patient_id": "odc-96254963",
+      "controller": "openaps",
+      "n_corrections": 573,
+      "isf_setting": 60.0,
+      "isf_calibrated": 4.291359544686133,
+      "baseline_drop": -35.6634696656187,
+      "calibration_ratio": 13.981583079958023,
+      "r_linear": -0.09000203171426148,
+      "r_log": 0.005325079965284357,
+      "dose_dep_stronger": false
+    }
+  ]
+}
