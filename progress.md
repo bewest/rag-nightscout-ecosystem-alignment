@@ -26,6 +26,43 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Wave-7: Actionable Settings Extraction (2026-04-20)
+
+Converted deconfounding research into 3 practical outputs + forward simulator fix.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2720 | `tools/cgmencode/exp_independent_settings_2720.py` | Independent-event ISF: 29% lower MAE |
+| EXP-2721 | `tools/cgmencode/exp_circadian_shrinkage_2721.py` | Circadian ISF real (2.87×) but not predictive |
+| EXP-2722 | `tools/cgmencode/exp_cross_controller_normalization_2722.py` | Controller η² reduced 55% |
+| β fix | `tools/cgmencode/production/forward_simulator.py` | Power-law dampening disabled |
+| Report | `docs/60-research/wave7-actionable-settings-report-2026-04-20.md` | 7-part synthesis |
+
+**Key Findings**:
+- Independent-event ISF (N=6K, 2h gap) predicts 29% better than all-event ISF
+- Circadian ISF schedule (2.87× ratio, r=0.80 stability) does NOT improve point-level MAE
+- Cross-controller normalization converges ISFs: Loop 20.6, Trio 16.9, OpenAPS 20.2
+- β=0.9 power-law disabled — proven transient PK artifact (EXP-2716)
+
+**Scorecard**: 21 experiments, 84 hypotheses, 47 PASS (56%)
+
+---
+
+## Wave-6: Supply-Demand Decomposition (2026-04-20)
+
+Tested whether glucose supply-side (EGP/glycogen) improves ISF extraction.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2717 | `tools/cgmencode/exp_supply_contamination_2717.py` | Supply contaminates ISF 27% but subtraction destroys signal |
+| EXP-2718 | `tools/cgmencode/exp_multi_timescale_2718.py` | 72h > 48h but only 0.2% ΔR² |
+| EXP-2719 | `tools/cgmencode/exp_bgi_decomposition_2719.py` | BGI/deviation r=-0.941 (coupled) |
+| Report | `docs/60-research/supply-demand-decomposition-report-2026-04-20.md` | 7-part synthesis |
+
+**Key Finding**: Supply-side adds <0.2% to multi-factor model. Demand-side R²≈0.17 sufficient.
+
+---
+
 ## Wave-5: Robustness Check — What Survives Independence? (2026-04-19)
 
 Critical validation wave: tested all prior findings against statistical independence and horizon sensitivity.
