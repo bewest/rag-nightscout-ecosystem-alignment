@@ -31,8 +31,9 @@ validated the same day.
    ISF for dosing — no dose-response curves needed.**
 
 3. **EXP-2667 (SC Ceiling with Demand ISF)**: Ceiling (Hill) model outperforms linear
-   for all 29 patients. Demand-ISF ceiling fits BETTER than scheduled-ISF ceiling (H3 PASS),
-   validating the tier-1 finding with the physiologically correct ISF input.
+   for all 29 patients. Demand-ISF ceiling fits BETTER than scheduled-ISF ceiling for
+   21/23 demand patients (H3 PASS), validating the tier-1 finding with the physiologically
+   correct ISF input.
 
 4. **EXP-2669 (Wall Resolution Mechanism)**: 24 patients, 1,763 wall episodes. **68% of
    wall resolutions are unaccounted** — glucose drops without matching IOB increase,
@@ -193,7 +194,7 @@ dose-dependence while demand ISF does not.
 
 ### 3.5 Leave-One-Out Robustness
 
-All 23 LOO iterations confirm demand_weaker=true. The demand r ranges from −0.069
+All 23 LOO iterations confirm demand_weaker=true. The demand r ranges from −0.070
 to −0.121 across iterations (all well within the \|r\|<0.3 threshold). No single patient
 drives the conclusion.
 
@@ -235,7 +236,7 @@ whether ceiling strength predicts sticky hyperglycemia and wall episode behavior
 |-----------|-----------|--------|------------|
 | H1 | At high IOB, glucose drops slower than linear prediction | **PASS** | All 29 patients |
 | H2 | Ceiling (Hill) model fits better than linear | **PASS** | All 29 patients |
-| H3 | Demand-ISF ceiling fits BETTER than scheduled-ISF ceiling | **PASS** | 23/23 demand patients |
+| H3 | Demand-ISF ceiling fits BETTER than scheduled-ISF ceiling | **PASS** | 21/23 demand patients |
 | H4 | Ceiling strength correlates with sticky-hyper frequency | **SKIP/FAIL** | Correlation too weak to detect |
 | H5 | Wall episodes show plateau pattern consistent with ceiling | **FAIL** | Walls resolve, not plateau |
 
@@ -254,11 +255,13 @@ early and is clinically significant.
 
 ### 4.4 H3: Demand ISF Superiority
 
-The demand-ISF parameterization outperforms scheduled ISF for the ceiling model in all
-23 patients where demand ISF is available. This validates the tier-1 EXP-2656 ceiling
-finding and connects it to the tier-2 ISF decomposition: the ceiling model is more
-physically accurate when parameterized with the pharmacodynamically meaningful ISF
-(demand) rather than the profile-configured ISF (scheduled).
+The demand-ISF parameterization outperforms scheduled ISF for the ceiling model in 21
+of 23 patients where demand ISF is available (the two exceptions — g and ns-a9ce2317bead
+— have nearly identical demand and scheduled ISF values, producing tied ceiling fits).
+This validates the tier-1 EXP-2656 ceiling finding and connects it to the tier-2 ISF
+decomposition: the ceiling model is more physically accurate when parameterized with
+the pharmacodynamically meaningful ISF (demand) rather than the profile-configured ISF
+(scheduled).
 
 ### 4.5 H4/H5: Sticky Hyper and Wall Episodes
 
@@ -469,7 +472,7 @@ of insulin dose-response in AID systems:
 |-----------|-----------|-----------|------------|
 | EXP-2636 | 9 patients, ~80 events | 18 patients, 175 events | H1/H2 direction REVERSED (inflation→deflation) |
 | EXP-2663 | 12 patients, ~200 events | 23 patients, 541 events | Effect size confirmed, LOO 100% robust |
-| EXP-2667 | 12 patients | 29 patients (23 demand) | H3 PASS (demand ISF superiority) is NEW finding |
+| EXP-2667 | 12 patients | 29 patients (23 demand) | H3 PASS 21/23 (demand ISF superiority) is NEW finding |
 | EXP-2669 | — (new experiment) | 24 patients, 1,763 episodes | First systematic wall resolution analysis |
 | EXP-2640 | 3 fitted patients | 6 fitted patients | 3 new patients confirm log model |
 
