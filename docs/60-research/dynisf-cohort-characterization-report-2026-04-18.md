@@ -29,7 +29,7 @@ and within-patient reproducibility analysis.
    but this is not statistically significant with current sample sizes.
 
 3. **SC ceiling estimates shift modestly** with more data — the DynISF dataset
-   yields slightly lower fitted ceilings for 7/12 patients (median Δ = −0.006),
+   yields slightly lower fitted ceilings for 4/12 patients (median Δ = 0.000),
    with sticky hyper rates essentially unchanged (Wilcoxon p = 1.0).
 
 4. **Patience mode is significantly more effective** when measured on the DynISF
@@ -141,14 +141,14 @@ excluded due to insufficient events).
 | Patient | Day ISF | Night ISF | Variation | Range % | Lowest Block |
 |---------|--------:|----------:|----------:|--------:|:-------------|
 | ns-1ccae8a375b9 | 47.4 | 60.0 | 1.86 | 64.3% | 16-20 |
-| ns-8b3c1b50793c | 10.9 | 3.9 | 6.40 | 235.3% | 04-08 |
-| ns-8f3527d1ee40 | 37.9 | 78.3 | 3.52 | 196.4% | 20-24 |
-| ns-9b9a6a874e51 | 166.7 | 146.9 | 1.25 | 20.3% | 12-16 |
-| ns-a9ce2317bead | 66.7 | 115.5 | 3.20 | 109.8% | 16-20 |
-| ns-adde5f4af7ca | 86.6 | 69.3 | 1.36 | 33.9% | 16-20 |
-| ns-c422538aa12a | 95.8 | 95.8 | 1.00 | 0.0% | 00-04 |
-| ns-d444c120c23a | 71.3 | 105.3 | 1.70 | 52.2% | 04-08 |
-| ns-dde9e7c2e752 | 113.0 | 178.4 | 1.62 | 55.5% | 20-24 |
+| ns-8b3c1b50793c | 3.8 | — | 6.40 | 235.3% | 12-16 |
+| ns-8f3527d1ee40 | — | 47.1 | 3.52 | 196.4% | 20-24 |
+| ns-9b9a6a874e51 | 160.0 | 138.5 | 1.25 | 20.3% | 00-04 |
+| ns-a9ce2317bead | 78.9 | 130.1 | 3.20 | 109.8% | 16-20 |
+| ns-adde5f4af7ca | 106.8 | 74.8 | 1.36 | 33.9% | 04-08 |
+| ns-c422538aa12a | — | 87.1 | 1.00 | 0.0% | 20-24 |
+| ns-d444c120c23a | 88.7 | 90.3 | 1.70 | 52.2% | 16-20 |
+| ns-dde9e7c2e752 | — | 154.8 | 1.62 | 55.5% | 04-08 |
 
 **Interpretation**: No significant difference in circadian amplitude between
 cohorts. Both groups show substantial individual variation (1.0–6.4×), with the
@@ -201,11 +201,12 @@ in DynISF patients, though sample sizes are too small for formal testing.
 
 **Wilcoxon paired tests**: Ceiling W = 3, p = 0.156; Sticky W = 39, p = 1.000.
 
-The ceiling estimates are highly reproducible. Seven of 12 patients show ceiling
-values at the 0.300 floor (the model's minimum) in both datasets. For the 5
-patients with ceiling > 0.300, the DynISF dataset yields slightly lower
-estimates (mean Δ = −0.017), consistent with more data reducing noise in the
-saturation fit. Sticky hyper rates are essentially unchanged (mean |Δ| = 1.1 pp).
+The ceiling estimates are highly reproducible. Six of 12 patients show ceiling
+values at the 0.300 floor (the model's minimum) in both datasets. For the 6
+patients with ceiling > 0.300 in at least one dataset, the DynISF dataset yields
+slightly lower estimates (mean Δ = −0.017), consistent with more data reducing
+noise in the saturation fit. Sticky hyper rates are essentially unchanged
+(mean |Δ| = 1.1 pp).
 
 ---
 
@@ -225,7 +226,7 @@ saturation fit. Sticky hyper rates are essentially unchanged (mean |Δ| = 1.1 pp
 | Hypo reduction (pp, median) | −0.068 | −0.262 | −0.362 | — |
 | Hyper increase (pp, median) | 0.000 | +0.497 | +0.487 | — |
 | TIR change (pp, median) | 0.000 | −0.071 | −0.119 | — |
-| Baseline TIR (median) | 0.7% | 0.9% | 0.9% | — |
+| Baseline TIR (median) | 66.8% | 87.0% | 87.1% | — |
 | N readings (total) | 655,924 | 476,214 | 597,947 | — |
 
 ### 5.2 Patience Mode Paired Comparison (NS → DynISF)
@@ -250,7 +251,7 @@ saturation fit. Sticky hyper rates are essentially unchanged (mean |Δ| = 1.1 pp
 - SMB prevented: W = 9, **p = 0.016** — significantly higher in DynISF
 
 Nine of 12 patients show increased wall detection in the DynISF dataset (mean
-Δ = +3.8 pp). Ten of 12 show increased SMB prevention (mean Δ = +6.4 pp). The
+Δ = +3.9 pp). Ten of 12 show increased SMB prevention (mean Δ = +6.4 pp). The
 DynISF dataset contains ~25% more readings per patient on average (49,829 vs
 39,685), which likely provides more statistical power to detect wall events that
 were undersampled in the smaller NS windows.
@@ -268,9 +269,9 @@ were undersampled in the smaller NS windows.
 | EXP-2651 ISF | Inflation ratio | **Perfect** (0.0% Δ) | 1.000 | Same correction episodes |
 | EXP-2652 Circadian | ISF variation | **Perfect** (0.0% Δ) | 1.000 | Same circadian windows |
 | EXP-2652 Circadian | ISF range % | **Perfect** (0.0% Δ) | 1.000 | Same circadian windows |
-| EXP-2656 Ceiling | Fitted ceiling | Near-perfect (|Δ| ≤ 0.062) | 0.156 | Slight shift w/ more data |
+| EXP-2656 Ceiling | Fitted ceiling | Near-perfect (median Δ = 0.000, max |Δ| = 0.062) | 0.156 | 4/12 shifted, 6/12 at floor |
 | EXP-2656 Ceiling | Sticky hyper % | Near-perfect (|Δ| ≤ 2.6 pp) | 1.000 | Stable |
-| EXP-2662 Patience | Wall detection % | **Shifted** (mean +3.8 pp) | **0.027** | More data → more walls |
+| EXP-2662 Patience | Wall detection % | **Shifted** (mean +3.9 pp) | **0.027** | More data → more walls |
 | EXP-2662 Patience | SMB prevented % | **Shifted** (mean +6.4 pp) | **0.016** | More data → more SMB |
 
 ### 6.2 Interpretation
@@ -320,7 +321,7 @@ statistically significant metabolic differences from the broader NS cohort:
 rows. This additional data:
 
 - Does **not** change ISF or circadian estimates (same correction episodes)
-- Slightly **refines** ceiling fits (7/12 patients shift by < 0.02)
+- Slightly **refines** ceiling fits (4/12 patients shift, max |Δ| = 0.062)
 - Significantly **increases** patience-mode wall detection and SMB savings
   (Wilcoxon p < 0.03), reflecting more complete glucose trace coverage
 

@@ -34,7 +34,7 @@ before rerun.
    — no longer significant at α=0.05.
 
 4. **EXP-2662 (Patience Mode)**: SMB savings robust (34% original, 42% DynISF) but
-   **delayed hypo reduction disappoints** at 10–15% (prior claim: 34–82%). TIR impact
+   **delayed hypo reduction disappoints** at 7–9% (prior claim: 34–82%). TIR impact
    negligible (−0.2pp original, −0.1pp DynISF). Hyper cost well-contained at max +2.1pp.
 
 5. **EXP-2640 (Per-Patient ISF Curves)**: Log model wins 5/6 patients. NaN/Inf guards
@@ -236,16 +236,16 @@ hyper cost, SMB savings, and TIR impact.
 
 | Hypothesis | Result | Detail |
 |-----------|--------|--------|
-| H1: ≥30% delayed hypo reduction | **FAIL** | Mean 10% reduction (range 0–27%) |
+| H1: ≥30% delayed hypo reduction | **FAIL** | Mean 7% reduction (range 0–21%) |
 | H2: hyper increase ≤5pp | **PASS** | Max +2.1pp |
-| H3: ≥20% SMB savings | **PASS** | Mean 34%, range 0–78% |
+| H3: ≥20% SMB savings | **PASS** | Mean 34%, range 0–82% |
 | H4: TIR neutral (≤1pp loss) | **FAIL** | Mean −0.2pp (within tolerance individually, but sign is consistently negative) |
 
 ### 5.3 Results — DynISF Cohort (12 patients)
 
 | Hypothesis | Result | Detail |
 |-----------|--------|--------|
-| H1: ≥30% delayed hypo reduction | **FAIL** | Mean 15% reduction |
+| H1: ≥30% delayed hypo reduction | **FAIL** | Mean 9% reduction |
 | H2: hyper increase ≤5pp | **PASS** | Max +1.2pp |
 | H3: ≥20% SMB savings | **PASS** | Mean 42% |
 | H4: TIR neutral | **FAIL** | Mean −0.1pp |
@@ -254,8 +254,8 @@ hyper cost, SMB savings, and TIR impact.
 
 | Metric | Prior (N=12) | Expanded Original (N=27) | DynISF (N=12) |
 |--------|-------------|--------------------------|---------------|
-| SMB savings | 34–82% | **Mean 34%** (range 0–78%) | **Mean 42%** |
-| Delayed hypo reduction | "34–82%" claimed | **Mean 10%** | **Mean 15%** |
+| SMB savings | 34–82% | **Mean 34%** (range 0–82%) | **Mean 42%** |
+| Delayed hypo reduction | "34–82%" claimed | **Mean 7%** | **Mean 9%** |
 | Max hyper cost | Not reported | +2.1pp | +1.2pp |
 | Mean TIR delta | Not reported | −0.2pp | −0.1pp |
 
@@ -263,7 +263,7 @@ hyper cost, SMB savings, and TIR impact.
 
 Patience mode delivers real SMB savings (34–42% mean across cohorts) with negligible
 hyper cost (max +2.1pp). However, the headline claim of 34–82% delayed hypo reduction
-is **not reproduced** — actual reduction is 10–15% on the expanded cohort. The prior
+is **not reproduced** — actual reduction is 7–9% on the expanded cohort. The prior
 range likely conflated SMB savings with hypo reduction.
 
 TIR impact is consistently slightly negative (−0.1 to −0.2pp), indicating patience mode
@@ -285,16 +285,16 @@ Fits per-patient dose–response curves (linear, log, sqrt models) to individual
 bolus events from EXP-2636. Tests dose-dependent ISF at the individual patient level with
 NaN/Inf guards for robustness.
 
-### 6.2 Results (6 patients fitted, 219 events)
+### 6.2 Results (6 patients fitted, 212 events from fitted; 219 total across 9 patients)
 
 | Patient | Best Model | Log r | Linear r | n_events |
 |---------|-----------|-------|----------|----------|
 | a | log | −0.597 | −0.469 | 79 |
-| c | log | −0.624 | −0.603 | 38 |
-| e | linear | −0.297 | −0.385 | 21 |
-| f | log | −0.819 | −0.652 | 24 |
-| g | log | +0.721 | +0.671 | 7 |
-| i | log | −0.815 | −0.713 | 24 |
+| c | log | −0.624 | −0.603 | 6 |
+| e | linear | −0.297 | −0.385 | 10 |
+| f | log | −0.819 | −0.652 | 91 |
+| g | log | +0.721 | +0.671 | 6 |
+| i | log | −0.815 | −0.713 | 20 |
 
 - **Log model wins**: 5/6 patients (83%)
 - **Negative correlation** (expected: higher dose → lower ISF): 5/6 patients
@@ -324,7 +324,7 @@ finding from EXP-2636 (r=−0.56, p<10⁻¹⁹).
 | EXP-2651 | 11 | 25 + 12 = 37 | >0.99 for H1 (effect size d→∞, 100% pass) | **Adequate** |
 | EXP-2652 | 11 | 18 + 10 = 28 | ~0.80 for H1 (78% rate) | **Adequate for H1, underpowered for H2** |
 | EXP-2656 | 12 | 29 + 12 = 41 | ~0.55 for H4 (r=−0.285) | **Adequate for H1–H3, underpowered for H4** |
-| EXP-2662 | 12 | 27 + 12 = 39 | ~0.40 for H1 (10% effect vs 30% threshold) | **Adequate for H2–H3, underpowered for H1** |
+| EXP-2662 | 12 | 27 + 12 = 39 | ~0.40 for H1 (7% effect vs 30% threshold) | **Adequate for H2–H3, underpowered for H1** |
 | EXP-2640 | 6 | 6 | ~0.60 for model comparison | **Underpowered — needs more patients** |
 
 ### 7.2 Effect Size Evolution
@@ -336,7 +336,7 @@ moderate values as N increases**.
 |---------|-------------|-----------------|-----------|
 | ISF inflation ratio | 2–10× | 1.30–5.26× | Contracted |
 | SC ceiling–sticky r | −0.60 | −0.285 | Weakened |
-| Delayed hypo reduction | 34–82% | 10–15% | Substantially reduced |
+| Delayed hypo reduction | 34–82% | 7–9% | Substantially reduced |
 | SMB savings | 34–82% | 34–42% | Narrowed |
 | Circadian RMSE improvement | 10–20% | <10% (1/18) | Collapsed |
 
@@ -351,7 +351,7 @@ To reach 80% power at α=0.05 for the currently failing/weak hypotheses:
 | Hypothesis | Current Effect | Required N |
 |-----------|---------------|------------|
 | EXP-2656 H4 (ceiling–sticky r) | r = −0.285 | ~95 patients |
-| EXP-2662 H1 (30% hypo reduction) | 10–15% actual | Effect too small — would need >200 patients, or the hypothesis should be revised to a lower threshold |
+| EXP-2662 H1 (30% hypo reduction) | 7–9% actual | Effect too small — would need >200 patients, or the hypothesis should be revised to a lower threshold |
 | EXP-2652 H2 (10% RMSE improvement) | 5.6% pass rate | Effect likely does not exist at Nyquist-correct resolution |
 
 ---
@@ -371,7 +371,7 @@ To reach 80% power at α=0.05 for the currently failing/weak hypotheses:
 | 2656-H2 | ceiling beats linear | PASS | **PASS** (41/41) | ✅ Confirmed |
 | 2656-H3 | ceiling in 30–50% range | PASS | **PASS** (30–56%) | ✅ Confirmed |
 | 2656-H4 | ceiling correlates sticky-hyper | PASS (r=−0.60) | **FAIL** (r=−0.285) | ❌ Rejected |
-| 2662-H1 | ≥30% delayed hypo reduction | PASS | **FAIL** (10–15%) | ❌ Rejected |
+| 2662-H1 | ≥30% delayed hypo reduction | PASS | **FAIL** (7–9%) | ❌ Rejected |
 | 2662-H2 | hyper cost ≤5pp | PASS | **PASS** (max +2.1pp) | ✅ Confirmed |
 | 2662-H3 | ≥20% SMB savings | PASS | **PASS** (34–42%) | ✅ Confirmed |
 | 2662-H4 | TIR neutral | untested | **FAIL** (−0.1 to −0.2pp) | ⚠️ Marginal (within clinical tolerance) |
@@ -397,7 +397,7 @@ Three claims from the original cohort are now rejected:
 
 1. **Sticky-hyper correlation** with ceiling level (r weakened from −0.60 to −0.285)
 2. **Circadian RMSE improvement** (artifact of 4h overfitting)
-3. **Large delayed hypo reduction** from patience mode (10–15%, not 34–82%)
+3. **Large delayed hypo reduction** from patience mode (7–9%, not 34–82%)
 
 ### 9.3 What Needs Revision
 
