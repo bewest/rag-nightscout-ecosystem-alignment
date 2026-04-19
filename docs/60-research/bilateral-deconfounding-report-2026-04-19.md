@@ -27,16 +27,20 @@ return settles, not the magnitude.
 
 ## EXP-2711: Baseline Return Model — Quantifying the Supply Side
 
+
+![exp-2711-dashboard](../../visualizations/baseline-return-model/exp-2711-dashboard.png)
+![circadian settings](../../visualizations/circadian-settings/circadian_settings.png)
+
 ### Supply Curve
 
 The homeostatic return follows a simple linear model:
 
 ```
-supply_return = -8.1 + 0.426 × (BG₀ - 120)
+supply_return = -9.1 + 0.436 × (BG₀ - 120)
 ```
 
 For every 1 mg/dL above the equilibrium point (~120 mg/dL), the body returns
-0.426 mg/dL over the 2-hour correction window. At BG=200 (80 above eq),
+0.436 mg/dL over the 2-hour correction window. At BG=200 (80 above eq),
 the expected supply return is 26 mg/dL. At BG=300, it's ~69 mg/dL.
 
 ### R² Comparison: Supply vs Demand
@@ -67,7 +71,7 @@ roughly additive (0.137 + 0.094 ≈ 0.228).
 | 8 | Patient fixed effects | +0.069 | 0.316 |
 
 The two largest single contributors are supply-side (BG₀, +0.117) and
-demand-side (insulin dose, +0.087). Together they account for 87% of the
+demand-side (insulin dose, +0.087). Together they account for 83% of the
 explainable variance before patient effects.
 
 ### Unmasking Effect
@@ -91,6 +95,10 @@ regulation is physiological, not controller-dependent.
 
 ## EXP-2712: Bilateral Subtraction — Supply + Demand Decomposition
 
+
+![exp-2712-dashboard](../../visualizations/bilateral-subtraction/exp-2712-dashboard.png)
+![sc ceiling settings](../../visualizations/sc-ceiling-settings/sc_ceiling_settings.png)
+
 ### The Key Finding: Magnitude Decomposition
 
 | Controller | Total Drop | Supply Return | Insulin Effect | Mean Dose |
@@ -98,7 +106,7 @@ regulation is physiological, not controller-dependent.
 | Loop | 37.8 mg/dL | 44.0 (117%) | **-6.3 (-17%)** | 5.2 U |
 | Trio | 49.3 mg/dL | 33.4 (68%) | 15.9 (32%) | 4.4 U |
 | OpenAPS | 42.0 mg/dL | 42.4 (101%) | -0.4 (-1%) | 1.7 U |
-| **Overall** | **41.3 mg/dL** | **41.2 (100%)** | **0.2 (0%)** | 4.1 U |
+| **Overall** | **41.3 mg/dL** | **41.2 (100%)** | **0.2 (0%)** | 4.3 U |
 
 **The supply side accounts for 100% of the average BG drop during corrections.**
 
@@ -179,7 +187,7 @@ dividing by dose, not from the supply-side contamination.
 3. **Bilateral holdout beats demand-only 86% of the time** — this validates
    the approach for practical settings optimization.
 
-4. **The supply model is simple**: `drop ≈ 0.43 × (BG₀ - 120) - 8`. This can
+4. **The supply model is simple**: `drop ≈ 0.44 × (BG₀ - 120) - 9`. This can
    be computed with no additional data requirements.
 
 ### For AID Controller R&D

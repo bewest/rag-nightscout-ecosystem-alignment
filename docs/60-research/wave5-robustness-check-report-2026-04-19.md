@@ -30,6 +30,9 @@ fragile finding, collapsing under both independence and horizon tests.
 
 ## Part 1: The Independence Problem (EXP-2714)
 
+
+![independence corrected](../../visualizations/independence-corrected/independence_corrected.png)
+
 ### What we found
 
 Our 65,425 "events" are actually **~6,000 independent observations** (9.2%
@@ -80,6 +83,9 @@ show NO systematic dose-response non-linearity.
 
 ## Part 2: β Vanishes at Longer Horizons (EXP-2716)
 
+
+![beta horizon](../../visualizations/beta-horizon/beta_horizon.png)
+
 ### The surprising finding
 
 β DECREASES with measurement horizon — completely opposite to our hypothesis
@@ -119,6 +125,9 @@ This completely reconciles **GAP-ALG-073** (β=0.595 vs simulator β=0.9):
 ---
 
 ## Part 3: Shrinkage Works for Stability, Not Accuracy (EXP-2715)
+
+
+![shrinkage circadian](../../visualizations/shrinkage-circadian/shrinkage_circadian.png)
 
 ### The nuanced result
 

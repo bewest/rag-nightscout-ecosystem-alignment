@@ -30,6 +30,11 @@ Three methodological breakthroughs emerged:
 
 ### Phase 1 — Raw Signal Discovery (EXP-2702, 2703, 2704)
 
+
+![circadian demand isf](../../visualizations/circadian-demand-isf/circadian_demand_isf.png)
+![sc ceiling per patient](../../visualizations/sc-ceiling-per-patient/sc_ceiling_per_patient.png)
+![glycogen state](../../visualizations/glycogen-state/glycogen_state.png)
+
 Three Tier-1 experiments looked for raw signals in the data:
 
 | EXP | Question | Verdicts | Raw Signal |
@@ -44,6 +49,11 @@ but was wrong. The SC ceiling was invisible. The glycogen effect was real but we
 
 ### Phase 2 — Confound Investigation (EXP-2705, 2706, 2707)
 
+
+![midday isf peak](../../visualizations/midday-isf-peak/midday_isf_peak.png)
+![sc slope](../../visualizations/sc-slope/sc_slope.png)
+![glycogen confound](../../visualizations/glycogen-confound/glycogen_confound.png)
+
 Three follow-up experiments asked: "Are those signals real or artifacts?"
 
 | EXP | Question | Verdicts | Finding |
@@ -57,6 +67,11 @@ relationships. Higher IOB correlates with higher BG (controller gives more insul
 when things are harder). Naive regression sees the opposite of truth.
 
 ### Phase 3 — Deconfounded Signal Extraction (EXP-2708, 2709, 2710)
+
+
+![bg adjusted circadian isf](../../visualizations/bg-adjusted-circadian-isf/bg_adjusted_circadian_isf.png)
+![sc ceiling simulation](../../visualizations/sc-ceiling-simulation/sc_ceiling_simulation.png)
+![multi factor deconfounding](../../visualizations/multi-factor-deconfounding/multi_factor_deconfounding.png)
 
 Three experiments applied deconfounding techniques to extract true signals:
 
