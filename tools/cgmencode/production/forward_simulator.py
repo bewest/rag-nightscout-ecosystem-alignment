@@ -49,7 +49,12 @@ from .types import TIR_LOW, TIR_HIGH
 _STEP_MINUTES = 5.0
 _STEPS_PER_HOUR = 60.0 / _STEP_MINUTES  # 12
 _FAST_FRACTION = 1.0 - _PERSISTENT_FRACTION  # 0.63
-_POWER_LAW_BETA = 0.9  # from EXP-2511 (causal validation, 17/17 patients)
+# RETRACTED: Power-law β=0.9 is a transient PK artifact, not a stable
+# dose-response property. EXP-2716 showed β decreases with horizon
+# (0.314@2h → 0.006@6h, Kendall τ=-0.867, p=0.017). EXP-2714 showed
+# β collapses from 0.595 to -0.041 with independent events.
+# See docs/60-research/wave5-robustness-check-report-2026-04-19.md
+_POWER_LAW_BETA = 0.9  # DEPRECATED — kept for backward compat, disabled below
 
 # Insulin activity curve parameters
 _DEFAULT_DIA_HOURS = 5.0
@@ -442,13 +447,14 @@ def forward_simulate(
         excess_absorption = total_absorption - basal_absorption
 
         # ── Fast demand: excess absorption × ISF × fast fraction ──
-        # Apply IOB-dependent power-law ISF dampening if enabled
-        # Research: EXP-2511-2518, β=0.9, 17/17 patients
-        # When IOB is high, each additional unit is less effective
+        # Power-law ISF dampening DISABLED: EXP-2716 proved β is a transient
+        # PK absorption artifact that vanishes at longer horizons, not a true
+        # dose-response nonlinearity. Using linear ISF instead.
         effective_isf = isf_at_t
-        if settings.iob_power_law and iob > _IOB_POWER_LAW_THRESHOLD:
-            dampening = (iob / _IOB_POWER_LAW_THRESHOLD) ** (-_POWER_LAW_BETA)
-            effective_isf = isf_at_t * dampening
+        # Legacy power-law code retained but disabled:
+        # if settings.iob_power_law and iob > _IOB_POWER_LAW_THRESHOLD:
+        #     dampening = (iob / _IOB_POWER_LAW_THRESHOLD) ** (-_POWER_LAW_BETA)
+        #     effective_isf = isf_at_t * dampening
 
         demand_fast = excess_absorption * effective_isf * _FAST_FRACTION
 
