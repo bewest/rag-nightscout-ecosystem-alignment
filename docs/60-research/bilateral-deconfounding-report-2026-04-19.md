@@ -318,30 +318,59 @@ modulated by ISF which varies with hepatic state and time of day.**
 
 ## Next Steps (Corrected Causal Frame)
 
-### EXP-2717: Total Insulin Accounting Over 6h DIA
-The fundamental problem with current ISF extraction: we only measure
-**user bolus dose** over a 2h window, but ISF operates over a **6h DIA
-window** and the **controller delivers additional insulin** (SMBs, basal
-adjustments) that we're not fully accounting for. Experiment:
-- Track TOTAL insulin delivered (bolus + SMB + net basal) over full 6h DIA
-- Compute ISF = BG_drop / total_insulin_6h
-- Does ISF converge toward profile settings when using full DIA accounting?
-- Per-controller: how much of Loop's 5.2U total is controller vs user?
+### EXP-2717: Total Insulin Accounting Over 6h DIA (COMPLETED)
+**Result**: Total insulin = 6-25× user bolus. ISF by division STILL deflated
+(10.1 vs profile 55) even with full insulin accounting. The ISF inflation is
+NOT an accounting problem.
 
-### EXP-2718: Hepatic Resistance as ISF Modulator
-Hepatic state (72h glycogen) doesn't lower glucose — it modulates insulin
-resistance. Experiment:
-- Compute 72h carb history as glycogen proxy (existing infrastructure)
-- Test: ISF = f(time_of_day, glycogen_state)
-- Does glycogen-adjusted ISF reduce between-event variance?
-- Separate insulin resistance variation from dose-response
+### EXP-2718: Phase Decomposition (COMPLETED — replaces "Hepatic Resistance")
+**Result**: Activity-based ISF at 0-1h = 65.3 (closest to profile 55).
+Drop distributed across 5 phases. Controller suspension visible.
 
-### EXP-2719: EGP as Insulin Headwind
-EGP raises glucose, opposing insulin. The net BG change is:
-`Δ BG = -ISF × dose + EGP × interval`. Experiment:
-- Estimate EGP from overnight basal-only periods (no bolus, no carbs)
-- Use EGP as a covariate in ISF extraction (headwind to subtract)
-- Does accounting for EGP opposition improve ISF precision?
+### EXP-2717/2717b: Insulin Accounting (COMPLETED)
+**Finding**: Total insulin is 6-25× user bolus. ISF by division STILL deflated
+even with full 6h accounting (10.1 vs profile 55). The 3-5× ISF inflation is
+NOT an accounting problem — it's a fundamental limitation of division-based ISF
+in closed-loop data. Per-patient signal preserved (r=0.706).
+
+### EXP-2718: Phase Decomposition (COMPLETED)
+**Finding**: Activity-based ISF at 0-1h (65.3) is closest to profile (55).
+BG drop distributed across phases: 22%|29%|24%|14%|11%. Controller suspension
+visible in IOB changes. This validates that insulin ACTIVITY curves (not raw
+delivery) are the right weighting — but still limited by phase mismatch.
+
+### EXP-2719: Extended Multi-Factor Waterfall (COMPLETED — KEY RESULT)
+**Finding**: Profile ISF BGI subtraction is CATASTROPHIC (R²=-33 to -88).
+Regression recovers by finding empirical coefficients 10-30× smaller than
+profile ISF. BG₀ is the dominant predictor (ΔR²=+0.28 to +0.44), with
+coefficient approaching 1.0 at 6h (0.894). Full model R²=0.47-0.54.
+Cross-validates well: R²_test=0.40/0.55/0.52 at 2h/4h/6h.
+
+Factor contribution matrix:
+| Stage              | 2h     | 4h     | 6h     |
+|-------------------|--------|--------|--------|
+| -BGI (profile)    | -33.75 | -58.27 | -88.33 |
+| +EGP regression   | +33.88 | +58.34 | +88.39 |
+| +BG₀              | +0.283 | +0.435 | +0.440 |
+| +ROC/IOB          | +0.059 | +0.038 | +0.020 |
+| +Circadian        | +0.016 | +0.006 | +0.005 |
+| +Patient FE       | +0.053 | +0.044 | +0.038 |
+
+### EXP-2719b: Settings from Waterfall Residuals (COMPLETED — 5/5 PASS)
+**Finding**: Population model residuals provide actionable per-patient ISF
+adjustments. 96% of patients have significant residuals → settings CAN be
+improved. Correction factors are stable across horizons (2h vs 6h r=0.820).
+16 patients need ↓ ISF, 9 need ↑ ISF, 3 within ±10%.
+
+This is the first method that passes all validation checks for per-patient
+settings assessment. It works by SUBTRACTION (population effects removed,
+residual = individual settings error) rather than DIVISION (ISF = drop/dose,
+which fails due to confounding by indication).
+
+### Future: EXP-2720+: Prospective Validation
+- Test whether residual-based ISF adjustments improve simulated outcomes
+- Apply autocorrelation correction (EXP-2714) to residual analysis
+- Glycogen resistance proxy: 72h excess insulin → ISF modulation
 
 ---
 
@@ -351,7 +380,12 @@ EGP raises glucose, opposing insulin. The net BG change is:
 |------|---------|
 | `tools/cgmencode/exp_baseline_return_model_2711.py` | BG₀-dependent drop model |
 | `tools/cgmencode/exp_bilateral_subtraction_2712.py` | BG₀-residualized ISF extraction |
-| `visualizations/baseline-return-model/exp-2711-dashboard.png` | 6-panel BG₀ analysis |
-| `visualizations/bilateral-subtraction/exp-2712-dashboard.png` | 6-panel ISF comparison |
-| `externals/experiments/exp-2711_baseline_return_model.json` | EXP-2711 results (git-ignored) |
-| `externals/experiments/exp-2712_bilateral_subtraction.json` | EXP-2712 results (git-ignored) |
+| `tools/cgmencode/exp_total_insulin_accounting_2717.py` | Total insulin 1-6h + 72h balance |
+| `tools/cgmencode/exp_excess_insulin_accounting_2717b.py` | Excess-only insulin accounting |
+| `tools/cgmencode/exp_phase_decomposition_2718.py` | 5-phase correction decomposition |
+| `tools/cgmencode/exp_extended_waterfall_2719.py` | Multi-factor subtraction waterfall |
+| `tools/cgmencode/exp_settings_from_residuals_2719b.py` | Per-patient settings from residuals |
+| `visualizations/baseline-return-model/exp-2711-dashboard.png` | BG₀ analysis |
+| `visualizations/bilateral-subtraction/exp-2712-dashboard.png` | ISF comparison |
+| `tools/visualizations/extended-waterfall/exp-2719-dashboard.png` | Waterfall dashboard |
+| `tools/visualizations/settings-from-residuals/exp-2719b-dashboard.png` | Settings dashboard |
