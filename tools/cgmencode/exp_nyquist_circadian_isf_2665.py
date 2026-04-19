@@ -39,10 +39,6 @@ PARQUET = Path("externals/ns-parquet/training/grid.parquet")
 RESULTS_DIR = Path("externals/experiments")
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 OUTFILE = RESULTS_DIR / "exp-2665_nyquist_circadian_isf.json"
-
-NS_PATIENTS = ["a", "b", "c", "d", "e", "f", "g", "i", "k"]
-ODC_FULL = ["odc-74077367", "odc-86025410", "odc-96254963"]
-ALL_PATIENTS = NS_PATIENTS + ODC_FULL
 STEPS_PER_HOUR = 12
 DIA_H = 6.0
 

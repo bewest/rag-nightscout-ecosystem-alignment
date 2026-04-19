@@ -363,6 +363,118 @@ inflated by AID compensation per EXP-2651.
 
 ---
 
+## EXP-2676: Cross-Controller PK Model Comparison
+
+**Date**: 2026-04-19  
+**Figures**: `visualizations/pk-model-comparison/fig[1-6]_*.png`  
+**Results**: `externals/experiments/exp-2676_pk_model_comparison.json`
+
+### Headline Finding
+
+**All 4 AID systems (Loop, oref0, AAPS, Trio) use mathematically identical exponential
+PK formulas**, sourced from the same LoopKit reference (GitHub issue #388). The differences
+are only in default parameters:
+
+| System | Default DIA | Default Peak | Model Options |
+|--------|-------------|--------------|---------------|
+| Loop | 360 min (6h) | 75 min (rapid) | Exponential + Walsh |
+| oref0 | 180 min (3h) | 75 min (rapid) | Exponential + Bilinear |
+| AAPS | Profile-based | 75/55/45 min | Exponential only |
+| Trio | 600 min (10h) | 75 min (rapid) | Exponential + Bilinear (= oref0) |
+
+**Shared exponential formula** (all systems):
+```
+τ = peak × (1 - peak/DIA) / (1 - 2×peak/DIA)
+a = 2×τ/DIA
+S = 1 / (1 - a + (1 + a)×exp(-DIA/τ))
+IOB(t) = 1 - S×(1-a)×((t²/(τ×DIA×(1-a)) - t/τ - 1)×exp(-t/τ) + 1)
+```
+
+### Panel Results
+
+#### Panel 2: IOB Decomposition (bolus\_iob + basal\_iob = total IOB)
+
+| Controller | N | MAE (U) | r |
+|------------|---|---------|---|
+| Loop | 42,900 | 0.0003 | 1.000000 |
+| Trio | 439,347 | 0.0002 | 1.000000 |
+| OpenAPS | 0 | — | — (no bolus\_iob data) |
+
+**Verdict**: Perfect decomposition where data available. IOB is exactly the sum of components.
+
+#### Panel 3: Empirical IOB Decay
+
+**Critical finding**: All curve fits hit the upper bounds (DIA=720m, peak=150m) for BOTH
+total IOB AND bolus\_iob component. This means empirical IOB does NOT follow single-bolus
+pharmacokinetic decay in AID systems, because:
+
+1. **Total IOB**: Controller keeps adding insulin (SMBs, temp basals), so IOB never truly decays
+2. **Bolus IOB**: Even the "bolus component" reflects ALL boluses (including new SMBs delivered after the index bolus), not just the isolated bolus's decay
+
+This is a fundamental methodological finding: **you cannot extract PK parameters from observed
+IOB in closed-loop AID data**. The PK model equivalence must be verified by source code analysis
+(which we have done) rather than empirical curve fitting.
+
+#### Panel 4: Insulin Activity vs IOB
+
+| Controller | N | r(IOB, activity) | Median Activity |
+|------------|---|-------------------|-----------------|
+| Loop | 42,900 | 0.844 | 0.0075 |
+| Trio | 439,347 | 0.856 | 0.0104 |
+| OpenAPS | — | — | No activity data |
+
+Strong positive correlation, consistent with activity being the derivative of IOB.
+Trio has higher median activity (more aggressive dosing → higher insulin action rate).
+
+#### Panel 5: IOB-Based BG Prediction at t+30 min
+
+`pred_iob_30` is a **glucose prediction** (mg/dL), NOT an insulin prediction. It represents
+the controller's prediction of where BG will be in 30 minutes considering only IOB effects.
+
+| Controller | N | MAE (mg/dL) | RMSE | r |
+|------------|---|-------------|------|---|
+| OpenAPS | 3,000 | 13.9 | 20.6 | 0.844 |
+| Trio | 3,000 | 22.8 | 33.1 | 0.559 |
+| Loop | 3,000 | 29.1 | 40.4 | 0.825 |
+
+OpenAPS has the best IOB-based BG prediction. This likely reflects less aggressive dosing
+(fewer perturbations → more predictable trajectory). Loop's strong r but higher MAE suggests
+systematic bias in the IOB-only prediction channel.
+
+#### Panel 6: IOB Semantics
+
+| Controller | Median IOB | P90 IOB | Max IOB | % Negative |
+|------------|-----------|---------|---------|------------|
+| Loop | 0.69 U | 4.85 U | varies | 15.5% |
+| Trio | 0.00 U | 3.58 U | varies | 9.2% |
+| OpenAPS | 0.08 U | 3.39 U | varies | 13.4% |
+
+**Key differences in IOB semantics**:
+- **Loop** carries the highest baseline IOB (median 0.69U) — runs relatively higher temp basals
+- **Trio** has median IOB = 0.0U — oscillates between zero-basal and SMB bursts (bang-bang control)
+- **OpenAPS** has low median (0.08U) — conservative dosing
+- **15.5% of Loop data has negative IOB** — basal suspended below scheduled rate
+
+### Implications for Cross-System Research
+
+1. **PK model is portable**: The formula is the same. Cross-system ISF/dosing comparisons
+   are valid because all systems compute IOB/activity identically (given same DIA/peak).
+
+2. **DIA settings matter enormously**: Trio's 10h default vs oref0's 3h default creates
+   3.3× different IOB tail lengths. When comparing IOB across systems, normalize by DIA.
+
+3. **Total IOB is NOT pharmacokinetic**: It's a closed-loop aggregate. Don't try to extract
+   PK parameters from IOB time series — the controller's continuous dosing masks the true
+   insulin kinetics.
+
+4. **pred\_iob\_30 is a BG prediction**: Future analyses should use this as a glucose prediction
+   channel, comparable to `loop_predicted_30` (which is also in mg/dL).
+
+5. **IOB semantics differ by controller strategy**: The "meaning" of IOB=2U differs — in Loop
+   it's steady state, in Trio it's a transient spike from an SMB burst.
+
+---
+
 ## Source Files
 
 - **EXP-2671**: `tools/cgmencode/exp_cross_controller_validation_2671.py`
@@ -370,6 +482,7 @@ inflated by AID compensation per EXP-2651.
 - **EXP-2673**: `tools/cgmencode/exp_autoresearch_wave1_2673.py`
 - **EXP-2674**: `tools/cgmencode/exp_dynisf_sr_deep_dive_2674.py`
 - **EXP-2675**: `tools/cgmencode/exp_cross_controller_isf_2675.py`
+- **EXP-2676**: `tools/cgmencode/exp_pk_model_comparison_2676.py`
 - **Pipeline**: `tools/ns2parquet/grid.py` (grid construction + percent-fix)
 - **Data**: `externals/ns-parquet/training/grid.parquet` (1.3M rows, 49 columns)
 - **Manifest**: `externals/experiments/autoprepare-qualified.json`

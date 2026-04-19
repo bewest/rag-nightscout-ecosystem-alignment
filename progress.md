@@ -555,3 +555,22 @@ loop workload ratio as ISF predictor (3 new closures, 30 total).
 **Cumulative totals**: 68 experiments, ~147 hypotheses, ~75 confirmed (51%).
 19 production features. 371 tests. 34 closed research lines.
 Validated across 16 patients from 2 independent sources.
+
+### Cross-Controller PK Model Comparison — EXP-2676 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| PK model comparison | `tools/cgmencode/exp_pk_model_comparison_2676.py` | All 4 AID systems use identical exponential PK formula |
+| 6-panel dashboard | `visualizations/pk-model-comparison/fig[1-6]_*.png` | IOB decomposition, decay, activity, BG prediction |
+| Updated report | `docs/60-research/cross-controller-validation-report-2026-04-19.md` | PK section added |
+
+**Key Findings**:
+- ALL 4 systems (Loop, oref0, AAPS, Trio) share identical exponential IOB formula from LoopKit #388
+- Difference is only parameters: DIA (3h-10h), peak (45-75min)
+- IOB decomposition is perfect: bolus_iob + basal_iob = total IOB (MAE < 0.001U)
+- Empirical IOB decay does NOT match theory — AID continuous dosing masks true PK
+- IOB semantics differ: Loop median=0.69U, Trio=0.00U, OpenAPS=0.08U
+- pred_iob_30 is a BG prediction (mg/dL), not insulin — OpenAPS best accuracy (MAE=13.9)
+
+**Cumulative (EXP-2671-2676)**: 6 cross-controller experiments, 22 qualified patients
+(Loop=8, Trio=11, OpenAPS=3), 44 visualizations.
