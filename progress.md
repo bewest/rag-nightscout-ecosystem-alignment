@@ -55,6 +55,48 @@ parquet paths, and added controller stratification.
 
 ---
 
+## Tier-2 DynISF Cross-Validation (2026-04-18)
+
+Cross-validated 4 tier-2 experiments on 12-patient DynISF cohort to confirm algorithm-independence.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| DynISF Cross-Validation Report | `docs/60-research/tier2-dynisf-cross-validation-report-2026-04-18.md` | Core findings replicate across AID algorithms |
+| EXP-2663 dynisf | `externals/experiments/exp-2663_demand_dose_dependence_dynisf.json` | Demand |r|=0.110 (dose-independent, replicates orig 0.097) |
+| EXP-2667 dynisf | `externals/experiments/exp-2667_sc_ceiling_demand_isf_dynisf.json` | Higher ceiling 34.4% (vs 22.5% orig); H4 flips FAIL→PASS |
+| EXP-2669 dynisf | `externals/experiments/exp-2669_wall_resolution_mechanism_dynisf.json` | 78% unaccounted (vs 68% orig) |
+| EXP-2668 dynisf | `externals/experiments/exp-2668_controller_isf_signatures_dynisf.json` | H1-H4 SKIP (single controller type, expected) |
+
+**Key Findings**:
+- Demand ISF dose-independence replicates (|r|<0.15 both cohorts)
+- DynISF patients show higher SC ceiling (34.4% vs 22.5%) — better absorption
+- Higher unaccounted wall resolution (78% vs 68%) — DynISF users may intervene more
+
+---
+
+## Tier-3 Therapy & Phenotyping (2026-04-18)
+
+Ran 4 tier-3 synthesis experiments (2291/2321/2331/2351) on 31+12 patients.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Tier-3 Report | `docs/60-research/tier3-therapy-phenotype-report-2026-04-18.md` | 16/31 safe to implement; mean TIR -0.5pp |
+| EXP-2351 results | `externals/experiments/exp-2351-2358_insulin_pk*.json` | 26/31 slow PK type, DIA 12.3h median |
+| EXP-2321 results | `externals/experiments/exp-2321-2328_phenotype*.json` | 8 HIGH, 11 MOD, 3 LOW risk |
+| EXP-2331 results | `externals/experiments/exp-2331-2338_prediction_bias*.json` | Only 2/29 safe; most show prediction benefit |
+| EXP-2291 results | `externals/experiments/exp-2291-2298_integrated*.json` | 16/31 safe, 20/31 ≥70% TIR |
+| EXP-2665 results | `externals/experiments/exp-2665_nyquist_circadian_isf*.json` | H4 PASS: demand ISF has NO circadian variation |
+
+**Key Findings**:
+- Conservative guardrails: most patients show benefit potential but few pass all 7 safety checks
+- Demand ISF circadian variation confirmed absent at all Nyquist-appropriate block sizes
+- DynISF patients show similar risk/phenotype distributions
+- Mean TIR improvement slightly negative (-0.5pp) — settings optimization is harder than expected
+
+**Gaps Identified**: GAP-ALG-072 (integrated recommendation TIR degradation needs investigation)
+
+---
+
 ## Tier-2 Expanded Cohort: Dose-Dependence & Wall Resolution (2026-04-18)
 
 Reran 5 tier-2 experiments (EXP-2636/2640/2663/2667/2669) after robustness audit.
