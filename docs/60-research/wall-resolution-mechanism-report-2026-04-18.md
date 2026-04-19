@@ -2,7 +2,7 @@
 
 **Date**: 2026-04-18  
 **Predecessor**: EXP-2667 (H5 failure follow-up)  
-**Patients**: 13  
+**Patients**: 24  
 **Data**: CGM + pump telemetry from grid.parquet
 
 ## 1. Motivation
@@ -30,6 +30,17 @@ EXP-2667 H5 predicted wall episodes (high IOB + high glucose + slow drop) would 
 | g | Loop/AB | 118 | 0.66 | 0.73h | 73.7% | 66.9% |
 | h | Loop/AB | 19 | 0.11 | 0.67h | 100.0% | 89.5% |
 | i | Loop/AB | 119 | 0.66 | 0.76h | 69.7% | 68.1% |
+| ns-554b16de7133 | Trio/AB | 20 | 0.14 | 0.64h | 100.0% | 85.0% |
+| ns-6bef17b4c1ec | Trio/AB | 60 | 0.42 | 0.71h | 100.0% | 85.0% |
+| ns-8b3c1b50793c | Trio/AB | 24 | 0.17 | 0.67h | 100.0% | 83.3% |
+| ns-8f3527d1ee40 | Trio/AB | 25 | 0.17 | 0.6h | 100.0% | 88.0% |
+| ns-8ffa739b986b | Trio/AB | 16 | 0.11 | 0.68h | 93.8% | 75.0% |
+| ns-9b9a6a874e51 | Trio/AB | 46 | 0.33 | 0.6h | 93.5% | 78.3% |
+| ns-a9ce2317bead | Trio/AB | 45 | 0.31 | 0.7h | 75.6% | 62.2% |
+| ns-adde5f4af7ca | Trio/AB | 83 | 0.67 | 0.67h | 90.4% | 73.5% |
+| ns-c422538aa12a | Trio/AB | 18 | 0.12 | 0.68h | 94.4% | 72.2% |
+| ns-d444c120c23a | Trio/AB | 9 | 0.06 | 0.69h | 77.8% | 55.6% |
+| ns-dde9e7c2e752 | Trio/AB | 68 | 0.47 | 0.67h | 94.1% | 85.3% |
 | odc-39819048 | AAPS/SMB | 5 | 0.49 | 0.78h | 100.0% | 80.0% |
 | odc-74077367 | AAPS/TBR | 128 | 0.6 | 0.83h | 92.2% | 79.7% |
 | odc-86025410 | AAPS/TBR | 119 | 0.32 | 0.81h | 68.1% | 72.3% |
@@ -43,7 +54,7 @@ EXP-2667 H5 predicted wall episodes (high IOB + high glucose + slow drop) would 
 
 ![Unaccounted](../../visualizations/wall-resolution-mechanism/fig3_unaccounted_resolution.png)
 
-**Overall**: 876/1349 episodes (64.9%) show unaccounted resolution.  
+**Overall**: 1199/1763 episodes (68.0%) show unaccounted resolution.  
 These events likely represent manual injections, infusion site changes, or equipment replacement that are not captured in pump telemetry.
 
 ## 5. Wall vs Non-Wall Insulin Effectiveness
@@ -66,11 +77,11 @@ These events likely represent manual injections, infusion site changes, or equip
 
 | H | Result | Description |
 |---|--------|-------------|
-| H1 | **PASS** | Wall ROC higher (less negative) than non-wall high-IOB |
+| H1 | **PASS** | Wall ROC higher (positive, not merely less negative) than non-wall high-IOB |
 | H2 | **PASS** | >20% of resolutions are unaccounted (possible intervention) |
-| H3 | SKIP | Demand ISF lower during walls (demand exhaustion) |
-| H4 | SKIP | Resolution timing clusters at 2-4h (demand cycle) |
-| H5 | SKIP | Longer wall duration predicts faster resolution |
+| H3 | **PASS** | Demand ISF lower during walls (demand exhaustion) |
+| H4 | **PASS** | Resolution timing clusters at 2-4h (demand cycle) |
+| H5 | FAIL | Longer wall duration predicts faster resolution |
 
 ## 10. Clinical Implications
 

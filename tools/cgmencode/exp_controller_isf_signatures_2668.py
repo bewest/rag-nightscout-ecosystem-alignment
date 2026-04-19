@@ -443,7 +443,7 @@ def _generate_report(results, hyps):
         "H5": "Within-controller ISF CV < overall CV",
     }
     for h, v in hyps.items():
-        s = "**PASS**" if v is True else ("FAIL" if v is False else "SKIP")
+        s = "**PASS**" if bool(v) is True else ("FAIL" if bool(v) is False else "SKIP")
         L.append("| {} | {} | {} |".format(h, s, descs.get(h, "")))
     L.append("")
 
@@ -572,7 +572,7 @@ def main():
     print("\n" + "=" * 70)
     print("HYPOTHESIS RESULTS:")
     for h, v in hyps.items():
-        s = "PASS" if v is True else ("FAIL" if v is False else "SKIP")
+        s = "PASS" if bool(v) is True else ("FAIL" if bool(v) is False else "SKIP")
         print("  {}: {}".format(h, s))
 
     print("\nGenerating visualizations...")
