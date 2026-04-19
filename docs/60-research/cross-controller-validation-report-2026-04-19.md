@@ -605,9 +605,10 @@ whatever the bolus doesn't provide, rendering individual bolus size nearly irrel
 ### 3. BG Drop Is Primarily Regression to the Mean
 
 The BG≥180 filter selects observations that are above the patient's equilibrium. These
-naturally regress toward the mean over 2h, with or without a bolus. The bolus may
-accelerate this process, but the magnitude is dominated by where the BG started
-relative to the patient's setpoint.
+naturally regress toward the mean over 2h, with or without a bolus. **EXP-2687 proved
+this directly**: no-bolus events at BG≥180 drop 61.7 mg/dL (median) over 2h — MORE than
+bolus events (53.0 mg/dL). The null model accounts for 116.5% of the bolus drop.
+The "treatment effect" of a correction bolus in AID is approximately zero (EXP-2689).
 
 ### 4. Stochastic Physiology Is the Dominant Factor
 
@@ -657,6 +658,9 @@ strategies (Trio's bang-bang) correlate with shorter, shallower hypos.
 - **EXP-2684**: `tools/cgmencode/exp_aggregate_outcomes_2684.py`
 - **EXP-2685**: `tools/cgmencode/exp_controller_strategy_2685.py`
 - **EXP-2686**: `tools/cgmencode/exp_safety_analysis_2686.py`
+- **EXP-2687**: `tools/cgmencode/exp_null_model_2687.py`
+- **EXP-2688**: `tools/cgmencode/exp_temporal_trends_2688.py`
+- **EXP-2689**: `tools/cgmencode/exp_confounding_2689.py`
 - **Pipeline**: `tools/ns2parquet/grid.py` (grid construction + percent-fix)
 - **Data**: `externals/ns-parquet/training/grid.parquet` (1.3M rows, 49 columns)
 - **Manifest**: `externals/experiments/autoprepare-qualified.json`
@@ -665,16 +669,18 @@ strategies (Trio's bang-bang) correlate with shorter, shallower hypos.
 
 Given the insulin irrelevance finding, the productive research directions shift:
 
-1. **Aggregate outcome modeling**: TIR, time-below-70, mean glucose as functions of
-   controller settings (ISF, CR, basal rate) — not individual corrections
-2. **Controller strategy comparison**: How do Loop/Trio/OpenAPS achieve similar BG
-   outcomes with ~3× different insulin delivery?
-3. **Regression to mean quantification**: Build a null model (BG → patient mean)
-   to benchmark any "treatment effect" claims
-4. **Sensitivity ratio validation**: Does the controller's own SR correlate with
-   aggregate outcomes? (per-session, not per-event)
-5. **Safety analysis**: When does aggressive dosing (Trio ~4.8U) vs conservative
-   (OpenAPS ~1.7U) lead to different hypo rates?
+1. ✅ **Aggregate outcome modeling** (EXP-2684): Settings don't predict TIR
+2. ✅ **Controller strategy comparison** (EXP-2685): Bang-bang vs proportional
+3. ✅ **Regression to mean quantification** (EXP-2687): Null model > bolus drop
+4. ✅ **Safety analysis** (EXP-2686): IOB at hypo = controller response, not cause
+5. ✅ **Confounding by indication** (EXP-2689): Users bolus in harder situations
+6. ✅ **Temporal trends** (EXP-2688): No learning curve, outcomes stable
+
+Remaining:
+1. **Controller decision tree**: Map the actual if/then decision logic from source
+2. **DynISF vs standard within Trio**: Does DynISF formula explain Trio's TIR advantage?
+3. **Patient selection bias**: Are Trio users more engaged / better at carb counting?
+4. **Open-loop periods**: Do any patients have open-loop data for true treatment effect?
 
 ---
 
@@ -734,3 +740,58 @@ consistent with its less aggressive suspension strategy (proportional, not bang-
 **DynISF formula within Trio**: Log formula → 90.5% TIR / 5.1% hypo (more aggressive);
 Sigmoid → 86.0% TIR / 3.3% hypo (more conservative). The log formula pushes harder for
 TIR at the cost of higher hypo risk.
+
+---
+
+## Phase 7: Null Model & Confounding (EXP-2687–2689)
+
+### EXP-2687: Null Model Benchmark
+
+**The AID controller alone brings BG down from 180+ faster than when users also bolus.**
+
+| Category | Median 2h BG Drop | N events |
+|----------|-------------------|----------|
+| No-bolus (null) | **61.7 mg/dL** | 40,016 |
+| Bolus | 53.0 mg/dL | 3,981 |
+| "Treatment effect" | **−8.7 mg/dL** | — |
+
+The null model accounts for **116.5%** of the bolus drop. By controller:
+- **Loop**: null=63, bolus=51, Δ=−12
+- **Trio**: null=86, bolus=52, Δ=−34
+- **OpenAPS**: null=55, bolus=57, Δ=+2
+
+After null subtraction, dose-response correlation r=−0.065 (no signal).
+
+### EXP-2688: Within-Patient Temporal Trends
+
+**No learning curve detected.** TIR is stable from the start:
+
+| Metric | Value |
+|--------|-------|
+| First→last month TIR change | +0.9 pp (p=0.579) |
+| Sig. improving patients | 3/22 |
+| Sig. declining patients | 1/22 |
+| Median slope | −0.013 pp/week |
+
+Settings (ISF, CR, basal) show minimal drift over time. Controller strategy is
+established early and outcomes don't change as settings are tuned.
+
+### EXP-2689: Confounding by Indication
+
+**Explains why bolus events drop less** (EXP-2687's negative "treatment effect"):
+
+| Confound | Bolus | No-bolus | Impact |
+|----------|-------|----------|--------|
+| Pre-slope (mg/dL/5min) | **+1.9 (rising)** | −0.4 (falling) | Users bolus when BG going up |
+| % meal boluses | 53% | 0% | Incoming carbs fight BG drop |
+| IOB at event | **2.5U** | 1.8U | Controller already maxed |
+| Correction-only drop | 58 mg/dL | 61 mg/dL | Even corrections ≈ null |
+
+**Stratified by pre-event trajectory**:
+- BG FALLING: bolus=61, null=74, Δ=−13 (controller handles falling BG alone)
+- BG RISING: bolus=48, null=46, Δ=+2 (no treatment effect even when BG rising)
+
+**Conclusion**: In AID systems, "easy" highs (already falling) resolve autonomously
+via the controller. Users bolus in "hard" situations (rising BG, meals, resistant highs).
+The true treatment effect of a correction bolus in the presence of an AID controller
+is approximately zero.
