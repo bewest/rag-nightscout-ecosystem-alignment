@@ -1,0 +1,287 @@
+# Multi-Factor Waterfall: From ISF Division to Subtraction-Based Settings
+
+**Date**: 2026-04-20  
+**Phase**: Transition from observational ISF extraction → multi-factor subtraction pipeline  
+**Experiments**: EXP-2717, EXP-2717b, EXP-2718, EXP-2719, EXP-2719b  
+**Dataset**: 43,760 correction events, 31 patients (BG ≥ 150 mg/dL, carb-free)  
+**Predecessors**: EXP-2681 (constant ~74 mg/dL drop), EXP-2698 (BGI subtraction), EXP-2711/2712 (bilateral)
+
+---
+
+## Phase Transition Summary
+
+This report documents the transition from **division-based ISF extraction** (which
+consistently fails in closed-loop AID data) to **subtraction-based settings assessment**
+(which passes all validation checks).
+
+| Approach | Method | Result | Status |
+|----------|--------|--------|--------|
+| ISF by division (2h) | drop / dose | ISF ≈ 3-8 (14× below profile) | ❌ Failed |
+| ISF by division (6h) | drop / total_insulin | ISF ≈ 10.1 (5.4× below) | ❌ Failed |
+| ISF by activity (0-1h) | drop / activity_integral | ISF ≈ 65.3 (1.2× above) | ⚠️ Promising |
+| Multi-factor waterfall | subtract known → measure residual | R² = 0.47-0.54 | ✅ Works |
+| Settings from residuals | population model → per-patient deviation | 5/5 pass, 96% actionable | ✅ **Breakthrough** |
+
+**Core insight**: In closed-loop AID data, you cannot DIVIDE (ISF = drop / dose) because
+of confounding by indication. You CAN SUBTRACT (remove known population effects, attribute
+residual to individual settings error). This is oref0's design philosophy applied to
+retrospective data analysis.
+
+---
+
+## Why Division Fails (EXP-2717, 2717b, 2718)
+
+### EXP-2717: Total Insulin Accounting
+**Question**: Is ISF deflation caused by incomplete insulin accounting?  
+**Answer**: No. Total insulin is 6-25× user bolus, but ISF by division still gives 10.1
+at 6h vs profile 55. Accounting for ALL insulin channels makes it WORSE because the
+controller delivers maintenance insulin that counterbalances EGP.
+
+### EXP-2717b: Excess Insulin Only
+**Question**: Does using excess-above-basal insulin fix ISF extraction?  
+**Answer**: Partially. Per-patient r=0.706 (signal preserved), but ISF still deflated
+3-5×. After BG₀ subtraction, residualized ISF becomes NEGATIVE — more insulin predicts
+LESS residual drop. This is confounding by indication: harder events get more insulin.
+
+### EXP-2718: Phase Decomposition
+**Question**: Does ISF work at shorter timescales (within DIA phases)?  
+**Answer**: Best result yet at 0-1h using insulin ACTIVITY weighting: ISF = 65.3 (closest
+to profile 55). But activity-based weighting at peak overshoots, and later phases show
+progressive ISF collapse (36.5 → 24.1 → 16.9). The controller's ongoing adjustment
+redistributes the "credit" for BG drop across phases.
+
+### The Fundamental Problem
+In closed-loop AID, the controller creates a feedback loop:
+```
+BG high → controller delivers insulin → BG drops → controller suspends
+```
+Division (ISF = drop / dose) captures this ENTIRE loop, not just insulin sensitivity.
+The quotient conflates three effects:
+1. Insulin pharmacodynamics (what ISF is supposed to measure)
+2. Controller proportional response (dosing proportional to BG elevation)
+3. Controller feedback (suspension/adjustment during correction)
+
+---
+
+## The Multi-Factor Waterfall (EXP-2719)
+
+### Design
+Progressive subtraction of known confounds, measuring R² increment at each stage.
+Run at 2h, 4h, and 6h horizons to see how each factor's contribution changes.
+
+### Results: Factor Contribution Matrix
+
+| Stage | What it subtracts | 2h ΔR² | 4h ΔR² | 6h ΔR² |
+|-------|-------------------|--------|--------|--------|
+| S0 | (baseline) | 0.000 | 0.000 | 0.000 |
+| S1 | Profile ISF × insulin | **-33.75** | **-58.27** | **-88.33** |
+| S2 | Regression-fit insulin + EGP | +33.88 | +58.34 | +88.39 |
+| S3 | BG₀ controller response | **+0.283** | **+0.435** | **+0.440** |
+| S4 | Rate of change + IOB | +0.059 | +0.038 | +0.020 |
+| S5 | Circadian blocks | +0.016 | +0.006 | +0.005 |
+| S6 | Patient fixed effects | +0.053 | +0.044 | +0.038 |
+| **Total** | | **0.486** | **0.550** | **0.557** |
+
+### Key Findings
+
+**1. Profile ISF is catastrophic for BGI subtraction (S1)**
+
+Applying `expected_drop = excess_insulin × ISF_profile` produces R² = -33 to -88.
+This is WORSE than predicting the mean. The profile ISF (≈55 mg/dL/U) overestimates
+the marginal effect of excess insulin by 10-30×.
+
+Why: In closed-loop, the controller has already delivered the "right" amount of insulin
+(proportional to BG elevation). Additional excess insulin has a marginal effect of only
+2-5 mg/dL/U because the dominant dose was already delivered.
+
+**2. BG₀ is the dominant real predictor (S3)**
+
+The BG₀ coefficient approaches 1.0 at 6h (0.606 → 0.835 → 0.894), meaning
+"BG returns toward 120" explains nearly all variance at physiological timescales.
+This IS the controller working — not endogenous homeostasis (T1D has no endogenous insulin).
+
+**3. EGP provides correct regression regularization (S2)**
+
+The EGP term enters with a positive coefficient (1.2-1.8 at 2h), meaning higher
+EGP is associated with LARGER drops (counterintuitive). This likely captures the
+correlation: higher IOB → more insulin suppression of EGP → larger drops.
+The EGP term functions as a regularizer helping the regression find correct
+insulin coefficients, not as a direct causal subtraction.
+
+**4. Circadian is small but real (S5)**
+
+ΔR² = +0.016 at 2h, declining at longer horizons. Consistent with EXP-2715
+(circadian ISF doesn't beat flat model). Dawn phenomenon is measurable but
+already captured by the controller's dosing patterns.
+
+**5. Patient fixed effects matter more than circadian (S6)**
+
+ΔR² = +0.053 at 2h. Between-patient heterogeneity explains 5× more variance
+than circadian variation. This validates the per-patient settings assessment approach.
+
+### Coefficient Stability
+
+| Factor | 2h | 4h | 6h | Interpretation |
+|--------|----|----|----| --------------|
+| excess_insulin | -5.1 | -2.7 | -1.9 | NEGATIVE: confounding by indication |
+| bg0_centered | 0.61 | 0.84 | 0.89 | Approaches 1.0 (pure regression to target) |
+| iob_start | 8.9 | 7.9 | 5.8 | Prior insulin state helps prediction |
+| egp_headwind | 1.8 | 0.8 | 0.4 | Regularization effect, decreasing with horizon |
+| roc_start | -0.03 | 0.02 | 0.02 | Momentum, minimal contribution |
+
+The negative insulin coefficient after BG₀ control confirms confounding by indication:
+after accounting for how high BG was, patients who received MORE insulin had SMALLER
+residual drops (because they had harder-to-treat events).
+
+### Cross-Validation (70/30 Patient Split)
+
+| Horizon | R²(train) | R²(test) | MAE(test) | MAE(baseline) | Reduction |
+|---------|-----------|----------|-----------|---------------|-----------|
+| 2h | 0.480 | 0.399 | 32.1 mg/dL | 41.6 mg/dL | 22.9% |
+| 4h | 0.543 | 0.547 | 32.8 mg/dL | 48.2 mg/dL | 32.0% |
+| 6h | 0.511 | 0.522 | 37.2 mg/dL | 55.1 mg/dL | 32.4% |
+
+The model generalizes well to unseen patients (R²_test ≈ R²_train at 4h/6h),
+confirming the factors are universal, not overfit.
+
+---
+
+## Settings from Residuals (EXP-2719b)
+
+### Method
+1. Fit population multi-factor model (all patients pooled)
+2. Compute per-patient mean residual (signed deviation from population prediction)
+3. Convert to correction factor: `observed_drop / predicted_drop`
+4. Test stability across horizons
+
+### Results: 5/5 Hypotheses Pass
+
+| Hypothesis | Result |
+|------------|--------|
+| H1: Majority have significant residuals | ✅ 96% (27/28) |
+| H2: Meaningful correction variance (σ > 0.1) | ✅ σ = 0.35 |
+| H3: Profile ISF predicts residual direction | ✅ r = -0.33 |
+| H4: Stable across horizons (2h vs 6h) | ✅ r = 0.820 |
+| H5: >30% need adjustment | ✅ 89% outside ±10% |
+
+### Per-Patient Recommendations (2h horizon, selected)
+
+| Patient | Profile ISF | Residual | p-value | Recommendation |
+|---------|------------|----------|---------|----------------|
+| ns-1ccae8a | 45 | +33.9 | <0.0001 | ↓ ISF by 134% |
+| ns-8ffa739 | 55 | +20.7 | <0.0001 | ↓ ISF by 92% |
+| ns-6bef17b | 63 | +19.2 | <0.0001 | ↓ ISF by 70% |
+| odc-491415 | 60 | +2.8 | 0.22 | Settings OK |
+| d | 40 | -3.0 | <0.0001 | Settings OK |
+| e | 33 | -7.9 | <0.0001 | ↑ ISF by 22% |
+| b | 90 | -42.3 | <0.0001 | ↑ ISF by 60% |
+
+### Interpretation of Correction Factors
+
+The correction factor distribution shifts toward 1.0 with longer horizons:
+
+| Horizon | Median CF | IQR | Patients needing ↓ ISF | Patients needing ↑ ISF | OK (±10%) |
+|---------|-----------|-----|----------------------|----------------------|-----------|
+| 2h | 1.23 | [0.85, 1.37] | 16 | 9 | 3 |
+| 4h | 1.06 | [0.89, 1.32] | 12 | 8 | 8 |
+| 6h | 1.04 | [0.92, 1.28] | 11 | 4 | 13 |
+
+At 2h, most patients overshoot (CF > 1.0) because the controller's early-phase
+aggressiveness hasn't been fully accounted for. At 6h, the population model
+better captures the full correction trajectory, leaving smaller residuals.
+
+### What "↓ ISF by X%" Means in Practice
+
+The correction factor represents how much the patient's actual BG drop deviates
+from the population prediction. If CF = 1.34 for a patient with ISF = 45:
+- Their corrections produce drops 34% larger than the population model predicts
+- This could mean: (a) their ISF is truly lower than 45 (more sensitive), or
+  (b) their controller is more aggressive than average, or (c) other settings
+  (CR, basal rate) are interacting
+
+**These are SIGNALS for clinical review, not automatic setting changes.**
+
+---
+
+## Relationship to Prior Work
+
+### What We Learned from Failed Approaches
+| Experiment | Method | Why it failed |
+|-----------|--------|---------------|
+| EXP-2699 | ISF = drop / excess_insulin (2h) | Profile ISF 14× inflated |
+| EXP-2700 | Multi-parameter extraction | ISF + CR entangled |
+| EXP-2680 | ISF at BG ≥ 180 | Dose-dependent artifact (r = -0.66) |
+| EXP-2717 | Total insulin accounting | ISF still 5.4× deflated |
+| EXP-2718 | Activity-based ISF | Best (65.3), but only at 0-1h |
+
+### What We Learned from the Other Researcher (EXP-2713-2716)
+| Finding | Implication |
+|---------|-------------|
+| Autocorrelation lag1=0.638 | Events not independent; effective N reduced 5.4× |
+| β collapses 0.595 → -0.041 | Independence correction kills naive dose-response |
+| β → 0 at 6h horizon | Dose-response vanishes at physiological timescales |
+
+Our EXP-2719 independence correction (Stage 7) shows R² drops to 0.41-0.49
+(from 0.47-0.54) but signal SURVIVES. The population model is more robust than
+single-factor dose-response to non-independence.
+
+### Connection to oref0 Design Philosophy
+oref0 doesn't extract ISF from data — it uses the settings you provide and
+looks at DEVIATIONS (BGI subtraction). EXP-2719 confirms this is the correct
+approach:
+- Profile ISF × dose → terrible predictions (R² < 0)
+- Regression on residual features → R² = 0.47-0.54
+- Per-patient residuals → actionable settings signals
+
+The production `deconfounding.py` pipeline should be recalibrated to use
+empirical coefficients rather than profile ISF for the initial BGI subtraction.
+
+---
+
+## Visualizations
+
+| Dashboard | Key Content |
+|-----------|-------------|
+| `tools/visualizations/extended-waterfall/exp-2719-dashboard.png` | Factor contribution matrix, cumulative R², coefficient stability, cross-validation |
+| `tools/visualizations/settings-from-residuals/exp-2719b-dashboard.png` | Correction factor distributions, profile ISF vs residual, empirical vs profile ISF |
+| `tools/visualizations/total-insulin-accounting/exp-2717-dashboard.png` | ISF by horizon, channel fractions, 72h balance |
+| `tools/visualizations/total-insulin-accounting/exp-2717b-dashboard.png` | Excess insulin ISF, per-patient stability |
+| `tools/visualizations/phase-decomposition/exp-2718-dashboard.png` | Phase-wise drop, ISF by activity, controller suspension |
+
+---
+
+## Next Steps
+
+### Immediate (from this phase)
+1. **Recalibrate production BGI subtraction** — Use empirical coefficients (not profile ISF)
+   in `production/deconfounding.py` to avoid the catastrophic S1 result
+2. **Prospective validation** — Apply 2719b corrections in forward simulation;
+   do corrected settings improve simulated TIR?
+3. **CR extraction** — Extend residual method to meal events (need carb-inclusive model)
+
+### From Other Researcher's Findings
+4. **Autocorrelation-corrected residuals** — Apply EXP-2714's independence subsampling
+   to 2719b per-patient analysis; does it change recommendations?
+5. **Shrinkage estimator** — EXP-2715's Bayesian shrinkage applied to correction factors
+   (pull extreme recommendations toward population mean)
+
+### Longer-Term
+6. **72h glycogen resistance** — 7/29 patients showed significant 72h-excess → ISF
+   correlation in EXP-2717. Integrate as an additional waterfall stage.
+7. **Multi-setting joint optimization** — ISF + CR + basal as coupled parameters
+8. **Controller-specific models** — Separate population models for Loop vs Trio vs AAPS
+
+---
+
+## Source Files
+
+| File | Purpose |
+|------|---------|
+| `tools/cgmencode/exp_extended_waterfall_2719.py` | Multi-factor subtraction waterfall |
+| `tools/cgmencode/exp_settings_from_residuals_2719b.py` | Per-patient settings from residuals |
+| `tools/cgmencode/exp_total_insulin_accounting_2717.py` | Total insulin over 1-6h |
+| `tools/cgmencode/exp_excess_insulin_accounting_2717b.py` | Excess-only insulin |
+| `tools/cgmencode/exp_phase_decomposition_2718.py` | Phase-wise decomposition |
+| `tools/cgmencode/production/waterfall.py` | Existing waterfall infrastructure |
+| `tools/cgmencode/production/deconfounding.py` | BGI subtraction pipeline |
+| `tools/cgmencode/production/metabolic_engine.py` | EGP computation |
