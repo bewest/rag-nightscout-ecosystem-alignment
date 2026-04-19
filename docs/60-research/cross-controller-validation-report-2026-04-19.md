@@ -1199,3 +1199,96 @@ effects through standard econometric methods.** The fundamental barriers are:
 | 8 | Aggregate more explainable than individual | EXP-2697: event R²=0.30, TIR R²=0.70 |
 | 9 | BG ≥ 180 floor required for corrections | EXP-2677: 57% negative ISF without |
 | 10 | IOB at hypo onset = controller response | EXP-2686: suspension is treatment, not cause |
+
+---
+
+## Phase 11: oref0-Inspired Combined Deconfounding Pipeline (EXP-2698)
+
+### Motivation
+
+oref0's autotune-prep computes `deviation = avgDelta - BGI` where `BGI = -iob.activity × ISF × 5min`.
+This subtracts the **expected** insulin effect, isolating unexplained glucose changes. Our prior work
+recovered signals using multi-factor decomposition (R²=0.296), within-patient FE, phase decomposition
+(2-10× ISF separation), and circadian blocking (+10-20% RMSE). Can we **combine** all of these?
+
+### Method
+
+1. **BGI Subtraction**: For each event (BG≥120, 2h horizon), compute `expected_drop = excess_insulin × ISF_setting`
+   where excess_insulin = bolus + SMB + (net_basal − scheduled_basal). Then `deviation = observed_drop − expected_drop`.
+2. **Event Categorization**: Classify into correction (bolus >0.3U, no carbs), meal (carbs >5g),
+   basal (minimal excess), UAM (deviation >5 with no carbs), mixed (everything else).
+3. **Multi-Factor Deviation Model**: Regress deviation on [bg0, insulin channels, carbs, ROC, IOB].
+4. **Within-Patient FE**: De-mean deviations per patient, then regress.
+5. **Circadian Blocking**: Add 4h time-of-day blocks as dummy variables.
+
+### Key Results
+
+**R² Waterfall — Cumulative Deconfounding**:
+
+| Stage | R² | Δ R² | Notes |
+|-------|-----|------|-------|
+| Univariate (bolus only) | 0.015 | — | EXP-2690 baseline |
+| Multi-factor (all channels) | 0.351 | +0.335 | 7 features, pooled |
+| + BGI subtraction | **0.768** | **+0.418** | oref0's core insight |
+| + Within-patient FE | 0.721 | −0.047 | Between-patient ISF error is informative |
+| + Circadian blocks | 0.722 | +0.001 | Negligible circadian after BGI |
+
+**48× improvement** from univariate to combined pipeline (0.015 → 0.722).
+
+**BGI subtraction is the dominant deconfounding technique** (+0.418 R²), larger than
+multi-factor channels (+0.335) alone.
+
+**Category-Specific R² (deviation model vs raw)**:
+
+| Category | N | Raw R² | Deviation R² | Δ R² |
+|----------|---|--------|--------------|------|
+| Correction | 227,926 | 0.354 | **0.839** | +0.484 |
+| Meal | 139,411 | 0.347 | 0.653 | +0.307 |
+| UAM | 115,539 | 0.384 | 0.411 | +0.027 |
+| Mixed | 20,384 | 0.184 | 0.285 | +0.101 |
+| Basal | 2,938 | 0.322 | 0.309 | −0.013 |
+
+Correction events benefit most from BGI subtraction (R²=0.839), exactly where oref0's
+approach should excel — clear insulin delivery without meal confounding.
+
+**ISF Recovery from Deviations**:
+- Mean ISF error: +80.2 mg/dL/U (settings systematically overestimate ISF)
+- Dose-dependent ISF from log model: r=−0.699 (p≈0) — strong signal
+- 21/22 patients: ISF successfully recovered from deviations
+- This aligns with EXP-2651 finding that apparent ISF is 2-10× inflated
+
+**Within-Patient FE Decreases R²**: Removing between-patient means actually reduces
+explanatory power (0.768 → 0.721). This means the between-patient ISF calibration
+error is **informative signal**, not confounding. Each patient's mean deviation
+reflects their ISF setting accuracy.
+
+### Interpretation
+
+The oref0 approach of "subtract expected, analyze residual" is the single most powerful
+deconfounding technique available for AID data. It works because:
+
+1. **Expected insulin effect is computable** from PK models + ISF settings
+2. **Residual deviation captures everything else**: EGP, carb absorption, exercise, dawn phenomenon
+3. **Multi-factor regression on deviations** is far more tractable than on raw BG changes
+
+The combined pipeline validates our catalog of deconfounding techniques:
+
+| Technique | Individual Δ R² | Works via |
+|-----------|-----------------|-----------|
+| Multi-factor channels | +0.335 | Separate bolus/SMB/basal/carbs effects |
+| BGI subtraction | **+0.418** | Remove expected insulin PK effect |
+| Event categorization | +0.484 (corrections) | Isolate event types |
+| Within-patient FE | informative | ISF calibration error signal |
+| Circadian blocking | +0.001 | Already captured by BGI |
+
+### Conclusion
+
+**Combined deconfounding IS feasible and productive.** The oref0-inspired BGI subtraction
+is the breakthrough technique — it transforms the problem from "predict BG from confounded
+insulin" to "predict residual from measured covariates," where 77-84% of variance is
+explainable. This opens the door for:
+
+1. **ISF calibration**: Per-patient ISF error quantification from deviation analysis
+2. **Parameter recovery**: Dose-dependent ISF (r=−0.699) from correction deviations
+3. **Autotune validation**: Compare our deviation-based ISF with oref0's autotune estimates
+4. **Multi-parameter optimization**: CR from meal deviations, basal from fasting deviations

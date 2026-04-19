@@ -1,0 +1,147 @@
+{
+  "experiment": "EXP-2698",
+  "title": "oref0-Inspired Multi-Factor Deconfounding Pipeline",
+  "n_events": 506198,
+  "expected_vs_observed": {
+    "r": -0.32447124709389896,
+    "p": 0.0
+  },
+  "deviation_stats": {
+    "mean": -29.743220042381758,
+    "sd": 267.7896731001276
+  },
+  "category_counts": {
+    "correction": 227926,
+    "meal": 139411,
+    "uam": 115539,
+    "mixed": 20384,
+    "basal": 2938
+  },
+  "r2_pipeline": {
+    "univariate_bolus": 0.015,
+    "multi_factor_raw": 0.35046067442430096,
+    "deviation_pooled": 0.7684016058285402,
+    "deviation_within_patient": 0.7211999275124708,
+    "deviation_fe_circadian": 0.7215547681116519
+  },
+  "category_r2": {
+    "correction": {
+      "n": 227926,
+      "r2_deviation": 0.8386984527002744,
+      "r2_raw": 0.3543497060208085,
+      "coefficients": {
+        "bg0": 26.57742877505129,
+        "bolus_2h": -129.24038972040987,
+        "smb_2h": -123.57424286464096,
+        "excess_basal_2h": -130.54029467378768,
+        "roc_start": -6.766113347870621,
+        "iob_start": 2.2619154189564625
+      },
+      "p_values": {
+        "bg0": 0.0,
+        "bolus_2h": 0.0,
+        "smb_2h": 0.0,
+        "excess_basal_2h": 0.0,
+        "roc_start": 0.0,
+        "iob_start": 0.0
+      }
+    },
+    "meal": {
+      "n": 139411,
+      "r2_deviation": 0.6533845935958972,
+      "r2_raw": 0.34651044263372155,
+      "coefficients": {
+        "bg0": 45.96200348874426,
+        "bolus_2h": -197.85479033004776,
+        "carbs_2h": -13.136637702775767,
+        "smb_2h": -114.69051316472287,
+        "excess_basal_2h": -158.98774633512232,
+        "roc_start": -10.450756690921395
+      },
+      "p_values": {
+        "bg0": 0.0,
+        "bolus_2h": 0.0,
+        "carbs_2h": 0.0,
+        "smb_2h": 0.0,
+        "excess_basal_2h": 0.0,
+        "roc_start": 0.0
+      }
+    },
+    "basal": {
+      "n": 2938,
+      "r2_deviation": 0.3094094984750815,
+      "r2_raw": 0.32224029839759916,
+      "coefficients": {
+        "bg0": 38.633811129596914,
+        "roc_start": -2.4578970445163844,
+        "iob_start": -9.353346030238615
+      },
+      "p_values": {
+        "bg0": 0.0,
+        "roc_start": 0.012437356656303411,
+        "iob_start": 0.0
+      }
+    },
+    "uam": {
+      "n": 115539,
+      "r2_deviation": 0.4107543969939096,
+      "r2_raw": 0.3839131337805606,
+      "coefficients": {
+        "bg0": 34.886352087605474,
+        "smb_2h": 13.47045810113616,
+        "excess_basal_2h": -66.71718103708064,
+        "roc_start": -13.17716731125028,
+        "iob_start": -4.282598906275275
+      },
+      "p_values": {
+        "bg0": 0.0,
+        "smb_2h": 0.0,
+        "excess_basal_2h": 0.0,
+        "roc_start": 0.0,
+        "iob_start": 0.0
+      }
+    },
+    "mixed": {
+      "n": 20384,
+      "r2_deviation": 0.2849239839017649,
+      "r2_raw": 0.18434083241231847,
+      "coefficients": {
+        "bg0": 9.490059099770944,
+        "smb_2h": 0.5740283713135064,
+        "excess_basal_2h": -35.262912861390724,
+        "roc_start": -5.016092108557144,
+        "iob_start": -1.351699339838462
+      },
+      "p_values": {
+        "bg0": 0.0,
+        "smb_2h": 0.13517843465287682,
+        "excess_basal_2h": 0.0,
+        "roc_start": 0.0,
+        "iob_start": 0.0025644952124841414
+      }
+    }
+  },
+  "controller_pipeline": {
+    "loop": {
+      "raw": 0.4462840947311053,
+      "deviation": 0.7772320377353428,
+      "dev_fe": 0.768829510550983
+    },
+    "trio": {
+      "raw": 0.4188083016144448,
+      "deviation": 0.7948259360380603,
+      "dev_fe": 0.7619187215112452
+    },
+    "openaps": {
+      "raw": 0.22462791280725558,
+      "deviation": 0.8436742779656025,
+      "dev_fe": 0.8363485389463683
+    }
+  },
+  "isf_recovery": {
+    "mean_isf_error": 80.17524844240906,
+    "dose_dependent_r": -0.6985018420675353,
+    "dose_dependent_p": 0.0,
+    "n_patients_recovered": 21
+  }
+}
