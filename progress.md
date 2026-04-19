@@ -616,3 +616,19 @@ Validated across 16 patients from 2 independent sources.
 
 **Cumulative (EXP-2671-2676)**: 6 cross-controller experiments, 22 qualified patients
 (Loop=8, Trio=11, OpenAPS=3), 44 visualizations.
+
+### AID Compensation Artifact — EXP-2677 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| AID compensation analysis | `tools/cgmencode/exp_aid_compensation_artifact_2677.py` | 57% negative ISF is artifact |
+| 6-panel dashboard | `visualizations/aid-compensation-artifact/fig[1-6]_*.png` | Prevalence, trajectory, insulin, basal, timing, BG |
+
+**Key Findings**:
+- 57% of correction events show negative ISF (glucose RISES) — universal across ALL controllers
+- Root cause: corrections at in-range glucose (median BG=106 for neg ISF vs 160 for positive)
+- NOT AID backing off (IOB change is HIGHER for neg ISF events)
+- NOT glucose already rising (pre-bolus ROC lower for neg ISF events)
+- BG floor filter dramatically reduces: ≥120→39%, ≥160→27%, ≥180→23%, ≥200→20%
+- Remaining ~20% at high BG is genuine AID compensation + regression to mean
+- METHODOLOGY FIX: All correction ISF extraction must require BG ≥ 150-180 mg/dL
