@@ -654,6 +654,16 @@ The correct conclusion is not "settings don't matter" but rather "the effect of
 settings is mediated through the controller and cannot be estimated by simple
 cross-patient correlation."
 
+**Quantitative evidence (EXP-2690/2691)**:
+- Multi-channel regression (R²=0.296) shows ALL insulin channels contribute
+  significant partial effects: bolus uniquely explains 7.3%, excess basal 6.4%,
+  SMBs 0.9% of BG drop variance — when controlling for each other.
+- Mediation path: ISF → SMB rate (r=−0.115, p=1.2e-11) → TIR (r=+0.169, p=2.2e-23).
+  Lower ISF → more aggressive controller → higher TIR.
+- Patient-level (settings + controller → TIR): R²=0.335 (n=22).
+- Within-patient, settings are very stable (ISF range ≈ 0.1 mg/dL/U), limiting
+  natural experiment power but confirming settings are appropriately individualized.
+
 ### 6. AID Controllers Mitigate Hypo Severity
 
 IOB near zero at hypo onset is not evidence of "insulin depletion" causing the hypo —
@@ -687,6 +697,8 @@ shorter, shallower hypos.
 - **EXP-2687**: `tools/cgmencode/exp_null_model_2687.py`
 - **EXP-2688**: `tools/cgmencode/exp_temporal_trends_2688.py`
 - **EXP-2689**: `tools/cgmencode/exp_confounding_2689.py`
+- **EXP-2690**: `tools/cgmencode/exp_multi_channel_2690.py`
+- **EXP-2691**: `tools/cgmencode/exp_settings_mediation_2691.py`
 - **Pipeline**: `tools/ns2parquet/grid.py` (grid construction + percent-fix)
 - **Data**: `externals/ns-parquet/training/grid.parquet` (1.3M rows, 49 columns)
 - **Manifest**: `externals/experiments/autoprepare-qualified.json`
@@ -815,9 +827,58 @@ established early and outcomes don't change as settings are tuned.
 
 **Stratified by pre-event trajectory**:
 - BG FALLING: bolus=61, null=74, Δ=−13 (controller handles falling BG alone)
-- BG RISING: bolus=48, null=46, Δ=+2 (no treatment effect even when BG rising)
+- BG RISING: bolus=47.5, null=46, Δ=+1.5 (no treatment effect even when BG rising)
 
 **Conclusion**: In AID systems, "easy" highs (already falling) resolve autonomously
 via the controller. Users bolus in "hard" situations (rising BG, meals, resistant highs).
-The true treatment effect of a correction bolus in the presence of an AID controller
-is approximately zero.
+The treatment effect of a correction bolus cannot be isolated from observational data
+because the controller co-intervenes through other channels simultaneously. Multi-factor
+analysis (EXP-2690) reveals that boluses uniquely explain 7.3% of BG drop variance when
+controlling for other channels — significant and meaningful.
+
+---
+
+## Phase 8: Multi-Factor Decomposition (EXP-2690–2691)
+
+### EXP-2690: Multi-Channel Insulin Decomposition
+
+**Multi-factor analysis recovers R²=0.296** (vs 0.015 for bolus-only univariate):
+
+| Channel | Unique R² | β (standardized) | p-value |
+|---------|-----------|-------------------|---------|
+| Starting BG | 13.3% | +28.6 | ≈0 *** |
+| **Bolus** | **7.3%** | −28.2 | ≈0 *** |
+| **Excess basal** | **6.4%** | −20.2 | ≈0 *** |
+| SMB total | 0.9% | −8.9 | ≈0 *** |
+| Carbs | 0.6% | +6.9 | ≈0 *** |
+| Glucose ROC | 0.5% | −5.0 | ≈0 *** |
+| IOB at start | 0.04% | +1.5 | ≈0 *** |
+
+All insulin channels have significant, measurable partial effects. The earlier
+"insulin irrelevance" finding was an artifact of univariate analysis not controlling
+for controller co-intervention through other channels.
+
+**Model hierarchy**: BG₀ only (R²=0.097) → All channels (0.296) → With interactions (0.309)
+→ Within-patient (0.318).
+
+**Controller-stratified**: Loop R²=0.378, Trio R²=0.394, OpenAPS R²=0.132.
+
+### EXP-2691: Settings Mediation Analysis
+
+Settings affect outcomes through a mediation pathway:
+
+**Settings → Controller behavior → Glucose outcomes**
+
+| Link | Variables | r | p-value |
+|------|-----------|---|---------|
+| a-path | ISF → SMB rate | −0.115 | 1.2e-11 |
+| b-path | SMB rate → TIR | +0.169 | 2.2e-23 |
+| Total | ISF → TIR | −0.114 | 1.8e-11 |
+
+Lower ISF → controller is more aggressive (more SMBs) → higher TIR.
+
+Patient-level model (settings + controller type → TIR): R²=0.335 (n=22).
+Trio has largest controller effect (β=+6.25) but underpowered (p=0.141).
+
+Within-patient settings are very stable (ISF range ≈ 0.1 mg/dL/U), confirming
+settings are appropriately individualized but limiting natural experiment power.
