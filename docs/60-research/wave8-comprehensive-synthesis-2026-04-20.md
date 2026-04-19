@@ -74,8 +74,8 @@ recommendations for 21 patients.
 | Metric | Profile ISF | Recommended ISF |
 |--------|-----------|-----------------|
 | Median | 55.0 | 2.6 |
-| Range | 11–220 | -8.9 to 34.2 |
-| MAE (on independent events) | 181.5 | 48.5 |
+| Range | 11–220 | -8.9 to 21.4 |
+| MAE (on independent events) | 164.3 | 43.2 |
 
 ### Key Finding: Profiles Are Badly Miscalibrated
 
@@ -171,7 +171,7 @@ Trio ISF (16.9) is lower than Loop ISF (20.6) after standard deconfounding?
 |--------|-------|
 | Pooled partial r (SR→ISF, controlling BG₀ and dose) | **0.008** |
 | Median per-patient |r| | 0.084 |
-| DynISF patients with significant r | 5/10 |
+| DynISF patients with significant r | 6/10 |
 
 The DynISF algorithm's sensitivity_ratio is essentially **orthogonal** to observed
 correction ISF. This means:
@@ -262,15 +262,15 @@ the per-event sensitivity_ratio doesn't correlate.
 
 | Wave | Theme | Experiments | PASS | FAIL | Rate | Key Discovery |
 |------|-------|-------------|------|------|------|---------------|
-| 1 | Tier-1 detection | 2702-2704 | 7 | 5 | 58% | Circadian + SC ceiling + glycogen signals |
-| 2 | Confound ID | 2705-2707 | 7 | 5 | 58% | BG₀ explains 71%; glycogen→ISF real |
-| 3 | Deconfounded | 2708-2710 | 10 | 2 | 83% | Multi-factor R²=0.224; MAE -83% |
-| 4 | Settings | 2711-2713 | 6 | 6 | 50% | Massive autocorrelation lag1=0.638 |
+| 1 | Tier-1 detection | 2702-2704 | 6 | 6 | 50% | Circadian + SC ceiling + glycogen signals |
+| 2 | Confound ID | 2705-2707 | 5 | 7 | 42% | BG₀ explains 71%; glycogen→ISF real |
+| 3 | Deconfounded | 2708-2710 | 9 | 3 | 75% | Multi-factor R²=0.224; MAE -83% |
+| 4 | Settings | 2711-2713 | 9 | 3 | 75% | Massive autocorrelation lag1=0.638 |
 | 5 | Robustness | 2714-2716 | 4 | 8 | 33% | R²=0.173 survives; β retracted |
 | 6 | Supply/Demand | 2717-2719 | 6 | 6 | 50% | Supply <0.2%; BGI/dev coupled |
 | 7 | Actionable | 2720-2722 | 7 | 5 | 58% | Indep ISF -29% MAE; norm -55% η² |
-| 8 | Translation | 2723-2725 | 8 | 4 | 67% | 90.5% patients improve; drift maps |
-| **Total** | | **24** | **55** | **41** | **57%** | |
+| 8 | Translation | 2723-2725 | 7 | 5 | 58% | 90.5% patients improve; drift maps |
+| **Total** | | **24** | **53** | **43** | **55%** | |
 
 ### Retracted Findings
 
