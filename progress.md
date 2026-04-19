@@ -26,6 +26,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Tier-1 Deconfounding Experiments: Circadian, SC Ceiling, Glycogen (2026-04-19)
+
+Ran three Tier-1 experiments on full 22-patient cohort using the new deconfounding infrastructure.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2702 | `tools/cgmencode/exp_circadian_demand_isf_2702.py` | Circadian ISF: 1.35× population, 2.02× per-patient; 76% patients improve |
+| EXP-2703 | `tools/cgmencode/exp_sc_ceiling_per_patient_2703.py` | SC ceiling highly variable; reliable (r=0.811) but ceiling↔wall correlation weak |
+| EXP-2704 | `tools/cgmencode/exp_glycogen_state_detection_2704.py` | 48h carb signal exists (r=0.131, 13/21 sig) but too weak for settings |
+
+**Key Findings**:
+- Circadian demand-ISF is real and actionable: peak at 12-16h (28.8 mg/dL/U) vs trough 04-08h (21.3). All controllers show it.
+- Dawn phenomenon is NOT a simple ISF shift — dawn and overnight ISF are nearly identical. The circadian peak is midday, not dawn.
+- SC ceiling methodology needs refinement: IOB quantile binning at 50% threshold is too coarse. Most patients show no measurable ceiling. Consider dose-response slope instead of threshold.
+- Glycogen (48h carbs) is a real but weak signal: 13/21 patients have significant correlation, but effect size is only -6.5% ISF modification. Not enough for settings extraction. Confirms EXP-2627's 9.2% R² as an upper bound.
+- Counter-intuitive: loaded glycogen shows HIGHER ISF (26.3) than depleted (24.7). This contradicts insulin resistance expectation — may reflect confounding (more carbs → more insulin → more corrections at high BG where ISF is naturally higher).
+
+**Gaps Identified**: GAP-ALG-071 (circadian ISF peak is midday, not dawn — implication for dawn phenomenon modeling)
+
+---
+
 ## Deconfounding Pipeline Infrastructure & Three-Audience Report (2026-04-19)
 
 Built reusable deconfounding infrastructure (4 production modules) and validated against EXP-2698. Extracted settings for 22 patients. Wrote three-audience transition report covering data understanding, settings optimization, and AID controller R&D recommendations.
