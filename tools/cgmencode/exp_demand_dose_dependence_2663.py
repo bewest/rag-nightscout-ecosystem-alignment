@@ -37,6 +37,7 @@ DATA: 19 patients, parquet grid, 5-min intervals
 DEPENDS ON: EXP-2651 extraction method, EXP-2640 analysis framework
 """
 
+import argparse
 import json
 import os
 import sys
@@ -47,21 +48,19 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-PARQUET = Path("externals/ns-parquet/training/grid.parquet")
+DEFAULT_PARQUET = Path("externals/ns-parquet/training/grid.parquet")
 RESULTS_DIR = Path("externals/experiments")
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 OUTFILE = RESULTS_DIR / "exp-2663_demand_dose_dependence.json"
 
-NS_PATIENTS = ["a", "b", "c", "d", "e", "f", "g", "i", "k"]
-ODC_FULL = ["odc-74077367", "odc-86025410", "odc-96254963"]
-ALL_PATIENTS = NS_PATIENTS + ODC_FULL
 STEPS_PER_HOUR = 12
 
 # Correction extraction parameters (from EXP-2651 gold standard)
 MIN_DOSE = 0.5          # Units
 MIN_PRE_BG = 120        # mg/dL
 CARB_WINDOW_H = 1.0     # ± hours, no carbs
-PRIOR_BOLUS_H = 2.0     # No prior bolus within this window
+PRIOR_BOLUS_H = 6.0     # Nyquist-correct: ≥DIA=6h
+LAX_PRIOR_BOLUS_H = 2.0 # Fallback for SMB-heavy patients
 POST_WINDOW_H = 6.0     # Track trajectory
 MIN_DROP = 10            # mg/dL minimum total drop to count
 MIN_EVENTS_FIT = 8      # Min events per patient for regression
@@ -72,19 +71,22 @@ NADIR_SEARCH_END_H = 5.0
 N_BOOTSTRAP = 2000
 
 
-def extract_correction_events(pdf):
+def extract_correction_events(pdf, prior_bolus_h=None):
     """Extract clean correction bolus events with per-event ISF metrics.
 
     Returns list of dicts with: dose, pre_bg, demand_isf, apparent_isf,
     drop_2h, total_drop, nadir_time_h.
+    Uses tiered fallback: strict 6h → lax 2h if <MIN_EVENTS_FIT at strict.
     """
+    if prior_bolus_h is None:
+        prior_bolus_h = PRIOR_BOLUS_H
     pdf = pdf.sort_values("time").reset_index(drop=True)
     glucose = pdf["glucose"].values.astype(np.float64)
     bolus = pdf["bolus"].fillna(0).values.astype(np.float64)
     carbs = pdf["carbs"].fillna(0).values.astype(np.float64)
 
     carb_window = int(CARB_WINDOW_H * STEPS_PER_HOUR)
-    prior_window = int(PRIOR_BOLUS_H * STEPS_PER_HOUR)
+    prior_window = int(prior_bolus_h * STEPS_PER_HOUR)
     post_window = int(POST_WINDOW_H * STEPS_PER_HOUR)
     demand_steps = int(DEMAND_WINDOW_H * STEPS_PER_HOUR)
     nadir_start = int(NADIR_SEARCH_START_H * STEPS_PER_HOUR)
@@ -289,6 +291,15 @@ def analyze_patient(pid, events):
     return result
 
 
+def _safe_pearsonr(x, y):
+    """Pearson r with NaN/Inf filtering."""
+    x, y = np.asarray(x, dtype=float), np.asarray(y, dtype=float)
+    mask = np.isfinite(x) & np.isfinite(y)
+    if mask.sum() < 3 or np.std(x[mask]) < 1e-12 or np.std(y[mask]) < 1e-12:
+        return np.nan, np.nan
+    return stats.pearsonr(x[mask], y[mask])
+
+
 def cross_patient_analysis(all_events):
     """Pool all patients and compare dose-dependence strength."""
     doses = np.array([e["dose"] for e in all_events])
@@ -302,12 +313,12 @@ def cross_patient_analysis(all_events):
     }
 
     # Overall correlations
-    r_demand, p_demand = stats.pearsonr(doses, demand_isfs)
-    r_apparent, p_apparent = stats.pearsonr(doses, apparent_isfs)
-    result["overall_demand_r"] = round(float(r_demand), 4)
-    result["overall_demand_p"] = float(p_demand)
-    result["overall_apparent_r"] = round(float(r_apparent), 4)
-    result["overall_apparent_p"] = float(p_apparent)
+    r_demand, p_demand = _safe_pearsonr(doses, demand_isfs)
+    r_apparent, p_apparent = _safe_pearsonr(doses, apparent_isfs)
+    result["overall_demand_r"] = round(float(r_demand), 4) if not np.isnan(r_demand) else None
+    result["overall_demand_p"] = float(p_demand) if not np.isnan(p_demand) else None
+    result["overall_apparent_r"] = round(float(r_apparent), 4) if not np.isnan(r_apparent) else None
+    result["overall_apparent_p"] = float(p_apparent) if not np.isnan(p_apparent) else None
     result["demand_weaker"] = abs(r_demand) < abs(r_apparent)
 
     # Model fits
@@ -356,8 +367,8 @@ def leave_one_patient_out(all_events):
         demand_isfs = np.array([e["demand_isf"] for e in subset])
         apparent_isfs = np.array([e["apparent_isf"] for e in subset])
 
-        r_d, p_d = stats.pearsonr(doses, demand_isfs)
-        r_a, p_a = stats.pearsonr(doses, apparent_isfs)
+        r_d, p_d = _safe_pearsonr(doses, demand_isfs)
+        r_a, p_a = _safe_pearsonr(doses, apparent_isfs)
         results[exclude] = {
             "n_remaining": len(subset),
             "demand_r": round(float(r_d), 4),
@@ -388,7 +399,7 @@ def egp_fraction_analysis(all_events):
 
     # Correlate EGP-ISF with dose
     if len(doses) >= MIN_EVENTS_FIT and np.std(doses) > 0.05:
-        r_egp, p_egp = stats.pearsonr(doses, egp_isfs)
+        r_egp, p_egp = _safe_pearsonr(doses, egp_isfs)
         result["egp_dose_r"] = round(float(r_egp), 4)
         result["egp_dose_p"] = float(p_egp)
         result["egp_fits"] = fit_dose_models(doses, egp_isfs)
@@ -468,29 +479,40 @@ def test_hypotheses(per_patient, cross_patient, loo):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="EXP-2663: Demand-Phase ISF Dose-Dependence")
+    parser.add_argument("--parquet", default=str(DEFAULT_PARQUET))
+    args = parser.parse_args()
+
     print("=" * 70)
     print("EXP-2663: Demand-Phase ISF Dose-Dependence")
     print("=" * 70)
 
-    if not PARQUET.exists():
-        print(f"ERROR: {PARQUET} not found. Run 'make bootstrap' first.")
+    parquet_path = Path(args.parquet)
+    if not parquet_path.exists():
+        print(f"ERROR: {parquet_path} not found. Run 'make bootstrap' first.")
         sys.exit(1)
 
-    df = pd.read_parquet(PARQUET)
-    print(f"Loaded {len(df):,} rows from parquet")
+    df = pd.read_parquet(parquet_path)
+    patients = sorted(df["patient_id"].unique())
+    print(f"Loaded {len(df):,} rows, {len(patients)} patients from {parquet_path}")
 
     # ── Per-patient analysis ─────────────────────────────────────
     per_patient = {}
     all_events = []
 
     print("\n--- Per-Patient Analysis ---")
-    for pid in ALL_PATIENTS:
+    for pid in patients:
         pdf = df[df["patient_id"] == pid].sort_values("time").reset_index(drop=True)
         if len(pdf) < 288 * 14:
             print(f"  {pid}: insufficient data ({len(pdf)} rows)")
             continue
 
-        events = extract_correction_events(pdf)
+        # Tiered extraction: strict 6h → lax 2h fallback
+        events = extract_correction_events(pdf, PRIOR_BOLUS_H)
+        iso_used = PRIOR_BOLUS_H
+        if len(events) < MIN_EVENTS_FIT:
+            events = extract_correction_events(pdf, LAX_PRIOR_BOLUS_H)
+            iso_used = LAX_PRIOR_BOLUS_H
         if len(events) < MIN_EVENTS_FIT:
             print(f"  {pid}: insufficient corrections ({len(events)})")
             continue

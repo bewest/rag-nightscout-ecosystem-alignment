@@ -36,6 +36,7 @@ OUTPUTS:
   - docs/60-research/wall-resolution-mechanism-report-2026-04-18.md
 """
 
+import argparse
 import json, sys
 from pathlib import Path
 import numpy as np
@@ -44,8 +45,8 @@ from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-PARQUET = Path("externals/ns-parquet/training/grid.parquet")
-DS_PARQUET = Path("externals/ns-parquet/training/devicestatus.parquet")
+DEFAULT_PARQUET = Path("externals/ns-parquet/training/grid.parquet")
+DEFAULT_DS_PARQUET = Path("externals/ns-parquet/training/devicestatus.parquet")
 RESULTS_DIR = Path("externals/experiments"); RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 OUTFILE = RESULTS_DIR / "exp-2669_wall_resolution_mechanism.json"
 VIZ_DIR = Path("visualizations/wall-resolution-mechanism"); VIZ_DIR.mkdir(parents=True, exist_ok=True)
@@ -571,6 +572,15 @@ def _generate_report(results, hyps):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="EXP-2669: Wall Resolution Mechanism")
+    parser.add_argument("--parquet", default=str(DEFAULT_PARQUET))
+    parser.add_argument("--ds-parquet", default=str(DEFAULT_DS_PARQUET))
+    args = parser.parse_args()
+
+    global DS_PARQUET
+    PARQUET = Path(args.parquet)
+    DS_PARQUET = Path(args.ds_parquet)
+
     print("=" * 70)
     print("EXP-2669: Wall Resolution Mechanism")
     print("=" * 70)
@@ -616,8 +626,15 @@ def main():
     wall_rocs = [r["wall_roc_mean"] for r in results.values() if r["wall_roc_mean"] is not None]
     nw_rocs = [r["non_wall_roc_mean"] for r in results.values() if r["non_wall_roc_mean"] is not None]
     if wall_rocs and nw_rocs:
-        _, pv = stats.mannwhitneyu(wall_rocs, nw_rocs, alternative="greater")
-        h3 = pv < 0.05
+        wr_arr = np.array(wall_rocs, dtype=float)
+        nw_arr = np.array(nw_rocs, dtype=float)
+        wr_valid = wr_arr[np.isfinite(wr_arr)]
+        nw_valid = nw_arr[np.isfinite(nw_arr)]
+        if len(wr_valid) >= 2 and len(nw_valid) >= 2:
+            _, pv = stats.mannwhitneyu(wr_valid, nw_valid, alternative="greater")
+            h3 = pv < 0.05
+        else:
+            h3 = None
     else: h3 = None
 
     # H4: Resolution clusters at 2-4h
@@ -635,9 +652,15 @@ def main():
             if ep["resolve_h"] is not None:
                 all_dur.append(ep["dur_h"]); all_res.append(ep["resolve_h"])
     if len(all_dur) >= 20:
-        rc, pv = stats.pearsonr(all_dur, all_res)
-        h5 = rc < -0.1 and pv < 0.05  # negative correlation = longer wall -> faster resolution
-        print("H5: dur vs resolve r={:.3f}, p={:.4f}".format(rc, pv))
+        dur_arr = np.array(all_dur, dtype=float)
+        res_arr = np.array(all_res, dtype=float)
+        mask = np.isfinite(dur_arr) & np.isfinite(res_arr)
+        if mask.sum() >= 10:
+            rc, pv = stats.pearsonr(dur_arr[mask], res_arr[mask])
+            h5 = rc < -0.1 and pv < 0.05
+            print("H5: dur vs resolve r={:.3f}, p={:.4f}".format(rc, pv))
+        else:
+            h5 = None
     else: h5 = None
 
     hyps = {"H1": h1, "H2": h2, "H3": h3, "H4": h4, "H5": h5}

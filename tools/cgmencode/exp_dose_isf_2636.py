@@ -32,6 +32,7 @@ HYPOTHESES:
       Rationale: If we scale ISF by dose, predictions should improve because
       we're accounting for residual insulin effects.
 """
+import argparse
 import json, sys
 import numpy as np
 import pandas as pd
@@ -39,10 +40,8 @@ from pathlib import Path
 from scipy import stats as sp_stats
 
 ROOT = Path(__file__).resolve().parents[2]
-PARQUET = ROOT / "externals" / "ns-parquet" / "training" / "grid.parquet"
+DEFAULT_PARQUET = ROOT / "externals" / "ns-parquet" / "training" / "grid.parquet"
 OUT = ROOT / "externals" / "experiments" / "exp-2636_dose_dependent_isf.json"
-
-FULL_PATIENTS = ["a", "b", "c", "d", "e", "f", "g", "i", "k"]
 
 STEPS_PER_HOUR = 12
 MIN_BOLUS_U = 0.5
@@ -52,7 +51,7 @@ POST_WINDOW_STEPS = 72
 NADIR_SEARCH_STEPS = 48
 RECOVERY_FIT_STEPS = 24
 MIN_DROP_MGDL = 10
-STACKING_WINDOW = 24
+STACKING_WINDOW = 72  # 6h at 5-min steps (Nyquist: ≥DIA=6h)
 
 DIA_MIN = 360
 PEAK_MIN = 75
@@ -167,12 +166,42 @@ def _extract_corrections(pdf):
     return events
 
 
+def _safe_pearsonr(x, y):
+    """Pearson r with NaN/Inf filtering."""
+    x, y = np.asarray(x, dtype=float), np.asarray(y, dtype=float)
+    mask = np.isfinite(x) & np.isfinite(y)
+    if mask.sum() < 3 or np.std(x[mask]) < 1e-12 or np.std(y[mask]) < 1e-12:
+        return np.nan, np.nan
+    return sp_stats.pearsonr(x[mask], y[mask])
+
+
+def _safe_linregress(x, y):
+    """linregress with NaN/Inf filtering."""
+    x, y = np.asarray(x, dtype=float), np.asarray(y, dtype=float)
+    mask = np.isfinite(x) & np.isfinite(y)
+    if mask.sum() < 3:
+        from types import SimpleNamespace
+        return SimpleNamespace(slope=np.nan, intercept=np.nan, rvalue=np.nan,
+                               pvalue=np.nan, stderr=np.nan)
+    return sp_stats.linregress(x[mask], y[mask])
+
+
 def main():
-    df = pd.read_parquet(PARQUET)
+    parser = argparse.ArgumentParser(description="EXP-2636: Dose-Dependent ISF")
+    parser.add_argument("--parquet", default=str(DEFAULT_PARQUET))
+    parser.add_argument("--out", default=str(OUT))
+    args = parser.parse_args()
+
+    parquet_path = Path(args.parquet)
+    out_path = Path(args.out)
+
+    df = pd.read_parquet(parquet_path)
+    patients = sorted(df["patient_id"].unique())
+
     all_events = []
     per_patient = {}
 
-    for pid in FULL_PATIENTS:
+    for pid in patients:
         pdf = df[df["patient_id"] == pid].sort_values("time").reset_index(drop=True)
         events = _extract_corrections(pdf)
         n_days = len(pdf) / (STEPS_PER_HOUR * 24)
@@ -228,7 +257,7 @@ def main():
     print(f"  → {'PASS' if h1_pass else 'FAIL'}")
 
     # --- H2: Bolus size ↔ apparent ISF correlation ---
-    r_bolus_isf, p_bolus_isf = sp_stats.pearsonr(boluses, apparent_isfs)
+    r_bolus_isf, p_bolus_isf = _safe_pearsonr(boluses, apparent_isfs)
     print(f"\n=== H2: Bolus ↔ apparent ISF ===")
     print(f"  r = {r_bolus_isf:.3f}, p = {p_bolus_isf:.4f}")
     h2_pass = r_bolus_isf > 0.2
@@ -239,11 +268,11 @@ def main():
     valid_sched = ~np.isnan(scheduled_isfs) & (scheduled_isfs > 0)
     if valid_sched.sum() > 10:
         isf_ratio = apparent_isfs[valid_sched] / scheduled_isfs[valid_sched]
-        r_bolus_ratio, _ = sp_stats.pearsonr(boluses[valid_sched], isf_ratio)
-        r_iob_ratio, _ = sp_stats.pearsonr(bolus_iob_nadir[valid_sched], isf_ratio)
+        r_bolus_ratio, _ = _safe_pearsonr(boluses[valid_sched], isf_ratio)
+        r_iob_ratio, _ = _safe_pearsonr(bolus_iob_nadir[valid_sched], isf_ratio)
         valid_tiob = valid_sched & ~np.isnan(total_iob_nadir)
         if valid_tiob.sum() > 10:
-            r_tiob_ratio, _ = sp_stats.pearsonr(total_iob_nadir[valid_tiob],
+            r_tiob_ratio, _ = _safe_pearsonr(total_iob_nadir[valid_tiob],
                                                   apparent_isfs[valid_tiob] / scheduled_isfs[valid_tiob])
         else:
             r_tiob_ratio = np.nan
@@ -266,7 +295,7 @@ def main():
     valid_for_sim = valid_sched.copy()
     if valid_for_sim.sum() > 10:
         # Fit linear dose adjustment: ISF_ratio = a + b × bolus
-        slope, intercept, _, _, _ = sp_stats.linregress(boluses[valid_for_sim], isf_ratio)
+        slope, intercept, _, _, _ = _safe_linregress(boluses[valid_for_sim], isf_ratio)
 
         # Standard prediction
         std_pred_drop = boluses[valid_for_sim] * scheduled_isfs[valid_for_sim]
@@ -323,7 +352,7 @@ def main():
     results = {
         "experiment": "EXP-2636",
         "title": "Dose-Dependent ISF — Does Bolus Size Inflate Effective ISF?",
-        "methodology": "EXP-2624 exact (bolus≥0.5U, carbs<2g/±1h, no stacking/2h, BG≥120, drop≥10)",
+        "methodology": "EXP-2624 exact (bolus≥0.5U, carbs<2g/±1h, no stacking/6h, BG≥120, drop≥10)",
         "n_events": len(all_events),
         "n_patients": len(per_patient),
         "validated_priors": {
@@ -373,10 +402,10 @@ def main():
         "events": all_events,
     }
 
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUT, "w") as f:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w") as f:
         json.dump(results, f, indent=2)
-    print(f"\nResults → {OUT}")
+    print(f"\nResults → {out_path}")
 
 
 if __name__ == "__main__":

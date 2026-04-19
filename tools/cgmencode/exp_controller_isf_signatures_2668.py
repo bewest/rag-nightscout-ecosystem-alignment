@@ -24,6 +24,7 @@ OUTPUTS:
   - docs/60-research/controller-isf-signatures-report-2026-04-18.md
 """
 
+import argparse
 import json, sys
 from pathlib import Path
 import numpy as np
@@ -32,8 +33,8 @@ from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-PARQUET = Path("externals/ns-parquet/training/grid.parquet")
-DS_PARQUET = Path("externals/ns-parquet/training/devicestatus.parquet")
+DEFAULT_PARQUET = Path("externals/ns-parquet/training/grid.parquet")
+DEFAULT_DS_PARQUET = Path("externals/ns-parquet/training/devicestatus.parquet")
 RESULTS_DIR = Path("externals/experiments"); RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 OUTFILE = RESULTS_DIR / "exp-2668_controller_isf_signatures.json"
 VIZ_DIR = Path("visualizations/controller-isf-signatures"); VIZ_DIR.mkdir(parents=True, exist_ok=True)
@@ -458,6 +459,15 @@ def _generate_report(results, hyps):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="EXP-2668: Controller ISF Signatures")
+    parser.add_argument("--parquet", default=str(DEFAULT_PARQUET))
+    parser.add_argument("--ds-parquet", default=str(DEFAULT_DS_PARQUET))
+    args = parser.parse_args()
+
+    global DS_PARQUET
+    PARQUET = Path(args.parquet)
+    DS_PARQUET = Path(args.ds_parquet)
+
     print("=" * 70)
     print("EXP-2668: Per-Controller Demand ISF Signatures")
     print("=" * 70)

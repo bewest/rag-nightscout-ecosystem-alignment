@@ -29,6 +29,7 @@ OUTPUTS:
   - docs/60-research/sc-ceiling-demand-isf-report-2026-04-18.md
 """
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -39,8 +40,8 @@ from scipy import stats, optimize
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-PARQUET = Path("externals/ns-parquet/training/grid.parquet")
-DS_PARQUET = Path("externals/ns-parquet/training/devicestatus.parquet")
+DEFAULT_PARQUET = Path("externals/ns-parquet/training/grid.parquet")
+DEFAULT_DS_PARQUET = Path("externals/ns-parquet/training/devicestatus.parquet")
 RESULTS_DIR = Path("externals/experiments")
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 OUTFILE = RESULTS_DIR / "exp-2667_sc_ceiling_demand_isf.json"
@@ -683,6 +684,15 @@ def _generate_report(results, hyps):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="EXP-2667: SC Ceiling with Demand ISF")
+    parser.add_argument("--parquet", default=str(DEFAULT_PARQUET))
+    parser.add_argument("--ds-parquet", default=str(DEFAULT_DS_PARQUET))
+    args = parser.parse_args()
+
+    global DS_PARQUET
+    PARQUET = Path(args.parquet)
+    DS_PARQUET = Path(args.ds_parquet)
+
     print("=" * 70)
     print("EXP-2667: SC Suppression Ceiling with Demand-Phase ISF")
     print("=" * 70)
@@ -744,8 +754,13 @@ def main():
     ]
     if len(cd) >= 5:
         cv, sv = zip(*cd)
-        rc, pv = stats.pearsonr(cv, sv)
-        h4 = abs(rc) > 0.3
+        cv_a, sv_a = np.array(cv, dtype=float), np.array(sv, dtype=float)
+        mask = np.isfinite(cv_a) & np.isfinite(sv_a)
+        if mask.sum() >= 3:
+            rc, pv = stats.pearsonr(cv_a[mask], sv_a[mask])
+        else:
+            rc, pv = np.nan, np.nan
+        h4 = abs(rc) > 0.3 if not np.isnan(rc) else None
     else:
         h4 = None
 
