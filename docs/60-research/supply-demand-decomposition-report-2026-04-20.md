@@ -43,6 +43,9 @@ the 72h window to improve point-level ISF estimates.
 
 ## Part 2: EXP-2717 — Supply-Side Contamination of ISF
 
+
+![supply contamination](../../visualizations/supply-contamination/supply_contamination.png)
+
 ### Design
 
 Test whether glucose rate-of-change (rising vs falling) contaminates ISF estimates,
@@ -82,6 +85,9 @@ a feature of the physiology, not a data artifact.
 ---
 
 ## Part 3: EXP-2718 — Multi-Timescale Carb Features
+
+
+![multi timescale](../../visualizations/multi-timescale/multi_timescale.png)
 
 ### Design
 
@@ -135,6 +141,9 @@ patient-level and dose-level effects), 72h carbs add only 0.01% incremental R².
 ---
 
 ## Part 4: EXP-2719 — BGI Decomposition (Supply vs Demand Channels)
+
+
+![bgi decomposition](../../visualizations/bgi-decomposition/bgi_decomposition.png)
 
 ### Design
 

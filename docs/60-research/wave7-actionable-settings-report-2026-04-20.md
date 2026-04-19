@@ -33,6 +33,9 @@ Wave 7 converts deconfounding research into practical outputs for the three audi
 
 ## Part 2: EXP-2720 — Independent-Event Settings Extraction
 
+
+![independent settings](../../visualizations/independent-settings/independent_settings.png)
+
 ### Design
 
 Extract per-patient ISF using only temporally independent events (≥2h gap between
@@ -81,6 +84,9 @@ filtering is trivial, and the 29% MAE reduction is substantial.
 ---
 
 ## Part 3: EXP-2721 — BG-Adjusted Shrinkage Circadian ISF
+
+
+![circadian shrinkage](../../visualizations/circadian-shrinkage/circadian_shrinkage.png)
 
 ### Design
 
