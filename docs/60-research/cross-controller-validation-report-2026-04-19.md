@@ -535,6 +535,10 @@ systematic bias in the IOB-only prediction channel.
 
 ### EXP-2680: Definitive Demand ISF Characterization
 
+
+![Figure 1 isf distribution](../../visualizations/definitive-isf/fig1_isf_distribution.png)
+![Figure 3 variance decomposition](../../visualizations/definitive-isf/fig3_variance_decomposition.png)
+
 Applied all methodology corrections (BG≥180, 2h isolation) to 22 patients:
 - 7986 events total, 1226 at BG≥180 (73-88% positive ISF vs 36-43% without floor)
 - **Trio severely underpowered**: only 66 events at BG≥180 (tight control)
@@ -543,12 +547,20 @@ Applied all methodology corrections (BG≥180, 2h isolation) to 22 patients:
 
 ### EXP-2681: BG Drop Direct Modeling
 
+
+![Figure 1 drop vs dose](../../visualizations/bg-drop-model/fig1_drop_vs_dose.png)
+![Figure 4 multivariate](../../visualizations/bg-drop-model/fig4_multivariate.png)
+
 Investigated the dose-dependence — **it's a ratio artifact**:
 - BG drop is ~74 mg/dL **regardless of dose** (Loop=78@4U, OpenAPS=71@1U, Trio=64@1.4U)
 - Dose R²=0.015, BG₀ R²=0.141, IOB R²=0.001, Full model R²=0.146
 - ISF = drop/dose creates artificial 1/dose dependence from a near-constant numerator
 
 ### EXP-2682: Controller vs Bolus — Who Drives Corrections?
+
+
+![Figure 1 insulin vs drop](../../visualizations/controller-vs-bolus/fig1_insulin_vs_drop.png)
+![Figure 3 controller response](../../visualizations/controller-vs-bolus/fig3_controller_response.png)
 
 Even TOTAL insulin (bolus + controller) doesn't predict BG drop:
 
@@ -562,6 +574,9 @@ Trio delivers **~3× the insulin** of OpenAPS for a **smaller BG drop**.
 Total insulin R²=0.0007 — even worse than bolus alone.
 
 ### EXP-2683: What Explains the 86% Unexplained Variance?
+
+
+![Figure 5 full model comparison](../../visualizations/unexplained-variance/fig5_full_model_comparison.png)
 
 **Answer: Nothing measurable.** Full model R²=0.165:
 
@@ -586,6 +601,12 @@ Total insulin R²=0.0007 — even worse than bolus alone.
 physiology (EGP variation, counter-regulatory hormones, activity, stress).
 
 ---
+
+
+### Key Visualizations
+
+![Figure 2 tir by controller](../../visualizations/cross-controller-validation/fig2_tir_by_controller.png)
+![Figure 8 per patient summary](../../visualizations/cross-controller-validation/fig8_per_patient_summary.png)
 
 ## Grand Synthesis: What We Can and Cannot Conclude
 
@@ -726,6 +747,10 @@ Remaining:
 
 ### EXP-2684: Aggregate Outcome Modeling
 
+
+![Figure 1 outcomes by controller](../../visualizations/aggregate-outcomes/fig1_outcomes_by_controller.png)
+![Figure 5 safety frontier](../../visualizations/aggregate-outcomes/fig5_safety_frontier.png)
+
 Individual correction events are unpredictable (83.5% irreducible variance), but
 **aggregate outcomes differ dramatically by controller**:
 
@@ -740,6 +765,10 @@ Controller algorithm/strategy is the dominant factor.
 
 ### EXP-2685: Controller Strategy Comparison
 
+
+![Figure 1 dosing by zone](../../visualizations/controller-strategy/fig1_dosing_by_zone.png)
+![Figure 4 basal modulation](../../visualizations/controller-strategy/fig4_basal_modulation.png)
+
 | Metric | Loop | Trio | OpenAPS |
 |--------|------|------|---------|
 | % time suspended | 64.7% | 82.6% | 33.9% |
@@ -752,6 +781,10 @@ Controller algorithm/strategy is the dominant factor.
 Trio's more extreme bang-bang strategy achieves the best TIR.
 
 ### EXP-2686: Safety Analysis
+
+
+![Figure 5 iob at hypo](../../visualizations/safety-analysis/fig5_iob_at_hypo.png)
+![Figure 4 prehypo controller](../../visualizations/safety-analysis/fig4_prehypo_controller.png)
 
 **Clinical target (TIR≥70% AND hypo≤4%)**:
 - Trio: 5/10 (50%) — best
@@ -785,6 +818,10 @@ TIR at the cost of higher hypo risk.
 
 ### EXP-2687: Null Model Benchmark
 
+
+![Figure 1 null vs bolus](../../visualizations/null-model/fig1_null_vs_bolus.png)
+![Figure 3 treatment effect](../../visualizations/null-model/fig3_treatment_effect.png)
+
 **The AID controller alone brings BG down from 180+ faster than when users also bolus.**
 
 | Category | Median 2h BG Drop | N events |
@@ -802,6 +839,10 @@ After null subtraction, dose-response correlation r=−0.065 (no signal).
 
 ### EXP-2688: Within-Patient Temporal Trends
 
+
+![Figure 1 weekly tir](../../visualizations/temporal-trends/fig1_weekly_tir.png)
+![Figure 3 settings drift](../../visualizations/temporal-trends/fig3_settings_drift.png)
+
 **No learning curve detected.** TIR is stable from the start:
 
 | Metric | Value |
@@ -815,6 +856,10 @@ Settings (ISF, CR, basal) show minimal drift over time. Controller strategy is
 established early and outcomes don't change as settings are tuned.
 
 ### EXP-2689: Confounding by Indication
+
+
+![Figure 1 pre trajectory](../../visualizations/confounding-analysis/fig1_pre_trajectory.png)
+![Figure 4 matched](../../visualizations/confounding-analysis/fig4_matched.png)
 
 **Explains why bolus events drop less** (EXP-2687's negative "treatment effect"):
 
@@ -842,6 +887,10 @@ controlling for other channels — significant and meaningful.
 
 ### EXP-2690: Multi-Channel Insulin Decomposition
 
+
+![Figure 4 variance decomposition](../../visualizations/multi-channel/fig4_variance_decomposition.png)
+![Figure 5 controller stratified](../../visualizations/multi-channel/fig5_controller_stratified.png)
+
 **Multi-factor analysis recovers R²=0.296** (vs 0.015 for bolus-only univariate):
 
 | Channel | Unique R² | β (standardized) | p-value |
@@ -864,6 +913,10 @@ for controller co-intervention through other channels.
 **Controller-stratified**: Loop R²=0.378, Trio R²=0.394, OpenAPS R²=0.132.
 
 ### EXP-2691: Settings Mediation Analysis
+
+
+![Figure 3 mediation](../../visualizations/settings-mediation/fig3_mediation.png)
+![Figure 1 settings to behavior](../../visualizations/settings-mediation/fig1_settings_to_behavior.png)
 
 Settings affect outcomes through a mediation pathway:
 
@@ -923,6 +976,10 @@ strongest (−8.56), consistent with Loop users relying more on manual boluses.
 
 ### EXP-2693: TIR Gap Decomposition
 
+
+![Figure 2 oaxaca](../../visualizations/tir-gap/fig2_oaxaca.png)
+![Figure 1 feature comparison](../../visualizations/tir-gap/fig1_feature_comparison.png)
+
 The Trio-OpenAPS TIR gap (**11.4pp**: 82.4% vs 71.0%) is **nearly fully decomposed**:
 
 | Factor | Contribution | Explanation |
@@ -948,6 +1005,10 @@ different physiological characteristics or engagement levels.
 70% of patient-level TIR variance is explained by measurable factors.
 
 ### EXP-2694: Time-Resolved Channel Decomposition
+
+
+![Figure 1 r2 by horizon](../../visualizations/time-resolved/fig1_r2_by_horizon.png)
+![Figure 2 temporal marginals](../../visualizations/time-resolved/fig2_temporal_marginals.png)
 
 The multi-factor model's explanatory power **grows with horizon**:
 
@@ -1029,6 +1090,10 @@ that the controller compensates through other channels when boluses are absent.
 
 ### EXP-2695: Propensity Score Matching for Causal Bolus Effect
 
+
+![Figure 1 ps distribution](../../visualizations/causal-psm/fig1_ps_distribution.png)
+![Figure 2 love plot](../../visualizations/causal-psm/fig2_love_plot.png)
+
 **47,045 matched pairs** (caliper=0.05, exact match on BG band, PS on 7 covariates).
 
 | Covariate | SMD Before | SMD After | Balanced? |
@@ -1070,6 +1135,9 @@ based on what the user does.
 
 ### EXP-2696: Impulse Response Functions (Local Projection)
 
+
+![Figure 1 impulse response](../../visualizations/impulse-response/fig1_impulse_response.png)
+
 Using Jordà (2005) Local Projections with BG history controls:
 
 **Bolus impulse response**: Peak −1.63 mg/dL at 105 min per 1U bolus.
@@ -1088,6 +1156,10 @@ than Insulin→BG (causal), confirming the dominant relationship is the controll
 and user reacting to BG, not insulin driving BG.
 
 ### EXP-2697: Within-Patient Variance Decomposition
+
+
+![Figure 1 variance decomp](../../visualizations/variance-decomposition/fig1_variance_decomp.png)
+![Figure 2 between patient](../../visualizations/variance-decomposition/fig2_between_patient.png)
 
 **Hierarchical variance decomposition (ANOVA)**:
 
