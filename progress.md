@@ -648,3 +648,19 @@ Validated across 16 patients from 2 independent sources.
 
 **Methodology revision**: EXP-2673's "no circadian signal" conclusion is QUALIFIED.
 True corrections (BG≥180) DO show circadian ISF variation. Must re-investigate.
+
+### Circadian ISF Deep Dive — EXP-2679 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Circadian ISF analysis | `tools/cgmencode/exp_circadian_isf_deep_dive_2679.py` | Loop-specific circadian signal |
+| 5-panel dashboard | `visualizations/circadian-isf-deep-dive/fig[1-5]_*.png` | Hourly, controller, patient, dawn, magnitude |
+
+**Key Findings**:
+- Overall Kruskal-Wallis p=0.0009 with BG≥180 filter (confirms EXP-2678)
+- Signal is LOOP-SPECIFIC: Loop p=7e-06 (n=597), OpenAPS p=0.40 (n=402), Trio p=0.40 (n=57)
+- Peak ISF at 2PM UTC (31.7 mg/dL/U), trough at midnight (2.0)
+- NO dawn phenomenon: dawn (4-8AM) ISF=17.0 vs non-dawn=15.6, p=0.95
+- 75.3% positive ISF with BG≥180 floor (vs 43% without)
+- Interpretation: likely controller behavior artifact (Loop temp basal patterns) not pure physiology,
+  since OpenAPS (n=402) shows no signal with adequate power
