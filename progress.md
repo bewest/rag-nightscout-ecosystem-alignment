@@ -26,6 +26,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Wave-3: BG-Adjusted Circadian ISF, SC Ceiling Detection, Multi-Factor (2026-04-19)
+
+Three experiments combining deconfounding techniques for maximum signal extraction.
+
+| EXP | Title | Verdicts | Key Finding |
+|-----|-------|----------|-------------|
+| 2708 | BG-Adjusted Circadian ISF | H1✓ H2✓ H3✗ H4✓ | Peak shifts 12-16h→20-24h; 15.2% MAE improvement; TRUE circadian ratio 5.57× (larger, not smaller) |
+| 2709 | SC Ceiling BG-Controlled | H1✗ H2✓ H3✓ H4✗ | Within-BG-band: ALL 6 bands show SC ceiling; power-law R²=0.934 vs linear 0.418 (β=0.595) |
+| 2710 | Multi-Factor Deconfounding | H1✓ H2✓ H3✓ H4✓ | Combined R²=0.183; CV reduced 19.8%; BG MAE: 145.8→24.8 mg/dL; ALL 21 patients improve |
+
+**Key Discoveries**:
+- BG stratification successfully reveals SC ceiling hidden in raw observational data
+- Multi-factor deconfounding reduces BG prediction error by 83% vs profile ISF
+- True circadian ISF variation is LARGER than raw data suggests (BG confound was suppressing it)
+- 6 of 7 deconfounding factors contribute incremental R² in stepwise addition
+
+**Gaps**: GAP-ALG-073 (SC ceiling β=0.595 ≠ forward_simulator β=0.9)
+
 ## Follow-Up Experiments: Deconfounding the Deconfounders (2026-04-19)
 
 Three follow-up experiments investigated confounds identified in the Tier-1 wave.
