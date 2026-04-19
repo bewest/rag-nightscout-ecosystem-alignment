@@ -96,27 +96,29 @@ OpenAPS=8). Two experiments: EXP-2671 (8-panel validation dashboard) and EXP-267
 | 2671 | Cross-controller data fidelity | PASS (w/ caveats) | Core fields safe; 7 patients flagged |
 | 2672 | Autoprepare qualification gate | ALL 4 GATES PASS | 22 qualified patients ready for autoresearch |
 
-### Findings
+### Autoresearch Wave (EXP-2673–2675)
 
-- **Demand-ISF dose-independence validated across 3 controllers**: Loop r=−0.19, Trio r=−0.20, OpenAPS r=−0.08
-- **22/31 patients qualified** (8 Loop, 11 Trio, 3 OpenAPS)
-- **enacted\_rate percent bug fixed** (odc-96254963 only, auto-detect in grid.py)
-- **sensitivity\_ratio, eventual\_bg** are 0% for Loop by design (not a bug)
-- **IOB = total system IOB** (bolus+basal+SMB), not single-bolus pharmacokinetic decay
-- **Patient j** permanently excluded (unknown controller, zero IOB/COB)
-- **ISF range**: 10.7–67.5 mg/dL/U across all qualified patients (plausible)
+| EXP | Question | Key Finding |
+|-----|----------|-------------|
+| 2673A | Circadian ISF replication | NO signal (p=0.18, 562 events, 22 patients) |
+| 2673B | Sensitivity ratio validation | Effective ISF 1.4-5.2× inflated vs demand (r=0.70) |
+| 2674 | DynISF formula effect | **Sigmoid=6.6× inflation vs Log=2.5×** — formula predicts inflation |
+| 2675 | Cross-controller portability | **Patient physiology = 81.9% of ISF variance** |
 
 ### Deliverables
 
 | Deliverable | Location |
 |-------------|----------|
 | Validation Report | `docs/60-research/cross-controller-validation-report-2026-04-19.md` |
-| EXP-2671 Figures (8) | `visualizations/cross-controller-validation/fig[1-8]_*.png` |
-| EXP-2672 Gate Figures (4) | `visualizations/autoprepare-gate/fig[1-4]_*.png` |
+| EXP-2671 Figures | `visualizations/cross-controller-validation/fig[1-8]_*.png` |
+| EXP-2672 Gate Figures | `visualizations/autoprepare-gate/fig[1-4]_*.png` |
+| EXP-2673 Wave 1 Figures | `visualizations/autoresearch-wave1/fig[1-6]_*.png` |
+| EXP-2674 DynISF Figures | `visualizations/autoresearch-wave2/fig[1-6]_*.png` |
+| EXP-2675 Portability Figures | `visualizations/autoresearch-wave3/fig[1-5]_*.png` |
 | Qualified Manifest | `externals/experiments/autoprepare-qualified.json` |
 | Pipeline Fix | `tools/ns2parquet/grid.py` (percent-encoding auto-fix) |
 
-### Status: 🚀 Autoprepare COMPLETE — Ready for Autoresearch
+### Status: 🔬 Autoresearch IN PROGRESS
 
 ---
 

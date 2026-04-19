@@ -311,12 +311,55 @@ inflated by AID compensation per EXP-2651.
 **Manifest**: `externals/experiments/autoprepare-qualified.json`  
 **Figures**: `visualizations/autoprepare-gate/fig[1-4]_*.png`
 
-### Phase 3: Autoresearch (Ready to Proceed) 🚀
-- [ ] Circadian ISF with Nyquist-strict isolation (22 patients)
-- [ ] SC ceiling × DynISF formula comparison (sigmoid vs log)
-- [ ] sensitivity\_ratio vs extracted demand-ISF correlation (Trio/OpenAPS only)
-- [ ] Cross-controller ISF portability test
-- [ ] Patience mode validation on expanded dataset
+### Phase 3: Autoresearch — Results (EXP-2673 through EXP-2675) 🔬
+
+#### EXP-2673: Circadian ISF Replication + Sensitivity Ratio Validation
+
+**Part A — Circadian ISF** (22 patients, 562 events, 2h isolation):
+- Pooled Mann-Whitney p=0.18: **NO circadian signal** (confirms EXP-2665)
+- Per-controller: Loop p=0.59, Trio p=0.07 (marginal), OpenAPS p=0.46
+- 6h isolation too strict for SMB controllers — 2h validated by EXP-2663
+
+**Part B — Sensitivity Ratio** (6 patients with SR coverage + events):
+- Cross-patient SR vs demand ISF: r=0.59 (promising but n=6, p=0.22)
+- Effective ISF (scheduled/SR) vs demand ISF: r=0.70 (p=0.12)
+- Effective/demand ISF ratio: 1.4-5.2× (confirms EXP-2651 inflation)
+
+#### EXP-2674: DynISF Formula × Demand ISF
+
+**Headline finding**: DynISF formula type predicts ISF inflation magnitude:
+
+| Formula | Patients | Median Inflation | Range |
+|---------|----------|-----------------|-------|
+| Sigmoid | 6 | 6.6× | 2.6-38.3× |
+| Log | 5 | 2.5× | 1.5-4.7× |
+
+- Sigmoid formula creates more aggressive AID compensation → higher inflation
+- Event-level SR is NOT predictive of per-correction ISF (pooled r=0.055)
+- 994 correction events across 12 Trio patients
+
+#### EXP-2675: Cross-Controller ISF Portability
+
+**Key result**: Patient physiology explains **81.9%** of demand ISF variance:
+
+| Metric | Loop | Trio | OpenAPS |
+|--------|------|------|---------|
+| Patients | 8 | 11 | 3 |
+| Events | 311 | 318 | 239 |
+| Median ISF | 7.3 | 4.7 | 32.5 |
+| Median CV | 2.32 | 5.41 | 1.67 |
+
+- Controller type: 18.1% (eta²=0.181) — moderate, not dominant
+- ISF distributions differ (Kruskal-Wallis p<0.001) — OpenAPS higher ISF
+- Profile ISF predicts demand ISF: r=0.456 (moderate)
+- Trio has highest variability (CV=5.41) due to aggressive SMBs
+
+### Phase 4: Next Priorities
+
+- [ ] SC ceiling replication on expanded dataset
+- [ ] Patience mode validation (cap SMBs when IOB>2×median)
+- [ ] Investigate negative median ISF in several Trio patients (AID artifact)
+- [ ] Expanded DynISF dataset (6 more sites pending ingestion)
 
 ---
 
@@ -324,6 +367,9 @@ inflated by AID compensation per EXP-2651.
 
 - **EXP-2671**: `tools/cgmencode/exp_cross_controller_validation_2671.py`
 - **EXP-2672**: `tools/cgmencode/exp_autoprepare_gate_2672.py`
-- **Pipeline**: `tools/ns2parquet/grid.py` (grid construction + percent-fix), `normalize.py` (field extraction)
+- **EXP-2673**: `tools/cgmencode/exp_autoresearch_wave1_2673.py`
+- **EXP-2674**: `tools/cgmencode/exp_dynisf_sr_deep_dive_2674.py`
+- **EXP-2675**: `tools/cgmencode/exp_cross_controller_isf_2675.py`
+- **Pipeline**: `tools/ns2parquet/grid.py` (grid construction + percent-fix)
 - **Data**: `externals/ns-parquet/training/grid.parquet` (1.3M rows, 49 columns)
 - **Manifest**: `externals/experiments/autoprepare-qualified.json`
