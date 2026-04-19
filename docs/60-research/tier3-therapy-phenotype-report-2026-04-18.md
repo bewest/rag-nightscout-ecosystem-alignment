@@ -25,7 +25,7 @@ The DynISF cohort shows similar patterns with stronger prediction bias (mean −
 
 ### 2.1 Overview
 
-EXP-2351 fits insulin action curves to correction events per patient, classifying insulin response type and estimating effective Duration of Insulin Action (DIA). The experiment spans sub-experiments EXP-2351 through EXP-2358, covering correction analysis, meal timing, curve fitting, exponential DIA, responder classification, circadian variation, IOB risk, and personalized recommendations.
+EXP-2351 fits insulin action curves to correction events per patient, classifying insulin response type and estimating effective Duration of Insulin Action (DIA). The experiment spans sub-experiments EXP-2351 through EXP-2358, covering correction analysis, meal timing, IOB decay validation, exponential DIA, responder classification, circadian variation, stacking risk, and personalized recommendations.
 
 ### 2.2 Correction Event Analysis (EXP-2351)
 
