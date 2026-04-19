@@ -26,6 +26,22 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Wave-8: Patient Settings & Clinical Translation (2026-04-20)
+
+Payoff wave: extracted per-patient ISF, assessed basal circadian, deconfounded DynISF.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2723 | `tools/cgmencode/exp_patient_settings_2723.py` | 90.5% patients improve, median 75.8% MAE reduction |
+| EXP-2724 | `tools/cgmencode/exp_basal_circadian_2724.py` | Drift circadian (p<1e-38) but patient-specific |
+| EXP-2725 | `tools/cgmencode/exp_dynisf_deconfound_2725.py` | SR⊥ISF (r=0.008); gap reduced 41.6% |
+| Report | `docs/60-research/wave8-comprehensive-synthesis-2026-04-20.md` | 8-part master synthesis |
+| Viz | `visualizations/master-synthesis/master_synthesis.png` | 6-panel research arc |
+
+**Scorecard**: 24 experiments (EXP-2702-2725), 96 hypotheses, 55 PASS (57%)
+
+---
+
 ## Wave-7: Actionable Settings Extraction (2026-04-20)
 
 Converted deconfounding research into 3 practical outputs + forward simulator fix.
