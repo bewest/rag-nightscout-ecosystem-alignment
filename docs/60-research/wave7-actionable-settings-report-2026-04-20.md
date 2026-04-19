@@ -49,7 +49,7 @@ events, same patient). Compare to all-event ISF and profile ISF.
 | Hypothesis | Test | Result | Verdict |
 |-----------|------|--------|---------|
 | H1: ISFs differ | Wilcoxon | p < 1e-6, median 13.1 vs 21.9 | ✅ PASS |
-| H2: Lower CV | Per-patient | 2/21 improved (10%) | ❌ FAIL |
+| H2: Lower CV | Per-patient | 2/21 improved (9.5%) | ❌ FAIL |
 | H3: Closer to profile | Per-patient | 0/21 closer | ❌ FAIL |
 | H4: Better predictions | Held-out MAE | 48.5 vs 68.2 vs 181.5 | ✅ PASS |
 
@@ -100,7 +100,7 @@ to produce stable, actionable time-of-day ISF schedules.
 | H1: Shrinkage improves stability | Split-half r | 0.801→0.794 (worse) | ❌ FAIL |
 | H2: Ratio in physiological range | Circadian ratio | Raw 2.87×, shrunk 3.10× | ✅ PASS |
 | H3: Circadian beats flat ISF | MAE comparison | 41.9 vs 40.3 (flat wins) | ❌ FAIL |
-| H4: Optimal k consistent | IQR of optimal k | k=100 for all (IQR ratio 1.0×) | ✅ PASS |
+| H4: Optimal k consistent | IQR of optimal k | median k=100 (19/21 patients; IQR ratio 1.0×) | ✅ PASS |
 
 ### Key Findings
 
@@ -144,7 +144,7 @@ settings translation between Loop, Trio, and AAPS/OpenAPS.
 | Hypothesis | Test | Result | Verdict |
 |-----------|------|--------|---------|
 | H1: Controller η² reduced >50% | Kruskal-Wallis | 0.333→0.150 (55% reduction) | ✅ PASS |
-| H2: Closer to profile | Per-patient | 2/21 (10%) | ❌ FAIL |
+| H2: Closer to profile | Per-patient | 2/21 (9.5%) | ❌ FAIL |
 | H3: Patient signal enhanced | Partial η² | 0.0525→0.0590 (+12%) | ✅ PASS |
 | H4: Cross-controller prediction | In-range test | 13/21 (62%) | ✅ PASS |
 

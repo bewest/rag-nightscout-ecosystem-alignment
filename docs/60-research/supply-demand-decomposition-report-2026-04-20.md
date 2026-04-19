@@ -61,7 +61,7 @@ and whether subtracting the supply contribution improves precision.
 |-----------|------|--------|---------|
 | H1: ISF lower when rising | Mann-Whitney | 19.4 vs 26.7 (p<0.001) | ✅ PASS |
 | H2: Adjusted CV lower | Per-patient CV | 1/21 improved | ❌ FAIL |
-| H3: Adjustment improves R² | Multi-factor | 0.230→0.065 (destroyed) | ❌ FAIL |
+| H3: Supply improves R² | Multi-factor + supply | 0.2298→0.2303 (+0.0005) | ❌ FAIL |
 | H4: Supply varies with glycogen | Loaded vs depleted | 0.0 vs 0.0 | ❌ FAIL |
 
 ### Interpretation
@@ -71,7 +71,7 @@ This is physiologically expected — when glucose is rising, the same insulin do
 a smaller observed BG drop because glucose production is fighting the insulin.
 
 However, the naive adjustment (`subtract roc × time`) **destroys** signal rather than
-improving it. R² drops from 0.230 to 0.065 — an 80% reduction. This happens because:
+improving it. R² drops from 0.230 to 0.065 — a 72% reduction. This happens because:
 
 1. `glucose_roc` captures short-term dynamics already embedded in the multi-factor model
 2. Subtracting it removes useful variance (the "supply" signal IS part of what makes
@@ -104,7 +104,7 @@ than the current 48h window, and whether the user's 72h glycogen hypothesis hold
 | H1: Timescales differ | Univariate R² range | 0.0002→0.0075 | ✅ PASS |
 | H2: 72h > 48h | R² comparison | 0.0075 > 0.0070 | ✅ PASS |
 | H3: 72h adds to multi-factor | Incremental R² | +0.0001 | ✅ PASS |
-| H4: Supply features >5% | Total supply R² | 1.0% | ❌ FAIL |
+| H4: Supply features >0.5% | Total supply R² | 1.0% | ❌ FAIL |
 
 ### Key Data: Monotonic Timescale Relationship
 
