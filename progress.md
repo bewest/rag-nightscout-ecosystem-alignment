@@ -872,3 +872,41 @@ is still actively managing via temp basals and SMBs. We cannot estimate the true
 treatment effect of a bolus from this observational data because the controller's
 co-intervention confounds the comparison. All insulin channels (bolus, SMB, basal
 modulation) contribute to glucose management; isolating any one requires causal methods.
+
+### Multi-Channel Insulin Decomposition — EXP-2690 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Multi-channel decomposition | `tools/cgmencode/exp_multi_channel_2690.py` | All channels significant |
+| 7-panel dashboard | `visualizations/multi-channel/fig[1-7]_*.png` | Correlation, effects, variance |
+
+**Multi-factor analysis recovers R²=0.296** (vs 0.015 for bolus alone):
+- Starting BG: 13.3% unique variance (largest factor)
+- **Bolus: 7.3% unique** (p≈0, highly significant when controlling for co-intervention)
+- **Excess basal: 6.4% unique** (controller's basal modulation is a major channel)
+- SMB: 0.9%, Carbs: 0.6%, ROC: 0.5% — all significant
+- Within-patient R²=0.318; controller-stratified: Loop=0.378, Trio=0.394, OpenAPS=0.132
+
+**Key correction**: Earlier "insulin irrelevance" was an artifact of single-factor analysis.
+When controlling for all channels simultaneously, each shows significant partial effects.
+The controller compensates through other channels, which MASKS the bolus effect in
+univariate analysis but does NOT mean the bolus has no effect.
+
+### Settings Mediation Analysis — EXP-2691 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Settings mediation | `tools/cgmencode/exp_settings_mediation_2691.py` | Settings → behavior → outcomes |
+| 6-panel dashboard | `visualizations/settings-mediation/fig[1-6]_*.png` | Mediation, within-patient, frontier |
+
+**Settings DO affect outcomes, mediated through controller behavior:**
+- ISF → SMB rate: r=−0.115, p=1.2e-11 (lower ISF → more aggressive dosing)
+- SMB rate → TIR: r=+0.169, p=2.2e-23 (more SMBs → higher TIR)
+- Patient-level (settings + controller → TIR): R²=0.335 (n=22, underpowered)
+
+**Within-patient natural experiments**: Settings barely change (ISF range=0.1 mg/dL/U),
+limiting power. Mean r(ΔISF, ΔTIR)=0.110; 2/22 patients show significant effects.
+
+**Key insight**: Settings configure controller behavior. Controller behavior determines
+outcomes. The causal chain is: Settings → Controller aggressiveness → Glucose outcomes.
+This is the coupled system working as designed.
