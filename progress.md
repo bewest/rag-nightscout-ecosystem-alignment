@@ -26,6 +26,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Follow-Up Experiments: Deconfounding the Deconfounders (2026-04-19)
+
+Three follow-up experiments investigated confounds identified in the Tier-1 wave.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2705 | `tools/cgmencode/exp_midday_isf_peak_2705.py` | Midday ISF peak is BG confound; after control, peak shifts to 16-20h |
+| EXP-2706 | `tools/cgmencode/exp_sc_slope_2706.py` | SC slope is positive (confounding by indication); ceiling not detectable this way |
+| EXP-2707 | `tools/cgmencode/exp_glycogen_confound_2707.py` | Loaded glycogen → higher ISF is REAL; supports EGP as useful decomposition |
+
+**Key Findings**:
+- **Circadian confound identified**: Midday ISF peak (EXP-2702) is partially a BG-level confound. BG0 explains 71% of the joint model. After BG control, pattern shape changes completely (rank r=0.203 vs raw). Peak shifts from 12-16h to 16-20h.
+- **BGI subtraction REVEALS signal**: Counter-intuitively, deviation has MORE circadian variance (η²=0.018) than raw ISF (η²=0.003). This means BGI subtraction removes a confound (BG level) that was masking the true circadian insulin effect.
+- **SC ceiling undetectable by slope**: Dose-response slope is positive (median 0.856) — confounding by indication. Higher IOB → higher starting BG → more room to fall. The SC ceiling requires different methodology (likely comparison to simulated linear absorption, not observational dose-response).
+- **Glycogen effect is REAL, not confounded**: EXP-2707 found that controlling for BG does NOT remove the glycogen effect within BG bands (effect is actually stronger: 3.2 vs 1.6 mg/dL/U). BG does not mediate the pathway (-9%). Interpretation: loaded glycogen → suppressed EGP → insulin is genuinely more effective. This validates EGP as a useful decomposition axis.
+- **Confounding by indication is pervasive**: Both SC ceiling (EXP-2706) and glycogen (EXP-2707 H1) show controller behavior masking or reversing expected relationships. The controller gives more insulin when BG is high, creating positive correlations where negative ones are expected.
+
+**Gaps Identified**: GAP-ALG-072 (confounding by indication makes SC ceiling undetectable from observational dose-response)
+
+---
+
 ## Tier-1 Deconfounding Experiments: Circadian, SC Ceiling, Glycogen (2026-04-19)
 
 Ran three Tier-1 experiments on full 22-patient cohort using the new deconfounding infrastructure.
