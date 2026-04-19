@@ -1295,6 +1295,62 @@ explainable. This opens the door for:
 
 ---
 
+## Phase 13: Full Parameter Recovery — CR + Basal (EXP-2700)
+
+### Key Results
+
+**Meal CR Calibration** (244,671 events, 22 patients):
+- Deviation vs expected carb rise: r=−0.625 (strong carb signal in deviations)
+- Median β_carb = −0.798 (close to −1.0 = ISF/CR ratio approximately correct)
+- This means patient CR settings are ~20% more aggressive than actual carb sensitivity
+
+**Fasting Basal** (2,035 events):
+- Mean fasting deviation: +8.5 mg/dL (BG drops slightly — basal marginally high)
+- Very few pure fasting periods in AID systems (SMBs fill most gaps)
+
+**Deviation R² by Category**:
+| Category | R² | Signal |
+|----------|-----|--------|
+| Correction | 0.828 | ISF + regression to mean |
+| Meal | 0.411 | Carbs + insulin interaction |
+| Fasting | 0.432 | bg0 regression to mean |
+
+### The Complete oref0-Autotune Analog
+
+| Parameter | oref0 Method | Our Method | Agreement |
+|-----------|-------------|------------|-----------|
+| ISF | deviation/BGI ratio | OLS slope from correction deviations | Both find settings overestimated |
+| CR | totalDeviations over meal period | β_carb in deviation ~ carb rise | β≈−0.8, settings ~20% aggressive |
+| Basal | deviations during fasting | Mean deviation in no-excess-insulin periods | Mean=+8.5 (slight excess) |
+
+---
+
+## Revised Grand Synthesis (Updated)
+
+### What the Combined Deconfounding Pipeline Establishes
+
+1. **BGI subtraction is the dominant deconfounding technique** for AID data (+0.418 R²).
+   The oref0 approach of subtracting expected insulin effect is validated and powerful.
+
+2. **ISF settings are NOT physiological ISF** — they are controller tuning parameters.
+   True insulin-specific ISF (~5 mg/dL/U) is ~14× lower than settings (~66 mg/dL/U)
+   because most BG drop from ≥180 is regression to mean (56.5 mg/dL baseline drop).
+
+3. **CR settings are approximately correct** (β_carb ≈ −0.8, within 20%), unlike ISF
+   which is grossly overestimated. This makes sense: CR determines bolus size for meals,
+   and users directly observe meal outcomes.
+
+4. **Event categorization dramatically improves signal**: correction R²=0.828 vs pooled 0.768.
+   The oref0 4-bucket approach (basal/ISF/CSF/UAM) is validated.
+
+5. **Dose-dependent ISF persists** (r=−0.686) even after deconfounding — this is real
+   pharmacology, not an artifact.
+
+6. **The AID feedback loop IS the therapy** — settings control aggressiveness, not precision.
+   Wrong ISF causes under-dosing (safe), and the controller iterates to correct.
+
+---
+
 ## Phase 12: Per-Patient ISF Calibration (EXP-2699)
 
 ### Motivation
