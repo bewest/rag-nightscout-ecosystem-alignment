@@ -726,3 +726,33 @@ R² model comparison:
 **Implication**: 86% of BG drop variance is unexplained by ANY insulin measure.
 BG drop is dominated by physiological factors (EGP, carb absorption, exercise, stress)
 not by insulin dose — whether manual or controller-delivered.
+
+### Unexplained BG Drop Variance — EXP-2683 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Variance analysis | `tools/cgmencode/exp_unexplained_variance_2683.py` | 83.5% irreducible stochastic variance |
+| 5-panel dashboard | `visualizations/unexplained-variance/fig[1-5]_*.png` | ROC, carbs, regression, random effects, model |
+
+**HEADLINE**: Full model with ALL available predictors achieves R²=0.165.
+83.5% of correction BG drop variance is IRREDUCIBLE noise.
+
+R² Model Comparison:
+- Full (FE + all): 0.165 — ceiling
+- BG₀ alone: 0.138 — most of what's predictable
+- Regression to mean: 0.130 — BG returns toward mean regardless
+- Patient FE: 0.028 — patient identity barely helps
+- Glucose ROC: 0.000 — momentum is irrelevant
+- Has carbs: 0.000 — concurrent carbs don't change drop
+
+Additional findings:
+- 51% of BG≥180 correction events have concurrent carbs (>5g)
+- Carb events show identical drop (75 vs 74 mg/dL, p=0.87)
+- ICC = 0.173 — only 17% of variance is between-patient
+- Regression to mean slope = 0.38 (each 10 mg/dL above patient mean → 3.8 mg/dL extra drop)
+
+**Interpretation**: BG correction outcome is dominated by stochastic physiological factors
+(EGP variation, stress hormones, physical activity, meal timing uncertainty).
+Neither insulin dose, controller behavior, glucose momentum, nor carb presence meaningfully
+predicts whether a correction will be effective. The BG≥180 → ~74 mg/dL drop is essentially
+regression to the mean plus physiological noise.
