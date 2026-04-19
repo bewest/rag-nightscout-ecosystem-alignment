@@ -354,12 +354,66 @@ inflated by AID compensation per EXP-2651.
 - Profile ISF predicts demand ISF: r=0.456 (moderate)
 - Trio has highest variability (CV=5.41) due to aggressive SMBs
 
-### Phase 4: Next Priorities
+### Phase 4: Methodology Revision (EXP-2677-2679)
 
-- [ ] SC ceiling replication on expanded dataset
-- [ ] Patience mode validation (cap SMBs when IOB>2×median)
-- [ ] Investigate negative median ISF in several Trio patients (AID artifact)
-- [ ] Expanded DynISF dataset (6 more sites pending ingestion)
+#### EXP-2677: AID Compensation Artifact — The 57% Negative ISF Problem
+
+**Critical finding**: 57% of "correction" events show NEGATIVE demand ISF (glucose rises
+after bolus). This affects ALL controllers:
+
+| Controller | N events | % Negative ISF | Median BG (neg) | Median BG (pos) |
+|------------|----------|----------------|-----------------|-----------------|
+| Loop | 597 | 55% | ~106 | ~160 |
+| Trio | 318 | 60% | ~108 | ~155 |
+| OpenAPS | 239 | 52% | ~110 | ~158 |
+
+**Root cause**: Boluses at in-range glucose (median BG=106 for negative ISF events) are
+misclassified meals, not corrections. The BG rises because the person was eating, not
+because insulin is ineffective.
+
+**BG Floor Effect**:
+| Floor | % Negative ISF |
+|-------|----------------|
+| None | 57% |
+| ≥120 mg/dL | 39% |
+| ≥150 mg/dL | 31% |
+| ≥160 mg/dL | 27% |
+| ≥180 mg/dL | 23% |
+
+**METHODOLOGY REQUIREMENT**: All future ISF extraction MUST include BG ≥ 150-180 mg/dL floor
+to exclude misclassified meal boluses. Earlier experiments (EXP-2673-2675) that used no floor
+have inflated variance and potentially incorrect conclusions.
+
+#### EXP-2678: BG Floor Sensitivity Analysis
+
+Replicated 3 key analyses from EXP-2673-2675 at BG floors [0, 120, 150, 180]:
+
+1. **Circadian ISF**: p drops from 0.18 (no floor) to 0.0009 (BG≥180). The signal was
+   HIDDEN by meal noise, not absent.
+
+2. **Variance decomposition**: Patient >> controller at ALL floors. Robust finding.
+
+3. **DynISF inflation**: Drops from 6.6× (no floor) to 1.4-1.8× (BG≥180). Sigmoid and log
+   formulas converge with cleaner data.
+
+#### EXP-2679: Circadian ISF Deep Dive (BG≥180)
+
+**Overall**: Kruskal-Wallis p=0.000894 — confirmed circadian signal with BG≥180 filter.
+Peak ISF at 2PM UTC (31.7 mg/dL/U), trough at midnight (2.0 mg/dL/U).
+
+**By controller**:
+| Controller | N (BG≥180) | Kruskal-Wallis p | Interpretation |
+|------------|-----------|------------------|----------------|
+| Loop | 597 | 7e-06 | **Strong circadian signal** |
+| Trio | 57 | 0.40 | Inconclusive (severely underpowered) |
+| OpenAPS | 402 | 0.40 | **No signal** (adequately powered) |
+
+**Dawn phenomenon**: NOT significant (p=0.95). Dawn ISF=17.0 vs non-dawn=15.6.
+
+**Interpretation**: The circadian signal is LOOP-SPECIFIC. Since OpenAPS has adequate power
+(n=402) and shows no signal, this likely reflects Loop controller behavior patterns (temp
+basal strategies that vary by time of day) rather than pure physiology. However, cannot rule
+out genuine physiology in the Loop patient population without timezone normalization.
 
 ---
 
@@ -478,6 +532,22 @@ systematic bias in the IOB-only prediction channel.
 ## Source Files
 
 - **EXP-2671**: `tools/cgmencode/exp_cross_controller_validation_2671.py`
+- **EXP-2672**: `tools/cgmencode/exp_autoprepare_gate_2672.py`
+- **EXP-2673**: `tools/cgmencode/exp_autoresearch_wave1_2673.py`
+- **EXP-2674**: `tools/cgmencode/exp_dynisf_sr_deep_dive_2674.py`
+- **EXP-2675**: `tools/cgmencode/exp_cross_controller_isf_2675.py`
+- **EXP-2676**: `tools/cgmencode/exp_pk_model_comparison_2676.py`
+- **EXP-2677**: `tools/cgmencode/exp_aid_compensation_artifact_2677.py`
+- **EXP-2678**: `tools/cgmencode/exp_bg_floor_sensitivity_2678.py`
+- **EXP-2679**: `tools/cgmencode/exp_circadian_isf_deep_dive_2679.py`
+
+## Next Priorities
+
+1. **Re-run EXP-2673-2675 with BG≥180 floor** (definitive versions, not sensitivity check)
+2. **Patience mode validation** (cap SMBs when IOB>2×median) on expanded dataset
+3. **Investigate Loop-specific circadian signal** — timezone normalization, controller artifact analysis
+4. **SC ceiling × controller type analysis** (EXP-2656 already has expanded data)
+5. **Per-patient DynISF formula optimization** (sigmoid vs log with BG floor)
 - **EXP-2672**: `tools/cgmencode/exp_autoprepare_gate_2672.py`
 - **EXP-2673**: `tools/cgmencode/exp_autoresearch_wave1_2673.py`
 - **EXP-2674**: `tools/cgmencode/exp_dynisf_sr_deep_dive_2674.py`

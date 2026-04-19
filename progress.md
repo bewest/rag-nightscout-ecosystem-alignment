@@ -664,3 +664,38 @@ True corrections (BG≥180) DO show circadian ISF variation. Must re-investigate
 - 75.3% positive ISF with BG≥180 floor (vs 43% without)
 - Interpretation: likely controller behavior artifact (Loop temp basal patterns) not pure physiology,
   since OpenAPS (n=402) shows no signal with adequate power
+
+### Definitive ISF Characterization — EXP-2680 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Definitive ISF analysis | `tools/cgmencode/exp_definitive_isf_2680.py` | BG≥180 + 2h isolation on 22 patients |
+| 7-panel dashboard | `visualizations/definitive-isf/fig[1-7]_*.png` | Distribution, per-patient, variance, profile, DynISF, stability, summary |
+
+**Key Findings**:
+- 7986 events (all BG), 1226 at BG≥180 — 73-88% positive ISF with floor vs 36-43% without
+- Trio severely underpowered at BG≥180 (only 66 events — tight control)
+- ISF differs significantly across controllers (Kruskal-Wallis p<0.0001)
+- Demand ISF appears dose-dependent (r=-0.418) at BG≥180 — REVISES EXP-2663
+
+### BG Drop Direct Modeling — EXP-2681 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| BG drop model | `tools/cgmencode/exp_bg_drop_model_2681.py` | Dose-independent drop, BG0 is best predictor |
+| 6-panel dashboard | `visualizations/bg-drop-model/fig[1-6]_*.png` | Dose-response, BG, IOB, multivariate, per-patient, bins |
+
+**BREAKTHROUGH FINDING**: BG drop after correction is ~74 mg/dL REGARDLESS of dose:
+- Loop: 78 mg/dL drop with 4.0U dose
+- OpenAPS: 71 mg/dL drop with 1.0U dose
+- Trio: 64 mg/dL drop with 1.4U dose
+
+Model R² breakdown:
+- log(dose): 0.015 — dose barely predicts BG drop
+- BG0: 0.141 — starting BG is the best single predictor
+- IOB: 0.001 — IOB doesn't help
+- Full: 0.146 — adding all predictors barely improves
+
+**Implication**: AID controller dominates the correction trajectory. Manual bolus dose is nearly
+irrelevant — the "dose-dependent ISF" from EXP-2680 is a ratio artifact (constant drop / varying dose).
+ISF-based correction dosing may be nearly irrelevant in AID systems.
