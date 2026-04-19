@@ -797,3 +797,23 @@ Trio's aggressive SMB + DynISF approach achieves better outcomes regardless of I
 - OpenAPS (these sites): no SMBs, smooth basal modulation — likely oref0 without SMB enabled
 - 0-minute reaction time: Loop/Trio deliver SMBs at the SAME 5-min interval as BG≥150 crossing
 - Trio achieves best TIR with the most extreme bang-bang strategy
+
+### Safety Analysis — EXP-2686 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Safety analysis | `tools/cgmencode/exp_safety_analysis_2686.py` | IOB near zero at hypo onset |
+| 6-panel dashboard | `visualizations/safety-analysis/fig[1-6]_*.png` | Frontier, characterization, temporal, pre-hypo, IOB, DynISF |
+
+**Clinical target (TIR≥70%, hypo≤4%)**:
+- Trio: 5/10 (50%) — best
+- Loop: 3/9 (33%)
+- OpenAPS: 1/3 (33%)
+
+**IOB at hypo onset is near zero for ALL controllers** — hypos happen when
+controller has already suspended insulin. Not caused by aggressive dosing.
+
+**OpenAPS has deepest hypos** (nadir 57 vs 62) and longest (25min vs 15-20).
+
+**DynISF formula within Trio**: log → 90.5% TIR / 5.1% hypo; sigmoid → 86.0% TIR / 3.3% hypo.
+Log formula is more aggressive (higher TIR but more hypos).
