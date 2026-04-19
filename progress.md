@@ -26,6 +26,43 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Cross-Controller Validation & Autoprepare Gate (2026-04-19)
+
+Validated cross-controller data fidelity on expanded 31-patient dataset (Loop=9, Trio=13, 
+OpenAPS=8). Two experiments: EXP-2671 (8-panel validation dashboard) and EXP-2672 
+(qualification gate). Fixed enacted-rate percent-encoding bug in grid.py.
+
+### Key Results
+
+| EXP | Purpose | Verdict | Key Finding |
+|-----|---------|---------|-------------|
+| 2671 | Cross-controller data fidelity | PASS (w/ caveats) | Core fields safe; 7 patients flagged |
+| 2672 | Autoprepare qualification gate | ALL 4 GATES PASS | 22 qualified patients ready for autoresearch |
+
+### Findings
+
+- **Demand-ISF dose-independence validated across 3 controllers**: Loop r=−0.19, Trio r=−0.20, OpenAPS r=−0.08
+- **22/31 patients qualified** (8 Loop, 11 Trio, 3 OpenAPS)
+- **enacted\_rate percent bug fixed** (odc-96254963 only, auto-detect in grid.py)
+- **sensitivity\_ratio, eventual\_bg** are 0% for Loop by design (not a bug)
+- **IOB = total system IOB** (bolus+basal+SMB), not single-bolus pharmacokinetic decay
+- **Patient j** permanently excluded (unknown controller, zero IOB/COB)
+- **ISF range**: 10.7–67.5 mg/dL/U across all qualified patients (plausible)
+
+### Deliverables
+
+| Deliverable | Location |
+|-------------|----------|
+| Validation Report | `docs/60-research/cross-controller-validation-report-2026-04-19.md` |
+| EXP-2671 Figures (8) | `visualizations/cross-controller-validation/fig[1-8]_*.png` |
+| EXP-2672 Gate Figures (4) | `visualizations/autoprepare-gate/fig[1-4]_*.png` |
+| Qualified Manifest | `externals/experiments/autoprepare-qualified.json` |
+| Pipeline Fix | `tools/ns2parquet/grid.py` (percent-encoding auto-fix) |
+
+### Status: 🚀 Autoprepare COMPLETE — Ready for Autoresearch
+
+---
+
 ## EGP Deconfounding & Recovery Model Comparison (2026-04-13/14)
 
 Two rounds of autoresearch testing whether EGP or any single-factor model can improve

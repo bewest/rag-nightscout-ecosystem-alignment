@@ -565,6 +565,19 @@ def build_grid(data_path: str, patient_id: str,
         if col not in df.columns:
             df[col] = np.nan
 
+    # Fix percent-encoded enacted_rate (EXP-2671: odc-96254963 stores
+    # enacted.rate as percentage of scheduled basal, not absolute U/h).
+    # Detect: if enacted_rate > 10 × scheduled_basal, likely a percentage.
+    if 'enacted_rate' in df.columns:
+        sched = df.get('scheduled_basal_rate')
+        if sched is not None:
+            enacted = df['enacted_rate']
+            pct_mask = enacted.notna() & sched.notna() & (sched > 0) & (enacted > 10 * sched)
+            if pct_mask.any():
+                df.loc[pct_mask, 'enacted_rate'] = enacted[pct_mask] / 100.0 * sched[pct_mask]
+                if verbose:
+                    print(f'  Fixed {pct_mask.sum()} percent-encoded enacted_rate values')
+
     # Rename to match grid schema
     df = df.rename(columns={
         'hypo_risk': 'loop_hypo_risk',
