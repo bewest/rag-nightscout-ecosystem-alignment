@@ -57,6 +57,7 @@ Each capability is rated by maturity level:
 | **Context-aware CR** | 🔬 Research | EXP-2341 | `advisor/_cr_advisors.py` |
 | **Split-dose recommendation** | ❌ Disproved | EXP-2522 | — |
 | **Circadian demand ISF** | ❌ Disproved | EXP-2664–2666 | — |
+| **Individual-event ISF estimation** | ❌ Disproved | EXP-2680–2683 | — |
 
 **Legend**: 🟢 Production (validated, tested, in pipeline) · 🟡 Beta/Partial (functional but incomplete) · 🔬 Research (experimental) · ❌ Disproved (tried, doesn't work)
 
@@ -161,11 +162,19 @@ The ISF advisories are diagnostic tools that show **how hard the controller is w
 
 The demand-phase ISF (glucose drop in first 0–2 hours divided by dose) is:
 - **2–10× smaller** than apparent ISF
-- **Dose-independent** (|r| = 0.156)
 - **Circadian-flat** (−4.7% from profiling — disproved)
-- **Constant per patient** — treat as a single number
 
-This is the validated target for ISF recommendations. The `advise_isf()` function uses conservative 25% steps toward the demand-phase value.
+> **⚠️ Important caveat (EXP-2680–2683)**: At larger sample sizes (N=7986),
+> demand ISF IS dose-dependent (r=−0.418). EXP-2681 showed this is a **ratio
+> artifact**: BG drop ≈74 mg/dL regardless of dose, so ISF = drop/dose creates
+> artificial 1/dose dependence. 83.5% of BG drop variance is irreducible
+> stochastic noise (EXP-2683). The controller dominates correction trajectories,
+> rendering individual-event ISF estimation unreliable. Demand ISF remains useful
+> as a **per-patient aggregate** for relative comparisons and conservative
+> step-down recommendations, but should not be interpreted as a physiological
+> constant.
+
+The `advise_isf()` function uses conservative 25% steps toward the demand-phase value.
 
 ### Key findings
 
