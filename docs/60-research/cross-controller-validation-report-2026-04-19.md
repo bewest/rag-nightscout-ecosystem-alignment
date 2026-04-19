@@ -587,56 +587,82 @@ physiology (EGP variation, counter-regulatory hormones, activity, stress).
 
 ---
 
-## Grand Synthesis: Implications for AID Research
+## Grand Synthesis: What We Can and Cannot Conclude
 
-### 1. ISF Is Not a Meaningful Physiological Quantity in AID Systems
+### ⚠️ Methodological Caution: Observational vs. Causal Claims
 
-ISF = BG_drop / dose. But BG_drop ≈ constant (~74 mg/dL) regardless of dose.
-Therefore ISF ∝ 1/dose — the observed "dose-dependence" is a mathematical artifact.
-ISF is not measuring insulin sensitivity; it's measuring the inverse of the dose
-the user happened to give.
+AID systems are closed-loop: the controller continuously adjusts insulin delivery
+(basal modulation, temp basals, SMBs) based on the same glucose readings we analyze.
+This creates systematic confounding that breaks observational correlations:
 
-### 2. AID Controllers Dominate Correction Trajectories
+- **Low R² does NOT mean insulin doesn't work.** Insulin is the mechanism by which ALL
+  controllers operate. Low bolus-outcome correlations reflect the controller compensating
+  through other channels, not insulin ineffectiveness.
+- **Cross-patient setting-outcome correlations near zero do NOT mean settings don't matter.**
+  Settings configure controller behavior. Different patients need different settings. The
+  absence of a cross-patient correlation means settings are appropriately individualized,
+  not that they're irrelevant.
+- **Observational data cannot isolate individual treatment effects** in a closed-loop system.
+  The controller's response to the same glucose signal confounds any attempt to attribute
+  outcomes to a single factor (bolus, settings, or physiology).
 
-The controller's response (temp basals, SMBs) overwhelms the manual bolus. Trio delivers
-~4.8U total insulin vs OpenAPS ~1.7U, yet achieves similar BG drops. The controller "fills in"
-whatever the bolus doesn't provide, rendering individual bolus size nearly irrelevant.
+### 1. Observed ISF (drop/dose) Is a Poor Estimator in AID Data
 
-### 3. BG Drop Is Primarily Regression to the Mean
+ISF = BG_drop / dose. Because the controller manages insulin through multiple channels
+simultaneously (basal, SMB, temp rates), the observed BG drop reflects the TOTAL system
+response, not just the user's bolus. Estimating ISF from correction events in closed-loop
+data is confounded by controller co-intervention. This does not mean ISF as a physiological
+concept is invalid — it means observational estimation is unreliable.
 
-The BG≥180 filter selects observations that are above the patient's equilibrium. These
-naturally regress toward the mean over 2h, with or without a bolus. **EXP-2687 proved
-this directly**: no-bolus events at BG≥180 drop 61.7 mg/dL (median) over 2h — MORE than
-bolus events (53.0 mg/dL). The null model accounts for 116.5% of the bolus drop.
-The "treatment effect" of a correction bolus in AID is approximately zero (EXP-2689).
+### 2. AID Controllers Manage Corrections Through Multiple Channels
 
-### 4. Stochastic Physiology Is the Dominant Factor
+The controller responds to high BG through temp basals, SMBs, and basal modulation.
+Trio delivers ~4.8U total insulin vs OpenAPS ~1.7U over 2h corrections, reflecting
+different controller strategies, not different physiology. Each channel contributes
+to the correction — user bolus, controller SMBs, and basal modulation all deliver
+insulin that lowers glucose. Isolating any one channel's effect requires causal
+methods, not observational correlation.
 
-83.5% of variance is irreducible noise. This aligns with the AID Compensation Paradox
-(EXP-2629-2661): controllers compensate for settings errors, making it impossible to
-observe the "true" effect of any single factor. The coupled system
-(physiology × controller × settings) is fundamentally unpredictable at the
-individual-event level.
+### 3. Regression to the Mean Is a Major Confounder
 
-### 5. Implications for Settings Optimization
+The BG≥180 filter selects observations above the patient's equilibrium, which
+tend to revert toward the mean. EXP-2687 showed no-bolus events at BG≥180 drop
+61.7 mg/dL over 2h — but this does NOT mean boluses don't work. In no-bolus events,
+the controller is still actively managing insulin (temp basals, SMBs). The "null" is
+not zero-insulin; it's controller-only insulin. EXP-2689 showed users bolus in harder
+situations (rising BG, concurrent meals), creating confounding by indication.
 
-- **ISF optimization is likely futile in AID**: The controller will compensate
-- **BG-based targets matter more than ISF-based dosing**: Starting BG (R²=0.14) is
-  the only meaningful predictor of correction outcome
-- **Correction factor** (ISF) should be viewed as a controller tuning parameter,
-  not a physiological constant
-- **Focus on aggregate metrics** (TIR, time below 70, mean BG) rather than
-  individual-event ISF estimation
+### 4. Individual Event Variance Is High; Aggregate Patterns Are Clear
+
+83.5% of individual correction variance is unexplained by measurable factors.
+This reflects the complexity of glucose physiology (meals, activity, stress, hormones)
+plus controller compensation. However, **aggregate outcomes differ systematically**:
+Trio achieves 89.9% TIR vs Loop 73.3% vs OpenAPS 68.4%. The controllers' different
+strategies (bang-bang vs proportional, SMB vs no-SMB) produce measurably different
+population-level outcomes even though individual events are noisy.
+
+### 5. Settings, Algorithm, and Physiology Are Coupled
+
+Settings configure how the controller responds. The controller adapts to physiology.
+Physiology varies with meals, activity, and time. This three-way coupling means:
+- Changing ISF changes how aggressively the controller corrects
+- Changing CR changes how the controller covers meals
+- The controller compensates for modest setting errors, but settings still matter
+- Optimal settings depend on the individual AND the controller algorithm
+
+The correct conclusion is not "settings don't matter" but rather "the effect of
+settings is mediated through the controller and cannot be estimated by simple
+cross-patient correlation."
 
 ### 6. AID Controllers Mitigate Hypo Severity
 
 IOB near zero at hypo onset is not evidence of "insulin depletion" causing the hypo —
 it is evidence of the **controller's response**. The hypo was caused by insulin
 delivered ~2 hours earlier. The controller detected falling BG, suspended delivery, and
-depleted IOB by the time glucose crossed 70 mg/dL. This is the same AID compensation
-pattern seen throughout: **observed states at the time of an event reflect the
-controller's response, not the cause of the event.** More aggressive suspension
-strategies (Trio's bang-bang) correlate with shorter, shallower hypos.
+depleted IOB by the time glucose crossed 70 mg/dL. This is the same pattern throughout:
+**observed states at the time of an event reflect the controller's response, not the
+cause.** More aggressive suspension strategies (Trio's bang-bang) correlate with
+shorter, shallower hypos.
 
 ---
 

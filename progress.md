@@ -696,9 +696,11 @@ Model R² breakdown:
 - IOB: 0.001 — IOB doesn't help
 - Full: 0.146 — adding all predictors barely improves
 
-**Implication**: AID controller dominates the correction trajectory. Manual bolus dose is nearly
-irrelevant — the "dose-dependent ISF" from EXP-2680 is a ratio artifact (constant drop / varying dose).
-ISF-based correction dosing may be nearly irrelevant in AID systems.
+**Implication**: In observational AID data, bolus dose shows low correlation with BG drop
+(R²=0.015). This reflects the controller compensating through other channels (SMB, temp
+basal), NOT that insulin is ineffective. The "dose-dependent ISF" from EXP-2680 is a ratio
+artifact (constant drop / varying dose). Isolating the bolus treatment effect requires causal
+methods — the controller's co-intervention confounds observational estimates.
 
 ### Controller vs Bolus Insulin — EXP-2682 (2026-04-19)
 
@@ -863,5 +865,10 @@ improve outcomes. Controller algorithm dominates from the start.
 4. **Correction-only boluses**: 58 mg/dL (closer to null 61, but still less).
 5. **Rising BG only**: bolus=48, null=46 → Δ=+2 (no treatment effect when BG rising).
 
-**Conclusion**: In AID systems, easy highs resolve on their own (controller handles).
-Users bolus in harder situations. True treatment effect of correction bolus ≈ 0.
+**Conclusion**: Confounding by indication explains the negative "treatment effect" in
+EXP-2687. Users bolus in harder situations (rising BG, concurrent meals, controller
+already at high effort). The "no-bolus" condition is NOT zero insulin — the controller
+is still actively managing via temp basals and SMBs. We cannot estimate the true
+treatment effect of a bolus from this observational data because the controller's
+co-intervention confounds the comparison. All insulin channels (bolus, SMB, basal
+modulation) contribute to glucose management; isolating any one requires causal methods.
