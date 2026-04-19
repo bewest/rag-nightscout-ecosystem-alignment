@@ -162,10 +162,10 @@ in the day (evening, not midday). This has direct clinical implications.
 
 **BGI deviation** (EXP-2705):
 - Raw circadian η² (variance explained): 0.003
-- BGI-subtracted circadian η²: 0.018 (6× larger)
+- BGI-subtracted circadian η²: 0.018 (~6.5× larger)
 
 Subtracting BGI (known insulin effect) doesn't reduce the circadian signal —
-it amplifies it by removing the dominant noise source.
+it amplifies it by removing the dominant noise source (~6.5×).
 
 ---
 
@@ -264,8 +264,7 @@ meaning predictions are both more accurate AND more precise.
    more effective than morning insulin.
 
 3. **Use channel-aware decomposition**: Splitting total insulin into bolus/SMB/basal
-   adds 0.2% incremental R². The channels have slightly different per-unit effects
-   (validated: bolus −129.2, SMB −123.6, basal −130.5 mg/dL/U).
+   adds 0.2% incremental R² (EXP-2710 stepwise waterfall: ΔR²=0.0022).
 
 4. **Track 48h carb history as state variable**: Though the glycogen effect is small
    (0.01% R²), it represents real EGP biology. Controllers with EGP models would
@@ -278,7 +277,7 @@ meaning predictions are both more accurate AND more precise.
    requirement for valid observational insulin analysis.
 
 2. **Use BGI subtraction before circadian analysis**: Removing known insulin effect
-   amplifies (not reduces) the circadian signal by 6×.
+   amplifies (not reduces) the circadian signal by ~6.5×.
 
 3. **Test for confounds BEFORE extracting parameters**: EXP-2705/2706/2707 showed
    that 2 of 3 raw signals were partially confounded. Without the confound checks,
