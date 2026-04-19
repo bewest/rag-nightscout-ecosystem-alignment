@@ -2,7 +2,7 @@
 
 **Date**: 2026-04-18  
 **Predecessor**: EXP-2656  
-**Patients**: 17 (11 with demand ISF)  
+**Patients**: 29 (23 with demand ISF)  
 **Data**: CGM + pump telemetry from grid.parquet
 
 ## 1. Motivation
@@ -25,6 +25,18 @@ EXP-2656 found SC insulin suppresses at most ~30% of hepatic EGP, explaining sti
 | h | T1 | Loop/AB | 180 | 66 | 90 | 2.0h (N=9) |
 | i | T1 | Loop/AB | 180 | 30 | 50 | 6.0h (N=8) |
 | k | T1 | Loop/AB | 179 | --- | 25 | --- |
+| ns-1ccae8a375b9 | T3 | Trio/AB | 144 | 44 | 45 | 2.0h (N=17) |
+| ns-554b16de7133 | T2 | Trio/AB | 144 | 26 | 81 | 2.0h (N=6) |
+| ns-6bef17b4c1ec | T1 | Trio/AB | 144 | 34 | 63 | 2.0h (N=24) |
+| ns-8b3c1b50793c | T2 | Trio/AB | 144 | 2 | 11 | 6.0h (N=15) |
+| ns-8f3527d1ee40 | T1 | Trio/AB | 144 | 31 | 62 | 2.0h (N=11) |
+| ns-8ffa739b986b | T2 | Trio/AB | 144 | 39 | 55 | 2.0h (N=5) |
+| ns-9b9a6a874e51 | T1 | Trio/AB | 138 | 81 | 100 | 2.0h (N=10) |
+| ns-a9ce2317bead | T2 | Trio/AB | 144 | 56 | 55 | 2.0h (N=19) |
+| ns-adde5f4af7ca | T1 | Trio/AB | 124 | 47 | 50 | 2.0h (N=19) |
+| ns-c422538aa12a | T3 | Trio/AB | 144 | 88 | 132 | 2.0h (N=8) |
+| ns-d444c120c23a | T3 | Trio/AB | 144 | 40 | 50 | 2.0h (N=13) |
+| ns-dde9e7c2e752 | T1 | Trio/AB | 144 | 78 | 220 | 2.0h (N=9) |
 | odc-39819048 | T3 | AAPS/SMB | 10 | --- | 40 | --- |
 | odc-49141524 | T3 | AAPS/SMB | 12 | --- | 60 | --- |
 | odc-58680324 | T3 | AAPS/TBR | 11 | --- | 33 | --- |
@@ -57,6 +69,18 @@ EXP-2656 found SC insulin suppresses at most ~30% of hepatic EGP, explaining sti
 | h | 149.0 | 142.5 | +4.3% | 20% |
 | i | 140.9 | 135.0 | +4.2% | 21% |
 | k | 64.3 | 63.3 | +1.5% | 55% |
+| ns-1ccae8a375b9 | 105.8 | 102.2 | +3.4% | 33% |
+| ns-554b16de7133 | 95.2 | 92.9 | +2.4% | 38% |
+| ns-6bef17b4c1ec | 86.1 | 82.6 | +4.1% | 35% |
+| ns-8b3c1b50793c | 83.7 | 83.5 | +0.3% | 67% |
+| ns-8f3527d1ee40 | 113.3 | 110.5 | +2.5% | 35% |
+| ns-8ffa739b986b | 102.2 | 101.4 | +0.8% | 53% |
+| ns-9b9a6a874e51 | 149.2 | 148.4 | +0.5% | 44% |
+| ns-a9ce2317bead | 152.3 | 134.5 | +11.7% | 10% |
+| ns-adde5f4af7ca | 117.8 | 102.3 | +13.2% | 10% |
+| ns-c422538aa12a | 110.7 | 103.5 | +6.5% | 22% |
+| ns-d444c120c23a | 127.5 | 124.8 | +2.1% | 34% |
+| ns-dde9e7c2e752 | 126.3 | 116.6 | +7.7% | 16% |
 | odc-39819048 | 138.2 | 132.3 | +4.3% | 22% |
 | odc-49141524 | 96.3 | 75.0 | +22.1% | 10% |
 | odc-58680324 | 84.7 | 72.1 | +14.9% | 18% |
@@ -69,8 +93,8 @@ EXP-2656 found SC insulin suppresses at most ~30% of hepatic EGP, explaining sti
 
 ![Ceiling](../../visualizations/sc-ceiling-demand-isf/fig3_ceiling_distribution.png)
 
-- Median: 20%, Range: 10-56%
-- At ceiling, ~80% of hepatic EGP remains active
+- Median: 22.5%, Range: 10-67%
+- At ceiling, ~77.5% of hepatic EGP remains active
 
 ## 7. Ceiling vs Sticky Hypers
 
@@ -91,6 +115,18 @@ EXP-2656 found SC insulin suppresses at most ~30% of hepatic EGP, explaining sti
 | g | 2495 | -50.2 | resolving |
 | h | 573 | -98.7 | resolving |
 | i | 3384 | -63.7 | resolving |
+| ns-1ccae8a375b9 | 112 | -75.5 | resolving |
+| ns-554b16de7133 | 480 | -55.0 | resolving |
+| ns-6bef17b4c1ec | 1332 | -55.4 | resolving |
+| ns-8b3c1b50793c | 584 | -55.8 | resolving |
+| ns-8f3527d1ee40 | 745 | -63.9 | resolving |
+| ns-8ffa739b986b | 501 | -62.5 | resolving |
+| ns-9b9a6a874e51 | 1548 | -75.4 | resolving |
+| ns-a9ce2317bead | 1241 | -43.3 | resolving |
+| ns-adde5f4af7ca | 1624 | -53.2 | resolving |
+| ns-c422538aa12a | 334 | -73.3 | resolving |
+| ns-d444c120c23a | 248 | -47.8 | resolving |
+| ns-dde9e7c2e752 | 1972 | -64.0 | resolving |
 | odc-39819048 | 128 | -59.7 | resolving |
 | odc-49141524 | 66 | -42.8 | resolving |
 | odc-58680324 | 10 | -106.8 | resolving |
