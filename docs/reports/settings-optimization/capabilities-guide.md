@@ -61,6 +61,9 @@ Each capability is rated by maturity level:
 | **Cross-controller ISF normalization** | 🔬 Research | EXP-2722 | η² reduced 55%; enables controller-switching ISF transfer |
 | **Independent-event ISF extraction** | 🔬 Research | EXP-2720 | 29% lower MAE with independence-filtered events |
 | **Deconfounding pipeline** | 🔬 Research | EXP-2698, 2710–2712 | R²=0.228 bilateral; 0.839 per-patient deconfounding |
+| **Per-patient settings extraction** | 🔬 Research | EXP-2723 | 90.5% of patients improve; median 75.8% MAE reduction |
+| **Basal circadian drift analysis** | 🔬 Research | EXP-2724 | Per-patient drift heatmap; patient-specific, not universal dawn |
+| **DynISF algorithm deconfounding** | 🔬 Research | EXP-2725 | sensitivity_ratio orthogonal to ISF (r=0.008); dose captures effect |
 
 **Legend**: 🟢 Production (validated, tested, in pipeline) · 🟡 Beta/Partial (functional but incomplete) · 🔬 Research (experimental) · ❌ Disproved (tried, doesn't work)
 

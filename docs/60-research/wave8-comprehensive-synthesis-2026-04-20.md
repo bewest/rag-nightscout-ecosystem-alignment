@@ -66,6 +66,8 @@ Wave 8 (Translation): Per-patient settings + clinical outputs
 
 ## Part 2: EXP-2723 — Per-Patient Settings Extraction
 
+![Per-Patient Settings Extraction](../../visualizations/patient-settings/patient_settings.png)
+
 ### The Payoff
 
 After 20 experiments of methodology development, EXP-2723 extracts actual ISF
@@ -118,6 +120,8 @@ For AID controllers, the recommendation is NOT "set ISF to 2.6." Rather:
 
 ## Part 3: EXP-2724 — Basal Rate Circadian Assessment
 
+![Basal Circadian Assessment](../../visualizations/basal-circadian/basal_circadian.png)
+
 ### Approach
 
 Instead of correction events (which test ISF), we looked at **steady-state fasting
@@ -158,6 +162,8 @@ blocks need basal adjustment.
 ---
 
 ## Part 4: EXP-2725 — DynISF Algorithm Deconfounding
+
+![DynISF Deconfounding](../../visualizations/dynisf-deconfound/dynisf_deconfound.png)
 
 ### The Question
 

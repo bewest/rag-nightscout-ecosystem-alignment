@@ -181,6 +181,9 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Independent-event ISF** | EXP-2720 | 2026-04 | 29% lower MAE with independence-filtered events (48.5 vs 68.2) |
 | **Circadian shrinkage ISF** | EXP-2721 | 2026-04 | Flat ISF wins MAE (40.3 vs 41.9); circadian real but not helpful |
 | **Cross-controller normalization** | EXP-2722 | 2026-04 | η² reduced 55%, ISFs converge across controllers |
+| **Per-patient settings extraction** | EXP-2723 | 2026-04 | Deconfounded ISF for 21 patients; 90.5% improve, median 75.8% MAE reduction |
+| **Basal circadian drift** | EXP-2724 | 2026-04 | Per-patient drift heatmap; patient-specific, not universal dawn phenomenon |
+| **DynISF deconfounding** | EXP-2725 | 2026-04 | sensitivity_ratio orthogonal to observed ISF (r=0.008); dose already captures DynISF |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 
@@ -203,6 +206,7 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Single-factor recovery prediction | EXP-2634, 2635 | All 5 models negative R² on post-nadir recovery rate |
 | Naive bias correction | Recommender EXP | Harmful for 8/10 patients — removes defensive suspension |
 | **Individual-event ISF estimation** | EXP-2680–2683, 2690, 2711–2712 | BG drop ≈74 mg/dL regardless of dose; ISF∝1/dose is a ratio artifact. 83.5% of BG drop variance is irreducible stochastic noise. Multi-channel regression (EXP-2690) recovers R²=0.296 when controlling for all insulin channels simultaneously — bolus uniquely explains 7.3%. Bilateral decomposition (EXP-2712) shows supply (baseline return) accounts for 99.6% of total drop, insulin residual only 0.4%. Individual-event ISF remains unreliable, but insulin IS measurably relevant in aggregate via multi-channel and deconfounding approaches. |
+| **DynISF sensitivity_ratio predicts ISF** | EXP-2725 | Pooled partial r=0.008 — DynISF's algorithmic adjustments are orthogonal to observed correction ISF. Dose variable already captures DynISF's influence. 6/10 DynISF patients have statistically significant r, but magnitudes are tiny (median |r|=0.084). |
 
 ---
 
