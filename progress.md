@@ -756,3 +756,23 @@ Additional findings:
 Neither insulin dose, controller behavior, glucose momentum, nor carb presence meaningfully
 predicts whether a correction will be effective. The BG≥180 → ~74 mg/dL drop is essentially
 regression to the mean plus physiological noise.
+
+### Aggregate Outcome Modeling — EXP-2684 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Aggregate outcomes | `tools/cgmencode/exp_aggregate_outcomes_2684.py` | Settings don't predict TIR |
+| 6-panel dashboard | `visualizations/aggregate-outcomes/fig[1-6]_*.png` | By controller, ISF, CR, TDD, safety, summary |
+
+**HEADLINE**: Trio achieves 89.9% TIR (median) vs Loop 73.3% vs OpenAPS 68.4%.
+But ISF/CR/TDD settings show ZERO correlation with outcomes:
+
+- ISF vs TIR: r=-0.046 (p=0.84)
+- CR vs TIR: r=0.194 (p=0.39)  
+- TDD vs TIR: r=-0.120 (p=0.59)
+
+Trio uses 56% more insulin than Loop (42.7 vs 27.3 U/day) for 17pp higher TIR.
+OpenAPS uses similar insulin to Trio (43.9 U/day) but achieves the worst TIR.
+
+**Interpretation**: Controller algorithm strategy matters more than any individual setting.
+Trio's aggressive SMB + DynISF approach achieves better outcomes regardless of ISF/CR tuning.

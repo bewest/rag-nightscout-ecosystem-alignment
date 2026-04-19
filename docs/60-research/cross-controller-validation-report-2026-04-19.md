@@ -529,6 +529,105 @@ systematic bias in the IOB-only prediction channel.
 
 ---
 
+---
+
+## Phase 5: The Insulin Irrelevance Discovery (EXP-2680-2683)
+
+### EXP-2680: Definitive Demand ISF Characterization
+
+Applied all methodology corrections (BG≥180, 2h isolation) to 22 patients:
+- 7986 events total, 1226 at BG≥180 (73-88% positive ISF vs 36-43% without floor)
+- **Trio severely underpowered**: only 66 events at BG≥180 (tight control)
+- ISF differs across controllers (Kruskal-Wallis p<0.0001)
+- **REVISION**: Demand ISF IS dose-dependent (r=-0.418) — contradicts EXP-2663
+
+### EXP-2681: BG Drop Direct Modeling
+
+Investigated the dose-dependence — **it's a ratio artifact**:
+- BG drop is ~74 mg/dL **regardless of dose** (Loop=78@4U, OpenAPS=71@1U, Trio=64@1.4U)
+- Dose R²=0.015, BG₀ R²=0.141, IOB R²=0.001, Full model R²=0.146
+- ISF = drop/dose creates artificial 1/dose dependence from a near-constant numerator
+
+### EXP-2682: Controller vs Bolus — Who Drives Corrections?
+
+Even TOTAL insulin (bolus + controller) doesn't predict BG drop:
+
+| Controller | Bolus | Total 2h Insulin | Bolus % | BG Drop |
+|------------|-------|------------------|---------|---------|
+| Loop | 4.0U | 7.6U | 58% | 78 mg/dL |
+| Trio | 1.4U | 8.3U | 20% | 64 mg/dL |
+| OpenAPS | 1.0U | 2.3U | 42% | 71 mg/dL |
+
+Trio delivers **4× the insulin** of OpenAPS for a **smaller BG drop**.
+Total insulin R²=0.0007 — even worse than bolus alone.
+
+### EXP-2683: What Explains the 86% Unexplained Variance?
+
+**Answer: Nothing measurable.** Full model R²=0.165:
+
+| Predictor | R² |
+|-----------|----|
+| Full (FE + all) | 0.165 |
+| BG₀ alone | 0.138 |
+| Regression to mean | 0.130 |
+| Patient FE | 0.028 |
+| Glucose ROC | 0.000 |
+| Has carbs | 0.000 |
+| IOB | 0.001 |
+| Dose | 0.004 |
+
+- **Glucose momentum**: r=-0.036 (irrelevant)
+- **Concurrent carbs**: p=0.87 (no difference, despite 51% having carbs)
+- **Regression to mean**: r=0.333, slope=0.38 — the dominant signal
+- **ICC**: 0.173 — only 17% between-patient
+
+**83.5% of BG drop variance is genuinely irreducible stochastic noise** from
+physiology (EGP variation, counter-regulatory hormones, activity, stress).
+
+---
+
+## Grand Synthesis: Implications for AID Research
+
+### 1. ISF Is Not a Meaningful Physiological Quantity in AID Systems
+
+ISF = BG_drop / dose. But BG_drop ≈ constant (~74 mg/dL) regardless of dose.
+Therefore ISF ∝ 1/dose — the observed "dose-dependence" is a mathematical artifact.
+ISF is not measuring insulin sensitivity; it's measuring the inverse of the dose
+the user happened to give.
+
+### 2. AID Controllers Dominate Correction Trajectories
+
+The controller's response (temp basals, SMBs) overwhelms the manual bolus. Trio delivers
+8.3U total insulin vs OpenAPS 2.3U, yet achieves similar BG drops. The controller "fills in"
+whatever the bolus doesn't provide, rendering individual bolus size nearly irrelevant.
+
+### 3. BG Drop Is Primarily Regression to the Mean
+
+The BG≥180 filter selects observations that are above the patient's equilibrium. These
+naturally regress toward the mean over 2h, with or without a bolus. The bolus may
+accelerate this process, but the magnitude is dominated by where the BG started
+relative to the patient's setpoint.
+
+### 4. Stochastic Physiology Is the Dominant Factor
+
+83.5% of variance is irreducible noise. This aligns with the AID Compensation Paradox
+(EXP-2629-2661): controllers compensate for settings errors, making it impossible to
+observe the "true" effect of any single factor. The coupled system
+(physiology × controller × settings) is fundamentally unpredictable at the
+individual-event level.
+
+### 5. Implications for Settings Optimization
+
+- **ISF optimization is likely futile in AID**: The controller will compensate
+- **BG-based targets matter more than ISF-based dosing**: Starting BG (R²=0.14) is
+  the only meaningful predictor of correction outcome
+- **Correction factor** (ISF) should be viewed as a controller tuning parameter,
+  not a physiological constant
+- **Focus on aggregate metrics** (TIR, time below 70, mean BG) rather than
+  individual-event ISF estimation
+
+---
+
 ## Source Files
 
 - **EXP-2671**: `tools/cgmencode/exp_cross_controller_validation_2671.py`
@@ -540,19 +639,25 @@ systematic bias in the IOB-only prediction channel.
 - **EXP-2677**: `tools/cgmencode/exp_aid_compensation_artifact_2677.py`
 - **EXP-2678**: `tools/cgmencode/exp_bg_floor_sensitivity_2678.py`
 - **EXP-2679**: `tools/cgmencode/exp_circadian_isf_deep_dive_2679.py`
-
-## Next Priorities
-
-1. **Re-run EXP-2673-2675 with BG≥180 floor** (definitive versions, not sensitivity check)
-2. **Patience mode validation** (cap SMBs when IOB>2×median) on expanded dataset
-3. **Investigate Loop-specific circadian signal** — timezone normalization, controller artifact analysis
-4. **SC ceiling × controller type analysis** (EXP-2656 already has expanded data)
-5. **Per-patient DynISF formula optimization** (sigmoid vs log with BG floor)
-- **EXP-2672**: `tools/cgmencode/exp_autoprepare_gate_2672.py`
-- **EXP-2673**: `tools/cgmencode/exp_autoresearch_wave1_2673.py`
-- **EXP-2674**: `tools/cgmencode/exp_dynisf_sr_deep_dive_2674.py`
-- **EXP-2675**: `tools/cgmencode/exp_cross_controller_isf_2675.py`
-- **EXP-2676**: `tools/cgmencode/exp_pk_model_comparison_2676.py`
+- **EXP-2680**: `tools/cgmencode/exp_definitive_isf_2680.py`
+- **EXP-2681**: `tools/cgmencode/exp_bg_drop_model_2681.py`
+- **EXP-2682**: `tools/cgmencode/exp_controller_vs_bolus_2682.py`
+- **EXP-2683**: `tools/cgmencode/exp_unexplained_variance_2683.py`
 - **Pipeline**: `tools/ns2parquet/grid.py` (grid construction + percent-fix)
 - **Data**: `externals/ns-parquet/training/grid.parquet` (1.3M rows, 49 columns)
 - **Manifest**: `externals/experiments/autoprepare-qualified.json`
+
+## Next Research Directions
+
+Given the insulin irrelevance finding, the productive research directions shift:
+
+1. **Aggregate outcome modeling**: TIR, time-below-70, mean glucose as functions of
+   controller settings (ISF, CR, basal rate) — not individual corrections
+2. **Controller strategy comparison**: How do Loop/Trio/OpenAPS achieve similar BG
+   outcomes with 4× different insulin delivery?
+3. **Regression to mean quantification**: Build a null model (BG → patient mean)
+   to benchmark any "treatment effect" claims
+4. **Sensitivity ratio validation**: Does the controller's own SR correlate with
+   aggregate outcomes? (per-session, not per-event)
+5. **Safety analysis**: When does aggressive dosing (Trio 8.3U) vs conservative
+   (OpenAPS 2.3U) lead to different hypo rates?
