@@ -123,9 +123,14 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Controller trust profiles | EXP-2624 | Early | 0 contradictions across 16 patients |
 | Safety guardrails (25% cap) | EXP-2626 | Early | Preserves ranking (τ > 0.8) |
 | Forward simulation (two-component) | EXP-2525, 2534, 2551 | Early | MAE=0.30pp, r=0.933 |
-| **Demand-phase ISF** | EXP-2651, 2663–2666 | 2026-04 | Dose-independent, circadian-flat, 6h isolation |
+| **Demand-phase ISF** | EXP-2651, 2663–2667 | 2026-04 | Dose-independent, circadian-flat, 6h isolation |
 | **SC suppression ceiling** | EXP-2656, 2660 | 2026-04 | Wall detection, 30% SC ceiling |
 | **Patience mode** | EXP-2662 | 2026-04 | 34–82% SMB savings, ≤+2.1pp hyper |
+| **SC ceiling + demand ISF** | EXP-2667 | 2026-04 | SC ceiling 30–56%, demand ISF validated |
+| **Controller ISF signatures** | EXP-2668 | 2026-04 | Loop/AB vs Loop/TBR bolus spacing affects ISF measurement |
+| **Wall resolution mechanism** | EXP-2669 | 2026-04 | 65% of wall resolutions are unaccounted (out-of-band intervention) |
+| **CR sanity-check contrast** | EXP-2670 | 2026-04 | Meal-quality filters for CR adequacy assessment |
+| **Cross-controller validation** | EXP-2671 | 2026-04 | 31-patient multi-controller data fidelity validation |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 

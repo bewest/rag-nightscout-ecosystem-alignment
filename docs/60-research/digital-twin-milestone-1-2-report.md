@@ -71,7 +71,7 @@ data will use patient-specific optimized multipliers.
 
 ### Production Changes
 
-`settings_advisor.py:simulate_tir_with_settings()` upgraded:
+`advisor/_simulation.py:simulate_tir_with_settings()` upgraded:
 - **Fast channel** (63%): τ=0.8h exponential decay → captures immediate insulin action
 - **Persistent channel** (37%): τ=12h → captures IOB underestimation & loop compensation
 - **Power-law ISF**: effective_mult = isf_mult^(1 - 0.9) → prevents overestimation
