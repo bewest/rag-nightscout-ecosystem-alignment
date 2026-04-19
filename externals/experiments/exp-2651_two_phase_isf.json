@@ -1,0 +1,749 @@
+{
+  "experiment": "EXP-2651",
+  "parquet_source": "externals/ns-parquet/training/grid.parquet",
+  "n_patients_analyzed": 25,
+  "n_patients_in_dataset": 31,
+  "patients": {
+    "a": {
+      "n_events": 62,
+      "n_validated": 60,
+      "scheduled_isf": 48.642093658447266,
+      "isf_1h": 2.917087937299449,
+      "demand_isf": 21.918208671830335,
+      "apparent_isf": 52.206895689901955,
+      "inflation_ratio": 2.38189609705647,
+      "median_nadir_time_h": 3.958333333333333,
+      "prediction": {
+        "rmse_2h_demand": 96.47887552771552,
+        "rmse_2h_apparent": 174.92772378265667,
+        "rmse_2h_scheduled": 163.1957996404908,
+        "best_2h": "demand",
+        "rmse_4h_demand": 85.2608895644154,
+        "rmse_4h_apparent": 130.21954994429007,
+        "rmse_4h_scheduled": 119.81650162674661,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        -0.25,
+        38.67788453500984
+      ],
+      "apparent_isf_iqr": [
+        41.73730944395276,
+        72.99038524317321
+      ],
+      "isolation_h": 6.0
+    },
+    "b": {
+      "n_events": 9,
+      "n_validated": 9,
+      "scheduled_isf": 95.0,
+      "isf_1h": 4.999999801317859,
+      "demand_isf": -4.2857143586995665,
+      "apparent_isf": 50.0,
+      "inflation_ratio": NaN,
+      "median_nadir_time_h": 2.6666666666666665,
+      "prediction": {
+        "rmse_2h_demand": 39.5499410740136,
+        "rmse_2h_apparent": 55.85040827784446,
+        "rmse_2h_scheduled": 78.90823262192124,
+        "best_2h": "demand",
+        "rmse_4h_demand": 56.63614624263854,
+        "rmse_4h_apparent": 71.0054771287486,
+        "rmse_4h_scheduled": 91.54419866372812,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        -15.604389469601172,
+        9.99999985098839
+      ],
+      "apparent_isf_iqr": [
+        46.0,
+        71.24999893829228
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "c": {
+      "n_events": 6,
+      "n_validated": 6,
+      "scheduled_isf": 75.0,
+      "isf_1h": -23.87423858286928,
+      "demand_isf": 22.29999971950756,
+      "apparent_isf": 57.10000042574747,
+      "inflation_ratio": 2.560538167890541,
+      "median_nadir_time_h": 3.041666666666667,
+      "prediction": {
+        "rmse_2h_demand": 34.55348468903262,
+        "rmse_2h_apparent": 86.14538031084183,
+        "rmse_2h_scheduled": 123.71464217805729,
+        "best_2h": "demand",
+        "rmse_4h_demand": 128.67079453211795,
+        "rmse_4h_apparent": 118.19786976233779,
+        "rmse_4h_scheduled": 131.61362387721704,
+        "best_4h": "apparent"
+      },
+      "demand_isf_iqr": [
+        -8.448275560064326,
+        34.786363015687186
+      ],
+      "apparent_isf_iqr": [
+        46.6379301247197,
+        95.55
+      ],
+      "isolation_h": 6.0
+    },
+    "d": {
+      "n_events": 14,
+      "n_validated": 14,
+      "scheduled_isf": 40.0,
+      "isf_1h": 7.065656661318344,
+      "demand_isf": 11.121212121212121,
+      "apparent_isf": 58.54166500787774,
+      "inflation_ratio": 5.263964428501268,
+      "median_nadir_time_h": 2.625,
+      "prediction": {
+        "rmse_2h_demand": 31.06096362712268,
+        "rmse_2h_apparent": 71.89138066461734,
+        "rmse_2h_scheduled": 52.48281313814568,
+        "best_2h": "demand",
+        "rmse_4h_demand": 75.31920969342598,
+        "rmse_4h_apparent": 78.46036920764242,
+        "rmse_4h_scheduled": 72.08923037395354,
+        "best_4h": "scheduled"
+      },
+      "demand_isf_iqr": [
+        -22.056276594193346,
+        34.57142577974159
+      ],
+      "apparent_isf_iqr": [
+        43.727272017928215,
+        109.3406617090821
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "e": {
+      "n_events": 5,
+      "n_validated": 5,
+      "scheduled_isf": 33.0,
+      "isf_1h": 0.0,
+      "demand_isf": 4.107142927087084,
+      "apparent_isf": 19.99999970197678,
+      "inflation_ratio": 4.869565061900929,
+      "median_nadir_time_h": 4.583333333333333,
+      "prediction": {
+        "rmse_2h_demand": 30.274416812565885,
+        "rmse_2h_apparent": 70.40880510931638,
+        "rmse_2h_scheduled": 127.72209112079028,
+        "best_2h": "demand",
+        "rmse_4h_demand": 75.87127911106113,
+        "rmse_4h_apparent": 67.89845271695783,
+        "rmse_4h_scheduled": 108.27184524654635,
+        "best_4h": "apparent"
+      },
+      "demand_isf_iqr": [
+        -6.249999906867744,
+        7.450980299270476
+      ],
+      "apparent_isf_iqr": [
+        17.254901745679,
+        38.75
+      ],
+      "isolation_h": 6.0
+    },
+    "f": {
+      "n_events": 43,
+      "n_validated": 42,
+      "scheduled_isf": 20.0,
+      "isf_1h": 1.9101124414213562,
+      "demand_isf": 7.733333333333333,
+      "apparent_isf": 17.0,
+      "inflation_ratio": 2.1982758620689653,
+      "median_nadir_time_h": 4.5,
+      "prediction": {
+        "rmse_2h_demand": 65.1969354612132,
+        "rmse_2h_apparent": 110.08254502644786,
+        "rmse_2h_scheduled": 136.1792189581112,
+        "best_2h": "demand",
+        "rmse_4h_demand": 91.12199579731424,
+        "rmse_4h_apparent": 83.38540011425823,
+        "rmse_4h_scheduled": 101.95889608335092,
+        "best_4h": "apparent"
+      },
+      "demand_isf_iqr": [
+        5.257061644542592,
+        15.370768931591368
+      ],
+      "apparent_isf_iqr": [
+        13.556756856274061,
+        25.201521056292925
+      ],
+      "isolation_h": 6.0
+    },
+    "g": {
+      "n_events": 22,
+      "n_validated": 21,
+      "scheduled_isf": 65.0,
+      "isf_1h": 30.714286683368073,
+      "demand_isf": 54.195804592216376,
+      "apparent_isf": 106.818180695053,
+      "inflation_ratio": 1.9709677067954126,
+      "median_nadir_time_h": 3.208333333333333,
+      "prediction": {
+        "rmse_2h_demand": 58.0339311480701,
+        "rmse_2h_apparent": 60.94919566360719,
+        "rmse_2h_scheduled": 54.825100124347166,
+        "best_2h": "scheduled",
+        "rmse_4h_demand": 81.07399396576726,
+        "rmse_4h_apparent": 95.34669485138804,
+        "rmse_4h_scheduled": 81.58807709048774,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        -1.3541669108801315,
+        94.64285406463551
+      ],
+      "apparent_isf_iqr": [
+        96.28571550821773,
+        129.49999612569826
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "h": {
+      "n_events": 11,
+      "n_validated": 11,
+      "scheduled_isf": 90.0,
+      "isf_1h": 51.2499992363155,
+      "demand_isf": 57.142858115994215,
+      "apparent_isf": 100.00000366797828,
+      "inflation_ratio": 1.7500000343872963,
+      "median_nadir_time_h": 2.3333333333333335,
+      "prediction": {
+        "rmse_2h_demand": 52.02849916187413,
+        "rmse_2h_apparent": 73.03859717698563,
+        "rmse_2h_scheduled": 65.89678510125779,
+        "best_2h": "demand",
+        "rmse_4h_demand": 60.93815149015626,
+        "rmse_4h_apparent": 84.82656388067552,
+        "rmse_4h_scheduled": 77.48504261851703,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        33.57142933964544,
+        91.74825182450286
+      ],
+      "apparent_isf_iqr": [
+        72.85714254972004,
+        123.50649304123753
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "i": {
+      "n_events": 11,
+      "n_validated": 11,
+      "scheduled_isf": 50.0,
+      "isf_1h": 3.5087718515502786,
+      "demand_isf": 18.024690509151387,
+      "apparent_isf": 39.75308454758046,
+      "inflation_ratio": 2.2054794520547945,
+      "median_nadir_time_h": 3.1666666666666665,
+      "prediction": {
+        "rmse_2h_demand": 71.70787090357217,
+        "rmse_2h_apparent": 159.87300412133337,
+        "rmse_2h_scheduled": 208.1383952146273,
+        "best_2h": "demand",
+        "rmse_4h_demand": 74.46016729394977,
+        "rmse_4h_apparent": 120.1973544717181,
+        "rmse_4h_scheduled": 163.64471049354668,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        2.090909068390216,
+        51.76923026135688
+      ],
+      "apparent_isf_iqr": [
+        30.01973706665462,
+        63.3749995622784
+      ],
+      "isolation_h": 6.0
+    },
+    "j": {
+      "n_events": 6,
+      "n_validated": 6,
+      "scheduled_isf": 40.0,
+      "isf_1h": 23.916666666666664,
+      "demand_isf": 40.33333333333333,
+      "apparent_isf": 53.25,
+      "inflation_ratio": 1.3202479338842976,
+      "median_nadir_time_h": 4.208333333333334,
+      "prediction": {
+        "rmse_2h_demand": 276.29888540143276,
+        "rmse_2h_apparent": 365.462207348448,
+        "rmse_2h_scheduled": 274.03831848849165,
+        "best_2h": "scheduled",
+        "rmse_4h_demand": 255.97681463294606,
+        "rmse_4h_apparent": 343.32461558511454,
+        "rmse_4h_scheduled": 253.78304382549544,
+        "best_4h": "scheduled"
+      },
+      "demand_isf_iqr": [
+        38.75,
+        67.91666666666667
+      ],
+      "apparent_isf_iqr": [
+        44.125,
+        77.75
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "ns-1ccae8a375b9": {
+      "n_events": 21,
+      "n_validated": 21,
+      "scheduled_isf": 45.0,
+      "isf_1h": 30.833332108126793,
+      "demand_isf": 41.81818091179716,
+      "apparent_isf": 54.1666645142768,
+      "inflation_ratio": 1.2952898316769217,
+      "median_nadir_time_h": 2.8333333333333335,
+      "prediction": {
+        "rmse_2h_demand": 57.03659047736069,
+        "rmse_2h_apparent": 83.700923390225,
+        "rmse_2h_scheduled": 63.56848660178289,
+        "best_2h": "demand",
+        "rmse_4h_demand": 47.39403260602212,
+        "rmse_4h_apparent": 72.54825589422337,
+        "rmse_4h_scheduled": 53.3331852764187,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        13.84615435402776,
+        49.16666471295894
+      ],
+      "apparent_isf_iqr": [
+        36.92307827740736,
+        74.0
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "ns-554b16de7133": {
+      "n_events": 7,
+      "n_validated": 7,
+      "scheduled_isf": 81.07015228271484,
+      "isf_1h": 20.000000340597975,
+      "demand_isf": 21.66666580571072,
+      "apparent_isf": 64.99999903142454,
+      "inflation_ratio": 3.0000000745058046,
+      "median_nadir_time_h": 2.5,
+      "prediction": {
+        "rmse_2h_demand": 16.892928052774796,
+        "rmse_2h_apparent": 48.02882240302185,
+        "rmse_2h_scheduled": 61.09123463232519,
+        "best_2h": "demand",
+        "rmse_4h_demand": 24.54955291527578,
+        "rmse_4h_apparent": 45.34766406794475,
+        "rmse_4h_scheduled": 57.19495425857811,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        9.821428539117383,
+        31.153847001814206
+      ],
+      "apparent_isf_iqr": [
+        38.26923083565414,
+        67.85714401274313
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "ns-6bef17b4c1ec": {
+      "n_events": 6,
+      "n_validated": 6,
+      "scheduled_isf": 63.0,
+      "isf_1h": -6.952380952380952,
+      "demand_isf": 12.666666666666666,
+      "apparent_isf": 55.97883549480376,
+      "inflation_ratio": 4.419381749589771,
+      "median_nadir_time_h": 3.875,
+      "prediction": {
+        "rmse_2h_demand": 37.863310464293065,
+        "rmse_2h_apparent": 64.4641687764829,
+        "rmse_2h_scheduled": 71.6168088357742,
+        "best_2h": "demand",
+        "rmse_4h_demand": 42.32200966329848,
+        "rmse_4h_apparent": 31.790573458326634,
+        "rmse_4h_scheduled": 37.63244136587305,
+        "best_4h": "apparent"
+      },
+      "demand_isf_iqr": [
+        -22.0,
+        35.208333333333336
+      ],
+      "apparent_isf_iqr": [
+        52.703703461687596,
+        58.78571428571429
+      ],
+      "isolation_h": 6.0
+    },
+    "ns-8b3c1b50793c": {
+      "n_events": 17,
+      "n_validated": 17,
+      "scheduled_isf": 11.0,
+      "isf_1h": 1.0384615384615385,
+      "demand_isf": 2.1538461538461537,
+      "apparent_isf": 6.384615384615385,
+      "inflation_ratio": 2.9642857142857144,
+      "median_nadir_time_h": 3.75,
+      "prediction": {
+        "rmse_2h_demand": 24.629816185873057,
+        "rmse_2h_apparent": 67.11278661050395,
+        "rmse_2h_scheduled": 134.0096051200368,
+        "best_2h": "demand",
+        "rmse_4h_demand": 46.630081451746975,
+        "rmse_4h_apparent": 70.56100898297595,
+        "rmse_4h_scheduled": 131.30473367016666,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        0.8333333333333334,
+        5.666666666666667
+      ],
+      "apparent_isf_iqr": [
+        3.3461538461538463,
+        27.391304915704
+      ],
+      "isolation_h": 6.0
+    },
+    "ns-8f3527d1ee40": {
+      "n_events": 16,
+      "n_validated": 16,
+      "scheduled_isf": 62.0,
+      "isf_1h": 22.499999988962124,
+      "demand_isf": 18.819444554938404,
+      "apparent_isf": 48.12499928288163,
+      "inflation_ratio": 2.5571955188365627,
+      "median_nadir_time_h": 3.041666666666667,
+      "prediction": {
+        "rmse_2h_demand": 27.20826816088982,
+        "rmse_2h_apparent": 32.841675487903,
+        "rmse_2h_scheduled": 41.40410575023624,
+        "best_2h": "demand",
+        "rmse_4h_demand": 22.137946554393086,
+        "rmse_4h_apparent": 26.870992621770124,
+        "rmse_4h_scheduled": 36.15846134603164,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        -1.0,
+        48.94927657390023
+      ],
+      "apparent_isf_iqr": [
+        41.15384729656246,
+        89.78260920944648
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "ns-8ffa739b986b": {
+      "n_events": 8,
+      "n_validated": 8,
+      "scheduled_isf": 55.0,
+      "isf_1h": 19.772727115095158,
+      "demand_isf": 24.208333333333332,
+      "apparent_isf": 42.32954468524223,
+      "inflation_ratio": 1.7485526203886637,
+      "median_nadir_time_h": 2.666666666666667,
+      "prediction": {
+        "rmse_2h_demand": 30.651666373591688,
+        "rmse_2h_apparent": 50.45938758527682,
+        "rmse_2h_scheduled": 71.792289634887,
+        "best_2h": "demand",
+        "rmse_4h_demand": 22.761401844840663,
+        "rmse_4h_apparent": 39.33022278982042,
+        "rmse_4h_scheduled": 61.24394118609302,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        -5.0852271815577215,
+        41.68154775905225
+      ],
+      "apparent_isf_iqr": [
+        26.124999706633396,
+        45.86904819211725
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "ns-9b9a6a874e51": {
+      "n_events": 11,
+      "n_validated": 11,
+      "scheduled_isf": 100.0,
+      "isf_1h": -10.0,
+      "demand_isf": 78.88889097873081,
+      "apparent_isf": 157.77778195746163,
+      "inflation_ratio": 2.0,
+      "median_nadir_time_h": 2.0833333333333335,
+      "prediction": {
+        "rmse_2h_demand": 61.08982290885642,
+        "rmse_2h_apparent": 96.21733339527735,
+        "rmse_2h_scheduled": 66.82473788559494,
+        "best_2h": "demand",
+        "rmse_4h_demand": 63.59909770115397,
+        "rmse_4h_apparent": 103.98114363178733,
+        "rmse_4h_scheduled": 71.488715419598,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        26.72413694943603,
+        137.17646887228156
+      ],
+      "apparent_isf_iqr": [
+        121.4733509303225,
+        177.0
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "ns-a9ce2317bead": {
+      "n_events": 26,
+      "n_validated": 26,
+      "scheduled_isf": 55.0,
+      "isf_1h": -19.16666647271506,
+      "demand_isf": 27.23214286189451,
+      "apparent_isf": 94.64285605821487,
+      "inflation_ratio": 3.4754097956296737,
+      "median_nadir_time_h": 3.0,
+      "prediction": {
+        "rmse_2h_demand": 37.5995861493753,
+        "rmse_2h_apparent": 51.56801952370018,
+        "rmse_2h_scheduled": 38.47782155033307,
+        "best_2h": "demand",
+        "rmse_4h_demand": 45.91365181032049,
+        "rmse_4h_apparent": 63.17482504865633,
+        "rmse_4h_scheduled": 49.370654598515216,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        -2.0,
+        85.41209065900487
+      ],
+      "apparent_isf_iqr": [
+        65.71428583998264,
+        147.40384305928373
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "ns-adde5f4af7ca": {
+      "n_events": 21,
+      "n_validated": 21,
+      "scheduled_isf": 50.44365310668945,
+      "isf_1h": 0.9523809956314903,
+      "demand_isf": 46.2499993108213,
+      "apparent_isf": 78.82352720082432,
+      "inflation_ratio": 1.70429250541376,
+      "median_nadir_time_h": 2.5833333333333335,
+      "prediction": {
+        "rmse_2h_demand": 34.98123697993594,
+        "rmse_2h_apparent": 47.310820922293004,
+        "rmse_2h_scheduled": 35.670803422724816,
+        "best_2h": "demand",
+        "rmse_4h_demand": 61.89792852742085,
+        "rmse_4h_apparent": 73.42161697755914,
+        "rmse_4h_scheduled": 62.85066981221341,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        22.105263435279237,
+        63.80952670730984
+      ],
+      "apparent_isf_iqr": [
+        57.391305537665524,
+        106.0
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "ns-c422538aa12a": {
+      "n_events": 10,
+      "n_validated": 10,
+      "scheduled_isf": 131.51380920410156,
+      "isf_1h": 63.0,
+      "demand_isf": 67.90697550631788,
+      "apparent_isf": 95.78571508247026,
+      "inflation_ratio": 1.4105430902832452,
+      "median_nadir_time_h": 2.958333333333333,
+      "prediction": {
+        "rmse_2h_demand": 69.99549245112912,
+        "rmse_2h_apparent": 82.0999882873076,
+        "rmse_2h_scheduled": 108.71217612948696,
+        "best_2h": "demand",
+        "rmse_4h_demand": 44.49914054523189,
+        "rmse_4h_apparent": 51.19602346542333,
+        "rmse_4h_scheduled": 78.49119342505715,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        25.063025086674106,
+        146.14285922293763
+      ],
+      "apparent_isf_iqr": [
+        81.7647052718694,
+        149.9833896810218
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "ns-d444c120c23a": {
+      "n_events": 24,
+      "n_validated": 23,
+      "scheduled_isf": 50.0,
+      "isf_1h": 20.499999602635718,
+      "demand_isf": 17.548077018689042,
+      "apparent_isf": 90.33333151208038,
+      "inflation_ratio": 5.147762425243155,
+      "median_nadir_time_h": 3.375,
+      "prediction": {
+        "rmse_2h_demand": 64.89989093874507,
+        "rmse_2h_apparent": 102.01790913428462,
+        "rmse_2h_scheduled": 69.65208562449799,
+        "best_2h": "demand",
+        "rmse_4h_demand": 78.07202059164611,
+        "rmse_4h_apparent": 89.92464775040459,
+        "rmse_4h_scheduled": 69.71416781059308,
+        "best_4h": "scheduled"
+      },
+      "demand_isf_iqr": [
+        -32.7499991556009,
+        43.0
+      ],
+      "apparent_isf_iqr": [
+        71.0,
+        112.86931593652265
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "ns-dde9e7c2e752": {
+      "n_events": 12,
+      "n_validated": 12,
+      "scheduled_isf": 220.0,
+      "isf_1h": 23.0,
+      "demand_isf": 30.308880834426482,
+      "apparent_isf": 133.33333333333334,
+      "inflation_ratio": 4.399150666819939,
+      "median_nadir_time_h": 4.291666666666666,
+      "prediction": {
+        "rmse_2h_demand": 45.07835602361324,
+        "rmse_2h_apparent": 144.06238993869377,
+        "rmse_2h_scheduled": 259.0604818273176,
+        "best_2h": "demand",
+        "rmse_4h_demand": 51.666711652848925,
+        "rmse_4h_apparent": 127.5479213550819,
+        "rmse_4h_scheduled": 241.4898203287374,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        13.0,
+        99.09090694317153
+      ],
+      "apparent_isf_iqr": [
+        52.07529136112174,
+        191.36363221594135
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "odc-74077367": {
+      "n_events": 18,
+      "n_validated": 18,
+      "scheduled_isf": 50.44365310668945,
+      "isf_1h": 10.333333002196431,
+      "demand_isf": 33.142857434798266,
+      "apparent_isf": 80.77777877854714,
+      "inflation_ratio": 2.437260545125319,
+      "median_nadir_time_h": 3.666666666666667,
+      "prediction": {
+        "rmse_2h_demand": 34.89375086920666,
+        "rmse_2h_apparent": 74.15571625156939,
+        "rmse_2h_scheduled": 42.22613678842965,
+        "best_2h": "demand",
+        "rmse_4h_demand": 46.599450431597326,
+        "rmse_4h_apparent": 71.241121760526,
+        "rmse_4h_scheduled": 47.29274903780048,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        5.673077131164153,
+        53.277778116273296
+      ],
+      "apparent_isf_iqr": [
+        45.75961659081593,
+        126.2857160191147
+      ],
+      "isolation_h": 2.0,
+      "data_quality_note": "Reduced to 2.0h isolation (SMB-heavy patient). Prior boluses may contaminate demand ISF estimate."
+    },
+    "odc-86025410": {
+      "n_events": 27,
+      "n_validated": 27,
+      "scheduled_isf": 110.0,
+      "isf_1h": 28.0,
+      "demand_isf": 54.666666666666664,
+      "apparent_isf": 112.0,
+      "inflation_ratio": 2.048780487804878,
+      "median_nadir_time_h": 2.5833333333333335,
+      "prediction": {
+        "rmse_2h_demand": 49.48679065740137,
+        "rmse_2h_apparent": 57.60648268856819,
+        "rmse_2h_scheduled": 56.30250879114923,
+        "best_2h": "demand",
+        "rmse_4h_demand": 86.49358865485098,
+        "rmse_4h_apparent": 108.70163404018338,
+        "rmse_4h_scheduled": 107.45523225565923,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        24.224137545482453,
+        90.45454446934474
+      ],
+      "apparent_isf_iqr": [
+        90.0,
+        179.07692612416656
+      ],
+      "isolation_h": 6.0
+    },
+    "odc-96254963": {
+      "n_events": 29,
+      "n_validated": 29,
+      "scheduled_isf": 60.0,
+      "isf_1h": 8.0,
+      "demand_isf": 25.12820996241239,
+      "apparent_isf": 70.76923336503079,
+      "inflation_ratio": 2.8163260921048394,
+      "median_nadir_time_h": 3.9166666666666665,
+      "prediction": {
+        "rmse_2h_demand": 76.84696734004247,
+        "rmse_2h_apparent": 129.48037442340043,
+        "rmse_2h_scheduled": 108.05738421572653,
+        "best_2h": "demand",
+        "rmse_4h_demand": 102.15387814688886,
+        "rmse_4h_apparent": 162.01180151784445,
+        "rmse_4h_scheduled": 141.3875534504937,
+        "best_4h": "demand"
+      },
+      "demand_isf_iqr": [
+        6.5,
+        63.33333501109375
+      ],
+      "apparent_isf_iqr": [
+        38.0,
+        94.0
+      ],
+      "isolation_h": 6.0
+    }
+  }
+}
