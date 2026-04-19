@@ -131,6 +131,19 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Wall resolution mechanism** | EXP-2669 | 2026-04 | 65% of wall resolutions are unaccounted (out-of-band intervention) |
 | **CR sanity-check contrast** | EXP-2670 | 2026-04 | Meal-quality filters for CR adequacy assessment |
 | **Cross-controller validation** | EXP-2671 | 2026-04 | 31-patient multi-controller data fidelity validation |
+| **Autoprepare gate** | EXP-2672 | 2026-04 | Data qualification pipeline for expanded cohort |
+| **Autoresearch wave 1** | EXP-2673 | 2026-04 | Automated experiment replication framework |
+| **DynISF SR deep dive** | EXP-2674 | 2026-04 | Sensitivity ratio characterization for DynISF cohort |
+| **Cross-controller ISF** | EXP-2675 | 2026-04 | ISF measurement differences across controller types |
+| **PK model comparison** | EXP-2676 | 2026-04 | Pharmacokinetic model alternatives |
+| **AID compensation artifact** | EXP-2677 | 2026-04 | Controller response confounds ISF measurement |
+| **BG floor sensitivity** | EXP-2678 | 2026-04 | BG≥180 filter effect on ISF sign and magnitude |
+| **Circadian ISF deep dive** | EXP-2679 | 2026-04 | Time-of-day ISF variation with BG≥180 corrections |
+| **Definitive demand ISF** | EXP-2680 | 2026-04 | 7986 events, demand ISF IS dose-dependent (r=−0.418) |
+| **BG drop direct modeling** | EXP-2681 | 2026-04 | BG drop ≈74 mg/dL regardless of dose — ISF dose-dependence is ratio artifact |
+| **Controller vs bolus** | EXP-2682 | 2026-04 | Total insulin (bolus+controller) R²=0.001 for BG drop |
+| **Unexplained variance** | EXP-2683 | 2026-04 | 83.5% of BG drop variance is irreducible stochastic noise |
+| **Aggregate outcomes** | EXP-2684 | 2026-04 | Population-level outcome modeling |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 
@@ -152,6 +165,7 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Additive force decomposition | EXP-2634, 2635 | Sum = 34, actual = 4.1 — forces are coupled, not additive |
 | Single-factor recovery prediction | EXP-2634, 2635 | All 5 models negative R² on post-nadir recovery rate |
 | Naive bias correction | Recommender EXP | Harmful for 8/10 patients — removes defensive suspension |
+| **Individual-event ISF estimation** | EXP-2680–2683 | BG drop ≈74 mg/dL regardless of dose; ISF∝1/dose is a ratio artifact. 83.5% of BG drop variance is irreducible stochastic noise. Controller dominates correction trajectory (total insulin R²=0.001) |
 
 ---
 
