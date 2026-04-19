@@ -26,6 +26,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Wave-4: Actionable Settings & Residual Analysis (2026-04-19)
+
+Three experiments translating deconfounding discoveries into actionable outputs.
+
+| EXP | Title | Verdicts | Key Finding |
+|-----|-------|----------|-------------|
+| 2711 | Circadian Settings | H1✓ H2✗ H3✓ H4✗ | Settings differ 94% from profile but per-block tables too noisy to beat flat ISF |
+| 2712 | SC Ceiling Settings | H1✓ H2✓ H3✓ H4✓ | Population β=0.595 reduces MAE for ALL patients; far better than simulator β=0.9 (R² 0.93 vs 0.71) |
+| 2713 | Residual Structure | H1✓ H2✗ H3✓ H4✓ | Residual has massive autocorrelation (lag1=0.64); overlapping windows, not independent events |
+
+**Key Discoveries**:
+- SC ceiling power-law is the most actionable single deconfounding factor (all patients improved)
+- Per-block circadian ISF needs more events per block — flat BG-adjusted ISF outperforms noisy circadian tables
+- Residual autocorrelation (0.638 lag-1) reveals overlapping-window dependency — events are NOT independent
+- Controller differences in residual: openaps MAR=36.5 vs loop=18.4 (2× larger unexplained variance)
+
+**Report**: `docs/60-research/deconfounding-signal-extraction-report-2026-04-19.md`
+**Visualization**: `visualizations/deconfounding-synthesis/deconfounding_synthesis.png`
+
 ## Wave-3: BG-Adjusted Circadian ISF, SC Ceiling Detection, Multi-Factor (2026-04-19)
 
 Three experiments combining deconfounding techniques for maximum signal extraction.
