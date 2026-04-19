@@ -882,3 +882,143 @@ Trio has largest controller effect (β=+6.25) but underpowered (p=0.141).
 
 Within-patient settings are very stable (ISF range ≈ 0.1 mg/dL/U), confirming
 settings are appropriately individualized but limiting natural experiment power.
+
+---
+
+## Phase 9: Advanced Multi-Factor Analysis (EXP-2692–2694)
+
+### EXP-2692: Per-Channel Dose-Response & Non-Linear Effects
+
+**Marginal effects per unit insulin** (controlling for all other channels):
+
+| Channel | mg/dL per U | 95% CI | Interpretation |
+|---------|-------------|--------|----------------|
+| Bolus | **−7.48** | ±0.11 | More bolus → less BG drop (confounding) |
+| SMB | **−4.34** | ±0.18 | Same direction, weaker per unit |
+| Excess basal | **−7.88** | ±0.12 | Strongest per-unit association |
+
+**All coefficients are negative** — the opposite of what we'd expect if more insulin
+causes more BG drop. This is **confounding by indication**: the controller gives
+more insulin precisely in harder situations (resistant highs, meals in progress,
+rising BG). Even after controlling for starting BG, carbs, and ROC, residual
+confounding from unobserved controller predictions remains.
+
+**Channel substitution**: 0.58U SMB ≈ 1U bolus effect; 1.05U excess basal ≈ 1U bolus.
+
+**Non-linearity**: Quadratic model R²=0.320 vs linear R²=0.296 (F=2165, p≈0).
+Statistically significant but only +2.4pp practical improvement. The relationship
+is mostly linear — no dramatic threshold or saturation effects.
+
+**Per-controller marginal effects differ substantially**:
+
+| Controller | Bolus (mg/dL/U) | SMB (mg/dL/U) | Excess Basal (mg/dL/U) |
+|------------|-----------------|----------------|------------------------|
+| Loop | −8.56 | −3.41 | −8.25 |
+| Trio | −5.05 | **−11.20** | −3.04 |
+| OpenAPS | −6.43 | 0.00 | −4.32 |
+
+Trio's SMBs have the strongest per-unit association (−11.20), suggesting they are
+deployed strategically in the most challenging situations. Loop boluses are
+strongest (−8.56), consistent with Loop users relying more on manual boluses.
+
+### EXP-2693: TIR Gap Decomposition
+
+The Trio-OpenAPS TIR gap (**11.4pp**: 82.4% vs 71.0%) is **nearly fully decomposed**:
+
+| Factor | Contribution | Explanation |
+|--------|-------------|-------------|
+| CV glucose | **+11.9pp** | Trio patients have lower glucose variability |
+| SMB rate | **+11.6pp** | Trio has SMBs (19.8%), OpenAPS doesn't (0%) |
+| TDD | **−9.3pp** | Trio uses 76 U/day vs OpenAPS 44 U/day |
+| ISF | −5.1pp | Trio ISF=57 vs OpenAPS 73 (more sensitive settings) |
+| Days of data | −3.5pp | OpenAPS has longer histories |
+| Suspend rate | +5.8pp | Trio suspends more (strategic) |
+| Other | +0.2pp | Residual |
+
+**Key insight**: The TIR gap is a mix of **patient selection** (lower BG variability),
+**algorithm features** (SMB availability), and **insulin dose** (higher TDD).
+It is NOT purely an algorithm effect — patients who choose Trio may have
+different physiological characteristics or engagement levels.
+
+**Patient-level multi-factor model**: R²=0.702 (n=22)
+- Controller type alone: R²=0.427
+- Settings + behavior alone: R²=0.564
+- Full model: R²=0.702
+
+70% of patient-level TIR variance is explained by measurable factors.
+
+### EXP-2694: Time-Resolved Channel Decomposition
+
+The multi-factor model's explanatory power **grows with horizon**:
+
+| Horizon | R² | New insight at this horizon |
+|---------|----|-----------------------------|
+| 30 min | 0.183 | Starting BG dominates (regression to mean) |
+| 60 min | 0.215 | Bolus + SMB effects begin to emerge |
+| 90 min | 0.254 | Controller adaptation visible |
+| 120 min | 0.296 | Full channel effects accumulated |
+
+**Controller response to user bolus** reveals channel substitution:
+
+| Metric (2h cumulative) | After user bolus | No user bolus |
+|-------------------------|------------------|---------------|
+| SMBs delivered | 2.29 U | 0.00 U |
+| Excess basal | −3.51 U | −1.41 U |
+
+When a user boluses, the controller responds by **suspending basal more aggressively**
+(−3.51 vs −1.41 U excess) while also delivering SMBs (2.29 vs 0.00 U). The controller
+is dynamically substituting between channels, which explains why single-channel
+analysis produces misleading conclusions.
+
+**BG₀-matched trajectory comparison** (190-210 mg/dL band):
+Events with and without user boluses follow similar BG trajectories, confirming
+that the controller compensates through other channels when boluses are absent.
+
+---
+
+## Grand Synthesis
+
+### What We Know (21 experiments, 181K events, 22 patients)
+
+1. **Multi-factor analysis is mandatory** for closed-loop AID systems. Single-factor
+   correlations are confounded by controller co-intervention. The controller
+   dynamically substitutes between channels (bolus, SMB, temp basal, suspend),
+   making each channel's observational effect appear weaker than its true causal
+   effect.
+
+2. **All insulin channels have measurable effects** when properly isolated:
+   - Unique R²: bolus 7.3%, excess basal 6.4%, SMB 0.9%
+   - Total multi-factor R²: 0.296 (vs 0.015 univariate)
+   - Marginal effects are negative due to confounding by indication
+
+3. **The TIR gap between controllers is 70% explained** by measurable factors:
+   patient physiology (BG variability), algorithm features (SMB availability),
+   and insulin delivery patterns (TDD, suspend rate).
+
+4. **Controller strategy matters more than individual settings**: controllers with
+   SMB capability (Trio, Loop) achieve higher TIR. Within a controller, settings
+   are appropriately tuned and show little variation.
+
+5. **The "insulin irrelevance" finding was an artifact** of univariate analysis.
+   In multi-factor models, insulin channels explain meaningful variance. However,
+   ~70% of event-level BG drop variance remains unexplained — reflecting
+   unmeasured physiology, meal absorption kinetics, exercise, and stress.
+
+### Methodological Lessons
+
+| Lesson | Evidence |
+|--------|----------|
+| Never use single-factor analysis in closed-loop | EXP-2680 R²=0.015 vs EXP-2690 R²=0.296 |
+| Negative coefficients ≠ harmful treatment | EXP-2692: confounding by indication |
+| Controller substitutes between channels | EXP-2694: bolus → suspend + SMB |
+| Patient selection confounds controller comparison | EXP-2693: CV_bg explains 11.9pp |
+| BG ≥ 180 floor required for correction analysis | EXP-2677: 57% negative ISF without |
+| IOB at hypo onset reflects controller response | EXP-2686: suspension is treatment, not cause |
+
+### Next Steps
+
+1. **Causal inference methods** (instrumental variables, regression discontinuity)
+   to estimate true treatment effects from observational AID data
+2. **Meal vs correction event separation** — 53% of boluses are meal-related
+3. **Within-patient longitudinal analysis** — exploit settings changes as natural experiments
+4. **Cross-validation** with the 6 additional datasets still loading

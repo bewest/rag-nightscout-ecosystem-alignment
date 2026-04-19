@@ -910,3 +910,35 @@ limiting power. Mean r(ΔISF, ΔTIR)=0.110; 2/22 patients show significant effec
 **Key insight**: Settings configure controller behavior. Controller behavior determines
 outcomes. The causal chain is: Settings → Controller aggressiveness → Glucose outcomes.
 This is the coupled system working as designed.
+
+### Advanced Multi-Factor Analysis — EXP-2692 to EXP-2694 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Dose-response curves | `tools/cgmencode/exp_dose_response_2692.py` | Marginal effects, non-linearity, substitution |
+| TIR gap decomposition | `tools/cgmencode/exp_tir_gap_2693.py` | Oaxaca decomposition, multi-factor TIR model |
+| Time-resolved decomposition | `tools/cgmencode/exp_time_resolved_2694.py` | R² growth 0.183→0.296, controller channel substitution |
+| 18-panel visualizations | `visualizations/{dose-response,tir-gap,time-resolved}/` | Complete analysis dashboards |
+
+**EXP-2692: Dose-Response — All coefficients are NEGATIVE (confounding by indication)**
+- Bolus: −7.48 mg/dL/U, SMB: −4.34, Excess basal: −7.88
+- More insulin → less BG drop because controller gives more in harder situations
+- Non-linearity: R² +2.4pp (0.296→0.320), statistically significant but modest
+- Trio SMBs strongest per-unit (−11.20), Loop boluses strongest (−8.56)
+
+**EXP-2693: TIR Gap Decomposition — 11.4pp gap nearly fully explained**
+- CV glucose: +11.9pp (patient selection — Trio patients less variable)
+- SMB rate: +11.6pp (algorithm feature)
+- TDD: −9.3pp (Trio uses more insulin)
+- Full patient-level model: R²=0.702 (controller alone: 0.427)
+
+**EXP-2694: Time-Resolved — R² grows linearly with horizon**
+- 30 min: 0.183 → 60 min: 0.215 → 90 min: 0.254 → 120 min: 0.296
+- Controller substitution: when user boluses, controller suspends (−3.51 vs −1.41U)
+  and adds SMBs (2.29 vs 0.00U) — channels are dynamically interchangeable
+- BG₀-matched comparison shows similar trajectories with/without bolus
+
+**Cumulative findings (24 experiments, EXP-2671–2694)**:
+Multi-factor decomposition is mandatory for AID analysis. Single-factor misleads.
+70% of patient-level TIR variance explained. 30% of event-level variance explained.
+Controller channel substitution is the primary reason observational analysis fails.
