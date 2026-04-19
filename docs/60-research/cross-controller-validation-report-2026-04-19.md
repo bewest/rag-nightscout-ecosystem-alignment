@@ -989,8 +989,10 @@ The Trio-OpenAPS TIR gap (**11.4pp**: 82.4% vs 71.0%) is **nearly fully decompos
 | TDD | **−9.3pp** | Trio uses 76 U/day vs OpenAPS 44 U/day |
 | ISF | −5.1pp | Trio ISF=57 vs OpenAPS 73 (more sensitive settings) |
 | Days of data | −3.5pp | OpenAPS has longer histories |
-| Suspend rate | +5.8pp | Trio suspends more (strategic) |
-| Other | +0.2pp | Residual |
+| Suspend rate | +2.8pp | Trio suspends more (strategic) |
+| CR | +2.2pp | Carb ratio differences |
+| Basal rate | +0.7pp | Scheduled basal rate differences |
+| Unexplained | +0.2pp | Residual |
 
 **Key insight**: The TIR gap is a mix of **patient selection** (lower BG variability),
 **algorithm features** (SMB availability), and **insulin dose** (higher TDD).
@@ -1326,7 +1328,7 @@ approach should excel — clear insulin delivery without meal confounding.
 **ISF Recovery from Deviations**:
 - Mean ISF error: +80.2 mg/dL/U (settings systematically overestimate ISF)
 - Dose-dependent ISF from log model: r=−0.699 (p≈0) — strong signal
-- 21/22 patients: ISF successfully recovered from deviations
+- 21/21 patients: ISF successfully recovered from deviations
 - This aligns with EXP-2651 finding that apparent ISF is 2-10× inflated
 
 **Within-Patient FE Decreases R²**: Removing between-patient means actually reduces
@@ -1467,9 +1469,9 @@ The controller then delivers more. The over-estimated ISF causes UNDER-dosing, w
 safe — the feedback loop corrects via repeated small doses.
 
 **Dose-Dependent ISF**: r=−0.686 (pooled log model). ISF decreases with larger doses,
-consistent with EXP-2640. 11/21 patients individually significant (p<0.05).
+consistent with EXP-2640. 21/21 patients individually significant (p<0.05).
 
-**Circadian ISF Variation**: Mean range 30.5 mg/dL across patients. Largest variation
+**Circadian ISF Variation**: Mean range 24.7 mg/dL across patients. Largest variation
 in Loop patients, consistent with EXP-2679.
 
 ### Implications for AID Settings Optimization
@@ -1526,8 +1528,9 @@ ISF settings are 8-10× overestimated. The R²=0.768 from EXP-2698 was on *devia
 | C: Calibrated ISF | 40.0 mg/dL | −0.005 |
 | D: Dose-dependent ISF | 40.5 mg/dL | −0.014 |
 
-**Model D wins 23/23 patients** on MAE (Wilcoxon p<0.001), reducing error 30% vs
-standard flat ISF.
+**Model D beats flat ISF (Model A) in 23/23 patients** on MAE (Wilcoxon p<0.001),
+reducing error 30% vs standard flat ISF. However, Model C (calibrated ISF) is the
+best overall model for 12/23 patients vs Model D for 11/23.
 
 **All models have near-zero R²** — BG variance is dominated by non-insulin factors
 (EGP, regression to mean, meals, exercise, CGM noise). This is consistent with
