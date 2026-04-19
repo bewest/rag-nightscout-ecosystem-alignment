@@ -446,9 +446,9 @@ def _extract_oref0_ds(ds: dict) -> dict:
         'override_name': None,
         'override_multiplier': None,
         'reason': suggested.get('reason'),
-        # Algorithm settings (oref0/Trio DynISF)
-        'algorithm_isf': float(suggested['ISF']) if 'ISF' in suggested else None,
-        'algorithm_cr': float(suggested['CR']) if 'CR' in suggested else None,
+        # Algorithm settings (oref0/Trio DynISF) — 0 = couldn't compute → None
+        'algorithm_isf': float(suggested['ISF']) if suggested.get('ISF') else None,
+        'algorithm_cr': float(suggested['CR']) if suggested.get('CR') else None,
         'algorithm_tdd': float(suggested['TDD']) if 'TDD' in suggested else None,
         'algorithm_version': openaps.get('version'),
         # Extended IOB decomposition

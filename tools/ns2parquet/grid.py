@@ -241,9 +241,11 @@ def build_grid(data_path: str, patient_id: str,
         ds_data['eventual_bg'].append(float(_suggested['eventualBG']) if 'eventualBG' in _suggested else np.nan)
         ds_data['sensitivity_ratio'].append(float(_suggested['sensitivityRatio']) if 'sensitivityRatio' in _suggested else np.nan)
         ds_data['insulin_req'].append(float(_suggested['insulinReq']) if 'insulinReq' in _suggested else np.nan)
-        # DynISF/oref0 algorithm settings
-        ds_data['algorithm_isf'].append(float(_suggested['ISF']) if 'ISF' in _suggested else np.nan)
-        ds_data['algorithm_cr'].append(float(_suggested['CR']) if 'CR' in _suggested else np.nan)
+        # DynISF/oref0 algorithm settings (0 = algorithm couldn't compute → NaN)
+        _isf = float(_suggested['ISF']) if 'ISF' in _suggested else np.nan
+        ds_data['algorithm_isf'].append(_isf if _isf else np.nan)
+        _cr = float(_suggested['CR']) if 'CR' in _suggested else np.nan
+        ds_data['algorithm_cr'].append(_cr if _cr else np.nan)
         ds_data['algorithm_tdd'].append(float(_suggested['TDD']) if 'TDD' in _suggested else np.nan)
         # Extended IOB decomposition
         ds_data['bolus_iob'].append(float(_iob_data['bolusiob']) if 'bolusiob' in _iob_data else np.nan)
@@ -254,6 +256,23 @@ def build_grid(data_path: str, patient_id: str,
                              index=pd.DatetimeIndex(ds_data['ts']))
         ds_df = ds_df.sort_index()
         ds_df = ds_df[~ds_df.index.duplicated(keep='first')]
+
+        # ── mmol/L → mg/dL conversion for algorithm output fields ──
+        # Same heuristic as normalize._extract_oref0_ds: ISF < 15 is mmol/L
+        if 'algorithm_isf' in ds_df.columns:
+            mmol_mask = ds_df['algorithm_isf'].notna() & (ds_df['algorithm_isf'] < 15)
+            if mmol_mask.any():
+                ds_df.loc[mmol_mask, 'algorithm_isf'] = (
+                    ds_df.loc[mmol_mask, 'algorithm_isf'] * MMOLL_TO_MGDL
+                ).round(1)
+                for bg_col in ('eventual_bg', 'bg'):
+                    if bg_col in ds_df.columns:
+                        bg_mmol = mmol_mask & ds_df[bg_col].notna() & (ds_df[bg_col] < 30)
+                        if bg_mmol.any():
+                            ds_df.loc[bg_mmol, bg_col] = (
+                                ds_df.loc[bg_mmol, bg_col] * MMOLL_TO_MGDL
+                            ).round(0)
+
         ds_df.index = ds_df.index.round('5min')
         ds_grouped = ds_df.groupby(level=0).first()
 

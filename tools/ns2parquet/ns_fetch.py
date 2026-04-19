@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 _MAX_RETRIES = 3
 _RETRY_BACKOFF = [2, 5, 15]          # seconds between retries
 _RETRYABLE_CODES = {429, 500, 502, 503, 504}  # HTTP codes worth retrying
-_INTER_REQUEST_SLEEP = 1.5           # seconds between windowed requests
+_INTER_REQUEST_SLEEP = 0.5            # seconds between windowed requests
 
 
 def load_ns_url(env_path: str) -> str:

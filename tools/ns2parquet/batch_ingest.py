@@ -247,9 +247,9 @@ def batch_ingest(csv_path: str, days: int, output: str,
 
         # Be polite to remote servers — longer pause after failures
         if status == 'ok':
-            time.sleep(3.0)
+            time.sleep(1.0)
         else:
-            time.sleep(5.0)
+            time.sleep(2.0)
 
     # Write manifest — merge with existing to preserve error classifications
     manifest_path = Path(output) / 'manifest.json'
