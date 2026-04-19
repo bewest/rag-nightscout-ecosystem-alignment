@@ -273,6 +273,73 @@ empirical coefficients rather than profile ISF for the initial BGI subtraction.
 
 ---
 
+## Phase 3: Prospective Validation and ISF Gap Decomposition (EXP-2726–2727)
+
+### EXP-2726: Profile ISF in Simulation Is Catastrophic
+
+Applied EXP-2719b correction factors in the forward simulator:
+
+| Arm | MAE | TIR% | TBR% |
+|-----|-----|------|------|
+| Profile ISF (baseline) | 89.8 | 28.6 | **64.9** |
+| Corrected (×1.028) | 88.8 | 29.0 | 64.1 |
+| Lowered 4× (ISF≈13) | **52.6** | **67.5** | 13.1 |
+
+**Finding**: Profile ISF causes 65% time below range in open-loop simulation.
+The 2719b correction factors barely help because they're residual corrections on
+the population model, not on profile ISF. The 4× lowered arm matches independent-event
+ISF from the other researcher's EXP-2720.
+
+### EXP-2726b: Empirical ISF — 5/5 PASS
+
+Extracted per-patient empirical ISF from independent events (bg_drop / total_dose):
+
+| Arm | MAE | TIR% | TBR% |
+|-----|-----|------|------|
+| Profile ISF | 79.7 | 33.6 | 58.7 |
+| Population median (6.2) | 48.1 | 67.0 | 10.4 |
+| Per-patient empirical | 43.8 | 70.5 | **0.9** |
+| Shrunk (James-Stein) | **43.6** | **70.8** | 1.2 |
+
+- 29/31 patients (94%) improve with empirical ISF
+- Median empirical/profile ratio = 0.10 (profile ~10× too high)
+- Shrunk estimator is marginally best overall
+
+### EXP-2727: ISF Gap Decomposition — EGP Is Dominant
+
+Decomposed the 10× profile→empirical ISF gap:
+
+| Source | Contribution |
+|--------|-------------|
+| EGP (hepatic glucose production) | **42%** of the gap |
+| Counter-regulation (glucagon) | 10% |
+| Controller compensation (basal suspension) | **44%** |
+
+**Insulin accounting during corrections (6h window)**:
+- Bolus: 7.05U, SMBs added: 4.10U
+- Controller suspends **171%** of scheduled basal (net basal = -4.18U vs scheduled 5.92U)
+- Net total insulin: 7.14U (barely more than bolus alone)
+
+**Critical insight**: Adding just EGP to the simulator with profile ISF (MAE=56.1)
+**beats** empirical ISF without EGP (MAE=58.1). The supply side matters.
+
+### Implications for Each Audience
+
+**For AID users**: Your profile ISF setting is interpreted by the controller in a
+closed-loop context where the controller will also suspend basal. The "effective ISF"
+(how much 1U of bolus actually lowers BG after controller compensation) is ~10× lower.
+This is by design — the controller manages the full response.
+
+**For AID authors**: Open-loop simulators need EGP and counter-regulation to produce
+realistic trajectories with profile ISF values. Without supply-side modeling, profile
+ISF causes catastrophic hypoglycemia in simulation.
+
+**For settings optimization**: Use empirical ISF from independent events as the
+calibration ground truth. Profile ISF optimized for the controller is fundamentally
+different from physiological ISF.
+
+---
+
 ## Source Files
 
 | File | Purpose |
@@ -282,6 +349,9 @@ empirical coefficients rather than profile ISF for the initial BGI subtraction.
 | `tools/cgmencode/exp_total_insulin_accounting_2717.py` | Total insulin over 1-6h |
 | `tools/cgmencode/exp_excess_insulin_accounting_2717b.py` | Excess-only insulin |
 | `tools/cgmencode/exp_phase_decomposition_2718.py` | Phase-wise decomposition |
+| `tools/cgmencode/exp_prospective_validation_2726.py` | Profile ISF catastrophic in sim |
+| `tools/cgmencode/exp_empirical_isf_validation_2726b.py` | Empirical ISF 5/5 PASS |
+| `tools/cgmencode/exp_isf_gap_decomposition_2727.py` | EGP + controller decomposition |
 | `tools/cgmencode/production/waterfall.py` | Existing waterfall infrastructure |
 | `tools/cgmencode/production/deconfounding.py` | BGI subtraction pipeline |
 | `tools/cgmencode/production/metabolic_engine.py` | EGP computation |
