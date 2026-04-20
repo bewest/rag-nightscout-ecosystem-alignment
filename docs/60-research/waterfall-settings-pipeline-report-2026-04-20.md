@@ -1479,3 +1479,64 @@ Circadian BG patterns during basal periods are massive and universal:
 | 2778 | DIA Window ISF | 4/5 PASS | 3h best r=0.755, gap stays |
 | 2779 | Residual Decomp | 2/5 PASS | Circadian 27/28, CSF AC=0.94 |
 | 2780 | Circadian Basal | 2/5 PASS | Amp 57 mg/dL/h, 96% universal |
+| 2781 | Meal AR Model | 1/5 PASS | AR(1)=0.518, flips ISF sign |
+| 2782 | Settings Audit | 3/5 PASS | 96% recs, ctrl p=0.002 |
+| 2783 | Controller Effort | 2/5 PASS | 92% susp universal, SMB≈2.3/h |
+| 2784 | TIR Predictors | 3/5 PASS | No user behavior predicts TIR! |
+| 2785 | Multi-Day ISF | 3/5 PASS | Confounding at daily scale r=+0.50 |
+| 2786 | Multiscale Deconf | 4/5 PASS | AR dominates, BGI negative, R²=15% |
+| 2787 | IOB-Based BGI | 1/5 PASS | deltaIOB WORSE — conflates delivery |
+| 2788 | Conv BGI | 5/5 PASS | Conv beats simple 28/28, R²=24% |
+
+## Phase 17: Controller Compensation & Multi-Scale Deconfounding (EXP-2781–2788)
+
+### Key Discoveries
+
+#### 1. Controller Effort is Universal (EXP-2783)
+ALL controllers suspend basal 72–93% of the time. Loop and Trio both use ~2.3 SMBs/hour.
+The controllers essentially REPLACE scheduled basal with dynamic dosing. This means:
+- Scheduled basal rate is almost irrelevant for acute glucose control
+- The 50/50 rule applies to what the body NEEDS, not what's DELIVERED on schedule
+- Actual basal fraction: Loop 22%, Trio 8%, OpenAPS 33% — all below 50%
+
+#### 2. No User Behavior Predicts TIR (EXP-2784)
+Bolus frequency (r=0.24), carb intake (r=0.08), meal size (r=0.21) — ALL non-significant.
+Controller type explains 31% of TIR variance (η²=0.312, p=0.009).
+Multi-factor R²=79.8% but driven by structural factors (CV, mean BG).
+**The controller compensates for user behavioral variability.**
+
+#### 3. Confounding by Indication at Every Scale
+- **5-min**: Insulin delivery correlates positively with BG rise (structural)
+- **1-6h**: ISF gap is 10-40× — can't observe true ISF (proven EXP-2776/77/78)
+- **24h**: Daily TDD positively correlates with mean BG (r=+0.50)
+- **72h**: Prior-day TDD barely predicts next-day BG (r=+0.12)
+
+#### 4. Proper BGI Modeling (EXP-2786/87/88)
+Three BGI approaches tested:
+- **Simple rolling sum**: L1 R² = -0.38 (NEGATIVE — adds noise)
+- **deltaIOB**: L1 R² = -0.62 (WORSE — conflates delivery + absorption)
+- **Delivery × activity curve convolution**: L1 R² = +0.002 (best, near zero)
+
+Convolution wins in ALL 28 patients. But L1 is still near-zero because
+DELIVERY itself is confounded — controller delivers more when BG is high.
+
+#### 5. AR Meal Momentum Dominates
+Across all three BGI approaches, the AR(1) meal layer provides the dominant
+variance explanation: +0.23 incremental R². This represents meal absorption
+momentum — glucose continues rising/falling in the same direction.
+
+### Basal Balance Summary (50/50 Rule)
+| Controller | Scheduled Basal | Bolus+SMB | Status |
+|-----------|----------------|-----------|--------|
+| Loop | 37.3% | 62.7% | Low |
+| Trio | 26.7% | 73.3% | Very Low |
+| OpenAPS | 49.3% | 50.7% | ✓ Well-calibrated |
+
+### Multi-Timescale Deconfounding Pipeline (Best: EXP-2788)
+| Layer | Timescale | Method | Incremental R² |
+|-------|-----------|--------|----------------|
+| L1 | 5-min | Delivery × activity curve | +0.002 |
+| L2 | 1-6h | AR(1) meal momentum | +0.231 |
+| L3 | 24h | Circadian hourly mean | +0.004 |
+| L4 | 72h | Daily mean shift | +0.002 |
+| **Total** | | | **0.238** |
