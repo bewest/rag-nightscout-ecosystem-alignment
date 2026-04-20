@@ -223,6 +223,40 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Intercept decomposition** | EXP-2764 | 2026-04 | 5/5 PASS ⭐: drop=73−6×excess_insulin+0.8×starting_BG; BG coef=0.797 (regression to mean dominates); LR+BG beats CF ~40%; stability 0.909 |
 | **Settings generator** | EXP-2765 | 2026-04 | 4/5 PASS: practical settings generation from correction factor pipeline |
 | **Iterative settings** | EXP-2766 | 2026-04 | 2/5 PASS: safe iterative settings protocol |
+| **Supply vs demand** | EXP-2767 | 2026-04 | 3/5 PASS: supply 53%, demand 3%, controller 14%; supply > demand-user 27/27 |
+| **Intercept & pre-IOB** | EXP-2768 | 2026-04 | 2/5 PASS: 5-channel model, residual intercept -28 mg/dL (hepatic) |
+| **72h insulin accounting** | EXP-2769 | 2026-04 | 1/5 PASS: TDD 27.2U, basal fraction -44% (suspended), delivery ratio r=0.535 |
+| **Multi-timescale subtraction** | EXP-2770 | 2026-04 | 1/5 PASS: L5 multi-day 26%, L4 circadian 3.4%, BGI cumulative fails |
+| **50/50 rule validation** | EXP-2771 | 2026-04 | 3/5 PASS: 16/30 basal <35%, controller redistributes 45% of TDD |
+| **Bounded BGI deviation** | EXP-2772 | 2026-04 | 3/5 PASS: BGI 10%, deviation 90%, 29/30 circadian pattern |
+| **Bilateral BGI regression** | EXP-2773 | 2026-04 | 4/5 PASS: R²=41.1%, empirical regression, 28/28 insulin negative |
+| **oref0 categorization** | EXP-2774 | 2026-04 | 4/5 PASS: Basal 21%, CSF 42%, ISF 30%, UAM 5% |
+| **Basal optimization** | EXP-2775 | 2026-04 | 2/5 PASS: 7/12 Trio basal too low by 70% |
+| **Category settings** | EXP-2776 | 2026-04 | 1/5 PASS: ISF-category ISF=5.4 vs full=2.3, 10× gap persists |
+| **ISF gap channels** | EXP-2777 | 2026-04 | 1/5 PASS: negative ISF across ALL channels — structural gap |
+| **DIA-window ISF** | EXP-2778 | 2026-04 | 4/5 PASS: 3h best r=0.755, ISF near-zero at all windows |
+| **Residual decomposition** | EXP-2779 | 2026-04 | 2/5 PASS: circadian 27/28, CSF autocorrelation=0.944 |
+| **Circadian basal** | EXP-2780 | 2026-04 | 2/5 PASS: amplitude 57 mg/dL/h, 96% universal, afternoon > dawn |
+| **Meal AR model** | EXP-2781 | 2026-04 | 1/5 PASS: AR(1)=0.518, flips ISF sign |
+| **Settings audit** | EXP-2782 | 2026-04 | 3/5 PASS: 96% recs, controller type p=0.002 |
+| **Controller effort** | EXP-2783 | 2026-04 | 2/5 PASS: 72-93% basal suspended, ~2.3 SMBs/h |
+| **TIR predictors** | EXP-2784 | 2026-04 | 3/5 PASS: no user behavior predicts TIR, controller η²=0.312 |
+| **Multi-day ISF** | EXP-2785 | 2026-04 | 3/5 PASS: confounding at daily scale r=+0.50 |
+| **Multiscale deconfound** | EXP-2786 | 2026-04 | 4/5 PASS: AR dominates, BGI negative, R²=15% |
+| **IOB-based BGI** | EXP-2787 | 2026-04 | 1/5 PASS: deltaIOB WORSE — conflates delivery+absorption |
+| **Conv BGI** | EXP-2788 | 2026-04 | 5/5 PASS ⭐: convolution beats simple 28/28, R²=24% |
+| **Deconf settings v2** | EXP-2789 | 2026-04 | 1/5 PASS: ISF negative 92% — structural impossibility |
+| **Insulin accounting** | EXP-2790 | 2026-04 | 3/5 PASS: actual basal 14% TDD, controllers deliver 33% of scheduled |
+| **Pipeline v3** | EXP-2791 | 2026-04 | 5/5 PASS ⭐: 93% ISF ≤2×, 79% CR ≤2×, CV R²=0.238 |
+| **Controller recs** | EXP-2792 | 2026-04 | 4/5 PASS: controller-specific recommendations + AID author guidance |
+| **Temporal AR** | EXP-2793 | 2026-04 | 4/5 PASS: category-specific AR, combined R²=0.449 |
+| **Deviation circadian** | EXP-2794 | 2026-04 | 4/5 PASS: dawn 79%, circadian 4.1% incremental |
+| **Prospective validation** | EXP-2795 | 2026-04 | 4/5 PASS: 89% improve, 93% ISF direction correct, 100% hypo-safe |
+| **Pipeline v4** | EXP-2796 | 2026-04 | 5/5 PASS ⭐: R²=0.418 test (2× v3), 100% beat v3 |
+| **EGP-aware settings** | EXP-2797 | 2026-04 | 2/5 PASS: EGP correction marginally helpful |
+| **Cross-patient transfer** | EXP-2798 | 2026-04 | 2/5 PASS: 96% need ISF decreased, cold-start blending helps |
+| **Deconfounding cascade** | EXP-2799 | 2026-04 | 0/5 PASS: BGI 1.2%, AR 22%, category 14.9%, total 44.5%; 55.5% stochastic |
+| **Hourly settings** | EXP-2800 | 2026-04 | 1/5 PASS: signal inverts at hourly scale — BGI 16%, AR 2.1%, category 34.5% |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 

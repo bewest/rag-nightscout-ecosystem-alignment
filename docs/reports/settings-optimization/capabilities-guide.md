@@ -105,6 +105,40 @@ Each capability is rated by maturity level:
 | **Intercept decomposition** | 🟢 Production | EXP-2764 | BEST model: drop=73−6×excess+0.8×BG; regression to mean dominates; ~40% vs CF; 5/5 PASS ⭐ |
 | **Settings generator** | 🟡 Beta | EXP-2765 | Practical settings generation from pipeline; 4/5 PASS |
 | **Iterative settings** | 🔬 Research | EXP-2766 | Safe iterative protocol; 2/5 PASS |
+| **Supply vs demand** | 🔬 Research | EXP-2767 | Supply dominates (53% vs demand 3%); 3/5 PASS |
+| **Intercept & pre-IOB** | 🔬 Research | EXP-2768 | 5-channel model, hepatic intercept -28 mg/dL; 2/5 PASS |
+| **72h insulin accounting** | 🔬 Research | EXP-2769 | Basal fraction -44% (suspended); 1/5 PASS |
+| **Multi-timescale** | 🔬 Research | EXP-2770 | Multi-day 26%, BGI cumulative fails; 1/5 PASS |
+| **50/50 rule** | 🟡 Beta | EXP-2771 | 16/30 basal <35%, controller redistributes 45%; 3/5 PASS |
+| **Bounded BGI** | 🟡 Beta | EXP-2772 | BGI 10%, deviation 90%; 3/5 PASS |
+| **Bilateral BGI regression** | 🟡 Beta | EXP-2773 | R²=41.1%, 28/28 insulin negative; 4/5 PASS |
+| **oref0 categorization** | 🟢 Production | EXP-2774 | Basal 21%, CSF 42%, ISF 30%, UAM 5%; 4/5 PASS |
+| **Basal optimization** | 🔬 Research | EXP-2775 | 7/12 Trio basal too low by 70%; 2/5 PASS |
+| **Category settings** | ❌ Disproved | EXP-2776 | ISF=5.4 vs full=2.3, 10× gap persists; 1/5 PASS |
+| **ISF gap channels** | ❌ Disproved | EXP-2777 | Negative ISF across ALL channels; 1/5 PASS |
+| **DIA-window ISF** | 🟡 Beta | EXP-2778 | 3h best r=0.755, ISF near-zero all windows; 4/5 PASS |
+| **Residual decomposition** | 🔬 Research | EXP-2779 | Circadian 27/28, CSF autocorrelation=0.944; 2/5 PASS |
+| **Circadian basal** | 🔬 Research | EXP-2780 | Amplitude 57 mg/dL/h, 96% universal; 2/5 PASS |
+| **Meal AR model** | ❌ Disproved | EXP-2781 | AR(1)=0.518 but flips ISF sign; 1/5 PASS |
+| **Settings audit** | 🟡 Beta | EXP-2782 | 96% recs, controller type p=0.002; 3/5 PASS |
+| **Controller effort** | 🔬 Research | EXP-2783 | 72-93% basal suspended, ~2.3 SMBs/h; 2/5 PASS |
+| **TIR predictors** | 🔬 Research | EXP-2784 | No user behavior predicts TIR; controller η²=0.312; 3/5 PASS |
+| **Multi-day ISF** | 🟡 Beta | EXP-2785 | Daily confounding r=+0.50; 3/5 PASS |
+| **Multiscale deconfound** | 🟡 Beta | EXP-2786 | AR dominates, BGI negative, R²=15%; 4/5 PASS |
+| **IOB-based BGI** | ❌ Disproved | EXP-2787 | deltaIOB worse — conflates delivery+absorption; 1/5 PASS |
+| **Conv BGI** | 🟢 Production | EXP-2788 | Convolution beats simple 28/28, R²=24%; 5/5 PASS ⭐ |
+| **Deconf settings v2** | ❌ Disproved | EXP-2789 | ISF negative 92% — structural impossibility; 1/5 PASS |
+| **Insulin accounting** | 🟡 Beta | EXP-2790 | Actual basal 14% TDD, 33% of scheduled delivered; 3/5 PASS |
+| **Pipeline v3** | 🟢 Production | EXP-2791 | 93% ISF ≤2×, 79% CR ≤2×, R²=0.238; 5/5 PASS ⭐ |
+| **Controller recs** | 🟢 Production | EXP-2792 | Controller-specific recs + AID author guidance; 4/5 PASS |
+| **Temporal AR** | 🟢 Production | EXP-2793 | Category-specific AR, combined R²=0.449; 4/5 PASS |
+| **Deviation circadian** | 🟢 Production | EXP-2794 | Dawn 79%, circadian +4.1% incremental; 4/5 PASS |
+| **Prospective validation** | 🟢 Production | EXP-2795 | 89% improve, 93% ISF direction correct, 100% hypo-safe; 4/5 PASS |
+| **Pipeline v4** | 🟢 Production | EXP-2796 | R²=0.418 (2× v3), 100% beat v3; 5/5 PASS ⭐ |
+| **EGP-aware settings** | 🔬 Research | EXP-2797 | EGP correction marginally helpful; 2/5 PASS |
+| **Cross-patient transfer** | 🔬 Research | EXP-2798 | 96% need ISF decreased, cold-start blending; 2/5 PASS |
+| **Deconfounding cascade** | ❌ Disproved | EXP-2799 | 55.5% stochastic; BGI 1.2%, AR 22%; 0/5 PASS |
+| **Hourly settings** | ❌ Disproved | EXP-2800 | Signal inverts at hourly scale; 1/5 PASS |
 
 **Legend**: 🟢 Production (validated, tested, in pipeline) · 🟡 Beta/Partial (functional but incomplete) · 🔬 Research (experimental) · ❌ Disproved (tried, doesn't work)
 

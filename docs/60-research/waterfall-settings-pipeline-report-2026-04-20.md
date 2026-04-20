@@ -1328,11 +1328,15 @@ and demand-side (insulin) channels, validated by the clinical 50/50 rule.
 - User bolus: **3%** (demand user — nearly irrelevant!)
 - Supply > demand-user: 27/27 patients (universal)
 
+![EXP-2767 Supply vs Demand](../../tools/visualizations/supply-demand/exp-2767-dashboard.png)
+
 **EXP-2768: 5-Channel with Pre-IOB (2/5 PASS)**
 - Added pre-existing IOB (1%) and carbs (4%)
 - Residual intercept: -28 mg/dL (hepatic estimate)
 - Supply-side total: ~72% of BG corrections
 - Demand-side total: ~18% of BG corrections
+
+![EXP-2768 Intercept & IOB](../../tools/visualizations/intercept-iob/exp-2768-dashboard.png)
 
 **EXP-2769: 72h Insulin Accounting (1/5 PASS — informative)**
 - TDD median 27.2U (IQR 20.3-36.2)
@@ -1340,11 +1344,15 @@ and demand-side (insulin) channels, validated by the clinical 50/50 rule.
 - All insulin delivered via bolus channels (SMB replaces basal)
 - Delivery ratio positively correlates with BG (r=0.535) — confounding
 
+![EXP-2769 72h Insulin](../../tools/visualizations/insulin-72h/exp-2769-dashboard.png)
+
 **EXP-2770: Multi-Timescale Subtraction (1/5 PASS — methodological)**
 - L5 multi-day trend: 26% variance (dominant timescale)
 - L4 circadian: 3.4% but significant in 97% of patients
 - L2 BGI: cumulative approach fails; must use bounded windows
 - Total: 33% variance removed, 67% remaining
+
+![EXP-2770 Multi-Timescale](../../tools/visualizations/multiscale-subtraction/exp-2770-dashboard.png)
 
 **EXP-2771: 50/50 Rule Validation (3/5 PASS — actionable!)**
 - Clinical rule: 50% TDD for basal (EGP), 50% for food/corrections
@@ -1353,6 +1361,8 @@ and demand-side (insulin) channels, validated by the clinical 50/50 rule.
 - Loop patients closer to 50/50 (dev=8%) than Trio (dev=18%)
 - **Settings action: increase basal rates for patients below 35%**
 
+![EXP-2771 50/50 Rule](../../tools/visualizations/fifty-fifty/exp-2771-dashboard.png)
+
 **EXP-2772: Bounded BGI Deviation (3/5 PASS)**
 - oref0-style bounded 2h windows (fixes EXP-2770's drift)
 - BGI explains only 10% of glucose changes (not 50%)
@@ -1360,6 +1370,8 @@ and demand-side (insulin) channels, validated by the clinical 50/50 rule.
 - 29/30 patients show circadian pattern in deviation
 - 50/50 applies to insulin QUANTITY (EXP-2771), not variance EXPLAINED
 - The controller obscures the causal insulin→glucose pathway
+
+![EXP-2772 Bounded BGI](../../tools/visualizations/bounded-bgi/exp-2772-dashboard.png)
 
 ### Key Insight: Why BGI Variance ≠ 50%
 
@@ -1390,9 +1402,11 @@ Physical BGI calculation using ΔIOB × ISF × CF CATASTROPHICALLY FAILED
 controller RESPONSE, not causal insulin effect.
 
 Solution: empirical regression (like oref0 autotune):
-- `delta_BG = 63 - 0.45×starting_BG - 2.9×insulin - 0.38×carbs`
+- `delta_BG = 63 - 0.45×starting_BG - 2.9×insulin + 0.38×carbs`
 - R² = 41.1%, insulin NEGATIVE for 28/28 patients ✓
 - Variance: Starting BG 34%, Insulin 3%, Carbs 4%, Residual 59%
+
+![EXP-2773 Bilateral BGI](../../tools/visualizations/bilateral-bgi/exp-2773-dashboard.png)
 
 ### EXP-2774: oref0-Style Deviation Categorization (4/5 PASS)
 
@@ -1401,11 +1415,15 @@ Implemented categorize.js logic: **Basal 21%, CSF 42%, ISF 30%, UAM 5%**
 - ISF category has strongest insulin coefficient (-4.4 mg/dL/U)
 - Basal category has highest R²=0.38 (least confounded)
 
+![EXP-2774 Deviation Categorize](../../tools/visualizations/deviation-categorize/exp-2774-dashboard.png)
+
 ### EXP-2775: Basal Rate Optimization via 50/50 Rule (2/5 PASS)
 
 **7/12 Trio patients need +70% basal increase.** Loop is well-calibrated
 at 50%. Trio's oref1+SMB controller compensates by delivering more SMBs.
 Basal deviation does NOT predict TIR (r=-0.11) because controller compensates.
+
+![EXP-2775 Basal Optimization](../../tools/visualizations/basal-optimization/exp-2775-dashboard.png)
 
 ### EXP-2776–2778: ISF Gap Investigation (Structural Conclusion)
 
@@ -1415,6 +1433,10 @@ Three experiments attempted to close the 10× ISF gap:
    Confounding by indication so strong that user boluses appear to raise BG.
 3. **DIA-matched windows** (2778): 1h-6h windows tested. ISF near-zero at ALL windows.
    3h window has best profile correlation (r=0.755). BG-falling filter at 1h: 86% positive.
+
+![EXP-2776 Category Settings](../../tools/visualizations/category-settings/exp-2776-dashboard.png)
+![EXP-2777 ISF Gap](../../tools/visualizations/isf-gap/exp-2777-dashboard.png)
+![EXP-2778 DIA Window](../../tools/visualizations/dia-window/exp-2778-dashboard.png)
 
 **Conclusion: The ISF gap is structural in observational data.** Regression captures
 BG correlation with insulin delivery, not the causal effect. The production pipeline
@@ -1428,6 +1450,8 @@ The 59% residual contains structured signals:
 3. But category-specific linear models only improve R² by +3% — the structure
    requires temporal models (AR/LSTM) to exploit
 
+![EXP-2779 Residual Decomposition](../../tools/visualizations/residual-decomp/exp-2779-dashboard.png)
+
 ### EXP-2780: Circadian Basal Rate Optimization (2/5 PASS)
 
 Circadian BG patterns during basal periods are massive and universal:
@@ -1435,6 +1459,8 @@ Circadian BG patterns during basal periods are massive and universal:
 - Dawn phenomenon present in 57% of patients
 - Afternoon (3-5pm) shows HIGHEST rise (+21 mg/dL/h), not dawn (+7.7)
 - Critical: ALL periods show rising BG because filter selects low-insulin times
+
+![EXP-2780 Circadian Basal](../../tools/visualizations/circadian-basal/exp-2780-dashboard.png)
 
 ### Phase 16 Summary
 
@@ -1551,6 +1577,17 @@ momentum — glucose continues rising/falling in the same direction.
 | L4 | 72h | Daily mean shift | +0.002 |
 | **Total** | | | **0.238** |
 
+### Phase 17 Dashboards
+
+![EXP-2781 Meal AR](../../tools/visualizations/meal-ar/exp-2781-dashboard.png)
+![EXP-2782 Settings Audit](../../tools/visualizations/settings-audit/exp-2782-dashboard.png)
+![EXP-2783 Controller Effort](../../tools/visualizations/controller-effort/exp-2783-dashboard.png)
+![EXP-2784 TIR Predictors](../../tools/visualizations/tir-predictors/exp-2784-dashboard.png)
+![EXP-2785 Multi-Day ISF](../../tools/visualizations/multiday-isf/exp-2785-dashboard.png)
+![EXP-2786 Multiscale Deconfound](../../tools/visualizations/multiscale-deconfound/exp-2786-dashboard.png)
+![EXP-2787 IOB BGI](../../tools/visualizations/iob-bgi/exp-2787-dashboard.png)
+![EXP-2788 Conv BGI](../../tools/visualizations/conv-bgi/exp-2788-dashboard.png)
+
 ## Phase 18: Insulin Accounting, Integrated Pipeline & Recommendations (EXP-2789–2792)
 
 ### Data Semantics Fix: net_basal is a DEVIATION (EXP-2790)
@@ -1582,6 +1619,8 @@ Even after convolution BGI + AR meal + circadian deconfounding:
 - Confirms: ISF CANNOT be extracted from observational closed-loop data
 - Validates the production approach (EXP-2719b) of using profile ISF as prior
 - CR also fails: median 32.8 vs profile 8.5 (4× gap)
+
+![EXP-2789 Deconf Settings](../../tools/visualizations/deconf-settings/exp-2789-dashboard.png)
 
 ### Integrated Production Pipeline v3 (EXP-2791) — 5/5 PASS ⭐
 
@@ -1671,8 +1710,8 @@ Category-specific AR(2) achieves R²=0.449 — nearly **double** global AR(2) (0
 
 | Category | AR(2) R² | Interpretation |
 |----------|----------|----------------|
-| CSF (meals) | 0.302 | Most predictable — carb absorption is structured |
-| ISF (corrections) | 0.185 | Moderate — insulin action is more variable |
+| CSF (meals) | 0.305 | Most predictable — carb absorption is structured |
+| ISF (corrections) | 0.195 | Moderate — insulin action is more variable |
 | UAM (unexplained) | 0.099 | Near-random — these truly are unexplained |
 | Basal | ~0.05 | Near-random — homeostatic noise |
 
