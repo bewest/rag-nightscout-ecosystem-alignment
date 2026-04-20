@@ -1301,8 +1301,71 @@ remain the right tool because they abstract over confounding.
 | BG prediction | EXP-2764 LR+BG model | **BEST** | 40% vs CF |
 | BG-stratified CF | EXP-2761 | NOT RECOMMENDED | within-patient r=0.11 |
 | IOB covariate | EXP-2762 | NOT RECOMMENDED | no added value |
+| Supply/demand | EXP-2767 bilateral | **CONFIRMED** | Supply 53%, demand 18% |
+| 50/50 rule | EXP-2771 validation | **ACTIONABLE** | Basal too low: 16/30 |
+| BGI deviation | EXP-2772 bounded | **CONFIRMED** | 10/90 split, circadian in 97% |
 
-## Experiment Index (Complete: 26 experiments)
+## Phase 15: Bilateral Supply-Demand Decomposition (2026-04-19)
+
+### Breakthrough: The Glucose Correction Is 72% Supply-Side
+
+Six experiments decomposed BG corrections into supply-side (homeostatic/hepatic)
+and demand-side (insulin) channels, validated by the clinical 50/50 rule.
+
+**EXP-2767: 3-Channel Supply vs Demand (3/5 PASS)**
+- BG regression to mean: 53% of corrections (supply-side dominant)
+- Controller automated: 14% (demand auto)
+- User bolus: **3%** (demand user — nearly irrelevant!)
+- Supply > demand-user: 27/27 patients (universal)
+
+**EXP-2768: 5-Channel with Pre-IOB (2/5 PASS)**
+- Added pre-existing IOB (1%) and carbs (4%)
+- Residual intercept: -28 mg/dL (hepatic estimate)
+- Supply-side total: ~72% of BG corrections
+- Demand-side total: ~18% of BG corrections
+
+**EXP-2769: 72h Insulin Accounting (1/5 PASS — informative)**
+- TDD median 27.2U (IQR 20.3-36.2)
+- Basal fraction NEGATIVE (-44%) — controllers suspend basal!
+- All insulin delivered via bolus channels (SMB replaces basal)
+- Delivery ratio positively correlates with BG (r=0.535) — confounding
+
+**EXP-2770: Multi-Timescale Subtraction (1/5 PASS — methodological)**
+- L5 multi-day trend: 26% variance (dominant timescale)
+- L4 circadian: 3.4% but significant in 97% of patients
+- L2 BGI: cumulative approach fails; must use bounded windows
+- Total: 33% variance removed, 67% remaining
+
+**EXP-2771: 50/50 Rule Validation (3/5 PASS — actionable!)**
+- Clinical rule: 50% TDD for basal (EGP), 50% for food/corrections
+- **16/30 patients have scheduled basal <35%** — too low!
+- Controller redistributes 45% of TDD from basal to SMB channels
+- Loop patients closer to 50/50 (dev=8%) than Trio (dev=18%)
+- **Settings action: increase basal rates for patients below 35%**
+
+**EXP-2772: Bounded BGI Deviation (3/5 PASS)**
+- oref0-style bounded 2h windows (fixes EXP-2770's drift)
+- BGI explains only 10% of glucose changes (not 50%)
+- Deviation (supply-side) = 90% of glucose dynamics
+- 29/30 patients show circadian pattern in deviation
+- 50/50 applies to insulin QUANTITY (EXP-2771), not variance EXPLAINED
+- The controller obscures the causal insulin→glucose pathway
+
+### Key Insight: Why BGI Variance ≠ 50%
+
+The 50/50 rule is about insulin VOLUME (half of TDD covers EGP, half covers
+meals/corrections). But the VARIANCE explained by BGI is only 10% because
+in closed-loop, IOB changes are the controller's RESPONSE to glucose, not
+just the cause. The controller masks the causal pathway through:
+1. Giving more insulin when BG is high (confounding by indication)
+2. Suspending basal when BG is low (reverse causation)
+3. Using multiple channels simultaneously (SMB + basal + bolus)
+
+To properly attribute 50% of glucose variance to insulin, we would need
+causal methods (controller replay, instrumental variables) not observational
+correlation.
+
+## Experiment Index (Complete: 32 experiments)
 
 | EXP | Title | Result | Key Finding |
 |-----|-------|--------|-------------|
@@ -1328,3 +1391,11 @@ remain the right tool because they abstract over confounding.
 | 2762 | IOB-Aware CF | 2/5 PASS | LR approach beats median |
 | 2763 | LR vs Median CF | 4/5 PASS | 73 mg/dL intercept! |
 | 2764 | Intercept Decomp | 5/5 PASS ⭐ | b2(BG)=0.8, neg insulin |
+| 2765 | Settings Generator | 4/5 PASS | 28/28 actionable recs |
+| 2766 | Iterative Settings | 2/5 PASS | r=1.000, purely mathematical |
+| 2767 | Supply vs Demand | 3/5 PASS | Supply 53%, user bolus 3% |
+| 2768 | Intercept + IOB | 2/5 PASS | Residual -28 mg/dL (hepatic) |
+| 2769 | 72h Insulin | 1/5 PASS | Basal fraction -44%, SMB dominant |
+| 2770 | Multi-Timescale | 1/5 PASS | L5 multi-day 26%, BGI fails cumul |
+| 2771 | 50/50 Rule | 3/5 PASS | 16/30 basal too low, 45% redistrib |
+| 2772 | Bounded BGI | 3/5 PASS | 10/90 split, circadian in 97% |
