@@ -294,22 +294,25 @@ A `DataSyncSelectorV1Test` does not currently exist (only V3 has a test). The si
 - **Should `PairProfileStore` track `nightscoutId`?** Every other `Pair*` does. Tracking would let AAPS use stable `_id` references and allow the c-r-m server to do `_id`-based dedup rather than `startDate`-based. It would also unblock a future `nsUpdate` path for profiles.
 - **The `createdAt % 1000 == 0L` heuristic in `NsIncomingDataProcessor.processProfile:283-295`** ("whole second means edited in NS") is fragile — any AAPS-originated profile whose epoch happens to land on a whole second will be re-imported as if NS-edited. Worth replacing with explicit provenance.
 
-## V3 path verification
+## V3 path verification and fix
 
 V3 hits `POST /api/v3/profile` (`NightscoutRemoteService.kt:102-103`), which routes to `lib/api3/generic/create/operation.js`. The handler computes an identifier as `uuid.v5("undefined_<doc.date>")` (since profile docs have no `device` or `eventType`) and uses it for dedup via `identifyingFilter`. Verified with three new tests in `tests/api3.aaps-patterns.test.js` under `Profile sync via REST (V3) - AAPS createProfileStore behavior`:
 
-| Scenario | V3 result |
-|---|---|
-| First POST | 201, one doc inserted |
-| Resend identical payload (retry) | **200, deduped in place** (request-level dedup works) |
-| Edit profile in AAPS → new `LocalProfileLastChange` → new `date` | **201, new doc inserted** (different identifier) |
+| Scenario | V3 pre-fix | V3 post-fix |
+|---|---|---|
+| First POST | 201, one doc inserted | 201, one doc inserted |
+| Resend identical payload (retry) | 200, deduped in place (request-level dedup works) | 200, deduped in place |
+| Edit profile in AAPS → new `LocalProfileLastChange` → new `date` | **201, new doc inserted** (different identifier) | **200, same identifier, single doc** |
+| Distinct `defaultProfile` names from same `app` | (n/a) | 201 each, two docs (no collision) |
 
-So V3 has **request-level dedup but not edit-level dedup**. Each user edit still accumulates a new MongoDB profile document — the same architectural symptom as pre-fix V1.
+So V3 had **request-level dedup but not edit-level dedup**. We patched it in two places:
 
-**Implications:**
-- After the c-r-m fix, V1 is now *better* than V3 for AAPS-shaped profile edits: V1 dedups by `startDate` and converges to a single document; V3 still accumulates one document per edit.
-- Both paths rely on `ctx.profile.last()` to choose the displayed profile, so the secondary sort key fix (`{startDate: -1, _id: -1}`) helps both.
-- A symmetric fix for V3 would extend `calculateIdentifier` to dedup profile docs by `startDate` (or by `(app, startDate)`), or AAPS could be modified to issue `nsUpdate` (PUT/PATCH) instead of `nsAdd` for profile re-saves so the existing identifier is reused.
+1. `lib/api3/shared/operationTools.js` — `calculateIdentifier` now special-cases profile-store-shaped documents (`defaultProfile` + `store`, no `eventType`) and computes `uuid.v5("profilestore_<app>_<defaultProfile>")`. Edits and retries from the same `(app, defaultProfile)` collapse onto a single identifier.
+2. `lib/api3/generic/update/validate.js` — relaxed immutability of `date`, `created_at`, `startDate` during deduplication when the storage document is a profile-store, since those fields are expected to advance per edit.
+
+After the fix, V3 (REST) and V1 (websocket) both converge AAPS profile updates onto a single MongoDB document per source. The secondary `_id` sort in `lib/server/profile.js:last()` continues to ensure deterministic display when multiple profile rows do exist (e.g., legacy data from before the fix).
+
+**Migration note:** existing duplicate profile rows in production databases are not retroactively merged. New POSTs from updated servers will pick the most recently-edited row (via the `dedupFallbackFields: ['created_at']` path) only if the standard identifier path doesn't match — in practice, after this fix new edits from any given AAPS source converge on one identifier, but pre-existing duplicates remain until manually cleaned up.
 
 ---
 
