@@ -40,6 +40,7 @@ from .metabolic_engine import (
     _PERSISTENT_WINDOW_HOURS,
     _DECAY_TARGET,
     _DECAY_RATE,
+    _compute_hepatic_production,
 )
 from .types import TIR_LOW, TIR_HIGH
 
@@ -326,6 +327,7 @@ def forward_simulate(
     seed: Optional[int] = None,
     metabolic_basal_rate: Optional[float] = None,
     counter_reg_k: float = 0.0,
+    egp_enabled: bool = False,
 ) -> SimulationResult:
     """Run forward glucose simulation from initial conditions.
 
@@ -357,6 +359,11 @@ def forward_simulate(
             hepatic glucose production. EXP-2579: k=1.1 reduces 2.5×
             overestimation to within 10% for corrections. Glucagon-only:
             only opposes drops, not rises.
+        egp_enabled: Enable hepatic glucose production (EGP) via Hill
+            equation from metabolic_engine.py. EXP-2727 showed EGP accounts
+            for 42% of the profile→empirical ISF gap. When enabled, EGP
+            adds ~1.5 mg/dL per 5-min step at zero insulin, suppressed by
+            IOB via Hill equation with circadian modulation.
 
     Returns:
         SimulationResult with glucose, IOB, COB, supply, demand traces.
@@ -499,11 +506,23 @@ def forward_simulate(
         carb_rise = carb_absorbed * csf
         supply_trace[t] = carb_rise
 
+        # ── EGP: Hepatic glucose production (EXP-2727) ────────────
+        # Hill equation suppression by IOB + circadian modulation.
+        # Adds ~1.5 mg/dL/5min at zero insulin, suppressed at high IOB.
+        egp_flux = 0.0
+        if egp_enabled:
+            egp_arr = _compute_hepatic_production(
+                np.array([iob_trace[t]]),
+                np.array([hour]),
+            )
+            egp_flux = float(egp_arr[0])
+            supply_trace[t] += egp_flux
+
         # ── Decay toward equilibrium ──────────────────────────────
         decay = (_DECAY_TARGET - glucose[t - 1]) * _DECAY_RATE
 
         # ── Integrate ─────────────────────────────────────────────
-        dBG = -total_demand + carb_rise + decay
+        dBG = -total_demand + carb_rise + egp_flux + decay
         if noise_std > 0:
             dBG += rng.normal(0, noise_std)
 
@@ -544,6 +563,7 @@ def compare_scenarios(
     modified_label: str = "Modified",
     metabolic_basal_rate: Optional[float] = None,
     counter_reg_k: float = 0.0,
+    egp_enabled: bool = False,
 ) -> ScenarioComparison:
     """Simulate two scenarios side-by-side for comparison.
 
@@ -585,6 +605,7 @@ def compare_scenarios(
         seed=seed,
         metabolic_basal_rate=met_basal,
         counter_reg_k=counter_reg_k,
+        egp_enabled=egp_enabled,
     )
 
     modified = forward_simulate(
@@ -598,6 +619,7 @@ def compare_scenarios(
         seed=seed,
         metabolic_basal_rate=met_basal,
         counter_reg_k=counter_reg_k,
+        egp_enabled=egp_enabled,
     )
 
     return ScenarioComparison(
