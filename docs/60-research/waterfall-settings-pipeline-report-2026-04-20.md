@@ -350,6 +350,8 @@ different from physiological ISF.
 
 ### The Supply-Side Breakthrough (EXP-2728)
 
+![EXP-2728 EGP-Aware Validation](../../tools/visualizations/egp-aware-validation/exp-2728-dashboard.png)
+
 EXP-2728 confirmed the critical hypothesis: **modeling both supply and demand sides
 of glucose homeostasis outperforms recalibrated single-factor approaches**.
 
@@ -378,6 +380,8 @@ artifact persists in the analytic pipeline.
 
 ### Multi-Factor Supply + Demand Regression (EXP-2732)
 
+![EXP-2732 Multi-Factor Deconfounding](../../tools/visualizations/multifactor-deconfounding/exp-2732-dashboard.png)
+
 Used EGP as an explicit regressor alongside insulin dose:
 
 | Metric | Single-factor | Multi-factor | Improvement |
@@ -391,6 +395,8 @@ EGP-corrected ISF = (observed_drop + EGP) / excess_insulin = 26.8 vs naive 21.2.
 Profile gap reduced from 2.5x to 2.2x — closer but controller compensation remains.
 
 ### Simulator-Based ISF Extraction (EXP-2733)
+
+![EXP-2733 Simulator ISF Extraction](../../tools/visualizations/simulator-isf-extraction/exp-2733-dashboard.png)
 
 Used the physics-based forward simulator to FIT ISF per episode — finding the
 ISF where simulated glucose best matches actual trajectory with EGP + counter-reg:
@@ -478,6 +484,8 @@ data. Simulation-based extraction or subtraction-based approaches are required.
 
 ### EXP-2734: Autocorrelation-Corrected Residuals (5/5 PASS)
 
+![EXP-2734 Autocorrelation Residuals](../../tools/visualizations/autocorr-residuals/exp-2734-dashboard.png)
+
 Tests whether overlapping insulin windows (events <2h apart) bias the per-patient
 correction factors from EXP-2719b via autocorrelation.
 
@@ -493,6 +501,8 @@ change recommendation category, no systematic shift (paired t-test p=0.16).
 → **Safe to use full-data correction factors for settings recommendations.**
 
 ### EXP-2735: Controller Compensation via Statistical Replay (3/5 PASS)
+
+![EXP-2735 Controller Compensation](../../tools/visualizations/controller-compensation/exp-2735-dashboard.png)
 
 Quantifies the controller compensation factor — the ISF hierarchy's remaining gap.
 

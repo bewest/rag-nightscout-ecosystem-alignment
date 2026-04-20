@@ -70,6 +70,11 @@ Each capability is rated by maturity level:
 | **Deconfounded CR extraction** | 🔬 Research | EXP-2729 | Profile CR ~2× off; deconfounded MAE 6.19→3.42, 95.5% improve |
 | **Basal drift optimization** | 🔬 Research | EXP-2730 | 22 patients, 207K events; all need adjustment; aggressive recs flagged |
 | **Unified calibration scoring** | 🔬 Research | EXP-2731 | ISF 0/100, CR 56/100, basal 19.5/100; controller predicts quality |
+| **Multi-factor EGP deconfounding** | 🔬 Research | EXP-2732 | EGP as regressor closes ISF gap 2.5×→2.2×; R² +33% |
+| **Simulator-based ISF extraction** | 🔬 Research | EXP-2733 | Causal ISF via physics sim; dose artifact reduced 32% |
+| **Cross-validation robustness** | 🔬 Research | EXP-2734 | 75/25 temporal split: test/train ratio=0.997; settings generalize |
+| **Controller compensation model** | 🔬 Research | EXP-2735 | Compensation ratio=0.497; basal suspension 185%; closes ISF gap |
+| **ISF reconciliation framework** | 🔬 Research | EXP-2736 | ~4× gap = 1.93× (EGP) × 2.66× (controller); all ISFs correct in context |
 
 **Legend**: 🟢 Production (validated, tested, in pipeline) · 🟡 Beta/Partial (functional but incomplete) · 🔬 Research (experimental) · ❌ Disproved (tried, doesn't work)
 

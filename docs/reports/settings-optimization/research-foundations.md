@@ -191,6 +191,11 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **CR extraction** | EXP-2729 | 2026-04 | Profile CR ~2× too high (8.75 vs 4.9); deconfounded CR reduces MAE 6.19→3.42, 95.5% improve |
 | **Basal optimization** | EXP-2730 | 2026-04 | 22 patients, 207K drift events; 100% need adjustment; aggressive recs (controller contamination) |
 | **Unified settings assessment** | EXP-2731 | 2026-04 | ISF score 0/100, CR 56/100, basal 19.5/100; controller type predicts quality (KW p=0.021) |
+| **Multi-factor deconfounding** | EXP-2732 | 2026-04 | EGP as regressor: R² 0.060→0.080; ISF gap to profile 2.5×→2.2×; corrected ISF=26.8 |
+| **Simulator ISF extraction** | EXP-2733 | 2026-04 | Causal deconfounding: simulator ISF=13.8, gap 3.4×; dose artifact reduced 32%; 3/5 PASS |
+| **Autocorrelation correction** | EXP-2734 | 2026-04 | Correction factors robust: r=0.903 between full/independent arms; 5/5 PASS cross-validation |
+| **Controller compensation quantification** | EXP-2735 | 2026-04 | Compensation ratio=0.497; basal suspension 185%; sim gap 2.75×→compensated 1.45×; 3/5 PASS |
+| **ISF reconciliation** | EXP-2736 | 2026-04 | ~4× gap decomposes: 1.93× (EGP) × 2.66× (controller); 5 ISF methods each correct in context |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 
