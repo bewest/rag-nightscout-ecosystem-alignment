@@ -277,6 +277,8 @@ empirical coefficients rather than profile ISF for the initial BGI subtraction.
 
 ### EXP-2726: Profile ISF in Simulation Is Catastrophic
 
+![EXP-2726 Prospective Validation](../../tools/visualizations/prospective-validation/exp-2726-dashboard.png)
+
 Applied EXP-2719b correction factors in the forward simulator:
 
 | Arm | MAE | TIR% | TBR% |
@@ -292,6 +294,8 @@ ISF from the other researcher's EXP-2720.
 
 ### EXP-2726b: Empirical ISF — 5/5 PASS
 
+![EXP-2726b Empirical ISF Validation](../../tools/visualizations/empirical-isf-validation/exp-2726b-dashboard.png)
+
 Extracted per-patient empirical ISF from independent events (bg_drop / total_dose):
 
 | Arm | MAE | TIR% | TBR% |
@@ -306,6 +310,8 @@ Extracted per-patient empirical ISF from independent events (bg_drop / total_dos
 - Shrunk estimator is marginally best overall
 
 ### EXP-2727: ISF Gap Decomposition — EGP Is Dominant
+
+![EXP-2727 ISF Gap Decomposition](../../tools/visualizations/isf-gap-decomposition/exp-2727-dashboard.png)
 
 Decomposed the 10× profile→empirical ISF gap:
 

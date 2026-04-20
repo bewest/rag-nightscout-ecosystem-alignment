@@ -184,6 +184,13 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Per-patient settings extraction** | EXP-2723 | 2026-04 | Deconfounded ISF for 21 patients; 90.5% improve, median 75.8% MAE reduction |
 | **Basal circadian drift** | EXP-2724 | 2026-04 | Per-patient drift heatmap; patient-specific, not universal dawn phenomenon |
 | **DynISF deconfounding** | EXP-2725 | 2026-04 | sensitivity_ratio orthogonal to observed ISF (r=0.008); dose already captures DynISF |
+| **Prospective ISF validation** | EXP-2726 | 2026-04 | Profile ISF catastrophic in sim (65% TBR); lowered 4× matches independent-event ISF |
+| **Empirical ISF validation** | EXP-2726b | 2026-04 | 5/5 PASS; per-patient empirical ISF: MAE 79.7→43.8, 29/31 improve, TBR 58.7→0.9% |
+| **ISF gap decomposition** | EXP-2727 | 2026-04 | 10× ISF gap: EGP 42%, controller 44%, counter-reg 10%. Profile+EGP beats empirical ISF |
+| **EGP-aware validation** | EXP-2728 | 2026-04 | Physics (profile+EGP+CR) MAE=46.9 beats empirical MAE=51.0; 4/5 PASS |
+| **CR extraction** | EXP-2729 | 2026-04 | Profile CR ~2× too high (8.75 vs 4.9); deconfounded CR reduces MAE 6.19→3.42, 95.5% improve |
+| **Basal optimization** | EXP-2730 | 2026-04 | 22 patients, 207K drift events; 100% need adjustment; aggressive recs (controller contamination) |
+| **Unified settings assessment** | EXP-2731 | 2026-04 | ISF score 0/100, CR 56/100, basal 19.5/100; controller type predicts quality (KW p=0.021) |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 

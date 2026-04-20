@@ -64,6 +64,12 @@ Each capability is rated by maturity level:
 | **Per-patient settings extraction** | 🔬 Research | EXP-2723 | 90.5% of patients improve; median 75.8% MAE reduction |
 | **Basal circadian drift analysis** | 🔬 Research | EXP-2724 | Per-patient drift heatmap; patient-specific, not universal dawn |
 | **DynISF algorithm deconfounding** | 🔬 Research | EXP-2725 | sensitivity_ratio orthogonal to ISF (r=0.008); dose captures effect |
+| **Prospective ISF validation** | 🔬 Research | EXP-2726/2726b | Profile ISF catastrophic in sim (65% TBR); empirical ISF 5/5 PASS, 29/31 improve |
+| **ISF gap decomposition** | 🔬 Research | EXP-2727 | 10× gap: EGP 42%, controller 44%; profile+EGP beats empirical ISF |
+| **EGP-aware simulation** | 🔬 Research | EXP-2728 | Physics (profile+EGP+CR) beats empirical ISF; 4/5 PASS |
+| **Deconfounded CR extraction** | 🔬 Research | EXP-2729 | Profile CR ~2× off; deconfounded MAE 6.19→3.42, 95.5% improve |
+| **Basal drift optimization** | 🔬 Research | EXP-2730 | 22 patients, 207K events; all need adjustment; aggressive recs flagged |
+| **Unified calibration scoring** | 🔬 Research | EXP-2731 | ISF 0/100, CR 56/100, basal 19.5/100; controller predicts quality |
 
 **Legend**: 🟢 Production (validated, tested, in pipeline) · 🟡 Beta/Partial (functional but incomplete) · 🔬 Research (experimental) · ❌ Disproved (tried, doesn't work)
 
