@@ -12,6 +12,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Wave-12: Multi-Factor Isolation — Context-Specific Deconfounding (2026-04-20)
+
+Tested context-specific subtraction: basal analysis subtracts corrections/meals, ISF analysis subtracts basal/EGP, CR analysis subtracts corrections/EGP. **Key finding**: controller compensation is the dominant confound, not EGP.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2740 | `tools/cgmencode/exp_basal_egp_equilibrium_2740.py` | 70% well-matched; controller already compensates EGP |
+| EXP-2741 | `tools/cgmencode/exp_isf_multifactor_2741.py` | Correction-only denominator: **67% ISF gap closure** (4.3→43.7→63) |
+| EXP-2742 | `tools/cgmencode/exp_cr_multifactor_2742.py` | **Precision +64%** (CV 1.04→0.38) but gap widens |
+| Report | `docs/60-research/wave12-multifactor-isolation-report-2026-04-20.md` | 7-part report |
+| Viz | `visualizations/basal-egp-equilibrium/` | Fasting equilibrium analysis |
+| Viz | `visualizations/isf-multifactor/` | ISF method ladder |
+| Viz | `visualizations/cr-multifactor/` | CR precision vs accuracy |
+
+**Deep insight**: EGP subtraction is unnecessary — the controller ALREADY compensates for EGP through basal delivery (residual ~0.05 mg/dL/5min). The 3 confound layers: (1) EGP ✅ compensated, (2) steady-state basal ✅ 67% gap closure, (3) dynamic controller adjustments 🔄 33% remaining.
+
+**Scorecard**: ~40 experiments, ~166 hypotheses, ~96 PASS (~58%)
+
+---
+
 ## Wave-11: The Safety Wall — Precision, Interactions & Clinical Translation (2026-04-20)
 
 Critical safety and precision wave: proved naive ISF replacement is dangerous, settings are coupled but separable, and personalized EGP delivers 4.3× basal improvement.
