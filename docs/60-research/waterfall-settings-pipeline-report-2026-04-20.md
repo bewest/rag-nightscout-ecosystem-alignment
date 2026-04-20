@@ -346,6 +346,109 @@ different from physiological ISF.
 
 ---
 
+## Phase 4: Supply-Side Physics & Multi-Factor Deconfounding (EXP-2728 – 2733)
+
+### The Supply-Side Breakthrough (EXP-2728)
+
+EXP-2728 confirmed the critical hypothesis: **modeling both supply and demand sides
+of glucose homeostasis outperforms recalibrated single-factor approaches**.
+
+| Simulation Arm | MAE | TIR% | TBR% |
+|----------------|-----|------|------|
+| Profile ISF (naive) | 64.2 | 56.1 | 36.4 |
+| Profile + EGP | 59.2 | 62.9 | 24.5 |
+| **Profile + EGP + Counter-reg** | **46.9** | **73.3** | **5.4** |
+| Empirical ISF | 51.0 | 75.6 | 15.3 |
+| Empirical + EGP | 51.2 | 72.6 | 10.2 |
+
+**Key result**: Profile ISF + physics (MAE=46.9) **BEATS** empirical ISF (MAE=51.0).
+The 10x ISF gap is primarily missing physics, not wrong settings.
+
+### Production Pipeline Recalibration (EXP-2731)
+
+Added EGP-aware BGI subtraction to `deconfounding.py`:
+- `BGISubtraction(egp_enabled=True, counter_reg_k=0.3)` for physics mode
+- Hill equation + circadian EGP estimation over analysis horizon
+- Counter-regulation dampening for rapid glucose drops
+- Backward compatible (default `egp_enabled=False`)
+
+Result: Deviation bias reduced 36%, variance reduced 37%. But analytic EGP
+correction doesn't improve ISF extraction — the structural ISF=drop/dose
+artifact persists in the analytic pipeline.
+
+### Multi-Factor Supply + Demand Regression (EXP-2732)
+
+Used EGP as an explicit regressor alongside insulin dose:
+
+| Metric | Single-factor | Multi-factor | Improvement |
+|--------|--------------|--------------|-------------|
+| R² | 0.060 | 0.080 | +33% |
+| β_insulin | -2.87 | -3.37 | More accurate |
+| β_EGP | — | -0.91 | New supply term |
+| ISF gap to profile | 2.5x | 2.2x | Closing |
+
+EGP-corrected ISF = (observed_drop + EGP) / excess_insulin = 26.8 vs naive 21.2.
+Profile gap reduced from 2.5x to 2.2x — closer but controller compensation remains.
+
+### Simulator-Based ISF Extraction (EXP-2733)
+
+Used the physics-based forward simulator to FIT ISF per episode — finding the
+ISF where simulated glucose best matches actual trajectory with EGP + counter-reg:
+
+| ISF Method | Median | Profile Gap | Dose |r| | CV |
+|------------|--------|-------------|----------|------|
+| Naive (drop/dose) | 26.0 | 2.1x | 0.713 | 1.237 |
+| Simulator + physics | 13.8 | 3.4x | 0.485 | 1.150 |
+| Profile setting | 55.0 | 1.0x | — | — |
+
+**Critical findings**:
+- Profile ↔ Simulator ISF: r=0.630 (p<0.002) — strong rank preservation
+- TDD ↔ Simulator ISF: r=-0.608 (p<0.003) — metabolically expected
+- Dose artifact reduced 32% (0.71 → 0.49)
+
+### ISF Hierarchy (Confirmed)
+
+Each deconfounding layer changes the ISF estimate:
+
+```
+Profile ISF (55)  →  what the controller uses (includes compensation assumption)
+    ÷ ~2x
+Naive ISF (26)    →  observed drop / dose (contaminated by EGP headwind)
+    ÷ ~2x
+Simulator ISF (14) →  physics-corrected (EGP + counter-reg modeled)
+    ÷ ~2x
+Empirical ISF (6)  →  net effect after controller compensation
+```
+
+The 10x gap from profile to empirical decomposes into:
+- **EGP + counter-regulation**: ~4x (modeled by physics)
+- **Controller compensation**: ~2.5x (basal suspension after correction)
+
+### 72h Insulin Accounting (Sanity Check)
+
+TDD ranges across patients: 26–74 U/day. Key metric validated:
+TDD anti-correlates with ISF (r=-0.608) — patients needing more insulin
+have lower sensitivity, as expected metabolically.
+
+### Implications
+
+**For AID users**: Your ISF settings are NOT wrong — they're optimized for
+the controller context. The "right" ISF depends on what system uses it.
+
+**For AID authors**: Adding EGP and counter-regulation to prediction models
+could reduce forecast error by 27%. Profile ISF + physics may outperform
+population-recalibrated ISF.
+
+**For settings optimization**: The multi-timescale approach is validated.
+Subtract what you know at each timescale (insulin effect, EGP, counter-reg)
+to isolate what remains for measurement.
+
+**For research**: The dose-ISF artifact (|r|=0.49–0.83) remains a fundamental
+challenge. Ratio-based ISF extraction is structurally flawed in closed-loop
+data. Simulation-based extraction or subtraction-based approaches are required.
+
+---
+
 ## Source Files
 
 | File | Purpose |
@@ -358,6 +461,11 @@ different from physiological ISF.
 | `tools/cgmencode/exp_prospective_validation_2726.py` | Profile ISF catastrophic in sim |
 | `tools/cgmencode/exp_empirical_isf_validation_2726b.py` | Empirical ISF 5/5 PASS |
 | `tools/cgmencode/exp_isf_gap_decomposition_2727.py` | EGP + controller decomposition |
+| `tools/cgmencode/exp_egp_aware_validation_2728.py` | **Physics beats empirical (4/5)** |
+| `tools/cgmencode/exp_egp_deconfounding_validation_2731.py` | Analytic EGP validation |
+| `tools/cgmencode/exp_multifactor_deconfounding_2732.py` | Supply + demand regression |
+| `tools/cgmencode/exp_simulator_isf_extraction_2733.py` | Simulator-based ISF fitting |
 | `tools/cgmencode/production/waterfall.py` | Existing waterfall infrastructure |
-| `tools/cgmencode/production/deconfounding.py` | BGI subtraction pipeline |
-| `tools/cgmencode/production/metabolic_engine.py` | EGP computation |
+| `tools/cgmencode/production/deconfounding.py` | BGI subtraction (now EGP-aware) |
+| `tools/cgmencode/production/forward_simulator.py` | Physics-based simulator (EGP integrated) |
+| `tools/cgmencode/production/metabolic_engine.py` | EGP computation (Hill + circadian) |
