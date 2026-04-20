@@ -159,15 +159,16 @@ Different patients need different types of adjustments.
 
 | Block | Current | Drift (mg/dL/h) | Recommended | Change |
 |-------|---------|-----------------|-------------|--------|
-| 00-04 | 1.2 | +5.1 | 1.4 | +17% |
-| 04-08 | 1.2 | -1.3 | 1.15 | -4% |
-| 08-12 | 1.2 | -5.3 | 0.99 | -18% |
-| 12-16 | 1.2 | -4.3 | 1.03 | -14% |
-| 16-20 | 1.2 | -2.3 | 1.11 | -8% |
-| 20-24 | 1.2 | -2.3 | 1.11 | -8% |
+| 00-04 | 1.4 | 0.0 | 1.4 | 0% |
+| 04-08 | 1.15 | 0.0 | 1.15 | 0% |
+| 08-12 | 1.15 | -4.0 | 0.993 | -14% |
+| 12-16 | 1.15 | -3.0 | 1.032 | -10% |
+| 16-20 | 1.15 | -1.0 | 1.111 | -3% |
+| 20-24 | 1.15 | -1.0 | 1.111 | -3% |
 
-This patient shows a classic overnight rise / daytime drift-down pattern consistent
-with dawn phenomenon.
+This patient shows zero overnight drift with mild daytime drift-down, suggesting
+the current overnight basal is well-calibrated while daytime rates could be slightly
+reduced.
 
 ### Caveat: Aggressive Recommendations
 
@@ -215,7 +216,7 @@ Verdict: H1=FAIL H2=PASS H3=PASS H4=PASS
 | ISF | 0.0 | Universally miscalibrated (5-27× off) |
 | CR | 56.2 | Moderate — ~2× off, some patients close |
 | Basal | 19.5 | Poor — most need large adjustments |
-| Overall | 2.0 | F grade across the board |
+| Overall | 1.2 | F grade across the board |
 
 **H1 FAIL**: Calibration score doesn't correlate with TIR (r=0.025). This is because
 ISF score floors at 0 for everyone — the AID controller compensates for bad settings
