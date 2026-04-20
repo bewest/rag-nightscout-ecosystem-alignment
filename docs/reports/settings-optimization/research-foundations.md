@@ -205,6 +205,13 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Integrated pipeline** | EXP-2743 | 2026-04 | ISF+CR+EGP combined: −28% MAE vs profile, beats profile 14/22 (64%), TIR improved 18/22 (82%); 4/5 PASS |
 | **Universal EGP extraction** | EXP-2744 | 2026-04 | Identification problem — EGP and basal are collinear in fasting; 2/5 PASS |
 | **Basal via fasting drift** | EXP-2745 | 2026-04 | 8/22 significant drift, direction agrees 22/22, but only 1/22 MAE improves — drift reflects controller not physiology; 3/5 PASS |
+| **Circadian basal profiling** | EXP-2746 | 2026-04 | 17/22 significant pattern, but only 8/22 improve in sim — ISF correction already captures circadian signal; 3/5 PASS |
+| **Dose-dependent CR** | EXP-2747 | 2026-04 | Large meals ~2× CR vs small meals (18/22); nonlinear carb absorption; size-stratified improves 9/22; 4/5 PASS |
+| **Time-of-day ISF** | EXP-2748 | 2026-04 | Dawn phenomenon rare in AID (6/22); time-stratified marginal (11/22); flat ISF sufficient; 3/5 PASS |
+| **Enhanced pipeline (size-CR)** | EXP-2749 | 2026-04 | 77% beat profile (up from 64%); MAE 43.3→36.9 (−15%); optional for variable meal sizes; 3/5 PASS |
+| **Meal absorption dynamics** | EXP-2750 | 2026-04 | Universal nonlinear absorption: large meals 60% per-gram impact (1.81 vs 2.99 mg/dL/g); wider excursion (80 vs 62 min); 3/5 PASS |
+| **Residual autocorrelation** | EXP-2751 | 2026-04 | 40min memory then white noise; no medium/long-term structure; pipeline captures all exploitable signal; 2/5 PASS |
+| **Absorption curve refinement** | EXP-2752 | 2026-04 | 0/5 PASS (informative null): linear carb model optimal (14/22); 40min ACF from controller dynamics, not absorption mismatch |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 
@@ -232,6 +239,9 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Naive ISF replacement** | EXP-2738 | Replacing profile ISF with empirical ISF increases TBR +6.2pp (4.2→10.3%) across 21 patients; ρ=−0.85 ISF ratio vs TBR increase. Profile ISF isn't wrong — it includes EGP + controller compensation margin that the controller needs. |
 | **Basal rate from fasting drift** | EXP-2745 | 8/22 significant drift, direction agrees 22/22, but only 1/22 MAE improve — closed-loop fasting drift reflects controller adjustments (temp basals, suspensions), not physiological basal needs. Basal optimization requires EGP-equilibrium modeling. |
 | **Universal EGP extraction** | EXP-2744 | EGP and basal are collinear in fasting data — cannot separate them without external constraint. Identification problem: 2/5 PASS. |
+| **Circadian basal scheduling** | EXP-2746 | Statistically real patterns (77%) but marginal prediction value (8/22 improve); integrated ISF already captures circadian signal. |
+| **Circadian ISF scheduling** | EXP-2748 | Dawn phenomenon rare in AID users (27%); flat ISF sufficient (11/22 improve, ~1-2 mg/dL gain). AID already compensates. |
+| **Absorption curve refinement** | EXP-2752 | 0/5 PASS: all 4 models produce identical ACF. 40-minute residual memory is from AID controller dynamics, not carb absorption. Linear model optimal (14/22). |
 
 ---
 

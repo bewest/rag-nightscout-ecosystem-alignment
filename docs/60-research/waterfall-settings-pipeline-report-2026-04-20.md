@@ -836,6 +836,8 @@ Final per-patient assessment combining all validated pipeline components:
 
 ### EXP-2746: Circadian Basal Profiling (3/5 PASS)
 
+![EXP-2746 Circadian Basal](../../tools/visualizations/circadian-basal/exp-2746-dashboard.png)
+
 **Approach**: Extract hourly fasting drift for all 22 patients, convert to circadian
 basal schedules (±50% of profile), test in simulator.
 
@@ -852,6 +854,8 @@ prediction value (~1-3 mg/dL). The integrated ISF correction already captures mo
 of the circadian signal through episode-based extraction.
 
 ### EXP-2747: Dose-Dependent CR (4/5 PASS) ⭐
+
+![EXP-2747 Dose-Dependent CR](../../tools/visualizations/dose-dependent-cr/exp-2747-dashboard.png)
 
 **Approach**: Analyze effective CR by meal size (bilateral deconfounding), test
 size-stratified CR (small vs large meals) in simulator.
@@ -873,6 +877,8 @@ doesn't fully account for absorption differences.
 **Actionable**: Consider recommending different CR for snacks vs full meals.
 
 ### EXP-2748: Time-of-Day ISF Variation (3/5 PASS)
+
+![EXP-2748 Circadian ISF](../../tools/visualizations/circadian-isf/exp-2748-dashboard.png)
 
 **Approach**: Extract effective ISF by time block from correction episodes at BG≥180,
 test time-stratified ISF schedules in simulator.
@@ -918,6 +924,8 @@ meals are harder to bolus for, and provides quantitative evidence for size-strat
 
 ### EXP-2749: Enhanced Pipeline with Dose-Dependent CR (3/5 PASS)
 
+![EXP-2749 Enhanced Pipeline](../../tools/visualizations/enhanced-pipeline/exp-2749-dashboard.png)
+
 Integrated size-stratified CR (from EXP-2747) into the full ISF+CR+EGP pipeline.
 Three modes compared: profile settings, flat-CR integrated pipeline, enhanced (size-CR) pipeline.
 
@@ -933,6 +941,8 @@ Three modes compared: profile settings, flat-CR integrated pipeline, enhanced (s
 meal sizes. Offer as an OPTION for patients with variable meal sizes.
 
 ### EXP-2750: Meal Absorption Dynamics (3/5 PASS) ⭐
+
+![EXP-2750 Absorption Dynamics](../../tools/visualizations/absorption-dynamics/exp-2750-dashboard.png)
 
 Investigated the MECHANISM behind dose-dependent CR:
 
@@ -1011,6 +1021,8 @@ and insufficient coverage of the extended tail.
 
 ### EXP-2751: Residual Autocorrelation (2/5 PASS)
 
+![EXP-2751 Residual Autocorrelation](../../tools/visualizations/residual-autocorrelation/exp-2751-dashboard.png)
+
 Key diagnostic: after the pipeline subtracts known effects, what structure remains?
 
 | Lag Range | Timescale | Significant | Interpretation |
@@ -1033,6 +1045,8 @@ there is effectively zero exploitable signal. The pipeline captures all multi-ho
 multi-day structure in the data.
 
 ### EXP-2752: Absorption Curve Refinement (0/5 PASS — Informative Null)
+
+![EXP-2752 Absorption Refinement](../../tools/visualizations/absorption-refinement/exp-2752-dashboard.png)
 
 Tested 4 absorption models to determine whether better carb curves could reduce
 the 40-minute autocorrelation:
@@ -1062,6 +1076,8 @@ This means the pipeline has extracted all the signal that can be extracted from
 observational closed-loop data for settings optimization.
 
 ### Production Settings Report v3
+
+![Production Report v3](../../tools/visualizations/production-report-v3/production-report-v3-dashboard.png)
 
 Final pipeline output: 22 per-patient settings recommendations.
 
@@ -1137,9 +1153,9 @@ Starting from raw Nightscout data (glucose, insulin, carbs, devicestatus), the p
 | 2719 | Waterfall regression | 5/5 PASS | BG₀ dominates, profile ISF catastrophic |
 | 2719b | Per-patient ISF from residuals | 5/5 PASS | 96% need ISF correction |
 | 2741 | Bilateral CR deconfounding | 4/5 PASS | 73% improve with compensated CR |
-| 2742 | EGP personalization | 3/5 PASS | Per-patient metabolic baseline |
-| 2743 | Integrated pipeline validation | 3/5 PASS | 64% beat profile, 28% MAE improvement |
-| 2744 | CR compensation validation | 3/5 PASS | Controller suspends ~30% during meals |
+| 2742 | EGP personalization | 4/5 PASS | Per-patient metabolic baseline |
+| 2743 | Integrated pipeline validation | 4/5 PASS | 64% beat profile, 28% MAE improvement |
+| 2744 | Universal EGP extraction | 2/5 PASS | EGP/basal collinear — identification problem |
 | 2745 | Basal validation | 3/5 PASS | Fasting drift = controller, not patient |
 | 2746 | Circadian basal | 3/5 PASS | Real pattern but marginal value |
 | 2747 | Dose-dependent CR | 4/5 PASS | 2× CR ratio large/small meals |

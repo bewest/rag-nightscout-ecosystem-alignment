@@ -85,6 +85,13 @@ Each capability is rated by maturity level:
 | **Integrated pipeline (ISF+CR+EGP)** | 🔬 Research | EXP-2743 | −28% MAE vs profile; beats profile 64%; TIR improved 82%; 4/5 PASS |
 | **Universal EGP extraction** | ❌ Disproved | EXP-2744 | EGP/basal collinear in fasting — identification problem; 2/5 PASS |
 | **Basal via fasting drift** | ❌ Disproved | EXP-2745 | 1/22 improve — drift reflects controller compensation, not physiology; 3/5 PASS |
+| **Circadian basal scheduling** | ❌ Disproved | EXP-2746 | Real pattern but marginal value (8/22); ISF correction captures circadian signal |
+| **Dose-dependent CR** | 🔬 Research | EXP-2747 | Large meals ~2× CR; size-stratified improves 9/22; 4/5 PASS |
+| **Circadian ISF scheduling** | ❌ Disproved | EXP-2748 | Dawn rare in AID (27%); flat ISF sufficient; 3/5 PASS |
+| **Enhanced pipeline (size-CR)** | 🔬 Research | EXP-2749 | 77% beat profile with size-stratified CR; optional for variable meals; 3/5 PASS |
+| **Nonlinear meal absorption** | 🔬 Research | EXP-2750 | Universal: large meals 60% per-gram impact; need size-dependent carb models |
+| **Pipeline completeness** | 🔬 Research | EXP-2751 | Residuals are white noise beyond 1h; all exploitable signal captured |
+| **Linear carb model optimality** | ❌ Disproved | EXP-2752 | All 4 models identical ACF; 40min memory from controller, not absorption; 0/5 PASS |
 
 **Legend**: 🟢 Production (validated, tested, in pipeline) · 🟡 Beta/Partial (functional but incomplete) · 🔬 Research (experimental) · ❌ Disproved (tried, doesn't work)
 
