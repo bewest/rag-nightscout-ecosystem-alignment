@@ -82,7 +82,7 @@ ISF×TDD = 4551 rather than 1800.
 
 | Metric | Loop | Trio | OpenAPS |
 |--------|------|------|---------|
-| Median TDD (U/day) | 46 | 52 | 35 |
+| Median TDD (U/day) | 46 | 60 | 35 |
 | Actual Basal % | 15% | 8% | 30% |
 | ISF Extracted (mg/dL/U) | 55 | 98 | 82 |
 | ISF Profile (mg/dL/U) | 49 | 62 | 50 |

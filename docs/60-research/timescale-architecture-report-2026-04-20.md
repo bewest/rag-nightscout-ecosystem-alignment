@@ -56,10 +56,10 @@ BG dynamics behave fundamentally differently by metabolic context:
 
 | Category | AR(2) R² | Hourly R² | Interpretation |
 |----------|----------|-----------|----------------|
-| CSF (meals) | 0.302 | Highest | Carb absorption is structured |
-| ISF (corrections) | 0.185 | Moderate | Insulin action more variable |
+| CSF (meals) | 0.305 | Highest | Carb absorption is structured |
+| ISF (corrections) | 0.195 | Moderate | Insulin action more variable |
 | UAM (unexplained) | 0.099 | Low | Truly unexplained events |
-| Basal (quiet) | ~0.05 | Low | Homeostatic noise |
+| Basal (quiet) | 0.108 | Low | Homeostatic noise |
 
 Using separate models per category instead of a global model **doubles prediction accuracy** (R²: 0.228 → 0.418 at 5-min, EXP-2796).
 
