@@ -1365,7 +1365,79 @@ To properly attribute 50% of glucose variance to insulin, we would need
 causal methods (controller replay, instrumental variables) not observational
 correlation.
 
-## Experiment Index (Complete: 32 experiments)
+## Phase 16: Confounding Structure & Residual Decomposition (EXP-2773–2780)
+
+### Context
+
+Phase 15 established bilateral supply-demand decomposition. Phase 16 asks:
+can we close the ISF gap between profile ISF (~55) and observed ISF (~5)?
+What structure exists in the 59% residual from bilateral regression?
+
+### EXP-2773: Bilateral BGI Regression (4/5 PASS)
+
+Physical BGI calculation using ΔIOB × ISF × CF CATASTROPHICALLY FAILED
+(R² deeply negative, -56% to -452%). In closed-loop, ΔIOB captures
+controller RESPONSE, not causal insulin effect.
+
+Solution: empirical regression (like oref0 autotune):
+- `delta_BG = 63 - 0.45×starting_BG - 2.9×insulin - 0.38×carbs`
+- R² = 41.1%, insulin NEGATIVE for 28/28 patients ✓
+- Variance: Starting BG 34%, Insulin 3%, Carbs 4%, Residual 59%
+
+### EXP-2774: oref0-Style Deviation Categorization (4/5 PASS)
+
+Implemented categorize.js logic: **Basal 21%, CSF 42%, ISF 30%, UAM 5%**
+- 48% of AID data is meal-related (CSF+UAM)
+- ISF category has strongest insulin coefficient (-4.4 mg/dL/U)
+- Basal category has highest R²=0.38 (least confounded)
+
+### EXP-2775: Basal Rate Optimization via 50/50 Rule (2/5 PASS)
+
+**7/12 Trio patients need +70% basal increase.** Loop is well-calibrated
+at 50%. Trio's oref1+SMB controller compensates by delivering more SMBs.
+Basal deviation does NOT predict TIR (r=-0.11) because controller compensates.
+
+### EXP-2776–2778: ISF Gap Investigation (Structural Conclusion)
+
+Three experiments attempted to close the 10× ISF gap:
+1. **Category stratification** (2776): ISF-category ISF=5.4 vs full=2.3. Still 10× below profile.
+2. **Channel decomposition** (2777): Median ISF is NEGATIVE across ALL channels. 
+   Confounding by indication so strong that user boluses appear to raise BG.
+3. **DIA-matched windows** (2778): 1h-6h windows tested. ISF near-zero at ALL windows.
+   3h window has best profile correlation (r=0.755). BG-falling filter at 1h: 86% positive.
+
+**Conclusion: The ISF gap is structural in observational data.** Regression captures
+BG correlation with insulin delivery, not the causal effect. The production pipeline
+(EXP-2719b) already handles this correctly by using profile ISF as prior.
+
+### EXP-2779: Residual Decomposition by Category (2/5 PASS)
+
+The 59% residual contains structured signals:
+1. **Circadian EGP**: 27/28 patients have significant time-of-day pattern (p<0.05)
+2. **Meal autocorrelation**: CSF lag-1 AC = 0.944 — meal absorption is extremely persistent
+3. But category-specific linear models only improve R² by +3% — the structure
+   requires temporal models (AR/LSTM) to exploit
+
+### EXP-2780: Circadian Basal Rate Optimization (2/5 PASS)
+
+Circadian BG patterns during basal periods are massive and universal:
+- Amplitude: median 57 mg/dL/h, **96% of patients >20 mg/dL/h**
+- Dawn phenomenon present in 57% of patients
+- Afternoon (3-5pm) shows HIGHEST rise (+21 mg/dL/h), not dawn (+7.7)
+- Critical: ALL periods show rising BG because filter selects low-insulin times
+
+### Phase 16 Summary
+
+| Finding | Impact | Actionability |
+|---------|--------|---------------|
+| Physical BGI fails in closed-loop | Use empirical regression | High |
+| 48% of AID data is meal-related | CSF category dominates | Medium |
+| 7/12 Trio basal too low by 70% | Direct user recommendation | **Very High** |
+| ISF gap is structural (3 experiments) | Cannot close observationally | Confirmed |
+| Circadian EGP is universal (96%) | Need deviation-based analysis | High |
+| CSF autocorrelation = 0.944 | Need temporal models | Medium |
+
+
 
 | EXP | Title | Result | Key Finding |
 |-----|-------|--------|-------------|
@@ -1399,3 +1471,11 @@ correlation.
 | 2770 | Multi-Timescale | 1/5 PASS | L5 multi-day 26%, BGI fails cumul |
 | 2771 | 50/50 Rule | 3/5 PASS | 16/30 basal too low, 45% redistrib |
 | 2772 | Bounded BGI | 3/5 PASS | 10/90 split, circadian in 97% |
+| 2773 | Bilateral BGI | 4/5 PASS | R²=41.1%, empirical regression |
+| 2774 | oref0 Categorize | 4/5 PASS | Basal 21%, CSF 42%, ISF 30% |
+| 2775 | Basal Optimization | 2/5 PASS | 7/12 Trio basal too low |
+| 2776 | Category Settings | 1/5 PASS | ISF-cat r=0.527, gap persists |
+| 2777 | ISF Gap Channels | 1/5 PASS | Negative ISF — structural gap |
+| 2778 | DIA Window ISF | 4/5 PASS | 3h best r=0.755, gap stays |
+| 2779 | Residual Decomp | 2/5 PASS | Circadian 27/28, CSF AC=0.94 |
+| 2780 | Circadian Basal | 2/5 PASS | Amp 57 mg/dL/h, 96% universal |
