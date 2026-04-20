@@ -1164,3 +1164,83 @@ Starting from raw Nightscout data (glucose, insulin, carbs, devicestatus), the p
 | 2750 | Absorption dynamics | 3/5 PASS | Universal nonlinear absorption |
 | 2751 | Residual autocorrelation | 2/5 PASS | 40min memory, white noise beyond |
 | 2752 | Absorption refinement | 0/5 PASS | Linear optimal, ACF from controller |
+| 2753 | Temporal cross-validation | 5/5 PASS | Settings generalize — 59% on test set ⭐ |
+| 2754 | Population insights | 2/5 PASS | Controller explains 47.5% of ISF variance |
+| 2755 | Controller-specific extraction | 1/5 PASS | Unified pipeline robust across controllers |
+| 2756 | ISF CF diagnostic | 2/5 PASS | 6× gap: EGP dominant, controller 96% suspends |
+| 2757 | EGP quantification | 3/5 PASS | EGP circular (artifact) — corrected in 2758 |
+| 2758 | ISF reconciliation | 1/5 PASS | Net EGP≈0, profile ISF ≠ observed ISF |
+
+## Phase 12: Validation & Generalization (EXP-2753 through 2755)
+
+### Temporal Cross-Validation (EXP-2753) ⭐
+
+The critical trust experiment. 70/30 chronological split per patient:
+- ISF corrected on train, validated on test: 21/22 improve on test
+- **Median improvement: 59% on BOTH train and test** — zero overfitting
+- Stability ratio: 0.98 (test improvement ≈ train improvement)
+- Zero patients harmed (>20% worse)
+
+This proves the corrections reflect genuine patient characteristics.
+
+### Population Insights (EXP-2754)
+
+- ISF overestimation is NOT universal — only 36% overestimate
+- **Controller type explains 47.5% of ISF correction variance**
+- Population-mean correction helps 64% (useful as default)
+- OpenAPS patients need opposite ISF direction vs Loop/Trio
+
+### Controller-Specific Extraction (EXP-2755)
+
+- Controller-specific insulin accounting does NOT improve over unified (7% vs 25%)
+- 68% of patients show <2% difference between methods
+- **Actionable: DIA window differs** — Loop optimal at 60min, Trio at 120min (p=0.022)
+
+## Phase 13: ISF Deep Diagnostic (EXP-2756 through 2758)
+
+### The 6× ISF Gap (EXP-2756)
+
+Profile ISF predicts 295 mg/dL drop per correction. Actual: 46 mg/dL.
+
+Gap decomposition:
+| Factor | Contribution |
+|--------|-------------|
+| Controller basal suspension | -164 mg/dL (counteracts) |
+| SMB dosing | +110 mg/dL (helps) |
+| Remaining (initially attributed to EGP) | +267 mg/dL |
+
+Controller suspends basal in **96.4%** of corrections. CF varies with starting BG
+(BG 180-220: CF=0.10, BG 300-400: CF=0.24).
+
+### EGP Circularity (EXP-2757 → 2758)
+
+EXP-2757 initially found EGP = 3.33 mg/dL/5min (~80 mg/dL/2h) but this was
+**circular** — it used `basal_effect = sched_basal × profile_ISF / 12`.
+
+EXP-2758 corrected this with ISF-independent measurement:
+- **Net fasting glucose drift: -0.01 mg/dL/5min** (essentially zero!)
+- The AID controller has ALREADY balanced basal against hepatic output
+- EGP is NOT the dominant factor in the gap
+
+### Critical Conclusion
+
+**Profile ISF and observed ISF are DIFFERENT quantities:**
+- Profile ISF (55 mg/dL/U) = controller parameter for IOB-based prediction
+- Observed ISF (9 mg/dL/U) = closed-loop system response including all compensation
+- These CANNOT be reconciled because they measure different things
+
+**The correction factor approach (EXP-2719b) is correct BECAUSE it doesn't try to
+derive "true ISF" — it finds the multiplier that makes predictions match observations.**
+
+## Pipeline Status (Final)
+
+| Setting | Method | Status | Performance |
+|---------|--------|--------|-------------|
+| ISF | EXP-2719b waterfall residuals | **PRODUCTION** | 68% improve |
+| CR flat | EXP-2741 bilateral deconfounding | **PRODUCTION** | 73% improve |
+| CR size-stratified | EXP-2747 dose-dependent | **OPTIONAL** | 41% improve |
+| EGP | EXP-2742 per-patient adjustment | **PRODUCTION (11/22)** | 55% improve |
+| Basal | EXP-2745 fasting drift | NOT RECOMMENDED | 1/22 |
+| Absorption | EXP-2752 linear optimal | **CONFIRMED** | 14/22 best |
+| Temporal stability | EXP-2753 cross-validation | **PROVEN** | 59% on test |
+| DIA window | EXP-2755 controller-specific | Loop 60min, Trio 120min | p=0.022 |
