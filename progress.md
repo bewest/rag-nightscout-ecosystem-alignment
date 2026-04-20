@@ -26,6 +26,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Wave-9: Complete Settings Suite — CR, Basal, Unified (2026-04-21)
+
+Extended validated ISF pipeline to CR and basal, then unified all three into per-patient calibration assessment.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2729 | `tools/cgmencode/exp_carb_ratio_extraction_2729.py` | Profile CR 8.8 vs observed 4.9; 95.5% improve with deconfounded CR |
+| EXP-2730 | `tools/cgmencode/exp_basal_optimization_2730.py` | 100% need non-trivial adjustment; drift→basal conversion works but too aggressive |
+| EXP-2731 | `tools/cgmencode/exp_unified_settings_2731.py` | ISF worst (score 0/100), CR moderate (56), basal poor (19.5) |
+| Report | `docs/60-research/wave9-complete-settings-report-2026-04-21.md` | 8-part comprehensive report |
+| Viz | `visualizations/carb-ratio/carb_ratio.png` | CR extraction 2×2 panel |
+| Viz | `visualizations/basal-optimization/basal_optimization.png` | Basal optimization 2×2 panel |
+| Viz | `visualizations/unified-settings/unified_settings.png` | Unified calibration 2×2 panel |
+
+**Scorecard**: 30 experiments (EXP-2702–2731), ~110 hypotheses, ~76 PASS (~69%)
+
+**Also integrated**: Other researcher's EXP-2726/2726b/2727/2728 (prospective validation, EGP decomposition)
+
+---
+
 ## Wave-8: Patient Settings & Clinical Translation (2026-04-20)
 
 Payoff wave: extracted per-patient ISF, assessed basal circadian, deconfounded DynISF.

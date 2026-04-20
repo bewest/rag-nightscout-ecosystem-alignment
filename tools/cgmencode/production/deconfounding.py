@@ -7,10 +7,14 @@ Research basis:
   EXP-2698: All insulin channels have ~equal per-unit effect (-124 to -131 mg/dL/U)
   EXP-2695: Propensity score matching recovers bolus effect from confounded data
   EXP-2680: BG≥180 floor reduces negative ISF from 57% to 10%
+  EXP-2727: ISF gap decomposition — EGP=42%, counter-reg=10%, controller=44%
+  EXP-2728: Profile ISF + EGP + counter-reg (MAE=46.9) beats empirical ISF (51.0)
 
 Design philosophy:
   - SUBTRACTION over exclusion: estimate the effect of SMBs/temp basals and subtract,
     rather than excluding events. This preserves data for Trio/SMB patients.
+  - SUPPLY + DEMAND: model both insulin (demand) AND hepatic production (supply)
+    to properly deconfound in the homeostatic T1D system.
   - COMPOSABLE: strategies are independent and chainable. Pick what fits your hypothesis.
   - VALIDATED DEFAULTS: coefficients from EXP-2698 (N=506,198 events, 21 patients).
 
@@ -20,18 +24,17 @@ Usage:
         IsolationFilter, ExperimentFilters, ValidationChecks,
     )
 
-    # Approach A: Subtract what you know (oref0-style)
+    # Approach A: Subtract what you know (oref0-style, demand only)
     bgi = BGISubtraction()
     events = bgi.compute_deviations(grid_df, patient_isf)
 
-    # Approach B: Exclude confounded events (traditional)
+    # Approach B: EGP-aware subtraction (supply + demand, EXP-2728)
+    bgi_physics = BGISubtraction(egp_enabled=True, counter_reg_k=0.3)
+    events = bgi_physics.compute_deviations(grid_df, patient_isf)
+
+    # Approach C: Exclude confounded events (traditional)
     filt = IsolationFilter(ExperimentFilters(bg_floor=180, isolation_hours=2))
     clean = filt.apply(grid_df)
-
-    # Approach C: Combine — subtract then filter
-    events = bgi.compute_deviations(grid_df, patient_isf)
-    events = EventCategorizer().categorize(events)
-    corrections = events[events["category"] == "correction"]
 
     # Validate the extraction
     ValidationChecks.dose_independence(corrections, dose_col="bolus_2h", outcome_col="deviation")
@@ -46,6 +49,8 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 from scipy import stats
+
+from .metabolic_engine import _compute_hepatic_production
 
 
 # ── Constants from EXP-2698 (N=506,198 events, 21 patients) ─────────
@@ -62,6 +67,83 @@ DEFAULT_HORIZON_STEPS = 24   # 2 hours (demand phase)
 
 # BG floor from EXP-2677/2680: reduces negative ISF from 57% to 10%
 DEFAULT_BG_FLOOR = 180.0
+
+# EGP constants (EXP-2727/2728: EGP accounts for 42% of the 10x ISF gap)
+# Counter-regulation coefficient (EXP-2728: profile+EGP+CR MAE=46.9 vs empirical 51.0)
+DEFAULT_COUNTER_REG_K = 0.3  # from forward_simulator default
+
+
+# ── EGP-aware BGI helpers (EXP-2727/2728) ────────────────────────────
+
+def _estimate_egp_over_horizon(
+    iob_start: float,
+    hour_start: float,
+    horizon_steps: int = DEFAULT_HORIZON_STEPS,
+) -> float:
+    """Analytically estimate total EGP contribution over a horizon window.
+
+    Uses the same Hill equation + circadian model as forward_simulator.py
+    but integrates analytically over the horizon using the starting IOB
+    and hour. This is an approximation (IOB changes during the window)
+    but captures the dominant supply-side effect.
+
+    EXP-2728 validation: adding EGP to BGI reduces profile ISF MAE from
+    64.2 → 59.2 (8% improvement), and with counter-regulation → 46.9 (27%).
+
+    Args:
+        iob_start: Insulin on board at start of window (Units).
+        hour_start: Hour of day at start (0-24).
+        horizon_steps: Number of 5-minute steps in window.
+
+    Returns:
+        Total EGP contribution in mg/dL over the horizon window.
+        Positive = glucose-raising (opposes insulin-driven drop).
+    """
+    # Sample EGP at a few points across the horizon for better integration
+    n_samples = min(horizon_steps, 6)
+    step_size = horizon_steps / n_samples
+    hours_per_step = 5.0 / 60.0
+
+    total_egp = 0.0
+    for s in range(n_samples):
+        t_step = s * step_size
+        # Approximate IOB decay (simple exponential, tau ~2h)
+        t_hours = t_step * hours_per_step
+        iob_approx = iob_start * np.exp(-t_hours / 2.0)
+        hour_approx = (hour_start + t_hours) % 24.0
+
+        egp_val = _compute_hepatic_production(
+            np.array([iob_approx]),
+            np.array([hour_approx]),
+        )
+        total_egp += float(egp_val[0]) * step_size
+
+    return total_egp
+
+
+def _estimate_counter_reg(
+    expected_drop_raw: float,
+    counter_reg_k: float = DEFAULT_COUNTER_REG_K,
+) -> float:
+    """Estimate counter-regulation damping on an expected glucose drop.
+
+    Counter-regulation (glucagon + hepatic response) opposes rapid drops.
+    This mirrors the forward_simulator implementation: when dBG < 0,
+    the effective drop is reduced by factor 1/(1+k).
+
+    EXP-2728: counter-regulation accounts for ~10% of the 10x ISF gap
+    when combined with EGP, but together they explain 94% of the gap.
+
+    Args:
+        expected_drop_raw: Raw expected drop from insulin (positive = BG falls).
+        counter_reg_k: Counter-regulation coefficient.
+
+    Returns:
+        Damped expected drop (always <= raw drop magnitude).
+    """
+    if expected_drop_raw <= 0 or counter_reg_k <= 0:
+        return expected_drop_raw
+    return expected_drop_raw / (1.0 + counter_reg_k)
 
 
 # ── Filter Specification ─────────────────────────────────────────────
@@ -154,10 +236,21 @@ class BGISubtraction:
     After subtraction, deviation = observed_drop - expected_drop.
     This removes the dominant confound (known insulin action) and makes
     residual analysis tractable (EXP-2698: +0.418 R²).
+
+    EGP-aware mode (EXP-2728): Subtracts hepatic glucose production
+    (supply-side) from expected drop, reducing the 10x ISF gap.
+    Profile ISF + EGP + counter-reg (MAE=46.9) beats empirical ISF (51.0).
     """
 
-    def __init__(self, horizon_steps: int = DEFAULT_HORIZON_STEPS):
+    def __init__(
+        self,
+        horizon_steps: int = DEFAULT_HORIZON_STEPS,
+        egp_enabled: bool = False,
+        counter_reg_k: float = 0.0,
+    ):
         self.horizon_steps = horizon_steps
+        self.egp_enabled = egp_enabled
+        self.counter_reg_k = counter_reg_k
 
     def compute_deviations(
         self,
@@ -232,7 +325,24 @@ class BGISubtraction:
                     excess_basal_2h = 0.0
 
                 excess_insulin = bolus_2h + smb_2h + excess_basal_2h
-                expected_drop = excess_insulin * isf_val
+                expected_drop_raw = excess_insulin * isf_val
+
+                # EGP correction (EXP-2728): subtract hepatic glucose production
+                # EGP opposes insulin action — liver produces glucose, reducing net drop.
+                egp_contribution = 0.0
+                if self.egp_enabled:
+                    iob_start_val = float(iob[i]) if not np.isnan(iob[i]) else 0.0
+                    egp_contribution = _estimate_egp_over_horizon(
+                        iob_start=iob_start_val,
+                        hour_start=hour,
+                        horizon_steps=h,
+                    )
+
+                # Counter-regulation correction (EXP-2728): dampen expected drop
+                expected_drop_after_egp = max(0.0, expected_drop_raw - egp_contribution)
+                expected_drop = _estimate_counter_reg(
+                    expected_drop_after_egp, self.counter_reg_k
+                )
 
                 observed_drop = bg0 - bg_end
                 deviation = observed_drop - expected_drop
@@ -255,6 +365,8 @@ class BGISubtraction:
                     "bg_end": bg_end,
                     "observed_drop": observed_drop,
                     "expected_drop": expected_drop,
+                    "expected_drop_raw": expected_drop_raw,
+                    "egp_contribution": egp_contribution,
                     "deviation": deviation,
                     "bolus_2h": bolus_2h,
                     "smb_2h": smb_2h,
