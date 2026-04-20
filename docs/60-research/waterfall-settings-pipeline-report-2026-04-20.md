@@ -1765,3 +1765,82 @@ EGP correction is real but modest:
 ### Phase 19 Summary
 
 The definitive pipeline v4 achieves R²=0.418 on held-out test data — nearly **double** the v3 pipeline. The key architectural insight is that BG dynamics are fundamentally different by metabolic context, requiring separate models per event category. EGP is real and measurable but the controller already compensates for most of it, making explicit EGP correction only marginally helpful.
+
+---
+
+## Phase 20: Cross-Patient Transfer and Multi-Timescale Architecture (EXP-2798–2800)
+
+### Overview
+
+Phase 20 explored three critical questions: (1) can population patterns help individual patients, (2) what is the architecture of the BG signal at different timescales, and (3) does operating at the RIGHT timescale improve settings extraction.
+
+### EXP-2798: Cross-Patient Transfer Learning
+
+**Result: 2/5 PASS**
+
+- **96% of patients need ISF decreased** — direction is nearly universal
+- Population mean ISF correction: -2.50 mg/dL/5min
+- Feature-based regression FAILS (LOO R²=-0.025) — can't predict magnitude from profile
+- Controller type marginally significant (ANOVA p=0.051)
+- Cold-start blending (50% population + 50% individual 10%) beats pure individual (MAE 0.954 vs 1.152)
+
+**FOR AID AUTHORS**: Simply telling new users "your ISF is probably too high" is 96% correct. But the magnitude requires individual data.
+
+![EXP-2798 Transfer](../../tools/visualizations/cross-patient-transfer/exp-2798-dashboard.png)
+
+### EXP-2799: Multi-Timescale Deconfounding Cascade
+
+**Result: 0/5 PASS (most informative)**
+
+Definitive signal decomposition at 5-min resolution:
+
+| Level | Component | Incremental R² |
+|-------|-----------|---------------|
+| L1 | BGI (insulin physics) | +1.2% |
+| L2 | AR(1) momentum | +22.0% |
+| L3 | Category AR(2) | +14.9% |
+| L4 | Circadian (24h) | +0.2% |
+| L5 | 72h insulin load | +0.03% |
+| **Total** | | **44.5%** |
+
+The 55.5% residual is genuinely stochastic at 5-min resolution. Circadian and 72h effects are REAL but operate at longer timescales — they're swamped by AR momentum at 5-min.
+
+![EXP-2799 Cascade](../../tools/visualizations/deconfounding-cascade/exp-2799-dashboard.png)
+
+### EXP-2800: Hourly-Scale Settings Extraction — Signal Inversion
+
+**Result: 1/5 PASS (transformative)**
+
+The signal decomposition **completely inverts** at hourly scale:
+
+| Component | 5-min | Hourly | Change |
+|-----------|-------|--------|--------|
+| BGI (insulin) | 1.2% | **16.0%** | 13× larger |
+| AR(1) | 22.0% | **2.1%** | 10× smaller |
+| Category | 14.9% | **34.5%** | 2.3× larger |
+| Circadian | 0.2% | **1.0%** | 5× larger |
+| 72h load | 0.03% | **0.29%** | 10× larger |
+| **Total** | **44.5%** | **58.1%** | +30% |
+
+**KEY ARCHITECTURAL INSIGHTS**:
+
+1. **5-min AR(1) is mostly CGM sensor smoothing**, not physiological. It nearly disappears at hourly.
+2. **Insulin physics needs ~1 hour to manifest** — BGI is 13× stronger at hourly vs 5-min.
+3. **Category-specific modeling is the DOMINANT signal** at hourly (34.5%).
+4. **Hourly ISF extraction gives 19.4 vs profile 55.0** (ratio 0.35) — consistent with CF=0.2.
+
+**IMPLICATION**: For settings extraction, operate at hourly scale. For BG forecasting, 5-min AR captures CGM dynamics. Different tasks → different timescales.
+
+![EXP-2800 Hourly](../../tools/visualizations/hourly-settings/exp-2800-dashboard.png)
+
+### Phase 20 Experiment Index
+
+| # | EXP | Title | Pass | Key Finding |
+|---|-----|-------|------|-------------|
+| 64 | 2798 | Cross-Patient Transfer | 2/5 | 96% need ISF decreased, transfer limited |
+| 65 | 2799 | Deconfounding Cascade | 0/5 | 44.5% R², 55.5% stochastic at 5-min |
+| 66 | 2800 | Hourly Settings | 1/5 | Signal inverts: BGI 13×, AR 0.1×, total 58.1% |
+
+### Phase 20 Summary
+
+The most significant finding is the **timescale-dependent signal architecture**. At 5-min, CGM smoothing (AR) dominates and insulin physics is invisible. At hourly, insulin physics becomes the primary signal and category context is the dominant predictor. This resolves the long-standing puzzle of why BGI seemed so weak — we were measuring at the wrong timescale.
