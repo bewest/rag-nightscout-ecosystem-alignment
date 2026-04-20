@@ -1232,7 +1232,47 @@ EXP-2758 corrected this with ISF-independent measurement:
 **The correction factor approach (EXP-2719b) is correct BECAUSE it doesn't try to
 derive "true ISF" — it finds the multiplier that makes predictions match observations.**
 
-## Pipeline Status (Final)
+## Phase 14: Extended Window and Model Refinement (EXP-2760–2764)
+
+### EXP-2760: Extended DIA Pipeline (2h vs 4h) — 4/5 PASS
+- 4h window better for 16/27 (59%) patients
+- CF IQR: 0.575 → 0.476 (17% more precise)
+- Temporal stability maintained: 0.961
+- Median improvement: 72.6% vs 70.6% (+2%)
+- **Recommendation**: 4h for offline, 2h for real-time
+
+### EXP-2761: BG-Stratified CF — 1/5 PASS (informative null)
+- BG-CF correlation is BETWEEN-patient, not within (median r=0.112)
+- Stratified CF barely helps (+1.6%) — single CF per patient is correct complexity
+
+### EXP-2762: IOB-Aware CF — 2/5 PASS
+- IOB adds nothing beyond excess_insulin (H5 fail, delta=0%)
+- Improvement is from regression approach (35%) not from IOB covariate
+- Led to discovery: regression beats median CF
+
+### EXP-2763: LR vs Median CF — 4/5 PASS (breakthrough)
+- Model: `actual_drop = 73 + slope × excess_insulin`
+- **The 73 mg/dL intercept = dose-independent baseline drop** (universal)
+- LR beats median CF: 22/26 patients (85%), 33% MAE reduction
+- Intercept helps 25/26 patients (96%) — nearly universal signal
+- This IS the ~74 mg/dL universal drop from EXP-2681
+
+### EXP-2764: Intercept Decomposition — 5/5 PASS ⭐
+- **Full model**: `drop = 73 - 6×excess_insulin + 0.8×starting_BG`
+- Starting BG coefficient = 0.797 (regression to mean dominates!)
+- Excess insulin slope is NEGATIVE (confounding by indication confirmed)
+- LR+BG beats median CF by ~40% (best prediction model in pipeline)
+- Controller action >100% of intercept (profile ISF overestimates effect)
+- Stability 0.909 — generalizes across time
+
+**Critical insight**: BG correction drops are primarily regression to mean
+(0.8 × starting_BG) plus controller compensation. The marginal insulin effect
+appears negative because the controller delivers more insulin in harder episodes.
+
+For prediction: LR+BG model is best. For settings optimization: correction factors
+remain the right tool because they abstract over confounding.
+
+## Pipeline Status (Updated)
 
 | Setting | Method | Status | Performance |
 |---------|--------|--------|-------------|
@@ -1243,4 +1283,34 @@ derive "true ISF" — it finds the multiplier that makes predictions match obser
 | Basal | EXP-2745 fasting drift | NOT RECOMMENDED | 1/22 |
 | Absorption | EXP-2752 linear optimal | **CONFIRMED** | 14/22 best |
 | Temporal stability | EXP-2753 cross-validation | **PROVEN** | 59% on test |
-| DIA window | EXP-2755 controller-specific | Loop 60min, Trio 120min | p=0.022 |
+| DIA window | EXP-2759 CF mechanism | **CONFIRMED** | 21% var reduction |
+| BG prediction | EXP-2764 LR+BG model | **BEST** | 40% vs CF |
+| BG-stratified CF | EXP-2761 | NOT RECOMMENDED | within-patient r=0.11 |
+| IOB covariate | EXP-2762 | NOT RECOMMENDED | no added value |
+
+## Experiment Index (Complete: 26 experiments)
+
+| EXP | Title | Result | Key Finding |
+|-----|-------|--------|-------------|
+| 2698 | Deconfounding Pipeline | Production | BGI subtraction R²=0.77 |
+| 2719b | ISF Waterfall | Production | 68% improve, CF approach |
+| 2741 | Bilateral CR | Production | 73% improve, demand+supply |
+| 2742 | EGP Personalization | Production | 55% improve, 11/22 |
+| 2745 | Basal Optimization | Not rec | 1/22, controller dominates |
+| 2747 | Size-Stratified CR | Optional | 41% improve, large meals |
+| 2749 | Full Pipeline Validation | 3/5 PASS | 77% improve overall |
+| 2750 | Pipeline Ablation | 4/5 PASS | ISF+CR sufficient |
+| 2751 | Residual Analysis | 3/5 PASS | 40min autocorrelation |
+| 2752 | Absorption Comparison | 4/5 PASS | Linear wins 14/22 |
+| 2753 | Temporal Cross-Val | 5/5 PASS ⭐ | 59% improve on test |
+| 2754 | Population Insights | 2/5 PASS | Controller explains 47.5% |
+| 2755 | Controller-Specific | 1/5 PASS | DIA differs (p=0.022) |
+| 2756 | ISF CF Diagnostic | 2/5 PASS | 6× gap, 96.4% basal susp |
+| 2757 | EGP Quantification | 3/5 PASS | Circular! (see 2758) |
+| 2758 | ISF Reconciliation | 1/5 PASS | Profile ISF ≠ observed ISF |
+| 2759 | DIA Window & CF | 4/5 PASS | CF is patient characteristic |
+| 2760 | Extended DIA (4h) | 4/5 PASS | 17% more precise |
+| 2761 | BG-Stratified CF | 1/5 PASS | Between-patient only |
+| 2762 | IOB-Aware CF | 2/5 PASS | LR approach beats median |
+| 2763 | LR vs Median CF | 4/5 PASS | 73 mg/dL intercept! |
+| 2764 | Intercept Decomp | 5/5 PASS ⭐ | b2(BG)=0.8, neg insulin |
