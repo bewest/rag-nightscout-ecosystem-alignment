@@ -293,7 +293,23 @@ A `DataSyncSelectorV1Test` does not currently exist (only V3 has a test). The si
 
 - **Should `PairProfileStore` track `nightscoutId`?** Every other `Pair*` does. Tracking would let AAPS use stable `_id` references and allow the c-r-m server to do `_id`-based dedup rather than `startDate`-based. It would also unblock a future `nsUpdate` path for profiles.
 - **The `createdAt % 1000 == 0L` heuristic in `NsIncomingDataProcessor.processProfile:283-295`** ("whole second means edited in NS") is fragile — any AAPS-originated profile whose epoch happens to land on a whole second will be re-imported as if NS-edited. Worth replacing with explicit provenance.
-- **V3 path** uses REST POST and `lib/server/profile.js:save()` (which now does `replaceOne` upsert by `_id`), but `createProfileStore` does not include `_id`, so V3 may exhibit the same insert-on-edit behavior via REST. Worth verifying separately.
+
+## V3 path verification
+
+V3 hits `POST /api/v3/profile` (`NightscoutRemoteService.kt:102-103`), which routes to `lib/api3/generic/create/operation.js`. The handler computes an identifier as `uuid.v5("undefined_<doc.date>")` (since profile docs have no `device` or `eventType`) and uses it for dedup via `identifyingFilter`. Verified with three new tests in `tests/api3.aaps-patterns.test.js` under `Profile sync via REST (V3) - AAPS createProfileStore behavior`:
+
+| Scenario | V3 result |
+|---|---|
+| First POST | 201, one doc inserted |
+| Resend identical payload (retry) | **200, deduped in place** (request-level dedup works) |
+| Edit profile in AAPS → new `LocalProfileLastChange` → new `date` | **201, new doc inserted** (different identifier) |
+
+So V3 has **request-level dedup but not edit-level dedup**. Each user edit still accumulates a new MongoDB profile document — the same architectural symptom as pre-fix V1.
+
+**Implications:**
+- After the c-r-m fix, V1 is now *better* than V3 for AAPS-shaped profile edits: V1 dedups by `startDate` and converges to a single document; V3 still accumulates one document per edit.
+- Both paths rely on `ctx.profile.last()` to choose the displayed profile, so the secondary sort key fix (`{startDate: -1, _id: -1}`) helps both.
+- A symmetric fix for V3 would extend `calculateIdentifier` to dedup profile docs by `startDate` (or by `(app, startDate)`), or AAPS could be modified to issue `nsUpdate` (PUT/PATCH) instead of `nsAdd` for profile re-saves so the existing identifier is reused.
 
 ---
 
