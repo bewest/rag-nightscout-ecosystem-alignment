@@ -301,7 +301,7 @@ Extracted per-patient empirical ISF from independent events (bg_drop / total_dos
 | Per-patient empirical | 43.8 | 70.5 | **0.9** |
 | Shrunk (James-Stein) | **43.6** | **70.8** | 1.2 |
 
-- 29/31 patients (94%) improve with empirical ISF
+- 29/31 patients (93.5%) improve with empirical ISF
 - Median empirical/profile ratio = 0.10 (profile ~10× too high)
 - Shrunk estimator is marginally best overall
 
@@ -318,7 +318,7 @@ Decomposed the 10× profile→empirical ISF gap:
 **Insulin accounting during corrections (6h window)**:
 - Bolus: 7.05U, SMBs added: 4.10U
 - Controller suspends **171%** of scheduled basal (net basal = -4.18U vs scheduled 5.92U)
-- Net total insulin: 7.14U (barely more than bolus alone)
+- Net total insulin: 6.98U (barely more than bolus alone)
 
 **Critical insight**: Adding just EGP to the simulator with profile ISF (MAE=56.1)
 **beats** empirical ISF without EGP (MAE=58.1). The supply side matters.
