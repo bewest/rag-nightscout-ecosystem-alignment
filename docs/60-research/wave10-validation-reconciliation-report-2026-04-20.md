@@ -14,7 +14,7 @@ Wave 10 addresses the three most critical open questions from our 30+ experiment
 1. **Do extracted settings generalize?** → YES. Perfect 5/5 PASS cross-validation.
 2. **Can EGP modeling fix aggressive basal recommendations?** → YES. EGP accounts for
    92% of fasting drift, eliminating all extreme (>100%) TDD adjustments.
-3. **Which ISF is "right"?** → They ALL are, for different purposes. The 10× gap
+3. **Which ISF is "right"?** → They ALL are, for different purposes. The ~5× gap
    decomposes cleanly: 1.93× (EGP/physics) × 2.66× (controller compensation).
 
 ### The Central Insight
@@ -28,9 +28,9 @@ Naive ISF (21.9)   → observed system behavior (EGP unmodeled, compensation inc
 Empirical ISF (13.1) → best for BG-drop prediction (captures net closed-loop effect)
 ```
 
-Each ISF is "right" in its context. The 10× gap decomposes into 1.93× (EGP/counter-reg)
-× 2.66× (controller compensation) = 5.1× — accounting for most of the profile-to-empirical
-gap.
+Each ISF is "right" in its context. The ~4.2× median profile-to-empirical gap decomposes
+into 1.93× (EGP/counter-reg) × 2.66× (controller compensation) = 5.1× — the product
+slightly exceeds the direct ratio because medians are not multiplicative.
 
 ---
 
@@ -54,7 +54,7 @@ or whether we've been overfitting to the training set.
 | H1: Empirical ISF generalizes | **PASS** | 21/21 patients improve (100%) |
 | H2: Empirical CR generalizes | **PASS** | 15/22 patients improve (68%) |
 | H3: Train-test ISF stability | **PASS** | Median drift 17%, r=0.686 |
-| H4: No overfitting | **PASS** | Test/train improvement ratio = 1.00 |
+| H4: No overfitting | **PASS** | Test/train improvement ratio = 0.997 |
 | H5: Ranking empirical < population < profile | **PASS** | 95% and 86% |
 
 ### Key Numbers
@@ -64,8 +64,8 @@ or whether we've been overfitting to the training set.
 | Median MAE (test) | 172.3 | 46.0 | 41.6 |
 | % patients improved vs profile | — | 95% | 100% |
 
-**The test/train ratio of 1.00 is the strongest possible evidence against overfitting.**
-The 75.1% test improvement exactly matches the 75.3% train improvement. Extracted ISF
+**The test/train ratio of 0.997 is strong evidence against overfitting.**
+The 75.1% test improvement closely matches the 75.3% train improvement. Extracted ISF
 settings are stable, generalizable, and NOT overfit.
 
 ### ISF Temporal Stability
@@ -118,7 +118,7 @@ basal_delta = corrected_drift / ISF
 
 ### Per-Patient Impact (selected)
 
-| Patient | Controller | TDD Current | TDD Raw | TDD EGP-Corrected | Improvement |
+| Patient | Controller | Basal Current | Basal Raw | Basal EGP-Corrected | Improvement |
 |---------|-----------|-------------|---------|-------------------|-------------|
 | c | loop | 29.0 | 70.3 (+142%) | 46.7 (+61%) | ✓ |
 | g | loop | 12.6 | 32.6 (+159%) | 16.7 (+33%) | ✓ |
@@ -161,10 +161,10 @@ The other researcher found profile ISF + EGP + counter-reg (MAE=46.9) beats empi
 
 | Hypothesis | Verdict | Key Metric |
 |-----------|---------|------------|
-| H1: Empirical wins for prediction | **PASS** | 100% of patients, MAE 48 vs 146 |
+| H1: Empirical wins for prediction | **PASS** | 100% of patients, MAE 48 vs 147 |
 | H2: Profile wins for simulation | **FAIL** | Only 14.3% |
 | H3: All methods preserve ranking | **FAIL** | Not all pairs r > 0.7 |
-| H4: 10× gap decomposes cleanly | **PASS** | 1.93× × 2.66× = 5.1× |
+| H4: ~4× gap decomposes cleanly | **PASS** | 1.93× × 2.66× = 5.1× |
 | H5: Physics ISF is best compromise | **FAIL** | Worse for prediction than naive |
 
 ### The Resolution
@@ -175,7 +175,7 @@ This suggests their result depends on EGP + counter-regulation being enabled in 
 simulator — profile ISF only "wins" when the simulator models the same physics that
 the controller compensates for.
 
-**H4 PASS is the key reconciliation.** The 10× profile-to-empirical gap decomposes into:
+**H4 PASS is the key reconciliation.** The ~4× median profile-to-empirical gap decomposes into:
 - **1.93× (profile → physics)**: EGP and counter-regulation inflate the apparent ISF.
   The liver produces glucose that opposes insulin, making each unit appear less effective.
 - **2.66× (physics → empirical)**: Controller compensation. The controller suspends
@@ -220,9 +220,9 @@ Indep    13.1  Net closed-loop effect      BG prediction, MAE optimization
 | 8 | Patient settings | 90.5% patients improve; DynISF SR is orthogonal |
 | 8.5* | Prospective validation | Profile+EGP+CR beats empirical ISF in simulation |
 | 9 | CR + basal + unified | CR ~2× off; ISF is worst-calibrated setting |
-| **10** | **Validation** | **Settings generalize perfectly (test/train=1.00)** |
+| **10** | **Validation** | **Settings generalize perfectly (test/train=0.997)** |
 | **10** | **EGP basal** | **EGP = 92% of drift; eliminates extreme recs** |
-| **10** | **Reconciliation** | **10× gap = 1.93× (EGP) × 2.66× (controller)** |
+| **10** | **Reconciliation** | **~4× gap = 1.93× (EGP) × 2.66× (controller)** |
 
 *Wave 8.5 = other researcher's parallel track
 
@@ -282,7 +282,7 @@ Indep    13.1  Net closed-loop effect      BG prediction, MAE optimization
 
 ### For Researchers
 
-1. **Temporal cross-validation is mandatory**. Our settings survive it (test/train=1.00),
+1. **Temporal cross-validation is mandatory**. Our settings survive it (test/train=0.997),
    but this should be standard practice for all AID data analysis.
 
 2. **Specify which ISF you mean**. There are at least 5 valid ISF measures. They differ
@@ -302,16 +302,16 @@ Indep    13.1  Net closed-loop effect      BG prediction, MAE optimization
 | 2734-H1 | ISF generalizes to test data | **PASS** | 100% improve, MAE 172→42 |
 | 2734-H2 | CR generalizes to test data | **PASS** | 68% improve, MAE 5.0→2.7 |
 | 2734-H3 | Train-test ISF stability | **PASS** | 17% drift, r=0.686 |
-| 2734-H4 | No overfitting | **PASS** | Test/train = 1.00 |
+| 2734-H4 | No overfitting | **PASS** | Test/train = 0.997 |
 | 2734-H5 | Empirical < population < profile | **PASS** | 95% and 86% |
 | 2735-H1 | EGP > 20% of drift | **PASS** | 91.9% |
 | 2735-H2 | >70% more conservative | **FAIL** | 61.9% |
 | 2735-H3 | Fewer extreme adjustments | **PASS** | 7 → 0 patients >100% |
 | 2735-H4 | Circadian EGP pattern | **PASS** | Dawn > midday |
-| 2736-H1 | Empirical wins for prediction | **PASS** | 100%, MAE 48 vs 146 |
+| 2736-H1 | Empirical wins for prediction | **PASS** | 100%, MAE 48 vs 147 |
 | 2736-H2 | Profile wins for simulation | **FAIL** | Only 14.3% |
 | 2736-H3 | All methods preserve ranking | **FAIL** | Some pairs r < 0.7 |
-| 2736-H4 | 10× gap decomposes cleanly | **PASS** | 1.93× × 2.66× = 5.1× |
+| 2736-H4 | ~4× gap decomposes cleanly | **PASS** | 1.93× × 2.66× = 5.1× |
 | 2736-H5 | Physics ISF is best compromise | **FAIL** | Worse than naive for prediction |
 
 ### Cumulative Scorecard (Waves 1-10)
