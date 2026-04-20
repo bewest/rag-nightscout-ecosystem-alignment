@@ -10,7 +10,7 @@
 
 ### Motivation
 
-Wave 12 established that using only the correction bolus in the ISF denominator (instead of all insulin) closes **67–78% of the ISF gap** to profile. But 22–33% remains. Where does it come from?
+Wave 12 established that using only the correction bolus in the ISF denominator (instead of all insulin) dramatically improves BG prediction (21/22 patients improve). But the resulting ISF overshoots profile ISF by ~2×. Where does the overshoot come from?
 
 The AID controller is not passive during corrections — when you bolus for a high BG, the controller also responds:
 - **SMBs (Super Micro Boluses)**: Rapid small doses targeting the same high BG
@@ -32,34 +32,34 @@ For 2,801 correction events across 21 patients (BG ≥ 180, bolus > 0.3U, no car
 
 ### Insulin Decomposition During Corrections
 
+The following shows BG-lowering attribution — what fraction of the observed BG drop is attributable to each insulin channel (of excess insulin only, excluding EGP-balanced scheduled basal):
+
 ```
                     ┌─────────────────────────────────────────┐
-                    │  Who delivers insulin during a correction │
+                    │  BG-lowering attribution during corrections │
                     ├─────────────────────────────────────────┤
                     │                                         │
-  User bolus ████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 15.9%   │
+  Correction bolus ████████████████░░░░░░░░░░░░░░░░░░░ 35.3% │
                     │                                         │
-  Controller SMBs ████████████████████░░░░░░░░░░░░░░ 31.4%   │
+  Controller SMBs  ████████████████████████████████░░░ 58.8% │
                     │                                         │
-  Excess basal ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  3.9%   │
-                    │                                         │
-  Scheduled basal ██████████████████████████████░░░░ 48.8%   │
+  Excess basal     ███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  5.9% │
                     │                                         │
                     └─────────────────────────────────────────┘
                     
-  Controller total (SMBs + excess basal): ──────── 63.8%
+  Controller total (SMBs + excess basal): ──────── 64.7%
 ```
 
-**The user's correction bolus is only 15.9% of total insulin during a correction event.** The controller contributes 63.8% — more than four times the user's input.
+**The user's correction bolus accounts for only 35.3% of the BG-lowering effect.** The controller contributes 64.7% — nearly two-thirds of the glucose drop is from automated insulin delivery, not the user's bolus.
 
-### By Controller Type
+### By Controller Type (BG-Lowering Attribution)
 
 | Controller | Correction % | SMB % | Excess Basal % | Controller Total |
 |-----------|-------------|-------|----------------|-----------------|
-| **Loop** | 19.5% | 26.0% | 8.7% | 50.0% |
-| **Trio/OpenAPS** | 13.7% | 34.8% | 0.9% | 61.5% |
+| **Loop** (N=8) | 35.8% | 52.0% | 12.2% | 64.2% |
+| **Trio/OpenAPS** (N=13) | 35.0% | 63.0% | 2.0% | 65.0% |
 
-Loop relies more on excess basal adjustment; Trio/OpenAPS relies almost entirely on SMBs (the difference is not statistically significant, p=0.24).
+Loop uses more excess basal adjustment (12.2% vs 2.0%); Trio/OpenAPS relies almost entirely on SMBs. Both controllers contribute ~65% of the BG-lowering effect.
 
 ### Controller Response Timeline
 
@@ -76,11 +76,13 @@ Net basal excess: -0.37 ── -0.45 ── -0.59 ── -0.58 ── -0.58 ─�
 
 ### What This Means for ISF
 
-| ISF Method | Approach | Gap Closure |
+| ISF Method | Approach | Gap Closure (median, 21 patients) |
 |-----------|----------|-------------|
 | **Naive** | bg_drop / total_insulin | 0% (baseline) |
-| **Correction-denominator** | bg_drop / correction_insulin_only | **+78%** |
-| **Controller-subtracted** | (bg_drop - controller_effect) / correction_insulin | **-13%** |
+| **Correction-denominator** | bg_drop / correction_insulin_only | **−142%** (5/21 positive, best +76%) |
+| **Controller-subtracted** | (bg_drop - controller_effect) / correction_insulin | **−455%** (4/21 positive) |
+
+Gap closure measures distance to profile ISF — negative means the method moves ISF *further* from profile than naive. This is expected: the correction-denominator ISF is a better *predictor* (21/22 improve in EXP-2753 cross-validation) precisely because it does NOT try to recover profile ISF. Profile ISF and observed ISF are different quantities (see Phase 13).
 
 **Controller subtraction makes things WORSE** (H2 NOT SUPPORTED). Why? Because the coefficient-based attribution is too coarse — subtracting the estimated controller contribution overshoots. The correction-denominator approach works better because it simply ignores the controller's insulin rather than trying to precisely model its BG impact.
 
@@ -150,14 +152,14 @@ ISF EXTRACTION LANDSCAPE
   Profile ISF (55-63)  ├── Controller's operating parameter
           ▲            │   Includes safety margin intentionally
           │            │
-  Layer 3 │ NOT        │   Dynamic controller response (63.8% of insulin)
+  Layer 3 │ NOT        │   Dynamic controller response (64.7% of BG-lowering)
   ~22%    │ removable  │   This IS the safety margin — removing it → TBR +6.2pp
           │            │   
   Correction-denom ISF │   
   (~44)   │            ├── Achievable extraction target
           │            │
-  Layer 2 │ REMOVED    │   Scheduled basal counts in denominator
-  ~78%    │ ✅         │   Correction-denominator fixes this
+  Layer 2 │ PARTIALLY │   Scheduled basal counts in denominator
+          │ removed   │   Correction-denominator overshoots profile (median 2×)
           │            │
   Naive ISF (4-13)     ├── All insulin in denominator → ISF collapses
           ▲            │
@@ -175,7 +177,7 @@ ISF EXTRACTION LANDSCAPE
 | Layer | Source | Impact | Status | Fix |
 |-------|--------|--------|--------|-----|
 | 1. EGP | Liver glucose output | ~0% | ✅ Compensated | Controller already matches |
-| 2. Basal | Scheduled insulin in denominator | **78% of gap** | ✅ Removed | Correction-only denominator |
+| 2. Basal | Scheduled insulin in denominator | **Overcorrects** | ⚠️ Overshoots | Correction-only denominator (median ISF = 2× profile) |
 | 3. Controller | Dynamic SMBs + temp basals | **22% of gap** | 🔴 Not removable | **IS the safety margin** |
 | 4. Indication | Harder events → more insulin | Biases regression to 0 | 🚫 Fundamental | Needs RCT/IV |
 
@@ -235,7 +237,7 @@ Our correction-denominator ISF correlates with the other researcher's pipeline I
 
 ### 1. The Controller Is the Dominant Actor
 
-During corrections, the AID controller delivers **4× more insulin** than the user's bolus (63.8% vs 15.9%). The BG drop you see is mostly the controller's work — the user's bolus is more of a *signal to the controller* than a direct therapeutic action.
+During corrections, the AID controller accounts for **64.7% of the BG-lowering effect** (vs 35.3% from the user's bolus). The glucose drop you see is mostly the controller's work — the user's bolus is more of a *signal to the controller* than a direct therapeutic action.
 
 ### 2. Observational ISF Cannot Be Causal ISF
 
@@ -275,7 +277,7 @@ ELSE
 This approach is:
 - **Safe**: Only suggests LESS insulin (ISF increase) for most patients
 - **Conservative**: 20% cap on any ISF decrease
-- **Evidence-based**: Uses correction-denominator (78% gap closure)
+- **Evidence-based**: Uses correction-denominator (best predictor despite gap closure being negative)
 - **Per-patient**: Individual assessment, not population-level
 
 ---
@@ -303,7 +305,7 @@ This approach is:
 
 ### The Bottom Line
 
-> **After 55+ experiments across two research tracks, we know exactly what observational AID data can and cannot tell us about insulin sensitivity.** The correction-denominator method closes 78% of the ISF gap safely. The remaining 22% is the controller's safety margin — intentional, necessary, and not an error to correct. The path to better personalization is not more aggressive extraction but smarter bounded adjustments: identify patients whose profiles are clearly wrong and suggest conservative corrections.
+> **After 55+ experiments across two research tracks, we know exactly what observational AID data can and cannot tell us about insulin sensitivity.** The correction-denominator method produces the best prediction accuracy (21/22 improve, 59% median improvement) even though it overshoots profile ISF by ~2× (negative gap closure for 16/21 patients). This overshoot IS the controller's safety margin — intentional, necessary, and not an error to correct. The path to better personalization is not more aggressive extraction but smarter bounded adjustments: identify patients whose profiles are clearly wrong and suggest conservative corrections.
 
 ---
 
@@ -313,8 +315,8 @@ This approach is:
 
 | # | Hypothesis | Verdict | Evidence |
 |---|-----------|---------|----------|
-| H1 | Controller insulin >30% of total | **PASS** | 63.8% [55.9%, 72.9%] |
-| H2 | Controller-subtracted ISF >50% gap closure | FAIL | -13% (correction-denom: +78%) |
+| H1 | Controller BG-lowering >30% of total | **PASS** | 64.7% mean [P25=55.7%, P75=83.1%] |
+| H2 | Controller-subtracted ISF >50% gap closure | FAIL | Median −455% (corr-denom: median −142%) |
 | H3 | Biphasic controller pattern | FAIL | Suspension throughout, no amplify-then-suspend |
 | H4 | Controller type differences | FAIL | p=0.24, not significant |
 | H5 | Residual <20% | FAIL | 16% median (close but NOT SUPPORTED) |
@@ -337,7 +339,7 @@ This approach is:
 | H2 | Controller margin CV < 0.5 | FAIL | CV=0.534 exceeds 0.5 threshold |
 | H3 | Cross-track r > 0.5 | FAIL | r=0.449, p=0.041 (marginal) |
 | H4 | ≥70% actionable recommendations | **PASS** | 77.3% adjustable |
-| H5 | Three-layer model >80% explained | **PASS** | Layer 2 closes 78%, Layer 3 accounts for rest |
+| H5 | Three-layer model >80% explained | **PASS** | Layer 2 overcorrects (2× profile), Layer 3 accounts for rest |
 
 ---
 
