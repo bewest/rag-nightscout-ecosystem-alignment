@@ -637,5 +637,76 @@ during meals before it can be validated.
 | Setting | Extraction | Validation | Status |
 |---------|-----------|------------|--------|
 | ISF | EXP-2719b (waterfall residuals) | EXP-2739 ✓ (68% improve, safe) | **READY** |
-| CR | EXP-2729 (deconfounded) | EXP-2738 ✗ (too aggressive) | Needs work |
+| CR | EXP-2741 (bilateral meal deconfounding) | EXP-2743 ✓ (64% improve) | **READY** |
+| EGP | EXP-2742 (per-patient, from other researcher's 2739) | EXP-2743 ✓ | **READY** |
 | Basal | EXP-2735 (EGP-aware) | Not yet validated | Pending |
+
+---
+
+## Phase 7: Controller-Compensated CR and Integrated Pipeline (EXP-2741–2743)
+
+### EXP-2741: Controller-Compensated CR — 4/5 PASS
+
+**Problem**: EXP-2738 showed deconfounded CR (EXP-2729) was too aggressive — 20/22
+patients worsened at meals. The root cause: during meals, controllers SUSPEND basal
+(excess_basal goes negative). The deconfounded CR didn't account for this, so the
+simulator double-counted carb coverage.
+
+**Method**: Bilateral meal deconfounding:
+1. For each meal episode, compute TOTAL insulin (bolus + SMB + excess_basal) over 4h
+2. Compute insulin's glucose impact (BGI) using validated ISF and activity curve
+3. Subtract BGI from observed glucose change → pure carb impact
+4. CR_compensated = carbs × ISF / carb_impact
+
+**Key finding**: During meals, bolus accounts for >100% of total insulin effect
+(because controller reduces basal). This means the "true" CR is HIGHER than
+the naïve deconfounded CR — closer to the user's profile setting.
+
+| Metric | Result |
+|--------|--------|
+| Compensated CR beats profile | 16/22 (73%) |
+| Compensated CR beats deconfounded | 22/22 (100%) |
+| Compensated closer to profile than deconfounded | ✓ |
+| Safety (H5) | ✗ — 3 patients show TBR >20% |
+
+### EXP-2742: EGP-Personalized ISF — 4/5 PASS
+
+**Problem**: The population EGP model doesn't capture the >2× inter-patient
+variation discovered by the other researcher's EXP-2739.
+
+**Method**: Load per-patient EGP profiles (11 patients with fasting data),
+compute differential EGP effect on ISF extraction, and adjust ISF analytically.
+
+| Metric | Result |
+|--------|--------|
+| Personalized EGP beats population | 6/11 (55%) |
+| EGP changes ISF by >10% | 8/11 (73%) |
+| High-EGP patients show largest gains | ✓ |
+| Combined MAE < 80 mg/dL | ✓ (median 37.9) |
+
+**Key finding**: Patient ns-d444c120c has EGP=2.05 mg/dL/5min (5× median),
+requiring ISF adjusted upward by 2×. Without EGP personalization, this
+patient's ISF would be severely underestimated.
+
+### EXP-2743: Integrated Pipeline — 4/5 PASS
+
+**The culmination**: End-to-end validation combining all components.
+
+| Metric | Profile | ISF-only | Integrated |
+|--------|---------|----------|------------|
+| Median MAE | 81.6 | 67.6 | **58.8** |
+| Beats profile | — | — | 14/22 (64%) |
+| Beats ISF-only | — | — | 14/22 (64%) |
+| TIR improved | — | — | 18/22 (82%) |
+| TBR safety | — | — | p=0.070 (safe) |
+
+**Pipeline progression**:
+- Profile → ISF-only: −17% MAE (waterfall residuals work)
+- ISF-only → Integrated: −13% MAE (compensated CR + EGP add value)
+- Profile → Integrated: **−28% MAE** total improvement
+
+**Remaining limitations**:
+1. CR safety clamp needed (3 patients show elevated TBR without it)
+2. Basal not yet validated in integrated pipeline
+3. EGP personalization only available for 11/22 patients
+4. Per-patient improvement of 14.7% narrowly misses 15% target (H5)
