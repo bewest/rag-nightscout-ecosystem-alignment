@@ -12,6 +12,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Wave-11: The Safety Wall — Precision, Interactions & Clinical Translation (2026-04-20)
+
+Critical safety and precision wave: proved naive ISF replacement is dangerous, settings are coupled but separable, and personalized EGP delivers 4.3× basal improvement.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2737 | `tools/cgmencode/exp_settings_interactions_2737.py` | ISF↔CR coupled (r=0.609) but joint only +2.5% — separable |
+| EXP-2738 | `tools/cgmencode/exp_safety_simulation_2738.py` | **TBR +6.2pp — naive ISF replacement unsafe** (ρ=−0.85) |
+| EXP-2739 | `tools/cgmencode/exp_egp_personalization_2739.py` | **Basal 83.7/100** with personal EGP (was 19.5) |
+| Report | `docs/60-research/wave11-safety-precision-report-2026-04-20.md` | 7-part report: safety wall + EGP precision |
+| Viz | `visualizations/settings-interactions/settings_interactions.png` | Coupling matrix + perturbation analysis |
+| Viz | `visualizations/safety-simulation/safety_simulation.png` | TIR/TBR/TAR counterfactual |
+| Viz | `visualizations/egp-personalization/egp_personalization.png` | Per-patient EGP profiling |
+
+**Safety Finding**: Profile ISF (55) isn't wrong — it's the controller's operating margin for EGP compensation. ISF gap = 1.93× (EGP) × 2.66× (controller). Removing this margin increases hypoglycemia.
+
+**Precision Finding**: Population EGP over-corrects 91% of patients. Per-patient EGP → basal score 83.7/100 (vs 48.2 population, 19.5 naive).
+
+**Scorecard**: ~37 experiments, ~151 hypotheses, ~90 PASS (~60%)
+
+---
+
 ## 🎉🎉🎉 MILESTONE: All 4 Domains 100% REQ + 100% GAP (2026-02-01) 🎉🎉🎉
 
 | Domain | REQs | GAPs |
