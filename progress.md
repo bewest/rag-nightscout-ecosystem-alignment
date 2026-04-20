@@ -12,6 +12,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Wave-13: Controller Dynamics and Grand Synthesis (2026-04-20)
+
+Decomposed controller contributions during corrections, tested regression-based ISF extraction, and synthesized 55+ experiments across two independent research tracks.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Controller Decomposition | `tools/cgmencode/exp_controller_decomposition_2753.py` | Controller does 63.8% of insulin during corrections; user bolus only 15.9% |
+| Regression ISF | `tools/cgmencode/exp_regression_isf_2754.py` | Confounding by indication → β₁≈0; regression 26× more precise but biased |
+| Grand Synthesis | `tools/cgmencode/exp_grand_synthesis_2755.py` | Correction-denominator best for 90.9% of patients; 77.3% have actionable recommendations |
+| Report | `docs/60-research/wave13-controller-dynamics-report-2026-04-20.md` | Four confound layers framework; controller margin IS safety margin |
+| Visualizations | `visualizations/{controller-decomposition,regression-isf,grand-synthesis}/` | Per-patient ISF landscape, confound waterfall, safety tradeoff |
+
+**Key Findings**:
+- Controller-initiated insulin (SMBs + excess basal) = 63.8% of total during corrections
+- Confounding by indication: regression β≈0 for correction insulin (fundamental observational limit)
+- Four confound layers: EGP (compensated), basal (78% gap closure via correction-denom), controller dynamics (22%, NOT removable = safety margin), confounding by indication (fundamental)
+- Correction-denominator ISF is the best practical method: safe, interpretable, 78% gap closure
+- The 22% ISF gap to profile is the controller's intentional safety reserve — removing it → TBR +6.2pp
+
+**Hypotheses**: 8/15 PASS across 3 experiments (53.3%)
+
+**Gaps Identified**: Layer 4 (confounding by indication) requires instrumental variables or RCT; 40-min autocorrelation is controller dynamics (unfixable from observational data)
+
+**Source Files Analyzed**: 22 patients, 2,801 correction events, 1,085,260 grid rows
+
+---
+
 ## Wave-12: Multi-Factor Isolation — Context-Specific Deconfounding (2026-04-20)
 
 Tested context-specific subtraction: basal analysis subtracts corrections/meals, ISF analysis subtracts basal/EGP, CR analysis subtracts corrections/EGP. **Key finding**: controller compensation is the dominant confound, not EGP.
