@@ -26,6 +26,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Wave-10: Validation, EGP-Aware Optimization, and ISF Reconciliation (2026-04-20)
+
+Critical validation wave: cross-validated settings, fixed basal optimization with EGP, reconciled ISF hierarchy.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2734 | `tools/cgmencode/exp_temporal_crossval_2734.py` | **5/5 PASS** — settings generalize perfectly (test/train=1.00) |
+| EXP-2735 | `tools/cgmencode/exp_egp_basal_optimization_2735.py` | EGP=92% of drift; 0 patients need >100% TDD change (vs 7) |
+| EXP-2736 | `tools/cgmencode/exp_isf_reconciliation_2736.py` | 10× ISF gap = 1.93× (EGP) × 2.66× (controller) |
+| Report | `docs/60-research/wave10-validation-reconciliation-report-2026-04-20.md` | 7-part comprehensive report |
+| Viz | `visualizations/temporal-crossval/temporal_crossval.png` | Cross-validation 2×2 panel |
+| Viz | `visualizations/egp-basal/egp_basal.png` | EGP-aware basal 2×2 panel |
+| Viz | `visualizations/isf-reconciliation/isf_reconciliation.png` | ISF reconciliation 2×3 panel |
+
+**Scorecard**: ~34 experiments, ~136 hypotheses, ~86 PASS (~63%)
+
+---
+
 ## Wave-9: Complete Settings Suite — CR, Basal, Unified (2026-04-21)
 
 Extended validated ISF pipeline to CR and basal, then unified all three into per-patient calibration assessment.

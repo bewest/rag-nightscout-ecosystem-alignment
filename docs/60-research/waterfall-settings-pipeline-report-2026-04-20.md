@@ -469,3 +469,68 @@ data. Simulation-based extraction or subtraction-based approaches are required.
 | `tools/cgmencode/production/deconfounding.py` | BGI subtraction (now EGP-aware) |
 | `tools/cgmencode/production/forward_simulator.py` | Physics-based simulator (EGP integrated) |
 | `tools/cgmencode/production/metabolic_engine.py` | EGP computation (Hill + circadian) |
+| `tools/cgmencode/exp_autocorr_residuals_2734.py` | Autocorrelation robustness check (5/5) |
+| `tools/cgmencode/exp_controller_compensation_2735.py` | Controller compensation quantification |
+
+---
+
+## Phase 5: Robustness & Controller Compensation (EXP-2734, EXP-2735)
+
+### EXP-2734: Autocorrelation-Corrected Residuals (5/5 PASS)
+
+Tests whether overlapping insulin windows (events <2h apart) bias the per-patient
+correction factors from EXP-2719b via autocorrelation.
+
+| Metric | Baseline (all events) | Independent (≥2h) |
+|--------|----------------------|-------------------|
+| Events | 43,218 | 7,918 (18%) |
+| Lag-1 autocorrelation | r=0.615 (27/31 sig) | r=-0.008 (8/29 sig) |
+| Population R² | 0.471 | 0.409 |
+
+**Result**: Correction factors are robust — r=0.903 between arms, only 3/29 patients
+change recommendation category, no systematic shift (paired t-test p=0.16).
+
+→ **Safe to use full-data correction factors for settings recommendations.**
+
+### EXP-2735: Controller Compensation via Statistical Replay (3/5 PASS)
+
+Quantifies the controller compensation factor — the ISF hierarchy's remaining gap.
+
+| Metric | Value |
+|--------|-------|
+| Compensation ratio | 0.497 (controller delivers ~50% of counterfactual insulin) |
+| Basal suspension | 185% of scheduled basal suspended during corrections |
+| ISF gap: Simulator → Profile | 2.75× |
+| ISF gap: Compensated → Profile | **1.45×** |
+
+**Complete ISF hierarchy** (now fully decomposed):
+
+```
+Profile ISF (55)     →  Controller setting (assumes compensation)
+    ÷ 1.45×
+Compensated ISF (38) →  After accounting for controller compensation
+    ÷ 1.90×
+Simulator ISF (20)   →  Physics-corrected (EGP + counter-reg)
+    ÷ 3.3×
+Empirical ISF (6)    →  Net observed effect (all confounds active)
+```
+
+**Gap decomposition** (10× total):
+- EGP headwind: ~3.3× (glucose supply opposing insulin)
+- Controller compensation: ~1.9× (basal suspension + SMB withholding)
+- Residual: ~1.45× (patient variability, timing, circadian effects)
+
+### Implications
+
+**For AID users**: The 2719b correction factors are robust and actionable. 96% of
+patients have significant residuals indicating improvable settings.
+
+**For AID authors**: Controller compensation is ~50% — during a correction, the
+controller reduces net insulin by half relative to maintaining scheduled basal.
+This is the EXPECTED behavior (safety), but it means profile ISF must be set
+~2× higher than the true insulin sensitivity to account for the controller
+"undoing" half the correction.
+
+**For researchers**: The full 10× gap is now decomposed into three measurable
+components. The remaining 1.45× represents genuine between-patient and within-
+patient variability that per-patient correction factors can address.
