@@ -551,6 +551,8 @@ patient variability that per-patient correction factors can address.
 
 ### EXP-2737: Joint Multi-Setting Optimization — 3/5 PASS
 
+![EXP-2737 Joint Optimization](../../tools/visualizations/joint-optimization/exp-2737-dashboard.png)
+
 Attempted to optimize ISF + CR + basal simultaneously per patient using the
 forward simulator.
 
@@ -572,6 +574,8 @@ episodes where it's dominant) is correct. Joint optimization over
 trajectories is a dead end without strong regularization.
 
 ### EXP-2738: Safety Validation of Waterfall Settings — 2/5 PASS
+
+![EXP-2738 Safety Validation](../../tools/visualizations/safety-validation/exp-2738-dashboard.png)
 
 Applied the independently-extracted settings (2719b ISF corrections +
 2729 deconfounded CR) through the forward simulator and compared vs
@@ -606,6 +610,8 @@ which should show improvement without the CR-induced meal degradation. This
 separates the two effects and provides an actionable, safe recommendation pipeline.
 
 ### EXP-2739: ISF-Only Safety Validation — 3/5 PASS ✓
+
+![EXP-2739 ISF-Only Validation](../../tools/visualizations/isf-only-validation/exp-2739-dashboard.png)
 
 Validated ISF corrections from EXP-2719b with **profile CR unchanged**.
 

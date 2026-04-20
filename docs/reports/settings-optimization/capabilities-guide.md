@@ -75,6 +75,11 @@ Each capability is rated by maturity level:
 | **Cross-validation robustness** | 🔬 Research | EXP-2734 | 75/25 temporal split: test/train ratio=0.997; settings generalize |
 | **Controller compensation model** | 🔬 Research | EXP-2735 | Compensation ratio=0.497; basal suspension 185%; closes ISF gap |
 | **ISF reconciliation framework** | 🔬 Research | EXP-2736 | ~4× gap = 1.93× (EGP) × 2.66× (controller); all ISFs correct in context |
+| **Settings interaction matrix** | 🔬 Research | EXP-2737 | ISF↔CR coupled (r=0.609) but joint opt only +2.5%; independent extraction adequate |
+| **Safety wall (naive ISF replacement)** | ❌ Disproved | EXP-2738 | TBR +6.2pp; 62% of patients unsafe; profile ISF includes needed compensation margin |
+| **Per-patient EGP profiling** | 🔬 Research | EXP-2739 | EGP varies 69×; basal score 19.5→83.7 (4.3×); ISF precision +16.8% |
+| **ISF-only safe recommendations** | 🔬 Research | EXP-2739 | 68% of patients improve MAE (−9%); TBR safe (p=0.42); CR too aggressive separately |
+| **Joint multi-setting optimization** | ❌ Disproved | EXP-2737 | Unconstrained optimizer finds degenerate (unphysical) solutions; waterfall is correct |
 
 **Legend**: 🟢 Production (validated, tested, in pipeline) · 🟡 Beta/Partial (functional but incomplete) · 🔬 Research (experimental) · ❌ Disproved (tried, doesn't work)
 

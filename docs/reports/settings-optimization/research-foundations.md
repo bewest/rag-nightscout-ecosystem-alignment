@@ -196,6 +196,10 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Autocorrelation correction** | EXP-2734 | 2026-04 | Correction factors robust: r=0.903 between full/independent arms; 5/5 PASS cross-validation |
 | **Controller compensation quantification** | EXP-2735 | 2026-04 | Compensation ratio=0.497; basal suspension 185%; sim gap 2.75×→compensated 1.45×; 3/5 PASS |
 | **ISF reconciliation** | EXP-2736 | 2026-04 | ~4× gap decomposes: 1.93× (EGP) × 2.66× (controller); 5 ISF methods each correct in context |
+| **Settings interaction matrix** | EXP-2737 | 2026-04 | ISF↔CR coupled (r=0.609) but joint optimization only +2.5% over independent; independent extraction is adequate |
+| **Safety wall — naive ISF replacement** | EXP-2738 | 2026-04 | TBR +6.2pp (4.2→10.3%); ρ=−0.85 ISF ratio vs TBR; 62% of patients unsafe for naive ISF swap |
+| **Per-patient EGP profiling** | EXP-2739 | 2026-04 | EGP varies 69× across patients; personalized EGP → basal score 83.7/100 (4.3× over naive); ISF precision +16.8% |
+| **Basal-EGP equilibrium** | EXP-2740 | 2026-04 | Drift magnitude and EGP consistency across time windows; circadian mismatch 1/5 PASS |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 
@@ -219,6 +223,8 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | Naive bias correction | Recommender EXP | Harmful for 8/10 patients — removes defensive suspension |
 | **Individual-event ISF estimation** | EXP-2680–2683, 2690, 2711–2712 | BG drop ≈74 mg/dL regardless of dose; ISF∝1/dose is a ratio artifact. 83.5% of BG drop variance is irreducible stochastic noise. Multi-channel regression (EXP-2690) recovers R²=0.296 when controlling for all insulin channels simultaneously — bolus uniquely explains 7.3%. Bilateral decomposition (EXP-2712) shows supply (baseline return) accounts for 99.6% of total drop, insulin residual only 0.4%. Individual-event ISF remains unreliable, but insulin IS measurably relevant in aggregate via multi-channel and deconfounding approaches. |
 | **DynISF sensitivity_ratio predicts ISF** | EXP-2725 | Pooled partial r=0.008 — DynISF's algorithmic adjustments are orthogonal to observed correction ISF. Dose variable already captures DynISF's influence. 6/10 DynISF patients have statistically significant r, but magnitudes are tiny (median |r|=0.084). |
+| **Joint multi-setting optimization** | EXP-2737 | Unconstrained joint optimization finds degenerate solutions (ISF→2–5, CR→50–389); 22/22 "improve" but settings are unphysical. ISF/CR/basal are NOT independently identifiable from trajectories alone — waterfall (domain-specific extraction) is correct approach. |
+| **Naive ISF replacement** | EXP-2738 | Replacing profile ISF with empirical ISF increases TBR +6.2pp (4.2→10.3%) across 21 patients; ρ=−0.85 ISF ratio vs TBR increase. Profile ISF isn't wrong — it includes EGP + controller compensation margin that the controller needs. |
 
 ---
 
@@ -364,6 +370,22 @@ The current pipeline is offline (batch retrospective). An online version running
 The demand-phase ISF (constant per patient) could replace apparent ISF as the AID's ISF setting, with the controller's compensation explicitly modeled as a separate gain term. This would address the prescriptive paradox at the firmware level rather than the advisory level.
 
 **Risk**: Changing ISF settings changes controller behavior, which changes observed ISF — the same circular dependency the paradox describes. Simulation studies needed before any clinical application.
+
+### 8.6 Per-Patient EGP Personalization (Highest-Leverage Improvement)
+
+**Status**: Validated (EXP-2739, 3/5 PASS).
+**Evidence**: EGP varies 69× across 11 patients (0.006–2.050 mg/dL/5min). Population EGP (1.5) over-corrects 91% of patients.
+
+Personalized EGP achieves a 4.3× improvement in basal calibration score (19.5→83.7/100) and 16.8% narrower ISF confidence intervals. This is the single highest-leverage improvement found in the research arc.
+
+**Next step**: Combine with ISF-only validation pipeline (EXP-2739 ISF-only: 68% improve, TBR safe) for a complete safe recommendation pathway.
+
+### 8.7 ISF-Only Safe Recommendation Pipeline
+
+**Status**: Validated (EXP-2739 ISF-only, 3/5 PASS).
+**Evidence**: ISF corrections from waterfall pipeline improve MAE for 68% of patients (median 89.7→82.0, −9%) with no TBR increase (p=0.42). CR corrections are too aggressive (EXP-2738 safety_validation) — ISF-only is the safe actionable path.
+
+**Barrier**: CR extraction needs to account for controller compensation during meals before it can be safely validated.
 
 ---
 
