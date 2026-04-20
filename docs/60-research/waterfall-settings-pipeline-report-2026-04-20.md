@@ -1176,6 +1176,16 @@ Starting from raw Nightscout data (glucose, insulin, carbs, devicestatus), the p
 | 2762 | IOB-aware CF | 2/5 PASS | IOB adds nothing; LR approach beats median |
 | 2763 | LR vs median CF | 4/5 PASS | 73 mg/dL intercept, 25/26 beat CF |
 | 2764 | Intercept decomposition | 5/5 PASS | BG coef=0.8, LR+BG best model ⭐ |
+| 2783 | Controller effort | 2/5 PASS | 92% basal suspension universal |
+| 2784 | TIR predictors | 3/5 PASS | No user behavior predicts TIR |
+| 2785 | Multi-day ISF dynamics | 3/5 PASS | TDD correlates positively with BG (confounding) |
+| 2786 | Multi-scale deconfounding | 4/5 PASS | AR meal dominates (R²+=0.23), 4-layer pipeline |
+| 2787 | IOB-based BGI | 1/5 PASS | deltaIOB WORSE — conflates delivery+absorption |
+| 2788 | Convolution BGI | 5/5 PASS | Delivery×activity curve beats all ⭐ |
+| 2789 | Deconfounded settings v2 | 1/5 PASS | ISF negative for 92% — structural impossibility |
+| 2790 | Total insulin accounting | 3/5 PASS | Actual basal only 14% of TDD! |
+| 2791 | Integrated pipeline v3 | 5/5 PASS | Full pipeline: conv BGI+AR+categorization ⭐ |
+| 2792 | Controller recommendations | 4/5 PASS | 6 actionable findings for AID authors ⭐ |
 
 ## Phase 12: Validation & Generalization (EXP-2753 through 2755)
 
@@ -1540,3 +1550,107 @@ momentum — glucose continues rising/falling in the same direction.
 | L3 | 24h | Circadian hourly mean | +0.004 |
 | L4 | 72h | Daily mean shift | +0.002 |
 | **Total** | | | **0.238** |
+
+## Phase 18: Insulin Accounting, Integrated Pipeline & Recommendations (EXP-2789–2792)
+
+### Data Semantics Fix: net_basal is a DEVIATION (EXP-2790)
+
+**Critical data semantics correction**: `net_basal` in the grid is the DEVIATION from scheduled
+basal rate (`actual_temp_basal - scheduled_basal_rate`), NOT the actual delivery.
+Actual delivery = `(net_basal + scheduled_basal_rate).clip(lower=0) / 12` per 5-min interval.
+
+### Total Insulin Accounting (EXP-2790) — 3/5 PASS
+
+Using CORRECTED actual delivery:
+
+| Controller | TDD | User Bolus | SMB | Actual Basal | Status |
+|-----------|-----|-----------|-----|-------------|--------|
+| Loop | 45.2 U | 51.8% | 25.7% | 22.1% | Low basal |
+| Trio | 60.9 U | 60.5% | 30.6% | 9.4% | **Very low basal** |
+| OpenAPS | 34.1 U | 53.4% | 0.0% | 33.2% | Closest to target |
+
+**Key insight**: Actual basal is only 14% of TDD across all patients.
+Controllers deliver only 33% of their scheduled basal rate (rest is suspended).
+The 50/50 rule applies to what the body NEEDS, not how insulin is DELIVERED.
+
+![EXP-2790 Insulin Accounting](../../tools/visualizations/insulin-accounting/exp-2790-dashboard.png)
+
+### Deconfounded Settings v2 (EXP-2789) — 1/5 PASS (Structural Impossibility)
+
+Even after convolution BGI + AR meal + circadian deconfounding:
+- ISF is NEGATIVE for 92% of patients
+- Confirms: ISF CANNOT be extracted from observational closed-loop data
+- Validates the production approach (EXP-2719b) of using profile ISF as prior
+- CR also fails: median 32.8 vs profile 8.5 (4× gap)
+
+### Integrated Production Pipeline v3 (EXP-2791) — 5/5 PASS ⭐
+
+Combines all best validated techniques:
+1. **Convolution BGI** (EXP-2788): delivery × activity curve
+2. **AR meal momentum** (EXP-2786): 1-6h autoregressive
+3. **oref0-style categorization** (EXP-2774): CSF/ISF/UAM/basal
+4. **Profile-prior settings** (EXP-2719b): weighted blend
+5. **Insulin accounting** (EXP-2790): 50/50 sanity check
+
+Results:
+- 93% of ISF within 2× of profile
+- 79% of CR within 2× of profile
+- 100% of patients get meaningful recommendations
+- **Median cross-validated R² = 0.238** (range: -0.03 to 0.73)
+
+Per-controller pipeline output:
+
+| Setting | Loop | Trio | OpenAPS |
+|---------|------|------|---------|
+| ISF | 49→32 (↓35%) | 58→45 (↓22%) | 55→46 (↓16%) |
+| CR | 8→7 | 10→14 (↑40%) | 8→12 (↑50%) |
+| Basal | 0.85→0.94 U/h | 0.82→1.27 U/h (↑55%) | 0.85→0.71 U/h |
+
+**Universal pattern**: ISF needs reduction across all controllers.
+
+![EXP-2791 Integrated Pipeline](../../tools/visualizations/integrated-pipeline-v3/exp-2791-dashboard.png)
+
+### Controller-Specific Recommendations (EXP-2792) — 4/5 PASS ⭐
+
+**6 Actionable Findings for AID Authors**:
+
+1. **ISF over-estimation is universal** — apps should suggest reduction proactively
+2. **Trio basal severely underestimated** (9% actual) — warn when < 20% of TDD
+3. **Controller compensation nullifies user behavior** — focus on settings, not behavior
+4. **Glucose CV is best TIR predictor** (r=-0.82) — display as quality metric
+5. **SMB strategies differ** — controller-specific defaults recommended
+6. **68% violate 50/50 rule** by >25pp — alert when actual basal < 30% of TDD
+
+Within ALL controllers, glucose CV is the ONLY significant TIR predictor.
+No individual setting significantly predicts TIR.
+
+Trio vs Loop (statistically significant):
+- Actual basal %: 9% vs 22% (p=0.022)
+- TIR: 87% vs 65% (p=0.003)
+- Despite worst settings, Trio achieves BEST TIR — oref1 compensates
+
+![EXP-2792 Controller Recommendations](../../tools/visualizations/controller-recommendations/exp-2792-dashboard.png)
+
+### Recommendations Summary
+
+**FOR LOOP DEVELOPERS**:
+- ISF too high for most users (49 → ~32)
+- Consider auto-suggesting ISF reduction from correction patterns
+- Basal suspension high (65%) but delivery reasonable (22%)
+
+**FOR TRIO/oref1 DEVELOPERS**:
+- Basal rates severely underestimated (only 9% actual delivery)
+- CR may be too aggressive (10 → ~14)
+- Add "basal adequacy" warning when actual < 20% of TDD
+- oref1+SMB is powerful enough to compensate for bad settings
+
+**FOR OPENAPS/oref0 DEVELOPERS**:
+- Best-calibrated basal rates (33%, closest to 50%)
+- CR needs increase (8 → ~12)
+- Most physiological delivery pattern (no SMB patients)
+
+**UNIVERSAL**:
+- Track 7-day actual basal % of TDD
+- ISF over-estimation is universal — suggest reduction proactively
+- Glucose CV is the best quality metric
+- User bolusing behavior does NOT predict TIR
