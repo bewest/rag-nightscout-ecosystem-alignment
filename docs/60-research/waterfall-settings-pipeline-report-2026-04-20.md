@@ -829,3 +829,85 @@ Final per-patient assessment combining all validated pipeline components:
 | `tools/visualizations/basal-validation/exp-2745-dashboard.png` | Basal dashboard |
 | `tools/visualizations/production-report-v2/production-report-v2-dashboard.png` | Report dashboard |
 | `externals/experiments/settings-assessment-v2.json` | Per-patient recommendations |
+
+---
+
+## Phase 9: Circadian & Dose-Dependent Refinements
+
+### EXP-2746: Circadian Basal Profiling (3/5 PASS)
+
+**Approach**: Extract hourly fasting drift for all 22 patients, convert to circadian
+basal schedules (±50% of profile), test in simulator.
+
+| Metric | Result |
+|--------|--------|
+| Significant circadian pattern | 17/22 (77%) ✓ |
+| Circadian improves over flat | 8/22 (36%) ✗ |
+| Circadian + integrated improves | 8/22 (36%) ✓ |
+| Dawn phenomenon | 1/22 (5%) ✗ |
+| Safety | p=1.0 ✓ |
+
+**Finding**: Circadian drift patterns are statistically real (77%) but add marginal
+prediction value (~1-3 mg/dL). The integrated ISF correction already captures most
+of the circadian signal through episode-based extraction.
+
+### EXP-2747: Dose-Dependent CR (4/5 PASS) ⭐
+
+**Approach**: Analyze effective CR by meal size (bilateral deconfounding), test
+size-stratified CR (small vs large meals) in simulator.
+
+| Metric | Result |
+|--------|--------|
+| CR varies by meal size | 13/22 (59%) ✓ |
+| Large/small CR diff >20% | 18/22 (82%) ✓ |
+| Controller proportional | 4/22 (18%) ✗ |
+| Size-stratified improves | 9/22 (41%) ✓ |
+| Safety | p=1.0 ✓ |
+
+**Finding**: CR IS dose-dependent — large meals show ~2× higher effective CR than
+small meals (18/22 patients). This likely reflects nonlinear carb absorption: larger
+meals have longer gastric emptying, spreading glucose impact over more time. Controller
+basal suspension is NOT proportional to meal size (4/22), suggesting the controller
+doesn't fully account for absorption differences.
+
+**Actionable**: Consider recommending different CR for snacks vs full meals.
+
+### EXP-2748: Time-of-Day ISF Variation (3/5 PASS)
+
+**Approach**: Extract effective ISF by time block from correction episodes at BG≥180,
+test time-stratified ISF schedules in simulator.
+
+| Metric | Result |
+|--------|--------|
+| Significant time variation | 7/22 (32%) ✗ |
+| Dawn ISF lower (>15%) | 6/22 (27%) ✗ |
+| Time-stratified improves | 11/22 (50%) ✓ |
+| Integrated + time improves | 11/22 (50%) ✓ |
+| Safety | p=1.0 ✓ |
+
+**Finding**: Dawn phenomenon is less prevalent than expected (27%), likely because AID
+controllers already compensate with higher overnight basal rates. Time-stratified ISF
+provides marginal improvement (~1-2 mg/dL) — the flat correction factor captures most signal.
+
+### Phase 9 Summary
+
+| Experiment | Pass | Key Insight | Actionability |
+|------------|------|-------------|---------------|
+| EXP-2746 Circadian basal | 3/5 | Real pattern, marginal value | Low (ISF covers it) |
+| EXP-2747 Dose-dependent CR | 4/5 | Large meals ~2× CR | **HIGH** (new recommendation) |
+| EXP-2748 Time-of-day ISF | 3/5 | Dawn phenomenon rare in AID | Low (flat correction sufficient) |
+
+The dose-dependent CR finding (EXP-2747) is the most actionable discovery: AID users should
+consider higher CR ratios for large meals. This aligns with clinical experience that large
+meals are harder to bolus for, and provides quantitative evidence for size-stratified CR.
+
+### Files
+
+| File | Description |
+|------|-------------|
+| `tools/cgmencode/exp_circadian_basal_2746.py` | Circadian basal profiling |
+| `tools/cgmencode/exp_dose_dependent_cr_2747.py` | Dose-dependent CR analysis |
+| `tools/cgmencode/exp_circadian_isf_2748.py` | Time-of-day ISF variation |
+| `tools/visualizations/circadian-basal/exp-2746-dashboard.png` | Circadian basal dashboard |
+| `tools/visualizations/dose-dependent-cr/exp-2747-dashboard.png` | Dose-dependent CR dashboard |
+| `tools/visualizations/circadian-isf/exp-2748-dashboard.png` | Circadian ISF dashboard |
