@@ -710,3 +710,112 @@ patient's ISF would be severely underestimated.
 2. Basal not yet validated in integrated pipeline
 3. EGP personalization only available for 11/22 patients
 4. Per-patient improvement of 14.7% narrowly misses 15% target (H5)
+
+---
+
+## Phase 8: Basal Validation & Production Report
+
+### EXP-2745: Basal Rate Validation via Fasting Drift (3/5 PASS)
+
+**Approach**: Extract fasting periods (no carbs or bolus for 3h), measure glucose drift,
+derive basal multiplier, validate in simulator.
+
+**Results**:
+- 8/22 patients show significant fasting drift (>0.5 mg/dL/5min)
+- Drift direction always agrees with correction sign (22/22)
+- BUT adjusting basal by drift worsens MAE (1/22 improve)
+- Safety maintained (TBR p=0.069)
+
+**Critical finding**: Fasting drift in closed-loop data reflects the CONTROLLER's basal
+adjustments (temp basals, suspensions), not the patient's physiological needs. When the
+controller reduces basal to prevent lows, we observe negative drift — but the scheduled
+basal rate is not wrong; the controller is already compensating.
+
+**Implication**: Basal rate optimization requires EGP-equilibrium modeling (other researcher's
+EXP-2740 approach using Hill equation physics) rather than empirical drift analysis.
+
+### Production Settings Report v2
+
+Final per-patient assessment combining all validated pipeline components:
+
+| Setting | Method | Validation | Status |
+|---------|--------|------------|--------|
+| ISF | EXP-2719b waterfall residuals | EXP-2739: 68% improve | **PRODUCTION** |
+| CR | EXP-2741 bilateral deconfounding | EXP-2743: 73% improve | **PRODUCTION** |
+| EGP | EXP-2742 per-patient adjustment | EXP-2743: 55% improve | **PRODUCTION** (11/22) |
+| Basal | EXP-2745 fasting drift | 1/22 improve | **NOT RECOMMENDED** |
+
+**Patient-level recommendations** (22 patients):
+
+| Category | Count | Confidence |
+|----------|-------|------------|
+| REDUCE_ISF | 9 | 6 HIGH, 2 MEDIUM, 1 LOW |
+| REDUCE_ISF + INCREASE_CR | 4 | 3 HIGH, 1 MEDIUM |
+| INCREASE_ISF + INCREASE_CR | 4 | 1 MEDIUM, 3 LOW |
+| INCREASE_CR | 2 | 1 HIGH, 1 LOW |
+| OK (no change needed) | 2 | 2 HIGH |
+| REDUCE_CR | 1 | LOW |
+
+**Summary**:
+- 11/22 high-confidence recommendations (50%)
+- 14/22 patients improving over profile (64%)
+- Median MAE improvement: 11.3% across all 22 patients
+- Dominant pattern: ISF too high (profile overestimates sensitivity)
+
+### Pipeline Architecture Summary
+
+```
+                    SIGNAL-DOMINANT EPISODES
+                    ========================
+┌──────────┐    ┌──────────────────────────────┐
+│ Waterfall│───→│ Correction events (BG≥180)   │───→ ISF correction factor
+│ Residuals│    │ 2h forward prediction         │     (EXP-2719b, 2739)
+│ (2719b)  │    └──────────────────────────────┘
+└──────────┘
+┌──────────┐    ┌──────────────────────────────┐
+│ Bilateral│───→│ Meal events (carbs>0)         │───→ Compensated CR
+│ Meal     │    │ Subtract total insulin BGI    │     (EXP-2741, 2743)
+│ Deconf.  │    │ (including controller suspend)│
+└──────────┘    └──────────────────────────────┘
+┌──────────┐    ┌──────────────────────────────┐
+│ EGP      │───→│ Fasting obs (IOB stable)      │───→ Per-patient EGP rate
+│ Person.  │    │ Hill equation fit              │     → ISF adjustment
+│ (2742)   │    └──────────────────────────────┘     (EXP-2742, 2743)
+└──────────┘
+                    ↓ All settings combined ↓
+                ┌──────────────────────────────┐
+                │ Integrated Pipeline (2743)    │
+                │ Safety: CR ≥ 70% of profile   │
+                │ Result: 28% MAE improvement   │
+                └──────────────────────────────┘
+```
+
+### Key Lessons Learned
+
+1. **Division fails, subtraction works**: ISF = BG_drop / insulin is fundamentally broken
+   in closed-loop data (confounding by indication). Residual-based correction works.
+
+2. **Controller compensation is pervasive**: The AID controller masks every physiological
+   signal. Meals → controller suspends basal. Corrections → controller adds SMBs.
+   Fasting → controller adjusts temp basal. Every analysis must account for this.
+
+3. **Waterfall extraction is the correct architecture**: Extract each setting from episodes
+   where its signal dominates, rather than trying to jointly identify all settings.
+
+4. **EGP is real but hard to measure**: Per-patient EGP varies >2× and affects ISF by >10%
+   for 73% of patients. But absolute EGP is not identifiable from observational AID data
+   without a physics model.
+
+5. **Safety clamping is essential**: Without guardrails, some patients get dangerous
+   recommendations (CR 3× higher than profile → hypoglycemia). Production requires
+   safety bounds.
+
+### Files
+
+| File | Description |
+|------|-------------|
+| `tools/cgmencode/exp_basal_validation_2745.py` | Basal validation experiment |
+| `tools/cgmencode/generate_settings_report_v2.py` | Production report generator |
+| `tools/visualizations/basal-validation/exp-2745-dashboard.png` | Basal dashboard |
+| `tools/visualizations/production-report-v2/production-report-v2-dashboard.png` | Report dashboard |
+| `externals/experiments/settings-assessment-v2.json` | Per-patient recommendations |
