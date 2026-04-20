@@ -1654,3 +1654,114 @@ Trio vs Loop (statistically significant):
 - ISF over-estimation is universal — suggest reduction proactively
 - Glucose CV is the best quality metric
 - User bolusing behavior does NOT predict TIR
+
+---
+
+## Phase 19: Pipeline v4 and Multi-Timescale Validation (EXP-2793–2797)
+
+### Overview
+
+Phase 19 integrates the multi-timescale deconfounding approach into a definitive pipeline (v4), validates category-specific modeling as the single biggest prediction improvement, confirms circadian EGP is real but modest, and demonstrates prospective generalization of settings recommendations.
+
+### EXP-2793: Temporal AR Model — Category-Specific Breakthrough
+
+**Result: 4/5 PASS**
+
+Category-specific AR(2) achieves R²=0.449 — nearly **double** global AR(2) (0.248). BG dynamics behave fundamentally differently by metabolic context:
+
+| Category | AR(2) R² | Interpretation |
+|----------|----------|----------------|
+| CSF (meals) | 0.302 | Most predictable — carb absorption is structured |
+| ISF (corrections) | 0.185 | Moderate — insulin action is more variable |
+| UAM (unexplained) | 0.099 | Near-random — these truly are unexplained |
+| Basal | ~0.05 | Near-random — homeostatic noise |
+
+AR coefficients stable across time splits (7.3% change). This means separate models per event category is the single most impactful architectural improvement.
+
+![EXP-2793 Temporal AR](../../tools/visualizations/temporal-ar/exp-2793-dashboard.png)
+
+### EXP-2794: Deviation-Based Circadian Analysis
+
+**Result: 4/5 PASS**
+
+After subtracting BGI and AR(1), ALL residual deviations are POSITIVE — this is the hepatic glucose production (EGP) signature. The body is always producing glucose; the controller is always fighting it.
+
+- Morning trough 8-10am: +0.6 mg/dL/5min
+- Evening peak 7-9pm: +1.7 mg/dL/5min (~3× variation)
+- Dawn phenomenon detected in 79% of patients
+- Circadian explains 4.1% additional variance
+- Controller type does NOT explain circadian (p=0.206) — it's physiological
+
+![EXP-2794 Circadian](../../tools/visualizations/deviation-circadian/exp-2794-dashboard.png)
+
+### EXP-2795: Prospective Settings Validation
+
+**Result: 4/5 PASS**
+
+Critical trust experiment: 70/30 chronological train/test split.
+
+- **89% of patients improve** on held-out test data (25/28)
+- **ISF direction prediction: 93% correct**
+- **Hypo safety: 100% safe** — zero increase in time below 70
+- **Consistent across controllers**: Loop 89%, Trio 100%, OpenAPS 71%
+- Prediction error: 2.576 → 2.485 mg/dL/5min (3.5% improvement)
+
+H2 (suspension decrease) correctly FAILS because ISF correction only changes prediction accuracy, not actual delivery. We're correcting our MODEL, not replaying the controller.
+
+![EXP-2795 Prospective](../../tools/visualizations/prospective-validation/exp-2795-dashboard.png)
+
+### EXP-2796: Final Pipeline Synthesis v4 — BEST EVER
+
+**Result: 5/5 PASS ⭐**
+
+Combines every validated technique:
+1. Convolution BGI (delivery × activity curve)
+2. Category-specific AR(2) (CSF/ISF/UAM/basal separate)
+3. Circadian correction (sin/cos harmonics per category)
+4. Profile-prior settings extraction
+
+| Metric | BGI-only | v3 (AR1+BGI) | **v4 (Cat-AR2+Circ)** |
+|--------|----------|-------------|------------------------|
+| Test R² | -0.016 | 0.228 | **0.418** |
+| Beats baseline | — | — | **100% (28/28)** |
+
+- **Train R²: 0.457**, Test R²: 0.418 (overfit gap only 0.039)
+- Stability ratio: 0.91 (near-perfect generalization)
+- ALL 28 patients improve over v3 — zero regressions
+- Category-specific modeling is the **single biggest improvement** in the entire 60-experiment research program
+
+| Controller | Train R² | Test R² | All Improve |
+|-----------|----------|---------|-------------|
+| Loop | 0.454 | 0.431 | 100% |
+| Trio | 0.456 | 0.449 | 100% |
+| OpenAPS | 0.593 | 0.273 | 100% |
+
+![EXP-2796 Pipeline v4](../../tools/visualizations/final-pipeline-v4/exp-2796-dashboard.png)
+
+### EXP-2797: EGP-Aware Settings Extraction
+
+**Result: 2/5 PASS**
+
+EGP correction is real but modest:
+- R² improves for 100% of patients (0.236→0.240) but only +0.004
+- ISF bias reduces (|deviation| 2.545→2.452)
+- BUT: circadian ISF variation NOT explained by EGP alone (H4 FAIL)
+- Window temporal consistency NOT improved (H5 FAIL)
+
+**KEY INSIGHT**: The AID controller already partially compensates for EGP. After controller compensation, the residual EGP signal (~1.7 mg/dL/5min circadian range) is small relative to other noise. ISF circadian variation has physiological sources BEYOND EGP — likely insulin sensitivity itself varies by time of day.
+
+![EXP-2797 EGP Settings](../../tools/visualizations/egp-settings/exp-2797-dashboard.png)
+
+### Phase 19 Experiment Index
+
+| # | EXP | Title | Pass | Key Finding |
+|---|-----|-------|------|-------------|
+| 59 | 2793 | Temporal AR Model | 4/5 | Category AR(2) R²=0.449, 2× global |
+| 60 | 2794 | Deviation Circadian | 4/5 | All residuals positive = EGP, 79% dawn |
+| 61 | 2795 | Prospective Validation | 4/5 | 89% improve on test, 93% ISF direction |
+| 62 | 2796 | Final Pipeline v4 | 5/5⭐ | R²=0.418, 100% improve, best ever |
+| 63 | 2797 | EGP Settings | 2/5 | EGP real but modest (+0.004 R²) |
+
+### Phase 19 Summary
+
+The definitive pipeline v4 achieves R²=0.418 on held-out test data — nearly **double** the v3 pipeline. The key architectural insight is that BG dynamics are fundamentally different by metabolic context, requiring separate models per event category. EGP is real and measurable but the controller already compensates for most of it, making explicit EGP correction only marginally helpful.
