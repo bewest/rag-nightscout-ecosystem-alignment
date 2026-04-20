@@ -327,6 +327,13 @@ class BGISubtraction:
                 excess_insulin = bolus_2h + smb_2h + excess_basal_2h
                 expected_drop_raw = excess_insulin * isf_val
 
+                # Extract hour first (needed for EGP circadian + event record)
+                try:
+                    ts = pd.Timestamp(times[i])
+                    hour = ts.hour + ts.minute / 60.0
+                except Exception:
+                    hour = 0.0
+
                 # EGP correction (EXP-2728): subtract hepatic glucose production
                 # EGP opposes insulin action — liver produces glucose, reducing net drop.
                 egp_contribution = 0.0
@@ -351,12 +358,6 @@ class BGISubtraction:
                 roc_start = float(glucose[i] - glucose[i - 1]) if i > 0 and not np.isnan(glucose[i - 1]) else 0.0
 
                 carbs_2h = float(np.nansum(carbs[i:i + h]))
-
-                try:
-                    ts = pd.Timestamp(times[i])
-                    hour = ts.hour
-                except Exception:
-                    hour = 0
 
                 events.append({
                     "patient_id": pid,
