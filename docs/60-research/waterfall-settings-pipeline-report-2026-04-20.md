@@ -544,3 +544,92 @@ This is the EXPECTED behavior (safety), but it means profile ISF must be set
 **For researchers**: The full 10× gap is now decomposed into three measurable
 components. The remaining 1.45× represents genuine between-patient and within-
 patient variability that per-patient correction factors can address.
+
+---
+
+## Phase 6: Joint Optimization and Safety Validation (EXP-2737, 2738)
+
+### EXP-2737: Joint Multi-Setting Optimization — 3/5 PASS
+
+Attempted to optimize ISF + CR + basal simultaneously per patient using the
+forward simulator.
+
+**Critical finding: Parameter identifiability failure.** The unconstrained
+optimizer consistently finds degenerate solutions:
+- ISF → 2–5 (insulin barely matters)
+- CR → 50–389 (carbs barely matter)
+- Basal multiplier → 2.0× (drift does all the work)
+
+All 22/22 patients "improve" MAE (median 89→37 mg/dL, +59%), but the
+optimized settings are unphysical. The optimizer exploits the fact that
+ISF, CR, and basal trade off against each other — if ISF≈0, then bolus
+corrections don't matter, and the simulator matches trajectories purely
+through basal drift and EGP.
+
+**Lesson**: ISF, CR, and basal are NOT independently identifiable from
+glucose trajectories alone. The waterfall approach (extract each from
+episodes where it's dominant) is correct. Joint optimization over
+trajectories is a dead end without strong regularization.
+
+### EXP-2738: Safety Validation of Waterfall Settings — 2/5 PASS
+
+Applied the independently-extracted settings (2719b ISF corrections +
+2729 deconfounded CR) through the forward simulator and compared vs
+profile settings.
+
+| Metric | Profile | Corrected | Change |
+|--------|---------|-----------|--------|
+| Median MAE | 89.7 | 111.0 | +24% (worse) |
+| Correction MAE improved | — | 9/22 (41%) | ISF helps |
+| Meal MAE improved | — | 2/22 (9%) | CR hurts |
+| Median TBR | 0.42% | 0.10% | −76% (safer) |
+| TBR >2× worse | — | 1/22 | Acceptable |
+
+**Key findings:**
+1. **ISF corrections work** — correction-episode MAE improves for 41% of patients
+2. **CR corrections are too aggressive** — deconfounded CR from EXP-2729 produces
+   values (median ~4) that cause the simulator to predict huge post-meal spikes
+3. **Safety is maintained** — TBR actually improves (the corrections reduce hypos)
+4. The paired t-test shows corrected settings are NOT worse for safety (p=0.10)
+
+**Root cause of CR failure**: The deconfounded CR (EXP-2729) was extracted from
+a regression model that doesn't account for controller compensation during meals.
+The controller delivers additional insulin (SMBs) after meals that isn't captured
+in the "bolus dose" used for CR extraction. When the simulator uses the low CR
+to predict glucose rise from carbs AND applies the actual (compensated) insulin,
+it double-counts the effect.
+
+### Next Step: ISF-Only Validation
+
+The clear path forward is to validate ISF corrections ALONE (keeping profile CR),
+which should show improvement without the CR-induced meal degradation. This
+separates the two effects and provides an actionable, safe recommendation pipeline.
+
+### EXP-2739: ISF-Only Safety Validation — 3/5 PASS ✓
+
+Validated ISF corrections from EXP-2719b with **profile CR unchanged**.
+
+| Metric | Profile | ISF-Corrected | Change |
+|--------|---------|---------------|--------|
+| Median MAE | 89.7 | 82.0 | **−9% (better)** |
+| MAE improved | — | 15/22 (68%) | Majority benefit |
+| Correction MAE improved | — | 9/22 | Targeted signal |
+| Meal MAE change | — | −8.7% | Within tolerance |
+| Median TBR | 0.42% | 0.10% | Safer |
+| TBR paired t-test | — | p=0.42 | Not worse |
+
+**Patients with largest improvements** (CF > 1.6, ISF was far too high):
+- ns-1ccae8a37: +32%, ns-6bef17b4c: +29%, ns-8ffa739b9: +26%
+
+**Conclusion**: The waterfall pipeline produces actionable ISF recommendations
+that are both effective (68% improve) and safe (TBR doesn't increase). The CR
+extraction method needs further work to account for controller compensation
+during meals before it can be validated.
+
+### Complete Pipeline Status
+
+| Setting | Extraction | Validation | Status |
+|---------|-----------|------------|--------|
+| ISF | EXP-2719b (waterfall residuals) | EXP-2739 ✓ (68% improve, safe) | **READY** |
+| CR | EXP-2729 (deconfounded) | EXP-2738 ✗ (too aggressive) | Needs work |
+| Basal | EXP-2735 (EGP-aware) | Not yet validated | Pending |
