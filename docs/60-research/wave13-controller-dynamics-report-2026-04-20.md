@@ -84,6 +84,8 @@ Net basal excess: -0.37 ── -0.45 ── -0.59 ── -0.58 ── -0.58 ─�
 
 **Controller subtraction makes things WORSE** (H2 NOT SUPPORTED). Why? Because the coefficient-based attribution is too coarse — subtracting the estimated controller contribution overshoots. The correction-denominator approach works better because it simply ignores the controller's insulin rather than trying to precisely model its BG impact.
 
+![EXP-2753 Controller Decomposition](../../visualizations/controller-decomposition/controller_decomposition.png)
+
 ---
 
 ## Part 3: Confounding by Indication (EXP-2754)
@@ -132,6 +134,8 @@ The harder-to-correct events get more insulin. The regression sees this as "more
 | ISF accuracy | Noisy but directional | Biased toward zero |
 
 Regression is far more **precise** but **inaccurate** — it tells us exactly the wrong number. This is a textbook bias-variance tradeoff.
+
+![EXP-2754 Regression ISF](../../visualizations/regression-isf/regression_isf.png)
 
 ---
 
@@ -222,6 +226,8 @@ Our correction-denominator ISF correlates with the other researcher's pipeline I
 | Key breakthroughs | 4 |
 | Confound layers identified | 4 |
 | Safety findings | 1 critical |
+
+![EXP-2755 Grand Synthesis](../../visualizations/grand-synthesis/grand_synthesis.png)
 
 ---
 
@@ -323,12 +329,12 @@ This approach is:
 | H4 | Regression CI narrower than division | **PASS** | 26× narrower (5.5 vs 144) |
 | H5 | Regression ISF safe for >50% | **PASS** | 100% safe (vacuously, β≈0 → conservative) |
 
-### EXP-2755: Grand Synthesis (4/5 PASS)
+### EXP-2755: Grand Synthesis (3/5 PASS)
 
 | # | Hypothesis | Verdict | Evidence |
 |---|-----------|---------|----------|
 | H1 | Correction-denom best for >60% | **PASS** | 90.9% recommended |
-| H2 | Controller margin CV < 0.5 | **PASS** | Consistent across patients |
+| H2 | Controller margin CV < 0.5 | FAIL | CV=0.534 exceeds 0.5 threshold |
 | H3 | Cross-track r > 0.5 | FAIL | r=0.449, p=0.041 (marginal) |
 | H4 | ≥70% actionable recommendations | **PASS** | 77.3% adjustable |
 | H5 | Three-layer model >80% explained | **PASS** | Layer 2 closes 78%, Layer 3 accounts for rest |

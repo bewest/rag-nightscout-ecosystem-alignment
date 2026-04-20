@@ -92,6 +92,19 @@ Each capability is rated by maturity level:
 | **Nonlinear meal absorption** | 🔬 Research | EXP-2750 | Universal: large meals 60% per-gram impact; need size-dependent carb models |
 | **Pipeline completeness** | 🔬 Research | EXP-2751 | Residuals are white noise beyond 1h; all exploitable signal captured |
 | **Linear carb model optimality** | ❌ Disproved | EXP-2752 | All 4 models identical ACF; 40min memory from controller, not absorption; 0/5 PASS |
+| **Temporal cross-validation** | 🟢 Production | EXP-2753 | 5/5 PASS: corrections PROVEN to reflect genuine patient characteristics; 0.98 stability; zero overfitting |
+| **Controller type as covariate** | 🔬 Research | EXP-2754 | Controller explains 47.5% of ISF variance; population-mean helps 64%; confounding by indication limits regression |
+| **Controller-specific ISF** | ❌ Disproved | EXP-2755 | Unified pipeline robust (7% vs 25%); 68% show <2% difference; controller-specific extraction NOT worth complexity |
+| **ISF gap decomposition** | 🔬 Research | EXP-2756 | Profile ISF (55) ≠ Observed ISF (9); different quantities; controller suspends basal 96.4% of corrections |
+| **EGP quantification** | ❌ Disproved | EXP-2757 | Initial EGP=3.33 was CIRCULAR; used profile ISF in formula; corrected by EXP-2758 |
+| **ISF reconciliation** | 🔬 Research | EXP-2758 | Net fasting drift ≈0; AID already balanced; EGP not dominant gap factor; 1/5 PASS |
+| **Extended DIA pipeline** | 🟡 Beta | EXP-2760 | 4h better for 59%; 17% more precise; stability 0.961; 4/5 PASS |
+| **BG-stratified CF** | ❌ Disproved | EXP-2761 | Between-patient, not within (r=0.112); single CF per patient correct; 1/5 PASS |
+| **IOB-aware CF** | ❌ Disproved | EXP-2762 | IOB adds nothing beyond excess_insulin; delta=0%; 2/5 PASS |
+| **LR vs median CF** | 🟢 Production | EXP-2763 | Intercept=73 (dose-independent drop); LR beats CF 25/26 (96%); 33% MAE reduction; 4/5 PASS |
+| **Intercept decomposition** | 🟢 Production | EXP-2764 | BEST model: drop=73−6×excess+0.8×BG; regression to mean dominates; ~40% vs CF; 5/5 PASS ⭐ |
+| **Settings generator** | 🟡 Beta | EXP-2765 | Practical settings generation from pipeline; 4/5 PASS |
+| **Iterative settings** | 🔬 Research | EXP-2766 | Safe iterative protocol; 2/5 PASS |
 
 **Legend**: 🟢 Production (validated, tested, in pipeline) · 🟡 Beta/Partial (functional but incomplete) · 🔬 Research (experimental) · ❌ Disproved (tried, doesn't work)
 

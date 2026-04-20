@@ -1170,6 +1170,12 @@ Starting from raw Nightscout data (glucose, insulin, carbs, devicestatus), the p
 | 2756 | ISF CF diagnostic | 2/5 PASS | 6× gap: EGP dominant, controller 96% suspends |
 | 2757 | EGP quantification | 3/5 PASS | EGP circular (artifact) — corrected in 2758 |
 | 2758 | ISF reconciliation | 1/5 PASS | Net EGP≈0, profile ISF ≠ observed ISF |
+| 2759 | DIA window & CF | 4/5 PASS | CF is patient characteristic |
+| 2760 | Extended DIA (4h) | 4/5 PASS | 17% more precise |
+| 2761 | BG-stratified CF | 1/5 PASS | Between-patient only (r=0.112) |
+| 2762 | IOB-aware CF | 2/5 PASS | IOB adds nothing; LR approach beats median |
+| 2763 | LR vs median CF | 4/5 PASS | 73 mg/dL intercept, 25/26 beat CF |
+| 2764 | Intercept decomposition | 5/5 PASS | BG coef=0.8, LR+BG best model ⭐ |
 
 ## Phase 12: Validation & Generalization (EXP-2753 through 2755)
 
@@ -1183,6 +1189,8 @@ The critical trust experiment. 70/30 chronological split per patient:
 
 This proves the corrections reflect genuine patient characteristics.
 
+![EXP-2753 Temporal Cross-Validation](../../visualizations/temporal-crossval/temporal_crossval.png)
+
 ### Population Insights (EXP-2754)
 
 - ISF overestimation is NOT universal — only 36% overestimate
@@ -1190,11 +1198,15 @@ This proves the corrections reflect genuine patient characteristics.
 - Population-mean correction helps 64% (useful as default)
 - OpenAPS patients need opposite ISF direction vs Loop/Trio
 
+![EXP-2753 Controller Decomposition](../../visualizations/controller-decomposition/controller_decomposition.png)
+
 ### Controller-Specific Extraction (EXP-2755)
 
 - Controller-specific insulin accounting does NOT improve over unified (7% vs 25%)
 - 68% of patients show <2% difference between methods
 - **Actionable: DIA window differs** — Loop optimal at 60min, Trio at 120min (p=0.022)
+
+![EXP-2755 Grand Synthesis](../../visualizations/grand-synthesis/grand_synthesis.png)
 
 ## Phase 13: ISF Deep Diagnostic (EXP-2756 through 2758)
 
@@ -1221,6 +1233,8 @@ EXP-2758 corrected this with ISF-independent measurement:
 - **Net fasting glucose drift: -0.01 mg/dL/5min** (essentially zero!)
 - The AID controller has ALREADY balanced basal against hepatic output
 - EGP is NOT the dominant factor in the gap
+
+![EXP-2758 ISF Reconciliation](../../visualizations/isf-reconciliation/isf_reconciliation.png)
 
 ### Critical Conclusion
 
@@ -1253,7 +1267,7 @@ derive "true ISF" — it finds the multiplier that makes predictions match obser
 ### EXP-2763: LR vs Median CF — 4/5 PASS (breakthrough)
 - Model: `actual_drop = 73 + slope × excess_insulin`
 - **The 73 mg/dL intercept = dose-independent baseline drop** (universal)
-- LR beats median CF: 22/26 patients (85%), 33% MAE reduction
+- LR beats median CF: 25/26 patients (96%), 33% median MAE reduction
 - Intercept helps 25/26 patients (96%) — nearly universal signal
 - This IS the ~74 mg/dL universal drop from EXP-2681
 
@@ -1299,9 +1313,9 @@ remain the right tool because they abstract over confounding.
 | 2745 | Basal Optimization | Not rec | 1/22, controller dominates |
 | 2747 | Size-Stratified CR | Optional | 41% improve, large meals |
 | 2749 | Full Pipeline Validation | 3/5 PASS | 77% improve overall |
-| 2750 | Pipeline Ablation | 4/5 PASS | ISF+CR sufficient |
-| 2751 | Residual Analysis | 3/5 PASS | 40min autocorrelation |
-| 2752 | Absorption Comparison | 4/5 PASS | Linear wins 14/22 |
+| 2750 | Absorption Dynamics | 3/5 PASS | Universal nonlinear absorption |
+| 2751 | Residual Autocorrelation | 2/5 PASS | 40min autocorrelation |
+| 2752 | Absorption Refinement | 0/5 PASS | Linear wins 14/22 |
 | 2753 | Temporal Cross-Val | 5/5 PASS ⭐ | 59% improve on test |
 | 2754 | Population Insights | 2/5 PASS | Controller explains 47.5% |
 | 2755 | Controller-Specific | 1/5 PASS | DIA differs (p=0.022) |

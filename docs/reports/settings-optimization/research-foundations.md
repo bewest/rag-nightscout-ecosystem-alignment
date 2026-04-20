@@ -212,6 +212,17 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Meal absorption dynamics** | EXP-2750 | 2026-04 | Universal nonlinear absorption: large meals 60% per-gram impact (1.81 vs 2.99 mg/dL/g); wider excursion (80 vs 62 min); 3/5 PASS |
 | **Residual autocorrelation** | EXP-2751 | 2026-04 | 40min memory then white noise; no medium/long-term structure; pipeline captures all exploitable signal; 2/5 PASS |
 | **Absorption curve refinement** | EXP-2752 | 2026-04 | 0/5 PASS (informative null): linear carb model optimal (14/22); 40min ACF from controller dynamics, not absorption mismatch |
+| **Temporal cross-validation** | EXP-2753 | 2026-04 | 5/5 PASS: 21/22 improve on test; median 59% improvement BOTH train and test; stability 0.98; zero patients harmed (>20% worse). PROVES corrections reflect genuine patient characteristics. |
+| **Population insights (regression)** | EXP-2754 | 2026-04 | 2/5 PASS: 36% overestimate ISF (not universal); controller type explains 47.5% of variance; population-mean correction helps 64%; confounding by indication makes β₁≈0 |
+| **Controller-specific ISF** | EXP-2755 | 2026-04 | 1/5 PASS: unified pipeline robust (7% vs 25% improvement); 68% show <2% method difference; DIA differs: Loop 60min, Trio 120min (p=0.022) |
+| **ISF diagnostic (6× gap)** | EXP-2756 | 2026-04 | Controller suspends basal in 96.4% of corrections; CF varies with starting BG (180-220: 0.10, 300-400: 0.24) |
+| **EGP quantification** | EXP-2757 | 2026-04 | Initial EGP=3.33 mg/dL/5min was CIRCULAR (used profile ISF in formula); corrected in EXP-2758 |
+| **ISF reconciliation** | EXP-2758 | 2026-04 | 1/5 PASS: net fasting drift −0.01 mg/dL/5min (≈zero); AID controller already balanced basal vs hepatic output; EGP NOT dominant gap factor |
+| **Extended DIA pipeline** | EXP-2760 | 2026-04 | 4/5 PASS: 4h window better for 59% patients; CF IQR 0.575→0.476 (17% more precise); stability 0.961 |
+| **LR vs median CF** | EXP-2763 | 2026-04 | 4/5 PASS: intercept=73 mg/dL (dose-independent baseline drop); LR beats CF 25/26 (96%), 33% MAE reduction |
+| **Intercept decomposition** | EXP-2764 | 2026-04 | 5/5 PASS ⭐: drop=73−6×excess_insulin+0.8×starting_BG; BG coef=0.797 (regression to mean dominates); LR+BG beats CF ~40%; stability 0.909 |
+| **Settings generator** | EXP-2765 | 2026-04 | 4/5 PASS: practical settings generation from correction factor pipeline |
+| **Iterative settings** | EXP-2766 | 2026-04 | 2/5 PASS: safe iterative settings protocol |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 
@@ -242,6 +253,8 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Circadian basal scheduling** | EXP-2746 | Statistically real patterns (77%) but marginal prediction value (8/22 improve); integrated ISF already captures circadian signal. |
 | **Circadian ISF scheduling** | EXP-2748 | Dawn phenomenon rare in AID users (27%); flat ISF sufficient (11/22 improve, ~1-2 mg/dL gain). AID already compensates. |
 | **Absorption curve refinement** | EXP-2752 | 0/5 PASS: all 4 models produce identical ACF. 40-minute residual memory is from AID controller dynamics, not carb absorption. Linear model optimal (14/22). |
+| **BG-stratified CF** | EXP-2761 | 1/5 PASS: BG-CF correlation is between-patient, not within (median r=0.112); stratified CF +1.6% — single CF per patient is correct complexity. |
+| **IOB-aware CF** | EXP-2762 | 2/5 PASS: IOB adds nothing beyond excess_insulin (H5 fail, delta=0%); improvement from regression approach (35%) not from IOB covariate. |
 
 ---
 
