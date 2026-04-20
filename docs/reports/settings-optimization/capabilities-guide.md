@@ -80,6 +80,11 @@ Each capability is rated by maturity level:
 | **Per-patient EGP profiling** | 🔬 Research | EXP-2739 | EGP varies 69×; basal score 19.5→83.7 (4.3×); ISF precision +16.8% |
 | **ISF-only safe recommendations** | 🔬 Research | EXP-2739 | 68% of patients improve MAE (−9%); TBR safe (p=0.42); CR too aggressive separately |
 | **Joint multi-setting optimization** | ❌ Disproved | EXP-2737 | Unconstrained optimizer finds degenerate (unphysical) solutions; waterfall is correct |
+| **Controller-compensated CR** | 🔬 Research | EXP-2741 | Bilateral meal deconfounding: beats profile 73%, beats deconfounded 100%; 4/5 PASS |
+| **EGP-personalized ISF** | 🔬 Research | EXP-2742 | Per-patient EGP adjustment: ISF shifted >10% for 73% of patients; 4/5 PASS |
+| **Integrated pipeline (ISF+CR+EGP)** | 🔬 Research | EXP-2743 | −28% MAE vs profile; beats profile 64%; TIR improved 82%; 4/5 PASS |
+| **Universal EGP extraction** | ❌ Disproved | EXP-2744 | EGP/basal collinear in fasting — identification problem; 2/5 PASS |
+| **Basal via fasting drift** | ❌ Disproved | EXP-2745 | 1/22 improve — drift reflects controller compensation, not physiology; 3/5 PASS |
 
 **Legend**: 🟢 Production (validated, tested, in pipeline) · 🟡 Beta/Partial (functional but incomplete) · 🔬 Research (experimental) · ❌ Disproved (tried, doesn't work)
 

@@ -200,6 +200,11 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **Safety wall — naive ISF replacement** | EXP-2738 | 2026-04 | TBR +6.2pp (4.2→10.3%); ρ=−0.85 ISF ratio vs TBR; 62% of patients unsafe for naive ISF swap |
 | **Per-patient EGP profiling** | EXP-2739 | 2026-04 | EGP varies 69× across patients; personalized EGP → basal score 83.7/100 (4.3× over naive); ISF precision +16.8% |
 | **Basal-EGP equilibrium** | EXP-2740 | 2026-04 | Drift magnitude and EGP consistency across time windows; circadian mismatch 1/5 PASS |
+| **Controller-compensated CR** | EXP-2741 | 2026-04 | Bilateral meal deconfounding: CR beats deconfounded 22/22, beats profile 16/22 (73%); 4/5 PASS |
+| **EGP-personalized ISF** | EXP-2742 | 2026-04 | Per-patient EGP adjustment: beats population 6/11 (55%); EGP changes ISF >10% for 8/11; 4/5 PASS |
+| **Integrated pipeline** | EXP-2743 | 2026-04 | ISF+CR+EGP combined: −28% MAE vs profile, beats profile 14/22 (64%), TIR improved 18/22 (82%); 4/5 PASS |
+| **Universal EGP extraction** | EXP-2744 | 2026-04 | Identification problem — EGP and basal are collinear in fasting; 2/5 PASS |
+| **Basal via fasting drift** | EXP-2745 | 2026-04 | 8/22 significant drift, direction agrees 22/22, but only 1/22 MAE improves — drift reflects controller not physiology; 3/5 PASS |
 | **Stacking prevention** (3.5h) | EXP-2624 | 2026-04 | EGP nadir timing |
 | **48h carb history** | EXP-2622, 2627 | 2026-04 | Glycogen context for overnight drift |
 
@@ -225,6 +230,8 @@ The hypo rate floor is approximately **16%**, irreducible by settings optimizati
 | **DynISF sensitivity_ratio predicts ISF** | EXP-2725 | Pooled partial r=0.008 — DynISF's algorithmic adjustments are orthogonal to observed correction ISF. Dose variable already captures DynISF's influence. 6/10 DynISF patients have statistically significant r, but magnitudes are tiny (median |r|=0.084). |
 | **Joint multi-setting optimization** | EXP-2737 | Unconstrained joint optimization finds degenerate solutions (ISF→2–5, CR→50–389); 22/22 "improve" but settings are unphysical. ISF/CR/basal are NOT independently identifiable from trajectories alone — waterfall (domain-specific extraction) is correct approach. |
 | **Naive ISF replacement** | EXP-2738 | Replacing profile ISF with empirical ISF increases TBR +6.2pp (4.2→10.3%) across 21 patients; ρ=−0.85 ISF ratio vs TBR increase. Profile ISF isn't wrong — it includes EGP + controller compensation margin that the controller needs. |
+| **Basal rate from fasting drift** | EXP-2745 | 8/22 significant drift, direction agrees 22/22, but only 1/22 MAE improve — closed-loop fasting drift reflects controller adjustments (temp basals, suspensions), not physiological basal needs. Basal optimization requires EGP-equilibrium modeling. |
+| **Universal EGP extraction** | EXP-2744 | EGP and basal are collinear in fasting data — cannot separate them without external constraint. Identification problem: 2/5 PASS. |
 
 ---
 

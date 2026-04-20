@@ -647,6 +647,8 @@ during meals before it can be validated.
 
 ### EXP-2741: Controller-Compensated CR — 4/5 PASS
 
+![EXP-2741 Controller-Compensated CR](../../tools/visualizations/cr-compensated/exp-2741-dashboard.png)
+
 **Problem**: EXP-2738 showed deconfounded CR (EXP-2729) was too aggressive — 20/22
 patients worsened at meals. The root cause: during meals, controllers SUSPEND basal
 (excess_basal goes negative). The deconfounded CR didn't account for this, so the
@@ -671,6 +673,8 @@ the naïve deconfounded CR — closer to the user's profile setting.
 
 ### EXP-2742: EGP-Personalized ISF — 4/5 PASS
 
+![EXP-2742 EGP-Personalized ISF](../../tools/visualizations/egp-personalized-isf/exp-2742-dashboard.png)
+
 **Problem**: The population EGP model doesn't capture the >2× inter-patient
 variation discovered by the other researcher's EXP-2739.
 
@@ -689,6 +693,8 @@ requiring ISF adjusted upward by 2×. Without EGP personalization, this
 patient's ISF would be severely underestimated.
 
 ### EXP-2743: Integrated Pipeline — 4/5 PASS
+
+![EXP-2743 Integrated Pipeline](../../tools/visualizations/integrated-pipeline/exp-2743-dashboard.png)
 
 **The culmination**: End-to-end validation combining all components.
 
@@ -717,6 +723,8 @@ patient's ISF would be severely underestimated.
 
 ### EXP-2745: Basal Rate Validation via Fasting Drift (3/5 PASS)
 
+![EXP-2745 Basal Validation](../../tools/visualizations/basal-validation/exp-2745-dashboard.png)
+
 **Approach**: Extract fasting periods (no carbs or bolus for 3h), measure glucose drift,
 derive basal multiplier, validate in simulator.
 
@@ -735,6 +743,8 @@ basal rate is not wrong; the controller is already compensating.
 EXP-2740 approach using Hill equation physics) rather than empirical drift analysis.
 
 ### Production Settings Report v2
+
+![Production Report v2](../../tools/visualizations/production-report-v2/production-report-v2-dashboard.png)
 
 Final per-patient assessment combining all validated pipeline components:
 
