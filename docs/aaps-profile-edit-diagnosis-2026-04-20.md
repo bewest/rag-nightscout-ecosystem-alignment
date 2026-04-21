@@ -6,18 +6,22 @@
 
 ## TL;DR
 
-- **No, our patches almost certainly do not fix this user's bug.** The symptom has the wrong shape for the V1 race we patched: that race produces **≥2** profile-store docs from **1** edit; the user has **1** doc total.
-- The `Test@@@@@<timestamp>` columns are **profile-switch treatments**, not profile-store docs. They are expected behavior — every Profile Switch (including loop pump-side activations from any source) produces one and is correctly rendered as a column by `lib/profilefunctions.js:272-287`.
-- **Static-analysis simulator** (`tools/aaps/sync-state-model.py`) modeled all silent-no-op branches in `DataSyncSelectorV1/V3.processChangedProfileStore` and ran 8 scenarios. **3 reproduce the user's symptom (≥2 saves, ≤1 profile-store doc in NS); 4 do not (definitively disconfirmed).**
-- **Disconfirmed by the model:**
-  - `LocalProfileLastChange == 0L` *alone* — the Save button calls `storeSettings(activity, dateUtil.now())` (`ProfileFragment.kt:346`) which immediately sets it to `now`. The guard only triggers if the user **never pressed Save**.
-  - Ack-leapfrog race (Save #2 clicked during Save #1's ack wait) — clock is monotonic; even a 1ms gap means `Save #2`'s `lastChange` is greater than `confirmLastProfileStore(now)` from the prior ack, so the `lastChange > lastSync` guard still passes.
-- **Surviving candidates** (in order of plausibility for a new user):
-  1. **`allProfilesValid != true`** (`DataSyncSelectorV1.kt:792` / `V3.kt:718`) — any single profile with `dia` outside `[5,9]`, `ic` outside `[2,100]`, basal outside the pump's `[min,max]`, or basal block boundary not aligned to a whole hour on a non-30-min-capable pump. **Silent. No notification, no log.** Most insidious — a Virtual Pump or misconfigured pump driver with `basalMaximumRate=0` rejects any profile.
-  2. **NSClient unauthorized for `profile.create`** — V3 REST returns 401, V1 socket dbAdd returns no ack within 60s. Visible as HTTP 401 in NSClient log.
-  3. **NSClient paused** — `isPaused` guard at `DataSyncSelectorV1.kt:787` / `V3.kt:713`. User-toggleable setting.
-- **Version-dependence:** for *this user's symptom* (1 profile-store doc), the answer is *independent of c-r-m version on the "AAPS didn't send" branch*. Our R-tests prove `wip/test-improvements` accepts every observed AAPS-shape body — so even on the "c-r-m rejected" branch, rejection would manifest as an HTTP error in the AAPS NSClient log regardless of c-r-m version.
-- Our PR's V1 dedup + `_id` tiebreaker patch is still correct and worth merging; it just addresses a different failure mode.
+- **No, our patches do not fix this user's bug.** The symptom has the wrong shape for the V1 race we patched: that race produces **≥2** profile-store docs from **1** edit; the user has **1** doc total.
+- **Conclusive evidence for "AAPS profile-switch sync works, profile-store sync silently fails":**
+  - The `Test@@@@@<timestamp>` columns in Reporting > Profiles are NOT profile-store records. They are **profile-switch treatments** with embedded `profileJson`, injected client-side by `lib/profilefunctions.js:272-287` into the in-memory store as `<name>@@@@@<mills>`. Server-side `lib/data/ddata.js:122-126` strips these from the editor dropdowns. The dropdown's *one* "Valid from: 1969…" entry is the lone real profile-store doc (NS bootstrap default).
+  - User reported (follow-up): renaming the AAPS profile from "Test" to "Default" produced no change to the NS Default doc. This rules out name collision and confirms profile-store POSTs are not happening at all.
+  - Profile-switch treatments share the same NSClient connection, auth, and `isPaused` flag as profile-store. Their successful arrival rules out NSClient pause / network / global auth failure.
+- **Surviving root-cause candidates** narrowed by this evidence (highest first):
+  1. **`allProfilesValid != true`** in `processChangedProfileStore` (`DataSyncSelectorV1.kt:792` / `V3.kt:718`). Only the profile-store path runs this gate; profile-switches do not — explaining the asymmetry exactly. Validity oracle (`tools/aaps/pump-validity-oracle.py`) shows the user's screenshot values (DIA=9, IC=15, ISF=4 mmol/L, basal=0.4) **pass on every realistic pump driver after `onStart()`**. So this requires either (a) additional basal blocks at non-hour boundaries on Omnipod/Medtrum/Insight/DiaconnG8 (BAIL on those pumps per oracle); (b) the user reconfigured DIA outside [5,9] in a *different* profile in the same store (one bad profile fails `allProfilesValid` for the whole store); (c) the active pump is still in pre-`onStart()` state for the Virtual Pump (basalMaximumRate=0 — race).
+  2. **Bootstrap-broadcast race with `LocalProfileLastChange`.** NS bootstrap profile is created with `startDate: new Date(0)` (`lib/profile/profileeditor.js:70`). AAPS's `NsIncomingDataProcessor.processProfile:289` accepts re-broadcasts when `createdAt % 1000 == 0L`, calling `loadFromStore` → `storeSettings(timestamp = 0)`. If a re-broadcast arrives *between* a user Save's `storeSettings(now)` call and the queued `processChangedProfileStore` coroutine actually reading the preference, the lastChange-zero guard at line 790 fires. Simulator (`scenario_S8`) shows this **does not reliably reproduce** the symptom in sequential ordering, but is a plausible intermittent failure — a tight race that could explain "some saves don't sync" but not "no saves sync."
+  3. **Per-collection NS auth scope** — the NS access token has `treatments:create` but not `profile:create`. Visible in NSClient log as 401 only on profile uploads.
+- **Definitively ruled out** by combined evidence (treatments arriving + dropdown showing 1 record):
+  - NSClient paused / network down / global auth invalid (treatments would fail too)
+  - `LocalProfileLastChange == 0L` from a *one-time* import (Save would recover via `dateUtil.now()`)
+  - Ack-leapfrog race (clock monotonic; simulator-disconfirmed in S3)
+  - Name collision (rename to "Default" was tested by user, no change)
+  - c-r-m server bug — our R-tests prove patched c-r-m correctly persists every observed AAPS-shape body, including reproducing the exact screenshot from treatments-only data (R8)
+- **Static-analysis simulator** (`tools/aaps/sync-state-model.py`) modeled all silent-no-op branches in `DataSyncSelectorV1/V3.processChangedProfileStore` and ran 8 scenarios.
 
 ## Method
 
@@ -75,19 +79,21 @@ These columns come from `lib/profilefunctions.js:272-287`, which injects each Pr
 
 ## Suggested message back to the Discord user
 
-> Your c-r-m install looks healthy — the `Test@@@@@<timestamp>` entries are expected (one per Profile Switch, used for the historical Reporting audit trail; they're correctly filtered out of the editor dropdowns).
+> Good news: your c-r-m install looks **healthy**. The `Test@@@@@<timestamp>` columns you see in Reporting > Profiles are *expected* — c-r-m injects each AAPS Profile Switch treatment into that view as a synthetic column for the historical audit trail (`lib/profilefunctions.js:272-287`); they are deliberately filtered out of the editor dropdown. So the dropdown showing a single "Default 1969" entry is consistent with: (a) the original c-r-m bootstrap profile is still the only real `profile` document, and (b) AAPS *is* successfully syncing Profile Switch treatments (which is why the columns keep appearing) but is **not** sending any profile-store updates.
 >
-> We modeled all silent-no-op branches of AAPS' `DataSyncSelectorV1/V3.processChangedProfileStore` and ran 8 scenarios. Three reproduce your symptom (many edits, ≤1 profile-store doc in NS); five don't. Of the three that survive, in order of likelihood:
+> We modeled all 9 silent-skip branches of AAPS' `DataSyncSelectorV1/V3.processChangedProfileStore` and ran an automated validity oracle against your screenshot values across 8 pump drivers. With your DIA=9, IC=15, ISF=4 mmol/L, basal=0.4, validation passes on every realistic pump after `onStart()`, so the leading suspect — `allProfilesValid` returning false — only fires under specific conditions. In order of likelihood:
 >
-> 1. **`allProfilesValid` returns false.** Any single profile in your store with `dia` outside [5, 9], `ic` outside [2, 100], or basal outside the active pump's [min, max] silently bails the sync — *no log, no notification*. Open AAPS → Local Profile and check every value, especially if you're on the Virtual Pump (which can have `basalMaximumRate=0`).
-> 2. **NSClient unauthorized for `profile.create`.** Check the NSClient log immediately after Save: V3 returns 401, or V1 dbAdd never gets an ack. Verify your NS access token's role grants `profile:create`.
-> 3. **NSClient sync paused.** Check NSClient settings page for a pause toggle.
+> 1. **Pump-validity gate.** Even though your *visible* profile passes, `allProfilesValid` checks **every** profile in the store. Do you have other profiles besides "Test"? Open AAPS → Local Profile → check the profile selector at the top. If a stale or imported profile has `dia=9.5`, `ic=1.5`, basal blocks at non-hour boundaries on Omnipod/Medtrum, etc., the *whole* store fails validity silently. (See `tools/aaps/pump-validity-oracle.py` for the per-pump rules.) **What pump driver are you using?**
+> 2. **NSClient unauthorized for `profile.create` specifically.** Your NS token clearly has `treatments:create` (Profile Switches arrive). It might lack `profile:create`. The NSClient log will show 401 only on profile uploads. Tap Save in Local Profile, then immediately open NSClient → Log and look for HTTP errors.
+> 3. **Bootstrap-broadcast race.** The original NS bootstrap profile has `startDate: new Date(0)`, and AAPS treats whole-second timestamps as "user edited in NS" → reloads it → resets `LocalProfileLastChange` to 0. If a re-broadcast arrives between your Save and the queued upload, the upload bails. Less likely to explain a 100% failure rate but possible for intermittent ones.
 >
-> We **disconfirmed** two earlier guesses: `LocalProfileLastChange == 0L` (the Save button immediately sets it to `now`, so the guard cannot trigger after even one Save) and the rapid-edit ack-leapfrog race (clock is monotonic so the next Save's `lastChange` is always greater).
+> Two things would let us pin it in minutes:
+> - The **pump driver** you've selected in AAPS.
+> - A short **NSClient log** captured while you do one Save (filter for "profile" / "DataSync" / HTTP errors).
 >
-> If you can `mongoexport` your `profile` and `treatments` collections (the latter filtered to `eventType: "Profile Switch"`), run our `tools/aaps/dropdown-logic-probe.js` against the JSON dumps — it will tell you definitively how many profile-store docs you have. And if you can share the NSClient log for the moment of a Save, we can pin which of the 3 it is in <5 minutes.
+> Also useful: from a NS shell, `mongoexport --collection profile --query '{}'` so we can see all your stored profile docs (including `defaultProfile` field per doc), and run our `tools/aaps/dropdown-logic-probe.js` against the dump to confirm what the editor is reading.
 >
-> Our forthcoming PR ([nightscout/cgm-remote-monitor#8475](https://github.com/nightscout/cgm-remote-monitor/pull/8475)) does fix a related issue — but only the case where AAPS sends two updates that race; it doesn't address the "no update was sent" case you're hitting.
+> Heads-up: our forthcoming PR ([nightscout/cgm-remote-monitor#8475](https://github.com/nightscout/cgm-remote-monitor/pull/8475)) hardens c-r-m against duplicate AAPS uploads, but does **not** address the "AAPS isn't sending uploads at all" case — which is what we believe is happening to you. The fix is on the AAPS side (instrumentation patch needed; we have a proposal pending).
 
 ## What was delivered (this iteration)
 

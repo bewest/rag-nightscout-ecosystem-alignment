@@ -270,6 +270,59 @@ def scenario_S6_paused_nsclient():
     return "S6_paused_nsclient", s
 
 
+def scenario_S8_bootstrap_redownload_resets_lastchange():
+    """NEW (2026-04-20): the most plausible mechanism for the Discord bug.
+
+    1. New AAPS user does first-time NS sync. NS profile collection contains
+       only the c-r-m bootstrap doc with `startDate: new Date(0).toISOString()`
+       (lib/profile/profileeditor.js:70). NsIncomingDataProcessor.processProfile
+       sees createdAt=0; the guard at line 289 is
+           if (createdAt > lastLocalChange || createdAt % 1000 == 0L) {...}
+       0 % 1000 == 0 → branch taken → loadFromStore → storeSettings(timestamp=0)
+       → LocalProfileLastChange = 0L.
+
+    2. User edits Local Profile in AAPS, taps Save. ProfileFragment:346 calls
+       storeSettings(activity, dateUtil.now()), so LocalProfileLastChange=Tnow.
+       processChangedProfileStore queues an nsAdd("profile", ...) — POST
+       starts but is async.
+
+    3. Before the POST/ack completes, NSClient briefly disconnects+reconnects
+       (mobile data toggle, app foreground change, NS server restart).
+       Reconnect re-fetches /api/v1/profile and re-broadcasts the bootstrap
+       doc. processProfile fires again → storeSettings(0) → LocalProfileLastChange
+       RESET to 0.
+
+    4. The pending nsAdd may or may not have flushed; either way, the *next*
+       Save now finds LocalProfileLastChange=0 (the most recent write wins).
+       processChangedProfileStore bails at line 790. From the user's POV:
+       "I keep editing and nothing reaches NS."
+
+    Profile-switch sync is unaffected because processChangedProfileSwitches
+    reads from persistenceLayer (room db), not from a preference key that
+    bootstrap re-download would clobber.
+    """
+    s = State(profile=Profile("Test", dia=6.5, basal_rates=[(0, 0.8)], ic=10, isf=50))
+    # Initial NS download: bootstrap with startDate=0
+    store_settings(s, timestamp=0, step="initial NS download (bootstrap startDate=0)")
+    s.advance(60_000)
+    # User edits + Save (would normally upload)
+    save_ts = s.now()
+    s.LocalProfileLastChange = save_ts
+    process_changed_profile_store(s, "Save #1 (after bootstrap)", ack_delay_ms=2000)
+    # NSClient reconnects, re-broadcasts bootstrap before next Save
+    s.advance(5_000)
+    store_settings(s, timestamp=0, step="NSClient reconnect: bootstrap re-broadcast")
+    # User edits + Save again — now lastChange has been reset to 0 by step above
+    s.advance(10_000)
+    store_settings(s, timestamp=s.now(), step="Save #2 (after reconnect-reset)")
+    # And another reconnect + Save
+    s.advance(5_000)
+    store_settings(s, timestamp=0, step="NSClient reconnect #2: bootstrap re-broadcast")
+    s.advance(10_000)
+    store_settings(s, timestamp=s.now(), step="Save #3")
+    return "S8_bootstrap_redownload_resets_lastchange", s
+
+
 def scenario_S7_basal_misaligned_to_hour():
     """User edits a basal block boundary to e.g. 00:30 — pump.is_30min_basal_capable
     is False (most pumps), so allProfilesValid returns False silently."""
@@ -291,6 +344,7 @@ def run():
         scenario_S5_nsclient_unauthorized_no_ack,
         scenario_S6_paused_nsclient,
         scenario_S7_basal_misaligned_to_hour,
+        scenario_S8_bootstrap_redownload_resets_lastchange,
     ]
     print("=" * 78)
     print("AAPS profile-store sync simulator (static-analysis-derived)")
