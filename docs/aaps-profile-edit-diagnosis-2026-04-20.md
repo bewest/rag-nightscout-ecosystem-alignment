@@ -6,13 +6,18 @@
 
 ## TL;DR
 
-- **No, our patches almost certainly do not fix this user's bug.** The symptom has the wrong shape for the V1 race we patched.
+- **No, our patches almost certainly do not fix this user's bug.** The symptom has the wrong shape for the V1 race we patched: that race produces **≥2** profile-store docs from **1** edit; the user has **1** doc total.
 - The `Test@@@@@<timestamp>` columns are **profile-switch treatments**, not profile-store docs. They are expected behavior — every Profile Switch (including loop pump-side activations from any source) produces one and is correctly rendered as a column by `lib/profilefunctions.js:272-287`.
-- The "only 1 Database record" symptom means **AAPS never POSTed an updated profile-store document**, not that c-r-m dropped one. Most likely root cause is in AAPS, in one of:
+- The "only 1 Database record" symptom means **either** AAPS never sent the update **or** c-r-m rejected it before insert. The two cases are indistinguishable from the server-side mongo state alone — they require the AAPS NSClient log or a server access log to disambiguate.
+- We did **not** confirm root cause empirically. We don't have the user's mongo dump or AAPS log. The probe in this report is the right tool for them to run; we only smoke-tested it against synthetic data.
+- Candidate silent-no-op paths (in rough order of plausibility, all unverified):
   1. `LongNonKey.LocalProfileLastChange == 0L` guard in `DataSyncSelectorV1/V3.processChangedProfileStore` (initial-import edge case).
-  2. `nsAdd("profile", ...)` failing silently (no ack within 60s, or REST POST returning non-2xx).
-  3. NSClient connection unauthenticated for the profile collection role.
-- Our PR's V1 dedup + `_id` tiebreaker patch is still correct and worth merging; it just addresses a different failure mode (race that produces **2** profile-store docs from **1** edit, not 0).
+  2. NSClient connection lacking `profile.create` role → V3 REST 401 or V1 socket auth-rejected.
+  3. `allProfilesValid` guard fails (any profile in the store has a validation issue).
+  4. `nsAdd("profile", ...)` ack never arrives within 60s and retry queue wedged.
+  5. NSClient sync paused/filtered by a user setting toggled at first-run.
+- **Version-dependence:** for *this user's symptom* (1 profile-store doc), the answer is *independent of c-r-m version on the "AAPS didn't send" branch*. On the "c-r-m rejected" branch it could vary by version, but our R-tests prove `wip/test-improvements` accepts every observed AAPS-shape body — so if rejection is happening, it would be visible as an HTTP error in the AAPS NSClient log regardless. We did not bisect older c-r-m versions because there is no symptom-pair to compare against without AAPS-side evidence.
+- Our PR's V1 dedup + `_id` tiebreaker patch is still correct and worth merging; it just addresses a different failure mode.
 
 ## Method
 
@@ -60,6 +65,13 @@ These columns come from `lib/profilefunctions.js:272-287`, which injects each Pr
 2. **NSClient authentication / role.** If the NSClient connection is auth'd as a role without `profile.create`, V3 POST returns 401 and V1 dbAdd is silently dropped. Check NSClient log for HTTP/socket errors at the moment of the edit save.
 3. **Profile name collision.** AAPS defaults to `defaultProfile = "Test"` for the user's Local Profile. If a stale profile with the same name exists from a prior account, the user might be editing one slot but NS `defaultProfile` filter shows another. Less likely.
 4. **Browser cache.** The Profile Editor page caches on first load. Hard-refresh or clear browser data. Last resort.
+
+## What we did NOT do (limits of this analysis)
+
+- We did **not** run the probe against the user's actual data. The probe was only smoke-tested against synthetic JSON in this workspace.
+- We did **not** read AAPS NSClient logs from the user — without them, we cannot distinguish "AAPS never sent" from "c-r-m rejected the POST".
+- We did **not** bisect older c-r-m versions. The R-tests prove the patched server accepts AAPS bodies; bisecting only becomes useful if a future report includes both an AAPS log showing successful POSTs and missing mongo docs.
+- The candidate root causes listed in the TL;DR are inferred from static reading of `DataSyncSelectorV1/V3` and `ProfilePlugin`, not observed.
 
 ## Suggested message back to the Discord user
 
