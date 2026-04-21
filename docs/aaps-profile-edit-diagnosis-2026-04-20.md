@@ -8,15 +8,15 @@
 
 - **No, our patches almost certainly do not fix this user's bug.** The symptom has the wrong shape for the V1 race we patched: that race produces **≥2** profile-store docs from **1** edit; the user has **1** doc total.
 - The `Test@@@@@<timestamp>` columns are **profile-switch treatments**, not profile-store docs. They are expected behavior — every Profile Switch (including loop pump-side activations from any source) produces one and is correctly rendered as a column by `lib/profilefunctions.js:272-287`.
-- The "only 1 Database record" symptom means **either** AAPS never sent the update **or** c-r-m rejected it before insert. The two cases are indistinguishable from the server-side mongo state alone — they require the AAPS NSClient log or a server access log to disambiguate.
-- We did **not** confirm root cause empirically. We don't have the user's mongo dump or AAPS log. The probe in this report is the right tool for them to run; we only smoke-tested it against synthetic data.
-- Candidate silent-no-op paths (in rough order of plausibility, all unverified):
-  1. `LongNonKey.LocalProfileLastChange == 0L` guard in `DataSyncSelectorV1/V3.processChangedProfileStore` (initial-import edge case).
-  2. NSClient connection lacking `profile.create` role → V3 REST 401 or V1 socket auth-rejected.
-  3. `allProfilesValid` guard fails (any profile in the store has a validation issue).
-  4. `nsAdd("profile", ...)` ack never arrives within 60s and retry queue wedged.
-  5. NSClient sync paused/filtered by a user setting toggled at first-run.
-- **Version-dependence:** for *this user's symptom* (1 profile-store doc), the answer is *independent of c-r-m version on the "AAPS didn't send" branch*. On the "c-r-m rejected" branch it could vary by version, but our R-tests prove `wip/test-improvements` accepts every observed AAPS-shape body — so if rejection is happening, it would be visible as an HTTP error in the AAPS NSClient log regardless. We did not bisect older c-r-m versions because there is no symptom-pair to compare against without AAPS-side evidence.
+- **Static-analysis simulator** (`tools/aaps/sync-state-model.py`) modeled all silent-no-op branches in `DataSyncSelectorV1/V3.processChangedProfileStore` and ran 8 scenarios. **3 reproduce the user's symptom (≥2 saves, ≤1 profile-store doc in NS); 4 do not (definitively disconfirmed).**
+- **Disconfirmed by the model:**
+  - `LocalProfileLastChange == 0L` *alone* — the Save button calls `storeSettings(activity, dateUtil.now())` (`ProfileFragment.kt:346`) which immediately sets it to `now`. The guard only triggers if the user **never pressed Save**.
+  - Ack-leapfrog race (Save #2 clicked during Save #1's ack wait) — clock is monotonic; even a 1ms gap means `Save #2`'s `lastChange` is greater than `confirmLastProfileStore(now)` from the prior ack, so the `lastChange > lastSync` guard still passes.
+- **Surviving candidates** (in order of plausibility for a new user):
+  1. **`allProfilesValid != true`** (`DataSyncSelectorV1.kt:792` / `V3.kt:718`) — any single profile with `dia` outside `[5,9]`, `ic` outside `[2,100]`, basal outside the pump's `[min,max]`, or basal block boundary not aligned to a whole hour on a non-30-min-capable pump. **Silent. No notification, no log.** Most insidious — a Virtual Pump or misconfigured pump driver with `basalMaximumRate=0` rejects any profile.
+  2. **NSClient unauthorized for `profile.create`** — V3 REST returns 401, V1 socket dbAdd returns no ack within 60s. Visible as HTTP 401 in NSClient log.
+  3. **NSClient paused** — `isPaused` guard at `DataSyncSelectorV1.kt:787` / `V3.kt:713`. User-toggleable setting.
+- **Version-dependence:** for *this user's symptom* (1 profile-store doc), the answer is *independent of c-r-m version on the "AAPS didn't send" branch*. Our R-tests prove `wip/test-improvements` accepts every observed AAPS-shape body — so even on the "c-r-m rejected" branch, rejection would manifest as an HTTP error in the AAPS NSClient log regardless of c-r-m version.
 - Our PR's V1 dedup + `_id` tiebreaker patch is still correct and worth merging; it just addresses a different failure mode.
 
 ## Method
@@ -69,20 +69,23 @@ These columns come from `lib/profilefunctions.js:272-287`, which injects each Pr
 ## What we did NOT do (limits of this analysis)
 
 - We did **not** run the probe against the user's actual data. The probe was only smoke-tested against synthetic JSON in this workspace.
-- We did **not** read AAPS NSClient logs from the user — without them, we cannot distinguish "AAPS never sent" from "c-r-m rejected the POST".
+- We did **not** read AAPS NSClient logs from the user — without them, we cannot distinguish among the 3 surviving candidates.
 - We did **not** bisect older c-r-m versions. The R-tests prove the patched server accepts AAPS bodies; bisecting only becomes useful if a future report includes both an AAPS log showing successful POSTs and missing mongo docs.
-- The candidate root causes listed in the TL;DR are inferred from static reading of `DataSyncSelectorV1/V3` and `ProfilePlugin`, not observed.
+- The simulator (`tools/aaps/sync-state-model.py`) models the *guard logic*, not the *exact preference defaults* of the AAPS Android Preferences API. We assumed prefs default to 0; this matches AAPS' explicit defaults in `LongNonKey` but isn't verified end-to-end against an emulator.
 
 ## Suggested message back to the Discord user
 
 > Your c-r-m install looks healthy — the `Test@@@@@<timestamp>` entries are expected (one per Profile Switch, used for the historical Reporting audit trail; they're correctly filtered out of the editor dropdowns).
 >
-> The issue is that your Local Profile edits aren't being POSTed to NS at all. AAPS only emits profile-store updates when `LongNonKey.LocalProfileLastChange != 0`. Two things to try:
+> We modeled all silent-no-op branches of AAPS' `DataSyncSelectorV1/V3.processChangedProfileStore` and ran 8 scenarios. Three reproduce your symptom (many edits, ≤1 profile-store doc in NS); five don't. Of the three that survive, in order of likelihood:
 >
-> 1. Open AAPS → Local Profile → make any tiny change → press Save. (Don't just clone or activate — Save explicitly stamps `lastChange = now`.)
-> 2. Watch the NSClient log immediately after Save. You should see `dbAdd profile` (V1) or `POST /v3/profile 201` (V3). If you don't, NSClient isn't authorized for profile sync.
+> 1. **`allProfilesValid` returns false.** Any single profile in your store with `dia` outside [5, 9], `ic` outside [2, 100], or basal outside the active pump's [min, max] silently bails the sync — *no log, no notification*. Open AAPS → Local Profile and check every value, especially if you're on the Virtual Pump (which can have `basalMaximumRate=0`).
+> 2. **NSClient unauthorized for `profile.create`.** Check the NSClient log immediately after Save: V3 returns 401, or V1 dbAdd never gets an ack. Verify your NS access token's role grants `profile:create`.
+> 3. **NSClient sync paused.** Check NSClient settings page for a pause toggle.
 >
-> If you can `mongoexport` your `profile` and `treatments` (Profile Switch only) collections, run our `tools/aaps/dropdown-logic-probe.js` against the JSON dumps — it will tell you definitively how many profile-store docs you have and which one Profile Editor is rendering.
+> We **disconfirmed** two earlier guesses: `LocalProfileLastChange == 0L` (the Save button immediately sets it to `now`, so the guard cannot trigger after even one Save) and the rapid-edit ack-leapfrog race (clock is monotonic so the next Save's `lastChange` is always greater).
+>
+> If you can `mongoexport` your `profile` and `treatments` collections (the latter filtered to `eventType: "Profile Switch"`), run our `tools/aaps/dropdown-logic-probe.js` against the JSON dumps — it will tell you definitively how many profile-store docs you have. And if you can share the NSClient log for the moment of a Save, we can pin which of the 3 it is in <5 minutes.
 >
 > Our forthcoming PR ([nightscout/cgm-remote-monitor#8475](https://github.com/nightscout/cgm-remote-monitor/pull/8475)) does fix a related issue — but only the case where AAPS sends two updates that race; it doesn't address the "no update was sent" case you're hitting.
 
@@ -91,6 +94,7 @@ These columns come from `lib/profilefunctions.js:272-287`, which injects each Pr
 | Artifact | Path | Purpose |
 |----------|------|---------|
 | Emission audit | `tools/aaps/emission-audit.md` | Static analysis of AAPS V1/V3 profile-store paths with line-level guards |
+| **Sync state model** | `tools/aaps/sync-state-model.py` | **Static-analysis-derived simulator** of all guard branches; runs 8 scenarios and identifies which match the observed symptom |
 | Fixture builder | `tools/aaps/build-fixtures.js` | Deterministic fixtures for replay tests |
 | Fixtures (5) | `tools/aaps/fixtures/*.json` | Canonical AAPS-shape bodies |
 | Roundtrip tests | `cgm-pr-8447 → tests/aaps-profile-edit-roundtrip.test.js` | R1-R7 integration tests, all green |
