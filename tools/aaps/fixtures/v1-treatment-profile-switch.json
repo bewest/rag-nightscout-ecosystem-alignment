@@ -1,0 +1,18 @@
+{
+  "eventType": "Profile Switch",
+  "enteredBy": "openaps://AndroidAPS",
+  "created_at": "2026-04-20T15:51:43.000Z",
+  "mills": 1776700303000,
+  "profile": "Test",
+  "duration": 0,
+  "timeshift": 0,
+  "percentage": 100,
+  "originalProfileName": "Test",
+  "originalCustomizedName": "Test",
+  "originalTimeshift": 0,
+  "originalPercentage": 100,
+  "originalDuration": 0,
+  "profileJson": "{\"units\":\"mg/dl\",\"dia\":6.5,\"timezone\":\"UTC\",\"sens\":[{\"time\":\"00:00\",\"value\":50}],\"carbratio\":[{\"time\":\"00:00\",\"value\":10}],\"basal\":[{\"time\":\"00:00\",\"value\":0.8}],\"target_low\":[{\"time\":\"00:00\",\"value\":100}],\"target_high\":[{\"time\":\"00:00\",\"value\":120}]}",
+  "carbs": null,
+  "insulin": null
+}

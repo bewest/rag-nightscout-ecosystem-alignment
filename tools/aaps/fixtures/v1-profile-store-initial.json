@@ -1,0 +1,45 @@
+{
+  "defaultProfile": "Test",
+  "startDate": "2026-04-20T15:46:40.000Z",
+  "created_at": "2026-04-20T15:46:40.000Z",
+  "date": 1776700000000,
+  "units": "mg/dl",
+  "mills": 1776700000000,
+  "store": {
+    "Test": {
+      "dia": 6,
+      "carbratio": [
+        {
+          "time": "00:00",
+          "value": 10
+        }
+      ],
+      "sens": [
+        {
+          "time": "00:00",
+          "value": 50
+        }
+      ],
+      "basal": [
+        {
+          "time": "00:00",
+          "value": 0.8
+        }
+      ],
+      "target_low": [
+        {
+          "time": "00:00",
+          "value": 100
+        }
+      ],
+      "target_high": [
+        {
+          "time": "00:00",
+          "value": 120
+        }
+      ],
+      "units": "mg/dl",
+      "timezone": "UTC"
+    }
+  }
+}
