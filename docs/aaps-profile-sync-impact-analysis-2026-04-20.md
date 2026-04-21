@@ -294,25 +294,48 @@ A `DataSyncSelectorV1Test` does not currently exist (only V3 has a test). The si
 - **Should `PairProfileStore` track `nightscoutId`?** Every other `Pair*` does. Tracking would let AAPS use stable `_id` references and allow the c-r-m server to do `_id`-based dedup rather than `startDate`-based. It would also unblock a future `nsUpdate` path for profiles.
 - **The `createdAt % 1000 == 0L` heuristic in `NsIncomingDataProcessor.processProfile:283-295`** ("whole second means edited in NS") is fragile — any AAPS-originated profile whose epoch happens to land on a whole second will be re-imported as if NS-edited. Worth replacing with explicit provenance.
 
-## V3 path verification and fix
+## V3 path verification
 
 V3 hits `POST /api/v3/profile` (`NightscoutRemoteService.kt:102-103`), which routes to `lib/api3/generic/create/operation.js`. The handler computes an identifier as `uuid.v5("undefined_<doc.date>")` (since profile docs have no `device` or `eventType`) and uses it for dedup via `identifyingFilter`. Verified with three new tests in `tests/api3.aaps-patterns.test.js` under `Profile sync via REST (V3) - AAPS createProfileStore behavior`:
 
-| Scenario | V3 pre-fix | V3 post-fix |
-|---|---|---|
-| First POST | 201, one doc inserted | 201, one doc inserted |
-| Resend identical payload (retry) | 200, deduped in place (request-level dedup works) | 200, deduped in place |
-| Edit profile in AAPS → new `LocalProfileLastChange` → new `date` | **201, new doc inserted** (different identifier) | **200, same identifier, single doc** |
-| Distinct `defaultProfile` names from same `app` | (n/a) | 201 each, two docs (no collision) |
+| Scenario | V3 result |
+|---|---|
+| First POST | 201, one doc inserted |
+| Resend identical payload (retry, same `date`) | 200, deduped in place (request-level dedup works) |
+| Edit profile in AAPS → new `LocalProfileLastChange` → new `date` | 201, new doc inserted (different identifier) |
 
-So V3 had **request-level dedup but not edit-level dedup**. We patched it in two places:
+So V3 has **request-level dedup but not edit-level dedup**. Each user edit accumulates a new MongoDB profile document.
 
-1. `lib/api3/shared/operationTools.js` — `calculateIdentifier` now special-cases profile-store-shaped documents (`defaultProfile` + `store`, no `eventType`) and computes `uuid.v5("profilestore_<app>_<defaultProfile>")`. Edits and retries from the same `(app, defaultProfile)` collapse onto a single identifier.
-2. `lib/api3/generic/update/validate.js` — relaxed immutability of `date`, `created_at`, `startDate` during deduplication when the storage document is a profile-store, since those fields are expected to advance per edit.
+### Why we are NOT changing this
 
-After the fix, V3 (REST) and V1 (websocket) both converge AAPS profile updates onto a single MongoDB document per source. The secondary `_id` sort in `lib/server/profile.js:last()` continues to ensure deterministic display when multiple profile rows do exist (e.g., legacy data from before the fix).
+Initial reaction was to add edit-level dedup to V3 by keying on `(app, defaultProfile)`. On review that turned out to be wrong: it would have diverged AAPS V3 from how the rest of the ecosystem treats the `profile` collection.
 
-**Migration note:** existing duplicate profile rows in production databases are not retroactively merged. New POSTs from updated servers will pick the most recently-edited row (via the `dedupFallbackFields: ['created_at']` path) only if the standard identifier path doesn't match — in practice, after this fix new edits from any given AAPS source converge on one identifier, but pre-existing duplicates remain until manually cleaned up.
+| Client | Endpoint | Sends `_id` | Effect on `profile` collection |
+|---|---|---|---|
+| **Loop** (NightscoutKit) | `POST /api/v1/profile` | No | new doc per upload |
+| **Trio** | `POST /api/v1/profile.json` (`NightscoutAPI.swift:411-444`) | No | new doc per upload |
+| **AAPS V1** | websocket `dbAdd` (post-fix) | No | new doc per `startDate` (retries dedup) |
+| **AAPS V3** | `POST /api/v3/profile` | No | new doc per `date` (retries dedup) |
+| **NS Web UI** | `PUT /api/v1/profile` (`save()`) | Yes | in-place replace by `_id` |
+
+Loop and Trio fire `uploadProfiles()` after **every** settings edit (`Trio/Sources/Modules/{BasalProfileEditor, ISFEditor, CarbRatioEditor, TargetsEditor, ...}`) and have accumulated profile history this way for years. Their users do not experience this as a bug because:
+- The `profile` collection is **historical/append-only by design**.
+- The NS UI profile editor lets users navigate prior snapshots.
+- `lib/server/profile.js:last()` always picks the most recent row for the active display.
+
+Collapsing V3 edits onto a single `(app, defaultProfile)` row would have:
+- Erased the upload history NS UI exposes.
+- Made AAPS V3 inconsistent with AAPS V1, Loop, and Trio.
+- Required relaxing field-immutability rules (`date`, `created_at`, `startDate`) in the V3 generic update path, increasing surface area for future bugs.
+
+### What actually fixes the user complaint
+
+The "AAPS profile edits don't appear" report is best explained by the V1 retry race interacting with **non-deterministic `last()` ordering when two rows share a `startDate`** (which is exactly what the 60s ack-window race produces). The two minimal fixes that resolve this without touching the historical semantic are:
+
+1. **V1 websocket dedup by `startDate`** (`lib/server/websocket.js`) — kills the duplicate row from the retry race.
+2. **`{startDate: -1, _id: -1}` secondary sort in `profile.last()`** (`lib/server/profile.js`) — deterministically picks the newest row when `startDate` ties.
+
+Both fixes help every uploader (Loop, Trio, AAPS V1, AAPS V3) and preserve profile history across the ecosystem.
 
 ---
 
