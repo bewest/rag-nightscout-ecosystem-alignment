@@ -543,3 +543,59 @@ def test_p_post_high_takes_precedence_over_naive():
     flags = classify_triage_flags(inputs)
     flag = [f for f in flags if f.name == "post_high_envelope"]
     assert flag and flag[0].severity == "medium"
+
+
+def test_p_basal_mismatch_high_emits_high_severity_with_safety_caveat():
+    """EXP-2865: P>=0.9 → HIGH severity; rationale must contain safety caveat."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        p_basal_mismatch=0.95,
+        basal_recommended_mult=0.07,
+    )
+    flags = classify_triage_flags(inputs)
+    flag = [f for f in flags if f.name == "basal_mismatch"]
+    assert flag and flag[0].severity == "high"
+    assert "EXP-2865" in flag[0].rationale
+    assert "TRIAGE" in flag[0].rationale
+    assert "do NOT lower basal" in flag[0].rationale
+
+
+def test_p_basal_mismatch_boundary_emits_low():
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        p_basal_mismatch=0.4,
+    )
+    flags = classify_triage_flags(inputs)
+    flag = [f for f in flags if f.name == "basal_mismatch"]
+    assert flag and flag[0].severity == "low"
+
+
+def test_p_basal_mismatch_below_threshold_suppresses():
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        p_basal_mismatch=0.05,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "basal_mismatch" not in names
+
+
+def test_p_basal_mismatch_none_emits_no_flag():
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "basal_mismatch" not in names

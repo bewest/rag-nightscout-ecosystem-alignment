@@ -72,6 +72,8 @@ class AuditionInputs:
     p_low_recovery: Optional[float] = None      # EXP-2862: bootstrap P(median recovery<0.4)
     p_site_degradation: Optional[float] = None  # EXP-2863: bootstrap P(aged-fresh ISF delta<-20%)
     p_post_high_envelope: Optional[float] = None  # EXP-2864: bootstrap P(envelope>25 mg/dL)
+    p_basal_mismatch: Optional[float] = None      # EXP-2865: max bootstrap P(scheduled basal mult>0.5) across TOD
+    basal_recommended_mult: Optional[float] = None  # EXP-2865: median recommended actual/scheduled multiplier (triage only, NOT a setting change)
 
 
 @dataclass
@@ -256,6 +258,35 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
                 "target — controller is sustaining high-end without recovery."
             ),
         ))
+
+    if inputs.p_basal_mismatch is not None:
+        mult_str = (
+            f"; median observed/scheduled mult={inputs.basal_recommended_mult:.2f}"
+            if inputs.basal_recommended_mult is not None
+            else ""
+        )
+        if inputs.p_basal_mismatch >= 0.9:
+            flags.append(AuditionFlag(
+                name="basal_mismatch",
+                severity="high",
+                rationale=(
+                    f"Bootstrap P(scheduled basal >> actual)={inputs.p_basal_mismatch:.2f} "
+                    f"in fasting equilibrium (EXP-2865){mult_str}. "
+                    "TRIAGE ONLY — the gap IS the EGP safety margin "
+                    "(per EXP-2738); do NOT lower basal by the multiplier. "
+                    "Audit basal schedule + EGP exposure."
+                ),
+            ))
+        elif inputs.p_basal_mismatch >= 0.1:
+            flags.append(AuditionFlag(
+                name="basal_mismatch",
+                severity="low",
+                rationale=(
+                    f"Bootstrap P(scheduled basal >> actual)={inputs.p_basal_mismatch:.2f} "
+                    f"(EXP-2865){mult_str} — boundary; provisional flag."
+                ),
+            ))
+        # else: confidently aligned → suppress
 
     # EXP-2854: prefer the direct EXP-2853 Simpson-paradox flag if available
     # (catches 9/29 patients across all phenotypes; phenotype proxy only
