@@ -1,0 +1,31 @@
+[
+  {
+    "patient_id": "b",
+    "charts": [
+      "week_envelope",
+      "meal_event",
+      "profile_audit",
+      "recovery_diagnostic",
+      "site_age"
+    ]
+  },
+  {
+    "patient_id": "c",
+    "charts": [
+      "week_envelope",
+      "meal_event",
+      "profile_audit",
+      "recovery_diagnostic",
+      "site_age"
+    ]
+  },
+  {
+    "patient_id": "ns-8f3527d1ee40",
+    "charts": [
+      "week_envelope",
+      "meal_event",
+      "profile_audit",
+      "site_age"
+    ]
+  }
+]
