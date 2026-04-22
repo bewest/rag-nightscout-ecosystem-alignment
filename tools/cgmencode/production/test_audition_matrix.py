@@ -365,3 +365,61 @@ def test_p_isf_takes_precedence_over_point_estimate():
     names = {f.name for f in flags}
     assert "isf_under_correction" in names
     assert "isf_over_correction" not in names
+
+
+def test_p_low_recovery_high_emits_high_severity():
+    """EXP-2862: flat + P(low recovery)>=0.9 → HIGH severity, bootstrap-confident."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.0,
+        p_low_recovery=1.0,
+    )
+    flags = classify_triage_flags(inputs)
+    rec = [f for f in flags if f.name == "flat_low_recovery"]
+    assert rec and rec[0].severity == "high"
+    assert "EXP-2862" in rec[0].rationale
+
+
+def test_p_low_recovery_boundary_emits_low():
+    """EXP-2862: flat + 0.1 <= P < 0.9 → LOW severity, boundary."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.3,
+        p_low_recovery=0.5,
+    )
+    flags = classify_triage_flags(inputs)
+    rec = [f for f in flags if f.name == "flat_low_recovery"]
+    assert rec and rec[0].severity == "low"
+    assert "boundary" in rec[0].rationale.lower()
+
+
+def test_p_low_recovery_below_threshold_suppresses():
+    """EXP-2862: flat + P(low) < 0.1 → confidently fine, suppress; ignore naive."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.3,    # would normally trigger naive flag
+        p_low_recovery=0.05,             # but bootstrap says no
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "flat_low_recovery" not in names
+
+
+def test_p_low_recovery_takes_precedence_over_point_estimate():
+    """EXP-2862: bootstrap field overrides naive median_recovery_fraction branch."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,    # naive would NOT emit
+        p_low_recovery=0.95,             # bootstrap says low
+    )
+    flags = classify_triage_flags(inputs)
+    rec = [f for f in flags if f.name == "flat_low_recovery"]
+    assert rec and rec[0].severity == "high"

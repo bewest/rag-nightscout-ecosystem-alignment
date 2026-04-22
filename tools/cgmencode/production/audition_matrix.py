@@ -69,6 +69,7 @@ class AuditionInputs:
     p_simpson: Optional[float] = None           # EXP-2859: bootstrap P(simpson)
     p_isf_under_correction: Optional[float] = None  # EXP-2861: bootstrap P(gap<-10%)
     p_isf_over_correction: Optional[float] = None   # EXP-2861: bootstrap P(gap>+30%)
+    p_low_recovery: Optional[float] = None      # EXP-2862: bootstrap P(median recovery<0.4)
 
 
 @dataclass
@@ -88,7 +89,31 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
     """
     flags: List[AuditionFlag] = []
 
-    if (
+    if inputs.phenotype == PHENOTYPE_FLAT and inputs.p_low_recovery is not None:
+        if inputs.p_low_recovery >= 0.9:
+            flags.append(AuditionFlag(
+                name="flat_low_recovery",
+                severity="high",
+                rationale=(
+                    f"Flat phenotype + bootstrap P(recovery<0.4)="
+                    f"{inputs.p_low_recovery:.2f} (EXP-2862). Envelope is "
+                    "held by sustained controller intervention rather than "
+                    "schedule. Audition ISF + site rotation."
+                ),
+            ))
+        elif inputs.p_low_recovery >= 0.1:
+            flags.append(AuditionFlag(
+                name="flat_low_recovery",
+                severity="low",
+                rationale=(
+                    f"Flat phenotype + bootstrap P(recovery<0.4)="
+                    f"{inputs.p_low_recovery:.2f} (EXP-2862) — boundary; "
+                    "transition count or noise leaves classification "
+                    "uncertain. Provisional flag."
+                ),
+            ))
+        # else: confidently above 0.4 → suppress
+    elif (
         inputs.phenotype == PHENOTYPE_FLAT
         and inputs.median_recovery_fraction is not None
         and inputs.median_recovery_fraction < 0.4
