@@ -43,6 +43,9 @@ and within-patient reproducibility analysis.
 ---
 
 ## 1. Cohort Composition
+![DynISF Deconfounding Analysis](../../visualizations/dynisf-deconfound/dynisf_deconfound.png)
+
+
 
 ### Patient Groups
 

@@ -13,6 +13,15 @@
 ---
 
 ## 1. Purpose
+![Three-Phase Correction](../../visualizations/egp-synthesis/fig1_three_phase_correction.png)
+
+![Dose-Dependent ISF](../../visualizations/egp-synthesis/fig2_dose_dependent_isf.png)
+
+![SC Ceiling](../../visualizations/egp-synthesis/fig3_sc_ceiling.png)
+
+![AID Compensation](../../visualizations/egp-synthesis/fig4_aid_compensation.png)
+
+
 
 This report reviews the full body of evidence from experiments 2621–2662 and corrects
 an over-generalization that crept into the narrative during experiments 2629–2635.
