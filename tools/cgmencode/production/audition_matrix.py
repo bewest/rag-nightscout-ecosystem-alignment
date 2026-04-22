@@ -64,6 +64,7 @@ class AuditionInputs:
     isf_gap_pct: Optional[float] = None         # EXP-2847; +ve = over-correct
     post_high_mg_dl: Optional[float] = None     # EXP-2843 envelope
     wear_isf_drop_pct: Optional[float] = None   # EXP-2812 site age
+    simpson_paradox: Optional[bool] = None      # EXP-2853: sign(β_fast) ≠ sign(β_slow)
 
 
 @dataclass
@@ -145,20 +146,33 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
             ),
         ))
 
-    # EXP-2850: up_shift patients are window-sensitive (50% sign-consistent
-    # vs 80-100% for flat/down). Audition recommendations derived from 48h
-    # envelope windows for up-shift patients should carry a warning that
-    # faster windows would emit opposite-sign recommendations.
-    if inputs.phenotype == PHENOTYPE_UP:
+    # EXP-2854: prefer the direct EXP-2853 Simpson-paradox flag if available
+    # (catches 9/29 patients across all phenotypes; phenotype proxy only
+    # catches 2/9 of them). Fall back to phenotype proxy when not provided.
+    if inputs.simpson_paradox is True:
+        flags.append(AuditionFlag(
+            name="window_dependence_warning",
+            severity="medium",
+            rationale=(
+                "EXP-2853 Simpson decomposition: β_fast (5-min reactive) and "
+                "β_slow (48h structural) have opposite signs. Audition "
+                "recommendations from one timescale will conflict with the "
+                "other; use both views before changing settings."
+            ),
+        ))
+    elif inputs.simpson_paradox is None and inputs.phenotype == PHENOTYPE_UP:
+        # Fallback: up_shift phenotype as a coarse proxy when Simpson flag
+        # is not yet computed for this patient.
         flags.append(AuditionFlag(
             name="window_dependence_warning",
             severity="low",
             rationale=(
-                "Up-shift phenotype — multi-scale envelope coupling (EXP-2849) "
-                "shows sign flip between fast (6-12h) and slow (24-48h) "
-                "windows for ~50% of these patients. Recommendations from 48h "
-                "structural-demand signal may conflict with reactive-loop "
-                "behavior visible at 6h."
+                "Up-shift phenotype proxy — multi-scale envelope coupling "
+                "(EXP-2849) shows sign flip between fast (6-12h) and slow "
+                "(24-48h) windows for ~50% of these patients. Recommendations "
+                "from 48h structural-demand signal may conflict with reactive-"
+                "loop behavior visible at 6h. Compute EXP-2853 Simpson flag "
+                "for direct detection."
             ),
         ))
 

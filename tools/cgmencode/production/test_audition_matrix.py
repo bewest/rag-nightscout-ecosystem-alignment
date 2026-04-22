@@ -186,3 +186,36 @@ def test_flat_and_down_do_not_emit_window_dependence_warning():
         assert "window_dependence_warning" not in names, (
             f"{ph} should NOT emit window_dependence_warning"
         )
+
+
+def test_simpson_flag_overrides_phenotype_proxy():
+    """EXP-2854: when EXP-2853 Simpson flag is available, it takes
+    precedence over the phenotype proxy and emits medium-severity warning."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",  # would NOT trigger phenotype proxy
+        median_recovery_fraction=0.6,
+        simpson_paradox=True,
+    )
+    flags = classify_triage_flags(inputs)
+    warn = [f for f in flags if f.name == "window_dependence_warning"]
+    assert warn, "Simpson flag should emit window_dependence_warning"
+    assert warn[0].severity == "medium"  # direct flag is higher confidence
+    assert "Simpson" in warn[0].rationale
+
+
+def test_simpson_false_suppresses_phenotype_proxy():
+    """EXP-2854: explicit Simpson=False overrides up_shift phenotype proxy."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="up_shift",   # would normally trigger
+        median_recovery_fraction=0.6,
+        simpson_paradox=False,  # but direct measurement says no
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "window_dependence_warning" not in names, (
+        "Explicit Simpson=False should suppress phenotype-proxy warning"
+    )
