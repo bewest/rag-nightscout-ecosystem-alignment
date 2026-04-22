@@ -8,6 +8,21 @@ correction layers
 
 ---
 
+
+## 📊 Visualization Dashboards
+
+> **Status**: Dashboards for experiments EXP-2823, 2832 are in development.
+> Visualization directory structure will be created in `visualizations/cross-layer-interactions/`
+> once all figure generation is complete. Figures will include:
+> - State/clustering analysis
+> - Transition matrices and persistence
+> - EGP audit and reconciliation
+> - Algorithm comparison
+>
+> **Expected**: Figures will be automatically embedded in this section upon dashboard completion.
+
+---
+
 ## 1. Motivation
 
 The multi-layer supply/demand pipeline (raw → state → EGP → wear → residual)

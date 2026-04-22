@@ -7,6 +7,21 @@
 
 ---
 
+
+## 📊 Visualization Dashboards
+
+> **Status**: Dashboards for experiments EXP-2830, 2831 are in development.
+> Visualization directory structure will be created in `visualizations/multitimescale-supply-demand/`
+> once all figure generation is complete. Figures will include:
+> - State/clustering analysis
+> - Transition matrices and persistence
+> - EGP audit and reconciliation
+> - Algorithm comparison
+>
+> **Expected**: Figures will be automatically embedded in this section upon dashboard completion.
+
+---
+
 ## 1. Framing
 
 The user proposed a supply/demand metaphor that organizes prior findings into

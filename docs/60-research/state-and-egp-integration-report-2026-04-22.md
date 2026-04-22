@@ -3,6 +3,21 @@
 **Experiments:** EXP-2810, EXP-2811, EXP-2820, EXP-2821
 **Lines of Inquiry:** Metabolic State (Line A), EGP Modeling (Line B)
 
+
+## 📊 Visualization Dashboards
+
+> **Status**: Dashboards for experiments EXP-2810, 2811, 2820, 2821 are in development.
+> Visualization directory structure will be created in `visualizations/state-egp-integration/`
+> once all figure generation is complete. Figures will include:
+> - State/clustering analysis
+> - Transition matrices and persistence
+> - EGP audit and reconciliation
+> - Algorithm comparison
+>
+> **Expected**: Figures will be automatically embedded in this section upon dashboard completion.
+
+---
+
 ## Executive Summary
 
 This report covers two newly-opened (or reopened) lines of research that together address foundational questions about (a) **multi-day metabolic context** as a covariate for settings extraction, and (b) **endogenous glucose production (EGP)** as a measurable physiological quantity that influences settings interpretation.

@@ -6,6 +6,21 @@
 
 ---
 
+
+## 📊 Visualization Dashboards
+
+> **Status**: Dashboards for experiments EXP-2840 are in development.
+> Visualization directory structure will be created in `visualizations/two-stream-methodology/`
+> once all figure generation is complete. Figures will include:
+> - State/clustering analysis
+> - Transition matrices and persistence
+> - EGP audit and reconciliation
+> - Algorithm comparison
+>
+> **Expected**: Figures will be automatically embedded in this section upon dashboard completion.
+
+---
+
 ## 1. The Conflation Problem
 
 User-articulated framing (2026-04-22):
