@@ -40,6 +40,24 @@ because a settings change cannot fix a hardware/wear cause.
 **Charter compliance**: Recommendation is the Stream B gap, not a
 biological ISF claim. No EGP estimation. Confidence grade B.
 
+### Per-patient audition chart (V4: 'you are here' for patient `b`)
+
+![Per-patient correction-ISF audit](figures/exp-2847_flat_isf_audit.png)
+
+Left: scheduled vs observed median ISF, parity line. Patient `b` (red,
+larger marker) is the only flat-low-recovery case. Right: per-patient
+ISF gap %; patient `b` is the lone left-of-zero entry.
+
+### Cohort overlay (Charter V3 percentile bands; V8 paired chart)
+
+![Cohort ISF gap by phenotype + controller](figures/exp-2847_cohort_isf_gap.png)
+
+Cohort medians cluster at +30% across phenotypes and controllers
+(observed > scheduled — controller compensation embedded in the
+correction). Patient `b` (black-edge marker) is the lone outlier on
+the under-correction side, validating the audition flag direction
+independently of phenotype/controller assignment.
+
 ## Productionized Audition Matrix
 
 `production/audition_matrix.py` exposes:

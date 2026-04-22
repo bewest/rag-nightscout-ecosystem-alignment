@@ -140,11 +140,48 @@ Highest-confidence intervention candidates (cross-tab from EXP-2845b):
 
 1. EXP-2843b: re-test envelope coupling at 24h windows (faster audition).
 2. Back-fill EXP-2812 transition data for the 4 flat patients without
-   transition coverage (looser n_trans criterion).
+   transition coverage (looser n_trans criterion). [EXP-2848]
 3. Stream A sensor-gap orthogonal test still open.
 4. Wear-positive vs wear-negative deeper drilldown (cohort_site_age_heatmap).
 5. The flat-low-recovery patients deserve explicit ISF re-audit
-   (cross-cluster experiment to be designed).
+   (cross-cluster experiment to be designed). **DONE: EXP-2847.**
+
+---
+
+## Visualizations (Charter V8 — every research line gets a paired chart)
+
+### Phenotype split (EXP-2844)
+
+![Cohort phenotype panel](figures/cohort_phenotype_panel.png)
+![Recovery vs phenotype shift](figures/cohort_recovery_vs_shift.png)
+![Controller × phenotype crosstab](figures/cohort_controller_phenotype.png)
+
+### Route hypothesis (EXP-2845)
+
+![Route by controller](figures/exp-2845_route_by_controller.png)
+![Unified triage table (V4 'you are here')](figures/triage_unified_table.png)
+
+### Time-of-day localization (EXP-2845c)
+
+![TOD basal heatmap (cohort)](figures/tod_basal_heatmap_cohort.png)
+![TOD basal panel by phenotype](figures/tod_basal_panel_by_phenotype.png)
+
+### SMB capability audit (EXP-2846)
+
+![SMB capability panel](figures/exp-2846_smb_capability_panel.png)
+
+### Recovery-by-controller cohort (V7 cohort pairing)
+
+![Recovery by controller](figures/cohort_recovery_by_controller.png)
+
+### Site-age heatmap (V7)
+
+![Site-age cohort heatmap](figures/cohort_site_age_heatmap.png)
+
+### Correction-ISF audition (EXP-2847)
+
+![Per-patient ISF audit](figures/exp-2847_flat_isf_audit.png)
+![Cohort ISF gap distribution](figures/exp-2847_cohort_isf_gap.png)
 
 ---
 
