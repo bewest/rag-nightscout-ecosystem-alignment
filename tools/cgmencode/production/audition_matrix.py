@@ -155,7 +155,36 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
     # patients have only 25% median agreement across rolling 30d windows
     # (vs 87.5% for Simpson-negative), so a single-window Simpson=True without
     # stability evidence is LOW confidence.
-    if inputs.simpson_paradox is True:
+    # EXP-2859: bootstrap P(simpson) takes precedence when available — gives
+    # explicit confidence (only 2/26 patients are P>=0.9, 12/26 are P<=0.1
+    # confidently clean, 12/26 are uncertain boundary).
+    if inputs.p_simpson is not None:
+        if inputs.p_simpson >= 0.9:
+            flags.append(AuditionFlag(
+                name="window_dependence_warning",
+                severity="medium",
+                rationale=(
+                    f"EXP-2859 bootstrap P(simpson)={inputs.p_simpson:.0%} — "
+                    "high-confidence Simpson regime. β_fast (5-min reactive) "
+                    "and β_slow (48h structural) sign-mismatch is robust to "
+                    "data resampling; conflicting timescale recommendations "
+                    "are expected."
+                ),
+            ))
+        elif inputs.p_simpson > 0.1:
+            flags.append(AuditionFlag(
+                name="window_dependence_warning",
+                severity="low",
+                rationale=(
+                    f"EXP-2859 bootstrap P(simpson)={inputs.p_simpson:.0%} — "
+                    "boundary case. Patient sits near the β_fast=0 / β_slow=0 "
+                    "regime boundary; Simpson classification is uncertain. "
+                    "Recommendations from one timescale MAY conflict with the "
+                    "other — sanity-check before applying."
+                ),
+            ))
+        # P<=0.1: confidently non-Simpson, suppress flag
+    elif inputs.simpson_paradox is True:
         if (
             inputs.simpson_stability_frac is not None
             and inputs.simpson_stability_frac >= 0.75

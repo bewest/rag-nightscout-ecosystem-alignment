@@ -238,3 +238,48 @@ def test_simpson_false_suppresses_phenotype_proxy():
     assert "window_dependence_warning" not in names, (
         "Explicit Simpson=False should suppress phenotype-proxy warning"
     )
+
+
+def test_p_simpson_high_emits_medium():
+    """EXP-2859: P(simpson) >= 0.9 → MEDIUM severity, takes precedence."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        simpson_paradox=False,  # would suppress under EXP-2854 logic
+        p_simpson=0.95,         # but bootstrap says high-confidence Simpson
+    )
+    flags = classify_triage_flags(inputs)
+    warn = [f for f in flags if f.name == "window_dependence_warning"]
+    assert warn and warn[0].severity == "medium"
+    assert "P(simpson)=95%" in warn[0].rationale
+
+
+def test_p_simpson_boundary_emits_low():
+    """EXP-2859: 0.1 < P(simpson) < 0.9 → LOW severity, boundary case."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        p_simpson=0.5,
+    )
+    flags = classify_triage_flags(inputs)
+    warn = [f for f in flags if f.name == "window_dependence_warning"]
+    assert warn and warn[0].severity == "low"
+    assert "boundary" in warn[0].rationale.lower()
+
+
+def test_p_simpson_low_suppresses():
+    """EXP-2859: P(simpson) <= 0.1 → confidently non-Simpson, suppress."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="up_shift",   # would normally trigger phenotype proxy
+        median_recovery_fraction=0.6,
+        p_simpson=0.05,         # but bootstrap says definitely not
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "window_dependence_warning" not in names

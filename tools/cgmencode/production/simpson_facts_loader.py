@@ -25,6 +25,9 @@ DEFAULT_SIMPSON_PARQUET = (
 DEFAULT_STABILITY_PARQUET = (
     _REPO / "externals" / "experiments" / "exp-2856_per_patient_stability.parquet"
 )
+DEFAULT_BOOTSTRAP_PARQUET = (
+    _REPO / "externals" / "experiments" / "exp-2859_bootstrap_simpson.parquet"
+)
 
 
 @dataclass(frozen=True)
@@ -32,6 +35,7 @@ class SimpsonAuditionFacts:
     """Per-patient Simpson facts ready for AuditionInputs."""
     simpson_paradox: Optional[bool]
     simpson_stability_frac: Optional[float]
+    p_simpson: Optional[float] = None
 
 
 class SimpsonFactsLoader:
@@ -46,9 +50,11 @@ class SimpsonFactsLoader:
         self,
         simpson_path: Path = DEFAULT_SIMPSON_PARQUET,
         stability_path: Path = DEFAULT_STABILITY_PARQUET,
+        bootstrap_path: Path = DEFAULT_BOOTSTRAP_PARQUET,
     ) -> None:
         self._simpson_path = Path(simpson_path)
         self._stability_path = Path(stability_path)
+        self._bootstrap_path = Path(bootstrap_path)
         self._index: Optional[dict[str, SimpsonAuditionFacts]] = None
 
     def _load(self) -> dict[str, SimpsonAuditionFacts]:
@@ -72,11 +78,19 @@ class SimpsonFactsLoader:
                     stab_by_pid[str(r["patient_id"])] = float(
                         r["frac_agree_with_overall"]
                     )
-        all_pids = set(flag_by_pid) | set(stab_by_pid)
+        # Bootstrap P(simpson) (EXP-2859)
+        psim_by_pid: dict[str, float] = {}
+        if self._bootstrap_path.exists():
+            df = pd.read_parquet(self._bootstrap_path)
+            if "patient_id" in df.columns and "p_simpson" in df.columns:
+                for _, r in df.iterrows():
+                    psim_by_pid[str(r["patient_id"])] = float(r["p_simpson"])
+        all_pids = set(flag_by_pid) | set(stab_by_pid) | set(psim_by_pid)
         for pid in all_pids:
             idx[pid] = SimpsonAuditionFacts(
                 simpson_paradox=flag_by_pid.get(pid),
                 simpson_stability_frac=stab_by_pid.get(pid),
+                p_simpson=psim_by_pid.get(pid),
             )
         return idx
 

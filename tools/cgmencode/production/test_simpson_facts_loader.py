@@ -11,9 +11,10 @@ from tools.cgmencode.production.simpson_facts_loader import (
 )
 
 
-def _write_artifacts(tmp_path: Path) -> tuple[Path, Path]:
+def _write_artifacts(tmp_path: Path) -> tuple[Path, Path, Path]:
     sim = tmp_path / "exp-2853_simpson_decomposition.parquet"
     stab = tmp_path / "exp-2856_per_patient_stability.parquet"
+    boot = tmp_path / "exp-2859_bootstrap_simpson.parquet"
     pd.DataFrame({
         "patient_id": ["a", "b", "c"],
         "simpson_paradox": [False, True, True],
@@ -23,12 +24,16 @@ def _write_artifacts(tmp_path: Path) -> tuple[Path, Path]:
         "patient_id": ["a", "b"],
         "frac_agree_with_overall": [0.9, 0.25],
     }).to_parquet(stab, index=False)
-    return sim, stab
+    # Empty bootstrap by default; tests that need it can write more
+    pd.DataFrame({"patient_id": [], "p_simpson": []}).to_parquet(boot, index=False)
+    return sim, stab, boot
 
 
 def test_loader_round_trip(tmp_path):
-    sim, stab = _write_artifacts(tmp_path)
-    loader = SimpsonFactsLoader(simpson_path=sim, stability_path=stab)
+    sim, stab, boot = _write_artifacts(tmp_path)
+    loader = SimpsonFactsLoader(
+        simpson_path=sim, stability_path=stab, bootstrap_path=boot,
+    )
 
     a = loader.get("a")
     assert a.simpson_paradox is False
@@ -52,6 +57,7 @@ def test_loader_missing_files_returns_empty(tmp_path):
     loader = SimpsonFactsLoader(
         simpson_path=tmp_path / "nope1.parquet",
         stability_path=tmp_path / "nope2.parquet",
+        bootstrap_path=tmp_path / "nope3.parquet",
     )
     assert loader.n_patients == 0
     assert loader.get("a") == SimpsonAuditionFacts(None, None)
@@ -66,8 +72,10 @@ def test_loader_integration_with_audition_inputs(tmp_path):
         classify_triage_flags,
     )
 
-    sim, stab = _write_artifacts(tmp_path)
-    loader = SimpsonFactsLoader(simpson_path=sim, stability_path=stab)
+    sim, stab, boot = _write_artifacts(tmp_path)
+    loader = SimpsonFactsLoader(
+        simpson_path=sim, stability_path=stab, bootstrap_path=boot,
+    )
 
     # Patient b: Simpson=True, stability=0.25 → LOW severity
     facts_b = loader.get("b")
