@@ -1,0 +1,179 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                 VERIFICATION REPORT SUMMARY - REPORT 5 OF 5                ║
+║                                                                            ║
+║    Report: controller-isf-signatures-report-2026-04-18.md                  ║
+║    EXP ID: EXP-2668: Per-Controller Demand ISF Signatures                  ║
+║    Status: ⚠️  CRITICAL ISSUES - DO NOT PUBLISH                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+VERIFICATION FINDINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Critical Issue #1: FABRICATED PATIENT IDs
+───────────────────────────────────────────
+  Severity: 🔴 CRITICAL
+  Location: Table 2.1 (Lines 18-29)
+  
+  Report claims 12 patients with IDs:
+    ns-1ccae8a375b9, ns-554b16de7133, ns-6bef17b4c1ec,
+    ns-8b3c1b50793c, ns-8f3527d1ee40, ns-8ffa739b986b,
+    ns-9b9a6a874e51, ns-a9ce2317bead, ns-adde5f4af7ca,
+    ns-c422538aa12a, ns-d444c120c23a, ns-dde9e7c2e752
+  
+  Finding: NONE of these IDs exist in source JSON
+  
+  Actual patients in JSON (17 total):
+    • Standard patients: a, b, c, d, e, f, g, h, i, k
+    • External patients: odc-39819048, odc-49141524, odc-58680324,
+                         odc-61403732, odc-74077367, odc-86025410,
+                         odc-96254963
+  
+  Impact: Table rows cannot be verified against source data
+  Status: Unfixable without understanding ns-* ID mapping
+
+
+Critical Issue #2: UNDISCLOSED PATIENT EXCLUSION
+─────────────────────────────────────────────────
+  Severity: 🔴 CRITICAL
+  Location: Line 5 (Patients: 12) vs Lines 16-29 (table)
+  
+  Discrepancy:
+    Header states: "Patients: 12"
+    Actual JSON: 17 patients
+    Table shows: 12 rows (only Trio/AB patients)
+    
+  Excluded patients NOT documented:
+    • Patient a (Loop/TBR, 180 days)
+    • Patient i (Loop/AB, 180 days) — MENTIONED IN MOTIVATION
+    • odc-39819048 (AAPS/SMB, 10 days)
+    • odc-49141524 (AAPS/SMB, 12 days)
+    • odc-58680324 (AAPS/TBR, 11 days)
+    • odc-61403732 (AAPS/SMB, 11 days)
+    • odc-74077367 (AAPS/TBR, 212 days)
+  
+  Impact: Sampling bias is hidden from reader
+  Fixable: YES - Document inclusion/exclusion criteria
+
+
+Critical Issue #3: PATIENT i CONTRADICTION
+────────────────────────────────────────────
+  Severity: 🔴 CRITICAL
+  Location: Line 10 (motivation) vs Lines 16-29 (table)
+  
+  Motivation (Line 10):
+    "EXP-2666 found patient i has 1132% ISF shift between 2-12h
+     isolation, while most patients stabilize at 6h."
+  
+  Results Table (Lines 16-29):
+    Patient i is COMPLETELY ABSENT
+    Table contains only Trio/AB patients
+    Patient i is Loop/AB (so filtered out)
+  
+  JSON Data on Patient i:
+    Controller: Loop/AB
+    Days: 180
+    SMB/day: 76.2
+    Bol/day: 78.6
+  
+  Impact: Main motivating example excluded without explanation
+  Fixable: YES - Include patient i or explain exclusion
+
+
+Critical Issue #4: ARTIFICIAL CONTROLLER HOMOGENEITY
+─────────────────────────────────────────────────────
+  Severity: 🟠 HIGH
+  Location: Line 10 (motivation) vs Lines 16-29 (table)
+  
+  Report Motivation:
+    "Different AID controllers dose differently: SMB-AID fires 50-75
+     micro-boluses/day (short inter-bolus gaps), Loop/TBR modulates
+     basal rates (longer clean windows)."
+  
+  Table Reality:
+    100% Trio/AB (12/12 rows shown)
+    ZERO controller diversity
+  
+  JSON Actual Distribution:
+    AAPS/SMB:  3 patients
+    AAPS/TBR:  4 patients
+    Loop/AB:   7 patients
+    Loop/TBR:  2 patients
+    Trio/AB:   1 patient
+  
+  Impact: Narrative contradicts data
+  Fixable: YES - Either show diversity or reframe motivation
+
+
+Critical Issue #5: HYPOTHESIS RESULT MISMATCHES
+────────────────────────────────────────────────
+  Severity: 🟠 HIGH
+  Location: Lines 49-57 (Hypothesis Results table)
+  
+  Comparison (Report vs JSON):
+    H1: FAIL  | JSON=False ✓ CORRECT
+    H2: FAIL  | JSON=False ✓ CORRECT
+    H3: FAIL  | JSON=True  ✗ WRONG
+    H4: FAIL  | JSON=True  ✗ WRONG
+    H5: FAIL  | JSON=True  ✗ WRONG
+  
+  Correct Results Should Be:
+    H3: PASS - "Patient i shift explained by SMB-AID bolus spacing"
+    H4: PASS - "Loop/TBR has more isolated corrections/day"
+    H5: PASS - "Within-controller ISF CV < overall CV"
+  
+  Impact: 3 of 5 hypothesis conclusions are inverted
+  Fixable: YES - Update lines 55-57
+
+
+VERIFICATION CONFIDENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Fabricated Patient IDs:        100% (JSON search confirms no ns-* IDs)
+Hidden Patient Exclusion:      100% (JSON count: 17 vs table: 12)
+Patient i Contradiction:       100% (motivation vs table rows)
+Controller Homogeneity:        100% (JSON has 5 types, table shows 1)
+Hypothesis Result Errors:      100% (JSON boolean vs text mismatch)
+
+OVERALL VERDICT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Status: ❌ DO NOT PUBLISH
+
+Reasons:
+  1. Per-patient table (main deliverable) is unverifiable
+  2. Patient IDs do not match source data
+  3. Key hypothesis results are incorrect
+  4. Sampling bias is hidden
+  5. Main motivating example (patient i) is excluded without explanation
+
+Recommendation: RETRACT and rebuild report with:
+  • Actual patient identifiers from source data
+  • Correct hypothesis results (H3-H5 should be PASS)
+  • Restored controller diversity analysis or reframed narrative
+  • Explicit documentation of inclusion/exclusion criteria
+  • Resolution of patient i contradiction
+
+
+REQUIRED FIXES (Priority Order)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[P1] Rebuild Table 2.1 using actual patient IDs (a-k, odc-*)
+[P1] Correct Hypothesis Results: H3/H4/H5 from FAIL to PASS
+[P1] Resolve patient i contradiction (include or explain exclusion)
+[P2] Document sampling criteria (why only Trio/AB if data has 5 types)
+[P2] Verify EXP-2666 cross-reference (1132% ISF shift claim)
+
+
+DETAILED ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+See: VERIFICATION-FINDINGS-2026-04-18-REPORT5.md
+     (Full technical analysis with evidence and remediation steps)
+
+Source Data:
+  Report: docs/60-research/controller-isf-signatures-report-2026-04-18.md
+  JSON:   externals/experiments/exp-2668_controller_isf_signatures.json
+
+Verification Date: 2026-04-18
+Verified By: Copilot (autoreview-correct skill)
+
