@@ -148,6 +148,6 @@ EXP-2656 found SC insulin suppresses at most ~30% of hepatic EGP, explaining sti
 ## 10. Clinical Implications
 
 1. **Max useful dose**: Beyond SC ceiling, additional insulin only increases hypo risk
-2. **Patience mode**: Cap IOB at 1.5x median during wall episodes (EXP-2662: saves 34-82% SMBs)
+2. **Patience mode**: Cap IOB at 1.5x median during wall episodes (EXP-2662: saves 34-42% SMBs)
 3. **Demand ISF**: Using true insulin sensitivity improves ceiling model accuracy
 4. **Per-patient personalization**: Ceiling varies; one-size-fits-all is insufficient
