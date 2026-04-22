@@ -1,8 +1,16 @@
 # EXP-2668: Per-Controller Demand ISF Signatures
 
+⚠️ **VERIFICATION STATUS**: **CRITICAL ERRORS FOUND** (2026-04-22)
+- 5 critical errors identified: fabricated patient IDs, hidden exclusions, hypothesis inversions
+- All 12 ns-* IDs don't exist in JSON (actual: a-k + odc-* pattern)
+- Patient i mentioned in motivation but excluded from results without explanation
+- 5 of 17 patients (29%) hidden from final tables
+- Hypotheses H1/H2/H3 reported as FAIL but should be PASS
+- **STATUS**: DO NOT PUBLISH — Requires complete rebuild with actual patient data
+
 **Date**: 2026-04-18  
 **Predecessor**: EXP-2663, EXP-2666  
-**Patients**: 12  
+**Patients**: ⚠️ Claimed 12 (actual structure different - see errors above)
 **Data**: CGM + pump telemetry from grid.parquet
 
 ## 1. Motivation
