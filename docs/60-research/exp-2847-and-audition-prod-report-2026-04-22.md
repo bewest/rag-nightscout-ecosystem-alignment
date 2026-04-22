@@ -22,7 +22,7 @@ BG ≥ 180, no carbs in prior 30 min or following 3 h). Observed ISF =
 scheduled ISF.
 
 **Result**:
-- N events: 13,810; per-patient coverage: 16/17 phenotype patients.
+- N events: 13,671; per-patient coverage: 16/17 phenotype patients.
 - Patient `b` (Loop, flat, recovery=0.0, only triple-flag in cohort):
   observed median 77 vs scheduled 90 → **−14% gap (under-correction)**.
 - All other patients (n=15) cluster at median **+36% gap (over-correction)**.
