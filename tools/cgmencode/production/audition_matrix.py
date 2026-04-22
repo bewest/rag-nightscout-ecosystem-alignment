@@ -66,6 +66,7 @@ class AuditionInputs:
     wear_isf_drop_pct: Optional[float] = None   # EXP-2812 site age
     simpson_paradox: Optional[bool] = None      # EXP-2853: sign(β_fast) ≠ sign(β_slow)
     simpson_stability_frac: Optional[float] = None  # EXP-2856: rolling-window agreement
+    p_simpson: Optional[float] = None           # EXP-2859: bootstrap P(simpson)
 
 
 @dataclass
