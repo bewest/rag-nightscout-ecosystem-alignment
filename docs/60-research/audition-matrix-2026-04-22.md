@@ -141,6 +141,10 @@ Highest-confidence intervention candidates (cross-tab from EXP-2845b):
 1. EXP-2843b: re-test envelope coupling at 24h windows (faster audition).
 2. Back-fill EXP-2812 transition data for the 4 flat patients without
    transition coverage (looser n_trans criterion). [EXP-2848]
+   **DONE: EXP-2848.** Loosening n_trans≥1 added only 1 non-flat patient.
+   The 4 uncovered flat patients have outcomes that genuinely do not
+   meet triage thresholds — coverage gap is a real-data property, not
+   a methodological limit.
 3. Stream A sensor-gap orthogonal test still open.
 4. Wear-positive vs wear-negative deeper drilldown (cohort_site_age_heatmap).
 5. The flat-low-recovery patients deserve explicit ISF re-audit
