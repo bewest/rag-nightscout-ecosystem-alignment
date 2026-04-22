@@ -1,9 +1,14 @@
 # EGP Research Synthesis: Evidence Review and Corrective Reframing
 
+⚠️ **VERIFICATION STATUS**: **ERRORS IDENTIFIED** (2026-04-22)
+- See: `VERIFICATION-REPORT-2026-04-18.md` (root directory) for details
+- 5 errors found: 1 critical correlation p-value inflation (~1000×), 2 high-severity patient count discrepancies, 3 data inconsistencies
+- **Action Required**: Correct p-value reporting and patient counts before republication
+
 **Date**: 2026-04-18  
 **Scope**: EXP-2621 through EXP-2662 (32 experiments)  
-**Patients**: 12 (9 NS + 3 ODC), 1,838 patient-days  
-**Status**: Errata and synthesis — supersedes over-generalized claims in earlier reports  
+**Patients**: ⚠️ Reported 12 (contradicts experiments using 4–28 patients)
+**Status**: Requires corrections — synthesis sound but scope falsified  
 
 ---
 
