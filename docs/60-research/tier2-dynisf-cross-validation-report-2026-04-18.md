@@ -22,6 +22,15 @@ Four tier-2 experiments were re-run on a 12-patient DynISF cohort (all Trio/AB c
 
 ---
 
+
+### Visualizations
+
+![Field Distributions](../../visualizations/cross-controller-validation/fig1_field_distributions.png)
+![TIR by Controller](../../visualizations/cross-controller-validation/fig2_tir_by_controller.png)
+![Correction Equivalence](../../visualizations/cross-controller-validation/fig3_correction_equivalence.png)
+![IOB Decay Curves](../../visualizations/cross-controller-validation/fig4_iob_decay_curves.png)
+
+
 ## 2. Cross-Cohort Comparison Table
 
 ### Hypothesis-Level Results

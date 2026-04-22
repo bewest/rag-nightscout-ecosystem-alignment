@@ -21,6 +21,17 @@ The DynISF cohort shows similar patterns with stronger prediction bias (mean −
 
 ---
 
+
+### Visualizations
+
+![Cohort Dashboard](../../visualizations/therapy-validation-report/fig01_cohort_dashboard.png)
+![Basal Drift Analysis](../../visualizations/therapy-validation-report/fig02_basal_drift.png)
+![ISF Validation](../../visualizations/therapy-validation-report/fig03_isf_validation.png)
+![CR Validation](../../visualizations/therapy-validation-report/fig04_cr_validation.png)
+![Holdout Stability](../../visualizations/therapy-validation-report/fig05_holdout_stability.png)
+![Safety Assessment](../../visualizations/therapy-validation-report/fig09_safety.png)
+
+
 ## 2. EXP-2351: Insulin Pharmacokinetics
 
 ### 2.1 Overview

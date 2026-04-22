@@ -52,6 +52,12 @@ wall resolution findings, this provides a coherent physiological model: insulin 
 constant potency, but absorption saturates at high IOB levels, and persistent hyperglycemia
 resolves primarily through patient-initiated out-of-band interventions.
 
+
+### Visualizations
+
+![Temporal Cross-Validation](../../visualizations/temporal-crossval/temporal_crossval.png)
+
+
 ---
 
 ## 1. Methodology
