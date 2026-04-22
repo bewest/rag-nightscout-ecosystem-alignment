@@ -26,6 +26,10 @@ from .types import (
     PatientProfile, PipelineResult, SettingsRecommendation,
     ControllerType, ControllerBehavior,
 )
+from .audition_matrix import (
+    AuditionInputs, classify_triage_flags,
+    generate_audition_recommendations,
+)
 
 
 def generate_recommendations(
@@ -35,6 +39,8 @@ def generate_recommendations(
     settings_recs: Optional[List[SettingsRecommendation]],
     meal_history: Optional[MealHistory] = None,
     prediction_bias_mgdl: Optional[float] = None,
+    audition_inputs: Optional[AuditionInputs] = None,
+    profile: Optional[PatientProfile] = None,
 ) -> List[ActionRecommendation]:
     """Generate prioritized action recommendations.
 
@@ -52,6 +58,11 @@ def generate_recommendations(
         settings_recs: list of SettingsRecommendation from settings_advisor.
         meal_history: MealHistory for unannounced meal warnings.
         prediction_bias_mgdl: systematic prediction bias (EXP-2331).
+        audition_inputs: optional 4-factor audition matrix inputs
+            (EXP-2843..2847). When provided, the audition module is
+            consulted and its recommendations + triage flags are merged.
+        profile: optional PatientProfile used to attach current/suggested
+            values to audition recommendations.
 
     Returns:
         List of ActionRecommendation sorted by priority then confidence.
@@ -168,6 +179,35 @@ def generate_recommendations(
             confidence=0.9,
             time_sensitive=False,
         ))
+
+    # ── Priority 2: Audition matrix (EXP-2843..2847) ──────────────
+    # Stream B operational layer. Profile-vs-actual gap recommendations
+    # derived from 4-factor classification (controller × SMB cap ×
+    # phenotype × time-of-day). Triage flags surface as priority 2
+    # informational entries when severity is "high".
+    if audition_inputs is not None:
+        flags = classify_triage_flags(audition_inputs)
+        for flag in flags:
+            if flag.severity != "high":
+                continue
+            recs.append(ActionRecommendation(
+                action_type=f"audition_flag_{flag.name}",
+                priority=2,
+                description=f"Audition triage [{flag.severity}]: {flag.rationale}",
+                predicted_tir_delta=1.0,
+                confidence=0.6,
+                time_sensitive=False,
+            ))
+        for sr in generate_audition_recommendations(audition_inputs, profile):
+            recs.append(ActionRecommendation(
+                action_type=f"audition_{sr.parameter.value}",
+                priority=2,
+                description=sr.rationale,
+                predicted_tir_delta=sr.predicted_tir_delta,
+                confidence=sr.confidence,
+                time_sensitive=False,
+                settings_rec=sr,
+            ))
 
     # Sort: priority first, then by predicted impact
     recs.sort(key=lambda r: (r.priority, -abs(r.predicted_tir_delta)))
