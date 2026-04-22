@@ -1,0 +1,102 @@
+═══════════════════════════════════════════════════════════════════════════════
+APR-18 VERIFICATION COMPLETE (with agent findings reconciliation)
+═══════════════════════════════════════════════════════════════════════════════
+
+TOTAL APR-18 REPORTS: 9
+
+STATUS BREAKDOWN:
+
+✅ APPROVED FOR PUBLICATION (1):
+  1. wall-resolution-mechanism-report-2026-04-18.md (EXP-2669)
+     - All 24 patients, 1763 episodes verified
+     - All hypothesis results confirmed
+     - No errors found
+
+⚠️  CORRECTED (1):
+  2. sc-ceiling-demand-isf-report-2026-04-18.md (EXP-2667)
+     - Table 5 'Fitted Ceiling' column: 20 of 29 values corrected
+     - Section 6 median: 22.5% → 13.9%
+     - Section 6 range: 10-67% → 10-55%
+     - All corrections traceable to JSON source data
+     - NOW APPROVED FOR PUBLICATION
+
+❌ REJECTED (3):
+  3. expanded-cohort-validation-report-2026-04-18.md
+     - 7 critical errors (fabricated DynISF cohorts, wrong H1 values, etc.)
+     - Status: DO NOT PUBLISH - requires complete rebuild
+
+  4. egp-evidence-synthesis-report-2026-04-18.md
+     - 5 critical errors (p-value inflation ~1000×, patient counts wrong, etc.)
+     - Status: DO NOT PUBLISH - requires rebuild
+
+  5. controller-isf-signatures-report-2026-04-18.md
+     - 5 critical errors (fabricated patient IDs, hidden exclusions, etc.)
+     - Status: DO NOT PUBLISH - requires complete rebuild
+
+🔍 STILL PENDING VERIFICATION (3):
+  6. dynisf-cohort-characterization-report-2026-04-18.md
+  7. tier2-dynisf-cross-validation-report-2026-04-18.md
+  8. tier3-therapy-phenotype-report-2026-04-18.md
+
+⊙ NOT RESEARCH REPORTS (1):
+  9. VERIFICATION-expanded-cohort-2026-04-18.md (verification doc itself)
+
+═══════════════════════════════════════════════════════════════════════════════
+AGENT RECONCILIATION NOTES
+═══════════════════════════════════════════════════════════════════════════════
+
+Contradiction Detected:
+- First batch agent: Found 17 errors in 5 reports (CORRECT - verified against actual data)
+- Second batch agent: Found 0 errors in 6 reports (INCORRECT - checked summary fields, not data)
+
+Resolution:
+- Reverted second agent's commit (1b3c732 → fe1f9f6)
+- Applied corrections from first agent's findings
+- Manual verification confirmed: JSON sc_ceiling median = 13.9%, not 22.5%
+- The summary field in JSON was incorrect; actual patient data is authoritative
+
+Lesson Learned:
+- Agents can have systematic biases (e.g., trusting summary fields without checking data)
+- Always manually verify agent findings when contradictions appear
+- ~50% false positive rate established in prior verification work applies here too
+
+═══════════════════════════════════════════════════════════════════════════════
+VERIFICATION STATISTICS
+═══════════════════════════════════════════════════════════════════════════════
+
+Reports Analyzed: 5 (of 9 total)
+Status Distribution:
+  ✅ Approved: 1 (20%)
+  ⚠️  Corrected: 1 (20%)
+  ❌ Rejected: 3 (60%)
+  
+Critical Errors Found: 17
+  - Fabricated data: 8 errors
+  - Wrong values: 5 errors
+  - Hidden exclusions: 2 errors
+  - Statistical inflation: 1 error
+  - Hypothesis inversions: 1 error
+
+Error Rate: 17 errors / 5 reports = 3.4 errors/report (Apr-18 batch)
+
+Comparison to Apr-22: Apr-22 had 0 errors (8/8 pass) - significant quality gap
+
+═══════════════════════════════════════════════════════════════════════════════
+NEXT STEPS
+═══════════════════════════════════════════════════════════════════════════════
+
+IMMEDIATE:
+1. ✅ Revert false-positive agent findings
+2. ✅ Correct sc-ceiling report based on actual JSON data
+3. ✅ Mark rejected reports with detailed error notices
+4. ⏳ Decide: Pursue manual rebuild of 3 rejected reports, or move to other batches?
+
+FUTURE:
+5. Verify remaining 3 Apr-18 reports (dynisf-cohort, tier2, tier3)
+6. Launch verification of Apr-18-19 batch (12 more reports)
+7. Continue with Apr-10-17 batch (~80 reports) - expect high error rates
+
+FILE LOCATIONS:
+- Verification reports: VERIFICATION-REPORT-APR18-BATCH.md, VERIFICATION-QUICK-REFERENCE-APR18.md
+- Corrected report: docs/60-research/sc-ceiling-demand-isf-report-2026-04-18.md
+- Rejected reports: Include error notices in headers
