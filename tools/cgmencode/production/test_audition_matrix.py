@@ -423,3 +423,63 @@ def test_p_low_recovery_takes_precedence_over_point_estimate():
     flags = classify_triage_flags(inputs)
     rec = [f for f in flags if f.name == "flat_low_recovery"]
     assert rec and rec[0].severity == "high"
+
+
+def test_p_site_degradation_high_emits_high_severity():
+    """EXP-2863: P(site-degradation)>=0.9 → HIGH severity."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="up_shift",
+        median_recovery_fraction=0.6,
+        p_site_degradation=0.95,
+    )
+    flags = classify_triage_flags(inputs)
+    site = [f for f in flags if f.name == "site_degradation"]
+    assert site and site[0].severity == "high"
+    assert "EXP-2863" in site[0].rationale
+
+
+def test_p_site_degradation_boundary_emits_low():
+    """EXP-2863: 0.1<=P<0.9 → LOW (boundary). Critical given typical CI width >100pp."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        p_site_degradation=0.5,
+    )
+    flags = classify_triage_flags(inputs)
+    site = [f for f in flags if f.name == "site_degradation"]
+    assert site and site[0].severity == "low"
+    assert "boundary" in site[0].rationale.lower()
+
+
+def test_p_site_degradation_low_suppresses():
+    """EXP-2863: P<0.1 → suppress; ignore naive wear_isf_drop_pct."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        wear_isf_drop_pct=-30,         # naive would emit HIGH
+        p_site_degradation=0.05,       # bootstrap says no
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "site_degradation" not in names
+
+
+def test_p_site_degradation_takes_precedence_over_naive():
+    """EXP-2863: bootstrap branch precedes naive wear_isf_drop_pct branch."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        wear_isf_drop_pct=-5,            # naive would NOT emit
+        p_site_degradation=0.95,         # bootstrap says yes
+    )
+    flags = classify_triage_flags(inputs)
+    site = [f for f in flags if f.name == "site_degradation"]
+    assert site and site[0].severity == "high"

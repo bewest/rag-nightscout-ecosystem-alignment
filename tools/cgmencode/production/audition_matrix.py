@@ -70,6 +70,7 @@ class AuditionInputs:
     p_isf_under_correction: Optional[float] = None  # EXP-2861: bootstrap P(gap<-10%)
     p_isf_over_correction: Optional[float] = None   # EXP-2861: bootstrap P(gap>+30%)
     p_low_recovery: Optional[float] = None      # EXP-2862: bootstrap P(median recovery<0.4)
+    p_site_degradation: Optional[float] = None  # EXP-2863: bootstrap P(aged-fresh ISF delta<-20%)
 
 
 @dataclass
@@ -185,7 +186,30 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
             ),
         ))
 
-    if (
+    if inputs.p_site_degradation is not None:
+        if inputs.p_site_degradation >= 0.9:
+            flags.append(AuditionFlag(
+                name="site_degradation",
+                severity="high",
+                rationale=(
+                    f"Bootstrap P(site-degradation)={inputs.p_site_degradation:.2f} "
+                    "(EXP-2863). Effective ISF drops with cannula age with high "
+                    "confidence. Investigate site-rotation discipline."
+                ),
+            ))
+        elif inputs.p_site_degradation >= 0.1:
+            flags.append(AuditionFlag(
+                name="site_degradation",
+                severity="low",
+                rationale=(
+                    f"Bootstrap P(site-degradation)={inputs.p_site_degradation:.2f} "
+                    "(EXP-2863) — boundary. Per-event ISF noise leaves the wear "
+                    "signal indistinguishable from sampling variance "
+                    "(typical CI width >100pp). Provisional flag."
+                ),
+            ))
+        # else: confidently no degradation → suppress
+    elif (
         inputs.wear_isf_drop_pct is not None
         and inputs.wear_isf_drop_pct < -20
     ):
