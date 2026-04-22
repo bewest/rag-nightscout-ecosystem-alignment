@@ -283,3 +283,85 @@ def test_p_simpson_low_suppresses():
     flags = classify_triage_flags(inputs)
     names = {f.name for f in flags}
     assert "window_dependence_warning" not in names
+
+
+def test_p_isf_under_high_emits_high_severity():
+    """EXP-2861: P(under)>=0.9 → HIGH severity, bootstrap-confident."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="up_shift",
+        median_recovery_fraction=0.6,
+        p_isf_under_correction=0.95,
+        p_isf_over_correction=0.0,
+    )
+    flags = classify_triage_flags(inputs)
+    under = [f for f in flags if f.name == "isf_under_correction"]
+    assert under and under[0].severity == "high"
+    assert "EXP-2861" in under[0].rationale
+
+
+def test_p_isf_over_high_emits_medium():
+    """EXP-2861: P(over)>=0.9 → MEDIUM severity."""
+    inputs = AuditionInputs(
+        controller=ControllerType.TRIO,
+        smb_capable=True,
+        phenotype="down_shift",
+        median_recovery_fraction=0.5,
+        p_isf_over_correction=0.92,
+        p_isf_under_correction=0.0,
+    )
+    flags = classify_triage_flags(inputs)
+    over = [f for f in flags if f.name == "isf_over_correction"]
+    assert over and over[0].severity == "medium"
+    assert "EXP-2861" in over[0].rationale
+
+
+def test_p_isf_boundary_emits_low():
+    """EXP-2861: 0.1<=P<0.9 → LOW severity, boundary."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        p_isf_under_correction=0.4,
+        p_isf_over_correction=0.05,
+    )
+    flags = classify_triage_flags(inputs)
+    under = [f for f in flags if f.name == "isf_under_correction"]
+    assert under and under[0].severity == "low"
+    assert "boundary" in under[0].rationale.lower()
+
+
+def test_p_isf_within_band_suppresses():
+    """EXP-2861: both P<0.1 → confidently neutral, suppress; ignore point isf_gap_pct."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        isf_gap_pct=-25,                  # would normally trigger naive flag
+        p_isf_under_correction=0.05,      # but bootstrap says no
+        p_isf_over_correction=0.0,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "isf_under_correction" not in names
+    assert "isf_over_correction" not in names
+
+
+def test_p_isf_takes_precedence_over_point_estimate():
+    """EXP-2861: bootstrap fields override naive isf_gap_pct branch."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        isf_gap_pct=+50,                 # naive would emit over-correction
+        p_isf_under_correction=0.95,     # bootstrap says under!
+        p_isf_over_correction=0.0,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "isf_under_correction" in names
+    assert "isf_over_correction" not in names

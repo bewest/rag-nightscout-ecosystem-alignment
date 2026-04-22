@@ -67,6 +67,8 @@ class AuditionInputs:
     simpson_paradox: Optional[bool] = None      # EXP-2853: sign(β_fast) ≠ sign(β_slow)
     simpson_stability_frac: Optional[float] = None  # EXP-2856: rolling-window agreement
     p_simpson: Optional[float] = None           # EXP-2859: bootstrap P(simpson)
+    p_isf_under_correction: Optional[float] = None  # EXP-2861: bootstrap P(gap<-10%)
+    p_isf_over_correction: Optional[float] = None   # EXP-2861: bootstrap P(gap>+30%)
 
 
 @dataclass
@@ -101,7 +103,43 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
             ),
         ))
 
-    if inputs.isf_gap_pct is not None and inputs.isf_gap_pct < -10:
+    if inputs.p_isf_under_correction is not None or inputs.p_isf_over_correction is not None:
+        p_under = inputs.p_isf_under_correction or 0.0
+        p_over = inputs.p_isf_over_correction or 0.0
+        if p_under >= 0.9:
+            flags.append(AuditionFlag(
+                name="isf_under_correction",
+                severity="high",
+                rationale=(
+                    f"Bootstrap P(under-correction)={p_under:.2f} (EXP-2861). "
+                    "Corrections under-deliver predicted drop with high confidence. "
+                    "Consider tightening scheduled ISF (smaller mg/dL/U)."
+                ),
+            ))
+        elif p_over >= 0.9:
+            flags.append(AuditionFlag(
+                name="isf_over_correction",
+                severity="medium",
+                rationale=(
+                    f"Bootstrap P(over-correction)={p_over:.2f} (EXP-2861). "
+                    "Corrections over-deliver with high confidence. "
+                    "Consider loosening scheduled ISF (larger mg/dL/U)."
+                ),
+            ))
+        elif max(p_under, p_over) >= 0.1:
+            direction = "under" if p_under > p_over else "over"
+            p = max(p_under, p_over)
+            flags.append(AuditionFlag(
+                name=f"isf_{direction}_correction",
+                severity="low",
+                rationale=(
+                    f"Bootstrap P({direction}-correction)={p:.2f} (EXP-2861) — "
+                    "boundary; per-event noise leaves classification uncertain. "
+                    "Provisional flag pending more correction events."
+                ),
+            ))
+        # else: confidently within band (suppress)
+    elif inputs.isf_gap_pct is not None and inputs.isf_gap_pct < -10:
         flags.append(AuditionFlag(
             name="isf_under_correction",
             severity="high",
