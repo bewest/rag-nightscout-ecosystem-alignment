@@ -19,7 +19,13 @@ from typing import Optional
 import pandas as pd
 
 _REPO = Path(__file__).resolve().parents[3]
+# EXP-2869 replaces EXP-2865 artifact: uses real-carb gating
+# (time_since_real_carb_min with >=5g reset) per EXP-2868 audit.
+# Loader falls back to EXP-2865 if the corrected artifact is missing.
 DEFAULT_BASAL_MISMATCH_PARQUET = (
+    _REPO / "externals" / "experiments" / "exp-2869_per_patient_summary.parquet"
+)
+LEGACY_BASAL_MISMATCH_PARQUET = (
     _REPO / "externals" / "experiments" / "exp-2865_per_patient_summary.parquet"
 )
 
@@ -38,6 +44,10 @@ class BasalMismatchFactsLoader:
         bootstrap_path: Path = DEFAULT_BASAL_MISMATCH_PARQUET,
     ) -> None:
         self._path = Path(bootstrap_path)
+        if not self._path.exists() and self._path == DEFAULT_BASAL_MISMATCH_PARQUET:
+            # Fall back to legacy EXP-2865 artifact (naive carb gating)
+            if LEGACY_BASAL_MISMATCH_PARQUET.exists():
+                self._path = LEGACY_BASAL_MISMATCH_PARQUET
         self._index: Optional[dict[str, BasalMismatchFacts]] = None
 
     def _load(self) -> dict[str, BasalMismatchFacts]:
