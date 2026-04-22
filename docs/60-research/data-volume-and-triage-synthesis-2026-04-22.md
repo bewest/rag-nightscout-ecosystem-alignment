@@ -34,7 +34,7 @@ bands) and synthesizes operational triage signals via EXP-2842
 
 ### Method (Stream A with G1 bands)
 
-1. From 1,294,346 5-min cells (31 patients) select cells where:
+1. From 1,294,346 5-min cells (25 patients in full dataset) select cells where:
    - `|net_basal| < 0.05 U/h` (no controller adjustment)
    - `bolus = 0`, `carbs = 0`, `cob < 1 g`
    - Time since last carb > 120 min
