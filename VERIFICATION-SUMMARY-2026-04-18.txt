@@ -1,0 +1,108 @@
+VERIFICATION SUMMARY
+Report: expanded-cohort-validation-report-2026-04-18.md
+Date: 2026-04-18
+
+═══════════════════════════════════════════════════════════════════════════════
+HIGH-CONFIDENCE ERRORS FOUND: 7
+═══════════════════════════════════════════════════════════════════════════════
+
+CRITICAL ERRORS (Cannot be ignored):
+────────────────────────────────────
+
+✗ ERROR 1: EXP-2651 DynISF cohort is FABRICATED
+  Report claims: 12 patients with separate results
+  JSON actual: 25 patients (identical to Original)
+  Impact: Entire Section 2.3 is unsupported
+
+✗ ERROR 2: EXP-2652 DynISF cohort is FABRICATED  
+  Report claims: 10 patients with separate results
+  JSON actual: 18 patients (identical to Original)
+  Impact: Entire Section 3.3 is unsupported
+
+✗ ERROR 5: EXP-2640 per-patient table is FABRICATED
+  Report table: 6 patients with specific correlations
+  JSON actual: Patients c, e, g marked "insufficient" (no correlations)
+              Only a, f, i are fitted with valid data
+  Impact: Section 6.2 table is unreliable
+
+HIGH-PRIORITY ERRORS (Significant numeric discrepancies):
+─────────────────────────────────────────────────────────
+
+⚠ ERROR 3: EXP-2662 Original H1 value wrong
+  Report: 7% delayed hypo reduction
+  Actual: 11.2% from JSON (60% higher)
+  Impact: Key hypothesis result misreported
+
+⚠ ERROR 4: EXP-2662 DynISF H1 value wrong
+  Report: 9% delayed hypo reduction  
+  Actual: 13.7% from JSON (52% higher)
+  Impact: Key hypothesis result misreported
+  Pattern: Both H1 values systematically understated
+
+MEDIUM-PRIORITY ISSUES (Data inconsistencies):
+──────────────────────────────────────────────
+
+⚠ ERROR 6: Patient g data contradiction
+  Table shows: n_events=6, log r=+0.721
+  JSON shows: n_events=1, marked "insufficient", no correlations
+  Report text acknowledges g has only ~7 events
+
+⚠ ERROR 7: Cohort accounting doesn't match
+  Report: "43 unique (31 NS-parquet + 12 DynISF)"
+  JSON: EXP-2651 has 31+25, EXP-2652 has 18+18 (not 12)
+  Impact: Patient uniqueness unclear
+
+═══════════════════════════════════════════════════════════════════════════════
+VERIFIED RESULTS (✓ Correct):
+═══════════════════════════════════════════════════════════════════════════════
+
+✓ EXP-2651 Original (25 patients): All H1-H4 results match JSON
+✓ EXP-2656 Original (29 patients): All H1-H4 results match JSON  
+✓ EXP-2656 DynISF (12 patients): All H1-H4 results match JSON
+✓ EXP-2652 Original (18 patients): All H1-H3 results match JSON
+✓ EXP-2662 H2/H3/H4 (both cohorts): ±5% match
+
+═══════════════════════════════════════════════════════════════════════════════
+ROOT CAUSES:
+═══════════════════════════════════════════════════════════════════════════════
+
+1. DynISF JSON files are DUPLICATES of Original
+   - Both exp-2651_..._dynisf.json and exp-2652_..._dynisf.json 
+   - Contain identical data to their non-DynISF versions
+   - Suggests: Analysis never run, JSON not updated, or stale files
+
+2. EXP-2662 H1 systematic understatement
+   - Both Original and DynISF H1 values ~50% lower than JSON
+   - Suggests: Different calculation method or data filtering
+
+3. EXP-2640 table from different source
+   - References patients marked insufficient in JSON
+   - Includes correlation values not computable from JSON
+   - Suggests: Table from older analysis run or manually created
+
+═══════════════════════════════════════════════════════════════════════════════
+REMEDIATION REQUIRED:
+═══════════════════════════════════════════════════════════════════════════════
+
+CRITICAL (Block publication):
+  □ Obtain correct EXP-2651 DynISF JSON (12 patients, not 25)
+  □ Obtain correct EXP-2652 DynISF JSON (10 patients, not 18)  
+  □ Fix EXP-2640 table to match JSON fitted patients
+  □ Reconcile cohort accounting (31+12 ≠ actual)
+
+HIGH PRIORITY:
+  □ Recalculate EXP-2662 Original H1: 7% → 11.2%
+  □ Recalculate EXP-2662 DynISF H1: 9% → 13.7%
+  □ Document calculation method for H1 to prevent regression
+  □ Clarify patient g data (1 vs 7 events, +0.721 vs no correlation)
+
+═══════════════════════════════════════════════════════════════════════════════
+RECOMMENDATION: REJECT FOR PUBLICATION
+═══════════════════════════════════════════════════════════════════════════════
+
+Core physiological findings are sound (EXP-2651, EXP-2656 verified), but
+DynISF cohort separation is not supported by JSON data. Report must be
+corrected before resubmission.
+
+Full verification report: docs/60-research/VERIFICATION-expanded-cohort-2026-04-18.md
+

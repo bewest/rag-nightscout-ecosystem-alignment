@@ -1,10 +1,16 @@
 # Expanded Cohort Validation Report
 
+⚠️ **VERIFICATION STATUS**: **REJECTED FOR PUBLICATION** (2026-04-22)
+- See: `/docs/60-research/VERIFICATION-expanded-cohort-2026-04-18.md` for details
+- 7 critical/high errors identified (fabricated DynISF cohorts, wrong H1 values, fabricated table)
+- Core findings (2-phase ISF, SC ceiling) verified as correct but DynISF claims unsupported
+- **Action Required**: Author must remediate before resubmission
+
 **Date**: 2026-04-18
 **Experiments**: EXP-2640, EXP-2651, EXP-2652, EXP-2656, EXP-2662
 **Scope**: Re-validation of 5 priority EGP/ISF experiments on expanded 43-patient cohort
 **Patients**: 43 unique (31 NS-parquet training + 12 DynISF-v2), up from 11 original
-**Status**: COMPLETE — all 5 experiments rerun with robustness fixes
+**Status**: ⚠️ REJECTED — Critical errors in DynISF cohorts and numerical values
 
 ---
 
