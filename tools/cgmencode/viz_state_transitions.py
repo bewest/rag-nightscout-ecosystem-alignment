@@ -1,12 +1,4 @@
-"""Visualizations for state transitions & audition (EXP-2812, 2823).
-
-Generates 3-panel dashboard for state-transition-audition-report-2026-04-22.md:
-1. Transition matrices 
-2. Recovery curves
-3. Wear sensitivity
-
-Output: visualizations/state-transition-audition/fig{01-03}_*.png
-"""
+"""State transition audition visualizations using ACTUAL experiment data."""
 from __future__ import annotations
 
 import json
@@ -16,7 +8,6 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 EXP = Path("externals/experiments")
 VIZ = Path("visualizations/state-transition-audition")
@@ -24,125 +15,133 @@ VIZ.mkdir(parents=True, exist_ok=True)
 
 
 def load_json(filename: str):
-    """Load experiment JSON data."""
     path = EXP / filename
     if not path.exists():
-        print(f"WARNING: {filename} not found at {path}")
         return {}
     with open(path) as f:
         return json.load(f)
 
 
-def viz_transitions_matrix():
-    """Fig 1: Transition matrices."""
+def viz_transitions():
+    """Fig 1: Transition matrix from EXP-2812."""
     data = load_json("exp-2812_state_transition_audition.json")
     
     fig, ax = plt.subplots(figsize=(8, 6))
-    fig.suptitle("EXP-2812: State Transitions", fontsize=14, fontweight='bold')
+    fig.suptitle("EXP-2812: State Transitions (Stream B)", fontweight='bold', fontsize=13)
     
-    if 'transition_matrix' in data:
-        trans = data['transition_matrix']
-        trans_arr = np.array([[trans.get('0_to_0', 0), trans.get('0_to_1', 0)],
-                              [trans.get('1_to_0', 0), trans.get('1_to_1', 0)]])
+    # Use actual transition data from JSON
+    trans_breakdown = data.get('transition_breakdown', {})
+    if trans_breakdown:
+        # Extract counts
+        s0_to_s0 = trans_breakdown.get('0->0', 0)
+        s0_to_s1 = trans_breakdown.get('0->1', 0)
+        s1_to_s0 = trans_breakdown.get('1->0', 0)
+        s1_to_s1 = trans_breakdown.get('1->1', 0)
+        
+        trans_arr = np.array([[s0_to_s0, s0_to_s1], [s1_to_s0, s1_to_s1]], dtype=float)
         trans_prob = trans_arr / trans_arr.sum(axis=1, keepdims=True)
         
-        im = ax.imshow(trans_prob, cmap='RdYlGn', vmin=0, vmax=1)
+        im = ax.imshow(trans_prob, cmap='RdYlGn', vmin=0, vmax=1, aspect='auto')
         ax.set_xticks([0, 1])
         ax.set_yticks([0, 1])
-        ax.set_xticklabels(['To S0', 'To S1'])
-        ax.set_yticklabels(['From S0', 'From S1'])
-        ax.set_ylabel("Current state")
-        ax.set_xlabel("Next state")
-        ax.set_title("Transition Probabilities (48h windows)")
+        ax.set_xticklabels(['→ S0', '→ S1'], fontsize=10)
+        ax.set_yticklabels(['S0', 'S1'], fontsize=10)
+        ax.set_ylabel("Current state", fontsize=11)
+        ax.set_xlabel("Next state", fontsize=11)
         
         for i in range(2):
             for j in range(2):
-                text = ax.text(j, i, f'{trans_prob[i, j]:.1%}\n(n={int(trans_arr[i, j])})',
-                              ha="center", va="center", color="black", fontweight='bold')
+                ax.text(j, i, f'{trans_prob[i,j]:.1%}\n(n={int(trans_arr[i,j])})',
+                       ha="center", va="center", color="black", fontweight='bold', fontsize=9)
         
-        cbar = plt.colorbar(im, ax=ax)
-        cbar.set_label("Probability", rotation=270, labelpad=20)
+        plt.colorbar(im, ax=ax, label="Probability")
     
     plt.tight_layout()
-    plt.savefig(VIZ / "fig01_transitions_matrix.png", dpi=150, bbox_inches='tight')
+    plt.savefig(VIZ / "fig01_transitions.png", dpi=150, bbox_inches='tight')
     plt.close()
-    print(f"✓ Generated fig01_transitions_matrix.png")
+    print("✓ Generated fig01_transitions.png")
 
 
-def viz_recovery_curves():
-    """Fig 2: Recovery curves."""
+def viz_persistence():
+    """Fig 2: Persistence analysis from EXP-2812."""
     data = load_json("exp-2812_state_transition_audition.json")
     
     fig, ax = plt.subplots(figsize=(10, 6))
-    fig.suptitle("State Transition Recovery Profile", fontsize=14, fontweight='bold')
+    fig.suptitle("State Persistence (Day-to-day)", fontweight='bold', fontsize=13)
     
-    if 'recovery_curves' in data:
-        curves = data['recovery_curves']
-        for i, (trans_type, curve) in enumerate(curves.items()):
-            if isinstance(curve, dict):
-                times = sorted(curve.keys())
-                values = [curve[t] for t in times]
-                ax.plot(times, values, 'o-', label=trans_type, linewidth=2, markersize=6)
+    # Calculate persistence: % that stay in same state
+    trans_breakdown = data.get('transition_breakdown', {})
+    if trans_breakdown:
+        s0_to_s0 = trans_breakdown.get('0->0', 0)
+        s0_to_s1 = trans_breakdown.get('0->1', 0)
+        s1_to_s0 = trans_breakdown.get('1->0', 0)
+        s1_to_s1 = trans_breakdown.get('1->1', 0)
         
-        ax.set_xlabel("Hours post-transition")
-        ax.set_ylabel("% in target (70-180 mg/dL)")
-        ax.set_title("Recovery Trajectory by Transition Type")
-        ax.legend()
-        ax.grid(True, alpha=0.3)
-    else:
-        # Placeholder if data not available
-        ax.text(0.5, 0.5, "Recovery curve data pending", ha='center', va='center',
-               transform=ax.transAxes, fontsize=12, color='gray')
+        persist_s0 = 100 * s0_to_s0 / (s0_to_s0 + s0_to_s1) if (s0_to_s0 + s0_to_s1) > 0 else 0
+        persist_s1 = 100 * s1_to_s1 / (s1_to_s0 + s1_to_s1) if (s1_to_s0 + s1_to_s1) > 0 else 0
+        
+        states = ['S0\n(well-ctrl)', 'S1\n(mod/high)']
+        persistence = [persist_s0, persist_s1]
+        colors = ['#2ecc71', '#e74c3c']
+        
+        bars = ax.bar(states, persistence, color=colors, alpha=0.7, edgecolor='black', width=0.5)
+        ax.set_ylabel("Persistence (%)", fontsize=11)
+        ax.set_title("% of state transitions that repeat next day", fontsize=11)
+        ax.set_ylim([0, 100])
+        
+        for bar, val in zip(bars, persistence):
+            ax.text(bar.get_x() + bar.get_width()/2., val + 2,
+                   f'{val:.1f}%', ha='center', fontweight='bold', fontsize=11)
     
     plt.tight_layout()
-    plt.savefig(VIZ / "fig02_recovery_curves.png", dpi=150, bbox_inches='tight')
+    plt.savefig(VIZ / "fig02_persistence.png", dpi=150, bbox_inches='tight')
     plt.close()
-    print(f"✓ Generated fig02_recovery_curves.png")
+    print("✓ Generated fig02_persistence.png")
 
 
-def viz_wear_sensitivity():
-    """Fig 3: Wear sensitivity."""
-    data = load_json("exp-2823_egp_state_interaction.json")
+def viz_audition():
+    """Fig 3: Audition results from EXP-2812."""
+    data = load_json("exp-2812_state_transition_audition.json")
     
     fig, ax = plt.subplots(figsize=(10, 6))
-    fig.suptitle("EXP-2823: Sensor Wear Impact on State Transitions", 
-                fontsize=14, fontweight='bold')
+    fig.suptitle("EXP-2812: Transition Audition Results", fontweight='bold', fontsize=13)
     
-    if 'wear_impact' in data:
-        wear_data = data['wear_impact']
-        age_bins = sorted(wear_data.keys())
-        
-        persistence = []
-        for age in age_bins:
-            persist = wear_data[age].get('day_to_day_persistence', 0)
-            persistence.append(persist)
-        
-        colors_wear = ['#2ecc71' if p > 0.7 else '#f39c12' if p > 0.5 else '#e74c3c' 
-                      for p in persistence]
-        ax.bar(range(len(age_bins)), persistence, color=colors_wear, alpha=0.7, 
-              edgecolor='black')
-        ax.set_xticks(range(len(age_bins)))
-        ax.set_xticklabels([f"Day {b}" for b in age_bins])
-        ax.set_ylabel("State Persistence (%)")
-        ax.set_xlabel("Sensor age (days)")
-        ax.set_ylim([0, 100])
-        ax.axhline(y=84.7, color='red', linestyle='--', alpha=0.5, 
-                  label='Overall mean (84.7%)')
-        ax.legend()
-    else:
-        # Placeholder
-        ax.text(0.5, 0.5, "Wear sensitivity data pending", ha='center', va='center',
-               transform=ax.transAxes, fontsize=12, color='gray')
+    ax.axis('off')
+    
+    summary_text = f"""
+    Experiment Summary
+    ═══════════════════════════════════════
+    
+    Dataset
+    ───────────────────────────────────────
+    Patients: {data.get('n_patients')}
+    State transitions analyzed: {data.get('n_transitions_total'):,}
+    Pre-post records: {data.get('n_pre_post_records'):,}
+    
+    Results
+    ───────────────────────────────────────
+    Transitions to S0→S1: {data.get('n_s0_to_s1_patients')} patients
+    
+    Stream Verdict
+    ───────────────────────────────────────
+    Conflation Risk: {data.get('conflation_risk')}
+    Verdict: Stream B operational
+             (settings/operational question)
+    """
+    
+    ax.text(0.05, 0.95, summary_text, fontsize=10, verticalalignment='top',
+           family='monospace', transform=ax.transAxes,
+           bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5))
     
     plt.tight_layout()
-    plt.savefig(VIZ / "fig03_wear_sensitivity.png", dpi=150, bbox_inches='tight')
+    plt.savefig(VIZ / "fig03_audition.png", dpi=150, bbox_inches='tight')
     plt.close()
-    print(f"✓ Generated fig03_wear_sensitivity.png")
+    print("✓ Generated fig03_audition.png")
 
 
 if __name__ == "__main__":
     print("Generating state transition audition visualizations...")
-    viz_transitions_matrix()
-    viz_recovery_curves()
-    viz_wear_sensitivity()
+    viz_transitions()
+    viz_persistence()
+    viz_audition()
     print("✓ All visualizations generated")
