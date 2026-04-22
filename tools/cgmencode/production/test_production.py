@@ -4544,8 +4544,14 @@ class TestForwardSimulator(unittest.TestCase):
     # --- Phase 2: IOB-Dependent Power-Law ISF Tests (WS-6) ---
 
     def test_power_law_reduces_large_correction(self):
-        """Power-law ISF should dampen large corrections (less overshoot)."""
-        import numpy as np
+        """Power-law ISF dampening was DISABLED in production (EXP-2716).
+
+        β was proven to be a transient PK absorption artifact that vanishes
+        at longer horizons, not a true dose-response nonlinearity. The
+        forward_simulator now uses linear ISF regardless of the
+        iob_power_law flag, so on/off must produce identical results.
+        See forward_simulator.py: 'Power-law ISF dampening DISABLED'.
+        """
         s_off = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
                                       iob_power_law=False)
         s_on = self.TherapySettings(isf=50, cr=10, basal_rate=0.8,
@@ -4554,8 +4560,10 @@ class TestForwardSimulator(unittest.TestCase):
             bolus_events=[self.InsulinEvent(0, 4.0)], seed=42)
         r_on = self.forward_simulate(250.0, s_on, duration_hours=8.0,
             bolus_events=[self.InsulinEvent(0, 4.0)], seed=42)
-        # Power-law should produce higher nadir (less aggressive)
-        self.assertGreater(r_on.glucose.min(), r_off.glucose.min())
+        # EXP-2716: flag is intentionally inert. Ensure simulator stays
+        # consistent — any drift means power-law has been re-enabled and
+        # the EXP-2716 conclusion needs revisiting.
+        self.assertEqual(r_on.glucose.min(), r_off.glucose.min())
 
     def test_power_law_minimal_for_small_dose(self):
         """Power-law should have less effect for small corrections."""
