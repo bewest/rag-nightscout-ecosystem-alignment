@@ -289,7 +289,7 @@ alone.
 
 ### Control Theory Interpretation
 
-From Round 1: the system has an effective **loop gain of ~8.3×** (34/4.1).
+From Round 1: the system has an effective **loop gain of ~7.3×** (34/4.1).
 
 ```
 Closed-loop response = Open-loop response / (1 + Loop Gain)
