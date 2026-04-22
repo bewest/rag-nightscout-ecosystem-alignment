@@ -11,15 +11,9 @@ does that reconcile with EXP-2841's null on EGP magnitude?
 
 ## 📊 Visualization Dashboards
 
-> **Status**: Dashboards for experiments EXP-2843 are in development.
-> Visualization directory structure will be created in `visualizations/envelope-reconciliation/`
-> once all figure generation is complete. Figures will include:
-> - State/clustering analysis
-> - Transition matrices and persistence
-> - EGP audit and reconciliation
-> - Algorithm comparison
->
-> **Expected**: Figures will be automatically embedded in this section upon dashboard completion.
+![Envelope vs cell-level reconciliation](../../visualizations/envelope-vs-cell-level/fig01_reconciliation.png)
+
+![ISF gap analysis](../../visualizations/envelope-vs-cell-level/fig02_isf_gap.png)
 
 ---
 

@@ -10,15 +10,11 @@
 
 ## 📊 Visualization Dashboards
 
-> **Status**: Dashboards for experiments EXP-2830, 2831 are in development.
-> Visualization directory structure will be created in `visualizations/multitimescale-supply-demand/`
-> once all figure generation is complete. Figures will include:
-> - State/clustering analysis
-> - Transition matrices and persistence
-> - EGP audit and reconciliation
-> - Algorithm comparison
->
-> **Expected**: Figures will be automatically embedded in this section upon dashboard completion.
+![Multi-timescale supply/demand](../../visualizations/multitimescale-supply-demand/fig01_multiscale.png)
+
+![Wear layer integration](../../visualizations/multitimescale-supply-demand/fig02_wear.png)
+
+![Residual structure](../../visualizations/multitimescale-supply-demand/fig03_residuals.png)
 
 ---
 

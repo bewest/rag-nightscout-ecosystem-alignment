@@ -9,15 +9,11 @@
 
 ## 📊 Visualization Dashboards
 
-> **Status**: Dashboards for experiments EXP-2841, 2842 are in development.
-> Visualization directory structure will be created in `visualizations/data-volume-triage/`
-> once all figure generation is complete. Figures will include:
-> - State/clustering analysis
-> - Transition matrices and persistence
-> - EGP audit and reconciliation
-> - Algorithm comparison
->
-> **Expected**: Figures will be automatically embedded in this section upon dashboard completion.
+![Data volume assessment](../../visualizations/data-volume-and-triage/fig01_volume.png)
+
+![Triage bucketing](../../visualizations/data-volume-and-triage/fig02_triage.png)
+
+![Coverage analysis](../../visualizations/data-volume-and-triage/fig03_coverage.png)
 
 ---
 

@@ -6,15 +6,13 @@
 
 ## 📊 Visualization Dashboards
 
-> **Status**: Dashboards for experiments EXP-2810, 2811, 2820, 2821 are in development.
-> Visualization directory structure will be created in `visualizations/state-egp-integration/`
-> once all figure generation is complete. Figures will include:
-> - State/clustering analysis
-> - Transition matrices and persistence
-> - EGP audit and reconciliation
-> - Algorithm comparison
->
-> **Expected**: Figures will be automatically embedded in this section upon dashboard completion.
+![State clustering analysis](../../visualizations/state-and-egp-integration/fig01_state_clustering.png)
+
+![EGP audit and reconciliation](../../visualizations/state-and-egp-integration/fig02_egp_audit.png)
+
+![Transition matrices and persistence](../../visualizations/state-and-egp-integration/fig03_transitions.png)
+
+![ISF decoupling by state](../../visualizations/state-and-egp-integration/fig04_isf_decoupling.png)
 
 ---
 

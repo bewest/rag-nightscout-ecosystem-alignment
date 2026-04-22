@@ -11,15 +11,11 @@
 
 ## 📊 Visualization Dashboards
 
-> **Status**: Dashboards for experiments EXP-2812 are in development.
-> Visualization directory structure will be created in `visualizations/state-transition-audition/`
-> once all figure generation is complete. Figures will include:
-> - State/clustering analysis
-> - Transition matrices and persistence
-> - EGP audit and reconciliation
-> - Algorithm comparison
->
-> **Expected**: Figures will be automatically embedded in this section upon dashboard completion.
+![State transition patterns](../../visualizations/state-transition-audition/fig01_transitions.png)
+
+![Persistence analysis](../../visualizations/state-transition-audition/fig02_persistence.png)
+
+![Audition results](../../visualizations/state-transition-audition/fig03_audition.png)
 
 ---
 

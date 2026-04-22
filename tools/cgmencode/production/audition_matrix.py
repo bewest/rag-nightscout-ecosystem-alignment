@@ -65,6 +65,7 @@ class AuditionInputs:
     post_high_mg_dl: Optional[float] = None     # EXP-2843 envelope
     wear_isf_drop_pct: Optional[float] = None   # EXP-2812 site age
     simpson_paradox: Optional[bool] = None      # EXP-2853: sign(β_fast) ≠ sign(β_slow)
+    simpson_stability_frac: Optional[float] = None  # EXP-2856: rolling-window agreement
 
 
 @dataclass
@@ -149,15 +150,35 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
     # EXP-2854: prefer the direct EXP-2853 Simpson-paradox flag if available
     # (catches 9/29 patients across all phenotypes; phenotype proxy only
     # catches 2/9 of them). Fall back to phenotype proxy when not provided.
+    # EXP-2856: severity depends on rolling-window stability — Simpson-positive
+    # patients have only 25% median agreement across rolling 30d windows
+    # (vs 87.5% for Simpson-negative), so a single-window Simpson=True without
+    # stability evidence is LOW confidence.
     if inputs.simpson_paradox is True:
+        if (
+            inputs.simpson_stability_frac is not None
+            and inputs.simpson_stability_frac >= 0.75
+        ):
+            sev = "medium"
+            stab_note = (
+                f" Confirmed stable across rolling 30d windows "
+                f"({inputs.simpson_stability_frac:.0%} agreement)."
+            )
+        else:
+            sev = "low"
+            stab_note = (
+                " EXP-2856 flagged Simpson-positive patients have only ~25% "
+                "rolling-window agreement; single-window flag is provisional."
+            )
         flags.append(AuditionFlag(
             name="window_dependence_warning",
-            severity="medium",
+            severity=sev,
             rationale=(
                 "EXP-2853 Simpson decomposition: β_fast (5-min reactive) and "
                 "β_slow (48h structural) have opposite signs. Audition "
                 "recommendations from one timescale will conflict with the "
                 "other; use both views before changing settings."
+                + stab_note
             ),
         ))
     elif inputs.simpson_paradox is None and inputs.phenotype == PHENOTYPE_UP:

@@ -1,0 +1,139 @@
+VERIFICATION RESULTS FOR APRIL-18 BATCH REPORTS
+================================================
+
+## REPORT 1: EXP-2667 - SC Suppression Ceiling with Demand-Phase ISF
+
+PATIENT COUNT VERIFICATION:
+- Report claims: 29 patients (23 with demand ISF)
+- JSON actual: 29 total patients
+- JSON with d_isf != null: 23 patients ✓
+
+MEDIAN CEILING DISCREPANCY (CRITICAL):
+- Report claims (Section 6): "Median: 22.5%"
+- JSON median (sc.ceiling): 0.139 = 13.9%
+- DISCREPANCY: 22.5% vs 13.9% (61% deviation)
+
+TABLE 5 - FITTED CEILING VALUES DISCREPANCY (CRITICAL):
+Report values vs JSON values (sc.ceiling * 100):
+- Patient a: Report 51% vs JSON 25%
+- Patient c: Report 27% vs JSON 10%
+- Patient d: Report 42% vs JSON 30%
+- Patient e: Report 12% vs JSON 10%
+- Patient f: Report 56% vs JSON 28%
+- Patient g: Report 10% vs JSON 10% ✓
+- Patient h: Report 20% vs JSON 10%
+- Patient i: Report 21% vs JSON 10%
+- Patient k: Report 55% vs JSON 55% ✓
+- ns-1ccae8a375b9: Report 33% vs JSON 32% ✓
+- ns-554b16de7133: Report 38% vs JSON 14%
+- ns-6bef17b4c1ec: Report 35% vs JSON 19%
+- ns-8b3c1b50793c: Report 67% vs JSON 41%
+- ns-8f3527d1ee40: Report 35% vs JSON 12%
+- ns-8ffa739b986b: Report 53% vs JSON 34%
+- ns-9b9a6a874e51: Report 44% vs JSON 34%
+- ns-a9ce2317bead: Report 10% vs JSON 10% ✓
+- ns-adde5f4af7ca: Report 10% vs JSON 10% ✓
+- ns-c422538aa12a: Report 22% vs JSON 10%
+- ns-d444c120c23a: Report 34% vs JSON 25%
+- ns-dde9e7c2e752: Report 16% vs JSON 10%
+- odc-39819048: Report 22% vs JSON 22% ✓
+- odc-49141524: Report 10% vs JSON 10% ✓
+- odc-58680324: Report 18% vs JSON 19% ✓
+- odc-61403732: Report 18% vs JSON 18% ✓
+- odc-74077367: Report 19% vs JSON 10%
+- odc-86025410: Report 35% vs JSON 35% ✓
+- odc-96254963: Report 10% vs JSON 10% ✓
+
+MATCH RATE: 9 of 29 (31%) - MOST VALUES INCORRECT
+
+TABLE 8 - WALL EPISODES AND MEAN 2H DGLUCOSE:
+Spot-checked 10 patients - ALL MATCH ✓
+- Patient a: Episodes 4595, Mean -56.3 ✓
+- Patient b: Episodes 3203, Mean -32.7 ✓
+- Patient c: Episodes 2399, Mean -97.6 ✓
+- Patient k: Episodes 0, Mean null ✓
+- ns-1ccae8a375b9: Episodes 112, Mean -75.5 ✓
+- ns-554b16de7133: Episodes 480, Mean -55.0 ✓
+- odc-74077367: Episodes 2233, Mean -48.5 ✓
+- odc-86025410: Episodes 2114, Mean -62.9 ✓
+- odc-96254963: Episodes 1185, Mean -37.0 ✓
+
+TABLE 5 - RMSE COLUMNS (Sample Check):
+- Ceiling RMSE column: Multiple discrepancies detected
+- Patient a: Report 132.7 vs JSON 133.881 (1.1 point difference)
+- Patient b: Report 117.2 vs JSON 117.159 (0.04 match) ✓
+- Patient c: Report 164.5 vs JSON 164.999 (0.5 match) ✓
+
+---
+
+## REPORT 2: EXP-2669 - Wall Resolution Mechanism
+
+PATIENT COUNT VERIFICATION:
+- Report claims: 24 patients
+- JSON actual: 24 patients ✓
+
+TABLE 2 EPISODE COUNTS - Spot Check (5 patients):
+- Patient a: Episodes 173 ✓, Ep/day 0.96 ✓
+- Patient h: Episodes 19 ✓, Ep/day 0.11 ✓
+- ns-6bef17b4c1ec: Episodes 60 ✓, Ep/day 0.42 ✓
+- odc-74077367: Episodes 128 ✓, Ep/day 0.60 ✓
+- odc-96254963: Episodes 65 ✓, Ep/day 0.35 ✓
+
+RESOLUTION PERCENTAGES - Spot Check (3 patients):
+- Patient a: Report 58.4% vs JSON 58.4% ✓
+- Patient c: Report 79.6% vs JSON 79.6% ✓
+- ns-8b3c1b50793c: Report 100.0% vs JSON 100.0% ✓
+
+UNACCOUNTED PERCENTAGE - Critical Claim:
+- Report (Section 4): "Overall: 1199/1763 episodes (68.0%)"
+- JSON summary.unaccounted_pct: 68.0% ✓
+- Arithmetic check: 1199/1763 = 0.6799... = 68.0% ✓
+
+---
+
+## REPORT 3: EXP-2668 - Per-Controller Demand ISF Signatures
+
+PATIENT COUNT DISCREPANCY (CRITICAL):
+- Report claims: 12 patients (all Trio/AB)
+- JSON (exp-2668_controller_isf_signatures.json): 17 patients mixed controllers
+- JSON (exp-2668_controller_isf_signatures_dynisf.json): 12 patients all Trio/AB ✓
+
+CORRECT FILE IDENTIFIED: exp-2668_controller_isf_signatures_dynisf.json
+
+TABLE 2 - BOLUS METRICS - Spot Check (4 patients):
+- ns-1ccae8a375b9: SMB 56.8 ✓, Bol 63.6 ✓, Median Gap 0.17h ✓
+- ns-554b16de7133: SMB 56.2 ✓, Bol 60.6 ✓, Median Gap 0.58h ✓
+- ns-6bef17b4c1ec: SMB 64.3 ✓, Bol 68.9 ✓, Median Gap 0.33h ✓
+- ns-8b3c1b50793c: SMB 24.9 ✓, Bol 31.0 ✓, Median Gap 0.42h ✓
+
+CONTROLLER TYPE:
+- All 12 patients are Trio/AB as claimed ✓
+
+---
+
+SUMMARY OF FINDINGS
+====================
+
+1. EXP-2667 (SC-Ceiling):
+   ❌ Fitted Ceiling column: 69% of values incorrect (20/29 patients)
+   ❌ Median ceiling claimed as 22.5% but JSON shows 13.9%
+   ✓ Patient count correct (29 total, 23 with demand ISF)
+   ✓ Wall episodes and Mean 2h dGlucose correct
+   ✓ RMSE values mostly match
+
+2. EXP-2669 (Wall-Resolution):
+   ✓ Patient count: 24 (correct)
+   ✓ Episode counts and rates (verified 5 patients)
+   ✓ Resolution percentages (verified 3 patients)
+   ✓ Overall unaccounted percentage: 68.0% (correct)
+
+3. EXP-2668 (Controller-ISF):
+   ⚠️  Wrong JSON file initially used (non-dynisf version had 17 mixed patients)
+   ✓ Correct dynisf file has 12 Trio/AB patients (correct)
+   ✓ SMB/day, Bol/day values match (verified 4 patients)
+   ✓ Median Gap values match (verified 4 patients)
+
+OVERALL ASSESSMENT:
+- EXP-2667: NEEDS FIXES (fabricated ceiling percentages)
+- EXP-2669: PASS (all checks pass)
+- EXP-2668: PASS (with correct JSON file)

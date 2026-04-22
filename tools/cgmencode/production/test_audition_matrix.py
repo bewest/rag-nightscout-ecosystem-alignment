@@ -189,8 +189,9 @@ def test_flat_and_down_do_not_emit_window_dependence_warning():
 
 
 def test_simpson_flag_overrides_phenotype_proxy():
-    """EXP-2854: when EXP-2853 Simpson flag is available, it takes
-    precedence over the phenotype proxy and emits medium-severity warning."""
+    """EXP-2854/2856: when EXP-2853 Simpson flag is available, it takes
+    precedence over the phenotype proxy. Severity is LOW without stability
+    evidence (per EXP-2856 — flagged patients are only 25% stable)."""
     inputs = AuditionInputs(
         controller=ControllerType.LOOP,
         smb_capable=False,
@@ -201,8 +202,26 @@ def test_simpson_flag_overrides_phenotype_proxy():
     flags = classify_triage_flags(inputs)
     warn = [f for f in flags if f.name == "window_dependence_warning"]
     assert warn, "Simpson flag should emit window_dependence_warning"
-    assert warn[0].severity == "medium"  # direct flag is higher confidence
+    assert warn[0].severity == "low"  # provisional without stability
     assert "Simpson" in warn[0].rationale
+    assert "provisional" in warn[0].rationale.lower() or "25%" in warn[0].rationale
+
+
+def test_simpson_with_stability_promotes_severity():
+    """EXP-2856: Simpson + rolling-window stability >=0.75 → MEDIUM severity."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        simpson_paradox=True,
+        simpson_stability_frac=0.85,
+    )
+    flags = classify_triage_flags(inputs)
+    warn = [f for f in flags if f.name == "window_dependence_warning"]
+    assert warn
+    assert warn[0].severity == "medium"
+    assert "stable" in warn[0].rationale.lower()
 
 
 def test_simpson_false_suppresses_phenotype_proxy():

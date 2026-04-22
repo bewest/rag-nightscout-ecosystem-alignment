@@ -9,15 +9,11 @@
 
 ## 📊 Visualization Dashboards
 
-> **Status**: Dashboards for experiments EXP-2840 are in development.
-> Visualization directory structure will be created in `visualizations/two-stream-methodology/`
-> once all figure generation is complete. Figures will include:
-> - State/clustering analysis
-> - Transition matrices and persistence
-> - EGP audit and reconciliation
-> - Algorithm comparison
->
-> **Expected**: Figures will be automatically embedded in this section upon dashboard completion.
+![Methodology comparison](../../visualizations/two-stream-methodology/fig01_comparison.png)
+
+![Two-stream architecture](../../visualizations/two-stream-methodology/fig02_architecture.png)
+
+![Integration results](../../visualizations/two-stream-methodology/fig03_integration.png)
 
 ---
 
