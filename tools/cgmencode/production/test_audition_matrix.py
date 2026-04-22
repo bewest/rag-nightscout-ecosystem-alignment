@@ -483,3 +483,63 @@ def test_p_site_degradation_takes_precedence_over_naive():
     flags = classify_triage_flags(inputs)
     site = [f for f in flags if f.name == "site_degradation"]
     assert site and site[0].severity == "high"
+
+
+def test_p_post_high_high_emits_medium_severity():
+    """EXP-2864: P(envelope>25)>=0.9 → MEDIUM severity."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="up_shift",
+        median_recovery_fraction=0.6,
+        p_post_high_envelope=0.95,
+    )
+    flags = classify_triage_flags(inputs)
+    flag = [f for f in flags if f.name == "post_high_envelope"]
+    assert flag and flag[0].severity == "medium"
+    assert "EXP-2864" in flag[0].rationale
+
+
+def test_p_post_high_boundary_emits_low():
+    """EXP-2864: 0.1<=P<0.9 → LOW (boundary)."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        p_post_high_envelope=0.4,
+    )
+    flags = classify_triage_flags(inputs)
+    flag = [f for f in flags if f.name == "post_high_envelope"]
+    assert flag and flag[0].severity == "low"
+    assert "boundary" in flag[0].rationale.lower()
+
+
+def test_p_post_high_below_threshold_suppresses():
+    """EXP-2864: P<0.1 → suppress; ignore naive post_high_mg_dl."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        post_high_mg_dl=40,             # naive would emit
+        p_post_high_envelope=0.05,      # bootstrap says no
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "post_high_envelope" not in names
+
+
+def test_p_post_high_takes_precedence_over_naive():
+    """EXP-2864: bootstrap branch precedes naive post_high_mg_dl."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        post_high_mg_dl=10,             # naive would NOT emit
+        p_post_high_envelope=0.95,      # bootstrap says yes
+    )
+    flags = classify_triage_flags(inputs)
+    flag = [f for f in flags if f.name == "post_high_envelope"]
+    assert flag and flag[0].severity == "medium"

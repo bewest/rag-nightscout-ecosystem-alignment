@@ -71,6 +71,7 @@ class AuditionInputs:
     p_isf_over_correction: Optional[float] = None   # EXP-2861: bootstrap P(gap>+30%)
     p_low_recovery: Optional[float] = None      # EXP-2862: bootstrap P(median recovery<0.4)
     p_site_degradation: Optional[float] = None  # EXP-2863: bootstrap P(aged-fresh ISF delta<-20%)
+    p_post_high_envelope: Optional[float] = None  # EXP-2864: bootstrap P(envelope>25 mg/dL)
 
 
 @dataclass
@@ -222,7 +223,28 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
             ),
         ))
 
-    if (
+    if inputs.p_post_high_envelope is not None:
+        if inputs.p_post_high_envelope >= 0.9:
+            flags.append(AuditionFlag(
+                name="post_high_envelope",
+                severity="medium",
+                rationale=(
+                    f"Bootstrap P(envelope>25 mg/dL)={inputs.p_post_high_envelope:.2f} "
+                    "(EXP-2864). Controller sustains high-end without recovery "
+                    "with high confidence."
+                ),
+            ))
+        elif inputs.p_post_high_envelope >= 0.1:
+            flags.append(AuditionFlag(
+                name="post_high_envelope",
+                severity="low",
+                rationale=(
+                    f"Bootstrap P(envelope>25 mg/dL)={inputs.p_post_high_envelope:.2f} "
+                    "(EXP-2864) — boundary; provisional flag."
+                ),
+            ))
+        # else: confidently in target → suppress
+    elif (
         inputs.post_high_mg_dl is not None
         and inputs.post_high_mg_dl > 25
     ):
