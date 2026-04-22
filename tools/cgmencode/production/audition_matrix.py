@@ -145,6 +145,23 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
             ),
         ))
 
+    # EXP-2850: up_shift patients are window-sensitive (50% sign-consistent
+    # vs 80-100% for flat/down). Audition recommendations derived from 48h
+    # envelope windows for up-shift patients should carry a warning that
+    # faster windows would emit opposite-sign recommendations.
+    if inputs.phenotype == PHENOTYPE_UP:
+        flags.append(AuditionFlag(
+            name="window_dependence_warning",
+            severity="low",
+            rationale=(
+                "Up-shift phenotype — multi-scale envelope coupling (EXP-2849) "
+                "shows sign flip between fast (6-12h) and slow (24-48h) "
+                "windows for ~50% of these patients. Recommendations from 48h "
+                "structural-demand signal may conflict with reactive-loop "
+                "behavior visible at 6h."
+            ),
+        ))
+
     return flags
 
 

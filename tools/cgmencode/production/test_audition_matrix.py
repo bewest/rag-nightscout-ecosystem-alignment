@@ -154,3 +154,35 @@ def test_site_degradation_recommends_low_confidence_isf_decrease():
     assert site
     assert site[0].confidence < 0.6  # site rec is lower confidence
     assert site[0].affected_hours == (0.0, 24.0)
+
+
+def test_up_shift_emits_window_dependence_warning():
+    """EXP-2850: up_shift patients are window-sensitive (50% sign-consistent
+    vs 80-100% for flat/down). Audition must surface a warning."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="up_shift",
+        median_recovery_fraction=0.6,
+    )
+    flags = classify_triage_flags(inputs)
+    warn = [f for f in flags if f.name == "window_dependence_warning"]
+    assert warn, "up_shift should emit window_dependence_warning"
+    assert warn[0].severity == "low"
+
+
+def test_flat_and_down_do_not_emit_window_dependence_warning():
+    """EXP-2850: flat (100%) and down_shift (80%) are timescale-robust;
+    no window-dependence warning required."""
+    for ph in ("flat", "down_shift"):
+        inputs = AuditionInputs(
+            controller=ControllerType.LOOP,
+            smb_capable=False,
+            phenotype=ph,
+            median_recovery_fraction=0.6,
+        )
+        flags = classify_triage_flags(inputs)
+        names = {f.name for f in flags}
+        assert "window_dependence_warning" not in names, (
+            f"{ph} should NOT emit window_dependence_warning"
+        )
