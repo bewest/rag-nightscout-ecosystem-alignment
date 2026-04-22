@@ -210,3 +210,91 @@ These don't need physics interpretation and can use any data layer.
 - `docs/60-research/state-and-egp-integration-report-2026-04-22.md`
 - `docs/60-research/multitimescale-supply-demand-report-2026-04-22.md`
 - `docs/60-research/cross-layer-interactions-report-2026-04-22.md`
+
+---
+
+## Appendix V: Visualization Stream (added 2026-04-22)
+
+The visualization toolkit
+(`tools/cgmencode/viz_metabolic_diagnostic.py`) operates as a **Stream B**
+artifact and is bound by the following preferences. All future charts
+intended for clinician/patient/author consumption MUST conform.
+
+### V1. Stream B only — no quantitative biology numbers
+
+Charts may show *observed* glucose, *delivered* insulin, *declared* carbs,
+*scheduled* profile parameters, and *derived operational* quantities (TIR,
+basal demand, cannula age). Charts MUST NOT display absolute Stream A
+estimates as numeric labels (e.g., "EGP = 14 mg/dL/hr", "true ISF = 75").
+This avoids Conflation Mode C2 (showing intervention-masked biology as if
+it were biology) at the most consequential decision interface.
+
+### V2. Profile-vs-actual gap is the audition primitive
+
+The actionable visual signal is the **divergence** between the open-loop
+schedule (profile basal, profile ISF, declared carbs) and what the closed
+loop actually did (actual basal, SMB delivery, observed BG response).
+That gap *is* the audition recommendation; no biology inference is
+required to interpret it. Every chart should make this gap visible,
+either as a band, an overlay, or a dedicated panel.
+
+### V3. Cohort overlays use percentile bands, never absolute predictions
+
+When showing a patient's metric against the cohort (recovery score,
+basal-shift percentage, site-age control, etc.), use percentile/quantile
+bands of the observed cohort. Do NOT show cohort-derived predictions
+("expected BG if profile were correct") because such predictions
+re-import Stream A confounding through the back door.
+
+### V4. "You are here" callout
+
+Per-patient charts that have a meaningful cohort comparison should embed
+a small "you are here" indicator: the patient's value plus a percentile
+rank within the cohort distribution. This grounds individual clinical
+discussion in the cohort denominator.
+
+### V5. Phenotype direction is a first-class axis
+
+Where the cohort splits into directional phenotypes (e.g., +basal-shift
+vs -basal-shift in S1, fast vs slow recoverers, dawn-rise vs flat),
+chart layouts should foreground the direction as a separate facet
+(side-by-side panels, color encoding, etc.) rather than collapsing to
+absolute magnitude. Direction often carries the actionable signal.
+
+### V6. Charter-anchored captions
+
+Every chart's caption must include a one-line statement of which Stream
+it represents and what gap it visualizes — e.g., "Stream B operational
+chart: profile basal vs actual delivered basal in S0 and S1 windows."
+This keeps downstream readers oriented to the methodological scope.
+
+### V7. Per-patient + cohort pairing
+
+Each new chart type should ship in two forms: per-patient and
+cohort-aggregate. Per-patient charts answer "what's happening for THIS
+patient?" and cohort charts answer "where does this patient sit in the
+distribution?" Together they support both individual triage and
+phenotype discovery.
+
+### V8. Pair every research line with a chart deliverable
+
+Open research lines (EXP-2812 controller recovery, EXP-2843 envelope
+coupling, EXP-2831 wear flags, etc.) each have a paired visualization
+todo (`viz-recovery-by-controller`, `viz-phenotype-drilldown`,
+`viz-site-age-cohort`, etc.). Charts and analysis advance together so
+findings are discussable as soon as they are validated.
+
+### Compliant-by-construction baseline
+
+The five baseline chart types ship compliant with V1–V8:
+
+| Chart | Stream | Profile-vs-actual surface |
+|-------|--------|---------------------------|
+| Week Envelope | B | Profile basal line vs actual basal area |
+| Meal Event | B | Declared carbs vs observed BG response |
+| Profile Audit | B | Hourly scheduled basal vs S0/S1 actual |
+| Recovery Diagnostic | B | Patient recovery vs cohort histogram |
+| Site-Age Trajectory | B | Profile demand vs actual at age >48h |
+
+Companion document:
+`docs/60-research/visualization-toolkit-2026-04-22.md`.
