@@ -275,6 +275,16 @@ For any new experiment, before reporting a result:
    (cf≥0.95) versus 2 of 9 oref1.  Without this guard, behavioural
    self-selection is reported as a mechanism difference.  (§2.9 +
    EXP-2902/2904)
+7. **Load-mediation guard (cross-sectional cf-vs-physiology only)**:
+   when correlating a load proxy (`cf_*`) with a downstream
+   physiological outcome (counter-reg intercept, recovery time,
+   etc.), AID protection MEDIATES the link.  Always also report
+   the same correlation against `true_exposure = cf × (1 −
+   protection)` — actual experienced events after AID coverage.
+   Sign or strength changes between the two flag a coverage-
+   distribution artifact rather than biology.  EXP-2912 negative
+   ρ(cf, intercept) flipped to +0.39 in oref1 under
+   true_exposure → HAAF interpretation withdrawn (EXP-2913).
 
 ---
 
