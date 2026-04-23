@@ -891,3 +891,67 @@ def test_night_protection_below_threshold_suppressed():
     flags = classify_triage_flags(inputs)
     names = {x.name for x in flags}
     assert "night_protection_degraded" not in names
+
+
+def test_under_performer_for_lineage_fires():
+    """EXP-2900: protection >=1 SD below comparator emits MEDIUM under-performer."""
+    inputs = AuditionInputs(
+        controller=ControllerType.TRIO,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="oref1 (modern)",
+        protection_z_within_lineage=-1.85,
+    )
+    flags = classify_triage_flags(inputs)
+    f = [x for x in flags if x.name == "under_performer_for_lineage"]
+    assert f
+    assert f[0].severity == "medium"
+    assert "1.8 SD" in f[0].rationale or "1.9 SD" in f[0].rationale
+
+
+def test_over_performer_for_lineage_fires():
+    """EXP-2900: protection >=1 SD above comparator emits LOW over-performer."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="Loop (iOS)",
+        protection_z_within_lineage=1.34,
+    )
+    flags = classify_triage_flags(inputs)
+    f = [x for x in flags if x.name == "over_performer_for_lineage"]
+    assert f
+    assert f[0].severity == "low"
+
+
+def test_protection_z_within_one_sd_no_flag():
+    """EXP-2900: |z| < 1 emits no protection-deviation flag."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="Loop (iOS)",
+        protection_z_within_lineage=0.6,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {x.name for x in flags}
+    assert "under_performer_for_lineage" not in names
+    assert "over_performer_for_lineage" not in names
+
+
+def test_protection_z_none_no_flag():
+    """EXP-2900: missing input is silent."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="Loop (iOS)",
+    )
+    flags = classify_triage_flags(inputs)
+    names = {x.name for x in flags}
+    assert "under_performer_for_lineage" not in names
+    assert "over_performer_for_lineage" not in names

@@ -85,6 +85,7 @@ class AuditionInputs:
     algorithm_lineage: Optional[str] = None         # "Loop (iOS)" | "oref1 (modern)" | "oref0 (legacy)" — controller family, not brand
     phenotype_archetype: Optional[str] = None       # EXP-2886: one of {well_defended, algorithm_dependent, exposed_stacker, hidden_leverage, lax_braking, stacker_balanced, stacker_weak_defense}
     night_severe_excess: Optional[float] = None     # EXP-2895: nighttime severe-rate - daytime severe-rate (per-patient or per-cell)
+    protection_z_within_lineage: Optional[float] = None  # EXP-2900: z-score of aid_protection_severe vs lineage (or cell) median
 
 
 @dataclass
@@ -546,6 +547,41 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
                     "active. For oref0 patients consider migration to "
                     "an oref1-family controller (TOD degradation is "
                     "smaller in oref1)."
+                ),
+            ))
+
+    # Per-patient protection deviation — EXP-2900
+    # Identifies individuals whose protection is materially below or above
+    # their lineage/cell median. Under-performers get tuning headroom
+    # signal; over-performers are tagged for replicable-pattern audit.
+    if inputs.protection_z_within_lineage is not None:
+        z = inputs.protection_z_within_lineage
+        if z <= -1.0:
+            flags.append(AuditionFlag(
+                name="under_performer_for_lineage",
+                severity="medium",
+                rationale=(
+                    f"EXP-2900: aid_protection_severe is {-z:.1f} SD "
+                    "below the lineage/cell comparator median. "
+                    "Material individual headroom beyond what the "
+                    "lineage-tercile baseline suggests. Ordered "
+                    "remediation: (1) counter-regulation channel "
+                    "(EXP-2898 intercept), (2) site-degradation "
+                    "(EXP-2842 recovery=0 + ISF drop), (3) within-"
+                    "tercile setting re-tune, (4) mechanism upgrade "
+                    "(basal-cut / SMB enablement)."
+                ),
+            ))
+        elif z >= 1.0:
+            flags.append(AuditionFlag(
+                name="over_performer_for_lineage",
+                severity="low",
+                rationale=(
+                    f"EXP-2900: aid_protection_severe is {z:.1f} SD "
+                    "above the lineage/cell comparator median. "
+                    "Capture the patient's settings fingerprint as a "
+                    "candidate template for same-cell peers; useful "
+                    "as a replicable best-practice reference."
                 ),
             ))
 
