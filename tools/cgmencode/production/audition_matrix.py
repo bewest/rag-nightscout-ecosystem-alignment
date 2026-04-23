@@ -75,6 +75,15 @@ class AuditionInputs:
     p_basal_mismatch: Optional[float] = None      # EXP-2865: max bootstrap P(scheduled basal mult>0.5) across TOD
     basal_recommended_mult: Optional[float] = None  # EXP-2865: median recommended actual/scheduled multiplier (triage only, NOT a setting change)
     counter_reg_intercept: Optional[float] = None   # EXP-2875: residual mg/dL/min unexplained by IOB+basal in rescue-free hypo recovery; <0.5 = impaired, >=2.0 = strongly preserved
+    # --- EXP-2882/2884/2885/2886/2889 phenotype axes ---
+    # Kept as THREE orthogonal axes per EXP-2888: composite scores lose
+    # information. See docs/60-research/deconfounding-toolkit-2026-04-22.md.
+    stack_score: Optional[float] = None             # EXP-2882: fraction of evenings with bolus-stacking (IOB+bolus4h > 75th pct)
+    braking_ratio: Optional[float] = None           # EXP-2885: mean actual_basal / sched_basal during pre-nadir descents; low = strong brake
+    counterfactual_severe: Optional[float] = None   # EXP-2889: per-patient fraction of descents that would reach <54 mg/dL without AID suspension (ISF=50)
+    aid_protection_severe: Optional[float] = None   # EXP-2889: counterfactual_severe - observed_severe (how much the AID buffers this patient)
+    algorithm_lineage: Optional[str] = None         # "Loop (iOS)" | "oref1 (modern)" | "oref0 (legacy)" — controller family, not brand
+    phenotype_archetype: Optional[str] = None       # EXP-2886: one of {well_defended, algorithm_dependent, exposed_stacker, hidden_leverage, lax_braking, stacker_balanced, stacker_weak_defense}
 
 
 @dataclass
@@ -414,21 +423,92 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
                 + stab_note
             ),
         ))
-    elif inputs.simpson_paradox is None and inputs.phenotype == PHENOTYPE_UP:
-        # Fallback: up_shift phenotype as a coarse proxy when Simpson flag
-        # is not yet computed for this patient.
+    # ------------------------------------------------------------------
+    # EXP-2889 AID-safety-dependence flags
+    # ------------------------------------------------------------------
+    # Patients whose counterfactual (AID-off) severe-hypo rate is high
+    # and whose braking_ratio is low are relying on the controller for
+    # safety. This is distinct from the other flags because it describes
+    # COUNTERFACTUAL risk, not observed outcomes (which the AID has
+    # already protected). See EXP-2889 for the construct validation
+    # (rho=-0.71, p=0.001 vs counterfactual_severe).
+    if (
+        inputs.braking_ratio is not None
+        and inputs.counterfactual_severe is not None
+    ):
+        if (
+            inputs.braking_ratio <= 0.10
+            and inputs.counterfactual_severe >= 0.95
+        ):
+            flags.append(AuditionFlag(
+                name="aid_safety_dependence_high",
+                severity="high",
+                rationale=(
+                    "EXP-2889 counterfactual replay: "
+                    f"braking_ratio={inputs.braking_ratio:.2f} (strong "
+                    "AID suspension) and "
+                    f"counterfactual_severe={inputs.counterfactual_severe:.0%} "
+                    "(≈all descents would reach <54 mg/dL without AID "
+                    "intervention). Settings-under-AID do not constitute "
+                    "safe settings-without-AID. Review standalone-pump "
+                    "fallback plan, sensor-dropout behaviour, and whether "
+                    "basal/ISF/CR are genuinely tuned or are compensating "
+                    "for controller aggressiveness."
+                ),
+            ))
+        elif (
+            inputs.braking_ratio is not None
+            and inputs.braking_ratio >= 0.40
+            and inputs.aid_protection_severe is not None
+            and inputs.aid_protection_severe <= 0.15
+        ):
+            flags.append(AuditionFlag(
+                name="lax_braking_controller_efficacy",
+                severity="medium",
+                rationale=(
+                    "EXP-2889: the AID is delivering "
+                    f"{inputs.braking_ratio:.0%} of scheduled basal during "
+                    "descents (weak braking) AND protection magnitude is "
+                    f"only {inputs.aid_protection_severe:.0%}. Either "
+                    "settings are so conservative the AID has nothing to "
+                    "do, or controller tuning/thresholds are insufficiently "
+                    "aggressive. Compare TDD vs profile basal to distinguish."
+                ),
+            ))
+
+    # Stacker flag — EXP-2882
+    if inputs.stack_score is not None and inputs.stack_score >= 0.75:
         flags.append(AuditionFlag(
-            name="window_dependence_warning",
-            severity="low",
+            name="evening_stacker",
+            severity="medium",
             rationale=(
-                "Up-shift phenotype proxy — multi-scale envelope coupling "
-                "(EXP-2849) shows sign flip between fast (6-12h) and slow "
-                "(24-48h) windows for ~50% of these patients. Recommendations "
-                "from 48h structural-demand signal may conflict with reactive-"
-                "loop behavior visible at 6h. Compute EXP-2853 Simpson flag "
-                "for direct detection."
+                f"EXP-2882 stack_score={inputs.stack_score:.0%} — "
+                "dinner-to-bed window repeatedly shows elevated IOB+recent "
+                "bolus, suggesting bolus-stacking. Audit dinner bolus "
+                "timing, carb accounting, and whether evening ISF/CR are "
+                "calibrated for larger / later meals."
             ),
         ))
+
+    if inputs.simpson_paradox is None and inputs.phenotype == PHENOTYPE_UP:
+        # Fallback: up_shift phenotype as a coarse proxy when Simpson flag
+        # is not yet computed for this patient. Suppressed if EXP-2859
+        # bootstrap has already classified the patient (p_simpson set).
+        if inputs.p_simpson is not None:
+            pass
+        else:
+            flags.append(AuditionFlag(
+                name="window_dependence_warning",
+                severity="low",
+                rationale=(
+                    "Up-shift phenotype proxy — multi-scale envelope coupling "
+                    "(EXP-2849) shows sign flip between fast (6-12h) and slow "
+                    "(24-48h) windows for ~50% of these patients. Recommendations "
+                    "from 48h structural-demand signal may conflict with reactive-"
+                    "loop behavior visible at 6h. Compute EXP-2853 Simpson flag "
+                    "for direct detection."
+                ),
+            ))
 
     return flags
 

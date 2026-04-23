@@ -686,3 +686,96 @@ def test_typical_counter_regulation_no_flag():
     flags = classify_triage_flags(inputs)
     cr = [f for f in flags if "counter_regulation" in f.name]
     assert cr == [], "no counter-reg flag expected in typical range"
+
+
+# ---------------------------------------------------------------------------
+# EXP-2889 counterfactual-validated phenotype axes
+# ---------------------------------------------------------------------------
+def test_aid_safety_dependence_high_flag():
+    """EXP-2889: low braking_ratio + high counterfactual_severe → high flag.
+
+    The construct is validated by Spearman rho=-0.711 (p=0.001) against
+    the counterfactual severe-hypo fraction computed by replaying each
+    descent with scheduled basal restored.
+    """
+    inputs = AuditionInputs(
+        controller=ControllerType.TRIO,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        braking_ratio=0.05,           # AID suspends 95% of basal in descent
+        counterfactual_severe=0.99,   # 99% of descents would be severe
+        aid_protection_severe=0.65,
+    )
+    flags = classify_triage_flags(inputs)
+    ad = [f for f in flags if f.name == "aid_safety_dependence_high"]
+    assert ad, "expected aid_safety_dependence_high flag"
+    assert ad[0].severity == "high"
+    assert "fallback" in ad[0].rationale.lower()
+
+
+def test_lax_braking_controller_efficacy_flag():
+    """EXP-2889: high braking_ratio + low AID protection → medium flag."""
+    inputs = AuditionInputs(
+        controller=ControllerType.OPENAPS,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        braking_ratio=0.58,             # AID barely suspends
+        counterfactual_severe=0.70,
+        aid_protection_severe=0.12,     # controller delivers only 12pp
+    )
+    flags = classify_triage_flags(inputs)
+    lx = [f for f in flags if f.name == "lax_braking_controller_efficacy"]
+    assert lx, "expected lax_braking_controller_efficacy flag"
+    assert lx[0].severity == "medium"
+
+
+def test_well_defended_emits_no_aid_dependence_flag():
+    """Typical well-defended patient (moderate brake, moderate protection)
+    should not trigger either EXP-2889 flag."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.6,
+        braking_ratio=0.20,
+        counterfactual_severe=0.80,
+        aid_protection_severe=0.50,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "aid_safety_dependence_high" not in names
+    assert "lax_braking_controller_efficacy" not in names
+
+
+def test_evening_stacker_flag():
+    """EXP-2882: stack_score >= 0.75 → evening_stacker flag."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        stack_score=0.85,
+    )
+    flags = classify_triage_flags(inputs)
+    st = [f for f in flags if f.name == "evening_stacker"]
+    assert st, "expected evening_stacker flag"
+    assert st[0].severity == "medium"
+
+
+def test_aid_dependence_requires_both_inputs():
+    """Missing either braking_ratio or counterfactual_severe suppresses
+    the AID-dependence flag (can't fire on partial data)."""
+    inputs = AuditionInputs(
+        controller=ControllerType.TRIO,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        braking_ratio=0.05,
+        # counterfactual_severe missing
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "aid_safety_dependence_high" not in names
+    assert "lax_braking_controller_efficacy" not in names
