@@ -829,3 +829,65 @@ def test_smb_absent_suppressed_when_smb_capable_true():
     flags = classify_triage_flags(inputs)
     names = {f.name for f in flags}
     assert "smb_absent_algorithm_gap" not in names
+
+
+def test_night_protection_degraded_oref0_high():
+    """EXP-2895: oref0 patient with night excess >=15pp gets HIGH severity flag."""
+    inputs = AuditionInputs(
+        controller=ControllerType.OPENAPS,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="oref0 (legacy)",
+        night_severe_excess=0.20,
+    )
+    flags = classify_triage_flags(inputs)
+    f = [x for x in flags if x.name == "night_protection_degraded"]
+    assert f
+    assert f[0].severity == "high"
+
+
+def test_night_protection_degraded_oref1_medium():
+    """EXP-2895: oref1 patient with night excess >=10pp gets MEDIUM severity."""
+    inputs = AuditionInputs(
+        controller=ControllerType.TRIO,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="oref1 (modern)",
+        night_severe_excess=0.12,
+    )
+    flags = classify_triage_flags(inputs)
+    f = [x for x in flags if x.name == "night_protection_degraded"]
+    assert f
+    assert f[0].severity == "medium"
+
+
+def test_night_protection_loop_suppressed():
+    """EXP-2895: Loop is TOD-invariant; flag is suppressed regardless."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="Loop (iOS)",
+        night_severe_excess=0.30,  # large but doesn't matter for Loop
+    )
+    flags = classify_triage_flags(inputs)
+    names = {x.name for x in flags}
+    assert "night_protection_degraded" not in names
+
+
+def test_night_protection_below_threshold_suppressed():
+    """oref1 below 10pp threshold: no flag."""
+    inputs = AuditionInputs(
+        controller=ControllerType.TRIO,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="oref1 (modern)",
+        night_severe_excess=0.05,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {x.name for x in flags}
+    assert "night_protection_degraded" not in names
