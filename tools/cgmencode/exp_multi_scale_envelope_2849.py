@@ -84,6 +84,9 @@ def per_patient_signal(g_pat: pd.DataFrame, window_h: int) -> dict | None:
     agg = aggregate_windows(g_pat, window_h)
     if len(agg) < 6:
         return None
+    agg = agg.dropna(subset=["glucose"])
+    if len(agg) < 6:
+        return None
     q33, q67 = np.percentile(agg["glucose"], [33, 67])
     elev = agg[agg["glucose"] >= q67]
     norm = agg[agg["glucose"] <= q33]

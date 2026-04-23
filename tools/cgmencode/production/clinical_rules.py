@@ -801,6 +801,9 @@ def grade_recommendation_confidence(parameter: SettingsParameter,
         return ConfidenceGrade.D, 100.0
 
     estimates_arr = np.array(estimates, dtype=float)
+    estimates_arr = estimates_arr[~np.isnan(estimates_arr)]
+    if len(estimates_arr) < 3:
+        return ConfidenceGrade.D, 100.0
     median_val = float(np.median(estimates_arr))
     if median_val == 0:
         return ConfidenceGrade.D, 100.0
@@ -1195,17 +1198,24 @@ def compute_demand_isf(glucose: np.ndarray,
 
     # Bootstrap CI for demand ISF
     if len(demand_isfs) >= 10:
-        rng = np.random.default_rng(42)
-        boot_medians = [
-            float(np.median(rng.choice(demand_isfs, size=len(demand_isfs), replace=True)))
-            for _ in range(1000)
-        ]
-        ci_low = float(np.percentile(boot_medians, 2.5))
-        ci_high = float(np.percentile(boot_medians, 97.5))
-        if isolation_used >= _STRICT_PRIOR_BOLUS_H:
-            conf = 'high' if len(demand_isfs) >= 20 else 'medium'
+        demand_arr = np.array(demand_isfs, dtype=float)
+        demand_arr = demand_arr[~np.isnan(demand_arr)]
+        if len(demand_arr) < 10:
+            ci_low = demand_med * 0.7
+            ci_high = demand_med * 1.3
+            conf = 'low'
         else:
-            conf = 'medium' if len(demand_isfs) >= 20 else 'low'
+            rng = np.random.default_rng(42)
+            boot_medians = [
+                float(np.median(rng.choice(demand_arr, size=len(demand_arr), replace=True)))
+                for _ in range(1000)
+            ]
+            ci_low = float(np.percentile(boot_medians, 2.5))
+            ci_high = float(np.percentile(boot_medians, 97.5))
+            if isolation_used >= _STRICT_PRIOR_BOLUS_H:
+                conf = 'high' if len(demand_arr) >= 20 else 'medium'
+            else:
+                conf = 'medium' if len(demand_arr) >= 20 else 'low'
     else:
         ci_low = demand_med * 0.7
         ci_high = demand_med * 1.3

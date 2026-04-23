@@ -97,7 +97,7 @@ def main() -> dict:
             n_events=("obs_isf", "size"),
             obs_isf_median=("obs_isf", "median"),
             sched_isf_median=("sched_isf", "median"),
-            obs_isf_iqr=("obs_isf", lambda s: float(np.percentile(s, 75) - np.percentile(s, 25))),
+            obs_isf_iqr=("obs_isf", lambda s: float(np.nanpercentile(s, 75) - np.nanpercentile(s, 25))),
         )
         .reset_index()
     )
