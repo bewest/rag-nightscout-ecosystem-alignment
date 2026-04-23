@@ -236,3 +236,86 @@ patient base and resolving all n=1 oref0 cells with honest CIs.
   small-n oref0 cells.
 - **Per-patient TZ normalisation:** removes the local-clock
   caveat from all TOD findings.
+
+---
+
+## Addendum (Apr-23 ninth+tenth batches): Recovery channel decomposition
+
+### Finding D — Sustained-high recovery: two-tier mechanism stack
+
+**Claim:** During carb-isolated sustained-high windows (BG crosses
+180 from quiet baseline, 60-min carb-guard before/after), recovery
+follows a **two-tier algorithmic structure**:
+
+| Tier | Lever | Evidence | Effect |
+|------|-------|----------|--------|
+| 1. Channel availability | SMB-as-correction present | EXP-2942 cross-cohort match (oref0 zero-SMB ≈ Loop_AB_OFF zero-SMB at 30%) | +6 pp Loop_AB_ON over no-SMB floor |
+| 2. Dose-sizing logic | velocity/absorption-aware sizing | EXP-2937 (sizing not cadence) + EXP-2940 (time-to-peak 22.9 vs 29.7 min) | +21 pp oref1 over Loop_AB_ON |
+
+**Per-design recovery (4 060 events, 19 patients):**
+
+| Design       | Recovery | SMB count | Decline |
+|--------------|---------:|----------:|--------:|
+| Loop_AB_OFF  |   29.6%  |   0.00    |  −0.38  |
+| Loop_AB_ON   |   35.7%  |   4.31    |  −0.18  |
+| oref0        |   30.0%  |   0.00    |  −0.12  |
+| oref1        |   57.0%  |   2.82    |  +0.21  |
+
+### Mechanism-elimination cascade (EXP-2937–2941, then 2942–2943)
+
+To attribute the +21 pp Loop_AB_ON → oref1 gap to a specific channel,
+8 candidates were sequentially refuted in carb-isolated windows:
+SMB cadence, first-fire latency, total dose, dose-to-velocity,
+dose-per-mgdl above target, dynamic-ISF amplification slope,
+within-window dose schedule shape, and pre-window SMB IOB proxy.
+
+EXP-2941 flagged selection-bias as the leading hypothesis. EXP-2942
+and EXP-2943 then **rebutted selection-bias** with two independent
+tests:
+
+- **EXP-2942 cross-cohort match.** oref0 (n=3, no SMB, OpenAPS
+  algorithm family) recovers at 30.0%, statistically
+  indistinguishable from Loop_AB_OFF (29.6%, CI [−0.095, +0.087]).
+  Two no-SMB designs from entirely independent patient cohorts
+  converge — selection bias would not predict this.
+- **EXP-2943 variance decomposition.** η² = 0.640 (design explains
+  64% of recovery variance vs 36% from within-design patient
+  heterogeneity).
+
+**Combined verdict:** algorithm-channel hypothesis rehabilitated.
+The single in-grid lever that distinguishes oref1 from Loop_AB_ON
+is dose-sizing logic (the EXP-2940 6.8-min time-to-BG-peak signal).
+Patient-self-selection cannot be fully eliminated without
+within-patient AID-switch data, but is no longer parsimonious.
+
+### Methodological invariant added
+
+- **Cross-cohort matching + η² > 0.5 = selection-bias rejected.**
+  When two algorithmically-matched designs from independent patient
+  cohorts converge to within-CI on the outcome AND design assignment
+  explains majority of variance, the design — not the cohort — is
+  the dominant signal. Use as canonical rebuttal template when
+  in-grid mechanism search exhausts.
+
+### AID-author priority order (re-affirmed, post EXP-2942/2943)
+
+1. UAM/glucose-appearance + dynamic-ISF (PP offence)
+2. SMB-as-correction during sustained-high (channel-availability tier)
+3. **Size correction SMBs to BG and BG velocity, not to
+   IOB-shortfall vs forecast** (dose-sizing tier — re-affirmed)
+4. Enable autobolus by default for AID-OFF correction loops
+5. Basal-cut latency (defence-side temporal — EXP-2918)
+
+### Experiment additions to index
+
+| EXP    | Title | Result |
+|--------|-------|--------|
+| 2933   | Pre-meal context | Guard #8 founded; explains EXP-2931 early-TBR gap |
+| 2934   | Day-level TIR Guard #8 | TIR edge = avoidance + recovery (compounding) |
+| 2937   | Sustained-high recovery | sizing lever, not cadence/latency |
+| 2938   | Velocity-binned recovery | gap constant across velocity tertiles |
+| 2939   | Dynamic-ISF amplification proxy | both designs scale similarly; refuted |
+| 2940   | Within-window dose schedule | identical schedules; time-to-peak 6.8 min apart |
+| 2941   | Pre-window IOB proxy | identical; selection-bias hypothesis flagged |
+| 2942   | oref0 cross-cohort | 30.0% ≈ 29.6% Loop_AB_OFF — selection-bias rejected |
+| 2943   | Variance decomposition | η²=0.640 design-dominated |
