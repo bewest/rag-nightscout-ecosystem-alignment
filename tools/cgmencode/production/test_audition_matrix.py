@@ -779,3 +779,53 @@ def test_aid_dependence_requires_both_inputs():
     names = {f.name for f in flags}
     assert "aid_safety_dependence_high" not in names
     assert "lax_braking_controller_efficacy" not in names
+
+
+def test_smb_absent_algorithm_gap_flag_fires():
+    """EXP-2893/2894: smb_capable=False AND adequate hypo protection
+    (>=40pp) fires smb_absent_algorithm_gap."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        aid_protection_severe=0.55,  # adequate protection on hypo
+    )
+    flags = classify_triage_flags(inputs)
+    smb_flag = [f for f in flags if f.name == "smb_absent_algorithm_gap"]
+    assert smb_flag, "expected smb_absent_algorithm_gap flag"
+    assert smb_flag[0].severity == "medium"
+
+
+def test_smb_absent_suppressed_when_protection_inadequate():
+    """If protection is low AND smb is absent, the lax_braking flag
+    is more apt; smb_absent_algorithm_gap is suppressed because the
+    primary problem is basal-cut, not SMB."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        aid_protection_severe=0.13,  # low; basal-cut is primary issue
+        counterfactual_severe=0.85,  # required for lax_braking eval
+        braking_ratio=0.96,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "smb_absent_algorithm_gap" not in names
+    assert "lax_braking_controller_efficacy" in names
+
+
+def test_smb_absent_suppressed_when_smb_capable_true():
+    """When SMB is enabled, the SMB-gap flag does not fire even with
+    adequate protection (no gap to flag)."""
+    inputs = AuditionInputs(
+        controller=ControllerType.TRIO,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        aid_protection_severe=0.65,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {f.name for f in flags}
+    assert "smb_absent_algorithm_gap" not in names

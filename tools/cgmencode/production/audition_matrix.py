@@ -490,6 +490,34 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
             ),
         ))
 
+    # SMB-absent algorithm-gap flag — EXP-2893/2894
+    # Distinct from lax_braking: this fires when basal-cut is OK but
+    # the SMB/auto-bolus channel is missing entirely. Hyper-correction
+    # is then user-driven only, eroding TIR even if hypo protection is
+    # adequate.
+    if (
+        inputs.smb_capable is False
+        and inputs.aid_protection_severe is not None
+        and inputs.aid_protection_severe >= 0.40
+    ):
+        # Adequate hypo protection (>=40 pp) confirms basal-cut is
+        # working; SMB-absence is then the limiting factor for hyper.
+        flags.append(AuditionFlag(
+            name="smb_absent_algorithm_gap",
+            severity="medium",
+            rationale=(
+                "EXP-2893/2894: SMB / automatic-bolus channel is absent "
+                f"(smb_capable=False) while hypo protection is "
+                f"{inputs.aid_protection_severe:.0%}. The algorithm "
+                "cannot auto-correct hyper events; users must bolus "
+                "manually. For Loop users this may indicate the "
+                "automatic-bolus toggle is off (opt-in feature). For "
+                "oref0 legacy users this is an absent code path — "
+                "migration to oref1-family or Loop ≥3.x with auto-bolus "
+                "enabled would close the gap."
+            ),
+        ))
+
     if inputs.simpson_paradox is None and inputs.phenotype == PHENOTYPE_UP:
         # Fallback: up_shift phenotype as a coarse proxy when Simpson flag
         # is not yet computed for this patient. Suppressed if EXP-2859

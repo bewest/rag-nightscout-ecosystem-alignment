@@ -1,0 +1,46 @@
+## Summary
+- Total verified: 167/167
+- Pass: 39
+- Needs fix: 128
+- Reject: 0
+
+## Errors by Category
+- COUNTING: 1 found
+- EXP_ATTRIBUTION: 1482 found
+- METHOD_MISMATCH: 2 found
+- MISSING_EXP: 1 found
+- SCOPE_DISCLOSURE: 89 found
+
+## Sample Pass Reports (first 10)
+- advanced-residual-stacking-report-2026-04-10.md (EXP-1021, EXP-1027, EXP-1041, EXP-1045, EXP-1048, EXP-1051, EXP-1052, EXP-1053, EXP-1054, EXP-1055, EXP-1056, EXP-1057, EXP-1058, EXP-1059, EXP-1060)
+- aid-optimization-report-2026-04-10.md (EXP-1611, EXP-1625, EXP-1636, EXP-1641, EXP-1643, EXP-1688, EXP-1693, EXP-1731, EXP-1734, EXP-1735, EXP-1741, EXP-1742, EXP-1743, EXP-1744, EXP-1745, EXP-1746)
+- autoregressive-leakage-analysis-report-2026-04-10.md (EXP-1021, EXP-1044, EXP-1051, EXP-1053, EXP-1061, EXP-1062, EXP-1063, EXP-1064, EXP-1065, EXP-1066, EXP-1067, EXP-1068, EXP-1069, EXP-1070, EXP-1071)
+- causal-pk-leakage-report-2026-04-10.md (EXP-1120, EXP-1128, EXP-1141, EXP-1151, EXP-1154, EXP-1161, EXP-1162, EXP-1163, EXP-1164, EXP-1165, EXP-1166, EXP-1167, EXP-1168, EXP-1169, EXP-1170)
+- centering-dynamics-report-2026-04-10.md (EXP-1301, EXP-1625, EXP-1647, EXP-1688, EXP-1731, EXP-1732, EXP-1733, EXP-1741, EXP-1743, EXP-1745, EXP-1746, EXP-1751, EXP-1752, EXP-1753, EXP-1754, EXP-1755, EXP-1756, EXP-1757, EXP-1758)
+- clinical-metrics-diagnostics-report-2026-04-10.md (EXP-1021, EXP-1022, EXP-1024, EXP-1031, EXP-1039, EXP-1041, EXP-1042, EXP-1043, EXP-1044, EXP-1045, EXP-1046, EXP-1047, EXP-1048, EXP-1049, EXP-1050, EXP-1051)
+- demand-diagnosis-glycogen-report-2026-04-10.md (EXP-1331, EXP-1601, EXP-1603, EXP-1611, EXP-1613, EXP-1614, EXP-1621, EXP-1623, EXP-1624, EXP-1625, EXP-1626, EXP-1627, EXP-1628, EXP-1631)
+- egp-calibration-report-2026-04-13.md (EXP-1301, EXP-2541, EXP-2624, EXP-2629, EXP-2631, EXP-2632, EXP-2633, EXP-2634, EXP-2635, EXP-2636, EXP-2640)
+- egp-dose-isf-report-2026-04-13.md (EXP-2624, EXP-2632, EXP-2635, EXP-2636, EXP-2637, EXP-2638, EXP-2639)
+- egp-methodology-validation-report-2026-04-13.md (EXP-2624, EXP-2629, EXP-2638, EXP-2639, EXP-2640, EXP-2641)
+
+## Sample Needs-Fix Reports (first 10)
+- acceleration-clinical-utility-report-2026-04-10.md (EXP-1101, EXP-1102, EXP-1103, EXP-1104, EXP-1105, EXP-1106, EXP-1107, EXP-1108, EXP-1109, EXP-1110, EXP-1111, EXP-1112, EXP-1113, EXP-1114, EXP-1115, EXP-1116, EXP-1117, EXP-1118, EXP-1119, EXP-1120)
+  Issues: Unqualified "all patients" claim without exclusion disclosure
+- advanced-architectures-benchmark-report-2026-04-10.md (EXP-1108, EXP-1115, EXP-1120, EXP-1121, EXP-1122, EXP-1123, EXP-1124, EXP-1125, EXP-1126, EXP-1127, EXP-1128, EXP-1129, EXP-1130, EXP-1180, EXP-1211, EXP-419, EXP-422)
+  Issues: EXP-1126 JSON not found; EXP-1211 JSON not found
+- aid-aware-settings-report-2026-04-09.md (EXP-1000, EXP-971, EXP-981, EXP-982, EXP-983, EXP-984, EXP-985, EXP-986, EXP-987, EXP-988, EXP-989, EXP-990, EXP-991, EXP-992, EXP-993, EXP-994, EXP-995, EXP-996, EXP-997, EXP-998, EXP-999)
+  Issues: EXP-1000 JSON not found; EXP-971 JSON not found
+- aid-loop-behavior-report-2026-04-10.md (EXP-1938, EXP-1941, EXP-1951, EXP-1954, EXP-1961, EXP-1962, EXP-1963, EXP-1964, EXP-1965, EXP-1966, EXP-1967, EXP-1968)
+  Issues: EXP-1938 JSON not found; EXP-1954 JSON not found
+- algorithm-improvement-report-2026-04-10.md (EXP-1881, EXP-1941, EXP-2071, EXP-2081, EXP-2091, EXP-2101, EXP-2102, EXP-2103, EXP-2104, EXP-2105, EXP-2106, EXP-2107, EXP-2108)
+  Issues: Unqualified "all patients" claim without exclusion disclosure
+- algorithm-improvements-report-2026-04-10.md (EXP-1951, EXP-1965, EXP-1966, EXP-1971, EXP-1981, EXP-1982, EXP-1983, EXP-1984, EXP-1985, EXP-1986, EXP-1987, EXP-1988)
+  Issues: EXP-1965 JSON not found; EXP-1966 JSON not found
+- algorithm-recommendations-report-2026-04-10.md (EXP-2201, EXP-2211, EXP-2221, EXP-2231, EXP-2232, EXP-2233, EXP-2234, EXP-2235, EXP-2236, EXP-2237, EXP-2238)
+  Issues: EXP-2211 JSON not found; EXP-2221 JSON not found
+- asymmetric-windows-data-quality-report-2026-04-07.md (EXP-353, EXP-369, EXP-408, EXP-409, EXP-410, EXP-411, EXP-413, EXP-417, EXP-419, EXP-421, EXP-422, EXP-423, EXP-424, EXP-425)
+  Issues: EXP-353 JSON not found; EXP-369 JSON not found
+- autoproductionization-report-2026-04-09.md (EXP-1320, EXP-1601, EXP-1644, EXP-1691, EXP-1731, EXP-1765, EXP-1766, EXP-1771, EXP-1772, EXP-1773, EXP-1774, EXP-1776, EXP-1777, EXP-1779, EXP-1780, EXP-1781, EXP-1782)
+  Issues: EXP-1777 JSON not found; EXP-1779 JSON not found
+- autoproductionize-summary-report-2026-04-09.md (EXP-1531, EXP-1535, EXP-1541, EXP-1591, EXP-1593, EXP-1601, EXP-1611, EXP-1613, EXP-1621, EXP-1631)
+  Issues: Unqualified "all patients" claim without exclusion disclosure
