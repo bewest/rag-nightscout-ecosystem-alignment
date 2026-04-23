@@ -96,6 +96,15 @@ The 4 signals above are individually noisy but jointly point to
   supervised) tests the hypothesis safely. The controller's 0%
   delivery suggests there is room.
 
+### 1b. State-conditioned basal context (EXP-2811)
+
+| State | basal_drift | n samples |
+|------:|------------:|---------:|
+| 0 | +3.00 | 25 |
+| 1 | +5.50 | 127 |
+
+**Observed range across states: 2.50.** A non-zero range indicates basal need shifts with metabolic context (EXP-2811). Sign/magnitude interpretation is experimental — treat as a cue that *state-aware* basal review may be warranted, not as a direct recommendation.
+
 ### 2. Review ISF (correction factor)
 Over-correction (P=1.00) on top of an already-suppressed basal
 suggests ISF may be too aggressive. Discuss whether to **soften ISF

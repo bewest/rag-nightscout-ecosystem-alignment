@@ -35,6 +35,9 @@ from tools.cgmencode.production.isf_gap_facts_loader import IsfGapFactsLoader
 from tools.cgmencode.production.post_high_facts_loader import PostHighFactsLoader
 from tools.cgmencode.production.recovery_facts_loader import RecoveryFactsLoader
 from tools.cgmencode.production.simpson_facts_loader import SimpsonFactsLoader
+from tools.cgmencode.production.state_basal_facts_loader import (
+    StateBasalFactsLoader,
+)
 from tools.cgmencode.production.types import ControllerType
 from tools.cgmencode.production.wear_facts_loader import WearFactsLoader
 
@@ -92,6 +95,9 @@ def main() -> None:
         .median_recommended_mult,
     )
     flags = classify_triage_flags(inputs)
+
+    # ---------- state-conditioned basal (informational) ----------
+    state_facts = StateBasalFactsLoader().lookup(PID)
 
     # ---------- FIGURE 1: AGP-style 24h percentile bands ----------
     by_hour = c.groupby(c["time"].dt.hour)["glucose"]
@@ -334,6 +340,10 @@ The 4 signals above are individually noisy but jointly point to
   supervised) tests the hypothesis safely. The controller's 0%
   delivery suggests there is room.
 
+### 1b. State-conditioned basal context (EXP-2811)
+
+{{STATE_BASAL_SECTION}}
+
 ### 2. Review ISF (correction factor)
 Over-correction (P=1.00) on top of an already-suppressed basal
 suggests ISF may be too aggressive. Discuss whether to **soften ISF
@@ -401,6 +411,37 @@ drives the wide IQR in the AGP.
   much smaller than the observed multiplier (~0%) because the gap is
   protective.
 """
+    # Build STATE_BASAL_SECTION
+    if state_facts.per_state_basal_drift:
+        sb_lines = [
+            "| State | basal_drift | n samples |",
+            "|------:|------------:|---------:|",
+        ]
+        for st, drift in sorted(state_facts.per_state_basal_drift.items()):
+            n = state_facts.per_state_basal_n.get(st, 0)
+            sb_lines.append(f"| {st} | {drift:+.2f} | {n} |")
+        if state_facts.has_multi_state:
+            sb_body = (
+                "\n".join(sb_lines)
+                + f"\n\n**Observed range across states: {state_facts.basal_drift_range:.2f}.**"
+                " A non-zero range indicates basal need shifts with metabolic"
+                " context (EXP-2811). Sign/magnitude interpretation is"
+                " experimental — treat as a cue that *state-aware* basal review"
+                " may be warranted, not as a direct recommendation."
+            )
+        else:
+            sb_body = (
+                "\n".join(sb_lines)
+                + "\n\nOnly one metabolic state observed with sufficient samples"
+                " (EXP-2811 min_n=20). Multi-state context not available for"
+                " this patient."
+            )
+    else:
+        sb_body = (
+            "No state-resolved basal data available for this patient (EXP-2811"
+            " requires ≥20 samples per state)."
+        )
+    md = md.replace("{STATE_BASAL_SECTION}", sb_body)
     REPORT.write_text(md)
     print(f"Wrote {REPORT}")
     print("Figures:")
