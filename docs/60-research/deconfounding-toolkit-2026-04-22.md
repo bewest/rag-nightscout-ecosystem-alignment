@@ -295,6 +295,19 @@ For any new experiment, before reporting a result:
    distribution artifact rather than biology.  EXP-2912 negative
    ρ(cf, intercept) flipped to +0.39 in oref1 under
    true_exposure → HAAF interpretation withdrawn (EXP-2913).
+8. **Event-anchor state-conditioning guard (cross-design event-window
+   only)**: when comparing designs across event-anchored windows
+   (meals, exercise, sleep onset, alarm response), the BG/IOB/COB
+   state at event onset is itself a downstream consequence of the
+   design (e.g. tighter daily TIR → lower pre-meal BG distribution).
+   Any within-window outcome (early TBR, peak, trough, recovery)
+   must be reported both marginally **and** within tertiles of
+   state-at-event-onset.  Marginal gaps that vanish within
+   state-tertiles are confounded by baseline-state distribution
+   differences, not produced by the controller's response to the
+   event.  EXP-2931 marginal +2.55 pp early-meal-TBR (oref1 vs
+   Loop_AB_ON) → +1.35 / +0.20 / +0.00 pp within pre-BG tertiles
+   (EXP-2933) — the apparent hypo cost was confounding, not biology.
 
 ---
 
