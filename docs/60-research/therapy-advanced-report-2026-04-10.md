@@ -9,6 +9,9 @@
 
 ## Executive Summary
 
+**Cohort**: All 11 patients (a–k), ~180 days each
+
+
 This batch delivers three breakthroughs and confirms one fundamental limitation:
 
 1. **🔬 Response-curve ISF works** (EXP-1301): Exponential decay fitting yields R²=0.805 fit quality with mean τ=2.0h, providing reliable ISF estimates without the deconfounding degeneracy of EXP-1291

@@ -7,6 +7,9 @@
 
 ## Executive Summary
 
+**Cohort**: All 11 patients (a–k), ~180 days each
+
+
 This batch tests mixed-magnitude intervention (basal@10% + CR@30%), analyzes
 correction bolus effectiveness, decomposes glucose variability, and builds a
 clinical decision support dashboard. Key discovery: **mixed-magnitude

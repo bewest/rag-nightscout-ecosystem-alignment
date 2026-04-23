@@ -7,6 +7,9 @@
 
 ## Executive Summary
 
+**Cohort**: All 11 patients (a–k), ~180 days each
+
+
 This batch validates the therapy pipeline for real-world deployment. Key findings: bootstrap CIs confirm CR is the most reliable intervention (all 11 CIs exclude zero), archetype classification is 82% stable across time halves, detection is possible within 8 days for most patients, priority scoring correlates well with severity (ρ=0.782), and 8/11 patients achieve deployment-ready status (grade B or above). The pipeline is operationally viable with ≥14 days of data for initial triage and ≥90 days for stable multi-parameter recommendations.
 
 ## Experiment Results

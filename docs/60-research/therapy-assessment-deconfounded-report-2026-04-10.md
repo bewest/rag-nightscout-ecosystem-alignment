@@ -9,6 +9,9 @@
 
 ## Executive Summary
 
+**Cohort**: All 11 patients (a–k), ~180 days each
+
+
 This batch advances therapy detection from descriptive profiling (EXP-1281–1290) to **quantified, precondition-gated, AID-deconfounded recommendations**. Key breakthroughs:
 
 1. **Precondition framework operational**: 5/11 patients fail ≥1 precondition, correctly identifying unreliable analysis conditions (patient i: R²=-2.77, patient h: 35.8% CGM)

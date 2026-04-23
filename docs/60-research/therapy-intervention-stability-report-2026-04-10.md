@@ -7,6 +7,9 @@
 
 ## Executive Summary
 
+**Cohort**: All 11 patients (a–k), ~180 days each
+
+
 This batch tests multi-parameter intervention simulation, AID system limits,
 delivery pattern analysis, and long-term stability. Key discovery: **CR needs
 aggressive (30%) correction** while basal needs conservative (10%) — different
