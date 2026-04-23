@@ -74,6 +74,7 @@ class AuditionInputs:
     p_post_high_envelope: Optional[float] = None  # EXP-2864: bootstrap P(envelope>25 mg/dL)
     p_basal_mismatch: Optional[float] = None      # EXP-2865: max bootstrap P(scheduled basal mult>0.5) across TOD
     basal_recommended_mult: Optional[float] = None  # EXP-2865: median recommended actual/scheduled multiplier (triage only, NOT a setting change)
+    counter_reg_intercept: Optional[float] = None   # EXP-2875: residual mg/dL/min unexplained by IOB+basal in rescue-free hypo recovery; <0.5 = impaired, >=2.0 = strongly preserved
 
 
 @dataclass
@@ -313,6 +314,42 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
                 ),
             ))
         # else: confidently aligned → suppress
+
+    # EXP-2875: counter-regulation residual. Patients with intercept
+    # <0.5 mg/dL/min in rescue-free hypo recovery have impaired glucagon
+    # response — aggressive hypo prevention (early basal suspension,
+    # rescue-carb prompts) is warranted because they cannot self-rescue.
+    # Patients with intercept >=2.0 have strongly preserved counter-reg;
+    # routine hypo handling is safer and over-suspending may cause
+    # rebound hyperglycemia.
+    if inputs.counter_reg_intercept is not None:
+        cr = inputs.counter_reg_intercept
+        if cr < 0.5:
+            flags.append(AuditionFlag(
+                name="impaired_counter_regulation",
+                severity="high",
+                rationale=(
+                    f"Counter-reg residual intercept = {cr:.2f} mg/dL/min "
+                    "in rescue-free hypo recovery (EXP-2875). Below the "
+                    "+0.5 impaired-response threshold. Patient has "
+                    "limited self-rescue capacity; emphasize early hypo "
+                    "prevention, rescue-carb protocols, and avoid "
+                    "aggressive ISF settings."
+                ),
+            ))
+        elif cr >= 2.0:
+            flags.append(AuditionFlag(
+                name="preserved_counter_regulation",
+                severity="low",
+                rationale=(
+                    f"Counter-reg residual intercept = {cr:.2f} mg/dL/min "
+                    "(EXP-2875) — strongly preserved glucagon response. "
+                    "Hypo events self-resolve faster than IOB decay alone "
+                    "predicts; monitor for rebound hyperglycemia after "
+                    "hypo. Aggressive basal suspension may not be needed."
+                ),
+            ))
+        # else: 0.5 ≤ cr < 2.0 = typical preserved range, no flag
 
     # EXP-2854: prefer the direct EXP-2853 Simpson-paradox flag if available
     # (catches 9/29 patients across all phenotypes; phenotype proxy only

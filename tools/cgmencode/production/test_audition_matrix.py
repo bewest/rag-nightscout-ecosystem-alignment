@@ -637,3 +637,52 @@ def test_basal_mismatch_trio_includes_smb_substitution_hint():
     assert "Trio" in bm[0].rationale
     assert "SMB" in bm[0].rationale or "smb" in bm[0].rationale.lower()
     assert "ISF" in bm[0].rationale
+
+
+def test_impaired_counter_regulation_flag():
+    """EXP-2875: counter_reg_intercept <0.5 mg/dL/min → high-severity
+    impaired-counter-reg flag with self-rescue warning."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        counter_reg_intercept=0.1,
+    )
+    flags = classify_triage_flags(inputs)
+    cr = [f for f in flags if f.name == "impaired_counter_regulation"]
+    assert cr, "expected impaired_counter_regulation flag"
+    assert cr[0].severity == "high"
+    assert "rescue" in cr[0].rationale.lower()
+
+
+def test_preserved_counter_regulation_flag():
+    """EXP-2875: counter_reg_intercept >=2.0 mg/dL/min → low-severity
+    rebound-warning flag."""
+    inputs = AuditionInputs(
+        controller=ControllerType.TRIO,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        counter_reg_intercept=2.4,
+    )
+    flags = classify_triage_flags(inputs)
+    cr = [f for f in flags if f.name == "preserved_counter_regulation"]
+    assert cr, "expected preserved_counter_regulation flag"
+    assert cr[0].severity == "low"
+    assert "rebound" in cr[0].rationale.lower()
+
+
+def test_typical_counter_regulation_no_flag():
+    """EXP-2875: 0.5 <= counter_reg_intercept < 2.0 is the typical
+    preserved-but-not-vigorous range; no flag emitted."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        counter_reg_intercept=1.4,
+    )
+    flags = classify_triage_flags(inputs)
+    cr = [f for f in flags if "counter_regulation" in f.name]
+    assert cr == [], "no counter-reg flag expected in typical range"
