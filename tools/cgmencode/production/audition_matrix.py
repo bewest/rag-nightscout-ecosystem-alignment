@@ -87,6 +87,8 @@ class AuditionInputs:
     night_severe_excess: Optional[float] = None     # EXP-2895: nighttime severe-rate - daytime severe-rate (per-patient or per-cell)
     protection_z_within_lineage: Optional[float] = None  # EXP-2900: z-score of aid_protection_severe vs lineage (or cell) median
     regime_label: Optional[str] = None  # EXP-2902: {mechanism_gap, load_saturation, moderate, defended, over_performer_at_load}
+    frac_smb: Optional[float] = None              # EXP-2893: fraction of hyper-side correction insulin delivered as SMB
+    frac_user_bolus: Optional[float] = None       # EXP-2893: fraction of hyper-side correction delivered as user-initiated bolus
 
 
 @dataclass
@@ -641,6 +643,35 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
                     "close the gap."
                 ),
             ))
+
+    # EXP-2905 manual_smb_substitution — the over-performer-on-oref0 pattern
+    # When an oref0 patient hand-compensates for the missing SMB channel
+    # via high-frequency manual bolusing, default mechanism_gap migration
+    # advice should be tempered. This flag marks the "happy on oref0"
+    # profile so audition recommendations don't push migration when the
+    # patient is already capturing the leverage manually.
+    if (
+        inputs.algorithm_lineage == "oref0 (legacy)"
+        and inputs.frac_smb is not None and inputs.frac_smb < 0.05
+        and inputs.frac_user_bolus is not None and inputs.frac_user_bolus > 0.85
+        and inputs.stack_score is not None and inputs.stack_score >= 0.50
+        and inputs.aid_protection_severe is not None
+        and inputs.aid_protection_severe > 0.60
+    ):
+        flags.append(AuditionFlag(
+            name="manual_smb_substitution",
+            severity="low",
+            rationale=(
+                "EXP-2905: oref0 patient with high user-bolus discipline "
+                f"(frac_user_bolus={inputs.frac_user_bolus:.0%}, "
+                f"stack_score={inputs.stack_score:.0%}) AND strong "
+                f"protection (aid_protection_severe={inputs.aid_protection_severe:.2f}). "
+                "Patient is hand-compensating for the missing SMB "
+                "channel. Algorithm migration recommendations should be "
+                "tempered — they may already capture the leverage that "
+                "oref1 SMB would otherwise provide."
+            ),
+        ))
 
     if inputs.simpson_paradox is None and inputs.phenotype == PHENOTYPE_UP:
         # Fallback: up_shift phenotype as a coarse proxy when Simpson flag

@@ -1059,3 +1059,59 @@ def test_regime_other_no_flag():
         names = {x.name for x in flags}
         assert "regime_load_saturation" not in names
         assert "regime_mechanism_gap" not in names
+
+
+def test_manual_smb_substitution_fires():
+    """EXP-2905: oref0 patient hand-compensating for missing SMB."""
+    inputs = AuditionInputs(
+        controller=ControllerType.OPENAPS,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="oref0 (legacy)",
+        frac_smb=0.0,
+        frac_user_bolus=0.986,
+        stack_score=0.75,
+        aid_protection_severe=0.72,
+    )
+    flags = classify_triage_flags(inputs)
+    f = [x for x in flags if x.name == "manual_smb_substitution"]
+    assert f, [x.name for x in flags]
+    assert f[0].severity == "low"
+    assert "tempered" in f[0].rationale
+
+
+def test_manual_smb_substitution_suppressed_when_protection_low():
+    """EXP-2905: low protection means no over-performance to credit."""
+    inputs = AuditionInputs(
+        controller=ControllerType.OPENAPS,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="oref0 (legacy)",
+        frac_smb=0.0,
+        frac_user_bolus=0.95,
+        stack_score=0.60,
+        aid_protection_severe=0.30,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {x.name for x in flags}
+    assert "manual_smb_substitution" not in names
+
+
+def test_manual_smb_substitution_suppressed_for_oref1():
+    """EXP-2905: oref1 already supplies SMB; flag is oref0-specific."""
+    inputs = AuditionInputs(
+        controller=ControllerType.TRIO,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="oref1 (modern)",
+        frac_smb=0.0,
+        frac_user_bolus=0.95,
+        stack_score=0.75,
+        aid_protection_severe=0.75,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {x.name for x in flags}
+    assert "manual_smb_substitution" not in names
