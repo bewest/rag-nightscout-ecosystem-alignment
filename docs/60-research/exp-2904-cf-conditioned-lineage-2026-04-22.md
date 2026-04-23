@@ -18,7 +18,7 @@ disappearance).
 
 | Test                                         | Statistic           | p-value |
 |----------------------------------------------|---------------------|---------|
-| Raw Kruskal (lineage, all n=19)              | H = 4.06            | 0.131   |
+| Raw Kruskal (lineage, all n=19)              | H = 4.06            | 0.132   |
 | Kruskal within high-cf stratum (n=11)        | H = 2.70            | 0.100   |
 | Kruskal within low-cf stratum (n=8)          | H = 1.36            | 0.506   |
 | Stratified permutation (lineage spread)      | spread = 0.238      | 0.123   |
