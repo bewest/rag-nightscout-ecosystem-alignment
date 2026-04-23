@@ -955,3 +955,56 @@ def test_protection_z_none_no_flag():
     names = {x.name for x in flags}
     assert "under_performer_for_lineage" not in names
     assert "over_performer_for_lineage" not in names
+
+
+def test_rebound_overshoot_algorithm_gap_fires():
+    """EXP-2898/2901: high intercept + low protection -> upstream gap flag."""
+    inputs = AuditionInputs(
+        controller=ControllerType.OPENAPS,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.0,
+        algorithm_lineage="oref0 (legacy)",
+        counter_reg_intercept=4.30,
+        aid_protection_severe=0.13,
+    )
+    flags = classify_triage_flags(inputs)
+    f = [x for x in flags if x.name == "rebound_overshoot_algorithm_gap"]
+    assert f, [x.name for x in flags]
+    assert f[0].severity == "high"
+    # The "preserved" flag should also fire (cr >= 2.0) but is intentionally
+    # weaker; the rebound_overshoot interpretation overrides clinically.
+    preserved = [x for x in flags if x.name == "preserved_counter_regulation"]
+    assert preserved
+
+
+def test_rebound_overshoot_suppressed_when_protection_high():
+    """EXP-2901: high intercept WITHOUT low protection = genuine resilience."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="Loop (iOS)",
+        counter_reg_intercept=4.30,
+        aid_protection_severe=0.65,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {x.name for x in flags}
+    assert "rebound_overshoot_algorithm_gap" not in names
+
+
+def test_rebound_overshoot_suppressed_when_intercept_moderate():
+    """EXP-2901: moderate intercept + low protection = no overshoot flag."""
+    inputs = AuditionInputs(
+        controller=ControllerType.OPENAPS,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.0,
+        algorithm_lineage="oref0 (legacy)",
+        counter_reg_intercept=2.20,
+        aid_protection_severe=0.13,
+    )
+    flags = classify_triage_flags(inputs)
+    names = {x.name for x in flags}
+    assert "rebound_overshoot_algorithm_gap" not in names

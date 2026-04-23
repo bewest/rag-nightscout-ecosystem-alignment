@@ -362,6 +362,32 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
             ))
         # else: 0.5 ≤ cr < 2.0 = typical preserved range, no flag
 
+        # EXP-2898/2901: rebound_overshoot_algorithm_gap
+        # High intercept (>=3.0) + low protection (<0.30) is the lagging-
+        # indicator pattern: rapid recovery exists ONLY because the patient
+        # is reaching severe hypo often. The fast bounce-back is a symptom
+        # of upstream AID failure, not resilience.
+        if (
+            cr >= 3.0
+            and inputs.aid_protection_severe is not None
+            and inputs.aid_protection_severe < 0.30
+        ):
+            flags.append(AuditionFlag(
+                name="rebound_overshoot_algorithm_gap",
+                severity="high",
+                rationale=(
+                    f"EXP-2898: counter-reg intercept = {cr:.2f} mg/dL/min "
+                    "is unusually high AND aid_protection_severe = "
+                    f"{inputs.aid_protection_severe:.2f} is below 0.30. "
+                    "Rapid recovery is a LAGGING indicator here — the "
+                    "patient reaches severe hypo often enough that fast "
+                    "rebound is observable. The algorithm is failing to "
+                    "PREVENT the events, not the body's failure to "
+                    "recover. Treat as algorithm/settings gap, not as "
+                    "preserved counter-regulation."
+                ),
+            ))
+
     # EXP-2854: prefer the direct EXP-2853 Simpson-paradox flag if available
     # (catches 9/29 patients across all phenotypes; phenotype proxy only
     # catches 2/9 of them). Fall back to phenotype proxy when not provided.
