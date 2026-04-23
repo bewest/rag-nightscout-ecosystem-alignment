@@ -1,0 +1,33 @@
+Report Name,Verdict,EXP Count,JSON Found,Key Issues,Fixable
+alert-filtering-report.md,PASS,11,Yes,,Yes
+autotune-uam-characterization-report.md,PASS,0,No,,Yes
+capability-report-clinical-decision-support.md,PASS,8,Yes,,Yes
+capability-report-data-quality.md,PASS,8,Yes,,Yes
+capability-report-event-detection.md,PASS,4,Yes,,Yes
+capability-report-glucose-forecasting.md,PASS,13,Yes,,Yes
+capability-report-hypoglycemia-prediction.md,PASS,4,Yes,,Yes
+capability-report-pattern-drift.md,PASS,6,Yes,,Yes
+capability-report-realtime-operations.md,PASS,4,Yes,,Yes
+capability-report-transfer-learning.md,PASS,6,Yes,,Yes
+confidence-intervals-report.md,PASS,7,Yes,,Yes
+digital-twin-forward-sim-report.md,PASS,3,Yes,,Yes
+digital-twin-integrated-report.md,PASS,2,Yes,,Yes
+digital-twin-milestone-1-2-report.md,PASS,4,Yes,,Yes
+digital-twin-phase2-report.md,NEEDS_FIX,7,Partial,Missing EXP-2555; EXP-2556,Yes
+event-aware-pipeline-integration-report.md,PASS,8,Yes,,Yes
+fidelity-therapy-assessment-report.md,PASS,11,Yes,,Yes
+gen2-baseline-report.md,PASS,7,Yes,,Yes
+gen2-initial-experiences-report.md,PASS,65,Yes,,Yes
+gen3-transition-report.md,PASS,4,Yes,,Yes
+gen4-regularization-report.md,PASS,11,Yes,,Yes
+hindcast-inference-report.md,PASS,0,No,,Yes
+hindcast-model-capabilities-report.md,PASS,0,No,,Yes
+isf-aid-feedback-report.md,PASS,11,Yes,,Yes
+meal-response-clustering-report.md,PASS,9,Yes,,Yes
+ml-experiment-progress-report.md,PASS,51,Yes,,Yes
+mongodb-update-readiness-report.md,PASS,0,N/A,,Yes
+multi-objective-validation-report.md,PASS,5,Yes,,Yes
+natural-experiments-settings-optimization-report.md,PASS,13,Yes,,Yes
+overnight-experiment-report-phase18.md,PASS,11,Yes,,Yes
+settings-optimizer-productionization-report.md,PASS,7,Yes,,Yes
+temporal-models-report.md,PASS,12,Yes,,Yes

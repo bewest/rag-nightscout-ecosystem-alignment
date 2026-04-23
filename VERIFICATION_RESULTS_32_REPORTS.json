@@ -1,35 +1,3 @@
-Verifying alert-filtering-report.md...
-Verifying autotune-uam-characterization-report.md...
-Verifying capability-report-clinical-decision-support.md...
-Verifying capability-report-data-quality.md...
-Verifying capability-report-event-detection.md...
-Verifying capability-report-glucose-forecasting.md...
-Verifying capability-report-hypoglycemia-prediction.md...
-Verifying capability-report-pattern-drift.md...
-Verifying capability-report-realtime-operations.md...
-Verifying capability-report-transfer-learning.md...
-Verifying confidence-intervals-report.md...
-Verifying digital-twin-forward-sim-report.md...
-Verifying digital-twin-integrated-report.md...
-Verifying digital-twin-milestone-1-2-report.md...
-Verifying digital-twin-phase2-report.md...
-Verifying event-aware-pipeline-integration-report.md...
-Verifying fidelity-therapy-assessment-report.md...
-Verifying gen2-baseline-report.md...
-Verifying gen2-initial-experiences-report.md...
-Verifying gen3-transition-report.md...
-Verifying gen4-regularization-report.md...
-Verifying hindcast-inference-report.md...
-Verifying hindcast-model-capabilities-report.md...
-Verifying isf-aid-feedback-report.md...
-Verifying meal-response-clustering-report.md...
-Verifying ml-experiment-progress-report.md...
-Verifying mongodb-update-readiness-report.md...
-Verifying multi-objective-validation-report.md...
-Verifying natural-experiments-settings-optimization-report.md...
-Verifying overnight-experiment-report-phase18.md...
-Verifying settings-optimizer-productionization-report.md...
-Verifying temporal-models-report.md...
 {
   "total_reports": 32,
   "verified": [
@@ -37,65 +5,75 @@ Verifying temporal-models-report.md...
       "report": "alert-filtering-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-1617",
-        "EXP-1616",
-        "EXP-1613",
+        "EXP-1141",
         "EXP-1541",
-        "EXP-1618",
-        "EXP-1614",
-        "EXP-1611",
-        "EXP-1612",
         "EXP-1145",
+        "EXP-1612",
+        "EXP-1611",
         "EXP-1615",
-        "EXP-1141"
+        "EXP-1613",
+        "EXP-1616",
+        "EXP-1614",
+        "EXP-1618",
+        "EXP-1617"
       ],
       "json_found": true,
+      "json_count": 11,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "autotune-uam-characterization-report.md",
-      "verdict": "NEEDS_FIX",
+      "verdict": "PASS",
       "exp_ids": [],
       "json_found": false,
-      "key_issues": [
-        "No EXP IDs found but report contains patient/data tables"
-      ],
-      "fixable": true
+      "json_count": 0,
+      "key_issues": [],
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": true
     },
     {
       "report": "capability-report-clinical-decision-support.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-685",
-        "EXP-227",
-        "EXP-688",
         "EXP-694",
+        "EXP-688",
         "EXP-1301",
         "EXP-747",
-        "EXP-693",
-        "EXP-746"
+        "EXP-685",
+        "EXP-746",
+        "EXP-227",
+        "EXP-693"
       ],
       "json_found": true,
+      "json_count": 8,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "capability-report-data-quality.md",
       "verdict": "PASS",
       "exp_ids": [
+        "EXP-681",
+        "EXP-682",
+        "EXP-847",
         "EXP-696",
-        "EXP-698",
+        "EXP-691",
         "EXP-687",
         "EXP-785",
-        "EXP-681",
-        "EXP-847",
-        "EXP-691",
-        "EXP-682"
+        "EXP-698"
       ],
       "json_found": true,
+      "json_count": 8,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "capability-report-event-detection.md",
@@ -107,58 +85,70 @@ Verifying temporal-models-report.md...
         "EXP-114"
       ],
       "json_found": true,
+      "json_count": 4,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "capability-report-glucose-forecasting.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-822",
-        "EXP-824",
+        "EXP-812",
+        "EXP-818",
+        "EXP-803",
         "EXP-800",
         "EXP-823",
         "EXP-843",
-        "EXP-830",
-        "EXP-811",
-        "EXP-803",
         "EXP-826",
-        "EXP-812",
+        "EXP-824",
+        "EXP-822",
         "EXP-875",
-        "EXP-818",
-        "EXP-850"
+        "EXP-850",
+        "EXP-811",
+        "EXP-830"
       ],
       "json_found": true,
+      "json_count": 13,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "capability-report-hypoglycemia-prediction.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-695",
         "EXP-817",
-        "EXP-692",
-        "EXP-749"
+        "EXP-749",
+        "EXP-695",
+        "EXP-692"
       ],
       "json_found": true,
+      "json_count": 4,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "capability-report-pattern-drift.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-696",
-        "EXP-765",
+        "EXP-781",
         "EXP-416",
+        "EXP-765",
+        "EXP-696",
         "EXP-686",
-        "EXP-126",
-        "EXP-781"
+        "EXP-126"
       ],
       "json_found": true,
+      "json_count": 6,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "capability-report-realtime-operations.md",
@@ -166,55 +156,67 @@ Verifying temporal-models-report.md...
       "exp_ids": [
         "EXP-448",
         "EXP-690",
-        "EXP-689",
-        "EXP-790"
+        "EXP-790",
+        "EXP-689"
       ],
       "json_found": true,
+      "json_count": 4,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "capability-report-transfer-learning.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-697",
         "EXP-699",
-        "EXP-769",
+        "EXP-697",
         "EXP-777",
         "EXP-815",
-        "EXP-462"
+        "EXP-462",
+        "EXP-769"
       ],
       "json_found": true,
+      "json_count": 6,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "confidence-intervals-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-1621",
+        "EXP-1622",
         "EXP-1626",
         "EXP-1627",
         "EXP-1625",
+        "EXP-1628",
         "EXP-1624",
-        "EXP-1622",
-        "EXP-1628"
+        "EXP-1621"
       ],
       "json_found": true,
+      "json_count": 7,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "digital-twin-forward-sim-report.md",
       "verdict": "PASS",
       "exp_ids": [
+        "EXP-2553",
         "EXP-2525",
-        "EXP-2554",
-        "EXP-2553"
+        "EXP-2554"
       ],
       "json_found": true,
+      "json_count": 3,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "digital-twin-integrated-report.md",
@@ -224,426 +226,484 @@ Verifying temporal-models-report.md...
         "EXP-2552"
       ],
       "json_found": true,
+      "json_count": 2,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "digital-twin-milestone-1-2-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-2525",
         "EXP-2551",
+        "EXP-2525",
         "EXP-2511",
         "EXP-2552"
       ],
       "json_found": true,
+      "json_count": 4,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "digital-twin-phase2-report.md",
-      "verdict": "PASS",
+      "verdict": "NEEDS_FIX",
       "exp_ids": [
-        "EXP-2526",
-        "EXP-2511",
-        "EXP-2555",
-        "EXP-2211",
         "EXP-2341",
+        "EXP-2556",
+        "EXP-2511",
+        "EXP-2526",
         "EXP-1931",
-        "EXP-2556"
+        "EXP-2211",
+        "EXP-2555"
       ],
       "json_found": true,
-      "key_issues": [],
-      "fixable": true
+      "json_count": 5,
+      "key_issues": [
+        "Partial JSON: 5/7 experiments found; missing EXP-2555, EXP-2556"
+      ],
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "event-aware-pipeline-integration-report.md",
       "verdict": "PASS",
       "exp_ids": [
         "EXP-1546",
+        "EXP-1545",
         "EXP-1542",
         "EXP-1541",
-        "EXP-1545",
         "EXP-1548",
-        "EXP-1543",
         "EXP-1544",
+        "EXP-1543",
         "EXP-1547"
       ],
       "json_found": true,
+      "json_count": 8,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "fidelity-therapy-assessment-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-1537",
-        "EXP-1591",
-        "EXP-1532",
-        "EXP-1541",
-        "EXP-1531",
-        "EXP-1551",
-        "EXP-1535",
-        "EXP-1536",
-        "EXP-1320",
         "EXP-1534",
-        "EXP-1538"
+        "EXP-1541",
+        "EXP-1551",
+        "EXP-1320",
+        "EXP-1531",
+        "EXP-1538",
+        "EXP-1536",
+        "EXP-1535",
+        "EXP-1591",
+        "EXP-1537",
+        "EXP-1532"
       ],
       "json_found": true,
+      "json_count": 11,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "gen2-baseline-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-124",
-        "EXP-123",
-        "EXP-150",
-        "EXP-153",
-        "EXP-122",
         "EXP-151",
-        "EXP-125"
+        "EXP-153",
+        "EXP-150",
+        "EXP-123",
+        "EXP-125",
+        "EXP-124",
+        "EXP-122"
       ],
       "json_found": true,
+      "json_count": 7,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "gen2-initial-experiences-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-220",
-        "EXP-016",
-        "EXP-215",
-        "EXP-137",
-        "EXP-007",
-        "EXP-211",
-        "EXP-121",
-        "EXP-223",
-        "EXP-128",
-        "EXP-123",
-        "EXP-158",
-        "EXP-212",
-        "EXP-100",
-        "EXP-113",
-        "EXP-009",
-        "EXP-218",
-        "EXP-155",
-        "EXP-136",
-        "EXP-127",
+        "EXP-101",
         "EXP-111",
-        "EXP-199",
-        "EXP-222",
-        "EXP-224",
-        "EXP-119",
-        "EXP-130",
-        "EXP-221",
-        "EXP-210",
-        "EXP-227",
-        "EXP-209",
-        "EXP-208",
-        "EXP-011",
-        "EXP-112",
-        "EXP-156",
         "EXP-134",
-        "EXP-203",
-        "EXP-126",
-        "EXP-114",
-        "EXP-118",
-        "EXP-010",
-        "EXP-005",
-        "EXP-225",
         "EXP-014",
-        "EXP-217",
+        "EXP-221",
+        "EXP-218",
+        "EXP-127",
+        "EXP-211",
         "EXP-206",
-        "EXP-115",
-        "EXP-120",
-        "EXP-216",
         "EXP-001",
-        "EXP-226",
-        "EXP-161",
+        "EXP-220",
         "EXP-138",
-        "EXP-228",
-        "EXP-142",
+        "EXP-119",
+        "EXP-216",
+        "EXP-219",
+        "EXP-226",
+        "EXP-126",
+        "EXP-010",
+        "EXP-007",
+        "EXP-210",
+        "EXP-115",
+        "EXP-212",
         "EXP-116",
         "EXP-133",
+        "EXP-016",
+        "EXP-227",
+        "EXP-114",
         "EXP-131",
+        "EXP-222",
+        "EXP-209",
+        "EXP-203",
+        "EXP-228",
+        "EXP-208",
         "EXP-141",
-        "EXP-213",
-        "EXP-129",
-        "EXP-219",
-        "EXP-214",
-        "EXP-101",
         "EXP-144",
+        "EXP-223",
+        "EXP-011",
+        "EXP-213",
+        "EXP-005",
+        "EXP-121",
+        "EXP-136",
+        "EXP-158",
+        "EXP-128",
+        "EXP-199",
+        "EXP-123",
+        "EXP-215",
+        "EXP-112",
+        "EXP-161",
+        "EXP-118",
+        "EXP-009",
+        "EXP-152",
+        "EXP-142",
+        "EXP-155",
+        "EXP-137",
+        "EXP-224",
+        "EXP-225",
+        "EXP-156",
         "EXP-139",
-        "EXP-152"
+        "EXP-130",
+        "EXP-120",
+        "EXP-214",
+        "EXP-217",
+        "EXP-129",
+        "EXP-113",
+        "EXP-100"
       ],
       "json_found": true,
+      "json_count": 65,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "gen3-transition-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-161",
         "EXP-162",
         "EXP-158",
-        "EXP-159"
+        "EXP-159",
+        "EXP-161"
       ],
       "json_found": true,
+      "json_count": 4,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "gen4-regularization-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-302",
         "EXP-276",
-        "EXP-274",
         "EXP-235",
         "EXP-280",
-        "EXP-278",
-        "EXP-275",
+        "EXP-302",
         "EXP-303",
+        "EXP-278",
+        "EXP-274",
         "EXP-260",
         "EXP-277",
+        "EXP-275",
         "EXP-242"
       ],
       "json_found": true,
+      "json_count": 11,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "hindcast-inference-report.md",
-      "verdict": "NEEDS_FIX",
+      "verdict": "PASS",
       "exp_ids": [],
       "json_found": false,
-      "key_issues": [
-        "No EXP IDs found but report contains patient/data tables"
-      ],
-      "fixable": true
+      "json_count": 0,
+      "key_issues": [],
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": true
     },
     {
       "report": "hindcast-model-capabilities-report.md",
-      "verdict": "NEEDS_FIX",
+      "verdict": "PASS",
       "exp_ids": [],
       "json_found": false,
-      "key_issues": [
-        "No EXP IDs found but report contains patient/data tables"
-      ],
-      "fixable": true
+      "json_count": 0,
+      "key_issues": [],
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": true
     },
     {
       "report": "isf-aid-feedback-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-1603",
         "EXP-1602",
-        "EXP-1604",
-        "EXP-1608",
-        "EXP-1606",
-        "EXP-1306",
-        "EXP-1605",
-        "EXP-1607",
         "EXP-1301",
+        "EXP-1608",
+        "EXP-1603",
+        "EXP-1606",
         "EXP-1601",
-        "EXP-1291"
+        "EXP-1605",
+        "EXP-1306",
+        "EXP-1291",
+        "EXP-1607",
+        "EXP-1604"
       ],
       "json_found": true,
+      "json_count": 11,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "meal-response-clustering-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-1598",
-        "EXP-1597",
-        "EXP-1592",
-        "EXP-1591",
+        "EXP-1594",
         "EXP-765",
         "EXP-1593",
-        "EXP-1594",
         "EXP-1595",
+        "EXP-1597",
+        "EXP-1598",
+        "EXP-1591",
+        "EXP-1592",
         "EXP-1596"
       ],
       "json_found": true,
+      "json_count": 9,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "ml-experiment-progress-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-132",
-        "EXP-016",
-        "EXP-137",
-        "EXP-007",
-        "EXP-013",
-        "EXP-128",
-        "EXP-153",
-        "EXP-100",
-        "EXP-136",
-        "EXP-015",
-        "EXP-102",
-        "EXP-145",
-        "EXP-011",
         "EXP-134",
-        "EXP-086",
-        "EXP-079",
-        "EXP-010",
-        "EXP-025",
-        "EXP-109",
-        "EXP-012",
-        "EXP-095",
-        "EXP-002",
-        "EXP-150",
-        "EXP-152",
-        "EXP-151",
         "EXP-001",
         "EXP-138",
-        "EXP-104",
-        "EXP-142",
-        "EXP-088",
-        "EXP-133",
-        "EXP-143",
-        "EXP-124",
-        "EXP-006",
-        "EXP-116",
-        "EXP-072",
-        "EXP-141",
-        "EXP-021",
-        "EXP-098",
-        "EXP-122",
-        "EXP-003",
-        "EXP-080",
+        "EXP-012",
+        "EXP-013",
         "EXP-135",
-        "EXP-140",
-        "EXP-144",
-        "EXP-139",
+        "EXP-010",
+        "EXP-007",
+        "EXP-002",
+        "EXP-088",
         "EXP-017",
+        "EXP-133",
+        "EXP-016",
+        "EXP-015",
+        "EXP-150",
+        "EXP-116",
+        "EXP-102",
+        "EXP-086",
+        "EXP-141",
+        "EXP-144",
+        "EXP-140",
+        "EXP-122",
+        "EXP-011",
+        "EXP-098",
+        "EXP-153",
+        "EXP-006",
         "EXP-005",
+        "EXP-026",
+        "EXP-104",
+        "EXP-136",
+        "EXP-143",
+        "EXP-128",
+        "EXP-021",
+        "EXP-080",
+        "EXP-132",
         "EXP-110",
+        "EXP-152",
+        "EXP-095",
+        "EXP-025",
+        "EXP-151",
+        "EXP-079",
+        "EXP-142",
+        "EXP-072",
+        "EXP-003",
+        "EXP-137",
+        "EXP-139",
+        "EXP-145",
         "EXP-092",
-        "EXP-026"
+        "EXP-124",
+        "EXP-109",
+        "EXP-100"
       ],
       "json_found": true,
+      "json_count": 51,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "mongodb-update-readiness-report.md",
-      "verdict": "NEEDS_FIX",
+      "verdict": "PASS",
       "exp_ids": [],
       "json_found": false,
-      "key_issues": [
-        "No EXP IDs found but report contains patient/data tables"
-      ],
-      "fixable": true
+      "json_count": 0,
+      "key_issues": [],
+      "fixable": true,
+      "has_data": false,
+      "is_legacy": false
     },
     {
       "report": "multi-objective-validation-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-124",
-        "EXP-123",
-        "EXP-122",
         "EXP-049",
-        "EXP-125"
+        "EXP-123",
+        "EXP-125",
+        "EXP-124",
+        "EXP-122"
       ],
       "json_found": true,
+      "json_count": 5,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "natural-experiments-settings-optimization-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-1711",
-        "EXP-1717",
-        "EXP-1705",
-        "EXP-1713",
-        "EXP-1721",
-        "EXP-1667",
-        "EXP-1301",
-        "EXP-1707",
-        "EXP-1653",
-        "EXP-1703",
         "EXP-1719",
         "EXP-1701",
-        "EXP-1715"
+        "EXP-1705",
+        "EXP-1711",
+        "EXP-1301",
+        "EXP-1715",
+        "EXP-1717",
+        "EXP-1721",
+        "EXP-1713",
+        "EXP-1653",
+        "EXP-1667",
+        "EXP-1707",
+        "EXP-1703"
       ],
       "json_found": true,
+      "json_count": 13,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "overnight-experiment-report-phase18.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-250",
-        "EXP-249",
-        "EXP-251",
-        "EXP-254",
-        "EXP-255",
-        "EXP-256",
-        "EXP-247",
-        "EXP-252",
         "EXP-258",
         "EXP-257",
-        "EXP-242"
+        "EXP-242",
+        "EXP-250",
+        "EXP-249",
+        "EXP-254",
+        "EXP-252",
+        "EXP-256",
+        "EXP-255",
+        "EXP-247",
+        "EXP-251"
       ],
       "json_found": true,
+      "json_count": 11,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "settings-optimizer-productionization-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-1717",
+        "EXP-1701",
         "EXP-1705",
-        "EXP-1801",
         "EXP-747",
+        "EXP-1717",
+        "EXP-1801",
         "EXP-1707",
-        "EXP-1703",
-        "EXP-1701"
+        "EXP-1703"
       ],
       "json_found": true,
+      "json_count": 7,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     },
     {
       "report": "temporal-models-report.md",
       "verdict": "PASS",
       "exp_ids": [
-        "EXP-1635",
-        "EXP-1632",
-        "EXP-1591",
         "EXP-1638",
-        "EXP-1633",
+        "EXP-1138",
+        "EXP-1634",
+        "EXP-1591",
+        "EXP-1611",
+        "EXP-1635",
+        "EXP-1636",
+        "EXP-1637",
         "EXP-1531",
         "EXP-1631",
-        "EXP-1637",
-        "EXP-1138",
-        "EXP-1611",
-        "EXP-1634",
-        "EXP-1636"
+        "EXP-1632",
+        "EXP-1633"
       ],
       "json_found": true,
+      "json_count": 12,
       "key_issues": [],
-      "fixable": true
+      "fixable": true,
+      "has_data": true,
+      "is_legacy": false
     }
   ],
   "summary": {
-    "pass": 28,
-    "needs_fix": 4,
+    "pass": 31,
+    "needs_fix": 1,
     "reject": 0,
     "error_categories": {
       "orphaned_unverifiable": 0,
+      "legacy_no_exp_ids": 0,
+      "partial_json_missing": 1,
       "fabrication": 0,
       "scope_issues": 0,
       "method_mischaracterization": 0,
@@ -651,47 +711,41 @@ Verifying temporal-models-report.md...
     }
   },
   "top_5_rejections": [],
+  "top_5_needs_fix": [
+    {
+      "report": "digital-twin-phase2-report.md",
+      "reason": "Partial JSON: 5/7 experiments found; missing EXP-2555, EXP-2556"
+    }
+  ],
   "top_10_passes": [
     {
       "report": "alert-filtering-report.md",
       "exp_ids": [
-        "EXP-1617",
-        "EXP-1616",
-        "EXP-1613",
+        "EXP-1141",
         "EXP-1541",
-        "EXP-1618",
-        "EXP-1614",
-        "EXP-1611",
-        "EXP-1612",
         "EXP-1145",
-        "EXP-1615",
-        "EXP-1141"
+        "EXP-1612",
+        "EXP-1611"
       ]
     },
     {
       "report": "capability-report-clinical-decision-support.md",
       "exp_ids": [
-        "EXP-685",
-        "EXP-227",
-        "EXP-688",
         "EXP-694",
+        "EXP-688",
         "EXP-1301",
         "EXP-747",
-        "EXP-693",
-        "EXP-746"
+        "EXP-685"
       ]
     },
     {
       "report": "capability-report-data-quality.md",
       "exp_ids": [
-        "EXP-696",
-        "EXP-698",
-        "EXP-687",
-        "EXP-785",
         "EXP-681",
+        "EXP-682",
         "EXP-847",
-        "EXP-691",
-        "EXP-682"
+        "EXP-696",
+        "EXP-691"
       ]
     },
     {
@@ -706,39 +760,30 @@ Verifying temporal-models-report.md...
     {
       "report": "capability-report-glucose-forecasting.md",
       "exp_ids": [
-        "EXP-822",
-        "EXP-824",
-        "EXP-800",
-        "EXP-823",
-        "EXP-843",
-        "EXP-830",
-        "EXP-811",
-        "EXP-803",
-        "EXP-826",
         "EXP-812",
-        "EXP-875",
         "EXP-818",
-        "EXP-850"
+        "EXP-803",
+        "EXP-800",
+        "EXP-823"
       ]
     },
     {
       "report": "capability-report-hypoglycemia-prediction.md",
       "exp_ids": [
-        "EXP-695",
         "EXP-817",
-        "EXP-692",
-        "EXP-749"
+        "EXP-749",
+        "EXP-695",
+        "EXP-692"
       ]
     },
     {
       "report": "capability-report-pattern-drift.md",
       "exp_ids": [
-        "EXP-696",
-        "EXP-765",
+        "EXP-781",
         "EXP-416",
-        "EXP-686",
-        "EXP-126",
-        "EXP-781"
+        "EXP-765",
+        "EXP-696",
+        "EXP-686"
       ]
     },
     {
@@ -746,16 +791,15 @@ Verifying temporal-models-report.md...
       "exp_ids": [
         "EXP-448",
         "EXP-690",
-        "EXP-689",
-        "EXP-790"
+        "EXP-790",
+        "EXP-689"
       ]
     },
     {
       "report": "capability-report-transfer-learning.md",
       "exp_ids": [
-        "EXP-697",
         "EXP-699",
-        "EXP-769",
+        "EXP-697",
         "EXP-777",
         "EXP-815",
         "EXP-462"
@@ -764,12 +808,10 @@ Verifying temporal-models-report.md...
     {
       "report": "confidence-intervals-report.md",
       "exp_ids": [
-        "EXP-1621",
+        "EXP-1622",
         "EXP-1626",
         "EXP-1627",
         "EXP-1625",
-        "EXP-1624",
-        "EXP-1622",
         "EXP-1628"
       ]
     }

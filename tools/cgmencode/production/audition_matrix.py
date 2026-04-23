@@ -84,6 +84,7 @@ class AuditionInputs:
     aid_protection_severe: Optional[float] = None   # EXP-2889: counterfactual_severe - observed_severe (how much the AID buffers this patient)
     algorithm_lineage: Optional[str] = None         # "Loop (iOS)" | "oref1 (modern)" | "oref0 (legacy)" — controller family, not brand
     phenotype_archetype: Optional[str] = None       # EXP-2886: one of {well_defended, algorithm_dependent, exposed_stacker, hidden_leverage, lax_braking, stacker_balanced, stacker_weak_defense}
+    night_severe_excess: Optional[float] = None     # EXP-2895: nighttime severe-rate - daytime severe-rate (per-patient or per-cell)
 
 
 @dataclass
@@ -517,6 +518,36 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
                 "enabled would close the gap."
             ),
         ))
+
+    # Night-protection-degraded flag — EXP-2895
+    # Lineage-conditional thresholds: oref0 patients are doubly exposed
+    # (settings AND TOD), oref1 mildly. Loop is TOD-invariant — no flag.
+    if inputs.night_severe_excess is not None:
+        lin = inputs.algorithm_lineage
+        threshold = None
+        severity = None
+        if lin == "oref0 (legacy)" and inputs.night_severe_excess >= 0.15:
+            threshold, severity = 0.15, "high"
+        elif lin == "oref1 (modern)" and inputs.night_severe_excess >= 0.10:
+            threshold, severity = 0.10, "medium"
+        # Loop intentionally excluded — EXP-2895 shows TOD-invariance
+        if threshold is not None:
+            flags.append(AuditionFlag(
+                name="night_protection_degraded",
+                severity=severity,
+                rationale=(
+                    f"EXP-2895: nighttime severe-hypo rate exceeds "
+                    f"daytime by {inputs.night_severe_excess:.0%} "
+                    f"(threshold {threshold:.0%} for {lin}). The "
+                    "controller's overnight protection is materially "
+                    "weaker than daytime. Audit overnight basal "
+                    "scheduling, sensor reliability during sleep, and "
+                    "whether the dawn-phenomenon adjustment is "
+                    "active. For oref0 patients consider migration to "
+                    "an oref1-family controller (TOD degradation is "
+                    "smaller in oref1)."
+                ),
+            ))
 
     if inputs.simpson_paradox is None and inputs.phenotype == PHENOTYPE_UP:
         # Fallback: up_shift phenotype as a coarse proxy when Simpson flag
