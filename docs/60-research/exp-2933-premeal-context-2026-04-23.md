@@ -11,8 +11,8 @@ Pre-meal BG distributions differ wildly by design:
 
 | Design       | Mean pre-BG | Median | n meals | Std |
 |--------------|------------:|-------:|--------:|----:|
-| Loop_AB_OFF  | 214.1       | 216    | 424     | 86.3 |
-| Loop_AB_ON   | 147.6       | 130    | 1 235   | 62.8 |
+| Loop_AB_OFF  | 214.1       | 216    | 424     | 86.25 |
+| Loop_AB_ON   | 147.6       | 130    | 1 235   | 62.85 |
 | oref1        | **113.8**   | **107**| 2 228   | 36.6 |
 
 oref1 patients enter meals with average BG **100 mg/dL lower**
