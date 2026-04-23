@@ -319,3 +319,101 @@ within-patient AID-switch data, but is no longer parsimonious.
 | 2941   | Pre-window IOB proxy | identical; selection-bias hypothesis flagged |
 | 2942   | oref0 cross-cohort | 30.0% ≈ 29.6% Loop_AB_OFF — selection-bias rejected |
 | 2943   | Variance decomposition | η²=0.640 design-dominated |
+| 2944   | True-IOB during sustained-high | iob_delta +0.629U gap — Loop loading vs oref1 peaking |
+| 2946   | PP IOB timing | Loop iob_peak 9.0 vs oref1 4.5 U; iob-vs-bg-peak lead -35 vs -55 min |
+| 2947   | Hypo IOB-age | Loop more cuts/decay yet 2× severe-hypo; mechanism is IOB AGE |
+
+---
+
+## 9. Finding E — UNIFIED IOB-AGE FRAMEWORK
+
+After EXP-2944/2946/2947, all three window-class outcomes
+(sustained-high recovery, PP TIR, hypo descent TBR) collapse to a
+single design principle.
+
+### One mechanism, three windows
+
+| Window         | Outcome  | Loop_AB_ON pattern                | oref1 pattern                          |
+|----------------|----------|-----------------------------------|----------------------------------------|
+| Sustained-high | Recovery | IOB +0.59 U during window (climbing) | IOB −0.04 U (peaking, acting now)   |
+| PP             | TIR      | IOB peak 35 min before BG peak    | IOB peak 55 min before BG peak         |
+| Hypo descent   | TBR      | Less iob_at_entry, MORE prior decay, MORE basal cuts; 2× severe-hypo | More iob_at_entry, less decay, fewer cuts; less hypo |
+
+### The unifying variable: IOB AGE
+
+EXP-2947 reveals what underlies the three observations:
+
+- **Fresh IOB** (recently delivered, pre-peak action) drives BG
+  down regardless of basal-cut posture. Loop_AB_ON shedding IOB
+  faster doesn't help because the IOB it has is still at its
+  most active phase.
+- **Stale IOB** (post-peak, gracefully decaying) is a buffer
+  rather than a driver. oref1's higher iob_at_entry at hypo
+  descents is benign because the dose was placed earlier and
+  the active phase is past.
+
+The same IOB value can be a **hazard** (fresh) or a **buffer**
+(stale) depending on age relative to the response window.
+
+### Single AID-author design principle
+
+**Predict-and-fire on rising velocity early, so that IOB ages
+before the BG response window.**
+
+This produces:
+- During BG rise: IOB is near peak action when needed (PP TIR,
+  sustained-high recovery)
+- During BG fall: IOB is past peak action (hypo defence; stale
+  buffer rather than fresh driver)
+
+oref1's UAM/dynamic-ISF/autosens stack is one implementation.
+Other implementations are possible — the principle, not the
+specific algorithm, is the recommendation.
+
+### Why reactive cutting cannot substitute
+
+Loop_AB_ON cuts basal in 96.1% of pre-hypo cells (vs oref1's
+91.1%) and sheds IOB at −1.45 U/h pre-event (vs oref1 −0.54).
+**It is winning every reactive metric and losing the BG outcome**
+(2× severe hypo). The fresh IOB it is reacting to was placed
+too late.
+
+This rules out the "more aggressive cuts will fix it" tuning
+recommendation. The fix is upstream — earlier predictive delivery,
+not deeper cuts.
+
+### Selection-bias hypothesis CLOSED
+
+Combined evidence:
+- EXP-2942 cross-cohort match (oref0 ≈ Loop_AB_OFF at no-SMB floor)
+- EXP-2943 variance decomposition (η²=0.64 design-dominated)
+- EXP-2944 true-IOB mechanism in sustained-high (iob_delta gap)
+- EXP-2946 IOB-timing in PP (cross-window validation; oref0
+  channel-positions shift by window class)
+- EXP-2947 IOB-age framework unifies all three windows
+
+The selection-bias hypothesis would need to coincidentally produce
+all five patterns from patient-cohort differences. Algorithm
+mechanism is the parsimonious explanation.
+
+### AID-author lever priority order (FINAL)
+
+1. **UAM/glucose-appearance + dynamic-ISF** (PP offence channel)
+2. **SMB-as-correction** (sustained-high channel)
+3. **Predict-and-fire on rising velocity early** so IOB AGES
+   before the BG response window — UNIFIED across PP TIR,
+   sustained-high recovery, and hypo defence
+4. Enable autobolus by default for AID-OFF correction loops
+5. Basal-cut latency (defence-side; SECONDARY to IOB age)
+
+### Counter-recommendations (what NOT to tune)
+
+- Don't increase basal-cut aggressiveness beyond ~91% as a hypo-
+  defence lever. Loop_AB_ON already cuts in 96.1% of cells and
+  loses the BG outcome.
+- Don't increase total dose magnitude within a design. Within-
+  design dose tertile is flat for both PP TIR (EXP-2946) and
+  sustained-high recovery (EXP-2944, Loop tertile flat).
+- Don't make oref1 dose more like Loop or vice versa. Different
+  dose policies are part of integrated bolus-calc + absorption
+  + ISF tuning, not isolated knobs.
