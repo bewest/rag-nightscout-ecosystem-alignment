@@ -599,3 +599,41 @@ def test_p_basal_mismatch_none_emits_no_flag():
     flags = classify_triage_flags(inputs)
     names = {f.name for f in flags}
     assert "basal_mismatch" not in names
+
+
+def test_basal_mismatch_loop_includes_hypo_prevention_hint():
+    """EXP-2871/2872/2873: Loop basal_mismatch rationale should reference
+    hypo-prevention bias and recommend softening schedule first."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        p_basal_mismatch=0.95,
+        basal_recommended_mult=0.40,
+    )
+    flags = classify_triage_flags(inputs)
+    bm = [f for f in flags if f.name == "basal_mismatch"]
+    assert bm, "expected basal_mismatch flag"
+    assert "Loop" in bm[0].rationale
+    assert "hypo-prevention" in bm[0].rationale.lower()
+    assert "schedule" in bm[0].rationale.lower()
+
+
+def test_basal_mismatch_trio_includes_smb_substitution_hint():
+    """EXP-2871/2872/2873: Trio basal_mismatch rationale should reference
+    SMB substitution and recommend ISF audit before lowering basal."""
+    inputs = AuditionInputs(
+        controller=ControllerType.TRIO,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        p_basal_mismatch=0.95,
+        basal_recommended_mult=0.40,
+    )
+    flags = classify_triage_flags(inputs)
+    bm = [f for f in flags if f.name == "basal_mismatch"]
+    assert bm, "expected basal_mismatch flag"
+    assert "Trio" in bm[0].rationale
+    assert "SMB" in bm[0].rationale or "smb" in bm[0].rationale.lower()
+    assert "ISF" in bm[0].rationale

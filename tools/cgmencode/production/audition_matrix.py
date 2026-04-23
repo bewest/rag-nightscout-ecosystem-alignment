@@ -265,6 +265,32 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
             if inputs.basal_recommended_mult is not None
             else ""
         )
+        # EXP-2871/2872/2873: Loop and Trio differ on suspension polarity.
+        # Loop suspends in normal/low envelopes (hypo-prevention bias);
+        # Trio suspends in elevated envelopes (SMB substitution). The same
+        # basal_mismatch signal therefore means different things per
+        # controller. Do NOT vary thresholds (no validated cohort yet);
+        # vary the rationale guidance.
+        ctl = getattr(inputs.controller, "value", inputs.controller)
+        if ctl == ControllerType.LOOP.value:
+            ctl_hint = (
+                " Controller=Loop: suspension is hypo-prevention biased "
+                "(EXP-2871); the gap most likely reflects the schedule "
+                "being too aggressive for fasting equilibrium. Soften "
+                "schedule first; ISF often follows."
+            )
+        elif ctl in (ControllerType.TRIO.value, ControllerType.AAPS.value,
+                     ControllerType.OPENAPS.value):
+            ctl_hint = (
+                f" Controller={ctl}: SMB-driven controllers substitute "
+                "basal with corrections (EXP-2871); the gap may reflect "
+                "ISF stacking driving basal suspension rather than a true "
+                "schedule excess. Audit ISF and SMB cap before lowering "
+                "basal."
+            )
+        else:
+            ctl_hint = ""
+
         if inputs.p_basal_mismatch >= 0.9:
             flags.append(AuditionFlag(
                 name="basal_mismatch",
@@ -274,7 +300,7 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
                     f"in fasting equilibrium (EXP-2865){mult_str}. "
                     "TRIAGE ONLY — the gap IS the EGP safety margin "
                     "(per EXP-2738); do NOT lower basal by the multiplier. "
-                    "Audit basal schedule + EGP exposure."
+                    f"Audit basal schedule + EGP exposure.{ctl_hint}"
                 ),
             ))
         elif inputs.p_basal_mismatch >= 0.1:
@@ -283,7 +309,7 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
                 severity="low",
                 rationale=(
                     f"Bootstrap P(scheduled basal >> actual)={inputs.p_basal_mismatch:.2f} "
-                    f"(EXP-2865){mult_str} — boundary; provisional flag."
+                    f"(EXP-2865){mult_str} — boundary; provisional flag.{ctl_hint}"
                 ),
             ))
         # else: confidently aligned → suppress
