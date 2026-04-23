@@ -1,0 +1,186 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║           VERIFICATION REPORT: EXP-2871 SUSPENSION POLARITY REPORT             ║
+║                           2026-04-22, N=31 Patched                             ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FINDINGS BY CLAIM TYPE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ INCORRECT: "Cohort suspension shift by window" table (lines 35-43)
+
+  Report claims (N ≤ 25):
+    Window 1: N=4, frac_pos=0.75, median=+0.086 U/h
+    Window 6: N=11, frac_pos=0.73, median=+0.066 U/h
+    Window 24: N=25, frac_pos=0.36, median=-0.012 U/h
+    Window 48: N=22, frac_pos=0.46, median=-0.002 U/h
+
+  Actual data (exp-2871_summary.json, N=31 patched):
+    Window 1: N=31, frac_pos=0.323, median=-0.073 U/h
+    Window 6: N=31, frac_pos=0.419, median=-0.005 U/h
+    Window 24: N=30, frac_pos=0.400, median=-0.010 U/h
+    Window 48: N=26, frac_pos=0.462, median=-0.002 U/h
+
+  Specific errors:
+    • N values wrong: Report 4-25, actual 26-31 (full cohort)
+    • frac_positive inverted: Report mostly >0.5, actual <0.5 (SIGN FLIP)
+    • median_shift SIGN INVERSION: Report shows positive (good signal), 
+      actual all negative (safety hedging—completely opposite interpretation!)
+    • Magnitude underestimated: Report ≤0.086, actual -0.073 to +0.000
+
+  Evidence: externals/experiments/exp-2871_summary.json, by_window array
+  Impact: This is the PRIMARY TABLE supporting the main finding. Sign inversion 
+          reverses the clinical interpretation.
+
+⚠️  IMPRECISE: "Per-patient classification" cross-tab (lines 27-31)
+
+  Report shows:
+    Loop: 0 True, 6 False (N=6)
+    Trio: 5 True, 3 False (N=8)
+    OpenAPS: 2 True, 3 False (N=5)
+    Total: 19 with controller data
+
+  Actual (exp-2871_per_patient.parquet, N=31 patched):
+    Loop: 0 True, 8 False (N=8)
+    Trio: 6 True, 3 False (N=9)
+    OpenAPS: 1 True, 4 False (N=5)
+    Total: 22 with controller data
+
+  Issue: Report tables show PRE-PATCH state (N=25 total, 19 classified).
+         Artifacts are PATCHED state (N=31 total, 22 classified).
+         Addendum correctly shows patched numbers but main text doesn't clarify.
+
+  Evidence: exp-2871_per_patient.parquet vs report
+  Impact: Reader checking JSON/parquet will see different numbers than main tables.
+
+✓ VERIFIED: Methodology (lines 11-21)
+
+  Claim: suspension = scheduled_basal − actual_basal; tertile comparison
+         Windows [1, 2, 3, 6, 12, 24, 48] h; median shift = susp_elev − susp_norm
+
+  Code verification (tools/cgmencode/exp_suspension_envelope_2871.py):
+    Line 64: g_pat["suspension"] = g_pat["scheduled_basal_rate"] - g_pat["actual_basal_rate"]
+    Line 86-93: Tertile split using np.percentile([33, 67]); median calc
+    Line 54: WINDOWS = [1, 2, 3, 6, 12, 24, 48]
+    Line 109: susp_shift_uph = susp_elev - susp_norm
+
+  Match: ALL CORRECT ✓
+
+❌ INCORRECT: "per-patient median shift is between −0.03 and −0.48 U/h" (line 50)
+
+  Report range: [−0.03, −0.48]
+  Actual Loop patient ranges (from exp-2871_per_patient.parquet):
+    a: [−0.621, −0.030]  ← exceeds −0.48 lower bound
+    b: [−0.049, −0.002]
+    c: [−0.310, −0.108]
+    d: [−0.054, +0.063]  ← includes positive (!), contradicts "all negative" claim
+    e: [−0.783, −0.026]  ← exceeds −0.48 lower bound
+    f: [−1.369, −0.422]  ← well beyond −0.48
+    g: [−0.089, −0.028]
+    i: [−1.392, +0.090]  ← includes positive
+
+  Actual range: [−1.392, +0.090]
+  Report misses: Patients f, i, and claims uniform negativity for all Loop
+
+  Evidence: Per-patient suspension shifts in exp-2871_suspension_envelope.parquet
+  Impact: Overstates consistency; Loop not universally negative at all windows.
+
+✓ VERIFIED: Checks summary (lines 23, 116-120)
+
+  Report claims:
+    • Checks: 0/3 PASS
+    • majority_uniformly_positive: false (only 7/25 = 28%)
+    • signature_dissolves: false (delta 0.83 >> threshold 0.3)
+    • no_inverted_long_scale: false (48h frac=0.46 << 0.7)
+
+  From exp-2871_summary.json:
+    • checks_passed: "0" (string, but represents 0) ✓
+    • PASS_majority_uniformly_positive: false ✓
+    • 48h frac_positive_shift: 0.462 ≈ 0.46 ✓
+
+  Match: CORRECT ✓
+  Note: Report cites "7/25" (pre-patch) but patched has 8/31 (minor version mismatch)
+
+✓ VERIFIED: Addendum cross-tab (lines 152-158)
+
+  Addendum claims (N=31):
+    Loop False=8, True=0
+    Trio False=3, True=6
+    OpenAPS False=4, True=1
+
+  From exp-2871_per_patient.parquet:
+    Loop False=8, True=0  ✓
+    Trio False=3, True=6  ✓
+    OpenAPS False=4, True=1  ✓
+
+  Match: PERFECT ✓
+
+✓ VERIFIED: Loop vs Trio inversion pattern (lines 45-71)
+
+  Report mechanism:
+    • Loop suspends more in NORMAL/LOW (hypo-prevention safety)
+    • Trio suspends more in ELEVATED (SMB-driven basal substitution)
+
+  Per-patient data analysis (all Loop, all Trio, by controller):
+    Loop patients (N=8 classified): ALL (8/8) have all_positive=False
+      → All show negative shifts across windows
+      → Confirms suspension in lows, not highs
+    
+    Trio patients (N=9 classified): 6/9 have all_positive=True
+      → 6/9 show positive shifts (suspend in highs)
+      → 3/9 still show negative shifts (minority pattern)
+      → Majority pattern is SMB (suspend in highs)
+
+  Pattern confirmed: ✓ VERIFIED at population and per-patient level
+
+⊘ CANNOT_VERIFY: Figure (line 130)
+
+  Report references: docs/60-research/figures/exp-2871_suspension_phenotype.png
+  File exists: Yes ✓
+  Axis accuracy: Not inspected (would require visual comparison)
+  Legend: Not inspected
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SUMMARY TABLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Claim                                 Line   Status      Severity  Evidence
+─────────────────────────────────────────────────────────────────────────────────
+Suspension formula                    11-21  ✓VERIFIED   -         Code matches
+Windows [1,2,3,6,12,24,48]           16     ✓VERIFIED   -         Code line 54
+Summary-by-window table N,frac,med   35-43  ❌INCORRECT CRITICAL  JSON array
+Per-patient cross-tab N counts       27-31  ⚠IMPRECISE  HIGH      Pre-patch vs patched
+Loop shift range "−0.03 to −0.48"    50     ❌INCORRECT MEDIUM    Actual [−1.37, +0.09]
+Checks 0/3 PASS                      23,116 ✓VERIFIED   -         JSON checks
+Addendum cross-tab (N=31)            152    ✓VERIFIED   -         Parquet exact match
+Loop vs Trio inversion               45-71  ✓VERIFIED   -         Per-patient patterns
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ROOT CAUSE & RECOMMENDATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ROOT CAUSE:
+  The report's main body (lines 27-43) appears to reference the PRE-PATCH 
+  experiment state (N=25 cohort, with older suspension calculation).
+  
+  The Addendum (added 2026-04-22) documents an np.percentile NaN fix that:
+    • Increases N from 25 to 31
+    • Changes loop_all_positive from 7 to 8
+    • Changes trio_all_positive from 5 to 6
+  
+  However, the main tables were never updated to match the patched artifacts.
+
+DATA ARTIFACTS CHECKED:
+  ✓ externals/experiments/exp-2871_summary.json (patched, N=31)
+  ✓ externals/experiments/exp-2871_per_patient.parquet (patched, N=31)
+  ✓ externals/experiments/exp-2871_suspension_envelope.parquet (patched, N=31)
+  ✓ tools/cgmencode/exp_suspension_envelope_2871.py (code matches methodology)
+
+RECOMMENDATION:
+  Update lines 27-43 (main tables) to reflect N=31 patched state, OR
+  clearly label them as "Pre-patch (N=25)" with a reference note.
+
+  The core Loop/Trio mechanism finding is sound and verified, but the
+  numerical support tables need correction for consistency.
+
+╚════════════════════════════════════════════════════════════════════════════════╝

@@ -242,6 +242,15 @@
       "description": "Karpathy automated research loop - reference for algorithm scoring pipeline",
       "frozen_at": "2026-03-28T11:46:00.087606",
       "frozen_from": "main"
+    },
+    {
+      "alias": "babelbetes",
+      "name": "babelbetes",
+      "url": "https://github.com/nudgebg/babelbetes.git",
+      "ref": "HEAD",
+      "description": "Multi-study CGM/insulin data standardization toolkit (500k+ subject-days) for cross-study phenotype synthesis",
+      "frozen_at": "2026-04-22T23:09:00.000000",
+      "frozen_from": "main"
     }
   ]
 }

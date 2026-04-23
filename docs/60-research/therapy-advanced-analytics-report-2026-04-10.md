@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-This batch explores population-level insights and advanced analytics, reaching the **200-experiment milestone**. Key findings: 4 natural patient clusters emerge from therapy profiles, recommendation direction transfers perfectly between similar patients (10/10), weekend vs weekday differences are statistically insignificant (0/11 p<0.05), insulin stacking is prevalent (10/11) with 0-18% hypo risk, and all patients have low glycemic risk (LBGI/HBGI). The sequential fix protocol (Strategy C) outperforms single-parameter fixes by 40-90% for multi-flag patients.
+This batch explores population-level insights across **all 11 patients (a–k)** in the cohort, and advanced analytics, reaching the **200-experiment milestone**. Key findings: 4 natural patient clusters emerge from therapy profiles, recommendation direction transfers perfectly between similar patients (10/10), weekend vs weekday differences are statistically insignificant (0/11 p<0.05), insulin stacking is prevalent (10/11) with 0-18% hypo risk, and all patients have low glycemic risk (LBGI/HBGI). The sequential fix protocol (Strategy C) outperforms single-parameter fixes by 40-90% for multi-flag patients.
 
 ## Experiment Results
 
