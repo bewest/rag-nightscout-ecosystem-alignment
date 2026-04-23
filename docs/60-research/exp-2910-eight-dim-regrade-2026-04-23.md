@@ -37,7 +37,7 @@ applies that guard retroactively.
 | 4 | SMB channel availability          | oref0 absent (0/3); Loop 5/7 enabled; oref1 9/9 enabled | **Mechanism (no Guard-#6 needed)** | EXP-2893, EXP-2894 | Configuration property |
 | 5 | TOD-invariance (day-vs-night)     | Loop +0.006 / oref1 +0.101 / oref0 +0.150 night excess | **Verified** (within high-cf: Loop +0.003, oref1 +0.095 p=0.004, oref0 +0.151 p=0.012) | EXP-2907 | Effect sizes essentially identical |
 | 6 | Hourly mitigation profile         | Loop dawn 04-05; oref1 03h focal; oref0 night-long | **Verified** (high-cf preserves all peaks; oref0 00h INTENSIFIES 0.82→0.90) | EXP-2909 | Monotonic Loop:oref1:oref0 ranking at every hour |
-| 7 | Counter-reg moderation            | Kruskal p=0.037; rho frac_smb vs intercept = -0.43 | **Pending** (intercept is post-event physiology; cf gates the upstream event but not the downstream rebound) | — | Reformulate as cf-conditioned analysis on event-level intercept |
+| 7 | Counter-reg moderation            | Kruskal p=0.037; rho frac_smb vs intercept = -0.43 | **Failed Guard #6** (EXP-2912: marginal Kruskal p=0.027 drops to p=0.245 after cf-residualization; plausibly load-mediated) | EXP-2912 | n_oref0=3 limits power; revisit with AAPS data |
 | 8 | User-config consistency           | Loop/oref1 within-lineage score 0.87; oref0 0.24 | **Robust to Guard-#6 by construction** | EXP-2899 | Intra-lineage variance metric, not cross-lineage; Guard #6 doesn't apply |
 
 ## Status totals
@@ -47,11 +47,14 @@ applies that guard retroactively.
 | Verified (cf-conditioned, survives)   | 3 (axes 1, 5, 6) |
 | Partially verified                    | 1 (axis 2 — EXP-2911) |
 | Mechanism / construction (Guard N/A)  | 3 (axes 3, 4, 8) |
-| Pending re-test                       | 1 (axis 7) |
+| **Failed Guard #6**                   | 1 (axis 7 — EXP-2912) |
+| Pending re-test                       | 0 |
 
-**7 of 8 axes** either pass Guard #6, are partially verified, or are
-exempt by construction. **1 of 8 axes** (counter-reg moderation)
-needs follow-up cf-conditioned re-analysis.
+**7 of 8 axes** support the algorithm-migration recommendation
+surface (verified, partially verified, or mechanism-by-construction).
+**1 of 8 axes** (counter-reg moderation, axis 7) failed Guard #6 and
+should be **withdrawn from cross-lineage claims** until cohort
+expansion (per EXP-2908) permits re-test.
 
 ## Refined "oref0 worst on every axis" claim
 
