@@ -71,7 +71,7 @@ rises by definition. Dynamic-ISF widens overnight sensitivity
 and pre-emptively raises insulin demand against EGP. This is
 the cleanest single-mechanism design comparison in this workspace.
 
-### Finding B — Post-prandial gap (UAM/SMB lever)
+### Finding B — Post-prandial gap (UAM/SMB lever; dose-shape mechanism)
 
 **Loop PP TIR = 48.64 %; oref1 PP TIR = 75.81 % (27 pp gap).**
 
@@ -80,12 +80,25 @@ the cleanest single-mechanism design comparison in this workspace.
 | 1 — Pooled state TIR | EXP-2927 | 48.64 vs 75.81 % at PP |
 | 2 — cf-conditioning  | EXP-2927 | mid_cf +27.80 pp [+7.93, +46.32]; high_cf +18.48 pp [+0.06, +37.55] |
 | 3 — Comparator cell  | EXP-2927 | oref0 PP TIR 70.47 % — UAM+SMB stack alone is competitive |
+| 4 — Autobolus split  | EXP-2929 | Loop_AB_OFF PP TIR = 32.14 %; ON = 55.23 %. Autobolus closes 53 % (23.10 of 43.67 pp) of the gap; residual 20.57 pp [+7.02, +36.28] |
+| 5 — Dose-shape mechanism | EXP-2930 | First-SMB latency identical (oref1 10 min vs Loop_AB_ON 12 min). oref1 front-loads dose: **2.2× in 0-30 min, 6.6× in 30-60 min**. Loop catches up corrective at 120-240 min into already-elevated BG |
 
 **Causal interpretation:** Half of Loop post-prandial cells are
-out of range. UAM detection + SMB-as-correction during absorption
-+ dynamic-ISF response to the bolus together deliver a structural
-27-pp advantage. **This is the larger absolute lever** — bigger
-than the dawn fingerprint.
+out of range. The mechanism is **dose shape, not cadence or
+first-fire timing** — both designs fire 4-7 SMBs per meal at
+the same first-fire latency. oref1's UAM detector + dynamic-ISF
+loads insulin during the early absorption phase; Loop autobolus
+fires when prediction crosses target (typically 30-90 min post-meal)
+and back-loads correction into already-elevated BG. **This is the
+larger absolute lever** — bigger than the dawn fingerprint.
+
+**Decomposed causal chain (closed by EXP-2930):**
+- ~53 % of the brake-only PP gap is closable by enabling autobolus
+  (Loop_AB_OFF → Loop_AB_ON, no UAM needed).
+- Remaining ~47 % requires a **glucose-appearance / UAM-style
+  detector** that does not depend on prediction crossing target,
+  plus **dynamic-ISF widening during early absorption** to
+  amplify the auto-correction dose.
 
 ### Finding C — Overnight basal-cut latency (oref0 weakness)
 
@@ -135,7 +148,15 @@ Suggested by absolute TIR delta in this cohort:
    and the highest-impact safety improvement (overnight severe
    hypo).
 4. **For Loop-style brake-only loops: enable autobolus.**
-   Halves dawn-hyper. Does not address PP gap or morning hypo.
+   Halves dawn 03:00 hyper and closes ~53 % of the PP TIR gap
+   (EXP-2929). Does not address the residual UAM/dynamic-ISF lever
+   (~47 % of PP gap remains; ~16 pp fasted gap unchanged).
+5. **Dose shape, not cadence.** Both autobolus and oref1-UAM fire
+   ~5 SMBs per meal at the same first-fire latency (EXP-2930).
+   The lever is **front-loaded delivery during early absorption**
+   (oref1 delivers 2.2× the dose in 0-30 min and 6.6× in 30-60 min
+   post-meal), which requires UAM-style appearance detection and
+   dynamic-ISF widening — not "fire SMBs more often."
 
 ---
 
@@ -198,18 +219,19 @@ patient base and resolving all n=1 oref0 cells with honest CIs.
 | 2924   | Guard #6 confirmation | 8× gap survives cf-matching |
 | 2925   | Hypo symmetry | oref1 Pareto-dominates; no hypo trade |
 | 2927   | TIR decomposition | PP gap > fasted gap (1.4–1.7×) |
+| 2929   | Loop autobolus × PP TIR | autobolus closes 53 % of PP gap; FASTED unchanged |
+| 2930   | SMB temporal alignment | identical first-fire latency; oref1 front-loads dose 2.2-6.6× |
 | Toolkit | Guard #7 (load-mediation), §2.8 small-n caveat | new methodological additions |
 
 ---
 
 ## 8. Outstanding questions (next R&D batch)
 
-- **EXP-2929 candidate:** PP TIR by Loop autobolus on/off — does
-  autobolus close any of the PP gap, or is UAM the binding lever?
-- **EXP-2930 candidate:** SMB cadence comparison oref1 vs Loop
-  autobolus head-to-head (both are micro-bolus designs).
 - **EXP-2931 candidate:** Apply Guard #7 retroactively to
   EXP-2912 stacker phenotype claim.
+- **EXP-2932 candidate:** post-meal TBR by design — does oref1's
+  front-loaded dose carry hypo cost? ("no free lunch" check at
+  meal-window granularity).
 - **AAPS ingestion (EXP-2908):** the only structural fix for
   small-n oref0 cells.
 - **Per-patient TZ normalisation:** removes the local-clock
