@@ -86,6 +86,7 @@ class AuditionInputs:
     phenotype_archetype: Optional[str] = None       # EXP-2886: one of {well_defended, algorithm_dependent, exposed_stacker, hidden_leverage, lax_braking, stacker_balanced, stacker_weak_defense}
     night_severe_excess: Optional[float] = None     # EXP-2895: nighttime severe-rate - daytime severe-rate (per-patient or per-cell)
     protection_z_within_lineage: Optional[float] = None  # EXP-2900: z-score of aid_protection_severe vs lineage (or cell) median
+    regime_label: Optional[str] = None  # EXP-2902: {mechanism_gap, load_saturation, moderate, defended, over_performer_at_load}
 
 
 @dataclass
@@ -608,6 +609,36 @@ def classify_triage_flags(inputs: AuditionInputs) -> List[AuditionFlag]:
                     "Capture the patient's settings fingerprint as a "
                     "candidate template for same-cell peers; useful "
                     "as a replicable best-practice reference."
+                ),
+            ))
+
+    # EXP-2902 regime label (cohort stratification in protection x cf space)
+    if inputs.regime_label is not None:
+        if inputs.regime_label == "load_saturation":
+            flags.append(AuditionFlag(
+                name="regime_load_saturation",
+                severity="medium",
+                rationale=(
+                    "EXP-2902: cf_severe >= 0.95 — every descent reaches "
+                    "the hypo precipice without AID intervention. "
+                    "Settings/behaviour drive cf to ceiling; mechanism "
+                    "channels may all pass yet observed severe-rate stays "
+                    "high. Settings de-aggression (CR or basal pullback "
+                    "~10%) has higher leverage than algorithm migration "
+                    "or mechanism upgrade."
+                ),
+            ))
+        elif inputs.regime_label == "mechanism_gap":
+            flags.append(AuditionFlag(
+                name="regime_mechanism_gap",
+                severity="high",
+                rationale=(
+                    "EXP-2902: aid_protection_severe < 0.35 with "
+                    "non-saturated cf — algorithm/mechanism deficit. "
+                    "Audit basal-cut utilization (EXP-2892), SMB "
+                    "presence (EXP-2893), and consider algorithm "
+                    "migration. Settings tuning alone is unlikely to "
+                    "close the gap."
                 ),
             ))
 

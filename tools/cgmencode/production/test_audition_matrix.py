@@ -1008,3 +1008,54 @@ def test_rebound_overshoot_suppressed_when_intercept_moderate():
     flags = classify_triage_flags(inputs)
     names = {x.name for x in flags}
     assert "rebound_overshoot_algorithm_gap" not in names
+
+
+def test_regime_load_saturation_fires():
+    """EXP-2902: load_saturation regime emits MEDIUM with de-aggression rationale."""
+    inputs = AuditionInputs(
+        controller=ControllerType.LOOP,
+        smb_capable=True,
+        phenotype="flat",
+        median_recovery_fraction=0.5,
+        algorithm_lineage="Loop (iOS)",
+        regime_label="load_saturation",
+    )
+    flags = classify_triage_flags(inputs)
+    f = [x for x in flags if x.name == "regime_load_saturation"]
+    assert f
+    assert f[0].severity == "medium"
+    assert "de-aggression" in f[0].rationale
+
+
+def test_regime_mechanism_gap_fires():
+    """EXP-2902: mechanism_gap regime emits HIGH with migration rationale."""
+    inputs = AuditionInputs(
+        controller=ControllerType.OPENAPS,
+        smb_capable=False,
+        phenotype="flat",
+        median_recovery_fraction=0.0,
+        algorithm_lineage="oref0 (legacy)",
+        regime_label="mechanism_gap",
+    )
+    flags = classify_triage_flags(inputs)
+    f = [x for x in flags if x.name == "regime_mechanism_gap"]
+    assert f
+    assert f[0].severity == "high"
+    assert "migration" in f[0].rationale
+
+
+def test_regime_other_no_flag():
+    """EXP-2902: defended/over-performer/moderate regimes don't emit regime flags."""
+    for regime in ["defended", "over_performer_at_load", "moderate"]:
+        inputs = AuditionInputs(
+            controller=ControllerType.LOOP,
+            smb_capable=True,
+            phenotype="flat",
+            median_recovery_fraction=0.5,
+            algorithm_lineage="Loop (iOS)",
+            regime_label=regime,
+        )
+        flags = classify_triage_flags(inputs)
+        names = {x.name for x in flags}
+        assert "regime_load_saturation" not in names
+        assert "regime_mechanism_gap" not in names
