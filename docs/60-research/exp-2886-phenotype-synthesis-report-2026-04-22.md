@@ -5,6 +5,15 @@
 **Status:** Complete — three independent phenotype axes confirmed;
 actionable archetype map delivered
 
+> **2026-04-22 update (EXP-2887):** The "HAAF feedback" narrative
+> for the observed oref1 low counter-reg mean (§4.2 below) was
+> formally tested and **REJECTED**. Baron-Kenny mediation shows
+> hypo_fraction mediates ≈ 0% of the effect; Path A is reversed
+> (oref1 has *less* hypo exposure than Loop, not more); Path C
+> itself fails significance (p=0.54) at n=19. Treat the observed
+> cohort-mean difference as directional-only and mechanism-unknown.
+> See EXP-2887 for details.
+
 ## Question
 
 EXP-2875 through 2885 established three per-patient signals:
