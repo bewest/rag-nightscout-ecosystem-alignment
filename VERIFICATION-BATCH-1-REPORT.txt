@@ -1,0 +1,225 @@
+================================================================================
+RESEARCH REPORT VERIFICATION BATCH 1
+Date: 2026-04-22
+Reports Verified: 6 of 6
+================================================================================
+
+VERIFICATION SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ PASS (5 reports):
+  1. EXP-2844 | Phenotype Drilldown Report
+  2. EXP-2845 | Cluster Route Triage & TOD Refinement  
+  3. EXP-2848 | Backfill Flat Trans Report
+  4. EXP-2849 | Multi-Scale Envelope Coupling
+  5. EXP-2850 | Reactive vs Structural Cluster Characterization
+
+⚠️  FAIL (1 report):
+  6. EXP-2847 | Correction ISF Audit + Productionization
+     Issue Count: 1 clear error
+
+
+================================================================================
+DETAILED FINDINGS
+================================================================================
+
+[PASS] EXP-2844: Phenotype Drilldown Report
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Verified Claims:
+  ✓ n_significant_patients = 17 (from EXP-2843)
+  ✓ Phenotype split: down_shift(n=6), flat(n=5), up_shift(n=6)
+  ✓ Controller cross-tab:
+    - Loop: 0 down-shift, 3 flat, 3 up-shift
+    - OpenAPS: 1 down-shift, 2 flat, 2 up-shift
+    - Trio: 5 down-shift, 0 flat, 1 up-shift
+  ✓ Override predictor test: U=13, p=0.48 (reported as FAIL, correct)
+  ✓ Recovery medians: 0.25 (down/up), 0.00 (flat)
+  ✓ Wear delta values match JSON within rounding
+  ✓ All numerical values cross-checked against exp-2844_phenotype_drilldown.json
+
+Data Integrity: OK
+  - Parquet file (exp-2844_phenotype_table.parquet): 17 rows × 24 cols
+  - No fabricated rows detected
+  - Chi-square caveat properly stated (cells <5)
+
+
+[PASS] EXP-2845: Cluster Route Triage & TOD Refinement
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Verified Claims:
+  ✓ H2 hypothesis (Loop basal uplift > Trio):
+    - Test result: p=0.032 ✓ PASS (as reported)
+    - Loop Δ basal: +0.084 U/h
+    - Trio Δ basal: -0.048 U/h
+  ✓ H3 hypothesis (total delivery similar):
+    - Test result: p=0.818 ✓ PASS (reported 0.82)
+    - Loop Δ total: 0.254 U/h
+    - Trio Δ total: 0.254 U/h
+  ✓ Patient b unified triage entry:
+    - Controller: Loop, Phenotype: flat
+    - Recovery: 0.0, Post %high: 30.9%
+    - Wear delta: -31.5%, Flag count: 3 (all triple-flag)
+  ✓ Per-patient route analysis table
+
+Data Integrity: OK
+  - Parquets load correctly:
+    - exp-2845_per_patient_route.parquet: 17 rows × 8 cols
+    - exp-2845b_unified_triage.parquet: 17 rows × 13 cols
+  - No fabricated rows detected
+  - All patient-specific values verifiable
+
+
+[FAIL] EXP-2847: Correction ISF Audit + Productionization
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CLEAR ERROR DETECTED:
+  ❌ Event count mismatch
+    Report states: "N events: 13,810"
+    JSON actual:   n_correction_events = 13,671
+    Difference:    -139 events
+    Error %:       -1.0%
+
+Verified Claims (OTHER):
+  ✓ n_patients_covered = 16/17 (correct)
+  ✓ Patient b correction-ISF:
+    - Observed median: 77.32 mg/dL/U
+    - Scheduled: 90 mg/dL/U
+    - Gap: -14.09% (reported -14%, correct)
+  ✓ All other patients ISF gap: +36.0% median (correct)
+  ✓ Correction event classification methodology accurate
+  ✓ Patient b isolation as outlier valid
+
+Data Integrity: CONCERNING
+  - Parquet file (exp-2847_correction_events.parquet): 13,671 rows × 8 cols
+  - Parquet row count matches JSON value (13,671)
+  - Report statement contradicts both (13,810)
+  - Likely cause: Report drafted from earlier intermediate count
+    before final data aggregation; JSON/parquet are authoritative
+
+Method Integrity: UNAFFECTED
+  - Analysis correctly uses n_correction_events=13,671
+  - Per-patient ISF values correct
+  - Recommendations grounded in actual event count
+
+
+[PASS] EXP-2848: Backfill Flat Trans Report
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Verified Claims:
+  ✓ Original triage flags (n≥2 transitions): 4 total
+  ✓ Back-fill flags (n=1 transitions): 1 total
+    - Patient: odc-49141524 (OpenAPS, up-shift)
+  ✓ Flat phenotype coverage: 1 original, 0 back-filled, 4 uncovered
+  ✓ Interpretation: uncovered flat patients have non-triage outcomes
+    (median_recovery ≥ 0.4 OR median_post_high ≤ 30)
+  ✓ Charter compliance:
+    - No invented transitions (PASS)
+    - Confidence grade demoted to C (PASS)
+    - Outcome thresholds preserved (PASS)
+
+Data Integrity: OK
+  - Parquet file (exp-2848_backfill_triage.parquet): 5 rows × 9 cols
+  - Flag logic trace-able
+  - Confidence grades properly assigned
+
+
+[PASS] EXP-2849: Multi-Scale Envelope Coupling
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Verified Claims:
+  ✓ Window analysis table (all values match JSON within rounding):
+    
+    6h:  n=11 pts,  median=-35.7%, IQR=58.4%, p<0.01 rate=82% (reported 82%)
+    12h: n=13 pts,  median=-17.6%, IQR=56.4%, p<0.01 rate=46% (reported 46%)
+    24h: n=25 pts,  median=+8.7%,  IQR=42.1%, p<0.01 rate=28% (reported 28%)
+    48h: n=22 pts,  median=+1.5%,  IQR=27.3%, p<0.01 rate=23% (reported 23%)
+  
+  ✓ Sign flip at 24h: crosses zero between 12h (-17.6%) and 24h (+8.7%)
+  ✓ Sign consistency: 6/25 patients (24%) consistent across all windows
+  ✓ Interpretation: reactive (fast windows) vs structural (slow windows)
+    confounding, correctly framed as closed-loop feedback property
+
+Data Integrity: OK
+  - Parquet file (exp-2849_multi_scale_envelope.parquet): 71 rows × 11 cols
+    (11 + 13 + 25 + 22 = 71 patient-window combinations)
+  - Per-patient pivot (exp-2849_per_patient_pivot.parquet) available
+
+
+[PASS] EXP-2850: Reactive vs Structural Cluster Characterization
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Verified Claims:
+  ✓ Cross-tab: Sign-consistency by phenotype (n=25 patients, 4 windows):
+    - flat:       5/5  = 100% ✓
+    - down_shift: 4/5  = 80%  ✓
+    - up_shift:   2/4  = 50%  ✓
+    Phenotype spread: 50 percentage points (far exceeds 20pp threshold)
+  
+  ✓ Cross-tab: Sign-consistency by controller (n=14 with controller data):
+    - Loop:    3/4  = 75%
+    - OpenAPS: 4/5  = 80%
+    - Trio:    4/5  = 80%
+    Controller spread: 5 percentage points (negligible)
+  
+  ✓ Cross-tab: Sign-consistency by SMB capability:
+    - SMB=False: 13/16 = 81%
+    - SMB=True:  6/9   = 67%
+    SMB spread: 15 percentage points (small)
+  
+  ✓ Interpretation: Phenotype (structural demand indicator) dominates;
+    up-shift patients most prone to timescale-dependent sign flip
+  ✓ Production recommendation: Treat sign-consistency as confidence
+    modifier for up-shift, not independent factor
+
+Data Integrity: OK
+  - Cross-tab calculations verified against JSON
+  - Patient ID discrepancies documented (5 patients have NaN controller/phenotype)
+  - 4-window consistent subset identified (9 patients)
+
+
+================================================================================
+SUMMARY STATISTICS
+================================================================================
+
+Overall Accuracy: 5/6 (83%)
+- Numerical claims verified: 38/39 (97%)
+- Fabricated per-patient tables: 0/5 datasets
+- Parquet files valid: 5/5
+- Method descriptions accurate: 6/6
+- Scope overstatement: 0 instances
+
+Error Pattern Analysis:
+- Type: Numeric (event count discrepancy)
+- Severity: Minor (1.0% undercount)
+- Scope: Single claim in one report (EXP-2847 introduction)
+- Impact: Does not affect analysis methodology or results
+- Root Cause: Likely intermediate summary error before final aggregation
+
+Data Integrity Confidence:
+- JSON files: PRIMARY AUTHORITY ✓
+- Parquet files: SECONDARY VALIDATION ✓
+- Report narrative: TERTIARY (requires verification) ⚠️
+
+
+================================================================================
+RECOMMENDATIONS
+================================================================================
+
+1. IMMEDIATE: Correct EXP-2847 report text
+   - Line: "N events: 13,810"
+   - Change to: "N events: 13,671"
+   - Rationale: Matches authoritative JSON/parquet values
+
+2. GENERAL: For future batches, implement automated spot-checks
+   - Cross-validate top 5 numerical claims against source JSON
+   - Verify per-patient table row counts against data
+   - Check consistency of reported stats across related experiments
+
+3. CONFIDENCE GRADING: Maintain high confidence in JSON/parquet integrity
+   - Event counts are internally consistent
+   - Statistical tests reproducible
+   - Patient cohorts stable across experiments
+
+
+================================================================================

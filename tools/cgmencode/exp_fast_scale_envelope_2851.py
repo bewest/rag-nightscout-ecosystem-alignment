@@ -58,6 +58,9 @@ def aggregate_windows(g_pat: pd.DataFrame, window_h: int) -> pd.DataFrame:
 
 def per_patient_signal(g_pat: pd.DataFrame, window_h: int) -> dict | None:
     agg = aggregate_windows(g_pat, window_h)
+    if agg.empty:
+        return None
+    agg = agg.dropna(subset=["glucose", "actual_basal"])
     if len(agg) < 6:
         return None
     q33, q67 = np.percentile(agg["glucose"], [33, 67])

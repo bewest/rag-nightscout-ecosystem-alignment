@@ -72,3 +72,33 @@ stream architecture**:
 - `externals/experiments/exp-2851_fast_scale_envelope.parquet`
 - `externals/experiments/exp-2851_summary.json`
 - `docs/60-research/figures/exp-2851_fast_scale_envelope.png`
+
+---
+
+## Addendum 2026-04-22: NaN-percentile bug fix (EXP-2873)
+
+A `np.percentile` NaN-propagation bug silently excluded patients
+with high glucose-NaN cell rates. Fix: dropna before percentile.
+See `exp-2873-nan-percentile-bug-fix-report-2026-04-22.md`.
+
+**New cohort summary (N grew from 25 → 31):**
+
+| window_h | N | frac_sig p<0.01 | median shift % |
+|--:|--:|--:|--:|
+| 1 | 31 | 0.871 | **+50.6** |
+| 2 | 31 | 0.806 | +40.4 |
+| 3 | 31 | 0.774 | +36.4 |
+| 6 | 31 | 0.645 | +11.9 |
+| 12 | 31 | 0.516 | +9.0 |
+| 24 | 30 | 0.300 | +7.1 |
+| 48 | 26 | 0.231 | +1.5 |
+
+**The sign-flip hypothesis is REFUTED**. Median shift is positive at
+every window, decaying smoothly from +50% (1h) to +1% (48h). The old
+"sign flip 12h → 24h" was an artifact of which patients qualified at
+each window. The new picture: at fast scales the controller responds
+proportionally (basal up when glucose elevated), and at long scales
+the elev/norm basal averages converge — meaning the basal SCHEDULE
+is roughly correct over multi-day spans. This is a much cleaner story
+and is consistent with the dual-timescale architecture memory (5-min
+AR(1) momentum dominates, hourly+ shows BGI/setting structure).

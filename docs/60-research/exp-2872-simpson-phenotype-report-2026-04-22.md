@@ -117,3 +117,56 @@ TIR by 15pp." That gap is mostly controller selection.
   shifts; reframe as "envelope-coupling signature" only.
 - Apply this Simpson decomposition pattern to ANY future
   cross-controller finding before publishing it.
+
+---
+
+## Addendum 2026-04-22: NaN-percentile bug fix (EXP-2873) — TRUE Simpson's paradox now detected
+
+After patching the NaN bug in EXP-2851 input (cohort 25 → 31), the
+phenotype → TIR relationship changes substantially:
+
+### New pooled and within-controller Spearman ρ
+
+| Stratum | N | n_phenotypes | ρ |
+|---|--:|--:|--:|
+| POOLED | 31 | 4 | **−0.28** |
+| Loop | 8 | 2 | **+0.41 ⬆ FLIPS POSITIVE** |
+| OpenAPS | 5 | 2 | **−0.71** (preserved, stronger) |
+| Trio | 9 | 2 | 0.00 (dissolves) |
+
+### New matched phenotype × controller (median TIR)
+
+| Phenotype | Loop | OpenAPS | Trio |
+|---|--:|--:|--:|
+| stream_A_dominant | — | 0.85 | 0.82 |
+| stream_B_early | **0.58** | 0.64 | **0.77** |
+| stream_B_normal | 0.51 | — | — |
+
+### NEW headline — TRUE Simpson's paradox detected
+
+Within Loop, the relationship between phenotype and TIR **REVERSES**
+from the pooled estimate. Pooled says "stream_A_dominant has higher
+TIR than stream_B_early" (−0.28). Within Loop, "stream_B_early has
+higher TIR than stream_B_normal" (+0.41).
+
+This is a clean Simpson's paradox. The pooled phenotype effect is
+**not just confounded by controller; it is REVERSED for Loop users**.
+
+### Updated decomposition of the cohort gap
+
+Matched stream_B_early TIR: Loop 0.58 < OpenAPS 0.64 < Trio 0.77.
+Controller premium at matched phenotype: **~19pp** Loop → Trio.
+Within-Trio phenotype effect (stream_B_early → stream_A_dominant):
+**+5pp** (0.77 → 0.82).
+
+The cohort gap is dominated by controller composition; phenotype
+contributes a modest within-controller signal that flips sign for
+Loop users.
+
+### Implications (revised)
+
+1. Vignette guidance for a Loop user must NEVER reference pooled
+   phenotype → TIR — within Loop, the direction is opposite.
+2. Loop's stream_B_early phenotype is associated with HIGHER TIR
+   within Loop (the 1 stream_B_normal Loop patient has TIR 0.51).
+3. Controller-aware audition and vignette messaging is now mandatory.

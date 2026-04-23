@@ -143,3 +143,26 @@ algorithmic-causation interpretation.
 - **Stream-A ceiling re-examination**: if Loop and Trio differ this
   much in basal modulation strategy, the Stream A ceiling should
   be measured per-controller.
+
+---
+
+## Addendum 2026-04-22: NaN-percentile bug fix (EXP-2873)
+
+EXP-2871 was patched with the same `np.percentile` NaN fix. Updated
+suspension-polarity cross-tab (N=31):
+
+```
+all_positive × controller (suspends MORE in elev at every window):
+              Loop  OpenAPS  Trio
+False            8        4     3
+True             0        1     6
+```
+
+Mechanism finding **strengthens**: 0/8 Loop patients ever flip to
+"suspends more in elev" (was 0/6). 6/9 Trio patients all_positive
+(was 5/8). The Loop hypo-prevention bias and Trio SMB-driven
+suspension polarity are even more clearly opposite under the
+patched cohort.
+
+Checks still 0/3 PASS (designed to test the schedule-artifact null;
+falsification IS the algorithmic-causation finding).

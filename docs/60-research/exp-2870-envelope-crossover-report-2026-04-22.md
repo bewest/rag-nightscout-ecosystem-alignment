@@ -101,3 +101,34 @@ stream_B_normal; all 7 stream_A_dominant patients run Trio/OpenAPS.
   removed.)
 - Vignette enhancement: add per-patient crossover hour as
   diagnostic in the basal-mismatch section.
+
+---
+
+## Addendum 2026-04-22: NaN-percentile bug fix (EXP-2873)
+
+EXP-2851 input was patched (NaN-propagation in `np.percentile`). New
+crossover phenotype distribution (N=31):
+
+| Phenotype | Loop | OpenAPS | Trio | unknown |
+|---|--:|--:|--:|--:|
+| stream_A_dominant | 0 | 1 | **5** | 1 |
+| stream_B_early | **7** | 4 | 4 | 6 |
+| stream_B_late | 0 | 0 | 0 | 1 |
+| stream_B_normal | **1** | 0 | 0 | 1 |
+
+**Old "Loop = uniform stream_B_normal" finding is INVALIDATED**.
+Loop is actually 7/8 stream_B_early + 1 stream_B_normal. The
+controller signature is real but takes a different form: Loop crosses
+to positive shift FAST (1-6h), Trio sustains negative shift (5/9
+stream_A_dominant). The mechanism is consistent with EXP-2871
+(Loop hypo-prevention; Trio SMB-driven aggressive intervention)
+but the phenotype-level summary needs the EXP-2872 Simpson reanalysis.
+
+Phenotype × TIR (revised):
+
+| Phenotype | n | median TIR |
+|---|--:|--:|
+| stream_A_dominant | 7 | 0.82 |
+| stream_B_late | 1 | 0.90 |
+| stream_B_normal | 2 | 0.72 |
+| stream_B_early | 21 | 0.67 |
