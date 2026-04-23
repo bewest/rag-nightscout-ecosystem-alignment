@@ -32,7 +32,7 @@ applies that guard retroactively.
 | # | Axis                              | Marginal finding | Guard-#6 status | Verifier EXP | Notes |
 |---|-----------------------------------|------------------|-----------------|--------------|-------|
 | 1 | Mean protection                   | oref1 0.68 > Loop 0.54 > oref0 0.41 | **Verified** (oref1>Loop survives; oref0 collapse driven by single patient) | EXP-2904 | t_oref1=2.13 (borderline), t_oref0=0.19 (collapses) |
-| 2 | Setting-independence              | oref1 flat 0.63→0.72; Loop dose-response; oref0 0.13→0.72 | **Pending** (no within-tier cf-conditioned ANCOVA yet) | — | n per tier = 3; cf-conditioning would split further |
+| 2 | Setting-independence              | oref1 flat 0.63→0.72; Loop dose-response; oref0 0.13→0.72 | **Partially verified** (EXP-2911: oref1 flat survives; oref0 ρ 1.00→0.50; Loop attenuated) | EXP-2911 | Power-limited (n=3-9 per lineage) |
 | 3 | Basal-cut utilization             | oref1 92% / Loop 88% / oref0 20% | **Mechanism (no Guard-#6 needed)** | EXP-2892 | Capacity-side metric, not outcome-side; cf-conditioning irrelevant |
 | 4 | SMB channel availability          | oref0 absent (0/3); Loop 5/7 enabled; oref1 9/9 enabled | **Mechanism (no Guard-#6 needed)** | EXP-2893, EXP-2894 | Configuration property |
 | 5 | TOD-invariance (day-vs-night)     | Loop +0.006 / oref1 +0.101 / oref0 +0.150 night excess | **Verified** (within high-cf: Loop +0.003, oref1 +0.095 p=0.004, oref0 +0.151 p=0.012) | EXP-2907 | Effect sizes essentially identical |
@@ -45,12 +45,13 @@ applies that guard retroactively.
 | Status                                | Count |
 |---------------------------------------|------:|
 | Verified (cf-conditioned, survives)   | 3 (axes 1, 5, 6) |
+| Partially verified                    | 1 (axis 2 — EXP-2911) |
 | Mechanism / construction (Guard N/A)  | 3 (axes 3, 4, 8) |
-| Pending re-test                       | 2 (axes 2, 7) |
+| Pending re-test                       | 1 (axis 7) |
 
-**6 of 8 axes** either pass Guard #6 or are exempt by construction.
-**2 of 8 axes** (setting-independence, counter-reg moderation) need
-follow-up cf-conditioned re-analyses.
+**7 of 8 axes** either pass Guard #6, are partially verified, or are
+exempt by construction. **1 of 8 axes** (counter-reg moderation)
+needs follow-up cf-conditioned re-analysis.
 
 ## Refined "oref0 worst on every axis" claim
 
