@@ -103,7 +103,9 @@ The 4 signals above are individually noisy but jointly point to
 | 0 | +3.00 | 25 |
 | 1 | +5.50 | 127 |
 
-**Observed range across states: 2.50.** A non-zero range indicates basal need shifts with metabolic context (EXP-2811). Sign/magnitude interpretation is experimental — treat as a cue that *state-aware* basal review may be warranted, not as a direct recommendation.
+**Observed range across states: 2.50 mg/dL/hr.** `basal_drift` is mean BG trend during 2h windows where the controller delivered basal ≈ schedule (no suspension, no intervention). Higher values = BG rises under scheduled basal.
+
+**⚠️ Selection caveat:** these windows are rare for patients whose controller suspends frequently. The windows that *do* exist are non-random — often selected for rising BG (which is why the controller let basal through). Treat the per-state **range** as a cue that basal need shifts with metabolic context; do NOT treat the sign as directly actionable (confounding-by-indication, same pattern as EXP-2754).
 
 ### 2. Review ISF (correction factor)
 Over-correction (P=1.00) on top of an already-suppressed basal

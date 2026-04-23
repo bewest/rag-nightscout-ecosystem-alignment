@@ -423,11 +423,17 @@ drives the wide IQR in the AGP.
         if state_facts.has_multi_state:
             sb_body = (
                 "\n".join(sb_lines)
-                + f"\n\n**Observed range across states: {state_facts.basal_drift_range:.2f}.**"
-                " A non-zero range indicates basal need shifts with metabolic"
-                " context (EXP-2811). Sign/magnitude interpretation is"
-                " experimental — treat as a cue that *state-aware* basal review"
-                " may be warranted, not as a direct recommendation."
+                + f"\n\n**Observed range across states: {state_facts.basal_drift_range:.2f} mg/dL/hr.**"
+                " `basal_drift` is mean BG trend during 2h windows where the"
+                " controller delivered basal ≈ schedule (no suspension, no"
+                " intervention). Higher values = BG rises under scheduled basal."
+                "\n\n**⚠️ Selection caveat:** these windows are rare for patients"
+                " whose controller suspends frequently. The windows that *do*"
+                " exist are non-random — often selected for rising BG (which is"
+                " why the controller let basal through). Treat the per-state"
+                " **range** as a cue that basal need shifts with metabolic"
+                " context; do NOT treat the sign as directly actionable"
+                " (confounding-by-indication, same pattern as EXP-2754)."
             )
         else:
             sb_body = (
