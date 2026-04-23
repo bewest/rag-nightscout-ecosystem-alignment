@@ -165,15 +165,36 @@ different subpopulations produces a misleading invariant (all zeros).
 
 ## Actionable implications
 
-### For OpenAPS authors
+### For OpenAPS authors — algorithm-generation context
 
 🚨 **Nocturnal braking gap.** OpenAPS delivers 75% of scheduled
 basal during night descent toward hypo. Loop/Trio deliver 6–12%.
-Candidates for investigation:
+
+**Important framing:** The dataset's OpenAPS patients are running
+the **legacy oref0 algorithm** (pre-SMB, original Intel Edison/rig
+lineage). The modern descendants — **AAPS (oref1)** and **Trio
+(oref1-derived with iOS-native refinements)** — inherited the
+feature set *after* SMB, dynamic ISF, and updated
+suspension/micro-bolus logic. This dataset contains *no AAPS
+patients*, so a direct oref0-vs-oref1 within-lineage comparison is
+not possible here.
+
+Interpretation:
+- Trio's 89% evening suspension likely reflects SMB-cutoff + oref1
+  tighter safety envelope, not just a Trio-specific behavior.
+- OpenAPS's nocturnal laxness likely reflects **oref0-era
+  conservative basal-only braking** without the oref1 SMB-off +
+  tighter BG-predict gates that modern forks added.
+- The path forward for oref0/OpenAPS users with nocturnal hypos is
+  likely **migration to AAPS or Trio** (oref1 lineage) rather than
+  tuning oref0 itself.
+
+Candidates for OpenAPS-lineage investigation (if still maintained):
 - Nighttime max-IOB / suspension trigger thresholds
 - Whether `exercise_mode` or `autotune` preferences interact with
   night-time hypo avoidance
-- Difference vs AAPS (which is not in this sample)
+- Whether backporting oref1's prediction-based `enableSMB_always` +
+  `maxDelta_bg_threshold` logic is feasible for rig users
 
 ### For Trio authors
 
