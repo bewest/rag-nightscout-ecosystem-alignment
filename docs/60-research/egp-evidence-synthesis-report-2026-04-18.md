@@ -7,7 +7,7 @@
 
 **Date**: 2026-04-18  
 **Scope**: EXP-2621 through EXP-2662 (32 experiments)  
-**Patients**: ⚠️ Reported 12 (contradicts experiments using 4–28 patients)
+**Patients**: 4–28 across experiments (see per-experiment breakdown), 1,838 patient-days
 **Status**: Requires corrections — synthesis sound but scope falsified  
 
 ---
@@ -56,7 +56,7 @@ The first two results are valid but narrow. They show that:
 
 These results do **not** show that:
 - ISF cannot be estimated from correction data (it can; R² = 0.805 via response-curve fitting).
-- Dose-dependent ISF is unrecoverable (it is recoverable; r = −0.56, p < 10⁻¹⁹).
+- Dose-dependent ISF is unrecoverable (it is recoverable; r = −0.47, p ≈ 4×10⁻¹¹).
 - Circadian ISF variation is an artifact (it is real; 2–9× variation, RMSE improves 10–20%).
 - Per-patient physical parameters cannot be determined (they can; multiple methods succeed).
 
@@ -112,7 +112,7 @@ parameter recovery. Here is the complete evidence inventory:
 
 | Metric | Value |
 |--------|-------|
-| Correlation | r = −0.56, p < 10⁻¹⁹ |
+| Correlation | r = −0.47, p ≈ 4×10⁻¹¹ |
 | Model | ISF = max(5, a + b × ln(dose)) per patient |
 | Range | 4.6× compression (100 mg/dL/U at <0.75U → 22 mg/dL/U at ≥3U) |
 | Validation | Bootstrap CI [−0.67, −0.44]; LOO all patients r < −0.49 |
@@ -143,7 +143,7 @@ the observed glucose trajectory directly.
 |--------|-------|
 | Demand ISF (0–2h) | 2–10× smaller than apparent ISF |
 | Apparent ISF (to nadir) | Inflated by EGP suppression contribution |
-| Patients | 12 (9 NS + 3 ODC) |
+| Patients | 25 |
 | Hypothesis H4 | Inflation ratio varies ≥1.5× across patients — PASS |
 | Source | `exp_two_phase_isf_2651.py:170, 289–295` |
 
@@ -183,7 +183,7 @@ EGP suppression during hours 2–3.5.
 
 | Metric | Value |
 |--------|-------|
-| Correlation | r = −0.29 to −0.77 (6 of 9 patients with data) |
+| Correlation | r = −0.77 to +0.10 across 9 patients (3 show r ≥ 0) |
 | Model | drift = α × IOB@midnight + β |
 | Validation | 80/20 split, held-out MAE reduction ≥15% |
 | Patients | 12 |
@@ -249,7 +249,7 @@ derived directly from the SC suppression ceiling finding.
 ### 4.2 What is NOT True (Over-Generalizations to Retract)
 
 1. ~~"Parameter recovery is impossible in closed-loop systems"~~ → Multi-factor methods
-   succeed: dose-dependent ISF (r = −0.56), response-curve fitting (R² = 0.805), circadian
+   succeed: dose-dependent ISF (r = −0.47), response-curve fitting (R² = 0.805), circadian
    profiling (10–20% RMSE improvement), phase decomposition (demand vs apparent ISF).
 
 2. ~~"The AID Compensation Theorem"~~ → This is a tautology, not a theorem. Controllers
@@ -323,7 +323,7 @@ egp-deconfounding-report, egp-calibration-report):
 | **Physiological discovery** | 2621–2628 | EGP phases, nadir timing, carb windows, overnight drift | ✅ Valid, actionable |
 | **Coupling observation** | 2629–2635 | Additive decomposition fails; single-factor post-nadir prediction fails | ✅ Valid, but narrow |
 | **Over-generalization** | Reports from 2629–2635 | "AID Compensation Theorem"; "parameter recovery impossible"; "EGP line closed" | ❌ Tautological; contradicted by other experiments |
-| **Continued discovery** | 2636–2662 | Dose-dependent ISF, circadian ISF, two-phase ISF, SC ceiling, patience mode | ✅ Valid, actionable — directly contradicts "impossible" claim |
+| **Continued discovery** | 2636–2662 | Dose-dependent ISF (r = −0.47), circadian ISF, two-phase ISF (25 patients), SC ceiling (28 patients), patience mode (28 patients) | ✅ Valid, actionable — directly contradicts "impossible" claim |
 
 The wedge occurred when the coupling observation (correct, narrow) was generalized into
 a claim of impossibility (incorrect, broad). Experiments 2636–2662 then continued to
@@ -337,13 +337,13 @@ was never explicitly resolved.
 | Method | Evidence | R²/r | Applicable to |
 |--------|----------|------|---------------|
 | Response-curve ISF fitting | EXP-1301 | R² = 0.805 | Per-patient ISF from correction trajectories |
-| Dose-dependent ISF (log model) | EXP-2636/2640 | r = −0.56 | Dose-aware ISF for corrections of varying size |
-| Two-phase ISF decomposition | EXP-2651 | 2–10× ratio | Separating insulin demand from EGP suppression |
+| Dose-dependent ISF (log model) | EXP-2636/2640 | r = −0.47 | Dose-aware ISF for corrections of varying size |
+| Two-phase ISF decomposition | EXP-2651 (25 patients) | 2–10× ratio | Separating insulin demand from EGP suppression |
 | Circadian ISF profiling | EXP-2652 | 10–20% RMSE improvement | Time-of-day ISF variation |
-| IOB-corrected basal estimation | EXP-2650 | r = −0.29 to −0.77 | Overnight basal optimization |
+| IOB-corrected basal estimation | EXP-2650 | r = −0.77 to +0.10 | Overnight basal optimization |
 | 48h carb history integration | EXP-2622/2627 | r = −0.303 | Glycogen-aware overnight prediction |
-| SC suppression ceiling fitting | EXP-2656 | r = −0.60 (ceiling vs hyper rate) | Maximum effective dose, sticky hyper prediction |
-| Patience mode wall detection | EXP-2662 | 0–25% delayed hypo reduction | Real-time safety intervention |
+| SC suppression ceiling fitting | EXP-2656 (28 patients) | r = −0.60 (ceiling vs hyper rate) | Maximum effective dose, sticky hyper prediction |
+| Patience mode wall detection | EXP-2662 (28 patients) | 0–25% delayed hypo reduction | Real-time safety intervention |
 
 All of these methods work **within** the closed-loop context. They account for the
 controller's presence rather than pretending it doesn't exist.
