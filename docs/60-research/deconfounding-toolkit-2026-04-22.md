@@ -179,6 +179,16 @@ before publishing a paradox claim.
 
 **Addresses:** C3, C5.
 
+**Small-n caveat (added EXP-2917):** when a cell has n=1, the
+percentile bootstrap returns a degenerate zero-width CI that
+ignores between-patient variance entirely. **Paired comparisons
+against an n=1 cell inherit only the multi-patient side's variance
+and report CIs that are *lower bounds* on true uncertainty.** Always
+flag such pairs in tables (e.g. with † or "n=1") and never
+interpret a "ci_excludes_zero=True" verdict on an n=1-involving
+pair as independent evidence of separation. Corroborate with
+mechanism stacks (Default Guard #6 / Recipe T) instead.
+
 ---
 
 ### 2.9  Counterfactual simulation (this is the new tool)
