@@ -1,7 +1,7 @@
 # EXP-2895 — TOD × lineage protection report
 
 **Date:** 2026-04-22
-**N:** 3,912 descent events, 19+ patients across 4 lineage groups
+**N:** 3,829 descent events, 24 patients across 4 lineage groups
 **Source:** `tools/cgmencode/exp_tod_lineage_2895.py`
 **Output:**
 - `externals/experiments/exp-2895_tod_lineage.parquet`

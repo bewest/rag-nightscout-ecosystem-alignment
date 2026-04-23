@@ -31,7 +31,7 @@ scheduled basal magnitudes to the conservative-oref1 patient.
 | Descent events           | 271                         | 120                         |
 | Counterfactual severe    | 70 %                        | 91 %                        |
 | Observed severe          | 58 %                        | 30 %                        |
-| **AID severe protection**| **12.5 %**                  | **60.8 %**                  |
+| **AID severe protection**| **12.5 %**†                 | **60.8 %**†                 |
 | Braking ratio (descent)  | 0.96 (almost no cut)        | 0.025 (near-full suspension)|
 | SMB delivery (rise)      | 0.00 U                      | 0.67 U                      |
 | Excess-basal share       | 17 %                        | 0.1 %                       |
@@ -73,6 +73,8 @@ The audition flag for the oref0 patient is `smb_absent_algorithm_gap`
 Loop users, the auto-bolus feature toggle.
 
 ## Therapy-discussion implications
+
+**†Protection metric disclosure:** The AID severe protection values use the `aid_protection_severe` field from EXP-2891 aggregate model (which may differ from direct calculation). Direct calculation using (cf_severe − obs_severe) / cf_severe yields: oref0 patient = 17.8%, oref1 patient = 67.0%, shifting the ratio to 3.8×. Core findings (mechanism, channel gaps, audition flags) remain unchanged.
 
 For `odc-86025410`:
 - Settings adjustments (ISF/CR/basal) cannot fully close the gap because

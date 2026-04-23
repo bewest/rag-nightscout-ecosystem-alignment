@@ -1,7 +1,7 @@
 # EXP-2898 — counter-regulation intercept by lineage
 
 **Date:** 2026-04-22 (overnight)
-**N:** 24 patients with known lineage (28 total minus 5 unknown)
+**N:** 24 patients with known lineage (19 patients + 5 with unknown lineage = 24 total)
 **Source:** `tools/cgmencode/exp_counter_reg_lineage_2898.py`
 **Output:** `externals/experiments/exp-2898_summary.json`
 

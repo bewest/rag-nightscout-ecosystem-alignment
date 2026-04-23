@@ -1,7 +1,7 @@
 # EXP-2897 — hourly counterfactual replay by lineage report
 
 **Date:** 2026-04-22 (overnight)
-**N:** 3,006 events with known lineage
+**N:** 3,593 events with known lineage
 **Source:** `tools/cgmencode/exp_hourly_cf_2897.py`
 **Outputs:** `externals/experiments/exp-2897_hourly_cf.parquet`, `_summary.json`
 
@@ -75,7 +75,7 @@ capacity vs oref1's 92%).
 
 ## Three-way decomposition of severe-hypo rate
 
-For any cell, observed severe rate = (1 - protection_fraction) × cf_severe.
+For any cell, observed severe rate = cf_severe - protection (additive, not multiplicative).
 
 | Lineage | Cf component | (1 − prot) component | Implied driver       |
 |---------|-------------:|----------------------:|----------------------|

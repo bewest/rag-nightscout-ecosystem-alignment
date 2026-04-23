@@ -1,7 +1,7 @@
 # EXP-2896 — hourly TOD × lineage report
 
 **Date:** 2026-04-22 (overnight)
-**N:** 3,006 events with known lineage (3,912 total minus unknown)
+**N:** 2,923 events with known lineage (3,829 total minus 906 unknown)
 **Source:** `tools/cgmencode/exp_hourly_tod_2896.py`
 **Outputs:** `externals/experiments/exp-2896_hourly.parquet`, `_summary.json`
 
