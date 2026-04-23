@@ -294,4 +294,26 @@ These are open work items for the research roadmap.
 ## 6. Experiments referenced
 
 EXP-2754, 2755, 2757/58, 2793, 2800, 2802, 2806, 2808, 2877, 2881,
-2882, 2884, 2885, 2886, 2887, 2888, and checkpoints 027-036.
+2882, 2884, 2885, 2886, 2887, 2888, 2889, 2891, 2892, 2893, 2894,
+2895, 2896, 2897, 2898, 2899, 2902, 2904, 2905, 2907, 2909, 2910,
+and checkpoints 027-039.
+
+---
+
+## 7. Eight-dimension lineage signature (Guard-#6 audit, EXP-2910)
+
+After EXP-2880 → EXP-2909 the lineage cohort is characterised along 8
+axes. Guard-#6 status as of EXP-2910 (Apr-23):
+
+- **Verified (cf-conditioned, survives)**: mean protection (EXP-2904),
+  TOD-invariance (EXP-2907), hourly mitigation profile (EXP-2909)
+- **Mechanism / construction (Guard N/A)**: basal-cut utilization
+  (EXP-2892), SMB channel availability (EXP-2893), user-config
+  consistency (EXP-2899)
+- **Pending re-test**: setting-independence (axis 2), counter-reg
+  moderation (axis 7) — see EXP-2911 / EXP-2912 backlog
+
+6 of 8 axes pass Guard #6 or are exempt. Algorithm-migration
+recommendation surface (EXP-2894 / EXP-2905) is supported by verified
+axes alone. Full re-grade table: see
+`docs/60-research/exp-2910-eight-dim-regrade-2026-04-23.md`.
