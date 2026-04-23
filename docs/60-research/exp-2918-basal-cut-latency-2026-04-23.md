@@ -47,7 +47,7 @@ worst:
 |--------------------|---------|--------------|-----------:|--------------:|------------------------------|
 | odc-86025410       | oref0   | conservative | 10 min     | 56.7 %        | mechanism_gap (EXP-2902)     |
 | odc-96254963       | oref0   | moderate     | 0 min      | 80.5 %        | average performer            |
-| odc-74077367       | oref0   | aggressive   | 25 min     | 70.7 %        | manual-SMB outlier (EXP-2905); relies on bolus, not basal |
+| odc-74077367       | oref0   | aggressive   | 25 min     | 70.7 %        | manual-SMB outlier (vignette); relies on bolus, not basal |
 
 The mechanism_gap patient now has THREE corroborated dimensions of
 the same design failure:
