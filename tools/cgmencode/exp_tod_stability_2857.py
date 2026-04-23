@@ -74,11 +74,14 @@ def main() -> None:
 
     rows = []
     for (pid, tod), g in ev.groupby(["patient_id", "tod"]):
-        if len(g) < MIN_EVENTS:
+        # EXP-2873 NaN guard: arr_obs/arr_sched must be NaN-free or boot
+        # medians propagate NaN into the final quantile.
+        gg = g.dropna(subset=["obs_isf", "sched_isf"])
+        if len(gg) < MIN_EVENTS:
             continue
-        boot = _boot_isf(g["obs_isf"].to_numpy(),
-                         g["sched_isf"].to_numpy(), rng)
-        rows.append({"patient_id": pid, "tod": tod, "n": len(g), **boot})
+        boot = _boot_isf(gg["obs_isf"].to_numpy(),
+                         gg["sched_isf"].to_numpy(), rng)
+        rows.append({"patient_id": pid, "tod": tod, "n": len(gg), **boot})
     df = pd.DataFrame(rows)
     df.to_parquet(EXPDIR / "exp-2857_tod_isf_gap.parquet", index=False)
 

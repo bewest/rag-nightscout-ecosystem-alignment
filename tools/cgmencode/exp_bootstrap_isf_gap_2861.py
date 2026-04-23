@@ -54,7 +54,10 @@ def main() -> None:
         if len(g) < MIN_EVENTS:
             continue
         gaps = g["gap_pct"].to_numpy()
+        gaps = gaps[~np.isnan(gaps)]
         n = len(gaps)
+        if n < MIN_EVENTS:
+            continue
         # Point estimate
         point_med = float(np.median(gaps))
         # Bootstrap medians
