@@ -107,6 +107,28 @@ The 4 signals above are individually noisy but jointly point to
 
 **⚠️ Selection caveat:** these windows are rare for patients whose controller suspends frequently. The windows that *do* exist are non-random — often selected for rising BG (which is why the controller let basal through). Treat the per-state **range** as a cue that basal need shifts with metabolic context; do NOT treat the sign as directly actionable (confounding-by-indication, same pattern as EXP-2754).
 
+### 1c. Envelope-coupling phenotype (EXP-2873 cascade)
+
+**Envelope phenotype: `stream_B_early`** (crossover at 1h; shift range +50% to +599%).
+
+Within Loop cohort (n=8 post EXP-2873 fix), C is one of **7 stream_B_early** patients — basal–envelope coupling becomes positive at the fastest scale (1h). This is the Loop-typical signature.
+
+**Within-Loop TIR comparison** (EXP-2872 Simpson decomposition):
+| patient | phenotype | TIR |
+|--------|-----------|-----:|
+| a | stream_B_early | 0.49 |
+| b | stream_B_normal | 0.51 |
+| c | stream_B_early | 0.51 ← **THIS PATIENT** |
+| i | stream_B_early | 0.54 |
+| e | stream_B_early | 0.58 |
+| f | stream_B_early | 0.58 |
+| g | stream_B_early | 0.67 |
+| d | stream_B_early | 0.69 |
+
+Within Loop, stream_B_early Spearman ρ(phenotype_rank, TIR) = +0.41 (positive within-cohort). C sits near the median for the cohort by TIR; phenotype is consistent with the cohort, not anomalous.
+
+**Caveat (EXP-2872):** the pooled cross-cohort phenotype→TIR relationship REVERSES within Loop (Simpson's paradox). Do NOT compare C to Trio/OpenAPS phenotype TIR rankings — controller premium dominates (~19pp at matched phenotype).
+
 ### 2. Review ISF (correction factor)
 Over-correction (P=1.00) on top of an already-suppressed basal
 suggests ISF may be too aggressive. Discuss whether to **soften ISF

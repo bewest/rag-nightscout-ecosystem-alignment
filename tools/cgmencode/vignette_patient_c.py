@@ -344,6 +344,10 @@ The 4 signals above are individually noisy but jointly point to
 
 {{STATE_BASAL_SECTION}}
 
+### 1c. Envelope-coupling phenotype (EXP-2873 cascade)
+
+{{ENVELOPE_SECTION}}
+
 ### 2. Review ISF (correction factor)
 Over-correction (P=1.00) on top of an already-suppressed basal
 suggests ISF may be too aggressive. Discuss whether to **soften ISF
@@ -448,6 +452,69 @@ drives the wide IQR in the AGP.
             " requires ≥20 samples per state)."
         )
     md = md.replace("{STATE_BASAL_SECTION}", sb_body)
+
+    # Build ENVELOPE_SECTION (EXP-2870 / EXP-2872 / EXP-2873)
+    env_lines = []
+    try:
+        env = pd.read_parquet(
+            "externals/experiments/exp-2870_per_patient_crossover.parquet"
+        )
+        crow = env[env["patient_id"] == PID]
+        if not crow.empty:
+            r = crow.iloc[0]
+            env_lines.append(
+                f"**Envelope phenotype: `{r['phenotype']}`** "
+                f"(crossover at {int(r['crossover_h'])}h; "
+                f"shift range {r['min_shift_pct']:+.0f}% to "
+                f"{r['max_shift_pct']:+.0f}%)."
+            )
+            env_lines.append("")
+            env_lines.append(
+                "Within Loop cohort (n=8 post EXP-2873 fix), C is one of "
+                "**7 stream_B_early** patients — basal–envelope coupling "
+                "becomes positive at the fastest scale (1h). This is the "
+                "Loop-typical signature."
+            )
+            env_lines.append("")
+            env_lines.append(
+                "**Within-Loop TIR comparison** (EXP-2872 Simpson "
+                "decomposition):"
+            )
+            loop = env[env["controller"] == "Loop"][
+                ["patient_id", "phenotype", "tir"]
+            ].sort_values("tir")
+            env_lines.append("| patient | phenotype | TIR |")
+            env_lines.append("|--------|-----------|-----:|")
+            for _, lr in loop.iterrows():
+                marker = " ← **THIS PATIENT**" if lr["patient_id"] == PID else ""
+                env_lines.append(
+                    f"| {lr['patient_id']} | {lr['phenotype']} "
+                    f"| {lr['tir']:.2f}{marker} |"
+                )
+            env_lines.append("")
+            env_lines.append(
+                "Within Loop, stream_B_early Spearman ρ(phenotype_rank, "
+                "TIR) = +0.41 (positive within-cohort). C sits near the "
+                "median for the cohort by TIR; phenotype is consistent "
+                "with the cohort, not anomalous."
+            )
+            env_lines.append("")
+            env_lines.append(
+                "**Caveat (EXP-2872):** the pooled cross-cohort phenotype→TIR "
+                "relationship REVERSES within Loop (Simpson's paradox). Do "
+                "NOT compare C to Trio/OpenAPS phenotype TIR rankings — "
+                "controller premium dominates (~19pp at matched phenotype)."
+            )
+        else:
+            env_lines.append(
+                "No envelope-coupling data available for this patient."
+            )
+    except Exception as e:
+        env_lines.append(
+            f"Envelope-coupling section unavailable ({type(e).__name__})."
+        )
+    md = md.replace("{ENVELOPE_SECTION}", "\n".join(env_lines))
+
     REPORT.write_text(md)
     print(f"Wrote {REPORT}")
     print("Figures:")
