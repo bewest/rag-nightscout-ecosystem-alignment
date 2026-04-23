@@ -266,6 +266,15 @@ For any new experiment, before reporting a result:
 5. **Counterfactual check**: is the outcome variable modified by the
    intervention under study?  If yes, observed-outcome validation is
    invalid.  (§2.9)
+6. **Load-stratification check (cross-lineage / cross-controller only)**:
+   any claim that lineage X outperforms lineage Y on a hypo/hyper
+   protection metric must report the result both marginally and after
+   conditioning on `cf_severe` (or equivalent counterfactual load).
+   Lineage cohorts in this dataset self-select on load intensity —
+   e.g. 5 of 7 Loop patients sit in the load_saturation regime
+   (cf≥0.95) versus 2 of 9 oref1.  Without this guard, behavioural
+   self-selection is reported as a mechanism difference.  (§2.9 +
+   EXP-2902/2904)
 
 ---
 
