@@ -563,3 +563,68 @@ per mg/dL/min of additional automated insulin.
 - Don't make oref1 dose more like Loop or vice versa. Different
   dose policies are part of integrated bolus-calc + absorption
   + ISF tuning, not isolated knobs.
+
+### Velocity-coupling robustness sweep — extension (EXP-2965/2969/2970/2966)
+
+Four experiments stress-tested the post-EXP-2964 framework: per-patient
+validation of the sustained-high finding, per-patient SMB-channel near-tie
+at PP, channel-decomposition at sustained-high, and a BG-band sweep.
+
+- **EXP-2969 — per-patient SMB-channel slope at PP** confirms
+  EXP-2964 robustly: median Loop_AB_ON +0.390 vs median oref1
+  +0.307; **MWU two-sided p = 0.36** (not significant). Per-patient
+  near-tie of the controller-channel slope at PP is now evidence-line
+  consistent (12th line).
+- **EXP-2965 — per-patient sustained-high** finds both designs
+  unanimously positive (Loop_AB_ON 5/5, oref1 9/9 sign-test
+  p = 0.004), but MWU between designs at the SMB channel is
+  **p = 0.149** — directional Loop > oref1 ordering, not per-patient
+  significant. Replicates the EXP-2962 pooled-vs-per-patient lesson.
+- **EXP-2970 — sustained-high decomposition** uncovers a **mean-dose
+  difference**: Loop_AB_ON delivers ~2.06 U SMB on a 60-min window
+  at sustained-high entry vs oref1's ~1.26 U (~63% higher). Pooled
+  SMB-slope ratio ~2× (Loop +0.78 vs oref1 +0.39, disjoint 95% CIs)
+  but per-patient MWU still p = 0.30. Net call: AID authors should
+  treat the delta as **trigger-frequency / IOB-ceiling driven**,
+  not per-event-magnitude.
+- **EXP-2966 — BG-band sweep** is the strongest new evidence:
+  in the **no-carb context with N>100k events per cell**, Loop_AB_ON
+  SMB slope exceeds oref1 SMB slope at every BG band by 1.5–1.9×
+  with **disjoint 95% CIs** in every band. The maximum coupling for
+  both designs is in the **70–100 mg/dL band** (just-above-target,
+  recovery climb) — the cleanest "sweet spot" for SMB-on-velocity
+  triggering identified in the campaign. Caveat: pooled CIs at high
+  N inflate significance; per-patient remains the rigorous test.
+
+### Evidence-line tally (post-this-batch)
+
+| # | Line | Source experiment(s) |
+|---|---|---|
+| 1 | Within-window IOB-age effect | EXP-2944, 2950, 2954 |
+| 2 | Cross-window unification | EXP-2957 |
+| 3 | UAM/SMB lever (PP, total slope) | EXP-2960 |
+| 4 | Sustained-high replication | EXP-2961 |
+| 5 | Per-patient correction (PP) | EXP-2962 |
+| 6 | oref0 anomaly = artefact | EXP-2963 |
+| 7 | SMB-channel near-tie at PP (pooled) | EXP-2964 |
+| 8 | Per-patient sustained-high positivity | EXP-2965 |
+| 9 | Per-patient SMB-channel near-tie at PP confirmed | EXP-2969 |
+| 10 | Sustained-high mean-dose Loop > oref1 | EXP-2970 |
+| 11 | BG-band sweet spot 70-100 (no-carb) | EXP-2966 |
+| 12 | Loop > oref1 SMB slope all bands (no-carb, pooled, disjoint CI) | EXP-2966 |
+
+Evidence-line count: **12** (up from 11). The IOB-age framework's
+core stays unchanged; the SMB-channel lever is now better resolved as:
+
+- **PP context**: per-event magnitude near-equivalent across SMB-equipped designs.
+- **No-carb context**: Loop_AB_ON SMB-on-velocity coupling 1.5–1.9× oref1's at pooled level, every band; per-patient MWU still underpowered.
+- **Sweet spot for tuning**: 70–100 mg/dL band (just-above-target recovery climb).
+
+### AID-author lever priority order (post-EXP-2966)
+
+| Lever | Channel | Effect | Sweet spot | Ranking |
+|---|---|---|---|---|
+| SMB / auto-bolus on rising velocity | SMB | +0.36–0.79 U per mg/dL/min | **70–100 mg/dL band, no-carb context** | **PRIMARY** |
+| SMB trigger frequency / IOB-ceiling at sustained-high | SMB (mean dose) | Loop ~2.06 vs oref1 ~1.26 U/60min | sustained-high entries | **NEW second-order lever** |
+| Temp-basal velocity modulation | basal-excess | <0.12 U per mg/dL/min (max +0.45 in 70-100 Loop_AB_OFF) | recovery from low (Loop_AB_OFF only) | Marginal except as SMB substitute |
+| User announce-meal pre-bolus | bolus (user) | +0.23–1.00 U per mg/dL/min | PP + sustained-high (user-driven) | NOT a controller lever |
