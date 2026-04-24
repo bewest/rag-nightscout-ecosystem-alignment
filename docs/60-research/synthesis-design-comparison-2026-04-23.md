@@ -405,9 +405,15 @@ Combined evidence (eight independent lines):
    faster than Loop_AB_ON during sustained-high (median gap
    −1.10 U; all p<1e-10). Framework is robust to action-curve
    parameter choice — closes natural reviewer objection.
+10. EXP-2960 velocity-vs-insulin coupling at PP (forward channel):
+    oref1 slope +1.36 U per mg/dL/min vs Loop_AB_ON +0.62 U per
+    mg/dL/min (95% CIs non-overlapping). oref1 commits insulin to
+    early rising velocity ~2.2× more strongly than Loop AB ON —
+    direct forward-response observation of lever (3) at PP. Closes
+    "designs differ only in defence" alternative explanation.
 
 The selection-bias hypothesis would need to coincidentally produce
-all nine patterns from patient-cohort differences. EXP-2954 in
+all ten patterns from patient-cohort differences. EXP-2954 in
 particular operates entirely WITHIN patients, eliminating cohort
 composition as a possible explanation. EXP-2957 closes the parameter-
 choice objection. Algorithm mechanism is the parsimonious explanation.
@@ -438,6 +444,41 @@ This refines lever (3) below:
    See Window-class scoping refinement above.
 4. Enable autobolus by default for AID-OFF correction loops
 5. Basal-cut latency (defence-side; SECONDARY to IOB age)
+
+### Mechanism decomposition (EXP-2958/2959/2960)
+
+Three follow-on experiments dissect *what part* of lever (3)'s
+"predict-and-fire" mechanism is observable from data:
+
+- **EXP-2958 — Within-patient SMB-vs-recovery at sustained-high
+  (NEGATIVE / reverse-caused).** 12/13 patients show POSITIVE
+  within-patient slope of `delta_60 ~ smb_30` — the controller
+  delivers more SMB precisely BECAUSE the rise is steeper. Within-
+  patient causal inference on controller-emitted variables is
+  unidentifiable from observational data; lever (3) at sustained-
+  high stands as a *between-design* claim only.
+- **EXP-2959 — Per-patient empirical action-curve peak (NULL).**
+  Mann-Whitney across designs on best-fit peak ∈ {45,60,75,90,105
+  min} all p ≥ 0.62 (oref median 60, Loop median 75 — directionally
+  consistent but not significant). RSS objective is essentially flat
+  (<1.5% improvement vs canonical 75/300 for nearly all patients).
+  The iob_delta gap is **not** explained by per-design insulin-
+  pharmacokinetic differences — it is event-emission timing that
+  matters. **Strengthens the framework's central claim.**
+- **EXP-2960 — Velocity-vs-insulin coupling at PP (CLEAN POSITIVE).**
+  Per-design slope of insulin-in-[0,60min] on bg-velocity-in-[0,30min]:
+  Loop_AB_OFF +1.01, Loop_AB_ON +0.62, oref0 −0.27, **oref1 +1.36**.
+  oref1 vs Loop_AB_ON 95% CIs do not overlap (0.84 vs 1.21). oref1's
+  autonomous controller couples insulin to early rising velocity ~2.2×
+  more strongly than Loop AB ON. This is the FORWARD-response analogue
+  of the IOB-age framework: oref1 ages insulin earlier *because* it
+  commits insulin earlier in response to rising velocity.
+
+**Net effect on the framework:** EXP-2959 closes the
+"insulin-pharmacokinetics" alternative explanation for the iob_delta
+gap. EXP-2960 adds a **tenth independent evidence line** (forward
+velocity-coupling). EXP-2958 honestly confines lever (3)'s within-
+patient causal claim to the hypo channel only.
 
 ### Counter-recommendations (what NOT to tune)
 
