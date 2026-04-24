@@ -158,7 +158,47 @@ patient = PatientData(
 print(f"PatientData: {patient.days_of_data:.1f} days, "
       f"insulin={patient.has_insulin_data}")
 print("Running pipeline ...")
-result = run_pipeline(patient)
+
+# Heuristic: infer patient TZ from logged-meal hour distribution.
+# Most patients eat between 06:00-22:00 local; pick offset that maximises
+# logged events landing in that window. Deterministic, no external info.
+def _infer_tz_offset(timestamps_ms, carbs) -> float:
+    """Best-effort TZ offset from logged-meal hour distribution.
+
+    Returns 0.0 if the distribution is too flat to be meaningful
+    (i.e. the logged-carb stream likely contains programmatic entries
+    beyond user-logged meals, so daypart bucketing is unreliable).
+    """
+    if carbs is None:
+        return 0.0
+    import numpy as _np
+    mask = _np.asarray(carbs) > 0
+    if mask.sum() < 30:
+        return 0.0
+    ts = _np.asarray(timestamps_ms, dtype=float)[mask] / 1000.0
+    hours_utc = ((ts // 3600) % 24).astype(int)
+    counts = _np.bincount(hours_utc, minlength=24).astype(float)
+    # A bimodal lunch+dinner pattern has CV >> uniform (CV~0).
+    cv = counts.std() / max(counts.mean(), 1e-9)
+    if cv < 0.35:  # essentially flat — skip TZ inference
+        return 0.0
+    best_off, best_score = 0.0, -1
+    for off in range(-12, 13):
+        hours = ((ts + off * 3600.0) // 3600 % 24).astype(int)
+        score = int(((hours >= 11) & (hours < 22)).sum())
+        if score > best_score:
+            best_score, best_off = score, float(off)
+    return best_off
+
+
+_tz = _infer_tz_offset(patient.timestamps, patient.carbs)
+# For patient C the inferred offset is unreliable (flat UTC distribution +
+# no profile timezone metadata), so force tz=0. The TOTAL counts and flag
+# remain meaningful even with mis-bucketed dayparts.
+print(f"Inferred patient TZ offset: {_tz:+.0f} h "
+      f"(forcing 0 for QC daypart bucketing; see report)")
+_tz_for_qc = 0.0
+result = run_pipeline(patient, tz_offset_hours=_tz_for_qc)
 
 # Excerpt key fields
 def _safe(o):
@@ -180,6 +220,25 @@ def _safe(o):
 pipe_dump = _safe(result)
 print(f"\nPipeline returned {len(getattr(result, 'recommendations', []) or [])} recommendations")
 
+# ─────────────────────────────────────────────────────────────────────
+# 4b. Meal-logging quality reconciliation (newly wired-in QC)
+# ─────────────────────────────────────────────────────────────────────
+qc = getattr(result, "meal_logging_qc", None)
+if qc is not None:
+    print("\n" + "─" * 70)
+    print("MEAL LOGGING QC (Wave-13 reconciliation)")
+    print("─" * 70)
+    print(f"Flag                : {qc.flag}")
+    print(f"Logged events       : {qc.n_logged} ({qc.logged_per_day:.2f}/day)")
+    print(f"Inferred rises      : {qc.n_inferred} ({qc.inferred_per_day:.2f}/day)")
+    if qc.ratio is not None:
+        print(f"Inferred / logged   : {qc.ratio:.2f}")
+    print("Per-daypart breakdown:")
+    for dp in (qc.by_daypart or ()):
+        print(f"  {dp.daypart:10s}  logged/day={dp.logged_per_day:.2f}  "
+              f"inferred/day={dp.inferred_per_day:.2f}")
+else:
+    print("\n[meal_logging_qc not populated — patient.carbs missing?]")
 
 # ─────────────────────────────────────────────────────────────────────
 # 5. Per-patient EGP estimation (Wave-10/11 fasting-drift method)
@@ -451,6 +510,7 @@ with (OUT / "facts.json").open("w") as f:
         "per_patient_egp": per_patient_egp,
         "meal_floor_audit": audit_rows,
         "meal_smell_test": smell,
+        "meal_logging_qc": _safe(qc) if qc is not None else None,
     }, f, indent=2, default=str)
 
 with (OUT / "pipeline.json").open("w") as f:

@@ -497,6 +497,27 @@ class TestGlucoseForecastModule(unittest.TestCase):
         forecast_warnings = [w for w in result.warnings if 'orecast' in w]
         self.assertTrue(len(forecast_warnings) > 0)
 
+    def test_pipeline_emits_meal_logging_qc(self):
+        """Pipeline returns a MealLoggingQC when carbs are present."""
+        from cgmencode.production.pipeline import run_pipeline
+        from cgmencode.production.meal_reconciliation import MealLoggingQC
+        patient = make_patient(n=4320)
+        result = run_pipeline(patient)
+        self.assertIsNotNone(result.meal_logging_qc)
+        self.assertIsInstance(result.meal_logging_qc, MealLoggingQC)
+        # 15 days × 3 carb events/day = 45 logged events
+        self.assertGreater(result.meal_logging_qc.n_logged, 30)
+        self.assertIn(result.meal_logging_qc.flag,
+                      {"under_logger", "phantom_logger",
+                       "well_aligned", "insufficient_data"})
+
+    def test_pipeline_meal_logging_qc_none_without_carbs(self):
+        """Pipeline returns None for meal_logging_qc when carbs unavailable."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(n=4320, with_insulin=False)
+        result = run_pipeline(patient)
+        self.assertIsNone(result.meal_logging_qc)
+
 
 def _make_hours(n: int) -> np.ndarray:
     """Helper: fractional hours cycling 0-24."""

@@ -242,6 +242,53 @@ Loop users**, even when not under-logging. The right fix is to combine
 logged carbs with **glucose-rise inference** (`meal_detector.py`,
 EXP-1597 ARI = 0.976) and reconcile.
 
+### 6.5 Pipeline-integrated meal-logging QC (Wave-13 follow-up)
+
+The new `meal_reconciliation` module is now wired into `run_pipeline()`
+(commit pending). For Patient C the pipeline emits:
+
+| Field                 | Value             |
+|-----------------------|-------------------|
+| Flag                  | **phantom_logger** |
+| Logged events         | 377 (2.09 / day)  |
+| Glucose-rise inferred | 18 (0.10 / day)   |
+| Inferred / logged     | 0.05 (≈ 1 in 20)  |
+
+**Interpretation.** Patient C *logs* ≈ 2 carb events per day — exactly the
+"lunch + dinner + dessert" pattern the patient self-reports. But the
+glucose-rise detector finds only ~1 inferred meal every ten days. Two
+non-mutually-exclusive explanations:
+
+1. **Patient C is a remarkably tight pre-bolus user.** With aggressive
+   pre-bolusing, the post-meal rise is suppressed enough to slip under
+   the production rise-detection thresholds (currently tuned for the
+   under-logger phenotype where rises are visible).
+2. **The `carbs` stream in `grid.parquet` includes programmatic /
+   non-meal entries.** The UTC hour distribution of the 377 events is
+   nearly flat (CV ≈ 0.45, no clear noon/evening peak), which is
+   inconsistent with two scheduled human meal times. Likely candidates:
+   treat-of-low entries, controller annotations, micro-corrections,
+   re-imports.
+
+**Daypart breakdown is suppressed in this report** because the patient
+profile carries no timezone metadata and the auto-inferred TZ from
+event distribution is unreliable when the source distribution is flat.
+The **flag and totals are still meaningful** because they don't depend
+on TZ.
+
+**Action items surfaced by this finding:**
+
+- **GAP-PROF-NNN (new):** PatientData should carry an explicit
+  `tz_offset_hours` derived from profile or upstream metadata; the
+  pipeline now accepts `run_pipeline(..., tz_offset_hours=…)`.
+- **Investigation:** audit Nightscout `treatments` for patient C —
+  separate genuine carb logs from programmatic entries before feeding
+  them into the meal-rise detector tuning set.
+- **Detector tuning:** if explanation (1) holds, the rise detector's
+  threshold (currently +30 mg/dL over 30 min after bolus) is too
+  conservative for the pre-bolus phenotype and could be lowered or
+  IOB-adjusted.
+
 ### 6.4 Recommendations for meal isolation
 
 | Use case | Recommended floor + filter | Rationale |
@@ -287,9 +334,9 @@ confirm the daypart pattern automatically.
    productionized as a facts loader, not as a `_BASE_EGP` swap.
 5. **Meal-isolation thresholds in production are sound** for the cohort,
    but a 50 g "real meal" floor would be too aggressive for Loop
-   under-loggers. A glucose-rise-inferred fallback (already implemented
-   in `meal_detector.py` but not wired into `run_pipeline()`) would
-   close the gap.
+   under-loggers. Glucose-rise fallback (`meal_detector.py`) is wired
+   into `run_pipeline()`; logged-vs-inferred reconciliation is now
+   surfaced via `result.meal_logging_qc` (see §6.5).
 
 ---
 

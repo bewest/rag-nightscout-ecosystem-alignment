@@ -1111,6 +1111,8 @@ class PipelineResult:
     dual_phase_isf: Optional[DualPhaseISF] = None
     # Saturation detection (EXP-2660/2662)
     saturation: Optional[SaturationAssessment] = None
+    # Meal logging QC vs glucose-rise inference (patient-C audit, 2026-04-23)
+    meal_logging_qc: Optional[object] = None  # MealLoggingQC; avoid circular import
     pipeline_latency_ms: float = 0.0
     warnings: List[str] = field(default_factory=list)
 

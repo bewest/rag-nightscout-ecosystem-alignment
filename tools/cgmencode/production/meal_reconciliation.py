@@ -106,15 +106,15 @@ class MealLoggingQC:
 # ── core ───────────────────────────────────────────────────────────
 
 
-def _hour_from_ms(t_ms: int) -> int:
-    """Local-naive hour-of-day from Unix-ms timestamp (UTC).
+def _hour_from_ms(t_ms: int, tz_offset_hours: float = 0.0) -> int:
+    """Hour-of-day from Unix-ms timestamp, applying a TZ offset.
 
-    Note: we intentionally use UTC because the production grid stores
-    timestamps in the source TZ already (no further conversion needed
-    in the per-patient context). Callers needing TZ-aware output can
-    pre-shift.
+    Pass ``tz_offset_hours`` to convert the UTC instant to the patient's
+    local clock before bucketing into a daypart. Defaults to 0 (UTC) for
+    backward compatibility.
     """
-    return datetime.fromtimestamp(t_ms / 1000.0, tz=timezone.utc).hour
+    shifted = t_ms / 1000.0 + tz_offset_hours * 3600.0
+    return datetime.fromtimestamp(shifted, tz=timezone.utc).hour
 
 
 def reconcile_meal_logging(
@@ -122,6 +122,7 @@ def reconcile_meal_logging(
     inferred_meals: Iterable,
     days_of_data: float,
     min_carbs_g: float = REAL_MEAL_FLOOR_G,
+    tz_offset_hours: float = 0.0,
 ) -> MealLoggingQC:
     """Compare logged vs inferred meal rates and flag the patient.
 
@@ -159,7 +160,7 @@ def reconcile_meal_logging(
     ]
     logged_buckets: dict = {n: 0 for n, _, _ in DAYPARTS}
     for t_ms, _ in logged_filtered:
-        logged_buckets[_daypart(_hour_from_ms(int(t_ms)))] += 1
+        logged_buckets[_daypart(_hour_from_ms(int(t_ms), tz_offset_hours))] += 1
 
     # Bucket inferred meals
     inferred_buckets: dict = {n: 0 for n, _, _ in DAYPARTS}
@@ -171,7 +172,7 @@ def reconcile_meal_logging(
             # Fallback: skip — daypart breakdown will be undercounted but
             # totals stay correct.
             continue
-        inferred_buckets[_daypart(_hour_from_ms(int(t_ms)))] += 1
+        inferred_buckets[_daypart(_hour_from_ms(int(t_ms), tz_offset_hours))] += 1
 
     by_daypart = tuple(
         DaypartCounts(

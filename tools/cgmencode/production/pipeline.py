@@ -204,6 +204,7 @@ def run_pipeline(patient: PatientData,
                  skip_patterns: bool = False,
                  current_hour: Optional[float] = None,
                  forecast_config: Optional[dict] = None,
+                 tz_offset_hours: float = 0.0,
                  ) -> PipelineResult:
     """Run complete inference pipeline on a single patient.
 
@@ -332,6 +333,7 @@ def run_pipeline(patient: PatientData,
     meal_history = None
     meal_prediction = None
     meal_responses = None
+    meals: list = []
     if metabolic is not None:
         try:
             meals = detect_meal_events(
@@ -408,6 +410,28 @@ def run_pipeline(patient: PatientData,
                         timing_models, c_hour, meal_history, **ml_kwargs)
         except Exception as e:
             warnings.append(f"Meal detection failed: {e}")
+
+    # ── Stage 5a: Meal-logging quality reconciliation ─────────────
+    # Compares logged carb events vs glucose-rise inferred meals;
+    # surfaces under-loggers (Loop users who skip logging) and
+    # phantom-loggers (UAM-style controller annotations).
+    meal_logging_qc = None
+    if patient.carbs is not None and patient.days_of_data > 0:
+        try:
+            from .meal_reconciliation import reconcile_meal_logging
+            logged_events = [
+                (int(t), float(c))
+                for t, c in zip(patient.timestamps, patient.carbs)
+                if c is not None and float(c) > 0
+            ]
+            meal_logging_qc = reconcile_meal_logging(
+                logged_events=logged_events,
+                inferred_meals=meals,
+                days_of_data=patient.days_of_data,
+                tz_offset_hours=tz_offset_hours,
+            )
+        except Exception as e:
+            warnings.append(f"Meal logging QC failed: {e}")
 
     # ── Stage 5b: Advanced Analytics ──────────────────────────────
     period_metrics = None
@@ -646,6 +670,7 @@ def run_pipeline(patient: PatientData,
         hypo_risk=hypo_risk_result,
         phenotype=phenotype_result,
         loop_quality=loop_quality_result,
+        meal_logging_qc=meal_logging_qc,
         pipeline_latency_ms=elapsed,
         warnings=warnings,
         dual_phase_isf=dual_phase_isf,

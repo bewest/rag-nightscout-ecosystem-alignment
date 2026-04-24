@@ -1,6 +1,6 @@
 {
   "patient_id": "c",
-  "generated_at_utc": "2026-04-24T03:01:24.253393+00:00",
+  "generated_at_utc": "2026-04-24T03:46:55.428159+00:00",
   "glycemic_summary": {
     "n_readings": 42859,
     "mean_mgdl": 162.04605398153848,
@@ -135,5 +135,36 @@
       "passes_2to8": false,
       "share_of_days_in_2to8": 0.0
     }
+  },
+  "meal_logging_qc": {
+    "logged_per_day": 2.094404043131884,
+    "inferred_per_day": 0.09999807102486451,
+    "ratio": 20.944444444444443,
+    "flag": "phantom_logger",
+    "by_daypart": [
+      {
+        "daypart": "breakfast",
+        "logged_per_day": 0.0,
+        "inferred_per_day": 0.0
+      },
+      {
+        "daypart": "lunch",
+        "logged_per_day": 2.094404043131884,
+        "inferred_per_day": 0.09999807102486451
+      },
+      {
+        "daypart": "dinner",
+        "logged_per_day": 0.0,
+        "inferred_per_day": 0.0
+      },
+      {
+        "daypart": "overnight",
+        "logged_per_day": 0.0,
+        "inferred_per_day": 0.0
+      }
+    ],
+    "n_logged": 377,
+    "n_inferred": 18,
+    "days_of_data": 180.0034722222222
   }
 }
