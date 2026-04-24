@@ -400,20 +400,42 @@ Combined evidence (eight independent lines):
    patients negative slope on bg_min ~ synth_act_entry
    (sign test p=1.9e-06); 15/19 individually p<0.05.
    Mechanism is biology, not design-cohort artifact.
+9. EXP-2957 action-curve sensitivity sweep: 9/9 combos
+   peak{60,75,90}×DIA{240,300,360} confirm oref1 sheds
+   faster than Loop_AB_ON during sustained-high (median gap
+   −1.10 U; all p<1e-10). Framework is robust to action-curve
+   parameter choice — closes natural reviewer objection.
 
 The selection-bias hypothesis would need to coincidentally produce
-all eight patterns from patient-cohort differences. EXP-2954 in
+all nine patterns from patient-cohort differences. EXP-2954 in
 particular operates entirely WITHIN patients, eliminating cohort
-composition as a possible explanation. Algorithm mechanism is the
-parsimonious explanation.
+composition as a possible explanation. EXP-2957 closes the parameter-
+choice objection. Algorithm mechanism is the parsimonious explanation.
+
+### Window-class scoping refinement (EXP-2955)
+
+Within-patient PP cross-validation (EXP-2955) found single-predictor
+18/18 patients negative (p=3.8e-06) BUT multi-factor (controlling for
+carbs and bg_entry) only 11/18 (p=0.24). The PP within-patient signal
+is dominated by meal context (carbs, starting BG), NOT by pre-meal
+IOB age per se.
+
+This refines lever (3) below:
+- IOB-AGE-AS-CAUSE is strongest at **hypo** (within-patient validated).
+- At **sustained-high**, between-design with strong mechanism support.
+- At **PP**, the cleanest framing is WITHIN-window SMB activity (the
+  SMB-during-rising-window mechanism), not pre-window IOB age.
 
 ### AID-author lever priority order (FINAL)
 
 1. **UAM/glucose-appearance + dynamic-ISF** (PP offence channel)
 2. **SMB-as-correction** (sustained-high channel)
-3. **Predict-and-fire on rising velocity early** so IOB AGES
-   before the BG response window — UNIFIED across PP TIR,
-   sustained-high recovery, and hypo defence
+3. **Predict-and-fire on rising velocity early** so insulin activity
+   exists during the response window — UNIFIED across PP TIR (via
+   WITHIN-window SMB activity, EXP-2946), sustained-high recovery
+   (via pre-window IOB-age, EXP-2944/2950/2957), and hypo defence
+   (via pre-window IOB-age, within-patient validated EXP-2954).
+   See Window-class scoping refinement above.
 4. Enable autobolus by default for AID-OFF correction loops
 5. Basal-cut latency (defence-side; SECONDARY to IOB age)
 
