@@ -232,7 +232,7 @@ def run_pipeline(patient: PatientData,
     # tz_offset_hours kwarg is deprecated; if provided, it is converted
     # to a Etc/GMT-style fixed-offset string for backward compatibility.
     profile_tz = getattr(patient.profile, "timezone", "UTC") or "UTC"
-    if tz_offset_hours is not None:
+    if tz_offset_hours is not None and float(tz_offset_hours) != 0.0:
         import warnings as _w
         _w.warn(
             "run_pipeline(tz_offset_hours=...) is deprecated. "
@@ -244,6 +244,7 @@ def run_pipeline(patient: PatientData,
         sign = "-" if tz_offset_hours > 0 else "+"
         effective_tz = f"Etc/GMT{sign}{abs(int(tz_offset_hours))}"
     else:
+        # tz_offset_hours is None or 0.0 — use profile timezone.
         effective_tz = profile_tz
 
     # ── Stage 1: Data Quality (spike cleaning) ────────────────────
@@ -536,7 +537,7 @@ def run_pipeline(patient: PatientData,
     if patient.days_of_data >= 3.0:
         # Compute demand-phase ISF (EXP-2651) — stored in PipelineResult
         try:
-            from cgmencode.production.clinical_rules import compute_demand_isf
+            from .clinical_rules import compute_demand_isf
             dual_phase_isf = compute_demand_isf(
                 cleaned.glucose, patient.bolus, patient.profile,
                 carbs=patient.carbs)

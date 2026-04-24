@@ -87,27 +87,46 @@ basal hard and SMBs over-correct on the descents.
 
 ## 4. Production pipeline recommendations (with safety clamps)
 
-`run_pipeline()` returned 6 advisories. Top 4 settings recommendations
+`run_pipeline()` returned 5 advisories. Top 4 settings recommendations
 (all clamped to ±25 % per EXP-2738 safety doctrine — actual observed
 deltas in `evidence` field):
 
 | # | Parameter | Current | Suggested | Cap | ΔTIR | Confidence | Source |
 |---|---|---:|---:|---:|---:|---:|---|
-| 1 | ISF (overnight) | 75 | **237** *(clamped from +216 %)* | +25 % | +7.2 pp | 0.30 | EXP-2271 |
-| 2 | CR | 4.5 | **15.7** *(clamped from +250 %)* | −25 % | +5.0 pp | 0.34 | EXP-2535 |
-| 3 | Basal | 1.40 | **0.84** | −25 % | +1.2 pp | 0.20 | Loop workload analysis |
-| 4 | Correction threshold | 180 | **250** | +25 % | +0.7 pp | 0.27 | EXP-2741 corr-denom |
+| 1 | ISF (overnight 00–06 local) | 75 | **349** *(clamped from +366 %)* | +25 % | +18.8 pp* | 0.30 | EXP-2271 |
+| 2 | CR (morning) | 4.5 | **3.8** *(clamped from −15 %)* | −25 % | −4.1 pp | 0.34 | EXP-2341 |
+| 3 | Basal (overnight) | 1.40 | **1.12** *(clamped from −31 %)* | −25 % | +2.2 pp | 0.20 | EXP-2589 quadrant |
+| 4 | Correction threshold | 180 | **250** *(clamped from +39 %)* | +25 % | +0.7 pp | 0.27 | EXP-2528 |
 
-> **TZ-aware (2026-04-23 fix):** `_extract_hours()` now resolves
-> `patient.profile.timezone` (Patient C: `Etc/GMT+7` ⇒ UTC−7, Pacific) and
-> bins via `tz_convert`. The "overnight 00–06" block above is therefore
-> **local nighttime**, not UTC. The pre-fix run mislabelled UTC 00–06
-> (local 17–23 evening corrections) as "overnight"; the rec now reflects
-> actual nocturnal physiology.
+\* ΔTIR figure for ISF is the recommender's headline number (+18.8 pp from
+the recommendations array); the underlying advisor's per-block prediction
+is +3.7 pp.
 
-All recommendations are **directionally consistent** — back off insulin on
-every channel. The safety margin clamps prevent any single review cycle
-from making more than a 25 % adjustment, per EXP-2738.
+> **2026-04-24 corrections (Phase 3 follow-up):** A latent bug in
+> `analyze_patient_c.py` divided ms timestamps by 1 000 000 before
+> handing them to the pipeline, which collapsed every reading to
+> ~21 Jan 1970. With the timestamps and TZ both correct, the advisor
+> now sees the **real** circadian distribution. The headline shifts:
+>
+> * **Overnight ISF jumps from 237 → 349 mg/dL/U** (366 % deviation).
+>   724 nocturnal correction events confirm the patient is dramatically
+>   over-correcting at night.
+> * **CR direction flips** to "decrease" (more insulin) for the
+>   morning bin. ⚠️ Patient C reports **never eating breakfast**, so the
+>   118 "morning meals" backing this rec are almost certainly
+>   treats-of-low (small carbs at low BG); the rec is treating
+>   rescue carbs as missed bolus opportunities. **Do not act on this
+>   rec without meal-stream cleanup.** See §6 below.
+> * **Overnight basal**: −20 % (was −25 % in broken run).
+> * Four pipeline-level wiring bugs were also fixed alongside (missing
+>   `BasalAssessment` import, stale `cgmencode.*` absolute imports,
+>   `_OVERNIGHT_START`/`MIN_CORRECTION_DELTA` undefined). Previously
+>   masked because the corrupted timestamps tripped early-exit paths.
+
+The ISF / basal / correction-threshold recs are **directionally
+consistent** — back off insulin on every channel. The CR rec is the
+outlier and likely a meal-stream-quality artifact, not a real
+under-dosing signal.
 
 ---
 

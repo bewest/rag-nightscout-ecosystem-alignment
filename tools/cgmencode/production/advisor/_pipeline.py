@@ -6,7 +6,7 @@ import numpy as np
 from ..types import (
     ClinicalReport, MetabolicState, OptimizationPhase,
     PatientProfile, SettingsParameter, SettingsRecommendation,
-    PeriodMetrics, PatternProfile,
+    PeriodMetrics, PatternProfile, BasalAssessment,
 )
 from ._simulation import simulate_tir_with_settings, PERIODS, MIN_DATA_DAYS, HIGH_CONFIDENCE_DAYS
 from ._isf_advisors import (
@@ -25,6 +25,7 @@ from ._basal_advisors import (
     advise_basal, advise_overnight_basal_quadrant,
     advise_loop_workload, assess_overnight_drift,
     advise_carb_context_overnight,
+    _OVERNIGHT_START, _OVERNIGHT_END,
 )
 
 
@@ -237,7 +238,7 @@ def analyze_periods(glucose: np.ndarray,
     Returns:
         List of PeriodMetrics, one per period.
     """
-    from .clinical_rules import assess_glycemic_control, assess_basal
+    from ..clinical_rules import assess_glycemic_control, assess_basal
 
     periods = []
     basal_vals = [e.get('value', e.get('rate', 0.8)) for e in profile.basal_schedule]
@@ -526,7 +527,7 @@ def generate_settings_advice(glucose: np.ndarray,
     # (avoids redundant computation when called from pipeline)
     if dual_phase_isf is None and bolus is not None:
         try:
-            from cgmencode.production.clinical_rules import compute_demand_isf
+            from ..clinical_rules import compute_demand_isf
             dual_phase_isf = compute_demand_isf(glucose, bolus, profile,
                                                 carbs=carbs)
         except Exception:
@@ -656,7 +657,7 @@ def generate_settings_advice(glucose: np.ndarray,
     # Patience mode advisory (EXP-2662) — cap SMBs during wall episodes
     if iob is not None:
         try:
-            from cgmencode.production.clinical_rules import detect_insulin_saturation
+            from ..clinical_rules import detect_insulin_saturation
             sat = detect_insulin_saturation(glucose, iob)
             patience_rec = advise_patience_mode(sat, days_of_data)
             if patience_rec:

@@ -32,6 +32,11 @@ import numpy as np
 
 from .types import MetabolicState, PatientData
 
+# Defined locally to avoid circular import with settings_optimizer
+# (settings_optimizer imports from this module). Mirrors the value
+# in settings_optimizer.MIN_CORRECTION_DELTA.
+MIN_CORRECTION_DELTA = 5.0   # mg/dL minimum drop for valid ISF
+
 
 # ── Constants (calibrated from EXP-1551, EXP-1320, EXP-1559) ─────────
 

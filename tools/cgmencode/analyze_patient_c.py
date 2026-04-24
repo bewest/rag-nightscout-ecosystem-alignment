@@ -153,7 +153,10 @@ profile = PatientProfile(
 )
 
 # Build PatientData
-ts_ms = (df["time"].astype("int64") // 1_000_000).to_numpy()
+# datetime64[ms, UTC] -> int64 ms directly. Earlier code divided by
+# 1_000_000 which collapsed every timestamp to ~Jan 1970 and silently
+# corrupted every downstream hour-of-day metric.
+ts_ms = df["time"].astype("int64").to_numpy()
 patient = PatientData(
     glucose=df["glucose"].to_numpy(dtype=float),
     timestamps=ts_ms,
@@ -170,46 +173,12 @@ print(f"PatientData: {patient.days_of_data:.1f} days, "
       f"insulin={patient.has_insulin_data}")
 print("Running pipeline ...")
 
-# Heuristic: infer patient TZ from logged-meal hour distribution.
-# Most patients eat between 06:00-22:00 local; pick offset that maximises
-# logged events landing in that window. Deterministic, no external info.
-def _infer_tz_offset(timestamps_ms, carbs) -> float:
-    """Best-effort TZ offset from logged-meal hour distribution.
-
-    Returns 0.0 if the distribution is too flat to be meaningful
-    (i.e. the logged-carb stream likely contains programmatic entries
-    beyond user-logged meals, so daypart bucketing is unreliable).
-    """
-    if carbs is None:
-        return 0.0
-    import numpy as _np
-    mask = _np.asarray(carbs) > 0
-    if mask.sum() < 30:
-        return 0.0
-    ts = _np.asarray(timestamps_ms, dtype=float)[mask] / 1000.0
-    hours_utc = ((ts // 3600) % 24).astype(int)
-    counts = _np.bincount(hours_utc, minlength=24).astype(float)
-    # A bimodal lunch+dinner pattern has CV >> uniform (CV~0).
-    cv = counts.std() / max(counts.mean(), 1e-9)
-    if cv < 0.35:  # essentially flat — skip TZ inference
-        return 0.0
-    best_off, best_score = 0.0, -1
-    for off in range(-12, 13):
-        hours = ((ts + off * 3600.0) // 3600 % 24).astype(int)
-        score = int(((hours >= 11) & (hours < 22)).sum())
-        if score > best_score:
-            best_score, best_off = score, float(off)
-    return best_off
-
-
-_tz = _infer_tz_offset(patient.timestamps, patient.carbs)
-# For patient C the inferred offset is unreliable (flat UTC distribution +
-# no profile timezone metadata), so force tz=0. The TOTAL counts and flag
-# remain meaningful even with mis-bucketed dayparts.
-print(f"Inferred patient TZ offset: {_tz:+.0f} h "
-      f"(forcing 0 for QC daypart bucketing; see report)")
-_tz_for_qc = 0.0
-result = run_pipeline(patient, tz_offset_hours=_tz_for_qc)
+# Pipeline now reads patient.profile.timezone directly (TZ-aware Phase 1+2
+# fix). Patient C's profile reports `Etc/GMT+7` (UTC-7, Pacific). The
+# legacy `_infer_tz_offset` heuristic and `tz_offset_hours` kwarg are no
+# longer needed.
+print(f"Profile timezone: {_patient_tz}")
+result = run_pipeline(patient)
 
 # Excerpt key fields
 def _safe(o):

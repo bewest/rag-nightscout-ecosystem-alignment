@@ -1564,7 +1564,7 @@ def advise_response_curve_isf(
         return None
 
     try:
-        from cgmencode.production.clinical_rules import compute_response_curve_isf
+        from ..clinical_rules import compute_response_curve_isf
         result = compute_response_curve_isf(glucose, bolus, basal_rate, profile)
     except Exception:
         return None
@@ -1641,7 +1641,7 @@ def advise_sc_ceiling(
     sched_isf = float(np.median([float(v) for v in isf_vals])) if isf_vals else 50.0
 
     try:
-        from cgmencode.production.clinical_rules import compute_sc_ceiling
+        from ..clinical_rules import compute_sc_ceiling
         ceiling = compute_sc_ceiling(glucose, iob,
                                      scheduled_isf=sched_isf,
                                      dia_hours=profile.dia_hours or 6.0)
@@ -1717,7 +1717,7 @@ def advise_dose_response_isf(
         return None
 
     try:
-        from cgmencode.production.clinical_rules import compute_dose_response_isf
+        from ..clinical_rules import compute_dose_response_isf
         result = compute_dose_response_isf(glucose, bolus, carbs, profile)
     except Exception:
         return None
