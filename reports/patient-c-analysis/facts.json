@@ -1,0 +1,139 @@
+{
+  "patient_id": "c",
+  "generated_at_utc": "2026-04-24T03:01:24.253393+00:00",
+  "glycemic_summary": {
+    "n_readings": 42859,
+    "mean_mgdl": 162.04605398153848,
+    "std_mgdl": 70.25393628950614,
+    "cv_pct": 43.354302411776104,
+    "tir_70_180": 0.6157166522784012,
+    "tbr_lt70": 0.04699129704379477,
+    "tbr_lt54": 0.015562658951445438,
+    "tar_gt180": 0.337292050677804,
+    "tar_gt250": 0.12074476772673184,
+    "ea1c_gmi_pct": 7.1861416112384005
+  },
+  "facts_loaders": {
+    "controller_dynamics_EXP_2753": {
+      "controller_type": "loop",
+      "n_events": 368,
+      "mean_correction_fraction": 0.15355210400115044,
+      "mean_smb_fraction": 0.8464478959988496,
+      "mean_excess_basal_fraction": 0.0,
+      "mean_controller_fraction_of_excess": 0.4678245605517005,
+      "corr_denom_gap_closure": -0.43464156024307665,
+      "isf_corr_denom_median": 126.41025620726379,
+      "isf_profile_median": 75.0
+    },
+    "basal_mismatch_EXP_2869": {
+      "p_basal_mismatch": 1.0,
+      "median_recommended_mult": 0.0
+    },
+    "isf_gap_EXP_2861": {
+      "p_isf_under_correction": 0.0,
+      "p_isf_over_correction": 1.0
+    },
+    "recovery_EXP_2862": {
+      "p_low_recovery": 1.0
+    },
+    "phenotype": {
+      "stack_score": null,
+      "brake_ratio": null,
+      "counter_reg_intercept": null,
+      "beta_nadir": null,
+      "p_haaf": null,
+      "evening_bolus_excess_4h": null,
+      "evening_iob_at_descent": null,
+      "controller_lineage": null
+    }
+  },
+  "per_patient_egp": {
+    "method": "EXP-2739 fasting-drift, deep-fasting subset",
+    "population_egp_mgdl_per_5min": 1.5,
+    "patient_c_glucose_roc_mgdl_per_5min_lowiob": 1.0,
+    "patient_c_egp_proxy_mgdl_per_5min": 1.0,
+    "patient_c_equilib_basal_multiplier_median": 0.0,
+    "n_deep_fasting_rows": 8449,
+    "n_equilib_rows": 176,
+    "interpretation": "Patient C's controller suspends to 0% of scheduled basal in fasting equilibrium, which is consistent with EXP-2865 basal-mismatch findings. Per-patient EGP could be back-solved as: EGP = scheduled_basal \u00d7 ISF \u00d7 mult_to_balance_drift. This is FEASIBLE but not yet productionized \u2014 the safety margin doctrine (EXP-2738) requires it be exposed via a facts loader, not swapped into _BASE_EGP."
+  },
+  "meal_floor_audit": [
+    {
+      "floor_g": 5,
+      "n_events": 385,
+      "events_per_day": 2.5,
+      "median_per_day": 2.0,
+      "max_per_day": 7,
+      "n_days_with_meal": 154,
+      "n_days_with_2to8": 108,
+      "evening_share_pct": 23.116883116883116
+    },
+    {
+      "floor_g": 10,
+      "n_events": 377,
+      "events_per_day": 2.4640522875816995,
+      "median_per_day": 2.0,
+      "max_per_day": 7,
+      "n_days_with_meal": 153,
+      "n_days_with_2to8": 107,
+      "evening_share_pct": 23.607427055702917
+    },
+    {
+      "floor_g": 20,
+      "n_events": 234,
+      "events_per_day": 1.9180327868852458,
+      "median_per_day": 2.0,
+      "max_per_day": 5,
+      "n_days_with_meal": 122,
+      "n_days_with_2to8": 69,
+      "evening_share_pct": 23.076923076923077
+    },
+    {
+      "floor_g": 30,
+      "n_events": 141,
+      "events_per_day": 1.4842105263157894,
+      "median_per_day": 1.0,
+      "max_per_day": 3,
+      "n_days_with_meal": 95,
+      "n_days_with_2to8": 36,
+      "evening_share_pct": 21.98581560283688
+    },
+    {
+      "floor_g": 50,
+      "n_events": 2,
+      "events_per_day": 1.0,
+      "median_per_day": 1.0,
+      "max_per_day": 1,
+      "n_days_with_meal": 2,
+      "n_days_with_2to8": 0,
+      "evening_share_pct": 50.0
+    }
+  ],
+  "meal_smell_test": {
+    "5g": {
+      "events_per_day": 2.5,
+      "passes_2to8": true,
+      "share_of_days_in_2to8": 0.6
+    },
+    "10g": {
+      "events_per_day": 2.4640522875816995,
+      "passes_2to8": true,
+      "share_of_days_in_2to8": 0.5944444444444444
+    },
+    "20g": {
+      "events_per_day": 1.9180327868852458,
+      "passes_2to8": false,
+      "share_of_days_in_2to8": 0.38333333333333336
+    },
+    "30g": {
+      "events_per_day": 1.4842105263157894,
+      "passes_2to8": false,
+      "share_of_days_in_2to8": 0.2
+    },
+    "50g": {
+      "events_per_day": 1.0,
+      "passes_2to8": false,
+      "share_of_days_in_2to8": 0.0
+    }
+  }
+}
