@@ -76,7 +76,15 @@ def classify_controller(pid):
     elif pid.startswith('ns-'):
         return 'Trio'
     elif pid.startswith('odc-'):
-        return 'OpenAPS'
+        # OpenAPS Data Commons (ODC) is AAPS-platform data (see
+        # tools/ns2parquet/odc_loader.py). EXP-2986: separate platform
+        # (AAPS = Android app) from algorithm (oref0 vs oref1). The 3
+        # ODC patients in this cohort run AAPS-platform with
+        # oref0-algorithm (no SMB, no dynamic ISF in devicestatus).
+        # Lineage assignment downstream (exp_phenotype_synthesis_2886)
+        # must keep these as 'oref0 (legacy)' until oref1-mode AAPS
+        # patients are added.
+        return 'AAPS'
     return 'Unknown'
 
 grid['controller'] = grid['patient_id'].apply(classify_controller)

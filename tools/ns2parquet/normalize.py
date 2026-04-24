@@ -91,12 +91,16 @@ def _detect_controller(device: str) -> str:
     dl = device.lower()
     if dl.startswith('loop://') or 'loop' in dl:
         return 'loop'
+    # Test AAPS/AndroidAPS BEFORE 'openaps' branch: AAPS exports stamp
+    # device='openaps://AndroidAPS' (ODC adapter, AAPS NS uploader),
+    # which would otherwise be mis-classified as legacy OpenAPS/oref0.
+    # AAPS runs the modern oref1 algorithm — see EXP-2986.
+    if 'aaps' in dl or 'androidaps' in dl:
+        return 'aaps'
     if dl.startswith('openaps://') or 'openaps' in dl:
         return 'openaps'
     if 'trio' in dl:
         return 'trio'
-    if 'aaps' in dl or 'androidaps' in dl:
-        return 'aaps'
     if 'xdrip' in dl:
         return 'xdrip'
     return 'unknown'

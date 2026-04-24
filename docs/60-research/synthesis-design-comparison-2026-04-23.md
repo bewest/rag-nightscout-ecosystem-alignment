@@ -924,3 +924,121 @@ document was added in this batch (post-EXP-2980 / EXP-2984).
 All "oref1" findings should be read as "Trio (oref1 lineage)"
 until the AAPS labeling fix is applied and EXP-2980 can be
 re-run with a separated AAPS arm.
+
+---
+
+## Addendum (Apr-23 thirteenth batch): AAPS labeling fix applied, peer-suppression mechanism, earlier-dosing test
+
+### Batch experiments (EXP-2986 through EXP-2988)
+
+#### Headlines
+
+- **EXP-2986 — STRUCTURAL FIX APPLIED (POSITIVE)**: AAPS-labeling
+  bug closed. Two code fixes + one data-relabel script. Cohort
+  controller distribution corrected from `OpenAPS=3 / Trio=9 /
+  Loop=7` (mis-labeled) to `AAPS=3 / Trio=9 / Loop=7` (platform-
+  correct). **Lineage NOT changed**: post-fix inspection of the 3
+  ODC patients shows `eventual_bg` populated but `algorithm_isf`,
+  `algorithm_cr`, `algorithm_tdd`, `insulin_activity`, `bolus_iob`
+  ALL zero non-null AND zero `bolus_smb` cells across the entire
+  grid. These patients run **AAPS-platform with oref0-algorithm**
+  (SMB/UAM/dynamic-ISF disabled or pre-oref1 AAPS version), so the
+  algorithm-correct lineage label is `oref0 (legacy)`.
+  Critically: this means the cohort has **zero AAPS-oref1**
+  patients, so EXP-2989 platform-isolation experiments (Trio-vs-
+  AAPS within oref1) **cannot yet be performed**. Future ODC /
+  AAPS-NS additions are required.
+- **EXP-2987 — NULL/MIXED**: None of the four hypothesized levers
+  (override, recent-carbs, IOB-cap, IOB-threshold) cleanly
+  explains the patient-i-vs-peer asymmetry at 70-100. Peers c/d/g
+  suppress >99% of *eligible* cells (no override, no recent carbs,
+  IOB below patient-95th-pct), patient e suppresses 99.98%, but
+  patient i still fires in 13% of *eligible* cells. Patient i has
+  HIGHER override fraction (22% vs peer-mean 7%) yet still fires
+  more often, meaning override is not the suppressing lever for
+  peers. The asymmetric-lever ranking puts `iob_p95` first
+  (i=9.95 vs peer-mean 7.31 U) — consistent with patient i
+  tolerating a larger IOB cap setting in Loop, but the magnitude
+  is not enough to fully explain the 130× fire-rate gap. The
+  remaining lever space is patient-specific Loop settings
+  (`recommendation_threshold`, glucose-target range, AB-mode
+  dose-fraction) not directly observable in the grid.
+- **EXP-2988 — NEGATIVE**: The earlier-dosing hypothesis is
+  REJECTED. Patient i fires MORE in the 100-140 ascent leading
+  into 70-100 entries (56.0%) than peers c/d/e/g (mean 32.1%),
+  AND fires more at 70-100 itself. Peers do NOT pre-empt the
+  rise; they simply fire less at every band. Combined with
+  EXP-2987, this confirms patient-i is a uniformly more-aggressive
+  policy across all glucose bands, not a "fires-late vs fires-
+  early" temporal-strategy difference.
+
+#### Source-of-truth fixes (commit-traceable)
+
+| File | Change | EXP |
+|---|---|---|
+| `tools/ns2parquet/normalize.py:87-102` | Reorder `_detect_controller()` branches: test `'aaps'`/`'androidaps'` BEFORE `'openaps'` so AAPS device strings (`openaps://AndroidAPS`) classify as `aaps` not `openaps` | EXP-2986 |
+| `tools/cgmencode/exp_state_clustering_2810.py:73-83` | Map `pid.startswith('odc-')` → `'AAPS'` (was `'OpenAPS'`); separates platform from algorithm | EXP-2986 |
+| `tools/cgmencode/exp_phenotype_synthesis_2886.py:41-55` | Add separate AAPS branch in `lineage()`; defaults to `'oref0 (legacy)'` for current cohort but documents per-patient override condition for oref1-mode AAPS | EXP-2986 |
+| `tools/ns2parquet/exp_2986_relabel_aaps.py` | Idempotent relabel of derived parquets (controller column only) to avoid full pipeline re-run | EXP-2986 |
+
+### Evidence-line tally (post-batch)
+
+| # | Line | Source |
+|---|---|---|
+| 26 | The "OpenAPS / oref0 (legacy)" arm in this cohort is actually AAPS-platform running oref0-algorithm; platform and algorithm must be tracked separately. There are zero AAPS-oref1 patients in the current cohort | EXP-2986 |
+| 27 | Patient-i SMB asymmetry at 70-100 is not explained by override/recent-carbs/IOB-cap/IOB-threshold — patient-specific Loop settings (recommendation_threshold, AB-mode dose fraction) are the remaining hypothesis space | EXP-2987 |
+| 28 | Patient-i is uniformly more aggressive across all glucose bands (≥100-140 ascent AND 70-100 band); peers do NOT pre-empt by dosing the rise | EXP-2988 |
+
+Evidence-line count: **28** (up from 25). Line 26 is the highest-
+value structural correction of the batch — it forces a re-read of
+ALL prior "oref0 vs oref1" claims in this synthesis: those
+comparisons are AAPS-oref0 (n=3) vs Trio-oref1 (n=9), NOT
+upstream-oref0 vs downstream-oref1.
+
+### Updated re-labeling
+
+- **All prior "oref0 (legacy)" findings**: re-label as "AAPS-
+  platform / oref0-algorithm (n=3 ODC patients)". The platform
+  is AAPS, not historical OpenAPS-on-Edison. Behavioral
+  conclusions (no SMB, simpler IOB profile) remain valid because
+  algorithm = oref0; but cross-platform comparisons (e.g., basal
+  scheduler granularity, profile-sync cadence) cannot be
+  attributed to "OpenAPS reference design" — they are AAPS-
+  Android implementation properties.
+- **All prior "oref1 (modern)" findings**: re-label as "Trio-
+  iOS / oref1-algorithm (n=9)". No AAPS-oref1 patients exist in
+  this cohort, so the Trio-vs-AAPS platform isolation EXP-2980
+  proposed remains pending future data.
+
+### Updated AID-author lever priority (post-EXP-2987/2988)
+
+For the patient-i overshoot phenotype (EXP-2979/2985), the lever
+priority must be revised — the previously-guessed PAF lever is
+ruled out (EXP-2982), and now the recent-carbs/IOB-cap/override
+levers are also ruled out (EXP-2987). Remaining patient-specific
+levers (highest priority first):
+
+1. **Loop `recommendation_threshold` / target-range floor** — the
+   gate that keeps peers from dosing in 70-100 must be configured
+   higher in peers than in patient i. AID authors should expose
+   this gate clearly in UI and warn when a low recommendation
+   threshold is set in combination with AB-ON.
+2. **AB-mode dose fraction (`partialApplicationFactor`)** — even
+   if PAF doesn't change overshoot in the rising-70-100 endogenous
+   stratum (EXP-2982), it directly scales fire-rate in 100-140
+   ascent. Patient i's higher pre-entry fire-rate (56% vs 32%)
+   is consistent with a higher PAF setting.
+3. **Per-patient maxIOB** — patient i's iob_p95 = 9.95 U vs peer-
+   mean 7.31 U. AID authors should present a "policy
+   conservatism" summary at setup combining maxIOB + PAF +
+   recommendation_threshold so the user understands the joint
+   aggressiveness.
+
+### Counter-recommendation (NEW)
+
+Do NOT build a single "Loop AB-ON aggressiveness" knob. The
+patient-i-vs-peers split shows that aggressiveness is multi-
+dimensional (cap, gate, fraction) and patients adopt different
+combinations. A single knob would force a particular combination
+on all users.
+

@@ -41,7 +41,14 @@ OUT_FIG = ROOT / "docs/60-research/figures/exp-2886_phenotype.png"
 def lineage(ctrl: str) -> str:
     if ctrl == "OpenAPS":
         return "oref0 (legacy)"
-    if ctrl in ("Trio", "AAPS"):
+    if ctrl == "AAPS":
+        # EXP-2986: AAPS-platform may run EITHER oref0 or oref1 algorithm.
+        # Default to 'oref0 (legacy)' for the current cohort because the 3
+        # ODC patients have no SMB / no dynamic-ISF / no insulin_activity
+        # markers (= oref0-mode AAPS). Override per-patient when oref1
+        # markers are present in devicestatus.
+        return "oref0 (legacy)"
+    if ctrl == "Trio":
         return "oref1 (modern)"
     if ctrl == "Loop":
         return "Loop (iOS)"
