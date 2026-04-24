@@ -27,7 +27,7 @@ patient required; 2000-bootstrap CIs.
 | design       | 5min  | 10min | 15min | 20min | 30min | 45min | 60min | tt_peak (min) | smb_total |
 |--------------|------:|------:|------:|------:|------:|------:|------:|--------------:|----------:|
 | Loop_AB_ON   | 0.290 | 0.457 | 0.541 | 0.608 | 0.727 | 0.854 | 1.000 |          29.7 |     1.975 |
-| oref1        | 0.333 | 0.480 | 0.572 | 0.630 | 0.740 | 0.868 | 1.000 |          22.9 |     1.413 |
+| oref1        | 0.333 | 0.480 | 0.572 | 0.630 | 0.740 | 0.868 | 1.000 |          23.0 |     1.413 |
 
 ### oref1 − Loop_AB_ON cumulative-fraction gaps
 
@@ -47,13 +47,13 @@ oref1 marginally front-loads slightly *more* than Loop, not less.
 ### BG-trajectory time-to-peak
 
 - Loop_AB_ON: 29.7 min mean
-- oref1: 22.9 min mean
-- Difference: oref1 BG peaks **6.8 min earlier** within the window.
+- oref1: 23.0 min mean
+- Difference: oref1 BG peaks **6.7 min earlier** within the window.
 
 ## Interpretation
 
 This is a decisive narrowing. With essentially identical within-window
-dose schedules and slightly lower total dose, oref1's BG peaks 6.8 min
+dose schedules and slightly lower total dose, oref1's BG peaks 6.7 min
 earlier and recovers 21 pp more often. The mechanism is **NOT**
 within-window dose mechanics.
 
