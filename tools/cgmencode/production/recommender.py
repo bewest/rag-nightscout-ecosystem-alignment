@@ -41,6 +41,7 @@ def generate_recommendations(
     prediction_bias_mgdl: Optional[float] = None,
     audition_inputs: Optional[AuditionInputs] = None,
     profile: Optional[PatientProfile] = None,
+    overnight_assessment: Optional[object] = None,
 ) -> List[ActionRecommendation]:
     """Generate prioritized action recommendations.
 
@@ -118,11 +119,19 @@ def generate_recommendations(
 
     # ── Priority 2: Settings changes ──────────────────────────────
     if settings_recs:
+        settings_recs = _apply_conflict_resolution(
+            settings_recs, overnight_assessment)
         for sr in settings_recs:
+            # Demote conflicting basal recommendations to priority 3
+            # so they still surface but do not dominate. The advisor
+            # may have flagged it via a `_conflict_warning` attribute.
+            conflict_note = getattr(sr, "_conflict_warning", "")
+            prio = 3 if conflict_note else 2
+            desc = sr.rationale + (f"  ⚠️ {conflict_note}" if conflict_note else "")
             recs.append(ActionRecommendation(
                 action_type=f"adjust_{sr.parameter.value}",
-                priority=2,
-                description=sr.rationale,
+                priority=prio,
+                description=desc,
                 predicted_tir_delta=sr.predicted_tir_delta,
                 confidence=sr.confidence,
                 time_sensitive=False,
@@ -213,6 +222,69 @@ def generate_recommendations(
     recs.sort(key=lambda r: (r.priority, -abs(r.predicted_tir_delta)))
 
     return recs
+
+
+# ── Conflict resolution & sample-size guards ─────────────────────────
+
+def _apply_conflict_resolution(
+    settings_recs: List[SettingsRecommendation],
+    overnight_assessment: Optional[object],
+) -> List[SettingsRecommendation]:
+    """Annotate settings recommendations that conflict with other
+    pipeline outputs so the recommender can demote them.
+
+    Currently flags overnight basal recommendations whose direction
+    disagrees with the overnight-assessment model
+    (`suggested_basal_change_pct`). The overnight assessment is
+    alcohol-/EGP-suppression aware (it reads the deep-fasting drift
+    and Loop-suspension fraction); when it points in the opposite
+    direction, the basal advisor is almost certainly chasing a
+    symptom rather than a true basal deficit (GAP-RECO-001).
+
+    Sets `_conflict_warning` (str) attribute on each affected rec.
+    Mutates the SettingsRecommendation list in-place but also returns
+    it for chaining.
+    """
+    if not settings_recs or overnight_assessment is None:
+        return settings_recs
+
+    overnight_pct = getattr(
+        overnight_assessment, "suggested_basal_change_pct", None)
+    overnight_conf = getattr(
+        overnight_assessment, "confidence", 0.0) or 0.0
+
+    if overnight_pct is None:
+        return settings_recs
+
+    for sr in settings_recs:
+        param = getattr(sr.parameter, "value", str(sr.parameter))
+        if param not in ("basal_rate", "basal"):
+            continue
+        # Determine if affected hours overlap the overnight window.
+        affected = getattr(sr, "affected_hours", None)
+        is_overnight = (
+            affected is not None
+            and len(affected) >= 2
+            and float(affected[0]) < 6.0
+        )
+        if not is_overnight:
+            continue
+        # Sign disagreement: rec increases while overnight model says
+        # decrease (or vice versa).
+        rec_signed_pct = (
+            getattr(sr, "magnitude_pct", 0.0) or 0.0
+        ) * (1.0 if sr.direction == "increase" else -1.0)
+        if rec_signed_pct == 0.0 or overnight_pct == 0.0:
+            continue
+        if (rec_signed_pct > 0) != (overnight_pct > 0):
+            sr._conflict_warning = (
+                f"Conflicts with overnight assessment "
+                f"(suggested {overnight_pct:+.1f}% basal change, "
+                f"confidence {overnight_conf:.2f}). Possible "
+                f"alcohol- or EGP-suppression overnight pattern; "
+                f"do not act on this without clinician review."
+            )
+    return settings_recs
 
 
 # ── Controller-Specific Behavior (EXP-2081) ──────────────────────────
@@ -331,7 +403,20 @@ def detect_controller_type(patient: 'PatientData') -> ControllerType:
     if 'openaps' in controller_str or 'oref' in controller_str:
         return ControllerType.OPENAPS
 
-    # Heuristic: suspension fraction
+    # Heuristic: suspension fraction + SMB cadence
+    # AAPS/oref1 emit small (<0.3 U) automated SMBs at high cadence.
+    # Loop autobolus-OFF has user-driven boluses only — sparser, larger.
+    # This separates the two even when both show ~25-50% basal suspension.
+    has_smb_cadence = False
+    if patient.bolus is not None:
+        bolus = patient.bolus
+        valid_bolus = bolus[np.isfinite(bolus) & (bolus > 0)]
+        if len(valid_bolus) >= 50:
+            small_frac = float(np.mean(valid_bolus < 0.3))
+            # AAPS/oref1 small-bolus fraction is typically >0.5;
+            # Loop user-bolus fraction is typically <0.2.
+            has_smb_cadence = small_frac > 0.4
+
     if patient.basal_rate is not None:
         basal = patient.basal_rate
         valid = basal[np.isfinite(basal)]
@@ -340,9 +425,13 @@ def detect_controller_type(patient: 'PatientData') -> ControllerType:
             if suspension_frac > 0.60:
                 return ControllerType.LOOP  # Very high suspension → Loop
             elif suspension_frac > 0.40:
-                return ControllerType.TRIO  # Moderate-high → Trio
+                # Could be Loop autobolus-OFF (high suspension, no SMB
+                # cadence) or Trio (high suspension WITH SMB cadence).
+                return ControllerType.TRIO if has_smb_cadence else ControllerType.LOOP
             elif suspension_frac > 0.15:
-                return ControllerType.AAPS  # Moderate → AAPS
+                # Could be AAPS (moderate suspension WITH SMB cadence)
+                # or a low-activity Loop autobolus-OFF deployment.
+                return ControllerType.AAPS if has_smb_cadence else ControllerType.LOOP
 
     return ControllerType.UNKNOWN
 

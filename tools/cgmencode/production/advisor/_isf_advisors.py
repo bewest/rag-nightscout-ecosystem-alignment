@@ -253,7 +253,12 @@ def advise_isf_nonlinearity(
         magnitude_pct=round(penalty_pct, 0),
         current_value=current_isf,
         suggested_value=round(isf_at_typical, 0),
-        predicted_tir_delta=round(split_improvement_pct * 0.3, 1),
+        # Cap predicted TIR delta to a sane range. The split-dose
+        # improvement is an upper bound on what dose-shaping could
+        # achieve; in practice TIR impact is dominated by other
+        # factors (meal timing, basal posture). Mirroring the cap
+        # other ISF advisors use (e.g. demand-phase ISF capped at 3.0pp).
+        predicted_tir_delta=round(min(3.0, split_improvement_pct * 0.03), 1),
         affected_hours=(0.0, 24.0),
         confidence=min(0.6, days_of_data / HIGH_CONFIDENCE_DAYS),
         evidence=(
@@ -286,9 +291,12 @@ def _estimate_typical_correction_dose(
     typical glucose excursions above target.
     """
     if bolus is not None:
-        # Filter to correction-sized boluses (> 0.3U, < 10U)
+        # Filter to correction-sized boluses (> 0.3U, < 10U).
+        # Require >= 10 events: a sample size of 5 was too low to
+        # support a published settings-change recommendation
+        # (GAP-ADVR-001).
         corrections = bolus[(bolus > 0.3) & (bolus < 10.0)]
-        if len(corrections) >= 5:
+        if len(corrections) >= 10:
             return float(np.median(corrections))
 
     # Fallback: estimate from ISF and typical high-glucose excursion

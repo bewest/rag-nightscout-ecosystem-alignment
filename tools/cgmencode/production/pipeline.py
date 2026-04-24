@@ -636,6 +636,7 @@ def run_pipeline(patient: PatientData,
         meal_prediction=meal_prediction,
         settings_recs=settings_recs,
         meal_history=meal_history,
+        overnight_assessment=overnight_assessment,
     )
 
     # ── Stage 8: DIA Discrepancy Analysis (EXP-2351–2358) ─────────

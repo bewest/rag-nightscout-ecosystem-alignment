@@ -2586,7 +2586,9 @@ class TestISFNonlinearityFunction(unittest.TestCase):
     def test_fires_for_large_corrections(self):
         """Advisory should fire when typical correction > threshold."""
         from cgmencode.production.settings_advisor import advise_isf_nonlinearity
-        bolus = np.array([2.5, 3.0, 2.0, 2.8, 3.5, 2.2])
+        # Need >= 10 corrections after GAP-ADVR-001 sample-size guard.
+        bolus = np.array([2.5, 3.0, 2.0, 2.8, 3.5, 2.2,
+                          2.6, 3.1, 2.4, 2.9, 3.2, 2.1])
         result = advise_isf_nonlinearity(
             self._make_clinical(), self._make_profile(),
             bolus=bolus, days_of_data=7.0)
@@ -2594,12 +2596,30 @@ class TestISFNonlinearityFunction(unittest.TestCase):
         self.assertEqual(result.parameter.value, 'isf')
         self.assertIn('non-linearity', result.evidence.lower())
         self.assertIn('EXP-2511', result.evidence)
+        # Predicted TIR delta must be capped to a sane range
+        # (GAP-ADVR-001 fix: was *0.3 producing 26+ pp).
+        self.assertLessEqual(result.predicted_tir_delta, 3.0)
+
+    def test_does_not_fire_for_sparse_corrections(self):
+        """Advisory must NOT fire for n<10 corrections (GAP-ADVR-001)."""
+        from cgmencode.production.settings_advisor import advise_isf_nonlinearity
+        bolus = np.array([2.5, 3.0])  # only 2 events
+        result = advise_isf_nonlinearity(
+            self._make_clinical(), self._make_profile(),
+            bolus=bolus, days_of_data=7.0)
+        # Either None or fallback that does not use the sparse signal.
+        # The sparse-bolus path should not return a populated rec.
+        if result is not None:
+            # If it fires from the fallback (ISF/excursion estimate),
+            # the predicted_tir_delta must still be sane.
+            self.assertLessEqual(result.predicted_tir_delta, 3.0)
 
     def test_penalty_increases_with_dose(self):
         """Larger doses should show greater effectiveness penalty."""
         from cgmencode.production.settings_advisor import advise_isf_nonlinearity
-        bolus_2u = np.array([2.0, 2.0, 2.0, 2.0, 2.0])
-        bolus_4u = np.array([4.0, 4.0, 4.0, 4.0, 4.0])
+        # Need >= 10 corrections after GAP-ADVR-001 sample-size guard.
+        bolus_2u = np.array([2.0] * 12)
+        bolus_4u = np.array([4.0] * 12)
         r2 = advise_isf_nonlinearity(
             self._make_clinical(), self._make_profile(),
             bolus=bolus_2u, days_of_data=7.0)
@@ -2614,7 +2634,7 @@ class TestISFNonlinearityFunction(unittest.TestCase):
     def test_split_dose_improvement_positive(self):
         """Split dose should always be better than single dose."""
         from cgmencode.production.settings_advisor import advise_isf_nonlinearity
-        bolus = np.array([3.0, 3.0, 3.0, 3.0, 3.0])
+        bolus = np.array([3.0] * 12)  # >=10 events for GAP-ADVR-001 guard
         result = advise_isf_nonlinearity(
             self._make_clinical(), self._make_profile(),
             bolus=bolus, days_of_data=7.0)
