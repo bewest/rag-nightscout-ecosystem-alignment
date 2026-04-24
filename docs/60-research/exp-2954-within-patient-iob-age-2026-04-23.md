@@ -51,10 +51,10 @@ i              Loop_AB_ON   454       -124      -0.385  1.9e-17
 ns-d444c120c23a oref1       265       -184      -0.377  2.3e-10
 f              Loop_AB_OFF  354       -235      -0.314  1.5e-09
 odc-86025410   oref0        456       -1964     -0.255  3.3e-08
-ns-1ccae8a375b9 oref1       264       -67       -0.292  1.4e-06
-ns-a9ce2317bead oref1       300       -188      -0.289  3.6e-07
 ns-8f3527d1ee40 oref1       420       -66       -0.248  2.6e-07
 a              Loop_AB_OFF  252       -260      -0.317  2.7e-07
+ns-a9ce2317bead oref1       300       -188      -0.289  3.6e-07
+ns-1ccae8a375b9 oref1       264       -67       -0.292  1.4e-06
 g              Loop_AB_ON   269       -208      -0.278  3.8e-06
 ns-dde9e7c2e752 oref1       173       -391      -0.344  3.5e-06
 c              Loop_AB_ON   351       -148      -0.239  5.8e-06
