@@ -6,7 +6,9 @@
     "spike_indices": "<array shape=(2066,)>",
     "n_spikes": 2066,
     "sigma_threshold": 2.0,
-    "cleaning_r2_gain": null
+    "cleaning_r2_gain": null,
+    "compression_low_indices": "<array shape=(11,)>",
+    "n_compression_lows": 11
   },
   "metabolic": {
     "supply": "<array shape=(51841,)>",
@@ -367,15 +369,15 @@
       "direction": "increase",
       "magnitude_pct": 25.0,
       "current_value": 75.0,
-      "suggested_value": 349.0,
-      "predicted_tir_delta": 18.8,
+      "suggested_value": 345.0,
+      "predicted_tir_delta": 18.6,
       "affected_hours": [
         0.0,
         24.0
       ],
       "confidence": 0.3,
-      "evidence": "Consolidated from 6 time-block advisories (range: 100-366%). Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 349 mg/dL/U vs profile 75 (+366% deviation) from 724 correction events. [CLAMPED from 188% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
-      "rationale": "Increase ISF from 75 to 349 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 724 corrections in this block with median effective ISF 349 mg/dL/U. Predicted TIR improvement: +3.7pp.",
+      "evidence": "Consolidated from 6 time-block advisories (range: 100-360%). Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 345 mg/dL/U vs profile 75 (+360% deviation) from 732 correction events. [CLAMPED from 184% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+      "rationale": "Increase ISF from 75 to 345 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 732 corrections in this block with median effective ISF 345 mg/dL/U. Predicted TIR improvement: +3.6pp.",
       "confidence_grade": null,
       "ci_width_pct": null
     },
@@ -391,7 +393,7 @@
         24.0
       ],
       "confidence": 0.34,
-      "evidence": "Consolidated from 4 time-block advisories (range: 5-250%). Context-aware CR analysis (EXP-2341): morning meals show mean excursion 71 mg/dL from 118 meals. [CLAMPED from 82% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+      "evidence": "Consolidated from 4 time-block advisories (range: 5-252%). Context-aware CR analysis (EXP-2341): morning meals show mean excursion 71 mg/dL from 118 meals. [CLAMPED from 83% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
       "rationale": "Decrease morning CR from 4.5 to 3.8 g/U (15% more insulin). Mean post-meal excursion is 71 mg/dL.",
       "confidence_grade": null,
       "ci_width_pct": null
@@ -425,7 +427,7 @@
         24.0
       ],
       "confidence": 0.27,
-      "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 250 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 2808 correction events. [CLAMPED from 39% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+      "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 250 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 2863 correction events. [CLAMPED from 39% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
       "rationale": "Increase correction threshold from 180 to 250 mg/dL. Corrections below 250 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.7pp.",
       "confidence_grade": null,
       "ci_width_pct": null
@@ -435,8 +437,8 @@
     {
       "action_type": "adjust_isf",
       "priority": 2,
-      "description": "Increase ISF from 75 to 349 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 724 corrections in this block with median effective ISF 349 mg/dL/U. Predicted TIR improvement: +3.7pp.",
-      "predicted_tir_delta": 18.8,
+      "description": "Increase ISF from 75 to 345 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 732 corrections in this block with median effective ISF 345 mg/dL/U. Predicted TIR improvement: +3.6pp.",
+      "predicted_tir_delta": 18.6,
       "confidence": 0.3,
       "time_sensitive": false,
       "deadline_minutes": null,
@@ -446,15 +448,15 @@
         "direction": "increase",
         "magnitude_pct": 25.0,
         "current_value": 75.0,
-        "suggested_value": 349.0,
-        "predicted_tir_delta": 18.8,
+        "suggested_value": 345.0,
+        "predicted_tir_delta": 18.6,
         "affected_hours": [
           0.0,
           24.0
         ],
         "confidence": 0.3,
-        "evidence": "Consolidated from 6 time-block advisories (range: 100-366%). Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 349 mg/dL/U vs profile 75 (+366% deviation) from 724 correction events. [CLAMPED from 188% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
-        "rationale": "Increase ISF from 75 to 349 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 724 corrections in this block with median effective ISF 349 mg/dL/U. Predicted TIR improvement: +3.7pp.",
+        "evidence": "Consolidated from 6 time-block advisories (range: 100-360%). Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 345 mg/dL/U vs profile 75 (+360% deviation) from 732 correction events. [CLAMPED from 184% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+        "rationale": "Increase ISF from 75 to 345 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 732 corrections in this block with median effective ISF 345 mg/dL/U. Predicted TIR improvement: +3.6pp.",
         "confidence_grade": null,
         "ci_width_pct": null
       }
@@ -480,7 +482,7 @@
           24.0
         ],
         "confidence": 0.34,
-        "evidence": "Consolidated from 4 time-block advisories (range: 5-250%). Context-aware CR analysis (EXP-2341): morning meals show mean excursion 71 mg/dL from 118 meals. [CLAMPED from 82% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+        "evidence": "Consolidated from 4 time-block advisories (range: 5-252%). Context-aware CR analysis (EXP-2341): morning meals show mean excursion 71 mg/dL from 118 meals. [CLAMPED from 83% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
         "rationale": "Decrease morning CR from 4.5 to 3.8 g/U (15% more insulin). Mean post-meal excursion is 71 mg/dL.",
         "confidence_grade": null,
         "ci_width_pct": null
@@ -534,7 +536,7 @@
           24.0
         ],
         "confidence": 0.27,
-        "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 250 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 2808 correction events. [CLAMPED from 39% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+        "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 250 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 2863 correction events. [CLAMPED from 39% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
         "rationale": "Increase correction threshold from 180 to 250 mg/dL. Corrections below 250 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.7pp.",
         "confidence_grade": null,
         "ci_width_pct": null
@@ -1425,7 +1427,7 @@
     "n_inferred": 17,
     "days_of_data": 180.0034722222222
   },
-  "pipeline_latency_ms": 9920.42029206641,
+  "pipeline_latency_ms": 10122.820656979457,
   "warnings": [
     "Cleaned 2066 spikes (4.0% of readings)",
     "Controller detected: Loop (compensating). Settings visibility: 30%."

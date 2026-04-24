@@ -13,6 +13,7 @@ Algorithm:
 from __future__ import annotations
 
 import numpy as np
+from typing import Optional
 
 from .types import CleanedData
 
@@ -96,8 +97,95 @@ def interpolate_spikes(glucose: np.ndarray,
     return cleaned
 
 
+def detect_compression_lows(
+    glucose: np.ndarray,
+    bolus: Optional[np.ndarray] = None,
+    carbs: Optional[np.ndarray] = None,
+    *,
+    drop_threshold: float = 30.0,
+    drop_window_steps: int = 3,        # 15 min @ 5-min cadence
+    low_threshold: float = 60.0,
+    recovery_threshold: float = 25.0,
+    recovery_window_steps: int = 6,    # 30 min
+    insulin_window_steps: int = 24,    # ±2 h
+    insulin_dose_threshold: float = 0.3,
+    carb_window_steps: int = 6,
+) -> np.ndarray:
+    """Flag suspected compression-low (pressure-on-sensor) artifacts.
+
+    Signature, conservative:
+      * BG drops by ``drop_threshold`` mg/dL in ``drop_window_steps``,
+      * reaches ``< low_threshold`` mg/dL,
+      * recovers by ``recovery_threshold`` mg/dL within
+        ``recovery_window_steps``,
+      * NO bolus > ``insulin_dose_threshold`` U in
+        [-insulin_window_steps, 0],
+      * NO real carbs (>5 g) in [-carb_window_steps, recovery window].
+
+    These criteria are deliberately conservative — only flag drops that
+    have no plausible insulin/carb explanation.
+
+    Args:
+        glucose: (N,) glucose (mg/dL); NaNs tolerated.
+        bolus, carbs: optional (N,) arrays for cause attribution.
+
+    Returns:
+        Indices of glucose samples flagged as artifact-low nadirs.
+    """
+    N = len(glucose)
+    if N < drop_window_steps + recovery_window_steps + 1:
+        return np.array([], dtype=int)
+
+    flagged: list[int] = []
+    g = np.asarray(glucose, dtype=float)
+
+    for i in range(drop_window_steps, N - recovery_window_steps):
+        gi = g[i]
+        if not np.isfinite(gi) or gi >= low_threshold:
+            continue
+
+        pre = g[i - drop_window_steps:i + 1]
+        pre_valid = pre[np.isfinite(pre)]
+        if pre_valid.size < 2:
+            continue
+        peak_pre = float(np.max(pre_valid))
+        if (peak_pre - gi) < drop_threshold:
+            continue
+
+        post = g[i:i + recovery_window_steps + 1]
+        post_valid = post[np.isfinite(post)]
+        if post_valid.size < 2:
+            continue
+        peak_post = float(np.max(post_valid))
+        if (peak_post - gi) < recovery_threshold:
+            continue
+
+        if bolus is not None:
+            b_lo = max(0, i - insulin_window_steps)
+            b_window = bolus[b_lo:i + 1]
+            b_valid = b_window[np.isfinite(b_window)]
+            if b_valid.size and float(np.max(b_valid)) > insulin_dose_threshold:
+                continue
+
+        if carbs is not None:
+            c_lo = max(0, i - carb_window_steps)
+            c_hi = min(N, i + recovery_window_steps + 1)
+            c_window = carbs[c_lo:c_hi]
+            c_valid = c_window[np.isfinite(c_window)]
+            if c_valid.size and float(np.nansum(c_valid)) > 5.0:
+                continue
+
+        flagged.append(i)
+
+    return np.array(flagged, dtype=int)
+
+
 def clean_glucose(glucose: np.ndarray,
-                  sigma_mult: float = DEFAULT_SIGMA) -> CleanedData:
+                  sigma_mult: float = DEFAULT_SIGMA,
+                  *,
+                  bolus: Optional[np.ndarray] = None,
+                  carbs: Optional[np.ndarray] = None,
+                  detect_artifacts: bool = True) -> CleanedData:
     """Full spike-cleaning pipeline: detect + interpolate.
 
     This is the primary public API for data quality processing.
@@ -112,10 +200,18 @@ def clean_glucose(glucose: np.ndarray,
     spikes = detect_spikes(glucose, sigma_mult)
     cleaned = interpolate_spikes(glucose, spikes)
 
+    if detect_artifacts:
+        compression_lows = detect_compression_lows(
+            cleaned, bolus=bolus, carbs=carbs)
+    else:
+        compression_lows = np.array([], dtype=int)
+
     return CleanedData(
         glucose=cleaned,
         original_glucose=glucose.copy(),
         spike_indices=spikes,
         n_spikes=len(spikes),
         sigma_threshold=sigma_mult,
+        compression_low_indices=compression_lows,
+        n_compression_lows=int(len(compression_lows)),
     )

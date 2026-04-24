@@ -394,12 +394,19 @@ class CleanedData:
     n_spikes: int
     sigma_threshold: float       # always 2.0 per research
     cleaning_r2_gain: Optional[float] = None  # R² improvement if measured
+    compression_low_indices: Optional[np.ndarray] = None  # suspected pressure artifacts
+    n_compression_lows: int = 0
 
     @property
     def spike_rate(self) -> float:
         """Fraction of readings that were spikes."""
         n = len(self.original_glucose)
         return self.n_spikes / n if n > 0 else 0.0
+
+    @property
+    def compression_low_rate(self) -> float:
+        n = len(self.original_glucose)
+        return self.n_compression_lows / n if n > 0 else 0.0
 
 
 @dataclass

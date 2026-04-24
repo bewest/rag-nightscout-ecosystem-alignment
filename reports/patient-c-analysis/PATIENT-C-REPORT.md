@@ -123,6 +123,41 @@ is +3.7 pp.
 >   `_OVERNIGHT_START`/`MIN_CORRECTION_DELTA` undefined). Previously
 >   masked because the corrupted timestamps tripped early-exit paths.
 
+> **2026-04-24 — Phase 4 meal-stream cleanup (treat-of-low filter +
+> compression-low detector):** Following user-confirmed Patient C
+> physiology (no breakfast; late-night dessert digestion compounds
+> overnight; most "lows" are CGM artifacts; only 1–4 real
+> treats-of-low/year during pump/CGM gaps):
+>
+> * Wired the existing `meal_filter.is_real_meal(prior_glucose_30min_min=…)`
+>   guard (EXP-2866) into pipeline `_extract_meal_events` and
+>   `_extract_correction_events`. Filter was a dead branch — no
+>   production caller had been using it.
+> * Added `data_quality.detect_compression_lows()` which flags
+>   pressure-on-sensor artifacts (sharp drop into <60 mg/dL with
+>   rapid recovery and no insulin/carb cause). Result is reported
+>   on `CleanedData.n_compression_lows`; raw glucose is **not**
+>   modified — the advisor decides how to use the count.
+>
+> Patient C numbers after Phase 4:
+>
+> | Signal | Before | After | Notes |
+> |---|---:|---:|---|
+> | Carb entries kept as meal events | 333 | **304** | 29 dropped as treats-of-low (8 %) |
+> | Removed by local hour | — | 11 in 00–03 h | matches user's "treats during overnight false-lows" pattern |
+> | Compression-lows detected | n/a | **11** in 180 days | conservative; only events with no insulin/carb cause |
+>
+> **Recommendations are unchanged in shape.** The morning CR rec
+> persists because the bulk of the 7–9 h local-time carb entries
+> have legitimate prior glucose (>80 mg/dL) and pass the filter.
+> User reports the patient never eats breakfast — that points to a
+> data-source problem (pump auto-carbs / cached COB entries vs
+> user-entered food) one layer below this pipeline. Recommended
+> next step before acting on the CR: audit the `carbs` source in
+> `grid.parquet` for Patient C against the raw NS treatments
+> stream to determine whether morning entries are user-entered
+> meals or pump-internal corrections.
+
 The ISF / basal / correction-threshold recs are **directionally
 consistent** — back off insulin on every channel. The CR rec is the
 outlier and likely a meal-stream-quality artifact, not a real

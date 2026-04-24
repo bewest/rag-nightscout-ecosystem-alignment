@@ -661,6 +661,41 @@ class TestDataQuality(unittest.TestCase):
         cleaned = self.clean_glucose(glucose)
         self.assertEqual(cleaned.n_spikes, 0)
 
+    def test_compression_low_detected_without_cause(self):
+        """Sharp drop into <55 with no insulin/carbs should flag."""
+        from cgmencode.production.data_quality import detect_compression_lows
+        N = 200
+        g = np.full(N, 120.0)
+        # drop at i=100 from 120 -> 45 over 3 steps, recover by i=104
+        g[97] = 120.0
+        g[98] = 105.0
+        g[99] = 75.0
+        g[100] = 45.0
+        g[101] = 70.0
+        g[102] = 110.0
+        g[103] = 120.0
+        idx = detect_compression_lows(g, bolus=None, carbs=None)
+        self.assertIn(100, idx.tolist())
+
+    def test_compression_low_skipped_with_recent_bolus(self):
+        """A recent bolus explains the low — should NOT flag."""
+        from cgmencode.production.data_quality import detect_compression_lows
+        N = 200
+        g = np.full(N, 120.0)
+        g[97] = 120.0; g[98] = 105.0; g[99] = 75.0
+        g[100] = 45.0
+        g[101] = 70.0; g[102] = 110.0; g[103] = 120.0
+        bolus = np.zeros(N)
+        bolus[80] = 4.0  # within 2h prior
+        idx = detect_compression_lows(g, bolus=bolus, carbs=None)
+        self.assertNotIn(100, idx.tolist())
+
+    def test_clean_glucose_attaches_compression_low_count(self):
+        glucose = make_glucose(500)
+        cleaned = self.clean_glucose(glucose)
+        self.assertIsInstance(cleaned.n_compression_lows, int)
+        self.assertGreaterEqual(cleaned.n_compression_lows, 0)
+
 
 class TestMetabolicEngine(unittest.TestCase):
     pytestmark = pytest.mark.unit
@@ -3747,6 +3782,34 @@ class TestMealEventExtraction(unittest.TestCase):
         hours = np.zeros(n)
         events = _extract_meal_events(glucose, bolus, carbs, hours)
         self.assertEqual(len(events), 0)
+
+
+    def test_treat_of_low_excluded(self):
+        """Carbs taken when prior 30-min glucose dipped <80 are
+        treated as treats-of-low and excluded from meal events
+        (EXP-2866; Patient C audit 2026-04-23)."""
+        from cgmencode.production.pipeline import _extract_meal_events
+        n = 200
+        glucose = np.full(n, 150.0)
+        # Drive prior 30-min minimum below 80 mg/dL
+        glucose[44:50] = 65.0
+        bolus = np.zeros(n)
+        carbs = np.zeros(n)
+        carbs[50] = 15.0  # juice / treat
+        hours = np.zeros(n)
+        events = _extract_meal_events(glucose, bolus, carbs, hours)
+        self.assertEqual(events, [])
+
+    def test_real_meal_after_recovery_kept(self):
+        """A meal preceded by in-range glucose is kept."""
+        from cgmencode.production.pipeline import _extract_meal_events
+        n = 200
+        glucose = np.full(n, 130.0)
+        bolus = np.zeros(n); bolus[50] = 4.0
+        carbs = np.zeros(n); carbs[50] = 45.0
+        hours = np.zeros(n)
+        events = _extract_meal_events(glucose, bolus, carbs, hours)
+        self.assertEqual(len(events), 1)
 
 
 class TestPipelineAdvisoryWiring(unittest.TestCase):

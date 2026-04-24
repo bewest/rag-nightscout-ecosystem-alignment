@@ -27,6 +27,7 @@ from .types import (
     ControllerType, TIR_LOW, TIR_HIGH,
 )
 from .data_quality import clean_glucose
+from .meal_filter import is_real_meal, is_real_carb_event, TREAT_OF_LOW_GLUCOSE_FLOOR_MGDL
 from .metabolic_engine import compute_metabolic_state, _extract_hours, estimate_dia_discrepancy, decompose_two_component_dia
 from .event_detector import classify_risk_simple
 from .hypo_predictor import predict_hypo, calibrate_threshold
@@ -79,9 +80,21 @@ def _extract_correction_events(
         # Skip if significant carbs within ±12 steps (1 hour)
         carb_window_lo = max(0, i - 12)
         carb_window_hi = min(N, i + 13)
+        # Skip if significant carbs within ±12 steps (1 hour). Treats-of-low
+        # (small carbs taken at low BG) are excluded from this guard so they
+        # don't suppress legitimate correction events.
         if carbs is not None:
-            carb_sum = float(np.nansum(carbs[carb_window_lo:carb_window_hi]))
-            if carb_sum > 5.0:
+            carb_lo, carb_hi = carb_window_lo, carb_window_hi
+            real_carbs = 0.0
+            for j in range(carb_lo, carb_hi):
+                cj = carbs[j]
+                if np.isnan(cj) or cj <= 0:
+                    continue
+                prior_min_j = _prior_glucose_min(glucose, j, n_steps=6)
+                if is_real_carb_event(float(cj),
+                                      prior_glucose_30min_min=prior_min_j):
+                    real_carbs += float(cj)
+            if real_carbs > 5.0:
                 continue
 
         # Need 48 steps (4h) of future glucose
@@ -146,6 +159,23 @@ def _extract_correction_events(
     return events
 
 
+def _prior_glucose_min(glucose: np.ndarray, i: int,
+                       n_steps: int = 6) -> Optional[float]:
+    """Min glucose in the [i - n_steps, i) window. None if no valid data.
+
+    n_steps=6 at 5-min cadence = 30 min lookback (treat-of-low window
+    convention from EXP-2866).
+    """
+    lo = max(0, i - n_steps)
+    if lo >= i:
+        return None
+    arr = glucose[lo:i]
+    valid = arr[~np.isnan(arr)]
+    if len(valid) == 0:
+        return None
+    return float(np.min(valid))
+
+
 def _extract_meal_events(
     glucose: np.ndarray,
     bolus: Optional[np.ndarray],
@@ -154,7 +184,11 @@ def _extract_meal_events(
 ) -> List[dict]:
     """Extract meal events for CR adequacy advisories.
 
-    A meal event is a carb entry >5g with any bolus within ±2 steps (10 min).
+    A meal event is a carb entry >5g with any bolus within ±2 steps (10 min)
+    AND prior 30-min glucose minimum at or above ``TREAT_OF_LOW_GLUCOSE_FLOOR_MGDL``
+    (80 mg/dL). Events following a sub-80 window are treats-of-low and
+    should not drive CR/ISF advisors (EXP-2866 + Patient C audit
+    2026-04-23).
     """
     if carbs is None or len(glucose) < 49:
         return []
@@ -163,7 +197,11 @@ def _extract_meal_events(
     events: List[dict] = []
 
     for i in range(N):
-        if np.isnan(carbs[i]) or carbs[i] <= 5.0:
+        if np.isnan(carbs[i]):
+            continue
+        prior_min = _prior_glucose_min(glucose, i, n_steps=6)
+        if not is_real_meal(float(carbs[i]),
+                            prior_glucose_30min_min=prior_min):
             continue
 
         # Sum bolus within ±2 steps
@@ -248,7 +286,11 @@ def run_pipeline(patient: PatientData,
         effective_tz = profile_tz
 
     # ── Stage 1: Data Quality (spike cleaning) ────────────────────
-    cleaned = clean_glucose(patient.glucose)
+    cleaned = clean_glucose(
+        patient.glucose,
+        bolus=getattr(patient, 'bolus', None),
+        carbs=getattr(patient, 'carbs', None),
+    )
     if cleaned.n_spikes > 0:
         pct = cleaned.spike_rate * 100
         warnings.append(f"Cleaned {cleaned.n_spikes} spikes ({pct:.1f}% of readings)")
