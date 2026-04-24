@@ -14,9 +14,10 @@ Insights, or guard-rail features.
 >   results characterise *mechanisms* the controllers use; they do
 >   not rank controllers as "better" for users.
 > - This is **not** a clinical study. It is observational analysis of
->   a 19-patient development cohort (after exclusion of 5 unknown-mode
->   patients from the parquet that ships with `tools/cgmencode`),
->   intended to inform code-level design and audition heuristics.
+>   a 19-patient cohort with known `algorithm_mode` (24 total in the
+>   parquet that ships with `tools/cgmencode`; 5 excluded for
+>   unknown-mode), intended to inform code-level design and audition
+>   heuristics.
 > - All controller-emitted variables (basal cuts, SMB delivery, IOB
 >   trajectory) are subject to reverse-causation when used as
 >   regression predictors. Within-patient claims are confined to the
@@ -291,9 +292,9 @@ file:line provided where applicable.
 | Rank | Lever | Channel | Code citation | Notes |
 |---:|---|---|---|---|
 | 1 | `correctionRange.lowerBound` and `suspendThreshold` (Loop) — Gate G4/G1 | SMB gate | `LoopAlgorithm.swift:419-423`; `DoseMath.swift:207-210` | Highest-priority lever for user-facing documentation; explains 99% peer-suppression of SMB at 70–100 mg/dL (EXP-2990). |
-| 2 | `enable_smb()` + `enableSMB_always` (oref1) | SMB rate | `DetermineBasalSMB.kt:66` | Frequency-lever's enable gate; off in no-carb context unless `enableSMB_always`. |
+| 2 | `enable_smb()` + `enableSMB_always` (Trio/oref1) | SMB rate | `DetermineBasalSMB.kt:66` | Frequency-lever's enable gate; off in no-carb context unless `enableSMB_always`. (Cohort = Trio only; AAPS-oref1 untested.) |
 | 3 | Predict-and-fire on rising velocity early (UAM / AB on momentum) | SMB | both designs | Single design principle that unifies PP TIR + sustained-high recovery + hypo defence (within-patient validated at hypo, EXP-2954). |
-| 4 | `SMBInterval` cycle-frequency ceiling (oref1) | SMB freq | `DetermineBasalSMB.kt:1101` | 3-min minimum in oref1; Loop uses cycle-only (5 min). Tuning lever for the *frequency* mechanism. |
+| 4 | `SMBInterval` cycle-frequency ceiling (Trio/oref1) | SMB freq | `DetermineBasalSMB.kt:1101` | 3-min minimum in oref1; Loop uses cycle-only (5 min). Tuning lever for the *frequency* mechanism. (Cohort = Trio only.) |
 | 5 | `partialApplicationFactor` / GBAF (Loop) | SMB magnitude | `GlucoseBasedApplicationFactorStrategy.swift:14`; `DoseMath.swift:101` | 0.20/0.40/0.80 attenuator; combined with pump rounding can convert near-zero corrections to literal zeros. Tuning lever for the *magnitude* mechanism. |
 | 6 | `maxSMBBasalMinutes` / `maxBolus`-derived caps | SMB ceiling | `SMBDefaults.kt`; `LoopDataManager.swift:1840` | Tertiary; backstop rather than primary tuning. |
 | 7 | Basal-cut latency (defence-side) | basal | both | Demoted from primary to **secondary** by EXP-2954/2947. Reactive cutting cannot substitute for predict-and-fire-early; Loop_AB_ON cuts in 96.1% of pre-hypo cells yet has 2× severe hypo. |
@@ -315,9 +316,12 @@ file:line provided where applicable.
    complementary mechanisms; converting between them isn't a
    well-defined operation, and the per-mechanism guard-rails would
    be wrong for the converted design (EXP-2972/2973).
-4. **Don't assume "conservative" = "slower".** EXP-2993 refutes
-   this for Loop_AB_ON on a 5-patient cohort. Conservative is
-   uniformly better on every outcome axis tested.
+4. **Don't assume "conservative" = "slower", and don't frame it
+   that way in UI or docs.** EXP-2993 refutes the trade-off for
+   Loop_AB_ON on a 5-patient cohort: conservative is uniformly
+   better on every outcome axis tested. User-facing copy that
+   labels conservative settings as "safer but slower" creates a
+   false trade-off perception that the data does not support.
 5. **Don't build a single "AB-aggressiveness" knob.** Aggressiveness
    is multi-dimensional (cap, gate, fraction); a single knob would
    force a particular combination on all users. Surface the

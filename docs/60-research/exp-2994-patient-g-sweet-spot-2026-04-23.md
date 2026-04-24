@@ -114,6 +114,14 @@ down and the SMB rate left at typical Loop levels).
 **Verdict**: 27 weeks of stable performance with low CV → g's pattern is
 reproducible, not a lucky window.
 
+> **Reproducing the weekly partition**: the per-week metrics in the
+> table above are computed transiently inside
+> `tools/cgmencode/exp_patient_g_sweet_spot_2994.py` (group-by ISO week
+> on patient g's grid rows) and not persisted to the JSON artifact —
+> the JSON only carries the per-patient aggregates. Re-run the script
+> against `externals/ns-parquet/training/grid.parquet` to regenerate
+> the weekly breakdown.
+
 ---
 
 ## Honest assessment: tunable target or idiosyncratic?
