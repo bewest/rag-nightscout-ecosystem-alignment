@@ -104,7 +104,9 @@ def assess_basal(glucose: np.ndarray,
                  metabolic: Optional[MetabolicState] = None,
                  hours: Optional[np.ndarray] = None,
                  iob: Optional[np.ndarray] = None,
-                 cob: Optional[np.ndarray] = None) -> BasalAssessment:
+                 cob: Optional[np.ndarray] = None,
+                 inferred_meal_indices: Optional[np.ndarray] = None,
+                 ) -> BasalAssessment:
     """Assess basal rate adequacy from overnight glucose behavior.
 
     Uses the actual glucose slope during fasting hours (00:00-06:00) as
@@ -122,6 +124,12 @@ def assess_basal(glucose: np.ndarray,
         hours: (N,) fractional hours for overnight window selection.
         iob: (N,) optional insulin-on-board for clean-night filtering.
         cob: (N,) optional carbs-on-board for clean-night filtering.
+        inferred_meal_indices: optional array of step indices where
+            inferred (residual+insulin spectral) meals occurred. When
+            provided, the 4 h post-meal window for each inferred meal
+            is excluded from the clean-night mask in addition to the
+            cob-clean filter. Critical for under-loggers whose `cob`
+            input understates true meal activity.
 
     Returns:
         BasalAssessment enum.
@@ -129,6 +137,10 @@ def assess_basal(glucose: np.ndarray,
     # Clean-night thresholds (from settings_advisor.py:2736, EXP-2375)
     CLEAN_IOB_MAX = 0.5   # Units
     CLEAN_COB_MAX = 5.0   # grams
+    PRE_MEAL_STEPS = 24   # 2 h backward from event center (covers
+                          # multi-part meals up to 150 min wide whose
+                          # center shifted forward into the second part)
+    POST_MEAL_STEPS = 48  # 4 h forward at 5-min cadence
 
     if hours is not None:
         # Select overnight fasting window (midnight to 6 AM)
@@ -141,6 +153,17 @@ def assess_basal(glucose: np.ndarray,
         if cob is not None:
             cob_clean = np.nan_to_num(cob, nan=0.0)
             overnight_mask = overnight_mask & (cob_clean < CLEAN_COB_MAX)
+        if inferred_meal_indices is not None and len(inferred_meal_indices):
+            n = len(glucose)
+            post_meal = np.zeros(n, dtype=bool)
+            for idx in inferred_meal_indices:
+                i = int(idx)
+                if i < 0 or i >= n:
+                    continue
+                end = min(n, i + POST_MEAL_STEPS)
+                start = max(0, i - PRE_MEAL_STEPS)
+                post_meal[start:end] = True
+            overnight_mask = overnight_mask & ~post_meal
 
         if np.sum(overnight_mask) >= 12:  # at least 1 hour
             overnight_bg = glucose[overnight_mask]
@@ -927,6 +950,9 @@ def generate_clinical_report(glucose: np.ndarray,
                              carbs: Optional[np.ndarray] = None,
                              bolus: Optional[np.ndarray] = None,
                              hours: Optional[np.ndarray] = None,
+                             iob: Optional[np.ndarray] = None,
+                             cob: Optional[np.ndarray] = None,
+                             inferred_meal_indices: Optional[np.ndarray] = None,
                              ) -> ClinicalReport:
     """Generate complete clinical decision support report.
 
@@ -944,7 +970,11 @@ def generate_clinical_report(glucose: np.ndarray,
     """
     metrics = assess_glycemic_control(glucose)
     grade = grade_glycemic_control(metrics['tir'], metrics['tbr'])
-    basal = assess_basal(glucose, metabolic, hours)
+    basal = assess_basal(
+        glucose, metabolic, hours,
+        iob=iob, cob=cob,
+        inferred_meal_indices=inferred_meal_indices,
+    )
     cr_score = score_cr_effectiveness(glucose, carbs, bolus) if carbs is not None else 50.0
 
     # ISF analysis — use response-curve method first, fall back to naive

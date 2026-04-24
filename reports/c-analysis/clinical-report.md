@@ -1,6 +1,6 @@
 # Clinical Analysis Report — patient `c`
 
-_Generated: 2026-04-24T22:54:31.778937+00:00_  
+_Generated: 2026-04-24T23:12:32.523085+00:00_  
 _Source parquet: `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/training`_  
 _Profile timezone: `Etc/GMT+7`_  
 _Days of data: 180.0_
@@ -30,13 +30,13 @@ _Days of data: 180.0_
 
 _Source: inferred meals from the production residual+insulin spectral detector (logged-carb input is treated as an unreliable prior). Logged column is shown for comparison only._
 
-| Floor | Inferred events/day | Logged events/day | In 2–8 target? |
-|---|---|---|---|
-| ≥5g | 0.09 | 2.14 | ❌ |
-| ≥10g | 0.09 | 2.09 | ❌ |
-| ≥20g | 0.03 | 1.30 | ❌ |
-| ≥30g | 0.00 | 0.78 | ❌ |
-| ≥50g | 0.00 | 0.01 | ❌ |
+| Floor | Inferred events/day | Logged events/day | Target band | In band? |
+|---|---|---|---|---|
+| ≥5g | 0.09 | 2.14 | 2.0–10.0 | ❌ |
+| ≥10g | 0.09 | 2.09 | 2.0–10.0 | ❌ |
+| ≥20g | 0.03 | 1.30 | 2.0–8.0 | ❌ |
+| ≥30g | 0.00 | 0.78 | 2.0–6.0 | ❌ |
+| ≥50g | 0.00 | 0.01 | 1.0–3.0 | ❌ |
 
 ## 4. Meal-logging QC
 
@@ -117,6 +117,12 @@ _Source: inferred meals from the production residual+insulin spectral detector (
 
 ### Rec 5: clinical_insight (priority 3), predicted TIR Δ +1.0 pp
 - Time below range is 4.7% (target <4%). Review insulin delivery around low glucose periods.
+
+### Rec 6: loop_override_recommendation (priority 3), predicted TIR Δ +1.5 pp
+- Consider configuring a controller override named "Dinner Aggressive" active 18:00–06:00 with target 100 mg/dL and ISF ratio 0.85 (75 → 64). Late-night peak (290 mg/dL) sits 132 mg/dL above the dinner baseline (158 mg/dL), indicating sustained post-dinner overshoot — current evening settings under-cover the late absorption phase.
+
+### Rec 7: design_migration_hypothetical (priority 3), predicted TIR Δ +14.0 pp
+- Cross-design hypothetical (EXP-2916–2944): a patient with your current profile (TIR 62%, TBR 4.7%, TAR 34%) on Loop migrating to Trio or AAPS (oref1) would expect roughly +14.0 pp TIR (+0.0 pp TBR, -16.3 pp TAR) based on cohort means. ⚠️ Caveat: TBR<70 is 4.7% and TBR<54 is 1.17%. The oref1 SMB-as-correction profile fires more aggressively and may deepen overnight hypos when the underlying cause is hepatic suppression (alcohol, late meals) rather than under-dosing. Discuss with your clinician before migrating.
 
 ## 6. Plots
 

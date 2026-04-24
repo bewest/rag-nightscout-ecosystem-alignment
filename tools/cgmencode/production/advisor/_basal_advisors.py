@@ -172,6 +172,7 @@ def advise_overnight_basal_quadrant(
     profile: "PatientProfile",
     actual_basal: Optional[np.ndarray] = None,
     days_of_data: float = 7.0,
+    inferred_meal_indices: Optional[np.ndarray] = None,
 ) -> List[SettingsRecommendation]:
     """Assess overnight basal using quadrant analysis (EXP-2589).
 
@@ -186,8 +187,18 @@ def advise_overnight_basal_quadrant(
     if days_of_data < 3:
         return []
 
+    # Build post-meal exclusion mask (4h after each inferred meal)
+    POST_MEAL_STEPS = 48
+    post_meal_mask = np.zeros(len(glucose), dtype=bool)
+    if inferred_meal_indices is not None and len(inferred_meal_indices):
+        for idx in inferred_meal_indices:
+            i = int(idx)
+            if i < 0 or i >= len(glucose):
+                continue
+            post_meal_mask[i:min(len(glucose), i + POST_MEAL_STEPS)] = True
+
     # Extract overnight windows (00-06)
-    night_mask = hours < _OVERNIGHT_QUADRANT_END
+    night_mask = (hours < _OVERNIGHT_QUADRANT_END) & (~post_meal_mask)
     g_night = glucose[night_mask]
     h_night = hours[night_mask]
     ab_night = actual_basal[night_mask]
@@ -297,6 +308,7 @@ def advise_loop_workload(
     profile: "PatientProfile",
     actual_basal: Optional[np.ndarray] = None,
     days_of_data: float = 7.0,
+    inferred_meal_indices: Optional[np.ndarray] = None,
 ) -> List[SettingsRecommendation]:
     """Assess basal adequacy from full-day loop workload analysis (EXP-2593).
 
@@ -323,8 +335,21 @@ def advise_loop_workload(
     if sched_basal <= 0:
         return []
 
-    # Filter to valid points (both glucose and actual_basal present)
-    valid = ~np.isnan(glucose) & ~np.isnan(actual_basal) & (actual_basal >= 0)
+    # Build post-meal exclusion mask (4h after each inferred meal).
+    # Meal-driven loop additions otherwise inflate the directional bias
+    # toward "basal too low" when the patient simply doesn't log carbs.
+    POST_MEAL_STEPS = 48
+    post_meal = np.zeros(len(glucose), dtype=bool)
+    if inferred_meal_indices is not None and len(inferred_meal_indices):
+        for idx in inferred_meal_indices:
+            i = int(idx)
+            if i < 0 or i >= len(glucose):
+                continue
+            post_meal[i:min(len(glucose), i + POST_MEAL_STEPS)] = True
+
+    # Filter to valid points (both glucose and actual_basal present, no recent meal)
+    valid = (~np.isnan(glucose) & ~np.isnan(actual_basal)
+             & (actual_basal >= 0) & (~post_meal))
     if valid.sum() < 200:
         return []
 
@@ -430,6 +455,7 @@ def assess_overnight_drift(
         cob: np.ndarray = None,
         actual_basal: np.ndarray = None,
         carbs: np.ndarray = None,
+        inferred_meal_indices: Optional[np.ndarray] = None,
         ) -> Optional[OvernightDriftAssessment]:
     """Assess basal adequacy from overnight glucose drift (EXP-2371–2378).
 
@@ -493,7 +519,17 @@ def assess_overnight_drift(
     if n_total_nights == 0:
         return None
 
-    # Filter to clean nights (IOB < 0.5, COB < 5)
+    # Filter to clean nights (IOB < 0.5, COB < 5, no recent inferred meal)
+    POST_MEAL_STEPS = 48  # 4 h
+    inferred_post_meal = None
+    if inferred_meal_indices is not None and len(inferred_meal_indices):
+        inferred_post_meal = np.zeros(len(glucose), dtype=bool)
+        for idx in inferred_meal_indices:
+            i = int(idx)
+            if i < 0 or i >= len(glucose):
+                continue
+            inferred_post_meal[i:min(len(glucose), i + POST_MEAL_STEPS)] = True
+
     clean_segments = []
     for idx in segments:
         is_clean = True
@@ -504,6 +540,9 @@ def assess_overnight_drift(
         if cob is not None:
             seg_cob = cob[idx]
             if np.any(np.isfinite(seg_cob)) and np.nanmax(seg_cob) > _CLEAN_NIGHT_COB_MAX:
+                is_clean = False
+        if inferred_post_meal is not None:
+            if np.any(inferred_post_meal[idx]):
                 is_clean = False
         if is_clean:
             clean_segments.append(idx)

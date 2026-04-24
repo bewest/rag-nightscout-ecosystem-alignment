@@ -277,32 +277,87 @@ def analyze(patient_id: str, parquet_dir: Path, out_dir: Path) -> dict:
           f"basal_mult_equilib={mult_med:.2f}")
 
     # ── 6. Meal-isolation smell test ─────────────────────────────────
+    # Source-of-truth = inferred meals from the production detector
+    # (spectral residual+insulin estimator). Logged-carb table is kept
+    # as a separate "logging-habit" view because user-logged carbs are
+    # often unreliable and frequently understate true intake.
+    inferred_meals = list(getattr(getattr(result, "meal_history", None),
+                                  "meals", None) or [])
+    inferred_records = []
+    for m in inferred_meals:
+        ts_ms = int(getattr(m, "timestamp_ms", 0) or 0)
+        if ts_ms <= 0:
+            continue
+        ts = pd.to_datetime(ts_ms, unit="ms", utc=True)
+        try:
+            ts_local = ts.tz_convert(patient_tz)
+        except Exception:
+            ts_local = ts
+        inferred_records.append({
+            "time": ts_local,
+            "date": ts_local.date(),
+            "hour": ts_local.hour,
+            "carbs": float(getattr(m, "estimated_carbs_g", 0.0) or 0.0),
+        })
+    inferred_df = pd.DataFrame(inferred_records)
+    n_days_data = max(days, 1.0)
+
     carb_events = df[df["carbs"].fillna(0) > 0][["time", "carbs"]].copy()
     carb_events["date"] = pd.to_datetime(carb_events["time"]).dt.date
     carb_events["hour"] = pd.to_datetime(carb_events["time"]).dt.hour
+
     audit_rows = []
     for floor in [5, 10, 20, 30, 50]:
-        eligible = carb_events[carb_events["carbs"] >= floor]
-        per_day = eligible.groupby("date").size()
+        # Inferred (production canonical)
+        eligible = (inferred_df[inferred_df["carbs"] >= floor]
+                    if len(inferred_df) else inferred_df)
+        per_day_inf = (eligible.groupby("date").size()
+                       if len(eligible) else pd.Series(dtype=float))
+        # Logged (user-entered, may be unreliable)
+        logged_eligible = carb_events[carb_events["carbs"] >= floor]
+        per_day_log = logged_eligible.groupby("date").size()
         audit_rows.append({
             "floor_g": floor,
+            # ── inferred ──
             "n_events": int(len(eligible)),
-            "events_per_day": float(per_day.mean()) if len(per_day) else 0.0,
-            "n_days_with_meal": int(len(per_day)),
-            "n_days_with_2to8": int(((per_day >= 2) & (per_day <= 8)).sum()),
+            "events_per_day": (
+                float(len(eligible)) / n_days_data if len(eligible) else 0.0
+            ),
+            "n_days_with_meal": int(len(per_day_inf)),
+            "n_days_with_2to8": int(((per_day_inf >= 2) & (per_day_inf <= 8)).sum())
+                                if len(per_day_inf) else 0,
             "evening_share_pct": (
                 float(100 * (eligible["hour"] >= 18).mean()) if len(eligible) else 0.0
+            ),
+            # ── logged (for comparison only) ──
+            "n_logged_events": int(len(logged_eligible)),
+            "logged_events_per_day": (
+                float(len(logged_eligible)) / n_days_data if len(logged_eligible) else 0.0
             ),
         })
     audit = pd.DataFrame(audit_rows)
     audit.to_csv(out_dir / "meal_audit.csv", index=False)
-    smell = {
-        f"{r['floor_g']}g": {
-            "events_per_day": r["events_per_day"],
-            "passes_2to8": 2 <= r["events_per_day"] <= 8,
-        }
-        for r in audit_rows
+    # Per-floor expected event-rate bands (events/day). Calibrated for
+    # an adult eating ~2 main meals + 1-2 snacks/day. ≥30g floor uses
+    # the broad "all real meals" band (2-8/day); higher floors taper
+    # toward "main meals only" (1-3/day at ≥50g, 0.3-2/day at ≥80g).
+    SMELL_BANDS = {
+        5:  (2.0, 10.0),
+        10: (2.0, 10.0),
+        20: (2.0, 8.0),
+        30: (2.0, 6.0),
+        50: (1.0, 3.0),
     }
+    smell = {}
+    for r in audit_rows:
+        lo, hi = SMELL_BANDS.get(r['floor_g'], (2.0, 8.0))
+        smell[f"{r['floor_g']}g"] = {
+            "events_per_day": r["events_per_day"],
+            "logged_events_per_day": r["logged_events_per_day"],
+            "target_low": lo,
+            "target_high": hi,
+            "passes": lo <= r["events_per_day"] <= hi,
+        }
 
     # ── 7. Plots ─────────────────────────────────────────────────────
     print("\nPlots ...")
@@ -508,12 +563,20 @@ def _render_markdown_report(out_dir, patient_id, payload, result, df):
         "",
         "## 3. Meal-isolation smell test",
         "",
-        "| Floor | Events/day | In 2–8 target? |",
-        "|---|---|---|",
+        "_Source: inferred meals from the production residual+insulin "
+        "spectral detector (logged-carb input is treated as an unreliable "
+        "prior). Logged column is shown for comparison only._",
+        "",
+        "| Floor | Inferred events/day | Logged events/day | Target band | In band? |",
+        "|---|---|---|---|---|",
     ]
     for k, v in smell.items():
-        flag = "✅" if v["passes_2to8"] else "❌"
-        lines.append(f"| ≥{k} | {v['events_per_day']:.2f} | {flag} |")
+        flag = "✅" if v["passes"] else "❌"
+        lines.append(
+            f"| ≥{k} | {v['events_per_day']:.2f} | "
+            f"{v.get('logged_events_per_day', 0.0):.2f} | "
+            f"{v['target_low']:.1f}–{v['target_high']:.1f} | {flag} |"
+        )
 
     if qc is not None:
         lines += [

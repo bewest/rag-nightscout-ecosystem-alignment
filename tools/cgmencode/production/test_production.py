@@ -953,6 +953,51 @@ class TestMealDetector(unittest.TestCase):
         # Flat data shouldn't produce many meals
         self.assertLess(len(meals), 5)
 
+    def test_spectral_sizing_geq_legacy(self):
+        """Spectral (residual+insulin) sizing ≥ legacy sizing per meal.
+
+        Confirms F1+F2 fix from exp_meal_size_audit.py 2026-04-24:
+        adding insulin-absorbed glucose back into the carb estimate
+        cannot decrease the per-meal estimate below the legacy
+        |signed-residual| value (positive-residual sum already ≥
+        |signed sum| for typical post-prandial profiles, and demand
+        ≥ 0 only adds).
+        """
+        patient = make_patient(n=4320)
+        metabolic = self.compute(patient)
+        hours = self.extract_hours(patient.timestamps)
+
+        legacy = self.detect(patient.glucose, metabolic, hours,
+                             patient.timestamps, patient.profile,
+                             sizing_method="legacy")
+        spectral = self.detect(patient.glucose, metabolic, hours,
+                               patient.timestamps, patient.profile,
+                               sizing_method="residual_plus_insulin")
+        # Same detector → same number / centers of events.
+        self.assertEqual(len(legacy), len(spectral))
+        for L, S in zip(legacy, spectral):
+            self.assertEqual(L.index, S.index)
+            self.assertGreaterEqual(S.estimated_carbs_g + 1e-6,
+                                    L.estimated_carbs_g)
+        # And on the (synthetic, AID-on) cohort the means should differ.
+        if len(spectral) >= 5:
+            mean_legacy = np.mean([m.estimated_carbs_g for m in legacy])
+            mean_spec = np.mean([m.estimated_carbs_g for m in spectral])
+            self.assertGreater(mean_spec, mean_legacy)
+
+    def test_spectral_default_is_active(self):
+        """Default sizing_method is the new spectral estimator."""
+        patient = make_patient(n=4320)
+        metabolic = self.compute(patient)
+        hours = self.extract_hours(patient.timestamps)
+        default_meals = self.detect(patient.glucose, metabolic, hours,
+                                    patient.timestamps, patient.profile)
+        explicit = self.detect(patient.glucose, metabolic, hours,
+                               patient.timestamps, patient.profile,
+                               sizing_method="residual_plus_insulin")
+        for d, e in zip(default_meals, explicit):
+            self.assertAlmostEqual(d.estimated_carbs_g, e.estimated_carbs_g)
+
 
 class TestMealPredictor(unittest.TestCase):
     pytestmark = pytest.mark.unit

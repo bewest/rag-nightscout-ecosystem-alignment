@@ -157,25 +157,14 @@
   "meal_history": {
     "meals": [
       {
-        "index": "152",
-        "timestamp_ms": 1769886600000.0,
+        "index": "166",
+        "timestamp_ms": 1769890800000.0,
         "window": {},
-        "estimated_carbs_g": 46.13088800624834,
+        "estimated_carbs_g": 52.33664047588864,
         "announced": false,
-        "residual_integral": 184.52355202499336,
-        "confidence": 0.3857579008040987,
-        "hour_of_day": 11.166666666666666,
-        "archetype": {}
-      },
-      {
-        "index": "180",
-        "timestamp_ms": 1769895000000.0,
-        "window": {},
-        "estimated_carbs_g": 26.39591524038475,
-        "announced": false,
-        "residual_integral": 105.58366096153901,
+        "residual_integral": 209.34656190355457,
         "confidence": 0.3913336750019988,
-        "hour_of_day": 13.5,
+        "hour_of_day": 12.333333333333334,
         "archetype": {}
       },
       {
@@ -190,25 +179,14 @@
         "archetype": {}
       },
       {
-        "index": "345",
-        "timestamp_ms": 1769944500000.0,
+        "index": "358",
+        "timestamp_ms": 1769948400000.0,
         "window": {},
-        "estimated_carbs_g": 52.74956985064496,
+        "estimated_carbs_g": 61.94160881084018,
         "announced": false,
-        "residual_integral": 210.9982794025798,
+        "residual_integral": 247.76643524336072,
         "confidence": 0.7572049118022312,
-        "hour_of_day": 3.25,
-        "archetype": {}
-      },
-      {
-        "index": "371",
-        "timestamp_ms": 1769952300000.0,
-        "window": {},
-        "estimated_carbs_g": 34.162403429705975,
-        "announced": false,
-        "residual_integral": 136.6496137188239,
-        "confidence": 0.42007481100012456,
-        "hour_of_day": 5.416666666666667,
+        "hour_of_day": 4.333333333333333,
         "archetype": {}
       },
       {
@@ -300,25 +278,14 @@
         "archetype": {}
       },
       {
-        "index": "1478",
-        "timestamp_ms": 1770284400000.0,
+        "index": "1495",
+        "timestamp_ms": 1770289500000.0,
         "window": {},
-        "estimated_carbs_g": 43.4163659481004,
+        "estimated_carbs_g": 73.36920199049196,
         "announced": false,
-        "residual_integral": 156.83758534317732,
-        "confidence": 0.4418986606664973,
-        "hour_of_day": 1.6666666666666665,
-        "archetype": {}
-      },
-      {
-        "index": "1510",
-        "timestamp_ms": 1770294000000.0,
-        "window": {},
-        "estimated_carbs_g": 50.3702137975529,
-        "announced": false,
-        "residual_integral": 197.1438061160027,
+        "residual_integral": 272.3118804385347,
         "confidence": 0.6252427808622045,
-        "hour_of_day": 4.333333333333333,
+        "hour_of_day": 3.0833333333333335,
         "archetype": {}
       },
       {
@@ -375,19 +342,52 @@
         "confidence": 0.3475369695779574,
         "hour_of_day": 20.416666666666668,
         "archetype": {}
+      },
+      {
+        "index": "2037",
+        "timestamp_ms": 1770452100000.0,
+        "window": {},
+        "estimated_carbs_g": 46.81539742641488,
+        "announced": false,
+        "residual_integral": 162.98027015786286,
+        "confidence": 0.6305740912913022,
+        "hour_of_day": 0.25,
+        "archetype": {}
+      },
+      {
+        "index": "2103",
+        "timestamp_ms": 1770471900000.0,
+        "window": {},
+        "estimated_carbs_g": 13.665251588349497,
+        "announced": false,
+        "residual_integral": 42.69626996925193,
+        "confidence": 0.3686647265952734,
+        "hour_of_day": 5.75,
+        "archetype": {}
+      },
+      {
+        "index": "2351",
+        "timestamp_ms": 1770546300000.0,
+        "window": {},
+        "estimated_carbs_g": 48.87234666119481,
+        "announced": false,
+        "residual_integral": 174.5084056429743,
+        "confidence": 1.0,
+        "hour_of_day": 2.4166666666666665,
+        "archetype": {}
       }
     ],
-    "total_detected": 176,
+    "total_detected": 145,
     "announced_count": 3,
-    "unannounced_count": 173,
-    "unannounced_fraction": 0.9829545454545454,
-    "meals_per_day": 2.932993866450642,
-    "mean_carbs_g": 52.26988727427923,
+    "unannounced_count": 142,
+    "unannounced_fraction": 0.9793103448275862,
+    "meals_per_day": 2.4163869922462675,
+    "mean_carbs_g": 57.570027326122336,
     "by_window": {
-      "breakfast": 20,
-      "lunch": 39,
-      "dinner": 37,
-      "snack": 80
+      "breakfast": 12,
+      "lunch": 36,
+      "dinner": 32,
+      "snack": 65
     }
   },
   "meal_prediction": null,
@@ -412,17 +412,17 @@
     {
       "parameter": {},
       "direction": "increase",
-      "magnitude_pct": 16.8,
+      "magnitude_pct": 17.0,
       "current_value": 1.7000000476837158,
-      "suggested_value": 2.04,
-      "predicted_tir_delta": 1.4,
+      "suggested_value": 1.98,
+      "predicted_tir_delta": 0.8,
       "affected_hours": [
         0.0,
-        24
+        6.0
       ],
-      "confidence": 0.21,
-      "evidence": "Consolidated from 2 time-block advisories (range: 14-20%). Overnight quadrant analysis (EXP-2589): BASAL SLIGHTLY LOW. [Controller: Loop]",
-      "rationale": "Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.",
+      "confidence": 0.18,
+      "evidence": "Overnight quadrant analysis (EXP-2589): BASAL SLIGHTLY LOW. Glucose slope -2.8 mg/dL/h, net basal +0.56 U/h, suspension 20%. Quadrant: flat_adding. [Controller: Loop]",
+      "rationale": "Increase overnight basal by 17% (from 1.70 to 1.98 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.",
       "confidence_grade": null,
       "ci_width_pct": null
     },
@@ -511,38 +511,60 @@
       "settings_rec": null
     },
     {
+      "action_type": "clinical_insight",
+      "priority": 3,
+      "description": "Time above range is 33.6%. Consider reviewing correction factors and carb counting.",
+      "predicted_tir_delta": 1.0,
+      "confidence": 0.6,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": null
+    },
+    {
       "action_type": "adjust_basal_rate",
       "priority": 3,
-      "description": "Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.  \u26a0\ufe0f Conflicts with overnight assessment (suggested -7.4% basal change, confidence 0.35). Possible alcohol- or EGP-suppression overnight pattern; do not act on this without clinician review.",
-      "predicted_tir_delta": 1.4,
-      "confidence": 0.21,
+      "description": "Increase overnight basal by 17% (from 1.70 to 1.98 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.  \u26a0\ufe0f Conflicts with overnight assessment (suggested -1.7% basal change, confidence 0.35). Possible alcohol- or EGP-suppression overnight pattern; do not act on this without clinician review.",
+      "predicted_tir_delta": 0.8,
+      "confidence": 0.18,
       "time_sensitive": false,
       "deadline_minutes": null,
       "meal_prediction": null,
       "settings_rec": {
         "parameter": {},
         "direction": "increase",
-        "magnitude_pct": 16.8,
+        "magnitude_pct": 17.0,
         "current_value": 1.7000000476837158,
-        "suggested_value": 2.04,
-        "predicted_tir_delta": 1.4,
+        "suggested_value": 1.98,
+        "predicted_tir_delta": 0.8,
         "affected_hours": [
           0.0,
-          24
+          6.0
         ],
-        "confidence": 0.21,
-        "evidence": "Consolidated from 2 time-block advisories (range: 14-20%). Overnight quadrant analysis (EXP-2589): BASAL SLIGHTLY LOW. [Controller: Loop]",
-        "rationale": "Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.",
+        "confidence": 0.18,
+        "evidence": "Overnight quadrant analysis (EXP-2589): BASAL SLIGHTLY LOW. Glucose slope -2.8 mg/dL/h, net basal +0.56 U/h, suspension 20%. Quadrant: flat_adding. [Controller: Loop]",
+        "rationale": "Increase overnight basal by 17% (from 1.70 to 1.98 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.",
         "confidence_grade": null,
         "ci_width_pct": null
       }
     },
     {
-      "action_type": "clinical_insight",
+      "action_type": "loop_override_recommendation",
       "priority": 3,
-      "description": "Time above range is 33.6%. Consider reviewing correction factors and carb counting.",
-      "predicted_tir_delta": 1.0,
-      "confidence": 0.6,
+      "description": "Consider configuring a controller override named \"Dinner Aggressive\" active 18:00\u201306:00 with target 100 mg/dL and ISF ratio 0.85 (40 \u2192 34). Late-night peak (317 mg/dL) sits 186 mg/dL above the dinner baseline (131 mg/dL), indicating sustained post-dinner overshoot \u2014 current evening settings under-cover the late absorption phase.",
+      "predicted_tir_delta": 1.5,
+      "confidence": 0.5,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": null
+    },
+    {
+      "action_type": "design_migration_hypothetical",
+      "priority": 3,
+      "description": "Cross-design hypothetical (EXP-2916\u20132944): a patient with your current profile (TIR 64%, TBR 2.6%, TAR 34%) on Loop migrating to Trio or AAPS (oref1) would expect roughly +14.0 pp TIR (+0.0 pp TBR, -16.3 pp TAR) based on cohort means. This is a directional estimate from cross-design pooling, not a per-patient simulation. Settings tuning on the current controller may capture much of the same benefit (see other recommendations in this report).",
+      "predicted_tir_delta": 14.0,
+      "confidence": 0.4,
       "time_sensitive": false,
       "deadline_minutes": null,
       "meal_prediction": null,
@@ -647,19 +669,11 @@
   "meal_responses": [
     {
       "response_type": {},
-      "excursion_mg_dl": 125.5,
-      "peak_time_min": 175.0,
-      "tail_ratio": 0.0,
-      "has_second_peak": true,
-      "confidence": 0.75
-    },
-    {
-      "response_type": {},
-      "excursion_mg_dl": 61.0,
-      "peak_time_min": 55.0,
+      "excursion_mg_dl": 118.0,
+      "peak_time_min": 125.0,
       "tail_ratio": 0.0,
       "has_second_peak": false,
-      "confidence": 0.8
+      "confidence": 0.7
     },
     {
       "response_type": {},
@@ -671,19 +685,11 @@
     },
     {
       "response_type": {},
-      "excursion_mg_dl": 30.714285714285722,
-      "peak_time_min": 170.0,
+      "excursion_mg_dl": 67.0,
+      "peak_time_min": 135.0,
       "tail_ratio": 0.0,
       "has_second_peak": true,
       "confidence": 0.75
-    },
-    {
-      "response_type": {},
-      "excursion_mg_dl": 46.0,
-      "peak_time_min": 70.0,
-      "tail_ratio": 1046.488993915884,
-      "has_second_peak": false,
-      "confidence": 0.7
     },
     {
       "response_type": {},
@@ -751,19 +757,11 @@
     },
     {
       "response_type": {},
-      "excursion_mg_dl": 23.0,
-      "peak_time_min": 30.0,
-      "tail_ratio": 0.0,
+      "excursion_mg_dl": 0.0,
+      "peak_time_min": 0.0,
+      "tail_ratio": 0.9092568187378338,
       "has_second_peak": true,
-      "confidence": 0.8
-    },
-    {
-      "response_type": {},
-      "excursion_mg_dl": 24.0,
-      "peak_time_min": 150.0,
-      "tail_ratio": 1087.668734082065,
-      "has_second_peak": false,
-      "confidence": 0.7
+      "confidence": 0.9
     },
     {
       "response_type": {},
@@ -804,6 +802,30 @@
       "tail_ratio": 1.435284208872242,
       "has_second_peak": true,
       "confidence": 0.75
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 61.33333333333334,
+      "peak_time_min": 75.0,
+      "tail_ratio": 0.7755469786037301,
+      "has_second_peak": false,
+      "confidence": 0.7
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 23.0,
+      "peak_time_min": 15.0,
+      "tail_ratio": 1.071773957944129,
+      "has_second_peak": false,
+      "confidence": 0.7
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 0.0,
+      "peak_time_min": 0.0,
+      "tail_ratio": 0.78896138463663,
+      "has_second_peak": true,
+      "confidence": 0.9
     }
   ],
   "bolus_safety": {
@@ -1343,16 +1365,16 @@
   "prediction_bias_mgdl": null,
   "overnight_assessment": {
     "phenotype": {},
-    "drift_mg_dl_per_hour": -5.0,
-    "n_clean_nights": 5,
+    "drift_mg_dl_per_hour": -1.18,
+    "n_clean_nights": 2,
     "n_total_nights": 56,
-    "mean_overnight_glucose": 180.6,
-    "dawn_rise_mg_dl": -6.9,
+    "mean_overnight_glucose": 188.2,
+    "dawn_rise_mg_dl": -8.0,
     "has_dawn_phenomenon": false,
-    "loop_suspension_pct": 48.3,
-    "suggested_basal_change_pct": -7.4,
+    "loop_suspension_pct": 16.3,
+    "suggested_basal_change_pct": -1.7,
     "confidence": 0.35,
-    "carbs_48h_g": 0.0,
+    "carbs_48h_g": 4.0,
     "glycogen_note": ""
   },
   "loop_workload": {
@@ -1404,36 +1426,36 @@
   "saturation": null,
   "meal_logging_qc": {
     "logged_per_day": 0.033329475755120935,
-    "inferred_per_day": 2.932993866450642,
-    "ratio": 0.011363636363636364,
+    "inferred_per_day": 2.4163869922462675,
+    "ratio": 0.013793103448275864,
     "flag": "under_logger",
     "by_daypart": [
       {
         "daypart": "breakfast",
         "logged_per_day": 0.0,
-        "inferred_per_day": 0.36662423330633026
+        "inferred_per_day": 0.23330633028584652
       },
       {
         "daypart": "lunch",
         "logged_per_day": 0.0,
-        "inferred_per_day": 0.7332484666126605
+        "inferred_per_day": 0.6665895151024186
       },
       {
         "daypart": "dinner",
         "logged_per_day": 0.033329475755120935,
-        "inferred_per_day": 0.8832311075107047
+        "inferred_per_day": 0.7832426802453419
       },
       {
         "daypart": "overnight",
         "logged_per_day": 0.0,
-        "inferred_per_day": 0.9498900590209466
+        "inferred_per_day": 0.7332484666126605
       }
     ],
     "n_logged": 2,
-    "n_inferred": 176,
+    "n_inferred": 145,
     "days_of_data": 60.00694444444445
   },
-  "pipeline_latency_ms": 15833.7608280126,
+  "pipeline_latency_ms": 15379.572866018862,
   "warnings": [
     "Cleaned 680 spikes (3.9% of readings)",
     "Controller detected: Loop (compensating). Settings visibility: 30%."

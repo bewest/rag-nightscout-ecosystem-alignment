@@ -37,6 +37,8 @@ from .patient_onboarding import get_onboarding_state
 from .meal_detector import detect_meal_events, build_meal_history, classify_all_meal_responses, classify_meal_archetypes
 from .meal_predictor import build_timing_models, predict_next_meal, MealMLModel
 from .settings_advisor import generate_settings_advice, analyze_periods, advise_circadian_isf, advise_context_cr, assess_overnight_drift, compute_loop_workload
+from .advisor._override_advisors import recommend_meal_override_schedule
+from .advisor._design_comparison import recommend_design_migration
 from .recommender import generate_recommendations, detect_controller_type, get_controller_behavior, adjust_confidence_for_controller
 from .hypo_risk import compute_hypo_risk
 from .patient_phenotyper import classify_patient_phenotype
@@ -332,8 +334,27 @@ def run_pipeline(patient: PatientData,
     except Exception as e:
         warnings.append(f"Hypo prediction failed: {e}")
 
-    # ── Stage 4c: Clinical Report ─────────────────────────────────
+    # ── Stage 4c-pre: Meal detection (hoisted from Stage 5) ───────
+    # Needed early so the clinical-report basal assessment can exclude
+    # post-meal windows. Full meal_history / responses / timing happen
+    # later in Stage 5.
     hours = _extract_hours(patient.timestamps, tz=effective_tz)
+    meals_for_basal: list = []
+    meal_indices_for_basal = None
+    if metabolic is not None:
+        try:
+            meals_for_basal = detect_meal_events(
+                cleaned.glucose, metabolic, hours,
+                patient.timestamps, patient.profile,
+                sizing_method="residual_plus_insulin")
+            if meals_for_basal:
+                meal_indices_for_basal = np.array(
+                    [m.index for m in meals_for_basal], dtype=int
+                )
+        except Exception as e:
+            warnings.append(f"Early meal detection (for basal) failed: {e}")
+
+    # ── Stage 4c: Clinical Report ─────────────────────────────────
     clinical_report = generate_clinical_report(
         glucose=cleaned.glucose,
         metabolic=metabolic,
@@ -341,6 +362,9 @@ def run_pipeline(patient: PatientData,
         carbs=patient.carbs,
         bolus=patient.bolus,
         hours=hours,
+        iob=patient.iob,
+        cob=patient.cob,
+        inferred_meal_indices=meal_indices_for_basal,
     )
 
     # ── Stage 4c′: Fidelity Assessment (EXP-1531–1538) ───────────
@@ -395,13 +419,9 @@ def run_pipeline(patient: PatientData,
     meal_history = None
     meal_prediction = None
     meal_responses = None
-    meals: list = []
-    if metabolic is not None:
+    meals: list = meals_for_basal
+    if metabolic is not None and meals:
         try:
-            meals = detect_meal_events(
-                cleaned.glucose, metabolic, hours,
-                patient.timestamps, patient.profile)
-
             # Meal archetype clustering (EXP-1591–1598)
             classify_meal_archetypes(cleaned.glucose, meals)
 
@@ -596,7 +616,8 @@ def run_pipeline(patient: PatientData,
                 correction_events=correction_events,
                 meal_events=meal_events,
                 dual_phase_isf=dual_phase_isf,
-                patterns=patterns)
+                patterns=patterns,
+                inferred_meal_indices=meal_indices_for_basal)
 
             # Adjust confidence based on controller behavior (EXP-2081)
             if settings_recs:
@@ -610,7 +631,8 @@ def run_pipeline(patient: PatientData,
             overnight_assessment = assess_overnight_drift(
                 cleaned.glucose, hours, patient.profile, patient.days_of_data,
                 iob=patient.iob, cob=patient.cob,
-                actual_basal=patient.basal_rate, carbs=patient.carbs)
+                actual_basal=patient.basal_rate, carbs=patient.carbs,
+                inferred_meal_indices=meal_indices_for_basal)
         except Exception as e:
             warnings.append(f"Overnight drift assessment failed: {e}")
 
@@ -638,6 +660,27 @@ def run_pipeline(patient: PatientData,
         meal_history=meal_history,
         overnight_assessment=overnight_assessment,
     )
+
+    # Pattern-driven override schedule recommender (informational, prio 3)
+    try:
+        override_recs = recommend_meal_override_schedule(
+            patient.glucose, hours, patient.profile,
+            days_of_data=patient.days_of_data,
+        )
+        recommendations.extend(override_recs)
+    except Exception as e:
+        warnings.append(f"Override schedule advisor failed: {e}")
+
+    # Cross-design migration hypothetical (informational, prio 3)
+    try:
+        migration_recs = recommend_design_migration(
+            clinical_report, controller_type,
+            days_of_data=patient.days_of_data,
+            target_design='oref1',
+        )
+        recommendations.extend(migration_recs)
+    except Exception as e:
+        warnings.append(f"Design-migration advisor failed: {e}")
 
     # ── Stage 8: DIA Discrepancy Analysis (EXP-2351–2358) ─────────
     dia_discrepancy = None

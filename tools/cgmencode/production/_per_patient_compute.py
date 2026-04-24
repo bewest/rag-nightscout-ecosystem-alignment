@@ -128,8 +128,16 @@ def compute_basal_mismatch(
     grid_df: pd.DataFrame,
     *,
     seed: int = 2869,
+    inferred_meals: Optional[pd.DataFrame] = None,
 ) -> Optional[dict]:
-    """Per-patient basal-mismatch summary (EXP-2869) from grid only."""
+    """Per-patient basal-mismatch summary (EXP-2869) from grid only.
+
+    If `inferred_meals` is provided (as returned by
+    `InferredMealsFacts.events`), its `timestamp_ms` column is unioned
+    with logged carbs to define "real meal" events. This protects the
+    basal-mismatch estimate from under-loggers whose logged-carb count
+    is misleadingly low.
+    """
     needed = {
         "time", "glucose", "cob", "carbs", "time_since_bolus_min",
         "exercise_active", "override_active",
@@ -143,6 +151,23 @@ def compute_basal_mismatch(
     df = df.sort_values("time").reset_index(drop=True)
 
     real_event = df["carbs"].fillna(0) >= _BASAL_REAL_CARB_THRESHOLD_G
+    if inferred_meals is not None and len(inferred_meals):
+        # Mark grid rows where an inferred meal of ≥ threshold occurred.
+        thresh = _BASAL_REAL_CARB_THRESHOLD_G
+        meal_ts = pd.to_datetime(
+            inferred_meals.loc[
+                inferred_meals["estimated_carbs_g"] >= thresh, "timestamp_ms"
+            ],
+            unit="ms", utc=True,
+        )
+        if len(meal_ts):
+            # Snap each meal timestamp to the nearest grid row by ts.
+            grid_ts = df["time"].to_numpy()
+            inferred_idx = np.searchsorted(grid_ts, meal_ts.to_numpy())
+            inferred_idx = np.clip(inferred_idx, 0, len(df) - 1)
+            inferred_mask = np.zeros(len(df), dtype=bool)
+            inferred_mask[inferred_idx] = True
+            real_event = real_event | pd.Series(inferred_mask, index=df.index)
     last_real = df["time"].where(real_event).ffill()
     df["time_since_real_carb_min"] = (
         (df["time"] - last_real).dt.total_seconds() / 60.0

@@ -552,6 +552,28 @@
       "deadline_minutes": null,
       "meal_prediction": null,
       "settings_rec": null
+    },
+    {
+      "action_type": "loop_override_recommendation",
+      "priority": 3,
+      "description": "Consider configuring a controller override named \"Dinner Aggressive\" active 18:00\u201306:00 with target 100 mg/dL and ISF ratio 0.85 (75 \u2192 64). Late-night peak (290 mg/dL) sits 132 mg/dL above the dinner baseline (158 mg/dL), indicating sustained post-dinner overshoot \u2014 current evening settings under-cover the late absorption phase.",
+      "predicted_tir_delta": 1.5,
+      "confidence": 0.5,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": null
+    },
+    {
+      "action_type": "design_migration_hypothetical",
+      "priority": 3,
+      "description": "Cross-design hypothetical (EXP-2916\u20132944): a patient with your current profile (TIR 62%, TBR 4.7%, TAR 34%) on Loop migrating to Trio or AAPS (oref1) would expect roughly +14.0 pp TIR (+0.0 pp TBR, -16.3 pp TAR) based on cohort means. \u26a0\ufe0f Caveat: TBR<70 is 4.7% and TBR<54 is 1.17%. The oref1 SMB-as-correction profile fires more aggressively and may deepen overnight hypos when the underlying cause is hepatic suppression (alcohol, late meals) rather than under-dosing. Discuss with your clinician before migrating.",
+      "predicted_tir_delta": 14.0,
+      "confidence": 0.4,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": null
     }
   ],
   "period_metrics": [
@@ -933,7 +955,7 @@
     "n_inferred": 17,
     "days_of_data": 180.0034722222222
   },
-  "pipeline_latency_ms": 9904.555601067841,
+  "pipeline_latency_ms": 9805.928410030901,
   "warnings": [
     "Cleaned 2066 spikes (4.0% of readings)",
     "Natural experiment detection failed: Mean of empty slice",

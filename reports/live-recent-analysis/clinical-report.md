@@ -1,6 +1,6 @@
 # Clinical Analysis Report — patient `live-recent`
 
-_Generated: 2026-04-24T22:54:50.354946+00:00_  
+_Generated: 2026-04-24T23:12:50.644567+00:00_  
 _Source parquet: `externals/ns-parquet/live-recent`_  
 _Profile timezone: `Etc/GMT+8`_  
 _Days of data: 60.0_
@@ -30,19 +30,19 @@ _Days of data: 60.0_
 
 _Source: inferred meals from the production residual+insulin spectral detector (logged-carb input is treated as an unreliable prior). Logged column is shown for comparison only._
 
-| Floor | Inferred events/day | Logged events/day | In 2–8 target? |
-|---|---|---|---|
-| ≥5g | 2.93 | 0.03 | ✅ |
-| ≥10g | 2.93 | 0.03 | ✅ |
-| ≥20g | 2.87 | 0.03 | ✅ |
-| ≥30g | 2.60 | 0.03 | ✅ |
-| ≥50g | 1.52 | 0.02 | ❌ |
+| Floor | Inferred events/day | Logged events/day | Target band | In band? |
+|---|---|---|---|---|
+| ≥5g | 2.42 | 0.03 | 2.0–10.0 | ✅ |
+| ≥10g | 2.42 | 0.03 | 2.0–10.0 | ✅ |
+| ≥20g | 2.35 | 0.03 | 2.0–8.0 | ✅ |
+| ≥30g | 2.15 | 0.03 | 2.0–6.0 | ✅ |
+| ≥50g | 1.33 | 0.02 | 1.0–3.0 | ✅ |
 
 ## 4. Meal-logging QC
 
 - Flag: **under_logger**
 - Logged: 2 (0.03/day)
-- Inferred (rises): 176 (2.93/day)
+- Inferred (rises): 145 (2.42/day)
 - Logged / inferred ratio: 0.01  _(reconciliation rate; distinct from the `unannounced_meal_warning` fraction in §5, which is unannounced ÷ total detected meals)_
 
 ## 4a. Wave-13 facts (read-only)
@@ -51,8 +51,8 @@ _Source: inferred meals from the production residual+insulin spectral detector (
 
 | Field | Value |
 |---|---|
-| p_basal_mismatch | 0.95 |
-| median_recommended_mult | 0.84 |
+| p_basal_mismatch | 0.93 |
+| median_recommended_mult | 0.95 |
 
 **Phenotype**
 
@@ -83,13 +83,19 @@ _Source: inferred meals from the production residual+insulin spectral detector (
 ### Rec 3: unannounced_meal_warning (priority 3), predicted TIR Δ +2.0 pp
 - 98% of detected meals have no carb entry. Logging meals improves prediction accuracy and enables better pre-bolus timing.
 
-### Rec 4: adjust_basal_rate (priority 3), predicted TIR Δ +1.4 pp
-- Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.  ⚠️ Conflicts with overnight assessment (suggested -7.4% basal change, confidence 0.35). Possible alcohol- or EGP-suppression overnight pattern; do not act on this without clinician review.
-- Settings change: **basal_rate** increase 1.7000000476837158 → 2.04 (+17 %)
-- Rationale: Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.
-
-### Rec 5: clinical_insight (priority 3), predicted TIR Δ +1.0 pp
+### Rec 4: clinical_insight (priority 3), predicted TIR Δ +1.0 pp
 - Time above range is 33.6%. Consider reviewing correction factors and carb counting.
+
+### Rec 5: adjust_basal_rate (priority 3), predicted TIR Δ +0.8 pp
+- Increase overnight basal by 17% (from 1.70 to 1.98 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.  ⚠️ Conflicts with overnight assessment (suggested -1.7% basal change, confidence 0.35). Possible alcohol- or EGP-suppression overnight pattern; do not act on this without clinician review.
+- Settings change: **basal_rate** increase 1.7000000476837158 → 1.98 (+17 %)
+- Rationale: Increase overnight basal by 17% (from 1.70 to 1.98 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.
+
+### Rec 6: loop_override_recommendation (priority 3), predicted TIR Δ +1.5 pp
+- Consider configuring a controller override named "Dinner Aggressive" active 18:00–06:00 with target 100 mg/dL and ISF ratio 0.85 (40 → 34). Late-night peak (317 mg/dL) sits 186 mg/dL above the dinner baseline (131 mg/dL), indicating sustained post-dinner overshoot — current evening settings under-cover the late absorption phase.
+
+### Rec 7: design_migration_hypothetical (priority 3), predicted TIR Δ +14.0 pp
+- Cross-design hypothetical (EXP-2916–2944): a patient with your current profile (TIR 64%, TBR 2.6%, TAR 34%) on Loop migrating to Trio or AAPS (oref1) would expect roughly +14.0 pp TIR (+0.0 pp TBR, -16.3 pp TAR) based on cohort means. This is a directional estimate from cross-design pooling, not a per-patient simulation. Settings tuning on the current controller may capture much of the same benefit (see other recommendations in this report).
 
 ## 6. Plots
 

@@ -34,6 +34,12 @@ from .types import (
 DEFAULT_SIGMA_MULT = 2.0    # 2σ threshold for burst detection
 ROLLING_WINDOW = 6          # 30 min (6 × 5-min steps)
 MERGE_GAP = 12              # Merge bursts within 60 min into one event
+MULTIPART_GAP_STEPS = 30    # 150 min — meals closer than this are
+                            # treated as one multi-part meal (e.g.
+                            # appetizer+main+dessert, fat-protein
+                            # rebound). Fixes ≥50g undercounting where
+                            # a single large meal is split into two
+                            # ≥30g events.
 MIN_CARB_SUPPLY = 0.5       # Threshold to call a meal "announced"
 
 # Meal window boundaries (from exp_autoresearch_681.py:264-266)
@@ -58,6 +64,7 @@ def detect_meal_events(glucose: np.ndarray,
                        timestamps: np.ndarray,
                        profile: PatientProfile,
                        sigma_mult: float = DEFAULT_SIGMA_MULT,
+                       sizing_method: str = "residual_plus_insulin",
                        ) -> List[DetectedMeal]:
     """Detect meals from physics residual bursts.
 
@@ -72,6 +79,15 @@ def detect_meal_events(glucose: np.ndarray,
         timestamps: (N,) Unix timestamps (ms).
         profile: PatientProfile for ISF/CR conversion.
         sigma_mult: burst threshold multiplier (default 2.0).
+        sizing_method: how to convert event to grams of carbs.
+            - "residual_plus_insulin" (default, EXP meal-size-audit 2026-04-24):
+              estimated_carbs = (Σmax(residual,0) + Σdemand) × CR / ISF.
+              Recovers full carb-driven glucose load including the portion
+              the AID's insulin response absorbed. Independent of whether
+              the meal was logged.
+            - "legacy": original abs(Σresidual) × CR / ISF (kept for
+              regression / comparison only — undersizes by ~3× when AID
+              is actively dosing).
 
     Returns:
         List of DetectedMeal objects.
@@ -114,9 +130,37 @@ def detect_meal_events(glucose: np.ndarray,
             current_end = burst_indices[i]
     events.append((current_start, current_end))
 
+    # ── Step 2b: Merge multi-part meals (≤150 min apart) ──────────
+    # Domain rule: bursts whose end-to-start gap is ≤ 150 min are
+    # considered the same multi-part meal (course-by-course dining,
+    # fat-protein rebound, "I'm still hungry" snack within 2.5h).
+    # Without this, a 70 g dinner with a SMB-induced glucose dip
+    # mid-meal registers as two ≥30g events instead of one ≥50g.
+    merged_events = []
+    if events:
+        cs, ce = events[0]
+        for ns, ne in events[1:]:
+            if ns - ce <= MULTIPART_GAP_STEPS:
+                ce = ne
+            else:
+                merged_events.append((cs, ce))
+                cs, ce = ns, ne
+        merged_events.append((cs, ce))
+    events = merged_events
+
     # ── Step 3: Classify and size each event ──────────────────────
     isf = _median_value(profile.isf_mgdl(), 'value', 'sensitivity', default=50.0)
     cr = _median_value(profile.cr_schedule, 'value', 'carbratio', default=10.0)
+    demand = metabolic.demand if metabolic.demand is not None else np.zeros(N)
+
+    # Residual baseline (median across full record). The supply-demand
+    # model has a systematic drift on most patients (e.g. live-recent
+    # 2026-04-24 audit: median residual = -1.34 mg/dL/5min — equivalent
+    # to ~14 g of "lost" carb signal per 41-step meal window). We
+    # subtract this baseline before integrating so the meal integral
+    # reflects only the meal excess above the patient's baseline drift.
+    finite_resid = residuals[np.isfinite(residuals)]
+    resid_baseline = float(np.median(finite_resid)) if len(finite_resid) else 0.0
 
     meals = []
     for ev_start, ev_end in events:
@@ -128,11 +172,33 @@ def detect_meal_events(glucose: np.ndarray,
         cs_total = float(np.sum(carb_supply[cs_start:cs_end]))
         announced = cs_total > MIN_CARB_SUPPLY
 
-        # Estimate meal size from residual integral
+        # Estimate meal size from residual integral over 3h absorption window.
         r_start = ev_start
-        r_end = min(N, ev_end + 36)  # 3h absorption window
-        resid_integral = float(np.sum(residuals[r_start:r_end]))
-        estimated_carbs = abs(resid_integral) * cr / max(isf, 1.0)
+        r_end = min(N, ev_end + 36)
+        win_resid = residuals[r_start:r_end]
+        signed_resid_int = float(np.nansum(win_resid))
+
+        if sizing_method == "legacy":
+            # Original estimator: abs(signed sum) × CR / ISF. Undersizes
+            # because (a) post-peak negative residuals subtract, and (b)
+            # the glucose mopped up by AID insulin is absent from the
+            # residual entirely.
+            resid_integral = signed_resid_int
+            estimated_carbs = abs(resid_integral) * cr / max(isf, 1.0)
+        else:
+            # "residual_plus_insulin": baseline-corrected spectral-power
+            # formulation. Total carb-driven rise = (de-drifted uncovered
+            # residual) + insulin-covered rise.
+            # Validated by exp_meal_size_audit.py on live-recent
+            # 2026-04-24: median estimate moves 14→54 g, p90 37→80 g,
+            # tracks raw BG-rise distribution (median 81 mg/dL).
+            adj_resid = win_resid - resid_baseline
+            pos_resid_int = float(np.nansum(np.maximum(adj_resid, 0.0)))
+            insulin_absorbed_mgdl = float(np.nansum(demand[r_start:r_end]))
+            resid_integral = pos_resid_int  # for backward-compat dataclass field
+            estimated_carbs = (
+                (pos_resid_int + insulin_absorbed_mgdl) * cr / max(isf, 1.0)
+            )
 
         # Confidence based on burst magnitude relative to threshold
         peak_burst = float(np.max(rolling_pos[ev_start:ev_end + 1]))

@@ -455,6 +455,7 @@ def generate_settings_advice(glucose: np.ndarray,
                              override_active: Optional[np.ndarray] = None,
                              dual_phase_isf: Optional['DualPhaseISF'] = None,
                              patterns: Optional['PatternProfile'] = None,
+                             inferred_meal_indices: Optional[np.ndarray] = None,
                              ) -> List[SettingsRecommendation]:
     """Generate all applicable settings recommendations.
 
@@ -646,7 +647,8 @@ def generate_settings_advice(glucose: np.ndarray,
         quadrant_recs = advise_overnight_basal_quadrant(
             glucose, hours, profile,
             actual_basal=actual_basal,
-            days_of_data=days_of_data)
+            days_of_data=days_of_data,
+            inferred_meal_indices=inferred_meal_indices)
         recs.extend(quadrant_recs)
 
     # Loop workload basal analysis (EXP-2593)
@@ -654,7 +656,8 @@ def generate_settings_advice(glucose: np.ndarray,
         workload_recs = advise_loop_workload(
             glucose, hours, profile,
             actual_basal=actual_basal,
-            days_of_data=days_of_data)
+            days_of_data=days_of_data,
+            inferred_meal_indices=inferred_meal_indices)
         recs.extend(workload_recs)
 
     # Override ISF split detection (EXP-2621)
@@ -719,7 +722,8 @@ def generate_settings_advice(glucose: np.ndarray,
     # Overnight drift assessment (EXP-2371–2378, EXP-2622 48h carbs)
     overnight = assess_overnight_drift(
         glucose, hours, profile, days_of_data,
-        iob=iob, cob=cob, actual_basal=actual_basal, carbs=carbs)
+        iob=iob, cob=cob, actual_basal=actual_basal, carbs=carbs,
+        inferred_meal_indices=inferred_meal_indices)
     if overnight is not None and overnight.needs_adjustment:
         drift_direction = "increase" if overnight.drift_mg_dl_per_hour > 0 else "decrease"
         basal_vals = [e.get('value', e.get('rate', 0.8))

@@ -83,11 +83,35 @@ class BasalMismatchFactsLoader:
     def compute_for(
         self, patient_id: str, grid_df, *, cache: bool = True
     ) -> BasalMismatchFacts:
-        """Compute basal-mismatch facts on demand from a single patient's grid."""
+        """Compute basal-mismatch facts on demand from a single patient's grid.
+
+        Unions logged carbs with inferred meals (when an
+        InferredMealsLoader cache exists or can be computed) so that
+        clean-fasting windows are correctly identified for under-loggers.
+        """
         from tools.cgmencode.production._per_patient_compute import (
             compute_basal_mismatch,
         )
-        result = compute_basal_mismatch(grid_df)
+        from tools.cgmencode.production.inferred_meals_facts_loader import (
+            InferredMealsLoader,
+        )
+
+        try:
+            inferred_loader = InferredMealsLoader()
+            inferred_facts = inferred_loader.lookup(patient_id)
+            if inferred_facts.empty:
+                # On-demand compute (cached for next call)
+                inferred_facts = inferred_loader.compute_for(
+                    patient_id, grid_df,
+                )
+            inferred_events = (inferred_facts.events
+                               if not inferred_facts.empty else None)
+        except Exception:
+            inferred_events = None
+
+        result = compute_basal_mismatch(
+            grid_df, inferred_meals=inferred_events,
+        )
         if result is None:
             facts = BasalMismatchFacts(None, None)
         else:
