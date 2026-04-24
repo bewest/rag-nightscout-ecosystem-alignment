@@ -165,11 +165,21 @@ def load_data() -> Tuple[pd.DataFrame, List[str]]:
 
 # ── Part 1: Per-Patient EGP Profiling ────────────────────────────────────────
 
-def identify_fasting_mask(pdf: pd.DataFrame) -> np.ndarray:
+def identify_fasting_mask(
+    pdf: pd.DataFrame,
+    patient_id: Optional[str] = None,
+    *,
+    use_inferred_meals: bool = True,
+) -> np.ndarray:
     """Return boolean mask of fasting 5-min intervals for one patient.
 
     Fasting = rolling sum of carbs over 4 h == 0
               AND rolling sum of manual bolus over 2 h == 0.
+
+    When `use_inferred_meals` is True and `patient_id` is provided, the
+    mask additionally excludes the [-2h, +4h] window around each inferred
+    meal (production residual+insulin detector) — protects EGP estimates
+    from under-loggers whose logged carbs are unreliable.
     """
     n = len(pdf)
     carbs = pdf["carbs"].fillna(0).values.astype(float)
@@ -191,7 +201,18 @@ def identify_fasting_mask(pdf: pd.DataFrame) -> np.ndarray:
     isf_valid = np.isfinite(pdf["scheduled_isf"].values)
     gluc_valid = np.isfinite(pdf["glucose"].values)
 
-    return mask & roc_valid & ia_valid & isf_valid & gluc_valid
+    mask = mask & roc_valid & ia_valid & isf_valid & gluc_valid
+
+    if use_inferred_meals and patient_id is not None:
+        try:
+            from cgmencode.production.fasting_helpers import (
+                apply_inferred_meal_exclusion,
+            )
+            mask = apply_inferred_meal_exclusion(mask, pdf, patient_id)
+        except Exception:
+            pass  # fall back to logged-only mask
+
+    return mask
 
 
 def compute_egp_observations(pdf: pd.DataFrame, fasting_mask: np.ndarray) -> pd.DataFrame:
@@ -240,7 +261,7 @@ def compute_egp_observations(pdf: pd.DataFrame, fasting_mask: np.ndarray) -> pd.
 
 def profile_patient_egp(pdf: pd.DataFrame, patient_id: str) -> Optional[Dict[str, Any]]:
     """Compute EGP profile for a single patient."""
-    fasting_mask = identify_fasting_mask(pdf)
+    fasting_mask = identify_fasting_mask(pdf, patient_id)
     n_fasting = int(np.sum(fasting_mask))
 
     if n_fasting < MIN_FASTING_OBS:
@@ -623,7 +644,7 @@ def run_part3(
             continue
         prof = egp_lookup[pid]
         pdf = grid[grid["patient_id"] == pid].sort_values("time").reset_index(drop=True)
-        fasting_mask = identify_fasting_mask(pdf)
+        fasting_mask = identify_fasting_mask(pdf, pid)
 
         if np.sum(fasting_mask) < MIN_FASTING_OBS:
             continue

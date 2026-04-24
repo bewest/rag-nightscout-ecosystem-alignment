@@ -187,7 +187,10 @@ def advise_overnight_basal_quadrant(
     if days_of_data < 3:
         return []
 
-    # Build post-meal exclusion mask (4h after each inferred meal)
+    # Build pre/post-meal exclusion mask: 2h before to 4h after each
+    # inferred meal center. Pre-window covers multi-part meals where
+    # the merge shifted the center forward into the second course.
+    PRE_MEAL_STEPS = 24
     POST_MEAL_STEPS = 48
     post_meal_mask = np.zeros(len(glucose), dtype=bool)
     if inferred_meal_indices is not None and len(inferred_meal_indices):
@@ -195,7 +198,9 @@ def advise_overnight_basal_quadrant(
             i = int(idx)
             if i < 0 or i >= len(glucose):
                 continue
-            post_meal_mask[i:min(len(glucose), i + POST_MEAL_STEPS)] = True
+            s = max(0, i - PRE_MEAL_STEPS)
+            e = min(len(glucose), i + POST_MEAL_STEPS)
+            post_meal_mask[s:e] = True
 
     # Extract overnight windows (00-06)
     night_mask = (hours < _OVERNIGHT_QUADRANT_END) & (~post_meal_mask)
@@ -335,9 +340,11 @@ def advise_loop_workload(
     if sched_basal <= 0:
         return []
 
-    # Build post-meal exclusion mask (4h after each inferred meal).
-    # Meal-driven loop additions otherwise inflate the directional bias
-    # toward "basal too low" when the patient simply doesn't log carbs.
+    # Build pre/post-meal exclusion mask (2h before to 4h after each
+    # inferred meal). Meal-driven loop additions otherwise inflate the
+    # directional bias toward "basal too low" when the patient simply
+    # doesn't log carbs. Pre-window covers multi-part meals.
+    PRE_MEAL_STEPS = 24
     POST_MEAL_STEPS = 48
     post_meal = np.zeros(len(glucose), dtype=bool)
     if inferred_meal_indices is not None and len(inferred_meal_indices):
@@ -345,7 +352,9 @@ def advise_loop_workload(
             i = int(idx)
             if i < 0 or i >= len(glucose):
                 continue
-            post_meal[i:min(len(glucose), i + POST_MEAL_STEPS)] = True
+            s = max(0, i - PRE_MEAL_STEPS)
+            e = min(len(glucose), i + POST_MEAL_STEPS)
+            post_meal[s:e] = True
 
     # Filter to valid points (both glucose and actual_basal present, no recent meal)
     valid = (~np.isnan(glucose) & ~np.isnan(actual_basal)
@@ -520,7 +529,8 @@ def assess_overnight_drift(
         return None
 
     # Filter to clean nights (IOB < 0.5, COB < 5, no recent inferred meal)
-    POST_MEAL_STEPS = 48  # 4 h
+    PRE_MEAL_STEPS = 24   # 2 h backward
+    POST_MEAL_STEPS = 48  # 4 h forward
     inferred_post_meal = None
     if inferred_meal_indices is not None and len(inferred_meal_indices):
         inferred_post_meal = np.zeros(len(glucose), dtype=bool)
@@ -528,7 +538,9 @@ def assess_overnight_drift(
             i = int(idx)
             if i < 0 or i >= len(glucose):
                 continue
-            inferred_post_meal[i:min(len(glucose), i + POST_MEAL_STEPS)] = True
+            s = max(0, i - PRE_MEAL_STEPS)
+            e = min(len(glucose), i + POST_MEAL_STEPS)
+            inferred_post_meal[s:e] = True
 
     clean_segments = []
     for idx in segments:

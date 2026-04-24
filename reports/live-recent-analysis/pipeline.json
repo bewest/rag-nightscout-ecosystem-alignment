@@ -411,18 +411,18 @@
     },
     {
       "parameter": {},
-      "direction": "increase",
-      "magnitude_pct": 17.0,
+      "direction": "decrease",
+      "magnitude_pct": 10.0,
       "current_value": 1.7000000476837158,
-      "suggested_value": 1.98,
-      "predicted_tir_delta": 0.8,
+      "suggested_value": 1.53,
+      "predicted_tir_delta": -0.5,
       "affected_hours": [
         0.0,
         6.0
       ],
-      "confidence": 0.18,
-      "evidence": "Overnight quadrant analysis (EXP-2589): BASAL SLIGHTLY LOW. Glucose slope -2.8 mg/dL/h, net basal +0.56 U/h, suspension 20%. Quadrant: flat_adding. [Controller: Loop]",
-      "rationale": "Increase overnight basal by 17% (from 1.70 to 1.98 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.",
+      "confidence": 0.24,
+      "evidence": "Overnight TIR currently 45%. Basal assessed as basal_slightly_high. Simulation predicts -0.5pp TIR improvement. [Controller: Loop]",
+      "rationale": "Decrease basal by 10% (from 1.70 to 1.53 U/hr) between 00:00-06:00. Predicted to improve overnight TIR by -0.5 percentage points. Confirmable within 1 week of data.",
       "confidence_grade": null,
       "ci_width_pct": null
     },
@@ -468,6 +468,33 @@
         "confidence": 0.21,
         "evidence": "Consolidated from 3 time-block advisories (range: 0-0%). Insulin saturation detected: 46% of high-glucose time at wall (66 episodes of 75 total). [Controller: Loop]",
         "rationale": "PATIENCE MODE (EXP-2662): Cap IOB at 1.6U (1.5\u00d7 median IOB of 1.1U) during wall episodes. Saves 60\u201382% of SMBs with \u2264+2.1pp hyper increase. Additional insulin at the SC suppression ceiling has negligible glucose-lowering effect but increases delayed hypo risk.",
+        "confidence_grade": null,
+        "ci_width_pct": null
+      }
+    },
+    {
+      "action_type": "adjust_basal_rate",
+      "priority": 2,
+      "description": "Decrease basal by 10% (from 1.70 to 1.53 U/hr) between 00:00-06:00. Predicted to improve overnight TIR by -0.5 percentage points. Confirmable within 1 week of data.",
+      "predicted_tir_delta": -0.5,
+      "confidence": 0.24,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": {
+        "parameter": {},
+        "direction": "decrease",
+        "magnitude_pct": 10.0,
+        "current_value": 1.7000000476837158,
+        "suggested_value": 1.53,
+        "predicted_tir_delta": -0.5,
+        "affected_hours": [
+          0.0,
+          6.0
+        ],
+        "confidence": 0.24,
+        "evidence": "Overnight TIR currently 45%. Basal assessed as basal_slightly_high. Simulation predicts -0.5pp TIR improvement. [Controller: Loop]",
+        "rationale": "Decrease basal by 10% (from 1.70 to 1.53 U/hr) between 00:00-06:00. Predicted to improve overnight TIR by -0.5 percentage points. Confirmable within 1 week of data.",
         "confidence_grade": null,
         "ci_width_pct": null
       }
@@ -520,33 +547,6 @@
       "deadline_minutes": null,
       "meal_prediction": null,
       "settings_rec": null
-    },
-    {
-      "action_type": "adjust_basal_rate",
-      "priority": 3,
-      "description": "Increase overnight basal by 17% (from 1.70 to 1.98 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.  \u26a0\ufe0f Conflicts with overnight assessment (suggested -1.7% basal change, confidence 0.35). Possible alcohol- or EGP-suppression overnight pattern; do not act on this without clinician review.",
-      "predicted_tir_delta": 0.8,
-      "confidence": 0.18,
-      "time_sensitive": false,
-      "deadline_minutes": null,
-      "meal_prediction": null,
-      "settings_rec": {
-        "parameter": {},
-        "direction": "increase",
-        "magnitude_pct": 17.0,
-        "current_value": 1.7000000476837158,
-        "suggested_value": 1.98,
-        "predicted_tir_delta": 0.8,
-        "affected_hours": [
-          0.0,
-          6.0
-        ],
-        "confidence": 0.18,
-        "evidence": "Overnight quadrant analysis (EXP-2589): BASAL SLIGHTLY LOW. Glucose slope -2.8 mg/dL/h, net basal +0.56 U/h, suspension 20%. Quadrant: flat_adding. [Controller: Loop]",
-        "rationale": "Increase overnight basal by 17% (from 1.70 to 1.98 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.",
-        "confidence_grade": null,
-        "ci_width_pct": null
-      }
     },
     {
       "action_type": "loop_override_recommendation",
@@ -1455,7 +1455,7 @@
     "n_inferred": 145,
     "days_of_data": 60.00694444444445
   },
-  "pipeline_latency_ms": 15379.572866018862,
+  "pipeline_latency_ms": 16067.811637884006,
   "warnings": [
     "Cleaned 680 spikes (3.9% of readings)",
     "Controller detected: Loop (compensating). Settings visibility: 30%."

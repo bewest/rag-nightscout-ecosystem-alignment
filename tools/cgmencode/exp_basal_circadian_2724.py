@@ -79,11 +79,16 @@ def load_data() -> pd.DataFrame:
 
 def extract_steady_periods(
     patient_df: pd.DataFrame,
+    patient_id: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Find fasting steady-state periods for a single patient.
 
     Returns list of dicts with keys: hour, block, glucose_drift,
     scheduled_basal, glucose_now.
+
+    When `patient_id` is provided, additionally exclude rows within the
+    [-2h, +4h] window of any production-detected inferred meal — protects
+    against under-loggers whose `carbs` column under-counts intake.
     """
     glucose = patient_df["glucose"].values
     bolus = patient_df["bolus"].values if "bolus" in patient_df.columns else None
@@ -103,8 +108,23 @@ def extract_steady_periods(
     # Pre-compute IOB median for stability check
     iob_median = float(np.nanmedian(iob)) if iob is not None else 0.0
 
+    # Pre-compute inferred-meal exclusion mask (True = ALLOWED)
+    inferred_ok = np.ones(n, dtype=bool)
+    if patient_id is not None:
+        try:
+            from cgmencode.production.fasting_helpers import (
+                apply_inferred_meal_exclusion,
+            )
+            inferred_ok = apply_inferred_meal_exclusion(
+                inferred_ok, patient_df, patient_id
+            )
+        except Exception:
+            pass
+
     periods: List[Dict[str, Any]] = []
     for i in range(FASTING_CARB_WINDOW, n - DRIFT_HORIZON):
+        if not inferred_ok[i]:
+            continue
         # Valid glucose at start and end
         g_now = glucose[i]
         g_future = glucose[i + DRIFT_HORIZON]
@@ -150,7 +170,7 @@ def analyze_patient(
     patient_df: pd.DataFrame,
 ) -> Optional[Dict[str, Any]]:
     """Compute per-block drift statistics for one patient."""
-    periods = extract_steady_periods(patient_df)
+    periods = extract_steady_periods(patient_df, pid)
     if len(periods) < MIN_EVENTS_PER_BLOCK:
         return None
 

@@ -1,7 +1,7 @@
 # Clinical Analysis Report — patient `live-recent`
 
-_Generated: 2026-04-24T23:12:50.644567+00:00_  
-_Source parquet: `externals/ns-parquet/live-recent`_  
+_Generated: 2026-04-24T23:15:16.044053+00:00_  
+_Source parquet: `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/live-recent`_  
 _Profile timezone: `Etc/GMT+8`_  
 _Days of data: 60.0_
 
@@ -51,8 +51,8 @@ _Source: inferred meals from the production residual+insulin spectral detector (
 
 | Field | Value |
 |---|---|
-| p_basal_mismatch | 0.93 |
-| median_recommended_mult | 0.95 |
+| p_basal_mismatch | 0.97 |
+| median_recommended_mult | 1.23 |
 
 **Phenotype**
 
@@ -75,21 +75,21 @@ _Source: inferred meals from the production residual+insulin spectral detector (
 - Settings change: **isf** informational 1.08 → 1.62 (+0 %)
 - Rationale: PATIENCE MODE (EXP-2662): Cap IOB at 1.6U (1.5× median IOB of 1.1U) during wall episodes. Saves 60–82% of SMBs with ≤+2.1pp hyper increase. Additional insulin at the SC suppression ceiling has negligible glucose-lowering effect but increases delayed hypo risk.
 
-### Rec 2: adjust_correction_threshold (priority 2), predicted TIR Δ +0.1 pp
+### Rec 2: adjust_basal_rate (priority 2), predicted TIR Δ -0.5 pp
+- Decrease basal by 10% (from 1.70 to 1.53 U/hr) between 00:00-06:00. Predicted to improve overnight TIR by -0.5 percentage points. Confirmable within 1 week of data.
+- Settings change: **basal_rate** decrease 1.7000000476837158 → 1.53 (+10 %)
+- Rationale: Decrease basal by 10% (from 1.70 to 1.53 U/hr) between 00:00-06:00. Predicted to improve overnight TIR by -0.5 percentage points. Confirmable within 1 week of data.
+
+### Rec 3: adjust_correction_threshold (priority 2), predicted TIR Δ +0.1 pp
 - Decrease correction threshold from 180 to 166 mg/dL. Corrections below 166 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.1pp.
 - Settings change: **correction_threshold** decrease 180.0 → 166.0 (+8 %)
 - Rationale: Decrease correction threshold from 180 to 166 mg/dL. Corrections below 166 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.1pp.
 
-### Rec 3: unannounced_meal_warning (priority 3), predicted TIR Δ +2.0 pp
+### Rec 4: unannounced_meal_warning (priority 3), predicted TIR Δ +2.0 pp
 - 98% of detected meals have no carb entry. Logging meals improves prediction accuracy and enables better pre-bolus timing.
 
-### Rec 4: clinical_insight (priority 3), predicted TIR Δ +1.0 pp
+### Rec 5: clinical_insight (priority 3), predicted TIR Δ +1.0 pp
 - Time above range is 33.6%. Consider reviewing correction factors and carb counting.
-
-### Rec 5: adjust_basal_rate (priority 3), predicted TIR Δ +0.8 pp
-- Increase overnight basal by 17% (from 1.70 to 1.98 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.  ⚠️ Conflicts with overnight assessment (suggested -1.7% basal change, confidence 0.35). Possible alcohol- or EGP-suppression overnight pattern; do not act on this without clinician review.
-- Settings change: **basal_rate** increase 1.7000000476837158 → 1.98 (+17 %)
-- Rationale: Increase overnight basal by 17% (from 1.70 to 1.98 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.
 
 ### Rec 6: loop_override_recommendation (priority 3), predicted TIR Δ +1.5 pp
 - Consider configuring a controller override named "Dinner Aggressive" active 18:00–06:00 with target 100 mg/dL and ISF ratio 0.85 (40 → 34). Late-night peak (317 mg/dL) sits 186 mg/dL above the dinner baseline (131 mg/dL), indicating sustained post-dinner overshoot — current evening settings under-cover the late absorption phase.

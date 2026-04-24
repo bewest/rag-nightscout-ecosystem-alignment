@@ -234,7 +234,12 @@ def load_exp2739() -> Optional[Dict]:
 
 # ── Step 1: Enhanced Fasting-Window Identification ────────────────────
 
-def identify_fasting_mask(pdf: pd.DataFrame) -> np.ndarray:
+def identify_fasting_mask(
+    pdf: pd.DataFrame,
+    patient_id: Optional[str] = None,
+    *,
+    use_inferred_meals: bool = True,
+) -> np.ndarray:
     """Return boolean mask of clean fasting 5-min intervals.
 
     Requirements
@@ -243,6 +248,8 @@ def identify_fasting_mask(pdf: pd.DataFrame) -> np.ndarray:
     - No manual bolus for ≥ 2 h prior  (no correction contamination)
     - COB ≈ 0  (carbs on board depleted)
     - Valid glucose, glucose_roc, insulin_activity, scheduled_isf
+    - When patient_id is provided, also exclude [-2h, +4h] around each
+      production-detected inferred meal (under-logger protection).
     """
     n = len(pdf)
     carbs = pdf["carbs"].fillna(0).values.astype(float)
@@ -283,6 +290,15 @@ def identify_fasting_mask(pdf: pd.DataFrame) -> np.ndarray:
     # Need scheduled_basal_rate for the decomposition
     if "scheduled_basal_rate" in pdf.columns:
         mask &= np.isfinite(pdf["scheduled_basal_rate"].values)
+
+    if use_inferred_meals and patient_id is not None:
+        try:
+            from cgmencode.production.fasting_helpers import (
+                apply_inferred_meal_exclusion,
+            )
+            mask = apply_inferred_meal_exclusion(mask, pdf, patient_id)
+        except Exception:
+            pass
 
     return mask
 
@@ -401,7 +417,7 @@ def analyze_patient(pdf: pd.DataFrame, pid: str) -> Optional[Dict]:
     controller = infer_controller(pdf)
 
     # -- fasting identification --
-    fasting_mask = identify_fasting_mask(pdf)
+    fasting_mask = identify_fasting_mask(pdf, pid)
     n_fasting = int(fasting_mask.sum())
     if n_fasting < MIN_FASTING_OBS:
         return None

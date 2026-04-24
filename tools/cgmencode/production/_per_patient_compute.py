@@ -153,6 +153,10 @@ def compute_basal_mismatch(
     real_event = df["carbs"].fillna(0) >= _BASAL_REAL_CARB_THRESHOLD_G
     if inferred_meals is not None and len(inferred_meals):
         # Mark grid rows where an inferred meal of ≥ threshold occurred.
+        # Shift the timestamp backward by 75 min to cover multi-part
+        # meals (≤150 min wide) whose detector center sits in the
+        # second course; the 4h "time since real carb" exclusion below
+        # then covers from the meal's true start through ~3h after end.
         thresh = _BASAL_REAL_CARB_THRESHOLD_G
         meal_ts = pd.to_datetime(
             inferred_meals.loc[
@@ -161,6 +165,7 @@ def compute_basal_mismatch(
             unit="ms", utc=True,
         )
         if len(meal_ts):
+            meal_ts = meal_ts - pd.Timedelta(minutes=75)
             # Snap each meal timestamp to the nearest grid row by ts.
             grid_ts = df["time"].to_numpy()
             inferred_idx = np.searchsorted(grid_ts, meal_ts.to_numpy())
