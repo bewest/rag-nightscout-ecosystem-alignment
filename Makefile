@@ -179,6 +179,20 @@ cgmencode-tests:
 	@echo "Running cgmencode ML pipeline tests..."
 	@python3 tools/cgmencode/test_cgmencode.py
 
+# Production-pipeline tests, partitioned by speed (see
+# tools/cgmencode/production/conftest.py for the unit/integration split).
+production-tests-unit:
+	@echo "Running production unit tests (~1 min)..."
+	@python3 -m pytest tools/cgmencode/production/ -m unit -q
+
+production-tests-integration:
+	@echo "Running production integration tests (~4 min)..."
+	@python3 -m pytest tools/cgmencode/production/ -m integration -q
+
+production-tests:
+	@echo "Running full production test suite (~5 min)..."
+	@python3 -m pytest tools/cgmencode/production/ -q
+
 ns2parquet-tests:
 	@echo "Running ns2parquet tests..."
 	@python3 -m pytest tools/ns2parquet/test_ns2parquet.py -v
