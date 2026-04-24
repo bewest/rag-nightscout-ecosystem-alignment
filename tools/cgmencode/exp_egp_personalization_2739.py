@@ -374,11 +374,20 @@ def run_part1(grid: pd.DataFrame, qualified: List[str]) -> List[Dict]:
 def extract_correction_events(
     pdf: pd.DataFrame,
     patient_egp: float,
+    patient_id: Optional[str] = None,
+    *,
+    use_inferred_meals: bool = True,
 ) -> Tuple[List[Dict], List[Dict]]:
     """Extract correction events and compute ISF under population vs personal EGP.
 
     Returns (pop_events, personal_events) where each event has:
       isf, bg_start, bg_end, dose, n_steps, egp_contribution
+
+    When `patient_id` is provided and `use_inferred_meals=True`, events
+    are additionally rejected if any production-detected inferred meal
+    starts within the [event_idx − 1h, event_idx + ISF_POST_WINDOW] band.
+    This prevents under-logged meals from contaminating ISF estimates
+    (post-meal hyperglycemia masquerading as a fasting correction).
     """
     n = len(pdf)
     glucose = pdf["glucose"].values
@@ -387,6 +396,25 @@ def extract_correction_events(
     carbs = pdf["carbs"].fillna(0).values
     net_basal = pdf["net_basal"].fillna(0).values if "net_basal" in pdf.columns else np.zeros(n)
     sched_basal = pdf["scheduled_basal_rate"].fillna(0).values if "scheduled_basal_rate" in pdf.columns else np.zeros(n)
+
+    # Pre-compute inferred-meal exclusion mask: True = grid index is
+    # contaminated by an inferred meal (use as "reject" indicator).
+    inferred_blocked = np.zeros(n, dtype=bool)
+    if use_inferred_meals and patient_id is not None:
+        try:
+            from cgmencode.production.fasting_helpers import (
+                apply_inferred_meal_exclusion,
+            )
+            allow = np.ones(n, dtype=bool)
+            # Pre-window 1h, post-window covers ISF_POST_WINDOW (2h)
+            allow = apply_inferred_meal_exclusion(
+                allow, pdf, patient_id,
+                pre_steps=STEPS_PER_HOUR,
+                post_steps=ISF_POST_WINDOW,
+            )
+            inferred_blocked = ~allow
+        except Exception:
+            pass
 
     pop_events = []
     pers_events = []
@@ -411,6 +439,10 @@ def extract_correction_events(
         # No significant carbs in window
         carbs_in_window = np.nansum(carbs[i:end_idx])
         if carbs_in_window > ISF_MAX_CARBS:
+            continue
+
+        # Reject if inferred meal contaminates this window
+        if inferred_blocked[i] or np.any(inferred_blocked[i:end_idx]):
             continue
 
         bg_start = glucose[i]
@@ -483,7 +515,7 @@ def run_part2(
             continue
         patient_egp = egp_lookup[pid]
         pdf = grid[grid["patient_id"] == pid].sort_values("time").reset_index(drop=True)
-        pop_events, pers_events = extract_correction_events(pdf, patient_egp)
+        pop_events, pers_events = extract_correction_events(pdf, patient_egp, pid)
 
         if len(pop_events) < 5:
             print(f"  {pid}: only {len(pop_events)} correction events, skipping")
