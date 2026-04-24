@@ -722,3 +722,99 @@ Key data → code linkages:
 | oref1 frequency scaling with velocity (EXP-2973) | `insulinReq` uses `naive_eventualBG`; falling velocity → `naive_eventualBG < target` → cycle skipped. |
 | Loop_AB_ON bimodality across patients (EXP-2972) | Sensitivity to `automaticDosingStrategy`, `glucoseBasedApplicationFactorEnabled`, target-range, `maxBolus`. |
 | Loop's sharper U-shape (EXP-2975) | `units` scales linearly in BG, so high-BG re-engagement is mechanical; oref1's `min(insulinReq/2, maxBolus)` cap binds at high BG. |
+
+---
+
+## Addendum (Apr-23 eleventh batch): PP context, audit, outcome linkage, platform isolation, Loop factor calibration
+
+### Batch experiments (EXP-2976 through EXP-2980)
+
+- **EXP-2976 (NEGATIVE / NULL)** — PP-context U-shape preserved, did
+  not flip. Loop_AB_ON `c=+8.7e-6` (z=+5.0), vertex 236 mg/dL;
+  oref1 `c=+3.5e-6` (z=+2.83), vertex 322. Same sign and similar
+  magnitude as no-carb (EXP-2975). Conclusion: U-shape is a
+  **persistent controller signature**, not a no-carb artifact.
+  Lever 3 (meal-state shaping) should preserve U-shape design.
+- **EXP-2978 (NEGATIVE)** — per-patient oref1 sustained-high em_rate
+  audit: all 9 Trio patients fire SMB at sustained-high BG
+  (range 0.11 – 0.34, no outlier ≪ median). The earlier
+  EXP-2972 anomaly (em_rate 0.008) was **at the 70-100 sweet spot,
+  not at sustained-high** — re-attribute to ISF/profile, not to
+  `enableSMB_always` gating.
+- **EXP-2979 (MIXED-DIRECTIONAL POSITIVE — outcome linkage)** — at
+  rising-stratum 70-100 cells, mechanism difference is mirrored
+  in pooled outcomes:
+
+  | Design | smb med | TTT med | overshoot 60min | hypo 60min |
+  |--------|---------|---------|-----------------|------------|
+  | Loop_AB_ON | 0.40 U | 10 min | **10.7%** | 12.7% |
+  | oref1 (Trio) | 0.15 U | 15 min | 3.5% | 18.4% |
+
+  Loop's magnitude lever returns to target ~5 min faster but with
+  ~3× higher overshoot. Critical caveat: Loop pooled is
+  **single-patient-dominated** (`i` = 361 of 363 events; c/d/e/g
+  have 0–1 events each in this stratum). Per-patient MWU not
+  feasible (n_loop=1 after threshold). The DIRECTION matches
+  mechanism prediction; external validity to other Loop patients
+  is unverified.
+- **EXP-2980 (MERGED-LABEL / NULL by data availability)** — all 9
+  oref1-lineage patients in cohort are controller=Trio. No
+  AAPS-on-Android patients available. Re-label all "oref1"
+  findings (EXP-2972/2973/2975/2978/2979) as **"Trio (oref1
+  lineage)"** for precision. Trio-vs-AAPS platform isolation
+  requires future cohort expansion.
+- **EXP-2977 (INCONCLUSIVE / methodological)** — implicit
+  `partialApplicationFactor` per Loop patient: all 5 patients
+  show negative `est_factor`-vs-BG slope (opposite of GBAF's
+  expected positive slide). Most likely explanation:
+  `proxy_insulinReq` over-estimates at high BG because it
+  doesn't account for IOB / RC, biasing the estimator. Cannot
+  separate Constant vs GBAF strategy from observational data
+  without per-patient ISF (oref1-only column). IQR of est_factor
+  (0.11 – 0.29) is wider than constant-factor would predict, so
+  some sliding/context-dependence is operating, but the source
+  cannot be pinned without a profile-JSON audit.
+
+### Evidence-line tally (post-batch)
+
+| # | Line | Source |
+|---|---|---|
+| 17 | U-shape persistent across meal context (no-carb + PP both U) | EXP-2976 |
+| 18 | oref1 sustained-high SMB universally enabled (no patient with gate-off pattern) | EXP-2978 |
+| 19 | Mechanism-to-outcome linkage: magnitude → faster+overshoot, frequency → slower+tighter (directional, single-patient Loop arm) | EXP-2979 |
+| 20 | Platform-isolation gap formally documented (no AAPS in cohort) | EXP-2980 |
+
+Evidence-line count: **20** (up from 16). Lines 17 and 19 are
+the new high-value additions; 18 is a clean negative; 20 is a
+documented limitation. EXP-2977 does NOT add an evidence line
+(inconclusive).
+
+### Updated AID-author lever priority (post-EXP-2979)
+
+EXP-2979 introduces a **per-mechanism guard-rail** consideration
+without rewriting the lever order:
+
+| Lever | Channel | Mechanism | Guard-rail (NEW) | Ranking |
+|---|---|---|---|---|
+| Cycle-frequency ceiling | SMB freq | oref1 3-min `SMBInterval` | **IOB-stacking governor** at sustained correction (oref1 patients show 0–50% hypo scatter) | PRIMARY |
+| Enable-gate policy | SMB rate | oref1 `enable_smb()`; Loop implicit | (unchanged) | PRIMARY |
+| Per-event multiplier | SMB magnitude | Loop `partialApplicationFactor` × overshoot | **Overshoot governor** (post-SMB cool-down OR predict-aware sizing cap when projected post-SMB BG > 180) | SECONDARY → upgraded |
+| `maxSMBBasalMinutes` cap | SMB ceiling | oref1 30/60 cap | (unchanged) | TERTIARY |
+| Per-mechanism guard-rails | NEW: mechanism-specific safety, not identical for both designs | EXP-2979 directional outcome difference | (this row) | NEW SECONDARY |
+
+### Counter-recommendation (NEW)
+
+Generic "add safety guard-rails" advice is INCORRECT for both
+designs. Magnitude-lever and frequency-lever AIDs need **different**
+safety guard-rails — the failure modes differ (overshoot for
+magnitude, IOB-stacking hypo for frequency). EXP-2979 is
+directional-only at single Loop patient n, but the asymmetry
+matches mechanism prediction; future work should validate at
+multi-patient Loop_AB_ON n.
+
+### Re-labeling note
+
+All prior "oref1" claims in this synthesis are now formally
+"Trio (oref1 lineage)". The algorithmic claims likely transfer
+to AAPS but **iOS / Android scheduler differences** (BLE timing,
+Doze, BackgroundTasks vs AlarmManager) are an unmeasured gap.
