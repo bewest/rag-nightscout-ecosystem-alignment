@@ -12,6 +12,7 @@ from ._simulation import simulate_tir_with_settings, PERIODS, MIN_DATA_DAYS, HIG
 from ._isf_advisors import (
     advise_isf, advise_isf_nonlinearity, advise_isf_segmented,
     advise_forward_sim_optimization, advise_correction_isf,
+    advise_correction_denominator_isf,  # Wave-12: multi-factor deconfounding
     advise_circadian_isf, advise_circadian_isf_profiled,
     advise_override_isf, advise_patience_mode,
     advise_isf_dual_phase, advise_response_curve_isf,
@@ -604,6 +605,13 @@ def generate_settings_advice(glucose: np.ndarray,
             bolus=bolus, carbs=carbs, iob=iob,
             days_of_data=days_of_data)
         recs.extend(corr_isf_recs)
+
+    # Multi-factor deconfounded ISF (Wave-12, EXP-2741: 67% gap closure)
+    # Filters to corrections only; removes basal/EGP/meal confounds
+    corr_denom_isf = advise_correction_denominator_isf(
+        clinical, profile, days_of_data=days_of_data)
+    if corr_denom_isf:
+        recs.append(corr_denom_isf)
 
     # Effective CR from meal response (EXP-2609/2610)
     if bolus is not None and carbs is not None:
