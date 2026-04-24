@@ -21,11 +21,11 @@ Do these mechanisms produce **different outcomes**?
 
 ## Result — MIXED / DIRECTIONAL POSITIVE (with caveat)
 
-Pooled metrics (1,253 qualifying events across both designs):
+Pooled metrics (1,251 qualifying events across both designs):
 
 | Design     | n events | smb median | TTT median (cens.) | overshoot 180 (60min) | hypo 70 (60min) |
 |------------|---------:|-----------:|--------------------:|----------------------:|----------------:|
-| Loop_AB_ON |      363 |  **0.40 U** | **10 min** (cens 0.30) | **10.7%**            | 12.7% |
+| Loop_AB_ON |      361 |  **0.40 U** | **10 min** (cens 0.30) | **10.7%**            | 12.7% |
 | oref1      |      890 |  0.15 U     | 15 min (cens 0.43)  | 3.5%                 | 18.4% |
 
 **Directional finding**: Loop's magnitude lever returns BG to
