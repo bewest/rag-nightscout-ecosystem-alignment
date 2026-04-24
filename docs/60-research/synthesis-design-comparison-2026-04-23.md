@@ -14,6 +14,17 @@ outcome-numbers analysis.
 9 oref1 (modern AAPS / Trio), 3 oref0 (legacy openaps/AAPS). All
 oref0 cells in derived analyses are n=1–3.
 
+**Cohort scope caveat (added 2026-04-23, post-EXP-2980 / EXP-2984):**
+All oref1-lineage patients in this cohort are **Trio** (iOS).
+There are **no `controller='aaps'` patients** because the ingest
+pipeline mis-labels AAPS-Android uploads as `controller='openaps'`
+(see EXP-2984 / `docs/40-data-pipelines/aaps-ingestion-scoping-2026-04-23.md`).
+Therefore the 3 patients labeled "oref0 (legacy)" may already
+include AAPS data silently. **Every "oref1" claim in this
+synthesis should be read as "Trio (oref1 lineage)";** the
+Trio-vs-AAPS platform-isolation question is structurally blocked
+by a labeling bug (data-LABELING gap), not a data-collection gap.
+
 **Source:** `externals/ns-parquet/training/grid.parquet` 5-min cells
 (944k rows after lineage filter), `externals/experiments/exp-2891_simpson_dose_response.parquet`
 for lineage/cf labels. EXP-2916 through EXP-2927.
@@ -818,3 +829,98 @@ All prior "oref1" claims in this synthesis are now formally
 "Trio (oref1 lineage)". The algorithmic claims likely transfer
 to AAPS but **iOS / Android scheduler differences** (BLE timing,
 Doze, BackgroundTasks vs AlarmManager) are an unmeasured gap.
+
+## Addendum (Apr-23 twelfth batch): patient-i representativeness, overshoot governor, IOB-stacking governor, AAPS scoping, cross-band overshoot
+
+### Batch experiments (EXP-2981 through EXP-2985)
+
+- **EXP-2981 (STRONG OUTLIER finding, downgrade pressure on EXP-2979)**
+  — Patient `i` is a Tukey-IQR outlier on **8 of 17** baseline /
+  event-count metrics: frac_in_70_100 (19.4% vs 13.1% peers),
+  frac_below_70 (10.7% vs 2.5%), n_smb_in_70_100 (1115 vs ~1.5),
+  smb_dose_mean (0.45U vs 0.25U). Critically, peers c/d/e/g
+  **descend into 70-100 frequently** (n_5min in 70-100 ranges
+  4.5k–7.8k) but **almost never fire SMB there** (0–18 SMBs
+  vs `i`'s 1115). This is a **policy difference, not a
+  use-pattern difference** — likely a temp-target / GBAF /
+  override gating that suppresses SMB at low BG for c/d/e/g
+  but not for `i`.
+- **EXP-2982 (NEGATIVE)** — Linear counterfactual cap sweep
+  (PAF ∈ {1.0, 0.8, 0.6, 0.4, 0.2}) for patient `i`'s 361
+  events: projected overshoot rate **does not decrease** as cap
+  shrinks (10.5% → 12.5%). The rise in 70-100 is **endogenous**
+  (carb residual / dawn / counter-reg); the SMB at this band is
+  small relative to the rise and ends up above 180 regardless.
+  PAF reduction is **not the lever** to fix this overshoot;
+  earlier dosing or pre-emptive temp basal would be more
+  promising candidates.
+- **EXP-2983 (NULL on stacking-ceiling)** — Across 8 Trio patients
+  with ≥20 no-carb SMB events, Spearman ρ(mean_IOB, hypo_rate)
+  = **−0.333** (p=0.38) and ρ(p75_IOB, hypo_rate) = −0.469
+  (p=0.20). Within-patient IOB-tertile analysis: hypo rate is
+  flat or **decreasing** with IOB. Pooled across-Trio bands:
+  hypo 4.0% at IOB <0.5 → 1.3% at IOB 3-5. **No empirical IOB
+  ceiling** above which hypo discontinuously jumps. Existing
+  Trio caps (`maxIOB`, `enableSMB_always: false`) appear to
+  prevent the dangerous regime; the hypo-prevention lever is
+  **not** "lower maxIOB" but suppression at low BG.
+- **EXP-2984 (POSITIVE / ACTIONABLE — pipeline diagnosis)** — The
+  AAPS-Android gap surfaced in EXP-2980 is a **data-LABELING
+  bug, not a data-collection failure**. AAPS uploads ARE
+  ingested (via `tools/ns2parquet/odc_loader.py`), but every
+  synthesized record stamps `device='openaps://AndroidAPS'`,
+  which `_detect_controller()` matches first as openaps. A
+  2-line fix (reorder branches; rename device prefix) plus a
+  one-time relabel pass would restore the AAPS arm. The 3
+  patients currently labeled "oref0 (legacy)" likely contain
+  mis-labeled AAPS data. Detail: `docs/40-data-pipelines/aaps-ingestion-scoping-2026-04-23.md`.
+- **EXP-2985 (POSITIVE — `i` is band-representative)** — Per-band
+  overshoot rate for Loop_AB_ON: at 100-140, 140-180, 180-220,
+  220+ patient `i` is **inside the cohort range** (in fact `c`
+  shows higher overshoot at 100-140 (32.5%) and 140-180
+  (53.6%)). At 70-100 only `i` fires meaningfully (1097 events
+  vs 0–12 for peers); his 7.3% overshoot there is plausible.
+  EXP-2979's directional claim STANDS but its scope is
+  appropriately narrowed: "the only Loop_AB_ON configuration
+  that fires SMB at low BG shows 10.7% overshoot vs 3.5% Trio
+  pooled."
+
+### Evidence-line tally (post-batch)
+
+| # | Line | Source |
+|---|---|---|
+| 21 | Loop_AB_ON SMB-at-low-BG behavior is policy-bimodal: 4 of 5 patients suppress, 1 fires aggressively | EXP-2981 |
+| 22 | In rising-70-100 endogenous-rise stratum, PAF reduction does not reduce overshoot — wrong lever | EXP-2982 |
+| 23 | No IOB-ceiling for Trio hypo within observed range; existing Trio caps already gate the danger zone | EXP-2983 |
+| 24 | Trio-vs-AAPS gap is labeling not collection — fixable in pipeline | EXP-2984 |
+| 25 | EXP-2979's directional Loop-overshoot claim is scope-narrowed but stands; `i` is overshoot-representative at all bands where peers fire | EXP-2985 |
+
+Evidence-line count: **25** (up from 20). Lines 21, 22, 24 are
+high-value structural findings; 23 is a clean negative; 25
+re-confirms / scope-narrows the prior directional claim.
+
+### Updated re-labeling and counter-recommendations
+
+- **EXP-2979 re-labeled**: "Loop magnitude lever overshoot 10.7%"
+  → "**single Loop_AB_ON configuration that does not gate SMB
+  at low BG** shows 10.7% projected overshoot at rising 70-100;
+  4 of 5 cohort Loop patients gate this band off and so the
+  population claim cannot be tested in this dataset." Direction
+  still matches mechanism prediction.
+- **PAF / `partialApplicationFactor` lever**: EXP-2982 contradicts
+  the intuitive expectation that smaller dose → less overshoot
+  in this stratum. Listed lever order in the eleventh-batch
+  addendum should be read with this caveat: PAF reduction is a
+  **post-prediction** safety control; it does not address
+  endogenous-rise overshoot, only insulin-stacking overshoot.
+- **`maxIOB` lever**: EXP-2983 finds no stacking-ceiling effect
+  in observed Trio data; "raise/lower maxIOB" is therefore not
+  a high-value lever for hypo prevention in this cohort.
+
+### Cohort scope caveat (re-iterated)
+
+The synthesis "Cohort scope caveat" near the top of this
+document was added in this batch (post-EXP-2980 / EXP-2984).
+All "oref1" findings should be read as "Trio (oref1 lineage)"
+until the AAPS labeling fix is applied and EXP-2980 can be
+re-run with a separated AAPS arm.
