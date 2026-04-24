@@ -74,6 +74,13 @@ Documentation follows source code analysis → research synthesis → domain und
 - `external-inventories/` - Documentation audits of external projects
 - `fixtures/` - Test data and examples for validation
 
+**Featured capstones**:
+- `60-research/CAPSTONE-iob-age-smb-mechanism-2026-04-23.md` —
+  IOB-Age and SMB-Emission Mechanism comparative study (34 evidence
+  lines; Loop magnitude lever vs Trio frequency lever; code-path
+  mappings; honest reversals). See `60-research/INDEX.md` for the
+  full EXP-29xx series.
+
 **Examples**:
 - `controller-registration-protocol-proposal.md` - New protocol proposal
 - `profile-model-evolution-proposal.md` - Data model enhancement

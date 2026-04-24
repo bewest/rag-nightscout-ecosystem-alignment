@@ -338,6 +338,13 @@ within-patient AID-switch data, but is no longer parsimonious.
 
 ## 9. Finding E — UNIFIED IOB-AGE FRAMEWORK
 
+> **Capstone**: see
+> `docs/60-research/CAPSTONE-iob-age-smb-mechanism-2026-04-23.md`
+> for the consolidated 34-evidence-line writeup with mechanism
+> decomposition, code-path mappings, and honest reversals. The
+> capstone supersedes this section's running tally for external
+> readers; this section remains the per-batch development log.
+
 After EXP-2944/2946/2947, all three window-class outcomes
 (sustained-high recovery, PP TIR, hypo descent TBR) collapse to a
 single design principle.
@@ -1130,3 +1137,60 @@ counter-recommendation: a single "aggressiveness" knob would force
 patients toward the strictly-worse end of the dial. Multi-axis
 visibility (the EXP-2991 score's four components) is the responsible
 UX choice.
+
+
+## Addendum (Apr-23 fifteenth batch / capstone): patient-g sweet-spot reproducibility, phenotype × algorithm_mode confounding test
+
+### EXP-2994 — Patient `g` sweet-spot vignette (POSITIVE)
+
+EXP-2993 flagged patient `g` (mid-conservatism Loop_AB_ON) as the
+within-design sweet spot. EXP-2994 confirms reproducibility and
+identifies the tunable settings signature.
+
+- **Reproducibility**: 27-week partition, TIR mean 0.667 (std 0.092,
+  CV 0.138); overshoot mean 0.213 (std 0.060). Stable, not a lucky
+  window.
+- **Distinguishing settings axes vs Loop_AB_ON peer mean**:
+  `bolus_smb_p95 = 0.55 U` (peer 0.95, −1.0 SD) and
+  `basal_frac_of_tdd = 0.060` (peer 0.258, −1.9 SD). Both are
+  configurable pump axes, not patient-physiology proxies.
+- **Verdict**: tunable target rather than idiosyncratic. AID-author
+  preset candidate: small SMB cap + low scheduled-basal share,
+  paired with a deployment-risk warning about Loop dependency.
+
+### EXP-2995 — Phenotype × algorithm_mode re-stratification (MIXED)
+
+Re-stratify EXP-2886's three orthogonal phenotype axes by EXP-2992's
+`algorithm_mode` column.
+
+- Cramér's V (archetype × mode) = **0.564** (moderate); V (lineage ×
+  mode) = 0.975 (sanity).
+- η² per continuous axis vs `algorithm_mode`:
+  - `stack_score` η² = **0.044** → CROSS-CUTS (genuine patient
+    heterogeneity).
+  - `braking_ratio` η² = **0.650** → ALIGNS (algorithm property).
+  - `counter_reg_intercept` η² = 0.225 → modest alignment.
+  - `hidden_leverage` η² = 0.091 → CROSS-CUTS.
+- Within-mode std / overall std for `braking_ratio` is 0.10–0.32
+  (very low) confirming braking ratio is essentially an algorithm
+  feature.
+- 6/6 `algorithm_dependent` archetype patients are on Loop-AB-ON or
+  Trio-oref1 (SMB-emitting designs); 0/3 on AAPS-oref0 (no SMB →
+  no algorithm to depend on).
+
+**Implication**: EXP-2886 archetype labels mix algorithm-driven and
+patient-driven features. Per-patient audition logic should preserve
+`stack_score` / `hidden_leverage` (genuine patient signals) but
+re-read `braking_ratio` as an algorithm fingerprint.
+
+### Evidence-line tally (post-capstone)
+
+| # | Line | Source |
+|---|---|---|
+| 33 | Patient `g` sweet-spot is reproducible across 27 weeks (TIR CV 0.14); distinguishing settings signature is observable on tunable pump axes | EXP-2994 |
+| 34 | EXP-2886 phenotype clusters partially align with `algorithm_mode` (V 0.56). `braking_ratio` mostly algorithm-driven (η² 0.65); `stack_score` and `hidden_leverage` cross-cut mode (η² 0.04, 0.09); `counter_reg_intercept` weakly aligns (η² 0.22) | EXP-2995 |
+
+Evidence-line count: **34** (up from 32 prior to capstone batch).
+The framework's central claims are unchanged; the capstone
+consolidates them with code-path mappings and honest reversals
+in `docs/60-research/CAPSTONE-iob-age-smb-mechanism-2026-04-23.md`.
