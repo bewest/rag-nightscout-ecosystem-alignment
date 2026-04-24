@@ -3,7 +3,7 @@ forward_simulator.py — Physics-based forward glucose simulation (digital twin)
 
 Research basis: Combines all validated physics components:
   - Two-component DIA (EXP-2525/2534): fast τ=0.8h + persistent 37%
-  - Power-law ISF for corrections (EXP-2511): β=0.9
+  - Linear ISF (not power-law): EXP-2716 proved β=0.9 is horizon-dependent artifact
   - Carb absorption: linear model over absorption window
   - Mean reversion toward ~120 mg/dL equilibrium
 
@@ -25,6 +25,11 @@ Model architecture (basal neutrality):
 
   Two-component split: excess insulin effect is 63% fast (τ=0.8h)
   and 37% persistent (τ=12h, validated EXP-2525/2534).
+
+SAFETY MARGIN (Wave-13, EXP-2738): The ISF gap between extracted (~43.7) and 
+profile (~55) settings is the controller's operational margin against hypo rebound.
+Removing this margin increases TBR by +6.2pp. This simulator preserves that margin
+by using profile settings, not extracted settings, unless explicitly overridden.
 """
 
 from __future__ import annotations

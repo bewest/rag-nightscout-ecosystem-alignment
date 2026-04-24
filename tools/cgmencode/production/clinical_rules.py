@@ -10,6 +10,30 @@ Key findings:
   - 46.5% of glucose rises are unannounced meals (EXP-748)
   - CR scores range 9.1-61.5 (highly variable between patients)
   - All 11/11 test patients successfully graded and classified
+
+================================================================================
+SAFETY MARGIN DOCTRINE (Wave-13: EXP-2738, EXP-2753–2755)
+================================================================================
+
+The ISF gap between extracted settings (e.g., 43.7 mg/dL/U) and profile 
+settings (e.g., 55 mg/dL/U) is NOT measurement error—it represents the 
+controller's operational safety reserve.
+
+Four confounding layers explain the gap:
+  1. EGP compensation        (✓ HANDLED: basal already adjusts for EGP)
+  2. Steady-state basal drift (✓ RESOLVED: 67% gap closure via correction-denom)
+  3. Controller dynamics     (🔄 RESIDUAL: 22% = intentional safety margin)
+  4. Confounding-by-indication (⛔ FUNDAMENTAL: observational limit, not fixable)
+
+CRITICAL FINDING (EXP-2738): Removing the 22% margin increases TBR by +6.2pp.
+The gap is the controller's buffer against aggressive dosing and hypo rebound.
+
+IMPLICATION: Do NOT replace profile ISF with extracted value without full
+settings revalidation and safety assessment. The controller margin is essential.
+
+Reference: docs/60-research/wave11-safety-precision-report-2026-04-20.md
+           docs/60-research/wave13-controller-dynamics-report-2026-04-20.md
+================================================================================
 """
 
 from __future__ import annotations
