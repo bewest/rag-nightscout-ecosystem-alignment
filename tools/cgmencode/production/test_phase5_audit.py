@@ -159,8 +159,49 @@ def test_isf_nonlinearity_predicted_delta_capped():
 
 
 # ──────────────────────────────────────────────────────────────────────
-# Renderer regression: predicted_tir_delta is NOT double-scaled
+# GAP-ADVR-002: block-merge inflation in _deduplicate_same_direction
+# (per-block predicted_tir_delta values were summed without a ceiling,
+# producing implausible 18.6 pp from 5 ISF blocks; the borrowed
+# rationale also still showed the per-block "+3.6pp" claim.)
 # ──────────────────────────────────────────────────────────────────────
+
+
+def test_dedupe_caps_summed_tir_delta_and_rewrites_rationale():
+    from tools.cgmencode.production.advisor._pipeline import (
+        _deduplicate_same_direction,
+    )
+    from tools.cgmencode.production.types import (
+        SettingsRecommendation, SettingsParameter,
+    )
+    blocks = []
+    for i, (h0, h1, dlt) in enumerate([
+        (0.0, 6.0, 3.6),
+        (6.0, 12.0, 5.0),
+        (12.0, 18.0, 4.0),
+        (18.0, 22.0, 6.0),
+    ]):
+        blocks.append(SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction="increase",
+            magnitude_pct=200.0 + i * 10,
+            current_value=75.0,
+            suggested_value=345.0,
+            predicted_tir_delta=dlt,
+            affected_hours=(h0, h1),
+            confidence=0.5,
+            evidence=f"block {i} evidence.",
+            rationale=f"Increase ISF block {i}. Predicted TIR improvement: +{dlt}pp.",
+        ))
+    out = _deduplicate_same_direction(blocks)
+    assert len(out) == 1
+    merged = out[0]
+    # Cap at 8 pp regardless of summed raw total (which would be 18.6).
+    assert merged.predicted_tir_delta <= 8.0
+    assert merged.predicted_tir_delta > 0
+    # Rationale's per-block "+X.Xpp" claim must be rewritten so the
+    # displayed prose matches the consolidated field.
+    assert "+3.6pp" not in merged.rationale
+    assert "Consolidated TIR improvement across 4 blocks" in merged.rationale
 
 
 def test_renderer_does_not_double_scale_tir_delta(tmp_path: Path):

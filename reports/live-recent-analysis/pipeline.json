@@ -394,18 +394,18 @@
   "settings_recs": [
     {
       "parameter": {},
-      "direction": "decrease",
-      "magnitude_pct": 25.0,
-      "current_value": 40.0,
-      "suggested_value": 18.0,
-      "predicted_tir_delta": 26.0,
+      "direction": "informational",
+      "magnitude_pct": 0.0,
+      "current_value": 1.08,
+      "suggested_value": 1.62,
+      "predicted_tir_delta": 1.5,
       "affected_hours": [
         0.0,
         24.0
       ],
-      "confidence": 0.36,
-      "evidence": "ISF non-linearity (EXP-2511): typical correction dose 2.5U is 56% less effective per unit than 1U (power-law \u03b2=0.9). Splitting into 2\u00d71.2U would be ~87% more effective total. [CLAMPED from 56% to 25% \u2014 stage over multiple adjustment cycles] [Controller: AAPS]",
-      "rationale": "Correction doses above 1.5U show diminishing returns. At 2.5U, each unit achieves only 18 mg/dL drop vs 40 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=18 for doses \u22652U. This is a pharmacokinetic property (\u03b2=0.9), not circadian.",
+      "confidence": 0.21,
+      "evidence": "Consolidated from 3 time-block advisories (range: 0-0%). Insulin saturation detected: 46% of high-glucose time at wall (66 episodes of 75 total). [Controller: Loop]",
+      "rationale": "PATIENCE MODE (EXP-2662): Cap IOB at 1.6U (1.5\u00d7 median IOB of 1.1U) during wall episodes. Saves 60\u201382% of SMBs with \u2264+2.1pp hyper increase. Additional insulin at the SC suppression ceiling has negligible glucose-lowering effect but increases delayed hypo risk.",
       "confidence_grade": null,
       "ci_width_pct": null
     },
@@ -420,8 +420,8 @@
         0.0,
         24
       ],
-      "confidence": 0.42,
-      "evidence": "Consolidated from 2 time-block advisories (range: 14-20%). Overnight quadrant analysis (EXP-2589): BASAL SLIGHTLY LOW. [Controller: AAPS]",
+      "confidence": 0.21,
+      "evidence": "Consolidated from 2 time-block advisories (range: 14-20%). Overnight quadrant analysis (EXP-2589): BASAL SLIGHTLY LOW. [Controller: Loop]",
       "rationale": "Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.",
       "confidence_grade": null,
       "ci_width_pct": null
@@ -437,8 +437,8 @@
         0.0,
         24.0
       ],
-      "confidence": 0.24,
-      "evidence": "Correction threshold analysis (EXP-2528): population optimal threshold is 166 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 5 correction events. [Controller: AAPS]",
+      "confidence": 0.12,
+      "evidence": "Correction threshold analysis (EXP-2528): population optimal threshold is 166 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 5 correction events. [Controller: Loop]",
       "rationale": "Decrease correction threshold from 180 to 166 mg/dL. Corrections below 166 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.1pp.",
       "confidence_grade": null,
       "ci_width_pct": null
@@ -448,53 +448,26 @@
     {
       "action_type": "adjust_isf",
       "priority": 2,
-      "description": "Correction doses above 1.5U show diminishing returns. At 2.5U, each unit achieves only 18 mg/dL drop vs 40 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=18 for doses \u22652U. This is a pharmacokinetic property (\u03b2=0.9), not circadian.",
-      "predicted_tir_delta": 26.0,
-      "confidence": 0.36,
+      "description": "PATIENCE MODE (EXP-2662): Cap IOB at 1.6U (1.5\u00d7 median IOB of 1.1U) during wall episodes. Saves 60\u201382% of SMBs with \u2264+2.1pp hyper increase. Additional insulin at the SC suppression ceiling has negligible glucose-lowering effect but increases delayed hypo risk.",
+      "predicted_tir_delta": 1.5,
+      "confidence": 0.21,
       "time_sensitive": false,
       "deadline_minutes": null,
       "meal_prediction": null,
       "settings_rec": {
         "parameter": {},
-        "direction": "decrease",
-        "magnitude_pct": 25.0,
-        "current_value": 40.0,
-        "suggested_value": 18.0,
-        "predicted_tir_delta": 26.0,
+        "direction": "informational",
+        "magnitude_pct": 0.0,
+        "current_value": 1.08,
+        "suggested_value": 1.62,
+        "predicted_tir_delta": 1.5,
         "affected_hours": [
           0.0,
           24.0
         ],
-        "confidence": 0.36,
-        "evidence": "ISF non-linearity (EXP-2511): typical correction dose 2.5U is 56% less effective per unit than 1U (power-law \u03b2=0.9). Splitting into 2\u00d71.2U would be ~87% more effective total. [CLAMPED from 56% to 25% \u2014 stage over multiple adjustment cycles] [Controller: AAPS]",
-        "rationale": "Correction doses above 1.5U show diminishing returns. At 2.5U, each unit achieves only 18 mg/dL drop vs 40 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=18 for doses \u22652U. This is a pharmacokinetic property (\u03b2=0.9), not circadian.",
-        "confidence_grade": null,
-        "ci_width_pct": null
-      }
-    },
-    {
-      "action_type": "adjust_basal_rate",
-      "priority": 2,
-      "description": "Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.",
-      "predicted_tir_delta": 1.4,
-      "confidence": 0.42,
-      "time_sensitive": false,
-      "deadline_minutes": null,
-      "meal_prediction": null,
-      "settings_rec": {
-        "parameter": {},
-        "direction": "increase",
-        "magnitude_pct": 16.8,
-        "current_value": 1.7000000476837158,
-        "suggested_value": 2.04,
-        "predicted_tir_delta": 1.4,
-        "affected_hours": [
-          0.0,
-          24
-        ],
-        "confidence": 0.42,
-        "evidence": "Consolidated from 2 time-block advisories (range: 14-20%). Overnight quadrant analysis (EXP-2589): BASAL SLIGHTLY LOW. [Controller: AAPS]",
-        "rationale": "Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.",
+        "confidence": 0.21,
+        "evidence": "Consolidated from 3 time-block advisories (range: 0-0%). Insulin saturation detected: 46% of high-glucose time at wall (66 episodes of 75 total). [Controller: Loop]",
+        "rationale": "PATIENCE MODE (EXP-2662): Cap IOB at 1.6U (1.5\u00d7 median IOB of 1.1U) during wall episodes. Saves 60\u201382% of SMBs with \u2264+2.1pp hyper increase. Additional insulin at the SC suppression ceiling has negligible glucose-lowering effect but increases delayed hypo risk.",
         "confidence_grade": null,
         "ci_width_pct": null
       }
@@ -504,7 +477,7 @@
       "priority": 2,
       "description": "Decrease correction threshold from 180 to 166 mg/dL. Corrections below 166 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.1pp.",
       "predicted_tir_delta": 0.1,
-      "confidence": 0.24,
+      "confidence": 0.12,
       "time_sensitive": false,
       "deadline_minutes": null,
       "meal_prediction": null,
@@ -519,8 +492,8 @@
           0.0,
           24.0
         ],
-        "confidence": 0.24,
-        "evidence": "Correction threshold analysis (EXP-2528): population optimal threshold is 166 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 5 correction events. [Controller: AAPS]",
+        "confidence": 0.12,
+        "evidence": "Correction threshold analysis (EXP-2528): population optimal threshold is 166 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 5 correction events. [Controller: Loop]",
         "rationale": "Decrease correction threshold from 180 to 166 mg/dL. Corrections below 166 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.1pp.",
         "confidence_grade": null,
         "ci_width_pct": null
@@ -536,6 +509,33 @@
       "deadline_minutes": null,
       "meal_prediction": null,
       "settings_rec": null
+    },
+    {
+      "action_type": "adjust_basal_rate",
+      "priority": 3,
+      "description": "Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.  \u26a0\ufe0f Conflicts with overnight assessment (suggested -7.4% basal change, confidence 0.35). Possible alcohol- or EGP-suppression overnight pattern; do not act on this without clinician review.",
+      "predicted_tir_delta": 1.4,
+      "confidence": 0.21,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": {
+        "parameter": {},
+        "direction": "increase",
+        "magnitude_pct": 16.8,
+        "current_value": 1.7000000476837158,
+        "suggested_value": 2.04,
+        "predicted_tir_delta": 1.4,
+        "affected_hours": [
+          0.0,
+          24
+        ],
+        "confidence": 0.21,
+        "evidence": "Consolidated from 2 time-block advisories (range: 14-20%). Overnight quadrant analysis (EXP-2589): BASAL SLIGHTLY LOW. [Controller: Loop]",
+        "rationale": "Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.",
+        "confidence_grade": null,
+        "ci_width_pct": null
+      }
     },
     {
       "action_type": "clinical_insight",
@@ -1433,9 +1433,9 @@
     "n_inferred": 176,
     "days_of_data": 60.00694444444445
   },
-  "pipeline_latency_ms": 15600.70304502733,
+  "pipeline_latency_ms": 15534.75114586763,
   "warnings": [
     "Cleaned 680 spikes (3.9% of readings)",
-    "Controller detected: AAPS (balanced). Settings visibility: 60%."
+    "Controller detected: Loop (compensating). Settings visibility: 30%."
   ]
 }

@@ -393,7 +393,16 @@ def _deduplicate_same_direction(
         mags = np.array([r.magnitude_pct for r in group])
         avg_mag = float(np.average(mags, weights=weights)) if weights.sum() > 0 else float(np.mean(mags))
 
-        total_delta = sum(r.predicted_tir_delta for r in group)
+        # Per-block deltas are not strictly additive (shared timeseries,
+        # diminishing returns); cap the sum at a plausible per-parameter
+        # ceiling so consolidated recs don't promise unrealistic TIR.
+        # See follow-up to GAP-ADVR-001 (block-merge inflation, EXP-2627).
+        _MERGED_TIR_CEILING = 8.0
+        raw_total = sum(r.predicted_tir_delta for r in group)
+        total_delta = round(
+            float(np.clip(raw_total, -_MERGED_TIR_CEILING, _MERGED_TIR_CEILING)),
+            1,
+        )
         max_conf = max(r.confidence for r in group)
 
         all_hours = [(r.affected_hours[0], r.affected_hours[1]) for r in group]
@@ -401,19 +410,29 @@ def _deduplicate_same_direction(
         max_h = max(h[1] for h in all_hours)
 
         mag_range = f"{min(mags):.0f}-{max(mags):.0f}%"
+        # Replace any per-block "+X.Xpp" claim in the borrowed rationale
+        # with the consolidated estimate so the displayed prose matches
+        # the predicted_tir_delta field.
+        import re as _re
+        base_rationale = _re.sub(
+            r"Predicted TIR improvement:\s*[+-]?\d+(?:\.\d+)?\s*pp\.?",
+            f"Consolidated TIR improvement across {len(group)} blocks: "
+            f"{total_delta:+.1f} pp.",
+            group[0].rationale,
+        )
         merged = SettingsRecommendation(
             parameter=group[0].parameter,
             direction=direction,
             magnitude_pct=round(avg_mag, 1),
             current_value=group[0].current_value,
             suggested_value=group[0].suggested_value,
-            predicted_tir_delta=round(total_delta, 1),
+            predicted_tir_delta=total_delta,
             affected_hours=(min_h, max_h),
             confidence=max_conf,
             evidence=(f"Consolidated from {len(group)} time-block advisories "
                       f"(range: {mag_range}). "
                       + group[0].evidence.split('.')[0] + '.'),
-            rationale=group[0].rationale,
+            rationale=base_rationale,
         )
         deduped.append(merged)
 

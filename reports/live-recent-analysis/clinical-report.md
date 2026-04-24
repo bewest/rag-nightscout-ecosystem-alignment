@@ -1,7 +1,7 @@
 # Clinical Analysis Report — patient `live-recent`
 
-_Generated: 2026-04-24T17:34:30.247480+00:00_  
-_Source parquet: `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/live-recent`_  
+_Generated: 2026-04-24T18:44:58.716602+00:00_  
+_Source parquet: `externals/ns-parquet/live-recent`_  
 _Profile timezone: `Etc/GMT+8`_  
 _Days of data: 60.0_
 
@@ -68,23 +68,23 @@ _Days of data: 60.0_
 
 ## 5. Recommendations
 
-### Rec 1: adjust_isf (priority 2), predicted TIR Δ +26.0 pp
-- Correction doses above 1.5U show diminishing returns. At 2.5U, each unit achieves only 18 mg/dL drop vs 40 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=18 for doses ≥2U. This is a pharmacokinetic property (β=0.9), not circadian.
-- Settings change: **isf** decrease 40.0 → 18.0 (+25 %)
-- Rationale: Correction doses above 1.5U show diminishing returns. At 2.5U, each unit achieves only 18 mg/dL drop vs 40 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=18 for doses ≥2U. This is a pharmacokinetic property (β=0.9), not circadian.
+### Rec 1: adjust_isf (priority 2), predicted TIR Δ +1.5 pp
+- PATIENCE MODE (EXP-2662): Cap IOB at 1.6U (1.5× median IOB of 1.1U) during wall episodes. Saves 60–82% of SMBs with ≤+2.1pp hyper increase. Additional insulin at the SC suppression ceiling has negligible glucose-lowering effect but increases delayed hypo risk.
+- Settings change: **isf** informational 1.08 → 1.62 (+0 %)
+- Rationale: PATIENCE MODE (EXP-2662): Cap IOB at 1.6U (1.5× median IOB of 1.1U) during wall episodes. Saves 60–82% of SMBs with ≤+2.1pp hyper increase. Additional insulin at the SC suppression ceiling has negligible glucose-lowering effect but increases delayed hypo risk.
 
-### Rec 2: adjust_basal_rate (priority 2), predicted TIR Δ +1.4 pp
-- Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.
-- Settings change: **basal_rate** increase 1.7000000476837158 → 2.04 (+17 %)
-- Rationale: Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.
-
-### Rec 3: adjust_correction_threshold (priority 2), predicted TIR Δ +0.1 pp
+### Rec 2: adjust_correction_threshold (priority 2), predicted TIR Δ +0.1 pp
 - Decrease correction threshold from 180 to 166 mg/dL. Corrections below 166 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.1pp.
 - Settings change: **correction_threshold** decrease 180.0 → 166.0 (+8 %)
 - Rationale: Decrease correction threshold from 180 to 166 mg/dL. Corrections below 166 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.1pp.
 
-### Rec 4: unannounced_meal_warning (priority 3), predicted TIR Δ +2.0 pp
+### Rec 3: unannounced_meal_warning (priority 3), predicted TIR Δ +2.0 pp
 - 98% of detected meals have no carb entry. Logging meals improves prediction accuracy and enables better pre-bolus timing.
+
+### Rec 4: adjust_basal_rate (priority 3), predicted TIR Δ +1.4 pp
+- Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.  ⚠️ Conflicts with overnight assessment (suggested -7.4% basal change, confidence 0.35). Possible alcohol- or EGP-suppression overnight pattern; do not act on this without clinician review.
+- Settings change: **basal_rate** increase 1.7000000476837158 → 2.04 (+17 %)
+- Rationale: Increase overnight basal by 20% (from 1.70 to 2.04 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.
 
 ### Rec 5: clinical_insight (priority 3), predicted TIR Δ +1.0 pp
 - Time above range is 33.6%. Consider reviewing correction factors and carb counting.
