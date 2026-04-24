@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import sys
 import unittest
+import pytest
 from pathlib import Path
 
 import numpy as np
@@ -135,6 +136,7 @@ def make_patient(n: int = 4320, with_insulin: bool = True,
 # ── 1. Type Contract Tests ────────────────────────────────────────────
 
 class TestEnumContracts(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Enums have the expected members and string values."""
 
     def test_glycemic_grades(self):
@@ -173,6 +175,7 @@ class TestEnumContracts(unittest.TestCase):
 
 
 class TestPatientProfileUnits(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """PatientProfile mmol/L ↔ mg/dL conversion for ISF."""
 
     def test_mgdl_profile_passthrough(self):
@@ -249,6 +252,7 @@ class TestPatientProfileUnits(unittest.TestCase):
 
 
 class TestPatientDataContracts(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """PatientData invariants: computed properties, optional degradation."""
 
     def test_n_samples(self):
@@ -278,6 +282,7 @@ class TestPatientDataContracts(unittest.TestCase):
 
 
 class TestDetectedMealContract(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """DetectedMeal fields match production usage (no duration_min!)."""
 
     def test_required_fields(self):
@@ -303,6 +308,7 @@ class TestDetectedMealContract(unittest.TestCase):
 
 
 class TestMealHistoryContract(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """MealHistory fields match production usage."""
 
     def test_required_fields(self):
@@ -327,6 +333,7 @@ class TestMealHistoryContract(unittest.TestCase):
 
 
 class TestMealPredictionContract(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """MealPrediction has dual-mode fields (Phase 4 addition)."""
 
     def test_dual_mode_fields_exist(self):
@@ -338,6 +345,7 @@ class TestMealPredictionContract(unittest.TestCase):
 
 
 class TestPipelineResultContract(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """PipelineResult has all expected stage outputs."""
 
     def test_required_fields(self):
@@ -356,6 +364,7 @@ class TestPipelineResultContract(unittest.TestCase):
 
 
 class TestForecastResultContract(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """ForecastResult type contract — fields, shapes, invariants."""
 
     def test_required_fields(self):
@@ -402,6 +411,7 @@ class TestForecastResultContract(unittest.TestCase):
 
 
 class TestGlucoseForecastModule(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """glucose_forecast.py: input preparation, constants, architecture."""
 
     def test_constants_match_exp619(self):
@@ -508,6 +518,7 @@ def _make_metabolic(n: int) -> MetabolicState:
 # ── 2. Module Contract Tests ──────────────────────────────────────────
 
 class TestDataQuality(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """data_quality.py: spike detection and cleaning contracts."""
 
     def setUp(self):
@@ -563,6 +574,7 @@ class TestDataQuality(unittest.TestCase):
 
 
 class TestMetabolicEngine(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """metabolic_engine.py: physics layer contracts."""
 
     def setUp(self):
@@ -624,6 +636,7 @@ class TestMetabolicEngine(unittest.TestCase):
 
 
 class TestTwoComponentDIA(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """metabolic_engine.py: two-component DIA decomposition (EXP-2525)."""
 
     def setUp(self):
@@ -751,6 +764,7 @@ class TestTwoComponentDIA(unittest.TestCase):
 
 
 class TestMealDetector(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """meal_detector.py: detection and history contracts."""
 
     def setUp(self):
@@ -817,6 +831,7 @@ class TestMealDetector(unittest.TestCase):
 
 
 class TestMealPredictor(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """meal_predictor.py: ML model and prediction contracts."""
 
     def setUp(self):
@@ -941,6 +956,7 @@ class TestMealPredictor(unittest.TestCase):
 
 
 class TestBasalAssessment(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """clinical_rules.assess_basal: slope-based assessment, AID-safe."""
 
     def setUp(self):
@@ -995,6 +1011,7 @@ class TestBasalAssessment(unittest.TestCase):
 
 
 class TestRecommender(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """recommender.py: output contracts."""
 
     def setUp(self):
@@ -1038,6 +1055,7 @@ class TestRecommender(unittest.TestCase):
 # ── 3. Pipeline Regression Tests ──────────────────────────────────────
 
 class TestPipelineRegression(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """End-to-end pipeline: doesn't crash, produces valid output."""
 
     def setUp(self):
@@ -1155,6 +1173,7 @@ class TestPipelineRegression(unittest.TestCase):
 # ── 4. Natural Experiment Detector Tests ──────────────────────────────
 
 class TestNaturalExperimentTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Type contracts for natural experiment detector."""
 
     def test_experiment_type_enum(self):
@@ -1213,6 +1232,7 @@ class TestNaturalExperimentTypes(unittest.TestCase):
 
 
 class TestNaturalExperimentDetector(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Module contracts for natural experiment detection."""
 
     def test_detect_returns_census(self):
@@ -1294,6 +1314,7 @@ class TestNaturalExperimentDetector(unittest.TestCase):
 
 
 class TestUAMCREnrichment(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test UAM window enrichment with CR-relevant fields."""
 
     def test_uam_has_cr_fields(self):
@@ -1420,6 +1441,7 @@ class TestUAMCREnrichment(unittest.TestCase):
 
 
 class TestNaturalExperimentPipeline(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """Integration tests: natural experiments through pipeline."""
 
     def test_pipeline_includes_experiments(self):
@@ -1442,6 +1464,7 @@ class TestNaturalExperimentPipeline(unittest.TestCase):
 # ── Settings Optimizer Tests (EXP-1701) ──────────────────────────────
 
 class TestSettingsOptimizerTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Type contracts for settings optimization types."""
 
     def test_setting_schedule_entry_fields(self):
@@ -1515,6 +1538,7 @@ class TestSettingsOptimizerTypes(unittest.TestCase):
 
 
 class TestSettingsOptimizerModule(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Module contracts for settings_optimizer."""
 
     def _make_census(self):
@@ -1697,6 +1721,7 @@ class TestSettingsOptimizerModule(unittest.TestCase):
 
 
 class TestSettingsOptimizerPipeline(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """Integration: settings optimizer through pipeline."""
 
     def test_pipeline_includes_optimal_settings(self):
@@ -1722,6 +1747,7 @@ class TestSettingsOptimizerPipeline(unittest.TestCase):
 # ── Circadian ISF & Context CR Tests ─────────────────────────────────
 
 class TestCircadianISF(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Tests for advise_circadian_isf (EXP-2271)."""
 
     def test_returns_empty_with_insufficient_data(self):
@@ -1760,6 +1786,7 @@ class TestCircadianISF(unittest.TestCase):
 
 
 class TestContextCR(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Tests for context-aware CR (EXP-2341)."""
 
     def test_compute_context_cr_baseline(self):
@@ -1821,6 +1848,7 @@ class TestContextCR(unittest.TestCase):
 
 
 class TestSettingsAdviceIntegration(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """Test generate_settings_advice integrates new functions."""
 
     def test_accepts_carbs_kwarg(self):
@@ -1851,6 +1879,7 @@ class TestSettingsAdviceIntegration(unittest.TestCase):
 # ── Controller-Specific Tests (EXP-2081) ─────────────────────────────
 
 class TestControllerTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test ControllerType and ControllerBehavior types."""
 
     def test_controller_type_values(self):
@@ -1870,6 +1899,7 @@ class TestControllerTypes(unittest.TestCase):
 
 
 class TestControllerDetection(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test controller detection logic."""
 
     def test_detect_from_metadata(self):
@@ -1934,6 +1964,7 @@ class TestControllerDetection(unittest.TestCase):
 # ── Overnight Drift & Loop Workload Tests (EXP-2371–2396) ────────────
 
 class TestOvernightDriftTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Type contracts for overnight phenotype and assessment."""
 
     def test_overnight_phenotype_values(self):
@@ -1983,6 +2014,7 @@ class TestOvernightDriftTypes(unittest.TestCase):
 
 
 class TestLoopWorkloadTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Type contracts for loop workload report."""
 
     def test_loop_workload_report_fields(self):
@@ -2008,6 +2040,7 @@ class TestLoopWorkloadTypes(unittest.TestCase):
 
 
 class TestOvernightDriftFunction(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test assess_overnight_drift function."""
 
     def test_returns_none_insufficient_data(self):
@@ -2088,6 +2121,7 @@ class TestOvernightDriftFunction(unittest.TestCase):
 
 
 class TestLoopWorkloadFunction(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test compute_loop_workload function."""
 
     def test_returns_none_without_basal(self):
@@ -2153,6 +2187,7 @@ class TestLoopWorkloadFunction(unittest.TestCase):
 
 
 class TestOvernightDriftIntegration(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """Test overnight drift and loop workload integrate into pipeline."""
 
     def test_generate_settings_advice_accepts_new_kwargs(self):
@@ -2192,6 +2227,7 @@ if __name__ == "__main__":
     unittest.main()
 
 class TestThreeWindowRoutingIntegration(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """Integration test for 3-window forecast routing (w48, w96, w144).
     
     Validates that the pipeline correctly routes forecasts to different
@@ -2371,6 +2407,7 @@ class TestThreeWindowRoutingIntegration(unittest.TestCase):
 # ── ISF Non-Linearity Advisory Tests (EXP-2511) ─────────────────────
 
 class TestISFNonlinearityTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Type-level tests for ISF non-linearity constants."""
 
     def test_population_beta_value(self):
@@ -2385,6 +2422,7 @@ class TestISFNonlinearityTypes(unittest.TestCase):
 
 
 class TestISFNonlinearityFunction(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Functional tests for advise_isf_nonlinearity."""
 
     def _make_clinical(self, mean_glucose=180.0):
@@ -2481,6 +2519,7 @@ class TestISFNonlinearityFunction(unittest.TestCase):
 
 
 class TestISFNonlinearityIntegration(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Integration: non-linearity advisory in generate_settings_advice."""
 
     def test_bolus_kwarg_accepted(self):
@@ -2517,6 +2556,7 @@ class TestISFNonlinearityIntegration(unittest.TestCase):
 # ── Correction Threshold Tests (EXP-2528) ────────────────────────────
 
 class TestCorrectionThresholdTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Type-level tests for correction threshold constants."""
 
     def test_population_threshold_value(self):
@@ -2541,6 +2581,7 @@ class TestCorrectionThresholdTypes(unittest.TestCase):
 
 
 class TestCorrectionThresholdFunction(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Functional tests for advise_correction_threshold."""
 
     def _make_clinical(self, mean_glucose=180.0):
@@ -2683,6 +2724,7 @@ class TestCorrectionThresholdFunction(unittest.TestCase):
 
 
 class TestCorrectionThresholdIntegration(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Integration: correction threshold advisory in generate_settings_advice."""
 
     def test_correction_events_kwarg_accepted(self):
@@ -2754,6 +2796,7 @@ class TestCorrectionThresholdIntegration(unittest.TestCase):
 # ── Circadian ISF Profiled Tests (EXP-2271, 4-block) ─────────────────
 
 class TestCircadianISFProfiledTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Type-level tests for circadian ISF profiled constants."""
 
     def test_circadian_blocks_is_dict(self):
@@ -2780,6 +2823,7 @@ class TestCircadianISFProfiledTypes(unittest.TestCase):
 
 
 class TestCircadianISFProfiledFunction(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Functional tests for advise_circadian_isf_profiled."""
 
     def _make_profile(self, isf=50.0):
@@ -2936,6 +2980,7 @@ class TestCircadianISFProfiledFunction(unittest.TestCase):
 
 
 class TestCircadianISFProfiledIntegration(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Integration: circadian ISF profiled in generate_settings_advice."""
 
     def test_correction_events_with_hour_accepted(self):
@@ -3016,6 +3061,7 @@ class TestCircadianISFProfiledIntegration(unittest.TestCase):
 # ── CR Adequacy Tests (EXP-2535/2536) ─────────────────────────────────
 
 class TestCRAdequacyTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Type-level tests for CR adequacy constants."""
 
     def test_min_meals_value(self):
@@ -3040,6 +3086,7 @@ class TestCRAdequacyTypes(unittest.TestCase):
 
 
 class TestCRAdequacyFunction(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Functional tests for advise_cr_adequacy."""
 
     def _make_profile(self, cr=10.0):
@@ -3196,6 +3243,7 @@ class TestCRAdequacyFunction(unittest.TestCase):
 
 
 class TestCRAdequacyIntegration(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Integration: CR adequacy in generate_settings_advice."""
 
     def test_meal_events_kwarg_accepted(self):
@@ -3277,6 +3325,7 @@ class TestCRAdequacyIntegration(unittest.TestCase):
 # ── Hypo Risk Type Tests (EXP-2539) ──────────────────────────────────
 
 class TestHypoRiskResultType(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """Type contract tests for HypoRiskResult dataclass."""
 
     def test_instantiation(self):
@@ -3318,6 +3367,7 @@ class TestHypoRiskResultType(unittest.TestCase):
 # ── Hypo Risk Functional Tests (EXP-2539) ────────────────────────────
 
 class TestComputeHypoRisk(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Functional tests for compute_hypo_risk."""
 
     def setUp(self):
@@ -3444,6 +3494,7 @@ class TestComputeHypoRisk(unittest.TestCase):
 # ── Hypo Risk Pipeline Integration (EXP-2539) ────────────────────────
 
 class TestHypoRiskPipelineIntegration(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """Integration test: hypo_risk runs as pipeline stage."""
 
     def test_pipeline_populates_hypo_risk(self):
@@ -3462,6 +3513,7 @@ class TestHypoRiskPipelineIntegration(unittest.TestCase):
 # ── Pipeline Event Extraction Tests (EXP-2528/2535/2536) ─────────────
 
 class TestCorrectionEventExtraction(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Tests for _extract_correction_events in pipeline.py."""
 
     def test_basic_correction_detection(self):
@@ -3550,6 +3602,7 @@ class TestCorrectionEventExtraction(unittest.TestCase):
 
 
 class TestMealEventExtraction(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Tests for _extract_meal_events in pipeline.py."""
 
     def test_basic_meal_detection(self):
@@ -3608,6 +3661,7 @@ class TestMealEventExtraction(unittest.TestCase):
 
 
 class TestPipelineAdvisoryWiring(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """Integration: pipeline passes bolus/correction_events/meal_events."""
 
     def test_pipeline_passes_bolus_to_settings(self):
@@ -3646,6 +3700,7 @@ class TestPipelineAdvisoryWiring(unittest.TestCase):
 # ── Patient Phenotype Tests (EXP-2541) ────────────────────────────────
 
 class TestPatientPhenotypeTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Type contracts for PatientPhenotype and PatientPhenotypeResult."""
 
     def test_phenotype_enum_values(self):
@@ -3670,6 +3725,7 @@ class TestPatientPhenotypeTypes(unittest.TestCase):
 
 
 class TestPatientPhenotyper(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Module contract tests for classify_patient_phenotype."""
 
     def test_well_controlled_classification(self):
@@ -3761,6 +3817,7 @@ class TestPatientPhenotyper(unittest.TestCase):
 
 
 class TestPhenotypePipelineIntegration(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """Integration: phenotype runs as pipeline stage."""
 
     def test_pipeline_populates_phenotype(self):
@@ -3777,6 +3834,7 @@ class TestPhenotypePipelineIntegration(unittest.TestCase):
 # ── Loop Quality Tests (EXP-2538/2540) ───────────────────────────────
 
 class TestLoopQualityTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Type contracts for LoopQualityResult."""
 
     def test_result_fields(self):
@@ -3796,6 +3854,7 @@ class TestLoopQualityTypes(unittest.TestCase):
 
 
 class TestLoopQualityAssessment(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Module contract tests for assess_loop_quality."""
 
     def test_no_hypos_good_grade(self):
@@ -3921,6 +3980,7 @@ class TestLoopQualityAssessment(unittest.TestCase):
 
 
 class TestLoopQualityPipelineIntegration(unittest.TestCase):
+    pytestmark = pytest.mark.integration
     """Integration: loop quality runs as pipeline stage."""
 
     def test_pipeline_populates_loop_quality(self):
@@ -3942,6 +4002,7 @@ class TestLoopQualityPipelineIntegration(unittest.TestCase):
 # ── Profile Generator Tests (WS-2) ──────────────────────────────────
 
 class TestProfileGeneratorTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Type and structure tests for profile_generator.py."""
 
     def test_generated_profile_fields(self):
@@ -3962,6 +4023,7 @@ class TestProfileGeneratorTypes(unittest.TestCase):
 
 
 class TestProfileGeneratorOref0(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test oref0 format output."""
 
     def _make_profile(self):
@@ -4027,6 +4089,7 @@ class TestProfileGeneratorOref0(unittest.TestCase):
 
 
 class TestProfileGeneratorLoop(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test Loop format output."""
 
     def _make_profile(self):
@@ -4065,6 +4128,7 @@ class TestProfileGeneratorLoop(unittest.TestCase):
 
 
 class TestProfileGeneratorTrio(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test Trio format output."""
 
     def _make_profile(self):
@@ -4101,6 +4165,7 @@ class TestProfileGeneratorTrio(unittest.TestCase):
 
 
 class TestProfileGeneratorNightscout(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test Nightscout ProfileSet format."""
 
     def _make_profile(self):
@@ -4144,6 +4209,7 @@ class TestProfileGeneratorNightscout(unittest.TestCase):
 
 
 class TestProfileGeneratorConstraints(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test physiological constraint enforcement."""
 
     def test_clamp_basal(self):
@@ -4164,6 +4230,7 @@ class TestProfileGeneratorConstraints(unittest.TestCase):
 
 
 class TestProfileGeneratorJSON(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test JSON serialization."""
 
     def _make_profile(self):
@@ -4191,6 +4258,7 @@ class TestProfileGeneratorJSON(unittest.TestCase):
 # ── Prediction Validator Tests (WS-3) ───────────────────────────────
 
 class TestPredictionValidatorTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Type tests for prediction_validator.py."""
 
     def test_validation_result_fields(self):
@@ -4232,6 +4300,7 @@ class TestPredictionValidatorTypes(unittest.TestCase):
 
 
 class TestPredictionValidatorExecution(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Functional tests for validation on synthetic data."""
 
     def test_validate_patient_synthetic(self):
@@ -4287,6 +4356,7 @@ class TestPredictionValidatorExecution(unittest.TestCase):
 # ─── Forward Simulator Tests ──────────────────────────────────────────
 
 class TestForwardSimulator(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Tests for the forward simulation engine."""
 
     def setUp(self):
@@ -4606,6 +4676,7 @@ class TestForwardSimulator(unittest.TestCase):
 # ── Override ISF Advisory Tests (EXP-2621) ────────────────────────────
 
 class TestOverrideISFAdvisory(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test advise_override_isf function."""
 
     def test_no_advisory_without_enough_data(self):
@@ -4727,6 +4798,7 @@ class TestOverrideISFAdvisory(unittest.TestCase):
 # ── Advisory Confidence Tier Tests (EXP-2622) ────────────────────────
 
 class TestAdvisoryConfidenceTier(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test advisory confidence tier functions."""
 
     def test_tier_insufficient(self):
@@ -4830,6 +4902,7 @@ class TestAdvisoryConfidenceTier(unittest.TestCase):
 
 
 class TestSafetyClamp(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Tests for apply_safety_clamp (EXP-2626)."""
 
     def test_clamp_reduces_large_magnitude(self):
@@ -4956,6 +5029,7 @@ class TestSafetyClamp(unittest.TestCase):
 
 
 class TestAdvisoryDeduplication(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Tests for _deduplicate_same_direction (EXP-2627)."""
 
     def test_merges_same_param_same_direction(self):
@@ -5114,6 +5188,7 @@ class TestAdvisoryDeduplication(unittest.TestCase):
 
 
 class TestComputeDemandISF(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test compute_demand_isf from clinical_rules."""
 
     def _make_correction_glucose(self, n_corrections=8, base_bg=200.0,
@@ -5294,6 +5369,7 @@ class TestComputeDemandISF(unittest.TestCase):
 
 
 class TestDetectInsulinSaturation(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test detect_insulin_saturation from clinical_rules."""
 
     def test_returns_none_with_no_iob(self):
@@ -5367,6 +5443,7 @@ class TestDetectInsulinSaturation(unittest.TestCase):
 
 
 class TestAssessBasalCleanNight(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test clean-night filtering in assess_basal."""
 
     def test_clean_night_filtering(self):
@@ -5419,6 +5496,7 @@ class TestAssessBasalCleanNight(unittest.TestCase):
 
 
 class TestAdviseISF(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test advise_isf: demand-phase ISF targeting with apparent fallback."""
 
     def _make_clinical(self, effective_isf=150.0, isf_discrepancy=3.0):
@@ -5515,6 +5593,7 @@ class TestAdviseISF(unittest.TestCase):
 
 
 class TestExcessInsulinCalculation(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Verify excess_insulin_u is sum of excess IOB (stock), not flow."""
 
     def test_excess_insulin_is_stock_not_flow(self):
@@ -5539,6 +5618,7 @@ class TestExcessInsulinCalculation(unittest.TestCase):
 
 
 class TestCleanNightFallback(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Verify tiered fallback for clean-night basal assessment."""
 
     def test_fallback_to_relaxed_overnight(self):
@@ -5559,6 +5639,7 @@ class TestCleanNightFallback(unittest.TestCase):
 
 
 class TestOvernightDrift48hCarbs(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test 48h carb history integration in assess_overnight_drift."""
 
     def test_low_carbs_with_rising_drift_adds_glycogen_note(self):
@@ -5598,6 +5679,7 @@ class TestOvernightDrift48hCarbs(unittest.TestCase):
 
 
 class TestStackingPrevention35h(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test 3.5h stacking threshold (EXP-2624 EGP nadir awareness)."""
 
     def test_stacking_at_3h_flagged(self):
@@ -5632,6 +5714,7 @@ class TestStackingPrevention35h(unittest.TestCase):
 
 
 class TestAdvisePatienceMode(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test advise_patience_mode from settings_advisor."""
 
     def test_returns_none_when_not_eligible(self):
@@ -5702,6 +5785,7 @@ class TestAdvisePatienceMode(unittest.TestCase):
 
 
 class TestAdviseISFDualPhase(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test advise_isf_dual_phase from settings_advisor."""
 
     def test_returns_none_with_no_data(self):
@@ -5758,6 +5842,7 @@ class TestAdviseISFDualPhase(unittest.TestCase):
 
 
 class TestComputeApparentISFAlias(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test that compute_effective_isf alias still works."""
 
     def test_alias_exists(self):
@@ -5767,6 +5852,7 @@ class TestComputeApparentISFAlias(unittest.TestCase):
 
 
 class TestDualPhaseISFType(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test DualPhaseISF dataclass."""
 
     def test_basic_instantiation(self):
@@ -5792,6 +5878,7 @@ class TestDualPhaseISFType(unittest.TestCase):
 
 
 class TestSaturationTypes(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test SaturationLevel and SaturationAssessment types."""
 
     def test_saturation_level_values(self):
@@ -5819,6 +5906,7 @@ class TestSaturationTypes(unittest.TestCase):
 # ── Tests for Autoproductionized Advisories (EXP-2627/2628/1301/2656/2640) ──
 
 class TestCarbContextOvernightAdvisory(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test advise_carb_context_overnight function (EXP-2627/2628)."""
 
     def test_no_advisory_insufficient_data(self):
@@ -5908,6 +5996,7 @@ class TestCarbContextOvernightAdvisory(unittest.TestCase):
 
 
 class TestResponseCurveISFAdvisory(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test advise_response_curve_isf function (EXP-1301)."""
 
     def test_no_advisory_insufficient_data(self):
@@ -5970,6 +6059,7 @@ class TestResponseCurveISFAdvisory(unittest.TestCase):
 
 
 class TestSCCeilingAdvisory(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test advise_sc_ceiling function (EXP-2656/2667)."""
 
     def test_no_advisory_insufficient_data(self):
@@ -6021,6 +6111,7 @@ class TestSCCeilingAdvisory(unittest.TestCase):
 
 
 class TestDoseResponseISFAdvisory(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test advise_dose_response_isf and compute_dose_response_isf (EXP-2640)."""
 
     def test_no_advisory_insufficient_data(self):
@@ -6113,6 +6204,7 @@ class TestDoseResponseISFAdvisory(unittest.TestCase):
 
 
 class TestComputeSCCeiling(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test compute_sc_ceiling function directly (EXP-2656/2667)."""
 
     def test_returns_none_insufficient_data(self):
@@ -6134,6 +6226,7 @@ class TestComputeSCCeiling(unittest.TestCase):
 
 
 class TestComputeDoseResponseISF(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Test compute_dose_response_isf function directly (EXP-2636/2640)."""
 
     def test_returns_none_no_bolus(self):
@@ -6155,6 +6248,7 @@ class TestComputeDoseResponseISF(unittest.TestCase):
 
 
 class TestCRSanityCheckContrast(unittest.TestCase):
+    pytestmark = pytest.mark.unit
     """Tests for EXP-2670 CR sanity-check contrast analysis.
 
     Validates that the CR contrast tool correctly:
