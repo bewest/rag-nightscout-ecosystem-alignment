@@ -154,7 +154,12 @@ than the schedule presumes.
 
 ## 6. Side question B: meal-isolation thresholds (smell test)
 
-**User's smell test:** most people eat 2–8 logged meals/day, evening
+> **Ground-truth update (2026-04-23, user-confirmed):**
+> *Patient C eats lunch + dinner + dessert; never breakfast.*
+> This invalidates the original "under-logger" framing and produces a more
+> useful finding (below).
+
+**User's general smell test:** most people eat 2–8 logged meals/day, evening
 dessert is real, "real meals" should be ≥ 50 g.
 
 **Production today** (`tools/cgmencode/production/meal_filter.py`):
@@ -162,60 +167,83 @@ dessert is real, "real meals" should be ≥ 50 g.
 - `REAL_MEAL_FLOOR_G = 10` g           → "is this a meal vs a snack?"
 - `SUBSTANTIAL_MEAL_G = 30` g          → "is this a substantial planned meal?"
 
-**Patient C measurement (180 days, 396 logged carb events):**
+### 6.1 Patient C eats small meals — the 50 g floor doesn't fit
 
-| Floor | Events | Mean/day | Median/day | Max/day | Days with 2–8 events | Evening share |
-|---:|---:|---:|---:|---:|---:|---:|
-| ≥ 5 g  | 385 | **2.50** | 2 | 7 | 60.0 % ✅ |  23 % |
-| ≥ 10 g | 377 | 2.46 | 2 | 7 | 59.4 % ✅ |  24 % |
-| ≥ 20 g | 234 | 1.92 | 2 | 5 | 38.3 % ❌ |  23 % |
-| ≥ 30 g | 141 | 1.48 | 1 | 3 | 20.0 % ❌ |  22 % |
-| **≥ 50 g** | **2** | 1.00 | 1 | 1 | 0.0 % ❌ | 50 % |
+Carb-size histogram for patient C's 396 logged events (180 days):
 
-![Meal floors](plots/05_meal_floors.png)
+| Size bin | Count | |
+|---|---:|---|
+|  0–2 g  |  11 | (treat-of-low dust) |
+|  5–10 g |   8 | |
+| **10–15 g** | **133** | dessert / snack / light lunch |
+| 15–20 g |  10 | |
+| **20–25 g** |  **84** | medium meal |
+| 25–30 g |   9 | |
+| **30–40 g** | **133** | full dinner |
+| 40–50 g |   6 | |
+| > 50 g  |   2 | (n=2 in 180 days — meaningless) |
 
-**Findings:**
+The distribution is sharply quantized at **10 / 20 / 30 g** (90 % of all
+events) — the patient mentally rounds. **Max meal = 50 g.** A "real meal
+≥ 50 g" floor would be 0 events for this patient. The user's
+50-g intuition is calibrated for higher-carb eaters; for this cohort
+**30 g is the right "substantial meal" floor** and matches production.
 
-1. **Patient C under-logs heavily.** Even at the lowest 5 g floor we see
-   only 2.5 carb events/day, which is at the *bottom* of the user's
-   2–8 expected range. Loop autobolus users routinely skip logging
-   when the controller catches the rise.
+### 6.2 Treat-of-low contamination: ~8 % at the 10 g floor
 
-2. **A 50 g floor would be a disaster for this patient.** Only 2 events
-   in 180 days clear it — meal-response analyses would be statistically
-   useless. The user's intuition about "real meals" doesn't survive
-   Loop-era under-logging.
+Applying a treat-of-low filter (prior 30-min minimum glucose ≥ 80 mg/dL):
 
-3. **The current 5/10/30 g ladder is the right *shape*** but the labels
-   are misleading for sparse-logging users:
-   - At 5 g (`REAL_CARB_EVENT_THRESHOLD_G`) we recover essentially all
-     logged events; near-zero noise filtering happens here.
-   - The 5 → 10 g step removes only **8 events** (385 → 377). For Loop
-     users who don't bother logging treat-of-low, this is fine; the
-     EXP-2866 audit rationale (30 % of cohort events are < 5 g) does
-     **not generalize** to patient C.
-   - Most attrition happens in the 10 → 30 g window (377 → 141 = 60 %
-     drop). This is where meal-analysis sample size collapses.
+|                             | Events | Per day |
+|---|---:|---:|
+| ≥ 10 g logged                | 377    | 2.10    |
+| ≥ 10 g AND prior 30-min ≥ 80 (real meals) | **320** | **1.78** |
+| Treat-of-low contamination   | 29     | 7.7 %   |
 
-4. **Evening dessert?** ~23 % of carb events occur ≥ 18:00 across all
-   floors except 50 g (where the n=2 sample is meaningless). That's
-   roughly 1 event every 2 days in the evening — plausible but
-   *under*-represented vs typical 30–40 % evening eating patterns,
-   reinforcing the under-logging hypothesis.
+Patient C has elevated TBR (4.7 %), so 7.7 % treat-of-low contamination
+in the meal stream is non-trivial. **`meal_filter.is_real_meal(carbs_g)`
+should be augmented with a `prior_glucose_30min` parameter** to suppress
+hypo-treatment events from meal-response cohorts.
 
-**Recommendations for meal isolation:**
+### 6.3 The lunch+dinner+dessert pattern is visible — but breakfast & overnight events surface a problem
 
-| Use case | Recommended floor | Rationale |
+After treat-of-low filter, by daypart:
+
+| Daypart        | Events / day | Vs ground truth |
+|---|---:|---|
+| Breakfast (05–11) | 0.31 | ground truth = **0** ⇒ likely phantom / dawn treat-of-low > 80 |
+| Lunch (11–15)     | 0.22 | matches ground-truth lunch |
+| Dinner (15–22)    | **0.69** | matches ground-truth dinner + dessert |
+| Overnight (22–05) | **0.55** | ground truth = 0 ⇒ contamination |
+
+Lunch + dinner align with ground truth. But **0.86/day events outside
+expected windows** — and most aren't classical treat-of-low. Likely
+sources:
+1. **Late-night dessert mis-stamped as "overnight"** (legitimate eating)
+2. **Loop UAM phantom-carb entries** (controller sometimes annotates
+   inferred meals as carb entries with size 10–15 g)
+3. **Wider-window hypo prophylaxis** (carbs eaten before bed because
+   "I felt low" but glucose was already > 80)
+
+This confirms: **logged carbs alone are an unreliable meal sensor for
+Loop users**, even when not under-logging. The right fix is to combine
+logged carbs with **glucose-rise inference** (`meal_detector.py`,
+EXP-1597 ARI = 0.976) and reconcile.
+
+### 6.4 Recommendations for meal isolation
+
+| Use case | Recommended floor + filter | Rationale |
 |---|---|---|
-| "Did anything happen?" detection | **≥ 5 g** (current) | catches almost all logged events |
-| Meal-response statistics (CR, COB) | **≥ 10 g** AND **time_since_carb_min ≥ 180** | excludes correction snacks without losing samples |
-| Substantial-meal absorption studies | **≥ 30 g** (current) | matches population EXP-2866 rationale |
-| **Glucose-rise inferred meal detection** | not yet wired in | `meal_detector.py` exists (2σ residual burst) but is not invoked in `run_pipeline()`; would help recover unlogged meals on Loop users like patient C |
+| "Did anything happen?" detection | ≥ 5 g (current) | catches all logged events |
+| **Meal-response statistics** (CR, COB) | **≥ 10 g AND prior 30-min glucose ≥ 80** | excludes 7.7 % treat-of-low contamination |
+| Substantial-meal absorption studies | ≥ 30 g (current) | matches population EXP-2866 *and* this patient's actual dinner size |
+| User's "real meal ≥ 50 g" floor | **NOT recommended** | excludes ~98 % of meals for small-meal eaters like patient C; calibrated for higher-carb populations |
+| **Phantom-carb / UAM detection** | logged_rate vs `meal_detector.detect_meal_events` rate, per-patient | flag patients whose ratio < 0.5 (under-logging) or > 2.0 (Loop phantom carbs) |
 
 The per-patient validation should compare **logged carb event rate** to
 **glucose-rise-inferred event rate** (`meal_detector.detect_meal_events`)
-and flag patients whose ratio < 0.5 as "under-logger" so downstream meal
-analyses widen confidence intervals or fall back to inferred events.
+*per daypart*, not just globally — patient C would show breakfast
+glucose-rise events near zero (no breakfast = no rise) which would
+confirm the daypart pattern automatically.
 
 ---
 
