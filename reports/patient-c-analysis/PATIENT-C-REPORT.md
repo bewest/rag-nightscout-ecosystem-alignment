@@ -189,20 +189,33 @@ events) — the patient mentally rounds. **Max meal = 50 g.** A "real meal
 50-g intuition is calibrated for higher-carb eaters; for this cohort
 **30 g is the right "substantial meal" floor** and matches production.
 
-### 6.2 Treat-of-low contamination: ~8 % at the 10 g floor
+### 6.2 Treat-of-low contamination: ~15 % at the 10 g floor — now filterable in production
 
-Applying a treat-of-low filter (prior 30-min minimum glucose ≥ 80 mg/dL):
+`meal_filter.is_real_meal()` now accepts an optional
+`prior_glucose_30min_min` argument (added 2026-04-23). With the
+production filter (`glucose.rolling(6, min_periods=1).min()`):
 
 |                             | Events | Per day |
 |---|---:|---:|
 | ≥ 10 g logged                | 377    | 2.10    |
 | ≥ 10 g AND prior 30-min ≥ 80 (real meals) | **320** | **1.78** |
-| Treat-of-low contamination   | 29     | 7.7 %   |
+| Treat-of-low rejection       | **57** | **15.1 %** |
 
-Patient C has elevated TBR (4.7 %), so 7.7 % treat-of-low contamination
-in the meal stream is non-trivial. **`meal_filter.is_real_meal(carbs_g)`
-should be augmented with a `prior_glucose_30min` parameter** to suppress
-hypo-treatment events from meal-response cohorts.
+Patient C's elevated TBR (4.7 %) means 15 % treat-of-low contamination
+is a meaningful confounder. **Now in production:**
+
+```python
+from tools.cgmencode.production.meal_filter import is_real_meal
+if is_real_meal(carbs_g, prior_glucose_30min_min=g_min_prior):
+    ...  # safe to include in meal-response cohort
+```
+
+Also added: `tools/cgmencode/production/meal_reconciliation.py` →
+`reconcile_meal_logging(logged, inferred, days_of_data)` returns a
+per-patient `MealLoggingQC` with `flag ∈ {under_logger, phantom_logger,
+well_aligned, insufficient_data}` plus a per-daypart breakdown
+(breakfast/lunch/dinner/overnight). Use it to widen confidence
+intervals on patients whose logged-vs-inferred ratio is out of band.
 
 ### 6.3 The lunch+dinner+dessert pattern is visible — but breakfast & overnight events surface a problem
 
@@ -234,7 +247,7 @@ EXP-1597 ARI = 0.976) and reconcile.
 | Use case | Recommended floor + filter | Rationale |
 |---|---|---|
 | "Did anything happen?" detection | ≥ 5 g (current) | catches all logged events |
-| **Meal-response statistics** (CR, COB) | **≥ 10 g AND prior 30-min glucose ≥ 80** | excludes 7.7 % treat-of-low contamination |
+| **Meal-response statistics** (CR, COB) | **`is_real_meal(carbs_g, prior_glucose_30min_min=g_min)`** | excludes ~15 % treat-of-low contamination |
 | Substantial-meal absorption studies | ≥ 30 g (current) | matches population EXP-2866 *and* this patient's actual dinner size |
 | User's "real meal ≥ 50 g" floor | **NOT recommended** | excludes ~98 % of meals for small-meal eaters like patient C; calibrated for higher-carb populations |
 | **Phantom-carb / UAM detection** | logged_rate vs `meal_detector.detect_meal_events` rate, per-patient | flag patients whose ratio < 0.5 (under-logging) or > 2.0 (Loop phantom carbs) |
