@@ -14,7 +14,7 @@ from ..forward_simulator import (
     InsulinEvent as _InsulinEvent,
     CarbEvent as _CarbEvent,
 )
-from ._simulation import simulate_tir_with_settings, MIN_DATA_DAYS, HIGH_CONFIDENCE_DAYS
+from ._simulation import simulate_tir_with_settings, MIN_DATA_DAYS, HIGH_CONFIDENCE_DAYS, PER_ADVISOR_TIR_DELTA_CAP_PP
 
 
 __all__ = [
@@ -863,7 +863,7 @@ def advise_correction_isf(
     direction = "decrease" if isf_mult < 1.0 else "increase"
     magnitude = abs(isf_mult - 1.0) * 100
     confidence = min(1.0, days_of_data / HIGH_CONFIDENCE_DAYS) * min(1.0, len(windows) / 50)
-    tir_delta = magnitude * 0.05
+    tir_delta = min(PER_ADVISOR_TIR_DELTA_CAP_PP, magnitude * 0.05)
 
     circadian_note = ""
     if abs(night_k - day_k) >= 0.5:
@@ -1393,7 +1393,7 @@ def advise_override_isf(
         magnitude_pct=magnitude,
         current_value=profile_isf,
         suggested_value=round(profile_isf * median_on, 1),
-        predicted_tir_delta=round(magnitude * 0.03, 1),
+        predicted_tir_delta=round(min(PER_ADVISOR_TIR_DELTA_CAP_PP, magnitude * 0.03), 1),
         affected_hours=(0.0, 24.0),
         confidence=confidence,
         evidence=(f"Override ISF analysis (EXP-2621): ISF ratio during overrides "

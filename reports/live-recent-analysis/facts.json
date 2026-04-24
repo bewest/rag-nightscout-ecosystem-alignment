@@ -1,6 +1,6 @@
 {
   "patient_id": "live-recent",
-  "generated_at_utc": "2026-04-24T19:40:52.797202+00:00",
+  "generated_at_utc": "2026-04-24T22:54:50.354946+00:00",
   "parquet_dir": "externals/ns-parquet/live-recent",
   "days_of_data": 60.00347222222222,
   "profile_timezone": "Etc/GMT+8",
@@ -29,8 +29,8 @@
       "isf_profile_median": null
     },
     "basal_mismatch_EXP_2869": {
-      "p_basal_mismatch": 0.0,
-      "median_recommended_mult": 1.2352941036224365
+      "p_basal_mismatch": 0.9533333333333334,
+      "median_recommended_mult": 0.8382352888584137
     },
     "isf_gap_EXP_2861": {
       "p_isf_under_correction": null,
@@ -61,64 +61,79 @@
   "meal_floor_audit": [
     {
       "floor_g": 5,
-      "n_events": 2,
-      "events_per_day": 1.0,
-      "n_days_with_meal": 2,
-      "n_days_with_2to8": 0,
-      "evening_share_pct": 0.0
+      "n_events": 176,
+      "events_per_day": 2.933163590070019,
+      "n_days_with_meal": 57,
+      "n_days_with_2to8": 54,
+      "evening_share_pct": 31.25,
+      "n_logged_events": 2,
+      "logged_events_per_day": 0.033331404432613856
     },
     {
       "floor_g": 10,
-      "n_events": 2,
-      "events_per_day": 1.0,
-      "n_days_with_meal": 2,
-      "n_days_with_2to8": 0,
-      "evening_share_pct": 0.0
+      "n_events": 176,
+      "events_per_day": 2.933163590070019,
+      "n_days_with_meal": 57,
+      "n_days_with_2to8": 54,
+      "evening_share_pct": 31.25,
+      "n_logged_events": 2,
+      "logged_events_per_day": 0.033331404432613856
     },
     {
       "floor_g": 20,
-      "n_events": 2,
-      "events_per_day": 1.0,
-      "n_days_with_meal": 2,
-      "n_days_with_2to8": 0,
-      "evening_share_pct": 0.0
+      "n_events": 172,
+      "events_per_day": 2.8665007812047913,
+      "n_days_with_meal": 57,
+      "n_days_with_2to8": 52,
+      "evening_share_pct": 31.976744186046513,
+      "n_logged_events": 2,
+      "logged_events_per_day": 0.033331404432613856
     },
     {
       "floor_g": 30,
-      "n_events": 2,
-      "events_per_day": 1.0,
-      "n_days_with_meal": 2,
-      "n_days_with_2to8": 0,
-      "evening_share_pct": 0.0
+      "n_events": 156,
+      "events_per_day": 2.5998495457438806,
+      "n_days_with_meal": 56,
+      "n_days_with_2to8": 49,
+      "evening_share_pct": 33.33333333333333,
+      "n_logged_events": 2,
+      "logged_events_per_day": 0.033331404432613856
     },
     {
       "floor_g": 50,
-      "n_events": 1,
-      "events_per_day": 1.0,
-      "n_days_with_meal": 1,
-      "n_days_with_2to8": 0,
-      "evening_share_pct": 0.0
+      "n_events": 91,
+      "events_per_day": 1.5165789016839304,
+      "n_days_with_meal": 46,
+      "n_days_with_2to8": 29,
+      "evening_share_pct": 36.26373626373626,
+      "n_logged_events": 1,
+      "logged_events_per_day": 0.016665702216306928
     }
   ],
   "meal_smell_test": {
     "5g": {
-      "events_per_day": 1.0,
-      "passes_2to8": false
+      "events_per_day": 2.933163590070019,
+      "logged_events_per_day": 0.033331404432613856,
+      "passes_2to8": true
     },
     "10g": {
-      "events_per_day": 1.0,
-      "passes_2to8": false
+      "events_per_day": 2.933163590070019,
+      "logged_events_per_day": 0.033331404432613856,
+      "passes_2to8": true
     },
     "20g": {
-      "events_per_day": 1.0,
-      "passes_2to8": false
+      "events_per_day": 2.8665007812047913,
+      "logged_events_per_day": 0.033331404432613856,
+      "passes_2to8": true
     },
     "30g": {
-      "events_per_day": 1.0,
-      "passes_2to8": false
+      "events_per_day": 2.5998495457438806,
+      "logged_events_per_day": 0.033331404432613856,
+      "passes_2to8": true
     },
     "50g": {
-      "events_per_day": 1.0,
+      "events_per_day": 1.5165789016839304,
+      "logged_events_per_day": 0.016665702216306928,
       "passes_2to8": false
     }
   },

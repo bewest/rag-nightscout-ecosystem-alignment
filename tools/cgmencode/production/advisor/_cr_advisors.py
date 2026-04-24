@@ -7,7 +7,7 @@ from ..types import (
     ClinicalReport, MetabolicState, PatientProfile,
     SettingsParameter, SettingsRecommendation, PeriodMetrics,
 )
-from ._simulation import simulate_tir_with_settings, MIN_DATA_DAYS, HIGH_CONFIDENCE_DAYS, PERIODS
+from ._simulation import simulate_tir_with_settings, MIN_DATA_DAYS, HIGH_CONFIDENCE_DAYS, PERIODS, PER_ADVISOR_TIR_DELTA_CAP_PP
 
 
 __all__ = [
@@ -78,7 +78,7 @@ def advise_cr(glucose: np.ndarray,
         magnitude_pct=magnitude,
         current_value=current_cr,
         suggested_value=round(suggested, 1),
-        predicted_tir_delta=round(best_delta * 100, 1),
+        predicted_tir_delta=round(min(PER_ADVISOR_TIR_DELTA_CAP_PP, best_delta * 100), 1),
         affected_hours=(5.0, 21.0),
         confidence=confidence,
         evidence=(f"CR effectiveness score is {clinical.cr_score:.0f}/100 (poor). "

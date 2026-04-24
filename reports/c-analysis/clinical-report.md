@@ -1,6 +1,6 @@
 # Clinical Analysis Report — patient `c`
 
-_Generated: 2026-04-24T19:40:19.624624+00:00_  
+_Generated: 2026-04-24T22:54:31.778937+00:00_  
 _Source parquet: `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/training`_  
 _Profile timezone: `Etc/GMT+7`_  
 _Days of data: 180.0_
@@ -28,13 +28,15 @@ _Days of data: 180.0_
 
 ## 3. Meal-isolation smell test
 
-| Floor | Events/day | In 2–8 target? |
-|---|---|---|
-| ≥5g | 2.50 | ✅ |
-| ≥10g | 2.46 | ✅ |
-| ≥20g | 1.92 | ❌ |
-| ≥30g | 1.48 | ❌ |
-| ≥50g | 1.00 | ❌ |
+_Source: inferred meals from the production residual+insulin spectral detector (logged-carb input is treated as an unreliable prior). Logged column is shown for comparison only._
+
+| Floor | Inferred events/day | Logged events/day | In 2–8 target? |
+|---|---|---|---|
+| ≥5g | 0.09 | 2.14 | ❌ |
+| ≥10g | 0.09 | 2.09 | ❌ |
+| ≥20g | 0.03 | 1.30 | ❌ |
+| ≥30g | 0.00 | 0.78 | ❌ |
+| ≥50g | 0.00 | 0.01 | ❌ |
 
 ## 4. Meal-logging QC
 

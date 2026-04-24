@@ -13,6 +13,7 @@ __all__ = [
     'HIGH_CONFIDENCE_DAYS',
     'MIN_DATA_DAYS',
     'PERIODS',
+    'PER_ADVISOR_TIR_DELTA_CAP_PP',
     'SIMULATION_STEPS',
     '_FAST_FRACTION',
     '_FAST_TAU_STEPS',
@@ -36,6 +37,14 @@ _POWER_LAW_BETA = 0.9                                # from EXP-2511
 # Confidence thresholds
 MIN_DATA_DAYS = 3.0       # Minimum data for any recommendation
 HIGH_CONFIDENCE_DAYS = 14.0  # Full confidence threshold
+
+# Per-advisor sanity ceiling for predicted_tir_delta (percentage points).
+# A single parameter change in a single block claiming more than this is
+# almost always a unit-confusion bug (fraction interpreted as pp, magnitude
+# scalar leaking through, etc.). Matches the dispatcher merge cap so the
+# downstream dedup arithmetic is bounded predictably. The dataclass
+# __post_init__ guard at +-15 pp is the last-line safety net (GAP-ADVR-003).
+PER_ADVISOR_TIR_DELTA_CAP_PP = 8.0
 
 # Period definitions for period-by-period analysis
 PERIODS = [

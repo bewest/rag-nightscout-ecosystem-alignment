@@ -1,6 +1,6 @@
 # Clinical Analysis Report — patient `live-recent`
 
-_Generated: 2026-04-24T19:40:52.797202+00:00_  
+_Generated: 2026-04-24T22:54:50.354946+00:00_  
 _Source parquet: `externals/ns-parquet/live-recent`_  
 _Profile timezone: `Etc/GMT+8`_  
 _Days of data: 60.0_
@@ -28,13 +28,15 @@ _Days of data: 60.0_
 
 ## 3. Meal-isolation smell test
 
-| Floor | Events/day | In 2–8 target? |
-|---|---|---|
-| ≥5g | 1.00 | ❌ |
-| ≥10g | 1.00 | ❌ |
-| ≥20g | 1.00 | ❌ |
-| ≥30g | 1.00 | ❌ |
-| ≥50g | 1.00 | ❌ |
+_Source: inferred meals from the production residual+insulin spectral detector (logged-carb input is treated as an unreliable prior). Logged column is shown for comparison only._
+
+| Floor | Inferred events/day | Logged events/day | In 2–8 target? |
+|---|---|---|---|
+| ≥5g | 2.93 | 0.03 | ✅ |
+| ≥10g | 2.93 | 0.03 | ✅ |
+| ≥20g | 2.87 | 0.03 | ✅ |
+| ≥30g | 2.60 | 0.03 | ✅ |
+| ≥50g | 1.52 | 0.02 | ❌ |
 
 ## 4. Meal-logging QC
 
@@ -49,8 +51,8 @@ _Days of data: 60.0_
 
 | Field | Value |
 |---|---|
-| p_basal_mismatch | 0.00 |
-| median_recommended_mult | 1.24 |
+| p_basal_mismatch | 0.95 |
+| median_recommended_mult | 0.84 |
 
 **Phenotype**
 

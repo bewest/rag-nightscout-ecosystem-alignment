@@ -9,7 +9,7 @@ from ..types import (
     PatientProfile, SettingsParameter, SettingsRecommendation,
     PeriodMetrics,
 )
-from ._simulation import simulate_tir_with_settings, MIN_DATA_DAYS, HIGH_CONFIDENCE_DAYS
+from ._simulation import simulate_tir_with_settings, MIN_DATA_DAYS, HIGH_CONFIDENCE_DAYS, PER_ADVISOR_TIR_DELTA_CAP_PP
 
 
 __all__ = [
@@ -129,7 +129,7 @@ def advise_basal(glucose: np.ndarray,
         magnitude_pct=magnitude,
         current_value=current_basal,
         suggested_value=round(suggested, 2),
-        predicted_tir_delta=round(best_delta * 100, 1),  # percentage points
+        predicted_tir_delta=round(min(PER_ADVISOR_TIR_DELTA_CAP_PP, best_delta * 100), 1),  # percentage points
         affected_hours=(0.0, 6.0),
         confidence=confidence,
         evidence=(f"Overnight TIR currently {overnight_tir*100:.0f}%. "
@@ -274,7 +274,7 @@ def advise_overnight_basal_quadrant(
         magnitude_pct=round(pct_increase, 0),
         current_value=sched_basal,
         suggested_value=suggested,
-        predicted_tir_delta=round(pct_increase * 0.05, 1),  # conservative
+        predicted_tir_delta=round(min(PER_ADVISOR_TIR_DELTA_CAP_PP, pct_increase * 0.05), 1),  # conservative
         affected_hours=(_OVERNIGHT_QUADRANT_START, _OVERNIGHT_QUADRANT_END),
         confidence=round(confidence, 2),
         evidence=(
