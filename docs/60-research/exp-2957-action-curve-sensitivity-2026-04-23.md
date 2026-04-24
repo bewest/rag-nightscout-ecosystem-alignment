@@ -36,7 +36,7 @@ N = 3,959 events (887 oref1, 1,675 Loop_AB_ON).
 |   90 | 360 |     −0.025 |          +1.094 |    −1.119 | 1.5e-13 |
 
 - **9/9 combos**: negative gap (oref1 sheds faster than Loop).
-- **9/9 combos**: p < 1e-10.
+- **8/9 combos**: p < 1e-10 (1 combo at p = 1.1e-10, just above threshold).
 - Median gap: −1.10 U.
 
 ## Interpretation
