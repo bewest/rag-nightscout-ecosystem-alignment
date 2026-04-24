@@ -384,17 +384,28 @@ not deeper cuts.
 
 ### Selection-bias hypothesis CLOSED
 
-Combined evidence:
-- EXP-2942 cross-cohort match (oref0 ≈ Loop_AB_OFF at no-SMB floor)
-- EXP-2943 variance decomposition (η²=0.64 design-dominated)
-- EXP-2944 true-IOB mechanism in sustained-high (iob_delta gap)
-- EXP-2946 IOB-timing in PP (cross-window validation; oref0
-  channel-positions shift by window class)
-- EXP-2947 IOB-age framework unifies all three windows
+Combined evidence (eight independent lines):
+1. EXP-2942 cross-cohort match (oref0 ≈ Loop_AB_OFF at no-SMB floor)
+2. EXP-2943 variance decomposition (η²=0.64 design-dominated)
+3. EXP-2944 true-IOB mechanism in sustained-high (iob_delta gap +1.18 U)
+4. EXP-2946 IOB-timing in PP (cross-window validation; oref0
+   channel-positions shift by window class)
+5. EXP-2947 IOB-age framework unifies all three windows
+6. EXP-2950 uniform biexponential action-curve (peak 75/DIA 300)
+   re-derives the iob_delta gap independent of grid `iob`
+   bookkeeping (p=9.5e-21; bg_delta gap 21.8 mg/dL p=1.7e-34)
+7. EXP-2953 same uniform curve at hypo descent: `synth_act_entry`
+   higher in Loop (p=4e-3); bg_min 4.1 mg/dL deeper (p=7e-25)
+8. EXP-2954 GOLD STANDARD within-patient regression: 19/19
+   patients negative slope on bg_min ~ synth_act_entry
+   (sign test p=1.9e-06); 15/19 individually p<0.05.
+   Mechanism is biology, not design-cohort artifact.
 
 The selection-bias hypothesis would need to coincidentally produce
-all five patterns from patient-cohort differences. Algorithm
-mechanism is the parsimonious explanation.
+all eight patterns from patient-cohort differences. EXP-2954 in
+particular operates entirely WITHIN patients, eliminating cohort
+composition as a possible explanation. Algorithm mechanism is the
+parsimonious explanation.
 
 ### AID-author lever priority order (FINAL)
 
