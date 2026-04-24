@@ -1,0 +1,6 @@
+floor_g,n_events,events_per_day,n_days_with_meal,n_days_with_2to8,evening_share_pct
+5,2,1.0,2,0,0.0
+10,2,1.0,2,0,0.0
+20,2,1.0,2,0,0.0
+30,2,1.0,2,0,0.0
+50,1,1.0,1,0,0.0

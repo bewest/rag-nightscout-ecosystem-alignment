@@ -1,0 +1,156 @@
+{
+  "patient_id": "live-recent",
+  "generated_at_utc": "2026-04-24T17:34:30.247480+00:00",
+  "parquet_dir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/live-recent",
+  "days_of_data": 60.00347222222222,
+  "profile_timezone": "Etc/GMT+8",
+  "glycemic_summary": {
+    "n_readings": 16035,
+    "mean_mgdl": 160.2882843017578,
+    "std_mgdl": 63.04923629760742,
+    "cv_pct": 39.33489990234375,
+    "tir_70_180": 0.6377923292797006,
+    "tbr_lt70": 0.02675397567820393,
+    "tbr_lt54": 0.0013719987527284067,
+    "tar_gt180": 0.33545369504209543,
+    "tar_gt250": 0.0876208294356096,
+    "ea1c_gmi_pct": 7.144095420837402
+  },
+  "facts_loaders": {
+    "controller_dynamics_EXP_2753": {
+      "controller_type": null,
+      "n_events": null,
+      "mean_correction_fraction": null,
+      "mean_smb_fraction": null,
+      "mean_excess_basal_fraction": null,
+      "mean_controller_fraction_of_excess": null,
+      "corr_denom_gap_closure": null,
+      "isf_corr_denom_median": null,
+      "isf_profile_median": null
+    },
+    "basal_mismatch_EXP_2869": {
+      "p_basal_mismatch": 0.0,
+      "median_recommended_mult": 1.2352941036224365
+    },
+    "isf_gap_EXP_2861": {
+      "p_isf_under_correction": null,
+      "p_isf_over_correction": null
+    },
+    "recovery_EXP_2862": {
+      "p_low_recovery": null
+    },
+    "phenotype": {
+      "stack_score": 2.0,
+      "brake_ratio": 0.2539636616132392,
+      "counter_reg_intercept": null,
+      "beta_nadir": null,
+      "p_haaf": null,
+      "evening_bolus_excess_4h": null,
+      "evening_iob_at_descent": null,
+      "controller_lineage": null
+    }
+  },
+  "per_patient_egp": {
+    "method": "EXP-2739 fasting-drift, deep-fasting subset",
+    "population_egp_mgdl_per_5min": 1.5,
+    "patient_glucose_roc_lowiob_mgdl_per_5min": -1.0,
+    "controller_equilib_basal_multiplier": 1.2222222810910088,
+    "n_deep_fasting_rows": 6734,
+    "n_equilib_rows": 1537
+  },
+  "meal_floor_audit": [
+    {
+      "floor_g": 5,
+      "n_events": 2,
+      "events_per_day": 1.0,
+      "n_days_with_meal": 2,
+      "n_days_with_2to8": 0,
+      "evening_share_pct": 0.0
+    },
+    {
+      "floor_g": 10,
+      "n_events": 2,
+      "events_per_day": 1.0,
+      "n_days_with_meal": 2,
+      "n_days_with_2to8": 0,
+      "evening_share_pct": 0.0
+    },
+    {
+      "floor_g": 20,
+      "n_events": 2,
+      "events_per_day": 1.0,
+      "n_days_with_meal": 2,
+      "n_days_with_2to8": 0,
+      "evening_share_pct": 0.0
+    },
+    {
+      "floor_g": 30,
+      "n_events": 2,
+      "events_per_day": 1.0,
+      "n_days_with_meal": 2,
+      "n_days_with_2to8": 0,
+      "evening_share_pct": 0.0
+    },
+    {
+      "floor_g": 50,
+      "n_events": 1,
+      "events_per_day": 1.0,
+      "n_days_with_meal": 1,
+      "n_days_with_2to8": 0,
+      "evening_share_pct": 0.0
+    }
+  ],
+  "meal_smell_test": {
+    "5g": {
+      "events_per_day": 1.0,
+      "passes_2to8": false
+    },
+    "10g": {
+      "events_per_day": 1.0,
+      "passes_2to8": false
+    },
+    "20g": {
+      "events_per_day": 1.0,
+      "passes_2to8": false
+    },
+    "30g": {
+      "events_per_day": 1.0,
+      "passes_2to8": false
+    },
+    "50g": {
+      "events_per_day": 1.0,
+      "passes_2to8": false
+    }
+  },
+  "meal_logging_qc": {
+    "logged_per_day": 0.033329475755120935,
+    "inferred_per_day": 2.932993866450642,
+    "ratio": 0.011363636363636364,
+    "flag": "under_logger",
+    "by_daypart": [
+      {
+        "daypart": "breakfast",
+        "logged_per_day": 0.0,
+        "inferred_per_day": 0.36662423330633026
+      },
+      {
+        "daypart": "lunch",
+        "logged_per_day": 0.0,
+        "inferred_per_day": 0.7332484666126605
+      },
+      {
+        "daypart": "dinner",
+        "logged_per_day": 0.033329475755120935,
+        "inferred_per_day": 0.8832311075107047
+      },
+      {
+        "daypart": "overnight",
+        "logged_per_day": 0.0,
+        "inferred_per_day": 0.9498900590209466
+      }
+    ],
+    "n_logged": 2,
+    "n_inferred": 176,
+    "days_of_data": 60.00694444444445
+  }
+}

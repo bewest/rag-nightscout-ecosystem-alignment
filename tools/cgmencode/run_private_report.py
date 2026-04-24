@@ -25,7 +25,10 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 LIVE_DIR = REPO / "externals/ns-data/live-recent"
 PARQUET_DIR = REPO / "externals/ns-parquet/live-recent"
-OUT_DIR = LIVE_DIR / "reports"
+# Default output: sibling to reports/patient-c-analysis/ so the rendered
+# markdown + plot PNGs surface on GitHub. The raw input parquet stays
+# under externals/ns-parquet/live-recent/ (gitignored).
+OUT_DIR = REPO / "reports/live-recent-analysis"
 
 
 def ensure_parquet(rebuild: bool = False) -> None:

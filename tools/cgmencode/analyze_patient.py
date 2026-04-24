@@ -525,7 +525,89 @@ def _render_markdown_report(out_dir, patient_id, payload, result, df):
             f"- Inferred (rises): {qc.n_inferred} ({qc.inferred_per_day:.2f}/day)",
         ]
         if qc.ratio is not None:
-            lines.append(f"- Inferred / logged ratio: {qc.ratio:.2f}")
+            lines.append(f"- Logged / inferred ratio: {qc.ratio:.2f}  "
+                         f"_(reconciliation rate; distinct from the "
+                         f"`unannounced_meal_warning` fraction in §5, "
+                         f"which is unannounced ÷ total detected meals)_")
+
+    # ── Wave-13 facts (controller dynamics, basal mismatch, ISF gap, recovery,
+    #    phenotype). Mirrors the bespoke PATIENT-C-REPORT.md tables so every
+    #    auto-generated report carries the same evidence depth.
+    facts = payload.get("facts_loaders") or {}
+    cd = facts.get("controller_dynamics_EXP_2753") or {}
+    bm = facts.get("basal_mismatch_EXP_2869") or {}
+    ig = facts.get("isf_gap_EXP_2861") or {}
+    rec_facts = facts.get("recovery_EXP_2862") or {}
+    phen = facts.get("phenotype") or {}
+
+    def _fmt(v, spec=".2f"):
+        if v is None:
+            return "_n/a_"
+        try:
+            return format(v, spec)
+        except (TypeError, ValueError):
+            return str(v)
+
+    has_any = any(v is not None for v in
+                  list(cd.values()) + list(bm.values()) + list(ig.values()) +
+                  list(rec_facts.values()) + list(phen.values()))
+    if has_any:
+        lines += ["", "## 4a. Wave-13 facts (read-only)", ""]
+        if any(v is not None for v in cd.values()):
+            lines += [
+                "**Controller dynamics (EXP-2753)**",
+                "",
+                "| Field | Value |",
+                "|---|---|",
+                f"| controller_type | {cd.get('controller_type') or '_n/a_'} |",
+                f"| n_events | {_fmt(cd.get('n_events'), '.0f')} |",
+                f"| mean_correction_fraction | {_fmt(cd.get('mean_correction_fraction'), '.3f')} |",
+                f"| mean_smb_fraction | {_fmt(cd.get('mean_smb_fraction'), '.3f')} |",
+                f"| corr_denom_gap_closure | {_fmt(cd.get('corr_denom_gap_closure'), '.2f')} |",
+                f"| isf_profile_median | {_fmt(cd.get('isf_profile_median'), '.0f')} |",
+                f"| isf_corr_denom_median | {_fmt(cd.get('isf_corr_denom_median'), '.0f')} |",
+                "",
+            ]
+        if any(v is not None for v in bm.values()):
+            lines += [
+                "**Basal mismatch (EXP-2869)**",
+                "",
+                "| Field | Value |",
+                "|---|---|",
+                f"| p_basal_mismatch | {_fmt(bm.get('p_basal_mismatch'), '.2f')} |",
+                f"| median_recommended_mult | {_fmt(bm.get('median_recommended_mult'), '.2f')} |",
+                "",
+            ]
+        if any(v is not None for v in ig.values()):
+            lines += [
+                "**ISF gap (EXP-2861)**",
+                "",
+                "| Field | Value |",
+                "|---|---|",
+                f"| p_isf_under_correction | {_fmt(ig.get('p_isf_under_correction'), '.2f')} |",
+                f"| p_isf_over_correction | {_fmt(ig.get('p_isf_over_correction'), '.2f')} |",
+                "",
+            ]
+        if any(v is not None for v in rec_facts.values()):
+            lines += [
+                "**Recovery dynamics (EXP-2862)**",
+                "",
+                "| Field | Value |",
+                "|---|---|",
+            ]
+            for k, v in rec_facts.items():
+                lines.append(f"| {k} | {_fmt(v, '.3f')} |")
+            lines.append("")
+        if phen:
+            lines += [
+                "**Phenotype**",
+                "",
+                "| Field | Value |",
+                "|---|---|",
+            ]
+            for k, v in phen.items():
+                lines.append(f"| {k} | {_fmt(v, '.3f') if isinstance(v, (int, float)) else str(v)} |")
+            lines.append("")
 
     lines += ["", "## 5. Recommendations", ""]
     if not recs:
@@ -537,7 +619,9 @@ def _render_markdown_report(out_dir, patient_id, payload, result, df):
             prio = getattr(rec, "priority", "")
             desc = getattr(rec, "description", "")
             tir = getattr(rec, "predicted_tir_delta", None)
-            tir_s = f", predicted TIR Δ {tir*100:+.1f} pp" if tir is not None else ""
+            # predicted_tir_delta is already in percentage points (advisors and
+            # recommender both emit pp, not fractions).
+            tir_s = f", predicted TIR Δ {tir:+.1f} pp" if tir is not None else ""
             lines.append(f"### Rec {i}: {action} (priority {prio}){tir_s}")
             if desc:
                 lines.append(f"- {desc}")
@@ -566,7 +650,7 @@ def _render_markdown_report(out_dir, patient_id, payload, result, df):
             if cur is not None and new is not None:
                 mag_s = f" ({mag:+.0f} %)" if mag is not None else ""
                 tir_s = (
-                    f", predicted TIR Δ {delta_tir*100:+.1f} pp"
+                    f", predicted TIR Δ {delta_tir:+.1f} pp"
                     if delta_tir is not None
                     else ""
                 )
@@ -575,17 +659,20 @@ def _render_markdown_report(out_dir, patient_id, payload, result, df):
                 lines.append(f"- Rationale: {rationale}")
         lines.append("")
 
-    lines += [
-        "## 6. Plots",
-        "",
-        "- ![AGP](plots/01_agp.png)",
-        "- ![Channel mix](plots/02_controller_donut.png)",
-        "- ![ISF reconciliation](plots/03_isf_reconciliation.png)",
-        "- ![Basal pattern](plots/04_basal_pattern.png)",
-        "- ![Meal floors](plots/05_meal_floors.png)",
-        "- ![EGP](plots/06_per_patient_egp.png)",
-        "",
+    plot_specs = [
+        ("01_agp.png", "AGP"),
+        ("02_controller_donut.png", "Channel mix"),
+        ("03_isf_reconciliation.png", "ISF reconciliation"),
+        ("04_basal_pattern.png", "Basal pattern"),
+        ("05_meal_floors.png", "Meal floors"),
+        ("06_per_patient_egp.png", "EGP"),
     ]
+    lines += ["## 6. Plots", ""]
+    plots_dir = out_dir / "plots"
+    for fname, label in plot_specs:
+        if (plots_dir / fname).exists():
+            lines.append(f"- ![{label}](plots/{fname})")
+    lines.append("")
     (out_dir / "clinical-report.md").write_text("\n".join(lines))
 
 
