@@ -628,3 +628,97 @@ core stays unchanged; the SMB-channel lever is now better resolved as:
 | SMB trigger frequency / IOB-ceiling at sustained-high | SMB (mean dose) | Loop ~2.06 vs oref1 ~1.26 U/60min | sustained-high entries | **NEW second-order lever** |
 | Temp-basal velocity modulation | basal-excess | <0.12 U per mg/dL/min (max +0.45 in 70-100 Loop_AB_OFF) | recovery from low (Loop_AB_OFF only) | Marginal except as SMB substitute |
 | User announce-meal pre-bolus | bolus (user) | +0.23–1.00 U per mg/dL/min | PP + sustained-high (user-driven) | NOT a controller lever |
+
+---
+
+### EXP-2971 / 2972 / 2973 / 2974 / 2975 (post-batch update)
+
+This batch tested the EXP-2966 sweet-spot per-patient, decomposed
+the lever, stratified by velocity sign, ran the formal U-shape
+test, and tied the data findings to source code.
+
+#### Headlines
+- **EXP-2971 (MIXED)** — per-patient sign-test in 70-100 no-carb:
+  Loop_AB_ON 5/5 positive (sign p=0.063), oref1 9/9 positive
+  (sign p=0.004). MWU between designs p=0.30 — within-design
+  directional consistency confirmed; between-design effect size
+  not separable per-patient at n=5 vs 9.
+- **EXP-2972 (POSITIVE / mechanism shift)** — pooled emission
+  decomposition: oref1 fires SMB at **2.06× the rate** of
+  Loop_AB_ON (em_rate 0.080 vs 0.039, disjoint CIs), with **44%
+  smaller per-event size** (0.169 U vs 0.244 U). **Total per-cell
+  SMB is higher for oref1** (0.0135 vs 0.0094 U/cell). Per-patient
+  MWU on em_rate p=0.060 (marginal); on mean_emission p=0.80 (null).
+  Loop_AB_ON is **bimodal across patients** (4/5 fire SMB <0.22%
+  of cells; patient `i` fires 12.4%).
+- **EXP-2973 (POSITIVE / mechanism decomposition)** — velocity
+  stratification reveals **complementary levers**: Loop_AB_ON
+  modulates **per-event MAGNITUDE** with velocity (mean_em rises
+  0.19→0.36 U from stable→rising, 1.9× scaling, ~flat em_rate).
+  oref1 modulates **EMISSION FREQUENCY** with velocity (em_rate
+  rises 0.048→0.097 from falling→rising, 2.0× scaling, ~flat
+  mean_em). Both designs back off appropriately on falling
+  velocity (slopes drop to +0.04 / −0.08).
+- **EXP-2974 (CODE MAPPING)** — source-code lookup tying findings
+  to specific dosing-path mechanisms:
+  - Loop's `partialDose = units × applicationFactor` with
+    `applicationFactor` 0.20-0.80 (GBAF) or 0.4 (constant); no
+    inter-cycle SMB gate; emission gated implicitly by
+    `bolus_increment` rounding.
+  - oref1's `microBolus = min(insulinReq/2, basal × 30/60)` with
+    explicit `SMBInterval=3min` and an `enable_smb()` gate that
+    requires `enableSMB_always` in no-carb context.
+  - Full deep-dive: `docs/10-domain/smb-emission-policy-deep-dive-2026-04-23.md`.
+- **EXP-2975 (POSITIVE)** — formal U-shape test confirms positive
+  curvature for both designs in no-carb context. Loop_AB_ON
+  c=+9.4e-6 (z=+9.2, p≈0), vertex BG=214 mg/dL, sharp U with
+  meaningful re-engagement at 260-300 mg/dL. oref1 c=+2.8e-6
+  (z=+3.15, p=0.002), vertex BG=347 mg/dL (out of range), nearly
+  monotonic-decreasing from 85 to 280 mg/dL.
+
+#### Evidence-line tally (post-batch)
+
+| # | Line | Source experiment(s) |
+|---|---|---|
+| 13 | Per-patient SMB-slope positivity at sweet spot (both designs) | EXP-2971 |
+| 14 | Lever decomposition: oref1 = frequency, Loop = magnitude | EXP-2972, 2973 |
+| 15 | Code-path mapping (SMB emission policy) | EXP-2974 (deep-dive) |
+| 16 | Formal U-shape (positive curvature) of SMB slope vs BG band | EXP-2975 |
+
+Evidence-line count: **16** (up from 12).
+
+#### Updated AID-author lever priority (post-EXP-2972/2973/2974)
+
+The single sentence that summarizes the campaign now:
+
+> The two SMB-equipped controllers (Loop AB-ON and oref1) achieve
+> comparable directional SMB-on-velocity behavior at the 70-100
+> mg/dL no-carb sweet spot via **complementary mechanisms**:
+> oref1 modulates emission FREQUENCY (gated by `SMBInterval` /
+> `enable_smb`); Loop modulates emission MAGNITUDE (gated by
+> `partialApplicationFactor` × predicted overshoot). Per-patient
+> outcome differences remain within natural variation; the
+> design-level signal lives at the pooled / cell-count level.
+
+| Lever | Channel | Mechanism | Code citation | Ranking |
+|---|---|---|---|---|
+| Cycle-frequency ceiling (`SMBInterval`) | SMB freq | oref1: 3-min minimum; Loop: cycle-only (5 min) | `DetermineBasalSMB.kt:1101`; `LoopDataManager.swift:1818` | **PRIMARY** |
+| Enable-gate policy (no-carb regime) | SMB rate | oref1: explicit `enable_smb()`; Loop: implicit `units > rounding` | `DetermineBasalSMB.kt:66`; `DoseMath.swift:101` | **PRIMARY** |
+| Per-event multiplier | SMB magnitude | Loop: `partialApplicationFactor` (0.20-0.80); oref1: hard `/2` | `GlucoseBasedApplicationFactorStrategy.swift:14`; `DetermineBasalSMB.kt:1065` | SECONDARY |
+| `maxSMBBasalMinutes` cap | SMB ceiling | oref1: `basal × 30/60`; Loop: `maxBolus × factor` | `SMBDefaults.kt`; `LoopDataManager.swift:1840` | TERTIARY |
+| Momentum integration into prediction | both | both fold velocity in; differs in where it gates | shared | implicit |
+
+#### Code-path mapping (new sub-section)
+
+For full file:line references, see
+`docs/10-domain/smb-emission-policy-deep-dive-2026-04-23.md`.
+
+Key data → code linkages:
+
+| Data finding | Code mechanism |
+|---|---|
+| oref1 em_rate 2× Loop in 70-100 no-carb (EXP-2972) | `enable_smb()` requires `enableSMB_always` (no-carb path); 8/9 oref1 patients have it on. Loop's implicit gate `units > 0.05U` blocks 4/5 Loop patients. |
+| Loop magnitude scaling with velocity (EXP-2973) | `partialDose = units × factor` and `units = (predictedBG − target)/ISF` carries momentum directly. |
+| oref1 frequency scaling with velocity (EXP-2973) | `insulinReq` uses `naive_eventualBG`; falling velocity → `naive_eventualBG < target` → cycle skipped. |
+| Loop_AB_ON bimodality across patients (EXP-2972) | Sensitivity to `automaticDosingStrategy`, `glucoseBasedApplicationFactorEnabled`, target-range, `maxBolus`. |
+| Loop's sharper U-shape (EXP-2975) | `units` scales linearly in BG, so high-BG re-engagement is mechanical; oref1's `min(insulinReq/2, maxBolus)` cap binds at high BG. |
