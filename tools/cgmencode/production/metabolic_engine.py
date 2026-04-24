@@ -78,14 +78,33 @@ def _compute_hepatic_production(iob: np.ndarray,
     return np.maximum(egp_insulin * circadian, 0.0)
 
 
-def _extract_hours(timestamps: np.ndarray) -> np.ndarray:
-    """Extract fractional hours from Unix timestamps (ms)."""
+def _extract_hours(timestamps: np.ndarray, tz: str = "UTC") -> np.ndarray:
+    """Extract fractional hours from Unix timestamps (ms).
+
+    Args:
+        timestamps: (N,) Unix epoch in milliseconds.
+        tz: IANA timezone name. UTC keeps backward-compatible behaviour;
+            patient-derived names like 'America/Los_Angeles' or
+            'Etc/GMT+7' yield local-clock hours, including DST.
+
+    Drives every circadian analysis in the production pipeline (ISF
+    blocks, basal slope, dawn detection, period analysis). UTC default
+    preserves existing test fixtures, but real patients should pass
+    their profile timezone.
+    """
     try:
         import pandas as pd
-        dt = pd.to_datetime(timestamps, unit='ms')
+        dt = pd.to_datetime(timestamps, unit='ms', utc=True)
+        if tz and tz != 'UTC':
+            try:
+                dt = dt.tz_convert(tz)
+            except Exception:
+                # Unknown TZ string — fall back to UTC silently;
+                # caller may have not yet plumbed normalize_timezone.
+                pass
         return np.asarray(dt.hour + dt.minute / 60.0, dtype=np.float64)
     except Exception:
-        # Fallback: assume timestamps are already in seconds or ms
+        # Fallback: assume timestamps are already in seconds or ms (UTC)
         ts = np.asarray(timestamps, dtype=np.float64)
         seconds = ts / 1000.0 if ts.max() > 1e12 else ts
         return (seconds % 86400) / 3600.0

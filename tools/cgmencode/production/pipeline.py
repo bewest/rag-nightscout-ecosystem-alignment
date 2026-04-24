@@ -204,7 +204,7 @@ def run_pipeline(patient: PatientData,
                  skip_patterns: bool = False,
                  current_hour: Optional[float] = None,
                  forecast_config: Optional[dict] = None,
-                 tz_offset_hours: float = 0.0,
+                 tz_offset_hours: Optional[float] = None,
                  ) -> PipelineResult:
     """Run complete inference pipeline on a single patient.
 
@@ -226,6 +226,25 @@ def run_pipeline(patient: PatientData,
     """
     start = time.perf_counter()
     warnings: List[str] = []
+
+    # ── Resolve effective timezone ─────────────────────────────────
+    # Profile-derived IANA name is the canonical source of truth.
+    # tz_offset_hours kwarg is deprecated; if provided, it is converted
+    # to a Etc/GMT-style fixed-offset string for backward compatibility.
+    profile_tz = getattr(patient.profile, "timezone", "UTC") or "UTC"
+    if tz_offset_hours is not None:
+        import warnings as _w
+        _w.warn(
+            "run_pipeline(tz_offset_hours=...) is deprecated. "
+            "Set PatientProfile.timezone to an IANA name "
+            "(e.g. 'America/Los_Angeles') instead.",
+            DeprecationWarning, stacklevel=2,
+        )
+        # Etc/GMT signs are inverted: Etc/GMT+7 means UTC-7.
+        sign = "-" if tz_offset_hours > 0 else "+"
+        effective_tz = f"Etc/GMT{sign}{abs(int(tz_offset_hours))}"
+    else:
+        effective_tz = profile_tz
 
     # ── Stage 1: Data Quality (spike cleaning) ────────────────────
     cleaned = clean_glucose(patient.glucose)
@@ -271,7 +290,7 @@ def run_pipeline(patient: PatientData,
         warnings.append(f"Hypo prediction failed: {e}")
 
     # ── Stage 4c: Clinical Report ─────────────────────────────────
-    hours = _extract_hours(patient.timestamps)
+    hours = _extract_hours(patient.timestamps, tz=effective_tz)
     clinical_report = generate_clinical_report(
         glucose=cleaned.glucose,
         metabolic=metabolic,
@@ -428,7 +447,7 @@ def run_pipeline(patient: PatientData,
                 logged_events=logged_events,
                 inferred_meals=meals,
                 days_of_data=patient.days_of_data,
-                tz_offset_hours=tz_offset_hours,
+                tz=effective_tz,
             )
         except Exception as e:
             warnings.append(f"Meal logging QC failed: {e}")

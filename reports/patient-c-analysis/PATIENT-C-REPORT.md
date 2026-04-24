@@ -98,6 +98,13 @@ deltas in `evidence` field):
 | 3 | Basal | 1.40 | **0.84** | −25 % | +1.2 pp | 0.20 | Loop workload analysis |
 | 4 | Correction threshold | 180 | **250** | +25 % | +0.7 pp | 0.27 | EXP-2741 corr-denom |
 
+> **TZ-aware (2026-04-23 fix):** `_extract_hours()` now resolves
+> `patient.profile.timezone` (Patient C: `Etc/GMT+7` ⇒ UTC−7, Pacific) and
+> bins via `tz_convert`. The "overnight 00–06" block above is therefore
+> **local nighttime**, not UTC. The pre-fix run mislabelled UTC 00–06
+> (local 17–23 evening corrections) as "overnight"; the rec now reflects
+> actual nocturnal physiology.
+
 All recommendations are **directionally consistent** — back off insulin on
 every channel. The safety margin clamps prevent any single review cycle
 from making more than a 25 % adjustment, per EXP-2738.

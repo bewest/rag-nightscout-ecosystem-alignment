@@ -20,6 +20,7 @@ import pytest
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
@@ -517,6 +518,73 @@ class TestGlucoseForecastModule(unittest.TestCase):
         patient = make_patient(n=4320, with_insulin=False)
         result = run_pipeline(patient)
         self.assertIsNone(result.meal_logging_qc)
+
+    # ── Timezone correctness (Phase 1+2) ──────────────────────────
+
+    def test_extract_hours_utc_default(self):
+        """_extract_hours defaults to UTC for backward compat."""
+        from cgmencode.production.metabolic_engine import _extract_hours
+        # Unix-ms for 2026-04-23T19:00:00 UTC
+        ts = np.array([int(pd.Timestamp("2026-04-23T19:00:00Z").value // 1_000_000)])
+        h = _extract_hours(ts)
+        self.assertAlmostEqual(float(h[0]), 19.0, places=2)
+
+    def test_extract_hours_iana_pacific(self):
+        """_extract_hours converts to local hour for IANA tz (DST-aware)."""
+        from cgmencode.production.metabolic_engine import _extract_hours
+        # 2026-04-23T19:00:00 UTC == 12:00 in America/Los_Angeles (PDT)
+        ts = np.array([int(pd.Timestamp("2026-04-23T19:00:00Z").value // 1_000_000)])
+        h = _extract_hours(ts, tz="America/Los_Angeles")
+        self.assertAlmostEqual(float(h[0]), 12.0, places=2)
+
+    def test_extract_hours_etc_gmt_inverted(self):
+        """_extract_hours handles Etc/GMT+N inverted-sign convention."""
+        from cgmencode.production.metabolic_engine import _extract_hours
+        # Etc/GMT+7 == UTC-7. 14:00 UTC → 07:00 local.
+        ts = np.array([int(pd.Timestamp("2026-04-23T14:00:00Z").value // 1_000_000)])
+        h = _extract_hours(ts, tz="Etc/GMT+7")
+        self.assertAlmostEqual(float(h[0]), 7.0, places=2)
+
+    def test_extract_hours_unknown_tz_falls_back(self):
+        """_extract_hours returns UTC hours for unknown TZ string."""
+        from cgmencode.production.metabolic_engine import _extract_hours
+        ts = np.array([int(pd.Timestamp("2026-04-23T19:00:00Z").value // 1_000_000)])
+        h = _extract_hours(ts, tz="Not/A_Real_Zone")
+        # Falls back to UTC silently
+        self.assertAlmostEqual(float(h[0]), 19.0, places=2)
+
+    def test_pipeline_uses_profile_timezone(self):
+        """run_pipeline reads patient.profile.timezone for circadian binning."""
+        from cgmencode.production.pipeline import run_pipeline
+        patient_utc = make_patient(n=4320)
+        patient_pdt = make_patient(n=4320)
+        # Mutate profile dataclass via __dict__ (frozen=False here)
+        patient_pdt.profile.timezone = "America/Los_Angeles"
+        r_utc = run_pipeline(patient_utc)
+        r_pdt = run_pipeline(patient_pdt)
+        # Pipeline must succeed in both branches
+        self.assertIsNotNone(r_utc.cleaned)
+        self.assertIsNotNone(r_pdt.cleaned)
+        # And the meal-logging QC bucketing differs between UTC and PDT
+        # because daypart bins shift by ~7 hours.
+        if r_utc.meal_logging_qc and r_pdt.meal_logging_qc:
+            utc_buckets = {dp.daypart: dp.logged_per_day
+                           for dp in r_utc.meal_logging_qc.by_daypart}
+            pdt_buckets = {dp.daypart: dp.logged_per_day
+                           for dp in r_pdt.meal_logging_qc.by_daypart}
+            self.assertNotEqual(utc_buckets, pdt_buckets)
+
+    def test_pipeline_tz_offset_kwarg_deprecated(self):
+        """Legacy tz_offset_hours kwarg emits DeprecationWarning."""
+        import warnings as _w
+        from cgmencode.production.pipeline import run_pipeline
+        patient = make_patient(n=4320)
+        with _w.catch_warnings(record=True) as caught:
+            _w.simplefilter("always")
+            run_pipeline(patient, tz_offset_hours=-7.0)
+            depr = [w for w in caught if issubclass(w.category, DeprecationWarning)
+                    and "tz_offset_hours" in str(w.message)]
+            self.assertTrue(len(depr) > 0)
 
 
 def _make_hours(n: int) -> np.ndarray:

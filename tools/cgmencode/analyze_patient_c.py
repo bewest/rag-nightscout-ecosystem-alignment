@@ -134,11 +134,22 @@ isf_median = float(df["scheduled_isf"].median())
 cr_median = float(df["scheduled_cr"].median())
 basal_median = float(df["scheduled_basal_rate"].median())
 
+# Pull patient timezone from profiles.parquet (Wave-13 TZ-correctness work)
+try:
+    PROFILES = REPO / "externals" / "ns-parquet" / "training" / "profiles.parquet"
+    _prof_df = pd.read_parquet(PROFILES, columns=["patient_id", "timezone"])
+    _tz_rows = _prof_df.loc[_prof_df["patient_id"] == "c", "timezone"].dropna()
+    _patient_tz = str(_tz_rows.iloc[0]) if len(_tz_rows) else "UTC"
+except Exception:
+    _patient_tz = "UTC"
+print(f"Patient C timezone (from profiles.parquet): {_patient_tz}")
+
 profile = PatientProfile(
     isf_schedule=[{"time": "00:00", "value": isf_median}],
     cr_schedule=[{"time": "00:00", "value": cr_median}],
     basal_schedule=[{"time": "00:00", "value": basal_median}],
     dia_hours=5.0,
+    timezone=_patient_tz,
 )
 
 # Build PatientData

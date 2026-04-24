@@ -310,6 +310,10 @@ class PatientProfile:
     target_low: float = TIR_LOW
     target_high: float = TIR_HIGH
     units: str = 'mg/dL'          # 'mg/dL' or 'mmol/L'
+    timezone: str = 'UTC'         # IANA tz name from Nightscout profile
+                                  # (e.g. 'Etc/GMT+7', 'America/Los_Angeles').
+                                  # Drives circadian bucketing of every
+                                  # hour-of-day analysis. UTC = back-compat.
 
     @property
     def is_mmol(self) -> bool:

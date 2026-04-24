@@ -106,13 +106,22 @@ class MealLoggingQC:
 # ── core ───────────────────────────────────────────────────────────
 
 
-def _hour_from_ms(t_ms: int, tz_offset_hours: float = 0.0) -> int:
-    """Hour-of-day from Unix-ms timestamp, applying a TZ offset.
+def _hour_from_ms(t_ms: int, tz_offset_hours: float = 0.0,
+                  tz: Optional[str] = None) -> int:
+    """Hour-of-day from a Unix-ms timestamp.
 
-    Pass ``tz_offset_hours`` to convert the UTC instant to the patient's
-    local clock before bucketing into a daypart. Defaults to 0 (UTC) for
-    backward compatibility.
+    Prefer ``tz`` (IANA name, DST-aware via pandas tz_convert) over
+    the legacy ``tz_offset_hours`` argument. ``tz_offset_hours`` is
+    retained for back-compat and acts only when ``tz`` is None or
+    the conversion fails.
     """
+    if tz and tz != 'UTC':
+        try:
+            import pandas as pd
+            ts = pd.Timestamp(int(t_ms), unit='ms', tz='UTC').tz_convert(tz)
+            return int(ts.hour)
+        except Exception:
+            pass
     shifted = t_ms / 1000.0 + tz_offset_hours * 3600.0
     return datetime.fromtimestamp(shifted, tz=timezone.utc).hour
 
@@ -123,6 +132,7 @@ def reconcile_meal_logging(
     days_of_data: float,
     min_carbs_g: float = REAL_MEAL_FLOOR_G,
     tz_offset_hours: float = 0.0,
+    tz: Optional[str] = None,
 ) -> MealLoggingQC:
     """Compare logged vs inferred meal rates and flag the patient.
 
@@ -160,7 +170,7 @@ def reconcile_meal_logging(
     ]
     logged_buckets: dict = {n: 0 for n, _, _ in DAYPARTS}
     for t_ms, _ in logged_filtered:
-        logged_buckets[_daypart(_hour_from_ms(int(t_ms), tz_offset_hours))] += 1
+        logged_buckets[_daypart(_hour_from_ms(int(t_ms), tz_offset_hours, tz))] += 1
 
     # Bucket inferred meals
     inferred_buckets: dict = {n: 0 for n, _, _ in DAYPARTS}
@@ -172,7 +182,7 @@ def reconcile_meal_logging(
             # Fallback: skip — daypart breakdown will be undercounted but
             # totals stay correct.
             continue
-        inferred_buckets[_daypart(_hour_from_ms(int(t_ms), tz_offset_hours))] += 1
+        inferred_buckets[_daypart(_hour_from_ms(int(t_ms), tz_offset_hours, tz))] += 1
 
     by_daypart = tuple(
         DaypartCounts(
