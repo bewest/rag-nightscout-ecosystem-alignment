@@ -480,6 +480,78 @@ gap. EXP-2960 adds a **tenth independent evidence line** (forward
 velocity-coupling). EXP-2958 honestly confines lever (3)'s within-
 patient causal claim to the hypo channel only.
 
+### Velocity-coupling robustness sweep (EXP-2961/2962/2963/2964)
+
+A four-experiment batch interrogates the EXP-2960 velocity-coupling
+finding for context-generality, single-patient leverage, and
+controller-vs-user channel decomposition.
+
+- **EXP-2961 — Velocity-coupling at sustained-high (no meal),
+  POSITIVE w/ surprise.** At sustained-high (BG > 200, no carbs prior
+  120 min), Loop_AB_ON pooled slope is +2.05 (95% CI [+1.88, +2.23]),
+  oref1 +0.98 (+0.81, +1.15), oref0 +0.06 (CI crosses 0), Loop_AB_OFF
+  +1.18. **Velocity-coupling persists OUTSIDE meals — confirming it
+  is a controller property, not a meal-detection artefact** (eleventh
+  independent evidence line). But the ordering FLIPS: Loop_AB_ON >
+  oref1 at sustained-high (opposite of PP). oref0's near-zero slope
+  here is consistent with its controller channel having no SMB.
+- **EXP-2962 — Per-patient velocity-coupling at PP (CLEAN POSITIVE
+  but DOWNGRADES EXP-2960).** All 9 oref1 patients individually have
+  positive slopes (sign-test p=0.0039), median +0.95. LOO pooled
+  slopes range +1.21 to +1.48 — robust. **However**, Mann-Whitney on
+  per-patient slopes oref1 vs Loop_AB_ON is p=0.22 (not significant);
+  Loop_AB_ON per-patient slopes (median +0.79) sit inside the oref1
+  distribution. The pooled-event "2.2×" headline conflates patient-
+  count and event-count weighting; per-patient framing reduces this
+  to a non-significant trend. **Reframe EXP-2960 as a within-design
+  positive-coupling finding, not a between-design contrast.**
+- **EXP-2963 — oref0 −0.27 anomaly (RESOLVED: artefact).** Of the 3
+  oref0 patients, slopes are {+0.50, +0.04, −0.48}. Removing patient
+  `odc-96254963` collapses the pooled slope from −0.27 to −0.027.
+  In ALL 3 patients the slope lives in the BOLUS channel
+  (max |basal-x slope| = 0.015). **The negative pooled slope was
+  one-patient user-bolus reverse-causation, not a controller
+  property.** oref0's controller-channel coupling at PP is
+  essentially zero — consistent with EXP-2961 sustained-high.
+- **EXP-2964 — SMB-vs-basal channel decomposition (MAJOR FRAMEWORK
+  UPDATE).** At PP, the SMB-channel velocity-coupling slope is
+  **near-identical between Loop_AB_ON (+0.380) and oref1 (+0.361)**
+  (95% CIs overlap). The +0.62 vs +1.36 total-slope difference is
+  driven primarily by the BOLUS channel (+0.23 vs +1.00) — i.e. USER
+  manual-bolus practice, not controller. Basal-excess velocity-
+  coupling is small in all designs (max 0.06).
+
+**Net framework update:** Lever (3)'s controller-side action at PP is
+quantified by the SMB-channel slope (~+0.37 U per mg/dL/min for both
+SMB-equipped designs). Loop_AB_ON and oref1 are quantitatively
+similar at this lever; they differ in event-emission timing
+(triggering thresholds, frequency caps, IOB-budget heuristics). The
+EXP-2960 between-design "2.2×" headline is corrected to: **EXP-2960
+mixed controller-channel and user-channel velocity-coupling. The
+controller-channel comparison is a near-tie at PP (+0.36 vs +0.38).**
+
+The IOB-age framework as a whole is unaffected by this correction —
+it rests on EXP-2944/2950/2954/2957 within-window mechanics and on
+EXP-2961's controller-property confirmation outside meals. The
+correction sharpens which channel (SMB) carries the controller's
+velocity-coupling signal.
+
+### AID-author lever priority order — REVISED (post-EXP-2964)
+
+| Lever | Channel | Controller-attributable effect at PP | Ranking |
+|---|---|---|---|
+| Auto-bolus / SMB on rising velocity (UAM, AB) | SMB | +0.36–0.38 U per mg/dL/min | **PRIMARY controller lever** |
+| Temp-basal velocity modulation | basal-excess | < 0.07 U per mg/dL/min | Marginal at 30-min horizon |
+| User announce-meal pre-bolus practice | bolus (user) | +0.23–1.00 U per mg/dL/min | NOT a controller lever — cohort-dependent |
+
+For controller authors: enabling SMB / auto-bolus on a rising-velocity
+heuristic is the single dominant code-level lever for forward
+velocity-response at PP. Tuning the basal channel alone cannot match
+the SMB-channel response in the 30-minute horizon. The Loop AB vs
+oref1 UAM heuristic differences do not translate to a measurable
+SMB-channel slope difference in this cohort — both deliver ~0.37 U
+per mg/dL/min of additional automated insulin.
+
 ### Counter-recommendations (what NOT to tune)
 
 - Don't increase basal-cut aggressiveness beyond ~91% as a hypo-
