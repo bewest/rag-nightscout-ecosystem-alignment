@@ -1,6 +1,6 @@
 # Clinical Analysis Report — patient `live-recent`
 
-_Generated: 2026-04-24T18:44:58.716602+00:00_  
+_Generated: 2026-04-24T19:40:52.797202+00:00_  
 _Source parquet: `externals/ns-parquet/live-recent`_  
 _Profile timezone: `Etc/GMT+8`_  
 _Days of data: 60.0_

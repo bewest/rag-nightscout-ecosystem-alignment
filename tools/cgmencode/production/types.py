@@ -630,6 +630,37 @@ class MealPrediction:
     prediction_mode: str = 'gaussian'    # 'gaussian', 'proactive', 'reactive', 'dual'
 
 
+# Per-rec ceiling for predicted_tir_delta. Single advisor producing a
+# claim above this is almost certainly suffering from a fraction-vs-pp
+# unit confusion (the bug class behind GAP-ADVR-001/002). We clamp at
+# the source so a bad rec can never reach the renderer; the original
+# value is preserved on the dataclass as `_raw_predicted_tir_delta`
+# for diagnostics, and a runtime warning fires once per producer.
+_MAX_PREDICTED_TIR_DELTA_PP = 15.0
+
+
+def _clamp_predicted_tir_delta(value: float, owner_cls: str) -> float:
+    """Clamp + emit a one-shot warning when a TIR delta exceeds the cap.
+
+    See GAP-ADVR-001 (sparse-correction) and GAP-ADVR-002 (block-merge).
+    """
+    import math
+    import warnings as _w
+    if value is None or not math.isfinite(value):
+        return 0.0
+    cap = _MAX_PREDICTED_TIR_DELTA_PP
+    if abs(value) <= cap:
+        return value
+    _w.warn(
+        f"{owner_cls}.predicted_tir_delta={value:.1f} exceeds {cap} pp ceiling — "
+        "clamping. This usually indicates a fraction-vs-pp unit confusion in "
+        "an advisor (see GAP-ADVR-001 / GAP-ADVR-002).",
+        RuntimeWarning,
+        stacklevel=3,
+    )
+    return float(cap if value > 0 else -cap)
+
+
 # ── Settings Advisor ──────────────────────────────────────────────────
 
 @dataclass
@@ -648,6 +679,13 @@ class SettingsRecommendation:
     confidence_grade: Optional[ConfidenceGrade] = None  # bootstrap CI grade (EXP-1621)
     ci_width_pct: Optional[float] = None  # bootstrap CI width as %
 
+    def __post_init__(self) -> None:
+        raw = self.predicted_tir_delta
+        clamped = _clamp_predicted_tir_delta(raw, "SettingsRecommendation")
+        if clamped != raw:
+            object.__setattr__(self, "_raw_predicted_tir_delta", raw)
+        self.predicted_tir_delta = clamped
+
 
 @dataclass
 class ActionRecommendation:
@@ -661,6 +699,13 @@ class ActionRecommendation:
     deadline_minutes: Optional[float] = None  # minutes until action should be taken
     meal_prediction: Optional[MealPrediction] = None
     settings_rec: Optional[SettingsRecommendation] = None
+
+    def __post_init__(self) -> None:
+        raw = self.predicted_tir_delta
+        clamped = _clamp_predicted_tir_delta(raw, "ActionRecommendation")
+        if clamped != raw:
+            object.__setattr__(self, "_raw_predicted_tir_delta", raw)
+        self.predicted_tir_delta = clamped
 
 
 # ── Advanced Analytics ────────────────────────────────────────────────

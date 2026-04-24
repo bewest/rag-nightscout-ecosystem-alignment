@@ -159,7 +159,76 @@ def test_isf_nonlinearity_predicted_delta_capped():
 
 
 # ──────────────────────────────────────────────────────────────────────
-# GAP-ADVR-002: block-merge inflation in _deduplicate_same_direction
+# GAP-ADVR-003: runtime guard at the dataclass level
+# (catches the unit-confusion bug class at the source so a single
+# advisor producing fraction-vs-pp confused values never reaches the
+# renderer regardless of dispatcher / dedup logic.)
+# ──────────────────────────────────────────────────────────────────────
+
+
+def test_settings_recommendation_clamps_inflated_tir_delta():
+    from tools.cgmencode.production.types import (
+        SettingsRecommendation, SettingsParameter,
+    )
+    import warnings as _w
+    with _w.catch_warnings(record=True) as caught:
+        _w.simplefilter("always")
+        rec = SettingsRecommendation(
+            parameter=SettingsParameter.ISF,
+            direction="increase",
+            magnitude_pct=200.0,
+            current_value=50.0, suggested_value=150.0,
+            predicted_tir_delta=42.0,  # absurd: clearly fraction*100 confusion
+            affected_hours=(0.0, 24.0),
+            confidence=0.5, evidence="x", rationale="y",
+        )
+    assert rec.predicted_tir_delta == 15.0  # clamped to ceiling
+    assert rec._raw_predicted_tir_delta == 42.0
+    assert any("exceeds 15" in str(w.message) for w in caught)
+
+
+def test_settings_recommendation_passes_through_plausible_value():
+    from tools.cgmencode.production.types import (
+        SettingsRecommendation, SettingsParameter,
+    )
+    rec = SettingsRecommendation(
+        parameter=SettingsParameter.ISF,
+        direction="increase",
+        magnitude_pct=20.0,
+        current_value=50.0, suggested_value=60.0,
+        predicted_tir_delta=2.5,
+        affected_hours=(0.0, 6.0),
+        confidence=0.6, evidence="x", rationale="y",
+    )
+    assert rec.predicted_tir_delta == 2.5
+    assert not hasattr(rec, "_raw_predicted_tir_delta")
+
+
+def test_action_recommendation_clamps_inflated_tir_delta():
+    from tools.cgmencode.production.types import ActionRecommendation
+    import warnings as _w
+    with _w.catch_warnings(record=True):
+        _w.simplefilter("always")
+        rec = ActionRecommendation(
+            action_type="adjust_isf", priority=2, description="x",
+            predicted_tir_delta=-99.0, confidence=0.5,
+            time_sensitive=False,
+        )
+    assert rec.predicted_tir_delta == -15.0
+
+
+def test_settings_recommendation_handles_nan():
+    from tools.cgmencode.production.types import (
+        SettingsRecommendation, SettingsParameter,
+    )
+    rec = SettingsRecommendation(
+        parameter=SettingsParameter.ISF, direction="increase",
+        magnitude_pct=10.0, current_value=50.0, suggested_value=55.0,
+        predicted_tir_delta=float("nan"),
+        affected_hours=(0.0, 24.0), confidence=0.5,
+        evidence="x", rationale="y",
+    )
+    assert rec.predicted_tir_delta == 0.0
 # (per-block predicted_tir_delta values were summed without a ceiling,
 # producing implausible 18.6 pp from 5 ISF blocks; the borrowed
 # rationale also still showed the per-block "+3.6pp" claim.)
