@@ -1042,3 +1042,91 @@ dimensional (cap, gate, fraction) and patients adopt different
 combinations. A single knob would force a particular combination
 on all users.
 
+
+## Addendum (Apr-23 fourteenth batch): Loop SMB-gating code mapping, policy-conservatism dial, algorithm_mode column, intra-design heterogeneity
+
+### EXP-2990 — Loop SMB-gating deep dive (POSITIVE; HIGH AID-author signal)
+
+The >99% peer-suppression of SMB at 70-100 mg/dL among Loop_AB_ON
+patients c, d, e, g (ruled out of behavioural levers in EXP-2987)
+maps to a single dominant code gate:
+
+* **Gate G4** — `externals/LoopAlgorithm/Sources/LoopAlgorithm/LoopAlgorithm.swift:419-423`:
+  if `correction == .aboveRange` AND predicted minimum < target lower
+  bound, then `deliveryMax = 0` ⇒ SMB suppressed.
+
+A secondary gate **G1** — `externals/LoopAlgorithm/.../DoseMath.swift:207-210`:
+short-circuits to `.suspend` if any predicted value < `suspendThreshold`.
+
+Five-gate enumeration plus IOB-headroom amplifier in
+`docs/10-domain/loop-smb-gating-deep-dive-2026-04-23.md`. Patient i's
+break-out from peer-suppression is now narrowed to the
+**(suspendThreshold, correctionRange.lowerBound, maxBolus)**
+configuration triple — none individually observable in the grid.
+
+This **promotes** the `recommendation_threshold / target-range floor`
+lever from "remaining hypothesis" (synthesis §13) to **rank-1 priority**
+in AID-author user-facing documentation.
+
+### EXP-2991 — Policy-conservatism score (MIXED)
+
+A four-proxy conservatism score (`iob_p95`, `bolus_smb_p95`,
+`suppress_70_100_eligible`, `basal_frac_of_tdd`) cleanly orders the
+five Loop_AB_ON peers (d > c > g > e > i) but does **not** correlate
+with overshoot rate (Pearson r = +0.013). The score is internally
+consistent; the dial-as-overshoot-predictor framing is rejected.
+
+### EXP-2992 — `algorithm_mode` column added (POSITIVE; SCHEMA)
+
+Three per-patient summary parquets now carry an `algorithm_mode`
+column derived from `(controller, lineage, ∃ bolus_smb > 0)`:
+
+```
+Trio-oref1 : 9   Loop-AB-ON : 5   AAPS-oref0 : 3
+Loop-AB-OFF: 2   unknown    : 5
+```
+
+**AAPS-oref1 confirmed as zero-patient gap** in this cohort. Future
+experiments SHOULD use `algorithm_mode` as the primary stratification
+key. See `docs/40-data-pipelines/cohort-algorithm-mode-2026-04-23.md`.
+
+### EXP-2993 — Intra-design heterogeneity within Loop_AB_ON (POSITIVE; HIGH AID-author signal)
+
+Stratifying the five Loop_AB_ON peers by conservatism tertile rejects
+the trade-off hypothesis decisively:
+
+| Tertile | overshoot | TTT_median (min) | TAR_frac |
+|---------|-----------|------------------|----------|
+| aggressive   (i, e) | 0.255 | 67.5 | 0.278 |
+| mid          (g)    | 0.210 | 50.0 | 0.191 |
+| conservative (c, d) | 0.275 | 53.8 | 0.227 |
+
+Spearman ρ(conservatism, TTT_median) = **−0.82** —
+**aggressive Loop_AB_ON has *longer* recovery times, not shorter.**
+Conservative Loop_AB_ON dominates aggressive on every outcome axis;
+the "sweet spot" is patient g (mid tertile).
+
+**AID-author finding (NEW):** Do NOT market the aggressive end of
+the Loop_AB_ON dial as a "faster recovery" mode — in this cohort it
+delivers *slower* recovery AND comparable-or-worse overshoot. Surface
+the four-proxy conservatism score in user-facing diagnostics.
+
+### Updated lever-priority order (replaces synthesis §13's earlier list)
+
+1. **Loop `correctionRange.lowerBound` (and `suspendThreshold`)** —
+   identified as Gate G4 (and G1) in EXP-2990; configurable knobs
+   that drive the >99% peer-suppression pattern. **Highest priority
+   for user-facing documentation and Insights surfacing.**
+2. **`maxBolus` (which sets the IOB-headroom cap as `maxBolus * 2`)**
+   — secondary gate that amplifies G4 suppression at high IOB.
+3. **AB-mode dose fraction (`partialApplicationFactor` / GBAF)** —
+   attenuates per-cycle dose; combined with pump rounding can
+   convert near-zero corrections to literal zeros.
+
+### Counter-recommendation reinforced
+
+The within-Loop_AB_ON results (EXP-2993) confirm the synthesis §13
+counter-recommendation: a single "aggressiveness" knob would force
+patients toward the strictly-worse end of the dial. Multi-axis
+visibility (the EXP-2991 score's four components) is the responsible
+UX choice.
