@@ -107,6 +107,42 @@ class ControllerDynamicsFactsLoader:
             self._index = self._load()
         return sorted(self._index.keys())
 
+    def compute_for(
+        self, patient_id: str, grid_df, *, cache: bool = True
+    ) -> ControllerDynamicsFacts:
+        """Compute controller decomposition on demand from a single patient's grid.
+
+        Reuses `analyze_patient` from EXP-2753.
+        """
+        from tools.cgmencode.production._per_patient_compute import (
+            compute_controller_decomposition,
+        )
+        row = compute_controller_decomposition(grid_df, str(patient_id))
+        if row is None:
+            facts = ControllerDynamicsFacts()
+        else:
+            facts = ControllerDynamicsFacts(
+                controller_type=_str_or_none(row.get("controller")),
+                n_events=_int_or_none(row.get("n_events")),
+                mean_correction_fraction=_float_or_none(
+                    row.get("mean_correction_fraction")),
+                mean_smb_fraction=_float_or_none(row.get("mean_smb_fraction")),
+                mean_excess_basal_fraction=_float_or_none(
+                    row.get("mean_excess_basal_fraction")),
+                mean_controller_fraction_of_excess=_float_or_none(
+                    row.get("mean_controller_fraction_of_excess")),
+                corr_denom_gap_closure=_float_or_none(
+                    row.get("corr_denom_gap_closure")),
+                isf_corr_denom_median=_float_or_none(
+                    row.get("isf_correction_denom_median")),
+                isf_profile_median=_float_or_none(row.get("isf_profile_median")),
+            )
+        if cache:
+            if self._index is None:
+                self._index = self._load()
+            self._index[str(patient_id)] = facts
+        return facts
+
 
 def _float_or_none(v) -> Optional[float]:
     if v is None:

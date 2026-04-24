@@ -57,6 +57,22 @@ class RecoveryFactsLoader:
             self._index = self._load()
         return sorted(self._index.keys())
 
+    def compute_for(
+        self, patient_id: str, grid_df, *, cache: bool = True
+    ) -> RecoveryBootstrapFacts:
+        """Recovery bootstrap requires EXP-2810 state assignments which are
+        a cohort-level upstream computation. For on-demand patients we
+        return the empty dataclass; full reproduction would require running
+        EXP-2810 → EXP-2812 → EXP-2862 against a merged grid (see
+        refresh_facts.py future work).
+        """
+        facts = RecoveryBootstrapFacts(None)
+        if cache:
+            if self._index is None:
+                self._index = self._load()
+            self._index[str(patient_id)] = facts
+        return facts
+
 
 def _smoke() -> None:  # pragma: no cover
     loader = RecoveryFactsLoader()

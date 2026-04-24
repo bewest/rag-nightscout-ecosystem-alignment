@@ -80,6 +80,27 @@ class BasalMismatchFactsLoader:
             self._index = self._load()
         return sorted(self._index.keys())
 
+    def compute_for(
+        self, patient_id: str, grid_df, *, cache: bool = True
+    ) -> BasalMismatchFacts:
+        """Compute basal-mismatch facts on demand from a single patient's grid."""
+        from tools.cgmencode.production._per_patient_compute import (
+            compute_basal_mismatch,
+        )
+        result = compute_basal_mismatch(grid_df)
+        if result is None:
+            facts = BasalMismatchFacts(None, None)
+        else:
+            facts = BasalMismatchFacts(
+                p_basal_mismatch=result.get("max_mismatch_p"),
+                median_recommended_mult=result.get("median_recommended_mult"),
+            )
+        if cache:
+            if self._index is None:
+                self._index = self._load()
+            self._index[str(patient_id)] = facts
+        return facts
+
 
 def _smoke() -> None:  # pragma: no cover
     loader = BasalMismatchFactsLoader()

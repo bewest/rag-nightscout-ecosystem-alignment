@@ -209,6 +209,42 @@ class PhenotypeFactsLoader:
         if self._index is None:
             self._index = self._load()
         return len(self._index)
+
+    def compute_for(
+        self,
+        patient_id: str,
+        grid_df,
+        *,
+        detected_controller: Optional[str] = None,
+        cache: bool = True,
+    ) -> PhenotypeFacts:
+        """Minimal per-patient phenotype from grid only.
+
+        Cohort-level fields (HAAF, evening drivers) require population
+        comparisons and stay None; the lineage + observable-rate fields
+        (controller_lineage, brake_ratio, stack_score) are computed inline.
+        """
+        from tools.cgmencode.production._per_patient_compute import (
+            compute_phenotype_minimal,
+        )
+        row = compute_phenotype_minimal(
+            grid_df, detected_controller=detected_controller
+        )
+        facts = PhenotypeFacts(
+            stack_score=row.get("stack_score"),
+            brake_ratio=row.get("brake_ratio"),
+            counter_reg_intercept=row.get("counter_reg_intercept"),
+            beta_nadir=row.get("beta_nadir"),
+            p_haaf=row.get("p_haaf"),
+            evening_bolus_excess_4h=row.get("evening_bolus_excess_4h"),
+            evening_iob_at_descent=row.get("evening_iob_at_descent"),
+            controller_lineage=row.get("controller_lineage"),
+        )
+        if cache:
+            if self._index is None:
+                self._index = self._load()
+            self._index[str(patient_id)] = facts
+        return facts
     
     def coverage_by_axis(self) -> dict[str, int]:
         """Count non-None for each orthogonal axis.

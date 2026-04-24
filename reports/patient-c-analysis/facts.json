@@ -1,6 +1,6 @@
 {
   "patient_id": "c",
-  "generated_at_utc": "2026-04-24T17:04:13.328657+00:00",
+  "generated_at_utc": "2026-04-24T17:23:57.622504+00:00",
   "parquet_dir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/training",
   "days_of_data": 180.0,
   "profile_timezone": "Etc/GMT+7",
@@ -40,14 +40,14 @@
       "p_low_recovery": 1.0
     },
     "phenotype": {
-      "stack_score": null,
-      "brake_ratio": null,
+      "stack_score": 4.0999999307096004,
+      "brake_ratio": 0.625161551667599,
       "counter_reg_intercept": null,
       "beta_nadir": null,
       "p_haaf": null,
       "evening_bolus_excess_4h": null,
       "evening_iob_at_descent": null,
-      "controller_lineage": null
+      "controller_lineage": "loop"
     }
   },
   "per_patient_egp": {

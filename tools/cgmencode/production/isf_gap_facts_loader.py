@@ -75,6 +75,27 @@ class IsfGapFactsLoader:
             self._index = self._load()
         return sorted(self._index.keys())
 
+    def compute_for(
+        self, patient_id: str, grid_df, *, cache: bool = True
+    ) -> IsfGapBootstrapFacts:
+        """Compute facts on demand for a patient not in the cohort cache."""
+        from tools.cgmencode.production._per_patient_compute import (
+            compute_isf_gap_bootstrap,
+        )
+        result = compute_isf_gap_bootstrap(grid_df)
+        if result is None or result.get("_insufficient"):
+            facts = IsfGapBootstrapFacts(None, None)
+        else:
+            facts = IsfGapBootstrapFacts(
+                p_isf_under_correction=result.get("p_under_correction"),
+                p_isf_over_correction=result.get("p_over_correction"),
+            )
+        if cache:
+            if self._index is None:
+                self._index = self._load()
+            self._index[str(patient_id)] = facts
+        return facts
+
 
 def _smoke() -> None:  # pragma: no cover
     loader = IsfGapFactsLoader()

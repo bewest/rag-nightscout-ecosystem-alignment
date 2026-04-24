@@ -79,6 +79,48 @@ def _try_lookup(loader_cls, patient_id, label):
         return None
 
 
+def _is_empty_facts(facts) -> bool:
+    """Detect a freshly-instantiated all-None facts dataclass."""
+    if facts is None:
+        return True
+    fields = [
+        v for k, v in vars(facts).items()
+        if not k.startswith("_")
+    ]
+    return all(v is None for v in fields)
+
+
+def _get_or_compute(loader_cls, patient_id, label, grid_df, **compute_kwargs):
+    """Lookup cached facts, falling back to per-patient compute_for."""
+    try:
+        loader = loader_cls()
+    except Exception as e:
+        print(f"  [skip {label}: {e}]")
+        return None
+    try:
+        facts = loader.lookup(patient_id)
+    except Exception as e:
+        print(f"  [{label} lookup failed: {e}]")
+        facts = None
+
+    if not _is_empty_facts(facts):
+        return facts
+
+    if not hasattr(loader, "compute_for"):
+        return facts
+
+    try:
+        computed = loader.compute_for(patient_id, grid_df, **compute_kwargs)
+    except Exception as e:
+        print(f"  [{label} compute_for failed: {e}]")
+        return facts
+    if not _is_empty_facts(computed):
+        print(f"  [{label}: computed on demand]")
+    else:
+        print(f"  [{label}: insufficient data — empty]")
+    return computed
+
+
 def analyze(patient_id: str, parquet_dir: Path, out_dir: Path) -> dict:
     plot_dir = out_dir / "plots"
     plot_dir.mkdir(parents=True, exist_ok=True)
@@ -125,11 +167,19 @@ def analyze(patient_id: str, parquet_dir: Path, out_dir: Path) -> dict:
     from tools.cgmencode.production.phenotype_facts_loader import PhenotypeFactsLoader
 
     print("\nFacts loaders ...")
-    ctrl = _try_lookup(ControllerDynamicsFactsLoader, patient_id, "controller_dynamics")
-    basal = _try_lookup(BasalMismatchFactsLoader, patient_id, "basal_mismatch")
-    isfg = _try_lookup(IsfGapFactsLoader, patient_id, "isf_gap")
-    recov = _try_lookup(RecoveryFactsLoader, patient_id, "recovery")
-    phen = _try_lookup(PhenotypeFactsLoader, patient_id, "phenotype")
+    ctrl = _get_or_compute(
+        ControllerDynamicsFactsLoader, patient_id, "controller_dynamics", df,
+    )
+    basal = _get_or_compute(
+        BasalMismatchFactsLoader, patient_id, "basal_mismatch", df,
+    )
+    isfg = _get_or_compute(IsfGapFactsLoader, patient_id, "isf_gap", df)
+    recov = _get_or_compute(RecoveryFactsLoader, patient_id, "recovery", df)
+    detected_ctrl = ctrl.controller_type if ctrl is not None else None
+    phen = _get_or_compute(
+        PhenotypeFactsLoader, patient_id, "phenotype", df,
+        detected_controller=detected_ctrl,
+    )
 
     facts = {
         "controller_dynamics_EXP_2753": ctrl.__dict__ if ctrl else None,
