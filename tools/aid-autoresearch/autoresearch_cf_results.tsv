@@ -1,0 +1,5 @@
+timestamp	exp_id	config_name	isf_source	kernel	duration_model	n_patients	n_events	pop_obs_severe	pop_cf_severe	aid_protection_severe	mean_duration_min	mean_extra_drop_mgdl	verdict	notes
+2026-04-25T02:13:23.860802+00:00	EXP-3000	baseline_pop_inst_linear	population_isf50	instantaneous	linear	31	3673	0.3624	0.9466	0.5843	60.00	44.56	baseline_match	matches EXP-2889 within 2pp (obs drift 0.000, cf drift 0.000)
+2026-04-25T02:13:56.167456+00:00	EXP-3001	per_patient_isf_inst_linear	profile_isf	instantaneous	linear	31	3673	0.3624	0.9592	0.5968	60.00	53.69	rank_preserved	rank vs baseline rho=0.962, braking_ratio rho=-0.878 (baseline -0.711)
+2026-04-25T02:14:33.298670+00:00	EXP-3002	pk_peak75_pp_isf_linear	profile_isf	oref0_exp_peak75	linear	31	3673	0.3624	0.4833	0.1209	60.00	3.30	destabilised	rank rho=0.309 <0.85 — PK kernel changes which patients are flagged
+2026-04-25T02:15:29.075271+00:00	EXP-3003	oref0_peak75_sigmoid_s400_pp_isf	profile_isf	oref0_peak75	sigmoid_s400	31	3673	0.3624	0.9668	0.6044	240.00	102.03	recovers_signal	sigmoidal+PK retains rank rho=0.959, braking rho=-0.868
