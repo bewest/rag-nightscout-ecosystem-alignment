@@ -54,11 +54,11 @@ Output: `externals/experiments/exp-2991_policy_conservatism.parquet`,
 
 ```
 patient  iob_p95  bolus_smb_p95  suppress_70_100  basal_frac  overshoot  conservatism
-   d      4.63        0.55           0.989          0.151       0.194      0.796
+   d      4.634       0.55           0.989          0.151       0.194      0.796
    c      5.88        0.85           1.000          0.233       0.356      0.761
    g      5.92        0.55           0.994          0.060       0.210      0.698
-   e     12.80        0.90           0.999          0.251       0.259      0.548
-   i      9.95        1.50           0.870          0.399       0.251      0.337
+   e     12.796       0.90           0.999          0.251       0.259      0.548
+   i      9.953       1.50           0.870          0.399       0.251      0.337
 ```
 
 * Conservatism rank: **d > c > g > e > i**.
