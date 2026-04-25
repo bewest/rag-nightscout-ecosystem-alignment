@@ -3,7 +3,7 @@
 **Date**: 2026-04-23
 **Audience**: open-source AID code authors.
 **Scope**: trace the source-level gates in Loop / LoopAlgorithm that
-produce >99% SMB suppression at 70-100 mg/dL among Loop_AB_ON peers
+produce >98% SMB suppression at 70-100 mg/dL among Loop_AB_ON peers
 c, d, e, g (vs outlier patient i). Cite file:line for each gate and
 map to the data signature.
 **What this is NOT**: not a runtime trace; not a re-derivation of
