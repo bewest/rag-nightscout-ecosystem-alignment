@@ -51,7 +51,7 @@ guard-rails or default presets.
 |                 | d | 0.159 | 4.31  | 0.24  | 0.991 |
 |                 | e | 0.225 | 4.24  | 0.30  | 0.993 |
 |                 | i | 0.162 | 4.92  | 0.54  | 0.994 |
-| hyper2 (>250)   | g | 0.059 | 4.81  | 0.25  | 0.989 |
+| hyper2 (>250)   | g | 0.059 | 4.81  | 0.25  | 1.000 |
 |                 | c | 0.102 | 4.12  | 0.38  | 1.000 |
 |                 | d | 0.021 | 5.48  | 0.36  | 1.000 |
 |                 | e | 0.073 | 5.37  | 0.42  | 1.000 |
@@ -63,7 +63,7 @@ guard-rails or default presets.
    peer median is ~0.21 U; patient i (the most aggressive) is 0.30 U.
    In hyper2, g's mean SMB is 0.25 U vs i's 0.81 U (3.2× smaller).
 2. **Comparable SMB rate per hour.** g delivers SMBs at 2.85/h in TIR
-   (peer median 3.16/h) — not unusually frequent.
+   (peer median 3.32/h) — not unusually frequent.
 3. **Lower hyper2 prevalence.** g spends 5.9% of cells above 250
    vs c (10.2%) and i (10.5%). This is the *outcome*, not the *cause*.
 4. **Lowest TIR-band overshoot (0.208 vs c 0.354).** When BG is in

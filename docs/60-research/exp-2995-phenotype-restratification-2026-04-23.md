@@ -86,7 +86,7 @@ Three measures of confounding:
 
 | axis | η² | within-mode std / overall std (per mode) | Interpretation |
 |---|---:|---|---|
-| `stack_score`           | 0.044 | 1.35 / 1.75 / 1.27 / 0.78 / 0.99 | CROSS-CUTS — patient-level |
+| `stack_score`           | 0.044 | 1.35 / 1.75 / 1.27 / 0.78 / 0.98 | CROSS-CUTS — patient-level |
 | `braking_ratio`         | **0.650** | 1.71 / 0.32 / 0.10 / 0.19 / NaN | ALIGNS — algorithm-level (within-AAPS oref0 still has spread) |
 | `counter_reg_intercept` | 0.225 | 0.73 / 1.03 / 1.01 / 1.06 / 0.82 | mostly cross-cuts; modest mode signal |
 | `hidden_leverage`       | 0.091 | (composite) | CROSS-CUTS |
