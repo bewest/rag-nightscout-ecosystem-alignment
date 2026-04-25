@@ -89,7 +89,7 @@ NOOP      exp-2895_tod_lineage.parquet: no odc- rows touched
 After applying the controller fix, inspection of devicestatus
 columns for the 3 ODC patients revealed:
 
-| Patient | rows | eventual_bg non-null | algorithm_isf nn | algorithm_cr nn | algorithm_tdd nn | insulin_activity nn | bolus_iob nn | bolus_smb cells > 0 |
+| Patient | rows | eventual_bg non-null | algorithm_isf nn | algorithm_cr nn | algorithm_tdd nn | insulin_activity nn | bolus_iob nn | enacted_smb cells > 0 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | odc-74077367 | 97225 | 95843 | 0 | 0 | 0 | 0 | 0 | 0 |
 | odc-86025410 | 155742 | 140823 | 0 | 0 | 0 | 0 | 0 | 0 |

@@ -22,15 +22,15 @@ Per-patient table (sorted by mean IOB):
 
 | patient | n_events | mean IOB (U) | p75 IOB (U) | hypo rate |
 |---|---:|---:|---:|---:|
-| ns-1ccae8a375b9 |  4115 | 0.21 | 0.22 | 4.5% |
-| ns-d444c120c23a |  6561 | 0.10 | 0.13 | 3.6% |
+| ns-1ccae8a375b9 |  4115 | 0.21 | 0.0 | 4.5% |
+| ns-d444c120c23a |  6561 | 0.10 | 0.0 | 3.6% |
 | ns-dde9e7c2e752 |  2750 | 0.53 | 0.77 | 1.2% |
 | ns-a9ce2317bead |  4986 | 0.80 | 1.16 | 7.0% |
 | ns-6bef17b4c1ec |  6385 | 0.88 | 1.31 | 1.9% |
 | ns-9b9a6a874e51 |  3626 | 0.96 | 1.36 | 2.8% |
 | ns-8f3527d1ee40 |  5006 | 0.98 | 1.25 | 3.9% |
 | ns-8b3c1b50793c |  2171 | 1.17 | 1.79 | 0.6% |
-| ns-adde5f4af7ca |  5767 | 1.36 | 2.22 | 3.1% |
+| ns-adde5f4af7ca |  5767 | 1.36 | 2.21 | 3.1% |
 
 Pooled across-Trio bands of IOB-at-emission:
 
