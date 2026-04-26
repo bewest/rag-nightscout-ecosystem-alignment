@@ -20,11 +20,13 @@ This addendum extends the original closeout with Phase 2 results, which moved fr
 
 For both Loop and Trio, the cf-replay engine identifies a strict-Pareto-better operating point at (T = +30 min earlier, M = 0.5×):
 
-| Controller | Δoversht | Δhypo |
-|---|---:|---:|
-| **Loop** | **−1.80 pp** | **−4.35 pp** |
-| **Trio** | **−2.64 pp** | **−7.57 pp** |
-| AAPS-oref0 | n/a (no SMB to retime) | — |
+| Controller | Δoversht | Δhypo (naive proxy) | **Δhypo (carb-aware, EXP-3014)** |
+|---|---:|---:|---:|
+| **Loop** | **−1.80 pp** | **−4.35 pp** | **~−3.3 pp** (revised) |
+| **Trio** | **−2.64 pp** | **−7.57 pp** | **~−3.2 pp** (revised, ~45 % reduction) |
+| AAPS-oref0 | n/a (no SMB to retime) | — | — |
+
+> **Update 2026-04-26 (post-EXP-3014)**: the worst-case trough proxy used in EXP-3010/3011 (no carb absorption, no EGP) inflated the Trio Δhypo claim by approximately 45 %. The carb-aware proxy (EXP-3014: cob_at_peak × 0.67 × 4 mg/dL/g) preserves direction and rank-order — Trio still beats Loop on hypo benefit — but the magnitudes should be cited as ~−3 pp on both axes, not the original −4.35 / −7.57. Loop's claim shrinks ~14 %; Trio's ~45 %. The strict-Pareto conclusion is unaffected. See `docs/60-research/exp-3014-carb-aware-2026-04-26.md`.
 
 **Mechanism**: the current "later and bigger" SMB pattern is dominated on both overshoot and hypo because (a) late firing cannot fully realise insulin effect by peak time, leaving overshoot; (b) the over-large compensating dose then arrives in the post-peak window, deepening the trough. The "early and small" pattern resolves both failures simultaneously.
 
@@ -41,13 +43,20 @@ For both Loop and Trio, the cf-replay engine identifies a strict-Pareto-better o
 
 EXP-3010 corrects EXP-3009 in flight; EXP-3011 then uses both (corrected accounting + magnitude axis from EXP-3008) to find the joint optimum that neither single-axis experiment could find. This is exactly the program design's intended behaviour — the git history preserves both the over-claim and the correction.
 
-## Status of original Phase 1 + Phase 2 program
+## Status of original Phase 1 + Phase 2 + Phase 3 program
 
 | Phase | EXP range | Status |
 |---|---|---|
 | Phase 1 — descent CF-replay maturation | EXP-3000 → 3006 | ✅ closed (prior closeout) |
 | Phase 2 — ascent CF-replay + bivariate frontier | EXP-3007 → 3011 | ✅ closed (this addendum) |
-| Phase 3 — open | EXP-3012+ | not started |
+| **Phase 3 — per-patient + phenotype + proxy validation** | **EXP-3012 → 3014** | **✅ closed (2026-04-26)** |
+| Phase 4 — score-function v3 + synthetic generator | EXP-3015+ | in progress |
+
+### Phase 3 highlights (added 2026-04-26)
+
+- **EXP-3012**: Per-patient (T*, M*) — 21/29 patients have Pareto improvements; **η² = 0.27** (patient heterogeneity dominates controller identity). The Phase 2 modal (T=30, M=0.5×) fits 45 % of patients; 28 % need M=0.5× *without* T-shift.
+- **EXP-3013**: Phenotype-conditional — `stack_score` rejected as predictor (p=0.38). **`braking_ratio` is the actionable lever** (ρ=−0.46, p=0.046 for benefit; ρ=−0.56, p=0.013 for T*). The recommendation should be **gated on `braking_ratio < ~0.1`**. Sweet-spot patient `g` (high braking 0.118) confirmed phenotypic, not idiosyncratic.
+- **EXP-3014**: Carb-aware trough proxy — recommendation **survives**; magnitudes adjusted (Loop −14 %, Trio −45 %); see closeout-recommendation table above.
 
 ## Suggested Phase 3 directions (none in flight)
 
