@@ -13,8 +13,8 @@ EXP-2980 surfaced "no AAPS in cohort." Closer inspection of the
 ingestion pipeline shows AAPS-native uploads **are present** in
 the underlying ODC corpus and reach the parquet store via
 `tools/ns2parquet/odc_loader.py`, but every synthesized record
-is stamped `device='openaps://AndroidAPS'` (lines 105, 145, 175,
-208, 224, 252, 295). The downstream
+is stamped `device='openaps://AndroidAPS'` (lines 105, 143, 144, 175,
+208, 224, 294). The downstream
 `_detect_controller()` in `tools/ns2parquet/normalize.py:87-100`
 tests `'openaps' in dl` *before* `'aaps' in dl`, so all 7 odc-*
 patients get tagged `controller='openaps'` and (where eligible
