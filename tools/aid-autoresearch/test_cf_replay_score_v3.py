@@ -29,7 +29,8 @@ def run(*args: str) -> dict:
 def main() -> int:
     base = run('--smb-multiplier', '1.0', '--t-shift', '0')
     front = run('--smb-multiplier', '0.5', '--t-shift', '30')
-    per = run('--per-patient', '--braking-gate')
+    per_drop = run('--per-patient', '--braking-gate', '--braking-mode', 'drop')
+    per_munity = run('--per-patient', '--braking-gate', '--braking-mode', 'm_unity')
 
     fails: list[str] = []
     if base['safety_ok']:
@@ -40,17 +41,27 @@ def main() -> int:
     if front['score'] <= base['score']:
         fails.append(f'frontier score {front["score"]:.4f} not > '
                      f'baseline {base["score"]:.4f}')
-    if not per['safety_ok']:
-        fails.append(f'per-patient mode failed safety: '
-                     f'max_hypo={per["components"]["ascent_max_hypo_rate"]:.4f}')
-    if per['meta']['n_dropped_braking'] == 0:
-        fails.append('per-patient mode dropped zero events for braking gate '
+    if not per_drop['safety_ok']:
+        fails.append(f'per-patient drop mode failed safety: '
+                     f'max_hypo={per_drop["components"]["ascent_max_hypo_rate"]:.4f}')
+    if per_drop['meta']['n_dropped_braking'] == 0:
+        fails.append('per-patient drop mode dropped zero events for braking gate '
                      '(phenotype parquet not loaded?)')
+    if per_munity['meta']['n_m_unity'] == 0:
+        fails.append('per-patient m_unity mode forced zero events to M=1.0 '
+                     '(phenotype parquet not loaded?)')
+    if per_munity['meta']['n_dropped_braking'] != 0:
+        fails.append('m_unity mode unexpectedly dropped events')
+    # m_unity safety NOT asserted: per EXP-3016 it intentionally reverts
+    # high-braking patients to baseline-strength insulin which itself fails
+    # the cohort-uniform safety gate. This is documented behaviour.
 
     print(f"baseline:    score={base['score']:.4f}  safety={base['safety_ok']}")
     print(f"frontier:    score={front['score']:.4f}  safety={front['safety_ok']}")
-    print(f"per_patient: score={per['score']:.4f}  safety={per['safety_ok']}  "
-          f"events_used={per['meta']['n_events_used']}/{per['meta']['n_events_total']}")
+    print(f"per_drop:    score={per_drop['score']:.4f}  safety={per_drop['safety_ok']}  "
+          f"used={per_drop['meta']['n_events_used']}/{per_drop['meta']['n_events_total']}")
+    print(f"per_munity:  score={per_munity['score']:.4f}  safety={per_munity['safety_ok']}  "
+          f"forced={per_munity['meta']['n_m_unity']} to M=1.0")
 
     if fails:
         for f in fails:

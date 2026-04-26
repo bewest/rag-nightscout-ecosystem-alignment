@@ -112,33 +112,42 @@ def cf_eval(ev: pd.DataFrame, T_arr: np.ndarray, M_arr: np.ndarray,
 def ascent_score_v3(profiles: pd.DataFrame, *,
                     multiplier: float, t_shift: float,
                     per_patient: bool, proxy: str,
-                    braking_gate: float | None) -> dict:
+                    braking_gate: float | None,
+                    braking_mode: str = 'm_unity') -> dict:
     ev = pd.read_parquet(ASCENT)
     ev['isf_used'] = ev['patient_id'].map(_isf_map(profiles, ev['patient_id'].unique().tolist()))
 
     n_total = len(ev)
     n_dropped_braking = 0
-    if braking_gate is not None and PHENOTYPE.exists():
+    high_braking_pids: set[str] = set()
+    if braking_gate is not None and braking_mode != 'none' and PHENOTYPE.exists():
         ph = pd.read_parquet(PHENOTYPE)[['patient_id', 'braking_ratio']]
-        keep = set(ph.loc[ph['braking_ratio'] < braking_gate, 'patient_id'])
-        # Patients without a phenotype row pass-through (don't drop unknowns).
-        unknown = set(ev['patient_id'].unique()) - set(ph['patient_id'])
-        keep = keep | unknown
-        before = len(ev)
-        ev = ev[ev['patient_id'].isin(keep)].copy()
-        n_dropped_braking = before - len(ev)
+        high_braking_pids = set(ph.loc[ph['braking_ratio'] >= braking_gate,
+                                       'patient_id'])
+        if braking_mode == 'drop':
+            before = len(ev)
+            ev = ev[~ev['patient_id'].isin(high_braking_pids)].copy()
+            n_dropped_braking = before - len(ev)
+        # m_unity: keep events; will force M=1.0 for these patients below.
 
     if per_patient and PER_PATIENT_REC.exists():
         rec = pd.read_parquet(PER_PATIENT_REC)[
             ['patient_id', 'rec_T_min', 'rec_M_mult']]
         merged = ev.merge(rec, on='patient_id', how='left')
-        # Fall back to cohort knobs for unmatched patients.
         T_arr = merged['rec_T_min'].fillna(t_shift).to_numpy()
         M_arr = merged['rec_M_mult'].fillna(multiplier).to_numpy()
         ev = merged
     else:
         T_arr = np.full(len(ev), t_shift)
         M_arr = np.full(len(ev), multiplier)
+
+    n_m_unity = 0
+    if braking_mode == 'm_unity' and high_braking_pids:
+        mask = ev['patient_id'].isin(high_braking_pids).to_numpy()
+        # Force M=1.0 for high-braking events; keep T as configured.
+        # (per EXP-3016: timing benefit retained, magnitude reduction unwanted)
+        M_arr = np.where(mask, 1.0, M_arr)
+        n_m_unity = int(mask.sum())
 
     out = cf_eval(ev, T_arr, M_arr, proxy=proxy)
     out = out[out['controller'].notna()].copy()
@@ -164,8 +173,10 @@ def ascent_score_v3(profiles: pd.DataFrame, *,
             'mode': 'per_patient' if per_patient else 'uniform',
             'proxy': proxy,
             'braking_gate': braking_gate,
+            'braking_mode': braking_mode if braking_gate is not None else None,
             'n_events_total': int(n_total),
             'n_dropped_braking': int(n_dropped_braking),
+            'n_m_unity': int(n_m_unity),
             'n_events_used': int(len(ev)),
         },
     }
@@ -192,7 +203,12 @@ def main() -> None:
                    default='carb_aware')
     p.add_argument('--braking-gate', nargs='?', const=DEFAULT_BRAKING_GATE,
                    default=None, type=float,
-                   help=f'drop patients with braking_ratio >= gate (default {DEFAULT_BRAKING_GATE})')
+                   help=f'apply phenotype gate at braking_ratio >= VALUE (default {DEFAULT_BRAKING_GATE})')
+    p.add_argument('--braking-mode', choices=['drop', 'm_unity', 'none'],
+                   default='m_unity',
+                   help='action for gated patients: drop=remove from cohort, '
+                        'm_unity=force M=1.0 retaining T (EXP-3016 default), '
+                        'none=no gate effect even if --braking-gate set')
     p.add_argument('--label', default=None)
     p.add_argument('--json', action='store_true')
     args = p.parse_args()
@@ -212,7 +228,8 @@ def main() -> None:
                           t_shift=args.t_shift,
                           per_patient=args.per_patient,
                           proxy=args.proxy,
-                          braking_gate=args.braking_gate)
+                          braking_gate=args.braking_gate,
+                          braking_mode=args.braking_mode)
 
     composite = (0.50 * desc['score'] +
                  0.35 * asc['ascent_score'] +
@@ -243,12 +260,13 @@ def main() -> None:
     else:
         m = asc['meta']
         print(f"score={composite:.4f}  safety={safety_ok}  mode={m['mode']}  "
-              f"proxy={m['proxy']}  brake_gate={m['braking_gate']}")
+              f"proxy={m['proxy']}  brake_gate={m['braking_gate']}  "
+              f"brake_mode={m['braking_mode']}")
         print(f"  descent_v1    = {desc['score']:.4f}")
         print(f"  ascent_score  = {asc['ascent_score']:.4f}")
         print(f"  max_hypo_rate = {asc['max_hypo_rate']:.4f}  (gate ≤ {HYPO_GATE})")
         print(f"  events used   = {m['n_events_used']}/{m['n_events_total']}  "
-              f"(dropped {m['n_dropped_braking']} for braking gate)")
+              f"(dropped {m['n_dropped_braking']}, m_unity-forced {m['n_m_unity']})")
         for r in asc['per_controller']:
             print(f"  [{r['controller']:<8}]  obs_over={r.get('obs_overshoot', float('nan')):.3%}  "
                   f"cand_over={r['cand_overshoot']:.3%}  "
