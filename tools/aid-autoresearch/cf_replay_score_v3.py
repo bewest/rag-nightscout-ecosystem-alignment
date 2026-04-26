@@ -61,6 +61,7 @@ ASCENT = REPO_ROOT / 'externals' / 'experiments' / 'exp-3007_ascent_events.parqu
 PER_PATIENT_REC = REPO_ROOT / 'externals' / 'experiments' / 'exp-3012_per_patient.parquet'
 PER_PATIENT_REC_CLAMPED = REPO_ROOT / 'externals' / 'experiments' / 'exp-3017_per_patient_clamped.parquet'
 PHENOTYPE = REPO_ROOT / 'externals' / 'experiments' / 'exp-2886_phenotype.parquet'
+PHENOTYPE_IMPUTED = REPO_ROOT / 'externals' / 'experiments' / 'exp-3019_phenotype_imputed.parquet'
 
 HYPO_GATE = 0.010
 HYPO_FLOOR = 70.0
@@ -112,11 +113,19 @@ def cf_eval(ev: pd.DataFrame, T_arr: np.ndarray, M_arr: np.ndarray,
     return df
 
 
-def _stratify_braking(pid_series: pd.Series) -> pd.Series:
+def _phenotype_path(source: str = 'imputed') -> Path:
+    """Pick imputed parquet by default; fall back to observed if missing."""
+    if source == 'imputed' and PHENOTYPE_IMPUTED.exists():
+        return PHENOTYPE_IMPUTED
+    return PHENOTYPE
+
+
+def _stratify_braking(pid_series: pd.Series, *, source: str = 'imputed') -> pd.Series:
     """Map patient_id → braking stratum {'low','mid','high','unknown'}."""
-    if not PHENOTYPE.exists():
+    path = _phenotype_path(source)
+    if not path.exists():
         return pd.Series(['unknown'] * len(pid_series), index=pid_series.index)
-    ph = pd.read_parquet(PHENOTYPE)[['patient_id', 'braking_ratio']]
+    ph = pd.read_parquet(path)[['patient_id', 'braking_ratio']]
     pmap = dict(zip(ph['patient_id'], ph['braking_ratio']))
     lo, hi = STRAT_BRAKING_EDGES
     def _bin(pid: str) -> str:
@@ -129,16 +138,14 @@ def _stratify_braking(pid_series: pd.Series) -> pd.Series:
     return pid_series.map(_bin)
 
 
-def _stratified_safety(out: pd.DataFrame, ev_baseline: pd.DataFrame) -> dict:
-    """Compare per-stratum candidate hypo vs baseline (M=1,T=0) hypo.
-
-    Pass criterion (per stratum): cand_hypo_rate ≤ baseline_hypo_rate + Δgate
-    AND cand_hypo_rate ≤ HYPO_GATE * 2 (absolute ceiling 2x cohort gate).
-    """
+def _stratified_safety(out: pd.DataFrame, ev_baseline: pd.DataFrame,
+                       *, source: str = 'imputed') -> dict:
+    """Compare per-stratum candidate hypo vs baseline (M=1,T=0) hypo."""
     out = out.copy()
-    out['stratum'] = _stratify_braking(out['patient_id']).values
+    out['stratum'] = _stratify_braking(out['patient_id'], source=source).values
     ev_baseline = ev_baseline.copy()
-    ev_baseline['stratum'] = _stratify_braking(ev_baseline['patient_id']).values
+    ev_baseline['stratum'] = _stratify_braking(ev_baseline['patient_id'],
+                                                source=source).values
 
     rows = []
     all_pass = True
@@ -169,21 +176,24 @@ def ascent_score_v3(profiles: pd.DataFrame, *,
                     braking_gate: float | None,
                     braking_mode: str = 'm_unity',
                     per_patient_source: str = 'clamped',
-                    safety_mode: str = 'cohort') -> dict:
+                    safety_mode: str = 'cohort',
+                    phenotype_source: str = 'imputed') -> dict:
     ev = pd.read_parquet(ASCENT)
     ev['isf_used'] = ev['patient_id'].map(_isf_map(profiles, ev['patient_id'].unique().tolist()))
 
     n_total = len(ev)
     n_dropped_braking = 0
     high_braking_pids: set[str] = set()
-    if braking_gate is not None and braking_mode != 'none' and PHENOTYPE.exists():
-        ph = pd.read_parquet(PHENOTYPE)[['patient_id', 'braking_ratio']]
-        high_braking_pids = set(ph.loc[ph['braking_ratio'] >= braking_gate,
-                                       'patient_id'])
-        if braking_mode == 'drop':
-            before = len(ev)
-            ev = ev[~ev['patient_id'].isin(high_braking_pids)].copy()
-            n_dropped_braking = before - len(ev)
+    if braking_gate is not None and braking_mode != 'none':
+        ph_path = _phenotype_path(phenotype_source)
+        if ph_path.exists():
+            ph = pd.read_parquet(ph_path)[['patient_id', 'braking_ratio']]
+            high_braking_pids = set(ph.loc[ph['braking_ratio'] >= braking_gate,
+                                           'patient_id'])
+            if braking_mode == 'drop':
+                before = len(ev)
+                ev = ev[~ev['patient_id'].isin(high_braking_pids)].copy()
+                n_dropped_braking = before - len(ev)
 
     rec_path = (PER_PATIENT_REC_CLAMPED if per_patient_source == 'clamped'
                 and PER_PATIENT_REC_CLAMPED.exists()
@@ -230,7 +240,7 @@ def ascent_score_v3(profiles: pd.DataFrame, *,
         0.30 * (1.0 - 2 * by['cand_hypo_rate']).clip(lower=0))
 
     cohort_safety_ok = bool(by['cand_hypo_rate'].max() <= HYPO_GATE)
-    strat = _stratified_safety(out, base_eval)
+    strat = _stratified_safety(out, base_eval, source=phenotype_source)
     safety_ok = strat['safety_ok'] if safety_mode == 'stratified' else cohort_safety_ok
 
     return {
@@ -286,6 +296,10 @@ def main() -> None:
                    help='action for gated patients: drop=remove from cohort, '
                         'm_unity=force M=1.0 retaining T (EXP-3016 default), '
                         'none=no gate effect even if --braking-gate set')
+    p.add_argument('--phenotype-source', choices=['observed', 'imputed'],
+                   default='imputed',
+                   help='observed=EXP-2886 only; imputed=EXP-3019 with prefix '
+                        'heuristic for unknown patients (default)')
     p.add_argument('--safety-mode', choices=['cohort', 'stratified'],
                    default='cohort',
                    help='cohort: max(per-controller hypo) <= 1pp; '
@@ -312,7 +326,8 @@ def main() -> None:
                           braking_gate=args.braking_gate,
                           braking_mode=args.braking_mode,
                           per_patient_source=args.per_patient_source,
-                          safety_mode=args.safety_mode)
+                          safety_mode=args.safety_mode,
+                          phenotype_source=args.phenotype_source)
 
     composite = (0.50 * desc['score'] +
                  0.35 * asc['ascent_score'] +
