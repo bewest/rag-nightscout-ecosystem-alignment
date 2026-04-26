@@ -57,11 +57,39 @@ _spec = importlib.util.spec_from_file_location('cf_replay_score_v1', _v1_path)
 v1 = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(v1)
 
-ASCENT = REPO_ROOT / 'externals' / 'experiments' / 'exp-3007_ascent_events.parquet'
-PER_PATIENT_REC = REPO_ROOT / 'externals' / 'experiments' / 'exp-3012_per_patient.parquet'
-PER_PATIENT_REC_CLAMPED = REPO_ROOT / 'externals' / 'experiments' / 'exp-3017_per_patient_clamped.parquet'
-PHENOTYPE = REPO_ROOT / 'externals' / 'experiments' / 'exp-2886_phenotype.parquet'
-PHENOTYPE_IMPUTED = REPO_ROOT / 'externals' / 'experiments' / 'exp-3019_phenotype_imputed.parquet'
+EXP_DIR = REPO_ROOT / 'externals' / 'experiments'
+ASCENT = EXP_DIR / 'exp-3007_ascent_events.parquet'  # legacy default (training)
+ASCENT_BY_SOURCE = {
+    'training': EXP_DIR / 'exp-3007_ascent_events__training.parquet',
+    'verification': EXP_DIR / 'exp-3007_ascent_events__verification.parquet',
+}
+PER_PATIENT_REC = EXP_DIR / 'exp-3012_per_patient.parquet'
+PER_PATIENT_REC_CLAMPED = EXP_DIR / 'exp-3017_per_patient_clamped.parquet'
+PHENOTYPE = EXP_DIR / 'exp-2886_phenotype.parquet'
+PHENOTYPE_IMPUTED = EXP_DIR / 'exp-3019_phenotype_imputed.parquet'
+
+import hashlib  # noqa: E402
+
+
+def _resolve_events_path(source: str | None, events_path: str | None) -> Path:
+    if events_path:
+        return Path(events_path)
+    if source is None:
+        return ASCENT  # legacy default for back-compat
+    p = ASCENT_BY_SOURCE.get(source)
+    if p is None:
+        raise ValueError(f'unknown source: {source!r}')
+    return p
+
+
+def _events_sha256(path: Path) -> str:
+    if not path.exists():
+        return ''
+    h = hashlib.sha256()
+    with path.open('rb') as f:
+        for chunk in iter(lambda: f.read(1 << 20), b''):
+            h.update(chunk)
+    return h.hexdigest()
 
 HYPO_GATE = 0.010
 HYPO_FLOOR = 70.0
@@ -177,8 +205,10 @@ def ascent_score_v3(profiles: pd.DataFrame, *,
                     braking_mode: str = 'm_unity',
                     per_patient_source: str = 'clamped',
                     safety_mode: str = 'cohort',
-                    phenotype_source: str = 'imputed') -> dict:
-    ev = pd.read_parquet(ASCENT)
+                    phenotype_source: str = 'imputed',
+                    events_path: Path | None = None) -> dict:
+    ev_path = events_path if events_path is not None else ASCENT
+    ev = pd.read_parquet(ev_path)
     ev['isf_used'] = ev['patient_id'].map(_isf_map(profiles, ev['patient_id'].unique().tolist()))
 
     n_total = len(ev)
@@ -261,6 +291,8 @@ def ascent_score_v3(profiles: pd.DataFrame, *,
             'n_dropped_braking': int(n_dropped_braking),
             'n_m_unity': int(n_m_unity),
             'n_events_used': int(len(ev)),
+            'events_path': str(ev_path),
+            'events_sha256': _events_sha256(ev_path),
         },
     }
 
@@ -305,9 +337,26 @@ def main() -> None:
                    default='cohort',
                    help='cohort: max(per-controller hypo) <= 1pp; '
                         'stratified: per-braking-stratum Δhypo vs baseline (EXP-3018)')
+    p.add_argument('--source', choices=['training', 'verification'], default=None,
+                   help='which ascent-events partition to score against. '
+                        'When omitted, uses the legacy un-suffixed parquet '
+                        '(historically training). Use --source verification for '
+                        'held-out within-cohort validation (EXP-3025).')
+    p.add_argument('--events-path', default=None,
+                   help='explicit path to an ascent-events parquet, '
+                        'overrides --source.')
     p.add_argument('--label', default=None)
     p.add_argument('--json', action='store_true')
     args = p.parse_args()
+
+    events_path = _resolve_events_path(args.source, args.events_path)
+    if not events_path.exists():
+        msg = (f'events parquet missing: {events_path}. Run '
+               f'`python3 -m tools.cgmencode.autoresearch_cf.exp_3007_ascent_extraction '
+               f'--source {args.source or "training"}` first.')
+        print(json.dumps({'score': 0.0, 'safety_ok': False, 'reason': msg,
+                          'components': {}}))
+        sys.exit(2)
 
     try:
         events, phenotype, profiles = replay.load_inputs()
@@ -328,7 +377,8 @@ def main() -> None:
                           braking_mode=args.braking_mode,
                           per_patient_source=args.per_patient_source,
                           safety_mode=args.safety_mode,
-                          phenotype_source=args.phenotype_source)
+                          phenotype_source=args.phenotype_source,
+                          events_path=events_path)
 
     composite = (0.50 * desc['score'] +
                  0.35 * asc['ascent_score'] +
@@ -355,6 +405,17 @@ def main() -> None:
         'stratified_safety_ok': asc.get('stratified_safety_ok'),
         'descent_components': desc.get('components', {}),
         'meta': asc['meta'],
+        'provenance': {
+            'eval_source': args.source or 'legacy_default',
+            'events_path': str(events_path),
+            'events_sha256': asc['meta'].get('events_sha256', ''),
+            'fit_source': 'training',  # per-patient + phenotype always trained on training
+            'per_patient_parquet': str(
+                PER_PATIENT_REC_CLAMPED if args.per_patient_source == 'clamped'
+                and PER_PATIENT_REC_CLAMPED.exists() else PER_PATIENT_REC),
+            'phenotype_parquet': str(_phenotype_path(args.phenotype_source)),
+            'n_events_used': asc['meta']['n_events_used'],
+        },
     }
 
     if args.json:
