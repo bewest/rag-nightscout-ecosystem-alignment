@@ -39,6 +39,9 @@ for lineage/cf labels. EXP-2916 through EXP-2927.
 | oref0   | 3 | 73.7 % | 5.27 | 20.99 %|  5.25 %                 | **4.18 %**                     |
 | **oref1** | 9 | **82.6 %** | **3.64** | **13.78 %** | **1.53 %** | 0.61 %                |
 
+¹ TIR, TBR, TAR, and "Fasted-dawn 03:00 hyper" are cell-weighted across all 180-day per-patient windows.
+"Overnight severe-hypo" uses per-patient mean (not cell-weighted) due to sparse event density.
+
 oref1 Pareto-dominates Loop on TIR/TBR/TAR pooled (EXP-2925).
 The dominance survives Guard #6 cf-conditioning at every tertile
 where comparison is possible (EXP-2924, EXP-2925, EXP-2927).
