@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import List, Optional
+from typing import Iterable, List, Optional
 
 import numpy as np
 
@@ -58,11 +58,21 @@ def _extract_correction_events(
     carbs: Optional[np.ndarray],
     hours: np.ndarray,
     profile: 'PatientProfile',
+    inferred_meals: Optional[Iterable] = None,
+    inferred_meal_min_carbs_g: float = 5.0,
 ) -> List[dict]:
     """Extract correction bolus events for settings advisories.
 
     A correction event is a bolus >0.1U when glucose is above target and
     no significant carbs appear within ±1 hour (12 steps at 5-min cadence).
+
+    If ``inferred_meals`` is provided (an iterable of objects with ``.index``
+    and ``.estimated_carbs_g`` attributes — typically the output of
+    ``meal_detector.detect_meal_events``), events whose ±1 h window contains
+    an inferred meal of at least ``inferred_meal_min_carbs_g`` are also
+    excluded. Mitigates the under-logger bias documented in EXP-2739:
+    post-meal corrections were being mis-classified as fasting corrections,
+    deflating ISF estimates by 20–45 % on heavy under-loggers.
     """
     if bolus is None or len(glucose) < 49:
         return []
@@ -70,6 +80,17 @@ def _extract_correction_events(
     N = len(glucose)
     target_high = getattr(profile, 'target_high', 180.0)
     events: List[dict] = []
+
+    inferred_meal_idx_carbs: List[tuple] = []
+    if inferred_meals:
+        for m in inferred_meals:
+            try:
+                idx = int(getattr(m, 'index'))
+                cg = float(getattr(m, 'estimated_carbs_g', 0.0))
+            except (TypeError, ValueError, AttributeError):
+                continue
+            if cg >= inferred_meal_min_carbs_g and 0 <= idx < N:
+                inferred_meal_idx_carbs.append((idx, cg))
 
     for i in range(N):
         if np.isnan(bolus[i]) or bolus[i] <= 0.1:
@@ -85,9 +106,9 @@ def _extract_correction_events(
         # Skip if significant carbs within ±12 steps (1 hour). Treats-of-low
         # (small carbs taken at low BG) are excluded from this guard so they
         # don't suppress legitimate correction events.
+        real_carbs = 0.0
         if carbs is not None:
             carb_lo, carb_hi = carb_window_lo, carb_window_hi
-            real_carbs = 0.0
             for j in range(carb_lo, carb_hi):
                 cj = carbs[j]
                 if np.isnan(cj) or cj <= 0:
@@ -96,8 +117,17 @@ def _extract_correction_events(
                 if is_real_carb_event(float(cj),
                                       prior_glucose_30min_min=prior_min_j):
                     real_carbs += float(cj)
-            if real_carbs > 5.0:
-                continue
+
+        # Inferred meals (under-logger correction): treat as additional
+        # ±1 h carb window. EXP-2739: under-loggers had post-meal boluses
+        # mis-classified as fasting corrections, deflating ISF.
+        if inferred_meal_idx_carbs:
+            for (im_idx, im_cg) in inferred_meal_idx_carbs:
+                if carb_window_lo <= im_idx < carb_window_hi:
+                    real_carbs += im_cg
+
+        if real_carbs > 5.0:
+            continue
 
         # Need 48 steps (4h) of future glucose
         end_idx = i + 48
@@ -587,7 +617,8 @@ def run_pipeline(patient: PatientData,
     try:
         correction_events = _extract_correction_events(
             cleaned.glucose, patient.bolus, patient.carbs,
-            hours, patient.profile) or None
+            hours, patient.profile,
+            inferred_meals=meals_for_basal or None) or None
     except Exception as e:
         warnings.append(f"Correction event extraction failed: {e}")
     try:
