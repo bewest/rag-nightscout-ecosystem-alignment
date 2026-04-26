@@ -12,7 +12,7 @@ TIR comparison across designs.
 
 ## Result — STRONG OUTLIER on the EXP-2979 stratum
 
-Patient `i` differs from c/d/e/g on **8 of 17 baseline / event-count
+Patient `i` differs from c/d/e/g on **9 of 17 baseline / event-count
 metrics** by Tukey-IQR (1.5 × IQR) test:
 
 | Metric | i | others median | others IQR | outlier |

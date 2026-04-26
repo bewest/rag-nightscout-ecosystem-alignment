@@ -14,7 +14,7 @@ Cohort controller distribution:
 |------------|----:|
 | Trio       | 9 |
 | Loop       | 7 |
-| OpenAPS    | 3 |
+| AAPS       | 3 |
 
 **All 9 patients in the `oref1 (modern)` lineage are
 controller=Trio.** The cohort contains no AAPS patients. Therefore

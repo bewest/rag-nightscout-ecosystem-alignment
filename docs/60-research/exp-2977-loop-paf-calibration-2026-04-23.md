@@ -75,8 +75,8 @@ yield a clean factor estimate.
 
 ## Code refs
 
-- `externals/LoopWorkspace/LoopAlgorithm/Sources/LoopAlgorithm/Insulin/DoseMath.swift:101-110`
-  — `asPartialBolus = correction * partialApplicationFactor`
+- `externals/LoopWorkspace/LoopKit/LoopKit/LoopAlgorithm/DoseMath.swift:120`
+  — `asPartialBolus = units * partialApplicationFactor`
 - `externals/LoopWorkspace/Loop/Loop/Models/GlucoseBasedApplicationFactorStrategy.swift:14-42`
   — sliding scale 0.2 → 0.8 over BG 90 → 200 mg/dL
 - `externals/LoopWorkspace/Loop/Loop/Managers/LoopDataManager.swift:1818-1855`
