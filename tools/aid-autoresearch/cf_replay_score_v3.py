@@ -59,6 +59,7 @@ _spec.loader.exec_module(v1)
 
 ASCENT = REPO_ROOT / 'externals' / 'experiments' / 'exp-3007_ascent_events.parquet'
 PER_PATIENT_REC = REPO_ROOT / 'externals' / 'experiments' / 'exp-3012_per_patient.parquet'
+PER_PATIENT_REC_CLAMPED = REPO_ROOT / 'externals' / 'experiments' / 'exp-3017_per_patient_clamped.parquet'
 PHENOTYPE = REPO_ROOT / 'externals' / 'experiments' / 'exp-2886_phenotype.parquet'
 
 HYPO_GATE = 0.010
@@ -113,7 +114,8 @@ def ascent_score_v3(profiles: pd.DataFrame, *,
                     multiplier: float, t_shift: float,
                     per_patient: bool, proxy: str,
                     braking_gate: float | None,
-                    braking_mode: str = 'm_unity') -> dict:
+                    braking_mode: str = 'm_unity',
+                    per_patient_source: str = 'clamped') -> dict:
     ev = pd.read_parquet(ASCENT)
     ev['isf_used'] = ev['patient_id'].map(_isf_map(profiles, ev['patient_id'].unique().tolist()))
 
@@ -128,10 +130,12 @@ def ascent_score_v3(profiles: pd.DataFrame, *,
             before = len(ev)
             ev = ev[~ev['patient_id'].isin(high_braking_pids)].copy()
             n_dropped_braking = before - len(ev)
-        # m_unity: keep events; will force M=1.0 for these patients below.
 
-    if per_patient and PER_PATIENT_REC.exists():
-        rec = pd.read_parquet(PER_PATIENT_REC)[
+    rec_path = (PER_PATIENT_REC_CLAMPED if per_patient_source == 'clamped'
+                and PER_PATIENT_REC_CLAMPED.exists()
+                else PER_PATIENT_REC)
+    if per_patient and rec_path.exists():
+        rec = pd.read_parquet(rec_path)[
             ['patient_id', 'rec_T_min', 'rec_M_mult']]
         merged = ev.merge(rec, on='patient_id', how='left')
         T_arr = merged['rec_T_min'].fillna(t_shift).to_numpy()
@@ -199,6 +203,10 @@ def main() -> None:
                    help='earlier-firing minutes for the cohort-uniform mode')
     p.add_argument('--per-patient', action='store_true',
                    help='use exp-3012 per-patient (T*, M*) instead of uniform knobs')
+    p.add_argument('--per-patient-source', choices=['raw', 'clamped'],
+                   default='clamped',
+                   help='which per-patient parquet to use: raw=EXP-3012, '
+                        'clamped=EXP-3017 phenotype-clamped (default)')
     p.add_argument('--proxy', choices=['carb_aware', 'worst_case'],
                    default='carb_aware')
     p.add_argument('--braking-gate', nargs='?', const=DEFAULT_BRAKING_GATE,
@@ -229,7 +237,8 @@ def main() -> None:
                           per_patient=args.per_patient,
                           proxy=args.proxy,
                           braking_gate=args.braking_gate,
-                          braking_mode=args.braking_mode)
+                          braking_mode=args.braking_mode,
+                          per_patient_source=args.per_patient_source)
 
     composite = (0.50 * desc['score'] +
                  0.35 * asc['ascent_score'] +
