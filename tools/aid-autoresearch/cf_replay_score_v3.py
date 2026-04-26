@@ -68,6 +68,8 @@ WINDOW_MIN = 120
 DEFAULT_AT_MIN = 180.0
 ISF_PER_G = 4.0
 DEFAULT_BRAKING_GATE = 0.10
+STRAT_DELTA_PP = 1.0  # per-stratum Δhypo gate (pp) above stratum baseline
+STRAT_BRAKING_EDGES = (0.05, 0.10)  # low / mid / high boundaries
 
 
 def _isf_map(profiles: pd.DataFrame, patient_ids: list[str]) -> dict[str, float]:
@@ -110,12 +112,64 @@ def cf_eval(ev: pd.DataFrame, T_arr: np.ndarray, M_arr: np.ndarray,
     return df
 
 
+def _stratify_braking(pid_series: pd.Series) -> pd.Series:
+    """Map patient_id → braking stratum {'low','mid','high','unknown'}."""
+    if not PHENOTYPE.exists():
+        return pd.Series(['unknown'] * len(pid_series), index=pid_series.index)
+    ph = pd.read_parquet(PHENOTYPE)[['patient_id', 'braking_ratio']]
+    pmap = dict(zip(ph['patient_id'], ph['braking_ratio']))
+    lo, hi = STRAT_BRAKING_EDGES
+    def _bin(pid: str) -> str:
+        v = pmap.get(pid)
+        if v is None or pd.isna(v):
+            return 'unknown'
+        if v < lo:   return 'low'
+        if v < hi:   return 'mid'
+        return 'high'
+    return pid_series.map(_bin)
+
+
+def _stratified_safety(out: pd.DataFrame, ev_baseline: pd.DataFrame) -> dict:
+    """Compare per-stratum candidate hypo vs baseline (M=1,T=0) hypo.
+
+    Pass criterion (per stratum): cand_hypo_rate ≤ baseline_hypo_rate + Δgate
+    AND cand_hypo_rate ≤ HYPO_GATE * 2 (absolute ceiling 2x cohort gate).
+    """
+    out = out.copy()
+    out['stratum'] = _stratify_braking(out['patient_id']).values
+    ev_baseline = ev_baseline.copy()
+    ev_baseline['stratum'] = _stratify_braking(ev_baseline['patient_id']).values
+
+    rows = []
+    all_pass = True
+    for stratum, sub in out.groupby('stratum'):
+        bsub = ev_baseline[ev_baseline['stratum'] == stratum]
+        if not len(bsub):
+            continue
+        cand_h = float(sub['cand_hypo'].mean())
+        base_h = float(bsub['baseline_cand_hypo'].mean())
+        delta_pp = (cand_h - base_h) * 100
+        ceiling = HYPO_GATE * 2.0
+        passes = (delta_pp <= STRAT_DELTA_PP) and (cand_h <= ceiling)
+        all_pass = all_pass and passes
+        rows.append({
+            'stratum': stratum,
+            'n': int(len(sub)),
+            'baseline_hypo': base_h,
+            'cand_hypo': cand_h,
+            'delta_pp': delta_pp,
+            'passes': passes,
+        })
+    return {'safety_ok': all_pass, 'per_stratum': rows}
+
+
 def ascent_score_v3(profiles: pd.DataFrame, *,
                     multiplier: float, t_shift: float,
                     per_patient: bool, proxy: str,
                     braking_gate: float | None,
                     braking_mode: str = 'm_unity',
-                    per_patient_source: str = 'clamped') -> dict:
+                    per_patient_source: str = 'clamped',
+                    safety_mode: str = 'cohort') -> dict:
     ev = pd.read_parquet(ASCENT)
     ev['isf_used'] = ev['patient_id'].map(_isf_map(profiles, ev['patient_id'].unique().tolist()))
 
@@ -156,6 +210,13 @@ def ascent_score_v3(profiles: pd.DataFrame, *,
     out = cf_eval(ev, T_arr, M_arr, proxy=proxy)
     out = out[out['controller'].notna()].copy()
 
+    # Per-stratum safety needs a baseline (M=1,T=0) cf-replay for the SAME
+    # event set, so we compute it here even if cohort mode is selected (cheap).
+    n_ev = len(ev)
+    base_eval = cf_eval(ev, np.zeros(n_ev), np.ones(n_ev), proxy=proxy)
+    base_eval = base_eval[base_eval['controller'].notna()].copy()
+    base_eval = base_eval.rename(columns={'cand_hypo': 'baseline_cand_hypo'})
+
     by = out.groupby('controller', as_index=False).agg(
         cand_overshoot=('cand_overshoot', 'mean'),
         cand_hypo_rate=('cand_hypo', 'mean'),
@@ -168,14 +229,22 @@ def ascent_score_v3(profiles: pd.DataFrame, *,
         0.70 * (1.0 - by['cand_overshoot']) +
         0.30 * (1.0 - 2 * by['cand_hypo_rate']).clip(lower=0))
 
+    cohort_safety_ok = bool(by['cand_hypo_rate'].max() <= HYPO_GATE)
+    strat = _stratified_safety(out, base_eval)
+    safety_ok = strat['safety_ok'] if safety_mode == 'stratified' else cohort_safety_ok
+
     return {
         'ascent_score': float(by['ctrl_score'].mean()),
         'max_hypo_rate': float(by['cand_hypo_rate'].max()),
-        'safety_ok': bool(by['cand_hypo_rate'].max() <= HYPO_GATE),
+        'safety_ok': safety_ok,
+        'cohort_safety_ok': cohort_safety_ok,
+        'stratified_safety_ok': strat['safety_ok'],
+        'per_stratum': strat['per_stratum'],
         'per_controller': by.to_dict(orient='records'),
         'meta': {
             'mode': 'per_patient' if per_patient else 'uniform',
             'proxy': proxy,
+            'safety_mode': safety_mode,
             'braking_gate': braking_gate,
             'braking_mode': braking_mode if braking_gate is not None else None,
             'n_events_total': int(n_total),
@@ -217,6 +286,10 @@ def main() -> None:
                    help='action for gated patients: drop=remove from cohort, '
                         'm_unity=force M=1.0 retaining T (EXP-3016 default), '
                         'none=no gate effect even if --braking-gate set')
+    p.add_argument('--safety-mode', choices=['cohort', 'stratified'],
+                   default='cohort',
+                   help='cohort: max(per-controller hypo) <= 1pp; '
+                        'stratified: per-braking-stratum Δhypo vs baseline (EXP-3018)')
     p.add_argument('--label', default=None)
     p.add_argument('--json', action='store_true')
     args = p.parse_args()
@@ -238,7 +311,8 @@ def main() -> None:
                           proxy=args.proxy,
                           braking_gate=args.braking_gate,
                           braking_mode=args.braking_mode,
-                          per_patient_source=args.per_patient_source)
+                          per_patient_source=args.per_patient_source,
+                          safety_mode=args.safety_mode)
 
     composite = (0.50 * desc['score'] +
                  0.35 * asc['ascent_score'] +
@@ -260,6 +334,9 @@ def main() -> None:
             'braking_gate': asc['meta']['braking_gate'],
         },
         'per_controller': asc['per_controller'],
+        'per_stratum': asc.get('per_stratum', []),
+        'cohort_safety_ok': asc.get('cohort_safety_ok'),
+        'stratified_safety_ok': asc.get('stratified_safety_ok'),
         'descent_components': desc.get('components', {}),
         'meta': asc['meta'],
     }
@@ -269,13 +346,20 @@ def main() -> None:
     else:
         m = asc['meta']
         print(f"score={composite:.4f}  safety={safety_ok}  mode={m['mode']}  "
-              f"proxy={m['proxy']}  brake_gate={m['braking_gate']}  "
-              f"brake_mode={m['braking_mode']}")
+              f"proxy={m['proxy']}  safety_mode={m['safety_mode']}  "
+              f"brake_gate={m['braking_gate']}  brake_mode={m['braking_mode']}")
         print(f"  descent_v1    = {desc['score']:.4f}")
         print(f"  ascent_score  = {asc['ascent_score']:.4f}")
-        print(f"  max_hypo_rate = {asc['max_hypo_rate']:.4f}  (gate ≤ {HYPO_GATE})")
+        print(f"  max_hypo_rate = {asc['max_hypo_rate']:.4f}  (cohort gate ≤ {HYPO_GATE})")
+        print(f"  cohort_safety = {asc.get('cohort_safety_ok')}  "
+              f"stratified_safety = {asc.get('stratified_safety_ok')}")
         print(f"  events used   = {m['n_events_used']}/{m['n_events_total']}  "
               f"(dropped {m['n_dropped_braking']}, m_unity-forced {m['n_m_unity']})")
+        for r in asc.get('per_stratum', []):
+            mark = '✓' if r['passes'] else '✗'
+            print(f"  [strat {r['stratum']:<7}] n={r['n']:>5}  "
+                  f"base_h={r['baseline_hypo']:.3%}  cand_h={r['cand_hypo']:.3%}  "
+                  f"Δ={r['delta_pp']:+5.2f}pp  {mark}")
         for r in asc['per_controller']:
             print(f"  [{r['controller']:<8}]  obs_over={r.get('obs_overshoot', float('nan')):.3%}  "
                   f"cand_over={r['cand_overshoot']:.3%}  "
