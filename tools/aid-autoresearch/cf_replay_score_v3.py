@@ -68,7 +68,7 @@ HYPO_FLOOR = 70.0
 WINDOW_MIN = 120
 DEFAULT_AT_MIN = 180.0
 ISF_PER_G = 4.0
-DEFAULT_BRAKING_GATE = 0.10
+DEFAULT_BRAKING_GATE = 0.15  # EXP-3020: raised from 0.10; raw + 0.15 + m_unity scores 0.7082 vs 0.7050 at full retention.
 STRAT_DELTA_PP = 1.0  # per-stratum Δhypo gate (pp) above stratum baseline
 STRAT_BRAKING_EDGES = (0.05, 0.10)  # low / mid / high boundaries
 
@@ -283,9 +283,10 @@ def main() -> None:
     p.add_argument('--per-patient', action='store_true',
                    help='use exp-3012 per-patient (T*, M*) instead of uniform knobs')
     p.add_argument('--per-patient-source', choices=['raw', 'clamped'],
-                   default='clamped',
-                   help='which per-patient parquet to use: raw=EXP-3012, '
-                        'clamped=EXP-3017 phenotype-clamped (default)')
+                   default='raw',
+                   help='which per-patient parquet to use: raw=EXP-3012 (default '
+                        'per EXP-3020; clamped+m_unity was double-clamping), '
+                        'clamped=EXP-3017 phenotype-clamped (legacy fallback)')
     p.add_argument('--proxy', choices=['carb_aware', 'worst_case'],
                    default='carb_aware')
     p.add_argument('--braking-gate', nargs='?', const=DEFAULT_BRAKING_GATE,

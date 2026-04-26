@@ -30,6 +30,7 @@ import argparse
 import itertools
 import json
 import os
+import random
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -45,6 +46,13 @@ DEFAULT_GRID = {
     'proxy':        ['carb_aware', 'worst_case'],
     'per_patient_source': ['raw', 'clamped'],
 }
+
+# Random-search bounds (only applied to the continuous axis).
+RANDOM_GATE_LOW = 0.04
+RANDOM_GATE_HIGH = 0.30
+# Refinement sweep: dense 1D scan of braking_gate around the grid winner.
+REFINE_RADIUS = 0.05
+REFINE_STEP = 0.01
 
 
 def run_scorer(*, per_patient: bool, braking_gate: float | None,
@@ -147,6 +155,73 @@ def harness(args) -> dict:
             'n_m_unity': (r.get('meta') or {}).get('n_m_unity'),
         })
 
+    safe_cells = [c for c in cells if c['safety_ok']]
+
+    # Optional refinement pass: dense 1D sweep of braking_gate around the
+    # winner's (mode, proxy, src) cell, plus optional random search.
+    if safe_cells and (args.refine or args.random_iterations > 0):
+        winner_seed = max(safe_cells, key=lambda c: c['score'] or 0.0)
+        seed_mode = winner_seed['braking_mode']
+        seed_proxy = winner_seed['proxy']
+        seed_src = winner_seed['per_patient_source']
+        seed_gate = float(winner_seed['braking_gate'])
+        print(f'[refine] seed cell: gate={seed_gate} mode={seed_mode} '
+              f'proxy={seed_proxy} src={seed_src} score={winner_seed["score"]:.4f}',
+              file=sys.stderr)
+
+        if args.refine:
+            n_steps = int(round(REFINE_RADIUS / REFINE_STEP))
+            gates = sorted({
+                round(max(RANDOM_GATE_LOW, min(RANDOM_GATE_HIGH,
+                                               seed_gate + k * REFINE_STEP)), 4)
+                for k in range(-n_steps, n_steps + 1)
+            })
+            for j, g in enumerate(gates, start=1):
+                print(f'[refine {j}/{len(gates)}] gate={g} mode={seed_mode} '
+                      f'proxy={seed_proxy} src={seed_src}…', file=sys.stderr)
+                r = run_scorer(per_patient=True, braking_gate=g,
+                               braking_mode=seed_mode, proxy=seed_proxy,
+                               per_patient_source=seed_src,
+                               safety_mode=args.safety_mode)
+                cells.append({
+                    'cell': f'refine_{j:02d}',
+                    'braking_gate': g, 'braking_mode': seed_mode,
+                    'proxy': seed_proxy, 'per_patient_source': seed_src,
+                    'score': r.get('score'), 'safety_ok': r.get('safety_ok'),
+                    'cohort_safety_ok': r.get('cohort_safety_ok'),
+                    'stratified_safety_ok': r.get('stratified_safety_ok'),
+                    'n_used': (r.get('meta') or {}).get('n_events_used'),
+                    'n_dropped': (r.get('meta') or {}).get('n_dropped_braking'),
+                    'n_m_unity': (r.get('meta') or {}).get('n_m_unity'),
+                })
+
+        if args.random_iterations > 0:
+            rng = random.Random(args.random_seed)
+            for j in range(1, args.random_iterations + 1):
+                g = round(rng.uniform(RANDOM_GATE_LOW, RANDOM_GATE_HIGH), 4)
+                # Sample categorical axes too — but only from values
+                # observed to be safe in the grid (excludes worst_case).
+                mode = rng.choice(['drop', 'm_unity'])
+                src = rng.choice(['raw', 'clamped'])
+                proxy = 'carb_aware'
+                print(f'[rand {j}/{args.random_iterations}] gate={g} mode={mode} '
+                      f'proxy={proxy} src={src}…', file=sys.stderr)
+                r = run_scorer(per_patient=True, braking_gate=g,
+                               braking_mode=mode, proxy=proxy,
+                               per_patient_source=src,
+                               safety_mode=args.safety_mode)
+                cells.append({
+                    'cell': f'rand_{j:02d}',
+                    'braking_gate': g, 'braking_mode': mode,
+                    'proxy': proxy, 'per_patient_source': src,
+                    'score': r.get('score'), 'safety_ok': r.get('safety_ok'),
+                    'cohort_safety_ok': r.get('cohort_safety_ok'),
+                    'stratified_safety_ok': r.get('stratified_safety_ok'),
+                    'n_used': (r.get('meta') or {}).get('n_events_used'),
+                    'n_dropped': (r.get('meta') or {}).get('n_dropped_braking'),
+                    'n_m_unity': (r.get('meta') or {}).get('n_m_unity'),
+                })
+
     cols = ['cell', 'braking_gate', 'braking_mode', 'proxy',
             'per_patient_source', 'score', 'safety_ok',
             'cohort_safety_ok', 'stratified_safety_ok',
@@ -157,7 +232,15 @@ def harness(args) -> dict:
             f.write('\t'.join(str(c.get(k, '')) for k in cols) + '\n')
 
     safe_cells = [c for c in cells if c['safety_ok']]
-    winner = max(safe_cells, key=lambda c: c['score'] or 0.0) if safe_cells else None
+    # Total cohort size (from baseline cell which uses all events).
+    n_total = next((c['n_used'] for c in cells if c['cell'] == 'baseline'), None)
+    if n_total:
+        retain_safe = [c for c in safe_cells
+                       if (c['n_used'] or 0) / n_total >= args.min_retention]
+    else:
+        retain_safe = safe_cells
+    raw_winner = max(safe_cells, key=lambda c: c['score'] or 0.0) if safe_cells else None
+    winner = max(retain_safe, key=lambda c: c['score'] or 0.0) if retain_safe else raw_winner
 
     return {
         'harness': 'cf-replay-v3',
@@ -165,9 +248,12 @@ def harness(args) -> dict:
         'tsv': str(tsv_path),
         'n_cells': len(cells),
         'n_safe': len(safe_cells),
+        'n_total_cohort': n_total,
+        'min_retention': args.min_retention,
         'baseline_score': base.get('score'),
         'frontier_score': frontier.get('score'),
         'winner': winner,
+        'raw_winner': raw_winner,
         'cells': cells,
     }
 
@@ -178,6 +264,15 @@ def main() -> None:
     ap.add_argument('--safety-mode', choices=['cohort', 'stratified'],
                     default='stratified',
                     help='which safety gate to enforce (default stratified, EXP-3018)')
+    ap.add_argument('--refine', action='store_true',
+                    help='after grid, do a dense 1D sweep of braking_gate around the winner')
+    ap.add_argument('--random-iterations', type=int, default=0,
+                    help='additional random-search iterations after grid (default 0)')
+    ap.add_argument('--random-seed', type=int, default=42)
+    ap.add_argument('--min-retention', type=float, default=0.80,
+                    help='minimum n_used/n_total ratio for the deployable winner '
+                         'pick (default 0.80; the unconstrained winner is also '
+                         'reported as raw_winner)')
     ap.add_argument('--json', action='store_true')
     args = ap.parse_args()
 
@@ -194,12 +289,18 @@ def main() -> None:
           f"frontier={out['frontier_score']:.4f}")
     if out['winner']:
         w = out['winner']
-        print(f"WINNER: cell={w['cell']}  score={w['score']:.4f}  "
-              f"safety_ok={w['safety_ok']}")
+        print(f"WINNER (≥{out['min_retention']:.0%} retention): cell={w['cell']}  "
+              f"score={w['score']:.4f}  safety_ok={w['safety_ok']}")
         print(f"  gate={w['braking_gate']}  mode={w['braking_mode']}  "
               f"proxy={w['proxy']}  src={w['per_patient_source']}  "
               f"n_used={w['n_used']}")
-    else:
+    if out['raw_winner'] and (not out['winner']
+                              or out['raw_winner']['cell'] != out['winner']['cell']):
+        rw = out['raw_winner']
+        print(f"RAW WINNER (no retention floor, may be selection-biased): "
+              f"cell={rw['cell']}  score={rw['score']:.4f}  "
+              f"n_used={rw['n_used']}/{out['n_total_cohort']}")
+    if not out['winner']:
         print("WINNER: NONE (no cell passed safety gate)")
     print(f"TSV: {out['tsv']}")
 

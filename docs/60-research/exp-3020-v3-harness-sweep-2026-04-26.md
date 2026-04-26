@@ -93,8 +93,31 @@ Phase-5 default (clamped + m_unity + gate=0.10) sits at 0.7050 (rank ≈ 12).
 ## Reproducibility
 
 ```bash
-python3 tools/aid-autoresearch/cf_replay_v3_harness.py --safety-mode stratified --json \
+python3 tools/aid-autoresearch/cf_replay_v3_harness.py \
+    --safety-mode stratified --refine --random-iterations 10 --json \
   > externals/experiments/cf_replay_v3_harness_$(date -u +%Y%m%dT%H%M%SZ).json
 ```
 
-TSV from this run: `externals/experiments/cf_replay_v3_harness_20260426T192303Z.tsv`.
+TSV from the original grid run: `externals/experiments/cf_replay_v3_harness_20260426T192303Z.tsv`.
+TSV from the extended grid + refine + random run: `externals/experiments/cf_replay_v3_harness_20260426T192900Z.tsv`.
+
+## Addendum (extended harness, refine + random)
+
+A second run added a 1D refine sweep around the unconstrained winner
+plus 10 random samples in `braking_gate ∈ [0.04, 0.30]`. Two findings:
+
+1. **m_unity score plateau above gate ≈ 0.15.** The candidates
+   `(gate = 0.1568, 0.2262, 0.2889) × m_unity × raw × carb_aware` all
+   produce score = 0.7082 — bit-identical to gate = 0.15. The gate is at
+   a knee: every patient with `braking_ratio ≥ 0.15` that the gate
+   catches keeps catching them as the threshold rises further.
+2. **drop-mode global maximum at gate = 0.15.** Drop-mode score peaks at
+   0.7150 (gate = 0.15 / 12 969 events); both lower and higher gates score
+   strictly worse with the same retention bias. Confirms the choice of
+   0.15 as the deployable gate.
+
+Selection bias confirmed:  the unconstrained `--refine` seed cell at
+gate = 0.05 / 4 838 events scores 0.7160, but only on ≈ 27 % of the cohort.
+The harness now has `--min-retention 0.80` (default) which selects the
+deployable winner from cells using ≥ 80 % of the cohort and reports the
+unconstrained winner separately as `raw_winner` for diagnostic purposes.
