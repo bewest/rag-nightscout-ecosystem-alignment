@@ -5,3 +5,4 @@ timestamp	exp_id	config_name	fit_source	eval_source	score	cohort_safety_ok	strat
 2026-04-27T00:17:21Z	EXP-3025-FIX	braking_gate_sweep	training	verification	n/a	n/a	gate=0.10	30_patients	n/a	PASS	gate=0.10 aligns with stratum boundary; verif delta +0.0245 vs target +0.0209; high stratum empty by construction
 2026-04-27T00:24:01Z	EXP-3025-LOPO	braking_gate=0.10_robustness	verification	verification_lopo	n/a	n/a	gate=0.10	23_splits	n/a	PASS	23/23 splits safety_ok; delta mean +0.0245 std 0.0037; min +0.0188 (drop i)
 2026-04-27T00:28:06Z	EXP-3028	per_patient_carb_aware_refit	training	verification	n=29	n/a	gate=0.10_clamped	carb_aware	training	PASS	delta=+0.0327 (lift +0.0082 vs EXP-3017); reclaims 47% of gate-flip cost; safety_ok
+2026-04-27T00:30:05Z	EXP-3027	impute_braking_LOO	observed_n19	LOO	n=19	n/a	controller_median_rule	n/a	n/a	FAIL	stratum_agreement=31.6%; 2 high->low flips on Trio; AAPS median unstable n=3; recommends safety-conservative imputation
