@@ -1,0 +1,181 @@
+{
+  "patient_id": "odc-86025410",
+  "generated_at_utc": "2026-04-27T05:58:38.998599+00:00",
+  "parquet_dir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/training",
+  "days_of_data": 375.0104166666667,
+  "profile_timezone": "US/Eastern",
+  "glycemic_summary": {
+    "n_readings": 106066,
+    "mean_mgdl": 146.5574634209675,
+    "std_mgdl": 66.01930953420899,
+    "cv_pct": 45.04670590850566,
+    "tir_70_180": 0.6835555220334508,
+    "tbr_lt70": 0.059755246733166144,
+    "tbr_lt54": 0.039418852412648725,
+    "tar_gt180": 0.256689231233383,
+    "tar_gt250": 0.07549073218562027,
+    "ea1c_gmi_pct": 6.815654525029543
+  },
+  "facts_loaders": {
+    "controller_dynamics_EXP_2753": {
+      "controller_type": "loop",
+      "n_events": 193,
+      "mean_correction_fraction": 0.8168339507169939,
+      "mean_smb_fraction": 0.0,
+      "mean_excess_basal_fraction": 0.1831660492830061,
+      "mean_controller_fraction_of_excess": -0.06250700461200522,
+      "corr_denom_gap_closure": 0.5955056179775283,
+      "isf_corr_denom_median": 116.0,
+      "isf_profile_median": 110.0
+    },
+    "basal_mismatch_EXP_2869": {
+      "p_basal_mismatch": 0.0,
+      "median_recommended_mult": 1.0
+    },
+    "isf_gap_EXP_2861": {
+      "p_isf_under_correction": 0.016,
+      "p_isf_over_correction": 0.0
+    },
+    "recovery_EXP_2862": {
+      "p_low_recovery": 0.976
+    },
+    "phenotype": {
+      "stack_score": 1.0,
+      "brake_ratio": 0.17120662197696382,
+      "counter_reg_intercept": null,
+      "beta_nadir": null,
+      "p_haaf": null,
+      "evening_bolus_excess_4h": null,
+      "evening_iob_at_descent": null,
+      "controller_lineage": "loop"
+    }
+  },
+  "per_patient_egp": {
+    "method": "EXP-2739 fasting-drift, deep-fasting subset",
+    "population_egp_mgdl_per_5min": 1.5,
+    "patient_glucose_roc_lowiob_mgdl_per_5min": 0.0,
+    "controller_equilib_basal_multiplier": 1.0,
+    "n_deep_fasting_rows": 27478,
+    "n_equilib_rows": 4432
+  },
+  "meal_floor_audit": [
+    {
+      "floor_g": 5,
+      "n_events": 269,
+      "events_per_day": 0.7173134079608899,
+      "n_days_with_meal": 181,
+      "n_days_with_2to8": 66,
+      "evening_share_pct": 29.36802973977695,
+      "n_logged_events": 2050,
+      "logged_events_per_day": 5.466514819032804
+    },
+    {
+      "floor_g": 10,
+      "n_events": 269,
+      "events_per_day": 0.7173134079608899,
+      "n_days_with_meal": 181,
+      "n_days_with_2to8": 66,
+      "evening_share_pct": 29.36802973977695,
+      "n_logged_events": 1840,
+      "logged_events_per_day": 4.906530374156273
+    },
+    {
+      "floor_g": 20,
+      "n_events": 269,
+      "events_per_day": 0.7173134079608899,
+      "n_days_with_meal": 181,
+      "n_days_with_2to8": 66,
+      "evening_share_pct": 29.36802973977695,
+      "n_logged_events": 1155,
+      "logged_events_per_day": 3.0799144468209216
+    },
+    {
+      "floor_g": 30,
+      "n_events": 267,
+      "events_per_day": 0.7119802227715897,
+      "n_days_with_meal": 179,
+      "n_days_with_2to8": 66,
+      "evening_share_pct": 29.588014981273407,
+      "n_logged_events": 627,
+      "logged_events_per_day": 1.6719535568456432
+    },
+    {
+      "floor_g": 50,
+      "n_events": 249,
+      "events_per_day": 0.663981556067887,
+      "n_days_with_meal": 170,
+      "n_days_with_2to8": 59,
+      "evening_share_pct": 31.32530120481928,
+      "n_logged_events": 123,
+      "logged_events_per_day": 0.3279908891419683
+    }
+  ],
+  "meal_smell_test": {
+    "5g": {
+      "events_per_day": 0.7173134079608899,
+      "logged_events_per_day": 5.466514819032804,
+      "target_low": 2.0,
+      "target_high": 10.0,
+      "passes": false
+    },
+    "10g": {
+      "events_per_day": 0.7173134079608899,
+      "logged_events_per_day": 4.906530374156273,
+      "target_low": 2.0,
+      "target_high": 10.0,
+      "passes": false
+    },
+    "20g": {
+      "events_per_day": 0.7173134079608899,
+      "logged_events_per_day": 3.0799144468209216,
+      "target_low": 2.0,
+      "target_high": 8.0,
+      "passes": false
+    },
+    "30g": {
+      "events_per_day": 0.7119802227715897,
+      "logged_events_per_day": 1.6719535568456432,
+      "target_low": 2.0,
+      "target_high": 6.0,
+      "passes": false
+    },
+    "50g": {
+      "events_per_day": 0.663981556067887,
+      "logged_events_per_day": 0.3279908891419683,
+      "target_low": 1.0,
+      "target_high": 3.0,
+      "passes": false
+    }
+  },
+  "meal_logging_qc": {
+    "logged_per_day": 4.9064849450020365,
+    "inferred_per_day": 0.7173067664160586,
+    "ratio": 6.840148698884758,
+    "flag": "phantom_logger",
+    "by_daypart": [
+      {
+        "daypart": "breakfast",
+        "logged_per_day": 1.5546090885522756,
+        "inferred_per_day": 0.19999259286693083
+      },
+      {
+        "daypart": "lunch",
+        "logged_per_day": 1.2719528906336801,
+        "inferred_per_day": 0.11732898781526609
+      },
+      {
+        "daypart": "dinner",
+        "logged_per_day": 2.021258471908448,
+        "inferred_per_day": 0.25065738305988666
+      },
+      {
+        "daypart": "overnight",
+        "logged_per_day": 0.05866449390763304,
+        "inferred_per_day": 0.14932780267397502
+      }
+    ],
+    "n_logged": 1840,
+    "n_inferred": 269,
+    "days_of_data": 375.0138888888889
+  }
+}

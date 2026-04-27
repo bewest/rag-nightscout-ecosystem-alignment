@@ -1,0 +1,67 @@
+[
+  {
+    "pid": "g",
+    "controller": "Loop_AB_ON",
+    "archetype": "hidden_leverage",
+    "tir": 75.2,
+    "tbr": 3.24,
+    "tar": 21.5,
+    "cv": 41.1,
+    "n_recs": 8,
+    "params_touched": "basal_rate,correction_threshold,cr,isf",
+    "max_tir_delta": 8.3,
+    "recs_detail": "isf:increase(65.0\u2192264.0,+8.0pp) | cr:decrease(8.5\u21926.7,+-8.0pp) | basal_rate:decrease(0.6000000238418579\u21920.36,+2.1pp) | correction_threshold:decrease(180.0\u2192130.0,+0.5pp)"
+  },
+  {
+    "pid": "i",
+    "controller": "Loop_AB_ON",
+    "archetype": "hidden_leverage",
+    "tir": 59.9,
+    "tbr": 10.68,
+    "tar": 29.4,
+    "cv": 50.8,
+    "n_recs": 8,
+    "params_touched": "basal_rate,correction_threshold,cr,isf",
+    "max_tir_delta": 14.0,
+    "recs_detail": "isf:increase(50.0\u2192320.0,+8.0pp) | cr:decrease(10.0\u21927.5,+3.1pp) | correction_threshold:increase(180.0\u2192190.0,+0.1pp) | basal_rate:decrease(2.5\u21921.5,+2.9pp)"
+  },
+  {
+    "pid": "a",
+    "controller": "Loop_AB_OFF",
+    "archetype": "exposed_stacker",
+    "tir": 55.8,
+    "tbr": 2.96,
+    "tar": 41.2,
+    "cv": 45.0,
+    "n_recs": 8,
+    "params_touched": "basal_rate,correction_threshold,cr,isf",
+    "max_tir_delta": 14.0,
+    "recs_detail": "basal_rate:decrease(0.30000001192092896\u21920.23,+-15.0pp) | isf:decrease(48.642093658447266\u219244.0,+5.8pp) | cr:decrease(4.0\u21922.7,+1.6pp) | correction_threshold:increase(180.0\u2192210.0,+0.3pp)"
+  },
+  {
+    "pid": "ns-8f3527d1ee40",
+    "controller": "Trio_oref1",
+    "archetype": "stacker_weak_defense",
+    "tir": 92.8,
+    "tbr": 3.28,
+    "tar": 3.9,
+    "cv": 28.0,
+    "n_recs": 5,
+    "params_touched": "basal_rate,correction_threshold,cr,isf",
+    "max_tir_delta": 6.2,
+    "recs_detail": "isf:increase(62.0\u2192107.0,+6.2pp) | cr:decrease(8.0\u21927.9,+4.6pp) | basal_rate:decrease(1.0499999523162842\u21920.84,+1.2pp) | correction_threshold:increase(180.0\u2192260.0,+0.8pp)"
+  },
+  {
+    "pid": "odc-86025410",
+    "controller": "AAPS_oref0",
+    "archetype": "lax_braking",
+    "tir": 68.4,
+    "tbr": 5.98,
+    "tar": 25.7,
+    "cv": 45.0,
+    "n_recs": 7,
+    "params_touched": "basal_rate,correction_threshold,cr,isf",
+    "max_tir_delta": 2.4,
+    "recs_detail": "isf:increase(110.0\u2192456.0,+2.4pp) | cr:decrease(33.0\u219226.9,+-1.3pp) | correction_threshold:decrease(180.0\u2192130.0,+0.5pp) | basal_rate:decrease(0.3499999940395355\u21920.31,+-0.2pp)"
+  }
+]

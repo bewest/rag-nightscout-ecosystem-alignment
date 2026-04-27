@@ -1,0 +1,1513 @@
+{
+  "patient_id": "odc-86025410",
+  "cleaned": {
+    "glucose": "<array shape=(108004,)>",
+    "original_glucose": "<array shape=(108004,)>",
+    "spike_indices": "<array shape=(852,)>",
+    "n_spikes": 852,
+    "sigma_threshold": 2.0,
+    "cleaning_r2_gain": null,
+    "compression_low_indices": "<array shape=(165,)>",
+    "n_compression_lows": 165
+  },
+  "metabolic": {
+    "supply": "<array shape=(108004,)>",
+    "demand": "<array shape=(108004,)>",
+    "hepatic": "<array shape=(108004,)>",
+    "carb_supply": "<array shape=(108004,)>",
+    "net_flux": "<array shape=(108004,)>",
+    "residual": "<array shape=(108004,)>"
+  },
+  "risk": {
+    "high_2h_probability": 0.7254911376361393,
+    "hypo_2h_probability": 5.5448524722794907e-05,
+    "current_event": {},
+    "event_probabilities": {
+      "none": 0.27445341383913796,
+      "high": 0.7254911376361393,
+      "hypo": 5.5448524722794907e-05
+    },
+    "lead_time_minutes": null,
+    "features_used": 49
+  },
+  "hypo_alert": {
+    "probability": 0.0,
+    "horizon_minutes": 120,
+    "alert_threshold": 0.2,
+    "should_alert": false,
+    "lead_time_estimate": null,
+    "supply_demand_imbalance": -5.769316310050493,
+    "confidence": 1.0,
+    "hypo_phenotype": null
+  },
+  "clinical_report": {
+    "grade": {},
+    "risk_score": 63.28302811483218,
+    "tir": 0.6849791639168065,
+    "tbr": 0.05932155450379952,
+    "tar": 0.255699281579394,
+    "mean_glucose": 146.5039223335412,
+    "gmi": 6.814373822218306,
+    "cv": 44.88529462813521,
+    "basal_assessment": {},
+    "cr_score": 59.25311453742442,
+    "effective_isf": 171.74920279769088,
+    "profile_isf": 110.0,
+    "isf_discrepancy": 1.5613563890699171,
+    "recommendations": [
+      "Time below range is 5.9% (target <4%). Review insulin delivery around low glucose periods."
+    ],
+    "overnight_tir": 0.8237743351213473,
+    "fidelity": {
+      "fidelity_grade": {},
+      "rmse": 18.01032305465909,
+      "correction_energy": 878.2930508894261,
+      "r2": -0.9889999506618885,
+      "conservation_integral": -228131.04560310242,
+      "ada_grade": {},
+      "concordance": true
+    }
+  },
+  "patterns": {
+    "circadian": {
+      "a": 0.3780130611425223,
+      "b": 0.9509813644278609,
+      "c": -2.112254483896062,
+      "amplitude": 1.023356941581683,
+      "phase_hours": 1.4451810114406434,
+      "r2_improvement": 0.0016367681175557536
+    },
+    "changepoints": [
+      521,
+      1889,
+      3187,
+      8855,
+      9233,
+      9522,
+      10690,
+      14689,
+      16320,
+      16686,
+      17982,
+      19443,
+      21129,
+      22371,
+      23396,
+      23752,
+      24345,
+      25494,
+      25924,
+      28980
+    ],
+    "n_changepoints": 88,
+    "isf_variation_pct": 0.0,
+    "isf_by_hour": "<array shape=(24,)>",
+    "weekly_trend": "stable",
+    "phenotype": {},
+    "tir_first_half": 0.696138916496334,
+    "tir_second_half": 0.6736949885284135,
+    "harmonic": {
+      "amplitudes": [
+        18.258298701857534,
+        10.391298869783405,
+        8.637840283603746,
+        5.965016596805082
+      ],
+      "phases": [
+        16.353990822750145,
+        9.95373122436753,
+        0.4955518682741319,
+        3.1480708406027524
+      ],
+      "offset": 146.54937083756437,
+      "periods": [
+        24.0,
+        12.0,
+        8.0,
+        6.0
+      ],
+      "r2": 0.06387786787242733,
+      "r2_by_harmonic": {
+        "24h": 0.03867089680715252,
+        "12h": 0.051194224115055253,
+        "8h": 0.059764842706042653,
+        "6h": 0.06387786787242733
+      },
+      "dominant_amplitude": 18.258298701857534,
+      "dominant_period": 24.0
+    }
+  },
+  "onboarding": {
+    "phase": {},
+    "days_of_data": 375.0138888888889,
+    "model_r2": 0.652,
+    "using_population_defaults": false,
+    "population_params": {
+      "ar_weight": 0.12,
+      "decay_rate": 0.005,
+      "decay_target": 120.0,
+      "hill_n": 1.5,
+      "hill_k": 2.0,
+      "base_egp": 1.0,
+      "circadian_amp": 0.15,
+      "ridge_alpha": 1.0,
+      "spike_sigma": 2.0,
+      "isf_multiplier": 2.91
+    },
+    "personal_params": null,
+    "ready_for_production": true
+  },
+  "meal_history": {
+    "meals": [
+      {
+        "index": "2021",
+        "timestamp_ms": 1475712600000.0,
+        "window": {},
+        "estimated_carbs_g": 81.50545614582332,
+        "announced": false,
+        "residual_integral": 271.68485381941105,
+        "confidence": 0.3606469387449604,
+        "hour_of_day": 20.166666666666668,
+        "archetype": {}
+      },
+      {
+        "index": "2073",
+        "timestamp_ms": 1475728200000.0,
+        "window": {},
+        "estimated_carbs_g": 55.903862467257866,
+        "announced": false,
+        "residual_integral": 186.34620822419288,
+        "confidence": 0.3615512591010962,
+        "hour_of_day": 0.5,
+        "archetype": {}
+      },
+      {
+        "index": "2181",
+        "timestamp_ms": 1475760600000.0,
+        "window": {},
+        "estimated_carbs_g": 43.338025906918624,
+        "announced": false,
+        "residual_integral": 144.4600863563954,
+        "confidence": 0.39828772927149425,
+        "hour_of_day": 9.5,
+        "archetype": {}
+      },
+      {
+        "index": "2224",
+        "timestamp_ms": 1475773500000.0,
+        "window": {},
+        "estimated_carbs_g": 80.82651486676207,
+        "announced": false,
+        "residual_integral": 269.4217162225402,
+        "confidence": 0.4644566865942509,
+        "hour_of_day": 13.083333333333334,
+        "archetype": {}
+      },
+      {
+        "index": "2491",
+        "timestamp_ms": 1475853600000.0,
+        "window": {},
+        "estimated_carbs_g": 88.14325147649295,
+        "announced": false,
+        "residual_integral": 293.8108382549765,
+        "confidence": 0.4780250435460946,
+        "hour_of_day": 11.333333333333334,
+        "archetype": {}
+      },
+      {
+        "index": "2778",
+        "timestamp_ms": 1475939700000.0,
+        "window": {},
+        "estimated_carbs_g": 79.92612766978243,
+        "announced": false,
+        "residual_integral": 266.42042556594146,
+        "confidence": 0.6026773845298692,
+        "hour_of_day": 11.25,
+        "archetype": {}
+      },
+      {
+        "index": "3270",
+        "timestamp_ms": 1476087300000.0,
+        "window": {},
+        "estimated_carbs_g": 153.7437364990083,
+        "announced": false,
+        "residual_integral": 512.479121663361,
+        "confidence": 0.716491029341043,
+        "hour_of_day": 4.25,
+        "archetype": {}
+      },
+      {
+        "index": "3336",
+        "timestamp_ms": 1476107100000.0,
+        "window": {},
+        "estimated_carbs_g": 80.17030392952047,
+        "announced": false,
+        "residual_integral": 267.23434643173493,
+        "confidence": 0.354337729084413,
+        "hour_of_day": 9.75,
+        "archetype": {}
+      },
+      {
+        "index": "3499",
+        "timestamp_ms": 1476156000000.0,
+        "window": {},
+        "estimated_carbs_g": 87.82264692960223,
+        "announced": false,
+        "residual_integral": 292.74215643200745,
+        "confidence": 0.8246515178642896,
+        "hour_of_day": 23.333333333333332,
+        "archetype": {}
+      },
+      {
+        "index": "3607",
+        "timestamp_ms": 1476188400000.0,
+        "window": {},
+        "estimated_carbs_g": 41.89910014741539,
+        "announced": false,
+        "residual_integral": 139.6636671580513,
+        "confidence": 0.3570041311222009,
+        "hour_of_day": 8.333333333333334,
+        "archetype": {}
+      },
+      {
+        "index": "4021",
+        "timestamp_ms": 1476312600000.0,
+        "window": {},
+        "estimated_carbs_g": 96.50575254368599,
+        "announced": false,
+        "residual_integral": 321.68584181228664,
+        "confidence": 0.6158246526472663,
+        "hour_of_day": 18.833333333333332,
+        "archetype": {}
+      },
+      {
+        "index": "5336",
+        "timestamp_ms": 1476707100000.0,
+        "window": {},
+        "estimated_carbs_g": 81.46786193369753,
+        "announced": false,
+        "residual_integral": 271.5595397789918,
+        "confidence": 0.8314721369390443,
+        "hour_of_day": 8.416666666666666,
+        "archetype": {}
+      },
+      {
+        "index": "5516",
+        "timestamp_ms": 1476761100000.0,
+        "window": {},
+        "estimated_carbs_g": 35.24326170413341,
+        "announced": false,
+        "residual_integral": 117.47753901377804,
+        "confidence": 0.3490907542612933,
+        "hour_of_day": 23.416666666666668,
+        "archetype": {}
+      },
+      {
+        "index": "5575",
+        "timestamp_ms": 1476778800000.0,
+        "window": {},
+        "estimated_carbs_g": 70.90051936476546,
+        "announced": false,
+        "residual_integral": 236.3350645492182,
+        "confidence": 0.34989260751174495,
+        "hour_of_day": 4.333333333333333,
+        "archetype": {}
+      },
+      {
+        "index": "7406",
+        "timestamp_ms": 1477328100000.0,
+        "window": {},
+        "estimated_carbs_g": 37.460650200505924,
+        "announced": false,
+        "residual_integral": 124.86883400168642,
+        "confidence": 0.3579211479047683,
+        "hour_of_day": 12.916666666666666,
+        "archetype": {}
+      },
+      {
+        "index": "7492",
+        "timestamp_ms": 1477353900000.0,
+        "window": {},
+        "estimated_carbs_g": 101.00558065323152,
+        "announced": false,
+        "residual_integral": 336.68526884410505,
+        "confidence": 0.47198329540278755,
+        "hour_of_day": 20.083333333333332,
+        "archetype": {}
+      },
+      {
+        "index": "8063",
+        "timestamp_ms": 1477525200000.0,
+        "window": {},
+        "estimated_carbs_g": 61.72772316351435,
+        "announced": false,
+        "residual_integral": 205.7590772117145,
+        "confidence": 0.3392624905844961,
+        "hour_of_day": 19.666666666666668,
+        "archetype": {}
+      },
+      {
+        "index": "8156",
+        "timestamp_ms": 1477553100000.0,
+        "window": {},
+        "estimated_carbs_g": 48.42624276015713,
+        "announced": false,
+        "residual_integral": 161.42080920052376,
+        "confidence": 0.360857917175656,
+        "hour_of_day": 3.4166666666666665,
+        "archetype": {}
+      },
+      {
+        "index": "8407",
+        "timestamp_ms": 1477628400000.0,
+        "window": {},
+        "estimated_carbs_g": 120.42743804698712,
+        "announced": false,
+        "residual_integral": 401.42479348995704,
+        "confidence": 0.6302786804503113,
+        "hour_of_day": 0.3333333333333333,
+        "archetype": {}
+      },
+      {
+        "index": "8480",
+        "timestamp_ms": 1477650300000.0,
+        "window": {},
+        "estimated_carbs_g": 162.52512114902814,
+        "announced": false,
+        "residual_integral": 541.7504038300938,
+        "confidence": 0.49456526409448387,
+        "hour_of_day": 6.416666666666667,
+        "archetype": {}
+      }
+    ],
+    "total_detected": 269,
+    "announced_count": 79,
+    "unannounced_count": 190,
+    "unannounced_fraction": 0.7063197026022305,
+    "meals_per_day": 0.7173067664160586,
+    "mean_carbs_g": 112.79699561641345,
+    "by_window": {
+      "breakfast": 66,
+      "lunch": 47,
+      "dinner": 61,
+      "snack": 95
+    }
+  },
+  "meal_prediction": null,
+  "settings_recs": [
+    {
+      "parameter": {},
+      "direction": "increase",
+      "magnitude_pct": 25.0,
+      "current_value": 110.0,
+      "suggested_value": 456.0,
+      "predicted_tir_delta": 2.4,
+      "affected_hours": [
+        0.0,
+        24.0
+      ],
+      "confidence": 0.44999999999999996,
+      "evidence": "Consolidated from 5 time-block advisories (range: 45-314%). Circadian ISF analysis (EXP-2271): day insulin is 4. [CLAMPED from 122% to 25% \u2014 stage over multiple adjustment cycles] [Controller: AAPS]",
+      "rationale": "Increase ISF from 110 to 456 mg/dL/U during daytime (07:00-22:00).",
+      "confidence_grade": null,
+      "ci_width_pct": null
+    },
+    {
+      "parameter": {},
+      "direction": "decrease",
+      "magnitude_pct": 25.0,
+      "current_value": 33.0,
+      "suggested_value": 26.9,
+      "predicted_tir_delta": -1.3,
+      "affected_hours": [
+        0.0,
+        24.0
+      ],
+      "confidence": 0.6,
+      "evidence": "Consolidated from 5 time-block advisories (range: 11-52%). Context-aware CR analysis (EXP-2341): morning meals show mean excursion 77 mg/dL from 632 meals. [CLAMPED from 31% to 25% \u2014 stage over multiple adjustment cycles] [Controller: AAPS]",
+      "rationale": "Decrease morning CR from 33.0 to 26.9 g/U (19% more insulin). Mean post-meal excursion is 77 mg/dL.",
+      "confidence_grade": null,
+      "ci_width_pct": null
+    },
+    {
+      "parameter": {},
+      "direction": "decrease",
+      "magnitude_pct": 25.0,
+      "current_value": 180.0,
+      "suggested_value": 130.0,
+      "predicted_tir_delta": 0.5,
+      "affected_hours": [
+        0.0,
+        24.0
+      ],
+      "confidence": 0.54,
+      "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 130 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 667 correction events. [CLAMPED from 28% to 25% \u2014 stage over multiple adjustment cycles] [Controller: AAPS]",
+      "rationale": "Decrease correction threshold from 180 to 130 mg/dL. Corrections below 130 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.5pp.",
+      "confidence_grade": null,
+      "ci_width_pct": null
+    },
+    {
+      "parameter": {},
+      "direction": "decrease",
+      "magnitude_pct": 11.0,
+      "current_value": 0.3499999940395355,
+      "suggested_value": 0.31,
+      "predicted_tir_delta": -0.2,
+      "affected_hours": [
+        0.0,
+        6.0
+      ],
+      "confidence": 0.42,
+      "evidence": "Overnight drift analysis (EXP-2371): 228 clean nights, mean drift -4.3 mg/dL/hr. Phenotype: over basaled. [Controller: AAPS]",
+      "rationale": "Decrease overnight basal by 11% (from 0.35 to 0.31 U/hr) between 00:00-06:00. Glucose drifts -4.3 mg/dL/hr overnight.",
+      "confidence_grade": null,
+      "ci_width_pct": null
+    }
+  ],
+  "recommendations": [
+    {
+      "action_type": "adjust_isf",
+      "priority": 2,
+      "description": "Increase ISF from 110 to 456 mg/dL/U during daytime (07:00-22:00).",
+      "predicted_tir_delta": 2.4,
+      "confidence": 0.44999999999999996,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": {
+        "parameter": {},
+        "direction": "increase",
+        "magnitude_pct": 25.0,
+        "current_value": 110.0,
+        "suggested_value": 456.0,
+        "predicted_tir_delta": 2.4,
+        "affected_hours": [
+          0.0,
+          24.0
+        ],
+        "confidence": 0.44999999999999996,
+        "evidence": "Consolidated from 5 time-block advisories (range: 45-314%). Circadian ISF analysis (EXP-2271): day insulin is 4. [CLAMPED from 122% to 25% \u2014 stage over multiple adjustment cycles] [Controller: AAPS]",
+        "rationale": "Increase ISF from 110 to 456 mg/dL/U during daytime (07:00-22:00).",
+        "confidence_grade": null,
+        "ci_width_pct": null
+      }
+    },
+    {
+      "action_type": "adjust_cr",
+      "priority": 2,
+      "description": "Decrease morning CR from 33.0 to 26.9 g/U (19% more insulin). Mean post-meal excursion is 77 mg/dL.",
+      "predicted_tir_delta": -1.3,
+      "confidence": 0.6,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": {
+        "parameter": {},
+        "direction": "decrease",
+        "magnitude_pct": 25.0,
+        "current_value": 33.0,
+        "suggested_value": 26.9,
+        "predicted_tir_delta": -1.3,
+        "affected_hours": [
+          0.0,
+          24.0
+        ],
+        "confidence": 0.6,
+        "evidence": "Consolidated from 5 time-block advisories (range: 11-52%). Context-aware CR analysis (EXP-2341): morning meals show mean excursion 77 mg/dL from 632 meals. [CLAMPED from 31% to 25% \u2014 stage over multiple adjustment cycles] [Controller: AAPS]",
+        "rationale": "Decrease morning CR from 33.0 to 26.9 g/U (19% more insulin). Mean post-meal excursion is 77 mg/dL.",
+        "confidence_grade": null,
+        "ci_width_pct": null
+      }
+    },
+    {
+      "action_type": "adjust_correction_threshold",
+      "priority": 2,
+      "description": "Decrease correction threshold from 180 to 130 mg/dL. Corrections below 130 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.5pp.",
+      "predicted_tir_delta": 0.5,
+      "confidence": 0.54,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": {
+        "parameter": {},
+        "direction": "decrease",
+        "magnitude_pct": 25.0,
+        "current_value": 180.0,
+        "suggested_value": 130.0,
+        "predicted_tir_delta": 0.5,
+        "affected_hours": [
+          0.0,
+          24.0
+        ],
+        "confidence": 0.54,
+        "evidence": "Correction threshold analysis (EXP-2528): per-patient optimal threshold is 130 mg/dL. Corrections below this level produce net harm (rebound + hypo risk > benefit). Based on 667 correction events. [CLAMPED from 28% to 25% \u2014 stage over multiple adjustment cycles] [Controller: AAPS]",
+        "rationale": "Decrease correction threshold from 180 to 130 mg/dL. Corrections below 130 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.5pp.",
+        "confidence_grade": null,
+        "ci_width_pct": null
+      }
+    },
+    {
+      "action_type": "adjust_basal_rate",
+      "priority": 2,
+      "description": "Decrease overnight basal by 11% (from 0.35 to 0.31 U/hr) between 00:00-06:00. Glucose drifts -4.3 mg/dL/hr overnight.",
+      "predicted_tir_delta": -0.2,
+      "confidence": 0.42,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": {
+        "parameter": {},
+        "direction": "decrease",
+        "magnitude_pct": 11.0,
+        "current_value": 0.3499999940395355,
+        "suggested_value": 0.31,
+        "predicted_tir_delta": -0.2,
+        "affected_hours": [
+          0.0,
+          6.0
+        ],
+        "confidence": 0.42,
+        "evidence": "Overnight drift analysis (EXP-2371): 228 clean nights, mean drift -4.3 mg/dL/hr. Phenotype: over basaled. [Controller: AAPS]",
+        "rationale": "Decrease overnight basal by 11% (from 0.35 to 0.31 U/hr) between 00:00-06:00. Glucose drifts -4.3 mg/dL/hr overnight.",
+        "confidence_grade": null,
+        "ci_width_pct": null
+      }
+    },
+    {
+      "action_type": "unannounced_meal_warning",
+      "priority": 3,
+      "description": "71% of detected meals have no carb entry. Logging meals improves prediction accuracy and enables better pre-bolus timing.",
+      "predicted_tir_delta": 2.0,
+      "confidence": 0.8,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": null
+    },
+    {
+      "action_type": "clinical_insight",
+      "priority": 3,
+      "description": "Time below range is 5.9% (target <4%). Review insulin delivery around low glucose periods.",
+      "predicted_tir_delta": 1.0,
+      "confidence": 0.6,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": null
+    },
+    {
+      "action_type": "loop_override_recommendation",
+      "priority": 3,
+      "description": "Consider configuring a controller override named \"Dinner Aggressive\" active 18:00\u201306:00 with target 100 mg/dL and ISF ratio 0.85 (110 \u2192 94). Late-night peak (241 mg/dL) sits 92 mg/dL above the dinner baseline (149 mg/dL), indicating sustained post-dinner overshoot \u2014 current evening settings under-cover the late absorption phase.",
+      "predicted_tir_delta": 1.5,
+      "confidence": 0.5,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": null
+    }
+  ],
+  "period_metrics": [
+    {
+      "name": "fasting",
+      "hour_start": 0.0,
+      "hour_end": 7.0,
+      "tir": 0.8381331961943944,
+      "tbr": 0.05708408331190538,
+      "tar": 0.10478272049370017,
+      "mean_glucose": 124.08321067305388,
+      "basal_assessment": {},
+      "recommendation": null
+    },
+    {
+      "name": "morning",
+      "hour_start": 7.0,
+      "hour_end": 12.0,
+      "tir": 0.6464595934330801,
+      "tbr": 0.04957023966528719,
+      "tar": 0.30397016690163264,
+      "mean_glucose": 153.03232522585245,
+      "basal_assessment": {},
+      "recommendation": null
+    },
+    {
+      "name": "afternoon",
+      "hour_start": 12.0,
+      "hour_end": 17.0,
+      "tir": 0.6195373925763393,
+      "tbr": 0.05970012799414884,
+      "tar": 0.3207624794295118,
+      "mean_glucose": 156.55134931618127,
+      "basal_assessment": {},
+      "recommendation": null
+    },
+    {
+      "name": "evening",
+      "hour_start": 17.0,
+      "hour_end": 24.0,
+      "tir": 0.6050049856862556,
+      "tbr": 0.0681913216893435,
+      "tar": 0.3268036926244009,
+      "mean_glucose": 157.25378940259506,
+      "basal_assessment": {},
+      "recommendation": null
+    }
+  ],
+  "correction_energy": {
+    "daily_scores": [
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0
+    ],
+    "mean_daily_score": 878.2481984435997,
+    "smoothed_7d": [
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0,
+      432.0
+    ],
+    "correlation_with_tir": -0.10802537295603597,
+    "interpretation": "High correction energy \u2014 AID working hard to compensate. Consider settings review. Energy-TIR correlation: r=-0.11."
+  },
+  "meal_responses": [
+    {
+      "response_type": {},
+      "excursion_mg_dl": 149.0,
+      "peak_time_min": 55.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": false,
+      "confidence": 0.8
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 48.0,
+      "peak_time_min": 145.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": false,
+      "confidence": 0.7
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 27.0,
+      "peak_time_min": 15.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": true,
+      "confidence": 0.8
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 145.75,
+      "peak_time_min": 135.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": false,
+      "confidence": 0.7
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 133.0,
+      "peak_time_min": 155.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": false,
+      "confidence": 0.7
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 93.5,
+      "peak_time_min": 5.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": false,
+      "confidence": 0.8
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 0.0,
+      "peak_time_min": 0.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": true,
+      "confidence": 0.9
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 137.5,
+      "peak_time_min": 175.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": true,
+      "confidence": 0.75
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 133.0,
+      "peak_time_min": 5.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": false,
+      "confidence": 0.8
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 56.0,
+      "peak_time_min": 125.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": false,
+      "confidence": 0.7
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 201.0,
+      "peak_time_min": 75.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": false,
+      "confidence": 0.65
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 129.0,
+      "peak_time_min": 5.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": true,
+      "confidence": 0.8
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 0.0,
+      "peak_time_min": 0.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": true,
+      "confidence": 0.9
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 98.0,
+      "peak_time_min": 125.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": true,
+      "confidence": 0.75
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 90.0,
+      "peak_time_min": 35.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": false,
+      "confidence": 0.8
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 196.0,
+      "peak_time_min": 115.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": false,
+      "confidence": 0.7
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 105.0,
+      "peak_time_min": 105.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": true,
+      "confidence": 0.75
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 77.5,
+      "peak_time_min": 105.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": true,
+      "confidence": 0.75
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 203.0,
+      "peak_time_min": 50.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": true,
+      "confidence": 0.8
+    },
+    {
+      "response_type": {},
+      "excursion_mg_dl": 314.0,
+      "peak_time_min": 155.0,
+      "tail_ratio": 0.0,
+      "has_second_peak": true,
+      "confidence": 0.75
+    }
+  ],
+  "bolus_safety": {
+    "total_corrections": 1106,
+    "stacking_events": 558,
+    "stacking_fraction": 0.5049773755656108,
+    "min_interval_hours": 0.08333333333333333,
+    "mean_interval_hours": 8.079336349924585,
+    "safety_flag": true,
+    "is_aid_managed": true,
+    "interpretation": "558 of 1105 correction pairs (50%) are <3.5h apart. Glucose nadir is at 3.5h post-correction (EXP-2624: EGP suppression phase lag). Even with AID basal reduction, re-correcting before nadir stacks insulin while the first dose is still active. Recommend waiting \u22653.5h between corrections."
+  },
+  "aid_compensation": {
+    "compensation_type": {},
+    "isf_ratio": 1.5613563890699171,
+    "mean_net_flux": 2.2432346629046953,
+    "flux_polarity": "positive",
+    "tar": 0.255699281579394,
+    "tbr": 0.05932155450379952,
+    "interpretation": "Good glycemic control. AID and settings appear well-matched."
+  },
+  "forecast": null,
+  "natural_experiments": {
+    "experiments": [
+      {
+        "exp_type": {},
+        "start_idx": 0,
+        "end_idx": 291,
+        "duration_minutes": 1455,
+        "hour_of_day": 23.75,
+        "quality": 0.997,
+        "measurements": {
+          "drift_mg_dl_per_hour": 0.054,
+          "mean_bg": 138.5,
+          "bg_cv": 26.4,
+          "cgm_coverage": 0.993
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 341,
+        "end_idx": 768,
+        "duration_minutes": 2135,
+        "hour_of_day": 4.17,
+        "quality": 0.982,
+        "measurements": {
+          "drift_mg_dl_per_hour": -0.395,
+          "mean_bg": 133.6,
+          "bg_cv": 49.58,
+          "cgm_coverage": 0.96
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 868,
+        "end_idx": 923,
+        "duration_minutes": 275,
+        "hour_of_day": 0.08,
+        "quality": 0.606,
+        "measurements": {
+          "drift_mg_dl_per_hour": 23.06,
+          "mean_bg": 131.1,
+          "bg_cv": 33.39,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 960,
+        "end_idx": 1017,
+        "duration_minutes": 285,
+        "hour_of_day": 7.75,
+        "quality": 0.864,
+        "measurements": {
+          "drift_mg_dl_per_hour": -3.543,
+          "mean_bg": 124.2,
+          "bg_cv": 8.74,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 1194,
+        "end_idx": 1288,
+        "duration_minutes": 470,
+        "hour_of_day": 3.25,
+        "quality": 0.983,
+        "measurements": {
+          "drift_mg_dl_per_hour": 1.104,
+          "mean_bg": 104.5,
+          "bg_cv": 7.12,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 1325,
+        "end_idx": 1401,
+        "duration_minutes": 380,
+        "hour_of_day": 14.17,
+        "quality": 0.771,
+        "measurements": {
+          "drift_mg_dl_per_hour": 15.007,
+          "mean_bg": 143.9,
+          "bg_cv": 25.28,
+          "cgm_coverage": 0.987
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 1778,
+        "end_idx": 1869,
+        "duration_minutes": 455,
+        "hour_of_day": 3.92,
+        "quality": 0.897,
+        "measurements": {
+          "drift_mg_dl_per_hour": 6.857,
+          "mean_bg": 128.7,
+          "bg_cv": 13.12,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 2127,
+        "end_idx": 2296,
+        "duration_minutes": 845,
+        "hour_of_day": 9.0,
+        "quality": 0.938,
+        "measurements": {
+          "drift_mg_dl_per_hour": 3.305,
+          "mean_bg": 168.9,
+          "bg_cv": 28.76,
+          "cgm_coverage": 0.959
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 2354,
+        "end_idx": 2758,
+        "duration_minutes": 2020,
+        "hour_of_day": 3.92,
+        "quality": 0.978,
+        "measurements": {
+          "drift_mg_dl_per_hour": -1.455,
+          "mean_bg": 134.4,
+          "bg_cv": 30.91,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 3561,
+        "end_idx": 3597,
+        "duration_minutes": 180,
+        "hour_of_day": 8.5,
+        "quality": 0.5,
+        "measurements": {
+          "drift_mg_dl_per_hour": 31.954,
+          "mean_bg": 101.3,
+          "bg_cv": 41.63,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 3781,
+        "end_idx": 3880,
+        "duration_minutes": 495,
+        "hour_of_day": 2.83,
+        "quality": 0.924,
+        "measurements": {
+          "drift_mg_dl_per_hour": -5.084,
+          "mean_bg": 106.3,
+          "bg_cv": 16.48,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 4072,
+        "end_idx": 4165,
+        "duration_minutes": 465,
+        "hour_of_day": 3.08,
+        "quality": 0.941,
+        "measurements": {
+          "drift_mg_dl_per_hour": 3.952,
+          "mean_bg": 90.9,
+          "bg_cv": 12.03,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 4356,
+        "end_idx": 4456,
+        "duration_minutes": 500,
+        "hour_of_day": 2.75,
+        "quality": 0.959,
+        "measurements": {
+          "drift_mg_dl_per_hour": -2.705,
+          "mean_bg": 103.6,
+          "bg_cv": 8.59,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 4644,
+        "end_idx": 4765,
+        "duration_minutes": 605,
+        "hour_of_day": 2.75,
+        "quality": 0.975,
+        "measurements": {
+          "drift_mg_dl_per_hour": 1.667,
+          "mean_bg": 125.1,
+          "bg_cv": 11.34,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 4993,
+        "end_idx": 5037,
+        "duration_minutes": 220,
+        "hour_of_day": 7.83,
+        "quality": 0.644,
+        "measurements": {
+          "drift_mg_dl_per_hour": -13.381,
+          "mean_bg": 171.6,
+          "bg_cv": 8.8,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 5232,
+        "end_idx": 5312,
+        "duration_minutes": 400,
+        "hour_of_day": 3.75,
+        "quality": 0.97,
+        "measurements": {
+          "drift_mg_dl_per_hour": 1.992,
+          "mean_bg": 130.1,
+          "bg_cv": 5.09,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 5349,
+        "end_idx": 5449,
+        "duration_minutes": 500,
+        "hour_of_day": 13.5,
+        "quality": 0.819,
+        "measurements": {
+          "drift_mg_dl_per_hour": 12.069,
+          "mean_bg": 158.2,
+          "bg_cv": 41.72,
+          "cgm_coverage": 1.0
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 5493,
+        "end_idx": 5742,
+        "duration_minutes": 1245,
+        "hour_of_day": 1.5,
+        "quality": 0.75,
+        "measurements": {
+          "drift_mg_dl_per_hour": 14.567,
+          "mean_bg": 120.6,
+          "bg_cv": 84.29,
+          "cgm_coverage": 0.896
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 5932,
+        "end_idx": 6042,
+        "duration_minutes": 550,
+        "hour_of_day": 14.08,
+        "quality": 0.854,
+        "measurements": {
+          "drift_mg_dl_per_hour": 7.208,
+          "mean_bg": 131.2,
+          "bg_cv": 49.03,
+          "cgm_coverage": 0.873
+        }
+      },
+      {
+        "exp_type": {},
+        "start_idx": 6079,
+        "end_idx": 6134,
+        "duration_minutes": 275,
+        "hour_of_day": 2.33,
+        "quality": 0.663,
+        "measurements": {
+          "drift_mg_dl_per_hour": -16.174,
+          "mean_bg": 105.0,
+          "bg_cv": 21.0,
+          "cgm_coverage": 1.0
+        }
+      }
+    ],
+    "total_detected": 9496,
+    "by_type": {
+      "fasting": 357,
+      "overnight": 374,
+      "meal": 1743,
+      "correction": 502,
+      "stable": 937,
+      "dawn": 374,
+      "uam": 2019,
+      "exercise": 1559,
+      "aid_response": 1631
+    },
+    "quality_mean": 0.782,
+    "days_analyzed": 375.0,
+    "per_day_rate": 25.3,
+    "meal_config": {
+      "min_carbs": 5.0,
+      "cluster_gap": 6
+    }
+  },
+  "optimal_settings": {
+    "optimal": {
+      "basal_schedule": [
+        {
+          "period": "overnight",
+          "start_hour": 0,
+          "current_value": 0.35,
+          "recommended_value": 0.331,
+          "change_pct": -5.4,
+          "confidence": "high",
+          "n_evidence": 300,
+          "ci_low": 0.324,
+          "ci_high": 0.337
+        },
+        {
+          "period": "morning",
+          "start_hour": 6,
+          "current_value": 0.35,
+          "recommended_value": 0.339,
+          "change_pct": -3.1,
+          "confidence": "high",
+          "n_evidence": 92,
+          "ci_low": 0.316,
+          "ci_high": 0.352
+        },
+        {
+          "period": "midday",
+          "start_hour": 10,
+          "current_value": 0.35,
+          "recommended_value": 0.363,
+          "change_pct": 3.7,
+          "confidence": "medium",
+          "n_evidence": 5,
+          "ci_low": 0.241,
+          "ci_high": 0.46
+        },
+        {
+          "period": "afternoon",
+          "start_hour": 14,
+          "current_value": 0.35,
+          "recommended_value": 0.38,
+          "change_pct": 8.6,
+          "confidence": "high",
+          "n_evidence": 26,
+          "ci_low": 0.352,
+          "ci_high": 0.408
+        },
+        {
+          "period": "evening",
+          "start_hour": 18,
+          "current_value": 0.35,
+          "recommended_value": 0.334,
+          "change_pct": -4.6,
+          "confidence": "high",
+          "n_evidence": 24,
+          "ci_low": 0.32,
+          "ci_high": 0.35
+        }
+      ],
+      "isf_schedule": [
+        {
+          "period": "overnight",
+          "start_hour": 0,
+          "current_value": 110.0,
+          "recommended_value": 82.0,
+          "change_pct": -25.5,
+          "confidence": "high",
+          "n_evidence": 227,
+          "ci_low": 71.0,
+          "ci_high": 88.0
+        },
+        {
+          "period": "morning",
+          "start_hour": 6,
+          "current_value": 110.0,
+          "recommended_value": 67.8,
+          "change_pct": -38.4,
+          "confidence": "high",
+          "n_evidence": 33,
+          "ci_low": 51.0,
+          "ci_high": 98.0
+        },
+        {
+          "period": "midday",
+          "start_hour": 10,
+          "current_value": 110.0,
+          "recommended_value": 122.0,
+          "change_pct": 10.9,
+          "confidence": "high",
+          "n_evidence": 31,
+          "ci_low": 72.0,
+          "ci_high": 180.0
+        },
+        {
+          "period": "afternoon",
+          "start_hour": 14,
+          "current_value": 110.0,
+          "recommended_value": 99.2,
+          "change_pct": -9.8,
+          "confidence": "high",
+          "n_evidence": 44,
+          "ci_low": 82.7,
+          "ci_high": 124.3
+        },
+        {
+          "period": "evening",
+          "start_hour": 18,
+          "current_value": 110.0,
+          "recommended_value": 98.8,
+          "change_pct": -10.2,
+          "confidence": "high",
+          "n_evidence": 158,
+          "ci_low": 82.0,
+          "ci_high": 114.0
+        }
+      ],
+      "cr_schedule": [
+        {
+          "period": "overnight",
+          "start_hour": 0,
+          "current_value": 33.0,
+          "recommended_value": 18.5,
+          "change_pct": -43.9,
+          "confidence": "high",
+          "n_evidence": 143,
+          "ci_low": 15.6,
+          "ci_high": 22.1
+        },
+        {
+          "period": "morning",
+          "start_hour": 6,
+          "current_value": 33.0,
+          "recommended_value": 27.7,
+          "change_pct": -16.2,
+          "confidence": "medium",
+          "n_evidence": 13,
+          "ci_low": 23.3,
+          "ci_high": 34.6
+        },
+        {
+          "period": "midday",
+          "start_hour": 10,
+          "current_value": 33.0,
+          "recommended_value": 16.9,
+          "change_pct": -48.9,
+          "confidence": "high",
+          "n_evidence": 368,
+          "ci_low": 16.0,
+          "ci_high": 17.5
+        },
+        {
+          "period": "afternoon",
+          "start_hour": 14,
+          "current_value": 33.0,
+          "recommended_value": 20.7,
+          "change_pct": -37.3,
+          "confidence": "high",
+          "n_evidence": 458,
+          "ci_low": 19.4,
+          "ci_high": 22.0
+        },
+        {
+          "period": "evening",
+          "start_hour": 18,
+          "current_value": 33.0,
+          "recommended_value": 19.9,
+          "change_pct": -39.6,
+          "confidence": "high",
+          "n_evidence": 634,
+          "ci_low": 18.9,
+          "ci_high": 21.0
+        }
+      ],
+      "confidence_grade": {},
+      "total_evidence": 2556,
+      "predicted_tir_delta": 1.03,
+      "tir_contributions": {
+        "basal": 0.04,
+        "isf": 0.81,
+        "cr": 0.19
+      }
+    },
+    "basal_drift_reduction_pct": 5.1,
+    "isf_residual_improvement_pct": 45.0,
+    "cr_excursion_improvement_pct": 14.2,
+    "n_recommendations": 12,
+    "temporal_stability_cv": 0.194,
+    "validation_note": "ISF varies >15% across time periods \u2014 recommendation less certain.",
+    "warnings": [
+      "CR analysis includes 815 unannounced meal windows (of 2558 total) with physics-estimated carbs. Zero-bolus UAM events use circular estimation (true_CR/profile_CR ratio only). Announced meals are preferred when available.",
+      "Dose-dependent ISF detected (r=-0.307, n=493): ISF \u2248 104.1 + -59.5\u00d7ln(dose). Bins: <1U: 126.0 (n=225), 1-2U: 73.5 (n=216), 2-3U: 64.5 (n=43), \u22653U: 57.3 (n=9). Larger corrections are less effective per unit (EXP-2640).",
+      "ISF varies 19% across periods \u2014 consider whether time-of-day variation is clinical or noise"
+    ]
+  },
+  "dia_discrepancy": {
+    "iob_dia_hours": 6.0,
+    "glucose_dia_hours": 10.416666666666666,
+    "discrepancy_ratio": 1.736111111111111,
+    "responder_type": {},
+    "onset_minutes": 15.0,
+    "nadir_minutes": 250.0,
+    "isf_ratio": 1.5363636363636364,
+    "interpretation": "IOB decay DIA: 6.0h | Glucose response DIA: 10.4h | Discrepancy: 1.7\u00d7 \u2014 insulin affects glucose much longer than the pump model assumes. | Responder type: fast | Effective ISF ratio: 1.54\u00d7"
+  },
+  "two_component_dia": {
+    "iob_fast_effect": "<array shape=(108004,)>",
+    "iob_persistent_effect": "<array shape=(108004,)>",
+    "total_insulin_12h": "<array shape=(108004,)>",
+    "fast_fraction": 0.63,
+    "persistent_fraction": 0.37,
+    "fast_tau_hours": 0.8,
+    "persistent_window_hours": 12.0
+  },
+  "prediction_bias_mgdl": null,
+  "overnight_assessment": {
+    "phenotype": {},
+    "drift_mg_dl_per_hour": -4.35,
+    "n_clean_nights": 228,
+    "n_total_nights": 374,
+    "mean_overnight_glucose": 119.8,
+    "dawn_rise_mg_dl": -9.5,
+    "has_dawn_phenomenon": false,
+    "loop_suspension_pct": 12.3,
+    "suggested_basal_change_pct": -11.3,
+    "confidence": 0.7,
+    "carbs_48h_g": 254.0,
+    "glycogen_note": ""
+  },
+  "loop_workload": {
+    "workload_score": 74.4,
+    "net_direction": "INCREASING",
+    "suspension_pct": 17.1,
+    "increase_pct": 18.8,
+    "deviation_mean": 0.52,
+    "ratio_median": 0.93,
+    "n_samples": 108004,
+    "period_workload": {
+      "overnight": 55.6,
+      "morning": 70.1,
+      "afternoon": 79.9,
+      "evening": 91.8
+    },
+    "interpretation": "Loop workload is high (74/100). The loop is predominantly INCREASING basal (median ratio: 0.93\u00d7 scheduled). Basal suspended 17% of the time, increased >150% for 19% of the time."
+  },
+  "hypo_risk": {
+    "risk_score": 0.001901516930056845,
+    "risk_level": "low",
+    "lead_time_minutes": 30,
+    "dominant_factor": "glucose_level",
+    "recommended_action": "No action needed \u2014 glucose trajectory is stable."
+  },
+  "phenotype": {
+    "phenotype": {},
+    "confidence": 0.85,
+    "tir": 0.6849791639168065,
+    "tbr": 0.05932155450379952,
+    "tar": 0.255699281579394,
+    "hypo_events_per_day": 1.4826117551201807,
+    "cv": 0.44885294628135214,
+    "evidence": "Hypo-prone: TBR=5.9%\u22654%, hypo=1.5/day\u22651 (CV=0.45)."
+  },
+  "loop_quality": {
+    "hypo_episodes": 556,
+    "loop_caused_hypos": 297,
+    "loop_caused_fraction": 0.5341726618705036,
+    "median_reaction_time_min": 15.0,
+    "high_excursions": 436,
+    "unaddressed_excursions": 164,
+    "unaddressed_fraction": 0.3761467889908257,
+    "aggression_ratio": 1.5859373366793723,
+    "overall_grade": "poor",
+    "evidence": "297/556 hypos (53%) preceded by loop insulin increase. median reaction time 15 min before hypo. 164/436 excursions >250 (38%) had no bolus/SMB within \u00b130 min. Aggression ratio 1.6\u00d7 (high-glucose vs in-range basal). Overall grade: poor."
+  },
+  "dual_phase_isf": {
+    "demand_isf": 73.6,
+    "apparent_isf": 112.0,
+    "inflation_ratio": 1.52,
+    "n_corrections": 19,
+    "confidence": "medium",
+    "demand_ci_low": 44.0,
+    "demand_ci_high": 90.9,
+    "scheduled_isf": 110.0,
+    "isolation_h": 6.0,
+    "data_quality_note": "",
+    "paradox_warning": "Apparent ISF is NOT true insulin sensitivity \u2014 it includes AID controller compensation and EGP suppression. Use demand-phase ISF (0\u20132h) for conservative recommendations. Multi-factor ISF methods validated: EXP-2640 r=-0.56, EXP-1301 R\u00b2=0.805."
+  },
+  "saturation": null,
+  "meal_logging_qc": {
+    "logged_per_day": 4.9064849450020365,
+    "inferred_per_day": 0.7173067664160586,
+    "ratio": 6.840148698884758,
+    "flag": "phantom_logger",
+    "by_daypart": [
+      {
+        "daypart": "breakfast",
+        "logged_per_day": 1.5546090885522756,
+        "inferred_per_day": 0.19999259286693083
+      },
+      {
+        "daypart": "lunch",
+        "logged_per_day": 1.2719528906336801,
+        "inferred_per_day": 0.11732898781526609
+      },
+      {
+        "daypart": "dinner",
+        "logged_per_day": 2.021258471908448,
+        "inferred_per_day": 0.25065738305988666
+      },
+      {
+        "daypart": "overnight",
+        "logged_per_day": 0.05866449390763304,
+        "inferred_per_day": 0.14932780267397502
+      }
+    ],
+    "n_logged": 1840,
+    "n_inferred": 269,
+    "days_of_data": 375.0138888888889
+  },
+  "pipeline_latency_ms": 101219.11555761471,
+  "warnings": [
+    "Cleaned 852 spikes (0.8% of readings)",
+    "Controller detected: AAPS (balanced). Settings visibility: 60%."
+  ]
+}
