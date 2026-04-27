@@ -10,6 +10,21 @@ frozen dataclass + Loader.lookup(patient_id) returning empty facts for
 unknown patients, plus `compute_for(patient_id, grid_df)` for ad-hoc
 computation. Cached as
 `externals/experiments/inferred_meals_<patient>.parquet`.
+
+Production note
+---------------
+This loader is *not* on the production `run_pipeline` hot path. Live
+advisory runs always call `meal_detector.detect_meal_events` directly
+on the incoming patient grid (see `pipeline.py:376`) and then pass
+those freshly-computed meals into `_extract_correction_events`. So a
+never-before-seen patient will get correct inferred-meal-aware
+correction events without any cache lookup.
+
+The cache exists strictly as an offline / experimental reproducibility
+artifact for cross-patient analyses (cf-replay, EXP-3026 directional
+audits, basal-mismatch unioning, etc.) where re-running the detector
+on every consumer would be wasteful and a single canonical snapshot
+per patient is desirable.
 """
 from __future__ import annotations
 
