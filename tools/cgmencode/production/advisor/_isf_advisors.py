@@ -1079,14 +1079,39 @@ def advise_circadian_isf(glucose: np.ndarray,
     day_effect = float(np.abs(np.mean(day_response)))
     night_effect = float(np.abs(np.mean(night_response)))
 
-    if day_effect < 0.01 or night_effect < 0.01:
+    # GAP-ADV-EGP fix (EXP-3022b): mean-residual denominators can collapse
+    # near zero in well-controlled AID patients where the controller has
+    # already nulled net residuals. A small denominator inflates the
+    # day/night ratio without bound and produces clinically-unsafe 4-6×
+    # ISF recommendations in a single advisory cycle.
+    #
+    # Two defenses:
+    #   (a) require both effects ≥ EFFECT_FLOOR (mg/dL/5min) so neither
+    #       side is dominated by floating-point noise;
+    #   (b) clamp the per-step ISF multiplier to MAX_STEP_RATIO so any
+    #       single advisory cycle moves ISF by at most ±50% (matches the
+    #       "Conservative 25% step" pattern at line 141 / 1538 elsewhere
+    #       in this module). When the raw ratio implies a larger jump,
+    #       cap the suggestion and set safety_flag with an explanation;
+    #       subsequent advisory cycles can re-evaluate after the patient
+    #       has been observed under the new setting.
+    EFFECT_FLOOR = 1.0          # mg/dL/5min mean residual magnitude
+    MAX_STEP_RATIO = 1.5        # +50% / −33% cap per single recommendation
+    if day_effect < EFFECT_FLOOR or night_effect < EFFECT_FLOOR:
         return []
 
-    ratio = night_effect / day_effect
+    raw_ratio = night_effect / day_effect
 
     # Only recommend split if day/night differ by >30%
-    if abs(ratio - 1.0) < 0.30:
+    if abs(raw_ratio - 1.0) < 0.30:
         return []
+
+    # Apply per-step clamp on either direction.
+    if raw_ratio >= 1.0:
+        ratio = min(raw_ratio, MAX_STEP_RATIO)
+    else:
+        ratio = max(raw_ratio, 1.0 / MAX_STEP_RATIO)
+    clamped = abs(ratio - raw_ratio) > 1e-6
 
     recs = []
 
@@ -1110,14 +1135,18 @@ def advise_circadian_isf(glucose: np.ndarray,
             suggested_value=round(night_isf, 0),
             predicted_tir_delta=night_delta,
             affected_hours=(NIGHT_ZONE_START, NIGHT_ZONE_END),
-            confidence=min(0.7, days_of_data / HIGH_CONFIDENCE_DAYS),
+            confidence=min(0.7, days_of_data / HIGH_CONFIDENCE_DAYS) * (0.6 if clamped else 1.0),
             evidence=(f"Circadian ISF analysis (EXP-2271): night insulin is "
-                      f"{ratio:.1f}× more effective than day. "
-                      f"2-zone split captures 61-90% of benefit."),
+                      f"{ratio:.1f}× more effective than day"
+                      + (f" (raw {raw_ratio:.1f}× clamped at {MAX_STEP_RATIO:.1f}×; "
+                         f"GAP-ADV-EGP safety cap)" if clamped else "")
+                      + ". 2-zone split captures 61-90% of benefit."),
             rationale=(f"Increase ISF from {current_isf:.0f} to {night_isf:.0f} "
                        f"mg/dL/U during nighttime (22:00-07:00). "
                        f"Insulin works more effectively at night due to lower "
-                       f"cortisol and growth hormone levels."),
+                       f"cortisol and growth hormone levels."
+                       + (f" NOTE: per-step change capped at +50%; re-evaluate "
+                          f"after observing under new setting." if clamped else "")),
         ))
     else:
         # Day insulin is more effective → increase day ISF
@@ -1139,11 +1168,16 @@ def advise_circadian_isf(glucose: np.ndarray,
             suggested_value=round(day_isf, 0),
             predicted_tir_delta=day_delta,
             affected_hours=DAY_ZONE,
-            confidence=min(0.7, days_of_data / HIGH_CONFIDENCE_DAYS),
+            confidence=min(0.7, days_of_data / HIGH_CONFIDENCE_DAYS) * (0.6 if clamped else 1.0),
             evidence=(f"Circadian ISF analysis (EXP-2271): day insulin is "
-                      f"{day_ratio:.1f}× more effective than night."),
+                      f"{day_ratio:.1f}× more effective than night"
+                      + (f" (raw {1.0/raw_ratio:.1f}× clamped at "
+                         f"{MAX_STEP_RATIO:.1f}×; GAP-ADV-EGP safety cap)"
+                         if clamped else "") + "."),
             rationale=(f"Increase ISF from {current_isf:.0f} to {day_isf:.0f} "
-                       f"mg/dL/U during daytime (07:00-22:00)."),
+                       f"mg/dL/U during daytime (07:00-22:00)."
+                       + (f" NOTE: per-step change capped at +50%; re-evaluate "
+                          f"after observing under new setting." if clamped else "")),
         ))
 
     return recs
@@ -1240,16 +1274,40 @@ def advise_circadian_isf_profiled(
 
         direction = "increase" if deviation > 0 else "decrease"
         magnitude = abs(deviation) * 100.0
-        suggested = round(block_isf, 0)
+        raw_suggested = round(block_isf, 0)
 
-        # Confidence: scales with event count, capped by data days
+        # GAP-ADV-EGP fix (EXP-3022b): per-step ISF cap. Apparent ISF
+        # measured via drop_4h/dose is inflated 2-10× by AID compensation
+        # and EGP suppression (EXP-2651, noted at line 1217 above), so the
+        # raw suggestion can imply an unsafe single-cycle move. Cap each
+        # block's adjustment at +50% / -33% versus the current profile and
+        # mark the recommendation as clamped so downstream consumers see
+        # reduced confidence and a clear note.
+        MAX_STEP_RATIO = 1.5
+        max_up = current_isf * MAX_STEP_RATIO
+        max_dn = current_isf / MAX_STEP_RATIO
+        suggested = float(min(max(raw_suggested, max_dn), max_up))
+        block_clamped = abs(suggested - raw_suggested) > 0.5
+        if block_clamped:
+            magnitude = abs((suggested - current_isf) / current_isf) * 100.0
+
+        # Confidence: scales with event count, capped by data days.
+        # Halve confidence when the safety cap was applied (clamped block).
         n = len(block_events)
         event_factor = min(1.0, n / 20.0)
         day_factor = min(1.0, days_of_data / HIGH_CONFIDENCE_DAYS)
-        confidence = round(event_factor * day_factor * 0.75, 2)
+        confidence = round(event_factor * day_factor * 0.75
+                           * (0.5 if block_clamped else 1.0), 2)
 
         # Predicted TIR delta: conservative 0.1pp per 10% ISF correction
         predicted_delta = round(magnitude * 0.01, 1)
+
+        clamp_note_ev = (f" Raw drop_4h/dose implied {raw_suggested:.0f}; "
+                         f"capped at ±50% step (GAP-ADV-EGP)."
+                         if block_clamped else "")
+        clamp_note_rt = (" NOTE: per-step change capped at ±50%; "
+                         "re-evaluate after observing under new setting."
+                         if block_clamped else "")
 
         recs.append(SettingsRecommendation(
             parameter=SettingsParameter.ISF,
@@ -1265,6 +1323,7 @@ def advise_circadian_isf_profiled(
                 f"({h_start:02d}:00-{h_end:02d}:00) effective ISF is "
                 f"{block_isf:.0f} mg/dL/U vs profile {current_isf:.0f} "
                 f"({deviation:+.0%} deviation) from {n} correction events."
+                + clamp_note_ev
             ),
             rationale=(
                 f"{direction.capitalize()} ISF from {current_isf:.0f} to "
@@ -1274,6 +1333,7 @@ def advise_circadian_isf_profiled(
                 f"this block with median effective ISF {block_isf:.0f} "
                 f"mg/dL/U. Predicted TIR improvement: "
                 f"+{predicted_delta}pp."
+                + clamp_note_rt
             ),
         ))
 

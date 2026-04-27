@@ -1,6 +1,6 @@
 # Clinical Analysis Report — patient `g`
 
-_Generated: 2026-04-27T05:54:55.490197+00:00_  
+_Generated: 2026-04-27T06:14:19.915663+00:00_  
 _Source parquet: `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/training`_  
 _Profile timezone: `Etc/GMT+7`_  
 _Days of data: 180.0_
@@ -98,15 +98,15 @@ _Source: inferred meals from the production residual+insulin spectral detector (
 ### Rec 1: hypo_alert (priority 1), predicted TIR Δ +2.0 pp
 - Hypoglycemia risk: 55% probability within 120 minutes (est. 25 min). Consider reducing insulin or taking carbs. Chronic-low pattern detected — consider reducing basal rate or raising target.
 
-### Rec 2: adjust_isf (priority 2), predicted TIR Δ +8.0 pp
-- Increase ISF from 65 to 264 mg/dL/U during daytime (07:00-22:00).
-- Settings change: **isf** increase 65.0 → 264.0 (+25 %)
-- Rationale: Increase ISF from 65 to 264 mg/dL/U during daytime (07:00-22:00).
-
-### Rec 3: adjust_cr (priority 2), predicted TIR Δ -8.0 pp
+### Rec 2: adjust_cr (priority 2), predicted TIR Δ -8.0 pp
 - Decrease morning CR from 8.5 to 6.7 g/U (21% more insulin). Mean post-meal excursion is 83 mg/dL.
 - Settings change: **cr** decrease 8.5 → 6.7 (+18 %)
 - Rationale: Decrease morning CR from 8.5 to 6.7 g/U (21% more insulin). Mean post-meal excursion is 83 mg/dL.
+
+### Rec 3: adjust_isf (priority 2), predicted TIR Δ +7.9 pp
+- Increase ISF from 65 to 98 mg/dL/U during daytime (07:00-22:00). NOTE: per-step change capped at +50%; re-evaluate after observing under new setting.
+- Settings change: **isf** increase 65.0 → 98.0 (+25 %)
+- Rationale: Increase ISF from 65 to 98 mg/dL/U during daytime (07:00-22:00). NOTE: per-step change capped at +50%; re-evaluate after observing under new setting.
 
 ### Rec 4: adjust_basal_rate (priority 2), predicted TIR Δ +2.1 pp
 - Decrease overnight basal by 40% (from 0.60 to 0.36 U/hr). In closed-loop, combining glucose direction with loop compensation direction provides more reliable basal assessment than glucose alone.

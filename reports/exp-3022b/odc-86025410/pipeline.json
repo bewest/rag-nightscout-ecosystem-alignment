@@ -397,18 +397,18 @@
   "settings_recs": [
     {
       "parameter": {},
-      "direction": "increase",
-      "magnitude_pct": 25.0,
+      "direction": "decrease",
+      "magnitude_pct": 9.2,
       "current_value": 110.0,
-      "suggested_value": 456.0,
-      "predicted_tir_delta": 2.4,
+      "suggested_value": 101.0,
+      "predicted_tir_delta": 3.1,
       "affected_hours": [
         0.0,
         24.0
       ],
-      "confidence": 0.44999999999999996,
-      "evidence": "Consolidated from 5 time-block advisories (range: 45-314%). Circadian ISF analysis (EXP-2271): day insulin is 4. [CLAMPED from 122% to 25% \u2014 stage over multiple adjustment cycles] [Controller: AAPS]",
-      "rationale": "Increase ISF from 110 to 456 mg/dL/U during daytime (07:00-22:00).",
+      "confidence": 0.6,
+      "evidence": "Consolidated from 2 time-block advisories (range: 8-10%). Demand-phase ISF (0\u20132h) = 74 mg/dL/U (CI: [44\u201391], N=19, confidence=medium). [Controller: AAPS]",
+      "rationale": "Demand-phase ISF measures true insulin effect (0\u20132h, before EGP suppression). Conservative 25% step: 110 \u2192 101 mg/dL/U. Validated: dose-dependent r=-0.56 (EXP-2640), response-curve R\u00b2=0.805 (EXP-1301), circadian 10-20% RMSE (EXP-2652). Confirmable within 2 weeks of stable use.",
       "confidence_grade": null,
       "ci_width_pct": null
     },
@@ -468,26 +468,26 @@
     {
       "action_type": "adjust_isf",
       "priority": 2,
-      "description": "Increase ISF from 110 to 456 mg/dL/U during daytime (07:00-22:00).",
-      "predicted_tir_delta": 2.4,
-      "confidence": 0.44999999999999996,
+      "description": "Demand-phase ISF measures true insulin effect (0\u20132h, before EGP suppression). Conservative 25% step: 110 \u2192 101 mg/dL/U. Validated: dose-dependent r=-0.56 (EXP-2640), response-curve R\u00b2=0.805 (EXP-1301), circadian 10-20% RMSE (EXP-2652). Confirmable within 2 weeks of stable use.",
+      "predicted_tir_delta": 3.1,
+      "confidence": 0.6,
       "time_sensitive": false,
       "deadline_minutes": null,
       "meal_prediction": null,
       "settings_rec": {
         "parameter": {},
-        "direction": "increase",
-        "magnitude_pct": 25.0,
+        "direction": "decrease",
+        "magnitude_pct": 9.2,
         "current_value": 110.0,
-        "suggested_value": 456.0,
-        "predicted_tir_delta": 2.4,
+        "suggested_value": 101.0,
+        "predicted_tir_delta": 3.1,
         "affected_hours": [
           0.0,
           24.0
         ],
-        "confidence": 0.44999999999999996,
-        "evidence": "Consolidated from 5 time-block advisories (range: 45-314%). Circadian ISF analysis (EXP-2271): day insulin is 4. [CLAMPED from 122% to 25% \u2014 stage over multiple adjustment cycles] [Controller: AAPS]",
-        "rationale": "Increase ISF from 110 to 456 mg/dL/U during daytime (07:00-22:00).",
+        "confidence": 0.6,
+        "evidence": "Consolidated from 2 time-block advisories (range: 8-10%). Demand-phase ISF (0\u20132h) = 74 mg/dL/U (CI: [44\u201391], N=19, confidence=medium). [Controller: AAPS]",
+        "rationale": "Demand-phase ISF measures true insulin effect (0\u20132h, before EGP suppression). Conservative 25% step: 110 \u2192 101 mg/dL/U. Validated: dose-dependent r=-0.56 (EXP-2640), response-curve R\u00b2=0.805 (EXP-1301), circadian 10-20% RMSE (EXP-2652). Confirmable within 2 weeks of stable use.",
         "confidence_grade": null,
         "ci_width_pct": null
       }
@@ -1505,7 +1505,7 @@
     "n_inferred": 269,
     "days_of_data": 375.0138888888889
   },
-  "pipeline_latency_ms": 101219.11555761471,
+  "pipeline_latency_ms": 101670.96894932911,
   "warnings": [
     "Cleaned 852 spikes (0.8% of readings)",
     "Controller detected: AAPS (balanced). Settings visibility: 60%."

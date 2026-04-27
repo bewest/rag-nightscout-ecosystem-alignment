@@ -3077,7 +3077,12 @@ class TestCircadianISFProfiledFunction(unittest.TestCase):
         self.assertEqual(recs, [])
 
     def test_fires_for_large_deviation(self):
-        """Advisory should fire when block ISF deviates >30% from profile."""
+        """Advisory should fire when block ISF deviates >30% from profile.
+
+        GAP-ADV-EGP (EXP-3022b): per-step ISF cap is ±50%. A 60%-deviation
+        raw effective ISF of 80 (vs profile 50) is now clamped to 75 with
+        a halved confidence and "capped at ±50% step" note in evidence.
+        """
         from cgmencode.production.settings_advisor import advise_circadian_isf_profiled
         # Profile ISF=50, effective ISF=80 (60% deviation) → should fire
         events = self._make_events(block_hour=9.0, drop=80.0, dose=1.0)
@@ -3088,8 +3093,9 @@ class TestCircadianISFProfiledFunction(unittest.TestCase):
         rec = recs[0]
         self.assertEqual(rec.parameter, SettingsParameter.ISF)
         self.assertEqual(rec.direction, "increase")
-        self.assertAlmostEqual(rec.suggested_value, 80.0, delta=1.0)
+        self.assertAlmostEqual(rec.suggested_value, 75.0, delta=1.0)
         self.assertIn("morning", rec.evidence)
+        self.assertIn("GAP-ADV-EGP", rec.evidence)
 
     def test_decrease_direction_when_block_isf_lower(self):
         """Direction 'decrease' when block ISF < profile ISF by >30%."""

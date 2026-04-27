@@ -1,6 +1,6 @@
-pid,controller,archetype,tir,tbr,tar,cv,n_recs,params_touched,max_tir_delta
-g,Loop_AB_ON,hidden_leverage,75.2,3.24,21.5,41.1,8,"basal_rate,correction_threshold,cr,isf",8.3
-i,Loop_AB_ON,hidden_leverage,59.9,10.68,29.4,50.8,8,"basal_rate,correction_threshold,cr,isf",14.0
-a,Loop_AB_OFF,exposed_stacker,55.8,2.96,41.2,45.0,8,"basal_rate,correction_threshold,cr,isf",14.0
-ns-8f3527d1ee40,Trio_oref1,stacker_weak_defense,92.8,3.28,3.9,28.0,5,"basal_rate,correction_threshold,cr,isf",6.2
-odc-86025410,AAPS_oref0,lax_braking,68.4,5.98,25.7,45.0,7,"basal_rate,correction_threshold,cr,isf",2.4
+pid,controller_label,phenotype_label,archetype,imputed_phenotype,tir_pct,tbr_pct,tar_pct,cv_pct,n_recs,n_settings_actionable,params_touched,max_predicted_tir_delta_pp,report_path
+g,Loop_AB_ON,hidden_leverage / sweet-spot,hidden_leverage,False,75.2,3.24,21.5,41.1,8,4,"basal_rate,correction_threshold,cr,isf",8.3,reports/exp-3022b/g/clinical-report.md
+i,Loop_AB_ON,hidden_leverage / hypo outlier,hidden_leverage,False,59.9,10.68,29.4,50.8,8,4,"basal_rate,correction_threshold,cr,isf",14.0,reports/exp-3022b/i/clinical-report.md
+a,Loop_AB_OFF,exposed_stacker / open-loop,exposed_stacker,False,55.8,2.96,41.2,45.0,8,4,"basal_rate,correction_threshold,cr,isf",14.0,reports/exp-3022b/a/clinical-report.md
+ns-8f3527d1ee40,Trio_oref1,stacker_weak_defense,stacker_weak_defense,False,92.8,3.28,3.9,28.0,5,4,"basal_rate,correction_threshold,cr,isf",4.6,reports/exp-3022b/ns-8f3527d1ee40/clinical-report.md
+odc-86025410,AAPS_oref0,lax_braking,lax_braking,False,68.4,5.98,25.7,45.0,7,4,"basal_rate,correction_threshold,cr,isf",3.1,reports/exp-3022b/odc-86025410/clinical-report.md

@@ -162,23 +162,6 @@
   "settings_recs": [
     {
       "parameter": {},
-      "direction": "increase",
-      "magnitude_pct": 25.0,
-      "current_value": 62.0,
-      "suggested_value": 107.0,
-      "predicted_tir_delta": 6.2,
-      "affected_hours": [
-        0.0,
-        24.0
-      ],
-      "confidence": 0.22499999999999998,
-      "evidence": "Consolidated from 6 time-block advisories (range: 42-368%). Circadian ISF analysis (EXP-2271): day insulin is 1. [CLAMPED from 109% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
-      "rationale": "Increase ISF from 62 to 107 mg/dL/U during daytime (07:00-22:00).",
-      "confidence_grade": null,
-      "ci_width_pct": null
-    },
-    {
-      "parameter": {},
       "direction": "decrease",
       "magnitude_pct": 25.0,
       "current_value": 8.0,
@@ -191,6 +174,23 @@
       "confidence": 0.34,
       "evidence": "Consolidated from 4 time-block advisories (range: 1-78%). Context-aware CR analysis (EXP-2341): morning meals show mean excursion 42 mg/dL from 131 meals. [CLAMPED from 26% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
       "rationale": "Decrease morning CR from 8.0 to 7.9 g/U (1% more insulin). Mean post-meal excursion is 42 mg/dL.",
+      "confidence_grade": null,
+      "ci_width_pct": null
+    },
+    {
+      "parameter": {},
+      "direction": "increase",
+      "magnitude_pct": 25.0,
+      "current_value": 62.0,
+      "suggested_value": 93.0,
+      "predicted_tir_delta": 2.1,
+      "affected_hours": [
+        0.0,
+        24.0
+      ],
+      "confidence": 0.15,
+      "evidence": "Consolidated from 6 time-block advisories (range: 42-50%). Circadian ISF analysis (EXP-2271): day insulin is 1. [CLAMPED from 48% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+      "rationale": "Increase ISF from 62 to 93 mg/dL/U during daytime (07:00-22:00). NOTE: per-step change capped at +50%; re-evaluate after observing under new setting.",
       "confidence_grade": null,
       "ci_width_pct": null
     },
@@ -231,33 +231,6 @@
   ],
   "recommendations": [
     {
-      "action_type": "adjust_isf",
-      "priority": 2,
-      "description": "Increase ISF from 62 to 107 mg/dL/U during daytime (07:00-22:00).",
-      "predicted_tir_delta": 6.2,
-      "confidence": 0.22499999999999998,
-      "time_sensitive": false,
-      "deadline_minutes": null,
-      "meal_prediction": null,
-      "settings_rec": {
-        "parameter": {},
-        "direction": "increase",
-        "magnitude_pct": 25.0,
-        "current_value": 62.0,
-        "suggested_value": 107.0,
-        "predicted_tir_delta": 6.2,
-        "affected_hours": [
-          0.0,
-          24.0
-        ],
-        "confidence": 0.22499999999999998,
-        "evidence": "Consolidated from 6 time-block advisories (range: 42-368%). Circadian ISF analysis (EXP-2271): day insulin is 1. [CLAMPED from 109% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
-        "rationale": "Increase ISF from 62 to 107 mg/dL/U during daytime (07:00-22:00).",
-        "confidence_grade": null,
-        "ci_width_pct": null
-      }
-    },
-    {
       "action_type": "adjust_cr",
       "priority": 2,
       "description": "Decrease morning CR from 8.0 to 7.9 g/U (1% more insulin). Mean post-meal excursion is 42 mg/dL.",
@@ -280,6 +253,33 @@
         "confidence": 0.34,
         "evidence": "Consolidated from 4 time-block advisories (range: 1-78%). Context-aware CR analysis (EXP-2341): morning meals show mean excursion 42 mg/dL from 131 meals. [CLAMPED from 26% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
         "rationale": "Decrease morning CR from 8.0 to 7.9 g/U (1% more insulin). Mean post-meal excursion is 42 mg/dL.",
+        "confidence_grade": null,
+        "ci_width_pct": null
+      }
+    },
+    {
+      "action_type": "adjust_isf",
+      "priority": 2,
+      "description": "Increase ISF from 62 to 93 mg/dL/U during daytime (07:00-22:00). NOTE: per-step change capped at +50%; re-evaluate after observing under new setting.",
+      "predicted_tir_delta": 2.1,
+      "confidence": 0.15,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": {
+        "parameter": {},
+        "direction": "increase",
+        "magnitude_pct": 25.0,
+        "current_value": 62.0,
+        "suggested_value": 93.0,
+        "predicted_tir_delta": 2.1,
+        "affected_hours": [
+          0.0,
+          24.0
+        ],
+        "confidence": 0.15,
+        "evidence": "Consolidated from 6 time-block advisories (range: 42-50%). Circadian ISF analysis (EXP-2271): day insulin is 1. [CLAMPED from 48% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+        "rationale": "Increase ISF from 62 to 93 mg/dL/U during daytime (07:00-22:00). NOTE: per-step change capped at +50%; re-evaluate after observing under new setting.",
         "confidence_grade": null,
         "ci_width_pct": null
       }
@@ -1075,7 +1075,7 @@
     "n_inferred": 0,
     "days_of_data": 144.15972222222223
   },
-  "pipeline_latency_ms": 9203.294510953128,
+  "pipeline_latency_ms": 9244.270164053887,
   "warnings": [
     "Cleaned 1952 spikes (4.7% of readings)",
     "Controller detected: Loop (compensating). Settings visibility: 30%."

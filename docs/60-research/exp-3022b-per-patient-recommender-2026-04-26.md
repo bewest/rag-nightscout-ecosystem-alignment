@@ -137,16 +137,21 @@ of `_pipeline.py`. The ISF and CR advisors do **not** yet take
 
 ### ⚠️ What needs follow-up
 
-1. **Three of five patients (`g`, `i`, `odc-86025410`) get ISF-increase
-   recommendations of 3.5–6.4× profile.** That magnitude is suspicious;
-   it is likely driven by the EXP-2739 fasting-drift estimator returning
-   `EGP_proxy = 0.000` for those patients (printed by `analyze_patient`
-   for `g`, `i`, `ns-8f3527d1ee40`, `odc-86025410`). When EGP collapses to
-   zero, the corrections-only ISF advisor (EXP-2579) attributes all
-   bg-drop to bolus and inflates ISF accordingly. **Action**: open
-   GAP-ADV-EGP for the EGP=0 degenerate edge case. Until resolved,
-   demote ISF-increase magnitude to "informational" when
-   EGP_proxy < some floor.
+1. ~~**Three of five patients (`g`, `i`, `odc-86025410`) get ISF-increase
+   recommendations of 3.5–6.4× profile.**~~ **RESOLVED in commit
+   following this report.** Root cause was unbounded ratios in
+   `advise_circadian_isf` (line 1085) and `advise_circadian_isf_profiled`
+   (line 1277). With small mean-residual denominators in well-controlled
+   AID patients, the day/night ratio collapsed and produced clinically
+   unsafe single-cycle ISF jumps. **Fix (GAP-ADV-EGP):** added
+   `MAX_STEP_RATIO = 1.5` per-step cap (±50%), `EFFECT_FLOOR = 1.0`
+   denominator floor, and a "clamped → halve confidence + note in
+   evidence" pattern in both advisors. Post-fix all 5 patients land in
+   [0.90×, 1.51×]. Original EGP_proxy=0 diagnostic in `analyze_patient`
+   was *not* the consumer — it is read-only — but the diagnostic
+   correctly reflects that under AID the controller has nulled net
+   fasting drift and so a residual-derived ratio is fragile. The clamp
+   is the durable defense.
 
 2. **Pipeline emitted a fraction-vs-pp clamp warning for patient `g`**
    (`SettingsRecommendation.predicted_tir_delta=-24.6 exceeds 15.0 pp
@@ -195,7 +200,12 @@ recommendations**. EXP-3022b establishes:
   bug (EGP=0 degenerate) — not a structural failure of the deconfounding.
 
 **Recommended next moves:**
-1. Open GAP-ADV-EGP for the EGP_proxy=0 degenerate case.
+1. ~~Open GAP-ADV-EGP for the EGP_proxy=0 degenerate case.~~
+   **DONE in this report's accompanying commit:** `MAX_STEP_RATIO=1.5`
+   per-step cap + `EFFECT_FLOOR=1.0` denominator floor wired into both
+   2-zone (`advise_circadian_isf`) and 4-block
+   (`advise_circadian_isf_profiled`) advisors. Confidence is halved and
+   evidence/rationale annotated when the cap fires.
 2. Wire `inferred_meal_indices` through to ISF and CR advisors (they
    currently rely on the already-deconfounded `correction_events`
    stream; pushing the indices through would let advisors that operate

@@ -1,6 +1,6 @@
 {
   "patient_id": "i",
-  "generated_at_utc": "2026-04-27T05:55:51.568535+00:00",
+  "generated_at_utc": "2026-04-27T06:15:17.720075+00:00",
   "parquet_dir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/training",
   "days_of_data": 180.0,
   "profile_timezone": "Etc/GMT+4",

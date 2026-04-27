@@ -1,6 +1,6 @@
 # Clinical Analysis Report — patient `odc-86025410`
 
-_Generated: 2026-04-27T05:58:38.998599+00:00_  
+_Generated: 2026-04-27T06:18:05.994242+00:00_  
 _Source parquet: `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/training`_  
 _Profile timezone: `US/Eastern`_  
 _Days of data: 375.0_
@@ -95,10 +95,10 @@ _Source: inferred meals from the production residual+insulin spectral detector (
 
 ## 5. Recommendations
 
-### Rec 1: adjust_isf (priority 2), predicted TIR Δ +2.4 pp
-- Increase ISF from 110 to 456 mg/dL/U during daytime (07:00-22:00).
-- Settings change: **isf** increase 110.0 → 456.0 (+25 %)
-- Rationale: Increase ISF from 110 to 456 mg/dL/U during daytime (07:00-22:00).
+### Rec 1: adjust_isf (priority 2), predicted TIR Δ +3.1 pp
+- Demand-phase ISF measures true insulin effect (0–2h, before EGP suppression). Conservative 25% step: 110 → 101 mg/dL/U. Validated: dose-dependent r=-0.56 (EXP-2640), response-curve R²=0.805 (EXP-1301), circadian 10-20% RMSE (EXP-2652). Confirmable within 2 weeks of stable use.
+- Settings change: **isf** decrease 110.0 → 101.0 (+9 %)
+- Rationale: Demand-phase ISF measures true insulin effect (0–2h, before EGP suppression). Conservative 25% step: 110 → 101 mg/dL/U. Validated: dose-dependent r=-0.56 (EXP-2640), response-curve R²=0.805 (EXP-1301), circadian 10-20% RMSE (EXP-2652). Confirmable within 2 weeks of stable use.
 
 ### Rec 2: adjust_cr (priority 2), predicted TIR Δ -1.3 pp
 - Decrease morning CR from 33.0 to 26.9 g/U (19% more insulin). Mean post-meal excursion is 77 mg/dL.
