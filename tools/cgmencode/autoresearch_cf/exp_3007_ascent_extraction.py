@@ -33,6 +33,7 @@ import pandas as pd
 GRID_BY_SOURCE = {
     'training': Path('externals/ns-parquet/training/grid.parquet'),
     'verification': Path('externals/ns-parquet/verification/grid.parquet'),
+    'verification2': Path('externals/ns-parquet/verification2/grid.parquet'),
 }
 EVENTS_REF = Path('externals/experiments/exp-2881_evening_drivers.parquet')
 OUT_DIR = Path('externals/experiments')

@@ -62,6 +62,7 @@ ASCENT = EXP_DIR / 'exp-3007_ascent_events.parquet'  # legacy default (training)
 ASCENT_BY_SOURCE = {
     'training': EXP_DIR / 'exp-3007_ascent_events__training.parquet',
     'verification': EXP_DIR / 'exp-3007_ascent_events__verification.parquet',
+    'verification2': EXP_DIR / 'exp-3007_ascent_events__verification2.parquet',
 }
 PER_PATIENT_REC = EXP_DIR / 'exp-3012_per_patient.parquet'
 PER_PATIENT_REC_CLAMPED = EXP_DIR / 'exp-3028_per_patient_carb_aware.parquet'  # EXP-3030: replaces exp-3017_per_patient_clamped.parquet after PASS-validated +0.0022 verif lift, 23/23 LOPO safe.
@@ -338,7 +339,7 @@ def main() -> None:
                    default='cohort',
                    help='cohort: max(per-controller hypo) <= 1pp; '
                         'stratified: per-braking-stratum Δhypo vs baseline (EXP-3018)')
-    p.add_argument('--source', choices=['training', 'verification'], default=None,
+    p.add_argument('--source', choices=['training', 'verification', 'verification2'], default=None,
                    help='which ascent-events partition to score against. '
                         'When omitted, uses the legacy un-suffixed parquet '
                         '(historically training). Use --source verification for '
