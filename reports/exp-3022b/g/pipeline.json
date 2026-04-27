@@ -419,13 +419,13 @@
       "magnitude_pct": 25.0,
       "current_value": 65.0,
       "suggested_value": 98.0,
-      "predicted_tir_delta": 7.9,
+      "predicted_tir_delta": 7.6,
       "affected_hours": [
         0.0,
         24.0
       ],
       "confidence": 0.126,
-      "evidence": "Consolidated from 6 time-block advisories (range: 50-197%). Circadian ISF analysis (EXP-2271): day insulin is 1. [CLAMPED from 73% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+      "evidence": "Consolidated from 6 time-block advisories (range: 50-187%). Circadian ISF analysis (EXP-2271): day insulin is 1. [CLAMPED from 72% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
       "rationale": "Increase ISF from 65 to 98 mg/dL/U during daytime (07:00-22:00). NOTE: per-step change capped at +50%; re-evaluate after observing under new setting.",
       "confidence_grade": null,
       "ci_width_pct": null
@@ -508,7 +508,7 @@
       "action_type": "adjust_isf",
       "priority": 2,
       "description": "Increase ISF from 65 to 98 mg/dL/U during daytime (07:00-22:00). NOTE: per-step change capped at +50%; re-evaluate after observing under new setting.",
-      "predicted_tir_delta": 7.9,
+      "predicted_tir_delta": 7.6,
       "confidence": 0.126,
       "time_sensitive": false,
       "deadline_minutes": null,
@@ -519,13 +519,13 @@
         "magnitude_pct": 25.0,
         "current_value": 65.0,
         "suggested_value": 98.0,
-        "predicted_tir_delta": 7.9,
+        "predicted_tir_delta": 7.6,
         "affected_hours": [
           0.0,
           24.0
         ],
         "confidence": 0.126,
-        "evidence": "Consolidated from 6 time-block advisories (range: 50-197%). Circadian ISF analysis (EXP-2271): day insulin is 1. [CLAMPED from 73% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+        "evidence": "Consolidated from 6 time-block advisories (range: 50-187%). Circadian ISF analysis (EXP-2271): day insulin is 1. [CLAMPED from 72% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
         "rationale": "Increase ISF from 65 to 98 mg/dL/U during daytime (07:00-22:00). NOTE: per-step change capped at +50%; re-evaluate after observing under new setting.",
         "confidence_grade": null,
         "ci_width_pct": null
@@ -1516,7 +1516,7 @@
     "n_inferred": 32,
     "days_of_data": 180.0034722222222
   },
-  "pipeline_latency_ms": 53987.60734684765,
+  "pipeline_latency_ms": 53621.71751121059,
   "warnings": [
     "Cleaned 2112 spikes (4.1% of readings)",
     "Controller detected: Loop (compensating). Settings visibility: 30%."

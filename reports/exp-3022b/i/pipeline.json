@@ -408,7 +408,7 @@
         24.0
       ],
       "confidence": 0.3,
-      "evidence": "Consolidated from 6 time-block advisories (range: 50-284%). Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 315 mg/dL/U vs profile 50 (+531% deviation) from 1325 correction events. [CLAMPED from 87% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+      "evidence": "Consolidated from 6 time-block advisories (range: 50-260%). Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 315 mg/dL/U vs profile 50 (+531% deviation) from 1325 correction events. [CLAMPED from 82% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
       "rationale": "Increase ISF from 50 to 75 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 1325 corrections in this block with median effective ISF 315 mg/dL/U. Consolidated TIR improvement across 6 blocks: +8.0 pp. NOTE: per-step change capped at \u00b150%; re-evaluate after observing under new setting.",
       "confidence_grade": null,
       "ci_width_pct": null
@@ -487,7 +487,7 @@
           24.0
         ],
         "confidence": 0.3,
-        "evidence": "Consolidated from 6 time-block advisories (range: 50-284%). Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 315 mg/dL/U vs profile 50 (+531% deviation) from 1325 correction events. [CLAMPED from 87% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+        "evidence": "Consolidated from 6 time-block advisories (range: 50-260%). Circadian ISF profiling (EXP-2271): overnight block (00:00-06:00) effective ISF is 315 mg/dL/U vs profile 50 (+531% deviation) from 1325 correction events. [CLAMPED from 82% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
         "rationale": "Increase ISF from 50 to 75 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9\u00d7 by time of day (EXP-2271). Observed 1325 corrections in this block with median effective ISF 315 mg/dL/U. Consolidated TIR improvement across 6 blocks: +8.0 pp. NOTE: per-step change capped at \u00b150%; re-evaluate after observing under new setting.",
         "confidence_grade": null,
         "ci_width_pct": null
@@ -1516,7 +1516,7 @@
     "n_inferred": 182,
     "days_of_data": 180.0034722222222
   },
-  "pipeline_latency_ms": 57015.29626781121,
+  "pipeline_latency_ms": 55541.405741125345,
   "warnings": [
     "Cleaned 2404 spikes (4.6% of readings)",
     "Controller detected: Loop (compensating). Settings visibility: 30%."

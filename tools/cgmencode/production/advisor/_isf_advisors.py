@@ -1614,6 +1614,7 @@ def advise_response_curve_isf(
     bolus: Optional[np.ndarray] = None,
     basal_rate: Optional[np.ndarray] = None,
     days_of_data: float = 0.0,
+    inferred_meal_indices: Optional[np.ndarray] = None,
 ) -> Optional[SettingsRecommendation]:
     """Report ISF from exponential response-curve fitting (EXP-1301).
 
@@ -1633,7 +1634,10 @@ def advise_response_curve_isf(
 
     try:
         from ..clinical_rules import compute_response_curve_isf
-        result = compute_response_curve_isf(glucose, bolus, basal_rate, profile)
+        result = compute_response_curve_isf(
+            glucose, bolus, basal_rate, profile,
+            inferred_meal_indices=inferred_meal_indices,
+        )
     except Exception:
         return None
 
@@ -1765,6 +1769,7 @@ def advise_dose_response_isf(
     bolus: Optional[np.ndarray] = None,
     carbs: Optional[np.ndarray] = None,
     days_of_data: float = 0.0,
+    inferred_meal_indices: Optional[np.ndarray] = None,
 ) -> Optional[SettingsRecommendation]:
     """Report dose-dependent ISF curve and split-dose recommendation (EXP-2640).
 
@@ -1786,7 +1791,10 @@ def advise_dose_response_isf(
 
     try:
         from ..clinical_rules import compute_dose_response_isf
-        result = compute_dose_response_isf(glucose, bolus, carbs, profile)
+        result = compute_dose_response_isf(
+            glucose, bolus, carbs, profile,
+            inferred_meal_indices=inferred_meal_indices,
+        )
     except Exception:
         return None
 

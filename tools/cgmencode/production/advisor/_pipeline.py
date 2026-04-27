@@ -701,21 +701,23 @@ def generate_settings_advice(glucose: np.ndarray,
         if carb_ctx_rec:
             recs.append(carb_ctx_rec)
 
-    # Response-curve ISF advisory (EXP-1301)
+    # Response-curve ISF advisory (EXP-1301; EXP-3022b under-logger fix)
     if bolus is not None:
         rc_rec = advise_response_curve_isf(
             glucose, hours, profile,
             bolus=bolus, basal_rate=actual_basal,
-            days_of_data=days_of_data)
+            days_of_data=days_of_data,
+            inferred_meal_indices=inferred_meal_indices)
         if rc_rec:
             recs.append(rc_rec)
 
-    # Dose-response ISF advisory (EXP-2636/2640)
+    # Dose-response ISF advisory (EXP-2636/2640; EXP-3022b under-logger fix)
     if bolus is not None:
         dr_rec = advise_dose_response_isf(
             glucose, hours, profile,
             bolus=bolus, carbs=carbs,
-            days_of_data=days_of_data)
+            days_of_data=days_of_data,
+            inferred_meal_indices=inferred_meal_indices)
         if dr_rec:
             recs.append(dr_rec)
 

@@ -206,11 +206,25 @@ recommendations**. EXP-3022b establishes:
    2-zone (`advise_circadian_isf`) and 4-block
    (`advise_circadian_isf_profiled`) advisors. Confidence is halved and
    evidence/rationale annotated when the cap fires.
-2. Wire `inferred_meal_indices` through to ISF and CR advisors (they
+2. ~~Wire `inferred_meal_indices` through to ISF and CR advisors (they
    currently rely on the already-deconfounded `correction_events`
    stream; pushing the indices through would let advisors that operate
    directly on the timeseries — e.g., `advise_dose_response_isf`,
-   `advise_response_curve_isf` — get the same benefit).
+   `advise_response_curve_isf` — get the same benefit).~~
+   **DONE:** `compute_response_curve_isf` and `compute_dose_response_isf`
+   in `clinical_rules.py` now accept `inferred_meal_indices` and
+   exclude correction events whose 2h post-bolus window overlaps the
+   −2h..+4h band around any inferred meal (PRE_MEAL_STEPS=24,
+   POST_MEAL_STEPS=48 — same convention as basal advisors). Plumbed
+   through `advise_response_curve_isf` / `advise_dose_response_isf`
+   and the pipeline call sites. Phantom-loggers (g, i, a,
+   odc-86025410) and the under-logger Trio patient
+   (ns-8f3527d1ee40, 0.72 inferred meals/day) all still receive the
+   full 4-setting recommendation set; ISF multipliers stay in
+   [0.91×, 1.51×] (within the GAP-ADV-EGP ±50% safety envelope).
+   Coverage: `TestComputeDoseResponseISF::test_inferred_meal_indices_excludes_events`
+   and `TestResponseCurveISFInferredMeal::test_inferred_meal_indices_excludes_events`
+   in `test_production.py` (466/466 production tests pass).
 3. Run this demo on the held-out verification stripe to confirm the
    recommendations transport.
 

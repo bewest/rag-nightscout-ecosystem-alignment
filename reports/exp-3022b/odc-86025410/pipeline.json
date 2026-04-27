@@ -1505,7 +1505,7 @@
     "n_inferred": 269,
     "days_of_data": 375.0138888888889
   },
-  "pipeline_latency_ms": 101670.96894932911,
+  "pipeline_latency_ms": 102632.25481798872,
   "warnings": [
     "Cleaned 852 spikes (0.8% of readings)",
     "Controller detected: AAPS (balanced). Settings visibility: 60%."

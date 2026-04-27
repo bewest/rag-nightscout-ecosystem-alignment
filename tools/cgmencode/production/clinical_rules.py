@@ -332,6 +332,7 @@ def compute_response_curve_isf(glucose: np.ndarray,
                                bolus: np.ndarray,
                                basal_rate: Optional[np.ndarray] = None,
                                profile: Optional[PatientProfile] = None,
+                               inferred_meal_indices: Optional[np.ndarray] = None,
                                ) -> dict:
     """AID-aware ISF estimation via response-curve fitting (EXP-1601–1608).
 
@@ -361,6 +362,13 @@ def compute_response_curve_isf(glucose: np.ndarray,
         bolus: (N,) bolus units per interval.
         basal_rate: (N,) actual basal rate U/hr (for AID dampening detection).
         profile: PatientProfile for scheduled basal comparison.
+        inferred_meal_indices: optional indices of meal centers (from the
+            spectral residual+insulin meal detector). When provided, any
+            correction event whose 2h window overlaps the −2h…+4h band
+            around an inferred meal is excluded from the fit. This is the
+            EXP-3022b under-logger fix: phantom-logger and
+            insufficient-data patients have unreliable user-logged carbs,
+            so the advisor must rely on the inferred-meal stream.
 
     Returns:
         dict with keys: isf, tau_hours, r2, n_corrections, aid_dampening_pct,
@@ -375,6 +383,21 @@ def compute_response_curve_isf(glucose: np.ndarray,
 
     if len(correction_indices) < 3:
         return {}
+
+    # Build inferred-meal exclusion mask: -2h..+4h around each meal center
+    # (PRE_MEAL_STEPS=24, POST_MEAL_STEPS=48 matches basal advisors).
+    meal_mask: Optional[np.ndarray] = None
+    if inferred_meal_indices is not None and len(inferred_meal_indices):
+        meal_mask = np.zeros(len(glucose), dtype=bool)
+        PRE_MEAL_STEPS = 24
+        POST_MEAL_STEPS = 48
+        for m_idx in inferred_meal_indices:
+            i = int(m_idx)
+            if i < 0 or i >= len(glucose):
+                continue
+            s = max(0, i - PRE_MEAL_STEPS)
+            e = min(len(glucose), i + POST_MEAL_STEPS)
+            meal_mask[s:e] = True
 
     # Determine scheduled basal for AID dampening detection
     scheduled_basal = 0.8  # default fallback
@@ -394,6 +417,13 @@ def compute_response_curve_isf(glucose: np.ndarray,
         # Need 2h (24 steps) post-bolus window
         post_end = min(idx + 24, len(glucose))
         if post_end - idx < 12:
+            continue
+
+        # EXP-3022b: skip corrections inside an inferred-meal window
+        # (−2h..+4h around any detected meal center). Without this
+        # filter, post-meal residual glucose-rise contaminates the
+        # exponential decay fit and inflates apparent ISF.
+        if meal_mask is not None and bool(np.any(meal_mask[idx:post_end])):
             continue
 
         pre_bg = float(glucose[idx])
@@ -1567,6 +1597,7 @@ def compute_dose_response_isf(
     bolus: np.ndarray,
     carbs: Optional[np.ndarray] = None,
     profile: Optional[PatientProfile] = None,
+    inferred_meal_indices: Optional[np.ndarray] = None,
 ) -> Optional[dict]:
     """Fit per-patient dose-response ISF curve (EXP-2636/2640).
 
@@ -1585,8 +1616,17 @@ def compute_dose_response_isf(
     Args:
         glucose: (N,) glucose values (mg/dL), 5-min intervals.
         bolus: (N,) bolus units per interval.
-        carbs: (N,) optional carb data for contamination filtering.
+        carbs: (N,) optional logged-carb data for contamination filtering.
+            Phantom-loggers (EXP-3022b) over-log carbs the body never sees;
+            under-loggers leave large meals invisible. Therefore the logged
+            carb stream alone is unreliable as a meal mask.
         profile: PatientProfile for ISF comparison.
+        inferred_meal_indices: optional indices of meal centers from the
+            spectral residual+insulin meal detector. When provided, any
+            correction event whose −2h..+4h band overlaps an inferred meal
+            is excluded — this catches the 5–13× under/over-logging gap
+            documented in EXP-3022b. Combined with the existing logged-carb
+            window check.
 
     Returns:
         dict with linear/log/sqrt fits, best_model, n_events, profile_ratio.
@@ -1597,6 +1637,20 @@ def compute_dose_response_isf(
 
     bolus_vals = np.nan_to_num(bolus, nan=0.0)
     carb_vals = np.nan_to_num(carbs, nan=0.0) if carbs is not None else None
+
+    # Build inferred-meal exclusion mask (matches basal advisor / response-curve).
+    meal_mask: Optional[np.ndarray] = None
+    if inferred_meal_indices is not None and len(inferred_meal_indices):
+        meal_mask = np.zeros(len(glucose), dtype=bool)
+        PRE_MEAL_STEPS = 24
+        POST_MEAL_STEPS = 48
+        for m_idx in inferred_meal_indices:
+            i = int(m_idx)
+            if i < 0 or i >= len(glucose):
+                continue
+            s = max(0, i - PRE_MEAL_STEPS)
+            e = min(len(glucose), i + POST_MEAL_STEPS)
+            meal_mask[s:e] = True
 
     # Extract isolated correction events
     correction_indices = np.where(bolus_vals >= _MIN_BOLUS_U)[0]
@@ -1609,12 +1663,18 @@ def compute_dose_response_isf(
 
         dose = float(bolus_vals[idx])
 
-        # Exclude events near carbs
+        # Exclude events near logged carbs (kept as belt-and-braces, but
+        # phantom-loggers/under-loggers make this incomplete by itself).
         if carb_vals is not None:
             carb_window = carb_vals[max(0, idx - _CARB_EXCLUSION_STEPS):
                                    min(len(carb_vals), idx + _CARB_EXCLUSION_STEPS)]
             if np.sum(carb_window) > 2.0:
                 continue
+
+        # EXP-3022b: also exclude events inside an inferred-meal window.
+        post_end = min(idx + 36, len(glucose))
+        if meal_mask is not None and bool(np.any(meal_mask[idx:post_end])):
+            continue
 
         # Exclude events near other boluses (3h window)
         future_bolus_window = bolus_vals[idx + 1:min(idx + 36, len(bolus_vals))]
@@ -1622,7 +1682,6 @@ def compute_dose_response_isf(
             continue
 
         # Measure 3h glucose drop
-        post_end = min(idx + 36, len(glucose))
         if post_end - idx < 12:
             continue
         post_window = glucose[idx:post_end]

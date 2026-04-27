@@ -6469,6 +6469,75 @@ class TestComputeDoseResponseISF(unittest.TestCase):
         )
         self.assertIsNone(result)
 
+    def test_inferred_meal_indices_excludes_events(self):
+        """EXP-3022b: events near inferred meals should be excluded.
+
+        Build a synthetic correction stream where every correction sits
+        on top of a putative inferred meal. Without the mask, the events
+        would be counted; with the mask, none survive and the function
+        should return None.
+        """
+        from cgmencode.production.clinical_rules import compute_dose_response_isf
+        n = 288 * 30
+        rng = np.random.RandomState(0)
+        glucose = np.full(n, 120.0) + rng.normal(0, 2, n)
+        bolus = np.zeros(n)
+        meal_indices = []
+        for day in range(30):
+            idx = day * 288 + 96  # mid-day correction
+            if idx + 36 >= n:
+                continue
+            glucose[idx] = 200.0
+            bolus[idx] = 1.0 + (day % 5) * 0.5  # vary dose 1.0..3.0
+            for k in range(36):
+                glucose[idx + k] = 200.0 - 60.0 * (1 - np.exp(-k / 8.0))
+            meal_indices.append(idx)  # meal coincides with correction
+
+        # Without mask -> events kept; result may be None due to other
+        # filters but the call must not error.
+        baseline = compute_dose_response_isf(glucose=glucose, bolus=bolus)
+        # With mask -> all events fall in -2h..+4h band, must drop to None.
+        masked = compute_dose_response_isf(
+            glucose=glucose, bolus=bolus,
+            inferred_meal_indices=np.array(meal_indices, dtype=int),
+        )
+        self.assertIsNone(masked)
+        # Sanity: baseline saw the events (either fit or insufficient,
+        # but mask must produce strictly fewer events).
+        if baseline is not None:
+            self.assertGreater(baseline.get('n_events', 0), 0)
+
+
+class TestResponseCurveISFInferredMeal(unittest.TestCase):
+    pytestmark = pytest.mark.unit
+    """EXP-3022b: response-curve ISF must honor inferred_meal_indices."""
+
+    def test_inferred_meal_indices_excludes_events(self):
+        from cgmencode.production.clinical_rules import compute_response_curve_isf
+        n = 288 * 30
+        rng = np.random.RandomState(1)
+        glucose = np.full(n, 130.0) + rng.normal(0, 2, n)
+        bolus = np.zeros(n)
+        meal_indices = []
+        for day in range(30):
+            idx = day * 288 + 60
+            if idx + 24 >= n:
+                continue
+            glucose[idx] = 220.0
+            bolus[idx] = 2.0
+            for k in range(24):
+                glucose[idx + k] = 220.0 - 80.0 * (1 - np.exp(-k / 10.0))
+            meal_indices.append(idx)
+
+        baseline = compute_response_curve_isf(glucose=glucose, bolus=bolus)
+        masked = compute_response_curve_isf(
+            glucose=glucose, bolus=bolus,
+            inferred_meal_indices=np.array(meal_indices, dtype=int),
+        )
+        # Mask must drop n_corrections to 0 → empty result dict.
+        self.assertEqual(masked, {})
+        self.assertGreater(baseline.get('n_corrections', 0), 0)
+
 
 class TestCRSanityCheckContrast(unittest.TestCase):
     pytestmark = pytest.mark.unit
