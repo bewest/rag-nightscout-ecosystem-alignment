@@ -70,14 +70,38 @@ STRATA = {
 NUMERIC_COLS = ["duration_min", "peak_delta", "smb_during",
                 "iob_start", "cob_start", "carbs_during"]
 
+# EXP-3021 scenario C fix: log-normal jitter collapses values near zero
+# (multiplicative noise on a base of 0 stays at 0). Apply additive
+# Gaussian jitter to columns that legitimately sit near zero a lot of
+# the time (IOB/COB at fasting, carbs_during for correction events);
+# keep multiplicative log-normal on columns whose values are bounded
+# away from zero (durations, peak deltas, observed boluses).
+ADDITIVE_JITTER_COLS = {"iob_start", "cob_start", "carbs_during"}
+MULTIPLICATIVE_JITTER_COLS = {"duration_min", "peak_delta", "smb_during"}
+
 
 def jittered_bootstrap(pool: pd.DataFrame, n: int, rng: np.random.Generator) -> pd.DataFrame:
     idx = rng.integers(0, len(pool), size=n)
     syn = pool.iloc[idx].reset_index(drop=True).copy()
     for col in NUMERIC_COLS:
-        if col in syn.columns:
+        if col not in syn.columns:
+            continue
+        vals = syn[col].fillna(0).to_numpy(dtype=float)
+        if col in ADDITIVE_JITTER_COLS:
+            # Additive Gaussian: σ = pool std × JITTER_SIGMA with a
+            # floor so columns whose pool happens to be near-degenerate
+            # still get a small perturbation. Floor scales with column
+            # type (IOB ~ 0.1U, COB ~ 5g, carbs_during ~ 5g).
+            pool_std = float(np.nanstd(pool[col].fillna(0).to_numpy(dtype=float)))
+            floor = {"iob_start": 0.1, "cob_start": 5.0, "carbs_during": 5.0}.get(col, 1.0)
+            sigma = max(pool_std * JITTER_SIGMA, floor * JITTER_SIGMA)
+            jitter = rng.normal(loc=0.0, scale=sigma, size=n)
+            syn[col] = np.clip(vals + jitter, a_min=0.0, a_max=None)
+        else:
+            # Multiplicative log-normal preserved for columns bounded
+            # away from zero.
             jitter = rng.lognormal(mean=0.0, sigma=JITTER_SIGMA, size=n)
-            syn[col] = (syn[col].fillna(0).to_numpy() * jitter).clip(min=0)
+            syn[col] = (vals * jitter).clip(min=0)
     syn["bg_peak"] = syn["bg_start"].fillna(120) + syn["peak_delta"]
     syn["isf_used"] = 50.0
     return syn

@@ -1,5 +1,18 @@
 """EXP-3006 — Phenotype-conditional patient sampler.
 
+⚠️  KNOWN LIMITATION (per EXP-3021 scenario A): k-NN sampling in the
+    EXP-2886 phenotype space does NOT reliably reproduce a held-out
+    patient on policy-driven features (e.g., SMB cadence, basal
+    suspension share, microbolus magnitude distribution). The
+    phenotype axes (braking_ratio, stack_score, hidden_leverage) are
+    summary statistics — two patients with matching phenotype
+    coordinates can have very different per-event policies that
+    average to the same shape. Use this generator for *exploratory
+    smell tests of controller behavior at archetype centroids*, NOT
+    as a stand-in for a real held-out patient. For per-patient
+    counterfactual replay use the actual patient's events
+    (`replay.load_inputs`) and EXP-3022b/EXP-3030 fitting.
+
 Goal: given a target phenotype coordinate (braking_ratio, stack_score,
 hidden_leverage), produce a synthetic per-event scenario by k-NN sampling
 from real patients in the EXP-2886 phenotype space.
@@ -22,6 +35,7 @@ Verdict criteria:
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -81,6 +95,14 @@ def sample_events_for_archetype(target, events, phenotype):
 
 
 def main() -> None:
+    print(
+        "[EXP-3006] WARNING: phenotype k-NN sampling is an exploratory "
+        "smell test, not a held-out-patient stand-in. Per EXP-3021 "
+        "scenario A, sampled vectors do NOT reproduce policy-driven "
+        "features (SMB cadence, suspension share). Use real per-patient "
+        "events for clinical / counterfactual evaluation.",
+        file=sys.stderr,
+    )
     events, phenotype, profiles = replay.load_inputs()
     config = replay.ReplayConfig(
         name='realistic_canonical_pheno',
