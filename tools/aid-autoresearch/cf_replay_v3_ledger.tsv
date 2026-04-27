@@ -1,3 +1,4 @@
 timestamp	exp_id	config_name	fit_source	eval_source	score	cohort_safety_ok	stratified_safety_ok	n_events	events_sha256	verdict	notes
 2026-04-26T19:56:20Z	EXP-3025	headline_v3 (clamped × carb_aware × gate=0.15 × drop)	training	verification	0.6751	False	False	2672	00bfa6e754912878	FAIL	high-stratum cand_hypo 3.3->7.7% (n=390); composite/direction generalize
 2026-04-26T19:59:36Z	EXP-3026	inferred_meal_correction_filter	training	training	n/a	n/a	n/a	5_patients	f719fdb654e3308e	PASS	aligned 0.66% vs under-loggers 43.3%; spearman +0.90
+2026-04-27T00:13:39Z	EXP-3026-EXT	inferred_meal_correction_filter	training	training	n/a	n/a	n/a	30_patients	n/a	PASS	aligned 2.24% vs heavy 27.9%; spearman +0.766; replicates EXP-3026 at full cohort
