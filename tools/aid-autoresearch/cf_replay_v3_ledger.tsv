@@ -3,3 +3,4 @@ timestamp	exp_id	config_name	fit_source	eval_source	score	cohort_safety_ok	strat
 2026-04-26T19:59:36Z	EXP-3026	inferred_meal_correction_filter	training	training	n/a	n/a	n/a	5_patients	f719fdb654e3308e	PASS	aligned 0.66% vs under-loggers 43.3%; spearman +0.90
 2026-04-27T00:13:39Z	EXP-3026-EXT	inferred_meal_correction_filter	training	training	n/a	n/a	n/a	30_patients	n/a	PASS	aligned 2.24% vs heavy 27.9%; spearman +0.766; replicates EXP-3026 at full cohort
 2026-04-27T00:17:21Z	EXP-3025-FIX	braking_gate_sweep	training	verification	n/a	n/a	gate=0.10	30_patients	n/a	PASS	gate=0.10 aligns with stratum boundary; verif delta +0.0245 vs target +0.0209; high stratum empty by construction
+2026-04-27T00:24:01Z	EXP-3025-LOPO	braking_gate=0.10_robustness	verification	verification_lopo	n/a	n/a	gate=0.10	23_splits	n/a	PASS	23/23 splits safety_ok; delta mean +0.0245 std 0.0037; min +0.0188 (drop i)

@@ -96,7 +96,7 @@ HYPO_FLOOR = 70.0
 WINDOW_MIN = 120
 DEFAULT_AT_MIN = 180.0
 ISF_PER_G = 4.0
-DEFAULT_BRAKING_GATE = 0.15  # EXP-3020: raised from 0.10; raw + 0.15 + m_unity scores 0.7082 vs 0.7050 at full retention.
+DEFAULT_BRAKING_GATE = 0.10  # EXP-3025-FIX + EXP-3025-LOPO: lowered from 0.15 to coincide with STRAT_BRAKING_EDGES upper boundary; verification-stripe high-stratum safety pass + 23/23 LOPO robustness (delta mean +0.0245, std 0.0037).
 STRAT_DELTA_PP = 1.0  # per-stratum Δhypo gate (pp) above stratum baseline
 STRAT_BRAKING_EDGES = (0.05, 0.10)  # low / mid / high boundaries
 
