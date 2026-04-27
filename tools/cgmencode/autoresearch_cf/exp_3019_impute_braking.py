@@ -2,9 +2,8 @@
 
 EXP-3018's stratified safety gate fell back to a generic 'unknown' stratum
 for 939 events from 12 patients absent from the EXP-2886 phenotype parquet.
-This experiment imputes those patients' braking_ratio from controller-level
-medians (using the ascent events parquet to recover their controller field),
-producing an augmented phenotype parquet.
+This experiment imputes those patients' braking_ratio for use as a *safety
+default* (NOT as a best estimate of their true braking) — see EXP-3027.
 
 Imputation rules (in priority order):
 
@@ -17,6 +16,20 @@ Imputation rules (in priority order):
    - 'OpenAPS' → treat as legacy AAPS (per stored memory: ODC patients run
      AAPS-platform with oref0 algorithm); use AAPS median.
 3. Else (controller is also NaN), use overall cohort median (0.058).
+
+**EXP-3027-FIX (2026-04-26): safety-conservative floor.**
+
+EXP-3027 LOO showed median imputation has only 31.6% stratum-agreement
+and 2 high→low flips on Trio (under-protective). To prevent unknown new
+patients from slipping into the low/mid stratum and bypassing the
+cf-replay-score-v3 stratified safety gate, *all imputed values* are
+floored at `STRAT_BRAKING_EDGES.upper = 0.10`, forcing them into the
+'high' stratum. Combined with `braking_mode='drop'` in the scorer, this
+guarantees unknown-controller events are excluded from the candidate
+policy by default.
+
+Trades a small composite Δ for a hard safety guarantee. Observed values
+are untouched.
 
 Outputs
 -------
@@ -34,6 +47,11 @@ EXP_ID = 'EXP-3019'
 PH_SRC = Path('externals/experiments/exp-2886_phenotype.parquet')
 ASCENT = Path('externals/experiments/exp-3007_ascent_events.parquet')
 OUT = Path('externals/experiments')
+# EXP-3027-FIX: safety-conservative floor for any imputed value.
+# Coincides with STRAT_BRAKING_EDGES upper boundary (0.10) so imputed
+# patients land in the 'high' stratum and are dropped under
+# braking_mode='drop'.
+SAFETY_FLOOR = 0.10
 
 
 def _infer_controller_by_prefix(pid: str) -> str | None:
@@ -84,17 +102,22 @@ def main() -> None:
             ctrl = _infer_controller_by_prefix(pid)
             ctrl_source = 'prefix_heuristic' if ctrl else 'none'
         if ctrl and ctrl in ctrl_median:
-            br = float(ctrl_median[ctrl])
+            br_raw = float(ctrl_median[ctrl])
             src = f'controller_median:{ctrl}({ctrl_source})'
             n_imputed_ctrl += 1
         else:
-            br = cohort_median
+            br_raw = cohort_median
             src = 'cohort_median'
             n_imputed_cohort += 1
+        # EXP-3027-FIX: apply safety-conservative floor to imputed values.
+        br = max(br_raw, SAFETY_FLOOR)
+        if br > br_raw:
+            src = src + f'+safety_floor({SAFETY_FLOOR})'
         rows.append({
             'patient_id': pid,
             'controller': ctrl,
             'braking_ratio': br,
+            'braking_ratio_raw': br_raw,
             'algorithm_mode': (existing.iloc[0]['algorithm_mode'] if len(existing) else 'unknown'),
             'imputed': True,
             'imputation_source': src,

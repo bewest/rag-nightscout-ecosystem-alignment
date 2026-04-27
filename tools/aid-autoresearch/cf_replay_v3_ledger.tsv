@@ -6,3 +6,4 @@ timestamp	exp_id	config_name	fit_source	eval_source	score	cohort_safety_ok	strat
 2026-04-27T00:24:01Z	EXP-3025-LOPO	braking_gate=0.10_robustness	verification	verification_lopo	n/a	n/a	gate=0.10	23_splits	n/a	PASS	23/23 splits safety_ok; delta mean +0.0245 std 0.0037; min +0.0188 (drop i)
 2026-04-27T00:28:06Z	EXP-3028	per_patient_carb_aware_refit	training	verification	n=29	n/a	gate=0.10_clamped	carb_aware	training	PASS	delta=+0.0327 (lift +0.0082 vs EXP-3017); reclaims 47% of gate-flip cost; safety_ok
 2026-04-27T00:30:05Z	EXP-3027	impute_braking_LOO	observed_n19	LOO	n=19	n/a	controller_median_rule	n/a	n/a	FAIL	stratum_agreement=31.6%; 2 high->low flips on Trio; AAPS median unstable n=3; recommends safety-conservative imputation
+2026-04-27T00:32:21Z	EXP-3027-FIX	safety_floor_imputation	observed	verification	n=12_imputed	n/a	floor=0.10	carb_aware	training	PASS	strict safety win + delta +0.0326 (vs +0.0245); composes with EXP-3028 to delta +0.0348
