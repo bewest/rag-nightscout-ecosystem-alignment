@@ -64,7 +64,8 @@ ASCENT_BY_SOURCE = {
     'verification': EXP_DIR / 'exp-3007_ascent_events__verification.parquet',
 }
 PER_PATIENT_REC = EXP_DIR / 'exp-3012_per_patient.parquet'
-PER_PATIENT_REC_CLAMPED = EXP_DIR / 'exp-3017_per_patient_clamped.parquet'
+PER_PATIENT_REC_CLAMPED = EXP_DIR / 'exp-3028_per_patient_carb_aware.parquet'  # EXP-3030: replaces exp-3017_per_patient_clamped.parquet after PASS-validated +0.0022 verif lift, 23/23 LOPO safe.
+PER_PATIENT_REC_CLAMPED_LEGACY = EXP_DIR / 'exp-3017_per_patient_clamped.parquet'  # kept for diagnostic comparisons
 PHENOTYPE = EXP_DIR / 'exp-2886_phenotype.parquet'
 PHENOTYPE_IMPUTED = EXP_DIR / 'exp-3019_phenotype_imputed.parquet'
 
