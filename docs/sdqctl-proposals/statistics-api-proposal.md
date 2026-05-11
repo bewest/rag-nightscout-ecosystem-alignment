@@ -1,9 +1,51 @@
 # Statistics API Proposal for Nightscout
 
-> **Version**: 1.0  
-> **Date**: 2026-01-29  
-> **Status**: Draft  
-> **Related**: PR#8366 (2025 reports), nightscout-reporter integration
+> **Version**: 1.1
+> **Date**: 2026-01-29 (initial); 2026-05-11 (status revision)
+> **Status**: **Required precondition for cgm-remote-monitor Track 3 (UI Discovery)**
+> **Related**: PR#8366 (2025 reports), nightscout-reporter integration, `cgm-remote-monitor/docs/proposals/testing-modernization-proposal.md` v1.2 §L9
+
+## 2026-05 Status Bump
+
+This proposal was originally drafted as a forward-looking enhancement.
+Tracks 1+2 of the cgm-remote-monitor testing-modernization effort have
+since retired `tests/reports.test.js` (`describe.skip`) on the explicit
+assumption that statistics computation is moving to a server-side API.
+That decision means:
+
+1. Any new UI shell adopted in Track 3 cannot recompute statistics
+   client-side without re-importing the legacy report code path that
+   was just retired.
+2. Server-side parity tests for the per-plugin stats math
+   (`basalprofileplugin`, `daytodayplugin`, `foodstatsplugin`,
+   `glucosedistributionplugin`, `hourlystatsplugin`, `loopalyzerplugin`,
+   `profileplugin`, `reportstorage`) need an endpoint to assert against.
+3. The `tests/fixtures/captured/` library (Loop iOS, Trio, AAPS,
+   xDrip4iOS slices) provides the canonical input corpus for parity
+   tests — the API must produce the same aggregations the per-plugin
+   suites already verify.
+
+**Therefore:** this proposal should be promoted from Draft to a
+prerequisite work item before Track 3 framework discovery starts. The
+schema below should be aligned with the existing per-plugin stats
+math so that a parity test can assert "for fixture F and timeframe T,
+the API response equals the in-process computation".
+
+### Parity test plan (new)
+
+Add `tests/api3.stats.parity.test.js` (under cgm-remote-monitor) that:
+
+- Loads each captured-fixture directory under `tests/fixtures/captured/`.
+- Posts entries/treatments to a test server.
+- Calls `/api/v3/stats/...` for the corresponding window.
+- Asserts numeric equality (within published tolerance) against the
+  in-process per-plugin computations.
+
+This makes the captured-fixture library do double duty: protects both
+sides of the planned migration (legacy plugin math AND new API) from
+drift.
+
+---
 
 ## Executive Summary
 

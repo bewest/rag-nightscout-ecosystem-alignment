@@ -1,9 +1,68 @@
 # Playwright Adoption Proposal for cgm-remote-monitor
 
-> **Target**: `nightscout/cgm-remote-monitor`  
-> **Priority**: P1 (High Value, Low Effort)  
-> **Status**: Proposal  
-> **Date**: 2026-01-29
+> **Target**: `nightscout/cgm-remote-monitor`
+> **Priority**: P1 (High Value, Low Effort)
+> **Status**: Proposal — scope narrowed (May 2026 revision)
+> **Date**: 2026-01-29 (initial); 2026-05-11 (scope revision)
+
+## 2026-05 Scope Revision (read first)
+
+The original proposal (below) sized Playwright as "replace bundle-driven
+UI tests". Tracks 1+2 of the testing-modernization effort
+(`cgm-remote-monitor/docs/proposals/testing-modernization-proposal.md`
+v1.2) have since landed and changed the picture:
+
+- **Per-module pure logic** is now covered by 181 Node-only tests in
+  `lib/client-core/{careportal,profile-editor,devicestatus}/`,
+  exercised against real captured payloads from Loop iOS, Trio, AAPS,
+  and xDrip4iOS (`tests/fixtures/captured/`).
+- **Bundle wiring** is covered structurally by
+  `tests/bundle.smoke.test.js` (asserts the public globals).
+- **End-to-end rendering** is the only remaining unautomated layer
+  (currently in `docs/test-specs/manual-smoke-checklist.md`).
+
+Playwright should therefore target **only the third layer** — and only
+the workflows where (a) wiring matters end-to-end, (b) per-plugin tests
+cannot reach, and (c) manual eyeballing is expensive. This dramatically
+shrinks the surface area, the maintenance cost, and the CI runtime
+budget compared to the original draft.
+
+### Recommended in-scope workflows (small, enumerated set)
+
+| Workflow | Why Playwright | What pure tests already cover |
+|---|---|---|
+| `auth.spec.js` — hashauth PIN login | Security-critical; jQuery + DOM + crypto + localStorage interaction | `tests/hashauth.modern.test.js` (token math) |
+| `careportal.spec.js` — full treatment wizard with conditional fields | Conditional UI (event-type → fields → confirm text) is wiring | `tests/client-core/careportal-*.test.js` (gather, normalize, validate, duration) |
+| `profile-editor.spec.js` — record CRUD (add/clone/delete) | jQuery click handlers + form state | `tests/client-core/profile-editor-*.test.js` (records, ranges, migrate) |
+| `dashboard.spec.js` — boot + chart paint + first SGV | Asserts d3 + Flot actually render | none — this is unique browser surface |
+| `socket.spec.js` — live SGV update via Socket.IO | Real socket.io transport; jsdom polyfill is unreliable | partial: `websocket.shape-handling.test.js` (server-side) |
+
+Out of scope (do **not** add Playwright tests for):
+
+- Reports (statistics math) — moving to server-side stats API; assert
+  against the API, not rendered HTML. See L9 in the modernization
+  proposal and the `statistics-api-proposal.md` precondition.
+- Treatment normalization, classifier branches, profile migration —
+  already covered by `tests/client-core/*` against captured fixtures.
+- Plugin behaviour — covered by per-plugin Mocha suites.
+
+### Why this scoping is the right size
+
+- Avoids polyfill drift (lesson L5 in modernization proposal v1.2):
+  bundle-driven jsdom tests broke silently across jsdom 11→24. Real
+  browsers don't have this failure mode.
+- Bounds CI cost: ~5 spec files × 3 browsers vs. the open-ended
+  "all UI" scope of the original draft.
+- Keeps the inversion of the testing pyramid honest: pure logic stays
+  in Node (~70 ms), wiring stays in the bundle smoke (~1 s), browser
+  E2E covers only the irreducible workflow set.
+
+The remainder of this document (original Jan-2026 draft) describes the
+infrastructure choices (Playwright vs Cypress, config, CI integration).
+Treat the **scope sections** of that draft as superseded by the table
+above; the **infrastructure sections** still apply.
+
+---
 
 ## Executive Summary
 

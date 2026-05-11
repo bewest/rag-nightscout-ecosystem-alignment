@@ -1,8 +1,32 @@
 # Cross-Project Testing Plan
 
-> **Purpose**: Define Ubuntu-compatible testing strategies for Swift AID projects  
-> **Scope**: Trio, Loop, LoopKit, and related Swift packages  
-> **Last Updated**: 2026-01-29
+> **Purpose**: Define Ubuntu-compatible testing strategies for Swift AID projects
+> **Scope**: Trio, Loop, LoopKit, and related Swift packages
+> **Last Updated**: 2026-05-11
+
+## 2026-05 Update: Linux-CI fixture-replay path now available
+
+For shape conformance against cgm-remote-monitor (the most common reason
+to want cross-project tests), Linux CI no longer needs Swift at all.
+`cgm-pr-8447/tests/fixtures/captured/{loop,trio,aaps,phone-uploader}/`
+contains sanitized real wire bytes from each controller class.
+Replaying those via Node into a local server (see
+`docs/backlogs/integration-test-harness.md` "2026-05 Pivot") covers the
+same shape-conformance surface a Swift/Kotlin client harness would, on
+Ubuntu, in seconds.
+
+**Use macOS runners only for:**
+
+- iOS Simulator UI behavior (UIKit, HealthKit, CoreData) — Trio/Loop in-app flows.
+- Swift package build/test for LoopKit/LoopAlgorithm where the Linux SwiftPM cross-compile is incomplete.
+- Auth/transport edge cases that depend on real `URLSession` behavior (cookie jar, ATS, JWT refresh) — small targeted suites only.
+
+For everything else (treatment shape, devicestatus classification,
+identifier dedup, profile migration), prefer the Linux fixture-replay
+path. This is the Phase-2 scope described in
+`integration-test-harness.md`.
+
+---
 
 ## Executive Summary
 

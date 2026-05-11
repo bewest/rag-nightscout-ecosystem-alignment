@@ -3,6 +3,62 @@
 > **Goal**: Run cgm-remote-monitor locally and test with Swift, Kotlin, and JavaScript clients to validate proposed fixes.
 > **Server Location**: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 > **Created**: 2026-03-10
+> **Last Updated**: 2026-05-11 (pivot to fixture-replay)
+
+## 2026-05 Pivot: Replay Captured Fixtures Instead of Re-implementing Clients
+
+The original plan (below) was to scaffold parallel Swift, Kotlin, and JavaScript clients that hit a local server. Tracks 1+2 of cgm-remote-monitor's testing-modernization effort have since landed `tests/fixtures/captured/` — sanitized, deterministic, per-source slices of real Loop iOS, Trio, AAPS-Android, and xDrip4iOS payloads, regenerable via `tools/captured-fixtures/sanitize.js`.
+
+These fixtures **are** the canonical bytes that Swift/Kotlin clients would generate. Replaying them via Node into a local cgm-remote-monitor gives identical wire coverage at a fraction of the cost, with one major bonus: Linux CI runners can do it without macOS or a Swift/JVM toolchain.
+
+### Revised harness shape
+
+```
+captured fixtures (loop/trio/aaps/phone-uploader)
+        │
+        ▼   POST/PUT/DELETE
+cgm-remote-monitor (cgm-pr-8447, my.test.env)
+        │
+        ▼
+MongoDB (test DB, cleared between runs)
+```
+
+- **Phase 1 (now feasible):** Node-based replay script that walks
+  `tests/fixtures/captured/{loop,trio,aaps,phone-uploader}/*.json`,
+  POSTs them through API v1 / API v3 / WebSocket, and asserts dedup,
+  identifier-handling, and shape conformance. Runs on Ubuntu CI.
+- **Phase 2 (only where needed):** keep Swift/Kotlin contract tests
+  for behavior the *fixtures* cannot exercise — primarily:
+  - **Auth flows** that depend on real `URLSession`/`OkHttp` cookie/JWT
+    handling (cannot be captured as bytes).
+  - **Retry/backoff under server 5xx** (server-state-dependent).
+  - **Kotlin/Swift JSON-encoder edge cases** (e.g. how each platform
+    encodes optional fields). Run as small targeted suites, not a full
+    parallel harness.
+
+### Findings already in hand that change harness assumptions
+
+These were discovered during Tracks 1+2 and should be encoded in the harness:
+
+| Finding | Source | Harness implication |
+|---|---|---|
+| API v3 dedup uses `device + date + eventType` only — `pumpId`/`pumpType`/`pumpSerial` are NOT part of the identifier | `cgm-pr-8447/docs/test-specs/shape-handling-tests.md` | Dedup tests must vary only those three fields; pump fields are red herrings. |
+| AAPS sends documents one-at-a-time to API v3; "batch handling" is rapid-sequential, not array POST | same | Don't write array-POST tests for AAPS pattern; write rapid-sequential tests. |
+| WebSocket `insertOne([array])` was creating a single doc — fixed in `lib/server/websocket.js` via array detection | PR #8314 | Replay should exercise WebSocket array-input branch explicitly. |
+| `eventType` defaults to `<none>` if missing on websocket path | `lib/server/websocket.js:357-358` | Negative-path tests must include missing-eventType. |
+| `device='openaps://AndroidAPS'` is the AAPS-Android wire signature; classifier ordering matters in `lib/client-core/devicestatus/uploader.js` AND in this repo's `tools/ns2parquet/normalize.py` | `cgm-pr-8447/tests/fixtures/captured/aaps/`; this repo's stored memories | Replay AAPS fixture and assert classifier returns `'openaps'` (and equivalently `'AAPS'` in the parquet pipeline). Single source of truth question is open — see "Cross-repo classifier" below. |
+
+### Cross-repo classifier — single source of truth question
+
+`classifyUploader` in `cgm-pr-8447/lib/client-core/devicestatus/uploader.js` and `_detect_controller` in `rag-nightscout-ecosystem-alignment/tools/ns2parquet/normalize.py` independently classify the same wire signal. Both have to test `aaps`/`androidaps` *before* `openaps` substring or AAPS-Android exports get mis-classified. **Open question:** should both repos consume one published rule set (e.g. a small JSON spec under `mapping/cross-project/`) so a fix in one cannot diverge from the other? Decide before adding the next uploader class.
+
+---
+
+## Original plan (Mar 2026)
+
+The remainder of this document captures the original three-language harness design. The Phase 1 fixture-replay path above subsumes most of the JavaScript-client and same-bytes Swift/Kotlin work; treat the Swift/Kotlin sections below as the **Phase 2 scope** described above (auth, retry, encoder edge cases only).
+
+---
 
 ## Overview
 
