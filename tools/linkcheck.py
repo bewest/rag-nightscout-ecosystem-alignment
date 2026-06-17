@@ -124,6 +124,12 @@ def should_skip_file(filepath, skip_patterns=None):
     if skip_patterns is None:
         skip_patterns = [
             "externals",
+            ".git",
+            ".build",
+            "node_modules",
+            "__pycache__",
+            ".venv",
+            "venv",
             "_generated",
             "_template",
         ]

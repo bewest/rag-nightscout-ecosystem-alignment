@@ -346,6 +346,104 @@ class TestValidateFixturesParsing(unittest.TestCase):
 
 
 # =============================================================================
+# Unit Tests for check_markdown_images.py
+# =============================================================================
+
+class TestCheckMarkdownImages(unittest.TestCase):
+    """Unit tests for markdown image auditing."""
+
+    def test_audit_image_links_reports_missing_markdown_image(self):
+        """A missing markdown image should be reported."""
+        from check_markdown_images import audit_image_links
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            (root / "docs").mkdir()
+            (root / "docs" / "report.md").write_text(
+                "![Missing](../visualizations/fig1.png)\n",
+                encoding="utf-8",
+            )
+
+            result = audit_image_links(root)
+
+            self.assertEqual(result["checked"], 1)
+            self.assertEqual(len(result["missing"]), 1)
+            self.assertEqual(result["missing"][0]["line"], 1)
+            self.assertIn("fig1.png", result["missing"][0]["link"])
+
+    def test_audit_image_links_accepts_existing_markdown_image(self):
+        """An existing markdown image should not be reported."""
+        from check_markdown_images import audit_image_links
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            (root / "docs").mkdir()
+            (root / "visualizations").mkdir()
+            (root / "visualizations" / "fig1.png").write_bytes(b"png")
+            (root / "docs" / "report.md").write_text(
+                "![Present](../visualizations/fig1.png)\n",
+                encoding="utf-8",
+            )
+
+            result = audit_image_links(root)
+
+            self.assertEqual(result["checked"], 1)
+            self.assertEqual(result["missing"], [])
+
+    def test_audit_image_links_reports_missing_html_image(self):
+        """A missing HTML img src should be reported."""
+        from check_markdown_images import audit_image_links
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            (root / "docs").mkdir()
+            (root / "docs" / "report.md").write_text(
+                '<img src="../visualizations/fig2.png" alt="chart">\n',
+                encoding="utf-8",
+            )
+
+            result = audit_image_links(root)
+
+            self.assertEqual(result["checked"], 1)
+            self.assertEqual(len(result["missing"]), 1)
+            self.assertEqual(result["missing"][0]["syntax"], "html")
+
+    def test_audit_image_links_skips_build_tree(self):
+        """Files under .build should be skipped by default."""
+        from check_markdown_images import audit_image_links
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            (root / ".build" / "docs").mkdir(parents=True)
+            (root / ".build" / "docs" / "vendor.md").write_text(
+                "![Vendor](missing.png)\n",
+                encoding="utf-8",
+            )
+
+            result = audit_image_links(root)
+
+            self.assertEqual(result["checked"], 0)
+            self.assertEqual(result["missing"], [])
+
+    def test_audit_image_links_skips_external_urls(self):
+        """External image URLs should not be counted as missing."""
+        from check_markdown_images import audit_image_links
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            (root / "docs").mkdir()
+            (root / "docs" / "report.md").write_text(
+                "![External](https://example.com/fig.png)\n",
+                encoding="utf-8",
+            )
+
+            result = audit_image_links(root)
+
+            self.assertEqual(result["checked"], 0)
+            self.assertEqual(result["missing"], [])
+
+
+# =============================================================================
 # Integration-style tests with synthetic data
 # =============================================================================
 
