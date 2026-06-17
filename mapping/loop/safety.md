@@ -79,13 +79,15 @@ The lower of the two is used.
 
 Limits total insulin on board to prevent dangerous stacking.
 
-### Implementation (Inferred)
+### Implementation (Verified)
 
-Loop tracks IOB and may limit dosing when at maximum. The exact implementation varies:
+Loop does not expose a standalone user-configurable `max_iob` or `maximumActiveInsulin` setting. In current automatic dosing, Loop derives an IOB ceiling from the configured maximum bolus:
 
-**Source**: `loop:Loop/Loop/Managers/LoopDataManager.swift` (dosing decision logic)
+- `automaticDosingIOBLimit = maxBolus * 2.0`
+- `iobHeadroom = automaticDosingIOBLimit - insulinOnBoard`
+- automatic bolus size is capped by that remaining headroom
 
-**Note**: The specific max IOB enforcement behavior should be verified against current Loop source. This section documents the expected behavior pattern.
+**Source**: `loop:Loop/Loop/Managers/LoopDataManager.swift#L1814-L1840`, `loop:Loop/LoopCore/LoopSettings.swift#L68-L75`
 
 ### Configuration
 
@@ -95,10 +97,10 @@ Loop tracks IOB and may limit dosing when at maximum. The exact implementation v
 
 ### Behavior
 
-When at or near max IOB:
-- Automatic dosing may be reduced or suspended
-- Manual bolus recommendations may be limited
-- The exact constraints depend on Loop version and configuration
+When at or above the automatic dosing IOB ceiling:
+- Automatic bolus headroom falls toward zero
+- Automatic bolus delivery is reduced or prevented
+- Temp basal recommendations can still be computed within `maximumBasalRatePerHour`
 
 ---
 
@@ -326,7 +328,7 @@ Not currently synced:
 |----------------|------|-----------------|
 | Suspend threshold | User-configurable | `min_bg` |
 | Max basal | Min of user max, 4x scheduled | Similar, varies |
-| Max IOB | User-configurable | `max_iob` |
+| Max IOB | Derived automatic dosing limit (`maximumBolus * 2.0`) | `max_iob` |
 | Max SMB/bolus | User-configurable | `maxSMBBasalMinutes`, etc |
 | Data freshness | 15 min glucose | 10-13 min typically |
 | Error handling | Per-cycle retry | Similar |

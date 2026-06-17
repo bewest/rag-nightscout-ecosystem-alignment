@@ -347,11 +347,11 @@ final String hashedSecret = Hashing.sha1()
 
 | File | Purpose |
 |------|---------|
-| `crm:lib/authorization/index.js` | Main authorization logic |
-| `crm:lib/authorization/storage.js` | Subject/role storage |
-| `crm:lib/authorization/endpoints.js` | REST endpoints |
-| `crm:lib/authorization/delaylist.js` | Rate limiting |
-| `crm:lib/server/enclave.js` | Secret hashing, JWT signing |
+| `cgm-remote-monitor-official:lib/authorization/index.js` | Main authorization logic |
+| `cgm-remote-monitor-official:lib/authorization/storage.js` | Subject/role storage |
+| `cgm-remote-monitor-official:lib/authorization/endpoints.js` | REST endpoints |
+| `cgm-remote-monitor-official:lib/authorization/delaylist.js` | Rate limiting |
+| `cgm-remote-monitor-official:lib/server/enclave.js` | Secret hashing, JWT signing |
 | `aaps:plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclientV3/services/NSClientV3Service.kt` | AAPS auth |
 | `loop:NightscoutService/NightscoutServiceKit/NightscoutService.swift` | Loop auth |
 | `xdrip:app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java` | xDrip+ auth |

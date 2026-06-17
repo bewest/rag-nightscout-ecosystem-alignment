@@ -122,10 +122,10 @@ actor:
 
 | Purpose | Location |
 |---------|----------|
-| Auth initialization | `crm:lib/authorization/index.js` |
-| Shiro trie | `crm:lib/authorization/index.js` |
-| JWT handling | `crm:lib/server/enclave.js` |
-| Brute-force protection | `crm:lib/authorization/delaylist.js` |
+| Auth initialization | `cgm-remote-monitor-official:lib/authorization/index.js` |
+| Shiro trie | `cgm-remote-monitor-official:lib/authorization/index.js` |
+| JWT handling | `cgm-remote-monitor-official:lib/server/enclave.js` |
+| Brute-force protection | `cgm-remote-monitor-official:lib/authorization/delaylist.js` |
 | NRG policy decision | `ns-gateway:lib/policies/index.js` |
 
 ---

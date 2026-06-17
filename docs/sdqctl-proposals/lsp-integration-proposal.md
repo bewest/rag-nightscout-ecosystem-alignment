@@ -31,7 +31,7 @@ This proposal defines how to integrate Language Server Protocol (LSP) tools into
 
 ### Current Gaps
 
-1. **Line number drift**: References like `crm:lib/api.js#L45` become stale after refactoring
+1. **Line number drift**: References like `cgm-remote-monitor-official:lib/api3/swagger.yaml#L45` become stale after refactoring
 2. **Symbol verification**: Cannot confirm `BgReading.calculated_value` actually exists
 3. **Placeholder paths**: `aaps:plugins/.../smsCommunicator/` with `...` unresolvable
 4. **Type understanding**: Cannot track data flow through transformations
@@ -234,7 +234,7 @@ class TSServerClient:
 python tools/verify_refs.py --validate-lines
 
 # LSP-based symbol check (Phase 2+)
-python tools/lsp_query.py definition crm:lib/api3/generic/entries.js:45:10
+python tools/lsp_query.py definition cgm-remote-monitor-official:lib/api3/generic/create/operation.js:45:10
 python tools/lsp_query.py references aaps:core/interfaces/.../Pump.kt:23:5
 
 # Integrated validation

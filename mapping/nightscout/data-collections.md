@@ -175,10 +175,10 @@ Different controllers use different fields for deduplication:
 
 | Purpose | Location |
 |---------|----------|
-| Treatment handling | `crm:lib/server/treatments.js` |
-| Profile loading | `crm:lib/profilefunctions.js` |
-| Entry processing | `crm:lib/data/ddata.js` |
-| API v3 CRUD | `crm:lib/api3/generic/` |
+| Treatment handling | `cgm-remote-monitor-official:lib/server/treatments.js` |
+| Profile loading | `cgm-remote-monitor-official:lib/profilefunctions.js` |
+| Entry processing | `cgm-remote-monitor-official:lib/data/ddata.js` |
+| API v3 CRUD | `cgm-remote-monitor-official:lib/api3/generic/` |
 
 ---
 
@@ -241,4 +241,3 @@ GET /api/v4/version
 | Soft delete | ✅ Default | ❌ Hard delete | Sync detection issues |
 | srvModified | ✅ Server time | ⚠️ Alias for date | Limited sync impact |
 | History endpoint | ✅ `/history/{ts}` | ❌ Missing | Polling requires workaround |
-

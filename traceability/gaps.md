@@ -56,6 +56,7 @@ All 10 duplicate GAP IDs have been renumbered:
 | 2026-01-29 | nightscout-api | DeviceStatus deep dive | 100% accurate (8 claims verified) |
 | 2026-01-29 | nightscout-api | Entries deep dive | 100% accurate (8 claims verified) |
 | 2026-01-29 | nightscout-api | Treatments deep dive | 100% accurate (8 claims verified) |
+| 2026-06-17 | Trio / Loop / Nightscout active docs | Trio Nightscout sync, Loop safety, Nightscout auth claims | Updated stale Trio/Loop claims; Nightscout auth identity claims still accurate |
 
 ## Mapping Verification Status
 
@@ -66,5 +67,6 @@ All 10 duplicate GAP IDs have been renumbered:
 | 2026-01-29 | loop/sync-identity-fields.md | 100% accurate | No gap changes needed |
 | 2026-01-29 | trio/nightscout-sync.md | 100% accurate | No gap changes needed |
 | 2026-01-29 | terminology-matrix.md (10% sample) | 100% accurate | No gap changes needed |
+| 2026-06-17 | trio/nightscout-sync.md, loop/safety.md, terminology-matrix.md | Trio and Loop claims refreshed against current source | No new gaps; corrected stale terminology and client-behavior notes |
 
-*Last updated: 2026-01-29*
+*Last updated: 2026-06-17*

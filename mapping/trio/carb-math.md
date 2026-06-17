@@ -269,13 +269,12 @@ Carbs are fetched from Nightscout:
 func fetchCarbs(sinceDate: Date? = nil) -> AnyPublisher<[CarbsEntry], Swift.Error> {
     components.queryItems = [
         URLQueryItem(name: "find[carbs][$exists]", value: "true"),
-        URLQueryItem(name: "find[enteredBy][$ne]", value: CarbsEntry.manual),
-        URLQueryItem(name: "find[enteredBy][$ne]", value: NightscoutTreatment.local)
+        // actual code appends the excludedEnteredBy list via makeNeQueryItems()
     ]
 }
 ```
 
-**Note**: Trio excludes its own carb entries to avoid duplicates.
+**Note**: Trio excludes known controller-generated `enteredBy` values (`Trio`, `AndroidAPS`, `openaps://AndroidAPS`, `iAPS`, `loop://iPhone`) to avoid duplicate carb import.
 
 ### Delete
 

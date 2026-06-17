@@ -16,7 +16,7 @@ This file defines code references used throughout the documentation. References 
 
 Instead of raw GitHub links, use reference IDs in your markdown:
 
-    See the entries normalization logic (ref: crm:lib/server/api3/entries.ts#L120-L188)
+    See the API v3 deduplication flow (ref: cgm-remote-monitor-official:lib/api3/generic/create/operation.js#L23-L35)
 
 Tooling will expand this to:
 - A link to the file in externals/
@@ -28,26 +28,26 @@ Tooling will expand this to:
 
 Example entries (update with actual paths after running bootstrap):
 
-### Nightscout (cgm-remote-monitor)
+### Nightscout (official dev server)
 
 | Ref ID | Path | Purpose |
 |--------|------|---------|
-| crm:lib/server/treatments.js | lib/server/treatments.js | Core treatment handling |
-| crm:lib/api3/generic/update/operation.js | lib/api3/generic/update/operation.js | API v3 update logic |
-| crm:lib/profilefunctions.js | lib/profilefunctions.js | Profile loading and value lookup |
-| crm:lib/authorization/index.js | lib/authorization/index.js | Auth system entry point |
-| crm:lib/server/enclave.js | lib/server/enclave.js | JWT signing and token generation |
-| crm:lib/authorization/delaylist.js | lib/authorization/delaylist.js | Brute-force protection |
-| crm:lib/server/bootevent.js | lib/server/bootevent.js | Server boot sequence |
-| crm:lib/bus.js | lib/bus.js | Internal event bus |
-| crm:lib/plugins/careportal.js | lib/plugins/careportal.js | Core event type definitions |
-| crm:lib/plugins/openaps.js | lib/plugins/openaps.js | OpenAPS event types |
-| crm:lib/plugins/loop.js | lib/plugins/loop.js | Loop event types |
-| crm:lib/data/ddata.js | lib/data/ddata.js | Data processing |
-| crm:lib/server/websocket.js | lib/server/websocket.js | Real-time treatment ingestion |
-| crm:lib/api3/storageSocket.js | lib/api3/storageSocket.js | API v3 storage events |
-| crm:lib/api3/alarmSocket.js | lib/api3/alarmSocket.js | API v3 alarm events |
-| crm:lib/report_plugins/treatments.js | lib/report_plugins/treatments.js | Treatment report (field usage) |
+| cgm-remote-monitor-official:lib/server/treatments.js | lib/server/treatments.js | Core treatment handling |
+| cgm-remote-monitor-official:lib/api3/generic/update/operation.js | lib/api3/generic/update/operation.js | API v3 update logic |
+| cgm-remote-monitor-official:lib/profilefunctions.js | lib/profilefunctions.js | Profile loading and value lookup |
+| cgm-remote-monitor-official:lib/authorization/index.js | lib/authorization/index.js | Auth system entry point |
+| cgm-remote-monitor-official:lib/server/enclave.js | lib/server/enclave.js | JWT signing and token generation |
+| cgm-remote-monitor-official:lib/authorization/delaylist.js | lib/authorization/delaylist.js | Brute-force protection |
+| cgm-remote-monitor-official:lib/server/bootevent.js | lib/server/bootevent.js | Server boot sequence |
+| cgm-remote-monitor-official:lib/bus.js | lib/bus.js | Internal event bus |
+| cgm-remote-monitor-official:lib/plugins/careportal.js | lib/plugins/careportal.js | Core event type definitions |
+| cgm-remote-monitor-official:lib/plugins/openaps.js | lib/plugins/openaps.js | OpenAPS event types |
+| cgm-remote-monitor-official:lib/plugins/loop.js | lib/plugins/loop.js | Loop event types |
+| cgm-remote-monitor-official:lib/data/ddata.js | lib/data/ddata.js | Data processing |
+| cgm-remote-monitor-official:lib/server/websocket.js | lib/server/websocket.js | Real-time treatment ingestion |
+| cgm-remote-monitor-official:lib/api3/storageSocket.js | lib/api3/storageSocket.js | API v3 storage events |
+| cgm-remote-monitor-official:lib/api3/alarmSocket.js | lib/api3/alarmSocket.js | API v3 alarm events |
+| cgm-remote-monitor-official:lib/report_plugins/treatments.js | lib/report_plugins/treatments.js | Treatment report (field usage) |
 
 ### Nightscout Roles Gateway
 

@@ -630,9 +630,13 @@ All four fields are used for sync logic. Changes to this schema will break AAPS.
 
 #### Trio
 
-Trio uses similar v1 parsing patterns to Loop. The `id` field (Trio's client-side UUID) is separate from the MongoDB `_id` returned in responses.
+Trio uses Nightscout v1 for reads and writes, but its current client behavior is more specific than the earlier Loop-based inference:
 
-**Note:** Trio's response parsing was not directly verified in source code for this analysis; this assessment is based on its documented use of v1 API endpoints with similar batch patterns to Loop.
+- `uploadTreatments` and `uploadGlucose` only check for a 2xx HTTP status and do **not** parse POST response bodies.
+- `BloodGlucose` decoding prefers `id` when present and falls back to legacy Mongo `_id`.
+- `NightscoutTreatment` keeps a client-side `id` field for later delete queries against v1.
+
+**Verified Source**: `trio:Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift#L304-L378`, `trio:Trio/Sources/Models/BloodGlucose.swift#L62-L88`, `trio:Trio/Sources/Models/NightscoutTreatment.swift#L3-L24`
 
 ---
 

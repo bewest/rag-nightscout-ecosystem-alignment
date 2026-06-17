@@ -290,9 +290,8 @@ Trio fetches temp targets from Nightscout:
 func fetchTempTargets(sinceDate: Date? = nil) -> AnyPublisher<[TempTarget], Swift.Error> {
     components.queryItems = [
         URLQueryItem(name: "find[eventType]", value: "Temporary+Target"),
-        URLQueryItem(name: "find[enteredBy][$ne]", value: TempTarget.manual),
-        URLQueryItem(name: "find[enteredBy][$ne]", value: NightscoutTreatment.local),
         URLQueryItem(name: "find[duration][$exists]", value: "true")
+        // actual code appends the excludedEnteredBy list via makeNeQueryItems()
     ]
 }
 ```

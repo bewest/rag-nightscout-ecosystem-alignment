@@ -148,8 +148,10 @@ Total: 310 requirements
 | 2026-01-29 | carb-absorption-model-comparison.md | REQ-CARB-001-003 (carb absorption) |
 | 2026-01-30 | prediction-curve-documentation.md | REQ-PRED-001-003 (predictions) |
 | 2026-01-30 | temp-basal-vs-smb-comparison.md | REQ-DOSE-001-003 (dosing) |
+| 2026-06-17 | algorithm-comparison-deep-dive.md | REQ-060-069 (algorithm behavior) refreshed for current Loop automatic dosing IOB terminology |
+| 2026-06-17 | nightscout-api-comparison.md | REQ-020 (sync identity), REQ-030 (field semantics) refreshed for current Trio v1 client behavior |
 
 **Level 2 Complete**: 5/5 mapping verifications passed (100%)
 **Level 3 Complete**: 8/8 deep dive verifications (100%) ✅
 
-*Last updated: 2026-01-29*
+*Last updated: 2026-06-17*

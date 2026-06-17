@@ -12,6 +12,54 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Nightscout Reference Freshness Grooming (2026-06-17)
+
+Updated active Nightscout documentation to point at the current official `cgm-remote-monitor` dev repository instead of stale `crm` fork paths for API v3, authorization, careportal, and treatment references.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Reference registry cleanup | `docs/_includes/code-refs.md` | Official repo paths now validate for auth, API v3, websocket, and plugin references |
+| Mapping refresh | `mapping/{cross-project,nightscout}/` | Live mapping docs now cite the current Nightscout source tree instead of broken legacy paths |
+| Gap/deep-dive freshness | `traceability/nightscout-api-gaps.md`, `docs/10-domain/authentication-flows-deep-dive.md` | Security and auth claims remain documented, but now point to the maintained upstream implementation |
+
+**Key Findings**:
+- The live documentation had drifted because `crm` resolves to a legacy fork without the current `lib/api3` and `lib/authorization` tree.
+- The current authoritative paths exist in `externals/cgm-remote-monitor-official/` and should be used for modern Nightscout API and auth claims.
+
+**Source Files Analyzed**:
+- `externals/cgm-remote-monitor-official/lib/api3/swagger.yaml`
+- `externals/cgm-remote-monitor-official/lib/api3/generic/create/validate.js`
+- `externals/cgm-remote-monitor-official/lib/authorization/index.js`
+- `externals/cgm-remote-monitor-official/lib/server/enclave.js`
+
+---
+
+## Trio, Loop, and Nightscout Claim Audit (2026-06-17)
+
+Verified current Trio Nightscout client behavior, current Loop automatic dosing safety logic, and active Nightscout authorization/treatment identity claims against refreshed upstream sources.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Trio Nightscout sync refresh | `mapping/trio/nightscout-sync.md` | Trio now documents broader `enteredBy` exclusion filters and clarified `id` vs legacy `_id` handling |
+| Loop safety refresh | `mapping/loop/safety.md` | Loop does not expose `maximumActiveInsulin`; automatic IOB headroom is derived from `maximumBolus * 2.0` |
+| Cross-project algorithm/API cleanup | `docs/10-domain/{algorithm-comparison-deep-dive,nightscout-api-comparison}.md`, `mapping/cross-project/terminology-matrix.md` | Active comparison docs now reflect verified Trio response handling and Loop safety terminology |
+
+**Key Findings**:
+- **Needs update**: Several active Loop docs still described a non-existent `maximumActiveInsulin` setting instead of the current derived automatic dosing IOB limit.
+- **Needs update**: Several Trio docs still described older two-value `enteredBy` exclusion logic and an oversimplified `_id` mapping.
+- **Still accurate**: Nightscout auth and identity claims remain directionally correct; the server authorizes treatment writes but does not bind `enteredBy` to the authenticated subject in treatment creation.
+
+**Source Files Analyzed**:
+- `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift`
+- `externals/Trio/Trio/Sources/Models/BloodGlucose.swift`
+- `externals/Trio/Trio/Sources/Models/NightscoutTreatment.swift`
+- `externals/LoopWorkspace/Loop/Loop/Managers/LoopDataManager.swift`
+- `externals/LoopWorkspace/Loop/LoopCore/LoopSettings.swift`
+- `externals/cgm-remote-monitor-official/lib/api/treatments/index.js`
+- `externals/cgm-remote-monitor-official/lib/authorization/index.js`
+
+---
+
 ## Wave-13: Controller Dynamics and Grand Synthesis (2026-04-20)
 
 Decomposed controller contributions during corrections, tested regression-based ISF extraction, and synthesized 55+ experiments across two independent research tracks.

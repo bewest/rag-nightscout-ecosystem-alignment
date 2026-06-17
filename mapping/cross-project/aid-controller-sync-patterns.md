@@ -43,18 +43,17 @@ All Trio uploads use `enteredBy: "Trio"` for identification.
 
 **Download Deduplication:**
 ```swift
-// Carbs fetch excludes own entries
+// Carbs fetch excludes known controller-generated entries
 components.queryItems = [
     URLQueryItem(name: "find[carbs][$exists]", value: "true"),
-    URLQueryItem(name: "find[enteredBy][$ne]", value: CarbsEntry.manual),
-    URLQueryItem(name: "find[enteredBy][$ne]", value: NightscoutTreatment.local)  // "Trio"
+    // actual code appends the excludedEnteredBy list via makeNeQueryItems()
 ]
 ```
 
 | Download Type | Filter Logic | Rationale |
 |---------------|--------------|-----------|
-| Carbs | `enteredBy != "Trio"` AND `enteredBy != manual` | Avoid processing own entries |
-| Temp Targets | `enteredBy != "Trio"` AND `enteredBy != manual` | Avoid processing own entries |
+| Carbs | `enteredBy` not in `{Trio, AndroidAPS, openaps://AndroidAPS, iAPS, loop://iPhone}` | Avoid importing controller-originated duplicates |
+| Temp Targets | `enteredBy` not in `{Trio, AndroidAPS, openaps://AndroidAPS, iAPS, loop://iPhone}` | Avoid importing controller-originated duplicates |
 | Glucose | No filter (fetches all) | CGM data is shared across devices |
 
 ### 1.3 Upload Triggers
@@ -438,9 +437,9 @@ Based on this analysis, the following conformance tests should be added:
 #### Nightscout Server
 | File | Purpose | Key Lines | Evidence For |
 |------|---------|-----------|--------------|
-| `crm:lib/api3/swagger.yaml` | API v3 spec | Full file | Endpoint definitions, schema |
-| `crm:lib/api3/generic/create/validate.js` | Dedup validation | Dedup section | Fallback dedup rules |
-| `crm:lib/server/treatments.js` | Treatment handling | Full file | V1 treatment processing |
+| `cgm-remote-monitor-official:lib/api3/swagger.yaml` | API v3 spec | Full file | Endpoint definitions, schema |
+| `cgm-remote-monitor-official:lib/api3/generic/create/validate.js` | Dedup validation | Dedup section | Fallback dedup rules |
+| `cgm-remote-monitor-official:lib/server/treatments.js` | Treatment handling | Full file | V1 treatment processing |
 
 ### 8.2 Cross-Reference to Existing Mapping Documents
 

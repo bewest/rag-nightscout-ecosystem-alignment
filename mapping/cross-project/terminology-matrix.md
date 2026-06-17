@@ -974,7 +974,7 @@ Nocturne's PostgreSQL schema uses a hybrid approach: typed columns for known fie
 
 | Project | Override/Adjustment Model Location |
 |---------|-----------------------------------|
-| Nightscout | `crm:lib/plugins/careportal.js` |
+| Nightscout | `cgm-remote-monitor-official:lib/plugins/careportal.js` |
 | Loop | `loop:LoopKit/LoopKit/TemporaryScheduleOverride.swift` |
 | AAPS | `aaps:database/impl/src/main/kotlin/app/aaps/database/entities/ProfileSwitch.kt` |
 | Trio | `trio:Trio/Sources/Models/Override.swift` |
@@ -1051,7 +1051,7 @@ Nocturne's PostgreSQL schema uses a hybrid approach: typed columns for known fie
 
 | Alignment Term | oref0 | Loop | AAPS | Trio |
 |----------------|-------|------|------|------|
-| Max IOB | `profile.max_iob` | `settings.maximumActiveInsulin` | `preferences.maxIOB` | `preferences.maxIOB` |
+| Max IOB | `profile.max_iob` | `automaticDosingIOBLimit = maximumBolus * 2.0` | `preferences.maxIOB` | `preferences.maxIOB` |
 | Max Basal Rate | `profile.max_basal` | `settings.maximumBasalRate` | `preferences.maxBasal` | `preferences.maxBasal` |
 | Max Bolus | N/A (SMB limit) | `settings.maximumBolus` | `preferences.maxBolus` | `preferences.maxBolus` |
 | Max SMB | `profile.maxSMBBasalMinutes` | N/A (no SMB) | `preferences.maxSMBBasalMinutes` | `preferences.maxSMBBasalMinutes` |

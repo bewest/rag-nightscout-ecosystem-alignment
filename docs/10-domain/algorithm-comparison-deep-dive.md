@@ -394,7 +394,7 @@ Loop suspends insulin delivery when predicted glucose falls below the suspend th
 
 | System | Setting | Effect |
 |--------|---------|--------|
-| **Loop** | `maximumActiveInsulin` | Limits total IOB |
+| **Loop** | Derived automatic limit (`maximumBolus * 2.0`) | Caps automatic bolus headroom rather than exposing a standalone max IOB setting |
 | **oref0** | `max_iob` | Returns to scheduled basal if exceeded |
 | **AAPS** | `preferences.maxIOB` | Constraint checker enforces |
 | **Trio** | `preferences.maxIOB` | Same as oref0 |
@@ -476,7 +476,7 @@ if (maxDelta > 0.2 * bg) {
 | Safety Feature | Loop | oref0 | AAPS | Trio |
 |----------------|------|-------|------|------|
 | **Low Glucose Suspend** | Yes (suspend threshold) | Yes (minGuardBG < threshold) | Yes (lgsThreshold) | Yes (suspendThreshold) |
-| **Max IOB Enforcement** | Yes (`maximumActiveInsulin`) | Yes (`max_iob`) | Yes (`preferences.maxIOB`) | Yes (`preferences.maxIOB`) |
+| **Max IOB Enforcement** | Yes (automatic dosing headroom from `maximumBolus * 2.0`) | Yes (`max_iob`) | Yes (`preferences.maxIOB`) | Yes (`preferences.maxIOB`) |
 | **Max Basal Rate** | Yes (`maximumBasalRatePerHour`) | Yes (3 limits: max_basal, daily multiplier, current multiplier) | Yes (same as oref0) | Yes (same as oref0) |
 | **Max SMB Size** | N/A (no SMB) | Yes (`maxSMBBasalMinutes` worth of basal) | Yes (same) | Yes (same) |
 | **SMB Safety Gating** | N/A | Yes (minGuardBG, maxDelta checks) | Yes (same) | Yes (same + scheduled disable) |
@@ -675,4 +675,3 @@ For algorithm interoperability, a unified prediction format could include:
 | Date | Author | Changes |
 |------|--------|---------|
 | 2026-01-17 | Agent | Initial comprehensive algorithm comparison |
-

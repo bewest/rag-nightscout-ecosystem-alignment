@@ -352,7 +352,7 @@ Brief description of what this component does.
 - Key behavior: ...
 
 ### Nightscout
-- Location: `crm:lib/server/treatments.js`
+- Location: `cgm-remote-monitor-official:lib/server/treatments.js`
 - Key behavior: ...
 
 ## Integration Points

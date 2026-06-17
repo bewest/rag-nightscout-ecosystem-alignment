@@ -216,7 +216,8 @@ func uploadGlucose() {
 | `direction` | `direction` |
 | `dateString` | `dateString` |
 | `date` | `date` (epoch ms) |
-| `_id` | `_id` |
+| `id` | `id` if present, else legacy `_id` fallback |
+| `legacyId` | `_id` |
 | `noise` | `noise` |
 | `filtered` | `filtered` |
 | `unfiltered` | `unfiltered` |
@@ -292,17 +293,16 @@ func fetchLastGlucose(sinceDate: Date? = nil) -> AnyPublisher<[BloodGlucose], Sw
 // trio:NightscoutAPI.swift#L101-L142
 func fetchCarbs(sinceDate: Date? = nil) -> AnyPublisher<[CarbsEntry], Swift.Error> {
     // GET /api/v1/treatments.json?find[carbs][$exists]=true
-    //     &find[enteredBy][$ne]=Trio (avoid own entries)
+    //     &find[$and][i][enteredBy][$ne]=Trio / AndroidAPS / iAPS / loop://iPhone ...
     //     &find[created_at][$gt]=...
     components.queryItems = [
         URLQueryItem(name: "find[carbs][$exists]", value: "true"),
-        URLQueryItem(name: "find[enteredBy][$ne]", value: CarbsEntry.manual),
-        URLQueryItem(name: "find[enteredBy][$ne]", value: NightscoutTreatment.local)
+        // actual code appends the excludedEnteredBy list via makeNeQueryItems()
     ]
 }
 ```
 
-**Note**: Trio excludes entries with `enteredBy` matching "Trio" or manual entry identifier to avoid duplicate processing.
+**Note**: Trio now excludes a broader set of controller-generated `enteredBy` values (`Trio`, `AndroidAPS`, `openaps://AndroidAPS`, `iAPS`, `loop://iPhone`) to avoid re-importing treatments created by peer AID clients.
 
 ### 3. Temp Targets Fetch
 
@@ -314,9 +314,8 @@ func fetchTempTargets(sinceDate: Date? = nil) -> AnyPublisher<[TempTarget], Swif
     //     &find[duration][$exists]=true
     components.queryItems = [
         URLQueryItem(name: "find[eventType]", value: "Temporary+Target"),
-        URLQueryItem(name: "find[enteredBy][$ne]", value: TempTarget.manual),
-        URLQueryItem(name: "find[enteredBy][$ne]", value: NightscoutTreatment.local),
         URLQueryItem(name: "find[duration][$exists]", value: "true")
+        // actual code appends the same excludedEnteredBy list via makeNeQueryItems()
     ]
 }
 ```
@@ -342,15 +341,15 @@ static let local = "Trio"
 
 This allows:
 1. Identifying Trio-originated entries in Nightscout
-2. Filtering out own entries during download to avoid duplicates
+2. Filtering out known controller-generated entries during download to avoid duplicates
 3. Distinguishing from other uploaders (Loop, AAPS, xDrip, etc.)
 
 ### Deduplication Strategy
 
 | Download Type | Filter Logic |
 |---------------|--------------|
-| Carbs | `enteredBy != "Trio"` AND `enteredBy != manual` |
-| Temp Targets | `enteredBy != "Trio"` AND `enteredBy != manual` |
+| Carbs | `enteredBy` not in `{Trio, AndroidAPS, openaps://AndroidAPS, iAPS, loop://iPhone}` |
+| Temp Targets | `enteredBy` not in `{Trio, AndroidAPS, openaps://AndroidAPS, iAPS, loop://iPhone}` |
 | Glucose | No filter (always fetches all) |
 
 **Note**: Remote commands are no longer fetched from Nightscout. They are received via encrypted APNS push notifications through the TrioRemoteControl system.
