@@ -18,6 +18,9 @@ This gives you submodule-like determinism without the submodule UX pain.
 make bootstrap
 # or: python3 tools/bootstrap.py
 
+# Advance clean repos to latest tracked upstream commits
+make refresh
+
 # Check status of all repos
 make status
 
@@ -70,6 +73,9 @@ make freeze
 ```bash
 # Freeze all repos to their current SHAs
 make freeze
+
+# Or refresh tracked repos first, then freeze happens automatically
+make refresh
 
 # Or manually edit workspace.lock.json to set specific refs
 ```

@@ -9,12 +9,14 @@ Usage:
     ./tools/bootstrap.py              # Clone/update all repos
     ./tools/bootstrap.py status       # Show status of all repos
     ./tools/bootstrap.py freeze       # Write resolved SHAs to lockfile
+    ./tools/bootstrap.py refresh      # Advance repos to latest tracked upstream commits
     ./tools/bootstrap.py add <name> <url> [ref]  # Add a new repo
 """
 
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -23,6 +25,7 @@ from pathlib import Path
 from typing import Optional
 
 SCRIPT_DIR = Path(__file__).parent
+SHA_PATTERN = re.compile(r"^[0-9a-f]{7,40}$")
 
 
 def run(cmd: list[str], cwd: Optional[Path] = None, check: bool = True) -> int:
@@ -99,6 +102,63 @@ def checkout_ref(dest: Path, ref: str) -> bool:
     """Fetch and checkout a specific ref (branch, tag, or SHA)."""
     run(["git", "fetch", "--all", "--tags", "--prune"], cwd=dest, check=False)
     return run(["git", "checkout", ref], cwd=dest, check=False) == 0
+
+
+def is_commit_sha(ref: str) -> bool:
+    """Return True when ref looks like a git commit SHA."""
+    return bool(ref and SHA_PATTERN.fullmatch(ref))
+
+
+def preferred_tracking_ref(repo: dict) -> Optional[str]:
+    """Return the best non-SHA tracking ref recorded for a repo."""
+    frozen_from = repo.get("frozen_from", "")
+    if frozen_from and not is_commit_sha(frozen_from):
+        return frozen_from
+
+    ref = repo.get("ref", "")
+    if ref and not is_commit_sha(ref) and ref != "HEAD":
+        return ref
+
+    return None
+
+
+def update_repo_pin(repo: dict, new_ref: str, tracked_from: Optional[str] = None) -> bool:
+    """Update repo pin metadata while preserving branch provenance."""
+    tracking_ref = tracked_from or preferred_tracking_ref(repo)
+    changed = repo.get("ref") != new_ref
+
+    if tracking_ref and repo.get("frozen_from") != tracking_ref:
+        changed = True
+
+    if not changed:
+        return False
+
+    repo["ref"] = new_ref
+    repo["frozen_at"] = datetime.now().isoformat()
+    if tracking_ref:
+        repo["frozen_from"] = tracking_ref
+
+    return True
+
+
+def resolve_remote_tracking_ref(dest: Path, repo: dict) -> tuple[Optional[str], Optional[str], str]:
+    """Resolve the best remote tracking branch and its SHA for a repo."""
+    candidates: list[str] = []
+    for candidate in (repo.get("frozen_from", ""), repo.get("ref", "")):
+        if candidate and candidate != "HEAD" and not is_commit_sha(candidate) and candidate not in candidates:
+            candidates.append(candidate)
+
+    for candidate in candidates:
+        sha = capture(["git", "rev-parse", f"origin/{candidate}"], cwd=dest)
+        if sha:
+            return candidate, sha, "configured"
+
+    remote_head = capture(["git", "symbolic-ref", "--short", "refs/remotes/origin/HEAD"], cwd=dest)
+    head_sha = capture(["git", "rev-parse", "refs/remotes/origin/HEAD"], cwd=dest)
+    if remote_head.startswith("origin/") and head_sha:
+        return remote_head.removeprefix("origin/"), head_sha, "origin/HEAD fallback"
+
+    return None, None, "unresolved"
 
 
 def get_repo_status(dest: Path) -> dict:
@@ -183,7 +243,7 @@ def cmd_bootstrap(args, lockfile_path: Path):
             continue
         
         if checkout_ref(dest, ref):
-            if has_submodules:
+            if has_submodules or (dest / ".gitmodules").exists():
                 if not checkout_submodules(dest):
                     print(f"  ! Warning: submodule checkout had issues")
             status = get_repo_status(dest)
@@ -230,6 +290,109 @@ def cmd_status(args, lockfile_path: Path):
     return 0
 
 
+def cmd_refresh(args, lockfile_path: Path):
+    """Refresh repos to the latest commit on their tracking branches."""
+    data = load_lockfile(lockfile_path)
+    externals_dir = Path(data.get("externals_dir", "externals"))
+    repos = data.get("repos", [])
+
+    if not repos:
+        print("No repos defined in lockfile.", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Refreshing {len(repos)} repositories:\n")
+
+    updated = 0
+    unchanged = 0
+    skipped = 0
+    failed = 0
+
+    for repo in repos:
+        name = repo["name"]
+        url = repo["url"]
+        desc = repo.get("description", "")
+        dest = externals_dir / name
+
+        print(f"== {name} ==")
+        if desc:
+            print(f"  {desc}")
+
+        cloned = ensure_repo(dest, url)
+        if not cloned and not (dest / ".git").exists():
+            print(f"  ! Failed to clone {name}")
+            failed += 1
+            print()
+            continue
+
+        run(["git", "fetch", "--all", "--tags", "--prune"], cwd=dest, check=False)
+        status_before = get_repo_status(dest)
+
+        if status_before["dirty"]:
+            print("  - Skipped: worktree is dirty")
+            skipped += 1
+            print()
+            continue
+
+        tracking_ref, target_sha, resolution = resolve_remote_tracking_ref(dest, repo)
+        if not tracking_ref or not target_sha:
+            print("  - Skipped: could not resolve a remote tracking branch")
+            skipped += 1
+            print()
+            continue
+
+        if status_before["branch"] not in ("HEAD", tracking_ref):
+            print(f"  - Skipped: on local branch '{status_before['branch']}' instead of detached/{tracking_ref}")
+            skipped += 1
+            print()
+            continue
+
+        if resolution != "configured":
+            print(f"  - Tracking via {resolution}: {tracking_ref}")
+        else:
+            print(f"  - Tracking branch: {tracking_ref}")
+
+        checkout_changed = status_before["sha"] != target_sha
+        if checkout_changed:
+            if status_before["branch"] == tracking_ref:
+                if run(["git", "merge", "--ff-only", f"origin/{tracking_ref}"], cwd=dest, check=False) != 0:
+                    print(f"  ! Failed to fast-forward {tracking_ref}")
+                    failed += 1
+                    print()
+                    continue
+            elif run(["git", "checkout", target_sha], cwd=dest, check=False) != 0:
+                print(f"  ! Failed to checkout {target_sha}")
+                failed += 1
+                print()
+                continue
+
+        if repo.get("submodules", False) or (dest / ".gitmodules").exists():
+            if not checkout_submodules(dest):
+                print("  ! Warning: submodule checkout had issues")
+
+        status_after = get_repo_status(dest)
+        if status_after["sha"] != target_sha:
+            print(f"  ! Expected {target_sha[:12]} but found {status_after['sha_short']}")
+            failed += 1
+            print()
+            continue
+
+        pinned = update_repo_pin(repo, status_after["sha"], tracked_from=tracking_ref)
+        if pinned:
+            print(f"  Updated to {status_after['sha_short']}")
+            updated += 1
+        else:
+            print(f"  Unchanged at {status_after['sha_short']}")
+            unchanged += 1
+
+        print()
+
+    if updated > 0:
+        save_lockfile(lockfile_path, data)
+
+    print(f"Done: {updated} updated, {unchanged} unchanged, {skipped} skipped, {failed} failed")
+    return 0 if failed == 0 else 1
+
+
 def cmd_freeze(args, lockfile_path: Path):
     """Freeze command: update lockfile with current SHAs."""
     data = load_lockfile(lockfile_path)
@@ -255,10 +418,7 @@ def cmd_freeze(args, lockfile_path: Path):
         old_ref = repo.get("ref", "")
         new_ref = status["sha"]
         
-        if old_ref != new_ref:
-            repo["ref"] = new_ref
-            repo["frozen_at"] = datetime.now().isoformat()
-            repo["frozen_from"] = old_ref
+        if update_repo_pin(repo, new_ref):
             print(f"  {name}: {old_ref[:12] if len(old_ref) > 12 else old_ref} -> {new_ref[:12]}")
             updated += 1
         else:
@@ -359,6 +519,7 @@ Examples:
     subparsers.add_parser("bootstrap", help="Clone and checkout all repositories")
     subparsers.add_parser("status", help="Show status of all repositories")
     subparsers.add_parser("freeze", help="Update lockfile with current SHAs")
+    subparsers.add_parser("refresh", help="Advance repos to latest tracked upstream commits")
     
     add_parser = subparsers.add_parser("add", help="Add a new repository")
     add_parser.add_argument("name", help="Repository name (directory name)")
@@ -379,6 +540,8 @@ Examples:
         return cmd_status(args, lockfile_path)
     elif args.command == "freeze":
         return cmd_freeze(args, lockfile_path)
+    elif args.command == "refresh":
+        return cmd_refresh(args, lockfile_path)
     elif args.command == "add":
         return cmd_add(args, lockfile_path)
     elif args.command == "remove":

@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke
+.PHONY: bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke
 
 # Default target
 help:
@@ -11,6 +11,7 @@ help:
 	@echo ""
 	@echo "Repository management:"
 	@echo "  make bootstrap  - Clone/update all external repositories"
+	@echo "  make refresh    - Advance clean repos to latest tracked upstream commits"
 	@echo "  make submodules - Checkout submodules for repos with submodules flag"
 	@echo "  make status     - Show status of all repositories"
 	@echo "  make freeze     - Pin all repos to current commit SHAs"
@@ -41,6 +42,7 @@ help:
 	@echo "  make verify-coverage    - Analyze requirement/gap coverage"
 	@echo "  make verify-terminology - Sample and verify terminology matrix (15 terms)"
 	@echo "  make verify-assertions  - Trace assertions to requirements"
+	@echo "  make verify-images      - Check embedded markdown image links"
 	@echo "  make verify-gap-duplicates - Find duplicate GAP definitions"
 	@echo "  make verify-gap-freshness - Check if gaps are still open (10 sample)"
 	@echo "  make verify-mapping-coverage - Check mapping doc coverage (5 sample)"
@@ -84,6 +86,11 @@ bootstrap:
 # Show status of all repositories
 status:
 	@python3 tools/bootstrap.py status
+
+# Advance repos to latest tracked upstream commits and update lockfile
+refresh:
+	@echo "Refreshing repository states..."
+	@python3 tools/bootstrap.py refresh
 
 # Checkout submodules for repos with submodules flag
 submodules:
@@ -270,6 +277,10 @@ verify-gap-freshness:
 verify-mapping-coverage:
 	@echo "Checking mapping doc coverage (sample of 5)..."
 	@python3 tools/verify_mapping_coverage.py --sample 5
+
+verify-images:
+	@echo "Checking embedded markdown image links..."
+	@python3 tools/check_markdown_images.py
 
 efficiency-dashboard:
 	@python3 tools/efficiency_dashboard.py --days 7
