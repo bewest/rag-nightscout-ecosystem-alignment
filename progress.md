@@ -12,6 +12,29 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Canonical CGM Decision-Support Prototype (2026-06-18)
+
+Built a reproducible decision-support HTML prototype for `cgmencode` personal-data analysis that now derives recommendation cards and supporting visuals from the canonical parquet-backed report bundle instead of a divergent secondary recommendation path.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Decision-support report prototype | `tools/report/generate_html_report.py` | HTML now prefers canonical `pipeline.json` / `facts.json` outputs when present and renders decision-first cards with staged/guarded/action states |
+| Canonical evidence alignment | `tools/report/generate_html_report.py` | Prototype cards now reflect the same basal, ISF, correction-threshold, meal, and dinner-override recommendations as the parquet-backed `analyze_patient` report bundle |
+| Recommendation-specific visuals | `externals/ns-data/live-recent/reports/2026-06-17-cgmencode/plots/{07_correction_dose_response,08_correction_threshold_context,09_overnight_drift_static,10_meal_timing_announced_vs_uam,11_dinner_excursion_overlay}.png` | Confidence-building visuals can be regenerated from the same analyzed data and linked directly to the recommendation cards |
+
+**Key Findings**:
+- The earlier HTML prototype could disagree with the canonical markdown/parquet report because it mixed a weaker JSON loader path with therapy-only heuristics.
+- Recommendation trust improved once the prototype preferred the canonical parquet-backed bundle and used its recommendation objects as the source of truth.
+- Recommendation-specific visuals are feasible and materially improve interpretability: overnight drift, correction dose-response, correction-threshold context, dinner excursion overlays, and announced-vs-unannounced meal timing all render reproducibly from the analyzed data.
+
+**Source Files Analyzed**:
+- `tools/report/generate_html_report.py`
+- `tools/report/therapy_analyzer.py`
+- `tools/cgmencode/analyze_patient.py`
+- `externals/ns-data/live-recent/reports/2026-06-17-cgmencode/{pipeline.json,facts.json,meal_audit.csv}`
+
+---
+
 ## Nightscout Reference Freshness Grooming (2026-06-17)
 
 Updated active Nightscout documentation to point at the current official `cgm-remote-monitor` dev repository instead of stale `crm` fork paths for API v3, authorization, careportal, and treatment references.

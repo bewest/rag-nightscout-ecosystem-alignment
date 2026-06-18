@@ -18,6 +18,10 @@ import numpy as np
 from pathlib import Path
 from datetime import datetime, timezone
 from collections import defaultdict
+import matplotlib
+
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
@@ -196,9 +200,9 @@ if mh and mh.meals:
         archetype_summary[k]['mean_carbs'] = round(np.mean(mc), 1) if mc else 0
 
 # Settings recommendations
-recs_data = []
+fallback_recs_data = []
 for r in result.settings_recs:
-    recs_data.append({
+    fallback_recs_data.append({
         'param': r.parameter.value if hasattr(r.parameter, 'value') else str(r.parameter),
         'dir': r.direction,
         'current': r.current_value,
@@ -223,7 +227,7 @@ night_chart = [{'d': n.date, 'slope': round(n.slope_per_hour, 1),
                 'end': round(n.end_bg, 0)} for n in therapy.nights[-30:]]
 
 # Therapy recommendations
-therapy_recs_data = therapy.recommendations
+fallback_therapy_recs_data = therapy.recommendations
 
 # Hypo events by hour
 hypo_by_hour = [0] * 24
@@ -256,6 +260,656 @@ corr_isf_data = [{'hour': c.hour, 'bolus': round(c.bolus_u, 1),
 # Response-curve ISF data
 rc_isf = therapy.response_curve_isf
 rc_tau = therapy.response_curve_tau
+meal_count = len(mh.meals) if mh else 0
+uam_pct_value = (mh.unannounced_fraction * 100.0) if mh else 0.0
+
+
+def _as_float(value):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _fmt_num(value, suffix="", digits=1):
+    if value is None:
+        return "—"
+    if digits == 0:
+        return f"{value:.0f}{suffix}"
+    return f"{value:.{digits}f}{suffix}"
+
+
+def _load_canonical_bundle(bundle_dir: Path):
+    pipeline_path = bundle_dir / 'pipeline.json'
+    if not pipeline_path.exists():
+        return None
+    bundle = {
+        'pipeline': json.loads(pipeline_path.read_text()),
+    }
+    facts_path = bundle_dir / 'facts.json'
+    if facts_path.exists():
+        bundle['facts'] = json.loads(facts_path.read_text())
+    return bundle
+
+
+def _confidence_components(sample_score, benefit_score, agreement_score):
+    sample_score = max(0, min(100, sample_score))
+    benefit_score = max(0, min(100, benefit_score))
+    agreement_score = max(0, min(100, agreement_score))
+    total = round(sample_score * 0.40 + benefit_score * 0.35 + agreement_score * 0.25)
+    if total >= 80:
+        label = "High"
+    elif total >= 65:
+        label = "Moderate"
+    elif total >= 50:
+        label = "Guarded"
+    else:
+        label = "Low"
+    return {
+        'total': total,
+        'label': label,
+        'support': round(sample_score),
+        'benefit_risk': round(benefit_score),
+        'agreement': round(agreement_score),
+    }
+
+
+ACTION_PARAMETER_MAP = {
+    'adjust_basal_rate': 'basal_rate',
+    'adjust_isf': 'isf',
+    'adjust_correction_threshold': 'correction_threshold',
+}
+
+
+def _meal_rows_from_sources(canonical_pipeline, meal_history_obj):
+    rows = []
+    if canonical_pipeline:
+        meal_history = canonical_pipeline.get('meal_history') or {}
+        for meal in meal_history.get('meals') or []:
+            rows.append({
+                'index': int(meal.get('index', -1)),
+                'timestamp_ms': _as_float(meal.get('timestamp_ms')),
+                'hour_of_day': _as_float(meal.get('hour_of_day')),
+                'estimated_carbs_g': _as_float(meal.get('estimated_carbs_g')),
+                'announced': bool(meal.get('announced', False)),
+                'window': str(meal.get('window', '')),
+            })
+        return rows
+
+    if meal_history_obj and getattr(meal_history_obj, 'meals', None):
+        for meal in meal_history_obj.meals:
+            window = getattr(meal, 'window', '')
+            rows.append({
+                'index': int(getattr(meal, 'index', -1)),
+                'timestamp_ms': _as_float(getattr(meal, 'timestamp_ms', None)),
+                'hour_of_day': _as_float(getattr(meal, 'hour_of_day', None)),
+                'estimated_carbs_g': _as_float(getattr(meal, 'estimated_carbs_g', None)),
+                'announced': bool(getattr(meal, 'announced', False)),
+                'window': getattr(window, 'value', str(window)),
+            })
+    return rows
+
+
+def _generate_recommendation_evidence_plots(plot_dir: Path, therapy, meal_rows, glucose, timestamps, profile_isf):
+    plot_dir.mkdir(parents=True, exist_ok=True)
+    generated = {}
+
+    if therapy.correction_isfs:
+        xs = np.array([c.bolus_u for c in therapy.correction_isfs], dtype=float)
+        ys = np.array([c.simple_isf for c in therapy.correction_isfs], dtype=float)
+        qs = np.array([c.quality for c in therapy.correction_isfs], dtype=float)
+        starts = np.array([c.start_bg for c in therapy.correction_isfs], dtype=float)
+
+        plt.figure(figsize=(7.2, 4.6))
+        sc = plt.scatter(xs, ys, c=qs, s=90, cmap='viridis', edgecolors='black', linewidths=0.5)
+        plt.axhline(profile_isf, color='#94a3b8', linestyle='--', linewidth=1.5, label=f'Profile ISF ({profile_isf:.0f})')
+        if len(xs) >= 2:
+            try:
+                coeff = np.polyfit(xs, ys, 1)
+                xfit = np.linspace(max(0.1, xs.min() * 0.9), xs.max() * 1.1, 100)
+                yfit = coeff[0] * xfit + coeff[1]
+                plt.plot(xfit, yfit, color='#ef4444', linewidth=2, label='Dose-response trend')
+            except np.linalg.LinAlgError:
+                pass
+        plt.xlabel('Correction dose (U)')
+        plt.ylabel('Observed mg/dL per U')
+        plt.title('Correction dose vs achieved sensitivity')
+        plt.colorbar(sc, label='Event quality')
+        plt.legend(loc='upper right', fontsize=8)
+        plt.tight_layout()
+        p = plot_dir / '07_correction_dose_response.png'
+        plt.savefig(p, dpi=130)
+        plt.close()
+        generated['correction_dose_response'] = p.name
+
+        plt.figure(figsize=(7.2, 4.6))
+        sc = plt.scatter(starts, ys, c=qs, s=90, cmap='plasma', edgecolors='black', linewidths=0.5)
+        plt.axvline(166, color='#f59e0b', linestyle='--', linewidth=1.5, label='Proposed threshold 166')
+        plt.axhline(profile_isf, color='#94a3b8', linestyle='--', linewidth=1.5, label=f'Profile ISF ({profile_isf:.0f})')
+        plt.xlabel('Start BG for correction (mg/dL)')
+        plt.ylabel('Observed mg/dL per U')
+        plt.title('Correction start glucose vs correction effectiveness')
+        plt.colorbar(sc, label='Event quality')
+        plt.legend(loc='upper right', fontsize=8)
+        plt.tight_layout()
+        p = plot_dir / '08_correction_threshold_context.png'
+        plt.savefig(p, dpi=130)
+        plt.close()
+        generated['correction_threshold'] = p.name
+
+    if therapy.nights:
+        nights = therapy.nights[-30:]
+        slopes = np.array([n.slope_per_hour for n in nights], dtype=float)
+        colors = ['#22c55e' if s > 2 else '#ef4444' if s < -2 else '#58a6ff' for s in slopes]
+        plt.figure(figsize=(8.5, 4.6))
+        plt.bar(range(len(nights)), slopes, color=colors, width=0.8)
+        plt.axhline(0, color='black', linewidth=0.8)
+        plt.axhline(np.median(slopes), color='#f59e0b', linestyle='--', linewidth=1.4, label=f'Median {np.median(slopes):+.1f} mg/dL/hr')
+        plt.xticks(range(len(nights)), [n.date[5:] for n in nights], rotation=65, fontsize=8)
+        plt.ylabel('Overnight drift (mg/dL/hr)')
+        plt.title('Night-by-night overnight drift (last 30 nights)')
+        plt.legend(loc='upper right', fontsize=8)
+        plt.tight_layout()
+        p = plot_dir / '09_overnight_drift_static.png'
+        plt.savefig(p, dpi=130)
+        plt.close()
+        generated['overnight_drift'] = p.name
+
+    if meal_rows:
+        announced = np.zeros(24, dtype=int)
+        unannounced = np.zeros(24, dtype=int)
+        for meal in meal_rows:
+            hour = meal.get('hour_of_day')
+            if hour is None:
+                continue
+            h = int(hour) % 24
+            if meal.get('announced'):
+                announced[h] += 1
+            else:
+                unannounced[h] += 1
+
+        plt.figure(figsize=(8.5, 4.2))
+        hrs = np.arange(24)
+        plt.bar(hrs, unannounced, color='#db6d28', alpha=0.75, label='Unannounced')
+        plt.bar(hrs, announced, bottom=unannounced, color='#3b82f6', alpha=0.8, label='Announced')
+        plt.axvspan(17.5, 21.5, color='#ef4444', alpha=0.10)
+        plt.xticks(hrs)
+        plt.xlabel('Hour of day')
+        plt.ylabel('Detected meals')
+        plt.title('Meal timing by hour and announcement status')
+        plt.legend(loc='upper right', fontsize=8)
+        plt.tight_layout()
+        p = plot_dir / '10_meal_timing_announced_vs_uam.png'
+        plt.savefig(p, dpi=130)
+        plt.close()
+        generated['meal_timing'] = p.name
+
+        dinner_traces = []
+        for meal in meal_rows:
+            hour = meal.get('hour_of_day')
+            meal_ts = meal.get('timestamp_ms')
+            if meal_ts is None or hour is None or not (17 <= hour < 22):
+                continue
+            idx = int(np.searchsorted(np.asarray(timestamps, dtype=float), float(meal_ts)))
+            start = max(0, idx - 6)
+            end = min(len(glucose), idx + 49)
+            segment = np.full(55, np.nan)
+            vals = glucose[start:end]
+            insert_at = 6 - (idx - start)
+            segment[insert_at:insert_at + len(vals)] = vals
+            dinner_traces.append(segment)
+
+        if dinner_traces:
+            trace_arr = np.vstack(dinner_traces)
+            rel_minutes = np.arange(-30, 245, 5)
+            plt.figure(figsize=(8.5, 4.6))
+            for row in trace_arr[:40]:
+                plt.plot(rel_minutes, row, color='#94a3b8', alpha=0.18, linewidth=1)
+            median = np.nanmedian(trace_arr, axis=0)
+            p25 = np.nanpercentile(trace_arr, 25, axis=0)
+            p75 = np.nanpercentile(trace_arr, 75, axis=0)
+            plt.fill_between(rel_minutes, p25, p75, color='#ef4444', alpha=0.15, label='25–75%')
+            plt.plot(rel_minutes, median, color='#ef4444', linewidth=2.5, label='Median dinner response')
+            plt.axhline(180, color='#f59e0b', linestyle='--', linewidth=1)
+            plt.axhline(70, color='#f59e0b', linestyle='--', linewidth=1)
+            plt.axvline(0, color='black', linewidth=0.8)
+            plt.xlabel('Minutes from detected dinner meal')
+            plt.ylabel('Glucose (mg/dL)')
+            plt.title('Dinner and late-evening excursion overlay')
+            plt.legend(loc='upper right', fontsize=8)
+            plt.tight_layout()
+            p = plot_dir / '11_dinner_excursion_overlay.png'
+            plt.savefig(p, dpi=130)
+            plt.close()
+            generated['dinner_excursions'] = p.name
+
+    return generated
+
+
+def _pipeline_rec_payload(rec):
+    if isinstance(rec, dict):
+        sr = rec.get('settings_rec') or {}
+        parameter = sr.get('parameter')
+        if isinstance(parameter, dict) or parameter is None:
+            parameter = ACTION_PARAMETER_MAP.get(rec.get('action_type'))
+        return {
+            'action_type': rec.get('action_type'),
+            'priority': rec.get('priority'),
+            'description': rec.get('description', '') or '',
+            'predicted_tir_delta': _as_float(rec.get('predicted_tir_delta')),
+            'parameter': parameter,
+            'current_value': _as_float(sr.get('current_value')),
+            'suggested_value': _as_float(sr.get('suggested_value')),
+            'direction': sr.get('direction'),
+            'rationale': sr.get('rationale', '') or '',
+            'evidence': sr.get('evidence', '') or '',
+            'confidence': _as_float(rec.get('confidence')),
+            'magnitude_pct': _as_float(sr.get('magnitude_pct')),
+        }
+
+    sr = getattr(rec, 'settings_rec', None)
+    parameter = None
+    current_value = None
+    suggested_value = None
+    direction = None
+    confidence = _as_float(getattr(rec, 'confidence', None))
+    magnitude_pct = None
+    if sr is not None:
+        parameter = getattr(getattr(sr, 'parameter', None), 'value', None)
+        if parameter is None and getattr(sr, 'parameter', None) is not None:
+            parameter = str(sr.parameter)
+        if parameter is None:
+            parameter = ACTION_PARAMETER_MAP.get(getattr(rec, 'action_type', None))
+        current_value = _as_float(getattr(sr, 'current_value', None))
+        suggested_value = _as_float(getattr(sr, 'suggested_value', None))
+        direction = getattr(sr, 'direction', None)
+        magnitude_pct = _as_float(getattr(sr, 'magnitude_pct', None))
+    return {
+        'action_type': getattr(rec, 'action_type', None),
+        'priority': getattr(rec, 'priority', None),
+        'description': getattr(rec, 'description', '') or '',
+        'predicted_tir_delta': _as_float(getattr(rec, 'predicted_tir_delta', None)),
+        'parameter': parameter,
+        'current_value': current_value,
+        'suggested_value': suggested_value,
+        'direction': direction,
+        'rationale': getattr(sr, 'rationale', '') if sr is not None else '',
+        'evidence': getattr(sr, 'evidence', '') if sr is not None else '',
+        'confidence': confidence,
+        'magnitude_pct': magnitude_pct,
+    }
+
+
+canonical_bundle = _load_canonical_bundle(OUTPUT.parent)
+canonical_pipeline = canonical_bundle.get('pipeline') if canonical_bundle else None
+canonical_facts = canonical_bundle.get('facts') if canonical_bundle else None
+canonical_meal_rows = _meal_rows_from_sources(canonical_pipeline, mh)
+evidence_plot_names = _generate_recommendation_evidence_plots(
+    OUTPUT.parent / 'plots',
+    therapy,
+    canonical_meal_rows,
+    glucose,
+    timestamps,
+    therapy.isf_value,
+)
+
+if canonical_pipeline:
+    meal_history = canonical_pipeline.get('meal_history') or {}
+    meal_count = int(round(
+        (_as_float(meal_history.get('unannounced_count')) or 0.0)
+        + (_as_float(meal_history.get('announced_count')) or 0.0)
+    ))
+    if meal_count == 0 and meal_history.get('meals_per_day') is not None:
+        meal_count = int(round(float(meal_history.get('meals_per_day', 0.0)) * max(
+            _as_float((canonical_facts or {}).get('days_of_data')) or 0.0,
+            _as_float(meta.get('days')) or 0.0,
+        )))
+    uam_pct_value = float(meal_history.get('unannounced_fraction', 0.0)) * 100.0
+
+pipeline_recs = [_pipeline_rec_payload(r) for r in (
+    canonical_pipeline.get('recommendations', []) if canonical_pipeline else result.recommendations
+)]
+pipeline_by_action = {r['action_type']: r for r in pipeline_recs if r.get('action_type')}
+therapy_by_category = {r.get('category'): r for r in fallback_therapy_recs_data if r.get('category')}
+
+rising_nights = sum(1 for n in therapy.nights if n.direction == 'rising')
+falling_nights = sum(1 for n in therapy.nights if n.direction == 'falling')
+flat_nights = sum(1 for n in therapy.nights if n.direction == 'flat')
+dinner_meal_count = sum(
+    1 for m in (mh.meals if mh and mh.meals else [])
+    if getattr(m, 'hour_of_day', -1) >= 17
+)
+
+decision_cards = []
+
+if canonical_pipeline:
+    basal_rec = pipeline_by_action.get('adjust_basal_rate')
+    if basal_rec:
+        basal_mult = None
+        if canonical_facts:
+            basal_mult = _as_float(
+                (canonical_facts.get('per_patient_egp') or {}).get('controller_equilib_basal_multiplier')
+            )
+        basal_conf = _confidence_components(
+            sample_score=min(100, len(therapy.nights) / 30 * 100),
+            benefit_score=min(100, abs((basal_rec.get('predicted_tir_delta') or 0.0)) / 4 * 100),
+            agreement_score=70 if (basal_rec.get('predicted_tir_delta') or 0.0) > 0 else 35,
+        )
+        decision_cards.append({
+            'title': 'Should overnight basal change?',
+            'state': 'Stage a smaller change first',
+            'tone': 'warn',
+            'time_block': 'Overnight',
+            'confidence': basal_conf,
+            'current': _fmt_num(basal_rec.get('current_value'), ' U/hr', 2),
+            'suggested': _fmt_num(basal_rec.get('suggested_value'), ' U/hr', 2),
+            'expected_effect': f"+{basal_rec['predicted_tir_delta']:.1f} pp TIR",
+            'top_evidence': [
+                basal_rec.get('description') or 'Canonical pipeline recommends a higher overnight basal.',
+                basal_rec.get('evidence') or basal_rec.get('rationale') or 'Parquet-backed pipeline evidence.',
+                f"Controller equilibrium basal multiplier is {_fmt_num(basal_mult, '×', 2)}.",
+            ],
+            'risk': 'The report itself says the raw increase is clamped and should be staged over multiple adjustment cycles.',
+            'automation_alt': 'Check whether the dinner/evening override can absorb some overnight burden before making a broad basal change.',
+            'visual_path': f"plots/{evidence_plot_names.get('overnight_drift', '09_overnight_drift_static.png')}",
+            'visual_caption': 'Night-by-night overnight drift from the analyzed data. Repeated upward drift supports the basal recommendation and makes inconsistency visible when confidence should be lower.',
+        })
+
+    isf_rec = pipeline_by_action.get('adjust_isf')
+    if isf_rec:
+        isf_conf = _confidence_components(
+            sample_score=min(100, max(therapy.correction_count, 5) / 8 * 100),
+            benefit_score=min(100, abs((isf_rec.get('predicted_tir_delta') or 0.0)) / 4 * 100),
+            agreement_score=55,
+        )
+        decision_cards.append({
+            'title': 'Should large-dose correction behavior change?',
+            'state': 'Stage a smaller change first',
+            'tone': 'info',
+            'time_block': 'Corrections',
+            'confidence': isf_conf,
+            'current': _fmt_num(isf_rec.get('current_value'), ' mg/dL/U', 0),
+            'suggested': _fmt_num(isf_rec.get('suggested_value'), ' mg/dL/U', 0),
+            'expected_effect': f"+{isf_rec['predicted_tir_delta']:.1f} pp TIR",
+            'top_evidence': [
+                isf_rec.get('description'),
+                isf_rec.get('evidence') or isf_rec.get('rationale') or 'Large-dose correction evidence from canonical pipeline.',
+                f"Suggested change is staged and clamped to {_fmt_num(isf_rec.get('magnitude_pct'), '%', 0)} of the raw estimate.",
+            ],
+            'risk': 'This recommendation is explicitly about large correction doses and may not justify a full-profile ISF change without dose-context support.',
+            'automation_alt': 'Prototype this first as a correction-specific rule or override instead of a global all-day ISF edit.',
+            'visual_path': f"plots/{evidence_plot_names.get('correction_dose_response', '07_correction_dose_response.png')}",
+            'visual_caption': 'Observed correction dose versus achieved mg/dL per unit from the analyzed data. This makes large-dose diminishing returns visible directly.',
+        })
+
+    threshold_rec = pipeline_by_action.get('adjust_correction_threshold')
+    if threshold_rec:
+        threshold_conf = _confidence_components(
+            sample_score=min(100, max(therapy.correction_count, 4) / 6 * 100),
+            benefit_score=min(100, abs((threshold_rec.get('predicted_tir_delta') or 0.0)) / 1.5 * 100),
+            agreement_score=62,
+        )
+        decision_cards.append({
+            'title': 'Should the correction threshold change?',
+            'state': 'Needs more data before changing',
+            'tone': 'info',
+            'time_block': 'Corrections',
+            'confidence': threshold_conf,
+            'current': _fmt_num(threshold_rec.get('current_value'), ' mg/dL', 0),
+            'suggested': _fmt_num(threshold_rec.get('suggested_value'), ' mg/dL', 0),
+            'expected_effect': f"+{threshold_rec['predicted_tir_delta']:.1f} pp TIR",
+            'top_evidence': [
+                threshold_rec.get('description'),
+                threshold_rec.get('evidence') or threshold_rec.get('rationale') or 'Threshold evidence from canonical pipeline.',
+                'The modeled upside is small, so this is lower priority than basal, ISF, or dinner automation.',
+            ],
+            'risk': 'Low-confidence, low-upside changes can add complexity without meaningfully changing outcomes.',
+            'automation_alt': 'If you test this, prefer a controller threshold or target change over more manual correction work.',
+            'visual_path': f"plots/{evidence_plot_names.get('correction_threshold', '08_correction_threshold_context.png')}",
+            'visual_caption': 'Observed start glucose for correction events versus achieved mg/dL per unit, with the proposed threshold marked at 166 mg/dL.',
+        })
+
+    dinner_override = pipeline_by_action.get('loop_override_recommendation')
+    if dinner_override:
+        dinner_conf = _confidence_components(
+            sample_score=min(100, max(dinner_meal_count, 12) / 20 * 100),
+            benefit_score=min(100, abs((dinner_override.get('predicted_tir_delta') or 0.0)) / 3 * 100),
+            agreement_score=82,
+        )
+        decision_cards.append({
+            'title': 'Should dinner and late-night coverage be automated?',
+            'state': 'Change now',
+            'tone': 'action',
+            'time_block': 'Dinner / evening',
+            'confidence': dinner_conf,
+            'current': 'No dedicated dinner automation pattern',
+            'suggested': 'Prototype a Dinner Aggressive override (target 100, ISF ratio 0.85)',
+            'expected_effect': f"+{dinner_override['predicted_tir_delta']:.1f} pp TIR",
+            'top_evidence': [
+                dinner_override.get('description'),
+                f"Detected meals are mostly unannounced, with about {meal_count / max(meta['days'], 1):.1f} meals/day and {uam_pct_value:.0f}% unannounced.",
+                f"At least {dinner_meal_count} detected meals occur in the dinner/evening block.",
+            ],
+            'risk': 'If late-night lows increase, the override window or aggressiveness is too broad.',
+            'automation_alt': 'This is already the automation-first option. It reduces dependence on manual bolus timing.',
+            'visual_path': f"plots/{evidence_plot_names.get('dinner_excursions', '11_dinner_excursion_overlay.png')}",
+            'visual_caption': 'Dinner and late-evening excursion overlay from detected meal events. This shows whether post-dinner glucose commonly runs high long after the meal starts.',
+        })
+
+    meal_rec = pipeline_by_action.get('unannounced_meal_warning')
+    if meal_rec:
+        meal_conf = _confidence_components(
+            sample_score=100,
+            benefit_score=min(100, abs((meal_rec.get('predicted_tir_delta') or 0.0)) / 3 * 100),
+            agreement_score=90,
+        )
+        decision_cards.append({
+            'title': 'Should meal handling rely on more logging, or more automation?',
+            'state': 'Change now',
+            'tone': 'action',
+            'time_block': 'Meals',
+            'confidence': meal_conf,
+            'current': f"{uam_pct_value:.0f}% of detected meals are unannounced",
+            'suggested': 'Prioritize automation for unannounced meals before asking for more manual logging',
+            'expected_effect': f"+{meal_rec['predicted_tir_delta']:.1f} pp TIR if meal handling improves",
+            'top_evidence': [
+                meal_rec.get('description'),
+                f"Meal audit shows about {meal_count / max(meta['days'], 1):.1f} inferred meals/day with very low logged meal capture.",
+                'Most late excursions are already happening in a low-manual-bolus workflow, so added burden is unlikely to scale well.',
+            ],
+            'risk': 'A logging-first workflow may improve observability, but it conflicts with the goal of reducing patient friction.',
+            'automation_alt': 'Use override patterns, detection, and meal-context automation before requiring more patient work.',
+            'visual_path': f"plots/{evidence_plot_names.get('meal_timing', '10_meal_timing_announced_vs_uam.png')}",
+            'visual_caption': 'Detected meal timing by hour, split into announced versus unannounced events, directly from the analyzed data.',
+        })
+else:
+    basal_rec = pipeline_by_action.get('adjust_basal_rate')
+    if basal_rec:
+        basal_conf = _confidence_components(
+            sample_score=min(100, len(therapy.nights) / 30 * 100),
+            benefit_score=min(100, abs((basal_rec.get('predicted_tir_delta') or 0.0)) / 4 * 100),
+            agreement_score=45 if therapy.basal_assessment == 'mixed' else 78,
+        )
+        decision_cards.append({
+            'title': 'Should overnight basal change?',
+            'state': 'Stage a smaller change first',
+            'tone': 'warn',
+            'time_block': 'Overnight',
+            'confidence': basal_conf,
+            'current': _fmt_num(basal_rec.get('current_value'), ' U/hr', 2),
+            'suggested': _fmt_num(basal_rec.get('suggested_value'), ' U/hr', 2),
+            'expected_effect': (
+                f"+{basal_rec['predicted_tir_delta']:.1f} pp TIR"
+                if (basal_rec.get('predicted_tir_delta') or 0.0) > 0
+                else f"Model upside is unclear ({basal_rec['predicted_tir_delta']:.1f} pp TIR)"
+                if basal_rec.get('predicted_tir_delta') is not None else 'Potential TIR improvement'
+            ),
+            'top_evidence': [
+                f"Loop equilibrium basal multiplier is {np.mean(therapy.iob_profile.hourly_mean[4:8]) / max(np.mean(therapy.iob_profile.hourly_mean[1:4]), 0.1):.2f}× from pre-dawn to dawn.",
+                f"Overnight pattern is mixed: {rising_nights} rising, {falling_nights} falling, {flat_nights} flat nights.",
+                basal_rec.get('description') or 'Pipeline recommends a higher overnight basal.',
+            ],
+            'risk': (
+                'Mixed-night behavior and existing hypo burden argue against taking the full jump at once.'
+            ),
+            'automation_alt': (
+                'Check whether dinner absorption or a scheduled evening override can absorb some of the overnight load before a broad basal increase.'
+            ),
+        })
+
+    isf_rec = pipeline_by_action.get('adjust_isf')
+    therapy_isf = therapy_by_category.get('isf')
+    if isf_rec or therapy_isf:
+        isf_conf = _confidence_components(
+            sample_score=min(100, therapy.correction_count / 8 * 100),
+            benefit_score=min(100, abs(((isf_rec or {}).get('predicted_tir_delta') or 0.0)) / 4 * 100 + 10),
+            agreement_score=28 if (isf_rec and therapy_isf) else 50,
+        )
+        profile_isf_text = _fmt_num(therapy.isf_value, ' mg/dL/U', 0)
+        rc_isf_text = _fmt_num(rc_isf, ' mg/dL/U', 0) if rc_isf else 'Insufficient data'
+        correction_target = (
+            'Use a stronger large-dose correction strategy for doses ≥3U'
+            if isf_rec else 'Review correction sensitivity'
+        )
+        decision_cards.append({
+            'title': 'Should profile ISF change, or only large-dose correction behavior?',
+            'state': 'Needs more data before changing',
+            'tone': 'info',
+            'time_block': 'Corrections',
+            'confidence': isf_conf,
+            'current': profile_isf_text,
+            'suggested': correction_target,
+            'expected_effect': (
+                f"+{isf_rec['predicted_tir_delta']:.1f} pp TIR from the pipeline model"
+                if isf_rec and isf_rec.get('predicted_tir_delta') is not None else 'Clarify correction behavior'
+            ),
+            'top_evidence': [
+                isf_rec.get('description') if isf_rec else 'Pipeline detected inefficient large correction doses.',
+                therapy_isf.get('finding') if therapy_isf else 'Therapy analysis estimated effective ISF from correction events.',
+                f"Profile ISF is {profile_isf_text}; response-curve estimate is {rc_isf_text}.",
+            ],
+            'risk': (
+                'Pipeline and therapy methods disagree on direction and magnitude, so a global profile edit could make hypos or over-corrections worse.'
+            ),
+            'automation_alt': (
+                'Prototype this first as a dose-context rule or correction-specific override rather than a full-day profile change.'
+            ),
+        })
+
+    morning_rec = therapy_by_category.get('morning')
+    if morning_rec:
+        morning = next((p for p in therapy.period_analyses if p.name == 'morning'), None)
+        morning_conf = _confidence_components(
+            sample_score=100,
+            benefit_score=78,
+            agreement_score=72,
+        )
+        decision_cards.append({
+            'title': 'Should morning control become more aggressive?',
+            'state': 'Change now',
+            'tone': 'action',
+            'time_block': 'Morning (07:00–12:00)',
+            'confidence': morning_conf,
+            'current': (
+                f"TIR {morning.tir * 100:.0f}%, TAR {morning.tar * 100:.0f}%, mean IOB {morning.mean_iob:.1f}U"
+                if morning else 'Morning period under-performs the rest of the day'
+            ),
+            'suggested': 'Test a morning-specific ISF / aggressiveness change',
+            'expected_effect': 'Reduce persistent morning hyperglycemia without changing the whole profile first',
+            'top_evidence': [
+                morning_rec.get('finding'),
+                morning_rec.get('evidence'),
+                'Loop is already carrying elevated morning IOB, so the issue is not simply missing insulin delivery.',
+            ],
+            'risk': 'Watch for extra lows if the change spills into late morning after food has absorbed.',
+            'automation_alt': (
+                'Favor a scheduled morning automation pattern over asking for more manual breakfast work.'
+            ),
+        })
+
+    dinner_override = pipeline_by_action.get('loop_override_recommendation')
+    if dinner_override:
+        dinner_conf = _confidence_components(
+            sample_score=min(100, max(dinner_meal_count, 12) / 20 * 100),
+            benefit_score=min(100, abs((dinner_override.get('predicted_tir_delta') or 0.0)) / 3 * 100),
+            agreement_score=74,
+        )
+        decision_cards.append({
+            'title': 'Should dinner and late-night coverage be automated?',
+            'state': 'Change now',
+            'tone': 'action',
+            'time_block': 'Dinner / evening',
+            'confidence': dinner_conf,
+            'current': 'No dedicated dinner automation pattern',
+            'suggested': 'Prototype a Dinner Aggressive override (target 100, ISF ratio 0.85)',
+            'expected_effect': (
+                f"+{dinner_override['predicted_tir_delta']:.1f} pp TIR"
+                if dinner_override.get('predicted_tir_delta') is not None else 'Potential evening TIR improvement'
+            ),
+            'top_evidence': [
+                dinner_override.get('description'),
+                f"Detected meals are mostly unannounced, with about {meal_count / max(meta['days'], 1):.1f} meals/day and {uam_pct_value:.0f}% unannounced.",
+                f"At least {dinner_meal_count} detected meals occur in the dinner/evening block.",
+            ],
+            'risk': 'If late-night lows increase, the override window or aggressiveness is too broad.',
+            'automation_alt': 'This is already the automation-first option. It reduces dependence on manual bolus timing.',
+        })
+
+    safety_rec = therapy_by_category.get('safety')
+    if safety_rec:
+        safety_conf = _confidence_components(
+            sample_score=min(100, len(therapy.hypo_events) / 25 * 100),
+            benefit_score=95,
+            agreement_score=86,
+        )
+        decision_cards.append({
+            'title': 'Is it safe to make aggressive changes without review?',
+            'state': 'Unsafe to change without review',
+            'tone': 'danger',
+            'time_block': 'Overnight / fasting',
+            'confidence': safety_conf,
+            'current': f"{therapy.hypo_per_day:.1f} hypos/day, {therapy.serious_hypo_count} serious",
+            'suggested': 'Add a safety guardrail first (for example higher target overnight) before aggressive tightening',
+            'expected_effect': 'Reduce avoidable lows while testing other parameter changes',
+            'top_evidence': [
+                f"Hypo burden is {therapy.hypo_per_day:.1f} events/day with {therapy.serious_hypo_count} readings below 54 mg/dL.",
+                safety_rec.get('evidence'),
+                f"Peak hypo hour is {therapy.peak_hypo_hour}:00, and the fasting period has the highest TBR.",
+            ],
+            'risk': 'Changing basal or ISF aggressively without a guardrail could improve highs while worsening lows.',
+            'automation_alt': 'Use controller targets or time-bound overrides as the first safety mechanism before manual behavior asks.',
+        })
+
+decision_cards = decision_cards[:5]
+
+if canonical_pipeline:
+    priority_map = {1: 'high', 2: 'medium', 3: 'info'}
+    therapy_recs_data = []
+    recs_data = []
+    for rec in pipeline_recs:
+        priority = priority_map.get(rec.get('priority'), 'info')
+        category = (rec.get('parameter') or rec.get('action_type') or 'recommendation').replace('_', ' ')
+        finding = rec.get('description') or category.title()
+        therapy_recs_data.append({
+            'category': category,
+            'priority': priority,
+            'finding': finding,
+            'recommendation': rec.get('rationale') or rec.get('description') or finding,
+            'evidence': rec.get('evidence') or 'Canonical parquet-backed cgmencode recommendation.',
+            'confirmable': 'Review against canonical report bundle.',
+        })
+        if rec.get('parameter'):
+            recs_data.append({
+                'param': rec.get('parameter'),
+                'dir': rec.get('direction') or 'review',
+                'current': rec.get('current_value'),
+                'suggested': rec.get('suggested_value'),
+                'evidence': rec.get('evidence'),
+                'rationale': rec.get('rationale') or rec.get('description'),
+            })
+else:
+    therapy_recs_data = fallback_therapy_recs_data
+    recs_data = fallback_recs_data
 
 # ═════════════════════════════════════════════════════════════════════
 # 4. Build the HTML
@@ -272,8 +926,8 @@ eff_isf = f'{cr.effective_isf:.1f}' if cr.effective_isf else '—'
 isf_disc = f'{cr.isf_discrepancy:.2f}' if cr.isf_discrepancy else '—'
 harm_r2 = f'{pa.harmonic.r2:.3f}' if pa and pa.harmonic else '—'
 sin_r2 = f'{pa.circadian.r2_improvement:.3f}' if pa else '—'
-n_meals = len(mh.meals) if mh else 0
-uam_pct = f'{mh.unannounced_fraction*100:.0f}' if mh else '—'
+n_meals = meal_count
+uam_pct = f'{uam_pct_value:.0f}'
 
 # Color helpers
 def tir_color(v):
@@ -323,6 +977,40 @@ header h1{{font-size:22px;font-weight:600}}
 .panel{{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px}}
 .panel h2{{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}}
 .panel h2 .ico{{font-size:16px}}
+
+/* Decision-support prototype */
+.decision-summary{{display:grid;grid-template-columns:1.3fr .7fr;gap:12px;margin-bottom:12px}}
+.decision-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}}
+.decision-card{{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}}
+.decision-card.warn{{border-color:rgba(210,153,34,.45)}}
+.decision-card.action{{border-color:rgba(63,185,80,.45)}}
+.decision-card.info{{border-color:rgba(88,166,255,.45)}}
+.decision-card.danger{{border-color:rgba(248,81,73,.45)}}
+.decision-top{{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}}
+.decision-title{{font-size:15px;font-weight:600;line-height:1.35}}
+.decision-badges{{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}}
+.badge{{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:600}}
+.badge.state-action{{background:rgba(63,185,80,.14);color:var(--green)}}
+.badge.state-warn{{background:rgba(210,153,34,.16);color:var(--yellow)}}
+.badge.state-info{{background:rgba(88,166,255,.14);color:var(--blue)}}
+.badge.state-danger{{background:rgba(248,81,73,.16);color:var(--red)}}
+.badge.confidence{{background:rgba(188,140,255,.15);color:var(--purple)}}
+.decision-copy{{font-size:13px;color:var(--muted);line-height:1.55}}
+.decision-split{{display:grid;grid-template-columns:1fr 1fr;gap:8px}}
+.decision-stat{{padding:10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04)}}
+.decision-stat .k{{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}}
+.decision-stat .v{{margin-top:4px;font-size:15px;font-weight:600}}
+.decision-evidence{{margin:0;padding-left:18px;font-size:12px;line-height:1.5;color:var(--text)}}
+.decision-evidence li{{margin-bottom:6px}}
+.confidence-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}}
+.confidence-cell{{padding:8px;border-radius:10px;background:rgba(255,255,255,.03);text-align:center}}
+.confidence-cell .k{{display:block;font-size:10px;color:var(--muted);text-transform:uppercase}}
+.confidence-cell .v{{display:block;font-size:16px;font-weight:700;margin-top:2px}}
+.decision-note{{font-size:12px;line-height:1.5;padding:10px;border-radius:10px;background:rgba(255,255,255,.025)}}
+.decision-visual{{border:1px solid rgba(255,255,255,.06);border-radius:10px;overflow:hidden;background:rgba(255,255,255,.02)}}
+.decision-visual img{{display:block;width:100%;height:auto}}
+.decision-visual .cap{{padding:8px 10px;font-size:11px;color:var(--muted);line-height:1.45}}
+@media(max-width:960px){{.decision-summary{{grid-template-columns:1fr}}}}
 
 /* Grid layouts */
 .g2{{display:grid;grid-template-columns:1fr 1fr;gap:12px}}
@@ -418,6 +1106,31 @@ footer{{text-align:center;padding:20px 0;color:var(--muted);font-size:11px;borde
   <div class="m-card"><div class="lbl">Fidelity</div><div class="val" style="font-size:18px;color:{"var(--green)" if fid_grade in ("excellent","good") else "var(--yellow)" if fid_grade=="acceptable" else "var(--red)"}">{fid_grade}</div><div class="sub">RMSE {fid_rmse}</div></div>
 </div>
 
+<!-- ── Decision-support prototype ── -->
+<div class="decision-summary">
+  <div class="panel">
+    <h2><span class="ico">🧭</span>Decisions needing attention now</h2>
+    <p class="decision-copy">
+      Prototype workflow: each card supports a specific parameter or automation decision, shows the current state,
+      the proposed next step, and why the report is confident or uncertain. Time-block decisions are shown first.
+    </p>
+  </div>
+  <div class="panel">
+    <h2><span class="ico">✅</span>Supported decision states</h2>
+    <div class="decision-badges">
+      <span class="badge state-action">Change now</span>
+      <span class="badge state-warn">Stage a smaller change first</span>
+      <span class="badge state-info">Needs more data before changing</span>
+      <span class="badge state-danger">Unsafe without review</span>
+    </div>
+    <p class="decision-copy" style="margin-top:10px">
+      The prototype also prefers automation-first options when meals are unannounced or when manual burden is already low.
+    </p>
+  </div>
+</div>
+
+<div class="decision-grid" id="decisionCards"></div>
+
 <!-- ── Glucose Trace ── -->
 <div class="panel">
   <h2><span class="ico">📈</span>Glucose Trace</h2>
@@ -478,6 +1191,14 @@ footer{{text-align:center;padding:20px 0;color:var(--muted);font-size:11px;borde
 
   <!-- ── Insights Tab (Therapy-focused) ── -->
   <div id="tab-therapy" class="tab-content on">
+    <div style="margin-bottom:18px">
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+        <span>🧭</span> Decision-support cards
+        <span style="font-size:11px;color:var(--muted);font-weight:400">{len(decision_cards)} prototype decisions</span>
+      </h3>
+      <div class="decision-grid" id="decisionCardsTab"></div>
+    </div>
+
     <div style="margin-bottom:16px">
       <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px">
         <span>🎯</span> Therapy Recommendations
@@ -685,6 +1406,7 @@ const CR_CF = {json.dumps(cr_cf_data)};
 const CORR_ISF = {json.dumps(corr_isf_data)};
 const PROFILE_ISF = {therapy.isf_value:.0f};
 const RC_ISF = {f"{rc_isf:.0f}" if rc_isf else "null"};
+const DECISION_CARDS = {json.dumps(decision_cards)};
 
 // ══════════════════════════════════════════════════════════
 // Chart defaults
@@ -694,6 +1416,76 @@ Chart.defaults.borderColor = '#30363d';
 Chart.defaults.font.family = "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
 Chart.defaults.font.size = 11;
 const gridOpt = {{color:'rgba(255,255,255,.04)'}};
+
+// ══════════════════════════════════════════════════════════
+// Decision-support cards
+// ══════════════════════════════════════════════════════════
+function renderDecisionCards(targetId){{
+  const host=document.getElementById(targetId);
+  if(!host) return;
+  if(DECISION_CARDS.length===0){{
+    host.innerHTML='<div class="decision-card info"><div class="decision-title">No decision cards were generated for this report.</div></div>';
+    return;
+  }}
+  host.innerHTML='';
+  DECISION_CARDS.forEach(card=>{{
+    const div=document.createElement('div');
+    div.className='decision-card '+(card.tone || 'info');
+    const stateCls = card.tone === 'danger' ? 'state-danger'
+      : card.tone === 'warn' ? 'state-warn'
+      : card.tone === 'action' ? 'state-action'
+      : 'state-info';
+    const evidence = (card.top_evidence || []).filter(Boolean).map(item=>`<li>${{item}}</li>`).join('');
+    const visual = card.visual_path ? `
+      <div class="decision-visual">
+        <img src="${{card.visual_path}}" alt="${{card.title}} evidence">
+        <div class="cap">${{card.visual_caption || ''}}</div>
+      </div>
+    ` : '';
+    div.innerHTML = `
+      <div class="decision-top">
+        <div>
+          <div class="decision-title">${{card.title}}</div>
+          <div class="decision-badges">
+            <span class="badge ${{stateCls}}">${{card.state}}</span>
+            <span class="badge confidence">Confidence ${{card.confidence.label}} · ${{card.confidence.total}}/100</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="decision-copy" style="font-size:11px;text-transform:uppercase;letter-spacing:.05em">Time block</div>
+          <div style="font-size:12px;font-weight:600">${{card.time_block}}</div>
+        </div>
+      </div>
+      <div class="decision-split">
+        <div class="decision-stat">
+          <div class="k">Current</div>
+          <div class="v">${{card.current}}</div>
+        </div>
+        <div class="decision-stat">
+          <div class="k">Suggested next step</div>
+          <div class="v">${{card.suggested}}</div>
+        </div>
+      </div>
+      <div class="decision-note"><b>Expected effect:</b> ${{card.expected_effect}}</div>
+      <div>
+        <div class="decision-copy" style="margin-bottom:6px">Top evidence</div>
+        <ul class="decision-evidence">${{evidence}}</ul>
+      </div>
+      ${{visual}}
+      <div class="confidence-grid">
+        <div class="confidence-cell"><span class="k">Support</span><span class="v">${{card.confidence.support}}</span></div>
+        <div class="confidence-cell"><span class="k">Benefit vs risk</span><span class="v">${{card.confidence.benefit_risk}}</span></div>
+        <div class="confidence-cell"><span class="k">Method agreement</span><span class="v">${{card.confidence.agreement}}</span></div>
+      </div>
+      <div class="decision-note"><b>Primary risk:</b> ${{card.risk}}</div>
+      <div class="decision-note"><b>Automation-first option:</b> ${{card.automation_alt}}</div>
+    `;
+    host.appendChild(div);
+  }});
+}}
+
+renderDecisionCards('decisionCards');
+renderDecisionCards('decisionCardsTab');
 
 // ══════════════════════════════════════════════════════════
 // Glucose chart
