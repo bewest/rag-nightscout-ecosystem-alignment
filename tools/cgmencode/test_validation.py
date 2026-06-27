@@ -742,7 +742,7 @@ class TestAutoresearchAgent(unittest.TestCase):
     def test_all_directions_defined(self):
         self.assertEqual(
             set(DIRECTIONS.keys()),
-            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling', 'settings-precision-vs-accuracy', 'controller-aware-causality', 'controller-state-stratification', 'stratified-deconfounding-audit', 'meal-independent-cr-proxies', 'meal-event-discovery-audition', 'novel-meal-discovery-techniques'},
+            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling', 'settings-precision-vs-accuracy', 'controller-aware-causality', 'controller-state-stratification', 'stratified-deconfounding-audit', 'meal-independent-cr-proxies', 'meal-event-discovery-audition', 'novel-meal-discovery-techniques', 'hybrid-technique-evidence'},
         )
 
     def test_build_research_plan_structure(self):
@@ -1179,6 +1179,12 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertEqual(plan['direction'], 'novel-meal-discovery-techniques')
         self.assertIn('novel_meal_discovery_summary', plan)
         self.assertTrue(plan['novel_meal_discovery_summary']['candidates'])
+
+    def test_hybrid_technique_evidence_builds_summary(self):
+        plan = build_research_plan('hybrid-technique-evidence')
+        self.assertEqual(plan['direction'], 'hybrid-technique-evidence')
+        self.assertIn('hybrid_technique_evidence_summary', plan)
+        self.assertEqual(plan['hybrid_technique_evidence_summary']['verdict'], 'promising-but-not-validated')
 
 
 # =============================================================================

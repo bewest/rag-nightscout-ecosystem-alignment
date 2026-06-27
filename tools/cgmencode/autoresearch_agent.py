@@ -595,6 +595,35 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'Identify which one should be prototyped first.',
         ),
     ),
+    'hybrid-technique-evidence': DirectionSpec(
+        key='hybrid-technique-evidence',
+        title='Hybrid Technique Evidence Status',
+        default_question=(
+            'Do we already have enough data-science evidence to say the hybrid UAM plus throughput/balance technique is a good candidate, or is it still mainly a research hypothesis?'
+        ),
+        search_terms=('hybrid', 'throughput', 'balance', 'UAM', 'meal-independent', 'precision', 'accuracy', 'validation'),
+        candidate_files=(
+            'externals/experiments/autoresearch/20260627-155045_meal-event-discovery-audition.md',
+            'externals/experiments/autoresearch/20260627-155147_novel-meal-discovery-techniques.md',
+            'externals/experiments/autoresearch/20260627-154653_meal-independent-cr-proxies.md',
+            'externals/experiments/exp443_throughput_balance.json',
+            'docs/10-domain/carb-absorption-comparison.md',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.autoresearch_agent --direction meal-event-discovery-audition',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction novel-meal-discovery-techniques',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction controller-aware-causality',
+        ),
+        hypotheses=(
+            'We have enough evidence to treat the hybrid detector as the best current candidate technique, but not enough to call it validated.',
+            'The missing evidence is not whether the components are promising, but whether the combined detector improves downstream CR recommendations under safety-aware evaluation.',
+        ),
+        success_criteria=(
+            'State what evidence we already have.',
+            'State what evidence is still missing.',
+            'Conclude whether the technique is validated, promising, or speculative.',
+        ),
+    ),
 }
 
 COUNTER_CAUSAL_PATTERNS: tuple[dict[str, Any], ...] = (
@@ -1489,6 +1518,31 @@ def _build_novel_meal_discovery_summary() -> dict[str, Any]:
     }
 
 
+def _build_hybrid_technique_evidence_summary() -> dict[str, Any]:
+    exp443 = _load_json_if_exists('externals/experiments/exp443_throughput_balance.json') or {}
+    return {
+        'verdict': 'promising-but-not-validated',
+        'evidence_we_have': [
+            'Throughput plus balance already separates meal-like from correction/stable windows better than the weaker single-feature baselines at useful horizons.',
+            'UAM / deviation-style logic is already a realistic meal-like trigger family in the ecosystem and does not require announced meals.',
+            'Controller-aware and stratified-causality memos already show why combining a fast trigger with a controller-separation layer is the right causal shape.',
+        ],
+        'evidence_still_missing': [
+            'No direct experiment yet runs a combined hybrid detector and compares it against the current standalone techniques.',
+            'No downstream CR recommendation benchmark yet shows that the hybrid detector improves precision and accuracy together.',
+            'No safety validation yet scores hybrid-derived CR support against validated hypo or controller-state strata.',
+        ],
+        'supporting_metrics': {
+            'throughput_balance_sil_2h': exp443.get('aggregate', {}).get('2h', {}).get('mean_sil_2d'),
+            'throughput_balance_sil_6h': exp443.get('aggregate', {}).get('6h', {}).get('mean_sil_2d'),
+            'throughput_balance_sil_12h': exp443.get('aggregate', {}).get('12h', {}).get('mean_sil_2d'),
+        },
+        'next_data_science_step': (
+            'Implement a hybrid detector experiment that emits meal-like windows from UAM triggers, re-ranks them with throughput/balance features, and scores downstream CR recommendations against validated hypo and controller-state audits.'
+        ),
+    }
+
+
 def _counter_causal_audit(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     for pattern in COUNTER_CAUSAL_PATTERNS:
@@ -1643,6 +1697,8 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['meal_event_discovery_audition'] = _build_meal_event_discovery_audition()
         if spec.key == 'novel-meal-discovery-techniques':
             plan['novel_meal_discovery_summary'] = _build_novel_meal_discovery_summary()
+        if spec.key == 'hybrid-technique-evidence':
+            plan['hybrid_technique_evidence_summary'] = _build_hybrid_technique_evidence_summary()
         span.set_outputs({
             'evidence_count': len(evidence),
             'command_count': len(spec.recommended_commands),
@@ -1855,6 +1911,18 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
             lines.append(f"  - priority: {row.get('priority')}")
             lines.append(f"  - what is new: {row.get('what_is_new')}")
             lines.append(f"  - capability unlocked: {row.get('capability_unlocked')}")
+    if plan.get('hybrid_technique_evidence_summary'):
+        summary = plan['hybrid_technique_evidence_summary']
+        lines.extend(['', '## Hybrid Technique Evidence Summary', ''])
+        lines.append(f"- verdict: {summary.get('verdict')}")
+        lines.append(f"- next data-science step: {summary.get('next_data_science_step')}")
+        lines.append(f"- supporting metrics: {json.dumps(summary.get('supporting_metrics', {}), sort_keys=True)}")
+        lines.extend(['', '### Evidence We Have', ''])
+        for item in summary.get('evidence_we_have', []):
+            lines.append(f"- {item}")
+        lines.extend(['', '### Evidence Still Missing', ''])
+        for item in summary.get('evidence_still_missing', []):
+            lines.append(f"- {item}")
     lines.extend(['', '## Success Criteria', ''])
     lines.extend([f'- {item}' for item in plan['success_criteria']])
     lines.extend(['', '## Next Steps', ''])
