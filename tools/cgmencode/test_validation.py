@@ -24,6 +24,7 @@ Usage:
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -53,6 +54,8 @@ from tools.cgmencode.objective_validators import (
     RetrievalValidator,
 )
 from tools.cgmencode.experiment_lib import ExperimentContext, set_seed
+from tools.cgmencode import mlflow_utils
+from tools.cgmencode.autoresearch_agent import build_research_plan, DIRECTIONS
 
 
 # =============================================================================
@@ -627,6 +630,76 @@ class TestExperimentContextValidation(unittest.TestCase):
             self.assertEqual(loaded['f1'], 0.939)
             self.assertEqual(loaded['validation_metadata']['seed'], 42)
             self.assertEqual(loaded['validation_metadata']['framework_version'], '1.0')
+
+    def test_experiment_context_save_with_mlflow_disabled(self):
+        """MLflow-disabled environments should still save JSON normally."""
+        with tempfile.TemporaryDirectory() as d, mock.patch.dict(
+            os.environ, {'CGMENCODE_DISABLE_MLFLOW': '1'}, clear=False
+        ):
+            ctx = ExperimentContext('EXP-T8', d)
+            ctx.result['mae'] = 12.3
+            result = ctx.save('test.json')
+
+            self.assertEqual(result['mae'], 12.3)
+            with open(os.path.join(d, 'test.json')) as f:
+                loaded = json.load(f)
+            self.assertEqual(loaded['mae'], 12.3)
+
+
+class TestMlflowUtils(unittest.TestCase):
+    """Tests for MLflow helper configuration and no-op fallback."""
+
+    def test_default_tracking_uri_uses_externals_dir(self):
+        with mock.patch.dict(os.environ, {'MLFLOW_TRACKING_URI': ''}, clear=False):
+            uri = mlflow_utils.get_tracking_uri()
+        self.assertTrue(uri.startswith('sqlite:///'))
+        self.assertIn('externals/mlflow/mlflow.db', uri)
+
+    def test_start_run_disabled_is_noop(self):
+        with mock.patch.dict(os.environ, {'CGMENCODE_DISABLE_MLFLOW': '1'}, clear=False):
+            self.assertFalse(mlflow_utils.has_active_run())
+            with mlflow_utils.start_run(run_name='disabled-test') as run:
+                self.assertIsNone(run)
+            self.assertFalse(mlflow_utils.has_active_run())
+
+
+class TestAutoresearchAgent(unittest.TestCase):
+    """Tests for the structured autoresearch pilot runner."""
+
+    def test_all_directions_defined(self):
+        self.assertEqual(
+            set(DIRECTIONS.keys()),
+            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping'},
+        )
+
+    def test_build_research_plan_structure(self):
+        plan = build_research_plan('parameter-extraction', question='test question')
+        self.assertEqual(plan['direction'], 'parameter-extraction')
+        self.assertEqual(plan['question'], 'test question')
+        self.assertTrue(plan['hypotheses'])
+        self.assertTrue(plan['recommended_commands'])
+        self.assertTrue(plan['success_criteria'])
+        self.assertIn('evidence', plan)
+        self.assertIn('counter_causal_findings', plan)
+        self.assertIn('prioritized_follow_up', plan)
+
+    def test_deconfounding_plan_finds_counter_causal_patterns(self):
+        plan = build_research_plan('deconfounding-audit')
+        self.assertTrue(plan['counter_causal_findings'])
+        patterns = {item['pattern'] for item in plan['counter_causal_findings']}
+        self.assertTrue(
+            {'observed-outcome-collider', 'pooled-aggregation-dominance', 'composite-risk-collapse'} & patterns
+        )
+        self.assertIsNotNone(plan['prioritized_follow_up'])
+        self.assertIn(
+            plan['prioritized_follow_up']['command'],
+            plan['recommended_commands'],
+        )
+
+    def test_proxy_scoping_plan_builds_matrix(self):
+        plan = build_research_plan('proxy-scoping')
+        self.assertIn('proxy_use_case_matrix', plan)
+        self.assertTrue(plan['proxy_use_case_matrix'])
 
 
 # =============================================================================

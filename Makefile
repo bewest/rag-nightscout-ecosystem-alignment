@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke
+.PHONY: bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
 
 # Default target
 help:
@@ -69,6 +69,8 @@ help:
 	@echo "  make terrarium-info - Show summary of terrarium contents"
 	@echo "  make terrarium-tiny - Build tiny smoke-test terrarium (~800KB)"
 	@echo "  make terrarium-tiny-smoke - Smoke test: load tiny + verify"
+	@echo "  make mlflow-ui      - Launch MLflow UI against externals/mlflow/mlflow.db"
+	@echo "  make mlflow-server  - Launch local MLflow tracking server on port 5000"
 	@echo ""
 	@echo "  make help       - Show this help message"
 	@echo ""
@@ -185,6 +187,19 @@ unit-tests:
 cgmencode-tests:
 	@echo "Running cgmencode ML pipeline tests..."
 	@python3 tools/cgmencode/test_cgmencode.py
+
+mlflow-ui:
+	@echo "Starting MLflow UI at http://127.0.0.1:5001"
+	@mkdir -p externals/mlflow/artifacts
+	@python3 -m mlflow ui --backend-store-uri "sqlite:///$$(pwd)/externals/mlflow/mlflow.db" --host 127.0.0.1 --port 5001
+
+mlflow-server:
+	@echo "Starting MLflow server at http://127.0.0.1:5000"
+	@mkdir -p externals/mlflow/artifacts
+	@python3 -m mlflow server \
+		--backend-store-uri "sqlite:///$$(pwd)/externals/mlflow/mlflow.db" \
+		--artifacts-destination "$$(pwd)/externals/mlflow/artifacts" \
+		--host 127.0.0.1 --port 5000
 
 # Production-pipeline tests, partitioned by speed (see
 # tools/cgmencode/production/conftest.py for the unit/integration split).

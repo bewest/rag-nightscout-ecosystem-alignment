@@ -36,6 +36,7 @@ from tools.cgmencode.experiment_lib import (
     set_seed,
     train_forecast,
 )
+from tools.cgmencode.mlflow_utils import log_artifact, log_dict, log_metrics, start_run
 from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
 
 
@@ -128,69 +129,94 @@ def run_single_config(config, feature_mode, patient_paths, data_cache, args):
 
     use_semantic = (feature_mode != 8)
     seed_results = {}
-
-    for seed in args.seeds:
-        set_seed(seed)
-        model = create_model(
-            'grouped', input_dim=input_dim,
-            d_model=config['d_model'], nhead=config['nhead'],
-            num_layers=config['num_layers'],
-            semantic_groups=use_semantic,
-        )
-        # Override dropout if specified
-        if 'dropout' in config:
-            for module in model.modules():
-                if isinstance(module, torch.nn.Dropout):
-                    module.p = config['dropout']
-
-        n_params = sum(p.numel() for p in model.parameters())
-
-        ckpt_path = os.path.join(
-            args.output_dir,
-            f'{args.name}_{cache_key}_{label}_s{seed}.pth')
-
-        best_val, epochs_run = train_forecast(
-            model, train_ds, val_ds, ckpt_path,
-            label=f'{cache_key}-{label}-s{seed}',
-            lr=config.get('lr', 1e-3),
-            epochs=args.epochs,
-            batch=args.batch,
-            patience=args.patience,
-            weight_decay=config.get('weight_decay', 1e-5),
-        )
-
-        val_mse = forecast_mse(model, val_ds, mask_future=True)
-        val_mae = np.sqrt(val_mse) * 400.0
-
-        seed_results[str(seed)] = {
-            'best_val_loss': float(best_val),
-            'epochs_run': epochs_run,
-            'forecast_mse': float(val_mse),
-            'mae_mgdl': round(float(val_mae), 2),
-        }
-        print(f'    {label} s{seed}: MAE={val_mae:.1f} mg/dL ({epochs_run} epochs)')
-
-    mses = [s['forecast_mse'] for s in seed_results.values()]
-    maes = [s['mae_mgdl'] for s in seed_results.values()]
-
-    return {
-        'config': config,
-        'feature_mode': feature_mode,
-        'input_dim': input_dim,
-        'n_params': n_params,
-        'n_train': len(train_ds),
-        'n_val': len(val_ds),
-        'persistence_mse': float(persist),
-        'seeds': seed_results,
-        'aggregate': {
-            'mean_mse': round(float(np.mean(mses)), 6),
-            'std_mse': round(float(np.std(mses)), 6),
-            'mean_mae': round(float(np.mean(maes)), 1),
-            'std_mae': round(float(np.std(maes)), 1),
-            'vs_persistence': round(float(1.0 - np.mean(mses) / persist) * 100, 1),
+    result = None
+    with start_run(
+        run_name=f'{args.name}-{cache_key}-{label}',
+        nested=True,
+        tags={'runner': 'run_experiments', 'feature_mode': cache_key, 'config_label': label},
+        params={
+            'sweep_name': args.name,
+            'feature_mode': feature_mode,
+            'input_dim': input_dim,
+            'patients_dir': args.patients_dir,
+            'n_train': len(train_ds),
+            'n_val': len(val_ds),
+            **config,
         },
-        'elapsed_seconds': round(time.time() - t0, 1),
-    }
+    ):
+        for seed in args.seeds:
+            with start_run(
+                run_name=f'{cache_key}-{label}-s{seed}',
+                nested=True,
+                tags={'runner': 'run_experiments.seed', 'feature_mode': cache_key},
+                params={'seed': seed, **config},
+            ):
+                set_seed(seed)
+                model = create_model(
+                    'grouped', input_dim=input_dim,
+                    d_model=config['d_model'], nhead=config['nhead'],
+                    num_layers=config['num_layers'],
+                    semantic_groups=use_semantic,
+                )
+                # Override dropout if specified
+                if 'dropout' in config:
+                    for module in model.modules():
+                        if isinstance(module, torch.nn.Dropout):
+                            module.p = config['dropout']
+
+                n_params = sum(p.numel() for p in model.parameters())
+
+                ckpt_path = os.path.join(
+                    args.output_dir,
+                    f'{args.name}_{cache_key}_{label}_s{seed}.pth')
+
+                best_val, epochs_run = train_forecast(
+                    model, train_ds, val_ds, ckpt_path,
+                    label=f'{cache_key}-{label}-s{seed}',
+                    lr=config.get('lr', 1e-3),
+                    epochs=args.epochs,
+                    batch=args.batch,
+                    patience=args.patience,
+                    weight_decay=config.get('weight_decay', 1e-5),
+                )
+
+                val_mse = forecast_mse(model, val_ds, mask_future=True)
+                val_mae = np.sqrt(val_mse) * 400.0
+
+                seed_results[str(seed)] = {
+                    'best_val_loss': float(best_val),
+                    'epochs_run': epochs_run,
+                    'forecast_mse': float(val_mse),
+                    'mae_mgdl': round(float(val_mae), 2),
+                }
+                log_metrics(seed_results[str(seed)], prefix='seed')
+                log_artifact(ckpt_path, artifact_path='checkpoints')
+                log_dict(seed_results[str(seed)], f'seeds/{cache_key}_{label}_s{seed}.json')
+                print(f'    {label} s{seed}: MAE={val_mae:.1f} mg/dL ({epochs_run} epochs)')
+
+        mses = [s['forecast_mse'] for s in seed_results.values()]
+        maes = [s['mae_mgdl'] for s in seed_results.values()]
+        result = {
+            'config': config,
+            'feature_mode': feature_mode,
+            'input_dim': input_dim,
+            'n_params': n_params,
+            'n_train': len(train_ds),
+            'n_val': len(val_ds),
+            'persistence_mse': float(persist),
+            'seeds': seed_results,
+            'aggregate': {
+                'mean_mse': round(float(np.mean(mses)), 6),
+                'std_mse': round(float(np.std(mses)), 6),
+                'mean_mae': round(float(np.mean(maes)), 1),
+                'std_mae': round(float(np.std(maes)), 1),
+                'vs_persistence': round(float(1.0 - np.mean(mses) / persist) * 100, 1),
+            },
+            'elapsed_seconds': round(time.time() - t0, 1),
+        }
+        log_metrics(result['aggregate'], prefix='aggregate')
+        log_dict(result, f'configs/{cache_key}_{label}.json')
+    return result
 
 
 def main():
@@ -250,53 +276,73 @@ def main():
     all_results = {}
     total_t0 = time.time()
 
-    for feat_mode in args.features:
+    with start_run(
+        run_name=args.name,
+        tags={'runner': 'run_experiments', 'mode': args.sweep},
+        params={
+            'sweep': args.sweep,
+            'features': args.features,
+            'patients_dir': args.patients_dir,
+            'output_dir': args.output_dir,
+            'epochs': args.epochs,
+            'batch': args.batch,
+            'patience': args.patience,
+            'seeds': args.seeds,
+            'device': str(device),
+            'n_patients': len(patient_paths),
+        },
+    ):
+        for feat_mode in args.features:
+            print(f'\n{"="*60}')
+            print(f'  {feat_mode}-Feature Sweep ({len(configs)} configs × {len(args.seeds)} seeds)')
+            print(f'{"="*60}')
+
+            for i, config in enumerate(configs):
+                print(f'\n  [{i+1}/{len(configs)}] {config["label"]} '
+                      f'(d={config["d_model"]}, L={config["num_layers"]}, '
+                      f'drop={config.get("dropout", 0.1)}, wd={config.get("weight_decay", 1e-5)})')
+                result = run_single_config(
+                    config, feat_mode, patient_paths, data_cache, args)
+                if result:
+                    key = f'{feat_mode}f_{config["label"]}'
+                    all_results[key] = result
+
+        # Save all results
+        output_path = os.path.join(args.output_dir, f'{args.name}_results.json')
+        with open(output_path, 'w') as f:
+            json.dump(all_results, f, indent=2, default=str)
+        log_artifact(output_path, artifact_path='results')
+        log_dict(all_results, f'results/{args.name}_results.json')
+        print(f'\nResults saved: {output_path}')
+
+        # Rank by MAE
         print(f'\n{"="*60}')
-        print(f'  {feat_mode}-Feature Sweep ({len(configs)} configs × {len(args.seeds)} seeds)')
+        print(f'  RANKING (by MAE)')
         print(f'{"="*60}')
 
-        for i, config in enumerate(configs):
-            print(f'\n  [{i+1}/{len(configs)}] {config["label"]} '
-                  f'(d={config["d_model"]}, L={config["num_layers"]}, '
-                  f'drop={config.get("dropout", 0.1)}, wd={config.get("weight_decay", 1e-5)})')
-            result = run_single_config(
-                config, feat_mode, patient_paths, data_cache, args)
-            if result:
-                key = f'{feat_mode}f_{config["label"]}'
-                all_results[key] = result
+        ranked = sorted(all_results.items(), key=lambda x: x[1]['aggregate']['mean_mae'])
+        for rank, (key, res) in enumerate(ranked, 1):
+            agg = res['aggregate']
+            cfg = res['config']
+            print(f'  #{rank}: {key}  MAE={agg["mean_mae"]:.1f}±{agg["std_mae"]:.1f} mg/dL  '
+                  f'({agg["vs_persistence"]:.1f}% vs persist)  '
+                  f'{res["n_params"]:,} params')
 
-    # Save all results
-    output_path = os.path.join(args.output_dir, f'{args.name}_results.json')
-    with open(output_path, 'w') as f:
-        json.dump(all_results, f, indent=2, default=str)
-    print(f'\nResults saved: {output_path}')
+        best_key = ranked[0][0]
+        best = ranked[0][1]
+        log_metrics(best['aggregate'], prefix='best')
+        print(f'\n  BEST: {best_key}')
+        print(f'  MAE={best["aggregate"]["mean_mae"]:.1f} mg/dL '
+              f'({best["aggregate"]["vs_persistence"]:.1f}% vs persistence)')
+        print(f'  Config: d_model={best["config"]["d_model"]}, '
+              f'layers={best["config"]["num_layers"]}, '
+              f'dropout={best["config"].get("dropout", 0.1)}, '
+              f'wd={best["config"].get("weight_decay", 1e-5)}')
 
-    # Rank by MAE
-    print(f'\n{"="*60}')
-    print(f'  RANKING (by MAE)')
-    print(f'{"="*60}')
-
-    ranked = sorted(all_results.items(), key=lambda x: x[1]['aggregate']['mean_mae'])
-    for rank, (key, res) in enumerate(ranked, 1):
-        agg = res['aggregate']
-        cfg = res['config']
-        print(f'  #{rank}: {key}  MAE={agg["mean_mae"]:.1f}±{agg["std_mae"]:.1f} mg/dL  '
-              f'({agg["vs_persistence"]:.1f}% vs persist)  '
-              f'{res["n_params"]:,} params')
-
-    best_key = ranked[0][0]
-    best = ranked[0][1]
-    print(f'\n  BEST: {best_key}')
-    print(f'  MAE={best["aggregate"]["mean_mae"]:.1f} mg/dL '
-          f'({best["aggregate"]["vs_persistence"]:.1f}% vs persistence)')
-    print(f'  Config: d_model={best["config"]["d_model"]}, '
-          f'layers={best["config"]["num_layers"]}, '
-          f'dropout={best["config"].get("dropout", 0.1)}, '
-          f'wd={best["config"].get("weight_decay", 1e-5)}')
-
-    total_time = time.time() - total_t0
-    print(f'\n  Total time: {total_time/60:.1f} minutes')
-    print(f'  Finished: {datetime.now().isoformat()}')
+        total_time = time.time() - total_t0
+        log_metrics({'total_time_minutes': total_time / 60.0, 'n_runs': len(all_results)})
+        print(f'\n  Total time: {total_time/60:.1f} minutes')
+        print(f'  Finished: {datetime.now().isoformat()}')
 
 
 if __name__ == '__main__':

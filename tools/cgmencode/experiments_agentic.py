@@ -45,6 +45,7 @@ from .experiment_lib import (
     resolve_patient_paths,
 )
 from .real_data_adapter import load_multipatient_nightscout
+from .mlflow_utils import log_artifact, log_dict, log_metrics
 from .schema import (
     NUM_FEATURES,
     NUM_FEATURES_EXTENDED,
@@ -77,6 +78,9 @@ def save_results(result, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w') as f:
         json.dump(result, f, indent=2, cls=_NumpyEncoder)
+    log_metrics(result, prefix='result')
+    log_dict(result, f'results/{os.path.basename(path)}')
+    log_artifact(path, artifact_path='results')
     print(f"  Results -> {path}")
 
 

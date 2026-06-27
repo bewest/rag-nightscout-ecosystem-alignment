@@ -216,6 +216,125 @@ Raw data → AI-ready vectors via three critical steps:
 - `experiment_lib.py` — `ExperimentContext` with validation integration (`record_seed`, `record_split`, `attach_multi_seed_report`)
 - `run_pattern_experiments.py` — Multi-scale pattern experiments (EXP-286+), `load_multiscale_data_3way()` for held-out test sets
 - `experiments_agentic.py` — Agentic experiment runner (EXP-328+)
+- `mlflow_utils.py` — Shared MLflow tracking helpers for sweeps, validated runs, and report artifacts
+
+### MLflow Tracking
+
+MLflow support is wired into the canonical experiment entrypoints:
+
+- `run_experiments.py` — hyperparameter sweeps with per-config and per-seed runs
+- `run_experiment.py` — legacy + agentic registry-driven experiments
+- `run_pattern_experiments.py` — pattern/FDA experiment registry
+- `experiments_validated.py` — validated multi-seed baselines and follow-ons
+- `run_validation_report.py` — logs the population dashboard, figures, report, and summary JSON
+
+By default, tracking writes to a git-ignored local SQLite tracking database at
+`externals/mlflow/mlflow.db` and stores artifacts under
+`externals/mlflow/artifacts/`. To send runs to a tracking server instead, set
+`MLFLOW_TRACKING_URI=http://127.0.0.1:5000` before running experiments.
+
+```bash
+# Install dependencies
+cd tools/cgmencode
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Browse the local dashboard
+make mlflow-ui
+
+# Optional: run a local tracking server
+make mlflow-server
+export MLFLOW_TRACKING_URI=http://127.0.0.1:5000
+```
+
+#### Replay strategy
+
+Start by replaying the stable, registry-driven experiment families rather than
+every historical one-off `exp_*.py` script:
+
+1. `python3 -m tools.cgmencode.run_experiments --sweep quick --name mlflow-quick`
+2. `python3 -m tools.cgmencode.run_pattern_experiments --list`
+3. `python3 -m tools.cgmencode.experiments_validated <key>`
+4. `PYTHONPATH=tools python3 tools/cgmencode/run_validation_report.py`
+
+That gives MLflow a useful dashboard quickly:
+
+- forecast sweeps and best-model rankings
+- pattern experiment comparisons
+- validated multi-seed baselines with confidence intervals
+- the custom clinical dashboard PNG as an artifact
+
+Historical ad hoc `exp_*.py` analyses can be backfilled selectively later if
+they are still active baselines or cited in current docs.
+
+#### Tracking vs GenAI classification matrix
+
+Most current work in this workspace belongs in MLflow's standard experiment
+tracking model, not the GenAI tab. The GenAI surface is the right fit only for
+workflows that actually involve prompts, retrieval, tool calls, agent traces,
+or human feedback on free-form outputs.
+
+| Workspace area | MLflow classification | GenAI tab? | Notes |
+|---|---|---|---|
+| `run_experiments.py` forecast sweeps | Experiment → runs → metrics/models/artifacts | No | Canonical hyperparameter sweeps |
+| `run_pattern_experiments.py` | Experiment → runs → metrics/artifacts | No | Retrieval, drift, override, hypo, FDA are classical ML/analytics here |
+| `experiments_validated.py` | Evaluation / validation runs | No | Multi-seed, 3-way split, CI-heavy validation |
+| `run_validation_report.py` | Artifact-heavy evaluation/report run | No | Logs figures, report markdown, and summary JSON |
+| XGBoost experiments (`exp_clinical_1151.py` and similar) | Classical ML runs / model artifacts | No | Tree-based regressors/classifiers belong in standard tracking |
+| oref0/Loop/AAPS conformance vectors | Dataset / benchmark / artifacts | No | Validation corpus and benchmark inputs, not LLM traces |
+| cross-algorithm equivalence harness | Benchmark / evaluation experiment | No | Structured algorithm comparison |
+| `EXP-2895-2900_AUTORESEARCH_PIPELINE.md` templates | Potential future agent workflow | Maybe | GenAI only if these become real prompt/tool-driven research agents |
+| future RAG over docs/specs/code | Traces + prompts + eval | Yes | Retrieval and answer generation fit GenAI well |
+| future LLM report generation / hypothesis generation | Traces + prompts + feedback | Yes | Especially if reviewed by humans |
+
+Use this rule of thumb:
+
+- **Tracking**: "Did this model predict, classify, retrieve, rank, or validate well?"
+- **GenAI**: "What did this agent ask, retrieve, call, reason over, and produce?"
+
+For this repository today, the default should be:
+
+1. **Tracking lane** for forecasting, XGBoost, CNN/Transformer, drift, retrieval,
+   conformance, and benchmark work.
+2. **GenAI lane** only for autoresearch agents, RAG systems, prompt-driven
+   report generation, or other workflows where traces and prompt lineage matter.
+
+#### Autoresearch pilot
+
+`tools/cgmencode/autoresearch_agent.py` is a minimal decision-support pilot that
+logs an autoresearch workflow to MLflow while staying local-first and key-free.
+It does four things:
+
+1. retrieves relevant evidence from local docs, prior results, and experiment code
+2. assembles a structured research memo for one decision-support direction
+3. runs a counter-causal audit that flags risky reasoning patterns such as pooled aggregation, composite-score collapse, observed-outcome collider bias, and controller-mediated feedback
+4. logs the memo plus nested MLflow spans so the workflow can be inspected as a GenAI-style pilot
+
+Initial directions:
+
+- `parameter-extraction` — infer effective parameters/settings from history
+- `intervention-scoring` — rank candidate interventions by likely TIR benefit and risk
+- `deconfounding-audit` — audit controller/user/physiology confounding and recommend a cleaner follow-up
+
+Run a pilot direction:
+
+```bash
+export MLFLOW_TRACKING_URI=http://127.0.0.1:5000
+python3 -m tools.cgmencode.autoresearch_agent --direction parameter-extraction
+python3 -m tools.cgmencode.autoresearch_agent --direction intervention-scoring
+python3 -m tools.cgmencode.autoresearch_agent --direction deconfounding-audit
+```
+
+Outputs are written to `externals/experiments/autoresearch/` as both JSON and
+markdown memos. The current pilot does not require LLM API keys because it is a
+structured retrieval-and-planning prototype. If you later replace the memo
+assembly with model-driven reasoning, the same directions can move further into
+the full MLflow GenAI surface.
+
+When counter-causal patterns are detected, the pilot also emits a
+**Prioritized Follow-Up** section that redirects the next command toward a safer
+validation or generalization check rather than just listing options.
 
 ### Tests
 - `test_cgmencode.py` — 46 test classes covering data pipeline, models, training

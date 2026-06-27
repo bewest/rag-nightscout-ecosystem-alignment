@@ -4,3 +4,4 @@ torch
 matplotlib
 scipy
 scikit-fda>=0.9.1
+mlflow

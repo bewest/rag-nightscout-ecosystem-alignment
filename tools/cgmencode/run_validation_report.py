@@ -23,6 +23,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT / 'tools'))
 
+from cgmencode.mlflow_utils import log_artifact, log_artifacts, log_dict, log_metrics, start_run
+
 PATIENTS_DIR = ROOT / 'externals' / 'ns-data' / 'patients'
 VIS_DIR = ROOT / 'visualizations' / 'clinical-validation'
 REPORT_PATH = ROOT / 'docs' / '60-research' / 'clinical-inference-vignettes-2026-04-09.md'
@@ -683,65 +685,82 @@ def generate_report(results):
 if __name__ == '__main__':
     VIS_DIR.mkdir(parents=True, exist_ok=True)
 
-    print("=== Loading patients ===")
-    patients = load_all_patients()
-    print(f"Loaded {len(patients)} patients\n")
+    with start_run(
+        run_name='validation-report',
+        tags={'runner': 'run_validation_report'},
+        params={
+            'patients_dir': str(PATIENTS_DIR),
+            'visualizations_dir': str(VIS_DIR),
+            'report_path': str(REPORT_PATH),
+        },
+    ):
+        print("=== Loading patients ===")
+        patients = load_all_patients()
+        print(f"Loaded {len(patients)} patients\n")
 
-    print("=== Running pipeline ===")
-    results = run_all(patients)
-    print()
+        print("=== Running pipeline ===")
+        results = run_all(patients)
+        print()
 
-    print("=== Generating visualizations ===")
-    fig_population_dashboard(results)
-    fig_circadian_grid(results)
-    fig_meal_archetype_analysis(results)
-    fig_fidelity_detail(results)
-    fig_recommendations_summary(results)
+        print("=== Generating visualizations ===")
+        fig_population_dashboard(results)
+        fig_circadian_grid(results)
+        fig_meal_archetype_analysis(results)
+        fig_fidelity_detail(results)
+        fig_recommendations_summary(results)
 
-    print("\n=== Generating report ===")
-    report = generate_report(results)
-    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(REPORT_PATH, 'w') as f:
-        f.write(report)
-    print(f"Report: {REPORT_PATH}")
+        print("\n=== Generating report ===")
+        report = generate_report(results)
+        REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with open(REPORT_PATH, 'w') as f:
+            f.write(report)
+        print(f"Report: {REPORT_PATH}")
 
-    # Save raw results as JSON for the private report
-    results_json = {}
-    for pid, r in results.items():
-        if r['result'] is None:
-            results_json[pid] = {'error': r['error']}
-            continue
-        res = r['result']
-        cr = res.clinical_report
-        fid = getattr(cr, 'fidelity', None)
-        mh = res.meal_history
-        results_json[pid] = {
-            'days': r['patient'].days_of_data,
-            'n_samples': r['patient'].n_samples,
-            'units': r['patient'].profile.units,
-            'tir': cr.tir,
-            'tbr': cr.tbr,
-            'tar': cr.tar,
-            'ada_grade': cr.grade.value,
-            'fidelity_grade': fid.fidelity_grade.value if fid else None,
-            'rmse': fid.rmse if fid else None,
-            'correction_energy': fid.correction_energy if fid else None,
-            'effective_isf': cr.effective_isf,
-            'profile_isf': cr.profile_isf,
-            'isf_discrepancy': cr.isf_discrepancy,
-            'n_meals': len(mh.meals) if mh else 0,
-            'hypo_risk': res.risk.hypo_2h_probability if res.risk else None,
-            'latency_ms': r['elapsed_ms'],
-            'n_warnings': len(res.warnings),
-            'harmonic_r2': (res.patterns.harmonic.r2
-                            if res.patterns and res.patterns.harmonic else None),
-            'sinusoidal_r2': (res.patterns.circadian.r2_improvement
-                              if res.patterns and res.patterns.circadian else None),
-        }
+        # Save raw results as JSON for the private report
+        results_json = {}
+        for pid, r in results.items():
+            if r['result'] is None:
+                results_json[pid] = {'error': r['error']}
+                continue
+            res = r['result']
+            cr = res.clinical_report
+            fid = getattr(cr, 'fidelity', None)
+            mh = res.meal_history
+            results_json[pid] = {
+                'days': r['patient'].days_of_data,
+                'n_samples': r['patient'].n_samples,
+                'units': r['patient'].profile.units,
+                'tir': cr.tir,
+                'tbr': cr.tbr,
+                'tar': cr.tar,
+                'ada_grade': cr.grade.value,
+                'fidelity_grade': fid.fidelity_grade.value if fid else None,
+                'rmse': fid.rmse if fid else None,
+                'correction_energy': fid.correction_energy if fid else None,
+                'effective_isf': cr.effective_isf,
+                'profile_isf': cr.profile_isf,
+                'isf_discrepancy': cr.isf_discrepancy,
+                'n_meals': len(mh.meals) if mh else 0,
+                'hypo_risk': res.risk.hypo_2h_probability if res.risk else None,
+                'latency_ms': r['elapsed_ms'],
+                'n_warnings': len(res.warnings),
+                'harmonic_r2': (res.patterns.harmonic.r2
+                                if res.patterns and res.patterns.harmonic else None),
+                'sinusoidal_r2': (res.patterns.circadian.r2_improvement
+                                  if res.patterns and res.patterns.circadian else None),
+            }
 
-    json_path = VIS_DIR / 'validation_results.json'
-    with open(json_path, 'w') as f:
-        json.dump(results_json, f, indent=2, default=str)
-    print(f"Results JSON: {json_path}")
+        json_path = VIS_DIR / 'validation_results.json'
+        with open(json_path, 'w') as f:
+            json.dump(results_json, f, indent=2, default=str)
+        log_metrics({
+            'n_patients': len(patients),
+            'n_successful': sum(1 for item in results.values() if item['result'] is not None),
+        })
+        log_dict(results_json, 'reports/validation_results.json')
+        log_artifacts(VIS_DIR, artifact_path='visualizations/clinical-validation')
+        log_artifact(REPORT_PATH, artifact_path='reports')
+        log_artifact(json_path, artifact_path='reports')
+        print(f"Results JSON: {json_path}")
 
-    print("\nDone!")
+        print("\nDone!")

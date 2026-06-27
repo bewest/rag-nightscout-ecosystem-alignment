@@ -55,6 +55,7 @@ from .real_data_adapter import (
     load_multipatient_nightscout,
 )
 from .evaluate import evaluate_model, persistence_baseline
+from .mlflow_utils import log_artifact, log_dict, log_metrics, start_run
 from .physics_model import (
     compute_residual_windows, compute_residual_windows_uva,
     residual_to_glucose, load_uva_predictions, align_uva_to_grid,
@@ -81,6 +82,9 @@ def save_results(results, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w') as f:
         json.dump(results, f, indent=2)
+    log_metrics(results, prefix='result')
+    log_dict(results, f'results/{os.path.basename(path)}')
+    log_artifact(path, artifact_path='results')
     print(f'  Results → {path}')
 
 
@@ -4151,10 +4155,46 @@ def main():
     exp = args.experiment
     if exp == 'all':
         # Run legacy experiments only (agentic have dependencies)
-        for name, func in _build_legacy_registry().items():
-            func(args)
+        with start_run(
+            run_name='legacy-all',
+            tags={'runner': 'run_experiment', 'mode': 'all'},
+            params={
+                'experiment': exp,
+                'real_data': args.real_data,
+                'patients_dir': args.patients_dir,
+                'output_dir': args.output_dir,
+                'epochs': args.epochs,
+                'batch': args.batch,
+                'window': args.window,
+                'patience': args.patience,
+                'device': str(args.resolved_device),
+            },
+        ):
+            for name, func in _build_legacy_registry().items():
+                with start_run(
+                    run_name=name,
+                    nested=True,
+                    tags={'runner': 'run_experiment.child'},
+                    params={'experiment': name},
+                ):
+                    func(args)
     elif exp in registry:
-        registry[exp](args)
+        with start_run(
+            run_name=exp,
+            tags={'runner': 'run_experiment'},
+            params={
+                'experiment': exp,
+                'real_data': args.real_data,
+                'patients_dir': args.patients_dir,
+                'output_dir': args.output_dir,
+                'epochs': args.epochs,
+                'batch': args.batch,
+                'window': args.window,
+                'patience': args.patience,
+                'device': str(args.resolved_device),
+            },
+        ):
+            registry[exp](args)
     else:
         print(f'Unknown experiment: {exp}')
         sys.exit(1)

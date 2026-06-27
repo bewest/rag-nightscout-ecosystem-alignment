@@ -33,6 +33,7 @@ from .evaluate import (
     evaluate_model, persistence_baseline,
     time_in_range, glycemia_risk_index, clinical_summary, override_accuracy,
 )
+from .mlflow_utils import has_active_run, log_artifact, log_dict, log_metrics, log_params, start_run
 from .schema import (
     NUM_FEATURES, NUM_FEATURES_EXTENDED,
     NORMALIZATION_SCALES, EXTENDED_FEATURE_NAMES,
@@ -87,6 +88,16 @@ class ExperimentContext:
             **extra,
         }
         self._validation_metadata = {}
+        self._mlflow_run = None
+        self._owns_mlflow_run = False
+        self._mlflow_run = start_run(
+            run_name=exp_id,
+            nested=has_active_run(),
+            tags={'runner': 'ExperimentContext', 'experiment_id': exp_id},
+            params={'output_dir': str(self.output_dir)},
+        )
+        self._mlflow_run.__enter__()
+        self._owns_mlflow_run = True
         print('=' * 60)
         print(f'{exp_id}')
         print('=' * 60)
@@ -168,7 +179,19 @@ class ExperimentContext:
         path = self.output_dir / filename
         with open(path, 'w') as f:
             json.dump(self.result, f, indent=2, default=str)
+        log_params({
+            'experiment_id': self.exp_id,
+            'output_dir': str(self.output_dir),
+            'result_file': filename,
+        })
+        if self._validation_metadata:
+            log_params(self._validation_metadata, prefix='validation')
+        log_metrics(self.result, prefix='result')
+        log_dict(self.result, f'results/{filename}')
+        log_artifact(path, artifact_path='results')
         print(f'\n  Results → {path}  ({self.result["elapsed_seconds"]}s)')
+        if self._owns_mlflow_run and self._mlflow_run is not None:
+            self._mlflow_run.__exit__(None, None, None)
         return self.result
 
 

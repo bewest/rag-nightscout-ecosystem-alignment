@@ -21,6 +21,7 @@ from .experiment_lib import (
     set_seed, get_device, set_device, resolve_patient_paths,
     run_validated_classification, ExperimentContext,
 )
+from .mlflow_utils import start_run
 from .run_pattern_experiments import (
     load_multiscale_data, load_multiscale_data_3way, SCALE_CONFIG,
     save_results,
@@ -1773,7 +1774,20 @@ def run_experiment(key, args):
     print(f"\n{'='*60}")
     print(f"Running: {exp_id} — {desc}")
     print(f"{'='*60}\n")
-    return fn(args)
+    with start_run(
+        run_name=key,
+        tags={'runner': 'experiments_validated', 'experiment_id': exp_id},
+        params={
+            'experiment_key': key,
+            'experiment_id': exp_id,
+            'description': desc,
+            'patients_dir': args.patients_dir,
+            'output_dir': args.output_dir,
+            'epochs': args.epochs,
+            'device': str(args.device),
+        },
+    ):
+        return fn(args)
 
 
 if __name__ == '__main__':

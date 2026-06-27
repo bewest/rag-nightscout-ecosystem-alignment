@@ -43,6 +43,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
+from .mlflow_utils import log_artifact, log_dict, log_metrics, start_run
 
 
 # ── Utilities ──────────────────────────────────────────────────────────
@@ -52,6 +53,9 @@ def save_results(result, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w') as f:
         json.dump(result, f, indent=2, default=str)
+    log_metrics(result, prefix='result')
+    log_dict(result, f'results/{os.path.basename(path)}')
+    log_artifact(path, artifact_path='results')
     print(f"Saved: {path}")
 
 
@@ -7492,10 +7496,24 @@ def main():
     print()
 
     os.makedirs(args.output_dir, exist_ok=True)
-    t0 = time.time()
-    result = func(args)
-    elapsed = time.time() - t0
-    print(f"\nCompleted in {elapsed:.1f}s")
+    with start_run(
+        run_name=args.experiment,
+        tags={'runner': 'run_pattern_experiments', 'experiment_id': exp_id},
+        params={
+            'experiment_key': args.experiment,
+            'experiment_id': exp_id,
+            'description': desc,
+            'patients_dir': args.patients_dir,
+            'output_dir': args.output_dir,
+            'device': args.device,
+            'epochs': args.epochs,
+        },
+    ):
+        t0 = time.time()
+        result = func(args)
+        elapsed = time.time() - t0
+        log_metrics({'elapsed_seconds': elapsed})
+        print(f"\nCompleted in {elapsed:.1f}s")
 
 
 if __name__ == '__main__':
