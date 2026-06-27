@@ -318,6 +318,7 @@ The pilot now also logs:
 
 - a structured GenAI-style trace artifact under `genai/traces/`
 - a deterministic evaluation summary under `genai/evals/`
+- explicit claim-level reasoning corrections that rewrite misleading causal lines into safer, auditable follow-up claims
 - a registration-ready model candidate artifact under `models/candidates/` for the `parameter-extraction` direction
 - a runnable MLflow pyfunc-style parameter-extraction model plus local packaging artifacts for the same direction
 - a learned parameter bundle derived from `visualizations/clinical-validation/validation_results.json`, used as the pyfunc model's primary state when available
@@ -335,6 +336,7 @@ Initial directions:
 - `settings-followup` — turn settings adequacy, basal-period decomposition, and correction taxonomy into actionable next-step guidance
 - `titration-safety-followup` — combine staged titration artifacts with validated hypo guardrails to assess whether safety-oriented follow-up selection improved
 - `settings-extraction-special-handling` — surface why basal, ISF, and carb-ratio extraction need different handling rules and which of those rules are already encoded in tracked artifacts
+- `settings-precision-vs-accuracy` — break down, for each setting, which research closes variance/coverage limits versus which research closes causal or controller-aware accuracy limits
 
 For carb-ratio work, the tracked workflow now treats **announced-meal-dependent**
 artifacts as provisional evidence only. Meal-conditioned CR outputs can inform

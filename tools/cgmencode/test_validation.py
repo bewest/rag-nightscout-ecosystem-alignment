@@ -742,7 +742,7 @@ class TestAutoresearchAgent(unittest.TestCase):
     def test_all_directions_defined(self):
         self.assertEqual(
             set(DIRECTIONS.keys()),
-            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling'},
+            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling', 'settings-precision-vs-accuracy'},
         )
 
     def test_build_research_plan_structure(self):
@@ -755,12 +755,15 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertIn('evidence', plan)
         self.assertIn('counter_causal_findings', plan)
         self.assertIn('prioritized_follow_up', plan)
+        self.assertIn('reasoning_corrections', plan)
 
     def test_evaluate_research_plan_returns_readiness(self):
         plan = build_research_plan('parameter-extraction', question='test question')
         evaluation = evaluate_research_plan(plan)
         self.assertIn('readiness', evaluation)
         self.assertIn('readiness_score', evaluation)
+        self.assertIn('reasoning_correction_count', evaluation)
+        self.assertIn('reasoning_correction_score', evaluation)
         self.assertGreaterEqual(evaluation['evidence_count'], 1)
         self.assertTrue(0.0 <= evaluation['readiness_score'] <= 1.0)
 
@@ -1082,14 +1085,23 @@ class TestAutoresearchAgent(unittest.TestCase):
     def test_deconfounding_plan_finds_counter_causal_patterns(self):
         plan = build_research_plan('deconfounding-audit')
         self.assertTrue(plan['counter_causal_findings'])
+        self.assertTrue(plan['reasoning_corrections'])
         patterns = {item['pattern'] for item in plan['counter_causal_findings']}
         self.assertTrue(
             {'observed-outcome-collider', 'pooled-aggregation-dominance', 'composite-risk-collapse'} & patterns
         )
+        corrected_patterns = {item['pattern'] for item in plan['reasoning_corrections']}
+        self.assertTrue(patterns & corrected_patterns)
         self.assertIsNotNone(plan['prioritized_follow_up'])
         self.assertIn(
             plan['prioritized_follow_up']['command'],
             plan['recommended_commands'],
+        )
+        self.assertTrue(
+            any(
+                item['replacement_test'] == plan['prioritized_follow_up']['command']
+                for item in plan['reasoning_corrections']
+            )
         )
 
     def test_proxy_scoping_plan_builds_matrix(self):
@@ -1120,6 +1132,13 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertIn('settings_extraction_summary', plan)
         self.assertIn('tracked_support', plan['settings_extraction_summary'])
         self.assertIn('announced_meal_dependency', plan['settings_extraction_summary'])
+
+    def test_settings_precision_vs_accuracy_builds_summary(self):
+        plan = build_research_plan('settings-precision-vs-accuracy')
+        self.assertEqual(plan['direction'], 'settings-precision-vs-accuracy')
+        self.assertIn('settings_precision_accuracy_summary', plan)
+        self.assertIn('basal', plan['settings_precision_accuracy_summary'])
+        self.assertIn('shared_guardrail', plan['settings_precision_accuracy_summary'])
 
 
 # =============================================================================

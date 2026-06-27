@@ -385,6 +385,35 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'Name the best next command for improving settings extraction coverage.',
         ),
     ),
+    'settings-precision-vs-accuracy': DirectionSpec(
+        key='settings-precision-vs-accuracy',
+        title='Settings Precision vs Accuracy Research Needs',
+        default_question=(
+            'For basal, ISF, and carb ratio, summarize what research is needed to improve precision versus what research is needed to improve accuracy of recommendations.'
+        ),
+        search_terms=('precision', 'accuracy', 'basal', 'isf', 'carb ratio', 'controller', 'egp', 'safety wall', 'meal size'),
+        candidate_files=(
+            'externals/experiments/parameter-models/effective-parameter-extractor_settings_handling.json',
+            'docs/60-research/wave11-safety-precision-report-2026-04-20.md',
+            'docs/60-research/wave12-multifactor-isolation-report-2026-04-20.md',
+            'docs/60-research/wave13-controller-dynamics-report-2026-04-20.md',
+            'tools/cgmencode/parameter_model_bundle.py',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.autoresearch_agent --direction settings-extraction-special-handling',
+            'python3 -m tools.cgmencode.build_effective_parameter_extractor',
+            'python3 -m tools.cgmencode.experiments_validated validate-hypo',
+        ),
+        hypotheses=(
+            'Basal recommendations are closest to actionable accuracy, while ISF and carb ratio still face larger accuracy limits than precision limits.',
+            'For ISF and carb ratio, the next research gains come more from causal and controller-aware framing than from narrower confidence intervals alone.',
+        ),
+        success_criteria=(
+            'State the main precision bottleneck for each setting.',
+            'State the main accuracy bottleneck for each setting.',
+            'Name the highest-value next research step for each setting.',
+        ),
+    ),
 }
 
 COUNTER_CAUSAL_PATTERNS: tuple[dict[str, Any], ...] = (
@@ -419,6 +448,33 @@ PATTERN_COMMAND_PREFERENCES: dict[str, tuple[str, ...]] = {
     'pooled-aggregation-dominance': ('leave-patient-out', 'rolling-isf', 'validate-override'),
     'observed-outcome-collider': ('validate-override', 'rolling-isf', 'leave-patient-out'),
     'controller-mediated-feedback': ('temporal-override', 'leave-patient-out', 'insulin-drift'),
+}
+
+REASONING_CORRECTION_LIBRARY: dict[str, dict[str, Any]] = {
+    'composite-risk-collapse': {
+        'misleading_claim': 'A single composite score is sufficient to rank intervention quality or physiology adequacy.',
+        'corrected_claim': 'Keep orthogonal signals separate first, then prove that any combined score preserves downstream decision value.',
+        'confidence_action': 'downgrade-until-factorized',
+        'hypothesis_terms': ('score', 'composite', 'rank', 'intervention'),
+    },
+    'pooled-aggregation-dominance': {
+        'misleading_claim': 'A pooled cohort average can be treated as if it were a patient-level causal effect.',
+        'corrected_claim': 'Use per-patient or stratified summaries before trusting the cohort result; pooled effects are descriptive until that check passes.',
+        'confidence_action': 'downgrade-until-stratified',
+        'hypothesis_terms': ('per-patient', 'pooled', 'cohort', 'parameter extraction'),
+    },
+    'observed-outcome-collider': {
+        'misleading_claim': 'Observed closed-loop outcomes directly identify whether an intervention or setting is beneficial.',
+        'corrected_claim': 'Treat observed outcomes as controller-mediated; prefer counterfactual proxies, controller lineage splits, or validated causal surfaces.',
+        'confidence_action': 'downgrade-until-counterfactual',
+        'hypothesis_terms': ('counterfactual', 'observed', 'benefit', 'validation', 'settings'),
+    },
+    'controller-mediated-feedback': {
+        'misleading_claim': 'Controller actions can be interpreted as independent evidence of physiology or recommendation quality.',
+        'corrected_claim': 'Audit treatment timing and sensitivity because controller actions may be responses to the same state being evaluated.',
+        'confidence_action': 'downgrade-until-timing-audit',
+        'hypothesis_terms': ('controller', 'override', 'feedback', 'drift', 'hypo'),
+    },
 }
 
 
@@ -715,6 +771,58 @@ def _build_settings_extraction_summary() -> dict[str, Any]:
     }
 
 
+def _build_settings_precision_accuracy_summary() -> dict[str, Any]:
+    settings_handling = _load_json_if_exists(
+        'externals/experiments/parameter-models/effective-parameter-extractor_settings_handling.json'
+    ) or {}
+    exp322 = _load_json_if_exists('externals/experiments/exp_322v_validated.json') or {}
+
+    hypo_guardrail = exp322.get('multi_seed', {}).get('aggregate', {})
+    return {
+        'basal': {
+            'current_state': 'Best current candidate for actionable tuning because personalized EGP and period-wise decomposition greatly improved calibration.',
+            'precision_research_needed': [
+                'Stabilize per-period drift estimates over biweekly windows and repeated fasting segments.',
+                'Improve residual-noise handling so dawn-period and circadian recommendations have tighter uncertainty.',
+            ],
+            'accuracy_research_needed': [
+                'Validate that personalized EGP and period-wise basal changes improve downstream safety endpoints, not just calibration scores.',
+                'Separate controller-driven temporary basal behavior from persistent underlying basal need.',
+            ],
+            'highest_value_next_step': 'Tie period-wise basal recommendations to validated hypo and other held-out safety outcomes after capped staged titration.',
+        },
+        'isf': {
+            'current_state': 'Reasonably predictive when using correction-denominator framing, but direct “true ISF” recovery is accuracy-limited by controller safety margin and indication bias.',
+            'precision_research_needed': [
+                'Increase qualifying-event coverage with better event selection and more stable denominator rules.',
+                'Use leave-patient-out or hierarchical pooling to reduce variance without collapsing to biased regression estimates.',
+            ],
+            'accuracy_research_needed': [
+                'Model controller feedback explicitly or use counterfactual/controller-safe targets instead of raw observational recovery.',
+                'Distinguish controller operating ISF from physiological ISF rather than forcing one recommendation to serve both roles.',
+            ],
+            'highest_value_next_step': 'Build controller-aware or counterfactual ISF targets and evaluate bounded recommendation rules against validated safety endpoints.',
+        },
+        'carb_ratio': {
+            'current_state': 'Precision can improve after multi-factor subtraction, but accuracy and promotion-readiness remain weak because current CR evidence still depends on meal-announcement artifacts.',
+            'precision_research_needed': [
+                'Find meal-independent carb-impact proxies that cluster repeated meal-like excursions without relying on logged carbs.',
+                'Quantify meal-size or absorption-regime effects with latent-meal/UAM-style cohorts rather than announced-meal cohorts.',
+            ],
+            'accuracy_research_needed': [
+                'Replace announced-meal dependence with unannounced or weakly supervised meal detection so CR recommendations reflect realistic workflow data.',
+                'Separate controller-added meal insulin from underlying carb sensitivity before promoting any CR setting changes.',
+            ],
+            'highest_value_next_step': 'Develop a meal-independent carb-impact extraction path and compare its recommendations against safety and trajectory outcomes before treating CR as promotion-ready.',
+        },
+        'shared_guardrail': {
+            'validated_hypo_auc_roc_mean': hypo_guardrail.get('auc_roc', {}).get('mean'),
+            'validated_hypo_specificity_mean': hypo_guardrail.get('specificity', {}).get('mean'),
+            'principle': 'Precision work narrows uncertainty, but accuracy work must be judged against controller-aware causal framing and validated safety endpoints.',
+        },
+    }
+
+
 def _counter_causal_audit(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     for pattern in COUNTER_CAUSAL_PATTERNS:
@@ -769,6 +877,46 @@ def _prioritize_command(
     }
 
 
+def _matching_hypotheses(
+    pattern_name: str,
+    hypotheses: list[str],
+) -> list[str]:
+    template = REASONING_CORRECTION_LIBRARY.get(pattern_name, {})
+    terms = tuple(str(term).lower() for term in template.get('hypothesis_terms', ()))
+    if terms:
+        matched = [
+            hypothesis for hypothesis in hypotheses
+            if any(term in hypothesis.lower() for term in terms)
+        ]
+        if matched:
+            return matched[:2]
+    return hypotheses[:1]
+
+
+def _build_reasoning_corrections(
+    hypotheses: list[str],
+    counter_causal_findings: list[dict[str, Any]],
+    prioritized_follow_up: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    corrections: list[dict[str, Any]] = []
+    for finding in counter_causal_findings:
+        template = REASONING_CORRECTION_LIBRARY.get(finding['pattern'], {})
+        corrections.append({
+            'pattern': finding['pattern'],
+            'misleading_claim': template.get(
+                'misleading_claim',
+                f"Treat the {finding['pattern']} signal as decision-grade without additional audit.",
+            ),
+            'corrected_claim': template.get('corrected_claim', finding['mitigation']),
+            'confidence_action': template.get('confidence_action', 'downgrade-until-reviewed'),
+            'affected_hypotheses': _matching_hypotheses(finding['pattern'], hypotheses),
+            'replacement_test': prioritized_follow_up.get('command') if prioritized_follow_up else None,
+            'evidence_refs': finding.get('evidence_refs', []),
+            'mitigation': finding['mitigation'],
+        })
+    return corrections
+
+
 def build_research_plan(direction: str, question: str | None = None) -> dict[str, Any]:
     if direction not in DIRECTIONS:
         raise KeyError(f'Unknown direction: {direction}')
@@ -797,6 +945,11 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['recommended_commands'],
             plan['counter_causal_findings'],
         )
+        plan['reasoning_corrections'] = _build_reasoning_corrections(
+            plan['hypotheses'],
+            plan['counter_causal_findings'],
+            plan['prioritized_follow_up'],
+        )
         if spec.key == 'intervention-scoring':
             sweep = _load_recent_sweep_summary()
             if sweep:
@@ -809,6 +962,8 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['titration_safety_summary'] = _build_titration_safety_summary()
         if spec.key == 'settings-extraction-special-handling':
             plan['settings_extraction_summary'] = _build_settings_extraction_summary()
+        if spec.key == 'settings-precision-vs-accuracy':
+            plan['settings_precision_accuracy_summary'] = _build_settings_precision_accuracy_summary()
         span.set_outputs({
             'evidence_count': len(evidence),
             'command_count': len(spec.recommended_commands),
@@ -854,6 +1009,18 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
             lines.append(f"- **{finding['pattern']}**: {finding['risk']}")
             lines.append(f"  - mitigation: {finding['mitigation']}")
             lines.append(f"  - evidence: {', '.join(finding['evidence_refs'])}")
+    if plan.get('reasoning_corrections'):
+        lines.extend(['', '## Corrected Reasoning', ''])
+        for correction in plan['reasoning_corrections']:
+            lines.append(f"- **{correction['pattern']}**")
+            lines.append(f"  - misleading claim: {correction['misleading_claim']}")
+            lines.append(f"  - corrected claim: {correction['corrected_claim']}")
+            lines.append(f"  - confidence action: {correction['confidence_action']}")
+            if correction.get('replacement_test'):
+                lines.append(f"  - replacement test: `{correction['replacement_test']}`")
+            if correction.get('affected_hypotheses'):
+                lines.append(f"  - affected hypotheses: {'; '.join(correction['affected_hypotheses'])}")
+            lines.append(f"  - evidence: {', '.join(correction['evidence_refs'])}")
     if 'recent_sweep' in plan:
         lines.extend(['', '## Recent Sweep Summary', ''])
         lines.append(f"- Best config: `{plan['recent_sweep']['best_key']}`")
@@ -894,6 +1061,17 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
         lines.append(f"- capability gap: {summary.get('capability_gap')}")
         for caution in summary.get('combined_cautions', []):
             lines.append(f"- caution: {caution}")
+    if plan.get('settings_precision_accuracy_summary'):
+        summary = plan['settings_precision_accuracy_summary']
+        lines.extend(['', '## Settings Precision vs Accuracy Summary', ''])
+        for key in ('basal', 'isf', 'carb_ratio'):
+            row = summary.get(key, {})
+            lines.append(f"- **{key}**: {row.get('current_state')}")
+            lines.append(f"  - precision research: {'; '.join(row.get('precision_research_needed', []))}")
+            lines.append(f"  - accuracy research: {'; '.join(row.get('accuracy_research_needed', []))}")
+            lines.append(f"  - next step: {row.get('highest_value_next_step')}")
+        if summary.get('shared_guardrail'):
+            lines.append(f"- shared guardrail: {json.dumps(summary['shared_guardrail'], sort_keys=True)}")
     lines.extend(['', '## Success Criteria', ''])
     lines.extend([f'- {item}' for item in plan['success_criteria']])
     lines.extend(['', '## Next Steps', ''])
@@ -909,6 +1087,8 @@ def evaluate_research_plan(plan: dict[str, Any]) -> dict[str, Any]:
     hypothesis_count = len(plan.get('hypotheses', []))
     success_criteria_count = len(plan.get('success_criteria', []))
     counter_causal_count = len(plan.get('counter_causal_findings', []))
+    reasoning_corrections = plan.get('reasoning_corrections', [])
+    correction_count = len(reasoning_corrections)
     prioritized_follow_up = plan.get('prioritized_follow_up')
 
     evidence_coverage = min(1.0, len(evidence) / max(1, hypothesis_count * 2))
@@ -917,6 +1097,10 @@ def evaluate_research_plan(plan: dict[str, Any]) -> dict[str, Any]:
         0.5 if counter_causal_count else 0.0
     )
     retrieval_diversity = min(1.0, len(evidence_refs) / max(1, hypothesis_count))
+    correction_score = 1.0 if counter_causal_count == 0 else min(
+        1.0,
+        correction_count / max(1, counter_causal_count),
+    )
     readiness_score = round(
         0.4 * evidence_coverage
         + 0.25 * command_coverage
@@ -940,11 +1124,13 @@ def evaluate_research_plan(plan: dict[str, Any]) -> dict[str, Any]:
         'recommended_command_count': command_count,
         'success_criteria_count': success_criteria_count,
         'counter_causal_count': counter_causal_count,
+        'reasoning_correction_count': correction_count,
         'has_prioritized_follow_up': bool(prioritized_follow_up),
         'evidence_coverage_score': round(evidence_coverage, 3),
         'command_coverage_score': round(command_coverage, 3),
         'retrieval_diversity_score': round(retrieval_diversity, 3),
         'counter_causal_audit_score': round(counter_causal_score, 3),
+        'reasoning_correction_score': round(correction_score, 3),
         'readiness_score': readiness_score,
         'readiness': readiness,
     }
@@ -1068,6 +1254,7 @@ def _build_trace_payload(
         },
         'audit': {
             'counter_causal_findings': plan.get('counter_causal_findings', []),
+            'reasoning_corrections': plan.get('reasoning_corrections', []),
             'prioritized_follow_up': plan.get('prioritized_follow_up'),
         },
         'evaluation': evaluation,
@@ -1201,12 +1388,14 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 'recommended_command_count': len(plan['recommended_commands']),
                 'hypothesis_count': len(plan['hypotheses']),
                 'counter_causal_count': len(plan['counter_causal_findings']),
+                'reasoning_correction_count': len(plan.get('reasoning_corrections', [])),
                 'prioritized_follow_up_score': (
                     plan['prioritized_follow_up']['score'] if plan.get('prioritized_follow_up') else 0
                 ),
                 'readiness_score': evaluation['readiness_score'],
                 'evidence_coverage_score': evaluation['evidence_coverage_score'],
                 'retrieval_diversity_score': evaluation['retrieval_diversity_score'],
+                'reasoning_correction_score': evaluation['reasoning_correction_score'],
                 'model_schedule_coverage': (
                     model_evaluation['descriptive']['schedule_coverage_fraction']
                     if model_evaluation else 0
