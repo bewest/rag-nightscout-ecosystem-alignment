@@ -12,6 +12,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Hybrid Meal Detector Prototype (2026-06-27)
+
+Implemented the first runnable meal-independent hybrid detector experiment for `cgmencode`, combining short-horizon rise/UAM-style trigger features, medium-horizon throughput and balance features, and controller-context features under leave-one-patient-out evaluation.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Hybrid detector experiment | `tools/cgmencode/exp_hybrid_meal_detector_3446.py` | A multiclass leave-one-patient-out model can combine trigger, throughput, balance, and controller-context features into a substantially stronger meal-like detector than any single component |
+| Repro wrapper integration | `tools/cgmencode/run_research_reproduction.py` | The hybrid detector now runs through the same MLflow-friendly reproduction surface as other standalone physiology experiments |
+
+**Key Findings**:
+- The hybrid model clearly outperformed the standalone components on held-out patients: meal F1 rose to about **0.62** versus **0.33** for throughput-only and **0.33** for trigger-only.
+- The hybrid detector also materially improved meal precision to about **0.64** while retaining recall around **0.71**, supporting the hypothesis that multi-timescale/controller-aware fusion is better than any single proxy family.
+- This is strong evidence for a good candidate technique, but not yet a promotion-ready CR pathway because downstream CR recommendation scoring and safety validation still need to be wired on top.
+
+**Source Files Analyzed**:
+- `tools/cgmencode/exp_hybrid_meal_detector_3446.py`
+- `tools/cgmencode/exp_metabolic_flux.py`
+- `tools/cgmencode/exp_metabolic_441.py`
+- `externals/experiments/exp291_uam_detection.json`
+- `externals/experiments/exp443_throughput_balance.json`
+- `externals/experiments/exp583_correction_event_taxonomy.json`
+
+---
+
 ## Autosens, Autotune, and Controller-Aware Usefulness (2026-06-27)
 
 Refreshed the autosens/autotune comparison with source-backed reasons for why these methods do not generalize consistently across groups, and documented the narrower but stronger case for controller-aware decision support and settings extraction.

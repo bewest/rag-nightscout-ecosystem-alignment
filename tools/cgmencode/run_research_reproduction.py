@@ -89,6 +89,13 @@ CASES: dict[str, ResearchCase] = {
         artifact_paths=('externals/experiments/exp584_biweekly_settings_tracking.json',),
         env=(('PYTHONPATH', 'tools'),),
     ),
+    'hybrid-meal-detector': ResearchCase(
+        key='hybrid-meal-detector',
+        title='Hybrid UAM and throughput meal detector',
+        description='Benchmarks a leave-one-patient-out hybrid detector that combines short-horizon rise features with throughput, balance, and controller-context features.',
+        command=('python3', 'tools/cgmencode/exp_hybrid_meal_detector_3446.py'),
+        artifact_paths=('externals/experiments/exp3446_hybrid_meal_detector.json',),
+    ),
 }
 
 
