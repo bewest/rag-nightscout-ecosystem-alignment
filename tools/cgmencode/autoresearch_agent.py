@@ -624,6 +624,37 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'Conclude whether the technique is validated, promising, or speculative.',
         ),
     ),
+    'hybrid-prototype-plan': DirectionSpec(
+        key='hybrid-prototype-plan',
+        title='Hybrid Detector Prototype Plan',
+        default_question=(
+            'Define the first prototype experiment for the hybrid UAM plus throughput/balance detector, including stages, scoring metrics, and promotion gates.'
+        ),
+        search_terms=('hybrid', 'UAM', 'throughput', 'balance', 'validated hypo', 'controller-state', 'promotion'),
+        candidate_files=(
+            'externals/experiments/autoresearch/20260627-160203_hybrid-technique-evidence.md',
+            'externals/experiments/autoresearch/20260627-155045_meal-event-discovery-audition.md',
+            'externals/experiments/autoresearch/20260627-152336_stratified-deconfounding-audit.md',
+            'externals/experiments/exp291_uam_detection.json',
+            'externals/experiments/exp443_throughput_balance.json',
+            'externals/experiments/exp583_correction_event_taxonomy.json',
+            'externals/experiments/exp_322v_validated.json',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.autoresearch_agent --direction hybrid-technique-evidence',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction stratified-deconfounding-audit',
+            'python3 -m tools.cgmencode.experiments_validated validate-hypo',
+        ),
+        hypotheses=(
+            'A staged detector with UAM-trigger, throughput/balance reranking, and controller-state filtering is the most testable first hybrid prototype.',
+            'Promotion should require not just better meal-like event quality, but better downstream CR-support behavior under safety-aware evaluation.',
+        ),
+        success_criteria=(
+            'Name the prototype stages in order.',
+            'Define the key evaluation metrics.',
+            'State clear promotion gates and failure modes.',
+        ),
+    ),
 }
 
 COUNTER_CAUSAL_PATTERNS: tuple[dict[str, Any], ...] = (
@@ -1543,6 +1574,74 @@ def _build_hybrid_technique_evidence_summary() -> dict[str, Any]:
     }
 
 
+def _build_hybrid_prototype_plan() -> dict[str, Any]:
+    exp291 = _load_json_if_exists('externals/experiments/exp291_uam_detection.json') or {}
+    exp443 = _load_json_if_exists('externals/experiments/exp443_throughput_balance.json') or {}
+    exp322 = _load_json_if_exists('externals/experiments/exp_322v_validated.json') or {}
+    exp583 = _load_json_if_exists('externals/experiments/exp583_correction_event_taxonomy.json') or {}
+
+    return {
+        'prototype_name': 'hybrid-uam-throughput-balance-v1',
+        'stages': [
+            {
+                'stage': 1,
+                'name': 'UAM trigger generation',
+                'goal': 'Generate high-recall meal-like candidate windows without announced meals.',
+                'backing_metric': {
+                    'uam_recall': exp291.get('uam_recall'),
+                    'uam_precision': exp291.get('uam_precision'),
+                },
+            },
+            {
+                'stage': 2,
+                'name': 'throughput/balance reranking',
+                'goal': 'Re-rank candidate windows by how meal-like they appear relative to correction and stable states.',
+                'backing_metric': {
+                    'sil_6h': exp443.get('aggregate', {}).get('6h', {}).get('mean_sil_2d'),
+                    'sil_12h': exp443.get('aggregate', {}).get('12h', {}).get('mean_sil_2d'),
+                },
+            },
+            {
+                'stage': 3,
+                'name': 'controller-state filtering',
+                'goal': 'Downweight failed-correction and fast-return windows where controller timing most likely dominates the apparent signal.',
+                'backing_metric': {
+                    'mean_failed_pct': exp583.get('mean_failed'),
+                    'mean_fast_return_pct': exp583.get('mean_fast_return'),
+                },
+            },
+            {
+                'stage': 4,
+                'name': 'downstream CR recommendation scoring',
+                'goal': 'Convert the filtered meal-like windows into CR-support summaries and test them against safety-aware endpoints.',
+                'backing_metric': {
+                    'validated_hypo_auc_roc': exp322.get('multi_seed', {}).get('aggregate', {}).get('auc_roc', {}).get('mean'),
+                    'validated_hypo_specificity': exp322.get('multi_seed', {}).get('aggregate', {}).get('specificity', {}).get('mean'),
+                },
+            },
+        ],
+        'evaluation_metrics': [
+            'candidate-window recall and precision',
+            'meal vs correction/stable separation quality',
+            'stability across patients and controller-state strata',
+            'downstream CR recommendation precision/accuracy proxy',
+            'validated hypo safety performance after recommendations are applied or simulated',
+        ],
+        'promotion_gates': [
+            'Hybrid detector must beat standalone UAM on precision without collapsing recall.',
+            'Hybrid-derived meal-like windows must preserve or improve medium-horizon separation relative to throughput/balance alone.',
+            'CR-support outputs must remain safe under validated hypo or other held-out safety scoring.',
+            'Performance must not collapse inside failed-correction or fast-return controller strata.',
+        ],
+        'failure_modes': [
+            'High recall but no precision gain over standalone UAM',
+            'Good separation but no downstream CR-support improvement',
+            'Apparent CR gains that worsen safety metrics or fail controller-state audits',
+            'Strong pooled performance that disappears in stratified or leave-patient-out evaluation',
+        ],
+    }
+
+
 def _counter_causal_audit(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     for pattern in COUNTER_CAUSAL_PATTERNS:
@@ -1699,6 +1798,8 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['novel_meal_discovery_summary'] = _build_novel_meal_discovery_summary()
         if spec.key == 'hybrid-technique-evidence':
             plan['hybrid_technique_evidence_summary'] = _build_hybrid_technique_evidence_summary()
+        if spec.key == 'hybrid-prototype-plan':
+            plan['hybrid_prototype_plan'] = _build_hybrid_prototype_plan()
         span.set_outputs({
             'evidence_count': len(evidence),
             'command_count': len(spec.recommended_commands),
@@ -1922,6 +2023,25 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
             lines.append(f"- {item}")
         lines.extend(['', '### Evidence Still Missing', ''])
         for item in summary.get('evidence_still_missing', []):
+            lines.append(f"- {item}")
+    if plan.get('hybrid_prototype_plan'):
+        summary = plan['hybrid_prototype_plan']
+        lines.extend(['', '## Hybrid Prototype Plan', ''])
+        lines.append(f"- prototype name: {summary.get('prototype_name')}")
+        lines.extend(['', '### Stages', ''])
+        for row in summary.get('stages', []):
+            lines.append(f"- **Stage {row.get('stage')}: {row.get('name')}**")
+            lines.append(f"  - goal: {row.get('goal')}")
+            if row.get('backing_metric'):
+                lines.append(f"  - backing metric: {json.dumps(row.get('backing_metric'), sort_keys=True)}")
+        lines.extend(['', '### Evaluation Metrics', ''])
+        for item in summary.get('evaluation_metrics', []):
+            lines.append(f"- {item}")
+        lines.extend(['', '### Promotion Gates', ''])
+        for item in summary.get('promotion_gates', []):
+            lines.append(f"- {item}")
+        lines.extend(['', '### Failure Modes', ''])
+        for item in summary.get('failure_modes', []):
             lines.append(f"- {item}")
     lines.extend(['', '## Success Criteria', ''])
     lines.extend([f'- {item}' for item in plan['success_criteria']])

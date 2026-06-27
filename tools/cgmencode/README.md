@@ -345,6 +345,7 @@ Initial directions:
 - `meal-event-discovery-audition` — score candidate meal-like event discovery techniques on precision, accuracy, realism, and readiness for downstream CR support
 - `novel-meal-discovery-techniques` — identify which genuinely new technique classes are worth inventing beyond the current proxy stack
 - `hybrid-technique-evidence` — state whether the best hybrid detector is already well-supported by data-science evidence or still mainly a research hypothesis
+- `hybrid-prototype-plan` — define the first hybrid detector experiment, its scoring metrics, and the promotion gates required before it can influence CR support
 
 For carb-ratio work, the tracked workflow now treats **announced-meal-dependent**
 artifacts as provisional evidence only. Meal-conditioned CR outputs can inform
