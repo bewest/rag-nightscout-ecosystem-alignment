@@ -343,6 +343,7 @@ Initial directions:
 - `stratified-deconfounding-audit` — map each controller-response stratum to its best audit, confidence downgrade, and next test instead of reusing one pooled causal audit
 - `meal-independent-cr-proxies` — rank the best non-announced-meal carb-impact proxies and state what would still be needed before CR support becomes promotion-ready
 - `meal-event-discovery-audition` — score candidate meal-like event discovery techniques on precision, accuracy, realism, and readiness for downstream CR support
+- `novel-meal-discovery-techniques` — identify which genuinely new technique classes are worth inventing beyond the current proxy stack
 
 For carb-ratio work, the tracked workflow now treats **announced-meal-dependent**
 artifacts as provisional evidence only. Meal-conditioned CR outputs can inform

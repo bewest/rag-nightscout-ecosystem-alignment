@@ -565,6 +565,36 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'Name the best next experiment for improving meal-independent CR support.',
         ),
     ),
+    'novel-meal-discovery-techniques': DirectionSpec(
+        key='novel-meal-discovery-techniques',
+        title='Novel Meal Discovery Technique Candidates',
+        default_question=(
+            'Identify which genuinely new technique classes are worth developing beyond the current meal-independent proxy stack, and explain why they could improve accurate and precise CR support.'
+        ),
+        search_terms=('UAM', 'throughput', 'balance', 'controller', 'latent', 'weakly supervised', 'counterfactual', 'meal-like'),
+        candidate_files=(
+            'externals/experiments/autoresearch/20260627-155045_meal-event-discovery-audition.md',
+            'externals/experiments/autoresearch/20260627-154653_meal-independent-cr-proxies.md',
+            'externals/experiments/autoresearch/20260627-152059_controller-aware-causality.md',
+            'docs/10-domain/carb-absorption-comparison.md',
+            'externals/experiments/exp443_throughput_balance.json',
+            'externals/experiments/exp583_correction_event_taxonomy.json',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.autoresearch_agent --direction meal-event-discovery-audition',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction controller-aware-causality',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction stratified-deconfounding-audit',
+        ),
+        hypotheses=(
+            'The next major gain will require hybrid or weakly supervised techniques, not only better thresholding of existing proxies.',
+            'The most promising novel methods will explicitly model controller response as part of meal-like event discovery rather than treating it as noise.',
+        ),
+        success_criteria=(
+            'Name at least three new technique classes.',
+            'State what new capability each technique could unlock.',
+            'Identify which one should be prototyped first.',
+        ),
+    ),
 }
 
 COUNTER_CAUSAL_PATTERNS: tuple[dict[str, Any], ...] = (
@@ -1425,6 +1455,40 @@ def _build_meal_event_discovery_audition() -> dict[str, Any]:
     }
 
 
+def _build_novel_meal_discovery_summary() -> dict[str, Any]:
+    return {
+        'candidates': [
+            {
+                'technique': 'Hybrid UAM + throughput/balance detector',
+                'what_is_new': 'Combine fast deviation/UAM triggers with medium-horizon throughput-balance separation instead of using either alone.',
+                'capability_unlocked': 'More precise meal-like event discovery without needing announced carbs, while preserving realistic controller context.',
+                'priority': 'highest',
+            },
+            {
+                'technique': 'Weakly supervised latent-meal inference',
+                'what_is_new': 'Train on loosely labeled meal-like windows and outcome consistency rather than explicit meal entries.',
+                'capability_unlocked': 'Can learn realistic meal histories from noisy observational data where ground-truth carb logs are sparse.',
+                'priority': 'high',
+            },
+            {
+                'technique': 'Controller-inversion residual model',
+                'what_is_new': 'Estimate what the controller likely contributed, subtract it, then infer residual meal impact from the remaining trajectory.',
+                'capability_unlocked': 'Directly attacks the main accuracy objection by separating controller action from disease-course and meal-course effects.',
+                'priority': 'high',
+            },
+            {
+                'technique': 'Multi-timescale state-space segmentation',
+                'what_is_new': 'Use one model to jointly infer rapid event state, medium-horizon response mode, and slow context regime.',
+                'capability_unlocked': 'Can tie meal-like detection to realistic context, making downstream CR recommendations more stable across horizons.',
+                'priority': 'medium',
+            },
+        ],
+        'prototype_first': 'Hybrid UAM + throughput/balance detector',
+        'prototype_reason': 'It reuses the strongest current signals, directly addresses the meal-independence blocker, and is the shortest path to a testable improvement in CR-support realism.',
+        'warning': 'Any novel detector still needs validation against controller-aware safety outcomes before its inferred meal history should drive promoted CR recommendations.',
+    }
+
+
 def _counter_causal_audit(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     for pattern in COUNTER_CAUSAL_PATTERNS:
@@ -1577,6 +1641,8 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['meal_independent_cr_summary'] = _build_meal_independent_cr_summary()
         if spec.key == 'meal-event-discovery-audition':
             plan['meal_event_discovery_audition'] = _build_meal_event_discovery_audition()
+        if spec.key == 'novel-meal-discovery-techniques':
+            plan['novel_meal_discovery_summary'] = _build_novel_meal_discovery_summary()
         span.set_outputs({
             'evidence_count': len(evidence),
             'command_count': len(spec.recommended_commands),
@@ -1778,6 +1844,17 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
             lines.append(f"  - why: {row.get('why')}")
             if row.get('evidence'):
                 lines.append(f"  - evidence: {json.dumps(row.get('evidence'), sort_keys=True)}")
+    if plan.get('novel_meal_discovery_summary'):
+        summary = plan['novel_meal_discovery_summary']
+        lines.extend(['', '## Novel Meal Discovery Techniques', ''])
+        lines.append(f"- prototype first: {summary.get('prototype_first')}")
+        lines.append(f"- prototype reason: {summary.get('prototype_reason')}")
+        lines.append(f"- warning: {summary.get('warning')}")
+        for row in summary.get('candidates', []):
+            lines.append(f"- **{row.get('technique')}**")
+            lines.append(f"  - priority: {row.get('priority')}")
+            lines.append(f"  - what is new: {row.get('what_is_new')}")
+            lines.append(f"  - capability unlocked: {row.get('capability_unlocked')}")
     lines.extend(['', '## Success Criteria', ''])
     lines.extend([f'- {item}' for item in plan['success_criteria']])
     lines.extend(['', '## Next Steps', ''])
