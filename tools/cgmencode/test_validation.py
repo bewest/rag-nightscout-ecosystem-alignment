@@ -742,7 +742,7 @@ class TestAutoresearchAgent(unittest.TestCase):
     def test_all_directions_defined(self):
         self.assertEqual(
             set(DIRECTIONS.keys()),
-            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling', 'settings-precision-vs-accuracy', 'controller-aware-causality', 'controller-state-stratification', 'stratified-deconfounding-audit'},
+            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling', 'settings-precision-vs-accuracy', 'controller-aware-causality', 'controller-state-stratification', 'stratified-deconfounding-audit', 'meal-independent-cr-proxies'},
         )
 
     def test_build_research_plan_structure(self):
@@ -1161,6 +1161,12 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertEqual(plan['direction'], 'stratified-deconfounding-audit')
         self.assertIn('stratified_deconfounding_summary', plan)
         self.assertTrue(plan['stratified_deconfounding_summary']['strata_audits'])
+
+    def test_meal_independent_cr_proxies_builds_summary(self):
+        plan = build_research_plan('meal-independent-cr-proxies')
+        self.assertEqual(plan['direction'], 'meal-independent-cr-proxies')
+        self.assertIn('meal_independent_cr_summary', plan)
+        self.assertTrue(plan['meal_independent_cr_summary']['proxy_families'])
 
 
 # =============================================================================

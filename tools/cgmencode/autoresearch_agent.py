@@ -506,6 +506,36 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'Name the next best stratified follow-up command.',
         ),
     ),
+    'meal-independent-cr-proxies': DirectionSpec(
+        key='meal-independent-cr-proxies',
+        title='Meal-Independent Carb-Impact Proxies',
+        default_question=(
+            'Identify the most promising meal-independent proxies for carb-impact and carb-ratio support, and explain how they could improve promotion-ready settings extraction without relying on announced meals.'
+        ),
+        search_terms=('UAM', 'unannounced meal', 'carb absorption', 'throughput', 'balance', 'deviation', 'meal-independent', 'carb ratio'),
+        candidate_files=(
+            'docs/10-domain/carb-absorption-comparison.md',
+            'externals/experiments/exp443_throughput_balance.json',
+            'externals/experiments/parameter-models/effective-parameter-extractor_settings_handling.json',
+            'externals/experiments/autoresearch/20260627-150911_settings-precision-vs-accuracy.md',
+            'tools/cgmencode/exp_dose_dependent_cr_2747.py',
+            'tools/cgmencode/exp_carb_ratio_extraction_2729.py',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.autoresearch_agent --direction settings-precision-vs-accuracy',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction controller-aware-causality',
+            'python3 -m tools.cgmencode.build_effective_parameter_extractor',
+        ),
+        hypotheses=(
+            'The best near-term path is not direct CR extraction from announced meals, but meal-independent carb-impact proxies built from deviation, throughput/balance, and UAM-style detection.',
+            'Promotion-ready CR support will likely require a layered proxy stack: meal-like event discovery, controller-separation features, and downstream safety validation.',
+        ),
+        success_criteria=(
+            'Name at least three meal-independent proxy families.',
+            'State what each proxy helps estimate and what it cannot support alone.',
+            'Name the best next experiment or memo direction for making CR support promotion-ready.',
+        ),
+    ),
 }
 
 COUNTER_CAUSAL_PATTERNS: tuple[dict[str, Any], ...] = (
@@ -1251,6 +1281,63 @@ def _build_stratified_deconfounding_summary() -> dict[str, Any]:
     }
 
 
+def _build_meal_independent_cr_summary() -> dict[str, Any]:
+    exp443 = _load_json_if_exists('externals/experiments/exp443_throughput_balance.json') or {}
+    settings_handling = _load_json_if_exists(
+        'externals/experiments/parameter-models/effective-parameter-extractor_settings_handling.json'
+    ) or {}
+
+    return {
+        'position': (
+            'Meal-independent carb-ratio support should start from meal-like event proxies and controller-separation features, not from announced-meal truth labels.'
+        ),
+        'proxy_families': [
+            {
+                'proxy': 'UAM / deviation-slope meal discovery',
+                'best_for': 'finding meal-like excursions when carbs are not logged',
+                'cannot_do_alone': 'estimate final carb ratio safely without separating controller-added insulin or validating outcomes',
+                'time_scale': 'minutes to ~1 hour',
+            },
+            {
+                'proxy': 'throughput + balance dual-channel features',
+                'best_for': 'distinguishing meal-like windows from correction and stable windows without explicit carb entries',
+                'cannot_do_alone': 'convert class separation directly into a promoted carb ratio',
+                'time_scale': '2h to 12h',
+                'evidence': {
+                    'sil_2h': exp443.get('aggregate', {}).get('2h', {}).get('mean_sil_2d'),
+                    'sil_6h': exp443.get('aggregate', {}).get('6h', {}).get('mean_sil_2d'),
+                    'sil_12h': exp443.get('aggregate', {}).get('12h', {}).get('mean_sil_2d'),
+                },
+            },
+            {
+                'proxy': 'controller-separated residual meal impact',
+                'best_for': 'estimating carb-driven rise after discounting obvious correction or suspension effects',
+                'cannot_do_alone': 'guarantee that the residual corresponds to true grams-per-unit sensitivity across all cohorts',
+                'time_scale': '2h to 6h',
+            },
+            {
+                'proxy': 'period-level persistent excursion context',
+                'best_for': 'identifying whether recurrent meal-like problems cluster by time of day and should be treated as setting context',
+                'cannot_do_alone': 'recover meal-specific carb ratio from slow drift alone',
+                'time_scale': 'circadian / time-of-day',
+            },
+        ],
+        'promotion_requirements': [
+            'Meal-independent event discovery must be stable across patients and controllers.',
+            'Proxy-derived CR recommendations must be checked against controller-aware safety outcomes before promotion.',
+            'Current meal-announcement-dependent CR artifacts should remain provisional until the meal-independent path is validated.',
+        ],
+        'current_blocker': (
+            'The tracked workflow already marks carb-ratio support as not promotion-ready because current CR artifacts still depend on announced meals.'
+            if (settings_handling.get('settings', {}).get('carb_ratio', {}).get('promotion_ready_without_meals') is False)
+            else 'No explicit meal-dependence blocker detected.'
+        ),
+        'highest_value_next_step': (
+            'Prototype a meal-like event discovery layer based on UAM/deviation plus throughput/balance separation, then score any derived CR recommendation against validated hypo and controller-state audits.'
+        ),
+    }
+
+
 def _counter_causal_audit(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     for pattern in COUNTER_CAUSAL_PATTERNS:
@@ -1399,6 +1486,8 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['controller_state_stratification_summary'] = _build_controller_state_stratification_summary()
         if spec.key == 'stratified-deconfounding-audit':
             plan['stratified_deconfounding_summary'] = _build_stratified_deconfounding_summary()
+        if spec.key == 'meal-independent-cr-proxies':
+            plan['meal_independent_cr_summary'] = _build_meal_independent_cr_summary()
         span.set_outputs({
             'evidence_count': len(evidence),
             'command_count': len(spec.recommended_commands),
@@ -1570,6 +1659,22 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
             lines.append(f"  - next test: `{row.get('next_test')}`")
             if row.get('evidence'):
                 lines.append(f"  - evidence: {json.dumps(row.get('evidence'), sort_keys=True)}")
+    if plan.get('meal_independent_cr_summary'):
+        summary = plan['meal_independent_cr_summary']
+        lines.extend(['', '## Meal-Independent CR Summary', ''])
+        lines.append(f"- position: {summary.get('position')}")
+        lines.append(f"- current blocker: {summary.get('current_blocker')}")
+        lines.append(f"- next step: {summary.get('highest_value_next_step')}")
+        for row in summary.get('proxy_families', []):
+            lines.append(f"- **{row.get('proxy')}**")
+            lines.append(f"  - best for: {row.get('best_for')}")
+            lines.append(f"  - cannot do alone: {row.get('cannot_do_alone')}")
+            lines.append(f"  - time scale: {row.get('time_scale')}")
+            if row.get('evidence'):
+                lines.append(f"  - evidence: {json.dumps(row.get('evidence'), sort_keys=True)}")
+        lines.extend(['', '### Promotion Requirements', ''])
+        for item in summary.get('promotion_requirements', []):
+            lines.append(f"- {item}")
     lines.extend(['', '## Success Criteria', ''])
     lines.extend([f'- {item}' for item in plan['success_criteria']])
     lines.extend(['', '## Next Steps', ''])
