@@ -446,6 +446,36 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'Name the next best causal-improvement experiment or memo direction.',
         ),
     ),
+    'controller-state-stratification': DirectionSpec(
+        key='controller-state-stratification',
+        title='Controller-State Stratification',
+        default_question=(
+            'Define practical controller-state strata that help separate controller action from disease course, and map which time scales and features support each stratum.'
+        ),
+        search_terms=('controller', 'correction', 'failed', 'fast return', 'throughput', 'balance', 'basal', 'time-of-day', 'strata'),
+        candidate_files=(
+            'externals/experiments/exp583_correction_event_taxonomy.json',
+            'externals/experiments/exp443_throughput_balance.json',
+            'externals/experiments/exp582_per-period_basal_decomposition.json',
+            'docs/60-research/wave12-multifactor-isolation-report-2026-04-20.md',
+            'docs/60-research/wave13-controller-dynamics-report-2026-04-20.md',
+            'externals/experiments/parameter-models/effective-parameter-extractor_settings_handling.json',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.autoresearch_agent --direction deconfounding-audit',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction controller-aware-causality',
+            'python3 -m tools.cgmencode.experiments_validated validate-hypo',
+        ),
+        hypotheses=(
+            'Controller-state strata built from correction taxonomy, throughput/balance, and time-of-day tuning signals can isolate controller-mediated behavior better than pooled analysis.',
+            'The most useful strata are not disease labels but response modes such as failed correction, fast return, suspension-heavy correction, and persistent period mismatch.',
+        ),
+        success_criteria=(
+            'Name at least three controller-state strata.',
+            'State which time scale and features support each stratum.',
+            'Explain what causal claim each stratum can and cannot support.',
+        ),
+    ),
 }
 
 COUNTER_CAUSAL_PATTERNS: tuple[dict[str, Any], ...] = (
@@ -935,6 +965,66 @@ def _build_controller_causality_summary() -> dict[str, Any]:
     }
 
 
+def _build_controller_state_stratification_summary() -> dict[str, Any]:
+    exp443 = _load_json_if_exists('externals/experiments/exp443_throughput_balance.json') or {}
+    exp582 = _load_json_if_exists('externals/experiments/exp582_per-period_basal_decomposition.json') or {}
+    exp583 = _load_json_if_exists('externals/experiments/exp583_correction_event_taxonomy.json') or {}
+
+    return {
+        'strata': [
+            {
+                'name': 'failed-correction state',
+                'time_scale': 'minutes to 2h',
+                'supporting_features': ['correction taxonomy failed_pct', 'throughput low / balance high', 'validated hypo guardrail'],
+                'what_it_supports': 'Identifying corrections where controller/user action was insufficient and recommendation confidence should be reduced or redirected.',
+                'what_it_cannot_support': 'Direct inference about underlying physiological sensitivity without separating controller follow-up actions.',
+                'evidence': {
+                    'mean_failed_pct': exp583.get('mean_failed'),
+                },
+            },
+            {
+                'name': 'fast-return controller-dominant state',
+                'time_scale': 'minutes to ~1h',
+                'supporting_features': ['correction taxonomy fast_return_pct', 'rapid throughput spikes', 'EGP-style flair'],
+                'what_it_supports': 'Auditing whether rapid return windows are driven by aggressive controller response versus slower disease-course drift.',
+                'what_it_cannot_support': 'Long-horizon basal or carb-ratio recommendations by itself.',
+                'evidence': {
+                    'mean_fast_return_pct': exp583.get('mean_fast_return'),
+                },
+            },
+            {
+                'name': 'controller-separable correction state',
+                'time_scale': '2h to 12h',
+                'supporting_features': ['throughput + balance', 'correction-only denominator framing', 'class separation windows'],
+                'what_it_supports': 'Separating controller work from background course when comparing correction episodes against meal or stable windows.',
+                'what_it_cannot_support': 'Proof of causal physiology if the controller policy itself changes across cohorts.',
+                'evidence': {
+                    'sil_2h': exp443.get('aggregate', {}).get('2h', {}).get('mean_sil_2d'),
+                    'sil_6h': exp443.get('aggregate', {}).get('6h', {}).get('mean_sil_2d'),
+                    'sil_12h': exp443.get('aggregate', {}).get('12h', {}).get('mean_sil_2d'),
+                },
+            },
+            {
+                'name': 'persistent period-mismatch state',
+                'time_scale': 'circadian / time-of-day',
+                'supporting_features': ['per-period basal decomposition', 'repeated fasting drift residuals', 'worst period counts'],
+                'what_it_supports': 'Linking recurrent mismatch to slower controller-state or basal-setting issues rather than one-off events.',
+                'what_it_cannot_support': 'Immediate correction-action attribution during single episodes.',
+                'evidence': {
+                    'mean_adjustments': exp582.get('mean_adjustments'),
+                    'worst_period_counts': exp582.get('worst_period_counts'),
+                },
+            },
+        ],
+        'stratification_principle': (
+            'Prefer response-mode strata over pooled patient cohorts: stratify by how the controller responded, then ask what disease-course claim remains after that response mode is isolated.'
+        ),
+        'highest_value_next_step': (
+            'Apply the deconfounding audit separately within failed-correction, fast-return, and persistent-period-mismatch strata, then compare whether recommendation rules keep their safety profile under validated hypo scoring.'
+        ),
+    }
+
+
 def _counter_causal_audit(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     for pattern in COUNTER_CAUSAL_PATTERNS:
@@ -1078,6 +1168,8 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['settings_precision_accuracy_summary'] = _build_settings_precision_accuracy_summary()
         if spec.key == 'controller-aware-causality':
             plan['controller_causality_summary'] = _build_controller_causality_summary()
+        if spec.key == 'controller-state-stratification':
+            plan['controller_state_stratification_summary'] = _build_controller_state_stratification_summary()
         span.set_outputs({
             'evidence_count': len(evidence),
             'command_count': len(spec.recommended_commands),
@@ -1208,6 +1300,19 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
         lines.extend(['', '### Causal Implications', ''])
         for item in summary.get('causal_implications', []):
             lines.append(f"- {item}")
+    if plan.get('controller_state_stratification_summary'):
+        summary = plan['controller_state_stratification_summary']
+        lines.extend(['', '## Controller-State Stratification Summary', ''])
+        lines.append(f"- principle: {summary.get('stratification_principle')}")
+        lines.append(f"- next step: {summary.get('highest_value_next_step')}")
+        for row in summary.get('strata', []):
+            lines.append(f"- **{row.get('name')}**")
+            lines.append(f"  - time scale: {row.get('time_scale')}")
+            lines.append(f"  - supporting features: {', '.join(row.get('supporting_features', []))}")
+            lines.append(f"  - supports: {row.get('what_it_supports')}")
+            lines.append(f"  - cannot support: {row.get('what_it_cannot_support')}")
+            if row.get('evidence'):
+                lines.append(f"  - evidence: {json.dumps(row.get('evidence'), sort_keys=True)}")
     lines.extend(['', '## Success Criteria', ''])
     lines.extend([f'- {item}' for item in plan['success_criteria']])
     lines.extend(['', '## Next Steps', ''])

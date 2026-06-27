@@ -742,7 +742,7 @@ class TestAutoresearchAgent(unittest.TestCase):
     def test_all_directions_defined(self):
         self.assertEqual(
             set(DIRECTIONS.keys()),
-            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling', 'settings-precision-vs-accuracy', 'controller-aware-causality'},
+            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling', 'settings-precision-vs-accuracy', 'controller-aware-causality', 'controller-state-stratification'},
         )
 
     def test_build_research_plan_structure(self):
@@ -1145,6 +1145,12 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertEqual(plan['direction'], 'controller-aware-causality')
         self.assertIn('controller_causality_summary', plan)
         self.assertTrue(plan['controller_causality_summary']['time_scales'])
+
+    def test_controller_state_stratification_builds_summary(self):
+        plan = build_research_plan('controller-state-stratification')
+        self.assertEqual(plan['direction'], 'controller-state-stratification')
+        self.assertIn('controller_state_stratification_summary', plan)
+        self.assertTrue(plan['controller_state_stratification_summary']['strata'])
 
 
 # =============================================================================
