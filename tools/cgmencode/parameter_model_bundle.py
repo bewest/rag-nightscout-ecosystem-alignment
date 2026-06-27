@@ -424,6 +424,78 @@ def derive_titration_guidance(
     }
 
 
+def derive_titration_plan(
+    bundle: dict[str, Any],
+    evaluation: dict[str, Any],
+    assessment: dict[str, Any],
+    guidance: dict[str, Any],
+) -> dict[str, Any]:
+    patient_models = bundle.get('patient_models', {})
+    max_basal_step_pct = guidance.get('max_basal_step_pct', 10)
+    reassessment_days = guidance.get('reassessment_days', 3)
+    per_patient: dict[str, Any] = {}
+
+    for patient_id, patient in sorted(patient_models.items()):
+        isf_ratio = _safe_float(patient.get('isf_ratio')) or 1.0
+        has_isf_change_signal = bool(patient.get('isf_schedule_model')) or abs(isf_ratio - 1.0) > 0.1
+        basal_schedule = patient.get('basal_schedule_model', {})
+        max_adj_pct = _safe_float(basal_schedule.get('max_adj_pct'))
+        basal_period = patient.get('basal_period_model', {})
+        has_basal_change_signal = bool(basal_schedule) or bool(basal_period.get('needs_adjustment'))
+        concurrent = has_isf_change_signal and has_basal_change_signal
+        basal_over_ten = max_adj_pct is not None and abs(max_adj_pct) > max_basal_step_pct
+
+        if concurrent and basal_over_ten:
+            staged_action = 'review-basal-first'
+            notes = [
+                'Basal and ISF both show change pressure.',
+                'Cap basal change to the policy step size before considering ISF changes.',
+                f'Recheck after {reassessment_days} days before the next step.',
+            ]
+        elif concurrent:
+            staged_action = 'lockstep-review'
+            notes = [
+                'Basal and ISF both show change pressure.',
+                'Concurrent changes may be necessary, but require explicit review.',
+                f'Use no more than {max_basal_step_pct}% basal change, then reassess after {reassessment_days} days.',
+            ]
+        elif has_basal_change_signal:
+            staged_action = 'basal-first'
+            notes = [
+                f'Apply at most {max_basal_step_pct}% basal change in this cycle.',
+                f'Reassess after {reassessment_days} days before further titration.',
+            ]
+        elif has_isf_change_signal:
+            staged_action = 'isf-review'
+            notes = [
+                'ISF signal present without strong basal change pressure.',
+                f'Reassess after {reassessment_days} days after any change.',
+            ]
+        else:
+            staged_action = 'observe'
+            notes = ['No strong change signal detected. Continue observation and reassess on the normal cadence.']
+
+        per_patient[patient_id] = {
+            'staged_action': staged_action,
+            'review_required': guidance.get('promotion_recommendation') == 'needs-review' or concurrent,
+            'concurrent_change_signal': concurrent,
+            'basal_change_signal': has_basal_change_signal,
+            'isf_change_signal': has_isf_change_signal,
+            'max_basal_step_pct': max_basal_step_pct,
+            'suggested_basal_step_pct': min(abs(max_adj_pct), max_basal_step_pct) if max_adj_pct is not None else None,
+            'reassessment_days': reassessment_days,
+            'notes': notes,
+        }
+
+    return {
+        'schema_version': SCHEMA_VERSION,
+        'plan_type': 'effective-parameter-extractor-remediation',
+        'generated_at_utc': datetime.now(timezone.utc).isoformat(),
+        'promotion_recommendation': assessment.get('promotion_recommendation'),
+        'per_patient': per_patient,
+    }
+
+
 def save_bundle(bundle: dict[str, Any], path: str | Path) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)

@@ -68,6 +68,7 @@ from tools.cgmencode.mlflow_pyfunc_models import (
     save_effective_parameter_extractor_model,
 )
 from tools.cgmencode.parameter_model_bundle import (
+    derive_titration_plan,
     derive_titration_guidance,
     assess_effective_parameter_thresholds,
     build_effective_parameter_bundle,
@@ -950,6 +951,8 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertEqual(guidance['max_basal_step_pct'], 10)
         self.assertEqual(guidance['reassessment_days'], 3)
         self.assertTrue(guidance['concurrent_change_review_required'])
+        plan = derive_titration_plan(bundle, evaluation, assessment, guidance)
+        self.assertEqual(plan['per_patient']['patient-a']['staged_action'], 'review-basal-first')
 
     def test_effective_parameter_thresholds_can_validate_safe_bundle(self):
         bundle = build_effective_parameter_bundle({
@@ -1004,6 +1007,8 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertEqual(assessment['promotion_recommendation'], 'validated')
         guidance = derive_titration_guidance(evaluation, assessment)
         self.assertEqual(guidance['reassessment_days'], 5)
+        plan = derive_titration_plan(bundle, evaluation, assessment, guidance)
+        self.assertEqual(plan['per_patient']['patient-a']['staged_action'], 'lockstep-review')
 
     def test_effective_parameter_extractor_model_saves_and_loads(self):
         import mlflow  # type: ignore

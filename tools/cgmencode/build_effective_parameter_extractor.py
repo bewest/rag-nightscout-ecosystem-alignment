@@ -9,6 +9,7 @@ from pathlib import Path
 
 from .mlflow_pyfunc_models import save_effective_parameter_extractor_model
 from .parameter_model_bundle import (
+    derive_titration_plan,
     derive_titration_guidance,
     build_effective_parameter_bundle,
     assess_effective_parameter_thresholds,
@@ -65,6 +66,8 @@ def main() -> None:
     assessment_path = save_bundle(assessment, output_dir / f'{args.name}_assessment.json')
     guidance = derive_titration_guidance(evaluation, assessment)
     guidance_path = save_bundle(guidance, output_dir / f'{args.name}_guidance.json')
+    plan = derive_titration_plan(bundle, evaluation, assessment, guidance)
+    plan_path = save_bundle(plan, output_dir / f'{args.name}_plan.json')
     model_path = output_dir / f'{args.name}_model'
     save_effective_parameter_extractor_model(
         model_path,
@@ -77,6 +80,8 @@ def main() -> None:
             'threshold_assessment': assessment,
             'guidance_path': str(guidance_path),
             'titration_guidance': guidance,
+            'plan_path': str(plan_path),
+            'titration_plan': plan,
         },
     )
 
@@ -85,6 +90,7 @@ def main() -> None:
     print(f'Thresholds: {thresholds_path}')
     print(f'Assessment: {assessment_path}')
     print(f'Guidance: {guidance_path}')
+    print(f'Plan: {plan_path}')
     print(f'Model: {model_path}')
 
 

@@ -98,6 +98,7 @@ class EffectiveParameterExtractorModel(_PyfuncBase):
             or 0.5
         )
         titration_guidance = self.candidate.get('titration_guidance', {})
+        titration_plan = self.candidate.get('titration_plan', {})
         patient_models = self.bundle.get('patient_models', {})
         population_ratio = (
             self.bundle.get('training_summary', {}).get('population_median_ratio')
@@ -110,6 +111,7 @@ class EffectiveParameterExtractorModel(_PyfuncBase):
             observed_isf = row.get('observed_isf')
             overnight_drift = float(row.get('overnight_drift_mgdl_per_hour', 0.0))
             time_of_day = row.get('time_of_day')
+            patient_plan = titration_plan.get('per_patient', {}).get(str(patient_id), {})
             patient_model = patient_models.get(str(patient_id)) if patient_id is not None else None
             if patient_model:
                 schedule_model = patient_model.get('isf_schedule_model', {})
@@ -157,6 +159,9 @@ class EffectiveParameterExtractorModel(_PyfuncBase):
                 'reassessment_days': titration_guidance.get('reassessment_days'),
                 'concurrent_change_review_required': titration_guidance.get('concurrent_change_review_required'),
                 'policy_recommendation': titration_guidance.get('promotion_recommendation'),
+                'staged_action': patient_plan.get('staged_action'),
+                'review_required': patient_plan.get('review_required'),
+                'suggested_basal_step_pct': patient_plan.get('suggested_basal_step_pct'),
             })
         if pd is not None:
             return pd.DataFrame(outputs)

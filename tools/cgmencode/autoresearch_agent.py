@@ -38,6 +38,7 @@ from .mlflow_pyfunc_models import (
     save_effective_parameter_extractor_model,
 )
 from .parameter_model_bundle import (
+    derive_titration_plan,
     derive_titration_guidance,
     assess_effective_parameter_thresholds,
     build_effective_parameter_bundle,
@@ -821,9 +822,9 @@ def build_model_candidate_from_plan(
 def _build_learned_bundle_for_candidate(
     model_candidate: dict[str, Any] | None,
     output_dir: Path,
-) -> tuple[Path | None, Path | None, dict[str, Any] | None, Path | None, Path | None, dict[str, Any] | None, Path | None, dict[str, Any] | None]:
+) -> tuple[Path | None, Path | None, dict[str, Any] | None, Path | None, Path | None, dict[str, Any] | None, Path | None, dict[str, Any] | None, Path | None, dict[str, Any] | None]:
     if not model_candidate or not DEFAULT_VALIDATION_RESULTS.exists():
-        return None, None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None, None, None, None
     results = json.loads(DEFAULT_VALIDATION_RESULTS.read_text(encoding='utf-8'))
     bundle = build_effective_parameter_bundle(
         results,
@@ -837,13 +838,15 @@ def _build_learned_bundle_for_candidate(
     thresholds = propose_effective_parameter_thresholds(evaluation)
     assessment = assess_effective_parameter_thresholds(evaluation, thresholds)
     guidance = derive_titration_guidance(evaluation, assessment)
+    plan = derive_titration_plan(bundle, evaluation, assessment, guidance)
     stem = _slug(model_candidate['candidate_name'])
     bundle_path = save_bundle(bundle, output_dir / f'{stem}_bundle.json')
     evaluation_path = save_bundle(evaluation, output_dir / f'{stem}_bundle_evaluation.json')
     thresholds_path = save_bundle(thresholds, output_dir / f'{stem}_bundle_thresholds.json')
     assessment_path = save_bundle(assessment, output_dir / f'{stem}_bundle_assessment.json')
     guidance_path = save_bundle(guidance, output_dir / f'{stem}_bundle_guidance.json')
-    return bundle_path, evaluation_path, evaluation, thresholds_path, assessment_path, assessment, guidance_path, guidance
+    plan_path = save_bundle(plan, output_dir / f'{stem}_bundle_plan.json')
+    return bundle_path, evaluation_path, evaluation, thresholds_path, assessment_path, assessment, guidance_path, guidance, plan_path, plan
 
 
 def _build_trace_payload(
@@ -862,6 +865,8 @@ def _build_trace_payload(
     threshold_assessment: dict[str, Any] | None,
     guidance_path: Path | None,
     titration_guidance: dict[str, Any] | None,
+    plan_path: Path | None,
+    titration_plan: dict[str, Any] | None,
 ) -> dict[str, Any]:
     return {
         'schema_version': '1.0',
@@ -883,6 +888,7 @@ def _build_trace_payload(
         'model_evaluation': model_evaluation,
         'threshold_assessment': threshold_assessment,
         'titration_guidance': titration_guidance,
+        'titration_plan': titration_plan,
         'outputs': {
             'json_artifact': str(json_path),
             'markdown_artifact': str(md_path),
@@ -895,6 +901,7 @@ def _build_trace_payload(
             'thresholds_path': str(thresholds_path) if thresholds_path else None,
             'assessment_path': str(assessment_path) if assessment_path else None,
             'guidance_path': str(guidance_path) if guidance_path else None,
+            'plan_path': str(plan_path) if plan_path else None,
         },
     }
 
@@ -933,6 +940,8 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 threshold_assessment,
                 guidance_path,
                 titration_guidance,
+                plan_path,
+                titration_plan,
             ) = _build_learned_bundle_for_candidate(
                 model_candidate, output_dir
             )
@@ -955,6 +964,10 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                     model_candidate['guidance_path'] = str(guidance_path)
                 if titration_guidance:
                     model_candidate['titration_guidance'] = titration_guidance
+                if plan_path:
+                    model_candidate['plan_path'] = str(plan_path)
+                if titration_plan:
+                    model_candidate['titration_plan'] = titration_plan
                 pyfunc_model_path = output_dir / f'{json_path.stem}_effective_parameter_extractor_model'
                 saved_path = save_effective_parameter_extractor_model(pyfunc_model_path, model_candidate)
                 if saved_path:
@@ -984,6 +997,8 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 threshold_assessment,
                 guidance_path,
                 titration_guidance,
+                plan_path,
+                titration_plan,
             )
             log_metrics({
                 'evidence_count': len(plan['evidence']),
@@ -1018,6 +1033,8 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 log_dict(threshold_assessment, f'models/evals/{json_path.stem}_bundle_assessment.json')
             if titration_guidance:
                 log_dict(titration_guidance, f'models/evals/{json_path.stem}_bundle_guidance.json')
+            if titration_plan:
+                log_dict(titration_plan, f'models/evals/{json_path.stem}_bundle_plan.json')
             log_artifact(json_path, artifact_path='autoresearch')
             log_artifact(md_path, artifact_path='autoresearch')
             if pyfunc_model_path:
@@ -1033,6 +1050,8 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 log_artifact(assessment_path, artifact_path='models/assessments')
             if guidance_path:
                 log_artifact(guidance_path, artifact_path='models/guidance')
+            if plan_path:
+                log_artifact(plan_path, artifact_path='models/plans')
             if model_candidate:
                 log_model_artifact(
                     model_candidate['candidate_name'],
@@ -1069,6 +1088,8 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 'threshold_assessment': threshold_assessment,
                 'guidance_path': guidance_path,
                 'titration_guidance': titration_guidance,
+                'plan_path': plan_path,
+                'titration_plan': titration_plan,
                 'json_path': json_path,
                 'md_path': md_path,
             }
