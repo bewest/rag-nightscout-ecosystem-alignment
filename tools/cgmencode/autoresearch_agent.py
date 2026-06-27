@@ -24,6 +24,7 @@ from typing import Any
 
 from .mlflow_utils import (
     build_run_context,
+    is_enabled as mlflow_is_enabled,
     log_artifact,
     log_dict,
     log_metrics,
@@ -77,7 +78,7 @@ class _NullSpan:
 
 @contextmanager
 def _span(name: str, span_type: str = 'AGENT', attributes: dict[str, Any] | None = None):
-    if mlflow is None:
+    if mlflow is None or not mlflow_is_enabled():
         yield _NullSpan()
         return
     with mlflow.start_span(name=name, span_type=span_type, attributes=attributes or {}) as span:

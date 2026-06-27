@@ -33,6 +33,10 @@ import json
 import os
 import tempfile
 
+# Unit tests should not create persistent MLflow runs or traces by default.
+# Tests that need MLflow model serialization still use local temp directories.
+os.environ.setdefault('CGMENCODE_DISABLE_MLFLOW', '1')
+
 import numpy as np
 import pandas as pd
 import pandas as pd
@@ -1019,12 +1023,13 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertEqual(plan['per_patient']['patient-a']['staged_action'], 'lockstep-review')
 
     def test_effective_parameter_extractor_model_saves_and_loads(self):
-        import mlflow  # type: ignore
-
         plan = build_research_plan('parameter-extraction', question='test question')
         evaluation = evaluate_research_plan(plan)
         candidate = build_model_candidate_from_plan(plan, evaluation)
         with tempfile.TemporaryDirectory() as d:
+            import mlflow  # type: ignore
+
+            mlflow.set_tracking_uri(f"sqlite:///{Path(d) / 'mlflow.db'}")
             bundle = build_effective_parameter_bundle(
                 {
                     'patient-a': {
