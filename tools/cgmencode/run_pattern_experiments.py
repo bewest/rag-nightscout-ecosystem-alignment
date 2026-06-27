@@ -43,7 +43,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
-from .mlflow_utils import log_artifact, log_dict, log_metrics, start_run
+from .mlflow_utils import build_run_context, log_artifact, log_dict, log_metrics, log_run_context, start_run
 
 
 # ── Utilities ──────────────────────────────────────────────────────────
@@ -7496,9 +7496,24 @@ def main():
     print()
 
     os.makedirs(args.output_dir, exist_ok=True)
+    patient_paths = resolve_patient_paths(args.patients_dir) if os.path.isdir(args.patients_dir) else []
+    run_context = build_run_context(
+        task_type='pattern-experiment',
+        result_type='retrospective',
+        artifact_role='result-json',
+        patient_paths=patient_paths,
+        patients_dir=args.patients_dir,
+        data_source='nightscout',
+        split_strategy='registry-defined',
+        split_details={'window_registry': 'experiment-specific'},
+        model_family='pattern-registry',
+        experiment_family=args.experiment,
+        extra_tags={'experiment_id': exp_id},
+        extra_params={'experiment_key': args.experiment, 'experiment_id': exp_id},
+    )
     with start_run(
         run_name=args.experiment,
-        tags={'runner': 'run_pattern_experiments', 'experiment_id': exp_id},
+        tags={'runner': 'run_pattern_experiments', 'experiment_id': exp_id, **run_context['tags']},
         params={
             'experiment_key': args.experiment,
             'experiment_id': exp_id,
@@ -7507,8 +7522,10 @@ def main():
             'output_dir': args.output_dir,
             'device': args.device,
             'epochs': args.epochs,
+            **run_context['params'],
         },
     ):
+        log_run_context(run_context)
         t0 = time.time()
         result = func(args)
         elapsed = time.time() - t0

@@ -81,6 +81,14 @@ CASES: dict[str, ResearchCase] = {
         artifact_paths=('externals/experiments/exp583_correction_event_taxonomy.json',),
         env=(('PYTHONPATH', 'tools'),),
     ),
+    'biweekly-settings': ResearchCase(
+        key='biweekly-settings',
+        title='Biweekly settings tracking',
+        description='Tracks settings adequacy at a 2-week resolution to distinguish drift and instability from broad monthly trends.',
+        command=('python3', 'tools/cgmencode/exp_autoresearch_581.py', '--experiments', '584', '--detail', '--save'),
+        artifact_paths=('externals/experiments/exp584_biweekly_settings_tracking.json',),
+        env=(('PYTHONPATH', 'tools'),),
+    ),
 }
 
 

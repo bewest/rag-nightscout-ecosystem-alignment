@@ -12,6 +12,58 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Effective Parameter Extractor Pilot (2026-06-27)
+
+Turned the `parameter-extraction` autoresearch direction into a registration-ready physiology-model pilot that now emits a learned parameter bundle, evaluation and threshold artifacts, titration guidance, and a runnable MLflow pyfunc package derived from validated results plus settings experiments.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Parameter bundle + thresholds | `tools/cgmencode/parameter_model_bundle.py` | Learned physiology artifacts can be evaluated in descriptive, prescriptive, and safety terms rather than treated as opaque checkpoints |
+| Model packaging CLI | `tools/cgmencode/build_effective_parameter_extractor.py` | A reproducible builder now packages the current effective-parameter extractor from validated artifacts into a runnable pyfunc model plus JSON evidence bundle |
+| Autoresearch-to-model bridge | `tools/cgmencode/{autoresearch_agent.py,mlflow_pyfunc_models.py}` | The `parameter-extraction` memo can now produce a model candidate, bundle assessment, and titration guidance instead of only prose output |
+
+**Key Findings**:
+- The strongest next step for parameter extraction is a structured physiology artifact, not only another memo: bundle the validated effective-ISF evidence, period-wise basal signals, and schedule optimizers into one tracked object.
+- Safety gating is necessary before promotion: large basal steps and concurrent basal+ISF changes should force `needs-review`, while small safe titrations can still be surfaced as warnings instead of hard failures.
+- The current pilot is viable end to end under MLflow, with local package artifacts written under `externals/experiments/parameter-models/`.
+
+**Source Files Analyzed**:
+- `tools/cgmencode/autoresearch_agent.py`
+- `tools/cgmencode/build_effective_parameter_extractor.py`
+- `tools/cgmencode/mlflow_pyfunc_models.py`
+- `tools/cgmencode/parameter_model_bundle.py`
+- `tools/cgmencode/test_validation.py`
+- `visualizations/clinical-validation/validation_results.json`
+- `externals/experiments/exp58{1,2,4}_*.json`
+
+---
+
+## MLflow Experience Report and Tracking Scope (2026-06-27)
+
+Documented the current `cgmencode` MLflow tracking surface, clarified that model-producing forecasters and learned physiological algorithms both belong in standard MLflow tracking, and outlined next directions for parameter-artifact lineage and promotion.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Experience report | `docs/60-research/mlflow-experience-report-2026-06-27.md` | MLflow is already useful as a local-first evidence layer across forecast sweeps, validated reports, legacy backfills, and agentic research pilots |
+| Tracking classification update | `tools/cgmencode/README.md` | Learned ISF, basal, CR, EGP, and dose-response artifacts should be treated as structured model outputs even when no neural checkpoint exists |
+
+**Key Findings**:
+- In this repo, “model” should include schedules, coefficients, rules, and validation bundles learned from data, not only serialized neural network checkpoints.
+- The forecasting lane is already the cleanest MLflow fit, while algorithm-design work needs better conventions for parameter artifacts, cohort lineage, and promotion state.
+- The GenAI surface remains most appropriate for autoresearch and retrieval/report-generation workflows, not for the bulk of forecasting or physiological parameter recovery.
+
+**Source Files Analyzed**:
+- `tools/cgmencode/README.md`
+- `tools/cgmencode/mlflow_utils.py`
+- `tools/cgmencode/run_experiments.py`
+- `tools/cgmencode/run_pattern_experiments.py`
+- `tools/cgmencode/experiments_validated.py`
+- `tools/cgmencode/run_validation_report.py`
+- `tools/cgmencode/run_research_reproduction.py`
+- `tools/cgmencode/production/settings_optimizer.py`
+
+---
+
 ## Canonical CGM Decision-Support Prototype (2026-06-18)
 
 Built a reproducible decision-support HTML prototype for `cgmencode` personal-data analysis that now derives recommendation cards and supporting visuals from the canonical parquet-backed report bundle instead of a divergent secondary recommendation path.

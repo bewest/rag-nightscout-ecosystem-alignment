@@ -22,11 +22,38 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from .mlflow_utils import log_artifact, log_dict, log_metrics, start_run
+from .mlflow_utils import (
+    build_run_context,
+    log_artifact,
+    log_dict,
+    log_metrics,
+    log_model_artifact,
+    log_pyfunc_model,
+    log_run_context,
+    start_run,
+)
+from .mlflow_pyfunc_models import (
+    build_input_example,
+    EffectiveParameterExtractorModel,
+    save_effective_parameter_extractor_model,
+)
+from .parameter_model_bundle import (
+    derive_titration_guidance,
+    assess_effective_parameter_thresholds,
+    build_effective_parameter_bundle,
+    evaluate_effective_parameter_bundle,
+    propose_effective_parameter_thresholds,
+    save_bundle,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT_DIR = ROOT / 'externals' / 'experiments' / 'autoresearch'
 RECENT_SWEEP = ROOT / 'externals' / 'experiments' / 'mlflow-initial-quick_results.json'
+DEFAULT_VALIDATION_RESULTS = ROOT / 'visualizations' / 'clinical-validation' / 'validation_results.json'
+DEFAULT_SCORE_TIR = ROOT / 'externals' / 'experiments' / 'exp581_score_predicts_future_tir.json'
+DEFAULT_BASAL_DECOMP = ROOT / 'externals' / 'experiments' / 'exp582_per-period_basal_decomposition.json'
+DEFAULT_ISF_SCHEDULE = ROOT / 'externals' / 'experiments' / 'exp_773_exp-773_isf_schedule_optimizer.json'
+DEFAULT_BASAL_SCHEDULE = ROOT / 'externals' / 'experiments' / 'exp_774_exp-774_basal_schedule_optimizer.json'
 
 try:
     import mlflow  # type: ignore
@@ -207,21 +234,89 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'externals/experiments/exp581_score_predicts_future_tir.json',
             'externals/experiments/exp582_per-period_basal_decomposition.json',
             'externals/experiments/exp583_correction_event_taxonomy.json',
+            'externals/experiments/exp584_biweekly_settings_tracking.json',
             'tools/cgmencode/run_validation_report.py',
         ),
         recommended_commands=(
             'python3 -m tools.cgmencode.run_research_reproduction correction-taxonomy',
+            'python3 -m tools.cgmencode.run_research_reproduction biweekly-settings',
             'python3 -m tools.cgmencode.run_research_reproduction settings-adequacy',
             'python3 -m tools.cgmencode.experiments_validated validate-hypo',
         ),
         hypotheses=(
             'Time-of-day basal decomposition is more actionable for settings changes than a global settings adequacy score.',
             'Correction taxonomy can distinguish where intervention quality is limited by slow correction, failed correction, or overcorrection risk.',
+            'Biweekly tracking can separate sustained settings drift from short-lived instability better than monthly summaries alone.',
         ),
         success_criteria=(
             'Name the most actionable settings-focused next experiment or analysis.',
             'State which time scale is best for basal tuning versus correction assessment.',
             'Explain whether the next step is mainly tuning, triage, or safety-focused.',
+        ),
+    ),
+    'safety-vs-explanation': DirectionSpec(
+        key='safety-vs-explanation',
+        title='Safety Endpoints vs Explanatory Proxy Value',
+        default_question=(
+            'Classify which proxy families are strongest for safety endpoints versus which are mainly explanatory, '
+            'and identify the time scales where each contributes the most.'
+        ),
+        search_terms=('hypo', 'safety', 'explanatory', 'egp', 'correction', 'basal', 'tir', 'auc', 'specificity'),
+        candidate_files=(
+            'externals/experiments/exp_322v_validated.json',
+            'externals/experiments/exp583_correction_event_taxonomy.json',
+            'externals/experiments/exp582_per-period_basal_decomposition.json',
+            'externals/experiments/exp-2629_aid_compensation_cascade.json',
+            'externals/experiments/exp442_tdd_normalization.json',
+            'tools/cgmencode/README.md',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.experiments_validated validate-hypo',
+            'python3 -m tools.cgmencode.run_research_reproduction correction-taxonomy',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction proxy-scoping',
+        ),
+        hypotheses=(
+            'Validated hypo models are better as decision endpoints than physiology proxies, while physiology proxies are stronger as explanatory and triage features.',
+            'Short-horizon recovery and correction proxies contribute more to explanation and safety triage than to direct outcome ranking.',
+        ),
+        success_criteria=(
+            'Separate safety-grade signals from explanatory-only signals.',
+            'Name one preferred time scale for safety endpoints and one for explanatory proxies.',
+            'State whether each proxy family is best for scoring, triage, tuning, or flair.',
+        ),
+    ),
+    'current-research-position': DirectionSpec(
+        key='current-research-position',
+        title='Current Diabetes Research Position',
+        default_question=(
+            'Synthesize the strongest recent memos and backing experiments into one current research position, '
+            'covering causal hygiene, proxy use, settings actionability, and safety versus explanation.'
+        ),
+        search_terms=('deconfounding', 'proxy', 'settings', 'safety', 'explanation', 'hypo', 'basal', 'correction'),
+        candidate_files=(
+            'externals/experiments/autoresearch/20260627-122947_deconfounding-audit.md',
+            'externals/experiments/autoresearch/20260627-135059_proxy-scoping.md',
+            'externals/experiments/autoresearch/20260627-140610_settings-followup.md',
+            'externals/experiments/autoresearch/20260627-141810_safety-vs-explanation.md',
+            'externals/experiments/exp_322v_validated.json',
+            'externals/experiments/exp583_correction_event_taxonomy.json',
+            'externals/experiments/exp582_per-period_basal_decomposition.json',
+            'externals/experiments/exp-2629_aid_compensation_cascade.json',
+            'externals/experiments/exp443_throughput_balance.json',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.autoresearch_agent --direction settings-followup',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction safety-vs-explanation',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction proxy-scoping',
+        ),
+        hypotheses=(
+            'The current best research position is not a single winning proxy but a layered stack: validated safety endpoints, settings triage signals, and explanatory physiology proxies.',
+            'Causal hygiene and use-case scoping are more important than chasing a universal physiological score.',
+        ),
+        success_criteria=(
+            'Summarize the current research position in one memo.',
+            'Name the strongest safety endpoint, the most actionable settings signal, and the most useful explanatory proxy.',
+            'State one next research direction that follows from the synthesis.',
         ),
     ),
 }
@@ -332,6 +427,15 @@ def _load_json_if_exists(rel_path: str) -> dict[str, Any] | None:
         return None
 
 
+def _load_json_path_if_exists(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding='utf-8'))
+    except Exception:
+        return None
+
+
 def _build_proxy_use_case_matrix() -> list[dict[str, Any]]:
     exp2629 = _load_json_if_exists('externals/experiments/exp-2629_aid_compensation_cascade.json') or {}
     exp441 = _load_json_if_exists('externals/experiments/exp441_product_flux_hepatic.json') or {}
@@ -412,6 +516,48 @@ def _build_proxy_use_case_matrix() -> list[dict[str, Any]]:
         },
     ]
     return matrix
+
+
+def _build_current_research_position() -> list[dict[str, Any]]:
+    exp2629 = _load_json_if_exists('externals/experiments/exp-2629_aid_compensation_cascade.json') or {}
+    exp322 = _load_json_if_exists('externals/experiments/exp_322v_validated.json') or {}
+    exp582 = _load_json_if_exists('externals/experiments/exp582_per-period_basal_decomposition.json') or {}
+    exp583 = _load_json_if_exists('externals/experiments/exp583_correction_event_taxonomy.json') or {}
+    exp443 = _load_json_if_exists('externals/experiments/exp443_throughput_balance.json') or {}
+
+    return [
+        {
+            'theme': 'Causal hygiene comes first',
+            'position': 'Use counterfactual proxies, per-patient aggregation, and leave-patient-out checks before trusting intervention conclusions.',
+            'backing': ['20260627-122947_deconfounding-audit.md', 'EXP-310', 'EXP-311'],
+        },
+        {
+            'theme': 'Safety endpoints beat physiology proxies for final decisions',
+            'position': 'Validated hypo detection is the strongest decision-grade safety surface, while physiology proxies mainly support explanation and triage.',
+            'backing': [
+                f"EXP-322v auc_roc≈{exp322.get('multi_seed', {}).get('aggregate', {}).get('auc_roc', {}).get('mean', 'n/a')}",
+                '20260627-141810_safety-vs-explanation.md',
+            ],
+        },
+        {
+            'theme': 'Time-of-day settings decomposition is actionable',
+            'position': 'Per-period basal decomposition and correction taxonomy give more actionable intervention guidance than a single global settings score.',
+            'backing': [
+                f"EXP-582 mean_adjustments={exp582.get('mean_adjustments', 'n/a')}",
+                f"EXP-583 mean_failed={exp583.get('mean_failed', 'n/a')}",
+                '20260627-140610_settings-followup.md',
+            ],
+        },
+        {
+            'theme': 'Physiology proxies need scope, not a winner-take-all ranking',
+            'position': 'Hill-style EGP recovery is best treated as short-horizon explanatory flair, while throughput+balance helps more at 6h–12h and TDD normalization works as a population prior.',
+            'backing': [
+                f"EXP-2629 H4={exp2629.get('hypotheses', {}).get('H4', {}).get('result', 'n/a')}",
+                f"EXP-443 sil_12h={exp443.get('aggregate', {}).get('12h', {}).get('mean_sil_2d', 'n/a')}",
+                '20260627-135059_proxy-scoping.md',
+            ],
+        },
+    ]
 
 
 def _counter_causal_audit(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -502,6 +648,8 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
                 plan['recent_sweep'] = sweep
         if spec.key == 'proxy-scoping':
             plan['proxy_use_case_matrix'] = _build_proxy_use_case_matrix()
+        if spec.key == 'current-research-position':
+            plan['current_research_position'] = _build_current_research_position()
         span.set_outputs({
             'evidence_count': len(evidence),
             'command_count': len(spec.recommended_commands),
@@ -563,6 +711,11 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
             lines.append(f"  - preferred time scale: {row['preferred_time_scale']}")
             lines.append(f"  - deconfounding value: {row['deconfounding_value']}")
             lines.append(f"  - evidence: {json.dumps(row['evidence'], default=str, sort_keys=True)}")
+    if plan.get('current_research_position'):
+        lines.extend(['', '## Current Research Position', ''])
+        for row in plan['current_research_position']:
+            lines.append(f"- **{row['theme']}**: {row['position']}")
+            lines.append(f"  - backing: {', '.join(row['backing'])}")
     lines.extend(['', '## Success Criteria', ''])
     lines.extend([f'- {item}' for item in plan['success_criteria']])
     lines.extend(['', '## Next Steps', ''])
@@ -571,16 +724,267 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
     return json_path, md_path
 
 
+def evaluate_research_plan(plan: dict[str, Any]) -> dict[str, Any]:
+    evidence = plan.get('evidence', [])
+    evidence_refs = {item.get('path') for item in evidence if item.get('path')}
+    command_count = len(plan.get('recommended_commands', []))
+    hypothesis_count = len(plan.get('hypotheses', []))
+    success_criteria_count = len(plan.get('success_criteria', []))
+    counter_causal_count = len(plan.get('counter_causal_findings', []))
+    prioritized_follow_up = plan.get('prioritized_follow_up')
+
+    evidence_coverage = min(1.0, len(evidence) / max(1, hypothesis_count * 2))
+    command_coverage = min(1.0, command_count / max(1, success_criteria_count))
+    counter_causal_score = 1.0 if counter_causal_count and prioritized_follow_up else (
+        0.5 if counter_causal_count else 0.0
+    )
+    retrieval_diversity = min(1.0, len(evidence_refs) / max(1, hypothesis_count))
+    readiness_score = round(
+        0.4 * evidence_coverage
+        + 0.25 * command_coverage
+        + 0.2 * retrieval_diversity
+        + 0.15 * counter_causal_score,
+        3,
+    )
+    if readiness_score >= 0.75:
+        readiness = 'candidate'
+    elif readiness_score >= 0.5:
+        readiness = 'needs-review'
+    else:
+        readiness = 'needs-more-evidence'
+
+    return {
+        'schema_version': '1.0',
+        'review_status': 'unreviewed',
+        'evidence_count': len(evidence),
+        'evidence_file_count': len(evidence_refs),
+        'hypothesis_count': hypothesis_count,
+        'recommended_command_count': command_count,
+        'success_criteria_count': success_criteria_count,
+        'counter_causal_count': counter_causal_count,
+        'has_prioritized_follow_up': bool(prioritized_follow_up),
+        'evidence_coverage_score': round(evidence_coverage, 3),
+        'command_coverage_score': round(command_coverage, 3),
+        'retrieval_diversity_score': round(retrieval_diversity, 3),
+        'counter_causal_audit_score': round(counter_causal_score, 3),
+        'readiness_score': readiness_score,
+        'readiness': readiness,
+    }
+
+
+def build_model_candidate_from_plan(
+    plan: dict[str, Any],
+    evaluation: dict[str, Any],
+) -> dict[str, Any] | None:
+    direction = plan.get('direction')
+    if direction != 'parameter-extraction':
+        return None
+
+    evidence_refs = [f"{item['path']}:{item['line']}" for item in plan.get('evidence', [])[:8]]
+    prioritized = plan.get('prioritized_follow_up') or {}
+    return {
+        'candidate_name': 'effective-parameter-extractor',
+        'candidate_kind': 'structured-physiology-model',
+        'registration_readiness': evaluation['readiness'],
+        'status': 'candidate',
+        'source': 'autoresearch-genai-pilot',
+        'problem_statement': plan.get('question'),
+        'intended_use': (
+            'Infer effective therapy parameters such as ISF, basal tendencies, and '
+            'related correction behavior from retrospective CGM and insulin history.'
+        ),
+        'simple_ml_research_alignment': {
+            'target_research': 'simple-ml-insulin-sensitivity-and-basal-rates',
+            'learned_objects': ['isf_schedule', 'basal_schedule', 'dose_response_fit'],
+            'algorithm_shape': [
+                'segment selection',
+                'digestion gating',
+                'least-squares trend fitting',
+                'time-of-day schedule updates',
+            ],
+        },
+        'inputs': {
+            'required': ['cgm_history', 'insulin_history', 'time_of_day', 'therapy_profile'],
+            'optional': ['controller_context', 'meal_annotations', 'override_state'],
+        },
+        'outputs': {
+            'primary': ['effective_isf_estimate', 'basal_adjustment_signal', 'validation_follow_up'],
+            'artifacts': ['parameter_schedule_json', 'dose_response_fit_json', 'evaluation_summary_json'],
+        },
+        'recommended_next_command': prioritized.get('command'),
+        'evidence_refs': evidence_refs,
+        'supporting_hypotheses': list(plan.get('hypotheses', [])),
+        'evaluation_summary': evaluation,
+    }
+
+
+def _build_learned_bundle_for_candidate(
+    model_candidate: dict[str, Any] | None,
+    output_dir: Path,
+) -> tuple[Path | None, Path | None, dict[str, Any] | None, Path | None, Path | None, dict[str, Any] | None, Path | None, dict[str, Any] | None]:
+    if not model_candidate or not DEFAULT_VALIDATION_RESULTS.exists():
+        return None, None, None, None, None, None, None, None
+    results = json.loads(DEFAULT_VALIDATION_RESULTS.read_text(encoding='utf-8'))
+    bundle = build_effective_parameter_bundle(
+        results,
+        source_path=str(DEFAULT_VALIDATION_RESULTS),
+        score_predicts_future_tir=_load_json_path_if_exists(DEFAULT_SCORE_TIR),
+        basal_decomposition=_load_json_path_if_exists(DEFAULT_BASAL_DECOMP),
+        isf_schedule_optimizer=_load_json_path_if_exists(DEFAULT_ISF_SCHEDULE),
+        basal_schedule_optimizer=_load_json_path_if_exists(DEFAULT_BASAL_SCHEDULE),
+    )
+    evaluation = evaluate_effective_parameter_bundle(bundle)
+    thresholds = propose_effective_parameter_thresholds(evaluation)
+    assessment = assess_effective_parameter_thresholds(evaluation, thresholds)
+    guidance = derive_titration_guidance(evaluation, assessment)
+    stem = _slug(model_candidate['candidate_name'])
+    bundle_path = save_bundle(bundle, output_dir / f'{stem}_bundle.json')
+    evaluation_path = save_bundle(evaluation, output_dir / f'{stem}_bundle_evaluation.json')
+    thresholds_path = save_bundle(thresholds, output_dir / f'{stem}_bundle_thresholds.json')
+    assessment_path = save_bundle(assessment, output_dir / f'{stem}_bundle_assessment.json')
+    guidance_path = save_bundle(guidance, output_dir / f'{stem}_bundle_guidance.json')
+    return bundle_path, evaluation_path, evaluation, thresholds_path, assessment_path, assessment, guidance_path, guidance
+
+
+def _build_trace_payload(
+    plan: dict[str, Any],
+    evaluation: dict[str, Any],
+    json_path: Path,
+    md_path: Path,
+    model_candidate: dict[str, Any] | None,
+    pyfunc_model_path: Path | None,
+    pyfunc_model_uri: str | None,
+    bundle_path: Path | None,
+    bundle_evaluation_path: Path | None,
+    model_evaluation: dict[str, Any] | None,
+    thresholds_path: Path | None,
+    assessment_path: Path | None,
+    threshold_assessment: dict[str, Any] | None,
+    guidance_path: Path | None,
+    titration_guidance: dict[str, Any] | None,
+) -> dict[str, Any]:
+    return {
+        'schema_version': '1.0',
+        'trace_type': 'genai-autoresearch-pilot',
+        'direction': plan['direction'],
+        'request': {
+            'question': plan['question'],
+            'hypotheses': plan['hypotheses'],
+        },
+        'retrieval': {
+            'evidence_count': len(plan['evidence']),
+            'evidence_refs': [f"{item['path']}:{item['line']}" for item in plan['evidence'][:12]],
+        },
+        'audit': {
+            'counter_causal_findings': plan.get('counter_causal_findings', []),
+            'prioritized_follow_up': plan.get('prioritized_follow_up'),
+        },
+        'evaluation': evaluation,
+        'model_evaluation': model_evaluation,
+        'threshold_assessment': threshold_assessment,
+        'titration_guidance': titration_guidance,
+        'outputs': {
+            'json_artifact': str(json_path),
+            'markdown_artifact': str(md_path),
+            'recommended_commands': plan['recommended_commands'],
+            'model_candidate_name': model_candidate['candidate_name'] if model_candidate else None,
+            'pyfunc_model_path': str(pyfunc_model_path) if pyfunc_model_path else None,
+            'pyfunc_model_uri': pyfunc_model_uri,
+            'bundle_path': str(bundle_path) if bundle_path else None,
+            'bundle_evaluation_path': str(bundle_evaluation_path) if bundle_evaluation_path else None,
+            'thresholds_path': str(thresholds_path) if thresholds_path else None,
+            'assessment_path': str(assessment_path) if assessment_path else None,
+            'guidance_path': str(guidance_path) if guidance_path else None,
+        },
+    }
+
+
 def run_direction(direction: str, question: str | None, output_dir: Path) -> dict[str, Any]:
     spec = DIRECTIONS[direction]
+    run_context = build_run_context(
+        task_type='genai-autoresearch',
+        result_type='trace-evaluation',
+        artifact_role='genai-trace',
+        data_source='workspace-docs-and-results',
+        split_strategy='retrieval-over-local-artifacts',
+        split_details={'candidate_file_count': len(spec.candidate_files)},
+        model_family='autoresearch-pilot',
+        experiment_family=direction,
+        extra_tags={'surface': 'genai-pilot', 'direction': direction},
+        extra_params={'direction': direction},
+    )
     with start_run(
         run_name=f'autoresearch-{direction}',
-        tags={'runner': 'autoresearch_agent', 'surface': 'genai-pilot', 'direction': direction},
-        params={'direction': direction, 'question': question or spec.default_question},
+        tags={'runner': 'autoresearch_agent', 'surface': 'genai-pilot', 'direction': direction, **run_context['tags']},
+        params={'direction': direction, 'question': question or spec.default_question, **run_context['params']},
     ):
+        log_run_context(run_context)
         with _span('autoresearch_request', span_type='AGENT', attributes={'direction': direction}) as span:
             plan = build_research_plan(direction, question=question)
             json_path, md_path = _write_outputs(plan, output_dir)
+            evaluation = evaluate_research_plan(plan)
+            model_candidate = build_model_candidate_from_plan(plan, evaluation)
+            (
+                bundle_path,
+                bundle_evaluation_path,
+                model_evaluation,
+                thresholds_path,
+                assessment_path,
+                threshold_assessment,
+                guidance_path,
+                titration_guidance,
+            ) = _build_learned_bundle_for_candidate(
+                model_candidate, output_dir
+            )
+            pyfunc_model_path: Path | None = None
+            pyfunc_model_uri: str | None = None
+            if model_candidate:
+                if bundle_path:
+                    model_candidate['bundle_path'] = str(bundle_path)
+                if bundle_evaluation_path:
+                    model_candidate['bundle_evaluation_path'] = str(bundle_evaluation_path)
+                if model_evaluation:
+                    model_candidate['bundle_evaluation'] = model_evaluation
+                if thresholds_path:
+                    model_candidate['thresholds_path'] = str(thresholds_path)
+                if assessment_path:
+                    model_candidate['threshold_assessment_path'] = str(assessment_path)
+                if threshold_assessment:
+                    model_candidate['threshold_assessment'] = threshold_assessment
+                if guidance_path:
+                    model_candidate['guidance_path'] = str(guidance_path)
+                if titration_guidance:
+                    model_candidate['titration_guidance'] = titration_guidance
+                pyfunc_model_path = output_dir / f'{json_path.stem}_effective_parameter_extractor_model'
+                saved_path = save_effective_parameter_extractor_model(pyfunc_model_path, model_candidate)
+                if saved_path:
+                    pyfunc_model_path = Path(saved_path)
+                    artifacts = {'candidate_json': str(pyfunc_model_path.parent / f'{pyfunc_model_path.name}_candidate.json')}
+                    if bundle_path:
+                        artifacts['bundle_json'] = str(bundle_path)
+                    pyfunc_model_uri = log_pyfunc_model(
+                        'models/pyfunc/effective_parameter_extractor',
+                        python_model=EffectiveParameterExtractorModel(model_candidate),
+                        artifacts=artifacts,
+                        input_example=build_input_example(),
+                    )
+            trace_payload = _build_trace_payload(
+                plan,
+                evaluation,
+                json_path,
+                md_path,
+                model_candidate,
+                pyfunc_model_path,
+                pyfunc_model_uri,
+                bundle_path,
+                bundle_evaluation_path,
+                model_evaluation,
+                thresholds_path,
+                assessment_path,
+                threshold_assessment,
+                guidance_path,
+                titration_guidance,
+            )
             log_metrics({
                 'evidence_count': len(plan['evidence']),
                 'recommended_command_count': len(plan['recommended_commands']),
@@ -589,14 +993,82 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 'prioritized_follow_up_score': (
                     plan['prioritized_follow_up']['score'] if plan.get('prioritized_follow_up') else 0
                 ),
+                'readiness_score': evaluation['readiness_score'],
+                'evidence_coverage_score': evaluation['evidence_coverage_score'],
+                'retrieval_diversity_score': evaluation['retrieval_diversity_score'],
+                'model_schedule_coverage': (
+                    model_evaluation['descriptive']['schedule_coverage_fraction']
+                    if model_evaluation else 0
+                ),
+                'model_aggressive_basal_fraction': (
+                    model_evaluation['safety']['aggressive_basal_fraction']
+                    if model_evaluation else 0
+                ),
+                'promotion_validated': 1 if threshold_assessment and threshold_assessment['promotion_recommendation'] == 'validated' else 0,
+                'guidance_reassessment_days': (
+                    titration_guidance['reassessment_days'] if titration_guidance else 0
+                ),
             })
             log_dict(plan, f'autoresearch/{json_path.name}')
+            log_dict(trace_payload, f'genai/traces/{json_path.stem}_trace.json')
+            log_dict(evaluation, f'genai/evals/{json_path.stem}_evaluation.json')
+            if model_evaluation:
+                log_dict(model_evaluation, f'models/evals/{json_path.stem}_bundle_evaluation.json')
+            if threshold_assessment:
+                log_dict(threshold_assessment, f'models/evals/{json_path.stem}_bundle_assessment.json')
+            if titration_guidance:
+                log_dict(titration_guidance, f'models/evals/{json_path.stem}_bundle_guidance.json')
             log_artifact(json_path, artifact_path='autoresearch')
             log_artifact(md_path, artifact_path='autoresearch')
+            if pyfunc_model_path:
+                log_artifact(pyfunc_model_path.parent / f'{pyfunc_model_path.name}_candidate.json', artifact_path='models/pyfunc-support')
+                log_artifact(pyfunc_model_path / 'MLmodel', artifact_path='models/pyfunc-local')
+            if bundle_path:
+                log_artifact(bundle_path, artifact_path='models/bundles')
+            if bundle_evaluation_path:
+                log_artifact(bundle_evaluation_path, artifact_path='models/evaluations')
+            if thresholds_path:
+                log_artifact(thresholds_path, artifact_path='models/thresholds')
+            if assessment_path:
+                log_artifact(assessment_path, artifact_path='models/assessments')
+            if guidance_path:
+                log_artifact(guidance_path, artifact_path='models/guidance')
+            if model_candidate:
+                log_model_artifact(
+                    model_candidate['candidate_name'],
+                    model_candidate,
+                    artifact_type='model-candidate',
+                    artifact_path='models/candidates',
+                    metadata={
+                        'runner': 'autoresearch_agent',
+                        'direction': direction,
+                        'status': model_candidate['status'],
+                        'registration_readiness': model_candidate['registration_readiness'],
+                    },
+                )
             span.set_inputs({'question': plan['question']})
-            span.set_outputs({'json_path': str(json_path), 'md_path': str(md_path)})
+            span.set_outputs({
+                'json_path': str(json_path),
+                'md_path': str(md_path),
+                'readiness': evaluation['readiness'],
+                'model_candidate_name': model_candidate['candidate_name'] if model_candidate else None,
+                'pyfunc_model_uri': pyfunc_model_uri,
+            })
             return {
                 'plan': plan,
+                'evaluation': evaluation,
+                'model_candidate': model_candidate,
+                'trace_payload': trace_payload,
+                'pyfunc_model_path': pyfunc_model_path,
+                'pyfunc_model_uri': pyfunc_model_uri,
+                'bundle_path': bundle_path,
+                'bundle_evaluation_path': bundle_evaluation_path,
+                'model_evaluation': model_evaluation,
+                'thresholds_path': thresholds_path,
+                'assessment_path': assessment_path,
+                'threshold_assessment': threshold_assessment,
+                'guidance_path': guidance_path,
+                'titration_guidance': titration_guidance,
                 'json_path': json_path,
                 'md_path': md_path,
             }

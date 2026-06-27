@@ -314,6 +314,17 @@ It does four things:
 3. runs a counter-causal audit that flags risky reasoning patterns such as pooled aggregation, composite-score collapse, observed-outcome collider bias, and controller-mediated feedback
 4. logs the memo plus nested MLflow spans so the workflow can be inspected as a GenAI-style pilot
 
+The pilot now also logs:
+
+- a structured GenAI-style trace artifact under `genai/traces/`
+- a deterministic evaluation summary under `genai/evals/`
+- a registration-ready model candidate artifact under `models/candidates/` for the `parameter-extraction` direction
+- a runnable MLflow pyfunc-style parameter-extraction model plus local packaging artifacts for the same direction
+- a learned parameter bundle derived from `visualizations/clinical-validation/validation_results.json`, used as the pyfunc model's primary state when available
+- a bundle evaluation artifact with **descriptive**, **prescriptive**, and **safety** sections for the enriched model state
+- a threshold proposal plus assessment artifact that recommends `validated`, `candidate`, or `needs-review` from the enriched model evaluation
+- a titration guidance artifact that surfaces max basal step, reassessment cadence, and whether concurrent basal+ISF review is required
+
 Initial directions:
 
 - `parameter-extraction` — infer effective parameters/settings from history
@@ -338,6 +349,16 @@ markdown memos. The current pilot does not require LLM API keys because it is a
 structured retrieval-and-planning prototype. If you later replace the memo
 assembly with model-driven reasoning, the same directions can move further into
 the full MLflow GenAI surface.
+
+Build the current parameter-extraction model package from validated artifacts:
+
+```bash
+python3 -m tools.cgmencode.build_effective_parameter_extractor
+```
+
+That package writes a git-ignored bundle, evaluation, threshold assessment,
+titration guidance, and runnable pyfunc model under
+`externals/experiments/parameter-models/`.
 
 When counter-causal patterns are detected, the pilot also emits a
 **Prioritized Follow-Up** section that redirects the next command toward a safer

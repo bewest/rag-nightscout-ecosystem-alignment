@@ -21,7 +21,7 @@ from .experiment_lib import (
     set_seed, get_device, set_device, resolve_patient_paths,
     run_validated_classification, ExperimentContext,
 )
-from .mlflow_utils import start_run
+from .mlflow_utils import build_run_context, log_run_context, start_run
 from .run_pattern_experiments import (
     load_multiscale_data, load_multiscale_data_3way, SCALE_CONFIG,
     save_results,
@@ -1774,9 +1774,22 @@ def run_experiment(key, args):
     print(f"\n{'='*60}")
     print(f"Running: {exp_id} — {desc}")
     print(f"{'='*60}\n")
+    run_context = build_run_context(
+        task_type='validated-experiment',
+        result_type='heldout-evaluation',
+        artifact_role='validated-result',
+        patients_dir=args.patients_dir,
+        data_source='nightscout',
+        split_strategy='validation-framework-temporal',
+        split_details={'default_split': [0.6, 0.2, 0.2]},
+        model_family='validated-registry',
+        experiment_family=key,
+        extra_tags={'experiment_id': exp_id},
+        extra_params={'experiment_key': key, 'experiment_id': exp_id},
+    )
     with start_run(
         run_name=key,
-        tags={'runner': 'experiments_validated', 'experiment_id': exp_id},
+        tags={'runner': 'experiments_validated', 'experiment_id': exp_id, **run_context['tags']},
         params={
             'experiment_key': key,
             'experiment_id': exp_id,
@@ -1785,8 +1798,10 @@ def run_experiment(key, args):
             'output_dir': args.output_dir,
             'epochs': args.epochs,
             'device': str(args.device),
+            **run_context['params'],
         },
     ):
+        log_run_context(run_context)
         return fn(args)
 
 

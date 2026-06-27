@@ -23,7 +23,16 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT / 'tools'))
 
-from cgmencode.mlflow_utils import log_artifact, log_artifacts, log_dict, log_metrics, start_run
+from cgmencode.mlflow_utils import (
+    build_run_context,
+    log_artifact,
+    log_artifacts,
+    log_dict,
+    log_metrics,
+    log_parameter_artifact,
+    log_run_context,
+    start_run,
+)
 
 PATIENTS_DIR = ROOT / 'externals' / 'ns-data' / 'patients'
 VIS_DIR = ROOT / 'visualizations' / 'clinical-validation'
@@ -685,15 +694,30 @@ def generate_report(results):
 if __name__ == '__main__':
     VIS_DIR.mkdir(parents=True, exist_ok=True)
 
+    patient_dirs = sorted(str(p) for p in PATIENTS_DIR.iterdir() if p.is_dir()) if PATIENTS_DIR.exists() else []
+    run_context = build_run_context(
+        task_type='validation-report',
+        result_type='heldout-evaluation',
+        artifact_role='report',
+        patient_paths=patient_dirs,
+        patients_dir=str(PATIENTS_DIR),
+        data_source='nightscout',
+        split_strategy='full-pipeline-batch',
+        split_details={'evaluation_scope': 'all-patients-report'},
+        model_family='clinical-inference-pipeline',
+        experiment_family='validation-report',
+    )
     with start_run(
         run_name='validation-report',
-        tags={'runner': 'run_validation_report'},
+        tags={'runner': 'run_validation_report', **run_context['tags']},
         params={
             'patients_dir': str(PATIENTS_DIR),
             'visualizations_dir': str(VIS_DIR),
             'report_path': str(REPORT_PATH),
+            **run_context['params'],
         },
     ):
+        log_run_context(run_context)
         print("=== Loading patients ===")
         patients = load_all_patients()
         print(f"Loaded {len(patients)} patients\n")
@@ -753,11 +777,27 @@ if __name__ == '__main__':
         json_path = VIS_DIR / 'validation_results.json'
         with open(json_path, 'w') as f:
             json.dump(results_json, f, indent=2, default=str)
+        parameter_summary = {
+            pid: {
+                'effective_isf': data.get('effective_isf'),
+                'profile_isf': data.get('profile_isf'),
+                'isf_discrepancy': data.get('isf_discrepancy'),
+                'units': data.get('units'),
+            }
+            for pid, data in results_json.items()
+            if 'effective_isf' in data or 'profile_isf' in data
+        }
         log_metrics({
             'n_patients': len(patients),
             'n_successful': sum(1 for item in results.values() if item['result'] is not None),
         })
         log_dict(results_json, 'reports/validation_results.json')
+        log_parameter_artifact(
+            'effective_isf_summary',
+            parameter_summary,
+            parameter_type='isf-summary',
+            metadata={'runner': 'run_validation_report', 'n_patients': len(parameter_summary)},
+        )
         log_artifacts(VIS_DIR, artifact_path='visualizations/clinical-validation')
         log_artifact(REPORT_PATH, artifact_path='reports')
         log_artifact(json_path, artifact_path='reports')

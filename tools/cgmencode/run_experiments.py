@@ -36,7 +36,15 @@ from tools.cgmencode.experiment_lib import (
     set_seed,
     train_forecast,
 )
-from tools.cgmencode.mlflow_utils import log_artifact, log_dict, log_metrics, start_run
+from tools.cgmencode.mlflow_utils import (
+    build_run_context,
+    log_artifact,
+    log_dict,
+    log_metrics,
+    log_model_artifact,
+    log_run_context,
+    start_run,
+)
 from tools.cgmencode.real_data_adapter import load_multipatient_nightscout
 
 
@@ -103,6 +111,26 @@ def run_single_config(config, feature_mode, patient_paths, data_cache, args):
     """Train one configuration and return results."""
     label = config['label']
     t0 = time.time()
+    run_context = build_run_context(
+        task_type='forecast',
+        result_type='retrospective',
+        artifact_role='checkpoint',
+        patient_paths=patient_paths,
+        data_source='nightscout',
+        split_strategy='per-patient-chronological-holdout',
+        split_details={
+            'train_fraction': 0.8,
+            'val_fraction': 0.2,
+            'train_shuffle_seed': 42,
+            'window_minutes': args.window * 5,
+        },
+        horizon_minutes=args.window * 5,
+        model_family='grouped-transformer',
+        experiment_family='forecast-config',
+        extra_tags={'feature_mode': feature_mode, 'config_label': label},
+        extra_params={'feature_mode': feature_mode, 'config_label': label},
+        extra_manifest={'config': config},
+    )
 
     # Use cached data
     cache_key = f'{feature_mode}f'
@@ -133,7 +161,7 @@ def run_single_config(config, feature_mode, patient_paths, data_cache, args):
     with start_run(
         run_name=f'{args.name}-{cache_key}-{label}',
         nested=True,
-        tags={'runner': 'run_experiments', 'feature_mode': cache_key, 'config_label': label},
+        tags={'runner': 'run_experiments', 'feature_mode': cache_key, 'config_label': label, **run_context['tags']},
         params={
             'sweep_name': args.name,
             'feature_mode': feature_mode,
@@ -142,8 +170,10 @@ def run_single_config(config, feature_mode, patient_paths, data_cache, args):
             'n_train': len(train_ds),
             'n_val': len(val_ds),
             **config,
+            **run_context['params'],
         },
     ):
+        log_run_context(run_context, artifact_file=f'metadata/{cache_key}_{label}_context.json')
         for seed in args.seeds:
             with start_run(
                 run_name=f'{cache_key}-{label}-s{seed}',
@@ -275,10 +305,29 @@ def main():
     data_cache = {}
     all_results = {}
     total_t0 = time.time()
+    run_context = build_run_context(
+        task_type='forecast',
+        result_type='retrospective',
+        artifact_role='sweep-summary',
+        patient_paths=patient_paths,
+        data_source='nightscout',
+        split_strategy='per-patient-chronological-holdout',
+        split_details={
+            'train_fraction': 0.8,
+            'val_fraction': 0.2,
+            'train_shuffle_seed': 42,
+            'window_minutes': args.window * 5,
+        },
+        horizon_minutes=args.window * 5,
+        model_family='grouped-transformer',
+        experiment_family='forecast-sweep',
+        extra_tags={'sweep_mode': args.sweep},
+        extra_params={'sweep_mode': args.sweep, 'feature_modes_count': len(args.features)},
+    )
 
     with start_run(
         run_name=args.name,
-        tags={'runner': 'run_experiments', 'mode': args.sweep},
+        tags={'runner': 'run_experiments', 'mode': args.sweep, **run_context['tags']},
         params={
             'sweep': args.sweep,
             'features': args.features,
@@ -290,8 +339,10 @@ def main():
             'seeds': args.seeds,
             'device': str(device),
             'n_patients': len(patient_paths),
+            **run_context['params'],
         },
     ):
+        log_run_context(run_context)
         for feat_mode in args.features:
             print(f'\n{"="*60}')
             print(f'  {feat_mode}-Feature Sweep ({len(configs)} configs × {len(args.seeds)} seeds)')
@@ -330,6 +381,16 @@ def main():
 
         best_key = ranked[0][0]
         best = ranked[0][1]
+        log_model_artifact(
+            'best_forecast_config',
+            {'best_key': best_key, 'best_result': best},
+            artifact_type='model-selection',
+            metadata={
+                'runner': 'run_experiments',
+                'task_type': 'forecast',
+                'model_family': 'grouped-transformer',
+            },
+        )
         log_metrics(best['aggregate'], prefix='best')
         print(f'\n  BEST: {best_key}')
         print(f'  MAE={best["aggregate"]["mean_mae"]:.1f} mg/dL '

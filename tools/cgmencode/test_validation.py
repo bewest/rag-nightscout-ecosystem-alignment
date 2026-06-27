@@ -34,6 +34,8 @@ import os
 import tempfile
 
 import numpy as np
+import pandas as pd
+import pandas as pd
 
 # ── Imports under test ──────────────────────────────────────────────────
 
@@ -55,7 +57,24 @@ from tools.cgmencode.objective_validators import (
 )
 from tools.cgmencode.experiment_lib import ExperimentContext, set_seed
 from tools.cgmencode import mlflow_utils
-from tools.cgmencode.autoresearch_agent import build_research_plan, DIRECTIONS
+from tools.cgmencode.autoresearch_agent import (
+    DIRECTIONS,
+    build_model_candidate_from_plan,
+    build_research_plan,
+    evaluate_research_plan,
+)
+from tools.cgmencode.mlflow_pyfunc_models import (
+    EffectiveParameterExtractorModel,
+    save_effective_parameter_extractor_model,
+)
+from tools.cgmencode.parameter_model_bundle import (
+    derive_titration_guidance,
+    assess_effective_parameter_thresholds,
+    build_effective_parameter_bundle,
+    evaluate_effective_parameter_bundle,
+    propose_effective_parameter_thresholds,
+    save_bundle,
+)
 
 
 # =============================================================================
@@ -662,6 +681,58 @@ class TestMlflowUtils(unittest.TestCase):
                 self.assertIsNone(run)
             self.assertFalse(mlflow_utils.has_active_run())
 
+    def test_build_run_context_tracks_cohort_and_split(self):
+        context = mlflow_utils.build_run_context(
+            task_type='forecast',
+            result_type='retrospective',
+            artifact_role='checkpoint',
+            patient_paths=[
+                '/tmp/patient-b/training',
+                '/tmp/patient-a/training',
+            ],
+            split_strategy='per-patient-chronological-holdout',
+            split_details={'train_fraction': 0.8, 'val_fraction': 0.2},
+            horizon_minutes=120,
+            model_family='grouped-transformer',
+            experiment_family='forecast-sweep',
+        )
+        self.assertEqual(context['manifest']['patient_ids'], ['patient-a', 'patient-b'])
+        self.assertEqual(context['params']['n_patients'], 2)
+        self.assertEqual(context['params']['split_strategy'], 'per-patient-chronological-holdout')
+        self.assertEqual(context['params']['horizon_minutes'], 120)
+        self.assertEqual(context['tags']['model_family'], 'grouped-transformer')
+        self.assertEqual(
+            context['params']['cohort_hash'],
+            mlflow_utils.cohort_fingerprint(['patient-a', 'patient-b']),
+        )
+
+    def test_log_run_context_writes_manifest(self):
+        context = {'manifest': {'task_type': 'forecast', 'n_patients': 2}}
+        with mock.patch.object(mlflow_utils, 'has_active_run', return_value=True), \
+             mock.patch.object(mlflow_utils, 'log_dict') as mocked_log_dict:
+            mlflow_utils.log_run_context(context, artifact_file='metadata/test_context.json')
+        mocked_log_dict.assert_called_once_with(
+            {'task_type': 'forecast', 'n_patients': 2},
+            'metadata/test_context.json',
+        )
+
+    def test_log_parameter_artifact_wraps_payload(self):
+        with mock.patch.object(mlflow_utils, 'has_active_run', return_value=True), \
+             mock.patch.object(mlflow_utils, 'log_dict') as mocked_log_dict:
+            envelope = mlflow_utils.log_parameter_artifact(
+                'effective isf summary',
+                {'patient-a': {'effective_isf': 42.0}},
+                parameter_type='isf-summary',
+                metadata={'runner': 'unit-test'},
+            )
+        self.assertEqual(envelope['artifact_type'], 'parameter-artifact')
+        self.assertEqual(envelope['metadata']['parameter_type'], 'isf-summary')
+        self.assertEqual(envelope['metadata']['runner'], 'unit-test')
+        mocked_log_dict.assert_called_once()
+        logged_payload, logged_path = mocked_log_dict.call_args.args
+        self.assertEqual(logged_path, 'parameters/effective_isf_summary.json')
+        self.assertEqual(logged_payload['payload']['patient-a']['effective_isf'], 42.0)
+
 
 class TestAutoresearchAgent(unittest.TestCase):
     """Tests for the structured autoresearch pilot runner."""
@@ -669,7 +740,7 @@ class TestAutoresearchAgent(unittest.TestCase):
     def test_all_directions_defined(self):
         self.assertEqual(
             set(DIRECTIONS.keys()),
-            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup'},
+            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position'},
         )
 
     def test_build_research_plan_structure(self):
@@ -682,6 +753,321 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertIn('evidence', plan)
         self.assertIn('counter_causal_findings', plan)
         self.assertIn('prioritized_follow_up', plan)
+
+    def test_evaluate_research_plan_returns_readiness(self):
+        plan = build_research_plan('parameter-extraction', question='test question')
+        evaluation = evaluate_research_plan(plan)
+        self.assertIn('readiness', evaluation)
+        self.assertIn('readiness_score', evaluation)
+        self.assertGreaterEqual(evaluation['evidence_count'], 1)
+        self.assertTrue(0.0 <= evaluation['readiness_score'] <= 1.0)
+
+    def test_parameter_extraction_builds_model_candidate(self):
+        plan = build_research_plan('parameter-extraction', question='test question')
+        evaluation = evaluate_research_plan(plan)
+        candidate = build_model_candidate_from_plan(plan, evaluation)
+        self.assertIsNotNone(candidate)
+        self.assertEqual(candidate['candidate_name'], 'effective-parameter-extractor')
+        self.assertEqual(candidate['status'], 'candidate')
+        self.assertIn('simple_ml_research_alignment', candidate)
+        self.assertIn('dose_response_fit', candidate['simple_ml_research_alignment']['learned_objects'])
+
+    def test_non_parameter_direction_does_not_build_model_candidate(self):
+        plan = build_research_plan('deconfounding-audit')
+        evaluation = evaluate_research_plan(plan)
+        candidate = build_model_candidate_from_plan(plan, evaluation)
+        self.assertIsNone(candidate)
+
+    def test_effective_parameter_extractor_predicts_dataframe(self):
+        plan = build_research_plan('parameter-extraction', question='test question')
+        evaluation = evaluate_research_plan(plan)
+        candidate = build_model_candidate_from_plan(plan, evaluation)
+        candidate['titration_guidance'] = {
+            'max_basal_step_pct': 10,
+            'reassessment_days': 3,
+            'concurrent_change_review_required': True,
+            'promotion_recommendation': 'needs-review',
+        }
+        bundle = build_effective_parameter_bundle({
+            'patient-a': {
+                'effective_isf': 64.0,
+                'profile_isf': 40.0,
+                'isf_discrepancy': 1.6,
+                'tir': 0.61,
+                'tbr': 0.03,
+                'tar': 0.36,
+                'ada_grade': 'B',
+                'units': 'mg/dL',
+            }
+        }, isf_schedule_optimizer={
+            'per_patient': [{
+                'patient': 'patient-a',
+                'current_isf': 40.0,
+                'optimized_schedule': {'00:00': 66.0, '08:00': 52.0},
+                'variation_pct': 22.0,
+                'n_blocks': 2,
+            }]
+        }, basal_decomposition={
+            'patients': {
+                'patient-a': {
+                    'periods': {'overnight': {'mean_fasting_dbg': 3.0, 'recommendation': 'increase'}},
+                    'worst_period': 'overnight',
+                    'needs_adjustment': ['overnight'],
+                    'n_adjustments': 1,
+                }
+            }
+        })
+        model = EffectiveParameterExtractorModel(candidate, bundle=bundle)
+        result = model.predict(
+            None,
+            pd.DataFrame([{
+                'patient_id': 'patient-a',
+                'profile_isf': 40.0,
+                'observed_isf': 60.0,
+                'correction_ratio': 1.4,
+                'overnight_drift_mgdl_per_hour': 8.0,
+                'time_of_day': 'overnight',
+            }]),
+        )
+        self.assertIn('effective_isf_estimate', result.columns)
+        self.assertIn('basal_adjustment_signal', result.columns)
+        self.assertEqual(result.iloc[0]['isf_source'], 'patient-isf-schedule')
+        self.assertEqual(result.iloc[0]['effective_isf_estimate'], 66.0)
+        self.assertEqual(result.iloc[0]['needs_adjustment_periods'], ['overnight'])
+        self.assertEqual(result.iloc[0]['max_basal_step_pct'], 10)
+        self.assertEqual(result.iloc[0]['model_candidate_name'], 'effective-parameter-extractor')
+
+    def test_effective_parameter_bundle_evaluation_has_three_sections(self):
+        bundle = build_effective_parameter_bundle({
+            'patient-a': {
+                'effective_isf': 64.0,
+                'profile_isf': 40.0,
+                'isf_discrepancy': 1.6,
+                'tir': 0.61,
+                'tbr': 0.03,
+                'tar': 0.36,
+                'ada_grade': 'B',
+                'units': 'mg/dL',
+            }
+        }, isf_schedule_optimizer={
+            'per_patient': [{
+                'patient': 'patient-a',
+                'current_isf': 40.0,
+                'optimized_schedule': {'00:00': 66.0},
+                'variation_pct': 22.0,
+                'n_blocks': 1,
+            }]
+        }, basal_decomposition={
+            'patients': {
+                'patient-a': {
+                    'periods': {'overnight': {'mean_fasting_dbg': 3.0, 'recommendation': 'increase'}},
+                    'worst_period': 'overnight',
+                    'needs_adjustment': ['overnight'],
+                    'n_adjustments': 1,
+                }
+            }
+        }, basal_schedule_optimizer={
+            'per_patient': [{
+                'patient': 'patient-a',
+                'current_basal': 0.4,
+                'max_adj_pct': -40.0,
+                'schedule': {'00:00': {'new_rate': 0.24}},
+                'n_blocks': 1,
+            }]
+        }, score_predicts_future_tir={
+            'patients': {
+                'patient-a': {
+                    'n_months': 4,
+                    'r_score_tir_change': -0.8,
+                    'low_score_tir_change': -0.01,
+                    'high_score_tir_change': -0.05,
+                }
+            }
+        })
+        summary = evaluate_effective_parameter_bundle(bundle)
+        self.assertIn('descriptive', summary)
+        self.assertIn('prescriptive', summary)
+        self.assertIn('safety', summary)
+        self.assertEqual(summary['descriptive']['n_patients'], 1)
+        self.assertEqual(summary['descriptive']['schedule_coverage_fraction'], 1.0)
+
+    def test_effective_parameter_thresholds_and_assessment(self):
+        bundle = build_effective_parameter_bundle({
+            'patient-a': {
+                'effective_isf': 64.0,
+                'profile_isf': 40.0,
+                'isf_discrepancy': 1.6,
+                'tir': 0.61,
+                'tbr': 0.03,
+                'tar': 0.36,
+                'ada_grade': 'B',
+                'units': 'mg/dL',
+            }
+        }, isf_schedule_optimizer={
+            'per_patient': [{
+                'patient': 'patient-a',
+                'current_isf': 40.0,
+                'optimized_schedule': {'00:00': 66.0},
+                'variation_pct': 22.0,
+                'n_blocks': 1,
+            }]
+        }, basal_decomposition={
+            'patients': {
+                'patient-a': {
+                    'periods': {'overnight': {'mean_fasting_dbg': 3.0, 'recommendation': 'increase'}},
+                    'worst_period': 'overnight',
+                    'needs_adjustment': ['overnight'],
+                    'n_adjustments': 1,
+                }
+            }
+        }, basal_schedule_optimizer={
+            'per_patient': [{
+                'patient': 'patient-a',
+                'current_basal': 0.4,
+                'max_adj_pct': -40.0,
+                'schedule': {'00:00': {'new_rate': 0.24}},
+                'n_blocks': 1,
+            }]
+        }, score_predicts_future_tir={
+            'patients': {
+                'patient-a': {
+                    'n_months': 4,
+                    'r_score_tir_change': -0.8,
+                    'low_score_tir_change': -0.01,
+                    'high_score_tir_change': -0.05,
+                }
+            }
+        })
+        evaluation = evaluate_effective_parameter_bundle(bundle)
+        thresholds = propose_effective_parameter_thresholds(evaluation)
+        assessment = assess_effective_parameter_thresholds(evaluation, thresholds)
+        self.assertIn('gates', thresholds)
+        self.assertIn('promotion_recommendation', assessment)
+        self.assertEqual(assessment['promotion_recommendation'], 'needs-review')
+        self.assertIn('safety.basal_over_ten_pct_fraction', assessment['failed_gates'])
+        self.assertIn('safety.concurrent_change_fraction', assessment['failed_gates'])
+        guidance = derive_titration_guidance(evaluation, assessment)
+        self.assertEqual(guidance['max_basal_step_pct'], 10)
+        self.assertEqual(guidance['reassessment_days'], 3)
+        self.assertTrue(guidance['concurrent_change_review_required'])
+
+    def test_effective_parameter_thresholds_can_validate_safe_bundle(self):
+        bundle = build_effective_parameter_bundle({
+            'patient-a': {
+                'effective_isf': 44.0,
+                'profile_isf': 40.0,
+                'isf_discrepancy': 1.05,
+                'tir': 0.7,
+                'tbr': 0.02,
+                'tar': 0.28,
+                'ada_grade': 'A',
+                'units': 'mg/dL',
+            }
+        }, basal_decomposition={
+            'patients': {
+                'patient-a': {
+                    'periods': {'overnight': {'mean_fasting_dbg': 0.5, 'recommendation': 'increase'}},
+                    'worst_period': 'overnight',
+                    'needs_adjustment': ['overnight'],
+                    'n_adjustments': 1,
+                }
+            }
+        }, basal_schedule_optimizer={
+            'per_patient': [{
+                'patient': 'patient-a',
+                'current_basal': 0.4,
+                'max_adj_pct': -5.0,
+                'schedule': {'00:00': {'new_rate': 0.38}},
+                'n_blocks': 1,
+            }]
+        }, isf_schedule_optimizer={
+            'per_patient': [{
+                'patient': 'patient-a',
+                'current_isf': 40.0,
+                'optimized_schedule': {'00:00': 42.0},
+                'variation_pct': 5.0,
+                'n_blocks': 1,
+            }]
+        }, score_predicts_future_tir={
+            'patients': {
+                'patient-a': {
+                    'n_months': 4,
+                    'r_score_tir_change': -0.4,
+                    'low_score_tir_change': -0.01,
+                    'high_score_tir_change': -0.03,
+                }
+            }
+        })
+        evaluation = evaluate_effective_parameter_bundle(bundle)
+        thresholds = propose_effective_parameter_thresholds(evaluation)
+        assessment = assess_effective_parameter_thresholds(evaluation, thresholds)
+        self.assertEqual(assessment['promotion_recommendation'], 'validated')
+        guidance = derive_titration_guidance(evaluation, assessment)
+        self.assertEqual(guidance['reassessment_days'], 5)
+
+    def test_effective_parameter_extractor_model_saves_and_loads(self):
+        import mlflow  # type: ignore
+
+        plan = build_research_plan('parameter-extraction', question='test question')
+        evaluation = evaluate_research_plan(plan)
+        candidate = build_model_candidate_from_plan(plan, evaluation)
+        with tempfile.TemporaryDirectory() as d:
+            bundle = build_effective_parameter_bundle(
+                {
+                    'patient-a': {
+                        'effective_isf': 64.0,
+                        'profile_isf': 40.0,
+                        'isf_discrepancy': 1.6,
+                        'tir': 0.61,
+                        'tbr': 0.03,
+                        'tar': 0.36,
+                        'ada_grade': 'B',
+                        'units': 'mg/dL',
+                    }
+                },
+                isf_schedule_optimizer={
+                    'per_patient': [{
+                        'patient': 'patient-a',
+                        'current_isf': 40.0,
+                        'optimized_schedule': {'00:00': 66.0, '08:00': 52.0},
+                        'variation_pct': 22.0,
+                        'n_blocks': 2,
+                    }]
+                },
+                basal_decomposition={
+                    'patients': {
+                        'patient-a': {
+                            'periods': {
+                                'overnight': {
+                                    'mean_fasting_dbg': 3.0,
+                                    'recommendation': 'increase',
+                                }
+                            },
+                            'worst_period': 'overnight',
+                            'needs_adjustment': ['overnight'],
+                            'n_adjustments': 1,
+                        }
+                    }
+                },
+            )
+            bundle_path = save_bundle(bundle, Path(d) / 'bundle.json')
+            candidate['bundle_path'] = str(bundle_path)
+            model_dir = Path(d) / 'effective_parameter_extractor_model'
+            saved = save_effective_parameter_extractor_model(model_dir, candidate)
+            self.assertEqual(saved, str(model_dir))
+            loaded = mlflow.pyfunc.load_model(str(model_dir))
+            result = loaded.predict(pd.DataFrame([{
+                'patient_id': 'patient-a',
+                'profile_isf': 42.0,
+                'observed_isf': 58.0,
+                'correction_ratio': 1.2,
+                'overnight_drift_mgdl_per_hour': 4.0,
+                'time_of_day': 'overnight',
+            }]))
+            self.assertIn('effective_isf_estimate', result.columns)
+            self.assertIn('confidence_score', result.columns)
+            self.assertEqual(result.iloc[0]['isf_source'], 'patient-isf-schedule')
+            self.assertEqual(result.iloc[0]['effective_isf_estimate'], 66.0)
 
     def test_deconfounding_plan_finds_counter_causal_patterns(self):
         plan = build_research_plan('deconfounding-audit')
@@ -700,6 +1086,17 @@ class TestAutoresearchAgent(unittest.TestCase):
         plan = build_research_plan('proxy-scoping')
         self.assertIn('proxy_use_case_matrix', plan)
         self.assertTrue(plan['proxy_use_case_matrix'])
+
+    def test_safety_vs_explanation_plan_builds(self):
+        plan = build_research_plan('safety-vs-explanation')
+        self.assertEqual(plan['direction'], 'safety-vs-explanation')
+        self.assertTrue(plan['recommended_commands'])
+
+    def test_current_research_position_builds_summary(self):
+        plan = build_research_plan('current-research-position')
+        self.assertEqual(plan['direction'], 'current-research-position')
+        self.assertIn('current_research_position', plan)
+        self.assertTrue(plan['current_research_position'])
 
 
 # =============================================================================
