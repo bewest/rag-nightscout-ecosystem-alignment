@@ -333,6 +333,7 @@ Initial directions:
 - `deconfounding-audit` — audit controller/user/physiology confounding and recommend a cleaner follow-up
 - `proxy-scoping` — classify physiology proxies by best use case, deconfounding value, and preferred time scale
 - `settings-followup` — turn settings adequacy, basal-period decomposition, and correction taxonomy into actionable next-step guidance
+- `titration-safety-followup` — combine staged titration artifacts with validated hypo guardrails to assess whether safety-oriented follow-up selection improved
 
 Run a pilot direction:
 

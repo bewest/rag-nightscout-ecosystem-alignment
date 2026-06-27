@@ -741,7 +741,7 @@ class TestAutoresearchAgent(unittest.TestCase):
     def test_all_directions_defined(self):
         self.assertEqual(
             set(DIRECTIONS.keys()),
-            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position'},
+            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup'},
         )
 
     def test_build_research_plan_structure(self):
@@ -1102,6 +1102,12 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertEqual(plan['direction'], 'current-research-position')
         self.assertIn('current_research_position', plan)
         self.assertTrue(plan['current_research_position'])
+
+    def test_titration_safety_followup_builds_summary(self):
+        plan = build_research_plan('titration-safety-followup')
+        self.assertEqual(plan['direction'], 'titration-safety-followup')
+        self.assertIn('titration_safety_summary', plan)
+        self.assertIn('staged_action_counts', plan['titration_safety_summary'])
 
 
 # =============================================================================

@@ -320,6 +320,38 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'State one next research direction that follows from the synthesis.',
         ),
     ),
+    'titration-safety-followup': DirectionSpec(
+        key='titration-safety-followup',
+        title='Staged Titration Safety Follow-Up',
+        default_question=(
+            'Use the staged titration-plan artifacts plus validated hypo results to decide whether the '
+            'new parameter-extraction outputs improve safety-oriented follow-up selection and endpoint framing.'
+        ),
+        search_terms=('titration', 'review-basal-first', 'lockstep-review', 'hypo', 'safety', 'threshold', 'specificity'),
+        candidate_files=(
+            'externals/experiments/parameter-models/effective-parameter-extractor_plan.json',
+            'externals/experiments/parameter-models/effective-parameter-extractor_guidance.json',
+            'externals/experiments/exp_322v_validated.json',
+            'externals/experiments/exp582_per-period_basal_decomposition.json',
+            'externals/experiments/exp583_correction_event_taxonomy.json',
+            'tools/cgmencode/parameter_model_bundle.py',
+            'tools/cgmencode/README.md',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.build_effective_parameter_extractor',
+            'python3 -m tools.cgmencode.experiments_validated validate-hypo',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction settings-followup',
+        ),
+        hypotheses=(
+            'Staged titration-plan artifacts improve capability by turning parameter-extraction outputs into explicit safety-constrained next actions.',
+            'Validated hypo remains the strongest endpoint guardrail for deciding whether staged titration suggestions are safe enough to prioritize.',
+        ),
+        success_criteria=(
+            'Quantify the staged titration action mix and review burden.',
+            'State whether safety framing improved compared with memo-only autoresearch.',
+            'Name the next best safety-oriented follow-up command.',
+        ),
+    ),
 }
 
 COUNTER_CAUSAL_PATTERNS: tuple[dict[str, Any], ...] = (
@@ -561,6 +593,57 @@ def _build_current_research_position() -> list[dict[str, Any]]:
     ]
 
 
+def _build_titration_safety_summary() -> dict[str, Any]:
+    titration_plan = _load_json_if_exists(
+        'externals/experiments/parameter-models/effective-parameter-extractor_plan.json'
+    ) or {}
+    titration_guidance = _load_json_if_exists(
+        'externals/experiments/parameter-models/effective-parameter-extractor_guidance.json'
+    ) or {}
+    exp322 = _load_json_if_exists('externals/experiments/exp_322v_validated.json') or {}
+
+    per_patient = titration_plan.get('per_patient', {})
+    staged_counts: dict[str, int] = {}
+    review_required = 0
+    suggested_steps: list[float] = []
+    for patient in per_patient.values():
+        action = patient.get('staged_action', 'unknown')
+        staged_counts[action] = staged_counts.get(action, 0) + 1
+        if patient.get('review_required'):
+            review_required += 1
+        step = patient.get('suggested_basal_step_pct')
+        if step is not None:
+            try:
+                suggested_steps.append(float(step))
+            except (TypeError, ValueError):
+                pass
+
+    n_patients = len(per_patient)
+    aggregate = exp322.get('multi_seed', {}).get('aggregate', {})
+    return {
+        'promotion_recommendation': titration_plan.get('promotion_recommendation'),
+        'max_basal_step_pct': titration_guidance.get('max_basal_step_pct'),
+        'reassessment_days': titration_guidance.get('reassessment_days'),
+        'concurrent_change_review_required': titration_guidance.get('concurrent_change_review_required'),
+        'n_patients': n_patients,
+        'staged_action_counts': staged_counts,
+        'review_required_fraction': round(review_required / n_patients, 3) if n_patients else None,
+        'mean_suggested_basal_step_pct': (
+            round(sum(suggested_steps) / len(suggested_steps), 2) if suggested_steps else None
+        ),
+        'validated_hypo_guardrail': {
+            'auc_roc_mean': aggregate.get('auc_roc', {}).get('mean'),
+            'specificity_mean': aggregate.get('specificity', {}).get('mean'),
+            'f1_positive_mean': aggregate.get('f1_positive', {}).get('mean'),
+        },
+        'capability_gain': (
+            'Parameter extraction now yields staged, safety-constrained next actions that can be audited against a validated hypo endpoint.'
+            if per_patient and aggregate
+            else 'Capability gain not yet measurable because staged titration artifacts or validated hypo outputs are missing.'
+        ),
+    }
+
+
 def _counter_causal_audit(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     for pattern in COUNTER_CAUSAL_PATTERNS:
@@ -651,6 +734,8 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['proxy_use_case_matrix'] = _build_proxy_use_case_matrix()
         if spec.key == 'current-research-position':
             plan['current_research_position'] = _build_current_research_position()
+        if spec.key == 'titration-safety-followup':
+            plan['titration_safety_summary'] = _build_titration_safety_summary()
         span.set_outputs({
             'evidence_count': len(evidence),
             'command_count': len(spec.recommended_commands),
@@ -717,6 +802,16 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
         for row in plan['current_research_position']:
             lines.append(f"- **{row['theme']}**: {row['position']}")
             lines.append(f"  - backing: {', '.join(row['backing'])}")
+    if plan.get('titration_safety_summary'):
+        summary = plan['titration_safety_summary']
+        lines.extend(['', '## Titration Safety Summary', ''])
+        lines.append(f"- promotion recommendation: {summary.get('promotion_recommendation')}")
+        lines.append(f"- max basal step pct: {summary.get('max_basal_step_pct')}")
+        lines.append(f"- reassessment days: {summary.get('reassessment_days')}")
+        lines.append(f"- review required fraction: {summary.get('review_required_fraction')}")
+        lines.append(f"- staged action counts: {json.dumps(summary.get('staged_action_counts', {}), sort_keys=True)}")
+        lines.append(f"- validated hypo guardrail: {json.dumps(summary.get('validated_hypo_guardrail', {}), sort_keys=True)}")
+        lines.append(f"- capability gain: {summary.get('capability_gain')}")
     lines.extend(['', '## Success Criteria', ''])
     lines.extend([f'- {item}' for item in plan['success_criteria']])
     lines.extend(['', '## Next Steps', ''])
