@@ -73,6 +73,14 @@ CASES: dict[str, ResearchCase] = {
         ),
         env=(('PYTHONPATH', 'tools'),),
     ),
+    'correction-taxonomy': ResearchCase(
+        key='correction-taxonomy',
+        title='Correction event taxonomy',
+        description='Classifies correction responses by speed, failure mode, and overcorrection risk to support intervention design.',
+        command=('python3', 'tools/cgmencode/exp_autoresearch_581.py', '--experiments', '583', '--detail', '--save'),
+        artifact_paths=('externals/experiments/exp583_correction_event_taxonomy.json',),
+        env=(('PYTHONPATH', 'tools'),),
+    ),
 }
 
 

@@ -669,7 +669,7 @@ class TestAutoresearchAgent(unittest.TestCase):
     def test_all_directions_defined(self):
         self.assertEqual(
             set(DIRECTIONS.keys()),
-            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping'},
+            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup'},
         )
 
     def test_build_research_plan_structure(self):

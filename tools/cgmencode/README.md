@@ -220,6 +220,8 @@ Raw data → AI-ready vectors via three critical steps:
 
 ### MLflow Tracking
 
+Related report: `docs/60-research/mlflow-experience-report-2026-06-27.md`
+
 MLflow support is wired into the canonical experiment entrypoints:
 
 - `run_experiments.py` — hyperparameter sweeps with per-config and per-seed runs
@@ -282,6 +284,7 @@ or human feedback on free-form outputs.
 | `experiments_validated.py` | Evaluation / validation runs | No | Multi-seed, 3-way split, CI-heavy validation |
 | `run_validation_report.py` | Artifact-heavy evaluation/report run | No | Logs figures, report markdown, and summary JSON |
 | XGBoost experiments (`exp_clinical_1151.py` and similar) | Classical ML runs / model artifacts | No | Tree-based regressors/classifiers belong in standard tracking |
+| Learned physiological parameter work (ISF / basal / CR / EGP extraction, dose-response fitting, schedule learning) | Structured experiment / model-artifact tracking | No | The learned object may be coefficients, schedules, or report artifacts rather than a neural checkpoint |
 | oref0/Loop/AAPS conformance vectors | Dataset / benchmark / artifacts | No | Validation corpus and benchmark inputs, not LLM traces |
 | cross-algorithm equivalence harness | Benchmark / evaluation experiment | No | Structured algorithm comparison |
 | `EXP-2895-2900_AUTORESEARCH_PIPELINE.md` templates | Potential future agent workflow | Maybe | GenAI only if these become real prompt/tool-driven research agents |
@@ -316,6 +319,8 @@ Initial directions:
 - `parameter-extraction` — infer effective parameters/settings from history
 - `intervention-scoring` — rank candidate interventions by likely TIR benefit and risk
 - `deconfounding-audit` — audit controller/user/physiology confounding and recommend a cleaner follow-up
+- `proxy-scoping` — classify physiology proxies by best use case, deconfounding value, and preferred time scale
+- `settings-followup` — turn settings adequacy, basal-period decomposition, and correction taxonomy into actionable next-step guidance
 
 Run a pilot direction:
 
@@ -324,6 +329,8 @@ export MLFLOW_TRACKING_URI=http://127.0.0.1:5000
 python3 -m tools.cgmencode.autoresearch_agent --direction parameter-extraction
 python3 -m tools.cgmencode.autoresearch_agent --direction intervention-scoring
 python3 -m tools.cgmencode.autoresearch_agent --direction deconfounding-audit
+python3 -m tools.cgmencode.autoresearch_agent --direction proxy-scoping
+python3 -m tools.cgmencode.autoresearch_agent --direction settings-followup
 ```
 
 Outputs are written to `externals/experiments/autoresearch/` as both JSON and

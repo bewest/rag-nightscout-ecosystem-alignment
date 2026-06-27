@@ -193,6 +193,37 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'Identify where a proxy should be treated as explanatory flair rather than decision-grade evidence.',
         ),
     ),
+    'settings-followup': DirectionSpec(
+        key='settings-followup',
+        title='Settings Follow-Up and Time-of-Day Intervention Planning',
+        default_question=(
+            'Using the settings adequacy, basal-period decomposition, and correction taxonomy work, '
+            'identify the most actionable next settings-focused follow-up and explain which time scales '
+            'matter for intervention design.'
+        ),
+        search_terms=('basal', 'period', 'evening', 'morning', 'correction', 'overcorrection', 'tir', 'settings score'),
+        candidate_files=(
+            'tools/cgmencode/exp_autoresearch_581.py',
+            'externals/experiments/exp581_score_predicts_future_tir.json',
+            'externals/experiments/exp582_per-period_basal_decomposition.json',
+            'externals/experiments/exp583_correction_event_taxonomy.json',
+            'tools/cgmencode/run_validation_report.py',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.run_research_reproduction correction-taxonomy',
+            'python3 -m tools.cgmencode.run_research_reproduction settings-adequacy',
+            'python3 -m tools.cgmencode.experiments_validated validate-hypo',
+        ),
+        hypotheses=(
+            'Time-of-day basal decomposition is more actionable for settings changes than a global settings adequacy score.',
+            'Correction taxonomy can distinguish where intervention quality is limited by slow correction, failed correction, or overcorrection risk.',
+        ),
+        success_criteria=(
+            'Name the most actionable settings-focused next experiment or analysis.',
+            'State which time scale is best for basal tuning versus correction assessment.',
+            'Explain whether the next step is mainly tuning, triage, or safety-focused.',
+        ),
+    ),
 }
 
 COUNTER_CAUSAL_PATTERNS: tuple[dict[str, Any], ...] = (
