@@ -27,6 +27,12 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
 
 from report.ns_loader import load_from_dir
+from report.recommendation_context import (
+    apply_titration_policy_to_cards,
+    build_recommendation_lists,
+    build_recommendation_status,
+    load_recommendation_context,
+)
 from report.therapy_analyzer import analyze_therapy
 from cgmencode.production.pipeline import run_pipeline
 
@@ -279,19 +285,6 @@ def _fmt_num(value, suffix="", digits=1):
     return f"{value:.{digits}f}{suffix}"
 
 
-def _load_canonical_bundle(bundle_dir: Path):
-    pipeline_path = bundle_dir / 'pipeline.json'
-    if not pipeline_path.exists():
-        return None
-    bundle = {
-        'pipeline': json.loads(pipeline_path.read_text()),
-    }
-    facts_path = bundle_dir / 'facts.json'
-    if facts_path.exists():
-        bundle['facts'] = json.loads(facts_path.read_text())
-    return bundle
-
-
 def _confidence_components(sample_score, benefit_score, agreement_score):
     sample_score = max(0, min(100, sample_score))
     benefit_score = max(0, min(100, benefit_score))
@@ -540,9 +533,10 @@ def _pipeline_rec_payload(rec):
     }
 
 
-canonical_bundle = _load_canonical_bundle(OUTPUT.parent)
-canonical_pipeline = canonical_bundle.get('pipeline') if canonical_bundle else None
-canonical_facts = canonical_bundle.get('facts') if canonical_bundle else None
+presentation_context = load_recommendation_context(OUTPUT.parent, root=ROOT)
+canonical_pipeline = presentation_context.get('pipeline')
+canonical_facts = presentation_context.get('facts')
+recommendation_status = build_recommendation_status(meta['patient_id'], presentation_context)
 canonical_meal_rows = _meal_rows_from_sources(canonical_pipeline, mh)
 evidence_plot_names = _generate_recommendation_evidence_plots(
     OUTPUT.parent / 'plots',
@@ -880,36 +874,26 @@ else:
             'automation_alt': 'Use controller targets or time-bound overrides as the first safety mechanism before manual behavior asks.',
         })
 
+decision_cards = apply_titration_policy_to_cards(decision_cards, recommendation_status)
 decision_cards = decision_cards[:5]
 
-if canonical_pipeline:
-    priority_map = {1: 'high', 2: 'medium', 3: 'info'}
-    therapy_recs_data = []
-    recs_data = []
-    for rec in pipeline_recs:
-        priority = priority_map.get(rec.get('priority'), 'info')
-        category = (rec.get('parameter') or rec.get('action_type') or 'recommendation').replace('_', ' ')
-        finding = rec.get('description') or category.title()
-        therapy_recs_data.append({
-            'category': category,
-            'priority': priority,
-            'finding': finding,
-            'recommendation': rec.get('rationale') or rec.get('description') or finding,
-            'evidence': rec.get('evidence') or 'Canonical parquet-backed cgmencode recommendation.',
-            'confirmable': 'Review against canonical report bundle.',
-        })
-        if rec.get('parameter'):
-            recs_data.append({
-                'param': rec.get('parameter'),
-                'dir': rec.get('direction') or 'review',
-                'current': rec.get('current_value'),
-                'suggested': rec.get('suggested_value'),
-                'evidence': rec.get('evidence'),
-                'rationale': rec.get('rationale') or rec.get('description'),
-            })
-else:
-    therapy_recs_data = fallback_therapy_recs_data
-    recs_data = fallback_recs_data
+therapy_recs_data, recs_data = build_recommendation_lists(
+    pipeline_recs=pipeline_recs,
+    fallback_therapy_recs=fallback_therapy_recs_data,
+    fallback_settings_recs=fallback_recs_data,
+    status=recommendation_status,
+)
+
+policy_promotion = recommendation_status.get('promotion_recommendation') or 'unavailable'
+policy_review = 'Required' if recommendation_status.get('review_required') else 'Not required'
+policy_action = recommendation_status.get('patient_action') or 'global-review'
+policy_step = recommendation_status.get('max_basal_step_pct')
+policy_reassessment = recommendation_status.get('reassessment_days')
+policy_failed_gates = ', '.join(recommendation_status.get('failed_gates', [])[:3]) or 'none'
+policy_caution = (
+    recommendation_status.get('combined_cautions', ['Latest titration artifacts were not loaded for this report.'])[0]
+)
+policy_source_loaded = 'Yes' if recommendation_status.get('promotion_recommendation') else 'No'
 
 # ═════════════════════════════════════════════════════════════════════
 # 4. Build the HTML
@@ -1116,15 +1100,23 @@ footer{{text-align:center;padding:20px 0;color:var(--muted);font-size:11px;borde
     </p>
   </div>
   <div class="panel">
-    <h2><span class="ico">✅</span>Supported decision states</h2>
+    <h2><span class="ico">✅</span>Latest titration policy</h2>
     <div class="decision-badges">
       <span class="badge state-action">Change now</span>
       <span class="badge state-warn">Stage a smaller change first</span>
       <span class="badge state-info">Needs more data before changing</span>
       <span class="badge state-danger">Unsafe without review</span>
     </div>
+    <div class="info-grid" style="margin-top:10px">
+      <div class="info-row"><span class="k">Policy loaded</span><span class="v">{policy_source_loaded}</span></div>
+      <div class="info-row"><span class="k">Promotion</span><span class="v">{policy_promotion}</span></div>
+      <div class="info-row"><span class="k">Review</span><span class="v">{policy_review}</span></div>
+      <div class="info-row"><span class="k">Preferred action</span><span class="v">{policy_action}</span></div>
+      <div class="info-row"><span class="k">Max basal step</span><span class="v">{f"{policy_step}%" if policy_step is not None else "—"}</span></div>
+      <div class="info-row"><span class="k">Reassess</span><span class="v">{f"{policy_reassessment} days" if policy_reassessment is not None else "—"}</span></div>
+    </div>
     <p class="decision-copy" style="margin-top:10px">
-      The prototype also prefers automation-first options when meals are unannounced or when manual burden is already low.
+      Failed gates: {policy_failed_gates}. {policy_caution}
     </p>
   </div>
 </div>
