@@ -99,6 +99,20 @@ def _label_window(carbs: np.ndarray, bolus: np.ndarray, start: int, end: int) ->
     return 'stable'
 
 
+def _meal_support_fields(glucose: np.ndarray, carbs: np.ndarray, bolus: np.ndarray, start: int, end: int) -> dict[str, float]:
+    future_end = min(len(glucose), end + TRIGGER_WINDOW)
+    meal_carbs = float(np.sum(carbs[start:end]))
+    insulin = float(np.sum(bolus[start:future_end]))
+    bg_rise = float(np.nanmax(glucose[start:future_end]) - glucose[start]) if future_end > start else 0.0
+    effective_cr_proxy = meal_carbs / insulin if insulin > 0.1 and meal_carbs > 0 else float('nan')
+    return {
+        'logged_carbs_window': meal_carbs,
+        'bolus_window': insulin,
+        'post_window_peak_rise': bg_rise,
+        'logged_effective_cr_proxy': effective_cr_proxy,
+    }
+
+
 def _build_examples(patient_name: str, df, supply_demand: dict[str, np.ndarray]) -> list[dict[str, float | int | str]]:
     glucose = np.nan_to_num(df['glucose'].values.astype(np.float64), nan=120.0)
     carbs = np.nan_to_num(df['carbs'].values.astype(np.float64), nan=0.0)
@@ -123,6 +137,7 @@ def _build_examples(patient_name: str, df, supply_demand: dict[str, np.ndarray])
 
         label = _label_window(carbs, bolus, start_2h, end)
         hour = (end % 288) / 12.0
+        meal_support = _meal_support_fields(glucose, carbs, bolus, start_2h, end)
 
         examples.append({
             'patient': patient_name,
@@ -143,6 +158,7 @@ def _build_examples(patient_name: str, df, supply_demand: dict[str, np.ndarray])
             'net_basal_abs_2h': float(np.mean(np.abs(net_basal[start_2h:end]))),
             'hour_sin': float(np.sin(2.0 * np.pi * hour / 24.0)),
             'hour_cos': float(np.cos(2.0 * np.pi * hour / 24.0)),
+            **meal_support,
         })
     return examples
 
@@ -178,6 +194,46 @@ def _evaluate_meal(y_true: np.ndarray, y_pred: np.ndarray, meal_prob: np.ndarray
     }
 
 
+def _score_cr_support(test_rows: list[dict[str, float | int | str]], y_true: np.ndarray, meal_prob: np.ndarray) -> dict[str, float | int | str]:
+    if len(test_rows) == 0:
+        return {'status': 'no_rows'}
+    cutoff = float(np.quantile(meal_prob, 0.8))
+    selected = meal_prob >= cutoff
+    if selected.sum() == 0:
+        return {'status': 'no_selected'}
+
+    meal_true = y_true == LABEL_TO_INT['meal']
+    selected_rows = [row for row, keep in zip(test_rows, selected) if keep]
+    selected_true_meals = [row for row, keep, truth in zip(test_rows, selected, meal_true) if keep and truth]
+    cr_values = [
+        float(row['logged_effective_cr_proxy'])
+        for row in selected_true_meals
+        if np.isfinite(float(row['logged_effective_cr_proxy']))
+    ]
+    logged_carbs = [float(row['logged_carbs_window']) for row in selected_rows]
+    bolus_values = [float(row['bolus_window']) for row in selected_rows]
+
+    precision = float((selected & meal_true).sum() / max(selected.sum(), 1))
+    recall = float((selected & meal_true).sum() / max(meal_true.sum(), 1))
+    if cr_values:
+        median_cr = float(np.median(cr_values))
+        iqr_cr = float(np.percentile(cr_values, 75) - np.percentile(cr_values, 25))
+    else:
+        median_cr = float('nan')
+        iqr_cr = float('nan')
+    return {
+        'selection_threshold': cutoff,
+        'selected_windows': int(selected.sum()),
+        'selected_precision': precision,
+        'selected_recall': recall,
+        'median_logged_effective_cr_proxy': median_cr,
+        'iqr_logged_effective_cr_proxy': iqr_cr,
+        'mean_logged_carbs_selected': float(np.mean(logged_carbs)) if logged_carbs else 0.0,
+        'mean_bolus_selected': float(np.mean(bolus_values)) if bolus_values else 0.0,
+        'promotion_ready_signal': bool(precision >= 0.6 and recall >= 0.5 and cr_values),
+    }
+
+
 def run_experiment(quick: bool = False) -> dict:
     patients = load_patients(PATIENTS_DIR, max_patients=4 if quick else None, verbose=True)
     all_rows: list[dict[str, float | int | str]] = []
@@ -187,6 +243,7 @@ def run_experiment(quick: bool = False) -> dict:
 
     per_patient: dict[str, dict] = {}
     fold_metrics: dict[str, list[dict[str, float]]] = {'trigger': [], 'throughput': [], 'hybrid': []}
+    cr_support_rows = []
 
     for held_out in sorted({str(row['patient']) for row in all_rows}):
         train_rows = [row for row in all_rows if row['patient'] != held_out]
@@ -207,6 +264,9 @@ def run_experiment(quick: bool = False) -> dict:
             probs = model.predict_proba(x_test)
             meal_prob = probs[:, LABEL_TO_INT['meal']]
             metrics = _evaluate_meal(y_test, y_pred, meal_prob)
+            if name == 'hybrid':
+                metrics['cr_support'] = _score_cr_support(test_rows, y_test, meal_prob)
+                cr_support_rows.append(metrics['cr_support'])
             patient_result[name] = metrics
             fold_metrics[name].append(metrics)
         per_patient[held_out] = patient_result
@@ -226,6 +286,7 @@ def run_experiment(quick: bool = False) -> dict:
         ('trigger', 'throughput', 'hybrid'),
         key=lambda key: (aggregate[key]['mean_meal_f1'], aggregate[key]['mean_meal_precision']),
     )
+    valid_cr = [row for row in cr_support_rows if row.get('status') is None]
 
     return {
         'experiment_id': 'EXP-3446',
@@ -235,6 +296,14 @@ def run_experiment(quick: bool = False) -> dict:
         'n_examples': len(all_rows),
         'per_patient': per_patient,
         'aggregate': aggregate,
+        'cr_support': {
+            'n_folds': len(valid_cr),
+            'mean_selected_precision': float(np.mean([row['selected_precision'] for row in valid_cr])) if valid_cr else float('nan'),
+            'mean_selected_recall': float(np.mean([row['selected_recall'] for row in valid_cr])) if valid_cr else float('nan'),
+            'promotion_ready_fold_fraction': float(np.mean([row['promotion_ready_signal'] for row in valid_cr])) if valid_cr else 0.0,
+            'median_logged_effective_cr_proxy': float(np.nanmedian([row['median_logged_effective_cr_proxy'] for row in valid_cr])) if valid_cr else float('nan'),
+            'median_iqr_logged_effective_cr_proxy': float(np.nanmedian([row['iqr_logged_effective_cr_proxy'] for row in valid_cr])) if valid_cr else float('nan'),
+        },
         'winner': winner,
         'winner_reason': 'Highest mean meal F1 with precision tie-break.',
     }
@@ -256,6 +325,13 @@ def main() -> None:
             f"recall={metrics['mean_meal_recall']:.3f} "
             f"auc={metrics['mean_meal_auc']:.3f}"
         )
+    cr_support = results.get('cr_support', {})
+    print(
+        "cr_support: "
+        f"precision={cr_support.get('mean_selected_precision', float('nan')):.3f} "
+        f"recall={cr_support.get('mean_selected_recall', float('nan')):.3f} "
+        f"promotion_ready_folds={cr_support.get('promotion_ready_fold_fraction', 0.0):.3f}"
+    )
     print(f"winner: {results['winner']}")
 
 

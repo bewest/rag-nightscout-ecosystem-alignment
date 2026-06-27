@@ -35,6 +35,7 @@ from .clinical_rules import generate_clinical_report
 from .pattern_analyzer import analyze_patterns
 from .patient_onboarding import get_onboarding_state
 from .meal_detector import detect_meal_events, build_meal_history, classify_all_meal_responses, classify_meal_archetypes
+from .hybrid_meal_support import annotate_meals_with_hybrid_support
 from .meal_predictor import build_timing_models, predict_next_meal, MealMLModel
 from .settings_advisor import generate_settings_advice, analyze_periods, advise_circadian_isf, advise_context_cr, assess_overnight_drift, compute_loop_workload
 from .advisor._override_advisors import recommend_meal_override_schedule
@@ -377,6 +378,14 @@ def run_pipeline(patient: PatientData,
                 cleaned.glucose, metabolic, hours,
                 patient.timestamps, patient.profile,
                 sizing_method="residual_plus_insulin")
+            annotate_meals_with_hybrid_support(
+                meals_for_basal,
+                glucose=cleaned.glucose,
+                metabolic=metabolic,
+                bolus=patient.bolus,
+                iob=patient.iob,
+                basal_rate=patient.basal_rate,
+            )
             if meals_for_basal:
                 meal_indices_for_basal = np.array(
                     [m.index for m in meals_for_basal], dtype=int

@@ -20,14 +20,17 @@ Implemented the first runnable meal-independent hybrid detector experiment for `
 |-------------|----------|--------------|
 | Hybrid detector experiment | `tools/cgmencode/exp_hybrid_meal_detector_3446.py` | A multiclass leave-one-patient-out model can combine trigger, throughput, balance, and controller-context features into a substantially stronger meal-like detector than any single component |
 | Repro wrapper integration | `tools/cgmencode/run_research_reproduction.py` | The hybrid detector now runs through the same MLflow-friendly reproduction surface as other standalone physiology experiments |
+| Production support annotation | `tools/cgmencode/production/{hybrid_meal_support.py,pipeline.py}` | Inferred meals now carry experimental hybrid-support metadata so downstream CR logic can gate on evidence quality without replacing the validated residual detector |
 
 **Key Findings**:
 - The hybrid model clearly outperformed the standalone components on held-out patients: meal F1 rose to about **0.62** versus **0.33** for throughput-only and **0.33** for trigger-only.
 - The hybrid detector also materially improved meal precision to about **0.64** while retaining recall around **0.71**, supporting the hypothesis that multi-timescale/controller-aware fusion is better than any single proxy family.
-- This is strong evidence for a good candidate technique, but not yet a promotion-ready CR pathway because downstream CR recommendation scoring and safety validation still need to be wired on top.
+- CR-support scoring is now measurable: high-confidence hybrid windows reached about **0.64** precision and **0.74** recall, but only about **55%** of folds met the preliminary promotion-ready signal, so CR recommendations remain gated rather than automatic.
 
 **Source Files Analyzed**:
 - `tools/cgmencode/exp_hybrid_meal_detector_3446.py`
+- `tools/cgmencode/production/hybrid_meal_support.py`
+- `tools/cgmencode/production/pipeline.py`
 - `tools/cgmencode/exp_metabolic_flux.py`
 - `tools/cgmencode/exp_metabolic_441.py`
 - `externals/experiments/exp291_uam_detection.json`

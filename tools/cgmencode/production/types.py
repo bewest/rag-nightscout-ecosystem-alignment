@@ -584,6 +584,7 @@ class DetectedMeal:
     confidence: float                    # detection confidence (0-1)
     hour_of_day: float                   # fractional hour
     archetype: Optional[MealArchetype] = None  # cluster assignment (EXP-1591)
+    metadata: Dict = field(default_factory=dict)  # experimental support signals
 
 
 @dataclass
