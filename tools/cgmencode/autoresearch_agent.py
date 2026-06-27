@@ -774,6 +774,142 @@ def _build_current_research_position() -> list[dict[str, Any]]:
     ]
 
 
+def _build_research_steering_summary() -> dict[str, Any]:
+    titration = _build_titration_safety_summary()
+    settings = _build_settings_extraction_summary()
+    proxy_matrix = _build_proxy_use_case_matrix()
+    current_position = _build_current_research_position()
+    controller_causality = _build_controller_causality_summary()
+    stratified = _build_stratified_deconfounding_summary()
+
+    promotion = titration.get('promotion_recommendation')
+    review_required_fraction = titration.get('review_required_fraction')
+    staged_counts = titration.get('staged_action_counts', {})
+    hypo_guardrail = titration.get('validated_hypo_guardrail', {})
+    carb_ratio_dependency = (settings.get('announced_meal_dependency') or {}).get('carb_ratio')
+
+    lines = [
+        {
+            'line': 'parameter-extraction',
+            'status': 'approval-needed' if promotion == 'needs-review' else 'continue',
+            'why': (
+                'The parameter model is useful diagnostically, but titration policy still marks promotion as needs-review.'
+                if promotion == 'needs-review'
+                else 'The parameter model has a staged path that can continue under the current titration policy.'
+            ),
+            'approval_scope': 'Approve only staged, review-first use. Do not auto-promote direct setting changes.',
+            'evidence': {
+                'promotion_recommendation': promotion,
+                'review_required_fraction': review_required_fraction,
+                'staged_action_counts': staged_counts,
+            },
+            'next_command': 'python3 -m tools.cgmencode.build_effective_parameter_extractor',
+        },
+        {
+            'line': 'intervention-scoring',
+            'status': 'steer',
+            'why': 'Intervention ranking should be steered through validated hypo and deconfounded follow-up before it is treated as decision-grade.',
+            'approval_scope': 'Do not approve direct intervention ranking as a final surface without safety-gated validation.',
+            'evidence': {
+                'safety_endpoint_position': current_position[1]['position'] if len(current_position) > 1 else None,
+                'validated_hypo_guardrail': hypo_guardrail,
+            },
+            'next_command': 'python3 -m tools.cgmencode.experiments_validated validate-hypo',
+        },
+        {
+            'line': 'deconfounding-audit',
+            'status': 'continue',
+            'why': 'Counter-causal correction and prioritized follow-up already improve research hygiene and should keep steering other lines.',
+            'approval_scope': 'Continue as a mandatory guardrail layer for new recommendation claims.',
+            'evidence': {
+                'shared_principle': stratified.get('shared_principle'),
+                'highest_value_next_step': stratified.get('highest_value_next_step'),
+            },
+            'next_command': 'python3 -m tools.cgmencode.autoresearch_agent --direction stratified-deconfounding-audit',
+        },
+        {
+            'line': 'proxy-scoping',
+            'status': 'steer',
+            'why': 'Proxy research is valuable, but it should be steered toward role clarity, not a single winner-take-all score.',
+            'approval_scope': 'Approve proxy use for explanation, triage, and tuning. Do not approve it alone as a final decision surface.',
+            'evidence': {
+                'current_position': current_position[3]['position'] if len(current_position) > 3 else None,
+                'proxy_count': len(proxy_matrix),
+            },
+            'next_command': 'python3 -m tools.cgmencode.autoresearch_agent --direction controller-aware-causality',
+        },
+        {
+            'line': 'settings-followup',
+            'status': 'continue',
+            'why': 'Time-of-day decomposition and correction taxonomy remain the most actionable route for near-term settings improvement.',
+            'approval_scope': 'Continue for triage and settings design, but route final changes through titration policy review.',
+            'evidence': {
+                'actionable_signal_position': current_position[2]['position'] if len(current_position) > 2 else None,
+                'capability_gain': titration.get('capability_gain'),
+            },
+            'next_command': 'python3 -m tools.cgmencode.autoresearch_agent --direction settings-followup',
+        },
+        {
+            'line': 'titration-safety-followup',
+            'status': 'approval-needed' if promotion == 'needs-review' else 'continue',
+            'why': (
+                'Safety-oriented follow-up is the right lane, but current outputs still need explicit human approval before broad setting changes.'
+                if promotion == 'needs-review'
+                else 'Safety-oriented follow-up can continue under the present promotion state.'
+            ),
+            'approval_scope': 'Approve staged actions and review cadence. Hold broad auto-approval until safety failures clear.',
+            'evidence': {
+                'promotion_recommendation': promotion,
+                'validated_hypo_guardrail': hypo_guardrail,
+            },
+            'next_command': 'python3 -m tools.cgmencode.autoresearch_agent --direction titration-safety-followup',
+        },
+        {
+            'line': 'settings-extraction-special-handling',
+            'status': 'steer' if carb_ratio_dependency else 'continue',
+            'why': (
+                'Carb-ratio extraction should be steered toward meal-independent evidence before promotion.'
+                if carb_ratio_dependency
+                else 'All settings families have adequate tracked support to continue.'
+            ),
+            'approval_scope': 'Do not approve carb-ratio promotion from announced-meal-dependent evidence alone.',
+            'evidence': {
+                'tracked_support': settings.get('tracked_support'),
+                'announced_meal_dependency': settings.get('announced_meal_dependency'),
+            },
+            'next_command': 'python3 -m tools.cgmencode.autoresearch_agent --direction settings-extraction-special-handling',
+        },
+        {
+            'line': 'controller-aware-causality',
+            'status': 'continue',
+            'why': 'Controller-aware causal framing is the clearest next refinement for improving which experiments deserve approval.',
+            'approval_scope': 'Continue as a steering layer for approval decisions, especially where controller feedback is strong.',
+            'evidence': {
+                'controller_causal_position': controller_causality.get('controller_causal_position'),
+                'highest_value_next_step': controller_causality.get('highest_value_next_step'),
+            },
+            'next_command': 'python3 -m tools.cgmencode.autoresearch_agent --direction controller-aware-causality',
+        },
+    ]
+
+    status_counts: dict[str, int] = {}
+    for row in lines:
+        status_counts[row['status']] = status_counts.get(row['status'], 0) + 1
+
+    return {
+        'summary': (
+            'Use approval-needed for lines that have diagnostic value but still require explicit human sign-off before operational recommendation use. '
+            'Use steer for lines that are worth continuing only under a clearer causal or role-bounded framing. '
+            'Use continue for lines that currently improve the research program directly.'
+        ),
+        'status_counts': status_counts,
+        'approval_queue': [row['line'] for row in lines if row['status'] == 'approval-needed'],
+        'steer_queue': [row['line'] for row in lines if row['status'] == 'steer'],
+        'continue_queue': [row['line'] for row in lines if row['status'] == 'continue'],
+        'lines': lines,
+    }
+
+
 def _build_titration_safety_summary() -> dict[str, Any]:
     titration_plan = _load_json_if_exists(
         'externals/experiments/parameter-models/effective-parameter-extractor_plan.json'
@@ -1250,6 +1386,7 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['proxy_use_case_matrix'] = _build_proxy_use_case_matrix()
         if spec.key == 'current-research-position':
             plan['current_research_position'] = _build_current_research_position()
+            plan['research_steering_summary'] = _build_research_steering_summary()
         if spec.key == 'titration-safety-followup':
             plan['titration_safety_summary'] = _build_titration_safety_summary()
         if spec.key == 'settings-extraction-special-handling':
@@ -1340,6 +1477,21 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
         for row in plan['current_research_position']:
             lines.append(f"- **{row['theme']}**: {row['position']}")
             lines.append(f"  - backing: {', '.join(row['backing'])}")
+    if plan.get('research_steering_summary'):
+        summary = plan['research_steering_summary']
+        lines.extend(['', '## Research Steering Summary', ''])
+        lines.append(f"- summary: {summary.get('summary')}")
+        lines.append(f"- status counts: {json.dumps(summary.get('status_counts', {}), sort_keys=True)}")
+        lines.append(f"- approval queue: {', '.join(summary.get('approval_queue', [])) or 'none'}")
+        lines.append(f"- steer queue: {', '.join(summary.get('steer_queue', [])) or 'none'}")
+        lines.append(f"- continue queue: {', '.join(summary.get('continue_queue', [])) or 'none'}")
+        for row in summary.get('lines', []):
+            lines.append(f"- **{row.get('line')}** → `{row.get('status')}`")
+            lines.append(f"  - why: {row.get('why')}")
+            lines.append(f"  - approval scope: {row.get('approval_scope')}")
+            lines.append(f"  - next command: `{row.get('next_command')}`")
+            if row.get('evidence'):
+                lines.append(f"  - evidence: {json.dumps(row.get('evidence'), sort_keys=True)}")
     if plan.get('titration_safety_summary'):
         summary = plan['titration_safety_summary']
         lines.extend(['', '## Titration Safety Summary', ''])
@@ -1602,6 +1754,7 @@ def _build_trace_payload(
             'counter_causal_findings': plan.get('counter_causal_findings', []),
             'reasoning_corrections': plan.get('reasoning_corrections', []),
             'prioritized_follow_up': plan.get('prioritized_follow_up'),
+            'research_steering_summary': plan.get('research_steering_summary'),
         },
         'evaluation': evaluation,
         'model_evaluation': model_evaluation,
@@ -1753,6 +1906,15 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 'promotion_validated': 1 if threshold_assessment and threshold_assessment['promotion_recommendation'] == 'validated' else 0,
                 'guidance_reassessment_days': (
                     titration_guidance['reassessment_days'] if titration_guidance else 0
+                ),
+                'approval_needed_count': (
+                    len((plan.get('research_steering_summary') or {}).get('approval_queue', []))
+                ),
+                'steer_count': (
+                    len((plan.get('research_steering_summary') or {}).get('steer_queue', []))
+                ),
+                'continue_count': (
+                    len((plan.get('research_steering_summary') or {}).get('continue_queue', []))
                 ),
             })
             log_dict(plan, f'autoresearch/{json_path.name}')

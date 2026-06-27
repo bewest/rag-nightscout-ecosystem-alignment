@@ -1119,6 +1119,10 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertEqual(plan['direction'], 'current-research-position')
         self.assertIn('current_research_position', plan)
         self.assertTrue(plan['current_research_position'])
+        self.assertIn('research_steering_summary', plan)
+        self.assertIn('approval_queue', plan['research_steering_summary'])
+        self.assertIn('steer_queue', plan['research_steering_summary'])
+        self.assertIn('continue_queue', plan['research_steering_summary'])
 
     def test_titration_safety_followup_builds_summary(self):
         plan = build_research_plan('titration-safety-followup')

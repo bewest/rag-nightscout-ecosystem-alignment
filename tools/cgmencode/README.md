@@ -326,6 +326,7 @@ The pilot now also logs:
 - a threshold proposal plus assessment artifact that recommends `validated`, `candidate`, or `needs-review` from the enriched model evaluation
 - a titration guidance artifact that surfaces max basal step, reassessment cadence, and whether concurrent basal+ISF review is required
 - a per-patient staged titration plan artifact that translates safety policy into concrete next-step actions
+- a research steering summary for the `current-research-position` direction that separates lines needing approval, lines to steer, and lines safe to continue
 
 Initial directions:
 
