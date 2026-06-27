@@ -212,6 +212,86 @@ Similar concept: adjust correction strength based on current glucose.
 
 ---
 
+## Why Autosens and Autotune Do Not Work Consistently for Groups
+
+We now have a reasonable basis for saying that inconsistency is structural, not just anecdotal.
+
+### 1. Autosens only uses surviving non-excluded data
+
+`oref0-detect-sensitivity.js` requires enough glucose data and explicitly compares an 8-hour and 24-hour pass over **non-excluded** intervals, then keeps the lower ratio (`externals/oref0/bin/oref0-detect-sensitivity.js:46-50,113-130`). In practice, different users and cohorts contribute very different amounts of:
+
+- fasting or between-meal windows
+- post-site-change data
+- carb-free intervals
+- UAM-free intervals
+
+That means two people with similar physiology can feed autosens very different evidence sets.
+
+### 2. Meal and UAM exclusion is a major source of selection bias
+
+`oref0/lib/determine-basal/autosens.js` skips data when carbs, COB, or UAM-style absorption are active (`externals/oref0/lib/determine-basal/autosens.js:67-83`). This makes autosens more stable for an individual loop, but less comparable across groups because:
+
+- some users log carbs reliably and lose many windows
+- some users do not log meals and are filtered differently
+- some controllers generate more residual meal-like deviation than others
+
+The result is a cohort comparability problem, not only an estimation problem.
+
+### 3. Autotune is bounded heuristic optimization, not causal identification
+
+The oref0 autotune core applies a set of bounded, practical heuristics:
+
+- DIA and peak only move if adjacent candidates beat the current setting by about 1% on both mean and RMS deviation (`externals/oref0/lib/autotune/index.js:58-98,102-138`)
+- carb ratio is aggregated from meal-labeled windows using total carbs divided by total implied insulin (`externals/oref0/lib/autotune/index.js:143-168`)
+- basal changes only apply **20%** of the needed correction and are then clamped by `autosens_min` / `autosens_max` (`externals/oref0/lib/autotune/index.js:234-246`; AAPS port mirrors this in `externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/autotune/AutotuneCore.kt:193-247`)
+
+These are sensible safety heuristics. They are not proof that the tuned parameters are portable or physiologically correct across groups.
+
+### 4. Controller-mediated feedback remains the dominant confound
+
+Our workspace research already shows why this matters:
+
+- controller compensation dominates the observational signal for ISF and CR comparisons
+- removing the apparent safety margin can worsen TBR materially
+- the most actionable signals are often controller-operating parameters, not pure physiology
+
+So a tuned parameter can be **useful** without being a universal truth. That distinction matters when discussing groups.
+
+---
+
+## Why Our Decision Support and Settings Extraction Tools May Be Authentically Useful
+
+Yes, we have a reasonable basis, but it is narrower and more defensible than claiming universal autotune correctness.
+
+### What the workspace supports today
+
+1. **Controller-aware usefulness** rather than raw physiological truth  
+   The best outputs are recommendations that remain safe and interpretable after controller action is accounted for.
+
+2. **Actionable basal guidance**  
+   Personalized-EGP and per-period decomposition work improved basal calibration materially in our research line and now maps cleanly into staged titration plans.
+
+3. **Bounded ISF guidance**  
+   Correction-denominator and controller-aware framing appear useful for recommendation ranking, even though direct physiological ISF recovery remains accuracy-limited.
+
+4. **Traceable caution on carb ratio**  
+   The current workflow explicitly marks meal-announcement-dependent CR support as provisional.
+
+### What is still needed
+
+| Topic | What is needed |
+|------|-----------------|
+| **Autosens / Autotune discussion** | controller-aware, cohort-level validation instead of only internal fit or single-user success stories |
+| **Decision support usefulness** | evaluation against held-out safety endpoints plus stratified controller-state audits |
+| **Settings extraction usefulness** | explicit separation between controller operating parameters and physiological parameters |
+| **CR usefulness** | a meal-independent proxy before CR can be considered promotion-ready |
+
+In short: we have a credible basis for discussing **why** autosens/autotune can be inconsistent across groups, and a credible basis for saying our tools may be useful. But the strongest claim we can defend today is:
+
+> our tools are most promising when they are framed as **controller-aware decision support** with explicit safety validation, not as universal physiological autotuning.
+
+---
+
 ## Gaps Identified
 
 ### GAP-SENS-001: Different Output Representations
@@ -259,6 +339,14 @@ Similar concept: adjust correction strength based on current glucose.
 **Impact:** Different aggression at high BG levels.
 
 **Remediation:** Document formula differences.
+
+### GAP-SENS-005: No controller-aware cohort validation for autosens/autotune
+
+**Description:** Autosens and autotune tune operating parameters from observational data, but the ecosystem lacks a shared controller-aware validation method showing that those tuned outputs remain useful across heterogeneous cohorts.
+
+**Impact:** Group-level inconsistency can be mistaken for algorithm failure or, conversely, single-user success can be over-generalized.
+
+**Remediation:** Validate tuned outputs against held-out safety outcomes and controller-state-stratified audits.
 
 ---
 

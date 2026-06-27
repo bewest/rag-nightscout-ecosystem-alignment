@@ -1399,6 +1399,11 @@ xDrip+ uniquely supports multiple insulin types per treatment:
 
 **Loop Alternative**: `RetrospectiveCorrection` detects discrepancies but does NOT adjust ISF dynamically.
 
+| Related Term | oref0 / AAPS / Trio | Loop | Notes |
+|--------------|----------------------|------|-------|
+| **Controller operating parameter** | Profile ISF plus autosens / autoISF adjustments | Prediction effect plus RC / application factor | Useful dosing parameter after controller compensation, not a direct physiological truth |
+| **Meal-excluded tuning window** | Excludes COB, recent carbs, and UAM-affected periods for autosens | No direct equivalent; RC works on recent residuals | Cross-user consistency depends on how much data survives exclusion logic |
+
 ### Feature Support Matrix
 
 | Feature | oref0 | Loop | AAPS | Trio |

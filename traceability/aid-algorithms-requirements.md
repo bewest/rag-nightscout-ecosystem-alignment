@@ -838,6 +838,28 @@ See [requirements.md](requirements.md) for the index.
 
 **Source**: `docs/10-domain/autosens-dynamic-isf-comparison.md`
 
+---
+
+### REQ-SENS-004: Validate Adaptive Tuning Against Controller-Aware Outcomes
+
+**Statement**: Systems that adapt ISF, basal, or carb-ratio parameters from observational data SHOULD evaluate those adaptations against controller-aware safety or causal validation, not only internal fit or deviation reduction.
+
+**Rationale**: Autosens and autotune can improve apparent fit while still encoding controller feedback, meal-announcement artifacts, or bounded heuristic assumptions that do not generalize across groups.
+
+**Scenarios**:
+- Comparing autosens/autotune behavior across patient cohorts
+- Using extracted settings for decision support
+- Determining whether tuned parameters reflect operating behavior or physiology
+
+**Verification**:
+- Recommendations are reviewed against held-out safety outcomes or controller-aware audits
+- Meal-dependent tuning outputs are marked provisional when meals are unlogged
+- Validation is stratified by controller-response mode where feasible
+
+**Gap**: GAP-SENS-005
+
+**Source**: `docs/10-domain/autosens-dynamic-isf-comparison.md`
+
 ## Carb Absorption Display Requirements
 
 ### REQ-CARB-007: COB Display Source Attribution

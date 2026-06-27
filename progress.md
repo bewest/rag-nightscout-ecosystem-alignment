@@ -12,6 +12,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Autosens, Autotune, and Controller-Aware Usefulness (2026-06-27)
+
+Refreshed the autosens/autotune comparison with source-backed reasons for why these methods do not generalize consistently across groups, and documented the narrower but stronger case for controller-aware decision support and settings extraction.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Autosens/autotune analysis refresh | `docs/10-domain/autosens-dynamic-isf-comparison.md` | Group inconsistency follows from exclusion windows, meal dependence, bounded tuning heuristics, and controller-mediated feedback, not just from user noise |
+| Algorithm gaps / requirements update | `traceability/aid-algorithms-{gaps,requirements}.md` | Added controller-aware cohort validation gap and requirement for adaptive tuning outputs |
+| Terminology refinement | `mapping/cross-project/terminology-matrix.md` | Distinguished controller operating parameters from physiological parameters and highlighted meal-excluded tuning windows |
+
+**Key Findings**:
+- We do have a reasonable basis for discussing why oref0 autosens/autotune do not work consistently for groups: both depend on selective non-excluded windows and bounded heuristics that are strongly shaped by controller behavior and meal logging.
+- We also have a reasonable basis for discussing why our decision support may be useful, but the defensible claim is controller-aware usefulness with safety validation, not universal autotune correctness.
+- The biggest missing piece is controller-aware cohort validation of adaptive tuning outputs, especially for carb-ratio paths that still depend on announced meals.
+
+**Source Files Analyzed**:
+- `externals/oref0/bin/oref0-detect-sensitivity.js`
+- `externals/oref0/lib/determine-basal/autosens.js`
+- `externals/oref0/lib/autotune/index.js`
+- `externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/autotune/AutotuneCore.kt`
+- `externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/openAPSAutoISF/DetermineBasalAutoISF.kt`
+- `docs/10-domain/autosens-dynamic-isf-comparison.md`
+
+---
+
 ## Effective Parameter Extractor Pilot (2026-06-27)
 
 Turned the `parameter-extraction` autoresearch direction into a registration-ready physiology-model pilot that now emits a learned parameter bundle, evaluation and threshold artifacts, titration guidance, and a runnable MLflow pyfunc package derived from validated results plus settings experiments.

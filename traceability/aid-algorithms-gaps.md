@@ -930,6 +930,28 @@ if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined)
 
 **Remediation:** Document formula differences and expected behaviors.
 
+### GAP-SENS-005: Autosens and Autotune Lack Controller-Aware Cohort Validation
+
+**Description:** oref0-style autosens and autotune are built from exclusion heuristics and bounded profile adjustments, but the workspace has no shared validation showing that their recommendations remain accurate across heterogeneous cohorts once controller-mediated feedback is separated from disease-course effects.
+
+**Source:**
+- `externals/oref0/bin/oref0-detect-sensitivity.js:46-50,113-130` (requires enough glucose data, compares 8h vs 24h non-excluded windows, keeps lowest ratio)
+- `externals/oref0/lib/determine-basal/autosens.js:67-83,130-138` (meal/UAM exclusions and autosens bounds)
+- `externals/oref0/lib/autotune/index.js:143-168,234-246,540-545` (CR uses meal-labeled windows, basal changes apply 20% heuristic updates, outputs bounded profile parameters)
+- `externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/autotune/AutotuneCore.kt:44-47,127-157,193-247` (AAPS port preserves autosens bounds, meal-based CR aggregation, and capped basal adjustment logic)
+
+**Impact:**
+- Group-level inconsistency can come from different amounts of surviving non-excluded data, not just from patient physiology.
+- Autosens/autotune outputs risk being interpreted as physiological truth when they are often controller-operating parameters.
+- Decision-support comparisons across cohorts can overstate confidence unless controller-state and meal-dependence are audited first.
+
+**Remediation:**
+1. Validate autosens/autotune-derived recommendations against controller-aware safety endpoints, not only internal fit metrics.
+2. Stratify validation by controller-response mode (failed correction, fast return, persistent period mismatch).
+3. Treat meal-announcement-dependent CR adjustments as provisional until a meal-independent proxy exists.
+
+**Status:** Basis established from source and workspace experiments; controller-aware cohort validation still missing.
+
 ## Dosing Mechanism Gaps
 
 ### GAP-DOSE-001: SMB Not Available in Loop
