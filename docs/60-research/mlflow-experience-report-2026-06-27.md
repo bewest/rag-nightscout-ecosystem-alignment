@@ -138,6 +138,72 @@ Local SQLite plus artifact logging is enough to create useful reproducibility. T
 
 ---
 
+## Concrete Impact Since Adoption
+
+The most important impact is that MLflow changed the shape of the work. We stopped treating experiments, memos, and production candidates as separate artifacts and started treating them as one evidence chain.
+
+### 1. Autoresearch became a promotion workflow
+
+The autoresearch pilot started as structured memo generation, but it now produces:
+
+- research memo artifacts under `externals/experiments/autoresearch/`
+- deterministic evaluation summaries
+- model-candidate JSON artifacts
+- parameter bundles and threshold assessments
+- runnable pyfunc packages for the effective-parameter extractor
+
+That made it possible to move from "this seems promising" to "this is a candidate artifact with evidence, thresholds, and known failure modes."
+
+### 2. Settings extraction gained explicit safety gates
+
+MLflow-backed runs helped keep basal, ISF, and carb-ratio work separated instead of collapsing them into one generic settings-extraction claim.
+
+The current tracked interpretation is:
+
+- basal is the most actionable settings path today
+- ISF is useful when framed as a controller-aware operating parameter
+- CR remains provisional when it depends on announced meals
+
+That distinction matters because the same numeric extraction can look precise while being unsafe or causally wrong if the controller's response is ignored.
+
+### 3. Hybrid meal detection moved from idea to measured candidate
+
+The hybrid meal detector line is the clearest example of MLflow-style evidence accumulation:
+
+1. `meal-independent-cr-proxies` identified the need for non-announced-meal CR support.
+2. `meal-event-discovery-audition` scored candidate techniques.
+3. `novel-meal-discovery-techniques` argued for a hybrid detector.
+4. `hybrid-technique-evidence` marked it promising but not validated.
+5. `hybrid-prototype-plan` defined the experiment.
+6. `EXP-3446` implemented it and produced measurable results.
+
+The result is now strong enough to be useful, but not overclaimed:
+
+| Approach | Meal F1 | Precision | Recall | AUC |
+|---|---:|---:|---:|---:|
+| Trigger-only | 0.325 | 0.342 | 0.395 | 0.702 |
+| Throughput-only | 0.328 | 0.297 | 0.423 | 0.764 |
+| Hybrid | **0.620** | **0.643** | **0.707** | **0.930** |
+
+The production pipeline now uses this result conservatively: inferred meals can carry experimental `hybrid_meal_support` metadata, but CR recommendations remain gated.
+
+### 4. It improved our ability to say "not yet"
+
+The MLflow-backed workflow made it easier to avoid premature promotion. For example, the hybrid detector improved meal-like event discovery, but its CR-support signal is only partly promotion-ready:
+
+- high-confidence hybrid windows: precision about 0.64, recall about 0.74
+- preliminary promotion-ready fold fraction: about 0.55
+
+That is useful evidence, but not enough for autonomous CR changes. Without the tracked experiment chain, it would be easier to overclaim.
+
+### 5. Test hygiene became part of the MLOps story
+
+One practical lesson was that MLflow instrumentation can accidentally create noisy local state during unit tests. We fixed this by making unit tests default to `CGMENCODE_DISABLE_MLFLOW=1`, making autoresearch spans honor that flag, and keeping explicit pyfunc model tests on a temporary tracking URI.
+
+That keeps MLflow useful for intentional experiment tracking without letting routine tests pollute the tracking store.
+
+---
+
 ## Future Directions
 
 ### 1. First-class support for learned parameter artifacts
@@ -174,6 +240,16 @@ Right now MLflow is strong at recording experiments but weaker at signaling whic
 - `production-reference`
 
 That status could apply to forecasters, recommendation formulas, or learned setting schedules alike.
+
+In practice, the hybrid detector work suggests a more concrete ladder:
+
+| Stage | Meaning | Example |
+|---|---|---|
+| `research` | exploratory result or memo | UAM-only detector |
+| `candidate` | measurable improvement over baseline | EXP-3446 hybrid detector |
+| `guarded-production-metadata` | safe to annotate production outputs, not drive autonomous recommendations | `hybrid_meal_support` on inferred meals |
+| `recommendation-gate` | can affect confidence or eligibility | future CR support gating |
+| `production-reference` | can directly drive recommendations | not yet reached for hybrid-derived CR |
 
 ### 4. Better support for hybrid physics + ML experiments
 
