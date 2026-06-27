@@ -414,6 +414,38 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'Name the highest-value next research step for each setting.',
         ),
     ),
+    'controller-aware-causality': DirectionSpec(
+        key='controller-aware-causality',
+        title='Controller-Aware Accuracy and Causality',
+        default_question=(
+            'Synthesize how controller-aware accuracy changes causal interpretation, and organize the best deconfounding features by time scale, flair role, and ability to separate controller action from disease course.'
+        ),
+        search_terms=('controller', 'causal', 'counterfactual', 'time scale', 'flair', 'deconfound', 'basal', 'isf', 'correction', 'throughput'),
+        candidate_files=(
+            'docs/60-research/wave11-safety-precision-report-2026-04-20.md',
+            'docs/60-research/wave12-multifactor-isolation-report-2026-04-20.md',
+            'docs/60-research/wave13-controller-dynamics-report-2026-04-20.md',
+            'externals/experiments/exp_322v_validated.json',
+            'externals/experiments/exp443_throughput_balance.json',
+            'externals/experiments/exp582_per-period_basal_decomposition.json',
+            'externals/experiments/exp583_correction_event_taxonomy.json',
+            'externals/experiments/parameter-models/effective-parameter-extractor_settings_handling.json',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.autoresearch_agent --direction deconfounding-audit',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction settings-precision-vs-accuracy',
+            'python3 -m tools.cgmencode.experiments_validated validate-hypo',
+        ),
+        hypotheses=(
+            'Controller-aware accuracy should be framed as a layered problem: safety endpoints, controller-state separation features, and explanatory physiology flair at different time scales.',
+            'Most observational errors come from controller-mediated feedback, so causal confidence improves more from controller-aware decomposition than from adding more pooled features.',
+        ),
+        success_criteria=(
+            'State which time scales are best for endpoint, controller-separation, and explanatory roles.',
+            'Separate flair signals from decision-grade signals.',
+            'Name the next best causal-improvement experiment or memo direction.',
+        ),
+    ),
 }
 
 COUNTER_CAUSAL_PATTERNS: tuple[dict[str, Any], ...] = (
@@ -823,6 +855,86 @@ def _build_settings_precision_accuracy_summary() -> dict[str, Any]:
     }
 
 
+def _build_controller_causality_summary() -> dict[str, Any]:
+    exp322 = _load_json_if_exists('externals/experiments/exp_322v_validated.json') or {}
+    exp443 = _load_json_if_exists('externals/experiments/exp443_throughput_balance.json') or {}
+    exp582 = _load_json_if_exists('externals/experiments/exp582_per-period_basal_decomposition.json') or {}
+    exp583 = _load_json_if_exists('externals/experiments/exp583_correction_event_taxonomy.json') or {}
+
+    hypo = exp322.get('multi_seed', {}).get('aggregate', {})
+    return {
+        'controller_causal_position': (
+            'Observed treatment outcomes are controller-mediated. Recommendation quality should be judged first against validated safety endpoints, '
+            'then against controller-separation features, and only then against physiology flair or descriptive proxies.'
+        ),
+        'time_scales': [
+            {
+                'scale': 'minutes to ~1 hour',
+                'best_for': 'explanatory flair and rapid controller-response interpretation',
+                'signals': ['Hill-style EGP recovery ratio', 'correction event taxonomy'],
+                'causal_role': 'good for warning flavor and local audit, weak as final decision surface',
+            },
+            {
+                'scale': '2h to 12h',
+                'best_for': 'controller-action separation and event discrimination',
+                'signals': ['throughput + balance dual-channel view', 'correction-only denominator framing'],
+                'causal_role': 'best current middle layer for separating controller work from disease-course interpretation',
+                'evidence': {
+                    'sil_2h': exp443.get('aggregate', {}).get('2h', {}).get('mean_sil_2d'),
+                    'sil_6h': exp443.get('aggregate', {}).get('6h', {}).get('mean_sil_2d'),
+                    'sil_12h': exp443.get('aggregate', {}).get('12h', {}).get('mean_sil_2d'),
+                },
+            },
+            {
+                'scale': 'circadian / time-of-day',
+                'best_for': 'settings tuning and slow controller-state decomposition',
+                'signals': ['per-period basal decomposition', 'time-of-day drift residuals'],
+                'causal_role': 'most actionable layer for basal tuning once fast controller effects are separated',
+                'evidence': {
+                    'mean_adjustments': exp582.get('mean_adjustments'),
+                    'worst_period_counts': exp582.get('worst_period_counts'),
+                },
+            },
+            {
+                'scale': 'biweekly to monthly',
+                'best_for': 'stability monitoring and low-frequency drift',
+                'signals': ['settings adequacy score', 'biweekly settings tracking'],
+                'causal_role': 'useful for triage and persistence, but too pooled for direct causal assignment',
+            },
+        ],
+        'decision_layers': {
+            'decision_grade': {
+                'signals': ['validated hypo endpoint'],
+                'why': 'strongest direct safety guardrail for whether any recommendation framing is acceptable',
+                'evidence': {
+                    'auc_roc_mean': hypo.get('auc_roc', {}).get('mean'),
+                    'specificity_mean': hypo.get('specificity', {}).get('mean'),
+                },
+            },
+            'controller_separation': {
+                'signals': ['correction-only denominator ISF', 'throughput + balance', 'correction taxonomy'],
+                'why': 'best available signals for distinguishing controller contribution from the underlying physiological course',
+                'evidence': {
+                    'mean_failed_corrections': exp583.get('mean_failed'),
+                    'mean_overcorrection_rate': exp583.get('mean_overcorrection'),
+                },
+            },
+            'flair': {
+                'signals': ['EGP recovery ratio', 'global settings adequacy score'],
+                'why': 'useful to explain phenomena and generate hypotheses, but not to close the causal loop alone',
+            },
+        },
+        'causal_implications': [
+            'Controller-mediated feedback is the dominant observational confound across ISF, basal, and CR.',
+            'Removing the controller safety margin can improve apparent physiological accuracy while making real recommendations less safe.',
+            'Controller-aware accuracy means the target is not the raw physiological quantity alone, but the quantity that remains useful after the controller has already acted.',
+        ],
+        'highest_value_next_step': (
+            'Extend the deconfounding audit with explicit controller-state strata or replay-style counterfactual comparison, then score resulting recommendation rules against validated hypo outcomes.'
+        ),
+    }
+
+
 def _counter_causal_audit(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     for pattern in COUNTER_CAUSAL_PATTERNS:
@@ -964,6 +1076,8 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['settings_extraction_summary'] = _build_settings_extraction_summary()
         if spec.key == 'settings-precision-vs-accuracy':
             plan['settings_precision_accuracy_summary'] = _build_settings_precision_accuracy_summary()
+        if spec.key == 'controller-aware-causality':
+            plan['controller_causality_summary'] = _build_controller_causality_summary()
         span.set_outputs({
             'evidence_count': len(evidence),
             'command_count': len(spec.recommended_commands),
@@ -1072,6 +1186,28 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
             lines.append(f"  - next step: {row.get('highest_value_next_step')}")
         if summary.get('shared_guardrail'):
             lines.append(f"- shared guardrail: {json.dumps(summary['shared_guardrail'], sort_keys=True)}")
+    if plan.get('controller_causality_summary'):
+        summary = plan['controller_causality_summary']
+        lines.extend(['', '## Controller-Aware Causality Summary', ''])
+        lines.append(f"- position: {summary.get('controller_causal_position')}")
+        lines.append(f"- next step: {summary.get('highest_value_next_step')}")
+        lines.extend(['', '### Time Scales', ''])
+        for row in summary.get('time_scales', []):
+            lines.append(f"- **{row.get('scale')}**")
+            lines.append(f"  - best for: {row.get('best_for')}")
+            lines.append(f"  - signals: {', '.join(row.get('signals', []))}")
+            lines.append(f"  - causal role: {row.get('causal_role')}")
+            if row.get('evidence'):
+                lines.append(f"  - evidence: {json.dumps(row.get('evidence'), sort_keys=True)}")
+        lines.extend(['', '### Decision Layers', ''])
+        for key, row in summary.get('decision_layers', {}).items():
+            lines.append(f"- **{key}**: {row.get('why')}")
+            lines.append(f"  - signals: {', '.join(row.get('signals', []))}")
+            if row.get('evidence'):
+                lines.append(f"  - evidence: {json.dumps(row.get('evidence'), sort_keys=True)}")
+        lines.extend(['', '### Causal Implications', ''])
+        for item in summary.get('causal_implications', []):
+            lines.append(f"- {item}")
     lines.extend(['', '## Success Criteria', ''])
     lines.extend([f'- {item}' for item in plan['success_criteria']])
     lines.extend(['', '## Next Steps', ''])

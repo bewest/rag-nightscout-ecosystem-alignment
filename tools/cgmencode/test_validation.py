@@ -742,7 +742,7 @@ class TestAutoresearchAgent(unittest.TestCase):
     def test_all_directions_defined(self):
         self.assertEqual(
             set(DIRECTIONS.keys()),
-            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling', 'settings-precision-vs-accuracy'},
+            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling', 'settings-precision-vs-accuracy', 'controller-aware-causality'},
         )
 
     def test_build_research_plan_structure(self):
@@ -1139,6 +1139,12 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertIn('settings_precision_accuracy_summary', plan)
         self.assertIn('basal', plan['settings_precision_accuracy_summary'])
         self.assertIn('shared_guardrail', plan['settings_precision_accuracy_summary'])
+
+    def test_controller_aware_causality_builds_summary(self):
+        plan = build_research_plan('controller-aware-causality')
+        self.assertEqual(plan['direction'], 'controller-aware-causality')
+        self.assertIn('controller_causality_summary', plan)
+        self.assertTrue(plan['controller_causality_summary']['time_scales'])
 
 
 # =============================================================================
