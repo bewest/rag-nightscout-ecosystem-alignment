@@ -27,6 +27,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
 
 from report.ns_loader import load_from_dir
+from report.flux_patterns import build_flux_pattern_summary
 from report.recommendation_context import (
     apply_titration_policy_to_cards,
     build_recommendation_lists,
@@ -176,12 +177,11 @@ if metabolic is not None:
         if res_buckets[h]:
             residual_hourly[h] = round(float(np.mean(res_buckets[h])), 2)
 
-# Net flux subsampled
-flux_chart = []
-if metabolic is not None:
-    for i in range(0, N, step):
-        if np.isfinite(metabolic.net_flux[i]):
-            flux_chart.append([int(timestamps[i]), round(float(metabolic.net_flux[i]), 2)])
+# Net flux patterns
+flux_pattern_summary = build_flux_pattern_summary(
+    getattr(metabolic, 'net_flux', None) if metabolic is not None else None,
+    timestamps,
+)
 
 # Treatment events (non-temp-basal)
 treat_chart = []
@@ -1167,7 +1167,14 @@ footer{{text-align:center;padding:20px 0;color:var(--muted);font-size:11px;borde
   </div>
   <div class="panel">
     <h2><span class="ico">⚡</span>Net Metabolic Flux</h2>
-    <div class="chart-wrap h250"><canvas id="cFlux"></canvas></div>
+    <p class="decision-copy" style="margin-bottom:10px">
+      {flux_pattern_summary.get('classification_rule', 'No flux-pattern summary available for this report.')}
+      {f" Top unusual days: {', '.join(flux_pattern_summary.get('top_unusual_dates', []))}." if flux_pattern_summary.get('available') else ''}
+    </p>
+    <div class="g2">
+      <div class="chart-wrap h250"><canvas id="cFluxProfile"></canvas></div>
+      <div class="chart-wrap h250"><canvas id="cFluxDays"></canvas></div>
+    </div>
   </div>
 </div>
 
@@ -1378,7 +1385,7 @@ footer{{text-align:center;padding:20px 0;color:var(--muted);font-size:11px;borde
 const S = {json.dumps(sgv_chart)};
 const IOB = {json.dumps(iob_chart)};
 const COB = {json.dumps(cob_chart)};
-const FLX = {json.dumps(flux_chart)};
+const FLUX_PATTERNS = {json.dumps(flux_pattern_summary)};
 const D = {json.dumps(daily_stats)};
 const AGP = {json.dumps(agp)};
 const HARM = {json.dumps(harm_curve)};
@@ -1568,20 +1575,68 @@ new Chart(document.getElementById('cIOB'),{{
 }});
 
 // ══════════════════════════════════════════════════════════
-// Net Flux
+// Net Flux patterns
 // ══════════════════════════════════════════════════════════
-const fluxColors = FLX.map(d=>d[1]>0?'rgba(63,185,80,.5)':'rgba(248,81,73,.5)');
-new Chart(document.getElementById('cFlux'),{{
-  type:'bar',
-  data:{{datasets:[{{label:'Net Flux',data:FLX.map(d=>({{x:d[0],y:d[1]}})),backgroundColor:fluxColors,borderWidth:0,barPercentage:1,categoryPercentage:1}}]}},
-  options:{{responsive:true,maintainAspectRatio:false,animation:{{duration:0}},
-    plugins:{{legend:{{display:false}},tooltip:{{callbacks:{{title:i=>new Date(i[0].parsed.x).toLocaleString(),label:i=>i.parsed.y.toFixed(1)+' mg/dL/5min'}}}}}},
-    scales:{{
-      x:{{type:'time',time:{{unit:'week'}},grid:gridOpt}},
-      y:{{grid:gridOpt,title:{{display:true,text:'mg/dL per 5min'}}}}
+if(FLUX_PATTERNS.available){{
+  const typical = FLUX_PATTERNS.typical_day_summary || {{}};
+  const unusual = FLUX_PATTERNS.unusual_day_summary || {{}};
+  new Chart(document.getElementById('cFluxProfile'),{{
+    type:'line',
+    data:{{
+      labels:hrs,
+      datasets:[
+        {{label:'Typical p75',data:typical.p75 || [],borderColor:'transparent',backgroundColor:'rgba(88,166,255,.08)',fill:false,pointRadius:0,tension:.35}},
+        {{label:'Typical p25',data:typical.p25 || [],borderColor:'transparent',backgroundColor:'rgba(88,166,255,.18)',fill:'-1',pointRadius:0,tension:.35}},
+        {{label:'Typical median',data:typical.median || [],borderColor:'#58a6ff',borderWidth:2,pointRadius:1.5,tension:.35,fill:false}},
+        {{label:'Unusual p75',data:unusual.p75 || [],borderColor:'transparent',backgroundColor:'rgba(248,81,73,.06)',fill:false,pointRadius:0,tension:.35}},
+        {{label:'Unusual p25',data:unusual.p25 || [],borderColor:'transparent',backgroundColor:'rgba(248,81,73,.15)',fill:'-1',pointRadius:0,tension:.35}},
+        {{label:'Unusual median',data:unusual.median || [],borderColor:'#f85149',borderWidth:2,pointRadius:1.5,borderDash:[5,4],tension:.35,fill:false}},
+      ]
+    }},
+    options:{{responsive:true,maintainAspectRatio:false,
+      plugins:{{
+        legend:{{position:'top',labels:{{boxWidth:10}}}},
+        title:{{display:true,text:'Typical (' + (typical.n_days || 0) + ') vs unusual (' + (unusual.n_days || 0) + ') flux profiles',font:{{size:13}},color:'#e6edf3'}},
+        tooltip:{{callbacks:{{label:i=>i.dataset.label + ': ' + Number(i.parsed.y).toFixed(2) + ' mg/dL/5min'}}}}
+      }},
+      scales:{{x:{{grid:gridOpt,title:{{display:true,text:'Hour of day'}}}},y:{{grid:gridOpt,title:{{display:true,text:'mg/dL per 5min'}}}}}}
     }}
+  }});
+
+  const fluxRows = FLUX_PATTERNS.daily_rows || [];
+  const fluxColors = fluxRows.map(r=>r.label==='unusual'?'rgba(248,81,73,.65)':r.label==='typical'?'rgba(88,166,255,.65)':'rgba(139,148,158,.35)');
+  new Chart(document.getElementById('cFluxDays'),{{
+    type:'bar',
+    data:{{
+      labels:fluxRows.map(r=>r.date.slice(5)),
+      datasets:[
+        {{label:'Mean |flux|',data:fluxRows.map(r=>r.mean_abs_flux),backgroundColor:fluxColors,borderRadius:2,yAxisID:'y'}},
+        {{label:'Deviation score',data:fluxRows.map(r=>r.deviation_score),type:'line',borderColor:'#bc8cff',backgroundColor:'rgba(188,140,255,.12)',borderWidth:2,pointRadius:1.5,tension:.2,yAxisID:'y1'}},
+      ]
+    }},
+    options:{{responsive:true,maintainAspectRatio:false,
+      plugins:{{
+        legend:{{position:'top',labels:{{boxWidth:10}}}},
+        title:{{display:true,text:'Daily flux intensity and unusual-day score',font:{{size:13}},color:'#e6edf3'}},
+        tooltip:{{callbacks:{{afterLabel:i=>{{const row=fluxRows[i.dataIndex]; return row ? [`class: ${{row.label}}`,`overnight mean: ${{row.overnight_mean}}`,`daytime mean: ${{row.daytime_mean}}`] : [];}}}}}}
+      }},
+      scales:{{
+        x:{{grid:{{display:false}},ticks:{{maxRotation:65,minRotation:65,autoSkip:true,maxTicksLimit:18}}}},
+        y:{{grid:gridOpt,title:{{display:true,text:'Mean |flux|'}}}},
+        y1:{{position:'right',grid:{{display:false}},title:{{display:true,text:'Deviation score'}}}}
+      }}
+    }}
+  }});
+}} else {{
+  const fluxFallback = document.getElementById('cFluxProfile');
+  if(fluxFallback){{
+    fluxFallback.parentElement.innerHTML = '<div class="decision-note">Not enough complete days to summarize typical versus unusual metabolic-flux patterns yet.</div>';
   }}
-}});
+  const fluxDaysFallback = document.getElementById('cFluxDays');
+  if(fluxDaysFallback){{
+    fluxDaysFallback.parentElement.innerHTML = '<div class="decision-note">Flux-pattern day classification becomes available after several well-covered days with valid metabolic flux.</div>';
+  }}
+}}
 
 // ══════════════════════════════════════════════════════════
 // Circadian overlay
