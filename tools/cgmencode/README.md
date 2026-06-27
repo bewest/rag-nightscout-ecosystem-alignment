@@ -336,6 +336,11 @@ Initial directions:
 - `titration-safety-followup` — combine staged titration artifacts with validated hypo guardrails to assess whether safety-oriented follow-up selection improved
 - `settings-extraction-special-handling` — surface why basal, ISF, and carb-ratio extraction need different handling rules and which of those rules are already encoded in tracked artifacts
 
+For carb-ratio work, the tracked workflow now treats **announced-meal-dependent**
+artifacts as provisional evidence only. Meal-conditioned CR outputs can inform
+research, but they are not promotion-ready if the intended workflow must still
+work when meals are unlogged.
+
 Run a pilot direction:
 
 ```bash

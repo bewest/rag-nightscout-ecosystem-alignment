@@ -490,6 +490,7 @@ def derive_settings_special_handling(
         if isinstance(aggregate, dict):
             dose_dep_ratio = _safe_float(aggregate.get('median_cr_ratio_large_small'))
             dose_dep_r = _safe_float(aggregate.get('mean_r_carbs_cr'))
+    announced_meal_dependency = bool(carb_ratio_analysis or dose_dependent_cr)
 
     return {
         'schema_version': SCHEMA_VERSION,
@@ -525,27 +526,31 @@ def derive_settings_special_handling(
                 },
             },
             'carb_ratio': {
-                'extraction_target': 'meal-conditioned carb coverage with deconfounding and meal-size awareness',
+                'extraction_target': 'meal-independent carb coverage proxy with deconfounding and meal-size awareness',
                 'coverage_fraction': round(carb_ratio_patients / n_patients, 3) if carb_ratio_patients else 0.0,
                 'special_handling': [
-                    'Use meal events, not correction events, and regress out background insulin/context.',
+                    'Do not require announced meals as the long-term dependency for CR support.',
+                    'Treat meal-announcement-derived CR estimates as provisional evidence, not promotion-ready truth.',
                     'Check whether carb ratio changes with meal size before promoting one flat CR.',
                     'Avoid changing CR at the same time as major basal or ISF changes unless explicitly reviewed.',
                 ],
                 'evidence_loaded': {
                     'carb_ratio_analysis': bool(carb_ratio_analysis),
                     'dose_dependent_cr': bool(dose_dependent_cr),
+                    'depends_on_announced_meals': announced_meal_dependency,
                 },
                 'evidence': {
                     'carb_ratio_patients': carb_ratio_patients,
                     'median_large_small_ratio': dose_dep_ratio,
                     'meal_size_dependence_r': dose_dep_r,
                 },
+                'promotion_ready_without_meals': False if announced_meal_dependency else None,
             },
         },
         'combined_cautions': [
             'Basal, ISF, and carb ratio should not be treated as interchangeable settings-extraction problems.',
             'Observed optimal settings can be controller-mediated, so causal interpretation needs setting-specific checks.',
+            'Settings extraction should not depend on announced meals if the intended workflow must work when meals are unlogged.',
             'When multiple settings change together, stage the intervention or require explicit review.',
         ],
     }

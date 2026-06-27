@@ -372,12 +372,12 @@ DIRECTIONS: dict[str, DirectionSpec] = {
         ),
         recommended_commands=(
             'python3 -m tools.cgmencode.build_effective_parameter_extractor',
-            'python3 tools/cgmencode/exp_carb_ratio_extraction_2729.py',
-            'python3 tools/cgmencode/exp_dose_dependent_cr_2747.py',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction settings-followup',
+            'python3 -m tools.cgmencode.experiments_validated validate-hypo',
         ),
         hypotheses=(
             'ISF, basal, and carb ratio require different extraction targets and should not be promoted with one shared rule.',
-            'The current tracked workflow is strongest for ISF and basal, while carb-ratio handling is still mostly policy-level unless meal-conditioned artifacts are loaded.',
+            'The current tracked workflow is strongest for ISF and basal, while carb-ratio handling remains provisional if it depends on announced meals.',
         ),
         success_criteria=(
             'Describe the distinct handling rule for basal, ISF, and carb ratio.',
@@ -687,6 +687,8 @@ def _build_settings_extraction_summary() -> dict[str, Any]:
 
     summary_settings = settings_handling.get('settings', {})
     upstream = bundle.get('upstream_artifacts', {})
+    carb_ratio_dependency = summary_settings.get('carb_ratio', {}).get('evidence_loaded', {}).get('depends_on_announced_meals')
+    carb_ratio_promotion_ready = summary_settings.get('carb_ratio', {}).get('promotion_ready_without_meals')
     coverage = {
         key: value.get('coverage_fraction')
         for key, value in summary_settings.items()
@@ -695,14 +697,18 @@ def _build_settings_extraction_summary() -> dict[str, Any]:
     tracked_support = {
         'isf': bool(upstream.get('isf_schedule_optimizer')),
         'basal': bool(upstream.get('basal_schedule_optimizer') or upstream.get('basal_decomposition')),
-        'carb_ratio': bool(upstream.get('carb_ratio_analysis') or upstream.get('dose_dependent_cr')),
+        'carb_ratio': bool(upstream.get('carb_ratio_analysis') or upstream.get('dose_dependent_cr')) and not carb_ratio_dependency,
     }
     return {
         'tracked_support': tracked_support,
         'coverage_fraction': coverage,
+        'announced_meal_dependency': {
+            'carb_ratio': carb_ratio_dependency,
+            'promotion_ready_without_meals': carb_ratio_promotion_ready,
+        },
         'combined_cautions': settings_handling.get('combined_cautions', []),
         'capability_gap': (
-            'Carb-ratio handling is still mostly policy-level because meal-conditioned CR artifacts are not yet loaded into the canonical parameter-model bundle.'
+            'Carb-ratio handling is not yet promotion-ready because the current CR artifacts still depend on announced meal data.'
             if not tracked_support['carb_ratio']
             else 'All three settings families have tracked artifact support, but carb-ratio promotion still requires careful meal-size review.'
         ),
@@ -884,6 +890,7 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
         lines.extend(['', '## Settings Extraction Summary', ''])
         lines.append(f"- tracked support: {json.dumps(summary.get('tracked_support', {}), sort_keys=True)}")
         lines.append(f"- coverage fraction: {json.dumps(summary.get('coverage_fraction', {}), sort_keys=True)}")
+        lines.append(f"- announced meal dependency: {json.dumps(summary.get('announced_meal_dependency', {}), sort_keys=True)}")
         lines.append(f"- capability gap: {summary.get('capability_gap')}")
         for caution in summary.get('combined_cautions', []):
             lines.append(f"- caution: {caution}")

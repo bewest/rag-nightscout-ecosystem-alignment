@@ -957,6 +957,7 @@ class TestAutoresearchAgent(unittest.TestCase):
         settings = derive_settings_special_handling(bundle)
         self.assertIn('carb_ratio', settings['settings'])
         self.assertEqual(settings['settings']['isf']['extraction_target'], 'controller-aware predictive ISF, not direct physiological truth')
+        self.assertIn('announced meals', ' '.join(settings['settings']['carb_ratio']['special_handling']).lower())
 
     def test_effective_parameter_thresholds_can_validate_safe_bundle(self):
         bundle = build_effective_parameter_bundle({
@@ -1118,6 +1119,7 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertEqual(plan['direction'], 'settings-extraction-special-handling')
         self.assertIn('settings_extraction_summary', plan)
         self.assertIn('tracked_support', plan['settings_extraction_summary'])
+        self.assertIn('announced_meal_dependency', plan['settings_extraction_summary'])
 
 
 # =============================================================================
