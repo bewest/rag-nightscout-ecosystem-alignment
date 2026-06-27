@@ -339,6 +339,7 @@ Initial directions:
 - `settings-precision-vs-accuracy` — break down, for each setting, which research closes variance/coverage limits versus which research closes causal or controller-aware accuracy limits
 - `controller-aware-causality` — organize endpoint signals, controller-separation features, and explanatory flair by time scale so controller action can be interpreted separately from disease course
 - `controller-state-stratification` — define practical controller-response strata and map which features and time scales can support causal claims within each stratum
+- `stratified-deconfounding-audit` — map each controller-response stratum to its best audit, confidence downgrade, and next test instead of reusing one pooled causal audit
 
 For carb-ratio work, the tracked workflow now treats **announced-meal-dependent**
 artifacts as provisional evidence only. Meal-conditioned CR outputs can inform

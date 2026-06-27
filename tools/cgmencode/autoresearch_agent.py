@@ -476,6 +476,36 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'Explain what causal claim each stratum can and cannot support.',
         ),
     ),
+    'stratified-deconfounding-audit': DirectionSpec(
+        key='stratified-deconfounding-audit',
+        title='Stratified Deconfounding Audit',
+        default_question=(
+            'Apply the causal audit separately to the main controller-response strata and identify which audit, confidence downgrade, and next test should be used in each stratum.'
+        ),
+        search_terms=('failed correction', 'fast return', 'throughput', 'balance', 'period mismatch', 'controller', 'counterfactual', 'leave-patient-out'),
+        candidate_files=(
+            'externals/experiments/autoresearch/20260627-152217_controller-state-stratification.md',
+            'externals/experiments/exp583_correction_event_taxonomy.json',
+            'externals/experiments/exp443_throughput_balance.json',
+            'externals/experiments/exp582_per-period_basal_decomposition.json',
+            'docs/60-research/wave12-multifactor-isolation-report-2026-04-20.md',
+            'docs/60-research/wave13-controller-dynamics-report-2026-04-20.md',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.autoresearch_agent --direction deconfounding-audit',
+            'python3 -m tools.cgmencode.run_pattern_experiments leave-patient-out',
+            'python3 -m tools.cgmencode.run_pattern_experiments temporal-override',
+        ),
+        hypotheses=(
+            'Different controller-response strata require different deconfounding audits rather than one shared audit order.',
+            'Confidence downgrades should be strongest in failed-correction and fast-return states, weaker in persistent period-mismatch states.',
+        ),
+        success_criteria=(
+            'Map at least three strata to their best audit and confidence action.',
+            'State which pooled claim becomes unsafe inside each stratum.',
+            'Name the next best stratified follow-up command.',
+        ),
+    ),
 }
 
 COUNTER_CAUSAL_PATTERNS: tuple[dict[str, Any], ...] = (
@@ -1025,6 +1055,66 @@ def _build_controller_state_stratification_summary() -> dict[str, Any]:
     }
 
 
+def _build_stratified_deconfounding_summary() -> dict[str, Any]:
+    correction_taxonomy = _load_json_if_exists('externals/experiments/exp583_correction_event_taxonomy.json') or {}
+    throughput_balance = _load_json_if_exists('externals/experiments/exp443_throughput_balance.json') or {}
+    basal_decomp = _load_json_if_exists('externals/experiments/exp582_per-period_basal_decomposition.json') or {}
+
+    return {
+        'strata_audits': [
+            {
+                'stratum': 'failed-correction state',
+                'unsafe_pooled_claim': 'Observed poor response directly reveals underlying physiological resistance.',
+                'best_audit': 'leave-patient-out plus controller-lineage sensitivity audit',
+                'confidence_action': 'downgrade strongly until controller follow-up actions are separated',
+                'next_test': 'python3 -m tools.cgmencode.run_pattern_experiments leave-patient-out',
+                'evidence': {
+                    'mean_failed_pct': correction_taxonomy.get('mean_failed'),
+                },
+            },
+            {
+                'stratum': 'fast-return controller-dominant state',
+                'unsafe_pooled_claim': 'Rapid resolution windows represent clean physiological success rather than aggressive controller intervention.',
+                'best_audit': 'temporal-override comparison with timing audit',
+                'confidence_action': 'downgrade until event timing shows the controller is not the main actor',
+                'next_test': 'python3 -m tools.cgmencode.run_pattern_experiments temporal-override',
+                'evidence': {
+                    'mean_fast_return_pct': correction_taxonomy.get('mean_fast_return'),
+                },
+            },
+            {
+                'stratum': 'controller-separable correction state',
+                'unsafe_pooled_claim': 'All correction windows can share one common causal interpretation.',
+                'best_audit': 'throughput/balance class-separation review plus leave-patient-out generalization',
+                'confidence_action': 'downgrade moderately when separation collapses across patients or horizons',
+                'next_test': 'python3 -m tools.cgmencode.run_pattern_experiments leave-patient-out',
+                'evidence': {
+                    'sil_2h': throughput_balance.get('aggregate', {}).get('2h', {}).get('mean_sil_2d'),
+                    'sil_6h': throughput_balance.get('aggregate', {}).get('6h', {}).get('mean_sil_2d'),
+                    'sil_12h': throughput_balance.get('aggregate', {}).get('12h', {}).get('mean_sil_2d'),
+                },
+            },
+            {
+                'stratum': 'persistent period-mismatch state',
+                'unsafe_pooled_claim': 'Repeated basal mismatch can be interpreted from single correction episodes.',
+                'best_audit': 'period-wise residual review with slower-horizon stratification',
+                'confidence_action': 'downgrade only for fast claims; keep moderate confidence for slow tuning claims',
+                'next_test': 'python3 -m tools.cgmencode.autoresearch_agent --direction settings-followup',
+                'evidence': {
+                    'mean_adjustments': basal_decomp.get('mean_adjustments'),
+                    'worst_period_counts': basal_decomp.get('worst_period_counts'),
+                },
+            },
+        ],
+        'shared_principle': (
+            'Run the deconfounding audit inside the response mode where the claim is made. Pooled causal confidence should not survive if it fails within the dominant controller-response strata.'
+        ),
+        'highest_value_next_step': (
+            'Start with failed-correction and fast-return strata, because those modes are most likely to overstate physiological certainty when controller timing is ignored.'
+        ),
+    }
+
+
 def _counter_causal_audit(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     for pattern in COUNTER_CAUSAL_PATTERNS:
@@ -1170,6 +1260,8 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['controller_causality_summary'] = _build_controller_causality_summary()
         if spec.key == 'controller-state-stratification':
             plan['controller_state_stratification_summary'] = _build_controller_state_stratification_summary()
+        if spec.key == 'stratified-deconfounding-audit':
+            plan['stratified_deconfounding_summary'] = _build_stratified_deconfounding_summary()
         span.set_outputs({
             'evidence_count': len(evidence),
             'command_count': len(spec.recommended_commands),
@@ -1311,6 +1403,19 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
             lines.append(f"  - supporting features: {', '.join(row.get('supporting_features', []))}")
             lines.append(f"  - supports: {row.get('what_it_supports')}")
             lines.append(f"  - cannot support: {row.get('what_it_cannot_support')}")
+            if row.get('evidence'):
+                lines.append(f"  - evidence: {json.dumps(row.get('evidence'), sort_keys=True)}")
+    if plan.get('stratified_deconfounding_summary'):
+        summary = plan['stratified_deconfounding_summary']
+        lines.extend(['', '## Stratified Deconfounding Summary', ''])
+        lines.append(f"- principle: {summary.get('shared_principle')}")
+        lines.append(f"- next step: {summary.get('highest_value_next_step')}")
+        for row in summary.get('strata_audits', []):
+            lines.append(f"- **{row.get('stratum')}**")
+            lines.append(f"  - unsafe pooled claim: {row.get('unsafe_pooled_claim')}")
+            lines.append(f"  - best audit: {row.get('best_audit')}")
+            lines.append(f"  - confidence action: {row.get('confidence_action')}")
+            lines.append(f"  - next test: `{row.get('next_test')}`")
             if row.get('evidence'):
                 lines.append(f"  - evidence: {json.dumps(row.get('evidence'), sort_keys=True)}")
     lines.extend(['', '## Success Criteria', ''])
