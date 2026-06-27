@@ -742,7 +742,7 @@ class TestAutoresearchAgent(unittest.TestCase):
     def test_all_directions_defined(self):
         self.assertEqual(
             set(DIRECTIONS.keys()),
-            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling', 'settings-precision-vs-accuracy', 'controller-aware-causality', 'controller-state-stratification', 'stratified-deconfounding-audit', 'meal-independent-cr-proxies'},
+            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling', 'settings-precision-vs-accuracy', 'controller-aware-causality', 'controller-state-stratification', 'stratified-deconfounding-audit', 'meal-independent-cr-proxies', 'meal-event-discovery-audition'},
         )
 
     def test_build_research_plan_structure(self):
@@ -1167,6 +1167,12 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertEqual(plan['direction'], 'meal-independent-cr-proxies')
         self.assertIn('meal_independent_cr_summary', plan)
         self.assertTrue(plan['meal_independent_cr_summary']['proxy_families'])
+
+    def test_meal_event_discovery_audition_builds_summary(self):
+        plan = build_research_plan('meal-event-discovery-audition')
+        self.assertEqual(plan['direction'], 'meal-event-discovery-audition')
+        self.assertIn('meal_event_discovery_audition', plan)
+        self.assertTrue(plan['meal_event_discovery_audition']['ranking'])
 
 
 # =============================================================================

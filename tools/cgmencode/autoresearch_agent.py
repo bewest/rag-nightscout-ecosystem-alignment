@@ -536,6 +536,35 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'Name the best next experiment or memo direction for making CR support promotion-ready.',
         ),
     ),
+    'meal-event-discovery-audition': DirectionSpec(
+        key='meal-event-discovery-audition',
+        title='Meal-Like Event Discovery Audition',
+        default_question=(
+            'Score the main meal-like event discovery techniques by expected precision, accuracy, realism, and readiness for producing promotion-ready carb-ratio support.'
+        ),
+        search_terms=('UAM', 'throughput', 'balance', 'deviation', 'meal-independent', 'carb ratio', 'precision', 'accuracy'),
+        candidate_files=(
+            'externals/experiments/autoresearch/20260627-154653_meal-independent-cr-proxies.md',
+            'docs/10-domain/carb-absorption-comparison.md',
+            'externals/experiments/exp443_throughput_balance.json',
+            'externals/experiments/parameter-models/effective-parameter-extractor_settings_handling.json',
+            'tools/cgmencode/exp_dose_dependent_cr_2747.py',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.autoresearch_agent --direction meal-independent-cr-proxies',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction settings-precision-vs-accuracy',
+            'python3 -m tools.cgmencode.autoresearch_agent --direction controller-aware-causality',
+        ),
+        hypotheses=(
+            'A hybrid of throughput/balance separation plus UAM-style meal discovery is the most promising near-term path for realistic CR support.',
+            'Pure period-level context is helpful for realism but too weak alone for accurate meal-like event discovery.',
+        ),
+        success_criteria=(
+            'Score at least three candidate techniques.',
+            'State which technique has the best overall promise and why.',
+            'Name the best next experiment for improving meal-independent CR support.',
+        ),
+    ),
 }
 
 COUNTER_CAUSAL_PATTERNS: tuple[dict[str, Any], ...] = (
@@ -1338,6 +1367,64 @@ def _build_meal_independent_cr_summary() -> dict[str, Any]:
     }
 
 
+def _build_meal_event_discovery_audition() -> dict[str, Any]:
+    exp443 = _load_json_if_exists('externals/experiments/exp443_throughput_balance.json') or {}
+    techniques = [
+        {
+            'technique': 'UAM / deviation-slope discovery',
+            'precision_score': 0.55,
+            'accuracy_score': 0.45,
+            'realism_score': 0.9,
+            'readiness_score': 0.5,
+            'why': 'Most realistic because it does not require meal labels, but noisy and controller-contaminated when used alone.',
+        },
+        {
+            'technique': 'throughput + balance separation',
+            'precision_score': 0.72,
+            'accuracy_score': 0.64,
+            'realism_score': 0.8,
+            'readiness_score': 0.68,
+            'why': 'Best current mid-horizon discriminator for separating meal-like from correction/stable windows without meal labels.',
+            'evidence': {
+                'sil_2h': exp443.get('aggregate', {}).get('2h', {}).get('mean_sil_2d'),
+                'sil_6h': exp443.get('aggregate', {}).get('6h', {}).get('mean_sil_2d'),
+                'sil_12h': exp443.get('aggregate', {}).get('12h', {}).get('mean_sil_2d'),
+            },
+        },
+        {
+            'technique': 'controller-separated residual meal impact',
+            'precision_score': 0.6,
+            'accuracy_score': 0.69,
+            'realism_score': 0.74,
+            'readiness_score': 0.46,
+            'why': 'Potentially most accurate if controller effects are separated cleanly, but still under-specified and validation-heavy.',
+        },
+        {
+            'technique': 'period-level persistent excursion context',
+            'precision_score': 0.42,
+            'accuracy_score': 0.35,
+            'realism_score': 0.78,
+            'readiness_score': 0.58,
+            'why': 'Good contextual realism and triage value, but too coarse to infer meal-like events or CR directly.',
+        },
+    ]
+    for row in techniques:
+        row['overall_score'] = round(
+            0.3 * row['precision_score']
+            + 0.3 * row['accuracy_score']
+            + 0.2 * row['realism_score']
+            + 0.2 * row['readiness_score'],
+            3,
+        )
+    ranked = sorted(techniques, key=lambda row: row['overall_score'], reverse=True)
+    return {
+        'ranking': ranked,
+        'winner': ranked[0]['technique'],
+        'winner_reason': ranked[0]['why'],
+        'best_next_step': 'Prototype a hybrid UAM + throughput/balance meal-like event detector, then score downstream CR recommendations against validated hypo and controller-state audits.',
+    }
+
+
 def _counter_causal_audit(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     for pattern in COUNTER_CAUSAL_PATTERNS:
@@ -1488,6 +1575,8 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['stratified_deconfounding_summary'] = _build_stratified_deconfounding_summary()
         if spec.key == 'meal-independent-cr-proxies':
             plan['meal_independent_cr_summary'] = _build_meal_independent_cr_summary()
+        if spec.key == 'meal-event-discovery-audition':
+            plan['meal_event_discovery_audition'] = _build_meal_event_discovery_audition()
         span.set_outputs({
             'evidence_count': len(evidence),
             'command_count': len(spec.recommended_commands),
@@ -1675,6 +1764,20 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
         lines.extend(['', '### Promotion Requirements', ''])
         for item in summary.get('promotion_requirements', []):
             lines.append(f"- {item}")
+    if plan.get('meal_event_discovery_audition'):
+        summary = plan['meal_event_discovery_audition']
+        lines.extend(['', '## Meal Event Discovery Audition', ''])
+        lines.append(f"- winner: {summary.get('winner')}")
+        lines.append(f"- winner reason: {summary.get('winner_reason')}")
+        lines.append(f"- best next step: {summary.get('best_next_step')}")
+        for row in summary.get('ranking', []):
+            lines.append(f"- **{row.get('technique')}**")
+            lines.append(
+                f"  - scores: precision={row.get('precision_score')}, accuracy={row.get('accuracy_score')}, realism={row.get('realism_score')}, readiness={row.get('readiness_score')}, overall={row.get('overall_score')}"
+            )
+            lines.append(f"  - why: {row.get('why')}")
+            if row.get('evidence'):
+                lines.append(f"  - evidence: {json.dumps(row.get('evidence'), sort_keys=True)}")
     lines.extend(['', '## Success Criteria', ''])
     lines.extend([f'- {item}' for item in plan['success_criteria']])
     lines.extend(['', '## Next Steps', ''])
