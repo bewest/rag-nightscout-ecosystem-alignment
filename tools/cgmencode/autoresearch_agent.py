@@ -55,6 +55,8 @@ DEFAULT_SCORE_TIR = ROOT / 'externals' / 'experiments' / 'exp581_score_predicts_
 DEFAULT_BASAL_DECOMP = ROOT / 'externals' / 'experiments' / 'exp582_per-period_basal_decomposition.json'
 DEFAULT_ISF_SCHEDULE = ROOT / 'externals' / 'experiments' / 'exp_773_exp-773_isf_schedule_optimizer.json'
 DEFAULT_BASAL_SCHEDULE = ROOT / 'externals' / 'experiments' / 'exp_774_exp-774_basal_schedule_optimizer.json'
+DEFAULT_CARB_RATIO = ROOT / 'externals' / 'experiments' / 'exp-2729_carb_ratio.json'
+DEFAULT_DOSE_DEPENDENT_CR = ROOT / 'externals' / 'experiments' / 'exp-2747_dose_dependent_cr.json'
 
 try:
     import mlflow  # type: ignore
@@ -352,6 +354,37 @@ DIRECTIONS: dict[str, DirectionSpec] = {
             'Name the next best safety-oriented follow-up command.',
         ),
     ),
+    'settings-extraction-special-handling': DirectionSpec(
+        key='settings-extraction-special-handling',
+        title='Settings Extraction Special Handling',
+        default_question=(
+            'Summarize the special handling required for basal, ISF, and carb-ratio extraction, '
+            'and explain which parts are already encoded in the tracked parameter-model workflow versus still needing richer artifacts.'
+        ),
+        search_terms=('basal', 'isf', 'carb', 'carb ratio', 'meal size', 'schedule', 'safety margin', 'titration'),
+        candidate_files=(
+            'externals/experiments/parameter-models/effective-parameter-extractor_settings_handling.json',
+            'externals/experiments/parameter-models/effective-parameter-extractor_plan.json',
+            'tools/cgmencode/parameter_model_bundle.py',
+            'tools/cgmencode/exp_carb_ratio_extraction_2729.py',
+            'tools/cgmencode/exp_dose_dependent_cr_2747.py',
+            'docs/60-research/wave13-controller-dynamics-report-2026-04-20.md',
+        ),
+        recommended_commands=(
+            'python3 -m tools.cgmencode.build_effective_parameter_extractor',
+            'python3 tools/cgmencode/exp_carb_ratio_extraction_2729.py',
+            'python3 tools/cgmencode/exp_dose_dependent_cr_2747.py',
+        ),
+        hypotheses=(
+            'ISF, basal, and carb ratio require different extraction targets and should not be promoted with one shared rule.',
+            'The current tracked workflow is strongest for ISF and basal, while carb-ratio handling is still mostly policy-level unless meal-conditioned artifacts are loaded.',
+        ),
+        success_criteria=(
+            'Describe the distinct handling rule for basal, ISF, and carb ratio.',
+            'State which settings already have tracked bundle support and which still need richer artifacts.',
+            'Name the best next command for improving settings extraction coverage.',
+        ),
+    ),
 }
 
 COUNTER_CAUSAL_PATTERNS: tuple[dict[str, Any], ...] = (
@@ -644,6 +677,38 @@ def _build_titration_safety_summary() -> dict[str, Any]:
     }
 
 
+def _build_settings_extraction_summary() -> dict[str, Any]:
+    settings_handling = _load_json_if_exists(
+        'externals/experiments/parameter-models/effective-parameter-extractor_settings_handling.json'
+    ) or {}
+    bundle = _load_json_if_exists(
+        'externals/experiments/parameter-models/effective-parameter-extractor_bundle.json'
+    ) or {}
+
+    summary_settings = settings_handling.get('settings', {})
+    upstream = bundle.get('upstream_artifacts', {})
+    coverage = {
+        key: value.get('coverage_fraction')
+        for key, value in summary_settings.items()
+        if isinstance(value, dict)
+    }
+    tracked_support = {
+        'isf': bool(upstream.get('isf_schedule_optimizer')),
+        'basal': bool(upstream.get('basal_schedule_optimizer') or upstream.get('basal_decomposition')),
+        'carb_ratio': bool(upstream.get('carb_ratio_analysis') or upstream.get('dose_dependent_cr')),
+    }
+    return {
+        'tracked_support': tracked_support,
+        'coverage_fraction': coverage,
+        'combined_cautions': settings_handling.get('combined_cautions', []),
+        'capability_gap': (
+            'Carb-ratio handling is still mostly policy-level because meal-conditioned CR artifacts are not yet loaded into the canonical parameter-model bundle.'
+            if not tracked_support['carb_ratio']
+            else 'All three settings families have tracked artifact support, but carb-ratio promotion still requires careful meal-size review.'
+        ),
+    }
+
+
 def _counter_causal_audit(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     for pattern in COUNTER_CAUSAL_PATTERNS:
@@ -736,6 +801,8 @@ def build_research_plan(direction: str, question: str | None = None) -> dict[str
             plan['current_research_position'] = _build_current_research_position()
         if spec.key == 'titration-safety-followup':
             plan['titration_safety_summary'] = _build_titration_safety_summary()
+        if spec.key == 'settings-extraction-special-handling':
+            plan['settings_extraction_summary'] = _build_settings_extraction_summary()
         span.set_outputs({
             'evidence_count': len(evidence),
             'command_count': len(spec.recommended_commands),
@@ -812,6 +879,14 @@ def _write_outputs(plan: dict[str, Any], output_dir: Path) -> tuple[Path, Path]:
         lines.append(f"- staged action counts: {json.dumps(summary.get('staged_action_counts', {}), sort_keys=True)}")
         lines.append(f"- validated hypo guardrail: {json.dumps(summary.get('validated_hypo_guardrail', {}), sort_keys=True)}")
         lines.append(f"- capability gain: {summary.get('capability_gain')}")
+    if plan.get('settings_extraction_summary'):
+        summary = plan['settings_extraction_summary']
+        lines.extend(['', '## Settings Extraction Summary', ''])
+        lines.append(f"- tracked support: {json.dumps(summary.get('tracked_support', {}), sort_keys=True)}")
+        lines.append(f"- coverage fraction: {json.dumps(summary.get('coverage_fraction', {}), sort_keys=True)}")
+        lines.append(f"- capability gap: {summary.get('capability_gap')}")
+        for caution in summary.get('combined_cautions', []):
+            lines.append(f"- caution: {caution}")
     lines.extend(['', '## Success Criteria', ''])
     lines.extend([f'- {item}' for item in plan['success_criteria']])
     lines.extend(['', '## Next Steps', ''])
@@ -891,7 +966,7 @@ def build_model_candidate_from_plan(
         ),
         'simple_ml_research_alignment': {
             'target_research': 'simple-ml-insulin-sensitivity-and-basal-rates',
-            'learned_objects': ['isf_schedule', 'basal_schedule', 'dose_response_fit'],
+            'learned_objects': ['isf_schedule', 'basal_schedule', 'carb_ratio_strategy', 'dose_response_fit'],
             'algorithm_shape': [
                 'segment selection',
                 'digestion gating',
@@ -904,8 +979,8 @@ def build_model_candidate_from_plan(
             'optional': ['controller_context', 'meal_annotations', 'override_state'],
         },
         'outputs': {
-            'primary': ['effective_isf_estimate', 'basal_adjustment_signal', 'validation_follow_up'],
-            'artifacts': ['parameter_schedule_json', 'dose_response_fit_json', 'evaluation_summary_json'],
+            'primary': ['effective_isf_estimate', 'basal_adjustment_signal', 'carb_ratio_handling', 'validation_follow_up'],
+            'artifacts': ['parameter_schedule_json', 'dose_response_fit_json', 'evaluation_summary_json', 'settings_special_handling_json'],
         },
         'recommended_next_command': prioritized.get('command'),
         'evidence_refs': evidence_refs,
@@ -917,9 +992,9 @@ def build_model_candidate_from_plan(
 def _build_learned_bundle_for_candidate(
     model_candidate: dict[str, Any] | None,
     output_dir: Path,
-) -> tuple[Path | None, Path | None, dict[str, Any] | None, Path | None, Path | None, dict[str, Any] | None, Path | None, dict[str, Any] | None, Path | None, dict[str, Any] | None]:
+) -> tuple[Path | None, Path | None, dict[str, Any] | None, Path | None, Path | None, dict[str, Any] | None, Path | None, dict[str, Any] | None, Path | None, dict[str, Any] | None, Path | None, dict[str, Any] | None]:
     if not model_candidate or not DEFAULT_VALIDATION_RESULTS.exists():
-        return None, None, None, None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None, None, None, None, None, None
     results = json.loads(DEFAULT_VALIDATION_RESULTS.read_text(encoding='utf-8'))
     bundle = build_effective_parameter_bundle(
         results,
@@ -928,12 +1003,15 @@ def _build_learned_bundle_for_candidate(
         basal_decomposition=_load_json_path_if_exists(DEFAULT_BASAL_DECOMP),
         isf_schedule_optimizer=_load_json_path_if_exists(DEFAULT_ISF_SCHEDULE),
         basal_schedule_optimizer=_load_json_path_if_exists(DEFAULT_BASAL_SCHEDULE),
+        carb_ratio_analysis=_load_json_path_if_exists(DEFAULT_CARB_RATIO),
+        dose_dependent_cr=_load_json_path_if_exists(DEFAULT_DOSE_DEPENDENT_CR),
     )
     evaluation = evaluate_effective_parameter_bundle(bundle)
     thresholds = propose_effective_parameter_thresholds(evaluation)
     assessment = assess_effective_parameter_thresholds(evaluation, thresholds)
     guidance = derive_titration_guidance(evaluation, assessment)
     plan = derive_titration_plan(bundle, evaluation, assessment, guidance)
+    settings_handling = bundle.get('settings_special_handling')
     stem = _slug(model_candidate['candidate_name'])
     bundle_path = save_bundle(bundle, output_dir / f'{stem}_bundle.json')
     evaluation_path = save_bundle(evaluation, output_dir / f'{stem}_bundle_evaluation.json')
@@ -941,7 +1019,11 @@ def _build_learned_bundle_for_candidate(
     assessment_path = save_bundle(assessment, output_dir / f'{stem}_bundle_assessment.json')
     guidance_path = save_bundle(guidance, output_dir / f'{stem}_bundle_guidance.json')
     plan_path = save_bundle(plan, output_dir / f'{stem}_bundle_plan.json')
-    return bundle_path, evaluation_path, evaluation, thresholds_path, assessment_path, assessment, guidance_path, guidance, plan_path, plan
+    settings_handling_path = (
+        save_bundle(settings_handling, output_dir / f'{stem}_bundle_settings_handling.json')
+        if settings_handling else None
+    )
+    return bundle_path, evaluation_path, evaluation, thresholds_path, assessment_path, assessment, guidance_path, guidance, plan_path, plan, settings_handling_path, settings_handling
 
 
 def _build_trace_payload(
@@ -962,6 +1044,8 @@ def _build_trace_payload(
     titration_guidance: dict[str, Any] | None,
     plan_path: Path | None,
     titration_plan: dict[str, Any] | None,
+    settings_handling_path: Path | None,
+    settings_special_handling: dict[str, Any] | None,
 ) -> dict[str, Any]:
     return {
         'schema_version': '1.0',
@@ -984,6 +1068,7 @@ def _build_trace_payload(
         'threshold_assessment': threshold_assessment,
         'titration_guidance': titration_guidance,
         'titration_plan': titration_plan,
+        'settings_special_handling': settings_special_handling,
         'outputs': {
             'json_artifact': str(json_path),
             'markdown_artifact': str(md_path),
@@ -997,6 +1082,7 @@ def _build_trace_payload(
             'assessment_path': str(assessment_path) if assessment_path else None,
             'guidance_path': str(guidance_path) if guidance_path else None,
             'plan_path': str(plan_path) if plan_path else None,
+            'settings_handling_path': str(settings_handling_path) if settings_handling_path else None,
         },
     }
 
@@ -1037,6 +1123,8 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 titration_guidance,
                 plan_path,
                 titration_plan,
+                settings_handling_path,
+                settings_special_handling,
             ) = _build_learned_bundle_for_candidate(
                 model_candidate, output_dir
             )
@@ -1063,6 +1151,10 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                     model_candidate['plan_path'] = str(plan_path)
                 if titration_plan:
                     model_candidate['titration_plan'] = titration_plan
+                if settings_handling_path:
+                    model_candidate['settings_handling_path'] = str(settings_handling_path)
+                if settings_special_handling:
+                    model_candidate['settings_special_handling'] = settings_special_handling
                 pyfunc_model_path = output_dir / f'{json_path.stem}_effective_parameter_extractor_model'
                 saved_path = save_effective_parameter_extractor_model(pyfunc_model_path, model_candidate)
                 if saved_path:
@@ -1094,6 +1186,8 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 titration_guidance,
                 plan_path,
                 titration_plan,
+                settings_handling_path,
+                settings_special_handling,
             )
             log_metrics({
                 'evidence_count': len(plan['evidence']),
@@ -1130,6 +1224,8 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 log_dict(titration_guidance, f'models/evals/{json_path.stem}_bundle_guidance.json')
             if titration_plan:
                 log_dict(titration_plan, f'models/evals/{json_path.stem}_bundle_plan.json')
+            if settings_special_handling:
+                log_dict(settings_special_handling, f'models/evals/{json_path.stem}_bundle_settings_handling.json')
             log_artifact(json_path, artifact_path='autoresearch')
             log_artifact(md_path, artifact_path='autoresearch')
             if pyfunc_model_path:
@@ -1147,6 +1243,8 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 log_artifact(guidance_path, artifact_path='models/guidance')
             if plan_path:
                 log_artifact(plan_path, artifact_path='models/plans')
+            if settings_handling_path:
+                log_artifact(settings_handling_path, artifact_path='models/settings-handling')
             if model_candidate:
                 log_model_artifact(
                     model_candidate['candidate_name'],
@@ -1185,6 +1283,8 @@ def run_direction(direction: str, question: str | None, output_dir: Path) -> dic
                 'titration_guidance': titration_guidance,
                 'plan_path': plan_path,
                 'titration_plan': titration_plan,
+                'settings_handling_path': settings_handling_path,
+                'settings_special_handling': settings_special_handling,
                 'json_path': json_path,
                 'md_path': md_path,
             }

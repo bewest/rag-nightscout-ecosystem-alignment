@@ -12,6 +12,7 @@ from .parameter_model_bundle import (
     derive_titration_plan,
     derive_titration_guidance,
     build_effective_parameter_bundle,
+    derive_settings_special_handling,
     assess_effective_parameter_thresholds,
     evaluate_effective_parameter_bundle,
     propose_effective_parameter_thresholds,
@@ -25,6 +26,8 @@ DEFAULT_SCORE_TIR = ROOT / 'externals' / 'experiments' / 'exp581_score_predicts_
 DEFAULT_BASAL_DECOMP = ROOT / 'externals' / 'experiments' / 'exp582_per-period_basal_decomposition.json'
 DEFAULT_ISF_SCHEDULE = ROOT / 'externals' / 'experiments' / 'exp_773_exp-773_isf_schedule_optimizer.json'
 DEFAULT_BASAL_SCHEDULE = ROOT / 'externals' / 'experiments' / 'exp_774_exp-774_basal_schedule_optimizer.json'
+DEFAULT_CARB_RATIO = ROOT / 'externals' / 'experiments' / 'exp-2729_carb_ratio.json'
+DEFAULT_DOSE_DEPENDENT_CR = ROOT / 'externals' / 'experiments' / 'exp-2747_dose_dependent_cr.json'
 
 
 def _load_json_if_exists(path: Path):
@@ -42,6 +45,8 @@ def main() -> None:
     parser.add_argument('--basal-decomposition', default=str(DEFAULT_BASAL_DECOMP))
     parser.add_argument('--isf-schedule', default=str(DEFAULT_ISF_SCHEDULE))
     parser.add_argument('--basal-schedule', default=str(DEFAULT_BASAL_SCHEDULE))
+    parser.add_argument('--carb-ratio', default=str(DEFAULT_CARB_RATIO))
+    parser.add_argument('--dose-dependent-cr', default=str(DEFAULT_DOSE_DEPENDENT_CR))
     args = parser.parse_args()
 
     validation_path = Path(args.validation_results)
@@ -56,8 +61,16 @@ def main() -> None:
         basal_decomposition=_load_json_if_exists(Path(args.basal_decomposition)),
         isf_schedule_optimizer=_load_json_if_exists(Path(args.isf_schedule)),
         basal_schedule_optimizer=_load_json_if_exists(Path(args.basal_schedule)),
+        carb_ratio_analysis=_load_json_if_exists(Path(args.carb_ratio)),
+        dose_dependent_cr=_load_json_if_exists(Path(args.dose_dependent_cr)),
     )
     bundle_path = save_bundle(bundle, output_dir / f'{args.name}_bundle.json')
+    settings_handling = derive_settings_special_handling(
+        bundle,
+        carb_ratio_analysis=_load_json_if_exists(Path(args.carb_ratio)),
+        dose_dependent_cr=_load_json_if_exists(Path(args.dose_dependent_cr)),
+    )
+    settings_handling_path = save_bundle(settings_handling, output_dir / f'{args.name}_settings_handling.json')
     evaluation = evaluate_effective_parameter_bundle(bundle)
     evaluation_path = save_bundle(evaluation, output_dir / f'{args.name}_evaluation.json')
     thresholds = propose_effective_parameter_thresholds(evaluation)
@@ -82,6 +95,8 @@ def main() -> None:
             'titration_guidance': guidance,
             'plan_path': str(plan_path),
             'titration_plan': plan,
+            'settings_handling_path': str(settings_handling_path),
+            'settings_special_handling': settings_handling,
         },
     )
 
@@ -91,6 +106,7 @@ def main() -> None:
     print(f'Assessment: {assessment_path}')
     print(f'Guidance: {guidance_path}')
     print(f'Plan: {plan_path}')
+    print(f'Settings handling: {settings_handling_path}')
     print(f'Model: {model_path}')
 
 

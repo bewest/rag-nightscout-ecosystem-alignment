@@ -99,6 +99,8 @@ class EffectiveParameterExtractorModel(_PyfuncBase):
         )
         titration_guidance = self.candidate.get('titration_guidance', {})
         titration_plan = self.candidate.get('titration_plan', {})
+        settings_special_handling = self.candidate.get('settings_special_handling', {})
+        setting_rules = settings_special_handling.get('settings', {})
         patient_models = self.bundle.get('patient_models', {})
         population_ratio = (
             self.bundle.get('training_summary', {}).get('population_median_ratio')
@@ -113,6 +115,7 @@ class EffectiveParameterExtractorModel(_PyfuncBase):
             time_of_day = row.get('time_of_day')
             patient_plan = titration_plan.get('per_patient', {}).get(str(patient_id), {})
             patient_model = patient_models.get(str(patient_id)) if patient_id is not None else None
+            carb_ratio_model = patient_model.get('carb_ratio_model', {}) if patient_model else {}
             if patient_model:
                 schedule_model = patient_model.get('isf_schedule_model', {})
                 optimized_schedule = schedule_model.get('optimized_schedule', {})
@@ -162,6 +165,15 @@ class EffectiveParameterExtractorModel(_PyfuncBase):
                 'staged_action': patient_plan.get('staged_action'),
                 'review_required': patient_plan.get('review_required'),
                 'suggested_basal_step_pct': patient_plan.get('suggested_basal_step_pct'),
+                'carb_ratio_source': 'patient-canonical' if carb_ratio_model else 'special-handling-only',
+                'carb_ratio_estimate': (
+                    carb_ratio_model.get('recommended_cr')
+                    or carb_ratio_model.get('deconfounded_cr')
+                    or carb_ratio_model.get('observed_cr')
+                ),
+                'carb_ratio_handling': setting_rules.get('carb_ratio', {}).get('extraction_target'),
+                'isf_handling': setting_rules.get('isf', {}).get('extraction_target'),
+                'basal_handling': setting_rules.get('basal', {}).get('extraction_target'),
             })
         if pd is not None:
             return pd.DataFrame(outputs)

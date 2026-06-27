@@ -70,6 +70,7 @@ from tools.cgmencode.mlflow_pyfunc_models import (
 from tools.cgmencode.parameter_model_bundle import (
     derive_titration_plan,
     derive_titration_guidance,
+    derive_settings_special_handling,
     assess_effective_parameter_thresholds,
     build_effective_parameter_bundle,
     evaluate_effective_parameter_bundle,
@@ -741,7 +742,7 @@ class TestAutoresearchAgent(unittest.TestCase):
     def test_all_directions_defined(self):
         self.assertEqual(
             set(DIRECTIONS.keys()),
-            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup'},
+            {'parameter-extraction', 'intervention-scoring', 'deconfounding-audit', 'proxy-scoping', 'settings-followup', 'safety-vs-explanation', 'current-research-position', 'titration-safety-followup', 'settings-extraction-special-handling'},
         )
 
     def test_build_research_plan_structure(self):
@@ -953,6 +954,9 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertTrue(guidance['concurrent_change_review_required'])
         plan = derive_titration_plan(bundle, evaluation, assessment, guidance)
         self.assertEqual(plan['per_patient']['patient-a']['staged_action'], 'review-basal-first')
+        settings = derive_settings_special_handling(bundle)
+        self.assertIn('carb_ratio', settings['settings'])
+        self.assertEqual(settings['settings']['isf']['extraction_target'], 'controller-aware predictive ISF, not direct physiological truth')
 
     def test_effective_parameter_thresholds_can_validate_safe_bundle(self):
         bundle = build_effective_parameter_bundle({
@@ -1108,6 +1112,12 @@ class TestAutoresearchAgent(unittest.TestCase):
         self.assertEqual(plan['direction'], 'titration-safety-followup')
         self.assertIn('titration_safety_summary', plan)
         self.assertIn('staged_action_counts', plan['titration_safety_summary'])
+
+    def test_settings_extraction_special_handling_builds_summary(self):
+        plan = build_research_plan('settings-extraction-special-handling')
+        self.assertEqual(plan['direction'], 'settings-extraction-special-handling')
+        self.assertIn('settings_extraction_summary', plan)
+        self.assertIn('tracked_support', plan['settings_extraction_summary'])
 
 
 # =============================================================================

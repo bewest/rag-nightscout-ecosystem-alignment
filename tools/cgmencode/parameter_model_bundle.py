@@ -35,6 +35,8 @@ def build_effective_parameter_bundle(
     basal_decomposition: dict[str, Any] | None = None,
     isf_schedule_optimizer: dict[str, Any] | None = None,
     basal_schedule_optimizer: dict[str, Any] | None = None,
+    carb_ratio_analysis: dict[str, Any] | None = None,
+    dose_dependent_cr: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     patient_models: dict[str, dict[str, Any]] = {}
     ratios: list[float] = []
@@ -124,6 +126,37 @@ def build_effective_parameter_bundle(
                 'n_blocks': raw.get('n_blocks'),
             }
 
+    if carb_ratio_analysis:
+        patient_payload = carb_ratio_analysis.get('patients')
+        if isinstance(patient_payload, dict):
+            for patient_id, raw in patient_payload.items():
+                patient = patient_models.get(patient_id)
+                if not patient or not isinstance(raw, dict):
+                    continue
+                patient['carb_ratio_model'] = {
+                    'profile_cr': _safe_float(raw.get('profile_cr')),
+                    'observed_cr': _safe_float(raw.get('observed_cr')),
+                    'deconfounded_cr': _safe_float(raw.get('deconfounded_cr')),
+                    'recommended_cr': _safe_float(raw.get('recommended_cr')),
+                    'n_events': raw.get('n_events'),
+                }
+
+    if dose_dependent_cr:
+        patient_payload = dose_dependent_cr.get('per_patient')
+        if isinstance(patient_payload, list):
+            for raw in patient_payload:
+                patient_id = raw.get('patient_id') or raw.get('patient')
+                patient = patient_models.get(patient_id)
+                if not patient or not isinstance(raw, dict):
+                    continue
+                patient.setdefault('carb_ratio_model', {})
+                patient['carb_ratio_model']['dose_dependent'] = {
+                    'significant': raw.get('significant'),
+                    'median_cr_small': _safe_float(raw.get('median_cr_small')),
+                    'median_cr_large': _safe_float(raw.get('median_cr_large')),
+                    'cr_ratio_large_small': _safe_float(raw.get('cr_ratio_large_small')),
+                }
+
     bundle = {
         'schema_version': SCHEMA_VERSION,
         'bundle_type': 'effective-parameter-extractor',
@@ -134,6 +167,8 @@ def build_effective_parameter_bundle(
             'basal_decomposition': bool(basal_decomposition),
             'isf_schedule_optimizer': bool(isf_schedule_optimizer),
             'basal_schedule_optimizer': bool(basal_schedule_optimizer),
+            'carb_ratio_analysis': bool(carb_ratio_analysis),
+            'dose_dependent_cr': bool(dose_dependent_cr),
         },
         'training_summary': {
             'n_patients': len(patient_models),
@@ -155,6 +190,11 @@ def build_effective_parameter_bundle(
         },
         'patient_models': patient_models,
     }
+    bundle['settings_special_handling'] = derive_settings_special_handling(
+        bundle,
+        carb_ratio_analysis=carb_ratio_analysis,
+        dose_dependent_cr=dose_dependent_cr,
+    )
     return bundle
 
 
@@ -421,6 +461,93 @@ def derive_titration_guidance(
             'concurrent_change_fraction': concurrent_change,
             'review_required': review_required,
         },
+    }
+
+
+def derive_settings_special_handling(
+    bundle: dict[str, Any],
+    *,
+    carb_ratio_analysis: dict[str, Any] | None = None,
+    dose_dependent_cr: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    patient_models = bundle.get('patient_models', {})
+    n_patients = max(1, len(patient_models))
+    training_summary = bundle.get('training_summary', {})
+
+    isf_schedule_patients = sum(1 for patient in patient_models.values() if patient.get('isf_schedule_model'))
+    basal_schedule_patients = sum(1 for patient in patient_models.values() if patient.get('basal_schedule_model'))
+    basal_period_patients = sum(1 for patient in patient_models.values() if patient.get('basal_period_model'))
+    carb_ratio_patients = sum(1 for patient in patient_models.values() if patient.get('carb_ratio_model'))
+
+    carb_ratio_patient_payload = carb_ratio_analysis.get('patients') if carb_ratio_analysis else None
+    if isinstance(carb_ratio_patient_payload, dict):
+        carb_ratio_patients = max(carb_ratio_patients, len(carb_ratio_patient_payload))
+
+    dose_dep_ratio = None
+    dose_dep_r = None
+    if dose_dependent_cr:
+        aggregate = dose_dependent_cr.get('aggregate', {})
+        if isinstance(aggregate, dict):
+            dose_dep_ratio = _safe_float(aggregate.get('median_cr_ratio_large_small'))
+            dose_dep_r = _safe_float(aggregate.get('mean_r_carbs_cr'))
+
+    return {
+        'schema_version': SCHEMA_VERSION,
+        'summary_type': 'settings-extraction-special-handling',
+        'generated_at_utc': datetime.now(timezone.utc).isoformat(),
+        'settings': {
+            'isf': {
+                'extraction_target': 'controller-aware predictive ISF, not direct physiological truth',
+                'coverage_fraction': round(isf_schedule_patients / n_patients, 3),
+                'special_handling': [
+                    'Treat the profile-vs-observed ISF gap as partly intentional controller safety margin.',
+                    'Prefer correction-event and counterfactual framing over raw observed-outcome interpretation.',
+                    'Review large ISF schedule variation before promoting direct schedule changes.',
+                ],
+                'evidence': {
+                    'population_median_ratio': training_summary.get('population_median_ratio'),
+                    'population_min_ratio': training_summary.get('population_min_ratio'),
+                    'population_max_ratio': training_summary.get('population_max_ratio'),
+                    'isf_schedule_patients': isf_schedule_patients,
+                },
+            },
+            'basal': {
+                'extraction_target': 'time-of-day basal tuning with capped staged titration',
+                'coverage_fraction': round(max(basal_schedule_patients, basal_period_patients) / n_patients, 3),
+                'special_handling': [
+                    'Basal adjustments should be localized by period instead of forced into a global score.',
+                    'Cap basal steps and reassess before compounding changes.',
+                    'Escalate explicit review when basal and ISF both signal change pressure.',
+                ],
+                'evidence': {
+                    'basal_schedule_patients': basal_schedule_patients,
+                    'basal_period_patients': basal_period_patients,
+                },
+            },
+            'carb_ratio': {
+                'extraction_target': 'meal-conditioned carb coverage with deconfounding and meal-size awareness',
+                'coverage_fraction': round(carb_ratio_patients / n_patients, 3) if carb_ratio_patients else 0.0,
+                'special_handling': [
+                    'Use meal events, not correction events, and regress out background insulin/context.',
+                    'Check whether carb ratio changes with meal size before promoting one flat CR.',
+                    'Avoid changing CR at the same time as major basal or ISF changes unless explicitly reviewed.',
+                ],
+                'evidence_loaded': {
+                    'carb_ratio_analysis': bool(carb_ratio_analysis),
+                    'dose_dependent_cr': bool(dose_dependent_cr),
+                },
+                'evidence': {
+                    'carb_ratio_patients': carb_ratio_patients,
+                    'median_large_small_ratio': dose_dep_ratio,
+                    'meal_size_dependence_r': dose_dep_r,
+                },
+            },
+        },
+        'combined_cautions': [
+            'Basal, ISF, and carb ratio should not be treated as interchangeable settings-extraction problems.',
+            'Observed optimal settings can be controller-mediated, so causal interpretation needs setting-specific checks.',
+            'When multiple settings change together, stage the intervention or require explicit review.',
+        ],
     }
 
 

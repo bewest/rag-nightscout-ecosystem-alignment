@@ -334,6 +334,7 @@ Initial directions:
 - `proxy-scoping` — classify physiology proxies by best use case, deconfounding value, and preferred time scale
 - `settings-followup` — turn settings adequacy, basal-period decomposition, and correction taxonomy into actionable next-step guidance
 - `titration-safety-followup` — combine staged titration artifacts with validated hypo guardrails to assess whether safety-oriented follow-up selection improved
+- `settings-extraction-special-handling` — surface why basal, ISF, and carb-ratio extraction need different handling rules and which of those rules are already encoded in tracked artifacts
 
 Run a pilot direction:
 
