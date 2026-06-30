@@ -106,6 +106,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3447_live_recent_deconfounding.md',
         ),
     ),
+    'live-recent-isf-deconfounding': ResearchCase(
+        key='live-recent-isf-deconfounding',
+        title='Live-recent ISF deconfounding sensitivity audit',
+        description='Tests whether observed correction-denominator ISF around 54-56 survives inferred-meal and controller deconfounding strongly enough for a baseline ISF change.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_isf_deconfounding_3448.py'),
+        artifact_paths=(
+            'externals/experiments/exp3448_live_recent_isf_deconfounding.json',
+            'externals/experiments/autoresearch/exp3448_live_recent_isf_deconfounding.md',
+        ),
+    ),
 }
 
 
