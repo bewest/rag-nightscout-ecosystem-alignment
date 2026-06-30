@@ -186,6 +186,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3455_live_recent_isf_proxy_ladder.md',
         ),
     ),
+    'live-recent-joint-latent': ResearchCase(
+        key='live-recent-joint-latent',
+        title='Live-recent joint latent meal and insulin model',
+        description='Fits meal absorption scale and delivered-insulin activity jointly across ISF candidates to test whether 53-56 explains glucose better than profile/lower ISF.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_joint_latent_3456.py'),
+        artifact_paths=(
+            'externals/experiments/exp3456_live_recent_joint_latent.json',
+            'externals/experiments/autoresearch/exp3456_live_recent_joint_latent.md',
+        ),
+    ),
 }
 
 

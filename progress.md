@@ -55,6 +55,8 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 **Update (EXP-3455, later 2026-06-30)**: Added an ISF proxy ladder from TDD and meal evidence. Combined basal+bolus actual TDD gives an 1800-rule ISF around 31.6, while profile/scheduled TDD gives about 43.4. Logged meals are sparse but their median implied CR is ~10.2 g/U, close to the configured CR; inferred meals are more frequent and median ~55.6 g at profile ISF. Re-scaling inferred meal sizes by ISF 53-56 makes meals smaller (~40-41 g median), while demand-phase ISF 30 makes them larger (~74 g median). These proxies do not independently support baseline ISF 53-56; they support a future joint latent meal+insulin model rather than direct ISF promotion.
 
+**Update (EXP-3456, later 2026-06-30)**: Added a joint latent meal+insulin model and a 180-day meal phenotype review. The model fits meal absorption scale plus delivered-insulin activity across ISF candidates; unconstrained and constrained meal-scale modes consistently prefer lower ISF (27.6-30) over 53-56 on validation, so it does not rescue the correction-denominator signal. The meal phenotype is clinically plausible for the stated behavior: 349 inferred meals over 172 days, median 2/day, with lunch and late/overnight events prominent. Late/overnight meals have the highest 4-8h tail-high burden (mean ~53%), and 27/63 dinner/evening events have a late/overnight follow-up within 8h, supporting the dinner+dessert/alcohol slow-digestion hypothesis.
+
 **Source Files Analyzed**:
 - `tools/cgmencode/production/advisor/_pipeline.py`
 - `tools/cgmencode/production/clinical_rules.py`
