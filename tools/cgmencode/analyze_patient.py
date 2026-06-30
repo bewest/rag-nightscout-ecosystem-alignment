@@ -768,6 +768,7 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
     )
     from tools.cgmencode.production.clinical_decision_figures import (
         build_clinical_figures, figure_from_file, DomainContext,
+        demand_isf_figure,
     )
 
     if policy is None:
@@ -786,9 +787,49 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
         "n_readings": glycemic.get("n_readings"),
     }
 
-    settings_recs = getattr(result, "settings_recs", None) or []
+    settings_recs = list(getattr(result, "settings_recs", None) or [])
     clinical = getattr(result, "clinical_report", None)
     cr_score = getattr(clinical, "cr_score", None) if clinical else None
+
+    # Surface the validated demand-phase ISF (EXP-2651) as a deconfounded
+    # ISF candidate, reproducibly from the pipeline's dual-phase analysis.
+    dual_phase = getattr(result, "dual_phase_isf", None)
+    demand_isf_dump = None
+    profile_isf = None
+    if df is not None and "scheduled_isf" in df:
+        try:
+            profile_isf = float(df["scheduled_isf"].median())
+        except Exception:
+            profile_isf = None
+    if dual_phase is not None and profile_isf:
+        from tools.cgmencode.production.clinical_decision_report import (
+            synthesize_demand_isf_rec,
+        )
+        demand_isf_dump = {
+            "method": "compute_demand_isf (EXP-2651), reproducible from "
+                      "result.dual_phase_isf",
+            "profile_isf": profile_isf,
+            "demand_isf": getattr(dual_phase, "demand_isf", None),
+            "apparent_isf": getattr(dual_phase, "apparent_isf", None),
+            "inflation_ratio": getattr(dual_phase, "inflation_ratio", None),
+            "n_corrections": getattr(dual_phase, "n_corrections", 0),
+            "confidence": getattr(dual_phase, "confidence", "low"),
+            "ci_low": getattr(dual_phase, "demand_ci_low", None),
+            "ci_high": getattr(dual_phase, "demand_ci_high", None),
+        }
+        (out_dir / "demand-phase-isf.json").write_text(
+            json.dumps(demand_isf_dump, indent=2, default=str))
+        demand_rec = synthesize_demand_isf_rec(
+            profile_isf=profile_isf,
+            demand_isf=demand_isf_dump["demand_isf"],
+            apparent_isf=demand_isf_dump["apparent_isf"],
+            inflation_ratio=demand_isf_dump["inflation_ratio"],
+            n_corrections=demand_isf_dump["n_corrections"] or 0,
+            confidence_label=demand_isf_dump["confidence"] or "low",
+            ci_low=demand_isf_dump["ci_low"],
+            ci_high=demand_isf_dump["ci_high"])
+        if demand_rec is not None:
+            settings_recs.append(demand_rec)
 
     # Controller trust factors — used to credit deconfounded ISF/CR
     # advisories whose confidence was uniformly dampened upstream for
@@ -856,6 +897,22 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
             figures = build_clinical_figures(
                 glucose=glucose, hours=hours, bolus=bolus, carbs=carbs,
                 domains=domain_ctx)
+
+        # Demand-phase ISF decomposition (profile vs apparent vs demand+CI)
+        # — the validated target visualized to make the ISF dynamics clear.
+        if demand_isf_dump is not None and demand_isf_dump.get("demand_isf"):
+            isf_ctx = domain_ctx.get("isf")
+            di = demand_isf_figure(
+                profile_isf=demand_isf_dump["profile_isf"],
+                demand_isf=demand_isf_dump["demand_isf"],
+                apparent_isf=demand_isf_dump["apparent_isf"],
+                ci_low=demand_isf_dump["ci_low"],
+                ci_high=demand_isf_dump["ci_high"],
+                n_corrections=demand_isf_dump["n_corrections"] or 0,
+                confidence_label=demand_isf_dump["confidence"] or "low",
+                direction=(isf_ctx.direction if isf_ctx else None))
+            if di is not None:
+                figures.append(di)
 
         # Reuse the analyzer's existing validated domain plots so readers
         # can relate basal/ISF settings to their targets (per user note).

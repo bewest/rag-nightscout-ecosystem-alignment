@@ -140,6 +140,33 @@ class TestDomainFigures:
         assert not [f for f in figs if f.section == "cr"]
 
 
+class TestDemandIsfFigure:
+    def _fig(self, **kw):
+        from cgmencode.production.clinical_decision_figures import (
+            demand_isf_figure,
+        )
+        params = dict(
+            profile_isf=40, demand_isf=30, apparent_isf=88.5,
+            ci_low=21, ci_high=39, n_corrections=5,
+            confidence_label="low", direction="decrease")
+        params.update(kw)
+        return demand_isf_figure(**params)
+
+    def test_returns_isf_figure(self):
+        f = self._fig()
+        assert isinstance(f, ReportFigure)
+        assert f.section == "isf"
+        assert _is_png_b64(f.png_base64)
+
+    def test_caption_explains_three_values(self):
+        f = self._fig()
+        cap = f.caption.lower()
+        assert "demand" in cap and "apparent" in cap and "profile" in cap
+
+    def test_none_when_demand_missing(self):
+        assert self._fig(demand_isf=None) is None
+
+
 class TestFigureFromFile:
     def test_attaches_existing_png(self, tmp_path):
         from cgmencode.production.clinical_decision_figures import (

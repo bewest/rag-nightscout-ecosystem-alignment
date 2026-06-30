@@ -818,6 +818,90 @@ def _build_reimbursement(
     )
 
 
+# ── Demand-phase ISF synthesis (validated target, EXP-2651) ──────────
+
+_DEMAND_CONF = {"high": 0.80, "medium": 0.60, "low": 0.35}
+
+
+def synthesize_demand_isf_rec(
+    profile_isf: Optional[float],
+    demand_isf: Optional[float],
+    apparent_isf: Optional[float] = None,
+    inflation_ratio: Optional[float] = None,
+    n_corrections: int = 0,
+    confidence_label: str = "low",
+    ci_low: Optional[float] = None,
+    ci_high: Optional[float] = None,
+    min_gap_pct: float = 10.0,
+    min_corrections: int = 3,
+) -> Optional["SettingsRecommendation"]:
+    """Build a deconfounded ISF recommendation from demand-phase analysis.
+
+    Demand-phase ISF (the true 0-2h insulin effect before EGP suppression,
+    EXP-2651) is the validated ISF target — unlike apparent/correction
+    ISF, which is inflated by AID compensation. This reproducibly surfaces
+    the pipeline's ``compute_demand_isf`` output (``result.dual_phase_isf``)
+    as an ISF candidate so the decision layer can act when warranted, or
+    hold with informative context when too sparse.
+
+    The recommendation carries the validated demand-phase statistical
+    confidence (high/medium/low → 0.80/0.60/0.35) and deliberately omits
+    the pipeline's controller-dampening marker, so it keeps that intrinsic
+    confidence (it is not credited or further dampened). The titration
+    clamp bounds the practical step.
+
+    Returns None when demand ISF is missing, the gap from profile is below
+    ``min_gap_pct``, or there are fewer than ``min_corrections`` events.
+    """
+    if not profile_isf or not demand_isf or profile_isf <= 0:
+        return None
+    if n_corrections < min_corrections:
+        return None
+    gap_pct = abs(demand_isf - profile_isf) / profile_isf * 100.0
+    if gap_pct < min_gap_pct:
+        return None
+
+    direction = "decrease" if demand_isf < profile_isf else "increase"
+    confidence = _DEMAND_CONF.get(confidence_label, 0.35)
+    # Conservative TIR delta; capped (impact dominated by other factors).
+    predicted_delta = round(min(3.0, gap_pct * 0.05), 1)
+
+    ci_str = (f", 95% CI {ci_low:g}–{ci_high:g}"
+              if ci_low is not None and ci_high is not None else "")
+    apparent_str = ""
+    if apparent_isf is not None:
+        apparent_str = (
+            f" Apparent/correction ISF {apparent_isf:g}"
+            + (f" is {inflation_ratio:.1f}× inflated"
+               if inflation_ratio else " is inflated")
+            + " by AID compensation and is NOT the target.")
+    under_over = ("under-deliver (true effect weaker than profile)"
+                  if direction == "decrease"
+                  else "over-deliver (true effect stronger than profile)")
+
+    return SettingsRecommendation(
+        parameter=SettingsParameter.ISF,
+        direction=direction,
+        magnitude_pct=round(gap_pct, 0),
+        current_value=float(profile_isf),
+        suggested_value=float(demand_isf),
+        predicted_tir_delta=predicted_delta,
+        affected_hours=(0.0, 24.0),
+        confidence=confidence,
+        evidence=(
+            f"Demand-phase ISF (EXP-2651): true 0–2h insulin effect "
+            f"\u2248 {demand_isf:g} mg/dL/U{ci_str} from {n_corrections} "
+            f"correction(s), confidence={confidence_label}, vs profile "
+            f"{profile_isf:g}.{apparent_str}"),
+        rationale=(
+            f"Demand-phase analysis indicates corrections {under_over}; "
+            f"the validated ISF target is {demand_isf:g} mg/dL/U "
+            f"({direction} from {profile_isf:g}). The practical step is "
+            f"bounded by the titration cap and preserves a safety margin "
+            f"(EXP-2738)."),
+    )
+
+
 # ── Public builder ────────────────────────────────────────────────────
 
 def build_clinical_decision_report(

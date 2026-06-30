@@ -1,6 +1,6 @@
 # Clinical Decision Support — patient `live-recent`
 
-_Generated: 2026-06-30T19:14:18.895977+00:00_
+_Generated: 2026-06-30T19:36:31.290613+00:00_
 
 ## Insulin sufficiency
 
@@ -73,10 +73,10 @@ _Median programmed basal vs what the loop actually delivered by hour. Persistent
 ### ISF
 
 **Decision:** NO CHANGE  
-**Hold reason:** no_meaningful_deviation  
-**Summary:** ISF: no change recommended.
+**Hold reason:** insufficient_evidence  
+**Summary:** ISF: no change recommended (insufficient evidence (confidence 0.35 below 0.50)).
 
-**Justification:** ISF reviewed: the data do not support a change this cycle. Maintaining the current setting and re-evaluating at the next review.
+**Justification:** ISF reviewed: a directional signal exists (theoretical target 30) but is held due to insufficient evidence (confidence 0.35 below 0.50). Re-evaluate at the next review.
 
 **Expected outcomes (2-week):**
 
@@ -85,6 +85,12 @@ _Median programmed basal vs what the loop actually delivered by hour. Persistent
 | TIR | 57.9% | 57.9% | stable |
 | TBR<70 | 1.99% | 1.99% | stable |
 | TAR>180 | 40.1% | 40.1% | stable |
+
+**Demand-phase ISF decomposition**
+
+![Bar chart of profile, apparent, and demand-phase ISF with CI.](figures/fig_demand_isf.png)
+
+_Profile ISF vs the apparent/correction ISF (amplified by AID compensation) vs the demand-phase ISF — the validated 0–2h insulin effect (EXP-2651) and the true target, shown with its 95% confidence interval. The apparent value is not the target; the recommendation tracks the demand-phase value, bounded by a safety margin (EXP-2738)._
 
 **ISF reconciliation (profile vs observed)**
 
@@ -132,12 +138,13 @@ _Median glucose rise after 5 carb-counted, bolused meals (peak +45 mg/dL at 45 m
 
 ## Overall justification
 
-Practical changes this cycle: Basal 1.7->1.87. Each practical step is the safe-titration projection of a larger theoretical optimum (documented in the addenda). Held/deferred: ISF (no_meaningful_deviation), Carb ratio (no_meaningful_deviation).
+Practical changes this cycle: Basal 1.7->1.87. Each practical step is the safe-titration projection of a larger theoretical optimum (documented in the addenda). Held/deferred: ISF (insufficient_evidence), Carb ratio (no_meaningful_deviation).
 
 ## Addenda
 
 - Factors considered: time-in-range distribution, hypo/hyper burden, glycemic variability, per-parameter advisory evidence, and cross-parameter sequencing.
 - Basal theoretical optimum: 1.87 (+10% vs current 1.7); practical step capped at 20%/cycle -> 1.87.
+- ISF theoretical optimum: 30 (-25% vs current 40); held this cycle.
 - Risks reviewed and mitigated: Hyperglycemia burden elevated (TAR>180 40.1% vs target 25%). Glycemic variability high (CV 37% vs target 36%).
 - Deconfounding applied: Basal recommendation(s) derive from validated deconfounded estimates (e.g. demand-phase ISF EXP-2651, correction-denominator/bilateral EXP-2741, deconfounded basal EXP-3447). The controller-masking confidence penalty does not apply to these, improving accuracy without removing the controller's residual safety margin (EXP-2738).
 - Mitigations: changes are bounded by a per-cycle titration cap; carb ratio is sequenced after basal/ISF to avoid confounded adjustment; explicit stop/escalate criteria accompany every recommendation for the 2-week feedback loop.

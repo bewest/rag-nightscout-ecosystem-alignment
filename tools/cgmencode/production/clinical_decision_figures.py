@@ -91,6 +91,88 @@ def figure_from_file(path: str, section: str, title: str, caption: str,
         rel_path=None, alt=alt or title)
 
 
+def demand_isf_figure(
+    profile_isf: Optional[float],
+    demand_isf: Optional[float],
+    apparent_isf: Optional[float] = None,
+    ci_low: Optional[float] = None,
+    ci_high: Optional[float] = None,
+    n_corrections: int = 0,
+    confidence_label: str = "low",
+    direction: Optional[str] = None,
+) -> Optional[ReportFigure]:
+    """Visualize the three ISF values that drive the ISF decision.
+
+    Profile vs apparent/correction (AID-inflated) vs demand-phase (the
+    validated 0-2h target, with its confidence interval). Makes the common
+    confusion legible: the high apparent value is not the target; the
+    demand-phase value is. Reproducible from ``result.dual_phase_isf``.
+    """
+    if not profile_isf or not demand_isf:
+        return None
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    labels, values, colors = [], [], []
+    labels.append("Profile\n(programmed)")
+    values.append(float(profile_isf))
+    colors.append("#94a3b8")
+    if apparent_isf is not None:
+        labels.append("Apparent\n(AID-inflated)")
+        values.append(float(apparent_isf))
+        colors.append("#cbd5e1")
+    labels.append("Demand-phase\n(validated target)")
+    values.append(float(demand_isf))
+    colors.append(_C_TARGET)
+
+    fig, ax = plt.subplots(figsize=(7.2, 3.0))
+    ypos = list(range(len(labels)))
+    ax.barh(ypos, values, color=colors, edgecolor="white", height=0.6)
+    for y, v in zip(ypos, values):
+        ax.text(v + 1, y, f"{v:g}", va="center", fontsize=9,
+                fontweight="bold", color="#334155")
+
+    # CI whisker on the demand-phase bar.
+    if ci_low is not None and ci_high is not None:
+        dy = ypos[-1]
+        ax.plot([ci_low, ci_high], [dy, dy], color="#14505a", lw=2)
+        for b in (ci_low, ci_high):
+            ax.plot([b, b], [dy - 0.12, dy + 0.12], color="#14505a", lw=2)
+
+    ax.set_yticks(ypos)
+    ax.set_yticklabels(labels, fontsize=9)
+    ax.invert_yaxis()
+    ax.set_xlabel("ISF (mg/dL per Unit)", fontsize=9, color="#52606d")
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.tick_params(colors="#52606d", labelsize=8)
+    ax.set_xlim(0, max(values + [ci_high or 0]) * 1.18)
+
+    dir_txt = ""
+    if direction in ("increase", "decrease"):
+        dir_txt = (f"  Recommended direction: {direction} ISF toward the "
+                   f"demand-phase target.")
+    ax.set_title(
+        f"ISF decomposition — profile {profile_isf:g}, demand "
+        f"{demand_isf:g} (N={n_corrections}, {confidence_label} confidence)",
+        fontsize=10, color="#14505a")
+    fig.tight_layout()
+
+    return ReportFigure(
+        section="isf",
+        title="Demand-phase ISF decomposition",
+        caption=(
+            "Profile ISF vs the apparent/correction ISF (amplified by AID "
+            "compensation) vs the demand-phase ISF — the validated 0–2h "
+            "insulin effect (EXP-2651) and the true target, shown with its "
+            "95% confidence interval. The apparent value is not the target; "
+            "the recommendation tracks the demand-phase value, bounded by a "
+            "safety margin (EXP-2738)." + dir_txt),
+        filename="fig_demand_isf.png",
+        png_base64=_fig_to_b64(fig),
+        alt="Bar chart of profile, apparent, and demand-phase ISF with CI.")
+
+
 def _tir_distribution_figure(glucose: np.ndarray) -> Optional[ReportFigure]:
     import matplotlib
     matplotlib.use("Agg")
