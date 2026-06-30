@@ -121,7 +121,9 @@ def _get_or_compute(loader_cls, patient_id, label, grid_df, **compute_kwargs):
     return computed
 
 
-def analyze(patient_id: str, parquet_dir: Path, out_dir: Path) -> dict:
+def analyze(patient_id: str, parquet_dir: Path, out_dir: Path,
+            policy: "ClinicalDecisionPolicy | None" = None,
+            patient_barriers: "list[str] | None" = None) -> dict:
     plot_dir = out_dir / "plots"
     plot_dir.mkdir(parents=True, exist_ok=True)
 
@@ -515,6 +517,11 @@ def analyze(patient_id: str, parquet_dir: Path, out_dir: Path) -> dict:
     # ── 9. Render markdown clinical report ───────────────────────────
     _render_markdown_report(out_dir, patient_id, payload, result, df)
 
+    # ── 10. Clinical-grade decision support deliverables ─────────────
+    _render_clinical_decision_support(
+        out_dir, patient_id, glycemic, result, days, policy,
+        patient_barriers)
+
     print(f"\n✅ Done. Outputs in {out_dir}")
     return payload
 
@@ -739,6 +746,67 @@ def _render_markdown_report(out_dir, patient_id, payload, result, df):
     (out_dir / "clinical-report.md").write_text("\n".join(lines))
 
 
+def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
+                                      days, policy, patient_barriers):
+    """Build and write the clinical-grade decision support deliverables.
+
+    Consumes the pipeline's settings recommendations and glycemic summary
+    to produce a structured, reimbursement-ready decision report (JSON +
+    markdown). Governed by ``policy`` (gating, titration, sequencing,
+    reimbursement mode, consolidated/split output).
+    """
+    from tools.cgmencode.production.clinical_decision_policy import (
+        DEFAULT_POLICY,
+    )
+    from tools.cgmencode.production.clinical_decision_report import (
+        build_clinical_decision_report,
+    )
+    from tools.cgmencode.production.clinical_decision_render import (
+        render_deliverables,
+    )
+
+    if policy is None:
+        policy = DEFAULT_POLICY
+
+    # Normalize the glycemic summary to the builder's expected keys.
+    norm = {
+        "tir": glycemic.get("tir_70_180"),
+        "tbr_lt70": glycemic.get("tbr_lt70"),
+        "tbr_lt54": glycemic.get("tbr_lt54"),
+        "tar_gt180": glycemic.get("tar_gt180"),
+        "tar_gt250": glycemic.get("tar_gt250"),
+        "mean_mgdl": glycemic.get("mean_mgdl"),
+        "cv_pct": glycemic.get("cv_pct"),
+        "ea1c_gmi_pct": glycemic.get("ea1c_gmi_pct"),
+        "n_readings": glycemic.get("n_readings"),
+    }
+
+    settings_recs = getattr(result, "settings_recs", None) or []
+    clinical = getattr(result, "clinical_report", None)
+    cr_score = getattr(clinical, "cr_score", None) if clinical else None
+
+    report = build_clinical_decision_report(
+        patient_id=patient_id,
+        glycemic=norm,
+        settings_recs=settings_recs,
+        policy=policy,
+        cr_score=cr_score,
+        days_of_data=days,
+        patient_barriers=patient_barriers,
+    )
+
+    deliverables = render_deliverables(report)
+    for fname, content in deliverables.items():
+        (out_dir / fname).write_text(content)
+
+    n_change = sum(
+        1 for d in (report.basal, report.isf, report.cr)
+        if d.mode.value == "change")
+    print(f"  Clinical decision support: {n_change} change(s), "
+          f"reboot={'yes' if report.reboot.recommended else 'no'}, "
+          f"files: {', '.join(sorted(deliverables))}")
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -747,9 +815,30 @@ def main(argv=None):
                    help="Directory containing grid.parquet etc.")
     p.add_argument("--output", default=None,
                    help="Output dir (default: reports/{patient_id}-analysis/)")
+    p.add_argument("--reimbursement", action="store_true",
+                   help="Include reimbursement evidence block in the "
+                        "clinical decision support deliverable.")
+    p.add_argument("--split-output", action="store_true",
+                   help="Emit separate clinician and reimbursement "
+                        "documents instead of one consolidated report.")
+    p.add_argument("--patient-barrier", action="append", default=None,
+                   metavar="TEXT",
+                   help="Patient-specific barrier (adherence/supply/"
+                        "prescription) for reimbursement evidence. "
+                        "Repeatable.")
     args = p.parse_args(argv)
     out_dir = Path(args.output) if args.output else REPO / f"reports/{args.patient_id}-analysis"
-    analyze(args.patient_id, Path(args.parquet_dir), out_dir)
+
+    from tools.cgmencode.production.clinical_decision_policy import (
+        ClinicalDecisionPolicy, OutputMode,
+    )
+    policy = ClinicalDecisionPolicy(
+        output_mode=OutputMode.SPLIT if args.split_output
+        else OutputMode.CONSOLIDATED,
+        reimbursement_mode=args.reimbursement,
+    )
+    analyze(args.patient_id, Path(args.parquet_dir), out_dir,
+            policy=policy, patient_barriers=args.patient_barrier)
 
 
 if __name__ == "__main__":
