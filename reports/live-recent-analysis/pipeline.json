@@ -1788,7 +1788,7 @@
     "n_inferred": 167,
     "days_of_data": 90.00347222222223
   },
-  "pipeline_latency_ms": 23569.818013114855,
+  "pipeline_latency_ms": 24002.85505806096,
   "warnings": [
     "Cleaned 1185 spikes (4.6% of readings)",
     "Controller detected: Loop (compensating). Settings visibility: 30%.",

@@ -1,0 +1,230 @@
+{
+  "patient_id": "live-recent",
+  "generated_at_utc": "2026-06-30T18:01:20.934581+00:00",
+  "glycemic_summary": {
+    "tir": 0.5788374812092868,
+    "tbr_lt70": 0.0199181560046768,
+    "tbr_lt54": 0.0038834140638049105,
+    "tar_gt180": 0.4012443627860364,
+    "tar_gt250": 0.10606313679639218,
+    "mean_mgdl": 169.92376708984375,
+    "cv_pct": 36.73835754394531,
+    "ea1c_gmi_pct": 7.374576568603516,
+    "n_readings": 23948
+  },
+  "insulin_sufficiency": {
+    "summary": "Overall insulin delivery shows opportunity for improvement (TIR 58%, TBR<70 2.0%, TAR>180 40%). 2 risk(s) identified; 0 parameter change(s) proposed this cycle.",
+    "overall_mode": "change",
+    "main_risks": [
+      "Hyperglycemia burden elevated (TAR>180 40.1% vs target 25%).",
+      "Glycemic variability high (CV 37% vs target 36%)."
+    ],
+    "whats_working": [
+      "Hypoglycemia within target (TBR<70 2.0%)."
+    ],
+    "hypo_burden_frac": 0.0199181560046768,
+    "hyper_burden_frac": 0.4012443627860364
+  },
+  "basal": {
+    "domain": "basal",
+    "mode": "no_change",
+    "summary": "Basal: no change recommended (insufficient evidence (confidence 0.22 below 0.50)).",
+    "confidence": 0.22499999999999998,
+    "evidence": "Consolidated from 2 time-block advisories (range: 13-48%). Overnight quadrant analysis (EXP-2589): BASAL TOO LOW. [CLAMPED from 31% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+    "justification": "Basal reviewed: a directional signal exists (theoretical target 2.52) but is held due to insufficient evidence (confidence 0.22 below 0.50). Re-evaluate at the next review.",
+    "follow_up": {
+      "success": [
+        "Basal held: glycemic metrics remain within tolerance of baseline over the 2-week window.",
+        "No new hypoglycemia signal (TBR<70 stays below 4%)."
+      ],
+      "stop_escalate": [
+        "TBR<70 rises by more than 1 pp -> escalate review.",
+        "TIR declines materially -> re-open Basal for change."
+      ],
+      "revisit_days": 14
+    },
+    "hold_reason": "insufficient_evidence",
+    "current_value": 1.7000000476837158,
+    "practical_value": null,
+    "practical_change_pct": null,
+    "theoretical_value": 2.52,
+    "theoretical_change_pct": 48.235289959759164,
+    "affected_time_block": null,
+    "expected_outcomes": [
+      {
+        "metric": "TIR",
+        "baseline": 57.9,
+        "expected_2wk": 57.9,
+        "unit": "%",
+        "direction": "stable"
+      },
+      {
+        "metric": "TBR<70",
+        "baseline": 1.99,
+        "expected_2wk": 1.99,
+        "unit": "%",
+        "direction": "stable"
+      },
+      {
+        "metric": "TAR>180",
+        "baseline": 40.1,
+        "expected_2wk": 40.1,
+        "unit": "%",
+        "direction": "stable"
+      }
+    ]
+  },
+  "isf": {
+    "domain": "isf",
+    "mode": "no_change",
+    "summary": "ISF: no change recommended (insufficient evidence (confidence 0.18 below 0.50)).",
+    "confidence": 0.18,
+    "evidence": "ISF non-linearity (EXP-2511): typical correction dose 2.8U is 60% less effective per unit than 1U (power-law \u03b2=0.9). Splitting into 2\u00d71.4U would be ~87% more effective total. [CLAMPED from 60% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
+    "justification": "ISF reviewed: a directional signal exists (theoretical target 16) but is held due to insufficient evidence (confidence 0.18 below 0.50). Re-evaluate at the next review.",
+    "follow_up": {
+      "success": [
+        "ISF held: glycemic metrics remain within tolerance of baseline over the 2-week window.",
+        "No new hypoglycemia signal (TBR<70 stays below 4%)."
+      ],
+      "stop_escalate": [
+        "TBR<70 rises by more than 1 pp -> escalate review.",
+        "TIR declines materially -> re-open ISF for change."
+      ],
+      "revisit_days": 14
+    },
+    "hold_reason": "insufficient_evidence",
+    "current_value": 40.0,
+    "practical_value": null,
+    "practical_change_pct": null,
+    "theoretical_value": 16.0,
+    "theoretical_change_pct": -60.0,
+    "affected_time_block": null,
+    "expected_outcomes": [
+      {
+        "metric": "TIR",
+        "baseline": 57.9,
+        "expected_2wk": 57.9,
+        "unit": "%",
+        "direction": "stable"
+      },
+      {
+        "metric": "TBR<70",
+        "baseline": 1.99,
+        "expected_2wk": 1.99,
+        "unit": "%",
+        "direction": "stable"
+      },
+      {
+        "metric": "TAR>180",
+        "baseline": 40.1,
+        "expected_2wk": 40.1,
+        "unit": "%",
+        "direction": "stable"
+      }
+    ]
+  },
+  "cr": {
+    "domain": "cr",
+    "mode": "no_change",
+    "summary": "Carb ratio: no change recommended.",
+    "confidence": 0.0,
+    "evidence": "No actionable Carb ratio signal in the analysis window; current setting is consistent with observed glucose behavior.",
+    "justification": "Carb ratio reviewed: the data do not support a change this cycle. Maintaining the current setting and re-evaluating at the next review.",
+    "follow_up": {
+      "success": [
+        "Carb ratio held: glycemic metrics remain within tolerance of baseline over the 2-week window.",
+        "No new hypoglycemia signal (TBR<70 stays below 4%)."
+      ],
+      "stop_escalate": [
+        "TBR<70 rises by more than 1 pp -> escalate review.",
+        "TIR declines materially -> re-open Carb ratio for change."
+      ],
+      "revisit_days": 14
+    },
+    "hold_reason": "no_meaningful_deviation",
+    "current_value": null,
+    "practical_value": null,
+    "practical_change_pct": null,
+    "theoretical_value": null,
+    "theoretical_change_pct": null,
+    "affected_time_block": null,
+    "expected_outcomes": [
+      {
+        "metric": "TIR",
+        "baseline": 57.9,
+        "expected_2wk": 57.9,
+        "unit": "%",
+        "direction": "stable"
+      },
+      {
+        "metric": "TBR<70",
+        "baseline": 1.99,
+        "expected_2wk": 1.99,
+        "unit": "%",
+        "direction": "stable"
+      },
+      {
+        "metric": "TAR>180",
+        "baseline": 40.1,
+        "expected_2wk": 40.1,
+        "unit": "%",
+        "direction": "stable"
+      }
+    ]
+  },
+  "overall_justification": "No parameter changes are recommended this cycle; all domains were reviewed and held with documented rationale. Held/deferred: Basal (insufficient_evidence), ISF (insufficient_evidence), Carb ratio (no_meaningful_deviation).",
+  "addenda": [
+    "Factors considered: time-in-range distribution, hypo/hyper burden, glycemic variability, per-parameter advisory evidence, and cross-parameter sequencing.",
+    "Basal theoretical optimum: 2.52 (+48% vs current 1.7); held this cycle.",
+    "ISF theoretical optimum: 16 (-60% vs current 40); held this cycle.",
+    "Risks reviewed and mitigated: Hyperglycemia burden elevated (TAR>180 40.1% vs target 25%). Glycemic variability high (CV 37% vs target 36%).",
+    "Mitigations: changes are bounded by a per-cycle titration cap; carb ratio is sequenced after basal/ISF to avoid confounded adjustment; explicit stop/escalate criteria accompany every recommendation for the 2-week feedback loop."
+  ],
+  "reboot": {
+    "recommended": false,
+    "rationale": "Settings reboot not indicated: the severe-mismatch composite (burden + large mismatch + low consistency) is not met. Incremental titration is appropriate."
+  },
+  "policy": {
+    "output_mode": "consolidated",
+    "reimbursement_mode": true,
+    "min_confidence_for_change": 0.5,
+    "min_effect_size_pp": 1.0,
+    "max_change_pct_per_cycle": 20.0,
+    "titration_step_pct": 10.0,
+    "titration_cadence_days": 3.0,
+    "defer_cr_when_basal_isf_lockstep": true,
+    "severe_hyper_tar_frac": 0.5,
+    "severe_hyper_cr_score_max": 25.0,
+    "reboot_tbr_frac": 0.06,
+    "reboot_tar_frac": 0.55,
+    "reboot_mismatch_ratio": 0.4,
+    "reboot_consistency_max": 0.45,
+    "target_tir_frac": 0.7,
+    "target_tbr_frac": 0.04,
+    "target_tar_frac": 0.25,
+    "success_capture_frac": 0.5,
+    "tbr_worsening_guardrail_pp": 1.0
+  },
+  "reimbursement": {
+    "data_sufficiency": "Analysis based on 90 days of CGM data (23,948 readings). Sufficient for time-in-range and titration assessment.",
+    "risks_reviewed": [
+      "Hyperglycemia burden elevated (TAR>180 40.1% vs target 25%).",
+      "Glycemic variability high (CV 37% vs target 36%)."
+    ],
+    "mitigations": [
+      "Recommendations bounded by a safe per-cycle titration cap.",
+      "Carb ratio sequenced after basal/ISF to prevent confounded change.",
+      "Explicit stop/escalate criteria defined for each recommendation."
+    ],
+    "alternatives_discussed": [
+      "Considered no-change vs incremental titration vs settings reboot.",
+      "Theoretical optima documented but deferred in favor of safe steps."
+    ],
+    "patient_barriers": [
+      "No patient-reported adherence, supply, or prescription barriers noted at this review."
+    ],
+    "agreed_plan": "Agreed plan: maintain current settings with documented rationale; re-evaluate in 2 weeks.",
+    "expected_trajectory": "Projected time-in-range at next review: ~58% (baseline 58%). Outcome will be scored against the per-recommendation success and stop/escalate criteria.",
+    "follow_up_date": "2026-07-14"
+  }
+}

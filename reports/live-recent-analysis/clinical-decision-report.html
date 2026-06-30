@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Clinical Decision Support — live-recent</title><style>:root {
+  --ink: #1f2933;
+  --muted: #52606d;
+  --line: #d9e2ec;
+  --bg: #f5f7fa;
+  --card: #ffffff;
+  --brand: #1f6f78;        /* deep teal */
+  --brand-deep: #14505a;
+  --accent: #2b6cb0;       /* clinical blue */
+  --ok: #2f855a;           /* green */
+  --ok-bg: #e6f4ea;
+  --warn: #b7791f;         /* amber */
+  --warn-bg: #fdf3e2;
+  --risk: #9b2c2c;         /* clinical red */
+  --risk-bg: #fdeaea;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  line-height: 1.55; font-size: 15px;
+}
+.wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 64px; }
+header.report {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%);
+  color: #fff; padding: 28px 0; margin-bottom: 24px;
+}
+header.report .wrap { padding-bottom: 0; }
+header.report h1 { margin: 0 0 4px; font-size: 22px; font-weight: 650; }
+header.report .meta { opacity: .85; font-size: 13px; }
+h2 {
+  font-size: 16px; letter-spacing: .02em; text-transform: uppercase;
+  color: var(--brand-deep); border-bottom: 2px solid var(--line);
+  padding-bottom: 6px; margin: 32px 0 14px;
+}
+h3 { font-size: 16px; margin: 0 0 2px; color: var(--ink); }
+.card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 10px; padding: 18px 20px; margin: 14px 0;
+  box-shadow: 0 1px 2px rgba(31,41,51,.04);
+}
+.card.domain { border-left: 4px solid var(--accent); }
+.summary-card { border-left: 4px solid var(--brand); }
+.badge {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 999px; vertical-align: middle;
+}
+.badge.change { background: var(--warn-bg); color: var(--warn); }
+.badge.nochange { background: var(--ok-bg); color: var(--ok); }
+.kv { color: var(--muted); font-size: 13px; margin: 2px 0 0; }
+table {
+  border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 14px;
+}
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; background: #f0f4f8; }
+tr:last-child td { border-bottom: none; }
+ul.crit { margin: 6px 0 0; padding-left: 18px; }
+ul.crit li { margin: 3px 0; }
+.cols { display: flex; gap: 18px; flex-wrap: wrap; }
+.cols > div { flex: 1 1 280px; }
+.panel { border-radius: 8px; padding: 12px 14px; }
+.panel.risk { background: var(--risk-bg); }
+.panel.ok { background: var(--ok-bg); }
+.panel h4 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase;
+  letter-spacing: .03em; }
+.panel.risk h4 { color: var(--risk); }
+.panel.ok h4 { color: var(--ok); }
+.callout {
+  background: var(--warn-bg); border: 1px solid #f0d8a8;
+  border-radius: 8px; padding: 14px 16px; margin: 14px 0;
+}
+.callout h3 { color: var(--warn); }
+.muted { color: var(--muted); }
+.justify { margin: 8px 0 0; }
+footer.report { color: var(--muted); font-size: 12px; margin-top: 40px;
+  text-align: center; }</style></head><body><header class="report"><div class="wrap"><h1>Clinical Decision Support — patient live-recent</h1><div class="meta">Generated 2026-06-30T18:01:20.934581+00:00</div></div></header><div class="wrap"><h2>Insulin sufficiency</h2><div class="card summary-card"><p>Overall insulin delivery shows opportunity for improvement (TIR 58%, TBR&lt;70 2.0%, TAR&gt;180 40%). 2 risk(s) identified; 0 parameter change(s) proposed this cycle.</p><div class="cols"><div class="panel risk"><h4>Main risks</h4><ul class="crit"><li>Hyperglycemia burden elevated (TAR&gt;180 40.1% vs target 25%).</li><li>Glycemic variability high (CV 37% vs target 36%).</li></ul></div><div class="panel ok"><h4>What's working</h4><ul class="crit"><li>Hypoglycemia within target (TBR&lt;70 2.0%).</li></ul></div></div></div><h2>Recommendations</h2><div class="card domain"><h3>Basal <span class="badge nochange">No change</span></h3><p class="kv">Hold reason: insufficient_evidence</p><p class="justify">Basal: no change recommended (insufficient evidence (confidence 0.22 below 0.50)).</p><p class="justify"><strong>Justification.</strong> Basal reviewed: a directional signal exists (theoretical target 2.52) but is held due to insufficient evidence (confidence 0.22 below 0.50). Re-evaluate at the next review.</p><p class="kv">Expected outcomes (2-week)</p><table><tr><th>Metric</th><th>Baseline</th><th>Expected</th><th>Direction</th></tr><tr><td>TIR</td><td>57.9%</td><td>57.9%</td><td>stable</td></tr><tr><td>TBR&lt;70</td><td>1.99%</td><td>1.99%</td><td>stable</td></tr><tr><td>TAR&gt;180</td><td>40.1%</td><td>40.1%</td><td>stable</td></tr></table><p class="kv">Success criteria (revisit in 14 days)</p><ul class="crit"><li>Basal held: glycemic metrics remain within tolerance of baseline over the 2-week window.</li><li>No new hypoglycemia signal (TBR&lt;70 stays below 4%).</li></ul><p class="kv">Stop / escalate criteria</p><ul class="crit"><li>TBR&lt;70 rises by more than 1 pp -&gt; escalate review.</li><li>TIR declines materially -&gt; re-open Basal for change.</li></ul></div><div class="card domain"><h3>ISF <span class="badge nochange">No change</span></h3><p class="kv">Hold reason: insufficient_evidence</p><p class="justify">ISF: no change recommended (insufficient evidence (confidence 0.18 below 0.50)).</p><p class="justify"><strong>Justification.</strong> ISF reviewed: a directional signal exists (theoretical target 16) but is held due to insufficient evidence (confidence 0.18 below 0.50). Re-evaluate at the next review.</p><p class="kv">Expected outcomes (2-week)</p><table><tr><th>Metric</th><th>Baseline</th><th>Expected</th><th>Direction</th></tr><tr><td>TIR</td><td>57.9%</td><td>57.9%</td><td>stable</td></tr><tr><td>TBR&lt;70</td><td>1.99%</td><td>1.99%</td><td>stable</td></tr><tr><td>TAR&gt;180</td><td>40.1%</td><td>40.1%</td><td>stable</td></tr></table><p class="kv">Success criteria (revisit in 14 days)</p><ul class="crit"><li>ISF held: glycemic metrics remain within tolerance of baseline over the 2-week window.</li><li>No new hypoglycemia signal (TBR&lt;70 stays below 4%).</li></ul><p class="kv">Stop / escalate criteria</p><ul class="crit"><li>TBR&lt;70 rises by more than 1 pp -&gt; escalate review.</li><li>TIR declines materially -&gt; re-open ISF for change.</li></ul></div><div class="card domain"><h3>Carb ratio <span class="badge nochange">No change</span></h3><p class="kv">Hold reason: no_meaningful_deviation</p><p class="justify">Carb ratio: no change recommended.</p><p class="justify"><strong>Justification.</strong> Carb ratio reviewed: the data do not support a change this cycle. Maintaining the current setting and re-evaluating at the next review.</p><p class="kv">Expected outcomes (2-week)</p><table><tr><th>Metric</th><th>Baseline</th><th>Expected</th><th>Direction</th></tr><tr><td>TIR</td><td>57.9%</td><td>57.9%</td><td>stable</td></tr><tr><td>TBR&lt;70</td><td>1.99%</td><td>1.99%</td><td>stable</td></tr><tr><td>TAR&gt;180</td><td>40.1%</td><td>40.1%</td><td>stable</td></tr></table><p class="kv">Success criteria (revisit in 14 days)</p><ul class="crit"><li>Carb ratio held: glycemic metrics remain within tolerance of baseline over the 2-week window.</li><li>No new hypoglycemia signal (TBR&lt;70 stays below 4%).</li></ul><p class="kv">Stop / escalate criteria</p><ul class="crit"><li>TBR&lt;70 rises by more than 1 pp -&gt; escalate review.</li><li>TIR declines materially -&gt; re-open Carb ratio for change.</li></ul></div><h2>Overall justification</h2><div class="card"><p>No parameter changes are recommended this cycle; all domains were reviewed and held with documented rationale. Held/deferred: Basal (insufficient_evidence), ISF (insufficient_evidence), Carb ratio (no_meaningful_deviation).</p></div><h2>Addenda</h2><div class="card"><ul class="crit"><li>Factors considered: time-in-range distribution, hypo/hyper burden, glycemic variability, per-parameter advisory evidence, and cross-parameter sequencing.</li><li>Basal theoretical optimum: 2.52 (+48% vs current 1.7); held this cycle.</li><li>ISF theoretical optimum: 16 (-60% vs current 40); held this cycle.</li><li>Risks reviewed and mitigated: Hyperglycemia burden elevated (TAR&gt;180 40.1% vs target 25%). Glycemic variability high (CV 37% vs target 36%).</li><li>Mitigations: changes are bounded by a per-cycle titration cap; carb ratio is sequenced after basal/ISF to avoid confounded adjustment; explicit stop/escalate criteria accompany every recommendation for the 2-week feedback loop.</li></ul></div><h2>Reimbursement justification</h2><div class="card"><p><strong>Data sufficiency.</strong> Analysis based on 90 days of CGM data (23,948 readings). Sufficient for time-in-range and titration assessment.</p><p class="kv">Risks reviewed</p><ul class="crit"><li>Hyperglycemia burden elevated (TAR&gt;180 40.1% vs target 25%).</li><li>Glycemic variability high (CV 37% vs target 36%).</li></ul><p class="kv">Mitigations</p><ul class="crit"><li>Recommendations bounded by a safe per-cycle titration cap.</li><li>Carb ratio sequenced after basal/ISF to prevent confounded change.</li><li>Explicit stop/escalate criteria defined for each recommendation.</li></ul><p class="kv">Alternatives discussed</p><ul class="crit"><li>Considered no-change vs incremental titration vs settings reboot.</li><li>Theoretical optima documented but deferred in favor of safe steps.</li></ul><p class="kv">Patient-specific barriers</p><ul class="crit"><li>No patient-reported adherence, supply, or prescription barriers noted at this review.</li></ul><p class="justify"><strong>Agreed plan.</strong> Agreed plan: maintain current settings with documented rationale; re-evaluate in 2 weeks.</p><p class="justify"><strong>Expected trajectory.</strong> Projected time-in-range at next review: ~58% (baseline 58%). Outcome will be scored against the per-recommendation success and stop/escalate criteria.</p><p class="justify"><strong>Follow-up date.</strong> 2026-07-14</p></div></div><footer class="report"><div class="wrap">Decision support is advisory only and does not replace clinical judgement.</div></footer></body></html>

@@ -1,7 +1,7 @@
 {
   "patient_id": "live-recent",
-  "generated_at_utc": "2026-06-27T23:34:09.877693+00:00",
-  "parquet_dir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/live-recent",
+  "generated_at_utc": "2026-06-30T18:01:20.929644+00:00",
+  "parquet_dir": "externals/ns-parquet/live-recent",
   "days_of_data": 90.0,
   "profile_timezone": "Etc/GMT+7",
   "glycemic_summary": {

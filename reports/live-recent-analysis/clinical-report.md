@@ -1,7 +1,7 @@
 # Clinical Analysis Report — patient `live-recent`
 
-_Generated: 2026-06-27T23:34:09.877693+00:00_  
-_Source parquet: `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/live-recent`_  
+_Generated: 2026-06-30T18:01:20.929644+00:00_  
+_Source parquet: `externals/ns-parquet/live-recent`_  
 _Profile timezone: `Etc/GMT+7`_  
 _Days of data: 90.0_
 
