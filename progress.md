@@ -51,6 +51,8 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 **Update (EXP-3453, later 2026-06-30)**: Added a clean-ISF evidence acquisition audit. The sequential funnel shows 24 bolus events become 6 apparently isolated correction candidates, then all 6 are rejected by strict inferred-meal exclusion. Live-recent has 61 clean high-BG episodes without a clean correction, so future passive data can change the decision only if clean correction events accumulate. Reopen ISF analysis at 10 strict-UAM-clean correction events; require roughly 62 events or tighter CI evidence before promoting a baseline ISF change.
 
+**Update (EXP-3454, later 2026-06-30)**: Added a UAM-aware autosens/deviation audit with reconstructed delivered-insulin activity. The live-recent grid lacks native `insulin_activity`, so EXP-3454 compares raw IOB-decay BGI against a normalized rapid-action activity kernel. Reconstructed activity improves the proxy on 23/33 available patient datasets, but only 1/33 clean-strata summaries would support a baseline ISF change. On live-recent-180, UAM-positive windows have larger positive deviations than non-UAM windows, while strict clean non-UAM activity evidence still does not support the 53-56 baseline. This supports the current interpretation: use autosens-style deviations for stratification and confound detection, not direct ISF promotion when meals are unannounced.
+
 **Source Files Analyzed**:
 - `tools/cgmencode/production/advisor/_pipeline.py`
 - `tools/cgmencode/production/clinical_rules.py`

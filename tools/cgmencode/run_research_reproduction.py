@@ -166,6 +166,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3453_live_recent_isf_acquisition.md',
         ),
     ),
+    'live-recent-uam-autosens': ResearchCase(
+        key='live-recent-uam-autosens',
+        title='Live-recent UAM-aware autosens deviation audit',
+        description='Computes an oref0-style BGI/deviation proxy and stratifies by hybrid/UAM meal support to test whether apparent ISF shifts survive clean non-meal windows.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_uam_autosens_3454.py'),
+        artifact_paths=(
+            'externals/experiments/exp3454_live_recent_uam_autosens.json',
+            'externals/experiments/autoresearch/exp3454_live_recent_uam_autosens.md',
+        ),
+    ),
 }
 
 
