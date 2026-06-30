@@ -105,6 +105,10 @@ class ClinicalDecisionPolicy:
     # license an unbounded ISF change.
     deconfounded_isf_confidence_cap: float = 0.80
     deconfounded_cr_confidence_cap: float = 0.90
+    # Recs that passed through the pipeline's controller-confidence
+    # adjustment carry this marker in their evidence. Crediting is limited
+    # to those (synthesized recs keep their intrinsic confidence).
+    controller_dampening_marker: str = "[Controller:"
 
     # ── Gating helpers ───────────────────────────────────────────────
 

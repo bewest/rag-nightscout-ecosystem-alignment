@@ -353,17 +353,31 @@ class TestDeconfounding:
         assert rep.basal.affected_time_block == (0.0, 24.0)
 
     def test_credit_lets_deconfounded_isf_pass_gate(self):
-        # Dampened demand-phase ISF (conf 0.18) credited via Loop trust 0.3.
+        # Pipeline-dampened demand-phase ISF (conf 0.18, carries the
+        # controller marker) credited via Loop trust 0.3.
         recs = [_rec(SettingsParameter.ISF, "decrease", 50, 40, 3.0, 0.18,
-                     evidence="Demand-phase ISF (EXP-2651) target")]
+                     evidence="Demand-phase ISF (EXP-2651) target "
+                              "[Controller: Loop]")]
         rep = build_clinical_decision_report(
             patient_id="c", glycemic=_glycemic(), settings_recs=recs,
             controller_trust={"isf": 0.3, "cr": 0.4, "basal": 0.3})
         assert rep.isf.mode == DecisionMode.CHANGE
 
+    def test_undampened_deconfounded_isf_not_credited(self):
+        # A synthesized demand-phase rec (no controller marker) keeps its
+        # true low confidence and is NOT inflated by the credit.
+        recs = [_rec(SettingsParameter.ISF, "decrease", 40, 30, 3.0, 0.35,
+                     evidence="Demand-phase ISF (EXP-2651), N=5, "
+                              "confidence=low")]
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=recs,
+            controller_trust={"isf": 0.3})
+        assert rep.isf.mode == DecisionMode.NO_CHANGE
+
     def test_no_credit_without_trust_holds(self):
         recs = [_rec(SettingsParameter.ISF, "decrease", 50, 40, 3.0, 0.18,
-                     evidence="Demand-phase ISF (EXP-2651) target")]
+                     evidence="Demand-phase ISF (EXP-2651) target "
+                              "[Controller: Loop]")]
         rep = build_clinical_decision_report(
             patient_id="c", glycemic=_glycemic(), settings_recs=recs)
         assert rep.isf.mode == DecisionMode.NO_CHANGE
@@ -378,7 +392,8 @@ class TestDeconfounding:
 
     def test_deconfounding_documented(self):
         recs = [_rec(SettingsParameter.ISF, "decrease", 50, 40, 3.0, 0.18,
-                     evidence="Demand-phase ISF (EXP-2651) target")]
+                     evidence="Demand-phase ISF (EXP-2651) target "
+                              "[Controller: Loop]")]
         rep = build_clinical_decision_report(
             patient_id="c", glycemic=_glycemic(), settings_recs=recs,
             controller_trust={"isf": 0.3})

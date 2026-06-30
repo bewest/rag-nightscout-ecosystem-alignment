@@ -212,15 +212,21 @@ def _effective_confidence(
 ) -> float:
     """Confidence used for gating, crediting deconfounded ISF/CR recs.
 
-    Deconfounded advisories had the controller-masking penalty wrongly
-    applied upstream; when the controller trust factor is known we divide
-    it back out (bounded by a safety cap). Non-deconfounded recs and
-    domains without a known trust factor are unchanged.
+    Deconfounded advisories that were dampened upstream for controller
+    masking get the penalty divided back out (bounded by a safety cap).
+    Crediting is restricted to recs that actually passed through the
+    pipeline's controller-confidence adjustment (they carry a
+    ``[Controller:`` marker); a synthesized demand-phase rec keeps its
+    intrinsic confidence (its uncertainty reflects data sparsity, not
+    masking, so it must not be inflated).
     """
     conf = rec.confidence
     if not (policy.trust_deconfounded and controller_trust):
         return conf
-    if not policy.is_deconfounded(_rec_text(rec)):
+    text = _rec_text(rec)
+    if not policy.is_deconfounded(text):
+        return conf
+    if policy.controller_dampening_marker not in text:
         return conf
     trust = controller_trust.get(domain)
     return policy.credited_confidence(domain, conf, trust)
