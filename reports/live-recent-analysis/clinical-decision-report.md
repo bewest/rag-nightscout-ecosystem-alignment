@@ -1,6 +1,6 @@
 # Clinical Decision Support — patient `live-recent`
 
-_Generated: 2026-06-30T18:01:20.934581+00:00_
+_Generated: 2026-06-30T18:12:13.398798+00:00_
 
 ## Insulin sufficiency
 
@@ -12,6 +12,18 @@ Overall insulin delivery shows opportunity for improvement (TIR 58%, TBR<70 2.0%
 
 **What's working:**
 - Hypoglycemia within target (TBR<70 2.0%).
+
+**Time-in-range distribution**
+
+![Stacked bar of time spent in each glucose range.](figures/fig_time_in_range.png)
+
+_Share of time in each glycemic band over 23,948 readings. Green is the 70-180 mg/dL target; reds are lows, ambers are highs._
+
+**Ambulatory glucose profile (AGP)**
+
+![Ambulatory glucose profile percentile bands by hour of day.](figures/fig_agp.png)
+
+_Median glucose by time of day with interquartile (25–75%) and 10–90% bands. The green zone is the 70–180 mg/dL target; a flat median inside it is the goal._
 
 ## Recommendations
 
@@ -30,6 +42,12 @@ Overall insulin delivery shows opportunity for improvement (TIR 58%, TBR<70 2.0%
 | TIR | 57.9% | 57.9% | stable |
 | TBR<70 | 1.99% | 1.99% | stable |
 | TAR>180 | 40.1% | 40.1% | stable |
+
+**Overnight glucose profile (00:00–06:00)**
+
+![Overnight median glucose by hour with interquartile band.](figures/fig_overnight.png)
+
+_Median overnight glucose with IQR. A rising trend suggests basal is too low; a falling trend suggests it is too high. Used to contextualize the basal recommendation._
 
 **Success criteria** (revisit in 14 days):
 - Basal held: glycemic metrics remain within tolerance of baseline over the 2-week window.

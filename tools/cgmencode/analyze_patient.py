@@ -520,7 +520,7 @@ def analyze(patient_id: str, parquet_dir: Path, out_dir: Path,
     # ── 10. Clinical-grade decision support deliverables ─────────────
     _render_clinical_decision_support(
         out_dir, patient_id, glycemic, result, days, policy,
-        patient_barriers)
+        patient_barriers, df, patient_tz)
 
     print(f"\n✅ Done. Outputs in {out_dir}")
     return payload
@@ -747,13 +747,15 @@ def _render_markdown_report(out_dir, patient_id, payload, result, df):
 
 
 def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
-                                      days, policy, patient_barriers):
+                                      days, policy, patient_barriers,
+                                      df=None, patient_tz="UTC"):
     """Build and write the clinical-grade decision support deliverables.
 
     Consumes the pipeline's settings recommendations and glycemic summary
     to produce a structured, reimbursement-ready decision report (JSON +
-    markdown). Governed by ``policy`` (gating, titration, sequencing,
-    reimbursement mode, consolidated/split output).
+    markdown + HTML) with embedded data visualizations. Governed by
+    ``policy`` (gating, titration, sequencing, reimbursement mode,
+    consolidated/split output).
     """
     from tools.cgmencode.production.clinical_decision_policy import (
         DEFAULT_POLICY,
@@ -763,6 +765,9 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
     )
     from tools.cgmencode.production.clinical_decision_render import (
         render_deliverables,
+    )
+    from tools.cgmencode.production.clinical_decision_figures import (
+        build_clinical_figures,
     )
 
     if policy is None:
@@ -785,6 +790,34 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
     clinical = getattr(result, "clinical_report", None)
     cr_score = getattr(clinical, "cr_score", None) if clinical else None
 
+    # ── Data visualizations (embedded base64 + written PNGs) ─────────
+    figures = []
+    if df is not None and "glucose" in df:
+        try:
+            glucose = df["glucose"].to_numpy(dtype=float)
+            hours = None
+            if "time" in df:
+                t = pd.to_datetime(df["time"], utc=True)
+                try:
+                    t_local = t.dt.tz_convert(patient_tz)
+                except Exception:
+                    t_local = t
+                hours = (t_local.dt.hour
+                         + t_local.dt.minute / 60.0).to_numpy(dtype=float)
+            figures = build_clinical_figures(glucose=glucose, hours=hours)
+            # Persist PNGs for the markdown deliverable to reference.
+            if figures:
+                fig_dir = out_dir / "figures"
+                fig_dir.mkdir(parents=True, exist_ok=True)
+                import base64 as _b64
+                for f in figures:
+                    if f.png_base64:
+                        (fig_dir / f.filename).write_bytes(
+                            _b64.b64decode(f.png_base64))
+                        f.rel_path = f"figures/{f.filename}"
+        except Exception as e:
+            print(f"  [clinical figures skipped: {e}]")
+
     report = build_clinical_decision_report(
         patient_id=patient_id,
         glycemic=norm,
@@ -793,6 +826,7 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
         cr_score=cr_score,
         days_of_data=days,
         patient_barriers=patient_barriers,
+        figures=figures,
     )
 
     deliverables = render_deliverables(report)
@@ -803,6 +837,7 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
         1 for d in (report.basal, report.isf, report.cr)
         if d.mode.value == "change")
     print(f"  Clinical decision support: {n_change} change(s), "
+          f"{len(figures)} figure(s), "
           f"reboot={'yes' if report.reboot.recommended else 'no'}, "
           f"files: {', '.join(sorted(deliverables))}")
 
