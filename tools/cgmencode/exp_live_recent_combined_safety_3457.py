@@ -2,8 +2,9 @@
 """EXP-3457: live-recent combined basal + ISF safety stress.
 
 EXP-3456 says a low ISF candidate can minimize a simple predictive RMSE, but
-programming a lower ISF makes correction dosing more aggressive. This
-experiment separates those concepts by stress-testing additional insulin from:
+programming a lower ISF makes Loop correction dosing more aggressive through
+both temp-basal and automatic-bolus paths. This experiment separates those
+concepts by stress-testing additional insulin from:
 
 1. the +10% 06:00-12:00 basal step, and
 2. lower programmed ISF candidates (30 and 27.6 mg/dL/U),
@@ -200,7 +201,7 @@ def _conclusion(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "unsafe_or_guardrail_fail_count": int(len(unsafe)),
         "combined_scenarios_tested": int(len(combined)),
         "interpretation": (
-            "The low-ISF validation signal is not enough to combine a lower programmed ISF with basal titration. Lower programmed ISF adds correction insulin; this coarse stress test does not show a large TBR increase, but the dosing pathway is speculative and lacks clean correction-event evidence."
+            "The low-ISF validation signal is not enough to combine a lower programmed ISF with basal titration. In Loop, lower programmed ISF can increase both moderated temp basal and automatic bolus recommendations; this coarse stress test does not show a large TBR increase, but the dosing pathway is speculative and lacks clean correction-event evidence."
         ),
         "recommendation": (
             "Keep the basal-first single-parameter plan. Treat ISF 27-30 as a model signal requiring prospective clean correction evidence, not as a setting to combine with basal."
