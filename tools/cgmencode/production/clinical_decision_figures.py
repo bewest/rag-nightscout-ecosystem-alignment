@@ -19,7 +19,9 @@ from __future__ import annotations
 
 import base64
 import io
-from typing import List, Optional
+import os
+from dataclasses import dataclass
+from typing import Dict, List, Optional
 
 import numpy as np
 
@@ -52,6 +54,41 @@ def _fig_to_b64(fig) -> str:
 def _clean(glucose: np.ndarray) -> np.ndarray:
     g = np.asarray(glucose, dtype=float)
     return g[np.isfinite(g)]
+
+
+@dataclass
+class DomainContext:
+    """Recommendation context used to annotate per-domain figures.
+
+    Lets a figure show not just the existing data but the recommended
+    target/direction so readers see *why* a change is (or isn't) proposed.
+    """
+    domain: str                       # 'basal' | 'isf' | 'cr'
+    current: Optional[float] = None
+    theoretical: Optional[float] = None
+    direction: Optional[str] = None   # 'increase' | 'decrease' | None
+    target: Optional[float] = None     # practical target if available
+
+
+def figure_from_file(path: str, section: str, title: str, caption: str,
+                     alt: str = "") -> Optional[ReportFigure]:
+    """Wrap an already-rendered PNG file as a ReportFigure.
+
+    Lets the decision report reuse the analyzer's existing domain plots
+    (e.g. ISF reconciliation, scheduled-vs-actual basal) instead of
+    duplicating that analysis. Returns None if the file is missing.
+    """
+    if not path or not os.path.exists(path):
+        return None
+    try:
+        with open(path, "rb") as fh:
+            b64 = base64.b64encode(fh.read()).decode("ascii")
+    except OSError:
+        return None
+    return ReportFigure(
+        section=section, title=title, caption=caption,
+        filename=os.path.basename(path), png_base64=b64,
+        rel_path=None, alt=alt or title)
 
 
 def _tir_distribution_figure(glucose: np.ndarray) -> Optional[ReportFigure]:
@@ -227,17 +264,122 @@ def _overnight_figure(glucose: np.ndarray,
         alt="Overnight median glucose by hour with interquartile band.")
 
 
+def _cr_excursion_figure(
+    glucose: np.ndarray,
+    bolus: np.ndarray,
+    carbs: np.ndarray,
+    ctx: Optional[DomainContext] = None,
+) -> Optional[ReportFigure]:
+    """Mean post-meal glucose excursion aligned at meal time.
+
+    Shows how glucose behaves after carb-counted, bolused meals — the
+    existing data behind a carb-ratio decision — and annotates the
+    recommended CR direction/target so the reason for change is visible.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    g = np.asarray(glucose, dtype=float)
+    b = np.asarray(bolus, dtype=float)
+    c = np.asarray(carbs, dtype=float)
+    n = g.size
+    pre, post = 6, 48  # 30 min before, 4 h after (5-min grid)
+
+    traces = []
+    for i in range(pre, n - post):
+        if not (c[i] >= 20.0):
+            continue
+        # Require a bolus near the meal and no large extra carbs after.
+        if np.nansum(b[max(0, i - 2):i + 3]) < 0.3:
+            continue
+        if np.nansum(c[i + 1:i + post]) > 10.0:
+            continue
+        seg = g[i - pre:i + post]
+        if np.isfinite(seg).sum() < (pre + post) * 0.6:
+            continue
+        base = np.nanmedian(g[i - pre:i + 1])
+        if not np.isfinite(base):
+            continue
+        traces.append(seg - base)  # excursion relative to pre-meal baseline
+
+    if len(traces) < 5:
+        return None
+
+    arr = np.vstack(traces)
+    x = (np.arange(-pre, post)) * 5.0 / 60.0  # hours relative to meal
+    med = np.nanmedian(arr, axis=0)
+    q25 = np.nanpercentile(arr, 25, axis=0)
+    q75 = np.nanpercentile(arr, 75, axis=0)
+    peak = float(np.nanmax(med))
+    peak_t = float(x[int(np.nanargmax(med))])
+    ret_4h = float(med[-1])
+
+    fig, ax = plt.subplots(figsize=(7.2, 3.0))
+    ax.axhline(0, color="#9aa5b1", lw=0.8, ls="--")
+    ax.fill_between(x, q25, q75, color=_C_BRAND, alpha=0.30,
+                    label="25–75% (IQR)")
+    ax.plot(x, med, color=_C_INK, lw=2.0, label="Median excursion")
+    ax.scatter([peak_t], [peak], color=_C_HIGH, zorder=5, s=30)
+    ax.annotate(f"peak +{peak:.0f} mg/dL\n@ {peak_t*60:.0f} min",
+                xy=(peak_t, peak), xytext=(peak_t + 0.4, peak),
+                fontsize=8, color="#52606d", va="center")
+
+    ax.set_xlim(-0.5, 4)
+    ax.set_xlabel("Hours from meal", fontsize=9, color="#52606d")
+    ax.set_ylabel("Glucose rise vs pre-meal (mg/dL)", fontsize=9,
+                  color="#52606d")
+    ax.grid(True, color=_C_GRID, lw=0.6)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.tick_params(colors="#52606d", labelsize=8)
+    ax.legend(fontsize=7.5, loc="upper right", frameon=False, ncol=2)
+    fig.tight_layout()
+
+    n_meals = len(traces)
+    direction_note = ""
+    if ctx is not None and ctx.direction in ("increase", "decrease") \
+            and ctx.current is not None and ctx.theoretical is not None:
+        direction_note = (
+            f" Recommendation: {ctx.direction} carb ratio "
+            f"{ctx.current:g}→{ctx.theoretical:g} g/U to "
+            + ("tighten meal coverage and lower these peaks."
+               if ctx.direction == "decrease"
+               else "relax coverage and reduce post-meal lows."))
+    else:
+        direction_note = (
+            " Carb ratio held this cycle; this profile is the baseline "
+            "to compare against at the next review.")
+
+    return ReportFigure(
+        section="cr",
+        title="Post-meal glucose excursion",
+        caption=(f"Median glucose rise after {n_meals} carb-counted, bolused "
+                 f"meals (peak +{peak:.0f} mg/dL at {peak_t*60:.0f} min; "
+                 f"{ret_4h:+.0f} mg/dL vs baseline at 4 h)."
+                 + direction_note),
+        filename="fig_cr_excursion.png",
+        png_base64=_fig_to_b64(fig),
+        alt="Mean post-meal glucose excursion curve with interquartile band.")
+
+
 def build_clinical_figures(
     glucose: np.ndarray,
     hours: Optional[np.ndarray] = None,
+    bolus: Optional[np.ndarray] = None,
+    carbs: Optional[np.ndarray] = None,
+    domains: Optional[Dict[str, DomainContext]] = None,
 ) -> List[ReportFigure]:
-    """Build decision-relevant figures from a patient's glucose data.
+    """Build decision-relevant figures from a patient's data.
 
     Args:
         glucose: (N,) glucose values in mg/dL (NaNs allowed).
         hours: (N,) fractional hour-of-day aligned to ``glucose``. When
             omitted, only the time-in-range distribution is produced
             (AGP and overnight figures require hour-of-day).
+        bolus: (N,) optional bolus units, for the CR excursion figure.
+        carbs: (N,) optional carb grams, for the CR excursion figure.
+        domains: optional per-domain context (current/theoretical/
+            direction) used to annotate the reason for change.
 
     Returns:
         List of ReportFigure (possibly empty). Generation never raises on
@@ -249,10 +391,15 @@ def build_clinical_figures(
     except Exception:
         return figures
 
+    domains = domains or {}
     builders = [lambda: _tir_distribution_figure(glucose)]
     if hours is not None:
         builders.append(lambda: _agp_figure(glucose, hours))
         builders.append(lambda: _overnight_figure(glucose, hours))
+    if bolus is not None and carbs is not None:
+        builders.append(
+            lambda: _cr_excursion_figure(
+                glucose, bolus, carbs, domains.get("cr")))
 
     for build in builders:
         try:

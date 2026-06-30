@@ -1,6 +1,6 @@
 # Clinical Decision Support — patient `live-recent`
 
-_Generated: 2026-06-30T18:12:13.398798+00:00_
+_Generated: 2026-06-30T18:25:19.172941+00:00_
 
 ## Insulin sufficiency
 
@@ -49,6 +49,12 @@ _Median glucose by time of day with interquartile (25–75%) and 10–90% bands.
 
 _Median overnight glucose with IQR. A rising trend suggests basal is too low; a falling trend suggests it is too high. Used to contextualize the basal recommendation._
 
+**Scheduled vs actual basal**
+
+![Scheduled vs actual basal](figures/04_basal_pattern.png)
+
+_Median programmed basal vs what the loop actually delivered by hour. Persistent loop deviation indicates the scheduled rate is mismatched in that direction._
+
 **Success criteria** (revisit in 14 days):
 - Basal held: glycemic metrics remain within tolerance of baseline over the 2-week window.
 - No new hypoglycemia signal (TBR<70 stays below 4%).
@@ -73,6 +79,12 @@ _Median overnight glucose with IQR. A rising trend suggests basal is too low; a 
 | TBR<70 | 1.99% | 1.99% | stable |
 | TAR>180 | 40.1% | 40.1% | stable |
 
+**ISF reconciliation (profile vs observed)**
+
+![ISF reconciliation (profile vs observed)](figures/03_isf_reconciliation.png)
+
+_Profile ISF against the correction-derived (observed) ISF. A gap shows how far the effective sensitivity sits from the programmed value and which direction a change would move it._
+
 **Success criteria** (revisit in 14 days):
 - ISF held: glycemic metrics remain within tolerance of baseline over the 2-week window.
 - No new hypoglycemia signal (TBR<70 stays below 4%).
@@ -96,6 +108,12 @@ _Median overnight glucose with IQR. A rising trend suggests basal is too low; a 
 | TIR | 57.9% | 57.9% | stable |
 | TBR<70 | 1.99% | 1.99% | stable |
 | TAR>180 | 40.1% | 40.1% | stable |
+
+**Post-meal glucose excursion**
+
+![Mean post-meal glucose excursion curve with interquartile band.](figures/fig_cr_excursion.png)
+
+_Median glucose rise after 5 carb-counted, bolused meals (peak +45 mg/dL at 45 min; -108 mg/dL vs baseline at 4 h). Carb ratio held this cycle; this profile is the baseline to compare against at the next review._
 
 **Success criteria** (revisit in 14 days):
 - Carb ratio held: glycemic metrics remain within tolerance of baseline over the 2-week window.

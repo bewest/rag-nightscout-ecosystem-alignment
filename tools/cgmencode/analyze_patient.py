@@ -767,7 +767,7 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
         render_deliverables,
     )
     from tools.cgmencode.production.clinical_decision_figures import (
-        build_clinical_figures,
+        build_clinical_figures, figure_from_file, DomainContext,
     )
 
     if policy is None:
@@ -790,10 +790,34 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
     clinical = getattr(result, "clinical_report", None)
     cr_score = getattr(clinical, "cr_score", None) if clinical else None
 
+    # Build the report first so figures can be annotated with the
+    # recommended direction/target per domain.
+    report = build_clinical_decision_report(
+        patient_id=patient_id,
+        glycemic=norm,
+        settings_recs=settings_recs,
+        policy=policy,
+        cr_score=cr_score,
+        days_of_data=days,
+        patient_barriers=patient_barriers,
+    )
+
     # ── Data visualizations (embedded base64 + written PNGs) ─────────
     figures = []
-    if df is not None and "glucose" in df:
-        try:
+    try:
+        domain_ctx = {
+            d.domain: DomainContext(
+                domain=d.domain, current=d.current_value,
+                theoretical=d.theoretical_value,
+                direction=(None if d.mode.value != "change"
+                           else ("increase"
+                                 if (d.practical_change_pct or 0) > 0
+                                 else "decrease")),
+                target=d.practical_value)
+            for d in (report.basal, report.isf, report.cr)
+        }
+
+        if df is not None and "glucose" in df:
             glucose = df["glucose"].to_numpy(dtype=float)
             hours = None
             if "time" in df:
@@ -804,30 +828,52 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
                     t_local = t
                 hours = (t_local.dt.hour
                          + t_local.dt.minute / 60.0).to_numpy(dtype=float)
-            figures = build_clinical_figures(glucose=glucose, hours=hours)
-            # Persist PNGs for the markdown deliverable to reference.
-            if figures:
-                fig_dir = out_dir / "figures"
-                fig_dir.mkdir(parents=True, exist_ok=True)
-                import base64 as _b64
-                for f in figures:
-                    if f.png_base64:
-                        (fig_dir / f.filename).write_bytes(
-                            _b64.b64decode(f.png_base64))
-                        f.rel_path = f"figures/{f.filename}"
-        except Exception as e:
-            print(f"  [clinical figures skipped: {e}]")
+            bolus = (df["bolus"].to_numpy(dtype=float)
+                     if "bolus" in df else None)
+            carbs = (df["carbs"].to_numpy(dtype=float)
+                     if "carbs" in df else None)
+            figures = build_clinical_figures(
+                glucose=glucose, hours=hours, bolus=bolus, carbs=carbs,
+                domains=domain_ctx)
 
-    report = build_clinical_decision_report(
-        patient_id=patient_id,
-        glycemic=norm,
-        settings_recs=settings_recs,
-        policy=policy,
-        cr_score=cr_score,
-        days_of_data=days,
-        patient_barriers=patient_barriers,
-        figures=figures,
-    )
+        # Reuse the analyzer's existing validated domain plots so readers
+        # can relate basal/ISF settings to their targets (per user note).
+        plot_dir = out_dir / "plots"
+        for fname, section, title, caption in (
+            ("04_basal_pattern.png", "basal",
+             "Scheduled vs actual basal",
+             "Median programmed basal vs what the loop actually delivered "
+             "by hour. Persistent loop deviation indicates the scheduled "
+             "rate is mismatched in that direction."),
+            ("03_isf_reconciliation.png", "isf",
+             "ISF reconciliation (profile vs observed)",
+             "Profile ISF against the correction-derived (observed) ISF. "
+             "A gap shows how far the effective sensitivity sits from the "
+             "programmed value and which direction a change would move it."),
+        ):
+            ef = figure_from_file(
+                str(plot_dir / fname), section=section, title=title,
+                caption=caption)
+            if ef is not None:
+                figures.append(ef)
+
+        # Persist generated PNGs (file-sourced ones already exist on disk)
+        # so the markdown deliverable can reference them by path.
+        if figures:
+            fig_dir = out_dir / "figures"
+            fig_dir.mkdir(parents=True, exist_ok=True)
+            import base64 as _b64
+            for f in figures:
+                if f.rel_path:
+                    continue  # already on disk (reused plot)
+                if f.png_base64:
+                    (fig_dir / f.filename).write_bytes(
+                        _b64.b64decode(f.png_base64))
+                    f.rel_path = f"figures/{f.filename}"
+    except Exception as e:
+        print(f"  [clinical figures skipped: {e}]")
+
+    report.figures = figures
 
     deliverables = render_deliverables(report)
     for fname, content in deliverables.items():

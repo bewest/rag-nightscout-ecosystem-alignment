@@ -1,6 +1,6 @@
 {
   "patient_id": "live-recent",
-  "generated_at_utc": "2026-06-30T18:12:13.398798+00:00",
+  "generated_at_utc": "2026-06-30T18:25:19.172941+00:00",
   "glycemic_summary": {
     "tir": 0.5788374812092868,
     "tbr_lt70": 0.0199181560046768,
@@ -254,6 +254,33 @@
       "png_base64": null,
       "rel_path": "figures/fig_overnight.png",
       "alt": "Overnight median glucose by hour with interquartile band."
+    },
+    {
+      "section": "cr",
+      "title": "Post-meal glucose excursion",
+      "caption": "Median glucose rise after 5 carb-counted, bolused meals (peak +45 mg/dL at 45 min; -108 mg/dL vs baseline at 4 h). Carb ratio held this cycle; this profile is the baseline to compare against at the next review.",
+      "filename": "fig_cr_excursion.png",
+      "png_base64": null,
+      "rel_path": "figures/fig_cr_excursion.png",
+      "alt": "Mean post-meal glucose excursion curve with interquartile band."
+    },
+    {
+      "section": "basal",
+      "title": "Scheduled vs actual basal",
+      "caption": "Median programmed basal vs what the loop actually delivered by hour. Persistent loop deviation indicates the scheduled rate is mismatched in that direction.",
+      "filename": "04_basal_pattern.png",
+      "png_base64": null,
+      "rel_path": "figures/04_basal_pattern.png",
+      "alt": "Scheduled vs actual basal"
+    },
+    {
+      "section": "isf",
+      "title": "ISF reconciliation (profile vs observed)",
+      "caption": "Profile ISF against the correction-derived (observed) ISF. A gap shows how far the effective sensitivity sits from the programmed value and which direction a change would move it.",
+      "filename": "03_isf_reconciliation.png",
+      "png_base64": null,
+      "rel_path": "figures/03_isf_reconciliation.png",
+      "alt": "ISF reconciliation (profile vs observed)"
     }
   ]
 }
