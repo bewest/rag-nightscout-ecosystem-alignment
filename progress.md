@@ -31,6 +31,8 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 **Validation**: 59 new TDD tests (red→green) across policy, builder, and renderers; full production unit suite remains green (378 passed); end-to-end smoke run on patient `c` produced JSON + markdown deliverables.
 
+**Update (later 2026-06-30)**: Added HTML deliverables with a clinical look & feel and embedded data visualizations. Each patient report now also emits `clinical-decision-report.html` (self-contained, base64-embedded figures) and decision-relevant plots: time-in-range distribution, ambulatory glucose profile (AGP), and an overnight glucose profile placed inside the basal recommendation with an overnight-drift annotation. Figures are section-tagged so readers can follow the evidence behind each claim. Consolidated (default) or split audience-specific outputs are supported. Total CDS tests: 80 (red→green); full production unit suite green (1042 passed). Live report `reports/live-recent-analysis/` refreshed end-to-end with the visualized deliverables.
+
 **Source Files Analyzed**:
 - `tools/cgmencode/production/advisor/_pipeline.py`
 - `tools/cgmencode/production/clinical_rules.py`
