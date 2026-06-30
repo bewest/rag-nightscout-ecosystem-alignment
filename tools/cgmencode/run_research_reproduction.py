@@ -156,6 +156,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3452_live_recent_isf_decision_robustness.md',
         ),
     ),
+    'live-recent-isf-acquisition': ResearchCase(
+        key='live-recent-isf-acquisition',
+        title='Live-recent clean ISF evidence acquisition audit',
+        description='Quantifies why strict detector-only UAM exclusion leaves no promotable ISF events and defines future passive evidence requirements.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_isf_acquisition_3453.py'),
+        artifact_paths=(
+            'externals/experiments/exp3453_live_recent_isf_acquisition.json',
+            'externals/experiments/autoresearch/exp3453_live_recent_isf_acquisition.md',
+        ),
+    ),
 }
 
 

@@ -49,6 +49,8 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 **Update (EXP-3452, later 2026-06-30)**: Added an ISF horizon decision-robustness audit. It compares exact and nadir ISF estimates from 1h through 6h and asks whether any horizon would flip the current ISF hold. The strongest logged-only challenger is exact 4h (median 53.7, CI 41.1-86.4), but every qualifying event overlaps inferred/hybrid meal windows and no UAM-clean horizon has any events. The decision support conclusion remains: show 2h and 4h as sensitivity context, but do not change baseline ISF.
 
+**Update (EXP-3453, later 2026-06-30)**: Added a clean-ISF evidence acquisition audit. The sequential funnel shows 24 bolus events become 6 apparently isolated correction candidates, then all 6 are rejected by strict inferred-meal exclusion. Live-recent has 61 clean high-BG episodes without a clean correction, so future passive data can change the decision only if clean correction events accumulate. Reopen ISF analysis at 10 strict-UAM-clean correction events; require roughly 62 events or tighter CI evidence before promoting a baseline ISF change.
+
 **Source Files Analyzed**:
 - `tools/cgmencode/production/advisor/_pipeline.py`
 - `tools/cgmencode/production/clinical_rules.py`
