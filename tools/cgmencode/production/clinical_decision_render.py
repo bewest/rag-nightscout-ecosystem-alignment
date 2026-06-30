@@ -20,7 +20,7 @@ import json
 from typing import Dict, List
 
 from .clinical_decision_report import (
-    ClinicalDecisionReport, DomainRecommendation, DecisionMode,
+    ClinicalDecisionReport, DomainRecommendation, DecisionMode, ReportFigure,
 )
 from .clinical_decision_policy import OutputMode
 
@@ -32,7 +32,31 @@ def _fmt_block(block) -> str:
     return f"{int(lo):02d}:00–{int(hi):02d}:00"
 
 
-def _domain_md(d: DomainRecommendation) -> List[str]:
+def _section_figs(rep: ClinicalDecisionReport,
+                  *sections: str) -> List[ReportFigure]:
+    want = set(sections)
+    return [f for f in rep.figures if f.section in want]
+
+
+def _figs_md(figs: List[ReportFigure]) -> List[str]:
+    lines: List[str] = []
+    for f in figs:
+        src = f.rel_path or (
+            f"data:image/png;base64,{f.png_base64}" if f.png_base64 else "")
+        if not src:
+            continue
+        lines.append(f"**{f.title}**")
+        lines.append("")
+        lines.append(f"![{f.alt or f.title}]({src})")
+        if f.caption:
+            lines.append("")
+            lines.append(f"_{f.caption}_")
+        lines.append("")
+    return lines
+
+
+def _domain_md(d: DomainRecommendation,
+               figs: Optional[List[ReportFigure]] = None) -> List[str]:
     label = {"basal": "Basal", "isf": "ISF", "cr": "Carb ratio"}[d.domain]
     lines = [f"### {label}", ""]
     badge = "CHANGE" if d.mode == DecisionMode.CHANGE else "NO CHANGE"
@@ -69,6 +93,9 @@ def _domain_md(d: DomainRecommendation) -> List[str]:
                 f"| {o.metric} | {o.baseline:g}{o.unit} | "
                 f"{o.expected_2wk:g}{o.unit} | {o.direction} |")
         lines.append("")
+
+    if figs:
+        lines += _figs_md(figs)
 
     lines.append(f"**Success criteria** (revisit in {d.follow_up.revisit_days} "
                  f"days):")
@@ -139,10 +166,14 @@ def _core_lines(rep: ClinicalDecisionReport) -> List[str]:
             lines.append(f"- {w}")
         lines.append("")
 
+    overview_figs = _section_figs(rep, "insulin_sufficiency", "overview")
+    if overview_figs:
+        lines += _figs_md(overview_figs)
+
     lines += ["## Recommendations", ""]
-    lines += _domain_md(rep.basal)
-    lines += _domain_md(rep.isf)
-    lines += _domain_md(rep.cr)
+    lines += _domain_md(rep.basal, _section_figs(rep, "basal"))
+    lines += _domain_md(rep.isf, _section_figs(rep, "isf"))
+    lines += _domain_md(rep.cr, _section_figs(rep, "cr"))
 
     lines += ["## Overall justification", "", rep.overall_justification, ""]
 
@@ -293,6 +324,13 @@ ul.crit li { margin: 3px 0; }
 .callout h3 { color: var(--warn); }
 .muted { color: var(--muted); }
 .justify { margin: 8px 0 0; }
+figure.viz { margin: 14px 0 4px; }
+figure.viz img { width: 100%; height: auto; border: 1px solid var(--line);
+  border-radius: 8px; background: #fff; }
+figure.viz figcaption { color: var(--muted); font-size: 12.5px;
+  margin-top: 6px; }
+.viz-title { font-size: 13px; font-weight: 600; color: var(--brand-deep);
+  margin: 16px 0 4px; }
 footer.report { color: var(--muted); font-size: 12px; margin-top: 40px;
   text-align: center; }
 """.strip()
@@ -303,7 +341,8 @@ def _e(text) -> str:
     return _html.escape(str(text), quote=True)
 
 
-def _domain_html(d: DomainRecommendation) -> str:
+def _domain_html(d: DomainRecommendation,
+                 figs: Optional[List[ReportFigure]] = None) -> str:
     label = {"basal": "Basal", "isf": "ISF", "cr": "Carb ratio"}[d.domain]
     is_change = d.mode == DecisionMode.CHANGE
     badge = ('<span class="badge change">Change</span>' if is_change
@@ -344,6 +383,9 @@ def _domain_html(d: DomainRecommendation) -> str:
             '<th>Expected</th><th>Direction</th></tr>'
             f'{rows}</table>')
 
+    if figs:
+        parts.append(_figs_html(figs))
+
     succ = "".join(f"<li>{_e(s)}</li>" for s in d.follow_up.success)
     stop = "".join(f"<li>{_e(s)}</li>" for s in d.follow_up.stop_escalate)
     parts.append(
@@ -355,6 +397,24 @@ def _domain_html(d: DomainRecommendation) -> str:
 
     parts.append("</div>")
     return "".join(parts)
+
+
+def _figs_html(figs: List[ReportFigure]) -> str:
+    out = []
+    for f in figs:
+        if f.png_base64:
+            src = f"data:image/png;base64,{f.png_base64}"
+        elif f.rel_path:
+            src = _e(f.rel_path)
+        else:
+            continue
+        out.append(
+            '<figure class="viz">'
+            f'<div class="viz-title">{_e(f.title)}</div>'
+            f'<img src="{src}" alt="{_e(f.alt or f.title)}">'
+            + (f'<figcaption>{_e(f.caption)}</figcaption>' if f.caption else "")
+            + '</figure>')
+    return "".join(out)
 
 
 def _num(v):
@@ -437,6 +497,9 @@ def render_html(rep: ClinicalDecisionReport,
     reimb = (_reimbursement_html_section(rep)
              if include_reimbursement else "")
 
+    overview_figs = _figs_html(
+        _section_figs(rep, "insulin_sufficiency", "overview"))
+
     body = (
         '<header class="report"><div class="wrap">'
         f'<h1>Clinical Decision Support — patient {_e(rep.patient_id)}</h1>'
@@ -446,10 +509,11 @@ def render_html(rep: ClinicalDecisionReport,
         '<h2>Insulin sufficiency</h2>'
         f'<div class="card summary-card"><p>{_e(ins.summary)}</p>'
         f'<div class="cols">{risk_panel}{working_panel}</div></div>'
+        f'{overview_figs}'
         '<h2>Recommendations</h2>'
-        f'{_domain_html(rep.basal)}'
-        f'{_domain_html(rep.isf)}'
-        f'{_domain_html(rep.cr)}'
+        f'{_domain_html(rep.basal, _section_figs(rep, "basal"))}'
+        f'{_domain_html(rep.isf, _section_figs(rep, "isf"))}'
+        f'{_domain_html(rep.cr, _section_figs(rep, "cr"))}'
         '<h2>Overall justification</h2>'
         f'<div class="card"><p>{_e(rep.overall_justification)}</p></div>'
         f'{reboot_html}'

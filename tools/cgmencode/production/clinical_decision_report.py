@@ -122,6 +122,25 @@ class RebootRecommendation:
 
 
 @dataclass
+class ReportFigure:
+    """A data visualization attached to the report.
+
+    Figures carry a self-contained base64 PNG payload (for portable HTML)
+    and an optional relative path (for markdown that references a written
+    PNG file). ``section`` ties the figure to the part of the report it
+    supports so readers can follow along: ``insulin_sufficiency``,
+    ``basal``, ``isf``, ``cr``, or ``overview``.
+    """
+    section: str
+    title: str
+    caption: str
+    filename: str
+    png_base64: Optional[str] = None
+    rel_path: Optional[str] = None
+    alt: str = ""
+
+
+@dataclass
 class ClinicalDecisionReport:
     """Top-level clinical-grade decision support report."""
     patient_id: str
@@ -136,9 +155,15 @@ class ClinicalDecisionReport:
     reboot: RebootRecommendation
     policy: Dict
     reimbursement: Optional[ReimbursementEvidence] = None
+    figures: List[ReportFigure] = field(default_factory=list)
 
     def to_dict(self) -> dict:
-        return _to_jsonable(self)
+        d = _to_jsonable(self)
+        # Keep report.json lean: drop the heavy base64 image payloads,
+        # preserving figure metadata (section/title/caption/filename/path).
+        for fig in d.get("figures", []):
+            fig["png_base64"] = None
+        return d
 
 
 # ── Serialization helper ──────────────────────────────────────────────
@@ -692,6 +717,7 @@ def build_clinical_decision_report(
     days_of_data: Optional[float] = None,
     generated_at_utc: Optional[str] = None,
     patient_barriers: Optional[List[str]] = None,
+    figures: Optional[List[ReportFigure]] = None,
 ) -> ClinicalDecisionReport:
     """Assemble a clinical-grade decision support report.
 
@@ -710,6 +736,8 @@ def build_clinical_decision_report(
         generated_at_utc: ISO timestamp override (defaults to now).
         patient_barriers: clinician-supplied adherence/supply/prescription
             barriers for the reimbursement evidence block.
+        figures: optional data visualizations to embed, each tagged with
+            the report section it supports.
 
     Returns:
         ClinicalDecisionReport.
@@ -754,4 +782,5 @@ def build_clinical_decision_report(
         reboot=reboot,
         policy=policy.to_dict(),
         reimbursement=reimbursement,
+        figures=list(figures or []),
     )
