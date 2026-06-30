@@ -246,9 +246,10 @@ def _pick_domain_rec(
     if not domain_recs:
         return None
     actionable = [r for r in domain_recs
-                  if r.direction in ("increase", "decrease")]
+                  if r.direction in ("increase", "decrease")
+                  and not policy.is_dose_shaping(_rec_text(r))]
     if not actionable:
-        return domain_recs[0]
+        return None
 
     gated = [
         r for r in actionable
@@ -711,6 +712,38 @@ def _build_addenda(
     return addenda
 
 
+def _dose_shaping_notes(
+    recs: List[SettingsRecommendation],
+    policy: ClinicalDecisionPolicy,
+) -> List[str]:
+    """Labeled addenda notes for dose-shaping advisories.
+
+    These describe a dose-conditional effective setting (e.g. a lower ISF
+    for large corrections) and are explicitly NOT baseline schedule
+    changes, so the figure of a large-dose effective ISF is never confused
+    with the ISF target.
+    """
+    notes: List[str] = []
+    seen = set()
+    for r in recs:
+        text = _rec_text(r)
+        if not policy.is_dose_shaping(text):
+            continue
+        param = r.parameter.value if hasattr(r.parameter, "value") else str(
+            r.parameter)
+        label = _DOMAIN_LABEL.get(param, param.upper())
+        key = (param, (r.rationale or "")[:40])
+        if key in seen:
+            continue
+        seen.add(key)
+        notes.append(
+            f"Dose-shaping guidance ({label}, NOT a baseline schedule "
+            f"change): {r.rationale} This describes a dose-conditional "
+            f"effective value for large corrections; prefer splitting large "
+            f"corrections over altering the baseline {label} schedule.")
+    return notes
+
+
 # ── Reimbursement evidence ────────────────────────────────────────────
 
 def _build_reimbursement(
@@ -839,6 +872,7 @@ def build_clinical_decision_report(
     reboot = _build_reboot(glycemic, recs, policy)
     overall = _build_overall_justification(domains, reboot)
     addenda = _build_addenda(domains, insulin, policy)
+    addenda.extend(_dose_shaping_notes(recs, policy))
 
     reimbursement = None
     if policy.reimbursement_mode:

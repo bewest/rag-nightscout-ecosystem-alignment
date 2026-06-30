@@ -89,6 +89,16 @@ class ClinicalDecisionPolicy:
         "EXP-3447", "EXP-2651", "EXP-2741", "deconfound", "deconfounded",
         "demand-phase", "correction-denominator", "bilateral",
     )
+    # Dose-shaping advisories (e.g. ISF non-linearity EXP-2511) describe a
+    # dose-conditional effective ISF — guidance to split large corrections,
+    # NOT a change to the baseline ISF schedule. They are demoted out of
+    # the headline recommendation and surfaced as labeled addenda guidance
+    # so a large-dose effective ISF (e.g. 16) is never presented as the
+    # baseline ISF "optimum".
+    dose_shaping_markers: tuple = (
+        "non-linearity", "nonlinearity", "EXP-2511", "diminishing returns",
+        "splitting", "split-dose", "split into", "dose-shaping",
+    )
     # Safety caps on credited confidence. ISF is capped tighter because
     # removing the controller's residual safety margin raises TBR
     # (EXP-2738: +6.2pp); deconfounding improves accuracy but must not
@@ -158,6 +168,14 @@ class ClinicalDecisionPolicy:
             return False
         low = text.lower()
         return any(m.lower() in low for m in self.deconfounding_markers)
+
+    def is_dose_shaping(self, text: str) -> bool:
+        """True when an advisory is dose-conditional guidance (split large
+        corrections) rather than a baseline schedule change."""
+        if not text:
+            return False
+        low = text.lower()
+        return any(m.lower() in low for m in self.dose_shaping_markers)
 
     def credited_confidence(self, domain: str, confidence: float,
                             observed_trust: Optional[float]) -> float:

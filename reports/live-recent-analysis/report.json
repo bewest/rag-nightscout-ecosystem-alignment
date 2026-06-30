@@ -1,6 +1,6 @@
 {
   "patient_id": "live-recent",
-  "generated_at_utc": "2026-06-30T19:02:49.273162+00:00",
+  "generated_at_utc": "2026-06-30T19:14:18.895977+00:00",
   "glycemic_summary": {
     "tir": 0.5788374812092868,
     "tbr_lt70": 0.0199181560046768,
@@ -81,10 +81,10 @@
   "isf": {
     "domain": "isf",
     "mode": "no_change",
-    "summary": "ISF: no change recommended (insufficient evidence (confidence 0.18 below 0.50)).",
-    "confidence": 0.18,
-    "evidence": "ISF non-linearity (EXP-2511): typical correction dose 2.8U is 60% less effective per unit than 1U (power-law \u03b2=0.9). Splitting into 2\u00d71.4U would be ~87% more effective total. [CLAMPED from 60% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
-    "justification": "ISF reviewed: a directional signal exists (theoretical target 16) but is held due to insufficient evidence (confidence 0.18 below 0.50). Re-evaluate at the next review.",
+    "summary": "ISF: no change recommended.",
+    "confidence": 0.0,
+    "evidence": "No actionable ISF signal in the analysis window; current setting is consistent with observed glucose behavior.",
+    "justification": "ISF reviewed: the data do not support a change this cycle. Maintaining the current setting and re-evaluating at the next review.",
     "follow_up": {
       "success": [
         "ISF held: glycemic metrics remain within tolerance of baseline over the 2-week window.",
@@ -96,12 +96,12 @@
       ],
       "revisit_days": 14
     },
-    "hold_reason": "insufficient_evidence",
-    "current_value": 40.0,
+    "hold_reason": "no_meaningful_deviation",
+    "current_value": null,
     "practical_value": null,
     "practical_change_pct": null,
-    "theoretical_value": 16.0,
-    "theoretical_change_pct": -60.0,
+    "theoretical_value": null,
+    "theoretical_change_pct": null,
     "affected_time_block": null,
     "expected_outcomes": [
       {
@@ -176,14 +176,14 @@
       }
     ]
   },
-  "overall_justification": "Practical changes this cycle: Basal 1.7->1.87. Each practical step is the safe-titration projection of a larger theoretical optimum (documented in the addenda). Held/deferred: ISF (insufficient_evidence), Carb ratio (no_meaningful_deviation).",
+  "overall_justification": "Practical changes this cycle: Basal 1.7->1.87. Each practical step is the safe-titration projection of a larger theoretical optimum (documented in the addenda). Held/deferred: ISF (no_meaningful_deviation), Carb ratio (no_meaningful_deviation).",
   "addenda": [
     "Factors considered: time-in-range distribution, hypo/hyper burden, glycemic variability, per-parameter advisory evidence, and cross-parameter sequencing.",
     "Basal theoretical optimum: 1.87 (+10% vs current 1.7); practical step capped at 20%/cycle -> 1.87.",
-    "ISF theoretical optimum: 16 (-60% vs current 40); held this cycle.",
     "Risks reviewed and mitigated: Hyperglycemia burden elevated (TAR>180 40.1% vs target 25%). Glycemic variability high (CV 37% vs target 36%).",
     "Deconfounding applied: Basal recommendation(s) derive from validated deconfounded estimates (e.g. demand-phase ISF EXP-2651, correction-denominator/bilateral EXP-2741, deconfounded basal EXP-3447). The controller-masking confidence penalty does not apply to these, improving accuracy without removing the controller's residual safety margin (EXP-2738).",
-    "Mitigations: changes are bounded by a per-cycle titration cap; carb ratio is sequenced after basal/ISF to avoid confounded adjustment; explicit stop/escalate criteria accompany every recommendation for the 2-week feedback loop."
+    "Mitigations: changes are bounded by a per-cycle titration cap; carb ratio is sequenced after basal/ISF to avoid confounded adjustment; explicit stop/escalate criteria accompany every recommendation for the 2-week feedback loop.",
+    "Dose-shaping guidance (ISF, NOT a baseline schedule change): Correction doses above 1.5U show diminishing returns. At 2.8U, each unit achieves only 16 mg/dL drop vs 40 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=16 for doses \u22653U. This is a pharmacokinetic property (\u03b2=0.9), not circadian. This describes a dose-conditional effective value for large corrections; prefer splitting large corrections over altering the baseline ISF schedule."
   ],
   "reboot": {
     "recommended": false,
@@ -220,6 +220,16 @@
       "demand-phase",
       "correction-denominator",
       "bilateral"
+    ],
+    "dose_shaping_markers": [
+      "non-linearity",
+      "nonlinearity",
+      "EXP-2511",
+      "diminishing returns",
+      "splitting",
+      "split-dose",
+      "split into",
+      "dose-shaping"
     ],
     "deconfounded_isf_confidence_cap": 0.8,
     "deconfounded_cr_confidence_cap": 0.9
@@ -295,7 +305,7 @@
     {
       "section": "isf",
       "title": "ISF reconciliation (profile vs observed)",
-      "caption": "Profile ISF against the correction-derived (observed) ISF. A gap shows how far the effective sensitivity sits from the programmed value and which direction a change would move it.",
+      "caption": "Profile ISF vs the correction-derived (observed/apparent) ISF. The observed value is amplified by AID compensation (basal suspension during corrections), so it is NOT a direct ISF target: the recommendation deliberately preserves the controller's residual safety margin (EXP-2738) rather than chasing the apparent value. Separately, a lower effective ISF for large single corrections is dose-shaping guidance (split the dose), not a baseline schedule change.",
       "filename": "03_isf_reconciliation.png",
       "png_base64": null,
       "rel_path": "figures/03_isf_reconciliation.png",

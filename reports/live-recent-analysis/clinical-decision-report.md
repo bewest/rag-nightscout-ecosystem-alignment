@@ -1,6 +1,6 @@
 # Clinical Decision Support — patient `live-recent`
 
-_Generated: 2026-06-30T19:02:49.273162+00:00_
+_Generated: 2026-06-30T19:14:18.895977+00:00_
 
 ## Insulin sufficiency
 
@@ -73,10 +73,10 @@ _Median programmed basal vs what the loop actually delivered by hour. Persistent
 ### ISF
 
 **Decision:** NO CHANGE  
-**Hold reason:** insufficient_evidence  
-**Summary:** ISF: no change recommended (insufficient evidence (confidence 0.18 below 0.50)).
+**Hold reason:** no_meaningful_deviation  
+**Summary:** ISF: no change recommended.
 
-**Justification:** ISF reviewed: a directional signal exists (theoretical target 16) but is held due to insufficient evidence (confidence 0.18 below 0.50). Re-evaluate at the next review.
+**Justification:** ISF reviewed: the data do not support a change this cycle. Maintaining the current setting and re-evaluating at the next review.
 
 **Expected outcomes (2-week):**
 
@@ -90,7 +90,7 @@ _Median programmed basal vs what the loop actually delivered by hour. Persistent
 
 ![ISF reconciliation (profile vs observed)](figures/03_isf_reconciliation.png)
 
-_Profile ISF against the correction-derived (observed) ISF. A gap shows how far the effective sensitivity sits from the programmed value and which direction a change would move it._
+_Profile ISF vs the correction-derived (observed/apparent) ISF. The observed value is amplified by AID compensation (basal suspension during corrections), so it is NOT a direct ISF target: the recommendation deliberately preserves the controller's residual safety margin (EXP-2738) rather than chasing the apparent value. Separately, a lower effective ISF for large single corrections is dose-shaping guidance (split the dose), not a baseline schedule change._
 
 **Success criteria** (revisit in 14 days):
 - ISF held: glycemic metrics remain within tolerance of baseline over the 2-week window.
@@ -132,16 +132,16 @@ _Median glucose rise after 5 carb-counted, bolused meals (peak +45 mg/dL at 45 m
 
 ## Overall justification
 
-Practical changes this cycle: Basal 1.7->1.87. Each practical step is the safe-titration projection of a larger theoretical optimum (documented in the addenda). Held/deferred: ISF (insufficient_evidence), Carb ratio (no_meaningful_deviation).
+Practical changes this cycle: Basal 1.7->1.87. Each practical step is the safe-titration projection of a larger theoretical optimum (documented in the addenda). Held/deferred: ISF (no_meaningful_deviation), Carb ratio (no_meaningful_deviation).
 
 ## Addenda
 
 - Factors considered: time-in-range distribution, hypo/hyper burden, glycemic variability, per-parameter advisory evidence, and cross-parameter sequencing.
 - Basal theoretical optimum: 1.87 (+10% vs current 1.7); practical step capped at 20%/cycle -> 1.87.
-- ISF theoretical optimum: 16 (-60% vs current 40); held this cycle.
 - Risks reviewed and mitigated: Hyperglycemia burden elevated (TAR>180 40.1% vs target 25%). Glycemic variability high (CV 37% vs target 36%).
 - Deconfounding applied: Basal recommendation(s) derive from validated deconfounded estimates (e.g. demand-phase ISF EXP-2651, correction-denominator/bilateral EXP-2741, deconfounded basal EXP-3447). The controller-masking confidence penalty does not apply to these, improving accuracy without removing the controller's residual safety margin (EXP-2738).
 - Mitigations: changes are bounded by a per-cycle titration cap; carb ratio is sequenced after basal/ISF to avoid confounded adjustment; explicit stop/escalate criteria accompany every recommendation for the 2-week feedback loop.
+- Dose-shaping guidance (ISF, NOT a baseline schedule change): Correction doses above 1.5U show diminishing returns. At 2.8U, each unit achieves only 16 mg/dL drop vs 40 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=16 for doses ≥3U. This is a pharmacokinetic property (β=0.9), not circadian. This describes a dose-conditional effective value for large corrections; prefer splitting large corrections over altering the baseline ISF schedule.
 
 ## Reimbursement justification
 

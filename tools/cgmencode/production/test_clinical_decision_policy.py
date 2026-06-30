@@ -179,6 +179,24 @@ class TestDeconfounding:
         assert p.is_deconfounded("Multi-factor deconfounding (EXP-2741)")
         assert not p.is_deconfounded("ISF non-linearity (EXP-2511)")
 
+
+class TestDoseShaping:
+    def test_detects_dose_shaping(self):
+        p = ClinicalDecisionPolicy()
+        assert p.is_dose_shaping("ISF non-linearity (EXP-2511): ...")
+        assert p.is_dose_shaping("Splitting into 2x1.4U would be more")
+        assert p.is_dose_shaping("diminishing returns at high dose")
+
+    def test_not_dose_shaping_for_baseline(self):
+        p = ClinicalDecisionPolicy()
+        assert not p.is_dose_shaping("Demand-phase ISF (EXP-2651) target")
+        assert not p.is_dose_shaping("Overnight quadrant analysis (EXP-2589)")
+        p = ClinicalDecisionPolicy()
+        assert p.is_deconfounded("Deconfounded basal block audit (EXP-3447)")
+        assert p.is_deconfounded("Demand-phase ISF (EXP-2651) target")
+        assert p.is_deconfounded("Multi-factor deconfounding (EXP-2741)")
+        assert not p.is_deconfounded("ISF non-linearity (EXP-2511)")
+
     def test_credit_recovers_dampened_confidence(self):
         # Loop isf_trust=0.3 dampened 0.6 -> 0.18; credit recovers toward 0.6.
         p = ClinicalDecisionPolicy()

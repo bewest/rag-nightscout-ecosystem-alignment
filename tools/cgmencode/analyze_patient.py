@@ -868,9 +868,14 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
              "rate is mismatched in that direction."),
             ("03_isf_reconciliation.png", "isf",
              "ISF reconciliation (profile vs observed)",
-             "Profile ISF against the correction-derived (observed) ISF. "
-             "A gap shows how far the effective sensitivity sits from the "
-             "programmed value and which direction a change would move it."),
+             "Profile ISF vs the correction-derived (observed/apparent) ISF. "
+             "The observed value is amplified by AID compensation (basal "
+             "suspension during corrections), so it is NOT a direct ISF "
+             "target: the recommendation deliberately preserves the "
+             "controller's residual safety margin (EXP-2738) rather than "
+             "chasing the apparent value. Separately, a lower effective ISF "
+             "for large single corrections is dose-shaping guidance (split "
+             "the dose), not a baseline schedule change."),
         ):
             ef = figure_from_file(
                 str(plot_dir / fname), section=section, title=title,

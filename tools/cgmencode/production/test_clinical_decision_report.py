@@ -384,3 +384,39 @@ class TestDeconfounding:
             controller_trust={"isf": 0.3})
         joined = (rep.isf.justification + " ".join(rep.addenda)).lower()
         assert "deconfound" in joined
+
+
+class TestDoseShapingDemotion:
+    def test_dose_shaping_not_headline(self):
+        # The non-linearity advisor (target 16) must NOT become the ISF
+        # headline change — it is dose guidance, not a schedule change.
+        recs = [_rec(SettingsParameter.ISF, "decrease", 40, 16, 2.6, 0.8,
+                     evidence=("ISF non-linearity (EXP-2511): typical "
+                               "correction dose 2.8U is 60% less effective. "
+                               "Splitting into 2x1.4U"))]
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=recs)
+        assert rep.isf.mode == DecisionMode.NO_CHANGE
+        # And it is not presented as a theoretical optimum of 16.
+        assert rep.isf.theoretical_value != 16
+
+    def test_dose_shaping_surfaced_in_addenda(self):
+        recs = [_rec(SettingsParameter.ISF, "decrease", 40, 16, 2.6, 0.8,
+                     evidence=("ISF non-linearity (EXP-2511): typical "
+                               "correction dose 2.8U. Splitting into 2x1.4U"))]
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=recs)
+        joined = " ".join(rep.addenda).lower()
+        assert "dose" in joined and ("split" in joined or "large" in joined)
+
+    def test_real_isf_rec_beats_dose_shaping(self):
+        recs = [
+            _rec(SettingsParameter.ISF, "decrease", 40, 16, 2.6, 0.8,
+                 evidence="ISF non-linearity (EXP-2511): Splitting"),
+            _rec(SettingsParameter.ISF, "increase", 40, 48, 2.0, 0.8,
+                 evidence="Demand-phase ISF (EXP-2651) baseline target"),
+        ]
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=recs)
+        assert rep.isf.mode == DecisionMode.CHANGE
+        assert rep.isf.theoretical_value == 48  # the baseline rec, not 16
