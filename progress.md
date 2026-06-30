@@ -53,6 +53,8 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 **Update (EXP-3454, later 2026-06-30)**: Added a UAM-aware autosens/deviation audit with reconstructed delivered-insulin activity. The live-recent grid lacks native `insulin_activity`, so EXP-3454 compares raw IOB-decay BGI against a normalized rapid-action activity kernel. Reconstructed activity improves the proxy on 23/33 available patient datasets, but only 1/33 clean-strata summaries would support a baseline ISF change. On live-recent-180, UAM-positive windows have larger positive deviations than non-UAM windows, while strict clean non-UAM activity evidence still does not support the 53-56 baseline. This supports the current interpretation: use autosens-style deviations for stratification and confound detection, not direct ISF promotion when meals are unannounced.
 
+**Update (EXP-3455, later 2026-06-30)**: Added an ISF proxy ladder from TDD and meal evidence. Combined basal+bolus actual TDD gives an 1800-rule ISF around 31.6, while profile/scheduled TDD gives about 43.4. Logged meals are sparse but their median implied CR is ~10.2 g/U, close to the configured CR; inferred meals are more frequent and median ~55.6 g at profile ISF. Re-scaling inferred meal sizes by ISF 53-56 makes meals smaller (~40-41 g median), while demand-phase ISF 30 makes them larger (~74 g median). These proxies do not independently support baseline ISF 53-56; they support a future joint latent meal+insulin model rather than direct ISF promotion.
+
 **Source Files Analyzed**:
 - `tools/cgmencode/production/advisor/_pipeline.py`
 - `tools/cgmencode/production/clinical_rules.py`

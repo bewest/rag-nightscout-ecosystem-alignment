@@ -176,6 +176,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3454_live_recent_uam_autosens.md',
         ),
     ),
+    'live-recent-isf-proxy-ladder': ResearchCase(
+        key='live-recent-isf-proxy-ladder',
+        title='Live-recent ISF proxy ladder from TDD and meals',
+        description='Compares combined basal+bolus TDD rules, logged meal bolus ratios, and inferred meal-size sensitivity as contextual ISF proxies.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_isf_proxy_ladder_3455.py'),
+        artifact_paths=(
+            'externals/experiments/exp3455_live_recent_isf_proxy_ladder.json',
+            'externals/experiments/autoresearch/exp3455_live_recent_isf_proxy_ladder.md',
+        ),
+    ),
 }
 
 
