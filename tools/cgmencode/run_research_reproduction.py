@@ -206,6 +206,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3457_live_recent_combined_safety.md',
         ),
     ),
+    'live-recent-basal-route-isf': ResearchCase(
+        key='live-recent-basal-route-isf',
+        title='Live-recent Loop basal-route ISF evidence audit',
+        description='Treats Loop excess-temp-basal high-glucose episodes as controller-route correction evidence instead of relying on bolus-only correction events.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_basal_route_isf_3458.py'),
+        artifact_paths=(
+            'externals/experiments/exp3458_live_recent_basal_route_isf.json',
+            'externals/experiments/autoresearch/exp3458_live_recent_basal_route_isf.md',
+        ),
+    ),
 }
 
 

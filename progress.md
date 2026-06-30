@@ -59,6 +59,8 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 **Update (EXP-3457, later 2026-06-30)**: Added a combined basal+ISF safety stress. This explicitly separates "low ISF fits delta-RMSE" from "lower programmed ISF is safe": in Loop, ISF feeds insulin correction units and therefore can increase both moderated temp basal and automatic bolus recommendations. The coarse stress test does not show a large TBR increase, but it depends on speculative correction-opportunity assumptions and still lacks strict-UAM-clean correction evidence. The decision remains: do not combine basal and lower ISF; keep basal-first, single-parameter titration.
 
+**Update (EXP-3458, later 2026-06-30)**: Redesigned ISF acquisition around Loop's actual correction route. Bolus-only clean-correction gates were structurally biased because this Loop configuration expresses most corrections as temp basal/excess basal. EXP-3458 treats high-glucose excess-basal episodes as controller-route correction evidence: live-recent has 61 strict-UAM-clean basal-route episodes in 90d and 89 in 180d. This solves the evidence-count bottleneck, but the dose-normalized basal-route response is far below 53-56 (4h median ~10.7-12.3 mg/dL/U), indicating these episodes are controller-modulated basal/EGP-equilibrium evidence, not a direct baseline ISF target. Interpreting low-net-flux windows as ISF requires an EGP/basal-equilibrium assumption; conditioned on good-enough basal, they point toward stronger insulin effect/lower ISF, not 53-56.
+
 **Source Files Analyzed**:
 - `tools/cgmencode/production/advisor/_pipeline.py`
 - `tools/cgmencode/production/clinical_rules.py`
