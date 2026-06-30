@@ -61,6 +61,8 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 **Update (EXP-3458, later 2026-06-30)**: Redesigned ISF acquisition around Loop's actual correction route. Bolus-only clean-correction gates were structurally biased because this Loop configuration expresses most corrections as temp basal/excess basal. EXP-3458 treats high-glucose excess-basal episodes as controller-route correction evidence: live-recent has 61 strict-UAM-clean basal-route episodes in 90d and 89 in 180d. This solves the evidence-count bottleneck, but the dose-normalized basal-route response is far below 53-56 (4h median ~10.7-12.3 mg/dL/U), indicating these episodes are controller-modulated basal/EGP-equilibrium evidence, not a direct baseline ISF target. Interpreting low-net-flux windows as ISF requires an EGP/basal-equilibrium assumption; conditioned on good-enough basal, they point toward stronger insulin effect/lower ISF, not 53-56.
 
+**Update (EXP-3459, later 2026-06-30)**: Extended basal-route ISF extraction to the full 6h insulin tail and added basal/EGP-equilibrium conditioning. The 180d strict-clean basal-route exact-6h estimate is ~10.8 mg/dL/U; equilibrium-context filtering raises it to ~13.8, and equilibrium-now filtering raises exact-4h to ~19.5, but no conditioning mode approaches 53-56. This confirms the expert concern that basal-route analysis needs the full insulin tail and good-enough basal/EGP assumptions, while also reinforcing that basal-route evidence is not a direct argument for a 53-56 baseline ISF.
+
 **Source Files Analyzed**:
 - `tools/cgmencode/production/advisor/_pipeline.py`
 - `tools/cgmencode/production/clinical_rules.py`

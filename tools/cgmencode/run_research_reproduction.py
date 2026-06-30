@@ -216,6 +216,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3458_live_recent_basal_route_isf.md',
         ),
     ),
+    'live-recent-basal-tail-equilibrium': ResearchCase(
+        key='live-recent-basal-tail-equilibrium',
+        title='Live-recent full-tail basal-route equilibrium audit',
+        description='Extends basal-route ISF evidence to 6h insulin tails and basal/EGP equilibrium-conditioned windows.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_basal_tail_equilibrium_3459.py'),
+        artifact_paths=(
+            'externals/experiments/exp3459_live_recent_basal_tail_equilibrium.json',
+            'externals/experiments/autoresearch/exp3459_live_recent_basal_tail_equilibrium.md',
+        ),
+    ),
 }
 
 
