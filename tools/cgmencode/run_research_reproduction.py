@@ -136,6 +136,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3450_live_recent_basal_natural.md',
         ),
     ),
+    'live-recent-isf-ladder': ResearchCase(
+        key='live-recent-isf-ladder',
+        title='Live-recent ISF decomposition ladder',
+        description='Reconciles scheduled, apparent, demand-phase, correction-denominator, UAM-filtered, and dose-shaping ISF-like values for live-recent.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_isf_ladder_3451.py'),
+        artifact_paths=(
+            'externals/experiments/exp3451_live_recent_isf_ladder.json',
+            'externals/experiments/autoresearch/exp3451_live_recent_isf_ladder.md',
+        ),
+    ),
 }
 
 

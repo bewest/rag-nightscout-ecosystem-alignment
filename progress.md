@@ -45,6 +45,8 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 **Update (EXP-3450, later 2026-06-30)**: Added a natural-experiment audit comparing clean matched morning windows where Loop already delivered at least the proposed basal rate against lower-delivery windows. The global high-delivery group had low near-term low risk (0.87%), but matched strata were mixed (weighted future-low-rate difference +1.67 pp), so this does not justify relaxing the 2-week TBR guardrail. It supports the same conservative interpretation: the basal step remains plausible only as a monitored single-parameter step, and ISF remains unpromoted until post-step clean correction windows exist.
 
+**Update (EXP-3451, later 2026-06-30)**: Added an ISF decomposition ladder for live-recent to reconcile the scheduled 40, response-curve apparent 78, demand-apparent 88.5, demand-phase 30, correction-denominator 53.7, UAM-filtered correction-denominator, controller-subtracted, and dose-shaping 16 values. The ladder documents which values are explanatory versus usable baseline targets. The only currently usable configured baseline is still 40; 30 is a low-confidence candidate, 53.7 is plausible but sparse and fails UAM exclusion, and 88/78/16 are not baseline targets.
+
 **Source Files Analyzed**:
 - `tools/cgmencode/production/advisor/_pipeline.py`
 - `tools/cgmencode/production/clinical_rules.py`
