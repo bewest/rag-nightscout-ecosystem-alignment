@@ -126,6 +126,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3449_live_recent_basal_replay.md',
         ),
     ),
+    'live-recent-basal-natural': ResearchCase(
+        key='live-recent-basal-natural',
+        title='Live-recent morning basal natural experiment',
+        description='Compares clean matched morning windows where Loop already delivered at least the proposed basal rate against lower-delivery windows.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_basal_natural_3450.py'),
+        artifact_paths=(
+            'externals/experiments/exp3450_live_recent_basal_natural.json',
+            'externals/experiments/autoresearch/exp3450_live_recent_basal_natural.md',
+        ),
+    ),
 }
 
 

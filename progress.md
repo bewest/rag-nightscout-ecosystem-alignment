@@ -41,6 +41,8 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 **Update (EXP-3448/3449, later 2026-06-30)**: Added focused ISF and basal replay audits for live-recent. EXP-3448 showed the observed correction-denominator ISF near 52-56 mg/dL/U appears in logged-only correction windows but does not survive inferred-meal exclusion, leaving zero clean correction events for a baseline ISF change. EXP-3449 stress-tested the +10% 06:00-12:00 basal step: controller-replacement and additive replay scenarios stayed within safety bounds, while the extreme floor-risk scenario stayed below 4% TBR but exceeded the 1 pp worsening guardrail. The resulting strategy is basal-first, single-parameter, monitored titration, with ISF held until prospective clean correction windows accumulate.
 
+**Update (EXP-3450, later 2026-06-30)**: Added a natural-experiment audit comparing clean matched morning windows where Loop already delivered at least the proposed basal rate against lower-delivery windows. The global high-delivery group had low near-term low risk (0.87%), but matched strata were mixed (weighted future-low-rate difference +1.67 pp), so this does not justify relaxing the 2-week TBR guardrail. It supports the same conservative interpretation: the basal step remains plausible only as a monitored single-parameter step, and ISF remains unpromoted until post-step clean correction windows exist.
+
 **Source Files Analyzed**:
 - `tools/cgmencode/production/advisor/_pipeline.py`
 - `tools/cgmencode/production/clinical_rules.py`
