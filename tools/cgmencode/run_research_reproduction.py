@@ -96,6 +96,16 @@ CASES: dict[str, ResearchCase] = {
         command=('python3', 'tools/cgmencode/exp_hybrid_meal_detector_3446.py'),
         artifact_paths=('externals/experiments/exp3446_hybrid_meal_detector.json',),
     ),
+    'live-recent-deconfounding': ResearchCase(
+        key='live-recent-deconfounding',
+        title='Live-recent deconfounding and safety-gated action audit',
+        description='Compares 30/60/90 day live-recent windows after excluding inferred and hybrid-supported meal contamination from basal and ISF evidence.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_deconfounding_3447.py'),
+        artifact_paths=(
+            'externals/experiments/exp3447_live_recent_deconfounding.json',
+            'externals/experiments/autoresearch/exp3447_live_recent_deconfounding.md',
+        ),
+    ),
 }
 
 

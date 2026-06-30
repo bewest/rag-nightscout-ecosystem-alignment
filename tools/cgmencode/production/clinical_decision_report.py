@@ -203,6 +203,7 @@ _DOMAIN_LABEL = {"basal": "Basal", "isf": "ISF", "cr": "Carb ratio"}
 def _pick_domain_rec(
     domain: str,
     recs: List[SettingsRecommendation],
+    policy: ClinicalDecisionPolicy,
 ) -> Optional[SettingsRecommendation]:
     """Choose the most impactful actionable rec for a domain.
 
@@ -217,6 +218,12 @@ def _pick_domain_rec(
     actionable = [r for r in domain_recs
                   if r.direction in ("increase", "decrease")]
     if actionable:
+        gated = [
+            r for r in actionable
+            if policy.passes_change_gate(r.confidence, r.predicted_tir_delta)
+        ]
+        if gated:
+            return max(gated, key=lambda r: abs(r.predicted_tir_delta))
         return max(actionable, key=lambda r: abs(r.predicted_tir_delta))
     return domain_recs[0]
 
@@ -748,11 +755,11 @@ def build_clinical_decision_report(
 
     # Per-domain assembly.
     basal = _build_domain(
-        "basal", _pick_domain_rec("basal", recs), glycemic, policy)
+        "basal", _pick_domain_rec("basal", recs, policy), glycemic, policy)
     isf = _build_domain(
-        "isf", _pick_domain_rec("isf", recs), glycemic, policy)
+        "isf", _pick_domain_rec("isf", recs, policy), glycemic, policy)
     cr = _build_domain(
-        "cr", _pick_domain_rec("cr", recs), glycemic, policy)
+        "cr", _pick_domain_rec("cr", recs, policy), glycemic, policy)
 
     # Sequencing: defer CR behind basal+ISF lock-step.
     cr = _apply_cr_sequencing(basal, isf, cr, glycemic, cr_score, policy)

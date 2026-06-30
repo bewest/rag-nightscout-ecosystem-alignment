@@ -464,7 +464,14 @@ def adjust_confidence_for_controller(
     behavior = get_controller_behavior(controller)
 
     for rec in recs:
-        if rec.parameter.value in ('isf', 'ISF'):
+        evidence = getattr(rec, "evidence", "") or ""
+        is_deconfounded_basal = (
+            rec.parameter.value in ('basal_rate', 'BASAL_RATE')
+            and "EXP-3447" in evidence
+        )
+        if is_deconfounded_basal:
+            rec.confidence *= 1.0
+        elif rec.parameter.value in ('isf', 'ISF'):
             rec.confidence *= behavior.isf_trust
         elif rec.parameter.value in ('cr', 'CR'):
             rec.confidence *= behavior.cr_trust

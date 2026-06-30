@@ -119,6 +119,18 @@ class TestNoChange:
         assert rep.isf.mode == DecisionMode.NO_CHANGE
         assert rep.isf.hold_reason == HoldReason.INSUFFICIENT_EVIDENCE
 
+    def test_passable_narrow_rec_beats_low_confidence_larger_delta(self):
+        recs = [
+            _rec(SettingsParameter.BASAL_RATE, "increase", 1.0, 1.4, 3.0, 0.2,
+                 affected=(0.0, 24.0)),
+            _rec(SettingsParameter.BASAL_RATE, "increase", 1.0, 1.1, 1.2, 0.65,
+                 affected=(6.0, 12.0)),
+        ]
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=recs)
+        assert rep.basal.mode == DecisionMode.CHANGE
+        assert rep.basal.affected_time_block == (6.0, 12.0)
+
 
 # ── Practical vs theoretical (facet 1/2) ─────────────────────────────
 

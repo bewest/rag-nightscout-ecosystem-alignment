@@ -37,6 +37,7 @@ __all__ = [
     '_WORKLOAD_PERIODS',
     'advise_basal',
     'advise_carb_context_overnight',
+    'advise_deconfounded_basal_blocks',
     'advise_loop_workload',
     'advise_overnight_basal_quadrant',
     'assess_overnight_drift',
@@ -433,6 +434,123 @@ def advise_loop_workload(
             f"metabolic need."
         ),
     )]
+
+
+def advise_deconfounded_basal_blocks(
+    glucose: np.ndarray,
+    hours: np.ndarray,
+    profile: "PatientProfile",
+    actual_basal: Optional[np.ndarray] = None,
+    *,
+    cob: Optional[np.ndarray] = None,
+    bolus: Optional[np.ndarray] = None,
+    inferred_meal_indices: Optional[np.ndarray] = None,
+    days_of_data: float = 7.0,
+) -> List[SettingsRecommendation]:
+    """Recommend narrow basal increases that survive UAM deconfounding.
+
+    EXP-3447 showed that live-recent's broad basal signal is unsafe to apply
+    globally: overnight remains handled by the dedicated overnight advisors,
+    while clean daytime blocks can show consistent Loop basal additions after
+    inferred-meal exclusion. This advisor only emits modest +10% daytime block
+    recommendations when the block has low TBR, high median glucose, and
+    systematic Loop additions.
+    """
+    if actual_basal is None or days_of_data < 14:
+        return []
+
+    basal_vals = [e.get("value", e.get("rate", 0.8))
+                  for e in profile.basal_schedule]
+    sched_basal = float(np.median([float(v) for v in basal_vals])) if basal_vals else 0.8
+    if sched_basal <= 0:
+        return []
+
+    n = len(glucose)
+    bg = np.asarray(glucose, dtype=np.float64)
+    actual = np.asarray(actual_basal, dtype=np.float64)
+    ratio = actual / sched_basal
+    block_hours = np.asarray(hours, dtype=np.float64)
+
+    post_meal = np.zeros(n, dtype=bool)
+    if inferred_meal_indices is not None and len(inferred_meal_indices):
+        for idx in inferred_meal_indices:
+            i = int(idx)
+            if i < 0 or i >= n:
+                continue
+            s = max(0, i - 24)
+            e = min(n, i + 48)
+            post_meal[s:e] = True
+
+    cob_arr = np.nan_to_num(cob, nan=0.0) if cob is not None else np.zeros(n)
+    bolus_arr = np.nan_to_num(bolus, nan=0.0) if bolus is not None else np.zeros(n)
+    bolus_4h = np.convolve(bolus_arr, np.ones(48), mode="full")[:n]
+
+    base_clean = (
+        np.isfinite(bg)
+        & np.isfinite(ratio)
+        & (actual >= 0)
+        & (cob_arr <= 1.0)
+        & (bolus_4h < 0.1)
+        & (~post_meal)
+    )
+
+    blocks = [
+        ("morning", 6.0, 12.0),
+        ("afternoon", 12.0, 18.0),
+    ]
+    recs: List[SettingsRecommendation] = []
+    for name, start, end in blocks:
+        mask = base_clean & (block_hours >= start) & (block_hours < end)
+        n_clean = int(mask.sum())
+        if n_clean < 100:
+            continue
+        g = bg[mask]
+        r = ratio[mask]
+        median_glucose = float(np.nanmedian(g))
+        tbr = float(np.mean(g < 70.0))
+        tar = float(np.mean(g > 180.0))
+        median_ratio = float(np.nanmedian(r))
+        p_adding = float(np.mean(r > 1.15))
+        if not (
+            median_ratio > 1.10
+            and p_adding >= 0.45
+            and tbr < 0.04
+            and median_glucose > 140.0
+        ):
+            continue
+
+        pct = 10.0
+        suggested = round(sched_basal * 1.10, 2)
+        confidence = min(0.72, 0.52 + 0.15 * min(1.0, n_clean / 500.0))
+        if p_adding >= 0.60:
+            confidence = min(0.76, confidence + 0.04)
+        predicted_delta = round(max(1.0, min(2.0, (tar * 100.0 - 20.0) / 10.0)), 1)
+        recs.append(SettingsRecommendation(
+            parameter=SettingsParameter.BASAL_RATE,
+            direction="increase",
+            magnitude_pct=pct,
+            current_value=sched_basal,
+            suggested_value=suggested,
+            predicted_tir_delta=predicted_delta,
+            affected_hours=(start, end),
+            confidence=round(confidence, 2),
+            evidence=(
+                f"Deconfounded basal block audit (EXP-3447): {name} "
+                f"{start:.0f}:00-{end:.0f}:00 has {n_clean} clean samples "
+                f"after inferred-meal exclusion, median glucose "
+                f"{median_glucose:.0f} mg/dL, TBR {tbr*100:.1f}%, "
+                f"and Loop actual/scheduled basal median {median_ratio:.2f} "
+                f"with additions >115% in {p_adding*100:.0f}% of samples."
+            ),
+            rationale=(
+                f"Increase basal by 10% during {name} "
+                f"({start:.0f}:00-{end:.0f}:00). This is a narrow "
+                f"deconfounded step: inferred-meal windows are excluded, "
+                f"Loop is consistently adding basal, and TBR is below 4%. "
+                f"Use the 2-week TBR guardrail before considering another step."
+            ),
+        ))
+    return recs
 
 
 # ── Overnight Drift Assessment (EXP-2371–2378) ───────────────────────
@@ -972,5 +1090,3 @@ def advise_carb_context_overnight(
                        f"output reduces overnight BG. Drift may normalize "
                        f"with consistent carb intake."),
         )
-
-

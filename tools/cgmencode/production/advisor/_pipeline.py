@@ -24,7 +24,7 @@ from ._cr_advisors import (
 from ._basal_advisors import (
     advise_basal, advise_overnight_basal_quadrant,
     advise_loop_workload, assess_overnight_drift,
-    advise_carb_context_overnight,
+    advise_carb_context_overnight, advise_deconfounded_basal_blocks,
     _OVERNIGHT_START, _OVERNIGHT_END,
 )
 
@@ -331,7 +331,10 @@ def _consolidate_recommendations(
     groups: dict = defaultdict(list)
     for r in recs:
         p = r.parameter.value if hasattr(r.parameter, 'value') else str(r.parameter)
-        groups[p].append(r)
+        source = "all"
+        if p == SettingsParameter.BASAL_RATE.value and "EXP-3447" in r.evidence:
+            source = "deconfounded"
+        groups[(p, source)].append(r)
 
     consolidated = []
     for param, param_recs in groups.items():
@@ -380,11 +383,14 @@ def _deduplicate_same_direction(
     groups: dict = defaultdict(list)
     for r in recs:
         p = r.parameter.value if hasattr(r.parameter, 'value') else str(r.parameter)
-        key = (p, r.direction)
+        source = "all"
+        if p == SettingsParameter.BASAL_RATE.value and "EXP-3447" in r.evidence:
+            source = "deconfounded"
+        key = (p, r.direction, source)
         groups[key].append(r)
 
     deduped = []
-    for (param, direction), group in groups.items():
+    for (param, direction, _source), group in groups.items():
         if len(group) == 1:
             deduped.append(group[0])
             continue
@@ -659,6 +665,18 @@ def generate_settings_advice(glucose: np.ndarray,
             days_of_data=days_of_data,
             inferred_meal_indices=inferred_meal_indices)
         recs.extend(workload_recs)
+
+    # Deconfounded block basal analysis (EXP-3447)
+    if actual_basal is not None:
+        deconfounded_basal_recs = advise_deconfounded_basal_blocks(
+            glucose, hours, profile,
+            actual_basal=actual_basal,
+            cob=cob,
+            bolus=bolus,
+            inferred_meal_indices=inferred_meal_indices,
+            days_of_data=days_of_data,
+        )
+        recs.extend(deconfounded_basal_recs)
 
     # Override ISF split detection (EXP-2621)
     if (override_active is not None and bolus is not None
@@ -1026,5 +1044,3 @@ def apply_safety_clamp(
             )
 
     return recs
-
-
