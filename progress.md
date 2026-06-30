@@ -39,6 +39,8 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 **Update (EXP-3447, later 2026-06-30)**: Added a live-recent deconfounding audit and promoted its safest finding into production. The audit compares 30/60/90 day windows, excludes inferred/hybrid-supported meal contamination from correction events, and tests clean basal blocks under TBR guardrails. It found enough evidence to relax the basal gate only for a narrow daytime block: the refreshed live-recent decision report recommends a +10% basal step from 06:00-12:00 (confidence 0.67), while continuing to hold ISF and CR. All naive correction events were contaminated by inferred meals after hybrid exclusion, so ISF strengthening remains unsupported.
 
+**Update (EXP-3448/3449, later 2026-06-30)**: Added focused ISF and basal replay audits for live-recent. EXP-3448 showed the observed correction-denominator ISF near 52-56 mg/dL/U appears in logged-only correction windows but does not survive inferred-meal exclusion, leaving zero clean correction events for a baseline ISF change. EXP-3449 stress-tested the +10% 06:00-12:00 basal step: controller-replacement and additive replay scenarios stayed within safety bounds, while the extreme floor-risk scenario stayed below 4% TBR but exceeded the 1 pp worsening guardrail. The resulting strategy is basal-first, single-parameter, monitored titration, with ISF held until prospective clean correction windows accumulate.
+
 **Source Files Analyzed**:
 - `tools/cgmencode/production/advisor/_pipeline.py`
 - `tools/cgmencode/production/clinical_rules.py`

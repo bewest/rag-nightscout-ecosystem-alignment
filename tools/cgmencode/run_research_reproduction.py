@@ -116,6 +116,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3448_live_recent_isf_deconfounding.md',
         ),
     ),
+    'live-recent-basal-replay': ResearchCase(
+        key='live-recent-basal-replay',
+        title='Live-recent basal step replay and ISF readiness audit',
+        description='Stress-tests the +10% 06:00-12:00 basal step under controller-replacement and additive counterfactual assumptions, then assesses ISF readiness.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_basal_replay_3449.py'),
+        artifact_paths=(
+            'externals/experiments/exp3449_live_recent_basal_replay.json',
+            'externals/experiments/autoresearch/exp3449_live_recent_basal_replay.md',
+        ),
+    ),
 }
 
 
