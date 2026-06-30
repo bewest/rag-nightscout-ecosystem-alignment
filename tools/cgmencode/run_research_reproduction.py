@@ -146,6 +146,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3451_live_recent_isf_ladder.md',
         ),
     ),
+    'live-recent-isf-decision-robustness': ResearchCase(
+        key='live-recent-isf-decision-robustness',
+        title='Live-recent ISF horizon decision robustness',
+        description='Sweeps exact and nadir ISF horizons from 1h to 6h to test whether any UAM-clean estimate would flip the default hold decision.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_isf_decision_robustness_3452.py'),
+        artifact_paths=(
+            'externals/experiments/exp3452_live_recent_isf_decision_robustness.json',
+            'externals/experiments/autoresearch/exp3452_live_recent_isf_decision_robustness.md',
+        ),
+    ),
 }
 
 

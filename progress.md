@@ -47,6 +47,8 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 **Update (EXP-3451, later 2026-06-30)**: Added an ISF decomposition ladder for live-recent to reconcile the scheduled 40, response-curve apparent 78, demand-apparent 88.5, demand-phase 30, correction-denominator 53.7, UAM-filtered correction-denominator, controller-subtracted, and dose-shaping 16 values. The ladder documents which values are explanatory versus usable baseline targets. The only currently usable configured baseline is still 40; 30 is a low-confidence candidate, 53.7 is plausible but sparse and fails UAM exclusion, and 88/78/16 are not baseline targets.
 
+**Update (EXP-3452, later 2026-06-30)**: Added an ISF horizon decision-robustness audit. It compares exact and nadir ISF estimates from 1h through 6h and asks whether any horizon would flip the current ISF hold. The strongest logged-only challenger is exact 4h (median 53.7, CI 41.1-86.4), but every qualifying event overlaps inferred/hybrid meal windows and no UAM-clean horizon has any events. The decision support conclusion remains: show 2h and 4h as sensitivity context, but do not change baseline ISF.
+
 **Source Files Analyzed**:
 - `tools/cgmencode/production/advisor/_pipeline.py`
 - `tools/cgmencode/production/clinical_rules.py`
