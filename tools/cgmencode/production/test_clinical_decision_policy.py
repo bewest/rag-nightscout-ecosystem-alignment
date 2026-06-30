@@ -164,3 +164,54 @@ class TestPolicyOverrides:
         assert d["output_mode"] == "consolidated"
         assert d["reimbursement_mode"] is False
         assert "max_change_pct_per_cycle" in d
+
+
+class TestDeconfounding:
+    def test_defaults_enabled(self):
+        p = ClinicalDecisionPolicy()
+        assert p.prefer_deconfounded is True
+        assert p.trust_deconfounded is True
+
+    def test_is_deconfounded_detects_markers(self):
+        p = ClinicalDecisionPolicy()
+        assert p.is_deconfounded("Deconfounded basal block audit (EXP-3447)")
+        assert p.is_deconfounded("Demand-phase ISF (EXP-2651) target")
+        assert p.is_deconfounded("Multi-factor deconfounding (EXP-2741)")
+        assert not p.is_deconfounded("ISF non-linearity (EXP-2511)")
+
+    def test_credit_recovers_dampened_confidence(self):
+        # Loop isf_trust=0.3 dampened 0.6 -> 0.18; credit recovers toward 0.6.
+        p = ClinicalDecisionPolicy()
+        credited = p.credited_confidence("isf", 0.18, observed_trust=0.3)
+        assert credited == pytest.approx(0.6, abs=1e-6)
+
+    def test_credit_capped_for_isf_safety(self):
+        # EXP-2738: ISF must stay bounded even when deconfounded.
+        p = ClinicalDecisionPolicy(deconfounded_isf_confidence_cap=0.80)
+        credited = p.credited_confidence("isf", 0.5, observed_trust=0.3)
+        assert credited == pytest.approx(0.80)
+
+    def test_credit_noop_when_trust_unknown(self):
+        p = ClinicalDecisionPolicy()
+        assert p.credited_confidence("isf", 0.18, observed_trust=None) == 0.18
+
+    def test_credit_noop_when_disabled(self):
+        p = ClinicalDecisionPolicy(trust_deconfounded=False)
+        assert p.credited_confidence("isf", 0.18, observed_trust=0.3) == 0.18
+
+    def test_credit_only_isf_cr(self):
+        # Basal deconfounded recs are not re-credited (already un-dampened
+        # upstream via EXP-3447), so basal credit is a no-op.
+        p = ClinicalDecisionPolicy()
+        assert p.credited_confidence("basal", 0.5, observed_trust=0.3) == 0.5
+
+    def test_reimbursement_mode_toggle(self):
+        p = ClinicalDecisionPolicy(reimbursement_mode=True)
+        assert p.reimbursement_mode is True
+
+    def test_policy_is_serializable(self):
+        p = ClinicalDecisionPolicy()
+        d = p.to_dict()
+        assert d["output_mode"] == "consolidated"
+        assert d["reimbursement_mode"] is False
+        assert "max_change_pct_per_cycle" in d

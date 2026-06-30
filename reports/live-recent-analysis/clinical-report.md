@@ -1,6 +1,6 @@
 # Clinical Analysis Report — patient `live-recent`
 
-_Generated: 2026-06-30T18:25:19.167201+00:00_  
+_Generated: 2026-06-30T19:02:49.267457+00:00_  
 _Source parquet: `externals/ns-parquet/live-recent`_  
 _Profile timezone: `Etc/GMT+7`_  
 _Days of data: 90.0_
@@ -92,21 +92,26 @@ _Source: inferred meals from the production residual+insulin spectral detector (
 - Settings change: **isf** decrease 40.0 → 16.0 (+25 %)
 - Rationale: Correction doses above 1.5U show diminishing returns. At 2.8U, each unit achieves only 16 mg/dL drop vs 40 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=16 for doses ≥3U. This is a pharmacokinetic property (β=0.9), not circadian.
 
-### Rec 3: adjust_correction_threshold (priority 2), predicted TIR Δ +0.1 pp
+### Rec 3: adjust_basal_rate (priority 2), predicted TIR Δ +1.3 pp
+- Increase basal by 10% during morning (6:00-12:00). This is a narrow deconfounded step: inferred-meal windows are excluded, Loop is consistently adding basal, and TBR is below 4%. Use the 2-week TBR guardrail before considering another step.
+- Settings change: **basal_rate** increase 1.7000000476837158 → 1.87 (+10 %)
+- Rationale: Increase basal by 10% during morning (6:00-12:00). This is a narrow deconfounded step: inferred-meal windows are excluded, Loop is consistently adding basal, and TBR is below 4%. Use the 2-week TBR guardrail before considering another step.
+
+### Rec 4: adjust_correction_threshold (priority 2), predicted TIR Δ +0.1 pp
 - Decrease correction threshold from 180 to 166 mg/dL. Corrections below 166 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.1pp.
 - Settings change: **correction_threshold** decrease 180.0 → 166.0 (+8 %)
 - Rationale: Decrease correction threshold from 180 to 166 mg/dL. Corrections below 166 mg/dL show net-negative outcomes: glucose rebounds and hypo risk exceed the glucose-lowering benefit. Per-patient thresholds range 130-290 mg/dL. Predicted TIR improvement: +0.1pp.
 
-### Rec 4: unannounced_meal_warning (priority 3), predicted TIR Δ +2.0 pp
+### Rec 5: unannounced_meal_warning (priority 3), predicted TIR Δ +2.0 pp
 - 98% of detected meals have no carb entry. Logging meals improves prediction accuracy and enables better pre-bolus timing.
 
-### Rec 5: clinical_insight (priority 3), predicted TIR Δ +1.0 pp
+### Rec 6: clinical_insight (priority 3), predicted TIR Δ +1.0 pp
 - Time above range is 40.1%. Consider reviewing correction factors and carb counting.
 
-### Rec 6: loop_override_recommendation (priority 3), predicted TIR Δ +1.5 pp
+### Rec 7: loop_override_recommendation (priority 3), predicted TIR Δ +1.5 pp
 - Consider configuring a controller override named "Dinner Aggressive" active 18:00–06:00 with target 100 mg/dL and ISF ratio 0.85 (40 → 34). Late-night peak (292 mg/dL) sits 163 mg/dL above the dinner baseline (129 mg/dL), indicating sustained post-dinner overshoot — current evening settings under-cover the late absorption phase.
 
-### Rec 7: design_migration_hypothetical (priority 3), predicted TIR Δ +14.0 pp
+### Rec 8: design_migration_hypothetical (priority 3), predicted TIR Δ +14.0 pp
 - Cross-design hypothetical (EXP-2916–2944): a patient with your current profile (TIR 58%, TBR 1.9%, TAR 40%) on Loop migrating to Trio or AAPS (oref1) would expect roughly +14.0 pp TIR (+0.0 pp TBR, -16.3 pp TAR) based on cohort means. This is a directional estimate from cross-design pooling, not a per-patient simulation. Settings tuning on the current controller may capture much of the same benefit (see other recommendations in this report).
 
 ## 6. Plots

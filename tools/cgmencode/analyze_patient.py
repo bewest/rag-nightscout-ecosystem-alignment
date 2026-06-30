@@ -520,7 +520,7 @@ def analyze(patient_id: str, parquet_dir: Path, out_dir: Path,
     # ── 10. Clinical-grade decision support deliverables ─────────────
     _render_clinical_decision_support(
         out_dir, patient_id, glycemic, result, days, policy,
-        patient_barriers, df, patient_tz)
+        patient_barriers, df, patient_tz, patient)
 
     print(f"\n✅ Done. Outputs in {out_dir}")
     return payload
@@ -748,7 +748,7 @@ def _render_markdown_report(out_dir, patient_id, payload, result, df):
 
 def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
                                       days, policy, patient_barriers,
-                                      df=None, patient_tz="UTC"):
+                                      df=None, patient_tz="UTC", patient=None):
     """Build and write the clinical-grade decision support deliverables.
 
     Consumes the pipeline's settings recommendations and glycemic summary
@@ -790,6 +790,26 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
     clinical = getattr(result, "clinical_report", None)
     cr_score = getattr(clinical, "cr_score", None) if clinical else None
 
+    # Controller trust factors — used to credit deconfounded ISF/CR
+    # advisories whose confidence was uniformly dampened upstream for
+    # controller masking (deconfounding removes that confound).
+    controller_trust = None
+    try:
+        from tools.cgmencode.production.recommender import (
+            detect_controller_type, get_controller_behavior,
+        )
+        ctype = getattr(result, "controller_type", None)
+        if ctype is None and patient is not None:
+            ctype = detect_controller_type(patient)
+        if ctype is not None:
+            beh = get_controller_behavior(ctype)
+            controller_trust = {
+                "isf": beh.isf_trust, "cr": beh.cr_trust,
+                "basal": beh.settings_visibility,
+            }
+    except Exception as e:
+        print(f"  [controller trust unavailable: {e}]")
+
     # Build the report first so figures can be annotated with the
     # recommended direction/target per domain.
     report = build_clinical_decision_report(
@@ -800,6 +820,7 @@ def _render_clinical_decision_support(out_dir, patient_id, glycemic, result,
         cr_score=cr_score,
         days_of_data=days,
         patient_barriers=patient_barriers,
+        controller_trust=controller_trust,
     )
 
     # ── Data visualizations (embedded base64 + written PNGs) ─────────

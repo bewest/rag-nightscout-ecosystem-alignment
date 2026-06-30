@@ -200,16 +200,46 @@ _DOMAIN_LABEL = {"basal": "Basal", "isf": "ISF", "cr": "Carb ratio"}
 
 # ── Domain recommendation assembly ────────────────────────────────────
 
+def _rec_text(rec: SettingsRecommendation) -> str:
+    return f"{getattr(rec, 'evidence', '') or ''} {getattr(rec, 'rationale', '') or ''}"
+
+
+def _effective_confidence(
+    domain: str,
+    rec: SettingsRecommendation,
+    policy: ClinicalDecisionPolicy,
+    controller_trust: Optional[Dict[str, float]],
+) -> float:
+    """Confidence used for gating, crediting deconfounded ISF/CR recs.
+
+    Deconfounded advisories had the controller-masking penalty wrongly
+    applied upstream; when the controller trust factor is known we divide
+    it back out (bounded by a safety cap). Non-deconfounded recs and
+    domains without a known trust factor are unchanged.
+    """
+    conf = rec.confidence
+    if not (policy.trust_deconfounded and controller_trust):
+        return conf
+    if not policy.is_deconfounded(_rec_text(rec)):
+        return conf
+    trust = controller_trust.get(domain)
+    return policy.credited_confidence(domain, conf, trust)
+
+
 def _pick_domain_rec(
     domain: str,
     recs: List[SettingsRecommendation],
     policy: ClinicalDecisionPolicy,
+    controller_trust: Optional[Dict[str, float]] = None,
 ) -> Optional[SettingsRecommendation]:
-    """Choose the most impactful actionable rec for a domain.
+    """Choose the most actionable, most trustworthy rec for a domain.
 
-    Prefers the highest |predicted_tir_delta| among directional (non-
-    informational) recs; falls back to the first informational rec so the
-    builder can still surface evidence in a no-change.
+    Among directional recs, prefer those that pass the change gate at
+    their effective (deconfounding-credited) confidence; among gate
+    passers, prefer validated deconfounded estimates (more accurate, not
+    subject to the controller-masking confound), then highest predicted
+    impact. Falls back to highest impact (which becomes a documented
+    no-change) when nothing passes, or to an informational rec.
     """
     param = _DOMAIN_PARAM[domain]
     domain_recs = [r for r in recs if r.parameter == param]
@@ -217,15 +247,22 @@ def _pick_domain_rec(
         return None
     actionable = [r for r in domain_recs
                   if r.direction in ("increase", "decrease")]
-    if actionable:
-        gated = [
-            r for r in actionable
-            if policy.passes_change_gate(r.confidence, r.predicted_tir_delta)
-        ]
-        if gated:
-            return max(gated, key=lambda r: abs(r.predicted_tir_delta))
-        return max(actionable, key=lambda r: abs(r.predicted_tir_delta))
-    return domain_recs[0]
+    if not actionable:
+        return domain_recs[0]
+
+    gated = [
+        r for r in actionable
+        if policy.passes_change_gate(
+            _effective_confidence(domain, r, policy, controller_trust),
+            r.predicted_tir_delta)
+    ]
+    if gated:
+        if policy.prefer_deconfounded:
+            deconf = [r for r in gated if policy.is_deconfounded(_rec_text(r))]
+            if deconf:
+                return max(deconf, key=lambda r: abs(r.predicted_tir_delta))
+        return max(gated, key=lambda r: abs(r.predicted_tir_delta))
+    return max(actionable, key=lambda r: abs(r.predicted_tir_delta))
 
 
 def _build_domain(
@@ -233,6 +270,7 @@ def _build_domain(
     rec: Optional[SettingsRecommendation],
     glycemic: Dict[str, float],
     policy: ClinicalDecisionPolicy,
+    controller_trust: Optional[Dict[str, float]] = None,
 ) -> DomainRecommendation:
     label = _DOMAIN_LABEL[domain]
     tir_pp = _g(glycemic, "tir") * 100.0
@@ -258,7 +296,10 @@ def _build_domain(
 
     current = rec.current_value
     theoretical = rec.suggested_value
-    confidence = rec.confidence
+    raw_confidence = rec.confidence
+    confidence = _effective_confidence(domain, rec, policy, controller_trust)
+    is_deconf = policy.is_deconfounded(_rec_text(rec))
+    credited = confidence > raw_confidence + 1e-9
     delta = rec.predicted_tir_delta
     is_informational = rec.direction not in ("increase", "decrease")
 
@@ -307,6 +348,18 @@ def _build_domain(
         (practical / current - 1.0) * 100.0 if current else None)
     expected_tir = max(0.0, min(100.0, tir_pp + delta))
 
+    deconf_note = ""
+    if is_deconf:
+        deconf_note = (
+            " This derives from a validated deconfounded estimate (the "
+            "controller-masking confound is already removed), so it is not "
+            "down-weighted for controller masking")
+        if credited:
+            deconf_note += (
+                f"; controller-masking confidence penalty reversed "
+                f"({raw_confidence:.2f}→{confidence:.2f}, capped for safety)")
+        deconf_note += "."
+
     return DomainRecommendation(
         domain=domain,
         mode=DecisionMode.CHANGE,
@@ -320,7 +373,7 @@ def _build_domain(
             f"Theoretical optimum is {theoretical:g} "
             f"({theoretical_pct:+.0f}%); the practical step honors a safe "
             f"titration cap of {policy.max_change_pct_per_cycle:.0f}% per "
-            f"cycle. {rec.rationale}"),
+            f"cycle.{deconf_note} {rec.rationale}"),
         current_value=current,
         practical_value=practical,
         practical_change_pct=practical_pct,
@@ -637,6 +690,19 @@ def _build_addenda(
     if insulin.main_risks:
         addenda.append(
             "Risks reviewed and mitigated: " + " ".join(insulin.main_risks))
+    deconf_domains = [
+        _DOMAIN_LABEL[d.domain] for d in domains
+        if d.mode == DecisionMode.CHANGE
+        and policy.is_deconfounded(d.evidence or "")]
+    if deconf_domains:
+        addenda.append(
+            "Deconfounding applied: " + ", ".join(deconf_domains)
+            + " recommendation(s) derive from validated deconfounded "
+            "estimates (e.g. demand-phase ISF EXP-2651, "
+            "correction-denominator/bilateral EXP-2741, deconfounded basal "
+            "EXP-3447). The controller-masking confidence penalty does not "
+            "apply to these, improving accuracy without removing the "
+            "controller's residual safety margin (EXP-2738).")
     addenda.append(
         "Mitigations: changes are bounded by a per-cycle titration cap; "
         "carb ratio is sequenced after basal/ISF to avoid confounded "
@@ -725,6 +791,7 @@ def build_clinical_decision_report(
     generated_at_utc: Optional[str] = None,
     patient_barriers: Optional[List[str]] = None,
     figures: Optional[List[ReportFigure]] = None,
+    controller_trust: Optional[Dict[str, float]] = None,
 ) -> ClinicalDecisionReport:
     """Assemble a clinical-grade decision support report.
 
@@ -755,11 +822,14 @@ def build_clinical_decision_report(
 
     # Per-domain assembly.
     basal = _build_domain(
-        "basal", _pick_domain_rec("basal", recs, policy), glycemic, policy)
+        "basal", _pick_domain_rec("basal", recs, policy, controller_trust),
+        glycemic, policy, controller_trust)
     isf = _build_domain(
-        "isf", _pick_domain_rec("isf", recs, policy), glycemic, policy)
+        "isf", _pick_domain_rec("isf", recs, policy, controller_trust),
+        glycemic, policy, controller_trust)
     cr = _build_domain(
-        "cr", _pick_domain_rec("cr", recs, policy), glycemic, policy)
+        "cr", _pick_domain_rec("cr", recs, policy, controller_trust),
+        glycemic, policy, controller_trust)
 
     # Sequencing: defer CR behind basal+ISF lock-step.
     cr = _apply_cr_sequencing(basal, isf, cr, glycemic, cr_score, policy)

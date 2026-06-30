@@ -1,6 +1,6 @@
 {
   "patient_id": "live-recent",
-  "generated_at_utc": "2026-06-30T18:25:19.172941+00:00",
+  "generated_at_utc": "2026-06-30T19:02:49.273162+00:00",
   "glycemic_summary": {
     "tir": 0.5788374812092868,
     "tbr_lt70": 0.0199181560046768,
@@ -13,7 +13,7 @@
     "n_readings": 23948
   },
   "insulin_sufficiency": {
-    "summary": "Overall insulin delivery shows opportunity for improvement (TIR 58%, TBR<70 2.0%, TAR>180 40%). 2 risk(s) identified; 0 parameter change(s) proposed this cycle.",
+    "summary": "Overall insulin delivery shows opportunity for improvement (TIR 58%, TBR<70 2.0%, TAR>180 40%). 2 risk(s) identified; 1 parameter change(s) proposed this cycle.",
     "overall_mode": "change",
     "main_risks": [
       "Hyperglycemia burden elevated (TAR>180 40.1% vs target 25%).",
@@ -27,36 +27,40 @@
   },
   "basal": {
     "domain": "basal",
-    "mode": "no_change",
-    "summary": "Basal: no change recommended (insufficient evidence (confidence 0.22 below 0.50)).",
-    "confidence": 0.22499999999999998,
-    "evidence": "Consolidated from 2 time-block advisories (range: 13-48%). Overnight quadrant analysis (EXP-2589): BASAL TOO LOW. [CLAMPED from 31% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
-    "justification": "Basal reviewed: a directional signal exists (theoretical target 2.52) but is held due to insufficient evidence (confidence 0.22 below 0.50). Re-evaluate at the next review.",
+    "mode": "change",
+    "summary": "Basal: increase from 1.7 to 1.87 (+10%).",
+    "confidence": 0.67,
+    "evidence": "Deconfounded basal block audit (EXP-3447): morning 6:00-12:00 has 4082 clean samples after inferred-meal exclusion, median glucose 152 mg/dL, TBR 1.7%, and Loop actual/scheduled basal median 1.24 with additions >115% in 55% of samples. [Controller: Loop]",
+    "justification": "Basal increase: implement the practical step 1.7 -> 1.87 (+10%) now. Theoretical optimum is 1.87 (+10%); the practical step honors a safe titration cap of 20% per cycle. This derives from a validated deconfounded estimate (the controller-masking confound is already removed), so it is not down-weighted for controller masking. Increase basal by 10% during morning (6:00-12:00). This is a narrow deconfounded step: inferred-meal windows are excluded, Loop is consistently adding basal, and TBR is below 4%. Use the 2-week TBR guardrail before considering another step.",
     "follow_up": {
       "success": [
-        "Basal held: glycemic metrics remain within tolerance of baseline over the 2-week window.",
-        "No new hypoglycemia signal (TBR<70 stays below 4%)."
+        "TIR improves by at least +0.6 pp toward the projected 59% within 2 weeks.",
+        "TBR<70 does not worsen by more than 1 pp."
       ],
       "stop_escalate": [
-        "TBR<70 rises by more than 1 pp -> escalate review.",
-        "TIR declines materially -> re-open Basal for change."
+        "TBR<70 increases by more than 1 pp after the Basal change -> revert and escalate.",
+        "Severe hypoglycemia (TBR<54) emerges -> revert immediately.",
+        "No measurable TIR improvement at 2 weeks -> reassess direction."
       ],
       "revisit_days": 14
     },
-    "hold_reason": "insufficient_evidence",
+    "hold_reason": "none",
     "current_value": 1.7000000476837158,
-    "practical_value": null,
-    "practical_change_pct": null,
-    "theoretical_value": 2.52,
-    "theoretical_change_pct": 48.235289959759164,
-    "affected_time_block": null,
+    "practical_value": 1.87,
+    "practical_change_pct": 9.999996914583175,
+    "theoretical_value": 1.87,
+    "theoretical_change_pct": 9.999996914583175,
+    "affected_time_block": [
+      6.0,
+      12.0
+    ],
     "expected_outcomes": [
       {
         "metric": "TIR",
         "baseline": 57.9,
-        "expected_2wk": 57.9,
+        "expected_2wk": 59.2,
         "unit": "%",
-        "direction": "stable"
+        "direction": "increase"
       },
       {
         "metric": "TBR<70",
@@ -68,9 +72,9 @@
       {
         "metric": "TAR>180",
         "baseline": 40.1,
-        "expected_2wk": 40.1,
+        "expected_2wk": 38.8,
         "unit": "%",
-        "direction": "stable"
+        "direction": "decrease"
       }
     ]
   },
@@ -172,12 +176,13 @@
       }
     ]
   },
-  "overall_justification": "No parameter changes are recommended this cycle; all domains were reviewed and held with documented rationale. Held/deferred: Basal (insufficient_evidence), ISF (insufficient_evidence), Carb ratio (no_meaningful_deviation).",
+  "overall_justification": "Practical changes this cycle: Basal 1.7->1.87. Each practical step is the safe-titration projection of a larger theoretical optimum (documented in the addenda). Held/deferred: ISF (insufficient_evidence), Carb ratio (no_meaningful_deviation).",
   "addenda": [
     "Factors considered: time-in-range distribution, hypo/hyper burden, glycemic variability, per-parameter advisory evidence, and cross-parameter sequencing.",
-    "Basal theoretical optimum: 2.52 (+48% vs current 1.7); held this cycle.",
+    "Basal theoretical optimum: 1.87 (+10% vs current 1.7); practical step capped at 20%/cycle -> 1.87.",
     "ISF theoretical optimum: 16 (-60% vs current 40); held this cycle.",
     "Risks reviewed and mitigated: Hyperglycemia burden elevated (TAR>180 40.1% vs target 25%). Glycemic variability high (CV 37% vs target 36%).",
+    "Deconfounding applied: Basal recommendation(s) derive from validated deconfounded estimates (e.g. demand-phase ISF EXP-2651, correction-denominator/bilateral EXP-2741, deconfounded basal EXP-3447). The controller-masking confidence penalty does not apply to these, improving accuracy without removing the controller's residual safety margin (EXP-2738).",
     "Mitigations: changes are bounded by a per-cycle titration cap; carb ratio is sequenced after basal/ISF to avoid confounded adjustment; explicit stop/escalate criteria accompany every recommendation for the 2-week feedback loop."
   ],
   "reboot": {
@@ -203,7 +208,21 @@
     "target_tbr_frac": 0.04,
     "target_tar_frac": 0.25,
     "success_capture_frac": 0.5,
-    "tbr_worsening_guardrail_pp": 1.0
+    "tbr_worsening_guardrail_pp": 1.0,
+    "prefer_deconfounded": true,
+    "trust_deconfounded": true,
+    "deconfounding_markers": [
+      "EXP-3447",
+      "EXP-2651",
+      "EXP-2741",
+      "deconfound",
+      "deconfounded",
+      "demand-phase",
+      "correction-denominator",
+      "bilateral"
+    ],
+    "deconfounded_isf_confidence_cap": 0.8,
+    "deconfounded_cr_confidence_cap": 0.9
   },
   "reimbursement": {
     "data_sufficiency": "Analysis based on 90 days of CGM data (23,948 readings). Sufficient for time-in-range and titration assessment.",
@@ -223,8 +242,8 @@
     "patient_barriers": [
       "No patient-reported adherence, supply, or prescription barriers noted at this review."
     ],
-    "agreed_plan": "Agreed plan: maintain current settings with documented rationale; re-evaluate in 2 weeks.",
-    "expected_trajectory": "Projected time-in-range at next review: ~58% (baseline 58%). Outcome will be scored against the per-recommendation success and stop/escalate criteria.",
+    "agreed_plan": "Agreed plan: Basal -> 1.87. Re-evaluate in 2 weeks.",
+    "expected_trajectory": "Projected time-in-range at next review: ~59% (baseline 58%). Outcome will be scored against the per-recommendation success and stop/escalate criteria.",
     "follow_up_date": "2026-07-14"
   },
   "figures": [

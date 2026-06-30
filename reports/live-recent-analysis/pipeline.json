@@ -749,6 +749,23 @@
     },
     {
       "parameter": {},
+      "direction": "increase",
+      "magnitude_pct": 10.0,
+      "current_value": 1.7000000476837158,
+      "suggested_value": 1.87,
+      "predicted_tir_delta": 1.3,
+      "affected_hours": [
+        6.0,
+        12.0
+      ],
+      "confidence": 0.67,
+      "evidence": "Deconfounded basal block audit (EXP-3447): morning 6:00-12:00 has 4082 clean samples after inferred-meal exclusion, median glucose 152 mg/dL, TBR 1.7%, and Loop actual/scheduled basal median 1.24 with additions >115% in 55% of samples. [Controller: Loop]",
+      "rationale": "Increase basal by 10% during morning (6:00-12:00). This is a narrow deconfounded step: inferred-meal windows are excluded, Loop is consistently adding basal, and TBR is below 4%. Use the 2-week TBR guardrail before considering another step.",
+      "confidence_grade": null,
+      "ci_width_pct": null
+    },
+    {
+      "parameter": {},
       "direction": "decrease",
       "magnitude_pct": 8.0,
       "current_value": 180.0,
@@ -816,6 +833,33 @@
         "confidence": 0.18,
         "evidence": "ISF non-linearity (EXP-2511): typical correction dose 2.8U is 60% less effective per unit than 1U (power-law \u03b2=0.9). Splitting into 2\u00d71.4U would be ~87% more effective total. [CLAMPED from 60% to 25% \u2014 stage over multiple adjustment cycles] [Controller: Loop]",
         "rationale": "Correction doses above 1.5U show diminishing returns. At 2.8U, each unit achieves only 16 mg/dL drop vs 40 mg/dL at 1U. Consider: (1) splitting large corrections into smaller doses spaced 30+ min apart, (2) using ISF=16 for doses \u22653U. This is a pharmacokinetic property (\u03b2=0.9), not circadian.",
+        "confidence_grade": null,
+        "ci_width_pct": null
+      }
+    },
+    {
+      "action_type": "adjust_basal_rate",
+      "priority": 2,
+      "description": "Increase basal by 10% during morning (6:00-12:00). This is a narrow deconfounded step: inferred-meal windows are excluded, Loop is consistently adding basal, and TBR is below 4%. Use the 2-week TBR guardrail before considering another step.",
+      "predicted_tir_delta": 1.3,
+      "confidence": 0.67,
+      "time_sensitive": false,
+      "deadline_minutes": null,
+      "meal_prediction": null,
+      "settings_rec": {
+        "parameter": {},
+        "direction": "increase",
+        "magnitude_pct": 10.0,
+        "current_value": 1.7000000476837158,
+        "suggested_value": 1.87,
+        "predicted_tir_delta": 1.3,
+        "affected_hours": [
+          6.0,
+          12.0
+        ],
+        "confidence": 0.67,
+        "evidence": "Deconfounded basal block audit (EXP-3447): morning 6:00-12:00 has 4082 clean samples after inferred-meal exclusion, median glucose 152 mg/dL, TBR 1.7%, and Loop actual/scheduled basal median 1.24 with additions >115% in 55% of samples. [Controller: Loop]",
+        "rationale": "Increase basal by 10% during morning (6:00-12:00). This is a narrow deconfounded step: inferred-meal windows are excluded, Loop is consistently adding basal, and TBR is below 4%. Use the 2-week TBR guardrail before considering another step.",
         "confidence_grade": null,
         "ci_width_pct": null
       }
@@ -1788,7 +1832,7 @@
     "n_inferred": 167,
     "days_of_data": 90.00347222222223
   },
-  "pipeline_latency_ms": 24569.41979494877,
+  "pipeline_latency_ms": 23705.08024492301,
   "warnings": [
     "Cleaned 1185 spikes (4.6% of readings)",
     "Controller detected: Loop (compensating). Settings visibility: 30%.",

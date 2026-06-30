@@ -24,6 +24,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, asdict
 from enum import Enum
+from typing import Optional
 
 
 class OutputMode(str, Enum):
@@ -75,6 +76,25 @@ class ClinicalDecisionPolicy:
     # of the predicted TIR gain without worsening TBR beyond the guardrail.
     success_capture_frac: float = 0.50
     tbr_worsening_guardrail_pp: float = 1.0  # absolute pp increase in TBR
+
+    # ── Deconfounding (accuracy / less-conservative) ─────────────────
+    # Deconfounded advisories explicitly remove the controller-masking
+    # confound (e.g. demand-phase ISF EXP-2651, correction-denominator /
+    # bilateral EXP-2741, deconfounded basal block audit EXP-3447). The
+    # pipeline's controller-masking penalty therefore double-counts the
+    # confound for these, making recommendations overly conservative.
+    prefer_deconfounded: bool = True   # prefer deconfounded gate-passers
+    trust_deconfounded: bool = True    # credit back the masking penalty
+    deconfounding_markers: tuple = (
+        "EXP-3447", "EXP-2651", "EXP-2741", "deconfound", "deconfounded",
+        "demand-phase", "correction-denominator", "bilateral",
+    )
+    # Safety caps on credited confidence. ISF is capped tighter because
+    # removing the controller's residual safety margin raises TBR
+    # (EXP-2738: +6.2pp); deconfounding improves accuracy but must not
+    # license an unbounded ISF change.
+    deconfounded_isf_confidence_cap: float = 0.80
+    deconfounded_cr_confidence_cap: float = 0.90
 
     # ── Gating helpers ───────────────────────────────────────────────
 
@@ -130,6 +150,36 @@ class ClinicalDecisionPolicy:
         mismatch = max_mismatch_ratio >= self.reboot_mismatch_ratio
         inconsistent = recommendation_consistency <= self.reboot_consistency_max
         return bool(burden and mismatch and inconsistent)
+
+    def is_deconfounded(self, text: str) -> bool:
+        """True when advisory evidence indicates a validated deconfounding
+        method (controller-masking confound already removed)."""
+        if not text:
+            return False
+        low = text.lower()
+        return any(m.lower() in low for m in self.deconfounding_markers)
+
+    def credited_confidence(self, domain: str, confidence: float,
+                            observed_trust: Optional[float]) -> float:
+        """Recover the controller-masking penalty for a deconfounded
+        ISF/CR advisory, bounded by a safety cap.
+
+        The pipeline uniformly multiplies observed ISF/CR confidence by a
+        controller "trust" factor (<1 for masking controllers like Loop).
+        That penalty does not apply to deconfounded estimates, so we divide
+        it back out — capped to preserve documented safety margins
+        (EXP-2738). Basal is excluded (already un-dampened upstream via
+        EXP-3447). A no-op when disabled or trust is unknown/≥1.
+        """
+        if not self.trust_deconfounded:
+            return confidence
+        if domain not in ("isf", "cr"):
+            return confidence
+        if not observed_trust or observed_trust <= 0 or observed_trust >= 1:
+            return confidence
+        cap = (self.deconfounded_isf_confidence_cap if domain == "isf"
+               else self.deconfounded_cr_confidence_cap)
+        return float(min(confidence / observed_trust, cap))
 
     def to_dict(self) -> dict:
         """JSON-serializable snapshot for report provenance."""
