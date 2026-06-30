@@ -238,10 +238,19 @@ def _build_domain(
     if is_informational or not policy.passes_change_gate(confidence, delta):
         hold = (HoldReason.NO_DEVIATION if is_informational
                 else HoldReason.INSUFFICIENT_EVIDENCE)
-        reason = ("insufficient evidence (confidence "
-                  f"{confidence:.2f} or effect size {delta:+.1f}pp below "
-                  f"thresholds)") if hold == HoldReason.INSUFFICIENT_EVIDENCE \
-            else "no clinically meaningful deviation"
+        if hold == HoldReason.INSUFFICIENT_EVIDENCE:
+            failed = []
+            if confidence < policy.min_confidence_for_change:
+                failed.append(
+                    f"confidence {confidence:.2f} below "
+                    f"{policy.min_confidence_for_change:.2f}")
+            if abs(delta) < policy.min_effect_size_pp:
+                failed.append(
+                    f"effect size {delta:+.1f}pp below "
+                    f"{policy.min_effect_size_pp:.1f}pp")
+            reason = "insufficient evidence (" + "; ".join(failed) + ")"
+        else:
+            reason = "no clinically meaningful deviation"
         return DomainRecommendation(
             domain=domain,
             mode=DecisionMode.NO_CHANGE,
