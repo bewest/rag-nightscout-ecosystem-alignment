@@ -15,6 +15,7 @@ source of truth.
 """
 from __future__ import annotations
 
+import html as _html
 import json
 from typing import Dict, List
 
@@ -183,9 +184,9 @@ def render_deliverables(rep: ClinicalDecisionReport) -> Dict[str, str]:
     """Package deliverables according to the report's output policy.
 
     Returns a mapping of filename -> content. JSON is always present.
-    Consolidated mode (default) emits one markdown; split mode separates
-    the reimbursement evidence into its own document for a distinct
-    audience.
+    Consolidated mode (default) emits one markdown + one HTML document;
+    split mode separates the reimbursement evidence into its own
+    markdown + HTML documents for a distinct audience.
     """
     out: Dict[str, str] = {
         "report.json": json.dumps(rep.to_dict(), indent=2),
@@ -196,12 +197,279 @@ def render_deliverables(rep: ClinicalDecisionReport) -> Dict[str, str]:
 
     if output_mode == OutputMode.SPLIT.value:
         # Clinician doc without the inline reimbursement block.
-        clinician = "\n".join(_core_lines(rep)).rstrip() + "\n"
-        out["clinical-decision-report.md"] = clinician
+        out["clinical-decision-report.md"] = (
+            "\n".join(_core_lines(rep)).rstrip() + "\n")
+        out["clinical-decision-report.html"] = render_html(
+            rep, include_reimbursement=False)
         if has_reimbursement:
             out["reimbursement-evidence.md"] = render_reimbursement_markdown(
                 rep)
+            out["reimbursement-evidence.html"] = render_reimbursement_html(rep)
     else:
         out["clinical-decision-report.md"] = render_markdown(rep)
+        out["clinical-decision-report.html"] = render_html(
+            rep, include_reimbursement=True)
 
     return out
+
+
+# ── HTML rendering (clinical look & feel) ─────────────────────────────
+
+# Calm clinical palette: slate/teal ink on white, restrained accents.
+_HTML_CSS = """
+:root {
+  --ink: #1f2933;
+  --muted: #52606d;
+  --line: #d9e2ec;
+  --bg: #f5f7fa;
+  --card: #ffffff;
+  --brand: #1f6f78;        /* deep teal */
+  --brand-deep: #14505a;
+  --accent: #2b6cb0;       /* clinical blue */
+  --ok: #2f855a;           /* green */
+  --ok-bg: #e6f4ea;
+  --warn: #b7791f;         /* amber */
+  --warn-bg: #fdf3e2;
+  --risk: #9b2c2c;         /* clinical red */
+  --risk-bg: #fdeaea;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  line-height: 1.55; font-size: 15px;
+}
+.wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 64px; }
+header.report {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%);
+  color: #fff; padding: 28px 0; margin-bottom: 24px;
+}
+header.report .wrap { padding-bottom: 0; }
+header.report h1 { margin: 0 0 4px; font-size: 22px; font-weight: 650; }
+header.report .meta { opacity: .85; font-size: 13px; }
+h2 {
+  font-size: 16px; letter-spacing: .02em; text-transform: uppercase;
+  color: var(--brand-deep); border-bottom: 2px solid var(--line);
+  padding-bottom: 6px; margin: 32px 0 14px;
+}
+h3 { font-size: 16px; margin: 0 0 2px; color: var(--ink); }
+.card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 10px; padding: 18px 20px; margin: 14px 0;
+  box-shadow: 0 1px 2px rgba(31,41,51,.04);
+}
+.card.domain { border-left: 4px solid var(--accent); }
+.summary-card { border-left: 4px solid var(--brand); }
+.badge {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 999px; vertical-align: middle;
+}
+.badge.change { background: var(--warn-bg); color: var(--warn); }
+.badge.nochange { background: var(--ok-bg); color: var(--ok); }
+.kv { color: var(--muted); font-size: 13px; margin: 2px 0 0; }
+table {
+  border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 14px;
+}
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; background: #f0f4f8; }
+tr:last-child td { border-bottom: none; }
+ul.crit { margin: 6px 0 0; padding-left: 18px; }
+ul.crit li { margin: 3px 0; }
+.cols { display: flex; gap: 18px; flex-wrap: wrap; }
+.cols > div { flex: 1 1 280px; }
+.panel { border-radius: 8px; padding: 12px 14px; }
+.panel.risk { background: var(--risk-bg); }
+.panel.ok { background: var(--ok-bg); }
+.panel h4 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase;
+  letter-spacing: .03em; }
+.panel.risk h4 { color: var(--risk); }
+.panel.ok h4 { color: var(--ok); }
+.callout {
+  background: var(--warn-bg); border: 1px solid #f0d8a8;
+  border-radius: 8px; padding: 14px 16px; margin: 14px 0;
+}
+.callout h3 { color: var(--warn); }
+.muted { color: var(--muted); }
+.justify { margin: 8px 0 0; }
+footer.report { color: var(--muted); font-size: 12px; margin-top: 40px;
+  text-align: center; }
+""".strip()
+
+
+def _e(text) -> str:
+    """HTML-escape any value."""
+    return _html.escape(str(text), quote=True)
+
+
+def _domain_html(d: DomainRecommendation) -> str:
+    label = {"basal": "Basal", "isf": "ISF", "cr": "Carb ratio"}[d.domain]
+    is_change = d.mode == DecisionMode.CHANGE
+    badge = ('<span class="badge change">Change</span>' if is_change
+             else '<span class="badge nochange">No change</span>')
+    parts = [f'<div class="card domain"><h3>{_e(label)} {badge}</h3>']
+
+    if (not is_change) and d.hold_reason.value != "none":
+        parts.append(
+            f'<p class="kv">Hold reason: {_e(d.hold_reason.value)}</p>')
+    parts.append(f'<p class="justify">{_e(d.summary)}</p>')
+
+    if is_change:
+        block = _fmt_block(d.affected_time_block)
+        parts.append(
+            '<table><tr><th>Field</th><th>Value</th></tr>'
+            f'<tr><td>Current</td><td>{_e(_num(d.current_value))}</td></tr>'
+            f'<tr><td>Practical (implement now)</td><td>'
+            f'{_e(_num(d.practical_value))} '
+            f'({d.practical_change_pct:+.0f}%)</td></tr>'
+            f'<tr><td>Time block</td><td>{_e(block)}</td></tr>'
+            f'<tr><td>Confidence</td><td>{d.confidence:.2f}</td></tr>'
+            '</table>')
+
+    parts.append(
+        f'<p class="justify"><strong>Justification.</strong> '
+        f'{_e(d.justification)}</p>')
+
+    if d.expected_outcomes:
+        rows = "".join(
+            f"<tr><td>{_e(o.metric)}</td>"
+            f"<td>{_e(_num(o.baseline))}{_e(o.unit)}</td>"
+            f"<td>{_e(_num(o.expected_2wk))}{_e(o.unit)}</td>"
+            f"<td>{_e(o.direction)}</td></tr>"
+            for o in d.expected_outcomes)
+        parts.append(
+            '<p class="kv">Expected outcomes (2-week)</p>'
+            '<table><tr><th>Metric</th><th>Baseline</th>'
+            '<th>Expected</th><th>Direction</th></tr>'
+            f'{rows}</table>')
+
+    succ = "".join(f"<li>{_e(s)}</li>" for s in d.follow_up.success)
+    stop = "".join(f"<li>{_e(s)}</li>" for s in d.follow_up.stop_escalate)
+    parts.append(
+        f'<p class="kv">Success criteria (revisit in '
+        f'{d.follow_up.revisit_days} days)</p>'
+        f'<ul class="crit">{succ}</ul>'
+        '<p class="kv">Stop / escalate criteria</p>'
+        f'<ul class="crit">{stop}</ul>')
+
+    parts.append("</div>")
+    return "".join(parts)
+
+
+def _num(v):
+    if v is None:
+        return "—"
+    if isinstance(v, float):
+        return f"{v:g}"
+    return v
+
+
+def _reimbursement_html_section(rep: ClinicalDecisionReport) -> str:
+    rb = rep.reimbursement
+    if rb is None:
+        return ""
+
+    def _list(items):
+        return '<ul class="crit">' + "".join(
+            f"<li>{_e(i)}</li>" for i in items) + "</ul>"
+
+    return (
+        '<h2>Reimbursement justification</h2>'
+        '<div class="card">'
+        f'<p><strong>Data sufficiency.</strong> {_e(rb.data_sufficiency)}</p>'
+        '<p class="kv">Risks reviewed</p>' + _list(rb.risks_reviewed) +
+        '<p class="kv">Mitigations</p>' + _list(rb.mitigations) +
+        '<p class="kv">Alternatives discussed</p>'
+        + _list(rb.alternatives_discussed) +
+        '<p class="kv">Patient-specific barriers</p>'
+        + _list(rb.patient_barriers) +
+        f'<p class="justify"><strong>Agreed plan.</strong> '
+        f'{_e(rb.agreed_plan)}</p>'
+        f'<p class="justify"><strong>Expected trajectory.</strong> '
+        f'{_e(rb.expected_trajectory)}</p>'
+        f'<p class="justify"><strong>Follow-up date.</strong> '
+        f'{_e(rb.follow_up_date)}</p>'
+        '</div>')
+
+
+def _html_document(title: str, body: str) -> str:
+    return (
+        "<!DOCTYPE html>\n"
+        '<html lang="en"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width, '
+        'initial-scale=1">'
+        f"<title>{_e(title)}</title>"
+        f"<style>{_HTML_CSS}</style>"
+        f"</head><body>{body}"
+        '<footer class="report"><div class="wrap">Decision support is '
+        'advisory only and does not replace clinical judgement.</div>'
+        "</footer></body></html>\n")
+
+
+def render_html(rep: ClinicalDecisionReport,
+                include_reimbursement: bool = True) -> str:
+    """Render a clinical-look HTML document for the decision report.
+
+    Uses a calm clinical palette (teal/slate ink, restrained accents),
+    card-based layout, and clear decision badges. All dynamic text is
+    HTML-escaped.
+    """
+    ins = rep.insulin_sufficiency
+
+    risks = "".join(f"<li>{_e(r)}</li>" for r in ins.main_risks)
+    working = "".join(f"<li>{_e(w)}</li>" for w in ins.whats_working)
+    risk_panel = (
+        f'<div class="panel risk"><h4>Main risks</h4>'
+        f'<ul class="crit">{risks}</ul></div>' if ins.main_risks else "")
+    working_panel = (
+        f'<div class="panel ok"><h4>What\'s working</h4>'
+        f'<ul class="crit">{working}</ul></div>' if ins.whats_working else "")
+
+    reboot_html = ""
+    if rep.reboot.recommended:
+        reboot_html = (
+            '<div class="callout"><h3>Settings reinitialization (reboot)</h3>'
+            f'<p>{_e(rep.reboot.rationale)}</p></div>')
+
+    addenda = "".join(f"<li>{_e(a)}</li>" for a in rep.addenda)
+
+    reimb = (_reimbursement_html_section(rep)
+             if include_reimbursement else "")
+
+    body = (
+        '<header class="report"><div class="wrap">'
+        f'<h1>Clinical Decision Support — patient {_e(rep.patient_id)}</h1>'
+        f'<div class="meta">Generated {_e(rep.generated_at_utc)}</div>'
+        '</div></header>'
+        '<div class="wrap">'
+        '<h2>Insulin sufficiency</h2>'
+        f'<div class="card summary-card"><p>{_e(ins.summary)}</p>'
+        f'<div class="cols">{risk_panel}{working_panel}</div></div>'
+        '<h2>Recommendations</h2>'
+        f'{_domain_html(rep.basal)}'
+        f'{_domain_html(rep.isf)}'
+        f'{_domain_html(rep.cr)}'
+        '<h2>Overall justification</h2>'
+        f'<div class="card"><p>{_e(rep.overall_justification)}</p></div>'
+        f'{reboot_html}'
+        '<h2>Addenda</h2>'
+        f'<div class="card"><ul class="crit">{addenda}</ul></div>'
+        f'{reimb}'
+        '</div>')
+
+    return _html_document(
+        f"Clinical Decision Support — {rep.patient_id}", body)
+
+
+def render_reimbursement_html(rep: ClinicalDecisionReport) -> str:
+    """Render a standalone reimbursement-evidence HTML document."""
+    body = (
+        '<header class="report"><div class="wrap">'
+        f'<h1>Reimbursement Evidence — patient {_e(rep.patient_id)}</h1>'
+        f'<div class="meta">Generated {_e(rep.generated_at_utc)}</div>'
+        '</div></header>'
+        f'<div class="wrap">{_reimbursement_html_section(rep)}</div>')
+    return _html_document(
+        f"Reimbursement Evidence — {rep.patient_id}", body)
+

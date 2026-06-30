@@ -15,6 +15,7 @@ from cgmencode.production.clinical_decision_report import (
 from cgmencode.production.clinical_decision_render import (
     render_markdown,
     render_deliverables,
+    render_html,
 )
 
 
@@ -113,3 +114,47 @@ class TestDeliverables:
             policy=policy)
         out = render_deliverables(rep)
         assert "reimbursement-evidence.md" not in out
+
+
+class TestHtml:
+    def test_renders_html_document(self):
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=[])
+        html = render_html(rep)
+        assert html.lstrip().lower().startswith("<!doctype html>")
+        assert "<html" in html and "</html>" in html
+
+    def test_html_contains_sections_and_patient(self):
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=[])
+        html = render_html(rep)
+        assert "Insulin sufficiency" in html
+        assert "Carb ratio" in html
+        assert "c" in html  # patient id
+
+    def test_html_escapes_content(self):
+        # Patient-supplied barrier text must be HTML-escaped.
+        policy = ClinicalDecisionPolicy(reimbursement_mode=True)
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=[],
+            policy=policy, days_of_data=90.0,
+            patient_barriers=["co-pay <too high> & rising"])
+        html = render_html(rep)
+        assert "&lt;too high&gt;" in html
+        assert "&amp;" in html
+
+    def test_deliverables_include_html_consolidated(self):
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=[])
+        out = render_deliverables(rep)
+        assert "clinical-decision-report.html" in out
+
+    def test_deliverables_include_html_split(self):
+        policy = ClinicalDecisionPolicy(
+            output_mode=OutputMode.SPLIT, reimbursement_mode=True)
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=[],
+            policy=policy, days_of_data=90.0)
+        out = render_deliverables(rep)
+        assert "clinical-decision-report.html" in out
+        assert "reimbursement-evidence.html" in out
