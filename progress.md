@@ -12,6 +12,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Clinical-Grade Decision Support Layer (2026-06-30)
+
+Added a configurable, reimbursement-ready decision support layer to `cgmencode` that turns raw advisory output into clinically documentable basal/bolus recommendations comparable across AID systems and multiple-daily-injection therapy. Every recommendation (including a documented no-change) carries practical-vs-theoretical framing, a 2-week expected-outcome projection, and explicit success plus stop/escalate criteria for an automatic feedback loop.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Policy layer | `tools/cgmencode/production/clinical_decision_policy.py` | All clinical judgement (gating, titration clamp, CR sequencing, severe-hyper exception, onboarding-reboot composite, output/reimbursement toggles) is isolated in one config object, so behavior is easy to retune without rewiring core logic |
+| Report builder | `tools/cgmencode/production/clinical_decision_report.py` | Structured report: insulin sufficiency overview, per-domain basal/ISF/CR change-vs-no-change, practical step in-body with theoretical optimum in addenda, 2-week outcomes, and reimbursement evidence |
+| Renderers | `tools/cgmencode/production/clinical_decision_render.py` | Markdown + JSON deliverables with consolidated (default) or split audience-specific outputs |
+| Analyzer integration | `tools/cgmencode/analyze_patient.py` | `--reimbursement`, `--split-output`, and repeatable `--patient-barrier` toggles; deliverables generated alongside existing reports |
+
+**Key Findings**:
+- Carb ratio is automatically deferred when basal and ISF are changed in lock-step (unless severe persistent post-meal hyperglycemia fires the exception), so overnight and meal-response dynamics can settle independently before CR titration.
+- The practical titration clamp (default 20% per cycle) keeps in-body recommendations safe while preserving the larger theoretical optimum in the addenda for transparency.
+- On Loop patient `c`, controller masking correctly dampens confidence below the change gate, producing a fully documented no-change with reviewed risks, mitigations, and a 2-week prediction — exactly the line-item evidence reimbursement review needs.
+- An onboarding reinitialization ("settings reboot") is recommended only when a severe-mismatch composite holds: extreme hypo/hyper burden, large parameter mismatch, and low recommendation consistency.
+
+**Validation**: 59 new TDD tests (red→green) across policy, builder, and renderers; full production unit suite remains green (378 passed); end-to-end smoke run on patient `c` produced JSON + markdown deliverables.
+
+**Source Files Analyzed**:
+- `tools/cgmencode/production/advisor/_pipeline.py`
+- `tools/cgmencode/production/clinical_rules.py`
+- `tools/cgmencode/production/types.py`
+- `tools/cgmencode/analyze_patient.py`
+
+---
+
 ## Hybrid Meal Detector Prototype (2026-06-27)
 
 Implemented the first runnable meal-independent hybrid detector experiment for `cgmencode`, combining short-horizon rise/UAM-style trigger features, medium-horizon throughput and balance features, and controller-context features under leave-one-patient-out evaluation.
