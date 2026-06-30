@@ -196,6 +196,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3456_live_recent_joint_latent.md',
         ),
     ),
+    'live-recent-combined-safety': ResearchCase(
+        key='live-recent-combined-safety',
+        title='Live-recent combined basal and ISF safety stress',
+        description='Stress-tests combining the +10% morning basal step with lower programmed ISF candidates by simulating extra correction insulin.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_combined_safety_3457.py'),
+        artifact_paths=(
+            'externals/experiments/exp3457_live_recent_combined_safety.json',
+            'externals/experiments/autoresearch/exp3457_live_recent_combined_safety.md',
+        ),
+    ),
 }
 
 
