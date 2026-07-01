@@ -1,6 +1,6 @@
 # Clinical Analysis Report — patient `g`
 
-_Generated: 2026-04-27T15:11:48.736087+00:00_  
+_Generated: 2026-07-01T18:27:11.190789+00:00_  
 _Source parquet: `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/training`_  
 _Profile timezone: `Etc/GMT+7`_  
 _Days of data: 180.0_

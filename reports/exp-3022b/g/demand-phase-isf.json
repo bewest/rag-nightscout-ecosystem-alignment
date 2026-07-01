@@ -1,0 +1,11 @@
+{
+  "method": "compute_demand_isf (EXP-2651), reproducible from result.dual_phase_isf",
+  "profile_isf": 65.0,
+  "demand_isf": 96.2,
+  "apparent_isf": 91.3,
+  "inflation_ratio": 0.95,
+  "n_corrections": 5,
+  "confidence": "low",
+  "ci_low": 67.3,
+  "ci_high": 125.0
+}

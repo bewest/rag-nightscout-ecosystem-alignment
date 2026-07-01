@@ -1,6 +1,6 @@
 {
   "patient_id": "c",
-  "generated_at_utc": "2026-04-24T17:30:25.303663+00:00",
+  "generated_at_utc": "2026-07-01T18:25:15.508842+00:00",
   "parquet_dir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/training",
   "days_of_data": 180.0,
   "profile_timezone": "Etc/GMT+7",
@@ -61,65 +61,90 @@
   "meal_floor_audit": [
     {
       "floor_g": 5,
-      "n_events": 385,
-      "events_per_day": 2.5,
-      "n_days_with_meal": 154,
-      "n_days_with_2to8": 108,
-      "evening_share_pct": 23.116883116883116
+      "n_events": 17,
+      "events_per_day": 0.09444444444444444,
+      "n_days_with_meal": 14,
+      "n_days_with_2to8": 3,
+      "evening_share_pct": 17.647058823529413,
+      "n_logged_events": 385,
+      "logged_events_per_day": 2.138888888888889
     },
     {
       "floor_g": 10,
-      "n_events": 377,
-      "events_per_day": 2.4640522875816995,
-      "n_days_with_meal": 153,
-      "n_days_with_2to8": 107,
-      "evening_share_pct": 23.607427055702917
+      "n_events": 17,
+      "events_per_day": 0.09444444444444444,
+      "n_days_with_meal": 14,
+      "n_days_with_2to8": 3,
+      "evening_share_pct": 17.647058823529413,
+      "n_logged_events": 377,
+      "logged_events_per_day": 2.0944444444444446
     },
     {
       "floor_g": 20,
-      "n_events": 234,
-      "events_per_day": 1.9180327868852458,
-      "n_days_with_meal": 122,
-      "n_days_with_2to8": 69,
-      "evening_share_pct": 23.076923076923077
+      "n_events": 6,
+      "events_per_day": 0.03333333333333333,
+      "n_days_with_meal": 5,
+      "n_days_with_2to8": 1,
+      "evening_share_pct": 33.33333333333333,
+      "n_logged_events": 234,
+      "logged_events_per_day": 1.3
     },
     {
       "floor_g": 30,
-      "n_events": 141,
-      "events_per_day": 1.4842105263157894,
-      "n_days_with_meal": 95,
-      "n_days_with_2to8": 36,
-      "evening_share_pct": 21.98581560283688
+      "n_events": 0,
+      "events_per_day": 0.0,
+      "n_days_with_meal": 0,
+      "n_days_with_2to8": 0,
+      "evening_share_pct": 0.0,
+      "n_logged_events": 141,
+      "logged_events_per_day": 0.7833333333333333
     },
     {
       "floor_g": 50,
-      "n_events": 2,
-      "events_per_day": 1.0,
-      "n_days_with_meal": 2,
+      "n_events": 0,
+      "events_per_day": 0.0,
+      "n_days_with_meal": 0,
       "n_days_with_2to8": 0,
-      "evening_share_pct": 50.0
+      "evening_share_pct": 0.0,
+      "n_logged_events": 2,
+      "logged_events_per_day": 0.011111111111111112
     }
   ],
   "meal_smell_test": {
     "5g": {
-      "events_per_day": 2.5,
-      "passes_2to8": true
+      "events_per_day": 0.09444444444444444,
+      "logged_events_per_day": 2.138888888888889,
+      "target_low": 2.0,
+      "target_high": 10.0,
+      "passes": false
     },
     "10g": {
-      "events_per_day": 2.4640522875816995,
-      "passes_2to8": true
+      "events_per_day": 0.09444444444444444,
+      "logged_events_per_day": 2.0944444444444446,
+      "target_low": 2.0,
+      "target_high": 10.0,
+      "passes": false
     },
     "20g": {
-      "events_per_day": 1.9180327868852458,
-      "passes_2to8": false
+      "events_per_day": 0.03333333333333333,
+      "logged_events_per_day": 1.3,
+      "target_low": 2.0,
+      "target_high": 8.0,
+      "passes": false
     },
     "30g": {
-      "events_per_day": 1.4842105263157894,
-      "passes_2to8": false
+      "events_per_day": 0.0,
+      "logged_events_per_day": 0.7833333333333333,
+      "target_low": 2.0,
+      "target_high": 6.0,
+      "passes": false
     },
     "50g": {
-      "events_per_day": 1.0,
-      "passes_2to8": false
+      "events_per_day": 0.0,
+      "logged_events_per_day": 0.011111111111111112,
+      "target_low": 1.0,
+      "target_high": 3.0,
+      "passes": false
     }
   },
   "meal_logging_qc": {
