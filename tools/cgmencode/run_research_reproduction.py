@@ -226,6 +226,16 @@ CASES: dict[str, ResearchCase] = {
             'externals/experiments/autoresearch/exp3459_live_recent_basal_tail_equilibrium.md',
         ),
     ),
+    'live-recent-route-aware-isf-monitor': ResearchCase(
+        key='live-recent-route-aware-isf-monitor',
+        title='Live-recent route-aware ISF evidence monitor',
+        description='Tracks bolus and Loop excess-temp-basal correction routes separately across 2h/4h/6h horizons with UAM-clean and basal/EGP-equilibrium filters.',
+        command=('python3', 'tools/cgmencode/exp_live_recent_route_aware_isf_monitor_3460.py'),
+        artifact_paths=(
+            'externals/experiments/exp3460_live_recent_route_aware_isf_monitor.json',
+            'externals/experiments/autoresearch/exp3460_live_recent_route_aware_isf_monitor.md',
+        ),
+    ),
 }
 
 

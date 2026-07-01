@@ -108,6 +108,8 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 **Update (EXP-3459, later 2026-06-30)**: Extended basal-route ISF extraction to the full 6h insulin tail and added basal/EGP-equilibrium conditioning. The 180d strict-clean basal-route exact-6h estimate is ~10.8 mg/dL/U; equilibrium-context filtering raises it to ~13.8, and equilibrium-now filtering raises exact-4h to ~19.5, but no conditioning mode approaches 53-56. This confirms the expert concern that basal-route analysis needs the full insulin tail and good-enough basal/EGP assumptions, while also reinforcing that basal-route evidence is not a direct argument for a 53-56 baseline ISF.
 
+**Update (EXP-3460, later 2026-07-01)**: Added a route-aware ISF evidence monitor so future basal-first follow-up can be replayed consistently at 7/14/21 days and across 30/60/90/full-history windows. The monitor tracks bolus corrections and Loop excess-temp-basal correction episodes separately over 2h/4h/6h horizons with strict inferred-meal exclusion from 2h before through 6h after. On live-recent-180, strict-clean bolus evidence remains sparse (2 full-history events, none in the most recent 90d), so baseline ISF promotion fails the event gate (`n 2 below 57`). Basal-route evidence is available (41 strict-clean episodes, 35 equilibrium-context episodes), but its full-history equilibrium exact-6h estimate remains low (~10.8 mg/dL/U) and is kept as controller-workload/directionality context rather than bolus-equivalent baseline ISF evidence. The decision remains: hold ISF; rerun the monitor after basal-first data accumulates.
+
 **Source Files Analyzed**:
 - `tools/cgmencode/production/advisor/_pipeline.py`
 - `tools/cgmencode/production/clinical_rules.py`
