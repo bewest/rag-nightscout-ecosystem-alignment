@@ -333,6 +333,38 @@ figure.viz figcaption { color: var(--muted); font-size: 12.5px;
   margin: 16px 0 4px; }
 footer.report { color: var(--muted); font-size: 12px; margin-top: 40px;
   text-align: center; }
+
+/* ── Print / PDF ──────────────────────────────────────────────── */
+@page {
+  size: A4;
+  margin: 14mm 12mm;
+}
+@media print {
+  :root { }
+  body {
+    background: #fff;
+    font-size: 11.5pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .wrap { max-width: none; padding: 0; }
+  /* Preserve the clinical palette (header band, badges, panels) in PDF. */
+  header.report, .badge, .panel, figure.viz img, table th,
+  .callout {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  header.report { padding: 16px 0; }
+  /* Keep semantic blocks intact across page boundaries. */
+  .card, figure.viz, table, .panel, .callout, h2, h3 {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  h2, h3 { break-after: avoid; page-break-after: avoid; }
+  .card { box-shadow: none; }
+  a { color: inherit; text-decoration: none; }
+  footer.report { margin-top: 18px; }
+}
 """.strip()
 
 

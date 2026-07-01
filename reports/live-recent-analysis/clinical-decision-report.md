@@ -1,6 +1,6 @@
 # Clinical Decision Support — patient `live-recent`
 
-_Generated: 2026-06-30T19:36:31.290613+00:00_
+_Generated: 2026-07-01T18:03:00.748955+00:00_
 
 ## Insulin sufficiency
 
@@ -174,4 +174,4 @@ Practical changes this cycle: Basal 1.7->1.87. Each practical step is the safe-t
 
 **Expected trajectory:** Projected time-in-range at next review: ~59% (baseline 58%). Outcome will be scored against the per-recommendation success and stop/escalate criteria.
 
-**Follow-up date:** 2026-07-14
+**Follow-up date:** 2026-07-15

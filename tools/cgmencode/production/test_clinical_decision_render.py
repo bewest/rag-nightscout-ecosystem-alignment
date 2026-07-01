@@ -84,6 +84,27 @@ class TestMarkdown:
         assert "Reimbursement justification" not in md
 
 
+class TestPrintStylesheet:
+    def test_has_print_media_query(self):
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=[])
+        html = render_html(rep)
+        assert "@media print" in html
+        assert "@page" in html
+
+    def test_avoids_breaking_cards_and_figures(self):
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=[])
+        html = render_html(rep)
+        assert "break-inside: avoid" in html
+
+    def test_preserves_colors_in_print(self):
+        rep = build_clinical_decision_report(
+            patient_id="c", glycemic=_glycemic(), settings_recs=[])
+        html = render_html(rep)
+        assert "print-color-adjust: exact" in html
+
+
 class TestDeliverables:
     def test_consolidated_single_doc(self):
         rep = build_clinical_decision_report(
