@@ -12,6 +12,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Therapy Trajectory State: Predictive Validation and Controller Stratification (2026-07-01, even later)
+
+Deepened the per-patient therapy-trajectory-state work with the next Candidly-playbook step: proving the emission features actually carry forward-looking signal (their "AUC-proof" step), scaled to the full available cohort, and stratified by controller lineage to guard against Simpson's-paradox-style confounding.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Full-cohort scaling | `externals/experiments/therapy-trajectory-state/turns_full_cohort.parquet` (git-ignored) | 28 patients (of 31 with >=4 turns), 1481 turns, up from the initial 4-patient/240-turn smoke test |
+| Predictive-signal validation | `tools/cgmencode/production/therapy_trajectory_predictive_validation.py` + `run_therapy_trajectory_validation.py` | Leave-patient-out cross-validated logistic regression comparing glycemic-only vs full (+physiology) feature sets for predicting next-turn outcome; controller-lineage stratification (population view + within-patient AUC lift) |
+| Tests | `tools/cgmencode/production/test_therapy_trajectory_predictive_validation.py` | 8 tests, including synthetic-data checks that the harness correctly detects a real injected signal (AUC>0.85) and reports near-chance AUC on pure noise |
+| Report v2 | `reports/therapy-trajectory-state/report.html`, `tools/cgmencode/production/therapy_trajectory_figures.py` (+2 figures), `render_therapy_trajectory_report.py` | Now 7 figures (added AUC-comparison and controller-TIR charts) plus narrative sections for both new findings |
+| Design doc update | `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §6.3-§6.5 | Full writeup of the scaling, predictive-validation, and controller-stratification findings, renumbered against the existing §6.6-§6.7 |
+
+**Key Findings**:
+- **Label coherence holds at scale**: across 1481 turns/28 patients, mean TIR remained highest in `stable_good` (87.8%) and lowest in `stable_poor` (59.8%); weekend-fraction/TIR correlation stayed negligible (-0.009).
+- **Honest "not yet" on the physiology features**: leave-patient-out AUC for predicting next-turn resolution was 0.638 for glycemic-only features (TIR/TBR/TAR/CV) vs 0.615 for the full set including physiology features (activity, flux/EGP, saturation, glycogen proxy, site wear) — physiology features did not improve on the simple baseline in this first cut, robust to regularization strength (0.61-0.62 across C=1.0/0.1/0.01). Physiology-alone (no glycemic state) scored only 0.532, barely above chance. Plausible causes recorded for follow-up: feature-count-vs-sample-size, mean-aggregation over 72h destroying within-turn timing signal, or a genuinely harder prediction task at this horizon than Candidly's conversational one.
+- **Controller lineage is a population confound, not a within-patient predictor**: mean TIR differs hugely by controller (Loop 63.6% vs Trio/oref1 81.0% across 21 patients with known lineage, EXP-2753), but adding controller identity to the leave-patient-out classifier only changed AUC by +0.005 within-patient — the expected, correct behavior for a patient-level-constant covariate under this validation design. This confirms the §6.6 predictive-validation null result isn't a controller-mix artifact in disguise.
+- The evaluation harness was validated on synthetic data before trusting it on real data: a feature engineered to be the true driver of a synthetic label scored AUC>0.85 under the same leave-patient-out methodology, confirming the null result on real data reflects the current features, not a broken validation method.
+
+**Next steps** (documented, not yet built): any regime-dependence audit of `ClinicalDecisionPolicy` gates should lead with the *validated* signals (current TIR/TBR, controller lineage) rather than the not-yet-validated physiology features; refining the physiology features (avoiding mean-aggregation, e.g. max/percentile/timing-aware features) before re-running this same validation harness is the natural next iteration.
+
+---
+
 ## Per-Patient Therapy Trajectory State Harness (2026-07-01, later)
 
 Built the first concrete piece from the state-aware-harness parallel analysis, after a scope refinement (documented in the doc's §6): the primary target is per-patient therapy trajectory, not the autoresearch tooling loop originally proposed.

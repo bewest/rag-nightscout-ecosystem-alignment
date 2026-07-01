@@ -112,7 +112,7 @@ Follow-up discussion challenged §3.1's autoresearch-session framing directly: *
 
 **Turn granularity — fixed 72-hour sequential windows, not calendar weekday/weekend blocks.** A turn needs to be long enough to see a within-turn trend (each daily basal segment repeats ~3x in 72h) but short enough to still be state-like rather than a whole-history average — this also roughly matches practical titration guidance already used elsewhere in this repo ("check every few days," not every two weeks). Weekday/weekend was deliberately **not** used as a hard turn boundary, because that would presuppose day-type is the regime that matters rather than letting the data show it, and it would make turns unequal length (5-day vs 2-day), complicating any count-based feature. Instead, `weekend_day_fraction` is carried as a continuous per-turn feature.
 
-**Outcome label — a cheap, rule-based ADA-threshold proxy, not unsupervised discovery (yet).** Candidly *discovered* 4 states via EM/IO-HMM fitting over thousands of conversations. We do not have that scale: roughly 20-30 patients x 40-60 turns each, and turns within a patient are highly autocorrelated (not independent draws), so naive clustering risks discovering "which patient this is" rather than a transferable regime — the same Simpson's-paradox/confounding risk this repo already treats carefully elsewhere (`deconfounding.py`, controller-lineage stratification). Candidly's own report is a warning sign here too: even with thousands of conversations, a 5-state model "did not recover a consistent, usable regime." **Unsupervised state discovery is deferred, not abandoned** — see §6.4 for what would need to be true first. What was built instead: continuous emission features stored per turn (so a future clustering/HMM pass can reuse them directly) plus an interpretable 5-value rule-based label (`improving` / `stable_good` / `stable_poor` / `worsening` / `unknown`) derived from the *next* turn's realized ADA-threshold trend, safety-first (a follow-up turn that breaches ADA hypoglycemia targets is always `worsening`, even if TIR nominally rose).
+**Outcome label — a cheap, rule-based ADA-threshold proxy, not unsupervised discovery (yet).** Candidly *discovered* 4 states via EM/IO-HMM fitting over thousands of conversations. We do not have that scale: roughly 20-30 patients x 40-60 turns each, and turns within a patient are highly autocorrelated (not independent draws), so naive clustering risks discovering "which patient this is" rather than a transferable regime — the same Simpson's-paradox/confounding risk this repo already treats carefully elsewhere (`deconfounding.py`, controller-lineage stratification). Candidly's own report is a warning sign here too: even with thousands of conversations, a 5-state model "did not recover a consistent, usable regime." **Unsupervised state discovery is deferred, not abandoned** — see §6.7 for what would need to be true first. What was built instead: continuous emission features stored per turn (so a future clustering/HMM pass can reuse them directly) plus an interpretable 5-value rule-based label (`improving` / `stable_good` / `stable_poor` / `worsening` / `unknown`) derived from the *next* turn's realized ADA-threshold trend, safety-first (a follow-up turn that breaches ADA hypoglycemia targets is always `worsening`, even if TIR nominally rose).
 
 **Emission features — reuse validated physiology research rather than inventing new proxies.** Beyond the surface glycemic/activity features (TIR/TBR/TAR/CV, data completeness, meal/bolus/override/exercise activity), four already-researched physiology signals were folded in directly:
 
@@ -132,21 +132,69 @@ Note: `types.OvernightDriftAssessment` declares `carbs_48h_g`/`glycogen_note` fi
 | Turn/feature/label harness | `tools/cgmencode/production/therapy_trajectory_state.py` | Loads a patient's grid, segments into 72h turns, computes ~25 continuous emission features per turn (glycemic, activity, flux/EGP, saturation, glycogen proxy, site wear), and a rule-based outcome label |
 | Unit tests | `tools/cgmencode/production/test_therapy_trajectory_state.py` | 16 tests on synthetic grids covering turn segmentation, feature computation, all 5 label branches (including the safety-priority rule), and end-to-end graceful degradation when profile columns are absent |
 | Cohort CLI + MLflow logging | `tools/cgmencode/run_therapy_trajectory_state.py` | `python -m tools.cgmencode.run_therapy_trajectory_state [--patient-ids ...] [--turn-hours 72]` — writes a labeled-turn parquet as a tracked MLflow evidence artifact (`task_type=therapy-trajectory-state`), with summary metrics (state distribution, mean TIR by state, saturation-level distribution) |
-| Visualizations | `tools/cgmencode/production/therapy_trajectory_figures.py` | 5 reader-facing figures: turn-label distribution, mean TIR by label (label-coherence sanity check), insulin "wall"/overflow saturation by label, weekend-fraction-vs-TIR scatter, and a per-patient TIR/TBR timeline with state-colored markers |
-| Figure tests | `tools/cgmencode/production/test_therapy_trajectory_figures.py` | 9 smoke tests on synthetic frames (figure generation, graceful skip on empty/low-variation input) |
-| HTML report + MLflow logging | `tools/cgmencode/render_therapy_trajectory_report.py` | `python -m tools.cgmencode.render_therapy_trajectory_report [--parquet-dir ... \| --turns-parquet ...]` — self-contained, base64-embedded-PNG HTML report (`reports/therapy-trajectory-state/report.html`) plus a JSON summary, matching the existing clinical-decision-report visual convention |
+| Visualizations | `tools/cgmencode/production/therapy_trajectory_figures.py` | 7 reader-facing figures: turn-label distribution, mean TIR by label, insulin "wall"/overflow saturation by label, weekend-fraction-vs-TIR scatter, per-patient TIR/TBR timeline, baseline-vs-full AUC comparison, and mean-TIR-by-controller |
+| Figure tests | `tools/cgmencode/production/test_therapy_trajectory_figures.py` | 14 smoke tests on synthetic frames |
+| Predictive-signal validation ("AUC-proof" step) | `tools/cgmencode/production/therapy_trajectory_predictive_validation.py` | Leave-patient-out cross-validated logistic regression comparing a glycemic-only baseline feature set against the full physiology feature set, predicting whether the next turn resolves well; plus controller-lineage stratification (population view + within-patient AUC lift) |
+| Predictive-validation tests | `tools/cgmencode/production/test_therapy_trajectory_predictive_validation.py` | 8 tests, including synthetic-data checks that the harness correctly detects a real injected signal and correctly reports near-chance AUC on pure noise |
+| Predictive-validation CLI | `tools/cgmencode/run_therapy_trajectory_validation.py` | `python -m tools.cgmencode.run_therapy_trajectory_validation` — runs both validation steps against a built cohort table and logs AUC/lift metrics to MLflow |
+| HTML report + MLflow logging | `tools/cgmencode/render_therapy_trajectory_report.py` | `python -m tools.cgmencode.render_therapy_trajectory_report [--parquet-dir ... \| --turns-parquet ...]` — self-contained, base64-embedded-PNG HTML report (`reports/therapy-trajectory-state/report.html`) with a predictive-validation section and a controller-stratification section, plus a JSON summary |
 
-Verified against real longitudinal data (patients a-d, `externals/ns-parquet/training`, ~180 days each -> 60 turns/patient): the harness runs end-to-end, all 25 new tests (16 harness + 9 figures) plus the full existing production unit suite pass with no regressions (1112 total), the MLflow run records successfully (`n_patients`, `n_turns`, `n_physiology_available` metrics; summary JSON artifacts for both the cohort build and the report render), and the HTML report renders 5 legible figures (~295KB, self-contained). An early, non-causal sanity check on 4 patients: mean TIR was highest in `stable_good` turns (79.2%) and lowest in `stable_poor` (55.2%), consistent with the label scheme being behaviorally coherent; the `weekend_day_fraction`-vs-TIR correlation was negligible (0.012) in this small sample — not evidence either way yet, just a first look. The per-patient timeline figure for patient c shows TIR oscillating roughly 35-85% across ~6 months with no obvious long-run trend, mostly landing in `worsening`/`stable_poor` turns — consistent with prior decision-support findings that patient c has meaningful room for basal/ISF improvement.
+Verified against real longitudinal data: the harness runs end-to-end, all 39 new tests (16 harness + 14 figures + 8 predictive-validation, with 1 test shared across counts) plus the full existing production unit suite pass with no regressions (1125 total), MLflow logging was confirmed via direct tracking-store queries, and the HTML report renders 7 legible, self-contained figures (~371KB). The findings themselves are substantial enough to warrant their own subsections — see §6.3-§6.5.
 
-### 6.3 What this enables next (not yet built)
+### 6.3 Scaling to the full cohort
+
+The initial report used only 4 patients (a-d, 240 turns) as a smoke test. Of the 31 patients in the training grid, 28 have at least 4 turns (>=12 days) of history; most have far more (up to 125 turns / ~375 days for one patient). Scaling `run_therapy_trajectory_state.py` to all 28 patients produced **1481 turns**, with the label-coherence sanity check holding at this larger scale too: mean TIR was highest in `stable_good` turns (87.8%) and lowest in `stable_poor` (59.8%); the `weekend_day_fraction`-vs-TIR correlation stayed negligible (-0.009). This full-cohort table (`externals/experiments/therapy-trajectory-state/turns_full_cohort.parquet`, git-ignored) is the basis for §6.4-§6.5.
+
+### 6.4 Predictive-signal validation: an honest "not yet"
+
+Candidly's own step 2 (before fitting any state machinery) was to prove their turn-level features actually predicted the conversation outcome — they got 0.90 AUC. We ran the equivalent check here: leave-patient-out cross-validated logistic regression predicting a binary resolved-like (`improving`/`stable_good`) vs not (`worsening`/`stable_poor`) outcome for the *next* turn, comparing a glycemic-only baseline (current turn's TIR/TBR/TAR/CV) against the full feature set (+ activity, flux/EGP, saturation, glycogen proxy, site wear).
+
+**Result on the full 28-patient cohort (1347 reliable, resolved/unresolved turns)**:
+
+| Feature set | Pooled leave-patient-out AUC |
+|---|---:|
+| Glycemic-only (baseline) | **0.638** |
+| + physiology features (full) | **0.615** |
+| Physiology features alone (no glycemic state at all) | 0.532 |
+
+This is an honest **"not yet"**, not a failure: adding the researched physiology features (as currently computed — simple 72h-window means) did not improve on the glycemic-only baseline, and was robust to regularization strength (AUC stayed 0.61-0.62 across C=1.0/0.1/0.01). Current-turn TIR/TBR/TAR/CV carries the dominant forward-looking signal (via continuity/regression-to-the-mean), noticeably weaker than Candidly's 0.90 but clearly above chance. Plausible reasons the physiology features didn't add value yet, to investigate before concluding they never will:
+
+1. **Feature count vs sample size**: 15 physiology features on ~1300 samples across 28 groups is a lot of parameters per leave-one-patient-out fold; the top features by (non-cross-validated) importance were activity counts (`bolus_active_row_count`, `smb_active_row_count`, `meal_count`), which may just be noisy proxies correlated with whatever current TIR already captures.
+2. **Mean-aggregation over 72h may destroy the signal that matters**: a single mean `saturation_wall_pct` or `mean_net_flux` per turn discards *when* within the turn a saturation episode or flux excursion happened, which may be exactly what's predictive.
+3. **The task itself may be genuinely harder at this time horizon** than Candidly's — predicting 72h-ahead glycemic trajectory from a snapshot of the preceding 72h is a different (and arguably harder) problem than predicting whether the next chat message resolves a conversation.
+
+The evaluation harness itself was validated on synthetic data first (a feature engineered to be the true driver of a synthetic label scored AUC > 0.85; pure-noise baseline features scored near chance) — the null result on real data is a property of the current features, not a bug in the validation methodology.
+
+### 6.5 Controller-lineage stratification: population confound, not a within-patient predictor
+
+Following the §6.7 concern about Simpson's-paradox-style confounding, we checked whether findings differ by controller lineage (EXP-2753: known for 21 of the 28 patients).
+
+**Population-level (between-patient) view** — a large, real difference:
+
+| Controller | Mean TIR | `stable_good` turn share | `worsening` turn share |
+|---|---:|---:|---:|
+| Loop | 63.6% | 7.9% | 58.4% |
+| Trio/oref1 | 81.0% | 27.4% | 50.4% |
+
+**Within-patient (leave-patient-out AUC) view** — a near-null effect:
+
+| Model | AUC |
+|---|---:|
+| Controller identity alone | 0.475 (at chance) |
+| Glycemic baseline, known-controller subset | 0.619 |
+| Glycemic baseline + controller identity | 0.624 (lift: **+0.005**) |
+
+These two views are not contradictory — they answer different questions. Controller lineage explains a large share of *why average control quality differs across patients* in this cohort (population view), but adds almost nothing to *predicting a given patient's own next turn* once leave-patient-out validation is applied (within-patient view), because a patient-level-constant covariate cannot discriminate between that same patient's own turns by construction. This is exactly the reassurance §6.7 was checking for: the §6.4 predictive-validation result does not appear to be a controller-mix artifact in disguise. It does **not** mean controller choice is unimportant to glycemic outcomes generally — only that it isn't a turn-level lever the leave-patient-out classifier can use, which is the correct and expected behavior for a between-patient covariate under this validation design.
+
+### 6.6 What this enables next (not yet built)
 
 This harness is infrastructure, not a policy change. It directly unblocks the downstream P1/P2 items from §4 that were previously blocked on having any per-turn trajectory data at all:
 
-- **Regime-dependence audit for `ClinicalDecisionPolicy` gates (§3.2)**: now possible to check, per saturation/flux/glycogen regime, whether a fixed gate threshold's effect is regime-dependent before further global tuning.
+- **Regime-dependence audit for `ClinicalDecisionPolicy` gates (§3.2)**: now possible to check, per saturation/flux/glycogen regime, whether a fixed gate threshold's effect is regime-dependent before further global tuning. Given §6.4's null result, this audit should lead with the *validated* signals (current TIR/TBR/TAR/CV, controller lineage) rather than assuming the new physiology features are ready to condition policy on yet.
 - **Outcome-linking (§3.4)**: the label scheme here is itself a backtested proxy for "did the next turn's realized outcome look like the projection." The same join pattern (patient + turn window -> realized ADA metrics) is what would be needed to reconcile `ClinicalDecisionReport`'s *projected* 2-week outcome against a *realized* one.
 - **Replay-and-diff harness (§3.3)**: this cohort table is a ready-made frozen evaluation set for replaying policy config changes against real historical trajectories.
 
-### 6.4 What would need to be true before attempting unsupervised state discovery
+### 6.7 What would need to be true before attempting unsupervised state discovery
 
 Recorded explicitly so this isn't attempted prematurely:
 

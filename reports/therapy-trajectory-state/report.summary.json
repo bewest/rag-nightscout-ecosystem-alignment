@@ -1,28 +1,120 @@
 {
-  "n_patients": 4,
-  "n_turns": 240,
-  "n_reliable_turns": 236,
-  "state_counts": {
-    "worsening": 120,
-    "improving": 62,
-    "stable_poor": 25,
-    "stable_good": 21,
-    "unknown": 12
+  "cohort": {
+    "n_patients": 28,
+    "n_turns": 1481,
+    "n_reliable_turns": 1382,
+    "state_counts": {
+      "worsening": 765,
+      "stable_good": 265,
+      "improving": 261,
+      "unknown": 134,
+      "stable_poor": 56
+    },
+    "mean_tir_by_state": {
+      "improving": 67.4,
+      "stable_good": 87.8,
+      "stable_poor": 59.8,
+      "unknown": 76.0,
+      "worsening": 75.7
+    },
+    "weekend_fraction_tir_corr": -0.009,
+    "n_physiology_available": 1481,
+    "saturation_level_counts": {
+      "insufficient_data": 476,
+      "severe": 403,
+      "moderate": 259,
+      "none": 252,
+      "mild": 91
+    }
   },
-  "mean_tir_by_state": {
-    "improving": 56.9,
-    "stable_good": 79.2,
-    "stable_poor": 55.2,
-    "unknown": 67.0,
-    "worsening": 65.3
+  "predictive_validation": {
+    "n_samples": 1347,
+    "n_groups": 28,
+    "resolved_like_fraction": 0.3904974016332591,
+    "baseline": {
+      "features": [
+        "tir",
+        "tbr_l1",
+        "tbr_l2",
+        "tar_l1",
+        "cv"
+      ],
+      "auc_pooled": 0.6375328242012198
+    },
+    "full": {
+      "features": [
+        "tir",
+        "tbr_l1",
+        "tbr_l2",
+        "tar_l1",
+        "cv",
+        "weekend_day_fraction",
+        "meal_count",
+        "bolus_active_row_count",
+        "smb_active_row_count",
+        "override_active_fraction",
+        "exercise_active_fraction",
+        "suspension_active_fraction",
+        "mean_hepatic_production",
+        "mean_carb_supply",
+        "mean_insulin_demand",
+        "mean_net_flux",
+        "saturation_wall_pct",
+        "carbs_48h_g",
+        "mean_cage_hours",
+        "mean_sage_hours"
+      ],
+      "auc_pooled": 0.6151452138030687
+    },
+    "delta_auc_from_physiology_features": -0.02238761039815107,
+    "top_physiology_features_by_importance": [
+      [
+        "bolus_active_row_count",
+        0.5173242750347901
+      ],
+      [
+        "smb_active_row_count",
+        -0.48475760711603905
+      ],
+      [
+        "meal_count",
+        -0.33137178875721757
+      ],
+      [
+        "override_active_fraction",
+        -0.2668257141065057
+      ],
+      [
+        "carbs_48h_g",
+        0.17444000931650577
+      ]
+    ]
   },
-  "weekend_fraction_tir_corr": 0.012,
-  "n_physiology_available": 240,
-  "saturation_level_counts": {
-    "severe": 91,
-    "moderate": 69,
-    "insufficient_data": 44,
-    "mild": 30,
-    "none": 6
+  "controller_stratification": {
+    "n_patients_with_known_controller": 21,
+    "mean_tir_by_controller": {
+      "loop": 63.6,
+      "trio_openaps": 81.0
+    },
+    "state_distribution_by_controller": {
+      "loop": {
+        "worsening": 0.584,
+        "improving": 0.186,
+        "unknown": 0.101,
+        "stable_good": 0.079,
+        "stable_poor": 0.05
+      },
+      "trio_openaps": {
+        "worsening": 0.504,
+        "stable_good": 0.274,
+        "improving": 0.163,
+        "unknown": 0.043,
+        "stable_poor": 0.015
+      }
+    },
+    "auc_controller_identity_only": 0.4750898897992232,
+    "auc_baseline_known_controller_subset": 0.6189633167277369,
+    "auc_baseline_plus_controller_identity": 0.6241988828962356,
+    "controller_identity_within_patient_lift": 0.00523556616849874
   }
 }

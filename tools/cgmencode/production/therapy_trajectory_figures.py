@@ -240,16 +240,115 @@ def weekend_fraction_vs_tir_figure(df: pd.DataFrame) -> Optional[TrajectoryFigur
     )
 
 
+def auc_comparison_figure(validation_summary: dict) -> Optional[TrajectoryFigure]:
+    """Baseline-vs-full AUC bar chart from the predictive-validation summary
+    (``therapy_trajectory_predictive_validation.compare_feature_sets``)."""
+    baseline_auc = validation_summary.get("baseline", {}).get("auc_pooled")
+    full_auc = validation_summary.get("full", {}).get("auc_pooled")
+    if baseline_auc is None or full_auc is None:
+        return None
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(5, 4))
+    labels = ["Glycemic-only\n(baseline)", "+ physiology\nfeatures (full)"]
+    values = [baseline_auc, full_auc]
+    colors = [_C_STABLE_GOOD, _C_WORSENING if full_auc < baseline_auc else _C_IMPROVING]
+    bars = ax.bar(labels, values, color=colors, zorder=3)
+    for bar, v in zip(bars, values):
+        ax.text(bar.get_x() + bar.get_width() / 2, v, f"{v:.3f}",
+                ha="center", va="bottom", fontsize=10, color=_C_INK)
+    ax.axhline(0.5, color=_C_INK, linewidth=0.8, linestyle=":", zorder=1)
+    ax.text(1.35, 0.505, "chance (0.5)", fontsize=8, color=_C_INK, ha="right")
+    ax.set_ylim(0.4, 1.0)
+    ax.set_ylabel("Leave-patient-out AUC (pooled)")
+    ax.set_title("Does adding physiology features help predict\nthe next turn's outcome?",
+                 color=_C_INK, fontweight="bold")
+    _style_axes(ax)
+
+    n = validation_summary.get("n_samples")
+    g = validation_summary.get("n_groups")
+    delta = validation_summary.get("delta_auc_from_physiology_features")
+    verdict = "did not improve on" if (delta or 0) <= 0 else "improved on"
+    caption = (
+        f"Leave-patient-out cross-validated AUC ({n} turns, {g} patients) for "
+        f"predicting whether the *next* turn resolves well, using only the "
+        f"current turn's own glycemic state (baseline) versus adding the "
+        f"researched physiology features (full). In this first cut, the "
+        f"physiology feature set {verdict} the glycemic-only baseline "
+        f"(delta={delta:+.3f}) -- an honest 'not yet', not a validated "
+        f"improvement; see the design doc for why (feature count vs sample "
+        f"size, mean-aggregation possibly diluting the signal)."
+    )
+    return TrajectoryFigure(
+        title="Predictive-signal validation: baseline vs full feature set",
+        caption=caption, png_base64=_fig_to_b64(fig),
+    )
+
+
+def controller_tir_figure(controller_summary: dict) -> Optional[TrajectoryFigure]:
+    """Mean TIR by controller lineage, from
+    ``therapy_trajectory_predictive_validation.controller_stratified_summary``."""
+    mean_tir = controller_summary.get("mean_tir_by_controller")
+    if not mean_tir:
+        return None
+    import matplotlib.pyplot as plt
+
+    order = sorted(mean_tir.keys())
+    values = [mean_tir[k] for k in order]
+    fig, ax = plt.subplots(figsize=(5, 4))
+    bars = ax.bar(order, values, color=[_C_STABLE_GOOD, _C_WORSENING][:len(order)], zorder=3)
+    for bar, v in zip(bars, values):
+        ax.text(bar.get_x() + bar.get_width() / 2, v, f"{v:.0f}%",
+                ha="center", va="bottom", fontsize=10, color=_C_INK)
+    ax.axhline(70.0, color=_C_INK, linewidth=1, linestyle="--", zorder=2)
+    ax.set_ylabel("Mean TIR (%)")
+    ax.set_title("Mean TIR by controller lineage", color=_C_INK, fontweight="bold")
+    _style_axes(ax)
+
+    n = controller_summary.get("n_patients_with_known_controller")
+    lift = controller_summary.get("controller_identity_within_patient_lift")
+    caption = (
+        f"Population-level (between-patient) mean TIR by controller lineage "
+        f"across {n} patients with known lineage (EXP-2753). This large "
+        f"difference reflects who happens to be on which controller in this "
+        f"cohort, not a turn-level predictive lever: adding controller "
+        f"identity to the leave-patient-out classifier changed AUC by only "
+        f"{lift:+.3f} within-patient, because a patient-level-constant "
+        f"covariate cannot discriminate between that same patient's own "
+        f"turns. Both readings matter -- see the design doc for why they "
+        f"don't contradict each other."
+    )
+    return TrajectoryFigure(
+        title="Mean TIR by controller lineage", caption=caption, png_base64=_fig_to_b64(fig),
+    )
+
+
 def build_trajectory_figures(
     df: pd.DataFrame,
     example_patient_ids: list[str] | None = None,
     max_timelines: int = 3,
+    validation_summary: dict | None = None,
+    controller_summary: dict | None = None,
 ) -> list[TrajectoryFigure]:
-    """Build the standard figure set for a cohort trajectory table."""
+    """Build the standard figure set for a cohort trajectory table.
+
+    ``validation_summary``/``controller_summary`` are optional outputs
+    from ``therapy_trajectory_predictive_validation`` -- when provided,
+    the AUC-comparison and controller-lineage figures are added too.
+    """
     figures: list[TrajectoryFigure] = []
     for fn in (state_distribution_figure, mean_tir_by_state_figure,
                saturation_by_state_figure, weekend_fraction_vs_tir_figure):
         fig = fn(df)
+        if fig is not None:
+            figures.append(fig)
+
+    if validation_summary is not None:
+        fig = auc_comparison_figure(validation_summary)
+        if fig is not None:
+            figures.append(fig)
+    if controller_summary is not None:
+        fig = controller_tir_figure(controller_summary)
         if fig is not None:
             figures.append(fig)
 

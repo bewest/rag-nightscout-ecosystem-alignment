@@ -11,7 +11,9 @@ import pandas as pd
 import pytest
 
 from tools.cgmencode.production.therapy_trajectory_figures import (
+    auc_comparison_figure,
     build_trajectory_figures,
+    controller_tir_figure,
     mean_tir_by_state_figure,
     patient_timeline_figure,
     saturation_by_state_figure,
@@ -96,8 +98,57 @@ def test_patient_timeline_figure_unknown_patient():
     assert patient_timeline_figure(df, "does-not-exist") is None
 
 
+def test_auc_comparison_figure_smoke():
+    summary = {
+        "baseline": {"auc_pooled": 0.638}, "full": {"auc_pooled": 0.615},
+        "n_samples": 1347, "n_groups": 28, "delta_auc_from_physiology_features": -0.022,
+    }
+    fig = auc_comparison_figure(summary)
+    assert fig is not None
+    assert base64.b64decode(fig.png_base64)
+    assert "not yet" in fig.caption
+
+
+def test_auc_comparison_figure_missing_data():
+    assert auc_comparison_figure({}) is None
+
+
+def test_controller_tir_figure_smoke():
+    summary = {
+        "mean_tir_by_controller": {"loop": 63.6, "trio_openaps": 81.0},
+        "n_patients_with_known_controller": 21,
+        "controller_identity_within_patient_lift": 0.005,
+    }
+    fig = controller_tir_figure(summary)
+    assert fig is not None
+    assert base64.b64decode(fig.png_base64)
+
+
+def test_controller_tir_figure_missing_data():
+    assert controller_tir_figure({}) is None
+
+
 def test_build_trajectory_figures_returns_expected_count():
     df = _synthetic_turns(n_patients=3)
     figures = build_trajectory_figures(df, max_timelines=2)
     # 4 cohort-level figures + up to max_timelines per-patient timelines
     assert len(figures) == 4 + 2
+
+
+def test_build_trajectory_figures_includes_validation_figures_when_provided():
+    df = _synthetic_turns(n_patients=3)
+    validation_summary = {
+        "baseline": {"auc_pooled": 0.6}, "full": {"auc_pooled": 0.58},
+        "n_samples": 100, "n_groups": 3, "delta_auc_from_physiology_features": -0.02,
+    }
+    controller_summary = {
+        "mean_tir_by_controller": {"loop": 60.0, "trio_openaps": 75.0},
+        "n_patients_with_known_controller": 3,
+        "controller_identity_within_patient_lift": 0.01,
+    }
+    figures = build_trajectory_figures(
+        df, max_timelines=1,
+        validation_summary=validation_summary, controller_summary=controller_summary,
+    )
+    # 4 cohort-level + 2 validation figures + 1 timeline
+    assert len(figures) == 4 + 2 + 1
