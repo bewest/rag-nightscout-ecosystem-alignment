@@ -250,6 +250,41 @@ This is an observational (non-interventional) dataset — no one actually acted 
 
 **Practical recommendation**: use the direct-advisor method as the primary, wide-coverage basal action label; treat facts-loader agreement as an optional higher-confidence confirmation layer when it happens to be available, rather than a replacement. Neither is wired into `ClinicalDecisionPolicy` from this work — both remain `research`-stage per the MLflow promotion ladder (`docs/60-research/mlflow-experience-report-2026-06-27.md`).
 
-### 7.4 What's next
+### 7.4 ISF action-label benchmark: the opposite pattern from basal
 
-ISF and CR need the equivalent benchmark, each with its own domain-appropriate evidence window (ISF: correction-dose events; CR: meal-response windows) rather than reusing the 14-day basal window by default — the right window length and possibly the right modeling approach may differ per domain, matching the point raised in discussion that different signals need different time horizons and features. Only after per-domain labels are chosen should wiring any of them into `ClinicalDecisionPolicy` as a real-time signal be considered, and even then as a staged `candidate` rather than a direct production change.
+`tools/cgmencode/production/isf_action_label_benchmark.py` runs the same coverage/agreement/persistence methodology for ISF, pairing `compute_isf_gap_bootstrap` (EXP-2861, facts-loader style: raw observed-vs-scheduled ISF gap from correction events) against `advise_correction_isf` (EXP-2579/2582/2585/2588, direct advisor: counter-regulation-corrected ISF multiplier from the same general class of correction events). Both operate on correction events rather than a fixed calendar window, so 14- and 30-day windows were both tried, per the discussion point that different domains may need different evidence windows.
+
+The direct-advisor ISF calibration turned out to be too computationally expensive to run at 30 days across the full cohort in this session (correction-window extraction and per-window counter-regulation calibration scale with the number of correction events found, and some patients correct far more often than others — single-patient runtimes ranged from 0.25s to over 20s at just 14 days). This is itself worth recording as a practical finding: unlike the basal advisors, `advise_correction_isf` in its current form does not scale comfortably to cohort-wide, many-window backtesting without further optimization. The comparison below is therefore reported on a 10-patient subset (`a` through `k`, the richest-data trained cohort) at 14 days, rather than the full 28-patient/30-day sweep used for basal.
+
+**Result (119 fourteen-day windows, 10 patients)**:
+
+| Metric | facts-loader (EXP-2861) | direct-advisor (EXP-2579/2585) |
+|---|---:|---:|
+| Coverage (usable label) | 60.5% | 100% |
+| Persistence (same direction next window) | **86.0%** | 61.0% |
+| Agreement (where both covered, n=72) | 51.4% | (same) |
+
+This is the **opposite pattern from basal**: for basal, direct-advisor won on both coverage and persistence. For ISF, direct-advisor still wins on coverage (as expected, since it's designed to always return a classification), but the facts-loader method is dramatically more temporally stable (86.0% vs 61.0% persistence) despite covering fewer windows. Agreement between the two (51.4%) is also lower than basal's (61.6%), essentially at chance for a 3-way categorical comparison — the two ISF methods disagree more often than the two basal methods did. This is concrete evidence for the point raised in discussion: different domains don't just need different evidence windows, they can favor genuinely different *methods* — there is no single "facts-loader is always better" or "direct-advisor is always better" rule across domains. For ISF specifically, the facts-loader's raw gap signal appears to be the more trustworthy repeated-measurement, even though it fires less often.
+
+### 7.5 CR: only one evidence path exists
+
+No CR-equivalent facts-loader exists in this codebase (confirmed by inspection: no `cr_*_facts_loader.py` analog to the basal/ISF ones). `tools/cgmencode/production/cr_action_label_benchmark.py` therefore validates the single available method, `advise_effective_cr` (EXP-2609, meal-response-window based), on coverage and persistence alone — there is nothing to compute agreement against yet. `advise_cr_adequacy` (EXP-2535/2536) exists as a second CR algorithm but requires pre-extracted meal-event dicts from the meal-detection pipeline rather than raw arrays, which was out of scope to wire up here and is recorded as a follow-up rather than silently skipped.
+
+**Result (27 patients, both window lengths)**:
+
+| Window | Coverage | Persistence | Direction mix (none / decrease / increase) |
+|---|---:|---:|---|
+| 14 days | 100% | 63.4% | 192 / 88 / 23 (303 windows) |
+| 30 days | 100% | **71.2%** | 72 / 54 / 9 (135 windows) |
+
+Unlike the correction-event-based ISF domain, CR's persistence *improved* materially with a longer window (63.4% -> 71.2%), directly supporting the hypothesis that different domains benefit from different evidence-window lengths: meal-response windows likely need more days to accumulate enough clean meal events for a stable read, more like basal's need for multiple nights than ISF's apparently faster-saturating correction-event accumulation.
+
+### 7.6 Cross-domain summary and what's next
+
+| Domain | Best coverage method | Best persistence method | Two independent methods? | Best window (of those tried) |
+|---|---|---|---|---|
+| Basal | direct-advisor (100%) | direct-advisor (72.9%) | Yes (61.6% agreement) | 14 days |
+| ISF | direct-advisor (100%) | **facts-loader** (86.0%) | Yes (51.4% agreement, 10-patient subset) | 14 days (30 days impractically slow) |
+| CR | direct-advisor (only method, 100%) | direct-advisor (71.2% at 30d vs 63.4% at 14d) | No — single evidence path | 30 days looks better than 14 |
+
+No domain shares the same "winning" recipe, which is exactly the point of running the benchmark empirically per domain rather than assuming one approach generalizes. Concrete next steps, in order: (1) revisit `advise_correction_isf`'s performance so a full-cohort, multi-window-length ISF sweep is tractable; (2) wire up `advise_cr_adequacy` against the meal-detection pipeline as CR's second independent method, closing the asymmetry noted in §7.5; (3) only after per-domain methods are chosen, stage the winning method per domain as a `candidate` action-label signal — not yet wired into `ClinicalDecisionPolicy` from this work.

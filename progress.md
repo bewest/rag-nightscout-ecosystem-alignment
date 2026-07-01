@@ -12,6 +12,27 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## ISF and CR Action-Label Benchmarks (2026-07-01, final)
+
+Extended the basal action-label benchmark (previous entry) to ISF and CR, completing the cross-domain comparison.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| ISF benchmark | `tools/cgmencode/production/isf_action_label_benchmark.py` | Pairs `compute_isf_gap_bootstrap` (EXP-2861, facts-loader) vs `advise_correction_isf` (EXP-2579/2585, direct advisor) on correction-event windows |
+| CR benchmark | `tools/cgmencode/production/cr_action_label_benchmark.py` | Validates the single available method (`advise_effective_cr`, EXP-2609) since no CR-equivalent facts-loader exists in this codebase |
+| Tests | `test_isf_action_label_benchmark.py` (8), `test_cr_action_label_benchmark.py` (5) | Synthetic correction-event / meal-event grids with controllable observed ISF / effective CR |
+| Design doc update | `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §7.4-§7.6 | Full cross-domain comparison table and findings |
+
+**Key Findings**:
+- **ISF shows the opposite pattern from basal**: direct-advisor still wins coverage (100% vs 60.5%), but the facts-loader method is dramatically *more* temporally stable (86.0% vs 61.0% persistence) despite firing less often, on a 119-window/10-patient subset. Agreement between the two methods was only 51.4% (near chance) — lower than basal's 61.6%. There is no single "which method is better" answer across domains; each needs its own empirical check, exactly as raised in discussion.
+- **`advise_correction_isf` does not scale well**: single-patient runtimes at 14-day windows ranged from 0.25s to over 20s depending on how many correction events a patient generates, and a full 28-patient/30-day sweep was too slow to complete in-session — recorded as a concrete performance follow-up, not silently worked around.
+- **CR has only one evidence path**: no CR-equivalent facts-loader exists; `advise_cr_adequacy` (a second CR algorithm) requires pre-extracted meal-event dicts from the meal-detection pipeline, which was out of scope to wire up here. Coverage was 100% and persistence *improved* with a longer window (63.4% at 14 days -> 71.2% at 30 days across 303/135 windows, 27 patients), supporting the hypothesis that meal-response assessment needs more days to stabilize than correction-event assessment does.
+- **Cross-domain summary**: no domain shares the same winning recipe (basal: direct-advisor wins both coverage and persistence; ISF: split decision; CR: single method, longer window wins) — confirming domain-specific evidence windows and methods are genuinely necessary, not just a theoretical concern.
+
+**Next steps** (documented, not yet built): profile/optimize `advise_correction_isf` for cohort-scale backtesting; wire `advise_cr_adequacy` to the meal-detection pipeline as CR's second independent method; only then stage the winning per-domain method as a `candidate` action-label signal.
+
+---
+
 ## Action-Space Basal Label Benchmark and Recency-Feature Re-test (2026-07-01, latest)
 
 Continued iterating on the §6.4 "not yet" finding, then pivoted the whole framing based on discussion: instead of a generic pooled glycemic-outcome label, align trajectory "states" with the actual recommender action space (basal/ISF/CR x increase/decrease/none x time-block).
