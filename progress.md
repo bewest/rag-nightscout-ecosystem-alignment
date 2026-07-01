@@ -12,6 +12,21 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Report Refresh: Consistent Benchmark Figures for All Three Domains (2026-07-01, post-close)
+
+User asked whether any deliverables needed refreshing after the session's updates. Checked `reports/therapy-trajectory-state/report.html`: still current (verified its embedded AUC numbers, 0.612 refined, match the latest recency-feature re-test). Found a real gap though: basal had a dedicated benchmark figure but ISF and CR only had numbers in the docs, no visuals.
+
+| Deliverable | Location | Notes |
+|-------------|----------|-------|
+| Reusable figure generator | `tools/cgmencode/production/action_label_benchmark_figures.py` | Replaces the one-off basal plotting script with a tested function handling both two-method (basal/ISF) and single-method (CR) summaries |
+| Tests | `test_action_label_benchmark_figures.py` (4) | |
+| Regenerated/new figures | `reports/therapy-trajectory-state/{basal,isf,cr}-label-benchmark.png` | Basal regenerated with the new function (values unchanged, confirms consistency); ISF and CR are new |
+| Design doc update | `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §7.4-§7.5 | Added the ISF and CR figure references alongside basal's |
+
+All three domains now have the same visual treatment. Full production unit suite: 1165 passed, no regressions.
+
+---
+
 ## Unified Research-Stage Action-Label Scorer (2026-07-01, session close)
 
 Closes out the action-label pivot with `tools/cgmencode/production/action_label_scorer.py`: one function, `score_patient_actions(parquet_dir, patient_id)`, packaging the empirically preferred method per domain (basal: direct-advisor primary; ISF: facts-loader primary with direct-advisor fallback/corroboration; CR: direct-advisor only) into a single callable, tagged `promotion_stage: "research"` throughout. 4 new tests; verified against real data (patient `c`: basal `decrease` conf 0.55, ISF `increase` conf 0.61 with both methods agreeing, CR `none`). Explicitly **not** wired into `ClinicalDecisionPolicy`/`ClinicalDecisionReport` — this is reusable/testable infrastructure, not a production change. Full production unit suite: 1161 passed, no regressions. See `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §7.7 for details.

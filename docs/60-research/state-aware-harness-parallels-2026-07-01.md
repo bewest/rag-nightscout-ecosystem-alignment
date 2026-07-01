@@ -264,6 +264,8 @@ The direct-advisor ISF calibration turned out to be too computationally expensiv
 | Persistence (same direction next window) | **86.0%** | 61.0% |
 | Agreement (where both covered, n=72) | 51.4% | (same) |
 
+![ISF action-label benchmark](../../reports/therapy-trajectory-state/isf-label-benchmark.png)
+
 This is the **opposite pattern from basal**: for basal, direct-advisor won on both coverage and persistence. For ISF, direct-advisor still wins on coverage (as expected, since it's designed to always return a classification), but the facts-loader method is dramatically more temporally stable (86.0% vs 61.0% persistence) despite covering fewer windows. Agreement between the two (51.4%) is also lower than basal's (61.6%), essentially at chance for a 3-way categorical comparison — the two ISF methods disagree more often than the two basal methods did. This is concrete evidence for the point raised in discussion: different domains don't just need different evidence windows, they can favor genuinely different *methods* — there is no single "facts-loader is always better" or "direct-advisor is always better" rule across domains. For ISF specifically, the facts-loader's raw gap signal appears to be the more trustworthy repeated-measurement, even though it fires less often.
 
 ### 7.5 CR: only one evidence path exists
@@ -276,6 +278,8 @@ No CR-equivalent facts-loader exists in this codebase (confirmed by inspection: 
 |---|---:|---:|---|
 | 14 days | 100% | 63.4% | 192 / 88 / 23 (303 windows) |
 | 30 days | 100% | **71.2%** | 72 / 54 / 9 (135 windows) |
+
+![CR action-label benchmark (30-day window)](../../reports/therapy-trajectory-state/cr-label-benchmark.png)
 
 Unlike the correction-event-based ISF domain, CR's persistence *improved* materially with a longer window (63.4% -> 71.2%), directly supporting the hypothesis that different domains benefit from different evidence-window lengths: meal-response windows likely need more days to accumulate enough clean meal events for a stable read, more like basal's need for multiple nights than ISF's apparently faster-saturating correction-event accumulation.
 
