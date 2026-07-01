@@ -1,0 +1,28 @@
+{
+  "n_patients": 4,
+  "n_turns": 240,
+  "n_reliable_turns": 236,
+  "state_counts": {
+    "worsening": 120,
+    "improving": 62,
+    "stable_poor": 25,
+    "stable_good": 21,
+    "unknown": 12
+  },
+  "mean_tir_by_state": {
+    "improving": 56.9,
+    "stable_good": 79.2,
+    "stable_poor": 55.2,
+    "unknown": 67.0,
+    "worsening": 65.3
+  },
+  "weekend_fraction_tir_corr": 0.012,
+  "n_physiology_available": 240,
+  "saturation_level_counts": {
+    "severe": 91,
+    "moderate": 69,
+    "insufficient_data": 44,
+    "mild": 30,
+    "none": 6
+  }
+}
