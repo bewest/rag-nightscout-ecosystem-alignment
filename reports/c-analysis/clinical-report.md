@@ -1,6 +1,6 @@
 # Clinical Analysis Report — patient `c`
 
-_Generated: 2026-04-24T23:12:32.523085+00:00_  
+_Generated: 2026-07-01T18:12:32.291945+00:00_  
 _Source parquet: `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/ns-parquet/training`_  
 _Profile timezone: `Etc/GMT+7`_  
 _Days of data: 180.0_
@@ -96,9 +96,9 @@ _Source: inferred meals from the production residual+insulin spectral detector (
 ## 5. Recommendations
 
 ### Rec 1: adjust_isf (priority 2), predicted TIR Δ +8.0 pp
-- Increase ISF from 75 to 345 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9× by time of day (EXP-2271). Observed 732 corrections in this block with median effective ISF 345 mg/dL/U. Consolidated TIR improvement across 6 blocks: +8.0 pp.
-- Settings change: **isf** increase 75.0 → 345.0 (+25 %)
-- Rationale: Increase ISF from 75 to 345 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9× by time of day (EXP-2271). Observed 732 corrections in this block with median effective ISF 345 mg/dL/U. Consolidated TIR improvement across 6 blocks: +8.0 pp.
+- Increase ISF from 75 to 112 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9× by time of day (EXP-2271). Observed 709 corrections in this block with median effective ISF 352 mg/dL/U. Consolidated TIR improvement across 6 blocks: +8.0 pp. NOTE: per-step change capped at ±50%; re-evaluate after observing under new setting.
+- Settings change: **isf** increase 75.0 → 112.5 (+25 %)
+- Rationale: Increase ISF from 75 to 112 mg/dL/U during overnight (00:00-06:00). ISF varies 4.6-9× by time of day (EXP-2271). Observed 709 corrections in this block with median effective ISF 352 mg/dL/U. Consolidated TIR improvement across 6 blocks: +8.0 pp. NOTE: per-step change capped at ±50%; re-evaluate after observing under new setting.
 
 ### Rec 2: adjust_cr (priority 2), predicted TIR Δ -4.1 pp
 - Decrease morning CR from 4.5 to 3.8 g/U (15% more insulin). Mean post-meal excursion is 71 mg/dL.
