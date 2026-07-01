@@ -12,6 +12,48 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Per-Patient Therapy Trajectory State Harness (2026-07-01, later)
+
+Built the first concrete piece from the state-aware-harness parallel analysis, after a scope refinement (documented in the doc's §6): the primary target is per-patient therapy trajectory, not the autoresearch tooling loop originally proposed.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Design update | `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §6 | Records the pivot, the turn-granularity/label/feature design decisions, and what would need to be true before attempting unsupervised state discovery |
+| Turn/feature/label harness | `tools/cgmencode/production/therapy_trajectory_state.py` | Segments a patient's grid into fixed 72h sequential turns; computes ~25 continuous emission features (glycemic, activity, supply/demand flux/EGP via `metabolic_engine`, insulin "wall"/overflow saturation via `clinical_rules.detect_insulin_saturation`, a 48h trailing-carbs glycogen-loading proxy, and CGM/infusion-site wear/age); labels each turn with a rule-based, ADA-threshold, safety-first outcome proxy (`improving`/`stable_good`/`stable_poor`/`worsening`/`unknown`) |
+| Tests | `tools/cgmencode/production/test_therapy_trajectory_state.py` | 16 tests on synthetic grids: segmentation, feature computation, all 5 label branches (incl. safety-priority over TIR), graceful degradation without profile columns |
+| Cohort CLI | `tools/cgmencode/run_therapy_trajectory_state.py` | `python -m tools.cgmencode.run_therapy_trajectory_state` builds a labeled-turn table for a cohort and logs it as a tracked MLflow evidence artifact |
+
+**Key Findings**:
+- 72h (not calendar weekday/weekend) turns were chosen deliberately: long enough for ~3 repetitions of each daily basal segment, short enough to stay state-like; day-type is carried as a continuous `weekend_day_fraction` feature rather than a hard turn boundary, so it can be validated as predictive rather than assumed.
+- Unsupervised state discovery (the IO-HMM Candidly used) is explicitly deferred, not attempted: our patient-turn scale (~20-30 patients x 40-60 turns) and within-patient autocorrelation make naive clustering prone to discovering "which patient this is" rather than a transferable regime — the same Simpson's-paradox risk this repo already treats carefully in `deconfounding.py`. A rule-based ADA-threshold label plus stored continuous features is the interim step; §6.4 of the design doc lists the four preconditions (leave-patient-out validation, BIC-based k selection, controller-lineage stratification, and a comparison baseline) before attempting discovery.
+- Verified against real longitudinal data (patients a-d, ~180 days each -> 60 turns/patient): full harness runs end-to-end, all 16 new tests plus the existing 1103-test production unit suite pass with no regressions, and MLflow logging (metrics + summary JSON artifact) was confirmed via a direct tracking-store query.
+- Early non-causal sanity check on 4 patients: mean TIR was highest in `stable_good` turns (79.2%) and lowest in `stable_poor` (55.2%), consistent with the label scheme being behaviorally coherent; `weekend_day_fraction`-vs-TIR correlation was negligible (0.012) in this small sample (not evidence either way yet).
+- The autoresearch-session-tracking angle from the original analysis was explicitly dropped from active work (not deleted from the doc) since it doesn't move any clinical outcome and the counter-causal-audit gap it would address remains a documented but non-urgent opportunity.
+
+**Enables next** (not yet built): regime-dependence audits for `ClinicalDecisionPolicy` gate thresholds, reconciling `ClinicalDecisionReport`'s projected 2-week outcomes against realized ones using the same join pattern, and a replay-and-diff harness for policy config changes using this cohort table as a frozen evaluation set.
+
+---
+
+## State-Aware Harness Parallels: Candidly/LangSmith Blog Analysis (2026-07-01)
+
+Researched Candidly's LangChain blog post on state-aware agent harnesses (turn-level state inference via an IO-HMM, replacing ex-post conversation grading with a mid-stream control signal) and mapped its architecture onto our own research/decision-support tooling.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Analysis doc | `docs/60-research/state-aware-harness-parallels-2026-07-01.md` | Full parallel mapping, prioritized recommendations, and explicit non-transferable caveats |
+
+**Key Findings**:
+- `autoresearch_agent.py`'s `evaluate_research_plan()` (line 2055) computes an ex-post `readiness_score` per single plan call — structurally identical to Candidly's *starting point* (ex-post conversation labels), not yet their end state (a turn-level signal read mid-session).
+- Our existing `_counter_causal_audit()` (line 1646) audits one plan in isolation; there is no session-level trend tracking across successive plan/direction calls to detect a "circling" research session (recurring counter-causal category, shrinking evidence diversity, flat/oscillating readiness) the way Candidly's coding-agent analogy describes ("edits circling the same files," "tests failing in new ways vs the same way every time").
+- `deconfounding.py` / `clinical_rules.py` already implement a causal analog of Candidly's emission/transition-input split (patient-side physiological signal vs controller-masking behavior), so the conceptual groundwork for a future state model already exists.
+- `ClinicalDecisionPolicy` gates (`min_confidence_for_change`, deconfounded confidence caps) are global constants; Candidly's central finding — pooled effects hide state-dependent harms/benefits — is a direct warning against further global-threshold tuning without checking regime-dependence via existing phenotype/controller signals.
+- The MLflow promotion ladder proposed in the 2026-06-27 MLflow experience report is structurally equivalent to Candidly's "versioned policy per state" concept, but recommendation-card artifacts don't yet carry the producing advisor's run id/promotion stage, and projected 2-week outcomes are never reconciled against realized outcomes on the same trace.
+- A full IO-HMM is premature given our much smaller-n regime (patients/sessions vs Candidly's thousands of conversations); rule-based trend features are the appropriate first step, matching the MLflow ladder's own research→candidate progression.
+
+**Recommended next steps (prioritized in the doc)**: session-level trend tracking in autoresearch (P0), MLflow run/promotion-stage tagging on recommendation cards (P0), regime-dependence audit before further policy gate tuning (P1), a replay-and-diff harness for policy config changes (P1), realized-outcome logging back onto originating MLflow runs (P2), and only then a lightweight regime classifier (P2, deferred).
+
+---
+
 ## Clinical-Grade Decision Support Layer (2026-06-30)
 
 Added a configurable, reimbursement-ready decision support layer to `cgmencode` that turns raw advisory output into clinically documentable basal/bolus recommendations comparable across AID systems and multiple-daily-injection therapy. Every recommendation (including a documented no-change) carries practical-vs-theoretical framing, a 2-week expected-outcome projection, and explicit success plus stop/escalate criteria for an automatic feedback loop.
