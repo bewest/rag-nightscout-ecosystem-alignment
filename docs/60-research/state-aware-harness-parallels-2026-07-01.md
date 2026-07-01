@@ -288,3 +288,13 @@ Unlike the correction-event-based ISF domain, CR's persistence *improved* materi
 | CR | direct-advisor (only method, 100%) | direct-advisor (71.2% at 30d vs 63.4% at 14d) | No — single evidence path | 30 days looks better than 14 |
 
 No domain shares the same "winning" recipe, which is exactly the point of running the benchmark empirically per domain rather than assuming one approach generalizes. Concrete next steps, in order: (1) revisit `advise_correction_isf`'s performance so a full-cohort, multi-window-length ISF sweep is tractable; (2) wire up `advise_cr_adequacy` against the meal-detection pipeline as CR's second independent method, closing the asymmetry noted in §7.5; (3) only after per-domain methods are chosen, stage the winning method per domain as a `candidate` action-label signal — not yet wired into `ClinicalDecisionPolicy` from this work.
+
+### 7.7 A unified, research-stage scorer
+
+`tools/cgmencode/production/action_label_scorer.py` packages the empirically preferred method per domain into one function, `score_patient_actions(parquet_dir, patient_id)`, so the three benchmarked methods are callable as one coherent unit for future evaluation:
+
+- **basal**: direct-advisor primary (100% coverage, higher persistence), facts-loader surfaced as corroboration.
+- **isf**: facts-loader primary (86.0% persistence), direct-advisor used as a fallback when facts-loader has no signal for the window, and as corroboration otherwise.
+- **cr**: direct-advisor only (no second method exists yet), using the 30-day window.
+
+Every result carries `promotion_stage: "research"` explicitly. This is deliberately **not** wired into `ClinicalDecisionPolicy` or `ClinicalDecisionReport` — it makes the benchmarked methods reusable and testable as a unit, not a change to any production recommendation. A real run on patient `c` illustrates the output shape: basal suggested `decrease` (confidence 0.55, facts-loader had no corroborating signal for this window), while ISF suggested `increase` with both methods agreeing (confidence 0.61) — exactly the kind of corroboration signal that would make a future `candidate`-stage promotion decision easier to justify.

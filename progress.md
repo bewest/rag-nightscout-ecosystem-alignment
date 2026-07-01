@@ -12,6 +12,14 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Unified Research-Stage Action-Label Scorer (2026-07-01, session close)
+
+Closes out the action-label pivot with `tools/cgmencode/production/action_label_scorer.py`: one function, `score_patient_actions(parquet_dir, patient_id)`, packaging the empirically preferred method per domain (basal: direct-advisor primary; ISF: facts-loader primary with direct-advisor fallback/corroboration; CR: direct-advisor only) into a single callable, tagged `promotion_stage: "research"` throughout. 4 new tests; verified against real data (patient `c`: basal `decrease` conf 0.55, ISF `increase` conf 0.61 with both methods agreeing, CR `none`). Explicitly **not** wired into `ClinicalDecisionPolicy`/`ClinicalDecisionReport` — this is reusable/testable infrastructure, not a production change. Full production unit suite: 1161 passed, no regressions. See `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §7.7 for details.
+
+This closes the state-aware-harness research thread for this session (todos: 10/10 done). Summary of the full arc: Candidly/LangSmith parallel analysis -> per-patient therapy-trajectory-state harness (72h turns, rule-based labels, physiology features) -> predictive-signal validation (honest "not yet" for the generic label) -> pivot to action-space labels aligned with the recommender's actual basal/ISF/CR domains -> per-domain benchmarks of existing label sources -> unified research-stage scorer. Next steps for a future session are recorded in §7.6-§7.7 of the design doc (ISF advisor performance, CR's second method, `candidate`-stage promotion).
+
+---
+
 ## ISF and CR Action-Label Benchmarks (2026-07-01, final)
 
 Extended the basal action-label benchmark (previous entry) to ISF and CR, completing the cross-domain comparison.
