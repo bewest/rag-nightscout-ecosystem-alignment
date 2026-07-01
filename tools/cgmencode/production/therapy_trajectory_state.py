@@ -164,6 +164,10 @@ class TurnFeatures:
     saturation_level: str = "insufficient_data"  # SaturationLevel value or
                                                    # "insufficient_data"
     saturation_wall_pct: float = 0.0
+    n_wall_episodes: int = 0             # EXP-2660/2662 episode-level detail,
+    n_high_glucose_episodes: int = 0     # not just the aggregate wall_pct
+    excess_insulin_u: float = 0.0        # estimated wasted insulin (Units)
+    delayed_hypo_risk: float = 0.0       # 0-1, fraction of walls with post-wall hypo
 
     carbs_48h_g: float = 0.0             # trailing 48h carbs before turn start
 
@@ -172,6 +176,22 @@ class TurnFeatures:
     site_degradation_p: float | None = None  # EXP-2863 per-patient P(site
                                                # degradation), static across
                                                # all of a patient's turns
+
+    # Recency/momentum features. The turn-level *means* above treat the
+    # whole 72h window as flat; these instead ask "what happened most
+    # recently" and "is the turn itself trending", since a flat mean can
+    # dilute exactly the timing signal that matters (see
+    # docs/60-research/state-aware-harness-parallels-2026-07-01.md §6.4).
+    last24h_tir: float = 0.0             # TIR over just the final 24h of the turn
+    last24h_tbr_l1: float = 0.0
+    last24h_tbr_l2: float = 0.0
+    last24h_net_flux_mean: float = 0.0   # recency-weighted flux (vs whole-turn mean)
+    first_half_tir: float = 0.0          # TIR over the turn's first half
+    second_half_tir: float = 0.0         # TIR over the turn's second half
+    tir_within_turn_trend: float = 0.0   # second_half_tir - first_half_tir:
+                                          # within-turn momentum, distinct from
+                                          # the turn-to-turn delta the label uses
+    net_flux_std: float = 0.0            # flux volatility, not just its mean
 
     @property
     def meets_ada_tbr(self) -> bool:
@@ -308,11 +328,19 @@ def compute_turn_features(
     iob_arr = window_df["iob"].to_numpy(dtype=float) if "iob" in window_df else None
     saturation_level = "insufficient_data"
     saturation_wall_pct = 0.0
+    n_wall_episodes = 0
+    n_high_glucose_episodes = 0
+    excess_insulin_u = 0.0
+    delayed_hypo_risk = 0.0
     if iob_arr is not None and len(glucose) > 0:
         assessment = detect_insulin_saturation(glucose.astype(float), iob_arr)
         if assessment is not None:
             saturation_level = assessment.level.value
             saturation_wall_pct = assessment.wall_pct
+            n_wall_episodes = assessment.n_wall_episodes
+            n_high_glucose_episodes = assessment.n_high_glucose_episodes
+            excess_insulin_u = assessment.excess_insulin_u
+            delayed_hypo_risk = assessment.delayed_hypo_risk
 
     # ── Supply/demand flux (EGP proxy), sliced from the whole-patient
     #    MetabolicState computed once by the caller ────────────────────
@@ -321,6 +349,29 @@ def compute_turn_features(
     mean_carb_supply = float(np.mean(metabolic_slice.carb_supply)) if physiology_available else 0.0
     mean_demand = float(np.mean(metabolic_slice.demand)) if physiology_available else 0.0
     mean_net_flux = float(np.mean(metabolic_slice.net_flux)) if physiology_available else 0.0
+    net_flux_std = float(np.std(metabolic_slice.net_flux)) if physiology_available else 0.0
+
+    # ── Recency/momentum sub-window features ──────────────────────────
+    # Positional sub-masks into window_df's own row order; metabolic_slice
+    # (if present) is already row-aligned with window_df by the caller, so
+    # the same boolean sub-mask applies directly to both.
+    last24h_mask = (window_df[time_col] >= (end - pd.Timedelta(hours=24))).to_numpy()
+    half_point = start + (end - start) / 2
+    first_half_mask = (window_df[time_col] < half_point).to_numpy()
+    second_half_mask = ~first_half_mask
+
+    last24h_glucose = glucose[last24h_mask] if len(glucose) else np.array([])
+    last24h_tir_data = compute_time_in_ranges(last24h_glucose)
+    first_half_tir_data = compute_time_in_ranges(
+        glucose[first_half_mask] if len(glucose) else np.array([])
+    )
+    second_half_tir_data = compute_time_in_ranges(
+        glucose[second_half_mask] if len(glucose) else np.array([])
+    )
+    last24h_net_flux_mean = (
+        float(np.mean(metabolic_slice.net_flux[last24h_mask]))
+        if physiology_available and last24h_mask.any() else 0.0
+    )
 
     return TurnFeatures(
         patient_id=patient_id,
@@ -352,10 +403,22 @@ def compute_turn_features(
         mean_net_flux=mean_net_flux,
         saturation_level=saturation_level,
         saturation_wall_pct=saturation_wall_pct,
+        n_wall_episodes=n_wall_episodes,
+        n_high_glucose_episodes=n_high_glucose_episodes,
+        excess_insulin_u=excess_insulin_u,
+        delayed_hypo_risk=delayed_hypo_risk,
         carbs_48h_g=carbs_48h_g,
         mean_cage_hours=_mean_or(window_df, "cage_hours"),
         mean_sage_hours=_mean_or(window_df, "sage_hours"),
         site_degradation_p=site_degradation_p,
+        last24h_tir=last24h_tir_data.tir,
+        last24h_tbr_l1=last24h_tir_data.tbr_l1,
+        last24h_tbr_l2=last24h_tir_data.tbr_l2,
+        last24h_net_flux_mean=last24h_net_flux_mean,
+        first_half_tir=first_half_tir_data.tir,
+        second_half_tir=second_half_tir_data.tir,
+        tir_within_turn_trend=second_half_tir_data.tir - first_half_tir_data.tir,
+        net_flux_std=net_flux_std,
     )
 
 

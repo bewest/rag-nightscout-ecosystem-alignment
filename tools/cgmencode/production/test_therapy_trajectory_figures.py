@@ -109,6 +109,20 @@ def test_auc_comparison_figure_smoke():
     assert "not yet" in fig.caption
 
 
+def test_auc_comparison_figure_with_refined_bar():
+    summary = {
+        "baseline": {"auc_pooled": 0.638}, "full": {"auc_pooled": 0.615},
+        "refined": {"auc_pooled": 0.612},
+        "n_samples": 1347, "n_groups": 28,
+        "delta_auc_from_physiology_features": -0.022,
+        "delta_auc_refined_vs_baseline": -0.025,
+    }
+    fig = auc_comparison_figure(summary)
+    assert fig is not None
+    assert base64.b64decode(fig.png_base64)
+    assert "recency/momentum" in fig.caption
+
+
 def test_auc_comparison_figure_missing_data():
     assert auc_comparison_figure({}) is None
 

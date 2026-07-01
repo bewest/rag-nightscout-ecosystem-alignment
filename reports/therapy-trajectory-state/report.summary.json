@@ -28,6 +28,7 @@
     }
   },
   "predictive_validation": {
+    "model": "logistic",
     "n_samples": 1347,
     "n_groups": 28,
     "resolved_like_fraction": 0.3904974016332591,
@@ -66,7 +67,44 @@
       ],
       "auc_pooled": 0.6151452138030687
     },
+    "refined": {
+      "features": [
+        "tir",
+        "tbr_l1",
+        "tbr_l2",
+        "tar_l1",
+        "cv",
+        "weekend_day_fraction",
+        "meal_count",
+        "bolus_active_row_count",
+        "smb_active_row_count",
+        "override_active_fraction",
+        "exercise_active_fraction",
+        "suspension_active_fraction",
+        "mean_hepatic_production",
+        "mean_carb_supply",
+        "mean_insulin_demand",
+        "mean_net_flux",
+        "saturation_wall_pct",
+        "carbs_48h_g",
+        "mean_cage_hours",
+        "mean_sage_hours",
+        "last24h_tir",
+        "last24h_tbr_l1",
+        "last24h_tbr_l2",
+        "last24h_net_flux_mean",
+        "tir_within_turn_trend",
+        "net_flux_std",
+        "n_wall_episodes",
+        "n_high_glucose_episodes",
+        "excess_insulin_u",
+        "delayed_hypo_risk"
+      ],
+      "auc_pooled": 0.6123108700786856
+    },
     "delta_auc_from_physiology_features": -0.02238761039815107,
+    "delta_auc_from_recency_momentum_features": -0.0028343437243831815,
+    "delta_auc_refined_vs_baseline": -0.02522195412253425,
     "top_physiology_features_by_importance": [
       [
         "bolus_active_row_count",
@@ -87,6 +125,28 @@
       [
         "carbs_48h_g",
         0.17444000931650577
+      ]
+    ],
+    "top_recency_momentum_features_by_importance": [
+      [
+        "n_wall_episodes",
+        -0.35087635729919076
+      ],
+      [
+        "last24h_tir",
+        0.2545114870009294
+      ],
+      [
+        "excess_insulin_u",
+        0.14665068971564515
+      ],
+      [
+        "net_flux_std",
+        -0.11966327717444485
+      ],
+      [
+        "n_high_glucose_episodes",
+        0.08616000406851694
       ]
     ]
   },

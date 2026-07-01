@@ -9,6 +9,8 @@ sklearn = pytest.importorskip("sklearn")
 
 from tools.cgmencode.production.therapy_trajectory_predictive_validation import (
     BASELINE_FEATURES,
+    RECENCY_MOMENTUM_FEATURES,
+    REFINED_FEATURES,
     add_controller_lineage,
     compare_feature_sets,
     controller_stratified_summary,
@@ -62,6 +64,58 @@ def _synthetic_dataset(n_patients: int = 10, n_turns: int = 20, seed: int = 0) -
     return pd.DataFrame(rows)
 
 
+def _synthetic_dataset_with_recency(
+    n_patients: int = 10, n_turns: int = 20, seed: int = 1,
+) -> pd.DataFrame:
+    """Like ``_synthetic_dataset``, but the true driver of the label is a
+    recency/momentum feature rather than the whole-turn mean physiology
+    feature, so tests can check REFINED_FEATURES picks up signal that
+    FULL_FEATURES (mean-only) would miss."""
+    rng = np.random.default_rng(seed)
+    rows = []
+    for p in range(n_patients):
+        patient_id = f"p{p}"
+        for t in range(n_turns):
+            recency_signal = rng.normal(0, 1)
+            resolved = recency_signal > 0
+            rows.append({
+                "patient_id": patient_id,
+                "data_completeness": 0.9,
+                "tir": rng.normal(65, 5),
+                "tbr_l1": rng.normal(2, 1),
+                "tbr_l2": rng.normal(0.5, 0.3),
+                "tar_l1": rng.normal(10, 3),
+                "cv": rng.normal(35, 5),
+                "weekend_day_fraction": 0.3,
+                "meal_count": 5,
+                "bolus_active_row_count": 5,
+                "smb_active_row_count": 0,
+                "override_active_fraction": 0.0,
+                "exercise_active_fraction": 0.0,
+                "suspension_active_fraction": 0.0,
+                "mean_hepatic_production": 0.0,   # mean features carry no signal here
+                "mean_carb_supply": 0.0,
+                "mean_insulin_demand": 0.0,
+                "mean_net_flux": 0.0,
+                "saturation_wall_pct": 0.0,
+                "carbs_48h_g": 50.0,
+                "mean_cage_hours": 24.0,
+                "mean_sage_hours": 24.0,
+                "last24h_tir": 65.0 + recency_signal * 10,  # the real signal
+                "last24h_tbr_l1": 2.0,
+                "last24h_tbr_l2": 0.5,
+                "last24h_net_flux_mean": recency_signal,
+                "tir_within_turn_trend": recency_signal * 5,
+                "net_flux_std": 1.0,
+                "n_wall_episodes": 0,
+                "n_high_glucose_episodes": 0,
+                "excess_insulin_u": 0.0,
+                "delayed_hypo_risk": 0.0,
+                "state": "improving" if resolved else "worsening",
+            })
+    return pd.DataFrame(rows)
+
+
 def test_prepare_binary_dataset_drops_unknown_and_unreliable():
     df = pd.DataFrame([
         {"patient_id": "a", "data_completeness": 0.9, "state": "improving"},
@@ -103,6 +157,50 @@ def test_compare_feature_sets_shows_physiology_improves_auc():
     assert summary["full"]["auc_pooled"] is not None
     assert summary["delta_auc_from_physiology_features"] > 0.2
     assert summary["top_physiology_features_by_importance"][0][0] == "mean_hepatic_production"
+
+
+def test_refined_features_detect_recency_signal_full_features_miss():
+    """When the true signal lives in a recency/momentum feature rather than
+    a whole-turn mean, REFINED_FEATURES should pick it up even though
+    FULL_FEATURES (mean-only physiology) carries no such feature."""
+    df = _synthetic_dataset_with_recency()
+    dataset = prepare_binary_dataset(df)
+    full = evaluate_feature_set(dataset, ["tir", "mean_hepatic_production"], "full_like")
+    refined = evaluate_feature_set(dataset, ["last24h_tir"], "recency_only")
+    assert refined.auc_pooled is not None
+    assert refined.auc_pooled > 0.85
+    # The mean-only features carry no signal for this synthetic label.
+    assert full.auc_pooled is not None
+    assert 0.3 < full.auc_pooled < 0.7
+
+
+def test_compare_feature_sets_includes_refined_comparison():
+    df = _synthetic_dataset_with_recency()
+    summary = compare_feature_sets(df)
+    assert summary["refined"]["auc_pooled"] is not None
+    assert summary["delta_auc_from_recency_momentum_features"] > 0.2
+    assert summary["top_recency_momentum_features_by_importance"][0][0] == "last24h_tir"
+
+
+def test_evaluate_feature_set_gbm_model_runs_and_detects_signal():
+    df = _synthetic_dataset()
+    dataset = prepare_binary_dataset(df)
+    result = evaluate_feature_set(
+        dataset, ["mean_hepatic_production"], "physiology_only_gbm", model="gbm",
+    )
+    assert result.model == "gbm"
+    assert result.auc_pooled is not None
+    assert result.auc_pooled > 0.7
+    # GBM importance extraction isn't implemented (would need permutation
+    # importance) -- confirm that's a documented no-op, not a silent bug.
+    assert result.feature_importance == {}
+
+
+def test_evaluate_feature_set_rejects_unknown_model():
+    df = _synthetic_dataset()
+    dataset = prepare_binary_dataset(df)
+    with pytest.raises(ValueError):
+        evaluate_feature_set(dataset, BASELINE_FEATURES, "x", model="not-a-real-model")
 
 
 def test_evaluate_feature_set_handles_single_class_gracefully():

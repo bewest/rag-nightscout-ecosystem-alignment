@@ -241,24 +241,35 @@ def weekend_fraction_vs_tir_figure(df: pd.DataFrame) -> Optional[TrajectoryFigur
 
 
 def auc_comparison_figure(validation_summary: dict) -> Optional[TrajectoryFigure]:
-    """Baseline-vs-full AUC bar chart from the predictive-validation summary
-    (``therapy_trajectory_predictive_validation.compare_feature_sets``)."""
+    """Baseline-vs-full[-vs-refined] AUC bar chart from the predictive-
+    validation summary (``therapy_trajectory_predictive_validation.compare_feature_sets``).
+    Shows a third "refined" bar (recency/momentum/episode features) when
+    present in the summary, for backward compatibility with older summaries
+    that only have baseline/full."""
     baseline_auc = validation_summary.get("baseline", {}).get("auc_pooled")
     full_auc = validation_summary.get("full", {}).get("auc_pooled")
     if baseline_auc is None or full_auc is None:
         return None
+    refined_auc = validation_summary.get("refined", {}).get("auc_pooled")
     import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots(figsize=(5, 4))
-    labels = ["Glycemic-only\n(baseline)", "+ physiology\nfeatures (full)"]
+    labels = ["Glycemic-only\n(baseline)", "+ physiology\n(full)"]
     values = [baseline_auc, full_auc]
-    colors = [_C_STABLE_GOOD, _C_WORSENING if full_auc < baseline_auc else _C_IMPROVING]
+    if refined_auc is not None:
+        labels.append("+ recency/momentum\n(refined)")
+        values.append(refined_auc)
+    colors = [
+        _C_STABLE_GOOD if v >= baseline_auc else _C_WORSENING for v in values
+    ]
+    colors[0] = _C_STABLE_GOOD
+
+    fig, ax = plt.subplots(figsize=(6, 4))
     bars = ax.bar(labels, values, color=colors, zorder=3)
     for bar, v in zip(bars, values):
         ax.text(bar.get_x() + bar.get_width() / 2, v, f"{v:.3f}",
                 ha="center", va="bottom", fontsize=10, color=_C_INK)
     ax.axhline(0.5, color=_C_INK, linewidth=0.8, linestyle=":", zorder=1)
-    ax.text(1.35, 0.505, "chance (0.5)", fontsize=8, color=_C_INK, ha="right")
+    ax.text(len(labels) - 0.65, 0.505, "chance (0.5)", fontsize=8, color=_C_INK, ha="right")
     ax.set_ylim(0.4, 1.0)
     ax.set_ylabel("Leave-patient-out AUC (pooled)")
     ax.set_title("Does adding physiology features help predict\nthe next turn's outcome?",
@@ -269,6 +280,14 @@ def auc_comparison_figure(validation_summary: dict) -> Optional[TrajectoryFigure
     g = validation_summary.get("n_groups")
     delta = validation_summary.get("delta_auc_from_physiology_features")
     verdict = "did not improve on" if (delta or 0) <= 0 else "improved on"
+    refined_note = ""
+    if refined_auc is not None:
+        delta2 = validation_summary.get("delta_auc_refined_vs_baseline")
+        refined_verdict = "also did not improve on" if (delta2 or 0) <= 0 else "improved on"
+        refined_note = (
+            f" Adding recency/momentum/episode-level features on top "
+            f"{refined_verdict} the baseline either (delta={delta2:+.3f})."
+        )
     caption = (
         f"Leave-patient-out cross-validated AUC ({n} turns, {g} patients) for "
         f"predicting whether the *next* turn resolves well, using only the "
@@ -276,8 +295,8 @@ def auc_comparison_figure(validation_summary: dict) -> Optional[TrajectoryFigure
         f"researched physiology features (full). In this first cut, the "
         f"physiology feature set {verdict} the glycemic-only baseline "
         f"(delta={delta:+.3f}) -- an honest 'not yet', not a validated "
-        f"improvement; see the design doc for why (feature count vs sample "
-        f"size, mean-aggregation possibly diluting the signal)."
+        f"improvement.{refined_note} See the design doc for the full "
+        f"discussion of why, and what was tried."
     )
     return TrajectoryFigure(
         title="Predictive-signal validation: baseline vs full feature set",

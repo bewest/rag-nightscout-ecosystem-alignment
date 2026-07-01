@@ -135,6 +135,38 @@ def test_compute_turn_features_meal_and_activity_counts():
     assert feats.override_active_fraction == pytest.approx(10 / len(window_df))
 
 
+def test_compute_turn_features_within_turn_momentum():
+    """Glucose that starts low (out of range) and rises into range over the
+    turn should show a positive within-turn TIR trend and higher last-24h
+    TIR than the whole-turn mean would suggest."""
+    df = _synthetic_grid(days=3.0, glucose_value=100.0)
+    n = len(df)
+    # First half out of range (40 mg/dL), second half in range (100 mg/dL).
+    df.loc[df.index[: n // 2], "glucose"] = 40.0
+    df.loc[df.index[n // 2:], "glucose"] = 100.0
+    turns = segment_into_turns(df, turn_hours=72.0)
+    (start, end) = turns[0]
+    window_df = df[(df["time"] >= start) & (df["time"] < end)]
+    feats = compute_turn_features("p1", 0, start, end, window_df, turn_hours=72.0)
+    assert feats.first_half_tir == pytest.approx(0.0)
+    assert feats.second_half_tir == pytest.approx(100.0)
+    assert feats.tir_within_turn_trend == pytest.approx(100.0)
+    # Last 24h falls entirely within the in-range second half.
+    assert feats.last24h_tir == pytest.approx(100.0)
+
+
+def test_compute_turn_features_saturation_episode_fields_present():
+    df = _synthetic_grid(days=3.0, glucose_value=100.0)
+    turns = segment_into_turns(df, turn_hours=72.0)
+    (start, end) = turns[0]
+    window_df = df[(df["time"] >= start) & (df["time"] < end)]
+    feats = compute_turn_features("p1", 0, start, end, window_df, turn_hours=72.0)
+    # Flat, in-range glucose -> no high-glucose episodes at all.
+    assert feats.n_wall_episodes == 0
+    assert feats.n_high_glucose_episodes == 0
+    assert feats.excess_insulin_u == 0.0
+
+
 # ── label_turn_outcome ────────────────────────────────────────────────
 
 def _feat(tir=70.0, tbr_l1=1.0, tbr_l2=0.0, completeness=1.0) -> TurnFeatures:
@@ -216,6 +248,12 @@ def test_build_patient_trajectory_end_to_end(tmp_path):
     assert [r["state"] for r in records] == ["stable_good", "stable_good", "unknown"]
     # site_degradation_p should be None (no bootstrap file for this patient).
     assert all(r["site_degradation_p"] is None for r in records)
+    # New recency/momentum/episode-level fields should be present and, for
+    # perfectly flat in-range glucose, show no within-turn momentum.
+    for r in records:
+        assert r["tir_within_turn_trend"] == pytest.approx(0.0)
+        assert r["last24h_tir"] == pytest.approx(100.0)
+        assert r["n_wall_episodes"] == 0
 
 
 def test_build_patient_trajectory_degrades_without_profile_columns(tmp_path):

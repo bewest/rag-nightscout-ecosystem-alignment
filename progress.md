@@ -12,6 +12,28 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Action-Space Basal Label Benchmark and Recency-Feature Re-test (2026-07-01, latest)
+
+Continued iterating on the §6.4 "not yet" finding, then pivoted the whole framing based on discussion: instead of a generic pooled glycemic-outcome label, align trajectory "states" with the actual recommender action space (basal/ISF/CR x increase/decrease/none x time-block).
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Recency/momentum feature re-test | `tools/cgmencode/production/therapy_trajectory_state.py` (extended `TurnFeatures`), `therapy_trajectory_predictive_validation.py` (`REFINED_FEATURES`, GBM model option) | Added last-24h sub-window TIR/TBR, within-turn TIR trend, flux volatility, and saturation episode-level detail; re-tested with both logistic regression and `HistGradientBoostingClassifier` |
+| Basal action-label benchmark | `tools/cgmencode/production/basal_action_label_benchmark.py` | Compares `compute_basal_mismatch` (EXP-2865/2869, facts-loader/revealed-preference) against `advise_overnight_basal_quadrant` (EXP-2589, direct advisor) on the same 14-day rolling windows |
+| Tests | `test_therapy_trajectory_state.py` (+2), `test_basal_action_label_benchmark.py` (12 new) | Momentum/episode feature correctness, benchmark coverage/agreement/persistence logic |
+| Design doc update | `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §7 | Full writeup of both the recency-feature re-test and the action-label pivot/benchmark |
+| Figure | `reports/therapy-trajectory-state/basal-label-benchmark.png` | Coverage/persistence/agreement comparison chart |
+
+**Key Findings**:
+- **Recency/momentum features also didn't help**: refined-feature AUC (0.612 logistic) was essentially the same as the mean-only "full" feature set (0.615) and still below the glycemic-only baseline (0.638) — ruling out "flat-mean dilution" as the explanation for the earlier null result. GBM scored worse than logistic regression across every feature set (e.g. baseline 0.596 vs 0.638), most likely reflecting overfitting risk at this sample size rather than a genuine nonlinearity advantage.
+- **Action-space reframing**: pooling basal/ISF/CR-relevant signal into one binary "resolved vs not" label is exactly the kind of averaging that hides state-dependent effects — the same lesson Candidly's own pooled-vs-per-state analysis teaches. `SettingsRecommendation` already has the right shape (`parameter`, `direction`, `affected_hours`) to use directly as the label target instead.
+- **Basal benchmark result**: the direct-advisor method (EXP-2589) has 100% coverage of 303 fourteen-day windows across 27 patients vs the facts-loader method's (EXP-2865/2869) 32.7% — a serious practical gap for decision-support usability. Both show real temporal persistence well above chance (73% vs 66%), with direct-advisor slightly more stable. The two methods agree only 61.6% of the time when both are available, meaning they capture related but distinct aspects of "basal need" (revealed-preference actual-delivery ratio vs overnight glucose-slope dynamics) rather than being redundant.
+- **Practical recommendation**: use the direct-advisor method as the primary wide-coverage basal label; treat facts-loader agreement as an optional higher-confidence layer, not a replacement. Neither is wired into `ClinicalDecisionPolicy` yet — both remain `research`-stage.
+
+**Next steps** (documented, not yet built): extend the same benchmark methodology to ISF (correction-event-based window) and CR (meal-response-window based), each likely needing its own evidence-window length and possibly its own modeling approach rather than reusing the 14-day basal window; only after per-domain labels are chosen should any be staged as a `candidate` signal into `ClinicalDecisionPolicy`.
+
+---
+
 ## Therapy Trajectory State: Predictive Validation and Controller Stratification (2026-07-01, even later)
 
 Deepened the per-patient therapy-trajectory-state work with the next Candidly-playbook step: proving the emission features actually carry forward-looking signal (their "AUC-proof" step), scaled to the full available cohort, and stratified by controller lineage to guard against Simpson's-paradox-style confounding.

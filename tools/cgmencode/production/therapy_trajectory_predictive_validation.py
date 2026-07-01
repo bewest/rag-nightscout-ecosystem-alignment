@@ -64,11 +64,31 @@ PHYSIOLOGY_FEATURES = [
     "mean_sage_hours",
 ]
 
+# Recency/momentum/episode-level features added after the first-cut "full"
+# feature set tested null (§6.4 of the design doc): a flat 72h mean may
+# dilute exactly the timing signal that matters, so these instead capture
+# "what happened most recently" and "is the turn itself trending", plus
+# saturation episode-level detail beyond the aggregate wall_pct.
+RECENCY_MOMENTUM_FEATURES = [
+    "last24h_tir",
+    "last24h_tbr_l1",
+    "last24h_tbr_l2",
+    "last24h_net_flux_mean",
+    "tir_within_turn_trend",
+    "net_flux_std",
+    "n_wall_episodes",
+    "n_high_glucose_episodes",
+    "excess_insulin_u",
+    "delayed_hypo_risk",
+]
+
 FULL_FEATURES = BASELINE_FEATURES + PHYSIOLOGY_FEATURES
+REFINED_FEATURES = FULL_FEATURES + RECENCY_MOMENTUM_FEATURES
 
 RESOLVED_STATES = {"improving", "stable_good"}
 UNRESOLVED_STATES = {"worsening", "stable_poor"}
 MIN_COMPLETENESS = 0.5
+DEFAULT_MODEL = "logistic"
 
 
 @dataclass
@@ -79,6 +99,7 @@ class EvaluationResult:
     n_groups: int
     n_groups_scored: int          # groups with both classes present (AUC-eligible)
     auc_pooled: float | None
+    model: str = DEFAULT_MODEL
     feature_importance: dict[str, float] = field(default_factory=dict)
 
 
@@ -95,23 +116,46 @@ def prepare_binary_dataset(df: pd.DataFrame) -> pd.DataFrame:
     return reliable
 
 
+def _build_pipeline(model: str):
+    from sklearn.impute import SimpleImputer
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
+
+    if model == "logistic":
+        clf = LogisticRegression(max_iter=1000, class_weight="balanced")
+    elif model == "gbm":
+        from sklearn.ensemble import HistGradientBoostingClassifier
+        clf = HistGradientBoostingClassifier(class_weight="balanced", random_state=0)
+    else:
+        raise ValueError(f"Unknown model type: {model!r} (expected 'logistic' or 'gbm')")
+
+    return Pipeline([
+        ("impute", SimpleImputer(strategy="median")),
+        ("scale", StandardScaler()),
+        ("clf", clf),
+    ])
+
+
 def evaluate_feature_set(
     df: pd.DataFrame,
     features: list[str],
     feature_set_name: str,
+    model: str = DEFAULT_MODEL,
 ) -> EvaluationResult:
     """Leave-patient-out cross-validated AUC for one feature set.
+
+    ``model`` is ``"logistic"`` (default; interpretable, gives feature
+    coefficients) or ``"gbm"`` (``HistGradientBoostingClassifier``; can
+    capture nonlinearities/interactions the linear model misses, at the
+    cost of not returning a simple per-feature coefficient).
 
     Returns ``auc_pooled=None`` if there isn't enough class variation
     across held-out folds to compute a meaningful AUC (e.g. too few
     patients or a degenerate label distribution).
     """
-    from sklearn.impute import SimpleImputer
-    from sklearn.linear_model import LogisticRegression
     from sklearn.metrics import roc_auc_score
     from sklearn.model_selection import LeaveOneGroupOut, cross_val_predict
-    from sklearn.pipeline import Pipeline
-    from sklearn.preprocessing import StandardScaler
 
     available = [f for f in features if f in df.columns]
     X = df[available].to_numpy(dtype=float)
@@ -119,11 +163,7 @@ def evaluate_feature_set(
     groups = df["patient_id"].to_numpy()
     n_groups = len(np.unique(groups))
 
-    pipeline = Pipeline([
-        ("impute", SimpleImputer(strategy="median")),
-        ("scale", StandardScaler()),
-        ("clf", LogisticRegression(max_iter=1000, class_weight="balanced")),
-    ])
+    pipeline = _build_pipeline(model)
 
     auc_pooled = None
     n_groups_scored = 0
@@ -145,14 +185,18 @@ def evaluate_feature_set(
 
     # Feature importance from a model refit on all data (qualitative only;
     # not itself cross-validated). Coefficient magnitude is meaningful
-    # because features are standardized by the same pipeline.
+    # because features are standardized by the same pipeline. Only
+    # extracted for the logistic model -- GBM importance would need
+    # permutation importance, which is a separate, heavier computation
+    # not included here.
     importance: dict[str, float] = {}
-    try:
-        pipeline.fit(X, y)
-        coefs = pipeline.named_steps["clf"].coef_[0]
-        importance = {f: float(c) for f, c in zip(available, coefs)}
-    except ValueError:
-        pass
+    if model == "logistic":
+        try:
+            pipeline.fit(X, y)
+            coefs = pipeline.named_steps["clf"].coef_[0]
+            importance = {f: float(c) for f, c in zip(available, coefs)}
+        except ValueError:
+            pass
 
     return EvaluationResult(
         feature_set_name=feature_set_name,
@@ -161,45 +205,52 @@ def evaluate_feature_set(
         n_groups=n_groups,
         n_groups_scored=n_groups_scored,
         auc_pooled=auc_pooled,
+        model=model,
         feature_importance=importance,
     )
 
 
-def compare_feature_sets(df: pd.DataFrame) -> dict:
-    """Run the baseline-vs-full comparison and return a plain-dict summary."""
-    dataset = prepare_binary_dataset(df)
-    baseline = evaluate_feature_set(dataset, BASELINE_FEATURES, "baseline_glycemic_only")
-    full = evaluate_feature_set(dataset, FULL_FEATURES, "full_with_physiology")
+def compare_feature_sets(df: pd.DataFrame, model: str = DEFAULT_MODEL) -> dict:
+    """Run the baseline-vs-full-vs-refined comparison and return a summary.
 
-    delta_auc = (
-        full.auc_pooled - baseline.auc_pooled
-        if baseline.auc_pooled is not None and full.auc_pooled is not None
-        else None
+    ``model`` applies to every feature set compared, so the comparison is
+    apples-to-apples (see ``evaluate_feature_set`` for model choices).
+    """
+    dataset = prepare_binary_dataset(df)
+    baseline = evaluate_feature_set(dataset, BASELINE_FEATURES, "baseline_glycemic_only", model=model)
+    full = evaluate_feature_set(dataset, FULL_FEATURES, "full_with_physiology", model=model)
+    refined = evaluate_feature_set(
+        dataset, REFINED_FEATURES, "refined_with_recency_momentum", model=model,
     )
-    top_physiology = sorted(
-        (
-            (feat, val) for feat, val in full.feature_importance.items()
-            if feat in PHYSIOLOGY_FEATURES
-        ),
-        key=lambda kv: abs(kv[1]), reverse=True,
-    )[:5]
+
+    def _delta(a: EvaluationResult, b: EvaluationResult) -> float | None:
+        if a.auc_pooled is None or b.auc_pooled is None:
+            return None
+        return b.auc_pooled - a.auc_pooled
+
+    def _top_features(result: EvaluationResult, pool: list[str], n: int = 5) -> list[tuple[str, float]]:
+        return sorted(
+            ((feat, val) for feat, val in result.feature_importance.items() if feat in pool),
+            key=lambda kv: abs(kv[1]), reverse=True,
+        )[:n]
 
     return {
+        "model": model,
         "n_samples": len(dataset),
         "n_groups": int(dataset["patient_id"].nunique()) if not dataset.empty else 0,
         "resolved_like_fraction": (
             float(dataset["resolved_like"].mean()) if not dataset.empty else None
         ),
-        "baseline": {
-            "features": baseline.features,
-            "auc_pooled": baseline.auc_pooled,
-        },
-        "full": {
-            "features": full.features,
-            "auc_pooled": full.auc_pooled,
-        },
-        "delta_auc_from_physiology_features": delta_auc,
-        "top_physiology_features_by_importance": top_physiology,
+        "baseline": {"features": baseline.features, "auc_pooled": baseline.auc_pooled},
+        "full": {"features": full.features, "auc_pooled": full.auc_pooled},
+        "refined": {"features": refined.features, "auc_pooled": refined.auc_pooled},
+        "delta_auc_from_physiology_features": _delta(baseline, full),
+        "delta_auc_from_recency_momentum_features": _delta(full, refined),
+        "delta_auc_refined_vs_baseline": _delta(baseline, refined),
+        "top_physiology_features_by_importance": _top_features(full, PHYSIOLOGY_FEATURES),
+        "top_recency_momentum_features_by_importance": _top_features(
+            refined, RECENCY_MOMENTUM_FEATURES,
+        ),
     }
 
 

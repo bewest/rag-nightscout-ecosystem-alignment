@@ -202,3 +202,54 @@ Recorded explicitly so this isn't attempted prematurely:
 2. A candidate range of state counts (e.g. k=2..6) evaluated by BIC/held-out fit *and* interpretability, the same two-sided check Candidly used, given their own experience that more states did not always mean a better model.
 3. Controller-lineage (Loop/AAPS/Trio) treated as a stratification variable or explicit covariate during fitting, not left for the clustering to absorb — otherwise "discovered" states risk encoding controller identity rather than a transferable behavioral regime, mirroring this repo's existing Simpson's-paradox concerns in the deconfounding work.
 4. A concrete comparison target: any discovered clustering should be checked against the cheap rule-based label from §6.1 as a baseline — it should recover at least as much predictive/actionable signal, not just be "different."
+
+---
+
+## 7. Iterating on the "Not Yet": Recency Features, and a Pivot to Action-Space Labels
+
+### 7.1 Recency/momentum features: still not yet
+
+§6.4's null result raised a specific hypothesis: a flat 72h mean might dilute exactly the timing signal that matters. To test this directly, `therapy_trajectory_state.py` was extended with recency/momentum features — `last24h_tir`/`last24h_tbr_l1`/`last24h_tbr_l2` (state over just the final 24h of the turn), `tir_within_turn_trend` (second-half minus first-half TIR, i.e. is the turn itself trending), `net_flux_std` (flux volatility, not just its mean), `last24h_net_flux_mean`, and saturation episode-level detail (`n_wall_episodes`, `n_high_glucose_episodes`, `excess_insulin_u`, `delayed_hypo_risk` from `SaturationAssessment`, not just the aggregate `wall_pct`). A `HistGradientBoostingClassifier` option was also added to `evaluate_feature_set` to check whether a nonlinear model could find interactions a linear one misses.
+
+**Result on the full 28-patient/1481-turn cohort**: recency/momentum features did not help either.
+
+| Feature set | Logistic AUC | GBM AUC |
+|---|---:|---:|
+| Glycemic-only (baseline) | 0.638 | 0.596 |
+| + physiology (full) | 0.615 | 0.493 |
+| + recency/momentum (refined) | 0.612 | 0.515 |
+
+The evaluation harness itself was re-validated on synthetic data with a *recency* feature engineered as the true driver (not a mean feature this time) — it correctly scored AUC>0.85, confirming the harness would have detected a real recency signal if one existed in the real data. GBM performed *worse* than logistic regression across the board, most likely reflecting overfitting risk at this sample size (~1300 turns, 28 groups, 15-30 features) rather than a real advantage for linear-vs-nonlinear; logistic regression remains the more trustworthy choice here without further hyperparameter tuning and more data.
+
+This is a disciplined stopping point for this line of iteration, not a dead end: continuing to search for a signal inside ever-more-elaborate variants of the *same* generic "resolved-like vs not" binary label risks exactly the kind of overfitting-to-noise this repo's own methodology warns against. The more productive move, discussed next, was to question the label itself.
+
+### 7.2 Pivot: states aligned with the actual recommender action space
+
+The generic binary label (resolved-like vs not) pools together very different underlying decisions: a turn might be "not resolving" because basal is too low overnight, ISF is inadequate for corrections, or CR is miscalibrated for meals — three different mechanisms with three different levers. Pooling them is exactly the kind of averaging that hides state-dependent effects, which is the *core* Candidly insight this whole line of work is built on (§2). Applying that insight to our own label design: the states most useful for decision support should align with the actual recommender action space already defined in `SettingsRecommendation` (`types.py:668`) — `parameter` (basal_rate / isf / cr), `direction` (increase / decrease), and `affected_hours` (time block) — rather than a single pooled glycemic-outcome label.
+
+A further design constraint (also raised in discussion): different domains need different evidence windows and likely different modeling approaches. Basal mismatch detection needs several clean fasting-equilibrium nights; ISF assessment needs enough correction-dose events; CR assessment needs enough meal-response windows. None of these naturally fit the same fixed 72h window used for reading physiology emissions elsewhere in this package — so the physiology-emission turns (72h) and the action-label decision windows (domain-specific, starting at 14 days to match the existing `ClinicalDecisionPolicy` review cadence) are treated as two different grains, nested together rather than forced into one.
+
+### 7.3 Basal action-label benchmark: two existing label sources, compared empirically
+
+Rather than assuming which of two already-existing basal-assessment approaches in this codebase was "the" label source, they were benchmarked against each other on the same 14-day rolling windows (`tools/cgmencode/production/basal_action_label_benchmark.py`):
+
+- **facts-loader style** (`compute_basal_mismatch`, EXP-2865/2869): uses the controller's own actual-vs-scheduled basal ratio during strictly-filtered fasting-equilibrium windows (COB=0, no recent carbs/bolus/exercise/override, flat glucose ROC), grouped into 4 time-of-day blocks.
+- **direct advisor** (`advise_overnight_basal_quadrant`, EXP-2589): classifies overnight (00-06h) glucose slope plus net actual-vs-scheduled basal into one of 4 quadrants, returning a `SettingsRecommendation` (direction, confidence, affected hours) directly.
+
+This is an observational (non-interventional) dataset — no one actually acted on either method's flagged direction — so "did the recommendation work" isn't answerable here. Instead three honest, computable comparisons were run across 303 fourteen-day windows over 27 patients:
+
+| Metric | facts-loader (EXP-2865/2869) | direct-advisor (EXP-2589) |
+|---|---:|---:|
+| Coverage (usable label) | 32.7% | 100% |
+| Persistence (same direction next window, of non-"none" labels) | 65.6% | 72.9% |
+| Agreement (where both covered, n=99) | 61.6% | (same) |
+
+![Basal action-label benchmark](../../reports/therapy-trajectory-state/basal-label-benchmark.png)
+
+**Interpretation**: the facts-loader method's strict fasting-equilibrium filtering is deliberately conservative — it only reports when it has clean evidence — but that leaves two-thirds of 14-day windows with no label at all, a serious practical limitation for a decision-support signal that needs to be available most of the time. The direct-advisor method always produces a classification and is also somewhat more temporally stable (72.9% vs 65.6% persistence, both meaningfully above the ~50% chance baseline for a binary increase/decrease persistence check). The two methods agree only 61.6% of the time when both fire — moderate, not high — meaning they are capturing related but genuinely different aspects of "basal need" (revealed-preference actual-delivery ratio vs overnight glucose-slope dynamics), not redundant computations of the same thing.
+
+**Practical recommendation**: use the direct-advisor method as the primary, wide-coverage basal action label; treat facts-loader agreement as an optional higher-confidence confirmation layer when it happens to be available, rather than a replacement. Neither is wired into `ClinicalDecisionPolicy` from this work — both remain `research`-stage per the MLflow promotion ladder (`docs/60-research/mlflow-experience-report-2026-06-27.md`).
+
+### 7.4 What's next
+
+ISF and CR need the equivalent benchmark, each with its own domain-appropriate evidence window (ISF: correction-dose events; CR: meal-response windows) rather than reusing the 14-day basal window by default — the right window length and possibly the right modeling approach may differ per domain, matching the point raised in discussion that different signals need different time horizons and features. Only after per-domain labels are chosen should wiring any of them into `ClinicalDecisionPolicy` as a real-time signal be considered, and even then as a staged `candidate` rather than a direct production change.
