@@ -43,10 +43,10 @@
       "alias": "trio",
       "name": "Trio",
       "url": "https://github.com/nightscout/Trio.git",
-      "ref": "05b5f45931c395309b7d702b9c38a806f08b02ca",
+      "ref": "fc4e69d9124f878ee53721bdf8b97aee89d7401c",
       "description": "Trio iOS closed-loop system",
       "submodules": true,
-      "frozen_at": "2026-06-17T15:04:41.377129",
+      "frozen_at": "2026-07-03T13:55:59.604776",
       "frozen_from": "dev"
     },
     {
@@ -137,9 +137,9 @@
       "alias": "loopfollow",
       "name": "LoopFollow",
       "url": "https://github.com/loopandlearn/LoopFollow.git",
-      "ref": "0d91b958f847fb0ba6e6386a9b6a3f4fb5947ec4",
+      "ref": "9d2cea6bee785e42df3013bf25de8da57084ec39",
       "description": "LoopFollow iOS/watchOS app for caregivers to monitor Loop/Trio/iAPS users via Nightscout",
-      "frozen_at": "2026-06-17T14:54:17.617512",
+      "frozen_at": "2026-07-03T13:55:59.797569",
       "frozen_from": "main"
     },
     {
@@ -252,6 +252,30 @@
       "description": "Multi-study CGM/insulin data standardization toolkit (500k+ subject-days) for cross-study phenotype synthesis",
       "frozen_at": "2026-06-17T14:54:35.227507",
       "frozen_from": "develop"
+    },
+    {
+      "name": "OmnipodKit",
+      "url": "git@github.com:loopandlearn/OmnipodKit.git",
+      "ref": "d75f218131225d3faa51daca0a004952d06c9b8f",
+      "description": "Universal Omnipod pump manager (Eros/Dash/Omnipod5) shared by Loop and Trio",
+      "frozen_at": "2026-07-03T13:56:00.091317",
+      "frozen_from": "main"
+    },
+    {
+      "name": "osaid-keymanager",
+      "url": "git@github.com:nightscout/osaid-keymanager.git",
+      "ref": "ba07e30d83703b13781a23b69d504f634a66269c",
+      "description": "Server issuing Omnipod-5 PDM keypairs to App-Attest-gated Loop/Trio builds",
+      "frozen_at": "2026-07-03T13:56:00.100223",
+      "frozen_from": "main"
+    },
+    {
+      "name": "trio-telemetry",
+      "url": "git@github.com:nightscout/trio-telemetry.git",
+      "ref": "91148cb6bd9c2d2bf354b0d046e53a145d37e2ff",
+      "description": "Anonymous opt-out telemetry sink for Trio, authenticated via Apple App Attest",
+      "frozen_at": "2026-07-03T13:56:00.109308",
+      "frozen_from": "master"
     }
   ]
 }
