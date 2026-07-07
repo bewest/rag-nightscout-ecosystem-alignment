@@ -12,6 +12,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## nightscout-connect Architecture Review Refresh (2026-07-07)
+
+Reviewed the updated `nightscout-connect` dev branch architecture after the connector integration pass and compared it with Nocturne's connector architecture.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Architecture review | `docs/10-domain/nightscout-connect-architecture-review-2026-07-07.md` | Captures additional tests, architectural recommendations, and Nocturne lessons |
+
+**Key Findings**:
+- The new `node --test` suite materially improves connector confidence, but machine-level XState transition tests are still the next highest-value gap.
+- Nocturne's separation of configuration, auth token providers, connector services, mappers, and timezone services is the best reference for future `nightscout-connect` refactors.
+- Glooko web-login/v3 graph work should be feature-flagged and fixture-backed, not folded into the 0.0.13 release baseline.
+
+**Source Files Analyzed**:
+- `/home/bewest/src/worktrees/nightscout-connect/lib/builder.js`
+- `/home/bewest/src/worktrees/nightscout-connect/lib/machines/session.js`
+- `/home/bewest/src/worktrees/nightscout-connect/lib/machines/fetch.js`
+- `/home/bewest/src/worktrees/nightscout-connect/lib/machines/cycle.js`
+- `/home/bewest/src/worktrees/nightscout-connect/machines.md`
+- `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Core/Services/BaseConnectorService.cs`
+- `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Glooko/`
+
+---
+
 ## nightscout-connect Dev Connectivity Branches (2026-07-07)
 
 Promoted the tested `nightscout-connect` connectivity baseline onto `origin/dev`, then worked methodically on branches cut from `dev` for Dexcom, LibreLinkUp, and Glooko connectivity.
