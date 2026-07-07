@@ -12,6 +12,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## nightscout-connect Dev Connectivity Branches (2026-07-07)
+
+Promoted the tested `nightscout-connect` connectivity baseline onto `origin/dev`, then worked methodically on branches cut from `dev` for Dexcom, LibreLinkUp, and Glooko connectivity.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Dev baseline | `nightscout-connect@origin/dev` (`52afd55`) | Integrates Dexcom, Nightscout source/output, LibreLinkUp, and Glooko compatibility fixes |
+| Dexcom branch | `wip/bewest/dexcom-connectivity` | Adds regional server, accountId wrapper, non-HTTP failure, and timestamp/trend tests |
+| Libre branch | `wip/bewest/libre-connectivity` | Fixes omitted-region default, multi-patient mismatch, missing graph/current data, and timezone-qualified timestamps |
+| Glooko branch | `wip/bewest/glooko-connectivity` | Fixes hardcoded device identity regression and maps v2 CGM readings to Nightscout entries |
+| Triage doc update | `docs/10-domain/nightscout-connect-connector-triage-2026-07-07.md` | Records branch sequence and international compatibility notes |
+
+**Key Findings**:
+- Working directly on top of `origin/dev` preserved existing unreleased LibreLinkUp and Glooko contributions before adding the 0.0.13 connectivity baseline.
+- The test suite now has 32 `node --test` cases covering Dexcom, Nightscout source/output, LibreLinkUp, and Glooko connector contracts.
+- Glooko EU CSRF web-login and v3 graph fallback are still larger follow-up work; they should be a dedicated branch with fixtures, not silently folded into the release baseline.
+
+**Source Files Analyzed**:
+- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/dexcomshare.js`
+- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/librelinkup.js`
+- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/glooko/index.js`
+- `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Dexcom/Services/DexcomAuthTokenProvider.cs`
+- `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Glooko/`
+- `/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.FreeStyle/`
+
+---
+
 ## Nightscout Dependabot Alert Context Report (2026-07-07)
 
 Reviewed the cgm-remote-monitor dependency-dev-tooling branch in `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` and wrote a report for closing or consolidating low-value Dependabot PRs without misrepresenting raw advisory counts.

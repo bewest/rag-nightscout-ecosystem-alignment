@@ -109,6 +109,25 @@ Recommendation: split Nightscout v3 work into small PRs: v3 read client, v3 outp
 | Glooko | Defer existing PRs from release | Create new focused web-login plus v3 graph PR |
 | Nightscout source/output | Defer #52 from release | Split v3 support into testable increments |
 
+## Dev Branch Update (2026-07-07)
+
+After the initial triage, `nightscout-connect` `origin/dev` was advanced as the release-integration branch. Work was staged on branches cut from `origin/dev`, then fast-forwarded into `dev` after each test pass.
+
+| Branch | Commit | Connectivity Added | Test Coverage |
+|--------|--------|--------------------|---------------|
+| `wip/bewest/dev-connectivity-0.0.13` | `980c8a5`, `45b92a0`, `ef5b024` | Dexcom Share auth compatibility, Nightscout source/output hardening, fake-server Nightscout source/output tests | `node --test`, 14 tests |
+| `wip/bewest/dexcom-connectivity` | `960de1f` | US/OUS/custom Dexcom server tests, non-HTTP failure rejection, accountId wrapper session tests, timestamp/trend mapping tests | 19 tests |
+| `wip/bewest/libre-connectivity` | `88076c2` | Default Libre EU region handling, multi-patient selection errors, missing graph/current tolerance, timezone-qualified timestamp parsing | 26 tests |
+| `wip/bewest/glooko-connectivity` | `52afd55` | Configurable/generated Glooko device identity and v2 CGM readings transformed into Nightscout entries | 32 tests |
+
+Current `origin/dev` head after this sequence: `52afd55`.
+
+### International Compatibility Notes
+
+- **Dexcom Share**: US (`share2.dexcom.com`), OUS (`shareous1.dexcom.com`), and explicit server override are now covered by tests. The same `{accountId}` response shape should also be checked in Nocturne, whose refreshed Dexcom connector still trims the auth response as a string.
+- **LibreLinkUp**: Region table includes AE, AP, AU, CA, DE, EU, EU2, FR, JP, and US. Tests now cover omitted region defaulting to EU, explicit server overrides, and timestamps with explicit timezone suffixes to avoid double-shifting international data.
+- **Glooko**: The dev branch now covers EU and explicit hosts such as `de-fr.api.glooko.com`, carries configurable device IDs, and uploads v2 CGM readings when returned. Full EU CSRF web-login and `/api/v3/graph/data` fallback remain separate follow-up work, informed by Nocturne's v3 graph/session models and timezone timeline services.
+
 ## New Traceability
 
 - GAP-CONNECT-013, REQ-CONNECT-013: Dexcom Share auth failure propagation
