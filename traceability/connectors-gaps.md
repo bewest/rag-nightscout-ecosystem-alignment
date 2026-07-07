@@ -831,6 +831,83 @@ osx_image: xcode12.4
 
 ---
 
+### GAP-CONNECT-013: Dexcom Share Authentication Errors Are Treated as Data
+
+**Description**: The `nightscout-connect` Dexcom Share driver resolves authentication failures as successful values, then forwards those error objects into the session request path. Its catch blocks also dereference `err.response` without guards and reference `error.response.data` where only `err` is in scope.
+
+**Affected Systems**: nightscout-connect, cgm-remote-monitor connect plugin users, Dexcom Share and G7 accounts.
+
+**Impact**:
+- Real Dexcom authentication failures can appear as `RUNNING 0 failures 0` with no new entries.
+- Modern Dexcom responses that wrap `accountId` can be serialized incorrectly into the session request.
+- Non-HTTP failures can crash error handling instead of surfacing actionable diagnostics.
+
+**Source**:
+- `../worktrees/nightscout-connect/lib/sources/dexcomshare.js:153`
+- `../worktrees/nightscout-connect/lib/sources/dexcomshare.js:169`
+- `../worktrees/nightscout-connect/lib/sources/dexcomshare.js:190`
+- `../worktrees/nightscout-connect/lib/sources/dexcomshare.js:199`
+- nightscout-connect PR #55
+
+**Remediation**: Merge the narrow Dexcom Share PR after review, add fixture tests for bare UUID vs `{accountId}` responses, and verify auth failures reject into the state machine's error path.
+
+**Status**: Triage complete, safe merge candidate.
+
+---
+
+### GAP-CONNECT-014: Glooko EU Authentication and Data Endpoints Have Drifted
+
+**Description**: Glooko EU accounts now report CSRF failures on JSON API login in field reports, while existing code still posts to `/api/v2/users/sign_in` and then reads v2 pump and CGM endpoints. Open PRs propose device metadata, refactors, or Puppeteer, but none provide a narrow, tested web-login plus timestamp-safe sync path.
+
+**Affected Systems**: nightscout-connect, Glooko EU users, Omnipod 5 and CamAPS users using Glooko as an intermediary.
+
+**Impact**:
+- EU users can receive 422 authentication failures even with valid credentials.
+- `/api/v2/cgm/readings` can return empty readings, leaving Glooko as treatments-only or requiring delayed `/api/v3/graph/data` use.
+- Fixed timezone offsets do not handle DST, risking shifted treatments.
+
+**Source**:
+- `../worktrees/nightscout-connect/lib/sources/glooko/index.js:26`
+- `../worktrees/nightscout-connect/lib/sources/glooko/index.js:53`
+- `../worktrees/nightscout-connect/lib/sources/glooko/index.js:135`
+- `../worktrees/nightscout-connect/lib/sources/glooko/index.js:139`
+- `../worktrees/nightscout-connect/lib/sources/glooko/index.js:171`
+- nightscout-connect issues #14, #38, #10
+- nightscout-connect PRs #31, #46, #51
+
+**Remediation**: Build a new focused Glooko PR around web-form CSRF login, region-specific server selection, v3 graph fallback for CGM, named time zone handling, and fixture-backed timestamp tests.
+
+**Status**: Open, not release-ready.
+
+---
+
+### GAP-CONNECT-015: Nightscout Source V3 Support Is Not Release-Ready
+
+**Description**: `nightscout-connect` can read from and write to Nightscout through v1 endpoints, with token acquisition through v2 authorization. The open v3 source PR is broad, adds Docker and compatibility material, and has a maintainer comment reporting a `register_loop` crash.
+
+**Affected Systems**: nightscout-connect, cgm-remote-monitor instances using Nightscout as a source or output, local mirror workflows.
+
+**Impact**:
+- Nightscout mirroring does not get v3 validation, history, or identifier-based sync identity.
+- Existing output remains v1-only for entries and treatments.
+- Broad v3 PRs are hard to review and can destabilize connector loop registration.
+
+**Source**:
+- `../worktrees/nightscout-connect/lib/sources/nightscout.js:40`
+- `../worktrees/nightscout-connect/lib/sources/nightscout.js:55`
+- `../worktrees/nightscout-connect/lib/sources/nightscout.js:92`
+- `../worktrees/nightscout-connect/lib/sources/nightscout.js:132`
+- `../worktrees/nightscout-connect/lib/sources/nightscout.js:133`
+- `../worktrees/nightscout-connect/lib/outputs/nightscout.js:35`
+- `../worktrees/nightscout-connect/lib/outputs/nightscout.js:48`
+- nightscout-connect PR #52
+
+**Remediation**: Split v3 work into small PRs: v3 read client, v3 output client, loop registration tests, and migration documentation.
+
+**Status**: Open, defer from candidate release.
+
+---
+
 ## Node.js & Dependency Gaps
 
 ---

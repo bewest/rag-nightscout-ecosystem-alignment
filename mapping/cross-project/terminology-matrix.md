@@ -213,6 +213,22 @@ Trusted external identity providers in the ecosystem. See [`docs/10-domain/trust
 
 ---
 
+### Third-Party Connector Triage Terms
+
+Terms used when triaging `nightscout-connect` connector bugs and PRs.
+
+| Alignment Term | nightscout-connect | Dexcom Share | Glooko | Nightscout |
+|----------------|--------------------|--------------|--------|------------|
+| **Authentication token** | `session`, `cookies`, bearer token | Publisher session ID from `LoginPublisherAccountById` | Web session cookie or API login response | JWT from `/api/v2/authorization/request/{token}` |
+| **Account identity** | Driver-specific auth result | `accountId` from `AuthenticatePublisherAccount` | `glookoCode` patient identifier | authorization subject or token |
+| **Cloud glucose fetch** | `dataFromSesssion` frame implementation | `/ReadPublisherLatestGlucoseValues` | `/api/v2/cgm/readings` or `/api/v3/graph/data` | `/api/v1/entries.json` or future v3 entries |
+| **Nightscout upload target** | `outputs/nightscout.js` | `entries` | `treatments`, possible `entries` | `entries`, `treatments` |
+| **Release gate** | Package publish plus cgm dependency bump | PR #55 is narrow and syntax-clean | Open fixes are incomplete or too broad | PR #52 is too broad and has reported crashes |
+
+**Related Gaps**: GAP-CONNECT-013, GAP-CONNECT-014, GAP-CONNECT-015
+
+---
+
 ### Statistics API Concepts
 
 | Concept | Definition | Formula/Source |

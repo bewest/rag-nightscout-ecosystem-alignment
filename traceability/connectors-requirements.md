@@ -820,6 +820,66 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
+### REQ-CONNECT-013: Dexcom Share Auth Failure Propagation
+
+**Statement**: Dexcom Share adapters MUST reject authentication, session, and glucose-fetch failures instead of returning error objects as successful data.
+
+**Rationale**: The connector state machine can only enter recovery and diagnostic paths when driver failures reject. Returning error objects as data hides actionable Dexcom failures and can serialize invalid objects into follow-up API calls.
+
+**Scenarios**:
+- `AuthenticatePublisherAccount` returns `AccountPasswordInvalid`
+- `AuthenticatePublisherAccount` returns `{ accountId: "..." }`
+- Latest glucose request fails without an HTTP response object
+
+**Verification**:
+- Mock each response shape and assert the driver returns a bare `accountId` or rejects.
+- Assert transform returns an empty entry batch only for non-array success payloads, not for hidden auth failures.
+
+**Gap Reference**: GAP-CONNECT-013
+
+---
+
+### REQ-CONNECT-014: Region-Safe Glooko Authentication and Timestamp Handling
+
+**Statement**: Glooko adapters MUST support region-specific authentication flows and SHOULD use named time zones instead of fixed offsets when converting treatment timestamps.
+
+**Rationale**: EU Glooko users report CSRF rejection on JSON API login, and fixed offsets cannot handle DST changes. Connector output must preserve event time semantics because downstream Nightscout treatments drive retrospective analysis.
+
+**Scenarios**:
+- EU web login obtains authenticity token and session cookie before API reads.
+- Glooko account uses a regional host such as `de-fr.api.glooko.com`.
+- DST boundary occurs within the sync window.
+- `/api/v2/cgm/readings` is empty but `/api/v3/graph/data` contains delayed CGM series.
+
+**Verification**:
+- Fixture tests for web-login token extraction and cookie reuse.
+- Timestamp tests across winter and summer offsets for the same named time zone.
+- CGM fallback tests that clearly mark Glooko-derived glucose latency.
+
+**Gap Reference**: GAP-CONNECT-014
+
+---
+
+### REQ-CONNECT-015: Nightscout V3 Source and Output Parity
+
+**Statement**: Nightscout source and output adapters SHOULD support API v3 entries and treatments in small, independently testable slices without regressing v1 compatibility.
+
+**Rationale**: V3 enables validation, history, and identifier-aware sync. A broad untested v3 rewrite creates more release risk than the missing feature itself.
+
+**Scenarios**:
+- Read entries from a v3 source using bearer token auth.
+- Upload entries and treatments through v3 with deterministic identifiers.
+- Fall back to v1 when v3 is unavailable or explicitly disabled.
+
+**Verification**:
+- Unit tests for v1 and v3 URL construction and auth headers.
+- Loop registration test for each source driver.
+- Idempotent upload test for entries and treatments.
+
+**Gap Reference**: GAP-CONNECT-015, GAP-CONNECT-001, GAP-CONNECT-003
+
+---
+
 
 ## Node.js & Dependency Requirements
 

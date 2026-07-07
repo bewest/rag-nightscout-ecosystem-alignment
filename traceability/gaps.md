@@ -6,7 +6,7 @@ This document is an index of gaps organized by domain.
 
 - [Aid Algorithms](aid-algorithms-gaps.md) - 66 gaps
 - [Cgm Sources](cgm-sources-gaps.md) - 52 gaps
-- [Connectors](connectors-gaps.md) - 68 gaps
+- [Connectors](connectors-gaps.md) - 71 gaps
 - [Nightscout Api](nightscout-api-gaps.md) - 74 gaps
 - [Pumps](pumps-gaps.md) - 10 gaps
 - [Sync Identity](sync-identity-gaps.md) - 71 gaps
@@ -19,12 +19,12 @@ This document is an index of gaps organized by domain.
 | nightscout-api | 78 | [nightscout-api-gaps.md](nightscout-api-gaps.md) | 2026-04-10 |
 | sync-identity | 71 | [sync-identity-gaps.md](sync-identity-gaps.md) | 2026-02-01 |
 | aid-algorithms | 71 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-02-08 |
-| connectors | 68 | [connectors-gaps.md](connectors-gaps.md) | 2026-02-01 |
+| connectors | 71 | [connectors-gaps.md](connectors-gaps.md) | 2026-07-07 |
 | cgm-sources | 52 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-02-01 |
 | treatments | 26 | [treatments-gaps.md](treatments-gaps.md) | 2026-03-10 |
 | pumps | 13 | [pumps-gaps.md](pumps-gaps.md) | 2026-02-03 |
 
-Total: 351 unique GAP IDs across 7 domains (3 GAP-ENTRY-* added 2026-04-10, 5 GAP-EFFECT-* added 2026-02-08)
+Total: 354 unique GAP IDs across 7 domains (3 GAP-CONNECT-* added 2026-07-07, 3 GAP-ENTRY-* added 2026-04-10, 5 GAP-EFFECT-* added 2026-02-08)
 
 ## Duplicate Resolution (2026-02-01)
 

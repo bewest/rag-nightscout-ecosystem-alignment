@@ -12,6 +12,35 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## nightscout-connect Connector PR Triage (2026-07-07)
+
+Inspected the cgm-remote-monitor dev candidate PR #8482 and set up a clean sibling `nightscout-connect` worktree to triage Dexcom Share, Glooko, and Nightscout connector issues and PRs.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Connector triage deep dive | `docs/10-domain/nightscout-connect-connector-triage-2026-07-07.md` | Dexcom #55 is narrow and mergeable; Glooko needs a new focused web-login/v3 graph PR; Nightscout v3 #52 should be split |
+| Terminology update | `mapping/cross-project/terminology-matrix.md` | Added connector auth/session/source terms for Dexcom Share, Glooko, and Nightscout |
+| Gap updates | `traceability/connectors-gaps.md` | Added GAP-CONNECT-013 through GAP-CONNECT-015 |
+| Requirement updates | `traceability/connectors-requirements.md` | Added REQ-CONNECT-013 through REQ-CONNECT-015 |
+
+**Key Findings**:
+- cgm-remote-monitor PR #8482 does not include a `nightscout-connect` version bump, so connector fixes need a package release before they can affect the candidate release.
+- Dexcom Share PR #55 directly addresses current source bugs in auth failure propagation and modern `{accountId}` response shape handling.
+- Glooko reports now point to EU CSRF rejection on JSON login, not just missing device metadata; existing PRs are partial, too broad, or known to have timestamp problems.
+- Nightscout v3 support PR #52 is too broad for release stabilization and has a reported `register_loop` crash.
+
+**Gaps Identified**: GAP-CONNECT-013, GAP-CONNECT-014, GAP-CONNECT-015
+
+**Source Files Analyzed**:
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package.json`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package-lock.json`
+- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/dexcomshare.js`
+- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/glooko/index.js`
+- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/nightscout.js`
+- `/home/bewest/src/worktrees/nightscout-connect/lib/outputs/nightscout.js`
+
+---
+
 ## Report Refresh: Consistent Benchmark Figures for All Three Domains (2026-07-01, post-close)
 
 User asked whether any deliverables needed refreshing after the session's updates. Checked `reports/therapy-trajectory-state/report.html`: still current (verified its embedded AUC numbers, 0.612 refined, match the latest recency-feature re-test). Found a real gap though: basal had a dedicated benchmark figure but ISF and CR only had numbers in the docs, no visuals.
