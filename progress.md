@@ -24,6 +24,7 @@ Researched public Glooko API and Nightscout integration evidence to determine wh
 **Key Findings**:
 - Multiple public clients independently document the same web-session flow: sign-in page, CSRF token, form POST, `_logbook-web_session`, then internal API calls.
 - Public projects and Nocturne converge on `/api/v3/session/users` plus `/api/v3/graph/data` with `cgmHigh`, `cgmNormal`, and `cgmLow`.
+- GlookoServiceKit is an uploader rather than a downloader, but it confirms Classic-vs-XT backend separation, 2FA, region resolution, `x-timezone`, local timestamp semantics, and retry after 401/421.
 - Glooko's official public developer portal exists, but detailed API use is relationship-gated. Community paths remain unofficial and should stay feature-flagged until real-account fixtures validate behavior.
 
 **Source Files / Resources Analyzed**:
@@ -33,6 +34,7 @@ Researched public Glooko API and Nightscout integration evidence to determine wh
 - `externals/glooko-reader/`
 - `externals/glooko2nightscout/`
 - `externals/glooko-nightscout-eu/`
+- `externals/GlookoServiceKit/`
 - `https://developers.glooko.com/docs`
 
 ---
