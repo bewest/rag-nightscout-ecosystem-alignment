@@ -126,8 +126,8 @@ Poller (Bus)
 |--------|-------------|------------|-------------|
 | **Dexcom Share** | Username/Password + Account ID | Entries only | 24h |
 | **LibreLinkUp** | Email/Password + Bearer | Entries only | 1h |
-| **Nightscout** | API Secret OR Token | Entries only | 8h |
-| **Glooko** | Email/Password + Cookie | Treatments | 24h |
+| **Nightscout** | API Secret OR Token | Entries, treatments, devicestatus, profiles | 8h |
+| **Glooko** | Email/Password + Cookie | Entries + treatments | 24h |
 | **Minimed CareLink** | Multi-step OAuth | All 3 collections | 7m |
 
 ### Dexcom Share
@@ -191,11 +191,18 @@ Enables Nightscout-to-Nightscout sync for:
 - Creates "nightscout-connect-reader" subject with readable role
 
 **API Endpoints**:
-- `/api/v1/verifyauth` (line 40)
-- `/api/v2/authorization/subjects` (line 55)
-- `/api/v1/entries.json` (line 133)
+- `/api/v1/verifyauth`
+- `/api/v2/authorization/subjects`
+- `/api/v1/entries.json`
+- `/api/v1/treatments.json`
+- `/api/v1/devicestatus.json`
+- `/api/v1/profile.json`
 
 **Session TTL**: 8 hours (matching Nightscout JWT)
+
+**Full sync**: As of the 0.0.13 dev line, the Nightscout source fetches entries,
+treatments, devicestatus, and profiles with independent collection cursors from
+the destination output's gap analysis.
 
 ### Glooko
 

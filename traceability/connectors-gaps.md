@@ -37,8 +37,8 @@ See [gaps.md](gaps.md) for the index.
 |--------|---------|------------|--------------|
 | Dexcom Share | ✅ | ❌ | ❌ |
 | LibreLinkUp | ✅ | ❌ | ❌ |
-| Nightscout | ✅ | ❌ | ❌ |
-| Glooko | ❌ | ✅ | ❌ |
+| Nightscout | ✅ | ✅ | ✅ |
+| Glooko | ✅ | ✅ | ❌ |
 | Minimed | ✅ | ✅ | ✅ |
 
 **Impact**: Incomplete data for most cloud platform sources.
@@ -46,6 +46,8 @@ See [gaps.md](gaps.md) for the index.
 **Assertions**: `conformance/assertions/bridge-connector.yaml` (transform-outputs-all-collections, transform-returns-standard-batch)
 
 **Remediation**: Extend sources to fetch all available collection types from vendor APIs.
+
+**Status**: Partially remediated for Nightscout source in `nightscout-connect` dev (`6dfc4f0`): entries, treatments, devicestatus, and profiles are fetched and output. Glooko now emits entries and treatments; remaining gaps apply to sources without devicestatus/profile coverage.
 
 ---
 
@@ -94,7 +96,7 @@ See [gaps.md](gaps.md) for the index.
 2. Propose V4 endpoints as Nightscout RFC
 3. Mark V4 as Nocturne-only, maintain V3 parity
 
-**Status**: Under discussion
+**Status**: Partially remediated for Nightscout source in `nightscout-connect` dev (`6dfc4f0`): entries, treatments, devicestatus, and profiles are fetched and output. Glooko now emits entries and treatments; remaining gaps apply to sources without devicestatus/profile coverage.
 
 ---
 

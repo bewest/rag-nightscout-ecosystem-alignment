@@ -12,6 +12,29 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Full Nightscout-to-Nightscout Sync (2026-07-07)
+
+Extended `nightscout-connect` Nightscout source/output support from entries-only to all core v1 collections.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Full sync branch | `wip/bewest/full-nightscout-sync` (`6dfc4f0`) | Fetches and writes entries, treatments, devicestatus, and profiles |
+| Fixture-backed test | `test/fixtures/nightscout-full-sync.json` | Representative Loop-style entries/treatments/devicestatus/profile batch |
+| Gap/doc updates | `traceability/connectors-gaps.md`, `docs/10-domain/nightscout-connect-deep-dive.md` | GAP-CONNECT-002 partially remediated for Nightscout source |
+
+**Key Findings**:
+- Nocturne's Nightscout connector confirmed the correct v1 endpoint set and the need for independent collection cursors.
+- External Nightscout output now posts `/api/v1/entries.json`, `/api/v1/treatments.json`, `/api/v1/devicestatus.json`, and `/api/v1/profile.json`.
+- Full sync remains v1-based; v3 identifiers/upsert are still separate future work.
+
+**Source Files Analyzed**:
+- `/home/bewest/src/worktrees/nightscout-connect/lib/sources/nightscout.js`
+- `/home/bewest/src/worktrees/nightscout-connect/lib/outputs/nightscout.js`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/api/{entries,treatments,devicestatus,profile}/index.js`
+- `externals/nocturne/src/Connectors/Nocturne.Connectors.Nightscout/Services/NightscoutConnectorService.cs`
+
+---
+
 ## Glooko Public Connectivity Research (2026-07-07)
 
 Researched public Glooko API and Nightscout integration evidence to determine whether web-login and v3 graph behavior could be implemented deterministically.

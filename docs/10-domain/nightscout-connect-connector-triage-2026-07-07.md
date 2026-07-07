@@ -119,6 +119,7 @@ After the initial triage, `nightscout-connect` `origin/dev` was advanced as the 
 | `wip/bewest/dexcom-connectivity` | `960de1f` | US/OUS/custom Dexcom server tests, non-HTTP failure rejection, accountId wrapper session tests, timestamp/trend mapping tests | 19 tests |
 | `wip/bewest/libre-connectivity` | `88076c2` | Default Libre EU region handling, multi-patient selection errors, missing graph/current tolerance, timezone-qualified timestamp parsing | 26 tests |
 | `wip/bewest/glooko-connectivity` | `52afd55` | Configurable/generated Glooko device identity and v2 CGM readings transformed into Nightscout entries | 32 tests |
+| `wip/bewest/full-nightscout-sync` | `6dfc4f0` | Nightscout source/output sync for entries, treatments, devicestatus, and profiles | 47 tests |
 
 Current `origin/dev` head after this sequence: `52afd55`.
 
@@ -127,6 +128,7 @@ Current `origin/dev` head after this sequence: `52afd55`.
 - **Dexcom Share**: US (`share2.dexcom.com`), OUS (`shareous1.dexcom.com`), and explicit server override are now covered by tests. The same `{accountId}` response shape should also be checked in Nocturne, whose refreshed Dexcom connector still trims the auth response as a string.
 - **LibreLinkUp**: Region table includes AE, AP, AU, CA, DE, EU, EU2, FR, JP, and US. Tests now cover omitted region defaulting to EU, explicit server overrides, and timestamps with explicit timezone suffixes to avoid double-shifting international data.
 - **Glooko**: The dev branch now covers EU and explicit hosts such as `de-fr.api.glooko.com`, carries configurable device IDs, uploads v2 CGM readings when returned, and includes feature-flagged web-login plus `/api/v3/graph/data` fallback. Public research supports these paths as deterministic enough behind flags, but live fixtures are still needed before making them defaults.
+- **Nightscout full sync**: The dev branch now supports Nightscout-to-Nightscout copy of entries, treatments, devicestatus, and profiles over v1 endpoints with independent collection cursors.
 
 ## New Traceability
 
