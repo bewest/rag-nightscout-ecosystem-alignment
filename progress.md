@@ -12,6 +12,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Nightscout Dependabot Alert Context Report (2026-07-07)
+
+Reviewed the cgm-remote-monitor dependency-dev-tooling branch in `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` and wrote a report for closing or consolidating low-value Dependabot PRs without misrepresenting raw advisory counts.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Dependabot context report | `docs/reports/nightscout-dependabot-context-2026-07-07.md` | Dev dependency refresh reduces production audit findings from 51 to 29 and criticals from 2 to 0; remaining alerts need code-path triage |
+
+**Key Findings**:
+- Raw Dependabot counts mix core runtime paths, optional connector paths, browser/report dependencies, dev/test/build tooling, and superseded PRs.
+- Nightscout maintainers are balancing limited review capacity, stability, backward/forward compatibility, and third-party connector constraints.
+- The recommended closure workflow classifies PRs as covered by dev refresh, dev/test-only, optional-feature-path, major-migration-needed, or keep-open-runtime.
+
+**Source Files Analyzed**:
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package.json`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package-lock.json`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/app.js`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/websocket.js`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/middleware/index.js`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/bootevent.js`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/client/index.js`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/purifier.js`
+
+---
+
 ## nightscout-connect Connector PR Triage (2026-07-07)
 
 Inspected the cgm-remote-monitor dev candidate PR #8482 and set up a clean sibling `nightscout-connect` worktree to triage Dexcom Share, Glooko, and Nightscout connector issues and PRs.
