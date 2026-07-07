@@ -76,7 +76,7 @@ Recommended golden cases:
 - LibreLinkUp US, EU, EU2, and explicit server config.
 - LibreLinkUp multi-patient account with configured `CONNECT_LINK_UP_PATIENT_ID`.
 - Glooko v2 readings with `value` encoded as mg/dL x 100.
-- Glooko EU host variants including `eu.api.glooko.com` and `de-fr.api.glooko.com`.
+- Glooko EU host variants including `eu.api.glooko.com` and `de-fr.api.glooko.com`, plus feature-flagged web-login/v3 graph paths.
 - Nightscout readable source, token URL source, and API-secret token creation source.
 
 ### P1: Package-in-Nightscout smoke test
@@ -223,7 +223,7 @@ If starting over with the current ecosystem knowledge:
 5. Store independent cursors per collection.
 6. Treat timezones and vendor "fake UTC" timestamps as first-class test cases.
 7. Design v3 identifiers before designing v3 output.
-8. Keep experimental Glooko web-login/v3 graph work behind a feature flag until fixture coverage exists.
+8. Keep Glooko web-login/v3 graph work behind feature flags until live fixture coverage exists.
 
 ## Release Guidance
 
@@ -233,6 +233,5 @@ For the 0.0.13 cycle, the current `dev` branch is a reasonable release candidate
 |-------|----------------|
 | 0.0.13 | Release current dev after packaging and cgm-remote-monitor dependency smoke test |
 | 0.0.14 | Add XState machine tests and connector status |
-| 0.0.15 | Split Glooko into auth/client/mapper modules and add v3 graph/web-login behind flags |
+| 0.0.15 | Split Glooko into auth/client/mapper modules, add live fixtures, and harden timezone/unit conversion |
 | Later | Add v3 output with deterministic identifiers |
-

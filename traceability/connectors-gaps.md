@@ -877,7 +877,7 @@ osx_image: xcode12.4
 
 **Remediation**: Build a new focused Glooko PR around web-form CSRF login, region-specific server selection, v3 graph fallback for CGM, named time zone handling, and fixture-backed timestamp tests.
 
-**Status**: Open, not release-ready.
+**Status**: Partially remediated in `nightscout-connect` dev (`c06c037`) with feature-flagged web login and v3 graph fallback. Still needs live/sanitized fixtures, named-timezone/DST handling, and unit validation before defaults change.
 
 ---
 

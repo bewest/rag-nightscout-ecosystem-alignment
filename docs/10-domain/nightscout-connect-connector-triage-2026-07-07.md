@@ -126,7 +126,7 @@ Current `origin/dev` head after this sequence: `52afd55`.
 
 - **Dexcom Share**: US (`share2.dexcom.com`), OUS (`shareous1.dexcom.com`), and explicit server override are now covered by tests. The same `{accountId}` response shape should also be checked in Nocturne, whose refreshed Dexcom connector still trims the auth response as a string.
 - **LibreLinkUp**: Region table includes AE, AP, AU, CA, DE, EU, EU2, FR, JP, and US. Tests now cover omitted region defaulting to EU, explicit server overrides, and timestamps with explicit timezone suffixes to avoid double-shifting international data.
-- **Glooko**: The dev branch now covers EU and explicit hosts such as `de-fr.api.glooko.com`, carries configurable device IDs, and uploads v2 CGM readings when returned. Full EU CSRF web-login and `/api/v3/graph/data` fallback remain separate follow-up work, informed by Nocturne's v3 graph/session models and timezone timeline services.
+- **Glooko**: The dev branch now covers EU and explicit hosts such as `de-fr.api.glooko.com`, carries configurable device IDs, uploads v2 CGM readings when returned, and includes feature-flagged web-login plus `/api/v3/graph/data` fallback. Public research supports these paths as deterministic enough behind flags, but live fixtures are still needed before making them defaults.
 
 ## New Traceability
 
