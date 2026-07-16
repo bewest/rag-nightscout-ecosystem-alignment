@@ -252,8 +252,8 @@ cgm-remote-monitor has two existing secret-like values, but neither should becom
 Preferred approach:
 
 1. Use a dedicated telemetry secret, for example `NIGHTSCOUT_TELEMETRY_SECRET`, when an operator or provider wants stable monthly identifiers across deploys.
-2. Add a later persistence mechanism for a generated telemetry secret, ideally separate from auth secrets and documented for backup/restore behavior.
-3. Use an ephemeral process secret only for disabled/prototype preview behavior, and label it as ephemeral so reviewers know it is not a stable installation identity.
+2. Generate and persist a telemetry-specific secret in a separate telemetry cache file when no explicit secret is configured.
+3. Use an ephemeral process secret only if telemetry-specific persistence fails, and label it as ephemeral so reviewers know it is not a stable installation identity.
 4. Derive monthly IDs as `HMAC(telemetry_secret, YYYY-MM)`, never transmitting the raw secret.
 
 ## Non-blocking next action

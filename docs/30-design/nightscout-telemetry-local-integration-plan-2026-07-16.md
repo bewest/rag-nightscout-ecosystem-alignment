@@ -16,6 +16,7 @@ Implemented pieces:
   - `5005aa26`: telemetry identity separated from auth/JWT secrets
   - `6555e713`: local route-family counters
   - `c3d6f33d`: manual aggregate sender that posts the preview-equivalent payload when explicitly invoked
+  - `8a3376f2`: telemetry-specific generated secret and daily counter persistence
 - backend repo `/home/bewest/src/crm-telemetry`
   - strict schema validation
   - `POST /v1/nightscout/checkin`
@@ -29,7 +30,6 @@ Implemented only for explicit/manual invocation:
 Not implemented yet:
 
 - automatic scheduling or startup-triggered telemetry send.
-- cgm persistent telemetry secret generation/storage.
 - backend object storage and aggregation.
 
 ## Local backend

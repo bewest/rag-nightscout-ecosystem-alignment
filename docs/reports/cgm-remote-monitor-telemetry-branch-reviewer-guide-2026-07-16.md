@@ -14,6 +14,7 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 | `5005aa26` | Keeps telemetry identity separate from API_SECRET/JWT signing material |
 | `6555e713` | Adds local route-family and websocket counters without retaining request metadata |
 | `c3d6f33d` | Adds manual sender that posts the preview-equivalent payload to `NIGHTSCOUT_TELEMETRY_ENDPOINT` only when explicitly invoked |
+| `8a3376f2` | Persists a telemetry-specific generated secret and daily counters, separate from API/JWT secrets |
 
 ## What this branch does
 
@@ -27,13 +28,14 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 - Mounts an admin-only preview endpoint at `/api/telemetry/preview.json`.
 - Counts allowlisted route families and coarse status classes locally.
 - Provides `sendOnce()` for explicit/manual POST tests.
+- Persists a generated telemetry secret in a telemetry-specific cache file when `NIGHTSCOUT_TELEMETRY_SECRET` is not provided.
+- Persists daily counter state and resets counters on UTC day boundaries.
 - Adds focused Mocha tests for module behavior and preview authorization.
 
 ## What this branch does not do
 
 - Does not automatically schedule or trigger sends.
-- Does not persist installation secrets.
-- Does not persist daily counters.
+- Does not use `API_SECRET` or JWT `randomString` as telemetry identity material.
 - Does not enable default-on telemetry.
 - Does not include treatment/profile values, therapy data, URLs, tokens, logs, raw request metadata, IP addresses, or user agents in the payload.
 
@@ -70,11 +72,10 @@ Reviewers should focus on:
 - Whether the payload excludes prohibited fields.
 - Whether the telemetry secret stays separate from API_SECRET and JWT signing material.
 - Whether manual sender semantics are acceptable before any scheduling or activation work.
+- Whether the telemetry cache location and backup/restore behavior are acceptable for target deployments.
 
 ## Suggested next branch slices
 
-1. Add local telemetry secret generation/persistence decision and implementation.
-2. Add daily counter reset/persistence strategy.
-3. Add explicit test/dev-only trigger for local end-to-end testing if maintainers want one.
-4. Add scheduling behind explicit `NIGHTSCOUT_TELEMETRY=aggregate`, still off by default until activation is approved.
-5. Add notice/preview UX and documentation before any default-on release.
+1. Add explicit test/dev-only trigger for local end-to-end testing if maintainers want one.
+2. Add scheduling behind explicit `NIGHTSCOUT_TELEMETRY=aggregate`, still off by default until activation is approved.
+3. Add notice/preview UX and documentation before any default-on release.
