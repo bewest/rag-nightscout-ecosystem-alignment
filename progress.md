@@ -23,7 +23,7 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 | identity-source update | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `5005aa26` | Keeps telemetry identity separate from `API_SECRET` and JWT `randomString`; supports explicit `NIGHTSCOUT_TELEMETRY_SECRET` and labels ephemeral preview IDs |
 | route-counter slice | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `6555e713` | Adds allowlisted route-family/status counters and websocket connection counts locally, with no raw URL/query/body/IP/user-agent retention |
 | manual sender slice | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `c3d6f33d` | Adds explicit `sendOnce()` POST support to `NIGHTSCOUT_TELEMETRY_ENDPOINT`; no automatic scheduling or default emission |
-| persistence slice | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `8a3376f2` | Persists a telemetry-specific generated secret and daily counter state, with UTC day-boundary resets |
+| persistence slice | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `8a3376f2` | Persists a telemetry-specific generated secret and prototype counter state; scheduling review found counter retention should align with send windows before production |
 | Reviewer guide | `docs/reports/cgm-remote-monitor-telemetry-branch-reviewer-guide-2026-07-16.md` | Summarizes branch commits, safety boundaries, validation, review focus, and next slices |
 
 **Key Findings**:
@@ -32,7 +32,7 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 - Focused tests cover env parsing, monthly ID rotation, allowlist filtering, coarse counters, payload shape, admin-only preview, and no-network preview behavior.
 - Existing auth/JWT secrets are not used as telemetry identity material; a dedicated telemetry secret or later persisted telemetry-specific secret is preferred.
 - A local two-component smoke test confirmed cgm `sendOnce()` can POST a schema-valid aggregate payload to the `crm-telemetry` receiver and receive `204`.
-- cgm now has telemetry-specific secret persistence and daily counter persistence, still without automatic scheduling or default emission.
+- cgm now has telemetry-specific secret persistence and prototype counter persistence, still without automatic scheduling or default emission.
 
 **Validation**:
 - `TEST=telemetry npm run test-single`
@@ -61,6 +61,7 @@ Converted the telemetry strategy into first-pass execution materials for board, 
 | Backend service design | `docs/30-design/nightscout-telemetry-backend-service-design-2026-07-16.md` | Defines a sibling endpoint, storage layout, aggregation model, dashboard outputs, metadata constraints, and tests inspired by Trio telemetry |
 | cgm emitter map | `docs/30-design/cgm-remote-monitor-telemetry-emitter-map-2026-07-16.md` | Maps cgm-remote-monitor env, boot, Express, API, report, websocket, preview, module, and PR-slice touchpoints |
 | Local integration plan | `docs/30-design/nightscout-telemetry-local-integration-plan-2026-07-16.md` | Shows how to run cgm-remote-monitor and `crm-telemetry` locally together once sender wiring exists |
+| Scheduling/dedupe model | `docs/30-design/nightscout-telemetry-scheduling-dedupe-model-2026-07-16.md` | Recommends weekly jittered attempts, monthly rotating IDs, and backend monthly dedupe to avoid thundering herd behavior |
 
 **Key Findings**:
 - The first milestone can remain narrow enough for default-on aggregate telemetry if the payload is previewable, schema-bound, opt-out, and server-side rejected on unknown fields.
