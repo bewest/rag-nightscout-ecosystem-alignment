@@ -6,6 +6,12 @@ Date: 2026-07-16
 
 The telemetry work is **technical prototype feature-complete** for local review. It is **not yet production/default-on complete**.
 
+Primary review links:
+
+- cgm-remote-monitor PR: `https://github.com/nightscout/cgm-remote-monitor/pull/8564`
+- crm-telemetry repo: `https://github.com/nightscout/crm-telemetry` (private)
+- This document is the consolidated review entry point for the project.
+
 Implemented and tested:
 
 - cgm-remote-monitor telemetry branch with default-off config.
@@ -15,7 +21,9 @@ Implemented and tested:
 - Weekly jitter scheduling helper.
 - Monthly rotating pseudonymous installation IDs.
 - Telemetry-specific secret, counter, and send-state persistence.
+- Mongo-backed telemetry state with file fallback for local/dev.
 - Route, status, report, websocket, plugin, and allowlisted connector-source counters.
+- Explicitly gated scheduled-send path.
 - Sibling `crm-telemetry` receiver.
 - Strict schema validation.
 - Accepted-payload storage.
@@ -44,8 +52,8 @@ Implemented and tested:
 
 | Repo | Branch/commits | Purpose |
 |------|----------------|---------|
-| cgm-remote-monitor | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`, branch `wip/bewest/nightscout-telemetry-emitter` | cgm emitter, preview, counters, manual send, scheduling gate |
-| crm-telemetry | `/home/bewest/src/crm-telemetry`, branch `main` | receiver, validation, storage, aggregation, export, dashboard |
+| cgm-remote-monitor | PR `https://github.com/nightscout/cgm-remote-monitor/pull/8564`; local worktree `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`, branch `wip/bewest/nightscout-telemetry-emitter` | cgm emitter, preview, counters, manual send, scheduling gate |
+| crm-telemetry | private repo `https://github.com/nightscout/crm-telemetry`; local repo `/home/bewest/src/crm-telemetry`, branch `main` | receiver, validation, storage, aggregation, export, dashboard |
 | alignment workspace | current branch `workspace/clinical-decision-report` | docs, schema, fixtures, planning, traceability |
 
 ## cgm branch commit stack
@@ -63,7 +71,9 @@ Implemented and tested:
 | `4ae99daf` | Gated manual send endpoint |
 | `3254e8a4` | Allowlisted Nightscout Connect source names |
 | `ea47d14e` | Direct `/report` counter |
-| `5e7a54d4` | Explicit scheduled-send gate and tick lifecycle wiring |
+| `5e7a54d4` | Explicit scheduled-send gate |
+| `a6825185` | Scheduled send checks wired to the existing tick lifecycle |
+| `5969531e` | Mongo-backed telemetry state with file fallback |
 
 ## crm-telemetry commit stack
 
@@ -116,9 +126,8 @@ reports/nightscout/dashboard.html
 
 1. Decide whether `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND=true` is acceptable for an opt-in pilot.
 2. Decide whether to keep, restrict, or remove the manual send endpoint before production.
-3. Decide whether cgm telemetry state should remain cache-file based or move to MongoDB for production durability.
-4. Add user/operator notice and opt-out docs in cgm-remote-monitor.
-5. Add production deployment/runbook for `crm-telemetry`.
-6. Apply storage lifecycle rules in the chosen production object store.
-7. Review the initial allowlists, especially therapy-adjacent plugin names and connector source names.
-
+3. Add user/operator notice and opt-out docs in cgm-remote-monitor.
+4. Add production deployment/runbook for `crm-telemetry`.
+5. Apply storage lifecycle rules in the chosen production object store.
+6. Review the initial allowlists, especially therapy-adjacent plugin names and connector source names.
+7. Decide whether the Mongo collection name/default (`telemetry`) is acceptable for production deployments.
