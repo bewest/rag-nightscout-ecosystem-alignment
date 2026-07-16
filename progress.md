@@ -12,6 +12,31 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## cgm-remote-monitor Telemetry Emitter Branch (2026-07-16)
+
+Prepared a cgm-remote-monitor implementation branch for the first disabled-by-default aggregate telemetry slice.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| cgm branch | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` branch `wip/bewest/nightscout-telemetry-emitter` commit `a8f6c31f` | Adds local telemetry config parsing, allowlists, monthly HMAC ID helper, counters, schema-shaped payload builder, no-network facade, and tests |
+
+**Key Findings**:
+- The first code slice is intentionally non-emitting: no network sender is active and no app route middleware is mounted yet.
+- `NIGHTSCOUT_TELEMETRY` defaults to `off`; `aggregate` only enables the local facade configuration.
+- Focused tests cover env parsing, monthly ID rotation, allowlist filtering, coarse counters, payload shape, and no-network preview behavior.
+
+**Validation**:
+- `TEST=telemetry npm run test-single`
+- `npm run test:unit -- --grep telemetry`
+
+**Source Files Changed**:
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/env.js`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/telemetry/`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/tests/telemetry.test.js`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/package.json`
+
+---
+
 ## Nightscout Telemetry Execution Materials (2026-07-16)
 
 Converted the telemetry strategy into first-pass execution materials for board, developer, schema, and implementation planning.
