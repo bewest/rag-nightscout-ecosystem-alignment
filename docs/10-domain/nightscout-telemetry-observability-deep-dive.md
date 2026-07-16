@@ -133,6 +133,185 @@ Research and ML/DataOps
   MLflow/reporting, and review workflow.
 ```
 
+## End-to-end recommendation for cgm-remote-monitor
+
+The feasible plan is a **Nightscout-owned aggregate telemetry service** implemented as a sibling to Trio telemetry, not as an expansion of the existing Trio endpoint. The service can reuse Trio's operational pattern while giving cgm-remote-monitor its own schema, identifiers, retention, governance, and dashboards.
+
+### Recommended target state
+
+```text
+cgm-remote-monitor
+  local aggregate counters
+  monthly rotating installation ID
+  payload preview
+  opt-out / endpoint replacement
+          |
+          v
+nightscout-telemetry service
+  strict schema validation
+  rate limiting and abuse controls
+  object-store raw retention
+  daily aggregation job
+  public aggregate dashboard
+          |
+          +--> optional operator diagnostics through OTLP/Sentry/logs
+          +--> separate consented data commons intake for research
+```
+
+### Phase 0: public charter and schema review
+
+Before code ships, publish a short telemetry charter and a JSON Schema. This should be a maintainer stability plan, not a vendor selection document.
+
+The charter should state:
+
+- Purpose: release support, feature adoption, deprecation planning, documentation prioritization, startup/regression visibility, Foundation aggregate reporting.
+- Default denominator: estimated active installations, not users or patients.
+- Prohibited data: glucose, insulin, carbs, treatments, profiles, devicestatus documents, therapy settings, alarms, secrets, tokens, hostnames, raw URLs, query strings, request bodies, stack messages, free-form text, IP addresses as retained fields, and user-agent strings.
+- Controls: preview exact payload, one-line opt-out, replace endpoint, disable in test/dev unless explicitly enabled.
+- Governance: public schema review, short raw retention, aggregate dashboard, incident owner if prohibited fields arrive.
+
+### Phase 1: cgm-remote-monitor aggregate emitter
+
+Add a small server-side module that records local counters and emits at most one aggregate report per day.
+
+Suggested settings:
+
+```text
+NIGHTSCOUT_TELEMETRY=off|aggregate
+NIGHTSCOUT_TELEMETRY_ENDPOINT=https://telemetry.nightscout.foundation/v1/nightscout/checkin
+NIGHTSCOUT_TELEMETRY_PREVIEW=true
+NIGHTSCOUT_TELEMETRY_ID_ROTATION=monthly
+```
+
+Initial release posture should be opt-in or notice-only. Default-on should wait for public review, payload preview, and at least one release cycle of notice.
+
+Minimum payload:
+
+```json
+{
+  "schema": 1,
+  "product": "cgm-remote-monitor",
+  "release": "16.x",
+  "reporting_period": "2026-07-16",
+  "installation_id": "monthly-rotating-pseudonymous-id",
+  "runtime": {
+    "node_major": 22,
+    "deployment_family": "docker"
+  },
+  "features": {
+    "enabled": ["careportal", "iob", "cob"],
+    "used": {
+      "api.v1.entries.read": 120,
+      "api.v3.entries.read": 42,
+      "reports.opened": 3
+    }
+  },
+  "health": {
+    "startup": "success",
+    "uptime_bucket": "7-30d",
+    "http_2xx": 1300,
+    "http_4xx": 44,
+    "http_5xx": 1
+  }
+}
+```
+
+Implementation notes:
+
+- Generate a local random secret once and derive `installation_id = HMAC(secret, "YYYY-MM")`.
+- Store counters locally in memory with periodic safe persistence if needed.
+- Use route templates and event names, not raw URLs.
+- Use buckets for uptime and durations.
+- Expose `GET /api/v1/admin/telemetry/preview` or a CLI/log preview that renders exactly what would be sent.
+- Send asynchronously after startup delay and never block requests or startup.
+- Treat send failures as debug-level operational noise with natural retry on the next daily window.
+
+### Phase 2: sibling Nightscout telemetry backend
+
+Create a new service, for example `nightscout-telemetry`, using Trio telemetry as the implementation reference but not the same product endpoint.
+
+Recommended backend behavior:
+
+- Endpoint: `POST /v1/nightscout/checkin`.
+- Accept only `application/json`.
+- Enforce schema version and strict allowlist. Reject unknown fields.
+- Enforce small payload size, for example 4 KB to 8 KB.
+- Rate-limit by coarse network metadata and temporary installation ID, without retaining IP as a telemetry field.
+- Store raw accepted payloads briefly, partitioned by date and product.
+- Aggregate daily into installation counts, version counts, feature-enabled counts, feature-active counts, runtime/deployment counts, and coarse health counters.
+- Delete raw payloads after short retention, for example 30 to 60 days.
+- Publish aggregate dashboards and downloadable summary tables.
+
+This backend can use the same operational shape as Trio telemetry: containerized Python or Node service, object storage source of truth, daily SQLite/Postgres/Parquet aggregation, self-contained HTML reports or Grafana dashboards, Prometheus metrics, structured logs, and alerting.
+
+### Phase 3: diagnostics stay separate
+
+Do not make Sentry, OpenTelemetry, or logs part of the default feature census.
+
+Add these as separate controls:
+
+```text
+OTEL_EXPORTER_OTLP_ENDPOINT=
+OTEL_TRACES_SAMPLER=parentbased_traceidratio
+OTEL_TRACES_SAMPLER_ARG=0.01
+LOG_FORMAT=json
+LOG_LEVEL=info
+SENTRY_DSN=
+```
+
+Diagnostic exports should be opt-in or operator-directed, scrubbed, and endpoint-replaceable. They are useful for release regressions and hosted-operator debugging, but they should not answer "how many installations use feature X?"
+
+### Phase 4: dashboard and maintainer workflow
+
+The first public dashboard should answer maintainer questions:
+
+- Estimated active reporting installations by month.
+- Release and Node.js major version distribution.
+- Deployment family distribution.
+- Enabled plugin/capability counts.
+- Feature-active counters for APIs, reports, and selected plugins.
+- Startup success and coarse 5xx trend by release.
+- Adoption of new APIs or migration targets.
+
+The maintainer workflow should be:
+
+1. Use telemetry dashboards for support-window and deprecation proposals.
+2. Use diagnostic observability for release regression triage.
+3. Use logs only for operator incidents.
+4. Use data commons only for consented research and ML/data-ops analysis.
+
+### Why not expand trio-telemetry directly
+
+Expanding `trio-telemetry` would be tempting because the stack already works, but it would couple two products with different threat models:
+
+- Trio is an iOS app and can use Apple App Attest. cgm-remote-monitor is a self-hosted Node.js server and cannot.
+- Trio groups by Apple `idfv` and `installId`. Nightscout should group by rotating installation IDs.
+- Trio currently accepts free-form payload extensions. Nightscout should use strict schema rejection.
+- Trio's reports can talk about app/device checkins. Nightscout should talk about installations.
+- Nightscout telemetry will need endpoint replacement for hosted providers, private operators, and Foundation reporting.
+
+The better route is shared infrastructure patterns first, shared platform later. If both services mature, they can be refactored behind a common ingestion framework with product-specific schemas:
+
+```text
+/v1/trio/checkin
+/v1/loopfollow/checkin
+/v1/nightscout/checkin
+```
+
+Each product should retain its own schema, retention, identifier model, and public dashboard labels.
+
+### Feasibility judgment
+
+This is feasible for cgm-remote-monitor if the first milestone is deliberately small:
+
+1. Charter and schema.
+2. Local aggregate emitter with preview and opt-out.
+3. Sibling validation endpoint with object storage.
+4. Daily aggregation report.
+5. Public review before any default-on collection.
+
+The highest-risk work is governance and field discipline, not the mechanics. Trio telemetry demonstrates the mechanics are achievable. Nightscout's additional work is making the schema stricter, the denominator installation-based, the endpoint replaceable, and the research/data-ops pathway separate.
+
 ## Candidate solution set
 
 ### Phase 0: charter and threat model
