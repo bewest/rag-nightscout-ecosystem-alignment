@@ -36,17 +36,17 @@ Implemented and tested:
 
 | Reader need | Read this |
 |-------------|-----------|
-| One-page decision context | `docs/reports/nightscout-telemetry-board-developer-packet-2026-07-16.md` |
-| Public data-rights posture | `docs/reports/nightscout-telemetry-charter-2026-07-16.md` |
-| Community-facing explanation | `docs/reports/nightscout-telemetry-community-faq-draft-2026-07-16.md` |
-| Buy-vs-build/vendor strategy | `docs/reports/nightscout-telemetry-buy-vs-build-strategy-2026-07-16.md` |
-| cgm branch review | `docs/reports/cgm-remote-monitor-telemetry-branch-reviewer-guide-2026-07-16.md` |
-| Backend/service review | `docs/30-design/nightscout-telemetry-backend-service-design-2026-07-16.md` |
-| Full local proof | `docs/reports/nightscout-telemetry-local-e2e-report-2026-07-16.md` |
-| Retention/deletion policy | `docs/30-design/nightscout-telemetry-lifecycle-policy-2026-07-16.md` |
-| Deployment lifecycle examples | `docs/30-design/nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.md` |
-| Scheduling/dedupe model | `docs/30-design/nightscout-telemetry-scheduling-dedupe-model-2026-07-16.md` |
-| Schema source of truth | `specs/jsonschema/nightscout-telemetry-aggregate.schema.json` |
+| One-page decision context | [Board/developer packet](nightscout-telemetry-board-developer-packet-2026-07-16.md) |
+| Public data-rights posture | [Telemetry charter](nightscout-telemetry-charter-2026-07-16.md) |
+| Community-facing explanation | [Community FAQ draft](nightscout-telemetry-community-faq-draft-2026-07-16.md) |
+| Buy-vs-build/vendor strategy | [Buy-vs-build strategy](nightscout-telemetry-buy-vs-build-strategy-2026-07-16.md) |
+| cgm branch review | [cgm branch reviewer guide](cgm-remote-monitor-telemetry-branch-reviewer-guide-2026-07-16.md) |
+| Backend/service review | [Backend service design](../30-design/nightscout-telemetry-backend-service-design-2026-07-16.md) |
+| Full local proof | [Local E2E report](nightscout-telemetry-local-e2e-report-2026-07-16.md) |
+| Retention/deletion policy | [Lifecycle policy](../30-design/nightscout-telemetry-lifecycle-policy-2026-07-16.md) |
+| Deployment lifecycle examples | [Deployment lifecycle examples](../30-design/nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.md) |
+| Scheduling/dedupe model | [Scheduling/dedupe model](../30-design/nightscout-telemetry-scheduling-dedupe-model-2026-07-16.md) |
+| Schema source of truth | [Nightscout telemetry JSON Schema](../../specs/jsonschema/nightscout-telemetry-aggregate.schema.json) |
 
 ## One-page architecture
 
@@ -75,7 +75,7 @@ The cgm implementation is vendor-agnostic. It sends a Nightscout-owned JSON payl
 
 ## Buy-vs-build summary
 
-The strategy is **build the telemetry contract, buy or use commodity infrastructure underneath**. See `docs/reports/nightscout-telemetry-buy-vs-build-strategy-2026-07-16.md` for the full analysis.
+The strategy is **build the telemetry contract, buy or use commodity infrastructure underneath**. See the [buy-vs-build strategy](nightscout-telemetry-buy-vs-build-strategy-2026-07-16.md) for the full analysis.
 
 | Layer | Strategy | Rationale |
 |-------|----------|-----------|
@@ -145,7 +145,7 @@ Vendor/technology posture:
 
 ## What is collected in the first schema
 
-Schema source: `specs/jsonschema/nightscout-telemetry-aggregate.schema.json`.
+Schema source: [Nightscout telemetry JSON Schema](../../specs/jsonschema/nightscout-telemetry-aggregate.schema.json).
 
 | Field | Example | How derived |
 |-------|---------|-------------|
@@ -182,7 +182,7 @@ Representative allowlisted counters:
 - `plugins.connect.active`
 - `connect.source.dexcomshare.active`
 
-The schema has `additionalProperties: false` and explicit counter/source allowlists. Fixtures under `specs/fixtures/telemetry/` prove accepted and rejected examples.
+The schema has `additionalProperties: false` and explicit counter/source allowlists. Fixtures under [`specs/fixtures/telemetry/`](../../specs/fixtures/telemetry/) prove accepted and rejected examples.
 
 ## What is not collected
 
@@ -219,7 +219,7 @@ Specific connector data that is **not** collected:
 
 ## Local E2E proof
 
-`docs/reports/nightscout-telemetry-local-e2e-report-2026-07-16.md` documents a successful local run:
+The [local E2E report](nightscout-telemetry-local-e2e-report-2026-07-16.md) documents a successful local run:
 
 ```json
 {"sent": true, "statusCode": 204}
