@@ -19,6 +19,7 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 | `b8149521` | Retains counters across day boundaries until a successful telemetry send, then resets them |
 | `4ae99daf` | Adds admin-only, explicitly gated manual send endpoint for local E2E testing |
 | `ea47d14e` | Counts `/report` page opens directly so report telemetry is not lost to route/static ordering |
+| `5e7a54d4` | Adds explicit `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND` gate and manual `runDue()` scheduler path |
 
 ## What this branch does
 
@@ -38,12 +39,13 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 - Persists a generated telemetry secret in a telemetry-specific cache file when `NIGHTSCOUT_TELEMETRY_SECRET` is not provided.
 - Persists counter state since the last successful send.
 - Resets counters only after `sendOnce()` receives a successful response.
-- Provides pure scheduling helpers, but does not automatically schedule sends.
+- Provides pure scheduling helpers.
+- Provides `runDue()` for explicitly gated scheduled-send tests when `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND=true`.
 - Adds focused Mocha tests for module behavior and preview authorization.
 
 ## What this branch does not do
 
-- Does not automatically schedule or trigger sends.
+- Does not automatically schedule or trigger sends unless `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND=true` and code explicitly calls `runDue()`.
 - Does not allow manual send unless `NIGHTSCOUT_TELEMETRY_MANUAL_SEND` is explicitly enabled.
 - Does not use `API_SECRET` or JWT `randomString` as telemetry identity material.
 - Does not enable default-on telemetry.
@@ -89,5 +91,5 @@ Reviewers should focus on:
 ## Suggested next branch slices
 
 1. Decide whether to keep, restrict, or remove the manual send endpoint before production activation.
-2. Add scheduling behind explicit `NIGHTSCOUT_TELEMETRY=aggregate`, still off by default until activation is approved.
+2. Decide where `runDue()` should be called from if maintainers approve scheduling activation.
 3. Add notice/preview UX and documentation before any default-on release.

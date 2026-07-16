@@ -20,6 +20,7 @@ Implemented pieces:
   - `10b63a99`: pure scheduling helper with first-run jitter, weekly success interval, and failure retry
   - `b8149521`: counter retention until successful send and send-state persistence
   - `4ae99daf`: gated admin manual send endpoint for local E2E testing
+  - `5e7a54d4`: explicit scheduled-send gate and manual `runDue()` path
 - backend repo `/home/bewest/src/crm-telemetry`
   - strict schema validation
   - `POST /v1/nightscout/checkin`
@@ -36,7 +37,7 @@ Implemented only for explicit/manual invocation:
 
 Not implemented yet:
 
-- automatic scheduling or startup-triggered telemetry send.
+- production decision on where to call `runDue()` automatically.
 - production hosting, object lifecycle policy, and richer dashboard styling.
 
 Scheduling model is documented separately in `docs/30-design/nightscout-telemetry-scheduling-dedupe-model-2026-07-16.md`.
