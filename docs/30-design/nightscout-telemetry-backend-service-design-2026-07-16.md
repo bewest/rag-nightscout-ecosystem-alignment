@@ -128,6 +128,7 @@ Object metadata must not include:
 Daily aggregation reads raw accepted payloads and writes aggregate records.
 
 Prototype implementation: `/home/bewest/src/crm-telemetry` commit `e42040c` adds `crm_telemetry.aggregate.aggregate_payloads()`, which dedupes monthly active installations and feature-active installations without exposing raw installation IDs.
+Commit `5a37596` adds `crm_telemetry.export.export_monthly()`, which writes monthly aggregate JSON exports under `exports/nightscout/monthly/YYYY-MM.json`.
 
 Suggested aggregate tables or JSON sections:
 
@@ -157,6 +158,12 @@ First dashboard:
 - Top active counters.
 - Startup status and uptime buckets.
 - Coarse 5xx trend by release family.
+
+Prototype export output:
+
+```text
+exports/nightscout/monthly/YYYY-MM.json
+```
 
 Public dashboards must not expose:
 
