@@ -62,6 +62,8 @@ Converted the telemetry strategy into first-pass execution materials for board, 
 
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
+| Execution summary | `docs/reports/nightscout-telemetry-execution-summary-2026-07-16.md` | Consolidates navigation, current status, implemented components, E2E proof, and remaining decisions |
+| Buy-vs-build strategy | `docs/reports/nightscout-telemetry-buy-vs-build-strategy-2026-07-16.md` | Recommends Nightscout-owned schema/receiver/emitter with managed object storage/hosting and separate diagnostics vendors |
 | Aggregate telemetry schema | `specs/jsonschema/nightscout-telemetry-aggregate.schema.json` | Strict default-on aggregate census schema with monthly rotating installation ID, coarse counters, health buckets, and prohibited-field rejection |
 | Telemetry charter | `docs/reports/nightscout-telemetry-charter-2026-07-16.md` | Defines purpose, non-purpose, data-rights commitments, prohibited data, identifier policy, retention, and governance gates |
 | Board/developer packet | `docs/reports/nightscout-telemetry-board-developer-packet-2026-07-16.md` | Frames the maintenance budget ask, urgent connector/cloud-access tally need, and data-rights-preserving opt-out commitments |
