@@ -19,6 +19,7 @@ Implemented pieces:
   - `8a3376f2`: telemetry-specific generated secret and prototype counter persistence
   - `10b63a99`: pure scheduling helper with first-run jitter, weekly success interval, and failure retry
   - `b8149521`: counter retention until successful send and send-state persistence
+  - `4ae99daf`: gated admin manual send endpoint for local E2E testing
 - backend repo `/home/bewest/src/crm-telemetry`
   - strict schema validation
   - `POST /v1/nightscout/checkin`
@@ -78,6 +79,7 @@ NIGHTSCOUT_TELEMETRY=aggregate
 NIGHTSCOUT_TELEMETRY_ENDPOINT=http://127.0.0.1:8765/v1/nightscout/checkin
 NIGHTSCOUT_TELEMETRY_SECRET=local-dev-telemetry-secret
 NIGHTSCOUT_TELEMETRY_PREVIEW=true
+NIGHTSCOUT_TELEMETRY_MANUAL_SEND=true
 ```
 
 The current branch can preview locally but does not yet POST:
@@ -111,7 +113,7 @@ The response should show:
    - `GET /api/v3/version`
    - `GET /report`
 4. Confirm `/api/telemetry/preview.json` shows local counters.
-5. Trigger sender manually with `ctx.telemetry.sendOnce()` or a test harness.
+5. Trigger sender manually with `POST /api/telemetry/send.json` using admin auth.
 6. Confirm backend returns `204`.
 7. Confirm backend rejects a tampered payload with an added `url`, `entries`, or `api.v1.treatments.write` counter.
 
@@ -144,4 +146,4 @@ Result:
 
 ## Feasibility judgment
 
-Local two-component testing is feasible and has passed for manual sender invocation. The backend validates fixtures and accepts/rejects HTTP checkins locally. The cgm branch builds preview payloads, counts local route families, retains counters until successful send, persists send state, and can manually POST the preview-equivalent payload to `NIGHTSCOUT_TELEMETRY_ENDPOINT`. Remaining work is automatic scheduling/activation, object storage, aggregation, and dashboards.
+Local two-component testing is feasible and has passed for manual sender invocation. The backend validates fixtures and accepts/rejects HTTP checkins locally. The cgm branch builds preview payloads, counts local route families, retains counters until successful send, persists send state, and can manually POST the preview-equivalent payload to `NIGHTSCOUT_TELEMETRY_ENDPOINT`. The cgm branch also has an explicitly gated admin manual-send endpoint for local E2E testing. Remaining work is automatic scheduling/activation and production deployment hardening.
