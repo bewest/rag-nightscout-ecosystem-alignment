@@ -25,9 +25,9 @@
       "alias": "ns-connect",
       "name": "nightscout-connect",
       "url": "https://github.com/nightscout/nightscout-connect.git",
-      "ref": "1e63c53910251bcfc98931b21615def07c21f64f",
+      "ref": "b394411a39236b614beebffabf23ccc04f730a68",
       "description": "Nightscout Connect bridge for data sources",
-      "frozen_at": "2026-01-28T15:03:43.372294",
+      "frozen_at": "2026-07-16T11:08:40.912581",
       "frozen_from": "main"
     },
     {
@@ -43,10 +43,10 @@
       "alias": "trio",
       "name": "Trio",
       "url": "https://github.com/nightscout/Trio.git",
-      "ref": "fc4e69d9124f878ee53721bdf8b97aee89d7401c",
+      "ref": "145107726be7f3765ab117c274032300022b3026",
       "description": "Trio iOS closed-loop system",
       "submodules": true,
-      "frozen_at": "2026-07-03T13:55:59.604776",
+      "frozen_at": "2026-07-16T11:08:47.601236",
       "frozen_from": "dev"
     },
     {
@@ -92,9 +92,9 @@
       "alias": "nightguard",
       "name": "nightguard",
       "url": "https://github.com/nightscout/nightguard.git",
-      "ref": "af0a72584b1f8b58832d5ec44779ab6ca26c64e7",
+      "ref": "9ea3dea75eb0923bb5aaf73b86b691a02c0f4335",
       "description": "Nightguard iOS/watchOS app for blood glucose monitoring via Nightscout",
-      "frozen_at": "2026-06-17T14:54:12.682805",
+      "frozen_at": "2026-07-16T11:08:50.008100",
       "frozen_from": "master"
     },
     {
@@ -110,18 +110,18 @@
       "alias": "xdrip",
       "name": "xDrip",
       "url": "https://github.com/NightscoutFoundation/xDrip.git",
-      "ref": "f49d55f3910f70a055de43bbfcc8d9d27fdb2519",
+      "ref": "1e86d9a2a52577ed2c30fbf7b69d75fd56e6918f",
       "description": "xDrip+ Android app for CGM data collection and Nightscout sync",
-      "frozen_at": "2026-06-17T14:54:15.277821",
+      "frozen_at": "2026-07-16T11:08:51.655802",
       "frozen_from": "master"
     },
     {
       "alias": "diable",
       "name": "DiaBLE",
       "url": "https://github.com/gui-dos/DiaBLE.git",
-      "ref": "b7da98fa42e7b1f590ec78df1af809559d66d151",
+      "ref": "a7db070504f25295789a85afb78e3f05e96e1301",
       "description": "DiaBLE - Diabetes Libre app for reading Libre sensors on iOS/watchOS",
-      "frozen_at": "2026-06-17T14:54:16.130014",
+      "frozen_at": "2026-07-16T11:08:52.454415",
       "frozen_from": "main"
     },
     {
@@ -155,9 +155,9 @@
     {
       "name": "nocturne",
       "url": "https://github.com/nightscout/nocturne.git",
-      "ref": "1845e503b536593a9db470afd12bac3ee45416ab",
+      "ref": "39856ca773c7e2c293716c620a21ba56688c1f4a",
       "description": "Nightscout client app",
-      "frozen_at": "2026-07-07T13:54:46.537000",
+      "frozen_at": "2026-07-16T11:08:55.683291",
       "frozen_from": "main"
     },
     {
@@ -180,18 +180,18 @@
     {
       "name": "cgm-remote-monitor-official",
       "url": "https://github.com/nightscout/cgm-remote-monitor.git",
-      "ref": "580f2d4a247a7b05969fca3bd8fdd9b5ef9ecddd",
+      "ref": "4982e954cccd9311ba145d946cfea08bc8918360",
       "description": "Official Nightscout server (dev branch)",
-      "frozen_at": "2026-06-17T14:54:29.659144",
+      "frozen_at": "2026-07-16T11:09:00.769517",
       "frozen_from": "dev"
     },
     {
       "alias": "tconnectsync",
       "name": "tconnectsync",
       "url": "https://github.com/jwoglom/tconnectsync.git",
-      "ref": "f0f94baf02d74740458a37068154297e2d9a48f4",
+      "ref": "7f88d88ea4146e55be07fb2558e706c441a24a73",
       "description": "Tandem t:connect to Nightscout sync tool (Python)",
-      "frozen_at": "2026-06-17T14:54:30.077852",
+      "frozen_at": "2026-07-16T11:09:01.509403",
       "frozen_from": "master"
     },
     {
@@ -256,17 +256,17 @@
     {
       "name": "OmnipodKit",
       "url": "git@github.com:loopandlearn/OmnipodKit.git",
-      "ref": "d75f218131225d3faa51daca0a004952d06c9b8f",
+      "ref": "fea9f96d306fa858fa46d825086e97c9f7f4de6e",
       "description": "Universal Omnipod pump manager (Eros/Dash/Omnipod5) shared by Loop and Trio",
-      "frozen_at": "2026-07-03T13:56:00.091317",
+      "frozen_at": "2026-07-16T11:09:08.505640",
       "frozen_from": "main"
     },
     {
       "name": "osaid-keymanager",
       "url": "git@github.com:nightscout/osaid-keymanager.git",
-      "ref": "ba07e30d83703b13781a23b69d504f634a66269c",
+      "ref": "e9c3b738aa5b1265f24d0b994d50f82dfa5a42d8",
       "description": "Server issuing Omnipod-5 PDM keypairs to App-Attest-gated Loop/Trio builds",
-      "frozen_at": "2026-07-03T13:56:00.100223",
+      "frozen_at": "2026-07-16T11:09:11.233681",
       "frozen_from": "main"
     },
     {
