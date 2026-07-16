@@ -15,6 +15,8 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 | `6555e713` | Adds local route-family and websocket counters without retaining request metadata |
 | `c3d6f33d` | Adds manual sender that posts the preview-equivalent payload to `NIGHTSCOUT_TELEMETRY_ENDPOINT` only when explicitly invoked |
 | `8a3376f2` | Persists a telemetry-specific generated secret and daily counters, separate from API/JWT secrets |
+| `10b63a99` | Adds pure scheduling helper for first-run jitter, weekly success interval, and failure retry |
+| `b8149521` | Retains counters across day boundaries until a successful telemetry send, then resets them |
 
 ## What this branch does
 
@@ -29,7 +31,9 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 - Counts allowlisted route families and coarse status classes locally.
 - Provides `sendOnce()` for explicit/manual POST tests.
 - Persists a generated telemetry secret in a telemetry-specific cache file when `NIGHTSCOUT_TELEMETRY_SECRET` is not provided.
-- Persists daily counter state and resets counters on UTC day boundaries.
+- Persists counter state since the last successful send.
+- Resets counters only after `sendOnce()` receives a successful response.
+- Provides pure scheduling helpers, but does not automatically schedule sends.
 - Adds focused Mocha tests for module behavior and preview authorization.
 
 ## What this branch does not do
@@ -77,5 +81,6 @@ Reviewers should focus on:
 ## Suggested next branch slices
 
 1. Add explicit test/dev-only trigger for local end-to-end testing if maintainers want one.
-2. Add scheduling behind explicit `NIGHTSCOUT_TELEMETRY=aggregate`, still off by default until activation is approved.
-3. Add notice/preview UX and documentation before any default-on release.
+2. Add backend object-storage persistence and monthly dedupe aggregation.
+3. Add scheduling behind explicit `NIGHTSCOUT_TELEMETRY=aggregate`, still off by default until activation is approved.
+4. Add notice/preview UX and documentation before any default-on release.

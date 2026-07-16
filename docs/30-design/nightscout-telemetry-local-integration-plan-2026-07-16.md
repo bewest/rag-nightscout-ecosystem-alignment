@@ -17,6 +17,8 @@ Implemented pieces:
   - `6555e713`: local route-family counters
   - `c3d6f33d`: manual aggregate sender that posts the preview-equivalent payload when explicitly invoked
   - `8a3376f2`: telemetry-specific generated secret and prototype counter persistence
+  - `10b63a99`: pure scheduling helper with first-run jitter, weekly success interval, and failure retry
+  - `b8149521`: counter retention until successful send and send-state persistence
 - backend repo `/home/bewest/src/crm-telemetry`
   - strict schema validation
   - `POST /v1/nightscout/checkin`
@@ -138,4 +140,4 @@ Result:
 
 ## Feasibility judgment
 
-Local two-component testing is feasible and has passed for manual sender invocation. The backend validates fixtures and accepts/rejects HTTP checkins locally. The cgm branch builds preview payloads, counts local route families, and can manually POST the preview-equivalent payload to `NIGHTSCOUT_TELEMETRY_ENDPOINT`. Remaining work is scheduling/activation, persistent telemetry secret generation/storage, object storage, aggregation, and dashboards.
+Local two-component testing is feasible and has passed for manual sender invocation. The backend validates fixtures and accepts/rejects HTTP checkins locally. The cgm branch builds preview payloads, counts local route families, retains counters until successful send, persists send state, and can manually POST the preview-equivalent payload to `NIGHTSCOUT_TELEMETRY_ENDPOINT`. Remaining work is automatic scheduling/activation, object storage, aggregation, and dashboards.
