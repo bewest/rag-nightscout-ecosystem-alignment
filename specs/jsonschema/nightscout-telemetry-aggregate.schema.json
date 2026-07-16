@@ -126,20 +126,26 @@
   "$defs": {
     "featureName": {
       "type": "string",
-      "pattern": "^[a-z][a-z0-9-]{0,63}$",
-      "not": {
-        "enum": [
-          "glucose",
-          "insulin",
-          "carbs",
-          "treatments",
-          "profile-values",
-          "api-secret",
-          "token",
-          "url",
-          "hostname"
-        ]
-      }
+      "enum": [
+        "alexa",
+        "bridge",
+        "careportal",
+        "cob",
+        "connect",
+        "connect.dexcomshare",
+        "connect.glooko",
+        "connect.linkup",
+        "connect.minimedcarelink",
+        "connect.nightscout",
+        "googlehome",
+        "iob",
+        "loop",
+        "mmconnect",
+        "openaps",
+        "profile",
+        "pump",
+        "rawbg"
+      ]
     },
     "counterName": {
       "type": "string",
@@ -161,6 +167,12 @@
         "reports.weekly",
         "reports.monthly",
         "plugins.bridge.active",
+        "plugins.connect.active",
+        "connect.source.dexcomshare.active",
+        "connect.source.glooko.active",
+        "connect.source.linkup.active",
+        "connect.source.minimedcarelink.active",
+        "connect.source.nightscout.active",
         "plugins.careportal.active",
         "plugins.iob.active",
         "plugins.cob.active",
@@ -230,13 +242,15 @@
         "database_family": "mongodb-atlas"
       },
       "features": {
-        "enabled": ["careportal", "iob", "cob", "bridge"],
+        "enabled": ["careportal", "iob", "cob", "bridge", "connect", "connect.dexcomshare"],
         "used": {
           "api.v1.entries.read": 120,
           "api.v3.entries.read": 42,
           "api.v1.devicestatus.write": 8,
           "reports.opened": 3,
-          "plugins.bridge.active": 1
+          "plugins.bridge.active": 1,
+          "plugins.connect.active": 1,
+          "connect.source.dexcomshare.active": 1
         }
       },
       "health": {

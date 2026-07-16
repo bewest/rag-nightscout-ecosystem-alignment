@@ -37,6 +37,7 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 - A local two-component smoke test confirmed cgm `sendOnce()` can POST a schema-valid aggregate payload to the `crm-telemetry` receiver and receive `204`.
 - cgm now has telemetry-specific secret persistence, counter retention through send success, and send-state persistence, still without automatic scheduling or default emission.
 - cgm now has a gated manual-send endpoint for local E2E testing without enabling automatic scheduling.
+- Schema/cgm updates now allow tallying enabled `connect` plugin and allowlisted Nightscout Connect source names such as Dexcom Share, Glooko, LibreLinkUp, Minimed CareLink, and Nightscout, without credentials or URLs.
 
 **Validation**:
 - `TEST=telemetry npm run test-single`

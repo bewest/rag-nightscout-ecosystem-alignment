@@ -164,6 +164,32 @@ Recommended behavior:
 - Include only plugin names, not plugin settings, extended settings, display settings, or credential-backed configuration.
 - Be conservative with therapy-adjacent plugin names. The first schema currently allows names such as `iob`, `cob`, `pump`, and `profile` only as enabled-feature names or allowlisted active plugin counters, not values or documents.
 
+## Connector/vendor tally touchpoints
+
+Nightscout Connect configuration uses `CONNECT_SOURCE` / `env.extendedSettings.connect.source`. The package README documents currently supported source names such as `nightscout`, `dexcomshare`, `glooko`, `linkup`, and `minimedcarelink` (`/home/bewest/src/worktrees/nightscout/cgm-pr-8447/node_modules/nightscout-connect/README.md`).
+
+Telemetry should include only reviewed source names:
+
+- `connect.dexcomshare`
+- `connect.glooko`
+- `connect.linkup`
+- `connect.minimedcarelink`
+- `connect.nightscout`
+
+It must not include:
+
+- account names,
+- passwords,
+- API secrets,
+- endpoint URLs,
+- region-specific hostnames,
+- patient IDs,
+- device IDs,
+- serial numbers,
+- timezone offsets.
+
+The cgm branch now derives these names from `env.extendedSettings.connect.source` and filters them through the same allowlist as plugin names.
+
 ## Payload preview touchpoints
 
 ### API v1 status/admin area

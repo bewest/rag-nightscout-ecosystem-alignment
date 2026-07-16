@@ -25,6 +25,7 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 - Parses optional `NIGHTSCOUT_TELEMETRY_SECRET` for stable preview IDs without using `API_SECRET` or the JWT signing random string.
 - Defaults telemetry mode to `off`.
 - Adds allowlisted feature and counter names.
+- Adds allowlisted Nightscout Connect source/vendor feature names such as `connect.dexcomshare`, without credentials, URLs, regions, patient IDs, device IDs, or serial numbers.
 - Derives monthly rotating pseudonymous installation IDs from a local secret.
 - Tracks coarse local counters in memory.
 - Builds a schema-shaped aggregate payload.
@@ -75,6 +76,7 @@ Reviewers should focus on:
 
 - Whether `NIGHTSCOUT_TELEMETRY=off` remains the safe default.
 - Whether allowlisted counters are narrow enough.
+- Whether allowlisted Nightscout Connect source names are acceptable for the first telemetry schema.
 - Whether the preview endpoint is correctly admin-protected.
 - Whether the payload excludes prohibited fields.
 - Whether the telemetry secret stays separate from API_SECRET and JWT signing material.

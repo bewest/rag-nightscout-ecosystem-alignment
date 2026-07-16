@@ -11,13 +11,15 @@
     "database_family": "mongodb-atlas"
   },
   "features": {
-    "enabled": ["careportal", "iob", "cob", "bridge"],
+    "enabled": ["careportal", "iob", "cob", "bridge", "connect", "connect.dexcomshare"],
     "used": {
       "api.v1.entries.read": 120,
       "api.v3.entries.read": 42,
       "api.v1.devicestatus.write": 8,
       "reports.opened": 3,
-      "plugins.bridge.active": 1
+      "plugins.bridge.active": 1,
+      "plugins.connect.active": 1,
+      "connect.source.dexcomshare.active": 1
     }
   },
   "health": {
