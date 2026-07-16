@@ -338,9 +338,9 @@ See [requirements.md](requirements.md) for the index.
 
 ### REQ-LIBRE-005: Libre 3 Security Protocol
 
-**Statement**: Libre 3 connections MUST complete the security handshake (challenge-response with ECDH key exchange) before receiving glucose data.
+**Statement**: Libre 3 direct-reader connections MUST complete the security handshake (challenge-response with ECDH/AES-CCM key exchange) before receiving glucose data.
 
-**Rationale**: Libre 3 is fully encrypted; data is unreadable without completing security protocol.
+**Rationale**: Libre 3 is fully encrypted; direct-reader implementations such as LibreLoop/LibreCRKit remain unsafe to treat as interoperable unless the handshake, supported variants, and key/certificate provenance are documented.
 
 **Scenarios**:
 - Libre 3 BLE Connection
@@ -358,8 +358,6 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
----
-
 ### REQ-LIBRE-006: Glucose Data Quality Flags
 
 **Statement**: Systems SHOULD interpret the data quality flags in glucose readings and exclude readings with `hasError=true` or invalid quality codes.
@@ -373,6 +371,29 @@ See [requirements.md](requirements.md) for the index.
 **Verification**:
 - Parse readings with various quality flags
 - Verify error readings are filtered or flagged
+
+---
+
+### REQ-LIBRE-007: Libre 3 Direct-Reader Readiness Evidence
+
+**Statement**: Systems that expose Libre 3/3+ as a direct CGM source SHOULD publish source-backed readiness evidence for first pairing, reconnect, re-pair after deletion, 5-minute cadence, no gaps over 6 minutes under steady conditions, 24-hour cold-start backfill, sensor lifecycle states, and CGM source switching.
+
+**Rationale**: Loop `next-dev` and Trio PR #1275 now show active direct-reader implementations. Cross-project alignment needs evidence that direct readings are stable enough for closed-loop use and distinguishable from LibreLinkUp cloud follower data.
+
+**Scenarios**:
+- Libre 3 / 3+ first pair and warmup
+- Reconnect after transient BLE loss
+- Cold-start/relaunch 24-hour backfill
+- Expiring, grace-period, expired, terminal-failure, and transient communication states
+- Switch Libre 3 / 3+ to another CGM and back without stale manager state
+
+**Reference**: [Libre 3 Protocol Readiness Report](../docs/10-domain/libre3-protocol-gap-analysis.md)
+
+**Verification**:
+- Replay or capture direct-reader traces showing 5-minute cadence and no gaps over 6 minutes during steady operation
+- Verify backfill includes expected recent history after app relaunch
+- Verify expired/grace-period/sensor-attention statuses are surfaced before dosing decisions consume readings
+- Verify Nightscout entries identify direct Libre 3 source distinctly from LibreLinkUp cloud follower entries
 
 ---
 

@@ -5,7 +5,7 @@ This document is an index of requirements organized by domain.
 ## Domain Files
 
 - [Aid Algorithms](aid-algorithms-requirements.md) - 56 requirements (+3 OREF)
-- [Cgm Sources](cgm-sources-requirements.md) - 18 requirements
+- [Cgm Sources](cgm-sources-requirements.md) - 19 requirements
 - [Connectors](connectors-requirements.md) - 55 requirements (+4 BLE)
 - [Nightscout Api](nightscout-api-requirements.md) - 57 requirements (+4 IDP)
 - [Pumps](pumps-requirements.md) - 10 requirements
@@ -13,7 +13,7 @@ This document is an index of requirements organized by domain.
 - [Telemetry and Observability](telemetry-observability-requirements.md) - 9 requirements
 - [Treatments](treatments-requirements.md) - 35 requirements
 
-Total: 322 requirements
+Total: 323 requirements
 
 ## Coverage Status
 

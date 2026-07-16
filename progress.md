@@ -12,6 +12,36 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Libre 3 Direct-Reader Readiness (2026-07-16)
+
+Refreshed the stale Libre 3 "eavesdrop only" report against Trio PR #1275 and Loop `next-dev` evidence.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Libre 3 readiness report | `docs/10-domain/libre3-protocol-gap-analysis.md` | Reclassifies Libre 3/3+ direct BLE from absolute blockage to active direct-reader validation via LibreLoop/LibreCRKit |
+| Terminology update | `mapping/cross-project/terminology-matrix.md` | Adds shared terms for LibreLoopCGMManager, LibreCRKit, receiver identity, backfill, status, and cloud fallback |
+| Gap updates | `traceability/cgm-sources-gaps.md` | Updates GAP-CGM-003/GAP-CGM-030/GAP-CGM-032 and adds GAP-CGM-035 for provenance/readiness evidence |
+| Requirement update | `traceability/cgm-sources-requirements.md` | Adds REQ-LIBRE-007 for direct-reader readiness evidence |
+
+**Key Findings**:
+- Trio PR #1275 is open and adds Libre 3/3+ through `LibreLoop`, `LibreCRKit`, and `LoopAlgorithm` submodules with PluginManager/PluginSource wiring.
+- Loop `next-dev` has repeated LibreLoop/LibreCRKit stabilization commits covering backfill, reconnect, sensor attention, display units, receiver identity, and expired-vs-transient error handling.
+- DiaBLE remains a protocol research reference, now documenting Libre 3 Direct-To-Watch via Messina while still warning that direct Apple Watch BLE is prototype-stage.
+- LibreLinkUp remains a required fallback/interoperability path for non-direct-reader clients.
+
+**Gaps Identified**: GAP-CGM-035
+
+**Source Files Analyzed**:
+- `externals/Trio` fetched PR ref `origin/pr-1275`
+- `externals/readiness/LoopWorkspace-next-dev`
+- `externals/readiness/LoopWorkspace-next-dev/LibreLoop`
+- `externals/readiness/LoopWorkspace-next-dev/LibreCRKit`
+- `externals/DiaBLE/README.md`
+- `externals/nightscout-connect/README.md`
+- `externals/nightscout-connect/test/librelinkup.test.js`
+
+---
+
 ## Full Nightscout-to-Nightscout Sync (2026-07-07)
 
 Extended `nightscout-connect` Nightscout source/output support from entries-only to all core v1 collections.

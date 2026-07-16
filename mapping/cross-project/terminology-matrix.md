@@ -2378,6 +2378,18 @@ All systems use **CRC-16 CCITT (XModem)**:
 ## Libre CGM Protocol Models
 
 > **See Also**: [Libre Protocol Deep Dive](../../docs/10-domain/libre-protocol-deep-dive.md) for comprehensive protocol specification.
+> **2026-07-16 update**: [Libre 3 Protocol Readiness Report](../../docs/10-domain/libre3-protocol-gap-analysis.md) reclassifies Libre 3/3+ direct BLE from "blocked" to an active Loop `next-dev` / Trio PR #1275 validation lane.
+
+### Libre 3 / 3+ Direct-Reader Integration Terms
+
+| Alignment Term | Loop `next-dev` | Trio PR #1275 | DiaBLE | Nightscout / Connectors |
+|----------------|-----------------|---------------|--------|--------------------------|
+| Direct Libre 3 CGM manager | `LibreLoopCGMManager` from `LibreLoop` | `LibreLoopCGMManager` registered as "FreeStyle Libre 3 / 3+" | Direct-To-Watch / Messina / LibreCRKit experiments | Should identify as direct BLE, not LibreLinkUp follower |
+| Crypto/control kit | `LibreCRKit` submodule | `LibreCRKit` submodule | Messina toggle and LibreCRKit experiments | Out of scope for cloud connectors |
+| Receiver identity | Stable `receiverID` / app-wide key in LibreLoop commits | PR test plan warns to note receiver ID before removal | LibreView GUID-derived receiver ID experiments | Candidate source metadata field for direct-reader entries |
+| Backfill path | LibreLoop ATT `0xFD`, clinical/historical data, 24h cold-start/relaunch target | PR test plan requires 24h backfill after cold start/relaunch | Historical/factory/event-log research | LibreLinkUp graph+current readings, Nightscout duplicate handling |
+| Sensor status surface | Sensor attention, transient communication error, expired vs failed, grace period | Home glucose view status highlight and CGM alerts | Patch status, event log, shutdown patch | Needs standardized status mapping before downstream dosing/display |
+| Cloud fallback | LibreLinkUp remains fallback outside direct-reader builds | Not the PR's primary path | Prototype can still compare against cloud behavior | `nightscout-connect` LibreLinkUp regional/version/patient/current+graph support |
 
 ### Sensor Type Detection (from PatchInfo)
 

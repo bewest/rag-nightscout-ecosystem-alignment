@@ -5,7 +5,7 @@ This document is an index of gaps organized by domain.
 ## Domain Files
 
 - [Aid Algorithms](aid-algorithms-gaps.md) - 66 gaps
-- [Cgm Sources](cgm-sources-gaps.md) - 52 gaps
+- [Cgm Sources](cgm-sources-gaps.md) - 53 gaps
 - [Connectors](connectors-gaps.md) - 71 gaps
 - [Nightscout Api](nightscout-api-gaps.md) - 74 gaps
 - [Pumps](pumps-gaps.md) - 10 gaps
@@ -21,12 +21,12 @@ This document is an index of gaps organized by domain.
 | sync-identity | 71 | [sync-identity-gaps.md](sync-identity-gaps.md) | 2026-02-01 |
 | aid-algorithms | 71 | [aid-algorithms-gaps.md](aid-algorithms-gaps.md) | 2026-02-08 |
 | connectors | 71 | [connectors-gaps.md](connectors-gaps.md) | 2026-07-07 |
-| cgm-sources | 52 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-02-01 |
+| cgm-sources | 53 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-07-16 |
 | treatments | 26 | [treatments-gaps.md](treatments-gaps.md) | 2026-03-10 |
 | pumps | 13 | [pumps-gaps.md](pumps-gaps.md) | 2026-02-03 |
 | telemetry-observability | 5 | [telemetry-observability-gaps.md](telemetry-observability-gaps.md) | 2026-07-16 |
 
-Total: 383 unique GAP IDs reported by `python tools/find_gap_duplicates.py` after adding 5 GAP-OBS-* entries on 2026-07-16. The quick-reference table remains a human-maintained domain index.
+Total: 384 unique GAP IDs reported by `python tools/find_gap_duplicates.py` after adding GAP-CGM-035 on 2026-07-16. The quick-reference table remains a human-maintained domain index.
 
 ## Duplicate Resolution (2026-02-01)
 

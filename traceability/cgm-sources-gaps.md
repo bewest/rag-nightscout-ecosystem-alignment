@@ -285,21 +285,21 @@ wercker.yml  # Defunct service
 
 **Scenario**: Direct Libre 3 sensor reading
 
-**Description**: DiaBLE documents partial Libre 3 support but notes that AES-128-CCM encryption with ECDH key agreement and Zimperium zShield anti-tampering are not fully cracked. DiaBLE can eavesdrop on BLE traffic but cannot independently decrypt sensor data.
+**Description**: DiaBLE documents partial Libre 3 support and active July 2026 work now shows direct-reader implementations in Loop `next-dev` via LibreLoop/LibreCRKit and Trio PR #1275. The remaining gap is no longer "no implementation exists"; it is that AES-CCM/ECDH handshake inputs, key/certificate provenance, supported sensor variants, and closed-loop safety gates are not yet consolidated into a source-backed ecosystem specification.
 
 **Source**: [DiaBLE CGM Transmitters](../mapping/diable/cgm-transmitters.md)
 
 **Impact**:
-- Full independent Libre 3 reading requires external decryption
-- Must use trident.realm extraction from rooted devices
-- DIY community lacks complete Libre 3 specification
+- Direct Libre 3 reading is emerging but not yet independently documented across implementations
+- Reviewers cannot yet compare Loop `next-dev`, Trio PR #1275, DiaBLE, and cloud-follower paths from one specification
+- Closed-loop consumers need explicit provenance, status, quality, and stale-reading gates before treating direct Libre 3 readings as a stable input
 
 **Possible Solutions**:
-1. Continue reverse engineering efforts (Juggluco project)
-2. Use LibreLinkUp cloud as alternative data source
-3. Document known encryption parameters for community research
+1. Review LibreLoop/LibreCRKit and document handshake, data-plane, backfill, and status semantics with file:line references
+2. Keep LibreLinkUp cloud as a supported fallback and bridge path
+3. Add readiness tests for 5-minute cadence, no gaps over 6 minutes, 24h backfill, sensor lifecycle events, and CGM source switching
 
-**Status**: Under investigation (community effort)
+**Status**: Under investigation - direct-reader implementation lane exists, specification/readiness evidence incomplete
 
 **Related**:
 - [DiaBLE README](../externals/DiaBLE/README.md)
@@ -1126,24 +1126,24 @@ wercker.yml  # Defunct service
 
 ### GAP-CGM-030: Libre 3 Direct BLE Access Blocked
 
-**Description**: Libre 3 uses ECDH encryption that requires Abbott private keys. Third-party apps cannot decrypt BLE data without using proprietary libraries.
+**Description**: Libre 3 uses ECDH/AES-CCM security and previously appeared blocked for independent third-party direct BLE readers. Loop `next-dev` now includes LibreLoop/LibreCRKit and Trio PR #1275 adds Libre 3/3+ through the same plugin lane, so the gap is reclassified from absolute access blockage to direct-reader validation and provenance review.
 
-**Affected Systems**: DiaBLE, xDrip+, xdripswift, AAPS, Loop (via bridges)
+**Affected Systems**: Loop `next-dev`, Trio PR #1275, DiaBLE, xDrip+, xdripswift, AAPS, Nightscout bridges
 
 **Impact**:
-- Users must run official Abbott app
-- Data delayed through LibreLinkUp (1-5 min)
-- No offline/direct sensor access
-- Privacy concerns (data through Abbott servers)
+- Released/follower-only apps may still require LibreLinkUp or bridge apps
+- Direct-reader support needs source-backed documentation of key/certificate provenance, supported variants, status handling, and backfill semantics
+- Downstream AID and Nightscout clients need reliable source metadata to distinguish direct BLE readings from cloud follower readings
 
 **Current Workarounds**:
 1. LibreLinkUp API polling (1-5 min delay)
-2. Juggluco with extracted native library (legal concerns)
-3. Eavesdrop mode (requires official app running)
+2. Loop `next-dev` direct-reader builds using LibreLoop/LibreCRKit
+3. Trio PR #1275 direct-reader branch (`feat/dev-libre3`)
+4. Juggluco/eavesdrop-style approaches where users accept their constraints
 
-**Source**: `DiaBLE/Libre3.swift:713-782` - eavesdrop logic
+**Source**: `docs/10-domain/libre3-protocol-gap-analysis.md`; Trio PR #1275; `externals/readiness/LoopWorkspace-next-dev` LibreLoop/LibreCRKit submodules; `externals/DiaBLE/README.md:6-23`
 
-**Status**: Open - No known legal solution
+**Status**: Partially remediated - active direct-reader lane exists, but protocol/readiness specification remains incomplete
 
 ---
 
@@ -1166,7 +1166,7 @@ wercker.yml  # Defunct service
 
 ### GAP-CGM-032: LibreLinkUp API Dependency
 
-**Description**: Third-party apps must use LibreLinkUp API as data source for Libre 3, creating dependency on Abbott cloud infrastructure.
+**Description**: Apps without direct Libre 3/3+ BLE support must use LibreLinkUp API as data source, creating dependency on Abbott cloud infrastructure. Loop `next-dev` and Trio PR #1275 partially mitigate this for their direct-reader lanes, but cloud dependency remains for follower integrations and non-direct-reader clients.
 
 **Affected Systems**: xdripswift, nightscout-librelink-up, AAPS
 
@@ -1180,6 +1180,28 @@ wercker.yml  # Defunct service
 **Source**: `xdripswift/Libre3HeartBeatBluetoothTransmitter.swift:75-80`
 
 **Status**: Open - Architectural limitation
+
+---
+
+### GAP-CGM-035: Libre 3 Direct-Reader Provenance and Readiness Evidence
+
+**Description**: Loop `next-dev` and Trio PR #1275 now provide a direct Libre 3/3+ reader path through LibreLoop/LibreCRKit, but the ecosystem lacks a consolidated evidence package for key/certificate provenance, supported sensor variants, handshake sequence, ATT/backfill semantics, sensor status taxonomy, and closed-loop safety gates.
+
+**Affected Systems**: Loop `next-dev`, Trio, DiaBLE, Nightscout entries consumers, AAPS/xDrip followers
+
+**Impact**:
+- Reviewers cannot determine which Libre 3/3+ regions, firmware versions, and product variants are supported
+- Nightscout cannot reliably distinguish direct BLE readings from LibreLinkUp cloud follower readings without a metadata convention
+- AID systems need documented stale-data, sensor-status, and data-quality gates before direct Libre 3 values become dosing inputs
+
+**Remediation**:
+1. Source-review LibreLoop and LibreCRKit for handshake, data-plane, backfill, and error/status semantics
+2. Add conformance scenarios covering first pair, reconnect, re-pair, cold-start 24h backfill, cadence gaps, expired/grace-period states, and CGM source switching
+3. Standardize Nightscout source metadata for direct Libre 3 versus LibreLinkUp follower data
+
+**Source**: `docs/10-domain/libre3-protocol-gap-analysis.md`
+
+**Status**: Open - new readiness/documentation gap
 
 ---
 
