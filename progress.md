@@ -20,12 +20,14 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 |-------------|----------|--------------|
 | cgm branch | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` branch `wip/bewest/nightscout-telemetry-emitter` commit `a8f6c31f` | Adds local telemetry config parsing, allowlists, monthly HMAC ID helper, counters, schema-shaped payload builder, no-network facade, and tests |
 | cgm preview slice | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `df8b218e` | Adds admin-only `/api/telemetry/preview.json` endpoint so reviewers/operators can inspect the exact pending aggregate payload without any network sender |
+| identity-source update | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `5005aa26` | Keeps telemetry identity separate from `API_SECRET` and JWT `randomString`; supports explicit `NIGHTSCOUT_TELEMETRY_SECRET` and labels ephemeral preview IDs |
 | Reviewer guide | `docs/reports/cgm-remote-monitor-telemetry-branch-reviewer-guide-2026-07-16.md` | Summarizes branch commits, safety boundaries, validation, review focus, and next slices |
 
 **Key Findings**:
 - The first code slice is intentionally non-emitting: no network sender is active and no app route middleware is mounted yet.
 - `NIGHTSCOUT_TELEMETRY` defaults to `off`; `aggregate` only enables the local facade configuration.
 - Focused tests cover env parsing, monthly ID rotation, allowlist filtering, coarse counters, payload shape, admin-only preview, and no-network preview behavior.
+- Existing auth/JWT secrets are not used as telemetry identity material; a dedicated telemetry secret or later persisted telemetry-specific secret is preferred.
 
 **Validation**:
 - `TEST=telemetry npm run test-single`

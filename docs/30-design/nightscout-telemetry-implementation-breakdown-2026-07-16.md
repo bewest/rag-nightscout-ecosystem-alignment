@@ -87,3 +87,4 @@ This breakdown turns the cgm-remote-monitor telemetry plan into implementation w
 | Vendor/service coupling | Nightscout-owned schema and endpoint replacement |
 | Budget is approved without operations owner | Board packet names shared infrastructure and maintenance responsibilities |
 | Diagnostics get mixed with feature census | Separate settings, endpoints, docs, and implementation workstreams |
+| Auth secrets get coupled to telemetry | Use a dedicated telemetry secret or generated telemetry-specific persisted secret, not API_SECRET or the JWT randomString cache |

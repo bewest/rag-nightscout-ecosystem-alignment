@@ -15,6 +15,7 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 ## What this branch does
 
 - Parses `NIGHTSCOUT_TELEMETRY`, `NIGHTSCOUT_TELEMETRY_ENDPOINT`, `NIGHTSCOUT_TELEMETRY_PREVIEW`, and `NIGHTSCOUT_TELEMETRY_ID_ROTATION`.
+- Parses optional `NIGHTSCOUT_TELEMETRY_SECRET` for stable preview IDs without using `API_SECRET` or the JWT signing random string.
 - Defaults telemetry mode to `off`.
 - Adds allowlisted feature and counter names.
 - Derives monthly rotating pseudonymous installation IDs from a local secret.
@@ -55,6 +56,7 @@ Reviewers should focus on:
 - Whether allowlisted counters are narrow enough.
 - Whether the preview endpoint is correctly admin-protected.
 - Whether the payload excludes prohibited fields.
+- Whether the telemetry secret stays separate from API_SECRET and JWT signing material.
 - Whether the module shape is acceptable before adding middleware or a sender.
 
 ## Suggested next branch slices
@@ -64,4 +66,3 @@ Reviewers should focus on:
 3. Add daily counter reset/persistence strategy.
 4. Add sender behind explicit `NIGHTSCOUT_TELEMETRY=aggregate`, still off by default until activation is approved.
 5. Add notice/preview UX and documentation before any default-on release.
-
