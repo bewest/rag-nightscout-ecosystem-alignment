@@ -12,6 +12,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Nightscout Telemetry Execution Materials (2026-07-16)
+
+Converted the telemetry strategy into first-pass execution materials for board, developer, schema, and implementation planning.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Aggregate telemetry schema | `specs/jsonschema/nightscout-telemetry-aggregate.schema.json` | Strict default-on aggregate census schema with monthly rotating installation ID, coarse counters, health buckets, and prohibited-field rejection |
+| Telemetry charter | `docs/reports/nightscout-telemetry-charter-2026-07-16.md` | Defines purpose, non-purpose, data-rights commitments, prohibited data, identifier policy, retention, and governance gates |
+| Board/developer packet | `docs/reports/nightscout-telemetry-board-developer-packet-2026-07-16.md` | Frames the maintenance budget ask, urgent connector/cloud-access tally need, and data-rights-preserving opt-out commitments |
+| Community FAQ draft | `docs/reports/nightscout-telemetry-community-faq-draft-2026-07-16.md` | Public-facing explanation of what changes, why, what is sent, opt-out, default-on rationale, and data-rights framing |
+| Implementation breakdown | `docs/30-design/nightscout-telemetry-implementation-breakdown-2026-07-16.md` | Splits work into charter/schema, cgm-remote-monitor emitter, sibling backend, diagnostics separation, and maintainer workflow |
+
+**Key Findings**:
+- The first milestone can remain narrow enough for default-on aggregate telemetry if the payload is previewable, schema-bound, opt-out, and server-side rejected on unknown fields.
+- The highest-risk work is governance and field discipline, not the mechanics; Trio telemetry already demonstrates the operational pattern.
+- The implementation path should start with materials and schema validation before emitter/backend code.
+
+**Source Files Analyzed**:
+- `docs/10-domain/nightscout-telemetry-observability-deep-dive.md`
+- `specs/jsonschema/aid-events.schema.json`
+- `docs/reports/nightscout-dependabot-context-2026-07-07.md`
+
+---
+
 ## Libre 3 Direct-Reader Readiness (2026-07-16)
 
 Refreshed the stale Libre 3 "eavesdrop only" report against Trio PR #1275 and Loop `next-dev` evidence.

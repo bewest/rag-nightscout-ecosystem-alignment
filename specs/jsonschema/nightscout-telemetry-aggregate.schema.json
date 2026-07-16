@@ -1,0 +1,254 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nightscout.foundation/schemas/nightscout-telemetry-aggregate.schema.json",
+  "title": "Nightscout Aggregate Telemetry Payload",
+  "description": "Strict schema for cgm-remote-monitor community usage telemetry. This schema is for daily aggregate installation, release, feature, and coarse health counters only. It excludes therapy data, identities, secrets, raw URLs, request bodies, logs, traces, and research data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "product",
+    "release",
+    "reporting_period",
+    "installation_id",
+    "runtime",
+    "features",
+    "health"
+  ],
+  "properties": {
+    "schema": {
+      "type": "integer",
+      "const": 1,
+      "description": "Telemetry schema version."
+    },
+    "product": {
+      "type": "string",
+      "const": "cgm-remote-monitor"
+    },
+    "release": {
+      "type": "string",
+      "pattern": "^[0-9]+(\\.(x|[0-9]+)){0,2}(-[A-Za-z0-9.-]+)?$",
+      "description": "Nightscout release family or version. Prefer release family when exact patch is not needed."
+    },
+    "reporting_period": {
+      "type": "string",
+      "format": "date",
+      "description": "UTC date for the locally aggregated report."
+    },
+    "installation_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{22,86}$",
+      "description": "Monthly rotating pseudonymous installation identifier derived locally from a random secret. It MUST NOT be stable across months."
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_major", "deployment_family"],
+      "properties": {
+        "node_major": {
+          "type": "integer",
+          "minimum": 18,
+          "maximum": 40
+        },
+        "npm_major": {
+          "type": "integer",
+          "minimum": 8,
+          "maximum": 40
+        },
+        "deployment_family": {
+          "type": "string",
+          "enum": [
+            "docker",
+            "heroku",
+            "railway",
+            "render",
+            "fly",
+            "azure",
+            "aws",
+            "gcp",
+            "bare-node",
+            "nightscout-as-a-service",
+            "unknown"
+          ],
+          "description": "Coarse deployment family. Do not include hostname, provider account, region, app name, or complete platform metadata."
+        },
+        "database_family": {
+          "type": "string",
+          "enum": ["mongodb-atlas", "mongodb-self-hosted", "mongodb-compatible", "unknown"]
+        }
+      }
+    },
+    "features": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "used"],
+      "properties": {
+        "enabled": {
+          "type": "array",
+          "maxItems": 80,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/featureName"
+          },
+          "description": "Enabled Nightscout plugins or coarse capabilities. Values are names only, not configuration values."
+        },
+        "used": {
+          "$ref": "#/$defs/counterMap",
+          "description": "Coarse daily feature-use counters using allowlisted event names such as api.v1.entries.read or reports.opened."
+        }
+      }
+    },
+    "health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startup", "uptime_bucket", "http_2xx", "http_4xx", "http_5xx"],
+      "properties": {
+        "startup": {
+          "type": "string",
+          "enum": ["success", "config-error", "database-error", "dependency-error", "unknown"]
+        },
+        "uptime_bucket": {
+          "type": "string",
+          "enum": ["lt-1h", "1-24h", "1-7d", "7-30d", "30d-plus", "unknown"]
+        },
+        "http_2xx": { "$ref": "#/$defs/nonNegativeCounter" },
+        "http_3xx": { "$ref": "#/$defs/nonNegativeCounter" },
+        "http_4xx": { "$ref": "#/$defs/nonNegativeCounter" },
+        "http_5xx": { "$ref": "#/$defs/nonNegativeCounter" },
+        "websocket_connections": { "$ref": "#/$defs/nonNegativeCounter" },
+        "startup_duration_bucket_ms": {
+          "type": "string",
+          "enum": ["lt-1000", "1000-5000", "5000-15000", "15000-plus", "unknown"]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "featureName": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,63}$",
+      "not": {
+        "enum": [
+          "glucose",
+          "insulin",
+          "carbs",
+          "treatments",
+          "profile-values",
+          "api-secret",
+          "token",
+          "url",
+          "hostname"
+        ]
+      }
+    },
+    "counterName": {
+      "type": "string",
+      "enum": [
+        "api.v1.entries.read",
+        "api.v1.entries.write",
+        "api.v1.status.read",
+        "api.v1.profile.read",
+        "api.v1.devicestatus.read",
+        "api.v1.devicestatus.write",
+        "api.v2.properties.read",
+        "api.v3.entries.read",
+        "api.v3.entries.write",
+        "api.v3.status.read",
+        "api.v3.version.read",
+        "api.v3.last-modified.read",
+        "reports.opened",
+        "reports.daily",
+        "reports.weekly",
+        "reports.monthly",
+        "plugins.bridge.active",
+        "plugins.careportal.active",
+        "plugins.iob.active",
+        "plugins.cob.active",
+        "plugins.rawbg.active",
+        "plugins.openaps.active",
+        "plugins.loop.active",
+        "plugins.mmconnect.active",
+        "plugins.pump.active",
+        "plugins.profile.active",
+        "plugins.alexa.active",
+        "plugins.googlehome.active",
+        "startup.success",
+        "startup.config-error",
+        "startup.database-error",
+        "startup.dependency-error"
+      ],
+      "description": "Stable aggregate event name. Must be route-template or feature level, never raw URL, query, body, treatment, profile, or subject data."
+    },
+    "nonNegativeCounter": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000
+    },
+    "counterMap": {
+      "type": "object",
+      "maxProperties": 160,
+      "propertyNames": {
+        "$ref": "#/$defs/counterName"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/nonNegativeCounter"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "not": {
+        "anyOf": [
+          { "required": ["entries"] },
+          { "required": ["treatments"] },
+          { "required": ["devicestatus"] },
+          { "required": ["profile"] },
+          { "required": ["api_secret"] },
+          { "required": ["token"] },
+          { "required": ["url"] },
+          { "required": ["hostname"] },
+          { "required": ["ip"] },
+          { "required": ["user_agent"] },
+          { "required": ["request_body"] },
+          { "required": ["stack"] },
+          { "required": ["logs"] }
+        ]
+      }
+    }
+  ],
+  "examples": [
+    {
+      "schema": 1,
+      "product": "cgm-remote-monitor",
+      "release": "16.x",
+      "reporting_period": "2026-07-16",
+      "installation_id": "monthly_8S9nOLd5cP4h7Qj2Vw",
+      "runtime": {
+        "node_major": 22,
+        "npm_major": 10,
+        "deployment_family": "docker",
+        "database_family": "mongodb-atlas"
+      },
+      "features": {
+        "enabled": ["careportal", "iob", "cob", "bridge"],
+        "used": {
+          "api.v1.entries.read": 120,
+          "api.v3.entries.read": 42,
+          "api.v1.devicestatus.write": 8,
+          "reports.opened": 3,
+          "plugins.bridge.active": 1
+        }
+      },
+      "health": {
+        "startup": "success",
+        "uptime_bucket": "7-30d",
+        "http_2xx": 1300,
+        "http_3xx": 12,
+        "http_4xx": 44,
+        "http_5xx": 1,
+        "websocket_connections": 17,
+        "startup_duration_bucket_ms": "1000-5000"
+      }
+    }
+  ]
+}
