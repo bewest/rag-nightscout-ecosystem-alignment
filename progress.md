@@ -30,6 +30,7 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 | report counter fix | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `ea47d14e` | Counts `/report` page opens directly as `reports.opened` and adds focused preview test coverage |
 | scheduled-send gate | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `5e7a54d4` | Adds explicit `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND` gate and `runDue()` path, with tests proving no send before first-run jitter due time |
 | tick lifecycle wiring | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `a6825185` | Wires scheduled send checks to existing tick lifecycle, still gated by `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND=false` by default |
+| Mongo-backed state | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `5969531e` | Prefers Mongo-backed telemetry secret/counter/schedule state when `ctx.store` is available, with file fallback for local/dev |
 | Reviewer guide | `docs/reports/cgm-remote-monitor-telemetry-branch-reviewer-guide-2026-07-16.md` | Summarizes branch commits, safety boundaries, validation, review focus, and next slices |
 
 **Key Findings**:
@@ -43,6 +44,7 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 - The known `/report` E2E counter gap is fixed in cgm with direct app-page instrumentation.
 - Schema/cgm updates now allow tallying enabled `connect` plugin and allowlisted Nightscout Connect source names such as Dexcom Share, Glooko, LibreLinkUp, Minimed CareLink, and Nightscout, without credentials or URLs.
 - Scheduling is wired to the existing tick lifecycle but remains explicitly gated and disabled by default.
+- cgm now prefers Mongo-backed telemetry state, addressing ephemeral runtime concerns while preserving file fallback for local/dev.
 
 **Validation**:
 - `TEST=telemetry npm run test-single`

@@ -22,6 +22,7 @@ Implemented pieces:
   - `4ae99daf`: gated admin manual send endpoint for local E2E testing
   - `5e7a54d4`: explicit scheduled-send gate and manual `runDue()` path
   - `a6825185`: scheduled telemetry wired to existing tick lifecycle, still gated by `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND`
+  - `5969531e`: Mongo-backed telemetry state with file fallback for local/dev
 - backend repo `/home/bewest/src/crm-telemetry`
   - strict schema validation
   - `POST /v1/nightscout/checkin`

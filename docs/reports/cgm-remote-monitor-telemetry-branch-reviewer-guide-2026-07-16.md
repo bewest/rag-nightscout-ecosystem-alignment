@@ -21,6 +21,7 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 | `ea47d14e` | Counts `/report` page opens directly so report telemetry is not lost to route/static ordering |
 | `5e7a54d4` | Adds explicit `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND` gate and manual `runDue()` scheduler path |
 | `a6825185` | Wires scheduled telemetry to the existing tick lifecycle, still gated by `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND` |
+| `5969531e` | Prefers Mongo-backed telemetry state with file fallback for local/dev |
 
 ## What this branch does
 
@@ -37,7 +38,7 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 - Counts `/report` page opens as `reports.opened`.
 - Provides `sendOnce()` for explicit/manual POST tests.
 - Mounts `POST /api/telemetry/send.json` only as an admin endpoint and only works when `NIGHTSCOUT_TELEMETRY_MANUAL_SEND=true`.
-- Persists a generated telemetry secret in a telemetry-specific cache file when `NIGHTSCOUT_TELEMETRY_SECRET` is not provided.
+- Persists telemetry state in Mongo when Nightscout storage is available, with file fallback for local/dev.
 - Persists counter state since the last successful send.
 - Resets counters only after `sendOnce()` receives a successful response.
 - Provides pure scheduling helpers.
@@ -89,6 +90,7 @@ Reviewers should focus on:
 - Whether manual sender semantics are acceptable before any scheduling or activation work.
 - Whether the manual send endpoint should remain test/dev-only or be removed before production activation.
 - Whether the telemetry cache location and backup/restore behavior are acceptable for target deployments.
+- Whether the Mongo collection name/default (`telemetry`) is acceptable for production deployments.
 
 ## Suggested next branch slices
 

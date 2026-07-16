@@ -278,9 +278,10 @@ cgm-remote-monitor has two existing secret-like values, but neither should becom
 Preferred approach:
 
 1. Use a dedicated telemetry secret, for example `NIGHTSCOUT_TELEMETRY_SECRET`, when an operator or provider wants stable monthly identifiers across deploys.
-2. Generate and persist a telemetry-specific secret in a separate telemetry cache file when no explicit secret is configured.
-3. Use an ephemeral process secret only if telemetry-specific persistence fails, and label it as ephemeral so reviewers know it is not a stable installation identity.
-4. Derive monthly IDs as `HMAC(telemetry_secret, YYYY-MM)`, never transmitting the raw secret.
+2. Prefer Mongo-backed telemetry state when Nightscout storage is available, so ephemeral runtimes retain stable telemetry state across rebuilds.
+3. Use the telemetry cache file only as local/dev fallback or when Mongo-backed state is unavailable.
+4. Use an ephemeral process secret only if telemetry-specific persistence fails, and label it as ephemeral so reviewers know it is not a stable installation identity.
+5. Derive monthly IDs as `HMAC(telemetry_secret, YYYY-MM)`, never transmitting the raw secret.
 
 ## Non-blocking next action
 
