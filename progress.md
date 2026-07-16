@@ -25,6 +25,7 @@ Converted the telemetry strategy into first-pass execution materials for board, 
 | Implementation breakdown | `docs/30-design/nightscout-telemetry-implementation-breakdown-2026-07-16.md` | Splits work into charter/schema, cgm-remote-monitor emitter, sibling backend, diagnostics separation, and maintainer workflow |
 | Schema fixtures and validator | `specs/fixtures/telemetry/`, `tools/validate_telemetry_schema.py`, `make validate-telemetry` | Provides accepted/rejected payload examples and a fast validation path that does not wait on release-gate decisions |
 | Backend service design | `docs/30-design/nightscout-telemetry-backend-service-design-2026-07-16.md` | Defines a sibling endpoint, storage layout, aggregation model, dashboard outputs, metadata constraints, and tests inspired by Trio telemetry |
+| cgm emitter map | `docs/30-design/cgm-remote-monitor-telemetry-emitter-map-2026-07-16.md` | Maps cgm-remote-monitor env, boot, Express, API, report, websocket, preview, module, and PR-slice touchpoints |
 
 **Key Findings**:
 - The first milestone can remain narrow enough for default-on aggregate telemetry if the payload is previewable, schema-bound, opt-out, and server-side rejected on unknown fields.
@@ -36,6 +37,10 @@ Converted the telemetry strategy into first-pass execution materials for board, 
 - `docs/10-domain/nightscout-telemetry-observability-deep-dive.md`
 - `specs/jsonschema/aid-events.schema.json`
 - `docs/reports/nightscout-dependabot-context-2026-07-07.md`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/server/{env,server,app,bootevent,websocket}.js`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/api/index.js`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/api3/index.js`
+- `/home/bewest/src/worktrees/nightscout/cgm-pr-8447/lib/settings.js`
 
 ---
 
