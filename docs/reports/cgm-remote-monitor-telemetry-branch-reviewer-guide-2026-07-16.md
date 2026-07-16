@@ -18,6 +18,7 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 | `10b63a99` | Adds pure scheduling helper for first-run jitter, weekly success interval, and failure retry |
 | `b8149521` | Retains counters across day boundaries until a successful telemetry send, then resets them |
 | `4ae99daf` | Adds admin-only, explicitly gated manual send endpoint for local E2E testing |
+| `ea47d14e` | Counts `/report` page opens directly so report telemetry is not lost to route/static ordering |
 
 ## What this branch does
 
@@ -31,6 +32,7 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 - Builds a schema-shaped aggregate payload.
 - Mounts an admin-only preview endpoint at `/api/telemetry/preview.json`.
 - Counts allowlisted route families and coarse status classes locally.
+- Counts `/report` page opens as `reports.opened`.
 - Provides `sendOnce()` for explicit/manual POST tests.
 - Mounts `POST /api/telemetry/send.json` only as an admin endpoint and only works when `NIGHTSCOUT_TELEMETRY_MANUAL_SEND=true`.
 - Persists a generated telemetry secret in a telemetry-specific cache file when `NIGHTSCOUT_TELEMETRY_SECRET` is not provided.

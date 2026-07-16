@@ -101,7 +101,7 @@ Aggregate summary:
 
 ## Limitations found
 
-- `/report` did not appear in the preview counters during the full-app E2E run. The likely cause is cgm route/static ordering: static handling or redirect behavior can satisfy `/report` before the current telemetry middleware sees the app-page route. API counters did work. This should be addressed before relying on report-page counters.
+- Initial E2E found `/report` did not appear in preview counters, likely due cgm route/static ordering. Follow-up cgm commit `ea47d14e` instruments the report page handler directly and adds a focused test proving `reports.opened` appears in preview.
 - The E2E test used an in-process cgm Express app and a real local crm-telemetry HTTP server, not two long-running shell-managed daemons.
 - Automatic scheduling is still not enabled.
 - crm-telemetry lifecycle policy is documented separately but not implemented as cloud object-store lifecycle rules.
@@ -112,4 +112,3 @@ Aggregate summary:
 2. Add a repeatable local E2E script if maintainers want a single command.
 3. Implement production lifecycle policy in the chosen storage backend.
 4. Add scheduling behind explicit telemetry configuration after review.
-

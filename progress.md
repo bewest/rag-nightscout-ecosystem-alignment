@@ -27,6 +27,7 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 | scheduling helper | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `10b63a99` | Adds pure schedule calculations for first-run jitter, weekly success interval, and failure retry without automatic timers |
 | retention fix | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `b8149521` | Retains counters across day boundaries until successful send, then resets and persists send state |
 | manual E2E trigger | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `4ae99daf` | Adds admin-only `POST /api/telemetry/send.json`, gated by `NIGHTSCOUT_TELEMETRY_MANUAL_SEND`, for local E2E testing |
+| report counter fix | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `ea47d14e` | Counts `/report` page opens directly as `reports.opened` and adds focused preview test coverage |
 | Reviewer guide | `docs/reports/cgm-remote-monitor-telemetry-branch-reviewer-guide-2026-07-16.md` | Summarizes branch commits, safety boundaries, validation, review focus, and next slices |
 
 **Key Findings**:
@@ -37,6 +38,7 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 - A local two-component smoke test confirmed cgm `sendOnce()` can POST a schema-valid aggregate payload to the `crm-telemetry` receiver and receive `204`.
 - cgm now has telemetry-specific secret persistence, counter retention through send success, and send-state persistence, still without automatic scheduling or default emission.
 - cgm now has a gated manual-send endpoint for local E2E testing without enabling automatic scheduling.
+- The known `/report` E2E counter gap is fixed in cgm with direct app-page instrumentation.
 - Schema/cgm updates now allow tallying enabled `connect` plugin and allowlisted Nightscout Connect source names such as Dexcom Share, Glooko, LibreLinkUp, Minimed CareLink, and Nightscout, without credentials or URLs.
 
 **Validation**:
