@@ -165,6 +165,8 @@ Prototype export output:
 exports/nightscout/monthly/YYYY-MM.json
 ```
 
+Prototype dashboard implementation: `/home/bewest/src/crm-telemetry` commit `d0ca8f3` adds `crm_telemetry.report.write_dashboard()`, which renders `reports/nightscout/dashboard.html` from monthly exports without raw installation IDs or network metadata.
+
 Public dashboards must not expose:
 
 - Raw payloads.

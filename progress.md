@@ -74,6 +74,7 @@ Converted the telemetry strategy into first-pass execution materials for board, 
 - `crm-telemetry` commit `e42040c` adds monthly aggregation that dedupes active installations and feature-active counts without exposing raw installation IDs.
 - `crm-telemetry` commit `4b6f25f` stores accepted payloads in local object-store-style partitions without retained network metadata.
 - `crm-telemetry` commit `5a37596` exports monthly aggregate JSON from stored payloads without raw installation IDs.
+- `crm-telemetry` commit `d0ca8f3` renders a static monthly dashboard from aggregate exports without raw installation IDs or network metadata.
 
 **Source Files Analyzed**:
 - `docs/10-domain/nightscout-telemetry-observability-deep-dive.md`

@@ -27,6 +27,7 @@ Implemented pieces:
   - monthly aggregation and feature-active dedupe tests in commit `e42040c`
   - accepted payload local filesystem storage in commit `4b6f25f`
   - monthly aggregate JSON exports in commit `5a37596`
+  - static HTML dashboard rendering in commit `d0ca8f3`
 
 Implemented only for explicit/manual invocation:
 
@@ -35,7 +36,7 @@ Implemented only for explicit/manual invocation:
 Not implemented yet:
 
 - automatic scheduling or startup-triggered telemetry send.
-- backend HTML dashboard/report rendering.
+- production hosting, object lifecycle policy, and richer dashboard styling.
 
 Scheduling model is documented separately in `docs/30-design/nightscout-telemetry-scheduling-dedupe-model-2026-07-16.md`.
 
