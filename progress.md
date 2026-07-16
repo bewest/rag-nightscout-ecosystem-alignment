@@ -72,6 +72,7 @@ Converted the telemetry strategy into first-pass execution materials for board, 
 - Release-gate language remains discussable, but fixtures, tests, backend design, and disabled-by-default prototype branches are non-blocking technical progress.
 - Local two-component testing is feasible: backend fixture validation and HTTP accept/reject behavior already work, while cgm preview/counter payloads are ready for a future sender.
 - `crm-telemetry` commit `e42040c` adds monthly aggregation that dedupes active installations and feature-active counts without exposing raw installation IDs.
+- `crm-telemetry` commit `4b6f25f` stores accepted payloads in local object-store-style partitions without retained network metadata.
 
 **Source Files Analyzed**:
 - `docs/10-domain/nightscout-telemetry-observability-deep-dive.md`

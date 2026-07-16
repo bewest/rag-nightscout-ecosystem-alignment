@@ -111,6 +111,8 @@ Raw accepted payload retention: 60 days.
 
 Rejected payload retention should be avoided by default. If temporarily enabled for debugging, store only rejection reason and schema path, not the raw request body.
 
+Prototype implementation: `/home/bewest/src/crm-telemetry` commit `4b6f25f` stores accepted payloads under `raw/accepted/nightscout/YYYY/MM/DD/<receipt_id>.json` and keeps IP/user-agent/hostname/raw URL out of stored payloads and object metadata.
+
 Object metadata must not include:
 
 - IP address.
@@ -180,6 +182,7 @@ Backend tests should include:
 - Oversized body rejected before storage.
 - Invalid content type rejected.
 - Accepted object stored without network metadata.
+- Accepted object uses product/date/receipt partitioning.
 - Aggregation counts distinct monthly installation IDs.
 - Aggregation does not link installation IDs across months.
 - Aggregation dedupes duplicate weekly reports by `(month, installation_id)` for monthly active counts.

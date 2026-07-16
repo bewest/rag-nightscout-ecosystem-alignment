@@ -25,6 +25,7 @@ Implemented pieces:
   - `GET /healthz`
   - fixture and HTTP tests
   - monthly aggregation and feature-active dedupe tests in commit `e42040c`
+  - accepted payload local filesystem storage in commit `4b6f25f`
 
 Implemented only for explicit/manual invocation:
 
@@ -33,7 +34,7 @@ Implemented only for explicit/manual invocation:
 Not implemented yet:
 
 - automatic scheduling or startup-triggered telemetry send.
-- backend object storage and dashboard/report generation.
+- backend dashboard/report generation.
 
 Scheduling model is documented separately in `docs/30-design/nightscout-telemetry-scheduling-dedupe-model-2026-07-16.md`.
 
