@@ -137,6 +137,17 @@ Research and ML/DataOps
 
 The feasible plan is a **Nightscout-owned aggregate telemetry service** implemented as a sibling to Trio telemetry, not as an expansion of the existing Trio endpoint. The service can reuse Trio's operational pattern while giving cgm-remote-monitor its own schema, identifiers, retention, governance, and dashboards.
 
+### Execution assumptions clarified
+
+These assumptions should guide the next materials and implementation planning:
+
+- **Rollout posture**: default-on aggregate telemetry is acceptable for the first implementation only if it is narrow, transparent, previewable, and easy to opt out of.
+- **Infrastructure ownership**: use a Nightscout/Foundation-owned sibling service with product-specific endpoints and schemas. It may reuse the Trio/Scaleway operational pattern where appropriate, but should not simply widen the existing Trio endpoint.
+- **Initial payload scope**: start with a minimal aggregate census only: release/runtime/deployment family, enabled plugins/capabilities, coarse API/report counters, startup status, and health buckets.
+- **Identifier and retention**: use a monthly rotating pseudonymous installation ID and retain raw accepted payloads for 60 days before relying on aggregates.
+- **Top-line board ask**: justify a cgm-remote-monitor maintenance and shared-infrastructure budget at least comparable to Trio, while also capturing urgent feature/connector usage tallies before third-party cloud access changes and framing telemetry as data-rights-preserving community transparency.
+- **Execution style**: develop reasonable board/developer materials first, then proceed methodically with agents and implementation tasks where appropriate.
+
 ### Recommended target state
 
 ```text
