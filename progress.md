@@ -55,12 +55,14 @@ Converted the telemetry strategy into first-pass execution materials for board, 
 | Schema fixtures and validator | `specs/fixtures/telemetry/`, `tools/validate_telemetry_schema.py`, `make validate-telemetry` | Provides accepted/rejected payload examples and a fast validation path that does not wait on release-gate decisions |
 | Backend service design | `docs/30-design/nightscout-telemetry-backend-service-design-2026-07-16.md` | Defines a sibling endpoint, storage layout, aggregation model, dashboard outputs, metadata constraints, and tests inspired by Trio telemetry |
 | cgm emitter map | `docs/30-design/cgm-remote-monitor-telemetry-emitter-map-2026-07-16.md` | Maps cgm-remote-monitor env, boot, Express, API, report, websocket, preview, module, and PR-slice touchpoints |
+| Local integration plan | `docs/30-design/nightscout-telemetry-local-integration-plan-2026-07-16.md` | Shows how to run cgm-remote-monitor and `crm-telemetry` locally together once sender wiring exists |
 
 **Key Findings**:
 - The first milestone can remain narrow enough for default-on aggregate telemetry if the payload is previewable, schema-bound, opt-out, and server-side rejected on unknown fields.
 - The highest-risk work is governance and field discipline, not the mechanics; Trio telemetry already demonstrates the operational pattern.
 - The implementation path should start with materials and schema validation before emitter/backend code.
 - Release-gate language remains discussable, but fixtures, tests, backend design, and disabled-by-default prototype branches are non-blocking technical progress.
+- Local two-component testing is feasible: backend fixture validation and HTTP accept/reject behavior already work, while cgm preview/counter payloads are ready for a future sender.
 
 **Source Files Analyzed**:
 - `docs/10-domain/nightscout-telemetry-observability-deep-dive.md`
