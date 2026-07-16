@@ -10,9 +10,10 @@ This document is an index of requirements organized by domain.
 - [Nightscout Api](nightscout-api-requirements.md) - 57 requirements (+4 IDP)
 - [Pumps](pumps-requirements.md) - 10 requirements
 - [Sync Identity](sync-identity-requirements.md) - 79 requirements (+4 FOLLOW, +2 PROPOSAL)
+- [Telemetry and Observability](telemetry-observability-requirements.md) - 9 requirements
 - [Treatments](treatments-requirements.md) - 35 requirements
 
-Total: 313 requirements
+Total: 322 requirements
 
 ## Coverage Status
 
@@ -154,4 +155,4 @@ Total: 313 requirements
 **Level 2 Complete**: 5/5 mapping verifications passed (100%)
 **Level 3 Complete**: 8/8 deep dive verifications (100%) ✅
 
-*Last updated: 2026-06-17*
+*Last updated: 2026-07-16*

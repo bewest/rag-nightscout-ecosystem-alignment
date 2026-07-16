@@ -10,6 +10,7 @@ This document is an index of gaps organized by domain.
 - [Nightscout Api](nightscout-api-gaps.md) - 74 gaps
 - [Pumps](pumps-gaps.md) - 10 gaps
 - [Sync Identity](sync-identity-gaps.md) - 71 gaps
+- [Telemetry and Observability](telemetry-observability-gaps.md) - 5 gaps
 - [Treatments](treatments-gaps.md) - 26 gaps
 
 ## Quick Reference
@@ -23,8 +24,9 @@ This document is an index of gaps organized by domain.
 | cgm-sources | 52 | [cgm-sources-gaps.md](cgm-sources-gaps.md) | 2026-02-01 |
 | treatments | 26 | [treatments-gaps.md](treatments-gaps.md) | 2026-03-10 |
 | pumps | 13 | [pumps-gaps.md](pumps-gaps.md) | 2026-02-03 |
+| telemetry-observability | 5 | [telemetry-observability-gaps.md](telemetry-observability-gaps.md) | 2026-07-16 |
 
-Total: 354 unique GAP IDs across 7 domains (3 GAP-CONNECT-* added 2026-07-07, 3 GAP-ENTRY-* added 2026-04-10, 5 GAP-EFFECT-* added 2026-02-08)
+Total: 383 unique GAP IDs reported by `python tools/find_gap_duplicates.py` after adding 5 GAP-OBS-* entries on 2026-07-16. The quick-reference table remains a human-maintained domain index.
 
 ## Duplicate Resolution (2026-02-01)
 
@@ -69,4 +71,4 @@ All 10 duplicate GAP IDs have been renumbered:
 | 2026-01-29 | terminology-matrix.md (10% sample) | 100% accurate | No gap changes needed |
 | 2026-06-17 | trio/nightscout-sync.md, loop/safety.md, terminology-matrix.md | Trio and Loop claims refreshed against current source | No new gaps; corrected stale terminology and client-behavior notes |
 
-*Last updated: 2026-06-17*
+*Last updated: 2026-07-16*

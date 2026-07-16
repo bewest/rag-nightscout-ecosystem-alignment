@@ -51,6 +51,22 @@ Each data field belongs to one of three ontology categories:
 
 ---
 
+## Telemetry and Observability Concepts
+
+Cross-project terminology for Nightscout telemetry, diagnostics, and shared infrastructure. See [`nightscout-telemetry-observability-deep-dive.md`](../../docs/10-domain/nightscout-telemetry-observability-deep-dive.md).
+
+| Alignment Term | Nightscout / cgm-remote-monitor | Trio telemetry | Foundation / DataOps | Comparable projects |
+|----------------|----------------------------------|----------------|-----------------------|---------------------|
+| **Community usage telemetry** | Proposed daily aggregate feature/version/health census with `NIGHTSCOUT_TELEMETRY` controls | JSON pings to App-Attest-protected `/checkin` | Public aggregate installation and adoption reports | Home Assistant analytics, Homebrew analytics |
+| **Diagnostic observability** | Proposed Sentry/OpenTelemetry metrics, traces, exceptions, and uptime signals | Prometheus `/metrics`, Loki logs, Grafana/Cockpit alerts | Release regression and shared-service health monitoring | Sentry, Grafana, Datadog, New Relic |
+| **Operational logs** | Existing console logs; Heroku manifest includes Papertrail as a log add-on | Canonical request log lines plus optional Loki shipper | Operator incident response and runbooks | Papertrail, Loki, Better Stack, Elastic |
+| **Estimated active installations** | Preferred public denominator for Nightscout instances reporting in a period | Trio currently reports distinct `idfv` values | Foundation impact and support-window planning | Home Assistant active installations |
+| **Monthly rotating installation ID** | Proposed HMAC-derived pseudonymous ID for deduplication without permanent tracking | Uses Apple `idfv` path grouping per day | Aggregate count deduplication with short raw retention | Privacy-preserving analytics patterns |
+| **Payload preview** | Proposed admin/CLI view of exact pending telemetry payload | Not currently modeled in Trio telemetry | Transparency and public trust requirement | Home Assistant logs exact shared payload |
+| **Consent-governed data commons** | Separate from default telemetry; not used for therapy or research payloads by default | Out of scope | Consent registry, provenance, lakehouse, MLflow/reporting | Research/data commons programs |
+
+---
+
 ## Data Concepts
 
 ### Heart Rate Collection (API v3)

@@ -113,6 +113,39 @@ Promoted the tested `nightscout-connect` connectivity baseline onto `origin/dev`
 
 ---
 
+## Nightscout Telemetry and Observability Plan (2026-07-16)
+
+Surveyed local telemetry discussion notes, ecosystem telemetry references, the Trio telemetry implementation, current cgm-remote-monitor logging posture, comparable open-source analytics patterns, and the adjacent data-ops/shared-services proposal.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Telemetry deep dive | `docs/10-domain/nightscout-telemetry-observability-deep-dive.md` | Recommends separated planes for community feature census, diagnostics, logs, and consented data commons work |
+| Gap updates | `traceability/telemetry-observability-gaps.md` | Adds GAP-OBS-001 through GAP-OBS-005 for architecture, schema, precedent, diagnostics, and stakeholder alignment gaps |
+| Requirement updates | `traceability/telemetry-observability-requirements.md` | Adds REQ-OBS-001 through REQ-OBS-009 for schema, identifiers, opt-out, endpoints, diagnostics, governance, and data commons separation |
+| Terminology update | `mapping/cross-project/terminology-matrix.md` | Adds telemetry and observability terms across Nightscout, Trio telemetry, Foundation/DataOps, and comparable projects |
+
+**Key Findings**:
+- Trio telemetry is the strongest ecosystem precedent, but its App Attest, `idfv`, free-form payload, and 180-day object retention model should not be copied directly into Nightscout default telemetry.
+- cgm-remote-monitor has deployment logging precedent via Papertrail, but logs are not a feature census and should remain operator-directed.
+- Home Assistant and Homebrew support the idea of disclosed, aggregate, public analytics used for maintainer prioritization, but Nightscout should be more conservative because health-adjacent metadata is sensitive.
+- The unifying plan is a phased proposal series: telemetry charter, feature census, structured logs, scrubbed diagnostics, OpenTelemetry, then Foundation shared-service/data-ops integration.
+
+**Gaps Identified**: GAP-OBS-001, GAP-OBS-002, GAP-OBS-003, GAP-OBS-004, GAP-OBS-005
+
+**Source Files Analyzed**:
+- `/home/bewest/Downloads/nightscout_telemetry_observability_options.md`
+- `externals/trio-telemetry/trio-telemetry-backend/README.md`
+- `externals/trio-telemetry/trio-telemetry-backend/app/main.py`
+- `externals/trio-telemetry/trio-telemetry-backend/app/metrics.py`
+- `externals/trio-telemetry/trio-telemetry-backend/app/logs.py`
+- `externals/trio-telemetry/trio-telemetry-backend/app/canonical.py`
+- `externals/trio-telemetry/trio-telemetry-cronjob/README.md`
+- `externals/cgm-remote-monitor-official/app.json`
+- `../ns-ml-data-ops-proposal/docs/technical-architecture.md`
+- `../ns-ml-data-ops-proposal/docs/ecosystem-shared-services.md`
+
+---
+
 ## Nightscout Dependabot Alert Context Report (2026-07-07)
 
 Reviewed the cgm-remote-monitor dependency-dev-tooling branch in `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` and wrote a report for closing or consolidating low-value Dependabot PRs without misrepresenting raw advisory counts.
