@@ -29,6 +29,7 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 | manual E2E trigger | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `4ae99daf` | Adds admin-only `POST /api/telemetry/send.json`, gated by `NIGHTSCOUT_TELEMETRY_MANUAL_SEND`, for local E2E testing |
 | report counter fix | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `ea47d14e` | Counts `/report` page opens directly as `reports.opened` and adds focused preview test coverage |
 | scheduled-send gate | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `5e7a54d4` | Adds explicit `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND` gate and `runDue()` path, with tests proving no send before first-run jitter due time |
+| tick lifecycle wiring | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `a6825185` | Wires scheduled send checks to existing tick lifecycle, still gated by `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND=false` by default |
 | Reviewer guide | `docs/reports/cgm-remote-monitor-telemetry-branch-reviewer-guide-2026-07-16.md` | Summarizes branch commits, safety boundaries, validation, review focus, and next slices |
 
 **Key Findings**:
@@ -41,7 +42,7 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 - cgm now has a gated manual-send endpoint for local E2E testing without enabling automatic scheduling.
 - The known `/report` E2E counter gap is fixed in cgm with direct app-page instrumentation.
 - Schema/cgm updates now allow tallying enabled `connect` plugin and allowlisted Nightscout Connect source names such as Dexcom Share, Glooko, LibreLinkUp, Minimed CareLink, and Nightscout, without credentials or URLs.
-- Scheduling remains explicitly gated and still requires a production decision about where to call `runDue()`.
+- Scheduling is wired to the existing tick lifecycle but remains explicitly gated and disabled by default.
 
 **Validation**:
 - `TEST=telemetry npm run test-single`

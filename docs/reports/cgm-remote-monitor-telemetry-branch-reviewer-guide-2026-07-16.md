@@ -20,6 +20,7 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 | `4ae99daf` | Adds admin-only, explicitly gated manual send endpoint for local E2E testing |
 | `ea47d14e` | Counts `/report` page opens directly so report telemetry is not lost to route/static ordering |
 | `5e7a54d4` | Adds explicit `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND` gate and manual `runDue()` scheduler path |
+| `a6825185` | Wires scheduled telemetry to the existing tick lifecycle, still gated by `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND` |
 
 ## What this branch does
 
@@ -41,11 +42,12 @@ Worktree: `/home/bewest/src/worktrees/nightscout/cgm-pr-8447`
 - Resets counters only after `sendOnce()` receives a successful response.
 - Provides pure scheduling helpers.
 - Provides `runDue()` for explicitly gated scheduled-send tests when `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND=true`.
+- Calls scheduled telemetry from the existing tick lifecycle only when scheduled sending is explicitly enabled.
 - Adds focused Mocha tests for module behavior and preview authorization.
 
 ## What this branch does not do
 
-- Does not automatically schedule or trigger sends unless `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND=true` and code explicitly calls `runDue()`.
+- Does not schedule or trigger sends unless `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND=true`.
 - Does not allow manual send unless `NIGHTSCOUT_TELEMETRY_MANUAL_SEND` is explicitly enabled.
 - Does not use `API_SECRET` or JWT `randomString` as telemetry identity material.
 - Does not enable default-on telemetry.
@@ -91,5 +93,5 @@ Reviewers should focus on:
 ## Suggested next branch slices
 
 1. Decide whether to keep, restrict, or remove the manual send endpoint before production activation.
-2. Decide where `runDue()` should be called from if maintainers approve scheduling activation.
+2. Decide whether scheduled-send gate is sufficient for opt-in pilot configuration.
 3. Add notice/preview UX and documentation before any default-on release.
