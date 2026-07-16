@@ -125,6 +125,8 @@ Object metadata must not include:
 
 Daily aggregation reads raw accepted payloads and writes aggregate records.
 
+Prototype implementation: `/home/bewest/src/crm-telemetry` commit `e42040c` adds `crm_telemetry.aggregate.aggregate_payloads()`, which dedupes monthly active installations and feature-active installations without exposing raw installation IDs.
+
 Suggested aggregate tables or JSON sections:
 
 | Aggregate | Key dimensions | Measures |
@@ -180,6 +182,8 @@ Backend tests should include:
 - Accepted object stored without network metadata.
 - Aggregation counts distinct monthly installation IDs.
 - Aggregation does not link installation IDs across months.
+- Aggregation dedupes duplicate weekly reports by `(month, installation_id)` for monthly active counts.
+- Feature-active installation counts dedupe by `(month, installation_id, counter_name)` while counter sums remain separate.
 
 The repository-level fixture validator is `tools/validate_telemetry_schema.py`.
 
@@ -239,4 +243,3 @@ Python/FastAPI or Flask is acceptable because Trio telemetry already uses Flask 
 2. Prototype the backend validation endpoint against these fixtures.
 3. Prototype the cgm-remote-monitor payload builder behind a disabled flag.
 4. Keep release-gate language under discussion without blocking fixtures, tests, or disabled-by-default implementation branches.
-
