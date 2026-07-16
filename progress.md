@@ -72,6 +72,7 @@ Converted the telemetry strategy into first-pass execution materials for board, 
 | Local integration plan | `docs/30-design/nightscout-telemetry-local-integration-plan-2026-07-16.md` | Shows how to run cgm-remote-monitor and `crm-telemetry` locally together once sender wiring exists |
 | Scheduling/dedupe model | `docs/30-design/nightscout-telemetry-scheduling-dedupe-model-2026-07-16.md` | Recommends weekly jittered attempts, monthly rotating IDs, and backend monthly dedupe to avoid thundering herd behavior |
 | Lifecycle policy | `docs/30-design/nightscout-telemetry-lifecycle-policy-2026-07-16.md` | Defines retention and deletion behavior for raw accepted payloads, rejected requests, aggregate exports, dashboards, metrics, and incidents |
+| Deployment lifecycle examples | `docs/30-design/nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.md` | Adds provider-neutral, S3-style, Terraform, and Scaleway-compatible examples for 60-day raw retention |
 | Full local E2E report | `docs/reports/nightscout-telemetry-local-e2e-report-2026-07-16.md` | Documents cgm manual endpoint to crm receiver to accepted payload storage to monthly export to dashboard rendering |
 
 **Key Findings**:

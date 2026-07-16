@@ -43,6 +43,8 @@ prefix: raw/accepted/nightscout/
 expire_after: 60 days
 ```
 
+Deployment examples are in `docs/30-design/nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.md`.
+
 ## Rejected payload lifecycle
 
 Rejected request bodies should not be stored by default.
@@ -118,4 +120,3 @@ The local `crm-telemetry` prototype currently implements:
 - tests ensuring raw installation IDs are not included in aggregate exports or dashboard HTML.
 
 It does not yet implement cloud lifecycle rules. Those must be added when the backend target storage provider is chosen.
-
