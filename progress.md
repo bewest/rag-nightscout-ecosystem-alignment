@@ -21,6 +21,8 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 | cgm branch | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` branch `wip/bewest/nightscout-telemetry-emitter` commit `a8f6c31f` | Adds local telemetry config parsing, allowlists, monthly HMAC ID helper, counters, schema-shaped payload builder, no-network facade, and tests |
 | cgm preview slice | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `df8b218e` | Adds admin-only `/api/telemetry/preview.json` endpoint so reviewers/operators can inspect the exact pending aggregate payload without any network sender |
 | identity-source update | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `5005aa26` | Keeps telemetry identity separate from `API_SECRET` and JWT `randomString`; supports explicit `NIGHTSCOUT_TELEMETRY_SECRET` and labels ephemeral preview IDs |
+| route-counter slice | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `6555e713` | Adds allowlisted route-family/status counters and websocket connection counts locally, with no raw URL/query/body/IP/user-agent retention |
+| manual sender slice | `/home/bewest/src/worktrees/nightscout/cgm-pr-8447` commit `c3d6f33d` | Adds explicit `sendOnce()` POST support to `NIGHTSCOUT_TELEMETRY_ENDPOINT`; no automatic scheduling or default emission |
 | Reviewer guide | `docs/reports/cgm-remote-monitor-telemetry-branch-reviewer-guide-2026-07-16.md` | Summarizes branch commits, safety boundaries, validation, review focus, and next slices |
 
 **Key Findings**:
@@ -28,6 +30,7 @@ Prepared a cgm-remote-monitor implementation branch for the first disabled-by-de
 - `NIGHTSCOUT_TELEMETRY` defaults to `off`; `aggregate` only enables the local facade configuration.
 - Focused tests cover env parsing, monthly ID rotation, allowlist filtering, coarse counters, payload shape, admin-only preview, and no-network preview behavior.
 - Existing auth/JWT secrets are not used as telemetry identity material; a dedicated telemetry secret or later persisted telemetry-specific secret is preferred.
+- A local two-component smoke test confirmed cgm `sendOnce()` can POST a schema-valid aggregate payload to the `crm-telemetry` receiver and receive `204`.
 
 **Validation**:
 - `TEST=telemetry npm run test-single`

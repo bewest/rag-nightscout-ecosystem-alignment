@@ -15,15 +15,20 @@ Implemented pieces:
   - `df8b218e`: admin telemetry preview endpoint
   - `5005aa26`: telemetry identity separated from auth/JWT secrets
   - `6555e713`: local route-family counters
+  - `c3d6f33d`: manual aggregate sender that posts the preview-equivalent payload when explicitly invoked
 - backend repo `/home/bewest/src/crm-telemetry`
   - strict schema validation
   - `POST /v1/nightscout/checkin`
   - `GET /healthz`
   - fixture and HTTP tests
 
+Implemented only for explicit/manual invocation:
+
+- cgm `sendOnce()` POSTs to `NIGHTSCOUT_TELEMETRY_ENDPOINT` when telemetry is enabled and a caller invokes it.
+
 Not implemented yet:
 
-- cgm sender that POSTs to `NIGHTSCOUT_TELEMETRY_ENDPOINT`.
+- automatic scheduling or startup-triggered telemetry send.
 - cgm persistent telemetry secret generation/storage.
 - backend object storage and aggregation.
 
@@ -98,9 +103,26 @@ The response should show:
    - `GET /api/v3/version`
    - `GET /report`
 4. Confirm `/api/telemetry/preview.json` shows local counters.
-5. Trigger sender manually or shorten send interval in test mode.
+5. Trigger sender manually with `ctx.telemetry.sendOnce()` or a test harness.
 6. Confirm backend returns `204`.
 7. Confirm backend rejects a tampered payload with an added `url`, `entries`, or `api.v1.treatments.write` counter.
+
+## Verified local smoke test
+
+The current cgm sender and `crm-telemetry` backend have been tested together locally without starting full Nightscout:
+
+```text
+crm-telemetry ThreadingHTTPServer on 127.0.0.1:<ephemeral>
+cgm createTelemetry(... endpoint=http://127.0.0.1:<ephemeral>/v1/nightscout/checkin ...)
+telemetry.counters.increment('api.v1.entries.read', 2)
+telemetry.sendOnce({ now: new Date('2026-07-16T12:00:00Z') })
+```
+
+Result:
+
+```json
+{"sent":true,"statusCode":204}
+```
 
 ## Acceptance criteria
 
@@ -114,5 +136,4 @@ The response should show:
 
 ## Feasibility judgment
 
-Local two-component testing is feasible. The backend already validates fixtures and accepts/rejects HTTP checkins locally. The cgm branch already builds preview payloads and local counters. The remaining connector is the disabled-by-default sender that POSTs the preview-equivalent payload to `NIGHTSCOUT_TELEMETRY_ENDPOINT`.
-
+Local two-component testing is feasible and has passed for manual sender invocation. The backend validates fixtures and accepts/rejects HTTP checkins locally. The cgm branch builds preview payloads, counts local route families, and can manually POST the preview-equivalent payload to `NIGHTSCOUT_TELEMETRY_ENDPOINT`. Remaining work is scheduling/activation, persistent telemetry secret generation/storage, object storage, aggregation, and dashboards.
