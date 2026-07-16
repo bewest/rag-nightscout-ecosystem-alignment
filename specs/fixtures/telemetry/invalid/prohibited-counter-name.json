@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "product": "cgm-remote-monitor",
+  "release": "16.x",
+  "reporting_period": "2026-07-16",
+  "installation_id": "monthly_badCounter7Qj2Vw9S",
+  "runtime": {
+    "node_major": 22,
+    "deployment_family": "docker"
+  },
+  "features": {
+    "enabled": ["careportal"],
+    "used": {
+      "api.v1.treatments.write": 1
+    }
+  },
+  "health": {
+    "startup": "success",
+    "uptime_bucket": "1-24h",
+    "http_2xx": 100,
+    "http_4xx": 1,
+    "http_5xx": 0
+  }
+}

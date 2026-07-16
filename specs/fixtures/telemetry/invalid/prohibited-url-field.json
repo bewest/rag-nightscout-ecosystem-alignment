@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "product": "cgm-remote-monitor",
+  "release": "16.x",
+  "reporting_period": "2026-07-16",
+  "installation_id": "monthly_badUrl7Qj2Vw9S8pL4",
+  "runtime": {
+    "node_major": 22,
+    "deployment_family": "heroku"
+  },
+  "features": {
+    "enabled": ["bridge"],
+    "used": {
+      "plugins.bridge.active": 1
+    }
+  },
+  "health": {
+    "startup": "success",
+    "uptime_bucket": "1-7d",
+    "http_2xx": 200,
+    "http_4xx": 5,
+    "http_5xx": 0
+  },
+  "url": "https://example-nightscout.invalid/api/v1/entries.json?token=secret"
+}

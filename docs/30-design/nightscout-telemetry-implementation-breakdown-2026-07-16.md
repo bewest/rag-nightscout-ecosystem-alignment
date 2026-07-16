@@ -20,7 +20,7 @@ This breakdown turns the cgm-remote-monitor telemetry plan into implementation w
 | A1. Public charter | One-page telemetry charter | Purpose, prohibited data, opt-out, retention, incident owner, and dashboard commitment are explicit |
 | A2. JSON Schema | `specs/jsonschema/nightscout-telemetry-aggregate.schema.json` | Strict schema with `additionalProperties: false`, examples, and prohibited-field rejection |
 | A3. Community copy | FAQ and announcement draft | Explains default-on aggregate telemetry, opt-out, exact payload preview, and no therapy data |
-| A4. Review checklist | Release gate checklist | Blocks merge/release until schema, preview, opt-out, and docs are ready |
+| A4. Review checklist | Release gate checklist | Defines what must be true before default-on activation; it should not block fixtures, tests, prototype branches, or disabled-by-default implementation work |
 
 ## Workstream B: cgm-remote-monitor aggregate emitter
 

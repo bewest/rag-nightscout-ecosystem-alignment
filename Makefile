@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
+.PHONY: bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json validate-telemetry workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
 
 # Default target
 help:
@@ -52,6 +52,7 @@ help:
 	@echo "  make trace ID=<id>      - Trace requirement or gap"
 	@echo "  make traceability       - Generate full traceability matrix"
 	@echo "  make validate-json      - Validate JSON/YAML files"
+	@echo "  make validate-telemetry - Validate Nightscout telemetry schema fixtures"
 	@echo "  make workflow TYPE=<type> - Run automated workflow (quick/full/validation/verification)"
 	@echo "  make cli                - Launch interactive workspace CLI"
 	@echo "  make efficiency-dashboard - Show productivity metrics (last 7 days)"
@@ -328,6 +329,10 @@ traceability:
 validate-json:
 	@echo "Validating JSON/YAML files..."
 	@python3 tools/validate_json.py
+
+validate-telemetry:
+	@echo "Validating Nightscout telemetry schema fixtures..."
+	@python3 tools/validate_telemetry_schema.py
 
 # Run automated workflows
 workflow:

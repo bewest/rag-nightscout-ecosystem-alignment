@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "product": "cgm-remote-monitor",
+  "release": "16.x",
+  "reporting_period": "2026-07-16",
+  "installation_id": "monthly_8S9nOLd5cP4h7Qj2Vw",
+  "runtime": {
+    "node_major": 22,
+    "npm_major": 10,
+    "deployment_family": "docker",
+    "database_family": "mongodb-atlas"
+  },
+  "features": {
+    "enabled": ["careportal", "iob", "cob", "bridge"],
+    "used": {
+      "api.v1.entries.read": 120,
+      "api.v3.entries.read": 42,
+      "api.v1.devicestatus.write": 8,
+      "reports.opened": 3,
+      "plugins.bridge.active": 1
+    }
+  },
+  "health": {
+    "startup": "success",
+    "uptime_bucket": "7-30d",
+    "http_2xx": 1300,
+    "http_3xx": 12,
+    "http_4xx": 44,
+    "http_5xx": 1,
+    "websocket_connections": 17,
+    "startup_duration_bucket_ms": "1000-5000"
+  }
+}

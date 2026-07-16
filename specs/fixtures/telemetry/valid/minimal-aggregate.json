@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "product": "cgm-remote-monitor",
+  "release": "16.x",
+  "reporting_period": "2026-07-16",
+  "installation_id": "monthly_minimal7Qj2Vw9S8pL4n",
+  "runtime": {
+    "node_major": 22,
+    "deployment_family": "unknown"
+  },
+  "features": {
+    "enabled": [],
+    "used": {}
+  },
+  "health": {
+    "startup": "success",
+    "uptime_bucket": "lt-1h",
+    "http_2xx": 0,
+    "http_4xx": 0,
+    "http_5xx": 0
+  }
+}

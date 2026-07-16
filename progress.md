@@ -23,11 +23,14 @@ Converted the telemetry strategy into first-pass execution materials for board, 
 | Board/developer packet | `docs/reports/nightscout-telemetry-board-developer-packet-2026-07-16.md` | Frames the maintenance budget ask, urgent connector/cloud-access tally need, and data-rights-preserving opt-out commitments |
 | Community FAQ draft | `docs/reports/nightscout-telemetry-community-faq-draft-2026-07-16.md` | Public-facing explanation of what changes, why, what is sent, opt-out, default-on rationale, and data-rights framing |
 | Implementation breakdown | `docs/30-design/nightscout-telemetry-implementation-breakdown-2026-07-16.md` | Splits work into charter/schema, cgm-remote-monitor emitter, sibling backend, diagnostics separation, and maintainer workflow |
+| Schema fixtures and validator | `specs/fixtures/telemetry/`, `tools/validate_telemetry_schema.py`, `make validate-telemetry` | Provides accepted/rejected payload examples and a fast validation path that does not wait on release-gate decisions |
+| Backend service design | `docs/30-design/nightscout-telemetry-backend-service-design-2026-07-16.md` | Defines a sibling endpoint, storage layout, aggregation model, dashboard outputs, metadata constraints, and tests inspired by Trio telemetry |
 
 **Key Findings**:
 - The first milestone can remain narrow enough for default-on aggregate telemetry if the payload is previewable, schema-bound, opt-out, and server-side rejected on unknown fields.
 - The highest-risk work is governance and field discipline, not the mechanics; Trio telemetry already demonstrates the operational pattern.
 - The implementation path should start with materials and schema validation before emitter/backend code.
+- Release-gate language remains discussable, but fixtures, tests, backend design, and disabled-by-default prototype branches are non-blocking technical progress.
 
 **Source Files Analyzed**:
 - `docs/10-domain/nightscout-telemetry-observability-deep-dive.md`
