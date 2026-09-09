@@ -2221,3 +2221,48 @@ structure)** — new §11.1:
 - `externals/cgm-remote-monitor-official/lib/plugins/{index,bridge,mmconnect}.js`
 - `externals/cgm-remote-monitor-official/lib/data/{ddata,dataloader,calcdelta}.js`
 - `externals/cgm-remote-monitor-official/lib/authorization/index.js`
+
+**Follow-up 8 (eBPF as the tenant→shard router; does the multitenant model make sharding
+Postgres easier than today's per-tenant-Mongo model beyond 10k tenants?)** — new §6.3 and
+§12.4:
+- Checked the specific eBPF routing proposal (read incoming host:tenant mapping, forward
+  on a fast datapath to a shard with a hot cache) against how the kernel hooks actually
+  work, rather than treating "eBPF" as one undifferentiated capability. Verified
+  Nocturne's actual tenant-resolution rule is by subdomain
+  (`externals/nocturne/.../TenantResolutionMiddleware.cs:14-15`, `{slug}.{BaseDomain}`),
+  the same convention today's single-tenant deployments already use — confirming hostname
+  *is* the tenant identity, which is what makes SNI-based routing applicable at all.
+- **Correction**: `sk_lookup` (L4 socket selection) has no SNI/TLS visibility and cannot
+  do hostname-based routing by itself; bare XDP doesn't reassemble TCP streams cleanly
+  enough to parse a ClientHello. The hook that actually does this is `sockmap`/`sk_msg`,
+  which can inspect the ClientHello's cleartext SNI and splice the socket in-kernel to a
+  backend, still encrypted, without a userspace proxy copying bytes through it — the real
+  mechanism behind existing SNI-passthrough routers.
+- Scoped this honestly as an *optimization* on an already-solved problem (nginx/Envoy/HAProxy
+  already do SNI-based routing in userspace in microseconds today), not a new capability —
+  the win is kernel-bypass CPU/copy savings at high connection churn, not routing
+  capability that doesn't otherwise exist. The genuinely hard part (the tenant→shard
+  control-plane map itself: assignment, rebalancing, failure handling) is unchanged by
+  which technology executes the lookup, and was already named as a cross-cutting
+  requirement in §4E before this round. Split "route to the shard holding a hot ctx" (sound,
+  same thing as §4B's `Map<tenantId,ctx>`) from "serve data from inside the eBPF program
+  itself" (not feasible — eBPF is verifier-bounded, no general app logic) — the proposal is
+  correct read as the first, not the second. Added EXP-MT-041 to prototype a boring
+  userspace SNI router first, replacing it with sockmap only if measured to be a bottleneck.
+- **Answered the sharding-comparison question directly, with a corrected framing**: not
+  "Postgres shards better than Mongo as engines" (MongoDB has native sharding; a shared
+  Mongo-with-tenantId model would face the same exercise) — the real asymmetry is that
+  today's per-tenant-Mongo model is already maximally partitioned (shard count = tenant
+  count) and was *never forced to build* a tenant→shard map, so it has no dial to turn,
+  while the multitenant model is forced to build exactly that map (§4E) regardless of
+  storage engine, and extending it to also mean "which Postgres node" is the same
+  generalization applied once more (matching Citus's flagship documented use case:
+  distribute-by-tenant_id with colocated per-tenant tables) rather than new
+  infrastructure. Confirmed RLS and sharding-by-tenant are orthogonal and stack (safety
+  vs. scale), so this doesn't revisit the RLS work already done. Left EXP-MT-040
+  (Postgres-primary ceiling) as the still-open number this reasoning depends on.
+
+**Source Files Analyzed (this round)**:
+- `externals/nocturne/src/API/Nocturne.API/Multitenancy/TenantResolutionMiddleware.cs`
+- Web research on `sk_lookup` vs `sockmap`/`sk_msg` vs XDP capabilities for SNI-based
+  routing, cited inline in the new §6.3

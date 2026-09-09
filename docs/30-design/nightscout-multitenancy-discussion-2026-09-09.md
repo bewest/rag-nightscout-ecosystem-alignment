@@ -721,6 +721,89 @@ valuable:
 explicitly out of scope as an application dependency. If the benchmark harness produces
 per-tenant flamegraphs and off-CPU profiles, the architecture debate becomes short.
 
+### 6.3 eBPF as the tenant→shard router — the specific proposal, checked against how the kernel hooks actually work
+
+The proposal on the table: use eBPF to read the incoming hostname, map it to the shard
+that holds that tenant, and forward the connection on a fast in-kernel datapath rather
+than through a userspace proxy — potentially straight to a process with the tenant
+already hot in cache. This is a real, well-precedented pattern (SNI-based TLS
+passthrough routing), but it needs one correction and one honest scoping before it goes
+in the plan.
+
+**The correction: which eBPF hook does this depends on which layer carries the tenant
+identity, and that changes the mechanism, not just the difficulty.** Nightscout's tenant
+identity is the hostname (`{slug}.{BaseDomain}`, confirmed as Nocturne's actual
+resolution rule at
+`externals/nocturne/src/API/Nocturne.API/Multitenancy/TenantResolutionMiddleware.cs:14-15`,
+and the same convention today's single-tenant deployments already use — one FQDN per
+site). For an HTTPS request, that hostname exists in exactly two places: the TLS
+ClientHello's cleartext SNI extension (sent *before* the handshake completes, so visible
+without decrypting anything), or the HTTP `Host`/`:authority` header inside the encrypted
+TLS record (visible only after decryption). Which eBPF program type applies is
+hook-specific, not a single "eBPF can read the hostname" capability:
+
+- **`sk_lookup`** (the socket-selection hook, chosen at TCP SYN) sees L3/L4 fields only —
+  source/destination IP and port. It has **no visibility into SNI or any TLS content**
+  and cannot make a hostname-based decision by itself.
+- **XDP** (the earliest, fastest hook, at the NIC driver) is the right layer for
+  raw packet-rate decisions (drop, simple L3/L4 hash-based load spreading) but does not
+  reassemble TCP streams, so it cannot cleanly parse a ClientHello that may span more than
+  one packet.
+- **`sockmap`/`sk_msg`** (the stream-level hook) is the one that actually does this job:
+  it can inspect the first bytes of a TCP stream — including a ClientHello's SNI — and
+  then *splice* the socket directly to a backend socket in-kernel, still fully encrypted,
+  without a userspace proxy process copying bytes through it. This is the real mechanism
+  behind SNI-passthrough routers; `sk_lookup` alone cannot do it.
+
+So: "eBPF detects the host:tenant mapping" is accurate only if scoped to `sockmap`/`sk_msg`
+working on the SNI in the ClientHello — not XDP, and not `sk_lookup` alone. This is a
+narrower, more specific claim than "eBPF" as a category, and worth stating precisely so
+the eventual implementer reaches for the right hook on the first try.
+
+**The honest scoping: this buys kernel-bypass efficiency on an already-solved problem,
+not a new capability.** SNI-based hostname routing without decryption is already a
+mature, widely deployed pattern in userspace (nginx `stream {} map $ssl_preread_server_name`,
+HAProxy `req.ssl_sni`, Envoy's SNI cluster matching) — every one of these can already route
+Nightscout's `{slug}.{host}` convention to the correct backend today, in microseconds, with
+no kernel programming at all. What `sockmap`-based in-kernel splicing adds over that is
+**avoiding a full userspace proxy hop's CPU and copy cost per connection** — a real win at
+very high connection-churn (many short-lived polling connections, which Nightscout's
+uploader/downloader clients do produce), but it is an optimization of the *mechanical
+forwarding step*, not a solution to the actual hard part.
+
+**The actual hard part is unchanged by which technology does the forwarding: the
+tenant→shard control-plane map itself** — assigning each tenant to a shard, keeping that
+assignment current as shards are added/removed/rebalanced, and handling a shard's failure
+or a tenant's migration between shards without dropping in-flight connections. §4E already
+named this ("a tenant→shard router... any serious deployment ends up here") as a
+cross-cutting requirement independent of this proposal. eBPF/sockmap can execute a lookup
+against that map faster than a userspace proxy can; it does not make the map itself easier
+to build, keep consistent, or rebalance. That control-plane problem should be designed and
+tested (EXP-MT-041, new) with whichever router is cheapest to build first — plausibly a
+plain Envoy/nginx SNI router pointed at a `tenantId → shard` config the app already
+maintains — and only replaced with an eBPF/sockmap datapath if that router is later
+measured to be the bottleneck, which is unlikely before the shared-process architecture
+(Layer 2) itself is.
+
+**On "communicate on a fast datapath to an instance with access to a hot cache"
+specifically:** precise this into two distinct claims, because they have very different
+feasibility. (1) *Route the connection to the shard process that already holds this
+tenant's `ctx` hot in the `Map<tenantId,ctx>` of §4B* — this is exactly what the
+tenant→shard router does, and is sound; the "hot cache" here is nothing more exotic than
+the shared-process architecture's own in-memory `ctx`, already specified in §4B/Layer 2.
+(2) *Serve data directly from within the eBPF program itself, bypassing the application
+entirely* — this does not hold up: eBPF programs are verifier-bounded (no unbounded
+loops, no heap allocation, limited instruction count) and cannot run a general-purpose
+application (JSON serialization, Postgres/Mongo queries, RLS-scoped reads, alarm logic).
+Claim (1) is the one worth pursuing; claim (2) is not something eBPF is built to do.
+
+**Recommendation, revised**: eBPF/sockmap SNI-based splicing to the correct shard is a
+legitimate Layer 2+ optimization, worth prototyping (new EXP-MT-041) *after* the
+tenant→shard control plane exists and is proven correct with a boring userspace router,
+and specifically valuable if connection-churn profiling (already recommended as
+observability infrastructure earlier in this section) shows the userspace proxy hop is a
+measured cost, not an assumed one.
+
 ---
 
 ## 7. Cold-tenant wake, hot cache and WASM: measured
@@ -1360,6 +1443,7 @@ behaviour at 2× target N; recovery after restart.
 | EXP-MT-038 | Repeat §8.10's process-footprint sweep against Deno (unavailable in this environment) and a current (1.2.x+) Bun, not the stale 1.0.0 build used here | §8.10's Bun result is real but version-dated; Deno is an outright gap |
 | EXP-MT-039 | Repeat §8.10 with the *real* require-graphs on both sides — `footprint.js`'s `nightscout` layer vs a minimal Nocturne API host booted (not a "Hello World" ASP.NET Core app) — and at N=16/32, not just N=8 | §8.10 used synthetic minimal apps for a first-order answer; the process-sharing curve should be confirmed against real code before it drives a migration decision |
 | EXP-MT-040 | Single Postgres primary under simulated 10 000-tenant RLS connection/query load — connection pooling (pgbouncer transaction mode) required or not, and whether a single primary saturates before a single shared-Node-process shard does | §12's 10 000-tenant extrapolation currently has no empirical ceiling for the storage side at that scale — this is the missing number |
+| EXP-MT-041 | Prototype tenant→shard connection routing two ways: (a) a boring userspace SNI router (nginx/Envoy `stream{}`/SNI matching) against a `tenantId→shard` config; (b) an eBPF `sockmap`/`sk_msg` SNI-splice datapath doing the same lookup in-kernel. Measure connection-setup latency and CPU/connection at realistic churn | §6.3: settles whether the userspace router is ever actually the bottleneck before reaching for eBPF/sockmap, and confirms `sockmap` (not `sk_lookup` or bare XDP) is the correct hook |
 
 `EXP-MT-030` matters disproportionately: running the *same* generator against Nocturne
 gives the ecosystem its first apples-to-apples server comparison, and it also fills the
@@ -1658,6 +1742,55 @@ proposed removing) are a permanently valid second deployment target, and that ad
 should stay for their sake — but that is "two deployment models forever," not "two
 backends inside the multitenant service forever," and the distinction matters for scoping
 the ongoing maintenance commitment honestly.
+
+### 12.4 If a single Postgres primary saturates before 10 000 tenants, does multitenancy actually make sharding *easier* than today's per-tenant-Mongo model?
+
+Directionally yes, but for a more specific reason than "Postgres shards better than
+Mongo" in the abstract — the two models differ in **whether the hard part of sharding has
+already been forced to exist**, not in which database engine is easier to partition.
+
+**Today's per-tenant-Mongo model is not "hard to shard" — it is already sharded to the
+maximum possible degree, which is precisely why it is expensive.** One tenant, one
+database (or one whole process/pod, §8.9), is shard-count = tenant-count — the finest
+possible partition. There is no sharding *problem* to solve at the database layer in that
+model; there is no router, no rebalancing, no cross-shard concern, because nothing is
+ever shared. The cost this document has been measuring throughout (§8.9's ~99 MB/pod
+floor, §8.9.4's 11–12 k8s objects/tenant) *is* the price of that maximal partitioning.
+Critically, that model has no dial to turn: you cannot ask it to put 50 tenants on one
+database to save cost, because nothing in its design ever built a tenant→location mapping
+in the first place — every tenant *is* its own location.
+
+**The multitenant model is forced to build exactly that mapping to work at all** — §4E's
+"tenant→shard router," needed the moment more than one process exists, and (per §6.3's
+correction) the same control-plane concept a `sockmap`/SNI router or a userspace SNI proxy
+would consult. Once that map exists for routing *app* processes, extending it to also
+mean "which Postgres node holds this tenant's rows" is the same generalization applied to
+one more layer, not new infrastructure — and it is the standard shape for scaling
+Postgres past one primary: shard by a **distribution column**, put every table for one
+tenant on the same physical shard (so a tenant's own queries never cross a shard
+boundary), and route by that column. This is precisely what Citus (a Postgres extension,
+mentioned as a candidate in §12.1) is built for — "distribute by tenant_id, colocate all
+of a tenant's tables" is its flagship documented use case, not a novel application of it —
+and RLS (§5.2.1) and sharding-by-tenant are **orthogonal and stack cleanly**: RLS is a
+safety property enforced on whichever shard answers a query; sharding is a scale property
+deciding which shard answers it. Adding Citus later does not revisit or weaken the RLS
+work already done.
+
+**So the precise claim, corrected from "Postgres shards easier than Mongo":** it is not
+that Postgres shards better than MongoDB as engines — MongoDB has had native sharding
+since long before Citus existed, and a *shared* MongoDB-with-`tenantId`-discriminator
+model (the first row of §5.2's backend table) would face an analogous shard-by-tenant_id
+exercise if it needed to scale past one replica set. The real asymmetry is between
+**today's actual deployed model** (Mongo, but one full database per tenant, with no
+tenant→shard concept because it never needed one) and **the multitenant model being
+proposed here** (either engine, but with a tenant→shard control plane already built as a
+Layer 2/§4E prerequisite). The multitenant program is what buys the option to shard the
+storage layer cheaply later, by reusing infrastructure it needed anyway — the current
+single-tenant-Mongo deployment model was never given that option, because it was never
+forced to build the map that sharding requires. This is a reason to still expect §12.1's
+"10 000" figure to be a target reachable through this program even if a single Postgres
+primary turns out not to be enough on its own — not a reason to skip measuring where that
+primary's ceiling actually is (EXP-MT-040, still the open item).
 
 ---
 
