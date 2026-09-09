@@ -122,6 +122,13 @@ Trio-specific fields it doesn't otherwise know about.
 - [ ] Refresh `workspace.lock.json`: advance `nocturne` pin from `39856ca77`
       to current `main`; replace the `Trio-dev` entry with a pin against
       `nightscout/Trio@dev` (retire `Trio-dev` as a tracked external).
+      **Blocked as of 2026-09-14**: `externals/nocturne`'s local worktree
+      has 2,591 changed files relative to its pinned commit (`git status
+      --short | wc -l`) — likely leftover local experimentation from a
+      prior session, not a clean fetch-only state. `tools/bootstrap.py
+      refresh` correctly skipped it ("worktree is dirty") rather than
+      force-discarding those changes. Needs a decision (stash/discard vs.
+      inspect-and-preserve) before refreshing, not done unilaterally here.
 - [ ] Field-by-field diff of Nocturne's V4 model vs.
       `specs/openapi/aid-*-2025.yaml`.
 - [ ] Raise the "extension bag vs. ad-hoc embedding" convention as a

@@ -113,6 +113,25 @@ for MCP consumers (an extension of §2's statistics API). Recommend narrowing
 to one of these before scoping further — they have different owners,
 different dependency chains, and different urgency.
 
+**Progress since the above was written (2026-09-14):** cross-project
+research into Nocturne, Trio, Loop, and AndroidAPS's dev-branch schema
+handling (`ecosystem-progression-nocturne-trio.md`,
+`ecosystem-progression-loop-aaps.md`) surfaced one concrete, narrowly-scoped,
+actionable item that doesn't require resolving the broader
+TypeScript/JSON-Schema/GraphQL question above first: all four projects
+independently split into the same two camps for handling vendor-specific
+fields (typed extension-bag vs. attribute-flattening). This is now drafted
+as a standalone proposal —
+[`x-aid-extensions-convention-proposal.md`](../../sdqctl-proposals/x-aid-extensions-convention-proposal.md)
+— a spec-only, non-breaking addition to `specs/openapi/aid-*-2025.yaml`
+that doesn't depend on picking a runtime validation mechanism (zod vs. JSON
+Schema vs. TS) first; that mechanism question (see
+`tooling-evaluation-keyv-mongoose-zod-wasm.md` §2) can be layered on later
+once/if runtime enforcement is wanted. This is "progress to integrate," not
+an open question — recommend reviewing and merging that proposal
+independently of the broader typed-support scoping decision above, which
+remains open.
+
 ## 5. General maintenance backlog
 
 Not enumerated by the user in this pass. The existing
