@@ -180,9 +180,9 @@
     {
       "name": "cgm-remote-monitor-official",
       "url": "https://github.com/nightscout/cgm-remote-monitor.git",
-      "ref": "4982e954cccd9311ba145d946cfea08bc8918360",
+      "ref": "a8888f0d9facb8a9bb54c2ab15333f3f241b45bf",
       "description": "Official Nightscout server (dev branch)",
-      "frozen_at": "2026-07-16T11:09:00.769517",
+      "frozen_at": "2026-09-09T11:28:24.480356",
       "frozen_from": "dev"
     },
     {
@@ -248,17 +248,17 @@
       "alias": "babelbetes",
       "name": "babelbetes",
       "url": "https://github.com/nudgebg/babelbetes.git",
-      "ref": "586191c12dd1d19134228c5d2698cda045f1af17",
+      "ref": "07a7f0727823500447c995b3930613c6ce638a78",
       "description": "Multi-study CGM/insulin data standardization toolkit (500k+ subject-days) for cross-study phenotype synthesis",
-      "frozen_at": "2026-06-17T14:54:35.227507",
+      "frozen_at": "2026-09-09T11:28:24.521069",
       "frozen_from": "develop"
     },
     {
       "name": "OmnipodKit",
       "url": "git@github.com:loopandlearn/OmnipodKit.git",
-      "ref": "fea9f96d306fa858fa46d825086e97c9f7f4de6e",
+      "ref": "b47560e317212a6d58bc4a982b192ef1a69eba87",
       "description": "Universal Omnipod pump manager (Eros/Dash/Omnipod5) shared by Loop and Trio",
-      "frozen_at": "2026-07-16T11:09:08.505640",
+      "frozen_at": "2026-09-09T11:28:24.543822",
       "frozen_from": "main"
     },
     {
@@ -272,9 +272,9 @@
     {
       "name": "trio-telemetry",
       "url": "git@github.com:nightscout/trio-telemetry.git",
-      "ref": "91148cb6bd9c2d2bf354b0d046e53a145d37e2ff",
+      "ref": "34b05295a43d1b50ef390cc83b8490b1cd82a2f1",
       "description": "Anonymous opt-out telemetry sink for Trio, authenticated via Apple App Attest",
-      "frozen_at": "2026-07-03T13:56:00.109308",
+      "frozen_at": "2026-09-09T11:28:24.557562",
       "frozen_from": "master"
     }
   ]
