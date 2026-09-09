@@ -2082,6 +2082,38 @@ Docker container, reimplementing Nocturne's verified RLS pattern with `knex`/`pg
   doesn't enforce tenant boundaries, and the workspace's real schema asset (OpenAPI +
   compiled Ajv/zod) already covers document validation without deepening Mongo coupling.
 
+**Follow-up 5 (Mongo→Postgres migration mechanics + a layered/sequencing model)** — new
+§5.2.2 and a rewritten §11:
+- **Verified the documents are less regular than feared, which argues for JSONB-first, not
+  against Postgres.** `Treatment` requires only `eventType`+`created_at`
+  (`aid-treatments-2025.yaml:130-132`); every other field varies across 28 enumerated
+  `eventType` values (`:77-111`). What's actually indexed *today* is a short, stable,
+  already-named list: 7 scalar fields for entries, 13 for treatments, 2 for devicestatus
+  (`lib/server/{entries,treatments,devicestatus}.js` `indexedFields` arrays).
+- Proposed shape: one JSONB `doc` column holding the whole document + generated columns
+  for only those ~22 already-indexed fields + RLS (the primitive demonstrated live in
+  follow-up 4) — a mechanical translation of existing indexes, not a schema redesign.
+  Full normalization is deferred indefinitely; the query-model seam (§5.2) is what lets
+  most call sites not notice which store answers.
+- Migration mechanism: because multitenancy is being introduced at the same time, the
+  storage migration and the tenancy migration are the *same* migration, done per-tenant
+  (strangler fig, no flag day) — new tenants land on Postgres directly, existing
+  Mongo-backed single-tenant sites migrate opt-in via backfill + bounded dual-write +
+  cutover. `~/src/node-multienv`'s own Kafka/CDC-watching-Mongo-change-streams pipeline
+  (built for a different purpose) is directly reusable as the dual-write/verify mechanism.
+- **Layered dependency model (§11), because tactics mixed across this whole document are
+  not all compatible or additive**: Layer 0 (typed schema) is a hard prerequisite for
+  everything else and ships alone risk-free; Layer 1 (storage isolation) must ship
+  *before* Layer 2 (shared-process) — sharing a process without isolation turns an
+  app-layer bug into a live cross-tenant leak, not just a discipline gap; Layer 2 and "a
+  runtime rewrite" are substitutes, not complements (§8.2) — pick one; Layer 4 (fairness
+  fixes) should land *with* Layer 2, not after, because Layer 2 is precisely what turns a
+  private tail-latency hiccup into a shared-tenant outage; Layer 5 (native/WASM core) is
+  conditional and last, and attempting it before Layer 0 is the single most measurably
+  counterproductive sequencing mistake this document can name (§8.1: Rust loses to V8
+  without a schema). Layers 0 and 3 (columnar) have no tenancy dependency and should ship
+  on their own timeline regardless of the multitenancy decision.
+
 **Source Files Analyzed**:
 - `externals/cgm-remote-monitor-official/lib/data/{ddata,dataloader,calcdelta}.js`
 - `externals/cgm-remote-monitor-official/lib/server/{cache,websocket,bootevent,env}.js`

@@ -486,6 +486,94 @@ Two results matter more than the numbers:
    (c) migrate the tenant-scoped tables to Postgres and keep the rest on Mongo (a
    two-database architecture, real but non-trivial complexity).
 
+### 5.2.2 Migrating off MongoDB without a flag day
+
+The obvious objection to (c) above is "how would that actually work" — a full relational
+redesign of a schema this heterogeneous sounds like a multi-quarter rewrite. Checked
+directly against the source rather than assumed:
+
+**The documents are far less regular than they look, and that argues *for* JSONB, not
+against Postgres.** `specs/openapi/aid-treatments-2025.yaml:130-132` requires only
+`eventType` and `created_at` — every other field is optional and varies by one of **28** enumerated
+`eventType` values (`aid-treatments-2025.yaml:77-111`, counted directly from the `enum:`
+list, spanning insulin/carb/basal/device/AAPS-specific/legacy categories). A
+`Temporary Override` has
+`reason.minValue`/`maxValue`; a `Temp Basal` has `rate`/`duration`/`absolute`; an SMB needs
+`type`, not `eventType`, to identify at all (`aid-treatments-2025.yaml:207,391-428`). A
+straight relational redesign (one typed column per field, one table per eventType or a
+giant nullable table) would fight this heterogeneity for no benefit — clinical event
+shapes evolve per-controller (Loop vs AAPS vs Trio) faster than a migration could track.
+
+**What's actually indexed today is a small, stable, and separately discoverable set.**
+Grepping the three storage modules' own `api.indexedFields` declarations:
+
+| Collection | Indexed fields today | Count |
+|---|---|---|
+| entries | `date, type, sgv, mbg, sysTime, dateString, identifier` + 2 compounds | 7 scalar |
+| treatments | `created_at, eventType, insulin, carbs, glucose, enteredBy, boluscalc.foods._id, notes, NSCLIENT_ID, percent, absolute, duration, identifier` + 2 compounds | 13 scalar |
+| devicestatus | `created_at, NSCLIENT_ID` + 1 compound | 2 scalar |
+
+(`lib/server/entries.js:217-227`, `lib/server/treatments.js:417-432`,
+`lib/server/devicestatus.js:161-169`). Everything Mongo indexes *today* is already a short,
+named list — the schema work in §5.3 doesn't need to invent a taxonomy, it needs to
+formalize one that already exists as `indexedFields` arrays.
+
+**Proposed migration shape — JSONB-first, generated columns for the hot set, nothing
+else typed yet:**
+
+```sql
+CREATE TABLE treatments (
+  id            bigserial PRIMARY KEY,
+  tenant_id     uuid NOT NULL,
+  doc           jsonb NOT NULL,                                   -- the whole document, as-is
+  eventType     text GENERATED ALWAYS AS (doc->>'eventType') STORED,
+  created_at    timestamptz GENERATED ALWAYS AS ((doc->>'created_at')::timestamptz) STORED,
+  duration      numeric GENERATED ALWAYS AS ((doc->>'duration')::numeric) STORED,
+  identifier    text GENERATED ALWAYS AS (doc->>'identifier') STORED
+  -- ...remaining ~9 fields from the table above, same pattern
+);
+CREATE INDEX ON treatments (tenant_id, eventType, duration, created_at); -- mirrors the compound above
+ALTER TABLE treatments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE treatments FORCE ROW LEVEL SECURITY;         -- §5.2.1's demonstrated primitive
+CREATE POLICY tenant_isolation ON treatments USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+```
+
+This is a **direct, mechanical translation of the existing `indexedFields` list**, not a
+new schema design — every generated column already has a one-line justification in
+today's Mongo index declaration. The 33 other possible treatment fields stay in `doc`,
+queryable via `doc->>'field'` when needed (rare, uncommon-eventType queries), indexed via
+GIN on `doc` if a specific plugin needs it. **Full normalization is deferred indefinitely,
+by design** — the query-model seam (§5.2) means call sites speak the API v3 query model,
+and the query-model layer is what translates `{find:{sgv:{$gte:120}}}`-shaped filters into
+either a Mongo query or a generated-column/JSONB Postgres query, so most call sites never
+notice which store answered.
+
+**Migration mechanism — the workspace already has the pattern.** Because multitenancy is
+being introduced at the same time, the storage migration and the tenancy migration are
+the *same* migration, done incrementally, one tenant at a time — a strangler fig, not a
+flag day:
+
+1. New tenants (and any site owner who opts in) are created directly on Postgres/RLS.
+2. Existing single-tenant Mongo-backed sites keep running completely unchanged — there is
+   no forced cutover date.
+3. For a site that opts to migrate: a one-time backfill (`mongoexport`-shaped bulk copy
+   into the JSONB tables above) followed by a bounded dual-write window (both stores
+   accept writes, a background job diffs them) before cutting reads over. The workspace's
+   own `~/src/node-multienv` prototype already built exactly this shape for a different
+   purpose — CDC via Kafka connectors watching Mongo change streams
+   (`node-multienv/COMPONENT-SEPARATION-SUMMARY.md`'s `KafkaTopics`/`KafkaConnector`
+   resources) — and that CDC pipe is directly reusable as the dual-write/verify mechanism
+   here instead of being rebuilt.
+4. Because isolation is per-tenant (§5.2.1), a bug in the migration tooling for one tenant
+   cannot corrupt another tenant's data on either side — the RLS boundary is also a
+   migration blast-radius boundary.
+
+This bounds the actual engineering unknown to something measurable rather than "migrate
+Mongo to Postgres" as a monolithic fear: port ~3 collections' `indexedFields` lists
+(22 scalar fields total, per the table above) to generated columns, stand up the CDC path
+already prototyped in this workspace, and migrate tenants incrementally. EXP-MT-037 (§10)
+is a time-boxed spike to put a real number on this rather than an estimate.
+
 ### 5.3 Schemas: mongoose, zod and friends
 
 Nightscout uses no ODM today (no mongoose). Introducing one now would couple the codebase
@@ -1206,31 +1294,85 @@ result.
 
 ---
 
-## 11. Phasing (only if the numbers support it)
+## 11. Phasing — a layered dependency model, not just an ordered list
 
-Reordered after the §7–§8 measurements: representation now leads, and native/runtime work
-moves from "last" to "probably never, on the server".
+This document has mixed a lot of tactics: typed schemas, RLS, JSONB, shared-process
+architecture, columnar representation, adaptive fairness fixes, native/WASM cores. Not all
+combinations matter, and some pairs are **substitutes** (doing both wastes effort) rather
+than **complements** (doing both compounds). Restated as layers, each with what it
+requires below it, what it's a substitute for, and what independently justifies it on its
+own even if nothing above it ever ships:
+
+| Layer | Move | Requires | Substitute for | Ships alone? |
+|---|---|---|---|---|
+| **0. Typed vocabulary** | Generate zod/Ajv validators from `specs/openapi/`, formalizing the *existing* `indexedFields` lists (§5.2.2) as the schema | Nothing — first move | Nothing; this is load-bearing infrastructure, not an alternative to anything | **Yes.** Correctness win today, single-tenant, zero risk. Also the *measured* precondition for every later win (§8.1: Rust without a schema loses to V8; columnar without a schema is undefined) |
+| **1. Storage isolation primitive** | Either (1a) a single enforced query-builder seam on Mongo, or (1b) JSONB+generated-columns+RLS on Postgres, migrated per-tenant (§5.2.2) | Layer 0 (need `tenant_id` and the hot-field set typed to write the generated columns / enforce the seam) | Nothing on its own — but is a **prerequisite**, not optional, for Layer 2 | **Yes**, and *should* ship before Layer 2 — see the ordering note below |
+| **2. Shared-process architecture** | `ctxFor(tenantId)`, one process holds N tenants (§4B) | Layer 1, non-negotiably (see below) | **A runtime rewrite** (§8.2: both attack the same 41 MB/process constant; measured, don't do both) | No — needs Layer 1 first |
+| **3. Representation (columnar hot window)** | Typed schema (Layer 0) to know field shapes | Nothing directly | Nothing; independent axis | **Yes**, and helps single-tenant sites even without Layers 1–2 |
+| **4. Fairness fixes for the O(n²) sites** | Nothing structurally, but low priority until Layer 2 ships | Nothing | Nothing | **Yes**, but priority should track Layer 2's schedule (see below) |
+| **5. Native/WASM compute core** | Layer 0 (typed, stateless data — §8.1 shows this fails without it) and evidence of a genuine CPU-bound hot path *after* Layers 2–3 are in | Layers 0, 2, 3 | **Nothing** — not a substitute for Layer 2 (§8.2), and actively harmful to attempt before Layer 0 | No — conditional and last |
+
+**The two orderings that are load-bearing, not just tidy:**
+
+1. **Layer 1 before Layer 2 is a safety requirement, not a style preference.** Sharing one
+   process across tenants (Layer 2) means a storage-isolation bug now has a *live*
+   co-resident neighbour to leak into, not just a log line in an already-compromised
+   single-tenant pod. §5.2.1 demonstrated RLS is fail-closed *by construction* — shipping
+   Layer 2 on top of Mongo's application-only filter (§5.2.1's leak table, column 4) would
+   turn a discipline problem into a live cross-tenant data breach surface. If Layer 1 must
+   be deferred for cost reasons, Layer 2 should be deferred with it, or restricted to a
+   small number of mutually-trusting tenants (e.g. one operator's own test sites) rather
+   than the general multi-tenant case.
+2. **Layer 4 (fairness) should be pulled forward to ship *with* Layer 2, not after it.**
+   §8.3 already showed the O(n²) sites are invisible at single-tenant sizes and a 30× tail
+   at heavy ones — Layer 2 is precisely the change that turns "one heavy tenant's private
+   80 ms hiccup" into "every co-resident tenant's shared stall." Shipping Layer 2 without
+   Layer 4 creates the exact failure Layer 4 exists to prevent, on a schedule dictated by
+   whichever tenant happens to be busiest that day.
+
+**What's genuinely independent (parallelizable, no ordering constraint between them):**
+Layer 0 and Layer 3 have no dependency on tenancy work at all and can — and should — ship
+on their own timeline, reviewed by whoever owns performance/correctness today, without
+waiting for a tenancy decision. This is deliberate: if the multitenancy program stalled or
+were rejected outright, Layers 0 and 3 would still have been worth doing.
+
+**What this rules out, plainly:** "migrate to Nocturne" is not a layer in this model at
+all — §3's correction and §5.4 showed it doesn't supply anything Layers 0–2 don't already
+supply, at a much higher migration cost. "Rewrite in Rust/Go" is Layer 2's substitute, not
+its complement — pick one. A native/WASM core (Layer 5) is real but strictly last,
+conditional, and only pays off *after* Layer 0 removes the representation penalty that
+made Rust lose to V8 in the first place (§8.1) — attempting Layer 5 before Layer 0 is the
+single most measurably counterproductive sequencing mistake this document can name.
+
+**Ordered execution, given the layers above and their constraints:**
 
 1. **Measure first.** Extend `tools/mt-bench/` into the §10 harness; run EXP-MT-001/002 and
    EXP-MT-026 (real remote DB in the loop). Cheap, independently useful, non-invasive.
-2. **Schema work (§5.3) — promoted.** It was framed as a correctness item; §8.1 shows it is
-   the precondition for every memory and parse win, in any language. Generate validators
-   from `specs/openapi/` rather than hand-rolling.
-3. **Representation: columnar hot window** for entries/MBGs/cals and Loop's
-   `predicted.values` (EXP-MT-021/025). ~20× memory and ~500× wake, in plain JavaScript,
-   with no tenancy change required — it helps single-tenant sites today.
-4. **Fairness fixes for the quadratics** (§8.3), justified by p99 under a heavy tenant and
-   ideally adaptive (scan when small, index when large — EXP-MT-028). Not capacity work.
-5. **Introduce the query-model seam** (§5.2) as a refactor toward the *documented* API v3
-   query model, validated by the existing test suites. Independently justifiable.
-6. **Tenant-scope the request path**: resolution middleware, socket rooms, socket
+2. **Layer 0 — schema work (§5.3).** Generate validators from `specs/openapi/`; formalize
+   the existing `indexedFields` lists as the schema (§5.2.2) rather than inventing a new one.
+3. **Layer 3 — columnar hot window** for entries/MBGs/cals and Loop's `predicted.values`
+   (EXP-MT-021/025). Ships independently of tenancy; helps single-tenant sites today.
+4. **Layer 1 — storage isolation primitive.** Either harden the Mongo query-builder seam
+   (1a, cheaper, weaker) or begin the incremental per-tenant Postgres/RLS migration (1b,
+   §5.2.2 — JSONB-first, generated columns for the ~22 fields already indexed, CDC-based
+   per-tenant cutover, no flag day). EXP-MT-037's migration spike belongs here, before
+   committing to 1b at scale.
+5. **Layer 4 — fairness fixes for the quadratics** (§8.3), timed to land with or just
+   before Layer 2, not after — see the ordering note above. Ideally adaptive (scan when
+   small, index when large — EXP-MT-028).
+6. **The query-model seam** (§5.2) as a refactor toward the *documented* API v3 query
+   model, validated by the existing test suites — this is also what makes Layer 1's
+   choice of backend (Mongo-hardened vs. Postgres/RLS) invisible to most call sites.
+7. **Tenant-scope the request path**: resolution middleware, socket rooms, socket
    auth binding, per-tenant settings — behind a flag that defaults to single-tenant.
-7. **Tenant-scope the data path**: `ctxFor(tenantId)`, per-tenant cache/loader/plugins,
-   fail-closed storage isolation.
-8. **Residency tiering + cold alarm path**, if EXP-MT-003/010 support it.
-9. **Shared native cores only where already typed and stateless** (§8.5) — preferably by
-   reusing Nocturne's Rust crates, compiled native for the server and WASM for the browser.
-   Not a host change (§8.4).
+8. **Layer 2 — tenant-scope the data path**: `ctxFor(tenantId)`, per-tenant
+   cache/loader/plugins. Only after step 4 (Layer 1) is in place for the tenants being
+   shared.
+9. **Residency tiering + cold alarm path**, if EXP-MT-003/010 support it.
+10. **Layer 5 — shared native cores only where already typed and stateless** (§8.5),
+    conditional on profiling *after* steps 2–8 still showing a CPU-bound hot path —
+    preferably by reusing Nocturne's Rust crates, compiled native for the server and WASM
+    for the browser. Not a host change (§8.4), and not a step to take early.
 
 ---
 
