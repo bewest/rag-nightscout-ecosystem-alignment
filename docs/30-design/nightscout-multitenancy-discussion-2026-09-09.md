@@ -179,7 +179,7 @@ tenants 200   heap delta 241.2 MB   per tenant 1.21 MB   JSON 795 KB/tenant
 That is the **floor**, not the estimate. Steady state additionally holds cache arrays,
 derived treatment arrays, the previous `lastData` for delta computation, and transient
 JSON clones during load. A working assumption of **4–8 MB resident per active tenant**
-should be treated as a hypothesis to be measured (§8, EXP-MT-001), not a number to quote.
+should be treated as a hypothesis to be measured (§9, EXP-MT-001), not a number to quote.
 At 6 MB, 1 000 tenants ≈ 6 GB of live JS objects before headroom — which is precisely why
 the residency/tiering question (§4) matters more than the storage question.
 
@@ -220,7 +220,7 @@ Two caveats Nocturne itself records: the browser bridge fans some notifications 
 whole tenant room rather than per-subject rooms (`Services/Realtime/RealtimeGroups.cs:32-57`),
 and there is **no published tenants-per-instance target or tenant-count scaling
 benchmark** in the repo, and no k6/NBomber/Socket.IO load harness. So Nocturne proves
-*correctness* of an approach, not *capacity*. Capacity is what §8 is for.
+*correctness* of an approach, not *capacity*. Capacity is what §9 is for.
 
 ### 3.1 Should cgm-remote-monitor *depend on* Nocturne?
 
@@ -282,7 +282,9 @@ Same as B, but a tenant's ddata is materialised on demand and evicted on inactiv
 - **Pro**: cost tracks *concurrency*, not *registrations*. Most sites have one viewer and
   long idle periods, so this is where the order-of-magnitude lives.
 - **Con**: needs a real eviction policy, cold-start latency budget, and a separated alarm
-  path. This is a genuine architecture change, not a refactor.
+  path. This is a genuine architecture change, not a refactor. The wake cost itself now
+  looks affordable — ~3–4 ms from a local store, or near-zero from a columnar hot cache
+  (§7.1, §7.4) — so the hard part is eviction policy and cold alarms, not latency.
 - **Verdict**: the most promising direction, and the one the benchmark plan should be
   designed to prove or kill (EXP-MT-003, EXP-MT-010).
 
@@ -372,7 +374,7 @@ Candidate backends, once that seam exists:
 | MongoDB + `tenantId` discriminator | Compound index `{tenantId, date}` | Zero migration for existing sites; keeps all current queries | No RLS equivalent; isolation is application-enforced only; shared Atlas cluster noisy-neighbour |
 | MongoDB, database-per-tenant | DB per site | Strong isolation; per-tenant backup/restore/export | Connection/namespace overhead; Atlas cost per DB; N × index sets |
 | PostgreSQL + RLS | Nocturne's model, fail-closed | Proven in-ecosystem; real constraints; JSONB for the messy documents; time-series indexes | New engine for Nightscout; migration of every query; ops learning curve |
-| **SQLite file per tenant** (`better-sqlite3` or `node:sqlite`) | Filesystem | Isolation is a *file*; backup = copy; delete = unlink; near-zero idle cost; per-tenant snapshot/restore/export makes data portability trivial | Node-level concurrency (WAL helps), thousands of open handles, replication/HA story, cloud filesystems |
+| **SQLite file per tenant** (`better-sqlite3` or `node:sqlite`) | Filesystem | Isolation is a *file*; backup = copy; delete = unlink; near-zero idle cost; per-tenant snapshot/restore/export makes data portability trivial. Measured: 1 000 open handles cost 66 MB RSS, cold open p99 0.06 ms (§7.1) | Replication/HA story; cloud filesystems; WAL write contention under heavy multi-writer load |
 | Columnar/Arrow/Parquet for history | File per tenant per period | Reports and long-window analytics get dramatically cheaper; workspace already has `externals/ns-parquet*` precedent | Not for the hot 48 h; adds a second storage tier |
 
 On the Node SQLite choice specifically: `node:sqlite` is built in from Node 22.5 but as of
@@ -443,6 +445,11 @@ What WASM will **not** fix: Mongo round-trips, JSON serialisation across the bou
 Node worker threads + `SharedArrayBuffer` may deliver more of the fairness benefit than
 WASM does, and should be in the same experiment arm.
 
+Two adjacent WASM proposals are measured and answered in §7 and should not be conflated
+with the four above: **SQLite compiled to WASM is 2.5–7× slower than native on the server**
+(§7.2), and **hosting Nightscout's JS inside a WASM runtime** optimises instantiation cost
+that Nightscout does not have, while taxing the JS hot path it does (§7.3).
+
 ### 6.2 eBPF
 
 eBPF cannot be a Nightscout runtime component (it is kernel-side, Linux-only, and requires
@@ -457,13 +464,159 @@ valuable:
 - Optionally: enforcement at the edge (cgroup/tc rate limiting per tenant process in a
   sharded deployment, §4E).
 
-**Recommendation**: treat eBPF as first-class *measurement* infrastructure for §8 and
+**Recommendation**: treat eBPF as first-class *measurement* infrastructure for §9 and
 explicitly out of scope as an application dependency. If the benchmark harness produces
 per-tenant flamegraphs and off-CPU profiles, the architecture debate becomes short.
 
 ---
 
-## 7. Runtime performance model to test
+## 7. Cold-tenant wake, hot cache and WASM: measured
+
+This section answers a specific maintainer question — *could a WASM server/runtime wake a
+cold tenant faster, make SQLite faster, or should we just keep a hot cache?* — with
+measurements rather than intuition. Harness and raw scripts: `tools/mt-bench/`
+(node v24.15.0, Linux, shared development machine; synthetic tenant = 576 SGVs +
+600 treatments + 576 Loop-style devicestatus with 72-point prediction arrays,
+i.e. one 48-hour window). **These are indicative single-machine numbers, not a
+benchmark result** — they exist to rank hypotheses before building the full harness in §9.
+
+### 7.1 How expensive is a cold wake, actually?
+
+Rebuilding one tenant's runtime window from various sources
+(`tools/mt-bench/coldwake.js`, `wasmvsnative.js`):
+
+| Wake path | Time |
+|---|---:|
+| `JSON.parse` of an 795 KB snapshot (the "hot cache in Redis/keyv" path) | 2.47 ms |
+| `v8.deserialize` of a 706 KB snapshot | 3.29 ms |
+| `node:sqlite`, cold open + 3 range scans + `JSON.parse` rows | 3.96 ms |
+| `node:sqlite`, warm handle + prepared statements + `JSON.parse` rows | 3.22 ms |
+| `node:sqlite`, warm handle, **rows only, no `JSON.parse`** | 0.70 ms |
+| `better-sqlite3`, warm handle + `JSON.parse` rows | 3.06 ms |
+| `better-sqlite3`, warm handle, rows only | 0.53 ms |
+| current `processRawDataForRuntime` clone (`JSON.parse(JSON.stringify(...))`) | 3.79 ms |
+| `structuredClone` of live ddata | 4.18 ms |
+
+**A cold wake from a local store is ~3–4 ms, and roughly 80 % of that is
+`JSON.parse` materialising JavaScript objects** — not I/O, not query planning, not
+code startup. Note also that `v8.deserialize` is *slower* than `JSON.parse` here, so the
+obvious "snapshot the object graph" trick does not pay.
+
+SQLite file-per-tenant scales fine at the handle level (`tools/mt-bench/handles.js`,
+1 000 tenant databases, 207 MB total):
+
+| Measure | Result |
+|---|---:|
+| cold open latency | p50 0.03 ms / p99 0.06 ms |
+| first query after open | p50 0.30 ms / p99 0.69 ms |
+| 1 000 handles held open simultaneously | no failure |
+| RSS to hold 1 000 open handles | 66.1 MB (≈ 67.7 KB per open tenant) |
+
+So the EXP-MT-012 worry about file handles and cold-open cost looks unfounded at this
+scale, which strengthens the SQLite-per-tenant option in §5.2 considerably.
+
+### 7.2 Does SQLite-in-WASM help? No — it is strictly slower here
+
+Same workload, same queries, native vs WASM build (`tools/mt-bench/wasmvsnative.js`,
+`@sqlite.org/sqlite-wasm` 3.53.4):
+
+| | + `JSON.parse` | rows only |
+|---|---:|---:|
+| `better-sqlite3` (native) | 3.06 ms | 0.53 ms |
+| SQLite-WASM | 7.68 ms | 3.79 ms |
+| **WASM penalty** | **2.5×** | **7.2×** |
+
+This is the expected result once stated plainly: SQLite-WASM exists so that *browsers*,
+which have no native SQLite, can have one (via OPFS). On a server that can call native
+SQLite directly, compiling it to WASM only adds a sandbox boundary and linear-memory
+bounds checks. **The "WASM makes SQLite faster" intuition inverts on the server side.**
+
+### 7.3 Would a WASM runtime wake a tenant faster? Wrong term of the equation
+
+The appeal of WASM runtimes (Wasmtime/WasmEdge/Spin) for multitenancy is real but
+specific: near-instant *instance* creation, cheap per-tenant sandboxes, and snapshot
+pre-initialisation (Wizer) giving microsecond cold starts. That is a decisive advantage
+when your cold start is dominated by **process/runtime startup** — the FaaS case.
+
+Nightscout's cold start is not. §7.1 shows it is ~3–4 ms of **data materialisation**, and
+in a real deployment the dominant term is the Mongo network round-trips (§2.3: ~14 queries
+per load), which a WASM runtime does not touch at all. A WASM runtime would optimise a
+term that is already close to zero.
+
+Worse, the cost side is severe. Nightscout is JavaScript, so "run it in WASM" means
+running JS *inside* a WASM-hosted engine — Javy/QuickJS or SpiderMonkey via
+ComponentizeJS. That trades V8's tiered JIT for an interpreter or a boundary-crossing
+engine; published comparisons commonly put QuickJS-in-WASM in the **5–20× slower**
+range for steady-state JS. Nightscout's per-tenant CPU is exactly steady-state JS:
+plugin chains (IOB/COB/AR2/loop/openaps), treatment processing, delta computation. Paying
+a multiple on all of that to save microseconds of instantiation is a bad trade.
+
+**Verdict**: a WASM *server runtime* hosting Nightscout's JS is not the answer, and should
+be pre-registered as an expected-to-lose arm (EXP-MT-024) purely so the question is closed
+with a number instead of being re-raised. WASM as a *library* boundary for shared Rust
+compute (§6.1, and Nocturne's stateless crates) remains open and interesting; those are
+different proposals that happen to share a word.
+
+### 7.4 The hot cache instinct is right — but the format matters more than the store
+
+The third suggestion is the strongest, with one refinement: **what the hot cache holds
+matters far more than where it lives.** Comparing representations of the 48-hour SGV
+window (`tools/mt-bench/columnar.js`, measuring `heapUsed + external`, 200 tenants):
+
+| Representation | Memory | Wake time |
+|---|---:|---:|
+| JS objects (`JSON.parse`) | 202.5 KB/tenant | 0.559 ms |
+| Columnar typed arrays (f64 mills, i32 sgv, f32 delta, u8 direction) | 9.9 KB/tenant | 0.001 ms |
+| **Ratio** | **≈ 20×** | **≈ 500×** |
+
+A hot cache holding *JSON* costs ~2.5 ms and a full object graph per wake. A hot cache
+holding *columnar blobs* costs effectively nothing to wake — mapping typed-array views
+over bytes is pointer arithmetic — and 20× less memory. Buffer-backed storage is also
+**external to the V8 heap**, so it does not add GC pressure, which matters more than raw
+bytes once hundreds of tenants share one event loop.
+
+Two honest limits:
+
+1. **This win requires no WASM.** Typed arrays are plain JavaScript. WASM linear memory
+   would only add value if the *compute* over those buffers also moved to Rust (shared
+   with Nocturne), or to release a tenant's memory wholesale on eviction without GC
+   negotiation. That is a §6.1 argument, not a runtime argument.
+2. **Not everything columnarises.** SGVs, MBGs, calibrations and Loop's
+   `devicestatus.loop.predicted.values` (72 floats each — a large share of devicestatus
+   bytes) are ideal. Treatments are heterogeneous documents with optional fields and free
+   text (`lib/data/ddata.js:249-337`) and will not compact nearly as well. Expect the
+   blended win to be well below 20×; EXP-MT-025 should measure per collection.
+
+### 7.5 Revised recommendation for the wake path
+
+Ordered by evidence, cheapest first:
+
+1. **Local store beats remote store.** Most of a realistic cold wake is Mongo network
+   RTT, not compute. SQLite-per-tenant (or any co-located store) removes it, and §7.1
+   shows handle/open costs are negligible at 1 000 tenants.
+2. **Stop materialising objects you do not need.** The parse is ~80 % of local wake cost.
+   Keep the hot window in a compact binary form and decode lazily, per field, on demand.
+3. **Hot cache holding columnar blobs**, tiered hot/warm/cold per §4C. Wake ≈ free;
+   full rebuild from the store (~3–4 ms) is the fallback, not the common path.
+4. **keyv is the right abstraction for *where* that blob lives** (memory → SQLite → Redis
+   as deployments grow, config-only change), which is exactly the §5.1 role — and note it
+   is storing an opaque value, so keyv's lack of a query language is irrelevant here.
+   This is the one place the keyv intuition lands cleanly.
+5. **WASM only for shared Rust compute over those buffers**, if EXP-MT-020/021 justify it.
+6. **Not** a WASM host runtime for Nightscout's JS; **not** SQLite-in-WASM on the server.
+
+### 7.6 Additional pre-registered arms
+
+| ID | Arm | Question |
+|---|---|---|
+| EXP-MT-023 | Snapshot format: JSON vs `v8.serialize` vs FlatBuffers/Arrow vs hand-rolled columnar | Wake time, bytes, and encode cost per update |
+| EXP-MT-024 | Nightscout JS under a WASM host (Javy/QuickJS, ComponentizeJS) vs Node/V8 | Close the question with a number; expected to lose on steady-state CPU |
+| EXP-MT-025 | Columnar coverage per collection (entries vs devicestatus vs treatments) | Where the 20× holds and where it collapses |
+| EXP-MT-026 | Cold wake with a real remote Mongo/Atlas in the loop | Confirm network RTT dominates local compute |
+
+---
+
+## 8. Runtime performance model to test
 
 Capacity per process should be modelled and then *checked*:
 
@@ -494,12 +647,12 @@ and it is a much easier sell to maintainers than a rewrite.
 
 ---
 
-## 8. Benchmark plan
+## 9. Benchmark plan
 
 The purpose is to replace opinion with numbers, using everything available: real code,
 synthetic tenants, ecosystem-realistic workloads, and both userland and kernel profiling.
 
-### 8.1 Harness
+### 9.1 Harness
 
 Proposed location `tools/mt-bench/` (new, workspace-side; nothing lands in
 cgm-remote-monitor until results justify it):
@@ -527,7 +680,7 @@ cgm-remote-monitor until results justify it):
   socket flaky harness (`test:flaky:socket`), and `tests/hooks.js` fixtures for correctness
   gating; Nocturne's `tests/Performance/**` for cross-server comparison shape.
 
-### 8.2 Metrics (fixed set, reported for every arm)
+### 9.2 Metrics (fixed set, reported for every arm)
 
 **Cost**: peak/steady RSS per tenant; total RSS at N; CPU-seconds per tenant-hour;
 DB ops per tenant-minute; DB storage per tenant-month; **$ per tenant-month** on two
@@ -540,7 +693,7 @@ correctness vs. full-payload reference; **zero cross-tenant leakage** (hard gate
 behaviour at 2× target N; recovery after restart.
 **Fairness**: p99 latency of a quiet tenant while a heavy tenant runs a 12-month report.
 
-### 8.3 Arms
+### 9.3 Arms
 
 | ID | Arm | Question |
 |---|---|---|
@@ -551,11 +704,11 @@ behaviour at 2× target N; recovery after restart.
 | EXP-MT-005 | Sharded K-tenants-per-process (§4E) | Best K for fairness vs. overhead |
 | EXP-MT-010 | Cold-tenant alarm evaluator | Can alarms be safe without a resident ddata? |
 | EXP-MT-011 | Storage: Mongo discriminator vs DB-per-tenant vs Postgres+RLS vs SQLite-per-tenant | Query cost, isolation, idle cost, backup/restore/export time |
-| EXP-MT-012 | `better-sqlite3` vs `node:sqlite` at 100/1 000 open tenant DBs | Handle limits, WAL contention, cold open latency |
+| EXP-MT-012 | `better-sqlite3` vs `node:sqlite` at 100/1 000 open tenant DBs | Handle limits, WAL contention, cold open latency — **preliminary result in §7.1: not a limiter** |
 | EXP-MT-013 | Validation: none vs zod vs compiled Ajv-from-OpenAPI | CPU cost of boundary validation at N × ingest |
 | EXP-MT-014 | keyv for ephemeral tenant state (memory vs SQLite vs Redis adapters) | Does it hold up as the shard-safe state layer? |
 | EXP-MT-020 | Hot loops: current JS vs Map-optimised JS vs WASM vs worker-thread offload | Is WASM worth the boundary cost *after* the JS fix? |
-| EXP-MT-021 | Representation: objects vs typed-array/columnar ddata | The memory-per-tenant order-of-magnitude question |
+| EXP-MT-021 | Representation: objects vs typed-array/columnar ddata | The memory-per-tenant order-of-magnitude question — **preliminary result in §7.4: ~20× memory, ~500× wake, on SGVs** |
 | EXP-MT-022 | eBPF-instrumented run of the winning arm | Where does time really go at scale? |
 | EXP-MT-030 | Nocturne under the identical workload | Cross-server capacity comparison; validates the harness itself |
 
@@ -563,7 +716,7 @@ behaviour at 2× target N; recovery after restart.
 gives the ecosystem its first apples-to-apples server comparison, and it also fills the
 gap that Nocturne's own repo has no tenant-count scaling benchmark.
 
-### 8.4 Method notes
+### 9.4 Method notes
 
 - **Sweep N**: 1, 10, 50, 100, 250, 500, 1 000, 2 500 tenants; stop each arm at its first
   gate failure and record where and why. The failure mode is the finding.
@@ -578,7 +731,7 @@ gap that Nocturne's own repo has no tenant-count scaling benchmark.
   commit SHAs of every server under test, following existing workspace report conventions.
 - **Pre-register the decision rule** before running (below), so the numbers decide.
 
-### 8.5 Decision rule (proposed, to be argued now rather than later)
+### 9.5 Decision rule (proposed, to be argued now rather than later)
 
 Adopt a multitenant direction only if the winning arm shows, at N ≥ 250 tenants:
 
@@ -590,14 +743,14 @@ Adopt a multitenant direction only if the winning arm shows, at N ≥ 250 tenant
    deletion.
 
 If no arm clears the bar, the finding is "keep the single-tenant deployment model and
-spend the effort on the §7 amplifiers" — which would itself be a valuable, publishable
+spend the effort on the §8 amplifiers" — which would itself be a valuable, publishable
 result.
 
 ---
 
-## 9. Phasing (only if the numbers support it)
+## 10. Phasing (only if the numbers support it)
 
-1. **Measure first.** Build `tools/mt-bench/`, run EXP-MT-001/002 and the §7 amplifier
+1. **Measure first.** Build `tools/mt-bench/`, run EXP-MT-001/002 and the §8 amplifier
    fixes. Cheap, independently useful, and non-invasive.
 2. **Land the amplifier fixes upstream on their own merits** (Map-indexed merge/delta,
    fewer queries, clone reduction). They help every existing single-tenant site today.
@@ -613,7 +766,7 @@ result.
 
 ---
 
-## 10. Relationship to the parallel tooling evaluation
+## 11. Relationship to the parallel tooling evaluation
 
 A companion evaluation produced alongside the modernization work —
 `docs/reports/nightscout-release-planning-2026-09/tooling-evaluation-keyv-mongoose-zod-wasm.md`
@@ -642,7 +795,7 @@ That is a cheap follow-up and it materially affects the D4 option in §3.1.
 
 ---
 
-## 11. Open questions for the maintainers
+## 12. Open questions for the maintainers
 
 1. Is the target "many people on one operator's instance" (hosted service, needs billing,
    support, liability, and an explicit trust/threat model) or "one family/clinic runs a few
@@ -664,7 +817,7 @@ That is a cheap follow-up and it materially affects the D4 option in §3.1.
 
 ---
 
-## 12. References
+## 13. References
 
 **Nightscout** (`externals/cgm-remote-monitor-official`, `dev` @ `a8888f0d`):
 `lib/data/ddata.js`, `lib/data/dataloader.js`, `lib/data/calcdelta.js`,

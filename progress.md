@@ -1999,6 +1999,17 @@ rather than argue about them.
 - WASM's strongest argument is memory representation, not speed; eBPF belongs in the
   benchmark harness as observability, not in the runtime.
 
+**Measured follow-up (cold wake / hot cache / WASM)** — harness in `tools/mt-bench/`:
+- Cold wake of one tenant's 48 h window is ~3–4 ms from a local store; ~80% of that is
+  `JSON.parse` materialising objects, not I/O. `v8.deserialize` is slower than `JSON.parse`.
+- SQLite-in-WASM is **2.5–7× slower** than native `better-sqlite3` on the server; the
+  "WASM makes SQLite faster" intuition inverts outside the browser.
+- A WASM host runtime optimises instantiation cost Nightscout does not have, while taxing
+  the JS hot path it does (QuickJS-in-WASM commonly 5–20× slower steady state).
+- Columnar typed arrays vs JS objects for the SGV window: ~20× less memory
+  (9.9 vs 202.5 KB/tenant) and ~500× faster wake (0.001 vs 0.559 ms) — and needs no WASM.
+- SQLite-file-per-tenant scales: 1 000 open handles = 66 MB RSS, cold open p99 0.06 ms.
+
 **Source Files Analyzed**:
 - `externals/cgm-remote-monitor-official/lib/data/{ddata,dataloader,calcdelta}.js`
 - `externals/cgm-remote-monitor-official/lib/server/{cache,websocket,bootevent,env}.js`
