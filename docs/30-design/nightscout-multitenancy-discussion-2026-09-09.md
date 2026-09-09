@@ -558,21 +558,54 @@ flag day:
    no forced cutover date.
 3. For a site that opts to migrate: a one-time backfill (`mongoexport`-shaped bulk copy
    into the JSONB tables above) followed by a bounded dual-write window (both stores
-   accept writes, a background job diffs them) before cutting reads over. The workspace's
-   own `~/src/node-multienv` prototype already built exactly this shape for a different
-   purpose — CDC via Kafka connectors watching Mongo change streams
-   (`node-multienv/COMPONENT-SEPARATION-SUMMARY.md`'s `KafkaTopics`/`KafkaConnector`
-   resources) — and that CDC pipe is directly reusable as the dual-write/verify mechanism
-   here instead of being rebuilt.
+   accept writes, a background job diffs them) before cutting reads over.
 4. Because isolation is per-tenant (§5.2.1), a bug in the migration tooling for one tenant
    cannot corrupt another tenant's data on either side — the RLS boundary is also a
    migration blast-radius boundary.
 
+**Correction — the CDC piece is not "already prototyped," it's unvalidated generated
+config.** An earlier pass through this document overstated `~/src/node-multienv`'s Kafka
+CDC work as directly reusable. Direct inspection corrects that:
+
+- `cmd/webhook/handlers/resources.js:717-860` (`renderKafkaTopics`,
+  `renderKafkaConnector`) does contain real, specific config — a `KafkaConnector` CRD
+  wired to `com.mongodb.kafka.connect.MongoSourceConnector`, with a per-tenant topic map
+  (`ns.<coll>` → `ns.<tenantId>.<coll>`), a DLQ topic, and `errors.tolerance: all`. This is
+  genuine, non-trivial Mongo-change-stream-to-Kafka wiring, not vaporware.
+- But it is **manifest-generation code only** — it emits the Kubernetes object a
+  Metacontroller decorator would create, and there is no test file exercising it
+  (no `*resources*test*` in the tree). node-multienv's own `STATUS.md` lists "Strimzi
+  Kafka + KafkaConnect (for CDC)" as an **unchecked** prerequisite (line 136) and "Validate
+  CDC: End-to-end Kafka connector testing" as a **pending** next step (line 217) — i.e. by
+  the project's own accounting, this has never been run against a live cluster with real
+  data flowing through it.
+- More importantly for reuse: it only generates the *source* side (Mongo → Kafka topic).
+  There is no sink connector anywhere in that codebase writing Kafka topics into Postgres
+  — that half (JDBC sink connector config, or a custom consumer that upserts into the
+  JSONB+generated-column tables above) does not exist and would need to be built and
+  tested from scratch.
+
+**Revised claim:** the *shape* (per-tenant CDC topic, DLQ, tolerant error handling) is a
+reasonable one to borrow, and the source-side `MongoSourceConnector` config in
+`resources.js` is a legitimate starting point to adapt rather than write blind. But
+"reusable" should read as "a design sketch and one unvalidated half of the pipeline,"
+not "an existing working mechanism." The bounded dual-write job in step 3 above (bulk
+backfill + diff + cutover) does **not** require Kafka/Strimzi at all — it can be built as
+a plain change-stream-tailing Node script reading Mongo's own oplog-backed change streams
+and writing into Postgres directly, which is less infrastructure and more directly
+testable than standing up Strimzi + Kafka Connect for a one-time-per-tenant migration.
+Kafka/CDC only earns its keep if dual-write needs to run continuously at scale across many
+concurrent migrating tenants; for a bounded, per-tenant, one-time migration, it is very
+likely over-engineering and the plain change-stream script should be the default until
+proven otherwise.
+
 This bounds the actual engineering unknown to something measurable rather than "migrate
 Mongo to Postgres" as a monolithic fear: port ~3 collections' `indexedFields` lists
-(22 scalar fields total, per the table above) to generated columns, stand up the CDC path
-already prototyped in this workspace, and migrate tenants incrementally. EXP-MT-037 (§10)
-is a time-boxed spike to put a real number on this rather than an estimate.
+(22 scalar fields total, per the table above) to generated columns, and build (not reuse)
+a per-tenant backfill+dual-write+cutover script, most simply as a direct Mongo
+change-stream consumer rather than a Kafka/Strimzi deployment. EXP-MT-037 (§10) is a
+time-boxed spike to put a real number on this rather than an estimate, and should include
+building and timing the plain change-stream-tailing approach before considering Kafka.
 
 ### 5.3 Schemas: mongoose, zod and friends
 
@@ -1252,7 +1285,7 @@ behaviour at 2× target N; recovery after restart.
 | EXP-MT-034 | Cold spawn+require latency by layer (`MEASURE_START=1 footprint.js`) | Preliminary result in §8.9.3: 22 ms bare → 266 ms p50 full server; scale-to-zero viability |
 | EXP-MT-035 | `shared` mode against real `ddata`/`dataloader`, 300/1 000 tenants | Does the 5 MB/tenant synthetic figure survive real query/cache code? |
 | EXP-MT-036 | Postgres RLS overhead at N tenants × ingest rate, live container (`rls-poc/perf.js`) | Preliminary result in §5.2.1/§5.4: ~0.32 ms overhead vs hand-written filter at 500×600 rows — noise at Nightscout's actual query rate |
-| EXP-MT-037 | Migration LOC/time spike: port 2–3 representative collections (entries, treatments) from Mongo filters to the §5.2 repository seam + Postgres/RLS | The one real, unmeasured cost in the "adopt RLS" recommendation of §5.4 |
+| EXP-MT-037 | Migration LOC/time spike: port 2–3 representative collections (entries, treatments) from Mongo filters to the §5.2 repository seam + Postgres/RLS, **and** build/time a plain Mongo change-stream-tailing backfill+dual-write script (no Kafka) per §5.2.2 | The one real, unmeasured cost in the "adopt RLS" recommendation of §5.4; also settles whether Kafka/Strimzi is ever necessary for this or is over-engineering for a bounded per-tenant migration |
 
 `EXP-MT-030` matters disproportionately: running the *same* generator against Nocturne
 gives the ecosystem its first apples-to-apples server comparison, and it also fills the
@@ -1354,9 +1387,10 @@ single most measurably counterproductive sequencing mistake this document can na
    (EXP-MT-021/025). Ships independently of tenancy; helps single-tenant sites today.
 4. **Layer 1 — storage isolation primitive.** Either harden the Mongo query-builder seam
    (1a, cheaper, weaker) or begin the incremental per-tenant Postgres/RLS migration (1b,
-   §5.2.2 — JSONB-first, generated columns for the ~22 fields already indexed, CDC-based
-   per-tenant cutover, no flag day). EXP-MT-037's migration spike belongs here, before
-   committing to 1b at scale.
+   §5.2.2 — JSONB-first, generated columns for the ~22 fields already indexed, per-tenant
+   cutover via a change-stream-tailing backfill+dual-write script, no flag day, no Kafka
+   dependency assumed). EXP-MT-037's migration spike belongs here, before committing to
+   1b at scale.
 5. **Layer 4 — fairness fixes for the quadratics** (§8.3), timed to land with or just
    before Layer 2, not after — see the ordering note above. Ideally adaptive (scan when
    small, index when large — EXP-MT-028).

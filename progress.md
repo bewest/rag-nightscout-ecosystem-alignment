@@ -2099,8 +2099,22 @@ Docker container, reimplementing Nocturne's verified RLS pattern with `knex`/`pg
   storage migration and the tenancy migration are the *same* migration, done per-tenant
   (strangler fig, no flag day) — new tenants land on Postgres directly, existing
   Mongo-backed single-tenant sites migrate opt-in via backfill + bounded dual-write +
-  cutover. `~/src/node-multienv`'s own Kafka/CDC-watching-Mongo-change-streams pipeline
-  (built for a different purpose) is directly reusable as the dual-write/verify mechanism.
+  cutover.
+- **Correction, same round:** initially claimed `~/src/node-multienv`'s Kafka/CDC pipeline
+  was "already prototyped" and "directly reusable" for the dual-write step. Direct
+  inspection of that repo shows this overstated it: `cmd/webhook/handlers/resources.js`
+  does generate real `MongoSourceConnector`/`KafkaConnector`/`KafkaTopic` config
+  (per-tenant topic map, DLQ, error tolerance) — genuine, not vaporware — but it is
+  manifest-generation code only, has no test coverage, and by the project's own
+  `STATUS.md` has never been run end-to-end against a live cluster ("Strimzi Kafka +
+  KafkaConnect" is an unchecked prerequisite; "Validate CDC: End-to-end...testing" is a
+  listed pending next step). It also only implements the source side (Mongo→Kafka); no
+  sink into Postgres exists anywhere in that codebase. Revised recommendation: for a
+  bounded, per-tenant, one-time migration, a plain Mongo change-stream-tailing Node
+  script writing directly into Postgres is simpler and more directly testable than
+  standing up Strimzi+Kafka Connect; Kafka only earns its keep for continuous CDC at
+  scale, which is not what this migration needs. Updated EXP-MT-037 to include timing the
+  plain change-stream approach before considering Kafka.
 - **Layered dependency model (§11), because tactics mixed across this whole document are
   not all compatible or additive**: Layer 0 (typed schema) is a hard prerequisite for
   everything else and ships alone risk-free; Layer 1 (storage isolation) must ship
