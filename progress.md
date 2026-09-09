@@ -2136,3 +2136,49 @@ Docker container, reimplementing Nocturne's verified RLS pattern with `knex`/`pg
 - `externals/nocturne/src/API/Nocturne.API/Multitenancy/TenantResolutionMiddleware.cs`
 - `externals/nocturne/src/Infrastructure/Nocturne.Infrastructure.Data/NocturneDbContext.cs`
 - `externals/nocturne/crates/nocturne-alerts-{core,ffi}/`
+
+**Follow-up 6 (10 000-tenant recommendation; Node vs Bun vs .NET measured directly; is
+dual Mongo+Postgres support a real/common pattern?)** — new §8.10 and new §12:
+- **Measured, not assumed, the Node/Bun/.NET question.** Ran a minimal `net10.0` ASP.NET
+  Core app (verified same target framework as Nocturne itself,
+  `externals/nocturne/**/*.csproj:TargetFramework` = `net10.0`) and the only Bun available
+  in this environment (1.0.0) side by side with Node 24 at N=1, 4, 8 concurrent processes,
+  measuring PSS (the actual physical cost once page-sharing across siblings is counted,
+  not solo RSS). Result inverts the intuition this document used on faith in §3: at N=4,
+  .NET's marginal PSS/process (21.3 MB) is statistically indistinguishable from Node's
+  (22.3 MB) — CoreCLR's ReadyToRun images page-share as well as Node's V8/glibc do. Bun is
+  the actual outlier, at ~2× Node's PSS/process even at N=8 (39.6 vs 21.2 MB) — the
+  opposite of its "leaner than Node" reputation, at least for this 2023-era build — and it
+  hit a real CLI-compatibility gap (`-e` prints a help banner instead of evaluating)
+  breaking `execFileSync`-based tooling.
+- Corrected §3/§8.9's framing accordingly: the reason to stay on Node is not a memory
+  number (there isn't one, once measured) — it's the switching cost of rewriting the
+  codebase/maintainer base into C#, against §8.1's finding that a typed Node/V8 core
+  already isn't beaten by untyped Rust, so there's no performance case pulling away from
+  Node either. Flagged Deno as simply unmeasured (no install available; new EXP-MT-038)
+  and Bun's 1.0.0 result as version-dated, not final (EXP-MT-038/039).
+- **New §12 answers the 10 000-tenant question directly and honestly bounds confidence**:
+  enough evidence for a *directional* recommendation (shared-process architecture +
+  storage isolation, stay on Node, keep native/WASM conditional per §11) but not enough to
+  certify the exact number 10 000 — named the concrete missing pieces: `shared` arch
+  marginal cost against real (not synthetic) `ddata`/`dataloader` code (EXP-MT-035, still
+  open), and an entirely new gap this round surfaced: nothing in this document has tested
+  a single Postgres primary's behavior under anything near 10 000 tenants' worth of RLS
+  policies/connections/ingest (new EXP-MT-040), nor re-tested the k8s object-count model
+  at that scale empirically.
+- **Answered the Mongo+Postgres dual-support question directly**: temporary dual-backend
+  support during migration is a well-established, named pattern (the "strangler fig"
+  shape already specified in §5.2.2) whose defining feature is that the old backend is
+  meant to be retired, not run in parallel forever. Distinguished that explicitly from
+  *permanent* dual-backend support as a standing feature (roughly doubles the query
+  surface and test matrix for every future feature, indefinitely) and recommended against
+  the latter — the repository seam in §5.2 should be read as enabling migration, not as a
+  commitment to maintain two backends forever. Carved out the one legitimate long-term
+  exception: self-hosted single-tenant Mongo operators are a permanent second deployment
+  target on their own terms, which is a different claim than "two backends inside the
+  multitenant service forever."
+
+**Source Files Analyzed (this round)**:
+- `externals/nocturne/**/*.csproj` (TargetFramework verification)
+- Live measurement: Node 24.15, Bun 1.0.0, and a scaffolded `net10.0` minimal ASP.NET Core
+  app, all run and measured directly in this session (not from prior art)

@@ -1142,33 +1142,104 @@ filters, shared Kafka topic with a tenant-keyed payload, one Nightscout Deployme
 horizontally instead of one-per-tenant) removes the k8s ceiling regardless of language,
 and is a strict prerequisite for any of the "radically more tenants" options in this doc.
 
-**So: Nocturne, extend cgm-remote-monitor, or new runtime?** The measurements point at a
-specific, narrower answer than any of the three framed wholesale:
+### 8.10 Node vs Bun vs .NET at the process level — measured directly, not assumed
 
-- **Don't adopt Nocturne's *runtime*.** Its Rust is small, optional, and off by default
-  (see the correction in §3); its .NET+RLS combination is not shown here to beat a
-  well-built shared-process Node server, and D3 (Nocturne as data plane) makes hosting
-  *harder* for small operators, not cheaper.
+Every other-runtime comparison so far (§8.1, §8.2) used Rust as the sole non-Node data
+point. The direct question "would it be dotnet, node/bun/deno, or something else?" was
+answered here the same way: run it, not guess it.
+
+**Setup.** `dotnet new web` scaffolded against **`net10.0`** — verified to be the same
+target framework Nocturne itself uses (`grep TargetFramework
+externals/nocturne/**/*.csproj` → `net10.0` in every project file), so this is a
+version-matched comparison, not cross-version extrapolation. Bun **1.0.0** is the only
+version available in this environment (installed under `~/n/bin`); Deno is not installed
+here at all — both are real gaps, tracked as EXP-MT-038 below rather than papered over.
+
+**Single-process baseline (RSS / PSS, MB), warm:**
+
+| Runtime | Layer | RSS | PSS |
+|---|---|---|---|
+| Node 24.15 | bare | 39.8 | 12.0 |
+| Node 24.15 | + express | 63.2 | 24.6 |
+| Bun 1.0.0 | bare | 35.5 | 37.4 |
+| Bun 1.0.0 | + express (CJS shim) | 68.4 | 66.6 |
+| .NET 10 (`net10.0`, Nocturne's TFM) | minimal ASP.NET Core, "Hello World" | 71.5 | 46.1 |
+
+Read in isolation this looks like the expected story — Node lightest, .NET heaviest. It
+is the wrong number to read in isolation, because no real deployment runs one process.
+
+**What changes at N concurrent processes on one host (PSS/process, MB) — this is the
+number that actually maps to "cost per additional tenant pod":**
+
+| Runtime | N=1 | N=4 | N=8 |
+|---|---|---|---|
+| Node 24.15 + express | 24.6 | 22.3 | 21.2 |
+| Bun 1.0.0 + express | 66.6 | 43.7 | 39.6 |
+| .NET 10 minimal ASP.NET Core | 46.1 | 21.3 | *(not run)* |
+
+**The result inverts the naive reading.** CoreCLR's ReadyToRun native images and shared
+framework assemblies page-share across sibling .NET processes on the same host so well
+that at N=4, .NET's marginal PSS/process (21.3 MB) is statistically indistinguishable
+from Node's (22.3 MB) — the "dotnet is heavier" intuition used earlier in this document
+(§3, before this measurement existed) does not survive contact with a multi-process
+measurement done the way real hosters actually deploy (many sibling processes on shared
+nodes, not one process in isolation). Bun is the one that doesn't share well here: its
+PSS/process stays roughly **2× Node's** even at N=8 (39.6 vs 21.2 MB) — the opposite of
+Bun's "leaner than Node" reputation, at least for this 2023-era build. Bun also hit a real
+compatibility rough edge mid-experiment (its `-e` flag prints a help banner instead of
+evaluating in v1.0.0, breaking `execFileSync`-based tooling written against Node's CLI
+contract) — a small thing, but a real one, and the kind of ecosystem friction that
+doesn't show up in a memory number.
+
+**What this does and doesn't change.** It does not change §11's Layer 2 recommendation:
+shared-process Node's ~5 MB/tenant marginal cost (§8.9.2, pending confirmation at real
+scale by EXP-MT-035) beats *every* process-per-tenant deployment measured here — Node,
+Bun, or .NET — by 10–20×, because none of them pay the ~20 MB/tenant process floor that
+sharing eliminates. It *does* correct a specific claim this document made in §3 on
+intuition rather than measurement: that .NET's process footprint is inherently worse than
+Node's. Measured at the scale hosters actually run at, it isn't. What actually
+distinguishes "stay on Node" from "adopt .NET" is not memory — it's the switching cost of
+rewriting 15+ years of a JS/Node codebase and its maintainer base into C#, against a
+technical case (§8.1) that a typed runtime doesn't even need to be a different language,
+since untyped Rust already lost to V8 and a typed-schema Node/V8 core was not shown to
+need replacing.
+
+**So: Nocturne, extend cgm-remote-monitor, or new runtime? — updated with §8.10's
+measurement.** The process-level parity found above changes *why*, not *what*:
+
+- **Don't adopt Nocturne's *runtime*, but not because it is measurably heavier — it
+  isn't, at N≥4 (§8.10).** The reason to stay on Node is switching cost (rewriting a
+  15+-year JS codebase and its maintainer base) against a technical case that doesn't
+  require it: §8.1 already showed a typed Node/V8 core is not beaten by untyped Rust, so
+  "leave Node for a faster runtime" lacks the payoff that would justify the rewrite. D3
+  (Nocturne as data plane) also makes hosting *harder* for small operators, independent of
+  runtime.
 - **Do adopt Nocturne's *isolation primitive*.** Fail-closed Postgres RLS (or an
   equivalent enforced-at-storage filter for whichever database Nightscout keeps) is a
   database property, not a .NET property — it is directly portable to Node+`pg` and is
   the actual lesson worth taking, independent of language.
 - **Extend cgm-remote-monitor with the `shared` architecture (§4B).** It is the measured
-  winner at 10–20× the density of both alternatives tested, requires no new language or
-  toolchain, and directly attacks the two real ceilings found here: per-pod require-graph
-  overhead (§8.9.1) and per-tenant Kubernetes object count (§8.9.4). A runtime rewrite
-  would have to *also* solve those two problems to be worth its migration cost, and
-  nothing measured here shows Rust/Go doing so for free.
+  winner at 10–20× the density of *every* process-per-tenant alternative tested — Node,
+  Bun, and .NET alike (§8.10) — requires no new language or toolchain, and directly
+  attacks the two real ceilings found here: per-pod require-graph overhead (§8.9.1) and
+  per-tenant Kubernetes object count (§8.9.4). A runtime rewrite would have to *also*
+  solve those two problems to be worth its migration cost, and nothing measured here
+  shows Rust/Go/C# doing so for free — they all still pay per-process, not per-tenant.
+- **Bun specifically is not (yet) a win.** Its measured PSS/process is ~2× Node's even
+  under sharing (§8.10), and it hit a real CLI-compatibility gap in this environment. Its
+  1.0.0 build is stale (2023); re-run against a current Bun before treating this as final,
+  but on present evidence there is no case for adopting it.
 - **A new runtime is worth revisiting only if** profiling of the *shared* architecture
   under real load surfaces a genuinely CPU-bound hot path (not a memory or footprint one —
   those are solved by sharing) — at which point §6/§8.4's answer (a typed, stateless
   native/WASM core called from Node, not a rewrite of the host) still applies.
 
-EXP-MT-032/033/034 (footprint, architecture, cold start) are added to §10 below; the
-highest-value next one is **EXP-MT-035: repeat `arch.js`'s `shared` mode against a real
-tenant-count target (300, 1 000) with the real `ddata`/`dataloader` code path**, not the
-synthetic fixture, to confirm the 5 MB/tenant figure survives contact with actual query
-and cache logic.
+EXP-MT-032/033/034 (footprint, architecture, cold start) and EXP-MT-038/039 (§8.10's
+Deno/current-Bun gap and real-require-graph .NET comparison) are added to §10 below; the
+highest-value next one remains **EXP-MT-035: repeat `arch.js`'s `shared` mode against a
+real tenant-count target (300, 1 000) with the real `ddata`/`dataloader` code path**, not
+the synthetic fixture, to confirm the 5 MB/tenant figure survives contact with actual
+query and cache logic.
 
 ---
 
@@ -1286,6 +1357,9 @@ behaviour at 2× target N; recovery after restart.
 | EXP-MT-035 | `shared` mode against real `ddata`/`dataloader`, 300/1 000 tenants | Does the 5 MB/tenant synthetic figure survive real query/cache code? |
 | EXP-MT-036 | Postgres RLS overhead at N tenants × ingest rate, live container (`rls-poc/perf.js`) | Preliminary result in §5.2.1/§5.4: ~0.32 ms overhead vs hand-written filter at 500×600 rows — noise at Nightscout's actual query rate |
 | EXP-MT-037 | Migration LOC/time spike: port 2–3 representative collections (entries, treatments) from Mongo filters to the §5.2 repository seam + Postgres/RLS, **and** build/time a plain Mongo change-stream-tailing backfill+dual-write script (no Kafka) per §5.2.2 | The one real, unmeasured cost in the "adopt RLS" recommendation of §5.4; also settles whether Kafka/Strimzi is ever necessary for this or is over-engineering for a bounded per-tenant migration |
+| EXP-MT-038 | Repeat §8.10's process-footprint sweep against Deno (unavailable in this environment) and a current (1.2.x+) Bun, not the stale 1.0.0 build used here | §8.10's Bun result is real but version-dated; Deno is an outright gap |
+| EXP-MT-039 | Repeat §8.10 with the *real* require-graphs on both sides — `footprint.js`'s `nightscout` layer vs a minimal Nocturne API host booted (not a "Hello World" ASP.NET Core app) — and at N=16/32, not just N=8 | §8.10 used synthetic minimal apps for a first-order answer; the process-sharing curve should be confirmed against real code before it drives a migration decision |
+| EXP-MT-040 | Single Postgres primary under simulated 10 000-tenant RLS connection/query load — connection pooling (pgbouncer transaction mode) required or not, and whether a single primary saturates before a single shared-Node-process shard does | §12's 10 000-tenant extrapolation currently has no empirical ceiling for the storage side at that scale — this is the missing number |
 
 `EXP-MT-030` matters disproportionately: running the *same* generator against Nocturne
 gives the ecosystem its first apples-to-apples server comparison, and it also fills the
@@ -1410,7 +1484,110 @@ single most measurably counterproductive sequencing mistake this document can na
 
 ---
 
-## 12. Relationship to the parallel tooling evaluation
+## 12. At 10 000 tenants: a direct recommendation, and what a two-store Nightscout would actually cost
+
+### 12.1 Is there enough evidence for an architecture recommendation?
+
+Enough for a **direction**, with the specific unmeasured pieces named rather than papered
+over. What's actually been measured, cumulatively, in this document: per-process
+footprint and its sharing behaviour across Node/Bun/.NET (§8.9, §8.10); the marginal cost
+of the `shared` architecture on synthetic tenants (§8.9.2, ~5 MB/tenant); the k8s
+object-count ceiling and its cause (§8.9.4); live Postgres RLS overhead at 500 tenants ×
+600 rows (§5.2.1, §5.4, ~0.32 ms — noise); and the fairness/tail-latency cost of the
+O(n²) sites (§8.3). What has **not** been measured at anything near 10 000 tenants:
+
+- The `shared`-architecture marginal cost against real `ddata`/`dataloader` code, not the
+  synthetic fixture (EXP-MT-035, still open).
+- A single Postgres primary's behaviour under 10 000 tenants' worth of RLS policies,
+  connections, and ingest rate — nothing in this document establishes whether that needs
+  connection pooling (pgbouncer transaction mode), read replicas, or a sharding layer
+  (e.g. Citus), because nothing here has tested past 500 tenants × 600 rows on one
+  unloaded container (EXP-MT-040, newly added).
+- Kubernetes control-plane behaviour at 10 000 tenants **even under the reduced-object
+  model** — §8.9.4's object-count fix is inferred from `node-multienv`'s per-tenant object
+  count, not empirically re-tested at that scale.
+
+So: recommend the direction below with high confidence on the *architecture* axis
+(don't rewrite the runtime; do adopt shared-process + storage isolation), and treat the
+specific number "10 000" as a target to design towards and then verify, not a number
+already demonstrated.
+
+### 12.2 Would it be .NET, Node/Bun/Deno, or something else?
+
+**Not primarily a language question**, on the evidence gathered here. §8.10 measured
+Node, Bun, and .NET's process-level marginal cost directly and found Node and .NET
+converge once processes share a host (~21–22 MB/process at N=4); Bun trails both at
+roughly double. None of the three eliminate the ~20 MB/tenant process floor that a
+*shared*-process architecture (§4B) removes for any of them. At 10 000 tenants that floor
+is the entire question — 10 000 processes × ~20 MB marginal PSS alone is ~200 GB before a
+single document is loaded, regardless of whether those 10 000 processes are Node, Bun, or
+.NET. The architecture decision (how many tenants share a process, and how many processes
+— shards — exist) dominates the language decision by roughly two orders of magnitude.
+
+Given that, the recommendation is to **stay on Node/JavaScript** for cgm-remote-monitor,
+for reasons that are about the *program*, not a memory number:
+
+- The technical argument for leaving Node (a faster runtime) doesn't clear its own bar:
+  §8.1 already showed untyped Rust losing to V8, and a typed-schema Node/V8 core was not
+  shown to need replacing. There is no measured performance case to leave.
+- The switching cost of rewriting a 15+-year JS/Node codebase and its maintainer base into
+  C# (Nocturne's language) or Rust is real, large, and does not appear in any benchmark —
+  it is a program-risk cost, not a runtime-cost one, and it is the actual reason to prefer
+  "extend cgm-remote-monitor" over "migrate to Nocturne," independent of the footprint
+  finding in §8.10.
+- Bun is not supported by present evidence (§8.10) — 2× Node's shared-process cost here,
+  plus a real CLI-compatibility gap hit mid-experiment. Deno is simply unmeasured
+  (EXP-MT-038) and should not be assumed either way.
+- 10 000 tenants at ~5 MB/tenant marginal (pending EXP-MT-035) is ~50 GB of *tenant* data
+  plus a small, fixed number of shard processes' ~20–100 MB bases each (§4E's "K tenants
+  per process" sharding, sized to keep each shard's event loop fair per §8.3/Layer 4) —
+  this is the number worth chasing, and it is available on Node today without a runtime
+  change.
+
+A native/WASM core (Layer 5, §11) remains in reserve, conditional on a real CPU-bound hot
+path surfacing under load — and if it does, §8.1's typed-first requirement still applies
+regardless of which of Node/Bun/Deno hosts it.
+
+### 12.3 Can cgm-remote-monitor support both MongoDB and Postgres — and is that common?
+
+**Temporarily: yes, and it's a well-established pattern, not a novel risk.** The
+repository/adapter seam already proposed in §5.2 plus the per-tenant backfill →
+bounded-dual-write → verify → cutover sequence in §5.2.2 is the standard "strangler fig"
+migration shape (Fowler's term for the pattern of routing new traffic to a replacement
+system while incrementally migrating the old one out from underneath, rather than a
+flag-day cutover) — the distinguishing feature of that pattern is that the **old system is
+meant to be strangled and eventually removed**, not maintained forever in parallel. This
+is common precisely because it bounds risk: any tenant's migration can be paused, verified
+independently, or rolled back without affecting any other tenant (§5.2.2 point 4), which
+is exactly the isolation property Layer 1 already buys.
+
+**Permanently: no — and this document should be explicit that it isn't recommending
+that.** There is a real difference between:
+
+1. **Migration-window dual-backend support** (bounded, per-tenant, temporary) — proven,
+   recommended, already specified in §5.2.2.
+2. **Permanent dual-backend support as a standing feature** — every future query feature,
+   index, and RLS/isolation change has to be designed, implemented, and tested against
+   *both* MongoDB and Postgres forever. This roughly doubles the ongoing query-surface and
+   test-matrix cost of every future feature, indefinitely, for a benefit (optionality)
+   that mostly only matters during the migration window itself.
+
+The repository seam in §5.2 should be read as **enabling (1), not committing to (2)**. The
+recommended end state is: new/migrated tenants on Postgres+RLS, the MongoDB adapter kept
+alive only as long as there are sites still using it, and an explicit target to retire the
+MongoDB adapter for the multitenant service once migration completes — not an indefinite
+two-backend commitment. The one legitimate reason to keep a MongoDB adapter alive
+long-term is unrelated to migration: **self-hosted single-tenant operators who explicitly
+choose to keep running their own MongoDB** (today's model, which this document has never
+proposed removing) are a permanently valid second deployment target, and that adapter
+should stay for their sake — but that is "two deployment models forever," not "two
+backends inside the multitenant service forever," and the distinction matters for scoping
+the ongoing maintenance commitment honestly.
+
+---
+
+## 13. Relationship to the parallel tooling evaluation
+
 
 A companion evaluation produced alongside the modernization work —
 `docs/reports/nightscout-release-planning-2026-09/tooling-evaluation-keyv-mongoose-zod-wasm.md`
@@ -1439,7 +1616,7 @@ That is a cheap follow-up and it materially affects the D4 option in §3.1.
 
 ---
 
-## 13. Open questions for the maintainers
+## 14. Open questions for the maintainers
 
 1. Is the target "many people on one operator's instance" (hosted service, needs billing,
    support, liability, and an explicit trust/threat model) or "one family/clinic runs a few
@@ -1468,7 +1645,7 @@ That is a cheap follow-up and it materially affects the D4 option in §3.1.
 
 ---
 
-## 14. References
+## 15. References
 
 **Nightscout** (`externals/cgm-remote-monitor-official`, `dev` @ `a8888f0d`):
 `lib/data/ddata.js`, `lib/data/dataloader.js`, `lib/data/calcdelta.js`,
