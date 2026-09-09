@@ -69,6 +69,20 @@ Cross-project terminology for Nightscout telemetry, diagnostics, and shared infr
 
 ## Data Concepts
 
+### Mutable Write Text Purification
+
+Cross-project interpretation of string fields that are written to Nightscout mutable data collections. See [`nightscout-write-purification-compatibility-deep-dive.md`](../../docs/10-domain/nightscout-write-purification-compatibility-deep-dive.md).
+
+| Concept | Nightscout Field(s) | Loop / NightscoutKit | AAPS | Trio | xDrip+ / xDrip4iOS | Interop Note |
+|---------|---------------------|----------------------|------|------|--------------------|--------------|
+| Treatment free text | `notes`, `reason`, `enteredBy`, `foodType`, `profile`, profile-name fields | Plain strings in treatment dictionaries | Plain strings and generated notes/profile names | Plain optional strings | Plain strings; xDrip+ also uses sentinel eventType `<none>` | Treat as text, not trusted HTML. Server purification should remove executable markup while preserving semantic plain text. |
+| Structured treatment metadata | `profileJson`, `bolusCalculatorResult`, nested treatment fields | Not typical | Stringified JSON for profile switch and bolus wizard | Not typical | Not typical | Preserve generated JSON semantics; regression-test representative payloads because arbitrary HTML-looking substrings may be normalized. |
+| Device-status algorithm reason text | `openaps.suggested.reason`, `openaps.enacted.reason` | Display/read | Nested JSON object strings | Display/read | xDrip4iOS decodes escaped comparator entities for display | Mathematical comparators (`<`, `>`, `<=`, `>=`) are text, not markup; output rendering must still escape. |
+
+**Related**: GAP-API-022, REQ-API-023
+
+---
+
 ### Heart Rate Collection (API v3)
 
 | Field | Type | Description | Source |

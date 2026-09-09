@@ -514,6 +514,34 @@ Added a configurable, reimbursement-ready decision support layer to `cgmencode` 
 
 ---
 
+## Nightscout Write Purification Compatibility (2026-09-02)
+
+Assessed whether server-side stored-XSS purification for Nightscout data writes is likely to break normal mobile or edge-client payloads.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Compatibility deep dive | `docs/10-domain/nightscout-write-purification-compatibility-deep-dive.md` | Reviewed Loop/NightscoutKit, AAPS, Trio, xDrip+, xDrip4iOS, tconnectsync, and LoopCaregiver paths; no typical client dependency on intentional HTML in treatment metadata was found |
+| API gap and requirement | `traceability/nightscout-api-{gaps,requirements}.md` | Added purification-parity gap and requirement for API v1 REST, API v3 REST, and legacy WebSocket mutable data writes |
+| Terminology update | `mapping/cross-project/terminology-matrix.md` | Classified treatment metadata as plain text and distinguished structured stringified JSON from executable markup |
+
+**Key Findings**:
+- Typical apps model `notes`, `enteredBy`, `reason`, `foodType`, event metadata, and related fields as plain text or generated JSON, not HTML.
+- API v3 parity matters because AAPS writes treatments, entries, device status, food, and profile data through `/v3/*` endpoints.
+- The main compatibility caveat is stringified JSON or user labels containing literal angle brackets; representative fixtures should guard against unintended semantic changes.
+
+**Gaps Identified**: GAP-API-022
+
+**Source Files Analyzed**:
+- `externals/NightscoutKit/Sources/NightscoutKit/Models/Treatments/NightscoutTreatment.swift`
+- `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/Extensions/{OverrideTreament.swift,SyncCarbObject.swift,DoseEntry.swift}`
+- `externals/AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/networking/NightscoutRemoteService.kt`
+- `externals/AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/remotemodel/RemoteTreatment.kt`
+- `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/models/Treatments.java`
+- `externals/xdripswift/xDrip/Treatments/TreatmentNSResponse.swift`
+- `externals/tconnectsync/tconnectsync/parser/nightscout.py`
+
+---
+
 ## Hybrid Meal Detector Prototype (2026-06-27)
 
 Implemented the first runnable meal-independent hybrid detector experiment for `cgmencode`, combining short-horizon rise/UAM-style trigger features, medium-horizon throughput and balance features, and controller-context features under leave-one-patient-out evaluation.

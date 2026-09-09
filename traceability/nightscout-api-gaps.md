@@ -1777,6 +1777,35 @@ The bug originates in client-side CGM parsing, not server validation:
 
 ---
 
+### GAP-API-022: Write Purification Parity Across API Surfaces
+
+**Scenario**: Stored-XSS prevention for mutable Nightscout data collections
+
+**Description**: Mutable data writes can enter Nightscout through API v1 REST, API v3 REST, and legacy WebSocket paths. If any write surface skips equivalent purification, a client with collection-write permission can persist unsafe strings that later reach shared dashboard or report rendering surfaces.
+
+**Evidence**:
+- AAPS is a major API v3 writer for entries, treatments, device status, food, and profile data (`externals/AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/networking/NightscoutRemoteService.kt:40-89`).
+- AAPS API v3 treatment metadata is modeled as plain strings, including `reason`, `notes`, `enteredBy`, `profileJson`, and `bolusCalculatorResult` (`externals/AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/remotemodel/RemoteTreatment.kt:52-76`).
+- Loop/NightscoutKit, Trio, xDrip+, xDrip4iOS, and tconnectsync reviewed paths treat treatment metadata as plain text or structured JSON rather than intentional HTML (`docs/10-domain/nightscout-write-purification-compatibility-deep-dive.md`).
+
+**Impact**:
+- Stored unsafe strings can cross from one write API into another user's browser/report view.
+- Security behavior differs by API surface, making advisory scope and regression testing harder to reason about.
+- Compatibility risk from purification appears low for typical apps, but stringified JSON and legacy sentinel strings need representative regression tests.
+
+**Possible Solutions**:
+1. Apply equivalent server-side purification to mutable data collections across API v1 REST, API v3 REST, and legacy WebSocket writes.
+2. Retain output escaping in all dashboard/report sinks for defense in depth and historical data.
+3. Add compatibility tests for representative AAPS v3 profile-switch/bolus-wizard payloads and xDrip+ `<none>` treatment eventType values.
+
+**Status**: Partially addressed by nightscout/cgm-remote-monitor#8591 and follow-up API v3 write-purification work
+
+**Related**:
+- [Nightscout Write Purification Compatibility Deep Dive](../docs/10-domain/nightscout-write-purification-compatibility-deep-dive.md)
+- REQ-API-023
+
+---
+
 ### GAP-ENTRY-010: No Explicit Unit Field on Entries Collection
 
 **Description**: The Nightscout `entries` collection stores `sgv` values without an explicit `units` field. The mg/dL convention is implied by all producers but never formally declared in the schema or API.

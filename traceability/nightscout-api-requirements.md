@@ -127,6 +127,27 @@ See [requirements.md](requirements.md) for the index.
 
 ---
 
+### REQ-API-023: Purify Mutable Data Writes Consistently
+
+**Statement**: Nightscout MUST purify caller-controlled string fields for mutable data collection writes consistently across API v1 REST, API v3 REST, and legacy WebSocket entry points.
+
+**Rationale**: Treatment, entry, device-status, food, and profile documents are shared across clients and rendered by multiple dashboard/report surfaces. A write-surface asymmetry allows a client with legitimate collection-write permission to persist unsafe strings that execute later in a viewer context.
+
+**Scenarios**:
+- A treatment is created through API v3 and viewed in the day-to-day report.
+- A treatment is created through legacy WebSocket `dbAdd` and viewed on the dashboard.
+- A client uploads representative AAPS profile-switch and bolus-wizard treatments containing stringified JSON.
+- xDrip+ uploads a treatment with legacy eventType `<none>`.
+
+**Verification**:
+- API v1 REST, API v3 create/replace/upsert/patch, and WebSocket write tests all strip event handlers and unsafe URLs from mutable data strings.
+- Existing plain-text mobile/edge-client payload fixtures still round-trip semantically.
+- Output-rendering tests verify escaping remains in dashboard/report sinks.
+
+**Gap Reference**: GAP-API-022
+
+---
+
 ## Plugin System Requirements
 
 ---
