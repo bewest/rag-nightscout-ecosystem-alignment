@@ -147,6 +147,8 @@ Mongo query operators, `$`-aggregation in reporting paths. API v3 adds its own q
 translation (`lib/server/query.js`, `lib/api3/`).
 
 There is therefore **no adapter seam capable of accepting a different query model today**.
+(API v3 does add a thin caching/collection layer — `lib/api3/storage/mongoCachedCollection/`
+and `lib/api3/storage/mongoCollection/` — but it is Mongo-shaped too.)
 This is the single most important finding for the keyv/SQLite question (§5).
 
 ### 2.6 Everything else that is process-global
@@ -611,7 +613,36 @@ result.
 
 ---
 
-## 10. Open questions for the maintainers
+## 10. Relationship to the parallel tooling evaluation
+
+A companion evaluation produced alongside the modernization work —
+`docs/reports/nightscout-release-planning-2026-09/tooling-evaluation-keyv-mongoose-zod-wasm.md`
+— reaches compatible conclusions from the *single-tenant* side, and the two should be read
+together. Agreements and one correction:
+
+| Point | Tooling evaluation | This document |
+|---|---|---|
+| mongoose | Do not adopt; reaffirms prior rejection | Agree — an ODM deepens Mongo coupling, opposite of the needed seam |
+| zod | Adopt only inside the broader schema-vocabulary item; API3 `validate.js` is hand-rolled and drifts from `specs/openapi/` | Agree; add that validation cost becomes a *hot path* at N tenants (EXP-MT-013), favouring compiled validators generated from the specs |
+| keyv | Low-priority, behaviour-preserving swap inside `lib/api3/storage/mongoCachedCollection/` so a future Redis move is config-only | Agree, and multitenancy is the concrete motivation: keyv namespaces map onto tenant prefixes and shard-safe ephemeral state (EXP-MT-014). Still not a substitute for a query model (§5.1) |
+| WASM | Reopen narrowly as a shared Rust oref core, without re-litigating ADR-005 | Agree; add that the first WASM benchmark must be against a *Map-optimised JS* baseline (EXP-MT-020), and that the strongest case is memory representation (EXP-MT-021) |
+
+`docs/90-decisions/adr-005-adapter-protocol.md` rejected WASM as the common runtime for the
+oref cross-validation harness. Nothing here reverses that: the proposal is Rust/WASM as an
+*additional* shared implementation, not as the harness runtime.
+
+**One correction to record**: the claim that Nocturne's `src/Core/oref/` is Rust with a
+`wasm-bindgen` feature does not match this checkout. `src/Core/Nocturne.Core.Oref/` is C#
+and P/Invokes a native `oref` Rust library (`OrefInterop.cs:1-40`, `LibraryName = "oref"`),
+whose crate is **not vendored here** — `externals/nocturne/crates/` contains only
+`nocturne-alerts-core` and `nocturne-alerts-ffi`, and neither `Cargo.toml` declares a wasm
+feature. So the verified ecosystem precedent is *Rust behind a stateless C ABI*, and the
+WASM target should be treated as unconfirmed until the oref crate is located and inspected.
+That is a cheap follow-up and it materially affects the D4 option in §3.1.
+
+---
+
+## 11. Open questions for the maintainers
 
 1. Is the target "many people on one operator's instance" (hosted service, needs billing,
    support, liability, and an explicit trust/threat model) or "one family/clinic runs a few
@@ -633,7 +664,7 @@ result.
 
 ---
 
-## 11. References
+## 12. References
 
 **Nightscout** (`externals/cgm-remote-monitor-official`, `dev` @ `a8888f0d`):
 `lib/data/ddata.js`, `lib/data/dataloader.js`, `lib/data/calcdelta.js`,
@@ -650,6 +681,8 @@ result.
 `tests/Integration/**/Rls/`, `CLAUDE.md`.
 
 **Workspace**: `docs/60-research/nightscout-modernization-next-steps-2026-09-09.md`,
+`docs/reports/nightscout-release-planning-2026-09/tooling-evaluation-keyv-mongoose-zod-wasm.md`,
+`docs/90-decisions/adr-005-adapter-protocol.md`,
 `docs/sdqctl-proposals/nocturne-modernization-analysis.md`,
 `docs/60-research/mongodb-modernization-impact-assessment.md`,
 `specs/openapi/aid-*-2025.yaml`, `conformance/`, `docs/DIGITAL-RIGHTS.md`,
