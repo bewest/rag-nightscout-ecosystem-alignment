@@ -75,6 +75,12 @@ attempt at exactly the typed-schema problem we're scoping.
 - [#1302](https://github.com/nightscout/Trio/pull/1302) — replaces
   exponential glucose smoothing with an Unscented-Kalman-Filter adaptive
   smoother (off by default).
+- [#1333](https://github.com/nightscout/Trio/pull/1333) (open) — internal
+  refactor extracting Trio's upload-trigger/dedup/mark-as-uploaded
+  infrastructure into reusable, backend-agnostic types **"ahead of adding a
+  fourth backend (Nocturne, `nightscout/nocturne-swift`)"**. Explicitly
+  states: *"Intended behavior change for Nightscout uploads: none"* — see
+  "Does Trio plan to drop Nightscout support?" below.
 - Recently merged, not yet tagged:
   [#1476](https://github.com/nightscout/Trio/pull/1476) — fixes a live bug
   where `getGlucoseNotYetUploadedToNightscout()` computed **fractional
@@ -84,6 +90,43 @@ attempt at exactly the typed-schema problem we're scoping.
   milliseconds. **Directly relevant**: this is a live, real-world instance
   of the exact timestamp-typing ambiguity Nocturne's `Entry.cs` independently
   built defensive fallback logic for (see above).
+
+## Does Trio plan to drop Nightscout support in favor of Nocturne?
+
+**No — confirmed by direct evidence, not inferred.** Nocturne is being added
+as an **additional, wire-compatible backend**, not a replacement requiring
+any Trio code change:
+
+- Trio PR [#1333](https://github.com/nightscout/Trio/pull/1333) (open) is
+  explicit: it refactors upload infrastructure *"ahead of adding a **fourth**
+  backend (Nocturne...)"* alongside Trio's existing Nightscout, Tidepool,
+  and Apple Health uploaders — and states plainly *"Intended behavior change
+  for Nightscout uploads: none."* Nightscout remains a first-class,
+  unmodified upload target.
+- Nocturne issue [#354](https://github.com/nightscout/nocturne/issues/354)
+  (closed): *"Trio uploads directly to Nocturne via the
+  **Nightscout-compatible API** — just point it at your Nocturne URL (no
+  config changes beyond the URL/secret)."* Nocturne is deliberately
+  designed to be indistinguishable from classic Nightscout at the protocol
+  level for existing uploaders — Trio (and Loop/AAPS/iAPS) already work
+  against it **today, unmodified**.
+- Nocturne PR [#401](https://github.com/nightscout/nocturne/pull/401)
+  (merged) fixed a legacy-auth compatibility bug specifically so that
+  *"uploaders that use the legacy Nightscout `api-secret` protocol (Loop,
+  AAPS, Trio, iAPS)"* authenticate correctly against Nocturne — active,
+  ongoing investment in **backward compatibility with the classic
+  Nightscout protocol**, the opposite of a planned cutover away from it.
+- A separate repo, `nightscout/nocturne-swift` (created 2026-04-28, pushed
+  2026-09-01), appears to be a native Swift SDK for deeper/optional
+  Nocturne-specific integration — additive tooling, not evidence of
+  deprecating classic-Nightscout support.
+
+**Conclusion:** Trio will continue to work with classic Nightscout servers
+(`cgm-remote-monitor`) exactly as it does today. Nocturne is being
+positioned as a swap-in-compatible alternative backend (same wire protocol,
+zero client changes required), with an optional richer native-SDK path for
+projects that want deeper Nocturne-specific integration later. This is
+"add a backend," not "cut over and drop the old one."
 
 **Data-model design pattern — a caution, not an example to follow:** Trio's
 `NightscoutProfileStore` struct **hard-codes Trio-specific extensions
@@ -119,16 +162,16 @@ Trio-specific fields it doesn't otherwise know about.
 
 ## Next steps (not yet done)
 
-- [ ] Refresh `workspace.lock.json`: advance `nocturne` pin from `39856ca77`
-      to current `main`; replace the `Trio-dev` entry with a pin against
-      `nightscout/Trio@dev` (retire `Trio-dev` as a tracked external).
-      **Blocked as of 2026-09-14**: `externals/nocturne`'s local worktree
-      has 2,591 changed files relative to its pinned commit (`git status
-      --short | wc -l`) — likely leftover local experimentation from a
-      prior session, not a clean fetch-only state. `tools/bootstrap.py
-      refresh` correctly skipped it ("worktree is dirty") rather than
-      force-discarding those changes. Needs a decision (stash/discard vs.
-      inspect-and-preserve) before refreshing, not done unilaterally here.
+- [x] Refresh `workspace.lock.json`: advanced `nocturne` pin to `80b49408`
+      (2026-09-09) and `Trio` to `fb2b1360b`; removed the stale `Trio-dev`
+      entry entirely (confirmed dead — its own tracked `dev` branch never
+      advanced past `26f158de1`, matching the finding above) and deleted
+      it from disk. `externals/nocturne` and `externals/Trio` each had
+      ~1,400-2,600 files of uncommitted, unbranched, unstashed local
+      changes on top of their pinned commits before this refresh (likely
+      leftover inspection artifacts from a prior session) — discarded via
+      `git reset --hard && git clean -fd` after confirming no untracked
+      files and no stash/branch preserving intent, then refreshed cleanly.
 - [ ] Field-by-field diff of Nocturne's V4 model vs.
       `specs/openapi/aid-*-2025.yaml`.
 - [ ] Raise the "extension bag vs. ad-hoc embedding" convention as a
