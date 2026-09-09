@@ -1764,6 +1764,113 @@ and nothing in Layers 0/1/3/4/5 requires it to start.
     preferably by reusing Nocturne's Rust crates, compiled native for the server and WASM
     for the browser. Not a host change (§8.4), and not a step to take early.
 
+### 11.2 Roadmap, visualized
+
+The pieces above (the layer table, the two load-bearing orderings, the 10-step execution
+list) are the roadmap already — this section only adds diagrams so the *shape* of it (what's
+shared, what's gated behind what, what runs in parallel) is visible at a glance rather than
+requiring the tables to be re-derived by reading. No new claims are introduced here; every
+edge below is a restatement of a dependency already argued in §11/§11.1.
+
+**Package/dependency shape** — this is the answer to "is a shared-core-plus-two-targets
+economically sound": most layers land in the shared package and pay off for *both*
+deployment targets, and only Layer 2 (plus the small tenant-resolution wrapper around it)
+is target-specific.
+
+```mermaid
+graph TD
+    subgraph CORE["@nightscout/core — shared, tenant-agnostic"]
+        L0["Layer 0: Typed vocabulary<br/>(zod/Ajv from specs/openapi/)"]
+        L3["Layer 3: Columnar hot window"]
+        L1["Layer 1: Storage isolation primitive<br/>(Mongo seam 1a, or Postgres/RLS 1b)"]
+        SANDBOX["sandbox.js / ddata / dataloader<br/>(already factory-shaped, §11.1)"]
+        PLUGINS["plugins/* incl. vendor connectivity<br/>(bridge.js, mmconnect.js, openaps.js, loop.js)"]
+    end
+
+    subgraph ST["@nightscout/single-tenant (target A, unchanged deployment model)"]
+        STRUN["bootevent() x1 — one ctx, one Mongo conn, one HTTP listener"]
+    end
+
+    subgraph MT["@nightscout/multitenant (target B, new)"]
+        L2["Layer 2: Shared-process architecture<br/>ctxFor(tenantId) → Map&lt;tenantId,ctx&gt;"]
+        L4["Layer 4: Fairness fixes for O(n²) sites<br/>(must land with Layer 2, §11 ordering note 2)"]
+        L5["Layer 5: Native/WASM core<br/>(conditional, last — §11 ordering note)"]
+    end
+
+    L0 --> L1
+    L0 --> L3
+    L0 -.->|"precondition, §8.1"| L5
+    L1 -->|"non-negotiable, §11 ordering note 1"| L2
+    L2 --> L4
+    L2 -.-> L5
+    L3 -.-> L5
+    SANDBOX --> STRUN
+    SANDBOX --> L2
+    PLUGINS --> STRUN
+    PLUGINS --> L2
+    L1 --> STRUN
+```
+
+**Phased execution** — the same 10-step list in §11.1, grouped so parallelizable work
+(nothing here depends on a multitenancy decision at all) is visually distinct from the
+gated, sequential spine, with the §10.5 decision rule shown as the gate it actually is:
+nothing past Layer 1 should ship into the multitenant target until an arm clears it.
+
+```mermaid
+graph LR
+    subgraph PA["Phase A — parallel, ships regardless of a tenancy decision"]
+        A1["Measure: extend tools/mt-bench/,<br/>run EXP-MT-001/002/026"]
+        A2["Layer 0: schema from specs/openapi/"]
+        A3["Layer 3: columnar hot window<br/>(entries/MBGs/cals, Loop predicted.values)"]
+    end
+
+    subgraph GATE["Decision gate (§10.5)"]
+        G["≥5x $/tenant · p99 within 2x ·<br/>zero leakage · alarm latency held ·<br/>backup/restore/export story"]
+    end
+
+    subgraph PB["Phase B — the one hard prerequisite"]
+        B1["Layer 1: storage isolation<br/>(Mongo seam, or incremental Postgres/RLS<br/>per §5.2.2 — no flag day, no Kafka)"]
+    end
+
+    subgraph PC["Phase C — timed together, not sequential"]
+        C1["Layer 4: fairness fixes<br/>(land with, not after, Layer 2)"]
+        C2["Query-model seam toward<br/>the documented API v3 model"]
+    end
+
+    subgraph PD["Phase D — the multitenant target"]
+        D1["Tenant-scope the request path<br/>(resolution middleware, socket rooms)"]
+        D2["Layer 2: tenant-scope the data path<br/>ctxFor(tenantId)"]
+    end
+
+    subgraph PE["Phase E — conditional, last"]
+        E1["Residency tiering + cold alarm path<br/>(if EXP-MT-003/010 support it)"]
+        E2["Layer 5: native/WASM core<br/>(only if profiling shows a CPU-bound<br/>hot path after Phase D)"]
+    end
+
+    A1 --> G
+    A2 --> B1
+    A2 --> A3
+    B1 --> G
+    G -->|"pass"| C1
+    G -->|"pass"| C2
+    C2 --> D1
+    D1 --> D2
+    C1 -.->|"must land alongside"| D2
+    D2 --> E1
+    D2 --> E2
+    A3 -.->|"precondition, §8.1"| E2
+    G -->|"fail"| STOP["Keep single-tenant deployment;<br/>spend effort on §9 amplifiers instead"]
+```
+
+Two things the diagrams make easier to see than the prose alone: first, that **Phase A is
+the entire near-term roadmap for a maintainer who is not yet sure multitenancy is worth
+it** — it is useful, low-risk, and ships to every existing self-hosted user regardless of
+how the rest resolves; second, that the **gate sits after Phase B, not at the end** — the
+expensive, hard-to-reverse work (Layer 2 and beyond) is deliberately positioned so that a
+failed decision-rule result only costs the storage-isolation work, which was going to
+improve Mongo's application-level filter discipline anyway (§5.2.1), not the whole
+multitenant build-out.
+
 ---
 
 ## 12. At 10 000 tenants: a direct recommendation, and what a two-store Nightscout would actually cost
