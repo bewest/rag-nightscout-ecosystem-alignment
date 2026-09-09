@@ -43,10 +43,10 @@
       "alias": "trio",
       "name": "Trio",
       "url": "https://github.com/nightscout/Trio.git",
-      "ref": "145107726be7f3765ab117c274032300022b3026",
+      "ref": "fb2b1360bd64b8b9017f1a9e84bc008a9e7d0d9b",
       "description": "Trio iOS closed-loop system",
       "submodules": true,
-      "frozen_at": "2026-07-16T11:08:47.601236",
+      "frozen_at": "2026-09-09T12:28:05.226424",
       "frozen_from": "dev"
     },
     {
@@ -155,19 +155,10 @@
     {
       "name": "nocturne",
       "url": "https://github.com/nightscout/nocturne.git",
-      "ref": "39856ca773c7e2c293716c620a21ba56688c1f4a",
-      "description": "Nightscout client app",
-      "frozen_at": "2026-07-16T11:08:55.683291",
+      "ref": "80b494084475bc1b02597c3a303bab170f109b0a",
+      "description": "C#/.NET rewrite of the Nightscout server/API (not a client app) with SvelteKit web frontend",
+      "frozen_at": "2026-09-09T12:28:05.642400",
       "frozen_from": "main"
-    },
-    {
-      "name": "Trio-dev",
-      "url": "git@github.com:nightscout/Trio-dev.git",
-      "ref": "26f158de13b9b69f356b9ccff60e66ec65c2b8be",
-      "description": "Trio development branch",
-      "submodules": true,
-      "frozen_at": "2026-06-17T15:05:00.859262",
-      "frozen_from": "dev"
     },
     {
       "name": "share2nightscout-bridge",
