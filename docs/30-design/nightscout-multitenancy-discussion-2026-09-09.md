@@ -321,6 +321,48 @@ Orthogonal and pragmatic: whatever B/C/D wins, run K tenants per process across 
 processes, with a tenant→shard router. Bounds blast radius, bounds GC pause impact, allows
 rolling upgrades, and lets a noisy tenant be moved. Any serious deployment ends up here.
 
+### 4.1 The five architectures, contrasted
+
+The five options are not a flat list — they decompose along the two axes named at the top
+of this section (**isolation unit**: process vs. context; **residency**: always-resident
+vs. tiered vs. computed-on-demand), and E is orthogonal to all of B/C/D rather than a peer
+of them. Placing them on those two axes makes the actual choice clearer than the prose
+alone: A is the only process-isolated option (and the control arm); B/C/D are three
+different residency policies for the *same* context-per-tenant isolation unit; E is a
+multiplier applied on top of whichever of B/C/D wins.
+
+```mermaid
+graph TD
+    subgraph AXIS1["Isolation unit: process"]
+        A["A. Process per tenant<br/>(today, at scale)<br/><br/>✅ isolation = OS<br/>❌ ~60-90 MB RSS floor/tenant<br/>❌ 1 container/tenant<br/><b>control arm</b>"]
+    end
+
+    subgraph AXIS2["Isolation unit: context, one process — residency varies"]
+        B["B. Multi-ctx, always resident<br/><br/>✅ smallest code change<br/>❌ memory ∝ registrations,<br/>not active tenants<br/>❌ one tenant's O(n²) stalls all"]
+        C["C. Multi-ctx, hot/warm/cold tiering<br/><br/>✅ cost ∝ concurrency<br/>✅ wake ~3-4ms (§7.1)<br/>❌ needs eviction policy +<br/>separated cold-alarm path<br/><b>most promising (§4C verdict)</b>"]
+        D["D. Stateless, storage-resident<br/><br/>✅ memory ≈ O(concurrent reqs)<br/>❌ delta protocol assumes<br/>resident whole-world object<br/>❌ recompute may cost more<br/>total CPU than resident copy"]
+    end
+
+    subgraph AXIS3["Orthogonal multiplier — applies on top of B, C, or D"]
+        E["E. Shard K tenants/process,<br/>M processes<br/><br/>bounds blast radius & GC pause,<br/>enables rolling upgrade,<br/>lets a noisy tenant move"]
+    end
+
+    A -.->|"beat me on $/tenant,<br/>match me on isolation"| B
+    B --> E
+    C --> E
+    D --> E
+    B -->|"add tiering"| C
+    C -->|"drop resident ddata<br/>entirely"| D
+```
+
+**What the diagram adds over the prose:** B, C, and D are not three independent things to
+choose between from scratch — they are one isolation unit (context-per-tenant) with
+progressively more aggressive residency policies, so the real decision is "how far along
+that residency spectrum," not "which of five equal options." E is never an alternative to
+B/C/D; it's a deployment multiplier that composes with whichever wins (this is why §4's
+own numbering already put it last and orthogonal, and why EXP-MT-005's question is "best
+K," not "B vs. E").
+
 ### Cross-cutting requirements for B–E
 
 1. Tenant resolution middleware (host, then path prefix as fallback, then token claim
@@ -2021,6 +2063,53 @@ forced to build the map that sharding requires. This is a reason to still expect
 "10 000" figure to be a target reachable through this program even if a single Postgres
 primary turns out not to be enough on its own — not a reason to skip measuring where that
 primary's ceiling actually is (EXP-MT-040, still the open item).
+
+### 12.5 The four storage architectures, contrasted
+
+The document has, across §5, §5.2.1, §5.2.2, and §12.4, evaluated four distinct storage
+shapes rather than a binary "Mongo vs. Postgres" choice. Laying them out together shows
+why the recommendation (§5.4, §11 Layer 1) is specifically "isolation primitive first,
+engine second" — the isolation mechanism (application filter vs. RLS) and the sharding
+posture (already-maximal vs. built-on-demand) are the two axes that actually differ; the
+storage *engine* is almost a secondary choice once those two are fixed.
+
+```mermaid
+graph TD
+    subgraph M1["Today: process/DB-per-tenant Mongo (§4A, §8.9)"]
+        M1D["1 Mongo DB per tenant<br/>isolation = OS/process boundary<br/>sharding = already maximal, no router exists<br/>cost = ~99 MB/pod floor + 11-12 k8s objects/tenant<br/><b>the expensive status quo</b>"]
+    end
+
+    subgraph M2["Shared Mongo + tenantId discriminator (§5.2 table, row 1)"]
+        M2D["1 Mongo replica set, tenantId field<br/>isolation = application-level filter only<br/>❌ fails open — §5.2.1's leak demo<br/>sharding = would need the same<br/>tenant→shard map as row 3, if ever needed"]
+    end
+
+    subgraph M3["Postgres + RLS, single primary (§5.2.1, Layer 1b)"]
+        M3D["1 Postgres primary, tenant_id column<br/>isolation = RLS, fail-closed by construction<br/>✅ demonstrated: ~0.32ms overhead @ 500×600 rows<br/>sharding = not yet needed; ceiling unmeasured<br/>past 500 tenants (EXP-MT-040, open)"]
+    end
+
+    subgraph M4["Postgres + RLS + Citus, sharded by tenant_id (§12.4)"]
+        M4D["N Postgres shards, tenant_id = distribution column<br/>isolation = RLS (unchanged, stacks with sharding)<br/>sharding = built on the same tenant→shard map<br/>Layer 2/§4E already required<br/><b>reachable without re-deriving isolation</b>"]
+    end
+
+    M1D -->|"Layer 2: build the ctxFor/tenant→shard map<br/>this model was never forced to build"| M2D
+    M2D -->|"Layer 1b: replace app-level filter<br/>with fail-closed RLS (§5.2.2 migration,<br/>no flag day, no Kafka)"| M3D
+    M3D -->|"if EXP-MT-040 shows a ceiling:<br/>reuse the tenant→shard map<br/>already built for Layer 2/§4E"| M4D
+
+    style M1D fill:#f8d7da
+    style M2D fill:#fff3cd
+    style M3D fill:#d4edda
+    style M4D fill:#d4edda
+```
+
+**What this makes visible that the tables in §5/§12.4 don't as directly:** the migration
+path is a straight line, not a fork — every arrow reuses infrastructure the previous step
+already had to build (the tenant→shard map from Layer 2 is exactly what §12.4 shows Citus
+needs; the RLS predicate from Layer 1b is exactly what stacks unchanged under sharding).
+The one architecture that is *not* on this recommended path, M2 (shared Mongo +
+discriminator), is included specifically because it's the tempting cheap-looking
+intermediate step — the diagram is also a warning that it fails closed nowhere and
+should not be treated as a resting point (§5.2.1's leak table is the reason it's shaded
+the same as the status quo, not green).
 
 ---
 
