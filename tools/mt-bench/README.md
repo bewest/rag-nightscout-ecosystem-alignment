@@ -33,6 +33,7 @@ full harness in §9 must add.
 | `rust/` | Would a non-Node host help? | Same fixtures in Rust: untyped `serde_json::Value`, typed structs, and columnar struct-of-arrays |
 | `footprint.js` | What does one Nightscout *pod* cost at rest, and how fast does it cold-start? | Requires `NS_ROOT`'s server one layer at a time (`node footprint.js`); `MEASURE_START=1 node footprint.js bare` adds spawn+require latency. **Guarded by `require.main === module`** — see warning below |
 | `arch.js` | `process` vs `worker_threads` vs `shared` — which Node architecture holds N tenants cheapest? | `node arch.js <process\|worker\|shared> <N>`; set `NS_REQUIRE=1` to load the real Nightscout require graph per isolate, which is what makes process/worker expensive |
+| `rls-poc/` | Does Postgres RLS actually fail closed, at what cost, vs MongoDB's application-only filter? | Live Postgres 16 container + `knex`; reimplements Nocturne's verified RLS pattern in Node. See its own README. |
 
 ## Running
 

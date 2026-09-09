@@ -404,6 +404,88 @@ copy — which is a digital-rights win as much as a cost win (cf. `docs/DIGITAL-
 Its risks (open file handles, WAL contention, HA) are exactly the kind of thing a
 benchmark settles in a day.
 
+### 5.2.1 Postgres RLS, demonstrated against a live database (not just described)
+
+The claim in §3 was that Nocturne's RLS is "fail closed at the storage layer." Rather than
+take that on faith, the same primitive was reimplemented against a real Postgres 16
+container with `knex` (`/tmp/rls-poc/` — a throwaway PoC, not committed, reproducible from
+the SQL and script below), because Node's ecosystem tool for this is knex/Kysely/Prisma,
+not EF Core, and the actual runnable mechanics matter more than the language they were
+proven in first.
+
+**Schema** (mirrors `externals/nocturne/.../Migrations/20260227034745_EnforceMultitenancy.cs:66-76`):
+
+```sql
+CREATE TABLE entries (
+  id bigserial PRIMARY KEY, tenant_id uuid NOT NULL, sgv integer NOT NULL, date timestamptz NOT NULL DEFAULT now()
+);
+-- The application connects as this role: not the owner, no BYPASSRLS. Table owners and
+-- BYPASSRLS roles see every row regardless of policy — this is the easiest way to
+-- accidentally make RLS a no-op, and it is exactly what "FORCE" (next line) prevents
+-- even for the owner.
+CREATE ROLE app_user LOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE;
+GRANT SELECT, INSERT, UPDATE, DELETE ON entries TO app_user;
+ALTER TABLE entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE entries FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation ON entries
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+-- second arg `true` = missing GUC returns NULL rather than raising; NULL = anything is
+-- NULL in SQL (never true) → an unbound connection sees zero rows, not an error and not
+-- everything. That NULL-comparison behaviour, not the policy syntax, is the actual
+-- fail-closed mechanism, and it is worth stating explicitly because it is easy to get
+-- backwards (a naive `current_setting(...)::uuid` with no second arg would instead
+-- *throw* on an unbound connection — fail-closed in a different, noisier way).
+```
+
+**Per-request binding**, the Node equivalent of `TenantConnectionInterceptor.cs`:
+
+```js
+async function withTenant(tenantId, fn) {
+  const trx = await knex.transaction();
+  try {
+    await trx.raw('select set_config(?, ?, true)', ['app.current_tenant_id', tenantId]);
+    return await fn(trx); // is_local=true: scoped to this transaction, safe under pooling
+  } finally { await trx.commit(); }
+}
+```
+
+**Results, against a live container, 300 000 rows across 500 tenants (600 rows/tenant, matching
+`gen.js`'s treatment count):**
+
+| Scenario | Rows returned | p50 |
+|---|---|---|
+| No tenant context bound at all | **0** (not an error, not all rows) | 0.19 ms |
+| Tenant-scoped query, **with no `tenant_id` predicate in the SQL at all** | only that tenant's 600 | 0.95 ms |
+| Same "forgot the filter" query, plain table + explicit `WHERE tenant_id=` (no RLS) | correct 600, but only because the developer remembered | 0.63 ms |
+| Same table, query with **no filter at all** (the actual bug, simulated) | **all 300 000 rows leaked** | 16.9 ms |
+| Simulated Mongo-shaped app-layer-only filter, same forgotten-filter bug | **all 3 rows across tenants leaked** | — |
+
+Two results matter more than the numbers:
+
+1. **The forgotten-filter query against the RLS table returns the correct 600 rows with
+   zero tenant predicate written in the SQL.** This is the actual value proposition: RLS
+   converts "every query must remember to filter" into "every *connection* must remember
+   to bind," which is one call site (middleware) instead of every call site (every query
+   in `lib/data/dataloader.js`, `lib/api3/generic/*`, every plugin). It is fail-closed in
+   the specific sense that *forgetting* fails safe, not merely that malicious input is
+   rejected.
+2. **RLS's overhead is real but small: ~0.32 ms (0.95 vs 0.63 ms) at this scale**, and it
+   buys the property in (1). At Nightscout's actual query rate (~14 ops per tenant load
+   cycle, once per 1–5 s per tenant, §2.3) this is noise, not a capacity concern.
+3. **This has no equivalent in MongoDB as Nightscout uses it today.** MongoDB (self-hosted
+   or Atlas, without Queryable Encryption/Data Federation, which are different features
+   for different problems) has no server-enforced per-document ACL comparable to RLS.
+   `ctx.store.collection(env.entries_collection)` (`lib/server/entries.js:203-205`) hands
+   back a raw collection handle; isolation would be **whatever filter the 30-odd call
+   sites across `lib/data/`, `lib/api3/generic/`, and every plugin remember to add** —
+   exactly the failure mode column 4 of the table demonstrates. The honest options on
+   Mongo are: (a) accept application-only isolation and invest heavily in a single
+   enforced query-builder seam that *all* call sites must go through (closable, but a
+   discipline problem, not a database property), (b) database-per-tenant (real isolation,
+   no RLS needed, but N Mongo connections/index-sets — see the storage table above), or
+   (c) migrate the tenant-scoped tables to Postgres and keep the rest on Mongo (a
+   two-database architecture, real but non-trivial complexity).
+
 ### 5.3 Schemas: mongoose, zod and friends
 
 Nightscout uses no ODM today (no mongoose). Introducing one now would couple the codebase
@@ -422,6 +504,41 @@ Suggested position for discussion:
   matrix (EXP-MT-013), because naive per-document validation can dominate CPU.
 - Tenant identity should be a *storage-enforced* column/predicate, never a validated
   application field.
+
+**Directly on "should Nightscout adopt mongoose":** no, independent of multitenancy.
+Mongoose is a Mongo-specific ODM; adopting it would deepen the MongoDB coupling the
+storage-abstraction seam (§5.2) is trying to loosen, and it does nothing that a compiled
+Ajv/zod validator generated from `specs/openapi/` doesn't already do better — it validates
+documents, not tenant boundaries, and (§5.2.1) tenant boundaries are the actual hard
+problem. If the project migrates any collection to Postgres, the equivalent tool is
+`knex` (query builder, used in §5.2.1) or `Kysely`/`Prisma` (typed query builder/ORM with
+migration tooling) — not mongoose, which doesn't apply to a relational store at all.
+
+### 5.4 Answering directly: is Postgres+RLS+knex better than Nocturne, better than Rust, or neither?
+
+Restated precisely, because "better" needs an axis: **on the specific axis of per-tenant
+capacity and cost**, measured here, adopting **RLS as an isolation primitive inside
+cgm-remote-monitor** (via knex or an equivalent query builder, keeping Node) dominates
+both alternatives the user named — but "dominates" needs three separate comparisons, not
+one verdict, because each alternative fails on a different axis:
+
+| vs. | What it would cost | What it would buy over Postgres+RLS+knex-in-Node | Verdict |
+|---|---|---|---|
+| **Migrating to Nocturne (D3, §3.1)** | Adopt .NET+EF Core+Postgres as the whole stack; lose the JS plugin/connector ecosystem; hard dependency on another project's roadmap | Nothing measured here — its Rust is optional and off by default (§3 correction), and nothing shown suggests EF Core+RLS beats knex+RLS at this workload | **Postgres+RLS+knex-in-Node is better**: same isolation primitive, none of the migration cost, keeps community-maintainable JS |
+| **A Rust (or other native) rewrite of the host** | Full rewrite; lose the plugin ecosystem; §8.1/§8.2 show it *loses* to V8 on the untyped document shape Nightscout uses today, and its only unambiguous win (§8.2, 41 MB/process) is exactly what §8.9's `shared` architecture already reclaims in Node | A stateless typed core for the genuinely CPU-bound spots (§6.1, §8.5) — narrow and separable, not a host swap | **Non-inferior to strictly better**: Postgres+RLS+knex solves *isolation*; a native core (if ever justified) solves a *different, CPU-bound* problem and can sit behind either storage choice. They are not substitutes for each other, so "better" doesn't fully apply — but nothing here argues for swapping the host to get RLS-equivalent isolation |
+| **Staying on MongoDB with only an application-enforced filter** | Cheapest short-term; zero migration | Nothing — §5.2.1's leak demonstration shows this fails exactly the bug class RLS exists to catch, and is the current de facto state | Postgres+RLS+knex is **strictly better** on the isolation axis; the honest cost is the migration itself (§5.2 table), which is the real thing to weigh, not whether RLS is a good idea |
+
+**So, plainly**: mongoose is not being proposed (§5.3) and would not help isolation if it
+were. The comparison that matters is Postgres+RLS+knex (or an equivalent enforced
+predicate on whichever store is kept) versus (a) Nocturne's *runtime*, which loses on
+migration cost for no measured capacity gain, and (b) a native rewrite, which solves a
+different problem than isolation and is not shown to win on the representation Nightscout
+actually uses (§8.1). The open cost that this document has **not** measured and should
+before recommending a migration is the one-time cost of moving Nightscout's ~14 queries
+per load cycle (§2.3) and every plugin's ad hoc Mongo filter onto a relational schema —
+that is a real, possibly large, engineering cost, and is tracked as EXP-MT-011
+(storage-backend comparison) and a to-be-added EXP-MT-037 (migration LOC/time estimate
+from a spike on 2–3 representative collections).
 
 ---
 
@@ -1046,6 +1163,8 @@ behaviour at 2× target N; recovery after restart.
 | EXP-MT-033 | `process` vs `worker_threads` vs `shared` at fixed N (`arch.js`) | Preliminary result in §8.9.2: `shared` wins 10–20×; worker ≈ process once real code is loaded |
 | EXP-MT-034 | Cold spawn+require latency by layer (`MEASURE_START=1 footprint.js`) | Preliminary result in §8.9.3: 22 ms bare → 266 ms p50 full server; scale-to-zero viability |
 | EXP-MT-035 | `shared` mode against real `ddata`/`dataloader`, 300/1 000 tenants | Does the 5 MB/tenant synthetic figure survive real query/cache code? |
+| EXP-MT-036 | Postgres RLS overhead at N tenants × ingest rate, live container (`rls-poc/perf.js`) | Preliminary result in §5.2.1/§5.4: ~0.32 ms overhead vs hand-written filter at 500×600 rows — noise at Nightscout's actual query rate |
+| EXP-MT-037 | Migration LOC/time spike: port 2–3 representative collections (entries, treatments) from Mongo filters to the §5.2 repository seam + Postgres/RLS | The one real, unmeasured cost in the "adopt RLS" recommendation of §5.4 |
 
 `EXP-MT-030` matters disproportionately: running the *same* generator against Nocturne
 gives the ecosystem its first apples-to-apples server comparison, and it also fills the

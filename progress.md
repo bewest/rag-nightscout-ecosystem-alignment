@@ -2056,6 +2056,32 @@ prior art at `/home/bewest/src/node-multienv`:
   adopting RLS-style fail-closed isolation as a *storage* property (portable to Node+pg,
   not a .NET property) — both deliverable inside cgm-remote-monitor.
 
+**Measured follow-up 4 (is Postgres+RLS+knex actually better than Nocturne/Rust, or
+non-inferior?)** — `tools/mt-bench/rls-poc/` (`test.js`, `perf.js`), a real Postgres 16
+Docker container, reimplementing Nocturne's verified RLS pattern with `knex`/`pg`:
+- **Live-demonstrated, not just described**: a query against the RLS-scoped table **with
+  zero `tenant_id` predicate written in the SQL** still returns only the bound tenant's
+  600 rows; a connection that never binds a tenant sees 0 rows (not an error, not
+  everything). The same "forgot the filter" bug simulated against a MongoDB-shaped
+  application-only filter leaks every tenant's rows — the asymmetry the whole exercise is
+  about, since MongoDB (as Nightscout uses it, `ctx.store.collection()`,
+  `lib/server/entries.js:203-205`) has no server-enforced equivalent.
+  RLS overhead measured at 500 tenants × 600 rows: ~0.32 ms vs. an equivalent hand-written
+  `WHERE tenant_id=` (0.95 vs 0.63 ms p50) — real but noise against Nightscout's actual
+  query rate (~14 ops/tenant/1–5 s cycle).
+- **Answered the three-way comparison directly** (new §5.4): Postgres+RLS+knex-in-Node is
+  **better than migrating to Nocturne** (same isolation primitive, none of the .NET/EF
+  Core migration cost or roadmap dependency, and Nocturne's own Rust is optional/off by
+  default per the earlier correction); it is **non-inferior, not directly comparable, to
+  a native/Rust rewrite** (RLS solves isolation, a native core would solve a separate,
+  CPU-bound problem, and §8.1 already showed Rust losing on Nightscout's actual document
+  shape); it is **strictly better than today's MongoDB app-layer-only filter** on the
+  isolation axis specifically, with the honest unmeasured cost being the query-model
+  migration itself (tracked as new EXP-MT-037).
+- Confirmed mongoose does not help here even as a schema tool: it's Mongo-specific ODM,
+  doesn't enforce tenant boundaries, and the workspace's real schema asset (OpenAPI +
+  compiled Ajv/zod) already covers document validation without deepening Mongo coupling.
+
 **Source Files Analyzed**:
 - `externals/cgm-remote-monitor-official/lib/data/{ddata,dataloader,calcdelta}.js`
 - `externals/cgm-remote-monitor-official/lib/server/{cache,websocket,bootevent,env}.js`
