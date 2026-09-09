@@ -2182,3 +2182,42 @@ dual Mongo+Postgres support a real/common pattern?)** — new §8.10 and new §1
 - `externals/nocturne/**/*.csproj` (TargetFramework verification)
 - Live measurement: Node 24.15, Bun 1.0.0, and a scaffolded `net10.0` minimal ASP.NET Core
   app, all run and measured directly in this session (not from prior art)
+
+**Follow-up 7 (monorepo, two targets, shared core — verified against the actual module
+structure)** — new §11.1:
+- Tested the user's proposal (single-tenant and multitenant as independent targets, in
+  tandem in a monorepo, sharing vendor connectivity + sandbox/data-isolation code) against
+  the real module boundaries rather than answering abstractly.
+- Found `lib/server/bootevent.js` (`:16-226`) is already a pure factory over an injected
+  `env`, not a singleton; `lib/sandbox.js`'s `init()` (`:8-13`) — literally the "ddata
+  sandbox" this whole document is about — allocates fresh state per call with zero
+  module-level mutable state; same shape confirmed for `lib/plugins/index.js`,
+  `lib/data/{ddata,dataloader,calcdelta}.js`. A direct grep for module-level mutable state
+  across those files returned zero matches. Vendor-connectivity plugins
+  (`bridge.js` Dexcom Share, `mmconnect.js` Medtronic CareLink) are already
+  `init(env, bus, ...)`-shaped, reading per-tenant credentials from
+  `env.extendedSettings`, not a global.
+- The only process-global leakage found: direct `process.env.*` reads outside
+  `lib/server/env.js`, small and contained — 13 occurrences, 3 files
+  (`lib/server/app.js`, `lib/plugins/webhook.js`, `lib/server/bridge-connect-compat.js`).
+- Conclusion: the codebase is already shaped as the user proposed, it just isn't packaged
+  that way. Proposed concrete package boundary: `@nightscout/core` (sandbox, ddata,
+  plugins incl. vendor connectivity, authorization, storage adapters, api3 — all already
+  tenant-agnostic), `@nightscout/single-tenant` (today's one-`bootevent()`-per-process
+  deployment, unchanged), `@nightscout/multitenant` (per-request tenant resolution +
+  `ctxFor(tenantId)`, calling the *same* core factories N times). Every layer in §11's
+  table localizes cleanly to one of these three packages without new abstraction — Layers
+  0/3 land in core and benefit both targets for free; Layer 1 is a core storage-adapter
+  concern the single-tenant target can simply not opt into; Layer 2 lives entirely in
+  `@nightscout/multitenant`. Reconciled with §2.6 (which lists these same things as
+  "process-global" today): §2.6 is the symptom (one instance exists per process); §11.1
+  establishes the cause is entirely in the outer wiring (one `bootevent()` call), not in
+  the factories themselves — which is why sharing the process is a viable path rather
+  than a rewrite.
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official/lib/server/bootevent.js`
+- `externals/cgm-remote-monitor-official/lib/sandbox.js`
+- `externals/cgm-remote-monitor-official/lib/plugins/{index,bridge,mmconnect}.js`
+- `externals/cgm-remote-monitor-official/lib/data/{ddata,dataloader,calcdelta}.js`
+- `externals/cgm-remote-monitor-official/lib/authorization/index.js`

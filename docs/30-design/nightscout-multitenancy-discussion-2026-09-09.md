@@ -1451,6 +1451,81 @@ conditional, and only pays off *after* Layer 0 removes the representation penalt
 made Rust lose to V8 in the first place (§8.1) — attempting Layer 5 before Layer 0 is the
 single most measurably counterproductive sequencing mistake this document can name.
 
+### 11.1 Codebase shape: single-tenant and multitenant as two targets over one shared core
+
+This was tested against the actual module structure rather than assumed, because it
+changes how Layer 2 should be built, not just where it lands in the sequence.
+
+**The finding: most of the codebase is already shaped this way, it just isn't packaged as
+such.** `lib/server/bootevent.js` — the function that boots one Nightscout process today
+— is already a pure factory: `boot(ctx, env)` takes an `env` argument and builds a fresh
+`ctx` (store, authorization, plugins, sandbox, language) hanging entirely off that one
+object (`lib/server/bootevent.js:16-226`), not off module-level state. `lib/sandbox.js`'s
+`init()` — literally the module this whole document has been calling "the ddata sandbox"
+since §1 — allocates a fresh `sbx = {}` per call with no shared mutable state at module
+scope (`lib/sandbox.js:8-13`). `lib/plugins/index.js`'s `init(ctx)` and
+`lib/data/{ddata,dataloader,calcdelta}.js` are the same shape: constructor functions
+closed over an injected `ctx`/`env`, not singletons. A direct grep for module-level
+mutable state (`^var .* = {}` / `= []` outside a function) across
+`plugins/index.js`, `data/ddata.js`, `data/dataloader.js`, and `authorization/index.js`
+returned **zero matches**. The only process-global leakage found was direct
+`process.env.*` reads outside `lib/server/env.js`, and it is small and contained: 13
+occurrences total, in exactly 3 files (`lib/server/app.js`, `lib/plugins/webhook.js`,
+`lib/server/bridge-connect-compat.js`).
+
+This doesn't contradict §2.6's list of things that are "process-global" today (`env`, the
+Mongo pool, the cache, the websocket namespace, plugin closures, etc.) — those things
+*are* one-per-process today, but because they're each constructed exactly once by
+whichever code calls `bootevent()`, not because the constructors themselves reach for
+global state. §2.6's list is the *symptom* (one instance exists); this section establishes
+the *cause* is entirely in the outer wiring, not in `@nightscout/core`'s own factories —
+which is what makes calling those same factories N times, instead of rewriting them,
+a viable path to Layer 2.
+
+**What this means concretely:** "shared-process architecture" (Layer 2) does not require
+rewriting `bootevent`/`sandbox`/plugins to accept a tenant argument — they already do
+(as `env`/`ctx`), because that is exactly how they're built to run one tenant today. What
+Layer 2 actually needs to add is (a) calling that same factory chain N times instead of
+once and keeping the N resulting `ctx`s in a `Map<tenantId, ctx>` rather than one process
+global, and (b) closing the small, named `process.env` leak so nothing implicitly assumes
+"the" tenant. That is a materially smaller, more auditable change than "rearchitect the
+data model for multitenancy" — the data model (`ddata`/`sandbox`) was never the part
+assuming single tenancy; the *outer* wiring (one `bootevent()` call, one HTTP listener,
+one `ctx` bound to module scope by whatever calls `bootevent`) was.
+
+**This directly supports the monorepo-with-two-targets shape.** Given the above, a natural
+package boundary already exists and mostly matches what's proposed:
+
+- **`@nightscout/core`** (shared): `sandbox.js`, `data/{ddata,dataloader,calcdelta}`,
+  `plugins/*` (including the vendor-connectivity plugins — `bridge.js` Dexcom Share,
+  `mmconnect.js` Medtronic CareLink, `openaps.js`, `loop.js` — all of which are already
+  `init(env, bus, ...)`-shaped, reading per-tenant credentials from
+  `env.extendedSettings` rather than a global, per `lib/plugins/bridge.js:6-11` and
+  `lib/plugins/mmconnect.js:5-11`), `authorization/`, `storage/` adapters, `api3/`. This is
+  the part of the codebase that is *already* tenant-agnostic and should not need to know
+  which target it's running under.
+- **`@nightscout/single-tenant`** (target): today's `server.js` + `lib/server/app.js` +
+  one `bootevent()` call per process, one Mongo connection, one HTTP listener — the
+  existing self-hosted deployment model, unchanged, for operators who want to run their
+  own instance (the permanent second deployment target already named in §12.3).
+- **`@nightscout/multitenant`** (target): a router that resolves `tenantId` per
+  request/socket, calls the same `@nightscout/core` factories per tenant, holds them in
+  `ctxFor(tenantId)` (§4B), and owns the process.env cleanup and storage-isolation
+  concerns (Layer 1) that the single-tenant target never had to.
+
+**Why this is lower-risk than it sounds:** every layer in the table above already
+localizes to one of these three packages without new abstraction — Layer 0 (schema) and
+Layer 3 (columnar) land in `@nightscout/core` and benefit *both* targets immediately
+(concretely: a self-hosted single-tenant operator gets the columnar hot-window win for
+free the day it ships, with no multitenancy code ever touching their deployment); Layer 1
+(storage isolation) is a `@nightscout/core` storage-adapter concern that
+`@nightscout/single-tenant` can simply not opt into (it's already isolated — by being a
+whole separate process); Layer 2 lives entirely in `@nightscout/multitenant` and nowhere
+else. No layer requires `@nightscout/core` to know which target loaded it — which is the
+actual test of whether "shared vendor connectivity and sandbox/data-isolation context" as
+a plan is sound: none of the shared code inspected above branches on tenancy mode today,
+and nothing in Layers 0/1/3/4/5 requires it to start.
+
 **Ordered execution, given the layers above and their constraints:**
 
 1. **Measure first.** Extend `tools/mt-bench/` into the §10 harness; run EXP-MT-001/002 and
