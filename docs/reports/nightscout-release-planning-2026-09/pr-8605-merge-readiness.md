@@ -83,6 +83,23 @@ fix into a smaller, independent hotfix PR against `dev` directly, decoupled
 from the other 29 milestones. See `release-cadence-framework.md` §2 for this
 exact split-vs-large-release tradeoff.
 
+**Update (2026-09-14) — reconciled:** full comparison completed in
+`../security-hotfix-eval-2026/report-02-auth-delay-headers.md` §10. #8723's
+design is authoritative; our branch does not duplicate it. Two concrete
+outcomes:
+
+1. **Trust-boundary fix**: no independent action needed — resolved once
+   `dev` gets #8723 (via #8605, or a targeted cherry-pick per option (b)
+   above; we recommend (b) given #8605's `BLOCKED` review-gate status is
+   unrelated to this fix's own readiness — see §1).
+2. **Secondary `setTimeout`→`setInterval` cleanup-timer bug** (report #2 §7,
+   never addressed by #8723 or any other tracked PR): implemented and
+   tested directly on `wip/bewest/security-hotfix-eval-auth-delay`
+   (commit `4d0c9524`, rebased onto `dev@a8888f0d`, full suite green
+   modulo pre-existing unrelated `debug-logging.test.js` failures present
+   on baseline `dev` too). Ready to open as its own minimal hotfix PR
+   against `dev`, fully decoupled from #8605/#8723.
+
 ## 4. Open items requiring maintainer/team input (not resolvable by source review alone)
 
 Per the branch's own stated gates (`docs/plans/nightscout-modernization.md`

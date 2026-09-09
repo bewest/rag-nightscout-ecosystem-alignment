@@ -8,7 +8,8 @@ verbatim beyond quoted excerpts needed for traceability)
 **Worktree:** `/home/bewest/src/worktrees/nightscout/cgm-auth-delay-eval`
 **Base:** `dev@4982e954` (same known-good tip as report #1; confirmed
 unchanged as of evaluation date via `git fetch official dev`)
-**Status:** 🔎 Plan drafted, defaults not yet confirmed, no code changes made
+**Status:** ✅ Primary issue resolved upstream by PR #8723 (see §10);
+secondary issue fixed on this branch, ready to PR against `dev`
 
 ---
 
@@ -228,3 +229,74 @@ lesson from report #1 about lingering timers causing apparent test hangs).
 9. Commit split mirroring report #1's pattern: one commit for the
    root-cause fix + tests, one (if needed) for documentation/defense-in-depth
    additions.
+
+## 10. Reconciliation — upstream PR #8723 (2026-09-14)
+
+While refreshing sources for the release-planning review
+(`docs/reports/nightscout-release-planning-2026-09/`), we found that
+`nightscout/cgm-remote-monitor#8723` ("Restore proxy compatibility for
+existing ingress deployments," merged 2026-09-08 into the
+`chore/nightscout-modernization` integration branch, commit `395f3207`)
+already implements the primary (§1–§6) trust-boundary fix, independently
+of this evaluation. It is treated here as the **authoritative
+implementation**, not a competing one.
+
+### 10.1 Design comparison
+
+| Aspect | This report's plan (§9) | PR #8723's shipped design |
+|---|---|---|
+| Env var | `TRUST_PROXY` | `TRUST_PROXY` (same name; also honors `CUSTOMCONNSTR_TRUST_PROXY`) |
+| Unset default | `false` (fail-closed) | **Compatibility mode** — behaves like the pre-fix code (legacy header walk), *not* `false` |
+| `TRUST_PROXY=false` | (this *was* the default) | Explicit opt-in: direct-only, ignores all forwarded headers |
+| Explicit trust value | Reuse Express's `trust proxy` semantics (hop count / `true` / CIDR list) | **Narrower on purpose**: only literal comma-separated IPs/CIDRs accepted; `true`, hop counts, and subnet aliases are rejected at startup with a thrown error |
+| Header precedence | Not specified (assumed `forwarded-for`/`req.ip` semantics) | Fixed precedence list (`Fastly-Client-IP`, `X-Forwarded-For`, `Z-Forwarded-For`, `Forwarded`, `X-Real-IP`), first present header wins, first valid IP in it is the client |
+| Scope | `getRemoteIP` call sites only | Same call sites **plus** HTTPS/hostname detection unified under one trust policy (closes a gap this report didn't check) |
+| Call sites patched | 6 (as traced in §3, not shown above) | Same 6, verified via `git grep` on the PR branch: `lib/api/index.js`, `lib/api/status.js`, `lib/api3/{index,alarmSocket,security,storageSocket}.js`, `lib/authorization/index.js`, `lib/server/{app,websocket}.js` |
+| Design doc | This report | `docs/proposals/trusted-proxy-migration.md` (upstream, 130 lines) — explicitly documents that an *earlier* candidate on that same branch *did* default to mandatory explicit-IP config and caused **production redirect loops** on a Kubernetes trial; the compatibility-default design in #8723 is the fix for that regression |
+| Test coverage | Planned, not written | Shipped: `tests/client-ip.test.js` (81 tests: compatibility, direct mode, CIDR trust, changing ingress peers, header precedence, malformed chains, IPv4/IPv6/ports, HTTPS redirects, independent auth-delay keys, HTTP/API3/Socket.IO consumers) + `tests/env.test.js` additions |
+
+### 10.2 Why the shipped default differs from this report's `false` recommendation
+
+This report (§6) concluded `TRUST_PROXY=false` was the only default safe
+for *all* deployments. PR #8723's own history (via its design doc)
+shows that conclusion was tried first upstream and **broke production**
+for TLS-terminating-ingress deployments that rely on `trust proxy` for
+HTTPS-redirect detection, not just client-IP resolution — a consumer this
+report's §4 checked only for regression-safety under `false`, not for
+what happens when a *stricter* default is forced on ingress topologies
+that need forwarded-proto trust to avoid redirect loops. The shipped
+"compatibility mode" default preserves exactly the pre-fix behavior
+(spoofable, as documented candidly in the design doc's "Compatibility
+boundary" section) and treats hardening as strictly opt-in
+(`TRUST_PROXY=false` or an explicit CIDR list) rather than a breaking
+default flip. This is the same "keep current behavior, document the
+opt-in" approach this evaluation discussed as an alternative to a
+default flip, now confirmed as the correct choice by a real production
+incident upstream.
+
+### 10.3 Disposition
+
+- **§1–§6 (trust-boundary root cause):** superseded by PR #8723. No
+  separate implementation needed from this branch; when
+  `chore/nightscout-modernization` merges into `dev` via #8605, this
+  finding is resolved. This report's empirical LB-topology tests (§4–§5)
+  remain useful as independent corroboration that the vulnerability was
+  real and reproducible, and can inform review/QA of #8605 if requested.
+- **§7 (one-shot `setTimeout` cleanup timer):** **not** addressed by
+  #8723 (out of scope for that PR) and not tracked by any other open
+  issue/PR as of this check. Implemented directly on this branch
+  (`wip/bewest/security-hotfix-eval-auth-delay`, commit `4d0c9524`,
+  rebased onto `dev@a8888f0d`) as a small, independent, low-risk fix:
+  `setInterval(...).unref()` replacing the one-shot `setTimeout`, with a
+  new regression test (`tests/authorization.delaylist.test.js`, 3 cases)
+  that fails against the prior code and passes with the fix. Full suite
+  run clean (2026 passing; 5 pre-existing, unrelated `debug-logging.test.js`
+  failures confirmed present on unmodified `dev@a8888f0d` baseline too).
+  This fix is decoupled from #8605/#8723's timeline and can ship as its
+  own small hotfix PR against `dev` independently.
+- **`wip/bewest/security-hotfix-eval-auth-delay` branch status:**
+  retained (not closed) — now contains exactly one commit (the
+  setInterval fix) and is ready to open as a standalone PR against `dev`.
+
+**Status:** ✅ Primary issue resolved upstream (pending #8605 merge);
+secondary issue fixed and tested on this branch, ready for PR.
