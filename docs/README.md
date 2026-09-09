@@ -74,6 +74,12 @@ Documentation follows source code analysis → research synthesis → domain und
 - `external-inventories/` - Documentation audits of external projects
 - `fixtures/` - Test data and examples for validation
 
+**Current discussion proposals**:
+
+- [Nightscout modernization review and proposed next steps](60-research/nightscout-modernization-next-steps-2026-09-09.md)
+  — Joint modernization review first, followed by proposed Connect, XState,
+  reporting/API/PDF, embeddable UI and shared-testing work. Draft for maintainer discussion.
+
 **Featured capstones**:
 - `60-research/CAPSTONE-iob-age-smb-mechanism-2026-04-23.md` —
   IOB-Age and SMB-Emission Mechanism comparative study (34 evidence
