@@ -31,6 +31,8 @@ full harness in §9 must add.
 | `handles.js` | Does SQLite-file-per-tenant scale? | Creates K tenant DBs (default 1 000), measures cold open, first query, and RSS holding all handles open |
 | `amplifiers.js` | Are the O(n²) hot spots worth fixing? | Reproduces `idMergePreferNew` and the treatment delta, nested vs Map-indexed, at typical (600) and heavy (5 000) sizes |
 | `rust/` | Would a non-Node host help? | Same fixtures in Rust: untyped `serde_json::Value`, typed structs, and columnar struct-of-arrays |
+| `footprint.js` | What does one Nightscout *pod* cost at rest, and how fast does it cold-start? | Requires `NS_ROOT`'s server one layer at a time (`node footprint.js`); `MEASURE_START=1 node footprint.js bare` adds spawn+require latency. **Guarded by `require.main === module`** — see warning below |
+| `arch.js` | `process` vs `worker_threads` vs `shared` — which Node architecture holds N tenants cheapest? | `node arch.js <process\|worker\|shared> <N>`; set `NS_REQUIRE=1` to load the real Nightscout require graph per isolate, which is what makes process/worker expensive |
 
 ## Running
 
@@ -41,6 +43,10 @@ node coldwake.js
 node --expose-gc columnar.js      # --expose-gc is required for the memory numbers
 K=1000 node handles.js
 node wasmvsnative.js 2>/dev/null  # sqlite-wasm prints SQL traces to stderr
+node footprint.js                                 # per-layer RSS/PSS at rest
+MEASURE_START=1 START_N=8 node footprint.js bare   # cold spawn+require latency
+node arch.js shared 32                             # architecture comparison
+NS_REQUIRE=1 node arch.js process 16               # ...with the real require graph loaded
 ```
 
 `node:sqlite` requires Node 22.5+ (release-candidate status as of Node 25/26);
@@ -65,3 +71,12 @@ Always re-run on the target hardware before quoting a number.
    rewrite of `idMergePreferNew` is *slower* than the nested scan at typical sizes
    (600 old / 3 new) and 30× faster at 5 000 — so a single measurement supports either
    conclusion. Always sweep the size.
+3. **A child process inheriting the parent's environment can re-enter code guarded only
+   by an env var, not by `require.main === module`.** `footprint.js`'s cold-start
+   measurement spawns children that `require()` the same file; an earlier version guarded
+   the measurement loop with `if (process.env.MEASURE_START === '1')` alone, so every
+   child re-entered the loop and forked its own children — an exponential fork bomb caught
+   in testing (elevated RSS, non-responsive shell) before being committed. Fixed by also
+   requiring `require.main === module`, and by stripping the env var from the child's
+   environment as defense in depth. Any script here that spawns a copy of itself must
+   guard on `require.main`, not solely on an environment variable.

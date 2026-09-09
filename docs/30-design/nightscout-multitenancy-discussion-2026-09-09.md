@@ -222,6 +222,21 @@ and there is **no published tenants-per-instance target or tenant-count scaling
 benchmark** in the repo, and no k6/NBomber/Socket.IO load harness. So Nocturne proves
 *correctness* of an approach, not *capacity*. Capacity is what §10 is for.
 
+> **Correction — Nocturne's Rust footprint is small, optional, and off by default.**
+> A prior draft's phrasing ("Rust `nocturne-alerts-core`...") reads as if the alert path
+> *is* Rust. Verified counts: `crates/nocturne-alerts-core` + `crates/nocturne-alerts-ffi`
+> total **6 618 lines of Rust**, against **89 430 lines of C#** in `src/` — Rust is ~7% of
+> the codebase, confined to one bounded, swappable boundary. More importantly, the engine
+> selector defaults to the **managed C# evaluator**; Rust only runs at all in `shadow` mode
+> (side-effect-free, comparing against managed) or explicit `rust` mode
+> (`src/API/Nocturne.API/Services/Alerts/Engines/AlertEngineSelector.cs:6-9,28-69`,
+> `ServiceRegistrationExtensions.cs:976-982`). **Nocturne's production default ships zero
+> Rust in the request path.** Do not index the "should we rewrite in Rust" question on
+> Nocturne's example — Nocturne itself doesn't run that way by default. Its actual
+> multitenancy lever is the shared-process + RLS-shared-Postgres combination (this table),
+> which is a *representation and isolation-primitive* choice, not a language choice — and
+> §8.9 shows that lever reproduces in plain Node at 5 MB/tenant.
+
 ### 3.1 Should cgm-remote-monitor *depend on* Nocturne?
 
 Options, honestly stated:
@@ -786,6 +801,137 @@ every hop.
 | EXP-MT-029 | Worker threads + `SharedArrayBuffer` over columnar buffers | Can fairness be bought without leaving Node? |
 | EXP-MT-031 | One columnar format server→wire→browser vs today's JSON hops | End-to-end bytes, parse time, battery on mobile followers |
 
+### 8.9 Deployment models: where the cost of "one Nightscout per person" actually is
+
+This section answers the operator-facing question directly: hosters (T1Pal, NSPro, and
+this workspace's own `node-multienv` prototype) run **one Node process — and usually one
+database — per tenant**, orchestrated by Kubernetes, and the claim is that this "pushes
+the limits of Kubernetes... for large cohorts". Measured, in three parts: what a pod
+actually costs at rest, what three Node architectures cost per tenant, and what actually
+runs out first in the k8s control plane.
+
+**Prior art in this workspace.** `/home/bewest/src/node-multienv` is exactly this
+architecture, evolved over four generations: a REST-managed process supervisor
+(`master.js`, one `node server.js` per `.env` file), then a Consul-backed dispatcher, then
+a Kubernetes deployment-per-tenant controller, then (2025-10) a Metacontroller
+CompositeController that declares **11–12 child resources per tenant** — MongoDB
+StatefulSet + Service + Secret, Nightscout Deployment + Service, Kafka Topic + Connector,
+PVCs, PodDisruptionBudgets — because "managing resources would need to handle an
+arbitrarily large number of resources per tenant, not just a single Deployment"
+(`COMPONENT-SEPARATION-SUMMARY.md:127-135`). Its operator-chosen defaults:
+Nightscout request/limit `128Mi`/`256Mi`, MongoDB `256Mi`/`512Mi`
+(`cmd/webhook/handlers/resources.js:1351-1362`) — i.e. **≥384 MiB requested per tenant**
+before the process has loaded a single document. That number is the one worth checking
+against reality.
+
+**1. What does a bare Nightscout pod cost before any tenant data?**
+Measured by requiring layers of the actual `-official` server one at a time in a fresh
+process (`tools/mt-bench/footprint.js`):
+
+| Layer added | RSS (MB) | PSS (MB) | Δ RSS |
+|---|---|---|---|
+| bare Node | 45.6 | 10.0 | — |
+| + express | 63.7 | 19.9 | +18.1 |
+| + socket.io | 66.6 | 21.7 | +2.9 |
+| + mongodb driver | 78.0 | 32.1 | +11.4 |
+| + Nightscout server modules (`env`, `plugins`, `sandbox`, `ddata`, `dataloader`,
+  `client`, `websocket`, `api3`, `language`) | **98.9** | **52.0** | +20.9 |
+
+That is **~99 MB RSS before one tenant's data is loaded** — against the §2.7 anchor of
+**~1.2 MB for that tenant's actual `ddata`**. In the pod-per-tenant model, code and runtime
+outweigh data roughly **80:1**. The `node-multienv` request of 128Mi is *below* this
+measured RSS floor already (it relies on Linux overcommit and the limit, not the request,
+being the operative ceiling) — a concrete, checkable discrepancy worth flagging to that
+project independently of this document.
+
+**2. Three ways to hold N tenants in Node — measured, not assumed**
+(`tools/mt-bench/arch.js`; each tenant loads the identical `gen.js` fixture, so the only
+variable is the architecture):
+
+| Architecture | What it is | RSS/tenant | PSS/tenant | at 16 tenants w/ full NS require graph |
+|---|---|---|---|---|
+| **process** (today's model) | fork per tenant, one k8s pod each | 54.8 MB (32 tenants) | 12.4 MB | 101.9 MB RSS / 53.7 MB PSS |
+| **worker** (`worker_threads`, one per tenant) | threads inside one process | 15.0 MB | 13.0 MB | 56.8 MB / 54.4 MB |
+| **shared** (`Map<tenantId, ctx>`, one process) | the `ctxFor(tenantId)` proposal, §4B | 2.2 MB | 2.3 MB | 5.4 MB / 5.1 MB |
+
+Three findings that should update the intuition:
+
+1. **RSS and PSS diverge hugely for `process`, and barely for the others.** The kernel
+   deduplicates the Node binary's text segment and shared libraries (libc, OpenSSL) across
+   forked processes, so the *physical* memory cost of process-per-tenant (12–54 MB/tenant)
+   is much less alarming than the *provisioned* cost (55–102 MB/tenant) that a Kubernetes
+   `resources.requests` field has to declare. **The real waste is in what Kubernetes must
+   book, not in what the kernel actually pays** — which is an argument for bin-packing
+   (higher pod density, lower per-pod requests) before it is an argument for rewriting.
+2. **Worker threads are not the free lunch they look like.** At the same 16-tenant,
+   full-require-graph scale, `worker` (56.8 MB/tenant) is statistically indistinguishable
+   from `process` (101.9 MB provisioned / 53.7 MB physical) — each V8 isolate re-compiles
+   and re-holds its own copy of every required module. Threads only look cheap when you
+   don't load real application code into them (bare fixture-only case: 15.0 MB vs 54.8 MB).
+   **Isolate count, not OS process count, is the cost driver.**
+3. **`shared` wins by 10–20× on both metrics**, and it is the same number the columnar
+   work (§7.4) and Nocturne's bounded-cache design (§3) both point at independently: one
+   process, one V8 isolate, one copy of the require graph, tenants as data. This is
+   Architecture B in §4, and it is now measured, not just proposed.
+
+**3. Cold start — does it matter for scale-to-zero?**
+Spawn + require, no DB I/O yet, p50/p95 over 8 runs:
+
+| Layer | p50 | p95 |
+|---|---|---|
+| bare Node | 22 ms | 23 ms |
+| + mongodb driver | 129 ms | 354 ms |
+| + full Nightscout server require graph | 266 ms | 503 ms |
+
+A quarter-second p50 (half a second p95) to *start the process*, before any Mongo
+round-trip, is the actual argument against per-tenant scale-to-zero (Knative/KEDA-style):
+it is not disqualifying for a background sync, but it is a bad user experience for
+"someone opens the app and the alarm engine has to cold-boot first". The `shared`
+architecture doesn't have a cold-start problem for existing tenants at all — only the
+process does, and only because it re-pays the require graph every time.
+
+**4. What actually limits Kubernetes at "a few score" → "a thousand" tenants**
+Not raw node memory first — the `node-multienv` history shows the tipping point was
+**object count and control-plane reconcile load**: 11–12 Kubernetes objects per tenant
+means 1 000 tenants is 11 000–12 000 objects, each independently watched, reconciled, and
+diffed by Metacontroller/kube-controller-manager and stored in etcd. That is a real,
+well-documented Kubernetes scaling axis (etcd request rate and watch fan-out, not disk
+space), and it is **orthogonal to the runtime language** — a Rust or Go rewrite of
+Nightscout would still need 11–12 objects per tenant under this deployment model, because
+the object count comes from the *database-per-tenant* and *CDC-per-tenant* choices, not
+from Node. Shrinking the object count (shared MongoDB with per-tenant collections/RLS-style
+filters, shared Kafka topic with a tenant-keyed payload, one Nightscout Deployment scaled
+horizontally instead of one-per-tenant) removes the k8s ceiling regardless of language,
+and is a strict prerequisite for any of the "radically more tenants" options in this doc.
+
+**So: Nocturne, extend cgm-remote-monitor, or new runtime?** The measurements point at a
+specific, narrower answer than any of the three framed wholesale:
+
+- **Don't adopt Nocturne's *runtime*.** Its Rust is small, optional, and off by default
+  (see the correction in §3); its .NET+RLS combination is not shown here to beat a
+  well-built shared-process Node server, and D3 (Nocturne as data plane) makes hosting
+  *harder* for small operators, not cheaper.
+- **Do adopt Nocturne's *isolation primitive*.** Fail-closed Postgres RLS (or an
+  equivalent enforced-at-storage filter for whichever database Nightscout keeps) is a
+  database property, not a .NET property — it is directly portable to Node+`pg` and is
+  the actual lesson worth taking, independent of language.
+- **Extend cgm-remote-monitor with the `shared` architecture (§4B).** It is the measured
+  winner at 10–20× the density of both alternatives tested, requires no new language or
+  toolchain, and directly attacks the two real ceilings found here: per-pod require-graph
+  overhead (§8.9.1) and per-tenant Kubernetes object count (§8.9.4). A runtime rewrite
+  would have to *also* solve those two problems to be worth its migration cost, and
+  nothing measured here shows Rust/Go doing so for free.
+- **A new runtime is worth revisiting only if** profiling of the *shared* architecture
+  under real load surfaces a genuinely CPU-bound hot path (not a memory or footprint one —
+  those are solved by sharing) — at which point §6/§8.4's answer (a typed, stateless
+  native/WASM core called from Node, not a rewrite of the host) still applies.
+
+EXP-MT-032/033/034 (footprint, architecture, cold start) are added to §10 below; the
+highest-value next one is **EXP-MT-035: repeat `arch.js`'s `shared` mode against a real
+tenant-count target (300, 1 000) with the real `ddata`/`dataloader` code path**, not the
+synthetic fixture, to confirm the 5 MB/tenant figure survives contact with actual query
+and cache logic.
+
 ---
 
 ## 9. Runtime performance model to test
@@ -896,10 +1042,18 @@ behaviour at 2× target N; recovery after restart.
 | EXP-MT-021 | Representation: objects vs typed-array/columnar ddata | The memory-per-tenant order-of-magnitude question — **preliminary result in §7.4: ~20× memory, ~500× wake, on SGVs** |
 | EXP-MT-022 | eBPF-instrumented run of the winning arm | Where does time really go at scale? |
 | EXP-MT-030 | Nocturne under the identical workload | Cross-server capacity comparison; validates the harness itself |
+| EXP-MT-032 | Per-process RSS/PSS by require-graph layer (`footprint.js`) | Preliminary result in §8.9.1: ~99 MB before any tenant data, ~80:1 code-to-data |
+| EXP-MT-033 | `process` vs `worker_threads` vs `shared` at fixed N (`arch.js`) | Preliminary result in §8.9.2: `shared` wins 10–20×; worker ≈ process once real code is loaded |
+| EXP-MT-034 | Cold spawn+require latency by layer (`MEASURE_START=1 footprint.js`) | Preliminary result in §8.9.3: 22 ms bare → 266 ms p50 full server; scale-to-zero viability |
+| EXP-MT-035 | `shared` mode against real `ddata`/`dataloader`, 300/1 000 tenants | Does the 5 MB/tenant synthetic figure survive real query/cache code? |
 
 `EXP-MT-030` matters disproportionately: running the *same* generator against Nocturne
 gives the ecosystem its first apples-to-apples server comparison, and it also fills the
-gap that Nocturne's own repo has no tenant-count scaling benchmark.
+gap that Nocturne's own repo has no tenant-count scaling benchmark. `EXP-MT-032/033/034`
+matter for a different reason: they are the numbers that actually decide the
+"pod-per-tenant vs shared-process" argument raised by real hosters (T1Pal, NSPro), and
+§8.9 shows preliminary results already favour `shared` by an order of magnitude,
+independent of any language question.
 
 ### 10.4 Method notes
 

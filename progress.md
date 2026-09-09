@@ -2025,6 +2025,37 @@ rather than argue about them.
 - Server and browser invert: native wins server-side, WASM is the only browser option;
   the shared artefact is a typed stateless core plus one columnar wire/storage/compute format.
 
+**Measured follow-up 3 (deployment models, prompted by real hoster experience with
+Kubernetes cost at ~scores-to-thousands of tenants)** — `tools/mt-bench/{footprint,arch}.js`,
+prior art at `/home/bewest/src/node-multienv`:
+- **Correction**: Nocturne's Rust is small (6 618 LOC vs 89 430 C#, ~7%), optional, and
+  **off by default** — the alert engine selector defaults to managed C#; Rust only runs in
+  `shadow` (side-effect-free comparison) or explicit `rust` mode
+  (`AlertEngineSelector.cs:6-9,28-69`). A prior draft's phrasing overstated this.
+- A bare Nightscout process (`-official`, no tenant data) costs **~99 MB RSS / 52 MB PSS**
+  before loading anything, vs ~1.2 MB for one tenant's actual `ddata` — code outweighs data
+  ~80:1 in the pod-per-tenant model.
+- Three Node architectures compared at fixed N with identical tenant data: `process`
+  (today's model, one pod/tenant) costs 101.9 MB/tenant **provisioned** (RSS) but only
+  53.7 MB/tenant **physical** (PSS, kernel-deduplicated) at 16 tenants w/ full require
+  graph; `worker_threads` (56.8 MB/tenant) is *not* cheaper than `process` once real code
+  is loaded — each isolate re-pays the require graph; `shared` (`Map<tenantId,ctx>`, one
+  process) wins by **10–20×** on both metrics (5.4 MB RSS / 5.1 MB PSS per tenant).
+- Cold spawn+require (no DB I/O): 22 ms bare Node → 266 ms p50 (503 ms p95) for the full
+  Nightscout require graph — relevant to scale-to-zero viability, and a fixed cost the
+  `shared` architecture doesn't pay per tenant at all.
+- Prior art `node-multienv` (this workspace, four architecture generations, ending in a
+  Metacontroller-based per-tenant Kubernetes controller) independently confirms the real
+  Kubernetes ceiling is **object count** (11–12 k8s objects/tenant — DB StatefulSet, CDC,
+  PVCs, etc. — `COMPONENT-SEPARATION-SUMMARY.md:127-135`), which is orthogonal to runtime
+  language: a Rust/Go rewrite would still need 11–12 objects/tenant under that deployment
+  model. Its configured pod memory request (128Mi) is already below the measured 99 MB RSS
+  floor — a concrete discrepancy worth flagging to that project.
+- **Conclusion**: neither "migrate to Nocturne" nor "rewrite the runtime" is supported by
+  measurement. The load-bearing move is the `shared`-process architecture (§4B) plus
+  adopting RLS-style fail-closed isolation as a *storage* property (portable to Node+pg,
+  not a .NET property) — both deliverable inside cgm-remote-monitor.
+
 **Source Files Analyzed**:
 - `externals/cgm-remote-monitor-official/lib/data/{ddata,dataloader,calcdelta}.js`
 - `externals/cgm-remote-monitor-official/lib/server/{cache,websocket,bootevent,env}.js`
