@@ -80,6 +80,12 @@ Documentation follows source code analysis → research synthesis → domain und
   — Joint modernization review first, followed by proposed Connect, XState,
   reporting/API/PDF, embeddable UI and shared-testing work. Draft for maintainer discussion.
 
+- [Nightscout multitenancy: approaches, tradeoffs and a benchmark plan](30-design/nightscout-multitenancy-discussion-2026-09-09.md)
+  — Where cgm-remote-monitor's single-tenant assumptions live (`ddata`, cache, settings,
+  sockets, storage), what Nocturne's host-based/RLS multitenancy demonstrates, an honest
+  assessment of keyv / SQLite / schema options and of WASM and eBPF, plus a pre-registered
+  benchmark matrix (EXP-MT-001…030) and decision rule. Measurement-first draft.
+
 **Featured capstones**:
 - `60-research/CAPSTONE-iob-age-smb-mechanism-2026-04-23.md` —
   IOB-Age and SMB-Emission Mechanism comparative study (34 evidence

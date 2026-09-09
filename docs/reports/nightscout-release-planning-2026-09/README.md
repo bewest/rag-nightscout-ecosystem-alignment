@@ -28,6 +28,7 @@ discussions can happen with a shared, accurate starting point.
 | [pr-8605-merge-readiness.md](./pr-8605-merge-readiness.md) | Independent verification of #8605's current mergeability, CI state, scope, and risk — is it ready to merge, and should progress keep splitting across releases or land as one large release? | Live findings, 2026-09-09 |
 | [release-cadence-framework.md](./release-cadence-framework.md) | Rubric for sequencing modernization vs. bug-fix/security vs. new-feature work across release cycles | Draft, decisions pending |
 | [feature-backlog-prioritization.md](./feature-backlog-prioritization.md) | Structured pass through the named feature areas (vendor connectivity, MCP/agentic connectivity, AID controller registration, schema vocabulary/typed support) against existing proposals and the maintenance backlog | Draft, decisions pending |
+| [tooling-evaluation-keyv-mongoose-zod-wasm.md](./tooling-evaluation-keyv-mongoose-zod-wasm.md) | Evaluates keyv, mongoose, zod, and wasm against `cgm-remote-monitor`'s actual current stack (raw `mongodb` driver, hand-rolled API3 validation, no cache library) for the schema-vocabulary/typed-support and data-layer backlog items | Draft, 2026-09-14 |
 
 ## Method
 

@@ -1969,3 +1969,41 @@ CANNOT isolate causal treatment effects from observational closed-loop AID data.
 The controller's simultaneous co-intervention, unobserved predictions, and
 anticipatory user behavior create irreducible confounding. Structural PK/PD models,
 instrumental variables, or controller open-loop periods would be needed.
+
+### Nightscout Multitenancy Discussion (2026-09-09)
+
+Cross-project analysis of what it would take to make `cgm-remote-monitor` multitenant,
+what Nocturne's existing multitenancy demonstrates, and how to benchmark the options
+rather than argue about them.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Multitenancy discussion doc | `docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md` | Single-tenant assumption map, 5 candidate architectures, storage/keyv/WASM/eBPF assessment, EXP-MT benchmark matrix and decision rule |
+
+**Key Findings**:
+- The plugin sandbox is already tenant-shaped (`lib/sandbox.js:45-84` takes settings+data),
+  but `ctx` — ddata, cache, dataloader, settings, plugins, bus, authorization — is not.
+- Nightscout holds ~48 h entries / 60 h treatments / 24–48 h devicestatus per site
+  (`lib/server/cache.js:26-31`) and issues ~14 DB ops per load (`lib/data/dataloader.js:128-146`).
+- Synthetic sizing: ~1.21 MB heap per bare `ddata`-shaped object (576 SGVs, 600 treatments,
+  576 Loop devicestatus); 4–8 MB/tenant resident is the working hypothesis to be measured.
+- Three O(n²) hot spots: `idMergePreferNew` (`lib/data/ddata.js:82-106`), `nsArrayTreatments`
+  (`lib/data/calcdelta.js:15-76`), repeated treatment filtering (`lib/data/ddata.js:249-337`).
+- Socket.IO uses a single non-tenant room `DataReceivers` (`lib/server/websocket.js:150`, `:792`).
+- Nocturne: host-header subdomain resolution, shared tables + `tenant_id` with EF Core filters
+  **and** PostgreSQL `FORCE ROW LEVEL SECURITY` (fail-closed), tenant-GUID-prefixed SignalR
+  groups, and deliberately **no** per-tenant ddata equivalent — many small TTL'd caches instead.
+- keyv suits ephemeral tenant-keyed state (sessions, tokens, counters, resolution cache) but
+  cannot serve Nightscout's range/predicate queries; the real seam is a repository interface
+  speaking the documented API v3 query model.
+- WASM's strongest argument is memory representation, not speed; eBPF belongs in the
+  benchmark harness as observability, not in the runtime.
+
+**Source Files Analyzed**:
+- `externals/cgm-remote-monitor-official/lib/data/{ddata,dataloader,calcdelta}.js`
+- `externals/cgm-remote-monitor-official/lib/server/{cache,websocket,bootevent,env}.js`
+- `externals/cgm-remote-monitor-official/lib/{sandbox,settings,bus}.js`
+- `externals/cgm-remote-monitor-official/lib/storage/mongo-storage.js`
+- `externals/nocturne/src/API/Nocturne.API/Multitenancy/TenantResolutionMiddleware.cs`
+- `externals/nocturne/src/Infrastructure/Nocturne.Infrastructure.Data/NocturneDbContext.cs`
+- `externals/nocturne/crates/nocturne-alerts-{core,ffi}/`
