@@ -29,6 +29,7 @@ discussions can happen with a shared, accurate starting point.
 | [release-cadence-framework.md](./release-cadence-framework.md) | Rubric for sequencing modernization vs. bug-fix/security vs. new-feature work across release cycles | Draft, decisions pending |
 | [feature-backlog-prioritization.md](./feature-backlog-prioritization.md) | Structured pass through the named feature areas (vendor connectivity, MCP/agentic connectivity, AID controller registration, schema vocabulary/typed support) against existing proposals and the maintenance backlog | Draft, decisions pending |
 | [tooling-evaluation-keyv-mongoose-zod-wasm.md](./tooling-evaluation-keyv-mongoose-zod-wasm.md) | Evaluates keyv, mongoose, zod, and wasm against `cgm-remote-monitor`'s actual current stack (raw `mongodb` driver, hand-rolled API3 validation, no cache library) for the schema-vocabulary/typed-support and data-layer backlog items | Draft, 2026-09-14 |
+| [ecosystem-progression-nocturne-trio.md](./ecosystem-progression-nocturne-trio.md) | Dev-vs-shipped progression for Nocturne (server rewrite) and Trio (iOS AID client); corrects `workspace.lock.json` mischaracterizations; surfaces Nocturne's in-progress V4 typed schema and a live Trio timestamp-precision bug relevant to schema consensus | Draft, 2026-09-14 |
 
 ## Method
 
