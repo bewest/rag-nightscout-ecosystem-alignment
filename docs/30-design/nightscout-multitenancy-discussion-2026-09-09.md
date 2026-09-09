@@ -179,7 +179,7 @@ tenants 200   heap delta 241.2 MB   per tenant 1.21 MB   JSON 795 KB/tenant
 That is the **floor**, not the estimate. Steady state additionally holds cache arrays,
 derived treatment arrays, the previous `lastData` for delta computation, and transient
 JSON clones during load. A working assumption of **4–8 MB resident per active tenant**
-should be treated as a hypothesis to be measured (§9, EXP-MT-001), not a number to quote.
+should be treated as a hypothesis to be measured (§10, EXP-MT-001), not a number to quote.
 At 6 MB, 1 000 tenants ≈ 6 GB of live JS objects before headroom — which is precisely why
 the residency/tiering question (§4) matters more than the storage question.
 
@@ -220,7 +220,7 @@ Two caveats Nocturne itself records: the browser bridge fans some notifications 
 whole tenant room rather than per-subject rooms (`Services/Realtime/RealtimeGroups.cs:32-57`),
 and there is **no published tenants-per-instance target or tenant-count scaling
 benchmark** in the repo, and no k6/NBomber/Socket.IO load harness. So Nocturne proves
-*correctness* of an approach, not *capacity*. Capacity is what §9 is for.
+*correctness* of an approach, not *capacity*. Capacity is what §10 is for.
 
 ### 3.1 Should cgm-remote-monitor *depend on* Nocturne?
 
@@ -464,7 +464,7 @@ valuable:
 - Optionally: enforcement at the edge (cgroup/tc rate limiting per tenant process in a
   sharded deployment, §4E).
 
-**Recommendation**: treat eBPF as first-class *measurement* infrastructure for §9 and
+**Recommendation**: treat eBPF as first-class *measurement* infrastructure for §10 and
 explicitly out of scope as an application dependency. If the benchmark harness produces
 per-tenant flamegraphs and off-CPU profiles, the architecture debate becomes short.
 
@@ -616,7 +616,179 @@ Ordered by evidence, cheapest first:
 
 ---
 
-## 8. Runtime performance model to test
+## 8. Is Node the right host at all? Measured
+
+§7 asked whether WASM makes Nightscout's *existing* runtime faster. This section asks the
+prior question: **should the server be JavaScript at all**, or would Rust, Grain, or a
+WASM shell be structurally better? Harness: `tools/mt-bench/rust/` (rustc 1.68, serde_json,
+release build) against the same fixtures as §7, same machine.
+
+### 8.1 Parsing and memory, Node vs Rust, three representations
+
+| Representation | Parse (SGV window) | Memory / tenant |
+|---|---:|---:|
+| Node — JS objects (`JSON.parse`) | 0.559 ms | 202.5 KB |
+| Node — typed arrays (columnar) | 0.001 ms | 9.9 KB |
+| Rust — `serde_json::Value` (untyped) | — | **1 552.3 KB** |
+| Rust — typed structs (serde derive) | 0.26 ms | 53.7 KB |
+| Rust — columnar struct-of-arrays | 0.25 ms | 10.2 KB |
+
+Whole-tenant untyped parse: **Node `JSON.parse` 2.47 ms vs Rust `serde_json::Value`
+4.60–4.82 ms.**
+
+Three results here are worth sitting with:
+
+1. **Rust loses to V8 on untyped JSON**, by roughly 1.9× on time and 7.7× on memory.
+   V8's `JSON.parse` is heavily optimised C++ with hidden-class object layout;
+   `serde_json::Value` is a tree of enums and `String`s and `BTreeMap`s. Choosing Rust
+   while keeping a schemaless document model makes things **worse**, not better.
+2. **Columnar JS ties columnar Rust**: 9.9 KB vs 10.2 KB per tenant, within 3 %. Once the
+   data is in typed arrays, JavaScript is holding the same bytes Rust would hold.
+3. **The lever is the schema, not the language.** Rust only wins after you commit to a
+   typed representation (1 552 → 53.7 → 10.2 KB). But that same commitment is available in
+   JavaScript, and delivers the same endpoint. This connects directly to §5.3: adopting
+   real schemas is what unlocks the performance, in *either* language.
+
+### 8.2 Language choice buys a constant; representation buys a slope
+
+| | Node | Rust |
+|---|---:|---:|
+| Baseline RSS, HTTP server, no data | 44.0 MB | 3.0 MB |
+
+That 41 MB gap is a **fixed cost per process**, and how much it matters depends entirely
+on the deployment model:
+
+| Tenants per process | Runtime baseline amortised |
+|---:|---:|
+| 1 (today's model) | 41 MB per tenant — **dominant** |
+| 100 | 0.41 MB per tenant |
+| 1 000 | 0.04 MB per tenant — negligible |
+
+This produces the sharpest strategic finding in this document:
+
+> **Multitenancy and a runtime rewrite are substitutes, not complements.** The single
+> largest per-tenant saving a Rust rewrite offers is eliminating a ~41 MB per-process
+> runtime baseline — which is exactly the cost that multitenancy amortises to nothing.
+> Doing both buys the second one almost nothing.
+
+In today's one-process-per-person deployment, the Node baseline genuinely *is* a
+per-tenant cost, and "rewrite it in something smaller" is a rational response to it. That
+is likely the intuition behind the question. But if the goal is many tenants per process,
+that argument dissolves, and what remains is the per-tenant *slope* — which §8.1 shows is
+set by data representation, and is achievable without leaving Node.
+
+### 8.3 The amplifiers are a fairness problem, not a throughput problem
+
+Re-measuring the O(n²) hot spots against a Map-indexed rewrite
+(`tools/mt-bench/amplifiers.js`) corrects an over-claim made in §10 of the first draft:
+
+| Workload | Nested scan (current shape) | Map-indexed |
+|---|---:|---:|
+| `idMergePreferNew`, 600 old / 3 new (typical incremental) | 0.022 ms | 0.077 ms |
+| treatment delta, 600 × 600 | 0.888 ms | 0.878 ms |
+| treatment delta, **5 000 × 5 000** (heavy/long-history tenant) | **80.9 ms** | **2.7 ms** |
+
+At typical sizes the nested scan is **already fine, and the "fix" is 3.5× slower** —
+building an index costs more than scanning three new documents. The quadratic only bites
+the tail: at 5 000 treatments it is a **30× difference and an 81 ms event-loop stall**.
+
+In single-tenant Nightscout, an 81 ms hiccup is invisible. In a multitenant process it is
+a **fairness incident**: one person with a long treatment history stalls everyone else's
+broadcasts. So the correct framing is tail latency and isolation, not throughput — and the
+right fix may be adaptive (scan when small, index when large) rather than unconditional.
+This also means §10's amplifier list should be justified by p99 and fairness metrics, not by
+expected tenants-per-process.
+
+### 8.4 Candidate hosts, assessed
+
+| Host | Real advantage | Real cost | Verdict |
+|---|---|---|---|
+| **Node/V8 (today)** | Best-in-class untyped JSON; the entire ecosystem Nightscout depends on (socket.io, mongodb driver, 38 plugins, connectors); largest contributor pool | 44 MB baseline; single-threaded fairness; no memory isolation between tenants | Default. The baseline stops mattering once amortised |
+| **Rust** | 3 MB baseline; real threads; predictable memory; Nocturne already ships Rust cores | Full rewrite; loses the plugin/connector ecosystem; **loses to V8 unless the data is typed** | Justified for *libraries* (§6.1), not as the host |
+| **Grain** | WASM-native, small, functional, pleasant type system | Ecosystem is tiny — no Mongo driver, no socket.io, no plugin community. Its production maturity could not be verified from authoritative sources here | Not viable as a Nightscout host; interesting for isolated pure computations at most |
+| **Go** | Small baseline, real concurrency, good ops story, large ecosystem | Full rewrite; same ecosystem loss as Rust; GC still present | Plausible if a rewrite were happening anyway; no measured advantage over Rust here |
+| **WASM component shell** (Wasmtime/Spin, WASI 0.3) | Genuine **per-tenant sandboxing and fairness**; cheap instantiation; host-managed shared event loop with `stream<T>`/`future<T>` now native to the canonical ABI (WASI 0.3 ratified by the WASI Subgroup, Bytecode Alliance) | Nightscout's JS would run in QuickJS/SpiderMonkey rather than V8 — the 5–20× steady-state tax from §7.3; ecosystem/driver gaps | Interesting as an **isolation** mechanism, not a speed one. Track WASI 0.3; do not adopt for throughput |
+
+The honest summary: **no candidate host is faster than Node at what Nightscout actually
+spends its time on**, once representation is held constant. What the alternatives offer is
+*isolation* and *baseline footprint* — and multitenancy addresses the second while §4's
+sharding addresses the first.
+
+### 8.5 Split by tier, not by language
+
+Nightscout is not one workload, and "which runtime" has a different answer per tier. This
+also matches what Nocturne actually did — .NET for orchestration, Rust for the stateless
+alert core (§3).
+
+| Tier | Character | Right host |
+|---|---|---|
+| HTTP ingest / API v1–v3 | I/O bound, untyped JSON in/out | **Node** — V8's parser is the best tool, and the ecosystem is here |
+| Storage / query | I/O bound | Node + native driver; the seam matters (§5.2), the language does not |
+| Realtime fan-out | I/O bound, connection-heavy | **Node** — socket.io is an ecosystem asset, hard to replace |
+| Per-tenant compute (IOB/COB/AR2/loop, alarms, delta) | CPU bound, stateless, schema-stable | **Native/WASM library boundary** — the Nocturne pattern; shareable across servers |
+| Reports / analytics | Batch, columnar, long windows | Columnar store + native compute (cf. `externals/ns-parquet*`) |
+| Browser | No native option exists | **WASM** — see §8.6 |
+
+The boundary belongs where data is **already typed and compute is already stateless**.
+That is precisely `nocturne-alerts-core`'s shape, and precisely *not* the shape of
+Nightscout's request handling.
+
+### 8.6 The browser is the opposite case — and the conclusions invert
+
+Every §7 conclusion reverses in the browser, and conflating the two is the main way this
+discussion goes wrong:
+
+| Question | Server | Browser |
+|---|---|---|
+| SQLite in WASM? | **No** — 2.5–7× slower than native (§7.2) | **Yes** — WASM+OPFS is the *only* way to have SQLite at all |
+| JS in a WASM engine? | **No** — loses V8's JIT (§7.3) | Irrelevant — the browser *is* V8/SpiderMonkey/JSC |
+| Rust/WASM compute? | Only where already typed and stateless | **Yes** — the only route to native-speed compute, and the only way to share one oref/alarm implementation with the server |
+| Columnar payloads? | Memory and wake win (§7.4) | **Bandwidth, parse-time and battery win** — decode into typed arrays feeding charts directly |
+
+The browser case is where WASM is unambiguously correct, and it is also where the
+modernization discussion is already heading (Svelte reports UI, Nocturne's Svelte
+components). A shared Rust core compiled **native for the server and WASM for the browser**
+gives one implementation, two targets, with parity testable in CI — which is a
+*correctness* argument first and a performance argument second.
+
+The unifying idea: **one columnar format used as wire format, storage format and compute
+format.** The server keeps it in Buffers, ships it to the browser without re-serialising,
+and the browser maps typed arrays over it straight into charts. That deletes several
+JSON encode/decode round-trips that currently exist purely because the format changes at
+every hop.
+
+### 8.7 Lessons
+
+1. **Fix the representation before changing the language.** Columnar JS (9.9 KB/tenant)
+   beats typed Rust structs (53.7 KB) and ties columnar Rust (10.2 KB). Language changes
+   nothing that representation has not already decided.
+2. **Rust is not automatically faster.** On untyped JSON it lost to V8 by ~1.9× on time and
+   ~7.7× on memory. "Rewrite in Rust" without a schema is a regression.
+3. **Schemas are the performance unlock**, not just a correctness nicety — which makes the
+   zod/OpenAPI work in §5.3 load-bearing for this whole effort rather than adjacent to it.
+4. **Runtime baseline is a constant; multitenancy already eliminates it.** Don't pay for a
+   rewrite to solve a problem that the architecture change deletes anyway.
+5. **The quadratics are a tail/fairness problem**, invisible at typical sizes and a 30×
+   cliff at heavy ones. Multitenancy converts a private hiccup into everyone's outage.
+6. **Server and browser have opposite answers.** Native wins on the server; WASM wins in the
+   browser; the shared artefact between them is a typed, stateless compute core plus a
+   common columnar format.
+7. **The strongest non-Node argument is isolation, not speed** — per-tenant sandboxing and
+   fairness. That is worth tracking (WASI 0.3, component model) and worth solving more
+   cheaply first with process sharding (§4E) and worker threads.
+
+### 8.8 Additional pre-registered arms
+
+| ID | Arm | Question |
+|---|---|---|
+| EXP-MT-027 | Node vs Rust vs Go: full tenant tick (load → plugins → delta → serialise) | Does the language gap survive a realistic mixed workload, or is it all representation? |
+| EXP-MT-028 | Adaptive merge/delta (scan when small, index when large) | Best crossover point; p99 under a heavy tenant |
+| EXP-MT-029 | Worker threads + `SharedArrayBuffer` over columnar buffers | Can fairness be bought without leaving Node? |
+| EXP-MT-031 | One columnar format server→wire→browser vs today's JSON hops | End-to-end bytes, parse time, battery on mobile followers |
+
+---
+
+## 9. Runtime performance model to test
 
 Capacity per process should be modelled and then *checked*:
 
@@ -632,27 +804,40 @@ cpu_per_minute  ≈ Σ_active ( loads_per_min × ( db_ops(≈14) + clone + merge
 
 Known amplifiers to attack before any exotic technology:
 
-| Amplifier | Evidence | Cheap fix to test first |
-|---|---|---|
-| JSON deep clone per load | `lib/data/ddata.js:29-79` | structuredClone, or clone-free normalisation |
-| O(old×new) merge | `lib/data/ddata.js:82-106` | Map-indexed merge by `_id`/`identifier` |
-| O(old×new) treatment delta | `lib/data/calcdelta.js:15-76` | Map-indexed diff |
-| 14 queries per load regardless of window | `lib/data/dataloader.js:128-146`, `:385-393` | Combine the six special-treatment queries; skip loaders whose window is empty |
-| Repeated filter/sort of full treatment array | `lib/data/ddata.js:249-337` | Single pass bucketing |
-| Per-object heap overhead | §2.7 | Compact/columnar representation |
+| Amplifier | Evidence | Cheap fix to test first | Measured (§7–§8) |
+|---|---|---|---|
+| JSON deep clone per load | `lib/data/ddata.js:29-79` | clone-free normalisation | clone 3.79 ms; `structuredClone` is **worse** at 4.18 ms |
+| O(old×new) merge | `lib/data/ddata.js:82-106` | Map-indexed merge by `_id`/`identifier` | index is **slower** at typical size; only wins in the tail (§8.3) |
+| O(old×new) treatment delta | `lib/data/calcdelta.js:15-76` | Map-indexed diff | 0.89 ms @600 (no gain) vs 80.9→2.7 ms @5 000 (**30×**) |
+| 14 queries per load regardless of window | `lib/data/dataloader.js:128-146`, `:385-393` | Combine the six special-treatment queries; skip loaders whose window is empty | not yet measured; expected to dominate once a real remote DB is in the loop (EXP-MT-026) |
+| Repeated filter/sort of full treatment array | `lib/data/ddata.js:249-337` | Single pass bucketing | not yet measured |
+| Per-object heap overhead | §2.7 | Compact/columnar representation | **202.5 → 9.9 KB/tenant (≈20×)**, wake ≈500× faster (§7.4) |
 
-A plausible and testable claim: **these six fixes alone move the tenants-per-process
-number more than any storage or WASM change.** If true, that reorders the whole roadmap,
-and it is a much easier sell to maintainers than a rewrite.
+**Correction to the first draft.** This section originally claimed these six fixes would
+"move the tenants-per-process number more than any storage or WASM change". The
+measurements only partly support that, and the distinction matters:
+
+- **Representation (row 6) does move the capacity number** — ~20× memory is a slope change.
+- **The quadratics (rows 2–3) do not.** At typical sizes they cost microseconds and the
+  "fix" can be slower; they are a **tail-latency and fairness** issue that multitenancy
+  promotes from private hiccup to shared outage (§8.3). Justify them with p99 under a
+  noisy tenant, not with tenants-per-process.
+- **Clone reduction (row 1) needs a different fix than assumed** — `structuredClone` is
+  slower than the current `JSON.parse(JSON.stringify(...))`, so the win has to come from
+  not cloning at all.
+
+Revised claim, still to be tested: **representation plus locality (columnar hot cache over
+a local store) moves capacity more than any language or runtime change**, and the
+quadratics must be fixed for fairness regardless of what capacity they buy.
 
 ---
 
-## 9. Benchmark plan
+## 10. Benchmark plan
 
 The purpose is to replace opinion with numbers, using everything available: real code,
 synthetic tenants, ecosystem-realistic workloads, and both userland and kernel profiling.
 
-### 9.1 Harness
+### 10.1 Harness
 
 Proposed location `tools/mt-bench/` (new, workspace-side; nothing lands in
 cgm-remote-monitor until results justify it):
@@ -680,7 +865,7 @@ cgm-remote-monitor until results justify it):
   socket flaky harness (`test:flaky:socket`), and `tests/hooks.js` fixtures for correctness
   gating; Nocturne's `tests/Performance/**` for cross-server comparison shape.
 
-### 9.2 Metrics (fixed set, reported for every arm)
+### 10.2 Metrics (fixed set, reported for every arm)
 
 **Cost**: peak/steady RSS per tenant; total RSS at N; CPU-seconds per tenant-hour;
 DB ops per tenant-minute; DB storage per tenant-month; **$ per tenant-month** on two
@@ -693,7 +878,7 @@ correctness vs. full-payload reference; **zero cross-tenant leakage** (hard gate
 behaviour at 2× target N; recovery after restart.
 **Fairness**: p99 latency of a quiet tenant while a heavy tenant runs a 12-month report.
 
-### 9.3 Arms
+### 10.3 Arms
 
 | ID | Arm | Question |
 |---|---|---|
@@ -716,7 +901,7 @@ behaviour at 2× target N; recovery after restart.
 gives the ecosystem its first apples-to-apples server comparison, and it also fills the
 gap that Nocturne's own repo has no tenant-count scaling benchmark.
 
-### 9.4 Method notes
+### 10.4 Method notes
 
 - **Sweep N**: 1, 10, 50, 100, 250, 500, 1 000, 2 500 tenants; stop each arm at its first
   gate failure and record where and why. The failure mode is the finding.
@@ -731,7 +916,7 @@ gap that Nocturne's own repo has no tenant-count scaling benchmark.
   commit SHAs of every server under test, following existing workspace report conventions.
 - **Pre-register the decision rule** before running (below), so the numbers decide.
 
-### 9.5 Decision rule (proposed, to be argued now rather than later)
+### 10.5 Decision rule (proposed, to be argued now rather than later)
 
 Adopt a multitenant direction only if the winning arm shows, at N ≥ 250 tenants:
 
@@ -743,30 +928,40 @@ Adopt a multitenant direction only if the winning arm shows, at N ≥ 250 tenant
    deletion.
 
 If no arm clears the bar, the finding is "keep the single-tenant deployment model and
-spend the effort on the §8 amplifiers" — which would itself be a valuable, publishable
+spend the effort on the §9 amplifiers" — which would itself be a valuable, publishable
 result.
 
 ---
 
-## 10. Phasing (only if the numbers support it)
+## 11. Phasing (only if the numbers support it)
 
-1. **Measure first.** Build `tools/mt-bench/`, run EXP-MT-001/002 and the §8 amplifier
-   fixes. Cheap, independently useful, and non-invasive.
-2. **Land the amplifier fixes upstream on their own merits** (Map-indexed merge/delta,
-   fewer queries, clone reduction). They help every existing single-tenant site today.
-3. **Introduce the query-model seam** (§5.2) as a refactor toward the *documented* API v3
+Reordered after the §7–§8 measurements: representation now leads, and native/runtime work
+moves from "last" to "probably never, on the server".
+
+1. **Measure first.** Extend `tools/mt-bench/` into the §10 harness; run EXP-MT-001/002 and
+   EXP-MT-026 (real remote DB in the loop). Cheap, independently useful, non-invasive.
+2. **Schema work (§5.3) — promoted.** It was framed as a correctness item; §8.1 shows it is
+   the precondition for every memory and parse win, in any language. Generate validators
+   from `specs/openapi/` rather than hand-rolling.
+3. **Representation: columnar hot window** for entries/MBGs/cals and Loop's
+   `predicted.values` (EXP-MT-021/025). ~20× memory and ~500× wake, in plain JavaScript,
+   with no tenancy change required — it helps single-tenant sites today.
+4. **Fairness fixes for the quadratics** (§8.3), justified by p99 under a heavy tenant and
+   ideally adaptive (scan when small, index when large — EXP-MT-028). Not capacity work.
+5. **Introduce the query-model seam** (§5.2) as a refactor toward the *documented* API v3
    query model, validated by the existing test suites. Independently justifiable.
-4. **Tenant-scope the request path**: resolution middleware, socket rooms, socket
+6. **Tenant-scope the request path**: resolution middleware, socket rooms, socket
    auth binding, per-tenant settings — behind a flag that defaults to single-tenant.
-5. **Tenant-scope the data path**: `ctxFor(tenantId)`, per-tenant cache/loader/plugins,
+7. **Tenant-scope the data path**: `ctxFor(tenantId)`, per-tenant cache/loader/plugins,
    fail-closed storage isolation.
-6. **Residency tiering + cold alarm path**, if EXP-MT-003/010 support it.
-7. **Native/columnar work last**, only where EXP-MT-020/021 show a real win, and preferably
-   by sharing Nocturne's stateless Rust cores rather than writing new ones.
+8. **Residency tiering + cold alarm path**, if EXP-MT-003/010 support it.
+9. **Shared native cores only where already typed and stateless** (§8.5) — preferably by
+   reusing Nocturne's Rust crates, compiled native for the server and WASM for the browser.
+   Not a host change (§8.4).
 
 ---
 
-## 11. Relationship to the parallel tooling evaluation
+## 12. Relationship to the parallel tooling evaluation
 
 A companion evaluation produced alongside the modernization work —
 `docs/reports/nightscout-release-planning-2026-09/tooling-evaluation-keyv-mongoose-zod-wasm.md`
@@ -795,7 +990,7 @@ That is a cheap follow-up and it materially affects the D4 option in §3.1.
 
 ---
 
-## 12. Open questions for the maintainers
+## 13. Open questions for the maintainers
 
 1. Is the target "many people on one operator's instance" (hosted service, needs billing,
    support, liability, and an explicit trust/threat model) or "one family/clinic runs a few
@@ -814,10 +1009,17 @@ That is a cheap follow-up and it materially affects the D4 option in §3.1.
    `docs/DIGITAL-RIGHTS.md` matter, not only an engineering one.
 7. Sequencing against the modernization gate: this work should stay measurement-only until
    #8605 is resolved, to avoid a second moving baseline.
+8. Given §8.2 — that multitenancy and a runtime rewrite are **substitutes** for the same
+   ~41 MB per-process cost — is the project's preference to keep one-process-per-person and
+   shrink the process, or to keep Node and share the process? Both are defensible; doing
+   both buys little. This is arguably the actual fork in the road.
+9. Is the project willing to treat **schemas as performance infrastructure** (§8.1, §11.3)
+   rather than as documentation? That reframing is what makes the representation work
+   possible, and it changes who needs to review it.
 
 ---
 
-## 13. References
+## 14. References
 
 **Nightscout** (`externals/cgm-remote-monitor-official`, `dev` @ `a8888f0d`):
 `lib/data/ddata.js`, `lib/data/dataloader.js`, `lib/data/calcdelta.js`,

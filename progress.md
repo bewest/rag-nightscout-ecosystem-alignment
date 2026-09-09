@@ -2010,6 +2010,21 @@ rather than argue about them.
   (9.9 vs 202.5 KB/tenant) and ~500× faster wake (0.001 vs 0.559 ms) — and needs no WASM.
 - SQLite-file-per-tenant scales: 1 000 open handles = 66 MB RSS, cold open p99 0.06 ms.
 
+**Measured follow-up 2 (is Node the right host?)** — `tools/mt-bench/rust/`, `amplifiers.js`:
+- Rust `serde_json::Value` (untyped) is **worse than V8**: 4.60 ms vs 2.47 ms parse, and
+  1552 vs 202 KB/tenant. Rewriting in Rust without a schema is a regression.
+- Columnar JS (9.9 KB/tenant) ties columnar Rust (10.2 KB) and beats typed Rust structs
+  (53.7 KB). **Representation dominates language.**
+- Node baseline RSS 44.0 MB vs Rust 3.0 MB — a fixed per-process cost. At 1 tenant/process
+  it is 41 MB/tenant (dominant); at 1 000 it is 41 KB/tenant (negligible). So multitenancy
+  and a runtime rewrite are **substitutes for the same cost**, not complements.
+- The O(n²) merge/delta are a **tail/fairness** problem, not throughput: at 600 treatments
+  the nested scan costs 0.022 ms and the Map "fix" is 3.5x slower; at 5 000 it is 80.9 ms
+  vs 2.7 ms (30x, an event-loop stall). Corrects an over-claim in the first draft.
+- `structuredClone` (4.18 ms) is slower than the current JSON clone (3.79 ms).
+- Server and browser invert: native wins server-side, WASM is the only browser option;
+  the shared artefact is a typed stateless core plus one columnar wire/storage/compute format.
+
 **Source Files Analyzed**:
 - `externals/cgm-remote-monitor-official/lib/data/{ddata,dataloader,calcdelta}.js`
 - `externals/cgm-remote-monitor-official/lib/server/{cache,websocket,bootevent,env}.js`

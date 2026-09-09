@@ -29,6 +29,8 @@ full harness in §9 must add.
 | `wasmvsnative.js` | Is SQLite-in-WASM faster than native? | `better-sqlite3` vs `@sqlite.org/sqlite-wasm` |
 | `columnar.js` | Do typed arrays beat JS objects? | Measures `heapUsed + external` (Buffer memory is off-heap — measuring `heapUsed` alone gives a wildly wrong answer) |
 | `handles.js` | Does SQLite-file-per-tenant scale? | Creates K tenant DBs (default 1 000), measures cold open, first query, and RSS holding all handles open |
+| `amplifiers.js` | Are the O(n²) hot spots worth fixing? | Reproduces `idMergePreferNew` and the treatment delta, nested vs Map-indexed, at typical (600) and heavy (5 000) sizes |
+| `rust/` | Would a non-Node host help? | Same fixtures in Rust: untyped `serde_json::Value`, typed structs, and columnar struct-of-arrays |
 
 ## Running
 
@@ -53,3 +55,13 @@ adds Mongo/Atlas network round-trips that are expected to dominate every local c
 measured here — see EXP-MT-026.
 
 Always re-run on the target hardware before quoting a number.
+
+## Two traps these scripts exist to avoid
+
+1. **Measuring `heapUsed` only.** `Buffer`/typed-array storage is *external* to the V8
+   heap. `columnar.js` measures `heapUsed + external`; measuring `heapUsed` alone made
+   columnar look 566× better than objects instead of the real ~20×.
+2. **Benchmarking the "fix" only at one size.** `amplifiers.js` shows the Map-indexed
+   rewrite of `idMergePreferNew` is *slower* than the nested scan at typical sizes
+   (600 old / 3 new) and 30× faster at 5 000 — so a single measurement supports either
+   conclusion. Always sweep the size.
