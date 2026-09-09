@@ -661,6 +661,128 @@ that is a real, possibly large, engineering cost, and is tracked as EXP-MT-011
 (storage-backend comparison) and a to-be-added EXP-MT-037 (migration LOC/time estimate
 from a spike on 2–3 representative collections).
 
+### 5.5 Query typing: what mongoose actually buys, and why it doesn't answer the DoS question
+
+A maintainer's stated reason for liking mongoose is specific and worth taking on its own
+terms, separate from §5.3's "don't adopt it for isolation" answer: it appears to turn a
+PHP-style nested query string (`find[date][$gte]=...&find[sgv][$lt]=100`) into a correctly
+typed, sophisticated Mongo query — date ranges, regex scans — "for free," where the
+project's own hand-rolled query handling has gaps. Both the "for free" attribution and the
+"gaps" claim check out against the code, but not for the reason it looks like, and the fix
+for one is not the fix for the other.
+
+**Correction: the nested-object translation isn't mongoose's.** Nightscout runs Express
+4.22 (`node_modules/express/package.json`), whose default query parser is `qs`, which
+already turns `find[date][$gte]=...` into a nested JS object before any application code —
+including mongoose, were it present — ever sees the request. That part of the "PHP-style"
+behavior is Express's, not an ODM feature, and Nightscout already has it today with no
+dependency at all.
+
+**What legacy `lib/server/query.js` does with that nested object — and where it stops.**
+`create(params, opts)` (`lib/server/query.js`) takes the already-parsed nested object and
+applies, in order: `enforceDateFilter` (forces a default 4-day window —
+`TWO_DAYS*2` — on `opts.dateField` unless `_id` or a date field is already present,
+`query.js:52-77`), `updateIdQuery` (normalizes `_id`/UUID handling, `query.js:83-113`), then
+`walker(spec)` (`query.js:186-238`), which recursively applies a **per-field-name `typer`
+function** to the leaf nodes of that field's clause — but *only* for field names explicitly
+listed in that collection's hand-written walker spec:
+
+- `entries.js:184-197` lists 7 fields (`date`, `sgv`, `filtered`, `unfiltered`, `rssi`,
+  `noise`, `mbg`), all cast with `parseInt`.
+- `treatments.js:257-269` lists `insulin`/`carbs`/`glucose` as `parseInt` and
+  `notes`/`eventType`/`enteredBy` as `find_options.parseRegEx` — the *only* three fields in
+  the whole codebase where a client-supplied `/pattern/flags` string
+  (`parseRegEx`, `query.js:251-256`) is turned into a `RegExp` at all.
+
+Any field not named in a given collection's spec — which is most of them, since the spec
+only lists what the original author thought to type — passes through **completely
+untyped and unconstrained** straight into `ctx.store.collection(...).find(query)`
+(`entries.js:198`, `devicestatus.js:106`, `treatments.js:271` all call `find_options(...)`
+and hand the result to `.find()` directly). There is no field allowlist at all: any field
+name a client sends becomes a query clause against Mongo. This is precisely the gap a
+maintainer would notice firsthand — numeric fields outside the walker list get compared as
+strings against numbers and silently return wrong results, and there is no bound on how
+many fields, how deep, or what operators a request can carry.
+
+**API v3's `lib/api3/generic/search/` is a second, independently-built query layer with a
+different, partly better, but still incomplete answer.** It does not reuse `qs`-nested
+objects; it has its own flat `field$operator=value` string DSL (`filterRegex =
+/(.*)\$([a-zA-Z]+)/`, `input.js:49-65`) with an explicit **operator allowlist** — `eq`,
+`ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`, `re` (`input.js:111`) — rejecting any operator
+outside that list with `HTTP_400_UNSUPPORTED_FILTER_OPERATOR`. It also enforces a genuine
+result-size cap, `API3_MAX_LIMIT` = 1000 (`lib/api3/const.json:6`, applied in
+`collection.js:76-89`), which v1 has no equivalent of. Both of those are real, measurable
+hardening that legacy `query.js` lacks.
+
+But the same class of gap the maintainer flagged is still present, just relocated:
+
+- **No field allowlist.** `parseFilter` (`input.js:107-152`) accepts *any* field name from
+  the query string and passes it through; there is no check against `indexedFields`
+  (`entries.js:214-221`, already the anchor list used for the Postgres migration proposal
+  in §5.2.2) or any other declared set of queryable/indexed columns.
+- **`parseValue` (`input.js`) casts by hard-coded field-name special-casing** (numbers,
+  booleans, quoted strings, and a fixed list of date-like names —
+  `date`/`srvModified`/`srvCreated`/`created_at`) — the same "only fields someone thought
+  to special-case get typed correctly" shape as v1's walker spec, just inlined instead of
+  per-collection.
+- **The `re` operator is wired straight to MongoDB's `$regex` with no guard at all:**
+  `filter[itemDef.field]['$regex'] = itemDef.value.toString()`
+  (`lib/api3/storage/mongoCollection/utils.js:77-79`) — any client-supplied string, on any
+  field name, becomes a live regex scan. There is no length or complexity limit on the
+  pattern, no requirement that the field be indexed, and — confirmed by grep across
+  `lib/api3/` and `lib/storage/` — **no `maxTimeMS`, `$regex`-safety wrapper, or `.hint()`
+  anywhere in the query path** (`find.js:68-82` calls `.find(filter).sort().limit().skip()`
+  with no timeout). A request such as `notes$re=(a+)+$` against an unindexed field is a
+  genuine, unmitigated ReDoS/full-collection-scan vector in the current codebase today —
+  not a multitenancy-specific risk, but one that becomes a much sharper *noisy-neighbor*
+  problem the moment many tenants share one process (§8.3), because one client's
+  unconstrained query now steals CPU/IO from every other tenant on the same host instead of
+  just its own dedicated container.
+
+**So: two independent, hand-rolled query layers, two different wire formats, and the same
+underlying gap — type/constrain by hand-listed field name, with no declared schema and no
+query-shape budget.** This reframes what's actually being asked for. Adopting mongoose
+would add schema-driven *casting* (a `Schema` knows `sgv` is a `Number` without a
+hand-maintained walker entry) — a real, specific win over today's per-field-name lists —
+but casting is not the same problem as bounding query *cost*. Mongoose does not itself
+limit which fields are queryable, cap regex complexity, or enforce that a query hits an
+index; by default every schema path is filterable with any operator. Fixing the casting
+gap and fixing the DoS-boundedness gap are two different, separable moves, and only one of
+them is mongoose-shaped.
+
+**Proposed reconciliation: typed query *profiles* per consumer class, not one generic
+query surface.** The maintainer's own examples name the two ends of the spectrum:
+
+| Consumer class | Example | Needed shape |
+|---|---|---|
+| **AID controller / alarm follower** | Loop, AAPS, xDrip+ polling for recent entries to drive a closed-loop decision or trigger an alarm | A small, fixed set of pre-declared query shapes: indexed fields only (the existing `indexedFields` list, `entries.js:214-221`), no regex, no arbitrary field names, bounded time window and result size, known cost per request. Denial-of-service resistance matters *more* than flexibility — a controller does not need ad hoc filtering. |
+| **Human dashboard / reports / plugin authors** | Browser report views, third-party analysis tooling | Broader querying (regex on an explicit whitelist of text fields, larger but still capped limits), because request rate is low and human-supervised — but still not unbounded, and still validated against a declared schema for casting. |
+
+Concretely, this is a *named-query* or *persisted-query* pattern (the same idea GraphQL
+uses for exactly this reason) rather than accepting an arbitrary find-object from any
+client: define, as data, the queryable fields + allowed operators + result/time bounds per
+consumer class, and generate both the casting (mongoose-equivalent, but store-agnostic —
+zod/Ajv from `specs/openapi/`, per §5.3) and the allowlist from the same source, so the
+legacy `query.js` walker spec and API v3's `parseValue` special-casing stop being two
+independently hand-maintained lists that can drift. A natural home is a new
+`x-aid-query-profile` OpenAPI extension alongside the existing `x-aid-gap`/
+`x-aid-controllers` extensions already in `specs/openapi/aid-*-2025.yaml`, scoped by the
+same API-token scopes Nightscout already uses to distinguish read-only controller tokens
+from browser sessions — no new authentication concept required, just a stricter query
+budget attached to the scope that already exists.
+
+This is Layer 0 work (§11: typed vocabulary), sits ahead of any storage migration (it
+applies equally whether the backing store stays Mongo or moves to Postgres, since it
+constrains the *query shape* a client is allowed to ask for, not the storage engine
+answering it), and should be validated with a new benchmark arm:
+
+- **EXP-MT-042 (query-cost bound, adversarial input):** measure wall-clock and CPU cost of
+  (a) today's unconstrained walker/filter path given an unindexed-field regex query on a
+  realistically sized tenant collection, versus (b) the same request rejected or
+  reshaped by a declared query profile before it reaches the store. Report as a tail-latency
+  and CPU-share number, and feed it into §8.3's fairness discussion — this is precisely the
+  kind of noisy-neighbor amplifier that multitenancy makes newly expensive.
+
 ---
 
 ## 6. WASM and eBPF: where they help, and where they don't
@@ -1444,6 +1566,7 @@ behaviour at 2× target N; recovery after restart.
 | EXP-MT-039 | Repeat §8.10 with the *real* require-graphs on both sides — `footprint.js`'s `nightscout` layer vs a minimal Nocturne API host booted (not a "Hello World" ASP.NET Core app) — and at N=16/32, not just N=8 | §8.10 used synthetic minimal apps for a first-order answer; the process-sharing curve should be confirmed against real code before it drives a migration decision |
 | EXP-MT-040 | Single Postgres primary under simulated 10 000-tenant RLS connection/query load — connection pooling (pgbouncer transaction mode) required or not, and whether a single primary saturates before a single shared-Node-process shard does | §12's 10 000-tenant extrapolation currently has no empirical ceiling for the storage side at that scale — this is the missing number |
 | EXP-MT-041 | Prototype tenant→shard connection routing two ways: (a) a boring userspace SNI router (nginx/Envoy `stream{}`/SNI matching) against a `tenantId→shard` config; (b) an eBPF `sockmap`/`sk_msg` SNI-splice datapath doing the same lookup in-kernel. Measure connection-setup latency and CPU/connection at realistic churn | §6.3: settles whether the userspace router is ever actually the bottleneck before reaching for eBPF/sockmap, and confirms `sockmap` (not `sk_lookup` or bare XDP) is the correct hook |
+| EXP-MT-042 | Query-cost bound under adversarial input: measure wall-clock/CPU for an unindexed-field `$regex` filter via today's unconstrained legacy `query.js` walker and API v3 `parseFilter`/`re` path, vs. the same request reshaped/rejected by a declared per-consumer query profile | §5.5: quantifies the noisy-neighbor exposure of the confirmed, currently unmitigated `$regex`/no-`maxTimeMS` gap (`lib/api3/storage/mongoCollection/utils.js:77-79`, `find.js:68-82`) once many tenants share one process (§8.3) |
 
 `EXP-MT-030` matters disproportionately: running the *same* generator against Nocturne
 gives the ecosystem its first apples-to-apples server comparison, and it also fills the

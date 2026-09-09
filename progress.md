@@ -2266,3 +2266,51 @@ Postgres easier than today's per-tenant-Mongo model beyond 10k tenants?)** — n
 - `externals/nocturne/src/API/Nocturne.API/Multitenancy/TenantResolutionMiddleware.cs`
 - Web research on `sk_lookup` vs `sockmap`/`sk_msg` vs XDP capabilities for SNI-based
   routing, cited inline in the new §6.3
+
+**Follow-up 9 (mongoose's query convenience vs. bounded, typed queries for AID
+controllers/alarm followers)** — new §5.5, plus EXP-MT-042:
+- Took the maintainer's specific claim on its own terms — mongoose turns a PHP-style
+  nested query string into a correctly typed, sophisticated Mongo query "for free," where
+  the project's own query handling has gaps — and checked both halves against the code.
+- **Correction**: the nested-query-string-to-object translation isn't mongoose's. Express
+  4.22's default `qs` parser already does that, with no ODM present. What mongoose would
+  actually add is schema-driven *casting* (a `Schema` knows a path's type without a
+  hand-maintained per-field list) — a real, separate win, not the one usually credited.
+- **Confirmed the gap is real and found it twice, independently.** Legacy
+  `lib/server/query.js`'s `walker(spec)` (`query.js:186-238`) types only the fields a
+  collection's hand-written spec names (`entries.js:184-197`: 7 fields, all `parseInt`;
+  `treatments.js:257-269`: 3 more, plus the only 3 fields anywhere with regex support via
+  `parseRegEx`, `query.js:251-256`) — everything else passes through untyped and
+  unconstrained straight into `.find()`, with no field allowlist at all. API v3's
+  `lib/api3/generic/search/input.js` is a second, independently built query layer (its own
+  `field$operator=value` DSL) that improves on two things — an explicit operator allowlist
+  (`eq/ne/gt/gte/lt/lte/in/nin/re`, `input.js:111`) and a real result-size cap
+  (`API3_MAX_LIMIT`=1000, `lib/api3/const.json:6`) — but repeats the same field-typing gap
+  via hard-coded special-casing in `parseValue`, and has **no field allowlist** either.
+- **New, concrete finding, not hypothetical**: API v3's `re` operator is wired straight to
+  MongoDB's `$regex` with the client's raw string, on any field name
+  (`lib/api3/storage/mongoCollection/utils.js:77-79`), and grep across `lib/api3/` and
+  `lib/storage/` confirms there is **no `maxTimeMS`, regex length/complexity guard, or
+  `.hint()` anywhere in the query path** (`find.js:68-82`). This is a live,
+  unmitigated ReDoS/full-collection-scan vector today, independent of multitenancy — and
+  becomes a sharper noisy-neighbor problem the moment tenants share a process (§8.3).
+- **Reconciliation proposed**: casting (mongoose-equivalent, but store-agnostic —
+  zod/Ajv from `specs/openapi/`, already recommended in §5.3) and query-shape *bounding*
+  are separable problems; fix both with typed **query profiles per consumer class** —
+  narrow, indexed-only, no-regex, capped profiles for AID controllers/alarm followers
+  (anchored on the existing `indexedFields` list, `entries.js:214-221`, already used for
+  the §5.2.2 Postgres migration proposal) vs. a broader but still-capped profile for
+  human/browse use. Proposed as a new `x-aid-query-profile` OpenAPI extension generated
+  from the same source as validation, replacing both hand-maintained lists, scoped by the
+  API-token scopes Nightscout already uses to distinguish controller tokens from browser
+  sessions.
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official/lib/server/query.js` (full file)
+- `externals/cgm-remote-monitor-official/lib/server/{entries,treatments,devicestatus}.js`
+  (walker specs, `indexedFields`)
+- `externals/cgm-remote-monitor-official/lib/api3/generic/search/{input,operation}.js`
+- `externals/cgm-remote-monitor-official/lib/api3/generic/collection.js` (`parseLimit`)
+- `externals/cgm-remote-monitor-official/lib/api3/storage/mongoCollection/{utils,find}.js`
+- `externals/cgm-remote-monitor-official/lib/api3/const.json`
+- `externals/cgm-remote-monitor-official/node_modules/express/package.json` (version check)
