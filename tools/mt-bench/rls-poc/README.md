@@ -1,6 +1,6 @@
 # RLS PoC — Postgres row-level security, measured against a live container
 
-Backs §5.2.1 and §5.4 of
+Backs §6.1 and §10.2 of
 [`nightscout-multitenancy-discussion-2026-09-09.md`](../../../docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md):
 does Postgres RLS actually do what Nocturne's code claims, at what cost, and how does it
 compare to the isolation Nightscout gets today from MongoDB with an application-only
@@ -42,16 +42,36 @@ docker rm -f rls-poc-pg   # cleanup
 
 `perf.js` — the cost of buying (1)/(2), against 300 000 rows / 500 tenants:
 
+Two independent runs, 300 000 rows across 500 tenants (run 1 / run 2):
+
 | Scenario | p50 |
 |---|---|
-| No tenant context bound (fail-closed, 0 rows) | 0.19 ms |
-| RLS-scoped, **no explicit tenant_id filter in the query** | 0.95 ms |
-| Plain table, explicit `WHERE tenant_id=` (no RLS) | 0.63 ms |
-| Plain table, **no filter at all** (the leak, 300k rows returned) | 16.9 ms |
+| No tenant context bound (fail-closed, 0 rows) | 0.19 / 0.13 ms |
+| RLS-scoped, **no explicit tenant_id filter in the query** | 0.95 / 1.03 ms |
+| Plain table, explicit `WHERE tenant_id=` (no RLS) | 0.63 / 0.46 ms |
+| Plain table, **no filter at all** (the leak, 300k rows returned) | 16.9 / 13.9 ms |
 
-RLS overhead here is ~0.32 ms relative to the equivalent hand-written filter — real, but
-small next to Nightscout's actual query rate (~14 ops/tenant/load cycle, once every
-1–5 s, per §2.3 of the discussion doc).
+**Quote the overhead as a range, not a point: ~0.3–0.6 ms** relative to an equivalent
+hand-written filter (1.5–2.2× it), which varied by nearly 2× between runs on the same
+machine. Real, but small next to Nightscout's actual query rate (~14 ops/tenant/load
+cycle, once every 1–5 s, per §2.3 of the discussion doc). Establishing it properly under
+load is EXP-MT-036/040, not this PoC.
+
+## Why the policy uses `NULLIF(current_setting(...), '')`
+
+Matching Nocturne's migration rather than the shorter bare form, because the two behave
+differently on an empty GUC, and `set_config` can produce one. Verified against the live
+container:
+
+| Bound value | Bare `current_setting(...,true)::uuid` | With `NULLIF(..., '')` |
+|---|---|---|
+| nothing bound at all | 0 rows | 0 rows |
+| empty string | **throws** `invalid input syntax for type uuid` | 0 rows |
+| malformed (`' '`) | throws | throws (correctly loud) |
+
+Both forms are fail-closed, but only the `NULLIF` form fails closed *quietly* on the empty
+case — which is the behaviour the discussion document analyses, so the PoC now demonstrates
+that one.
 
 ## Gotchas hit while building this
 

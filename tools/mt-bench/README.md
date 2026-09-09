@@ -4,7 +4,7 @@ Seed harness for the experiments in
 [`docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md`](../../docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md).
 
 These are **micro-benchmarks used to rank hypotheses**, not the full multi-tenant load
-harness described in §9 of that document. They answer narrow questions: how expensive is a
+harness described in §8 of that document. They answer narrow questions: how expensive is a
 cold tenant wake, does SQLite-in-WASM help on the server, does a columnar representation
 pay, and does SQLite-file-per-tenant survive a thousand tenants.
 
@@ -19,7 +19,7 @@ pay, and does SQLite-file-per-tenant survive a thousand tenants.
 Field sets were taken from `externals/cgm-remote-monitor-official/lib/data/ddata.js` and
 the retention windows in `lib/server/cache.js:26-31`. It is synthetic: treatment
 heterogeneity and real upload burstiness are **not** modelled, which is exactly what the
-full harness in §9 must add.
+full harness in §8 must add.
 
 ## Scripts
 

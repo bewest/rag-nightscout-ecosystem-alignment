@@ -28,7 +28,14 @@ ALTER TABLE entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE entries FORCE ROW LEVEL SECURITY;
 
 CREATE POLICY tenant_isolation ON entries
-  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
--- second arg `true` to current_setting = "missing GUC returns NULL, not an error" —
--- NULL = anything is NULL in SQL (never true), so an unset tenant context returns
--- zero rows rather than throwing. This is the actual fail-closed mechanism.
+  USING (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid);
+-- Two guards, both load-bearing, matching Nocturne's migration exactly
+-- (Migrations/20260227034745_EnforceMultitenancy.cs:66-76):
+--   * second arg `true` to current_setting = "missing GUC returns NULL, not an error";
+--   * NULLIF(..., '') extends that to an *empty-string* GUC, which set_config can
+--     produce and which would otherwise raise on ::uuid.
+-- NULL = anything is NULL in SQL (never true), so an unbound or empty tenant context
+-- returns zero rows rather than throwing. That NULL-comparison behaviour, not the
+-- POLICY syntax, is the actual fail-closed mechanism. Dropping the second argument
+-- would instead throw on an unbound connection — also fail-closed, but noisier, and
+-- a different failure mode than the one this PoC is written to demonstrate.

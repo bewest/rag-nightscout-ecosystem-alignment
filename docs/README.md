@@ -80,11 +80,15 @@ Documentation follows source code analysis → research synthesis → domain und
   — Joint modernization review first, followed by proposed Connect, XState,
   reporting/API/PDF, embeddable UI and shared-testing work. Draft for maintainer discussion.
 
-- [Nightscout multitenancy: approaches, tradeoffs and a benchmark plan](30-design/nightscout-multitenancy-discussion-2026-09-09.md)
+- [Nightscout multitenancy: evidence and options](30-design/nightscout-multitenancy-discussion-2026-09-09.md)
   — Where cgm-remote-monitor's single-tenant assumptions live (`ddata`, cache, settings,
-  sockets, storage), what Nocturne's host-based/RLS multitenancy demonstrates, an honest
-  assessment of keyv / SQLite / schema options and of WASM and eBPF, plus a pre-registered
-  benchmark matrix (EXP-MT-001…030) and decision rule. Measurement-first draft.
+  sockets, storage); the cross-tenant hazards already in the code (including a
+  process-global alarm map that is a safety blocker for any shared-process design); what
+  Nocturne's host-based/RLS multitenancy demonstrates, with RLS re-verified against a live
+  Postgres; measured findings that representation beats language and that shared-process
+  beats every process-per-tenant runtime by 10–20×; plus a pre-registered benchmark matrix
+  (EXP-MT-001…042) and decision rule. Measurement-first draft; every number carries a
+  confidence tier.
 
 **Featured capstones**:
 - `60-research/CAPSTONE-iob-age-smb-mechanism-2026-04-23.md` —
