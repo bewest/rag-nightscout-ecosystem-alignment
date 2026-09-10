@@ -2407,3 +2407,51 @@ mobile-first/light UI?)** — new §5.4, plus EXP-MT-045.
 - No MQTT references exist anywhere in `externals/cgm-remote-monitor-official` today
   (confirmed by grep) — this is a genuinely new transport option for the ecosystem, not an
   existing-but-undocumented one.
+
+**Follow-up 12 (maintainer pushback: MQTT wasn't required and had prior history; why is
+mongoose rejected given a permanent single-tenant-Mongo target; what would shared
+Mongo/Postgres storage infrastructure look like?)** — revises §5.4, rewrites §6.4 into
+§6.4 + new §6.4.1, updates the two stale cross-references (§11 open-questions table,
+§12 tooling-relationship table), adds EXP-MT-046.
+- **Corrected §5.4 on MQTT, from direct maintainer correction**: found via git history
+  that `lib/server/mqtt.js` (317 lines) existed for bidirectional mobile sync and was
+  removed in 2018 (`0e2ae003`, "npm update and remove mqtt") — so MQTT is a previously-
+  shipped-and-dropped capability, not a novel proposal. Re-scoped it from "named candidate
+  transport" to explicitly optional: Postgres logical-replication push (`NOTIFY`/Realtime)
+  is now the stated default recommendation (needs nothing beyond the already-recommended
+  storage layer, no broker to operate), with MQTT kept only as an available upgrade for the
+  mobile QoS/offline case, to be added only if EXP-MT-045 shows Realtime falls short.
+- **Reconsidered the mongoose rejection, given the maintainer's specific point that the
+  single-tenant target will permanently stay on MongoDB (§10.3)**: the prior blanket "no
+  ODM" verdict conflated two different scopes. Split it three ways: (1) casting/validation
+  — mongoose genuinely helps here, closing the exact real gap already found in §6.5
+  (`query.js`'s walker-spec-only-covers-listed-fields); (2) isolation — mongoose does
+  nothing, unchanged, still an application-filter/RLS question (§6.1); (3) query-cost
+  bounding — mongoose does nothing, unchanged, still needs the query-profile work (§6.5).
+  Concluded mongoose is legitimate specifically as an internal implementation detail of the
+  MongoDB adapter behind the repository seam (§6.2) — used only by the permanent
+  single-tenant-Mongo target, never touching `@nightscout/core` or the Postgres/
+  multitenant path — provided its schemas are *generated* from `specs/openapi/` rather
+  than hand-maintained as a fourth drift-prone source of truth (alongside the OpenAPI spec
+  itself, the Ajv/zod boundary validators, and knex's Postgres migrations).
+- **Answered "what would shared Mongo/Postgres storage infrastructure look like?"
+  directly, with a new diagram (§6.4.1)**: the repository interface (§6.2) is the entire
+  shared surface — domain modules, query profiles, and boundary validators are written
+  once, engine-agnostic; mongoose (Mongo adapter) and knex/RLS (Postgres adapter) share
+  zero code with each other below that line, only the interface shape. This also surfaces
+  an honest cost not previously named: the two adapters can diverge in exactly which query
+  shapes they permit, so the query-profile contract (§6.5) needs conformance testing across
+  both adapters, not just documentation, if a two-store Nightscout is ever real (§10.3).
+- Updated two stale cross-references that still said "no, don't adopt mongoose" without
+  qualification: the §11 open-questions table and the §12 tooling-evaluation-relationship
+  table, both now reflect the scoped "yes, inside the Mongo adapter only" position.
+- Added EXP-MT-046 (mongoose-schema casting cost at N-tenant ingest rate vs. today's
+  hand-rolled casting, scoped to the MongoDB adapter) to the arms table (§8.3).
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official` git history: `git log --oneline --all -- '*mqtt*'`
+  and `git show 0e2ae003` (confirmed MQTT existed 2015ish–2018, removed in commit
+  `0e2ae003`, 2018-11-20, "npm update and remove mqtt")
+- Re-read §6.2 (repository interface / backend comparison table) and §6.5 (query cost
+  finding, unchanged) to ground the adapter-boundary argument in already-verified facts
+  rather than re-deriving them

@@ -656,19 +656,34 @@ process-wide Socket.IO room, `lib/server/websocket.js:150,792`, fed by a residen
 `ddata`) is more machinery than a headless deployment needs to produce that push. The
 right framing is: **keep push, change what produces it.**
 
+**Correction, from maintainer feedback: MQTT is not a new idea for this codebase, and it
+is not required.** `lib/server/mqtt.js` existed in cgm-remote-monitor for bidirectional
+mobile-sync support and was removed in 2018 (`0e2ae003`, "npm update and remove mqtt" —
+317 lines of `lib/server/mqtt.js` plus its test suite deleted, `env.js`/`server.js` wiring
+removed alongside it). So this section is evaluating **bringing back a capability the
+project already tried and dropped**, not proposing something novel — worth being explicit
+about, since the reason it was dropped previously (unclear from the commit message alone;
+likely maintenance burden of a second realtime transport, not a technical dead end) is
+exactly the kind of cost the "additive" framing below needs to be weighed against, not
+waved away. Given that history, MQTT is presented here as **one available transport
+option for a mobile-first client, not a required piece of the headless architecture** —
+Postgres logical-replication push alone (below) already closes most of the gap headless
+opens, with none of the "run and maintain a broker" cost. Treat what follows as "if a
+mobile UI wants MQTT specifically, here is how it would fit," not "MQTT is recommended."
+
 **What already generalises, and what doesn't, from §5.3's storage-first architecture.**
 The three transports worth naming, and what each would need:
 
 | Transport | What it needs, on top of §5.3's Postgres+RLS baseline | Fit for mobile/light UI |
 |---|---|---|
 | **Socket.IO (today's mechanism)** | The full resident-`ddata`/`calcdelta` pipeline (§2.1) to compute a delta, plus per-tenant rooms (§5.1's `WS` box) instead of one shared room | Works, but reintroduces exactly the resident-state cost §5.3 argued away — this is the "reorg, not new code" case only if the delta computation moves to a cheap, storage-driven form (below), not if the current in-memory pipeline is kept as-is |
-| **Postgres logical replication → push** (Supabase Realtime, or a hand-rolled `LISTEN`/`NOTIFY` + `pgoutput` consumer) | Nothing beyond Layer 1b (§6.1) already recommended — the database already knows which row changed and for which `tenant_id`; a change event *is* the delta, computed by the WAL, not by an app-level deep-compare | Very good fit: RLS-scoped subscriptions mean a mobile client can subscribe directly to "my tenant's rows changed" with the isolation guarantee already enforced at the same layer as everything else in §5.3, and no per-tenant resident merge step |
-| **MQTT (broker + per-tenant topic, e.g. `tenants/{tenantId}/entries`)** | A publish step *somewhere* in the write path — either the app tier publishes on ingest, or a Postgres→MQTT bridge (e.g. a `pg_net`/trigger-driven publisher, or a small dispatcher consuming the same WAL/`NOTIFY` stream as the row above) | Best fit specifically for **battery- and bandwidth-constrained mobile clients**: MQTT's persistent-session + QoS + last-will semantics are built for exactly the intermittent-connectivity case a phone-based follower app is, in a way Socket.IO (designed for a browser tab with a live TCP connection) is not. This is a genuinine capability gain, not a re-labelling of what Socket.IO already does |
+| **Postgres logical replication → push** (Supabase Realtime, or a hand-rolled `LISTEN`/`NOTIFY` + `pgoutput` consumer) | Nothing beyond Layer 1b (§6.1) already recommended — the database already knows which row changed and for which `tenant_id`; a change event *is* the delta, computed by the WAL, not by an app-level deep-compare | Very good fit, and the recommended default: RLS-scoped subscriptions mean a mobile client can subscribe directly to "my tenant's rows changed" with the isolation guarantee already enforced at the same layer as everything else in §5.3, no per-tenant resident merge step, and no second piece of broker infrastructure to run |
+| **MQTT (broker + per-tenant topic, e.g. `tenants/{tenantId}/entries`)** | A publish step *somewhere* in the write path — either the app tier publishes on ingest, or a Postgres→MQTT bridge (e.g. a `pg_net`/trigger-driven publisher, or a small dispatcher consuming the same WAL/`NOTIFY` stream as the row above) — **plus a broker to operate**, the cost that likely motivated dropping it in 2018 | A real, optional upgrade specifically for **battery- and bandwidth-constrained mobile clients** over what Postgres Realtime alone gives you (QoS/persistent-session semantics), but not a requirement — worth adding only if EXP-MT-045 shows Realtime's delivery/miss behaviour is measurably worse for the mobile case |
 
-**MQTT is a real, additive option, not a swap for feature-parity reasons alone.** Its
-concrete advantages for this specific use case: (1) **QoS 1/2 delivery** means a phone
-that drops connectivity for an hour (subway, flight, low battery) does not miss a hypo
-alert the way a disconnected Socket.IO client would — the broker holds it for a persistent
+**Where MQTT would still be worth it, if chosen.** Its concrete advantages over
+Realtime/Socket.IO specifically: (1) **QoS 1/2 delivery** means a phone that drops
+connectivity for an hour (subway, flight, low battery) does not miss a hypo alert the way
+a disconnected Socket.IO or Realtime client would — the broker holds it for a persistent
 session; (2) **topic-per-tenant** (`tenants/{tenantId}/entries`, `tenants/{tenantId}/alarms`)
 maps directly onto the tenant-scoped-room pattern §5.1 already establishes for Socket.IO,
 so the *authorization* problem is unchanged — a client still must only be able to
@@ -677,21 +692,26 @@ resolved tenant identity, checked at CONNECT/SUBSCRIBE time, structurally the sa
 requirement as §5.2 item 2's "tenant-bound socket authorization"); (3) **last-will** lets
 an alarm-follower app publish "I went offline" so a caregiver's dashboard can show
 "follower unreachable" rather than silently going stale — a safety-relevant property this
-document has not previously had a mechanism for.
+document has not previously had a mechanism for. None of these is free: each is a reason
+to *reconsider* MQTT specifically for a mobile client, not a reason it must be built.
 
 **What doesn't change, and is worth stating plainly so this isn't read as walking back
-§5.3**: none of this reopens the residency question. Whichever transport carries the
-push — Socket.IO fed by a lighter delta source, Postgres Realtime, or MQTT — the *content*
-of what's pushed should still come from the same place §5.3 already argued for: a change
-computed at or near the storage layer (WAL-driven), not a resident, per-tenant merged
-`ddata` recomputed on a heartbeat. The transport question and the residency question are
-separable, and this section only answers the first.
+§5.3**: none of this reopens the residency question, and none of it makes MQTT mandatory.
+Whichever transport carries the push — Socket.IO fed by a lighter delta source, Postgres
+Realtime, or (optionally) MQTT — the *content* of what's pushed should still come from the
+same place §5.3 already argued for: a change computed at or near the storage layer
+(WAL-driven), not a resident, per-tenant merged `ddata` recomputed on a heartbeat. The
+transport question and the residency question are separable, and this section only
+answers the first.
 
-**Net effect on the headless recommendation**: add MQTT (or Postgres Realtime) as a named
-candidate transport for the mobile/light-UI case, without changing §5.3's core claim that
-the in-process cache/sandbox does not need to scale — the push mechanism sits on top of
-the same storage-first architecture, consuming its change stream rather than requiring a
-resident merge step to produce one. This is EXP-MT-045 (§8.3), run alongside EXP-MT-043.
+**Net effect on the headless recommendation**: Postgres Realtime/`NOTIFY` is the default
+recommendation for realtime push in a headless/mobile deployment — it needs no new
+infrastructure beyond Layer 1b. MQTT is named as an available, previously-shipped, and
+optional upgrade for the mobile-specific QoS/offline case, to be added only if EXP-MT-045
+shows a measurable gap Realtime doesn't close, not built by default. Neither choice
+changes §5.3's core claim that the in-process cache/sandbox does not need to scale — the
+push mechanism sits on top of the same storage-first architecture either way. This is
+EXP-MT-045 (§8.3).
 
 ---
 
@@ -886,12 +906,61 @@ one-time-per-tenant migration. Kafka earns its keep only if dual-write must run
 continuously across many concurrently migrating tenants. **Default to the plain script
 until proven otherwise** (EXP-MT-037).
 
-### 6.4 Schemas: no ODM, generate from the specs
+### 6.4 Schemas and ODMs: is mongoose really ruled out, given a permanent single-tenant-Mongo target?
 
-Nightscout uses no ODM today (no mongoose, verified). Introducing one would couple the
-codebase *harder* to Mongo — the opposite of the goal — and it validates documents, not
-tenant boundaries, which §6.1 shows is the actual hard problem. If any collection moves to
-Postgres, the equivalent tool is `knex` or Kysely/Prisma, not mongoose.
+**Reconsidered, given maintainer pushback — the prior blanket rejection was overbroad.**
+The original argument ("mongoose would couple the codebase harder to Mongo") is correct
+for one specific scope — a *shared, engine-agnostic core* — and wrong as a blanket
+statement, because §5.3/§10.3 already established there will permanently be a
+single-tenant-on-MongoDB deployment target that has no reason to ever be engine-neutral.
+For that target specifically, mongoose is not "coupling the codebase to Mongo" — the
+codebase is already, permanently, coupled to Mongo by the deployment choice itself
+(§10.3); the only question is whether that Mongo-specific code gets schema-driven casting
+or not, and §6.5 already found a concrete, real bug class (`query.js`'s walker-only-covers-
+listed-fields gap) that schema-driven casting would close outright. So: **yes, mongoose
+would plausibly help, on exactly the level the maintainer is pointing at — correctness and
+casting for the Mongo-specific code path** — and the earlier rejection should have said so
+explicitly instead of treating "don't adopt an ODM" as a single undifferentiated verdict.
+
+**What mongoose does *not* change, restated precisely so the concession doesn't overreach:**
+tenant isolation is still not what an ODM does — §6.1's leak table shows the application-
+enforced-filter failure mode is about a forgotten *predicate*, not an untyped *field*, and a
+mongoose `Schema` casts and validates a document shape, it does not add a query filter a
+developer forgot to write. Query-cost bounding (§6.5's DoS concern) is a third, still
+separate problem — mongoose does not itself cap which fields are queryable, limit regex
+complexity, or bound result size; §6.5's query-profile proposal is unchanged and still
+needed regardless of whether mongoose is adopted underneath it. So the corrected position
+has three independent parts, not one: **casting** (mongoose helps, scoped as below),
+**isolation** (mongoose does nothing, RLS/discriminator-with-enforced-filter is still the
+answer, §6.1), **cost-bounding** (mongoose does nothing, query profiles are still needed,
+§6.5).
+
+**Where mongoose belongs, concretely: entirely inside the MongoDB adapter, behind the
+§6.2 repository seam — never in call-site code, and never in `@nightscout/core`.** This is
+what makes it safe to adopt without reopening the multitenant-core neutrality argument:
+`entries.list()`/`upsertMany()`/`remove()` (§6.2) is the boundary every domain module
+already needs to be refactored to speak, independent of this question. Once that seam
+exists, the *implementation* behind it for the Mongo adapter specifically is an internal
+choice with no visibility outside the adapter — mongoose schemas casting/validating
+documents on the way in and out of MongoDB calls, while the Postgres adapter behind the
+same interface uses `knex`/Kysely, and neither adapter's internal tooling choice is visible
+to a domain module, a plugin, or `@nightscout/multitenant`. The single-tenant-Mongo target
+(§9.1's `@nightscout/single-tenant`) is free to depend on the MongoDB adapter package,
+which is free to depend on mongoose; `@nightscout/multitenant` simply never imports that
+package if it's running on Postgres.
+
+**One real cost to name honestly, not a reason to reject it, but a reason to sequence it
+correctly:** a mongoose `Schema` is a *fourth* place a field's type could be declared,
+alongside the OpenAPI spec (`specs/openapi/aid-*.yaml`), the Ajv/zod boundary validators
+generated from it (this section's prior recommendation, unchanged), and `knex`'s
+Postgres-side column types/migrations. Adopting mongoose without generating its schemas
+from the same OpenAPI source the other two already use would recreate exactly the
+drift-prone, hand-maintained-in-N-places problem §6.5 diagnosed in `query.js`'s walker
+spec — just with a fourth list instead of a third. The fix is the same one already
+recommended for Ajv/zod: **generate the mongoose `Schema` from `specs/openapi/` too** (a
+mechanical OpenAPI-schema-object → mongoose-`Schema`-definition mapping is a small, bounded
+piece of tooling, not a research problem), so there is one source of truth and four
+generated consumers, not four independently-maintained ones.
 
 The workspace already holds the real schema assets: OpenAPI 3.0 in
 `specs/openapi/aid-*-2025.yaml` with `x-aid-*` annotations.
@@ -900,12 +969,79 @@ The workspace already holds the real schema assets: OpenAPI 3.0 in
   read-back), with zod or an Ajv/JSON-Schema compilation of the existing specs. Vendor and
   uploader payloads are hostile; TypeScript types would not validate them.
 - **Generate, don't duplicate**: derive validators from `specs/openapi/` so the spec, the
-  `conformance/` scenarios and the server cannot drift.
+  `conformance/` scenarios and the server cannot drift — and, per the above, the same rule
+  now explicitly extends to a mongoose `Schema` if the MongoDB adapter adopts one.
 - **Validation is a hot path in multitenancy**: N tenants × ingest rate. Compiled
   validators (Ajv `standalone`, precompiled zod) belong in the benchmark matrix
-  (EXP-MT-013) — naive per-document validation can dominate CPU.
+  (EXP-MT-013) — naive per-document validation can dominate CPU. Mongoose's own casting
+  cost at ingest rate is a related, previously-unmeasured question — see EXP-MT-046 below.
 - Tenant identity must be a *storage-enforced* predicate, never a validated application
-  field.
+  field — unchanged by this section; mongoose is not where tenant isolation lives (§6.1).
+
+### 6.4.1 Shared infrastructure between a MongoDB and a PostgreSQL backend
+
+This is the direct answer to "what would shared storage infrastructure between Mongo and
+Postgres look like": **the repository interface (§6.2) is the entire shared surface.**
+Everything above that line — domain modules, plugins, the query-profile validation of
+§6.5, tenant resolution, RLS/discriminator enforcement decisions — is written once and is
+engine-agnostic by construction, because it only ever calls `entries.list(...)`, never a
+driver method. Everything below that line — mongoose schemas, raw Mongo `find`/`$regex`
+operators, `knex` query builders, Postgres-specific RLS `set_config` calls — is
+engine-specific, lives entirely inside one adapter package, and the two adapters share
+**zero code with each other**, only the interface shape.
+
+```mermaid
+graph TB
+    subgraph SHARED["Shared, engine-agnostic — @nightscout/core"]
+        DOMAIN["Domain modules (entries, treatments,<br/>devicestatus, profile, ...)"]
+        PROFILE["Query profiles (§6.5)<br/>allowlisted fields, operators, bounds —<br/>generated from specs/openapi/"]
+        VALID["Boundary validators (Ajv/zod)<br/>generated from specs/openapi/"]
+        REPO["Repository interface (§6.2)<br/>list / upsertMany / remove<br/>— the only shared contract"]
+    end
+
+    subgraph MONGOA["@nightscout/storage-mongo (adapter)"]
+        MSCHEMA["mongoose Schemas<br/>(optional — generated from<br/>specs/openapi/, per §6.4)"]
+        MDRIVER["MongoDB driver calls<br/>find/insertMany/$regex etc."]
+    end
+
+    subgraph PGA["@nightscout/storage-postgres (adapter)"]
+        KNEX["knex/Kysely query builder"]
+        RLS["set_config('app.current_tenant_id')<br/>per request — RLS enforcement (§6.1)"]
+    end
+
+    DOMAIN --> PROFILE --> REPO
+    VALID --> DOMAIN
+    REPO -->|"single-tenant-Mongo target only<br/>(§9.1 @nightscout/single-tenant)"| MSCHEMA --> MDRIVER --> MONGODB[("MongoDB<br/>1 DB per tenant, OS-isolated")]
+    REPO -->|"multitenant target<br/>(§9.1 @nightscout/multitenant)"| KNEX --> RLS --> PG[("PostgreSQL<br/>shared tables, tenant_id + RLS")]
+
+    style REPO fill:#d4edda,stroke:#2c7a3f,color:#111
+    style PROFILE fill:#d4edda,stroke:#2c7a3f,color:#111
+    style MSCHEMA fill:#fff3cd,stroke:#a1791b,color:#111
+    style RLS fill:#d4edda,stroke:#2c7a3f,color:#111
+```
+
+**What this settles about "does mongoose help on a number of levels":** yes, exactly one
+level — casting/validation correctness inside the Mongo adapter, which is real and closes
+a genuine bug class (§6.5) — and the diagram is what makes that a *safe*, contained yes:
+mongoose's blast radius is the shaded amber box only. It never becomes a dependency of
+`@nightscout/core`, never appears in a domain module's signature, and the multitenant
+target on Postgres never loads the package at all. This is the same "adapter, not
+core-coupling" pattern §9.1 already established for the storage-isolation primitive
+generally — mongoose is just one more legitimate implementation choice made *inside* one
+adapter, not a new architectural decision.
+
+**One consequence worth flagging rather than assuming away:** if the single-tenant-Mongo
+target's adapter and the multitenant-Postgres target's adapter diverge in which query
+shapes they can efficiently serve (e.g., mongoose/Mongo handling an ad hoc nested filter
+that the Postgres adapter's stricter query-profile enforcement (§6.5) would reject), a
+plugin or third-party API consumer written against one target may not behave identically
+against the other. The repository interface guarantees a *common contract*, not identical
+*permissiveness* — this is a real, honest cost of running two backends (already named in
+§10.3's discussion of a two-store Nightscout) and is a reason the query-profile work of
+§6.5 should be treated as the actual shared contract to test conformance against
+(`conformance/` scenarios, run against both adapters), not just documentation.
+
+This is EXP-MT-046 (§8.3).
 
 ### 6.5 Query cost is unbounded today — a live finding
 
@@ -1226,7 +1362,7 @@ they are not re-litigated, not because they need further discussion.
 | Does SQLite-in-WASM help on the server? | **No — 2.5–7× slower than native.** SQLite-WASM exists so *browsers*, which have no native SQLite, can have one. On a server it only adds a sandbox boundary and bounds checks | 3.06 → 7.68 ms with parse; 0.53 → 3.79 ms rows-only (carried) |
 | Would a WASM runtime wake a tenant faster? | **No — wrong term of the equation.** WASM runtimes optimise *instantiation*, but Nightscout's cold start is ~3–4 ms of *data materialisation* (§7.1) plus Mongo RTT. And "run Nightscout in WASM" means running JS inside QuickJS/SpiderMonkey, trading V8's JIT for a commonly-cited 5–20× steady-state penalty on exactly the plugin/delta CPU Nightscout spends its time on | §7.1; inferred |
 | Would keyv decouple us from the storage engine? | **Not for clinical records** — keyv is key→value with no query language, and Nightscout's access is range and predicate queries (§6.5). "Load a namespace and filter in JS" *is* the resident-memory cost we are reducing. **But it is the right abstraction for ephemeral tenant-keyed state** — sessions, share tokens, rate-limit counters, slug→tenant cache, socket presence, and the columnar hot blob of §7.2 (an opaque value, so the missing query language is irrelevant). Namespaces map 1:1 onto tenant prefixes; adapters let small deployments use memory/SQLite and large ones Redis with no code change | §6.2, §7.2 |
-| Should we adopt mongoose? | **No**, independent of multitenancy — §6.4. Its one real win (schema-driven casting without a hand-maintained walker list) does not address query *cost* (§6.5), and the nested `find[x][$gte]` parsing people attribute to it is actually Express's `qs`, which we already have | §6.4, §6.5 |
+| Should we adopt mongoose? | **Reconsidered — yes, but scoped.** Not for `@nightscout/core` or the multitenant target (unchanged: doesn't solve isolation, §6.1, or query cost, §6.5, and the nested `find[x][$gte]` parsing people attribute to it is actually Express's `qs`, which we already have). But **for the permanent single-tenant-Mongo target specifically (§10.3)**, mongoose is a legitimate, contained choice entirely inside the MongoDB adapter (§6.4.1) — it closes a real casting gap (§6.5) with zero blast radius outside that adapter, as long as its schemas are generated from `specs/openapi/` rather than hand-maintained as a fourth drift-prone list | §6.4, §6.4.1, §6.5 |
 | Should eBPF route tenants to shards? | **Not first.** The mechanism is narrower than "eBPF": only `sockmap`/`sk_msg` can inspect a ClientHello's SNI and splice sockets in-kernel — `sk_lookup` sees L3/L4 only, and XDP does not reassemble TCP. But SNI routing is already mature in userspace (nginx `ssl_preread_server_name`, HAProxy `req.ssl_sni`, Envoy SNI matching), and **the hard part is the tenant→shard control-plane map**, which eBPF makes faster to *consult*, not easier to build, keep consistent, or rebalance. Build a boring userspace router first; replace it only if measured to be the bottleneck. Serving data *from inside* an eBPF program is not feasible — programs are verifier-bounded with no heap or unbounded loops | §5E, EXP-MT-041 |
 | eBPF for anything? | **Yes — as measurement infrastructure**, explicitly out of scope as an application dependency. Off-CPU and scheduler analysis, per-tenant syscall/network accounting via `bpftrace`, TCP retransmits and socket-buffer pressure under N websocket clients. Per-tenant flamegraphs would make the architecture debate short | §8.1 |
 | Bun, Deno, or .NET instead of Node? | **Not a language question.** At the multi-process scale hosters actually run, .NET's marginal PSS/process converges with Node's (21.3 vs 22.3 MB at N=4) because CoreCLR's ReadyToRun images page-share well; Bun trails both at roughly 2× Node even at N=8, and its available build hit a real CLI-compatibility gap. Deno is unmeasured. **None of them eliminate the ~20 MB/tenant process floor that sharing removes for all of them.** What distinguishes "stay on Node" is switching cost against a technical case (§7.3) that a typed runtime need not be a different language | carried; EXP-MT-038/039 |
@@ -1337,6 +1473,7 @@ running at scale, but they are no longer open questions.
 | EXP-MT-043 | Headless-only workload (§5.3) — resident multi-ctx (§5B/C) vs. stateless-on-read over Postgres+RLS with event-triggered alarms (§5D) | Does removing the browser consumer make D competitive with or better than B/C on $/tenant and alarm latency? |
 | EXP-MT-044 | Managed platform (Supabase-equivalent: Postgres+RLS+Realtime+Edge Functions) vs. self-hosted Postgres+RLS+Node, same headless workload (§5.3) | Quantifies the lock-in-vs-cost tradeoff of a low/no-code storage+auth+scheduler platform |
 | EXP-MT-045 | Push-delivery comparison for headless/mobile: Socket.IO+resident-ddata vs. Postgres logical-replication push vs. MQTT broker fed by the same WAL stream (§5.4) | Does WAL-driven push match delivery latency without resident `ddata`, and does MQTT's QoS/persistent-session reduce missed alarms under mobile connectivity drops? |
+| EXP-MT-046 | Mongoose-schema casting cost at N-tenant ingest rate, generated from `specs/openapi/`, vs. today's hand-rolled `parseInt`/`find_options` casting (§6.4/§6.5) | Does mongoose's casting close the correctness gap at acceptable CPU cost inside the MongoDB adapter only — feeds the same validation-hot-path concern as EXP-MT-013 |
 
 `EXP-MT-030` matters disproportionately: the *same* generator against Nocturne gives the
 ecosystem its first apples-to-apples server comparison, and fills the gap that Nocturne's
@@ -1661,7 +1798,7 @@ reaches compatible conclusions from the *single-tenant* side:
 
 | Point | Tooling evaluation | This document |
 |---|---|---|
-| mongoose | Do not adopt; reaffirms prior rejection | Agree — an ODM deepens Mongo coupling, the opposite of the needed seam (§6.4) |
+| mongoose | Do not adopt; reaffirms prior rejection | **Refined, not a straight disagreement**: do not adopt for the shared core or the multitenant/Postgres target (agree, same reasoning — doesn't solve isolation or query cost). But reconsidered for the permanent single-tenant-MongoDB target specifically: scoped entirely inside that target's MongoDB adapter (§6.4.1), it closes a real casting gap (§6.5) with no coupling cost to the rest of the codebase, provided its schemas are generated from `specs/openapi/` rather than hand-maintained separately |
 | zod | Adopt only inside the broader schema-vocabulary item; API3 `validate.js` is hand-rolled and drifts from `specs/openapi/` | Agree; add that validation becomes a *hot path* at N tenants (EXP-MT-013), favouring compiled validators generated from the specs |
 | keyv | Low-priority, behaviour-preserving swap inside `lib/api3/storage/mongoCachedCollection/` so a future Redis move is config-only | Agree, and multitenancy is the concrete motivation: namespaces map onto tenant prefixes and shard-safe ephemeral state (EXP-MT-014). Still not a substitute for a query model (§7.6) |
 | WASM | Reopen narrowly as a shared Rust oref core, without re-litigating ADR-005 | Agree; add that the first WASM benchmark must baseline against *Map-optimised JS* (EXP-MT-020), and that the strongest case is memory representation (EXP-MT-021) |
