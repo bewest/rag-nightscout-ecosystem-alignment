@@ -2455,3 +2455,47 @@ Mongo/Postgres storage infrastructure look like?)** — revises §5.4, rewrites 
 - Re-read §6.2 (repository interface / backend comparison table) and §6.5 (query cost
   finding, unchanged) to ground the adapter-boundary argument in already-verified facts
   rather than re-deriving them
+
+**Follow-up 13 (maintainer pushback: isn't multitenancy mostly a tenant discriminator +
+Mongo aggregation, doesn't require leaving Mongo; is a headless multitenant backend on
+PostgREST feasible; requested actual prototypes, not more argument)** — adds new §6.1.1
+and §5.5, two new live prototypes, EXP-MT-047.
+- **New prototype `tools/mt-bench/mongo-iso-poc/`** against a live MongoDB 7 container:
+  built the enforced-filter repository seam §6.1 described in the abstract, and a
+  `$lookup`-based join correlating treatments with nearby entries. Confirmed both parts of
+  the maintainer's challenge are correct — a `tenantId` discriminator + compound index is
+  the whole schema change, and `$lookup` genuinely reproduces a Postgres-view-shaped
+  correlation query. But confirmed the underlying §6.1 conclusion is unchanged by either:
+  bypassing the seam (mirroring `entries.js:203-205`'s raw collection handle) leaks both
+  tenants' rows, and omitting the tenantId `$match` inside the `$lookup` sub-pipeline leaks
+  the same way, one layer up. Mongo's query model is not the bottleneck; the isolation
+  guarantee is still a discipline property (single seam, code review), not a database
+  property (regardless of code path) — same distinction §6.1 already drew, now demonstrated
+  with a join, not just a plain find. Wrote up as new §6.1.1.
+- **New prototype `tools/mt-bench/postgrest-poc/`** against a live PostgREST 16.2 +
+  Postgres 16 stack, answering "is a headless multitenant Nightscout backend on PostgREST
+  feasible": confirmed a JWT `role` claim drives PostgREST's own `SET ROLE` per request, no
+  custom pre-request function, and the RLS policy from `../rls-poc` reads `tenant_id`
+  straight out of PostgREST's `request.jwt.claims` GUC unmodified — same fail-closed
+  primitive, zero new isolation code. Verified: unauthenticated requests get 401 (not a
+  silent empty list); a tenant-scoped JWT sees only that tenant's rows with zero
+  `tenant_id` in the querystring; PostgREST's native `date=gte.<iso>` querystring operators
+  cover the API v3 date-range shape; a tampered JWT is rejected before RLS is reached.
+  Scoped honestly in write-up (new §5.5): answers the CRUD-surface question, does not
+  answer where computed state (IOB/COB, alerts, vendor connectivity) would live — proposed
+  shape is PostgREST for CRUD + a small stateless compute service, not "PostgREST instead
+  of Node."
+- Both write-ups explicit that neither prototype argues Mongo is "wrong" or Postgres+
+  PostgREST is "required" — they answer capability questions (can Mongo's model express
+  multitenancy and joins; can PostgREST alone serve a headless CRUD surface), leaving the
+  cost/risk recommendation exactly where §10 already put it.
+- Added EXP-MT-047 to the arms table (§8.3): PostgREST-fronted CRUD vs. a thin Node API
+  layer over the same RLS tables, at realistic tenant/request counts.
+
+**Source Files Analyzed (this round)**:
+- `tools/mt-bench/rls-poc/` (reused, not re-derived — same RLS policy/role pattern)
+- New: `tools/mt-bench/mongo-iso-poc/{seed.js,test.js,README.md}` (live MongoDB 7 container)
+- New: `tools/mt-bench/postgrest-poc/{setup.sql,postgrest.conf,test.js,README.md}` (live
+  PostgREST 16.2 + Postgres 16 containers)
+- `lib/server/entries.js:203-205` (re-cited — the raw-collection-handle call site the
+  mongo-iso-poc bypass test mirrors)

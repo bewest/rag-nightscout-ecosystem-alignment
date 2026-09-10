@@ -713,6 +713,46 @@ changes §5.3's core claim that the in-process cache/sandbox does not need to sc
 push mechanism sits on top of the same storage-first architecture either way. This is
 EXP-MT-045 (§8.3).
 
+### 5.5 Is a PostgREST-only headless backend feasible? — **measured**
+
+§5.3 asked whether headless changes the residency recommendation; this asks a sharper
+version — could the CRUD half of Nightscout's API be served with **no Node process at
+all**, directly by [PostgREST](https://postgrest.org) against the same RLS table from
+§6.1? Tested against a live PostgREST 16.2 + Postgres 16 stack
+(`tools/mt-bench/postgrest-poc/`, committed and reproducible), not asserted from the
+project's marketing:
+
+| Test | Live result |
+|---|---|
+| No JWT presented | `401` — `web_anon` has zero grants; a permission error, not a silent empty list |
+| Tenant A JWT, **zero `tenant_id` in the querystring** | 5 rows, only tenant A |
+| Date-range query, PostgREST's native `date=gte.<iso>&order=date.desc&select=...` | works — the same operator shape (`gte`, `order`, `select`, `limit`) as API v3's `find[date][$gte]` |
+| Tenant B JWT, `limit=1000` | only tenant B's rows |
+| Tampered JWT signature | `401` — verified before RLS is ever reached |
+
+**The mechanism needs no custom code**: a JWT with a `role` claim makes PostgREST `SET
+ROLE` per request, and PostgREST always exposes the verified JWT's payload as the
+`request.jwt.claims` GUC — the RLS policy from §6.1 reads `tenant_id` back out of that JSON
+unmodified, same `NULLIF(current_setting(...), '')` fail-closed shape, no pre-request
+PL/pgSQL function required for this case.
+
+**What this answers**: yes, for the storage-scoped CRUD surface — list/insert
+entries/treatments, filtered/sorted/paginated, tenant-isolated — PostgREST is a real
+candidate for the "no Node in the request path" headless target, reusing §6.1's isolation
+primitive exactly, with query ergonomics close enough to API v3's existing querystring
+shape (§6.2) to be a plausible drop-in for that portion.
+
+**What this does not answer**: PostgREST has no place to put computed state.
+`calcdelta`/IOB/COB, alarm evaluation (§3.1's blocker still applies wherever that state
+ends up), and vendor-connectivity polling (`lib/plugins/bridge.js`,
+`lib/plugins/mmconnect.js`, §5.3) all need a process somewhere. The realistic shape is
+PostgREST in front for the CRUD surface plus a small stateless service (Node or otherwise)
+for computed views and connectors — "PostgREST instead of the CRUD half of Node," not
+"PostgREST instead of Node." Postgres generated columns (§6.3) absorb the cheapest of
+these (e.g. a `delta` column); IOB/COB curves are not expressible as SQL generated columns
+without reimplementing oref's algorithm in SQL, which nobody here is proposing. This is
+EXP-MT-047 (§8.3).
+
 ---
 
 ## 6. Storage and isolation
@@ -792,6 +832,52 @@ Three conclusions, in order of importance:
    database property; (b) database-per-tenant — real isolation, no RLS needed, but N
    connections and index sets; (c) migrate tenant-scoped collections to Postgres and keep
    the rest on Mongo.
+
+#### 6.1.1 Is switching engines actually required, or is most of the change "just add a tenant discriminator"? — **measured**
+
+A fair challenge to the above: doesn't multitenancy mostly come down to a `tenantId` field
+plus an index, and can't Mongo's aggregation pipeline stand in for the joins/views a
+relational engine would use? Tested directly against a live MongoDB 7 container
+(`tools/mt-bench/mongo-iso-poc/`, committed and reproducible), not argued from precedent:
+
+```js
+// The enforced seam §6.1(a) describes — the one sanctioned way to reach entries.
+function entriesRepo(db) {
+  const col = db.collection('entries');
+  return { list: (tenantId, opts = {}) => {
+    if (!tenantId) throw new Error('tenantId is required');
+    return col.find({ tenantId, ...(opts.find || {}) }).toArray();
+  }};
+}
+```
+
+| Test | Live result |
+|---|---|
+| Seam used correctly | 10 rows, all tenant A |
+| Seam called with no `tenantId` | throws — **fail-loud** (a bug caught only on that code path), not fail-closed regardless of code path (§6.1) |
+| Same collection reached directly, bypassing the seam (mirrors `entries.js:203-205`) | **20 rows, both tenants — the leak** |
+| `$lookup` correlating treatments with nearby entries, tenantId matched on both sides | 1 doc, correlated entries from tenant A only |
+| Same `$lookup`, sub-pipeline's tenantId `$match` omitted | correlated entries from **both tenants** — same bug, moved into pipeline authoring |
+
+**Both parts of the challenge are correct, and neither changes the §6.1 conclusion:**
+
+1. **"Most of the change is a tenant discriminator" — true for the data model.** Nothing
+   about Mongo's document model resists multitenancy; `tenantId` + a compound index is the
+   entire schema change (mirrored in the storage-comparison table below).
+2. **"Aggregation/projections can do what joins/views do" — also true, demonstrated
+   above.** `$lookup` reproduces a Postgres-view-shaped correlation (temp basal near a
+   contemporaneous SGV) correctly, and does it whether the correlated collection is
+   tenant-scoped identically to the driving one or not.
+
+**What does not change**: the seam and the `$lookup` pipeline both do the *filtering* job
+fine — they do not do the *enforcement* job. A bypassed seam or an omitted `$match` in a
+join's sub-pipeline still leaks, and nothing at the database layer stops it, because Mongo
+(without a paid Atlas/Queryable-Encryption tier neither this analysis nor Nightscout's
+current deployments assume) has no per-document ACL analogous to RLS. This is not a
+capability gap in Mongo's query model — it is the same discipline-vs-database-property
+distinction §6.1 already drew, now demonstrated with a join query too, not just a plain
+find. Whether that distinction is worth a storage migration is the §10 cost/risk question,
+answered there — it is not, by itself, a reason multitenancy is infeasible on Mongo.
 
 ### 6.2 What a storage abstraction has to be
 
@@ -1474,6 +1560,7 @@ running at scale, but they are no longer open questions.
 | EXP-MT-044 | Managed platform (Supabase-equivalent: Postgres+RLS+Realtime+Edge Functions) vs. self-hosted Postgres+RLS+Node, same headless workload (§5.3) | Quantifies the lock-in-vs-cost tradeoff of a low/no-code storage+auth+scheduler platform |
 | EXP-MT-045 | Push-delivery comparison for headless/mobile: Socket.IO+resident-ddata vs. Postgres logical-replication push vs. MQTT broker fed by the same WAL stream (§5.4) | Does WAL-driven push match delivery latency without resident `ddata`, and does MQTT's QoS/persistent-session reduce missed alarms under mobile connectivity drops? |
 | EXP-MT-046 | Mongoose-schema casting cost at N-tenant ingest rate, generated from `specs/openapi/`, vs. today's hand-rolled `parseInt`/`find_options` casting (§6.4/§6.5) | Does mongoose's casting close the correctness gap at acceptable CPU cost inside the MongoDB adapter only — feeds the same validation-hot-path concern as EXP-MT-013 |
+| EXP-MT-047 | PostgREST-fronted CRUD (`tools/mt-bench/postgrest-poc/`) vs. a thin Node API layer over the same RLS tables, at realistic tenant/request counts (§5.5) | Does removing the Node process from the request path change p50/p99 or memory per tenant for the storage-scoped CRUD surface specifically, and does it hold up once a companion compute service (IOB/COB/alerts) is added back for the parts PostgREST cannot do |
 
 `EXP-MT-030` matters disproportionately: the *same* generator against Nocturne gives the
 ecosystem its first apples-to-apples server comparison, and fills the gap that Nocturne's
