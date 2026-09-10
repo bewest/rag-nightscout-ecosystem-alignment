@@ -1631,6 +1631,7 @@ running at scale, but they are no longer open questions.
 | EXP-MT-046 | Mongoose-schema casting cost at N-tenant ingest rate, generated from `specs/openapi/`, vs. today's hand-rolled `parseInt`/`find_options` casting (§6.4/§6.5) | Does mongoose's casting close the correctness gap at acceptable CPU cost inside the MongoDB adapter only — feeds the same validation-hot-path concern as EXP-MT-013 |
 | EXP-MT-047 | PostgREST-fronted CRUD (`tools/mt-bench/postgrest-poc/`) vs. a thin Node API layer over the same RLS tables, at realistic tenant/request counts (§5.5) | Does removing the Node process from the request path change p50/p99 or memory per tenant for the storage-scoped CRUD surface specifically, and does it hold up once a companion compute service (IOB/COB/alerts) is added back for the parts PostgREST cannot do |
 | EXP-MT-048 | Vendor-connectivity worker density: how many concurrent `nightscout-connect` session/poll actors (real LibreLinkUp/Glooko/CareLink auth flows) can one worker process hold before session-refresh latency or memory becomes the limit, vs. splitting across N worker processes (§5.6) | Is "N actors per worker process" (already `nightscout-connect`'s internal shape) actually the right multitenant scaling axis, or does per-vendor rate-limiting/session stickiness force a lower density than the CRUD/realtime layers achieve |
+| EXP-MT-049 | Split topology (PostgREST + auth-mint + realtime-fanout + Node compute service + vendor-connectivity pool) vs. `@nightscout/multitenant` alone with only vendor-connectivity split out, at N tenants (§9.3) | Does the four-process split add measurable correctness or latency cost from re-deriving/re-forwarding tenant identity at each hop, relative to the minimal-sidecar alternative |
 
 `EXP-MT-030` matters disproportionately: the *same* generator against Nocturne gives the
 ecosystem its first apples-to-apples server comparison, and fills the gap that Nocturne's
@@ -1794,6 +1795,62 @@ onward) is deliberately positioned so that a failed decision-rule result costs o
 storage-isolation work — which was going to improve query discipline anyway (§6.1) — not the
 whole multitenant build-out. **Steps 1–4 are the entire near-term roadmap for a maintainer
 who is not yet sure multitenancy is worth it.**
+
+### 9.3 Monolith vs. PostgREST-plus-sidecars — which owns which piece
+
+§5.5/§5.6 established the pieces a full connectivity + realtime multitenant Nightscout
+needs: CRUD, tenant auth/JWT-minting, computed state (`calcdelta`/IOB/COB, alarms), realtime
+fan-out, and vendor connectivity. This section answers directly: **is one Node process
+(§9.1's `@nightscout/multitenant`, extended) the right home for all of it, or should
+PostgREST plus separate sidecar processes replace parts of it?** Not a single yes/no —
+each piece has a different answer, and the answer follows directly from §7.4 and §9.1's
+already-established findings, not a new argument.
+
+| Piece | Best home | Why (citing existing findings, not re-arguing them) |
+|---|---|---|
+| CRUD (list/insert entries, treatments) | **Either** — genuinely a tie | §5.5 measured PostgREST can serve this correctly; §9.1 shows the Node monolith already can too, cheaply, once Layer 2's `ctxFor(tenantId)` lands. Neither has a forcing argument over the other for this piece alone — the decision should follow from which one is already being stood up for other reasons (below), not be litigated separately |
+| Tenant auth/JWT-minting | **Sidecar, either way** | Stateless, small, has no equivalent in today's code at all (§5.6) — a new component regardless of which side owns CRUD, no reason to fold it into either the monolith or PostgREST |
+| **Computed state** (`calcdelta`, IOB/COB, alarm evaluation) | **Node monolith, not a sidecar** | This is the load-bearing case. §7.4's `shared` architecture wins 10–20× specifically *because* `ddata`/`calcdelta`/alarm state live in the same process, same isolate, as the tenant's loaded data — a network hop to a separate compute sidecar per write reintroduces exactly the constant-cost-per-tenant problem §7.4 measured away. §3.1's alarm-state blocker also gets *harder*, not easier, split across processes: cross-tenant leakage prevention and cross-request consistency (has this tenant's ack already been applied before the next poll's alert fires?) are easiest to guarantee in one process holding the authoritative in-memory state, hardest across a network call with its own failure/ordering semantics |
+| Realtime fan-out | **Sidecar, once tenant count justifies it** | Genuinely stateless multiplexing (§5.6) — the one piece where "many small tenant-agnostic connections" is the entire job, a natural fit for a separately-scaled process (Elixir/Phoenix-shaped, or Supabase Realtime, §5.3), independent of whether CRUD is PostgREST or Node |
+| Vendor connectivity | **Sidecar pool, but not because of PostgREST** | §5.6 already established this is naturally isolate-per-tenant-account-shaped, independent of the CRUD/compute decision — `nightscout-connect`'s `xstate` actors would be split into their own worker pool whether the rest of the system is a Node monolith or PostgREST, because the reason to split it (session stickiness, per-vendor rate limits, EXP-MT-048) has nothing to do with which database sits underneath |
+
+**The answer is neither pure "integrated monolith" nor pure "PostgREST alongside several
+sidecars" — it's a hybrid, and the split follows the isolate-cost argument (§7.4), not a
+stylistic preference for one pattern:**
+
+- **PostgREST can front the CRUD surface** if that is otherwise being stood up anyway (e.g.
+  because a hoster is already committing to Postgres/RLS per §6.1 for isolation reasons),
+  but doing so is not what makes the computed-state piece work, and does not reduce the
+  need for the `@nightscout/multitenant` process to exist — it still needs to hold
+  `ctxFor(tenantId)` for `calcdelta`/alarms, and now must additionally subscribe to
+  Postgres's `NOTIFY`/WAL stream to know when PostgREST-mediated writes happened, rather
+  than seeing those writes directly. That is a real added integration cost the "PostgREST
+  replaces Node" framing hides — the monolith does not go away, it moves from "owns writes"
+  to "owns computed state, reacts to writes it doesn't perform," a materially different
+  (and more complex) role, not a smaller one.
+- **The vendor-connectivity split is worth doing regardless of the CRUD decision.** It is
+  already the natural shape internally (§5.6) and its isolation/rate-limit reasons are
+  orthogonal to whether Postgres or Mongo, PostgREST or Node, sits underneath.
+- **Realtime fan-out is worth splitting out once tenant count justifies a dedicated
+  connection-handling process**, again independent of the CRUD decision, but for a small
+  hoster or an indie site, in-process Socket.IO (today's shape) remains simplest and is not
+  worth splitting prematurely.
+
+**A sidecar-sprawl warning, directly tied to §6.1's central finding**: every additional
+network hop between a client's request and the data it's allowed to see is another place
+the tenant-isolation check must be re-derived or re-forwarded correctly (a JWT, a re-issued
+session, a passed-through tenant header) — RLS's whole value proposition was collapsing
+"every call site must remember to filter" into "every connection must remember to bind"
+(§6.1). Splitting CRUD (PostgREST), auth-minting, realtime fan-out, and vendor connectivity
+into four separate processes reintroduces four places that binding can be gotten wrong,
+instead of one. This is not an argument against splitting — the vendor-connectivity and
+realtime-fan-out splits are justified above on independent grounds — but it is a reason to
+default to **the fewest sidecars the isolate-cost argument actually requires**, not a
+services-per-concern architecture as a default posture. This is EXP-MT-049 (§8.3): does
+running the split topology (PostgREST + auth-mint + realtime-fanout + Node compute
+service + vendor-connectivity pool) at N tenants show a measurable correctness or latency
+cost from the added hops, versus the same feature set in `@nightscout/multitenant` alone
+with only the vendor-connectivity pool split out.
 
 ---
 

@@ -2546,3 +2546,35 @@ LibreLinkUp) need different solutions)** — adds new §5.6, a correction to §3
 - `.../nightscout-connect/lib/sources/minimedcarelink/index.js:235-`
 - `lib/plugins/bridge.js:4,89,119` (module-scope `mostRecentRecord`, re-examined; new
   finding, not previously flagged in §3)
+
+**Follow-up 15 (what's required for connectivity+realtime "across the board" using a
+multitenant PostgREST layer vs. a Node monolith; is an integrated monolith the way to go,
+or PostgREST alongside several sidecars?)** — adds new §9.3, EXP-MT-049. Synthesis of
+already-established findings (§5.5, §5.6, §7.4, §9.1), no new prototype needed — the
+prior two rounds' PostgREST/mongo-iso prototypes and the vendor-connectivity analysis
+already supplied the evidence this question needed to be answered from.
+- Answered per-piece, not as a single yes/no: CRUD is a genuine tie (either PostgREST or
+  the Node monolith serves it, per §5.5/§9.1); tenant auth/JWT-minting is a new sidecar
+  either way; **computed state (`calcdelta`/IOB/COB/alarms) belongs in the Node monolith,
+  not a sidecar** — this is the load-bearing conclusion, because §7.4's measured 10–20×
+  `shared`-architecture win specifically depends on `ddata`/`calcdelta`/alarm state living
+  in the same process/isolate as the tenant's loaded data, and splitting it out
+  reintroduces the per-tenant constant cost that architecture eliminated, while also
+  making §3.1's alarm-state consistency guarantee harder across a network boundary, not
+  easier; realtime fan-out and vendor connectivity are both justified sidecar splits, but
+  for reasons independent of the CRUD/PostgREST decision (§5.6).
+- Named the hidden cost the "PostgREST replaces Node" framing hides: if PostgREST owns
+  writes, `@nightscout/multitenant` doesn't disappear — it must now subscribe to
+  Postgres's NOTIFY/WAL to learn about writes it no longer performs itself, a materially
+  more complex role ("owns computed state, reacts to writes it doesn't perform") than
+  today's ("owns computed state and the writes that produce it"), not a smaller one.
+- Concluded neither "integrated monolith" nor "PostgREST + several sidecars" is the right
+  framing — it's a hybrid where the split is decided per-piece by the isolate-cost
+  argument (§7.4), not a stylistic default. Added an explicit sidecar-sprawl warning tied
+  to §6.1: every added network hop is another place tenant identity must be correctly
+  re-derived/forwarded, echoing RLS's "one call site instead of every call site" value
+  proposition — default to the fewest sidecars the isolate-cost argument actually
+  requires (vendor connectivity, and realtime fan-out once tenant count justifies it), not
+  services-per-concern as a default posture.
+- Added EXP-MT-049 (split topology vs. minimal-sidecar alternative, measuring cost of the
+  added hops) to the arms table (§8.3).
