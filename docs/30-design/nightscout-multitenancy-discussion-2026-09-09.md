@@ -642,6 +642,57 @@ per-tenant resource cost that a resident, scaled-up sandbox would otherwise have
 This should be checked, not assumed: EXP-MT-043/044 (§8.3) are the arms that would confirm
 or kill it.
 
+### 5.4 Does headless preclude real-time push — and where does MQTT fit?
+
+**No — and §5.3 needs one correction first.** §5.3 grouped "browser-socket mounts" with
+static-file serving as the thing a headless target sheds; that overstates it. What
+headless actually removes is the *browser-specific cost centre* — `calcdelta.js`'s
+O(old×new) diff computed once per load cycle and broadcast to everyone in one shared room
+(§2.1, §2.4) — not the general idea of push. A lightweight or mobile-first UI, and for
+that matter an AID controller that wants faster-than-polling notice of a new reading, is
+exactly a **realtime consumer that isn't a browser**, and nothing in §5.3's argument
+removes the value of push for it; it only argues the *current mechanism* (one
+process-wide Socket.IO room, `lib/server/websocket.js:150,792`, fed by a resident merged
+`ddata`) is more machinery than a headless deployment needs to produce that push. The
+right framing is: **keep push, change what produces it.**
+
+**What already generalises, and what doesn't, from §5.3's storage-first architecture.**
+The three transports worth naming, and what each would need:
+
+| Transport | What it needs, on top of §5.3's Postgres+RLS baseline | Fit for mobile/light UI |
+|---|---|---|
+| **Socket.IO (today's mechanism)** | The full resident-`ddata`/`calcdelta` pipeline (§2.1) to compute a delta, plus per-tenant rooms (§5.1's `WS` box) instead of one shared room | Works, but reintroduces exactly the resident-state cost §5.3 argued away — this is the "reorg, not new code" case only if the delta computation moves to a cheap, storage-driven form (below), not if the current in-memory pipeline is kept as-is |
+| **Postgres logical replication → push** (Supabase Realtime, or a hand-rolled `LISTEN`/`NOTIFY` + `pgoutput` consumer) | Nothing beyond Layer 1b (§6.1) already recommended — the database already knows which row changed and for which `tenant_id`; a change event *is* the delta, computed by the WAL, not by an app-level deep-compare | Very good fit: RLS-scoped subscriptions mean a mobile client can subscribe directly to "my tenant's rows changed" with the isolation guarantee already enforced at the same layer as everything else in §5.3, and no per-tenant resident merge step |
+| **MQTT (broker + per-tenant topic, e.g. `tenants/{tenantId}/entries`)** | A publish step *somewhere* in the write path — either the app tier publishes on ingest, or a Postgres→MQTT bridge (e.g. a `pg_net`/trigger-driven publisher, or a small dispatcher consuming the same WAL/`NOTIFY` stream as the row above) | Best fit specifically for **battery- and bandwidth-constrained mobile clients**: MQTT's persistent-session + QoS + last-will semantics are built for exactly the intermittent-connectivity case a phone-based follower app is, in a way Socket.IO (designed for a browser tab with a live TCP connection) is not. This is a genuinine capability gain, not a re-labelling of what Socket.IO already does |
+
+**MQTT is a real, additive option, not a swap for feature-parity reasons alone.** Its
+concrete advantages for this specific use case: (1) **QoS 1/2 delivery** means a phone
+that drops connectivity for an hour (subway, flight, low battery) does not miss a hypo
+alert the way a disconnected Socket.IO client would — the broker holds it for a persistent
+session; (2) **topic-per-tenant** (`tenants/{tenantId}/entries`, `tenants/{tenantId}/alarms`)
+maps directly onto the tenant-scoped-room pattern §5.1 already establishes for Socket.IO,
+so the *authorization* problem is unchanged — a client still must only be able to
+subscribe to its own tenant's topic, enforced the same way (a broker ACL keyed by the same
+resolved tenant identity, checked at CONNECT/SUBSCRIBE time, structurally the same
+requirement as §5.2 item 2's "tenant-bound socket authorization"); (3) **last-will** lets
+an alarm-follower app publish "I went offline" so a caregiver's dashboard can show
+"follower unreachable" rather than silently going stale — a safety-relevant property this
+document has not previously had a mechanism for.
+
+**What doesn't change, and is worth stating plainly so this isn't read as walking back
+§5.3**: none of this reopens the residency question. Whichever transport carries the
+push — Socket.IO fed by a lighter delta source, Postgres Realtime, or MQTT — the *content*
+of what's pushed should still come from the same place §5.3 already argued for: a change
+computed at or near the storage layer (WAL-driven), not a resident, per-tenant merged
+`ddata` recomputed on a heartbeat. The transport question and the residency question are
+separable, and this section only answers the first.
+
+**Net effect on the headless recommendation**: add MQTT (or Postgres Realtime) as a named
+candidate transport for the mobile/light-UI case, without changing §5.3's core claim that
+the in-process cache/sandbox does not need to scale — the push mechanism sits on top of
+the same storage-first architecture, consuming its change stream rather than requiring a
+resident merge step to produce one. This is EXP-MT-045 (§8.3), run alongside EXP-MT-043.
+
 ---
 
 ## 6. Storage and isolation
@@ -1285,6 +1336,7 @@ running at scale, but they are no longer open questions.
 | EXP-MT-042 | Query-cost bound under adversarial input: unindexed-field `$regex` through today's path vs. a declared query profile | Quantifies the confirmed unmitigated ReDoS exposure (§6.5) as a noisy-neighbour number |
 | EXP-MT-043 | Headless-only workload (§5.3) — resident multi-ctx (§5B/C) vs. stateless-on-read over Postgres+RLS with event-triggered alarms (§5D) | Does removing the browser consumer make D competitive with or better than B/C on $/tenant and alarm latency? |
 | EXP-MT-044 | Managed platform (Supabase-equivalent: Postgres+RLS+Realtime+Edge Functions) vs. self-hosted Postgres+RLS+Node, same headless workload (§5.3) | Quantifies the lock-in-vs-cost tradeoff of a low/no-code storage+auth+scheduler platform |
+| EXP-MT-045 | Push-delivery comparison for headless/mobile: Socket.IO+resident-ddata vs. Postgres logical-replication push vs. MQTT broker fed by the same WAL stream (§5.4) | Does WAL-driven push match delivery latency without resident `ddata`, and does MQTT's QoS/persistent-session reduce missed alarms under mobile connectivity drops? |
 
 `EXP-MT-030` matters disproportionately: the *same* generator against Nocturne gives the
 ecosystem its first apples-to-apples server comparison, and fills the gap that Nocturne's

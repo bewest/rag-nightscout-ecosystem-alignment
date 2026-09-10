@@ -2369,3 +2369,41 @@ this round's addition was placed against the current structure, not the prior on
   Realtime logical-replication push, Deno Edge Functions) — general platform knowledge, not
   fetched from a specific doc URL this round; flagged for a follow-up web-verification pass
   if the maintainers want citations before treating any Supabase-specific claim as final.
+
+**Follow-up 11 (does headless preclude real-time push, and where does MQTT fit for a
+mobile-first/light UI?)** — new §5.4, plus EXP-MT-045.
+- **Corrected an overstatement in §5.3**: that section had grouped "browser-socket
+  mounts" with static-file serving as things a headless target sheds. Corrected: headless
+  removes the *browser-specific cost centre* (resident `ddata` + O(old×new) `calcdelta`
+  diff broadcast to one shared room, §2.1/§2.4), not the value of push generally — a
+  mobile/light UI, or an AID controller wanting faster-than-polling notice, is a realtime
+  consumer that isn't a browser, and nothing in §5.3 argues against push for it.
+- **Framed the actual choice as "keep push, change what produces it."** Compared three
+  transports against §5.3's Postgres+RLS baseline: (1) today's Socket.IO mechanism, which
+  only stays cheap if the delta-producing step changes too (reusing it as-is reintroduces
+  the resident-state cost §5.3 argued away); (2) Postgres logical-replication push
+  (Supabase Realtime, or hand-rolled `LISTEN`/`NOTIFY`+`pgoutput`), which needs nothing
+  beyond the already-recommended Layer 1b — the WAL already knows the delta, per tenant_id,
+  under the same RLS enforcement as everything else in §5.3; (3) MQTT, broker-fed by the
+  same WAL/`NOTIFY` stream, topic-per-tenant (`tenants/{tenantId}/entries`).
+- **Argued MQTT is additive, not redundant with Socket.IO**, on three concrete grounds:
+  QoS 1/2 persistent-session delivery survives a phone's connectivity drop in a way a live
+  Socket.IO connection cannot; topic-per-tenant maps onto the same tenant-scoped-room
+  authorization pattern already required in §5.2 item 2, so it's not a new auth model;
+  last-will lets a follower app signal "gone offline" for a caregiver dashboard — a
+  safety-relevant capability this document had no prior mechanism for.
+- **Kept the residency conclusion of §5.3 intact and said so explicitly**: transport
+  choice and residency are separable questions; whichever transport is used, the pushed
+  content should still originate at/near storage (WAL-driven), not from a resident,
+  per-tenant merged `ddata` — this section only answers the transport question.
+- Added EXP-MT-045 (push-delivery comparison: Socket.IO+resident-ddata vs. Postgres
+  Realtime vs. MQTT, measuring delivery latency and miss behaviour under simulated mobile
+  connectivity drops) to the arms table (§8.3).
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official/lib/server/websocket.js` (`:120-150`, `:780-801`
+  — auth handshake, room join, `emitData`/delta broadcast, confirming the single-room and
+  resident-`lastData` dependency claimed in §5.4)
+- No MQTT references exist anywhere in `externals/cgm-remote-monitor-official` today
+  (confirmed by grep) — this is a genuinely new transport option for the ecosystem, not an
+  existing-but-undocumented one.
