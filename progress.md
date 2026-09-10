@@ -2314,3 +2314,58 @@ controllers/alarm followers)** — new §5.5, plus EXP-MT-042:
 - `externals/cgm-remote-monitor-official/lib/api3/storage/mongoCollection/{utils,find}.js`
 - `externals/cgm-remote-monitor-official/lib/api3/const.json`
 - `externals/cgm-remote-monitor-official/node_modules/express/package.json` (version check)
+
+**Follow-up 10 (headless multitenant Nightscout: reorg vs. new code vs. low/no-code, and
+whether the in-process sandbox/cache needs to scale at all)** — new §5.3, plus
+EXP-MT-043/044. Note: the discussion doc was independently restructured/tightened
+(2 197→1 365 lines, commits `5f069849`/`642a95b2`) between the prior round and this one;
+section numbers shifted (query-profile work is now §6.5, storage-comparison is §6.6) —
+this round's addition was placed against the current structure, not the prior one.
+- Answered the core question directly: **scaling the in-process cache/sandbox is very
+  likely not needed for a headless (API-only, no browser) target.** Traced why: `ddata`'s
+  O(old×new) `calcdelta` diff and the single socket room exist specifically to serve many
+  *concurrently polling browser viewers of one site* cheaply — a consumer headless doesn't
+  have. AID controllers/alarm followers already poll on their own schedule with a known,
+  bounded query shape (exactly what §6.5's query-profile proposal, from the prior round,
+  independently arrived at) — they have no use for a delta-vs-last-broadcast optimisation.
+- Isolated the two things that *do* still need server-side compute in a headless target,
+  and showed neither requires a resident, scaled-up sandbox: **(1) alarm evaluation**
+  (`plugins.checkNotifications(sbx)`, `bootevent.js:338`) is a small bounded computation
+  over a recent window, and §5D (stateless/on-demand) was previously disfavoured
+  specifically because "the client protocol is delta-oriented" — a browser-only
+  constraint that disappears once there's no delta stream to maintain; **(2) vendor
+  connectivity** (`lib/plugins/bridge.js:115` Dexcom Share, `lib/plugins/mmconnect.js:24`
+  Medtronic CareLink) — verified both are `init(env, ...)`-factory-shaped `setInterval`
+  closures over one tenant's `env.extendedSettings` credentials with zero shared state
+  between ticks, i.e. already cron-job-shaped, not resident-process-shaped; 1 000 resident
+  timers in shared processes is an avoidable cost, not a requirement.
+- **Evaluated Supabase concretely, piece by piece**, rather than as one bundled
+  recommendation: managed Postgres+RLS maps exactly onto the already-recommended Layer 1b
+  (§6.1); JWT auth + RLS policies reading `auth.jwt()` claims collapse tenant-resolution
+  middleware and storage-enforcement into one DB-level check; Realtime (WAL→subscription)
+  can replace the whole `calcdelta`+socket-room mechanism for headless followers, since
+  Postgres already knows what changed; Edge Functions (Deno, cron-triggerable) are a close
+  fit for the vendor-connectivity shape found above. **Named the honest cost plainly**:
+  real platform lock-in, and it does not replace the self-hosted deployment target already
+  concluded to be permanent (§10.3) — scoped Supabase as one swappable implementation of
+  the existing repository-seam recommendation (§6.2), not a hard dependency.
+- **Reorg vs. new code, answered directly**: the compute logic needs almost no rewriting
+  (§9.1's factory-shape finding already established this and holds unchanged here); what's
+  genuinely new is the *trigger model* — replacing the resident bus's heartbeat+debounce
+  polling (`bootevent.js:301-330`) with event-triggered (NOTIFY/webhook/queue) invocation
+  — plus stripping the already-separable static-file/browser-socket mounts
+  (`lib/server/app.js:192-197`). Small, bounded new-code surface, not a rewrite.
+- Added EXP-MT-043 (headless workload: resident multi-ctx vs. stateless-on-read+RLS, does
+  removing the browser make D competitive with B/C?) and EXP-MT-044 (managed-platform vs.
+  self-hosted cost/latency at matched tenant counts) to the main arms table (§8.3).
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official/lib/server/bootevent.js` (load cycle, `:338`)
+- `externals/cgm-remote-monitor-official/lib/server/app.js` (static file mounts, `:190-198`)
+- `externals/cgm-remote-monitor-official/lib/server/websocket.js` (single room confirmation)
+- `externals/cgm-remote-monitor-official/lib/plugins/bridge.js` (`:100-125`, Dexcom Share timer)
+- `externals/cgm-remote-monitor-official/lib/plugins/mmconnect.js` (`:1-30`, CareLink timer)
+- Web knowledge of Supabase's architecture (managed Postgres+RLS, GoTrue/JWT auth,
+  Realtime logical-replication push, Deno Edge Functions) — general platform knowledge, not
+  fetched from a specific doc URL this round; flagged for a follow-up web-verification pass
+  if the maintainers want citations before treating any Supabase-specific claim as final.

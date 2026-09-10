@@ -535,6 +535,113 @@ able to enforce that they did.
    for the cost model that justifies the whole exercise.
 8. Alarm delivery for non-resident tenants, with per-tenant alarm state (§3.1).
 
+### 5.3 Headless: does removing the browser change the recommendation?
+
+A **headless** deployment target — API/websocket for AID controllers and alarm followers
+only, no HTML views, no browser session — is worth treating as its own point in the
+design space, because two of §2's three cost centres exist specifically **to serve the
+browser cheaply**, and headless removes that consumer entirely.
+
+**What the browser actually causes in §2's component graph.** `calcdelta.js`'s O(old×new)
+deep-compare (§2.1) and the single `'DataReceivers'` socket room (§2.4) exist to turn one
+resident `ddata` into a cheap incremental diff for potentially many concurrently-polling
+viewers of the *same* site — a human refreshing a dashboard, a family member's phone, a
+clinic view. **An AID controller or alarm follower is not that consumer.** Loop, AAPS and
+xDrip+ poll on their own schedule (typically every 1–5 minutes), want a small, predictable
+response for a known query shape, and have no use for a delta-versus-last-broadcast
+optimisation — they already re-request from scratch each cycle. §6.5's proposed query
+profiles were arrived at independently of this question, for a different reason (bounding
+DoS surface), but they describe exactly the request shape a headless server would only
+ever receive.
+
+**What's actually left resident, once the browser is gone, is alarm evaluation — and that
+does not require the same architecture either.** `plugins.checkNotifications(sbx)`
+(`bootevent.js:338`, §2.3) still has to run against something for cold/inactive tenants
+(§3's C tier, §5C) — a person with no viewer open still needs a hypo alert. But this is a
+bounded computation over a short recent window (IOB/COB curves, AR2 trend, a handful of
+plugins), not a reason to hold a whole site's `ddata` resident indefinitely. §5D
+("stateless server, storage-resident derived data") was previously the least-favoured
+architecture in this document specifically because the *client protocol is delta-oriented*
+(§5D's con) — a constraint that assumes a browser. Remove the browser, and D's objection
+mostly disappears: there is no delta stream to maintain, so the recompute-per-invocation
+cost is the only one left to justify against a resident copy, and that computation is
+small and infrequent (once per alarm-evaluation cycle, not once per HTTP poll).
+
+**Vendor connectivity is a second, independent thing that does not need a resident
+process at all, and this is a *finding*, not an assumption.** `lib/plugins/bridge.js:115`
+(Dexcom Share) and `lib/plugins/mmconnect.js:24` (Medtronic CareLink) both run their own
+`setInterval` closure, opened once per process over that tenant's `env.extendedSettings`
+credentials (`mmconnect.js:5-8`), with no shared state between ticks and no dependency on
+`ddata`/`sandbox` at all — each tick is "wake, fetch one vendor API with one tenant's
+stored credentials, hand the parsed entries to the loader." That shape is a cron job, not
+a server: it does not need Node running continuously per tenant, it needs to run on a
+schedule and terminate. At 1 000 tenants, 1 000 resident `setInterval` timers in shared
+processes (Layer 2, §9) is a real, avoidable cost and a fairness/backpressure hazard in
+its own right (§5.2 item 5) — a scheduled/queued invocation model removes it entirely,
+independent of whether the rest of the stack stays Node.
+
+**So, directly: scaling the in-process cache/sandbox is very likely *not* needed for a
+headless target**, on three separable grounds, each independently supported above:
+(1) the query surface serving AID controllers/alarm followers is already the bounded,
+typed-profile shape §6.5 recommends regardless of residency, so a well-built query
+builder against Postgres+RLS (§6.1, §6.6/D) can answer it directly without a resident
+merge step; (2) alarm evaluation is a small, boundable, event- or schedule-triggered
+computation (§5D), not a reason to hold megabytes of merged JSON per tenant for months;
+and (3) vendor polling is stateless-per-tick and belongs on a scheduler, not in a resident
+timer. What remains genuinely resident-shaped is a browser-serving concern this target
+does not have.
+
+**Low/no-code: what Supabase specifically would and would not buy.** Supabase is managed
+Postgres + RLS + JWT-based auth + Realtime (logical-replication-driven push) + Edge
+Functions (Deno, per-invocation V8 isolates, cron-triggerable) — and it maps onto this
+document's own layers more directly than any other option evaluated so far:
+
+| Supabase piece | Maps to | What it removes from application code |
+|---|---|---|
+| Managed Postgres + RLS | Layer 1b exactly (§6.1, §6.6/D) | Nothing extra over self-managed Postgres+RLS — same `set_config`-per-request pattern, just operated for you |
+| JWT auth + RLS policies reading `auth.jwt()` claims | Tenant resolution (§5.2 item 1) | Tenant binding becomes a DB-enforced predicate on the presented JWT, not app-tier middleware — collapses §5.2 items 1 and 6 into one enforcement point |
+| Realtime (WAL → subscription push) | The delta/broadcast half of §2.1/§2.4 | For a headless follower that wants live updates, Postgres already knows what changed; no app-level `calcdelta` deep-compare or resident `ddata` needed to produce a delta at all |
+| Edge Functions (Deno, cron-triggerable) | The vendor-connectivity scheduler above | A near-exact fit for `bridge.js`/`mmconnect.js`'s actual shape — stateless, credentialed, scheduled — with no code-shape change needed to the fetch/parse logic itself, only to how it's invoked |
+
+**The honest cost, stated plainly: platform lock-in, and it does not replace the
+self-hosted target.** Every Supabase-shaped piece above is a *specific vendor's*
+implementation of an architecture this document already recommends in vendor-neutral
+terms (RLS, a repository seam, an event-driven scheduler) — adopting it verbatim would
+tie the multitenant target to Supabase's specific Postgres extensions, Realtime protocol
+and Edge Function runtime, which is a real, ongoing cost against the ecosystem's
+self-hosted ethos, and is exactly the kind of two-deployment-model split §10.3 already
+concluded should be permanent (self-hosted operators keep MongoDB or self-managed
+Postgres; nothing here proposes removing that path). The correct scoping is: Supabase (or
+any managed Postgres+Realtime+Edge-Function platform — Neon, Cloudflare with D1/Workers,
+a self-hosted PostgREST+pg_cron stack) is **one implementation of the §6.2 repository
+seam and the scheduler above**, evaluated and swappable behind it, not a hard dependency
+of the multitenant target itself.
+
+**Reorganisation vs. new code, answered directly.** The compute logic itself needs almost
+no rewriting — §9.1 already established `bootevent`, `sandbox`, the plugin registry and
+the vendor-connectivity plugins are factory-shaped over `(env, ctx)` with essentially zero
+module-level mutable state, and that finding holds unchanged for a headless target: the
+same `init(env, ...)` calls work whether the caller is a resident process, an on-demand
+stateless handler, or (per Supabase) an Edge Function. What is genuinely **new**, not a
+reorganisation, is the *trigger model*: today's bus (`bootevent.js:301-330`, a 60 s
+heartbeat plus 1 s/5 s debounce) assumes a resident process polling its own timer; a
+headless, cost-optimised target instead wants **event-triggered** invocation — a Postgres
+`NOTIFY`/webhook/queue message on write, driving a stateless alarm-evaluation and
+vendor-poll dispatch, rather than N resident bus instances. That scheduler/dispatch layer,
+plus stripping the already-separable static-file and browser-socket mounts
+(`lib/server/app.js:192-197`, §2.4), is the actual new-code surface — small, bounded, and
+independent of whether the storage/auth layer underneath is self-hosted Postgres+RLS or a
+managed platform.
+
+**Net recommendation for this target, restated as a change to §9's ordering**: for a
+headless-only deployment, Layer 2 (shared-process `ctxFor(tenantId)`, §9) is likely
+*skippable entirely* in favour of going from Layer 1 (storage isolation) straight to a
+variant of Layer 2/D — an event-triggered, mostly-stateless compute layer over
+Postgres+RLS, with the query-profile work of §6.5 doing the load-bearing work of bounding
+per-tenant resource cost that a resident, scaled-up sandbox would otherwise have to do.
+This should be checked, not assumed: EXP-MT-043/044 (§8.3) are the arms that would confirm
+or kill it.
+
 ---
 
 ## 6. Storage and isolation
@@ -1176,6 +1283,8 @@ running at scale, but they are no longer open questions.
 | EXP-MT-040 | Single Postgres primary under simulated 10 000-tenant RLS connection/query load | Is pgbouncer transaction mode required? Does a primary saturate before a shared-Node shard does? |
 | EXP-MT-041 | Tenant→shard routing two ways: userspace SNI router vs eBPF `sockmap`/`sk_msg` splice | Is the userspace router ever the bottleneck? (§7.6) |
 | EXP-MT-042 | Query-cost bound under adversarial input: unindexed-field `$regex` through today's path vs. a declared query profile | Quantifies the confirmed unmitigated ReDoS exposure (§6.5) as a noisy-neighbour number |
+| EXP-MT-043 | Headless-only workload (§5.3) — resident multi-ctx (§5B/C) vs. stateless-on-read over Postgres+RLS with event-triggered alarms (§5D) | Does removing the browser consumer make D competitive with or better than B/C on $/tenant and alarm latency? |
+| EXP-MT-044 | Managed platform (Supabase-equivalent: Postgres+RLS+Realtime+Edge Functions) vs. self-hosted Postgres+RLS+Node, same headless workload (§5.3) | Quantifies the lock-in-vs-cost tradeoff of a low/no-code storage+auth+scheduler platform |
 
 `EXP-MT-030` matters disproportionately: the *same* generator against Nocturne gives the
 ecosystem its first apples-to-apples server comparison, and fills the gap that Nocturne's
