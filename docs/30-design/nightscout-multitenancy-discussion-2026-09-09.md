@@ -205,6 +205,79 @@ measured (EXP-MT-035), not a number to quote. At 6 MB, 1 000 tenants ≈ 6 GB of
 objects before headroom — which is why the residency question (§5C) matters more than the
 storage question.
 
+### 2.8 The runtime as a component graph
+
+Everything above, as components and the relationships between them. The chokepoints that
+assume a single tenant are shaded: each is a real object that exists **exactly once per
+process** and that every request implicitly shares.
+
+```mermaid
+graph TB
+    UP["<b>Uploaders</b><br/>xDrip+, AAPS, Loop, Trio,<br/>nightscout-connect"]
+
+    subgraph PROC["One Nightscout process = one person's site"]
+        direction TB
+        APP["express app<br/>lib/server/app.js"]
+        AUTH["authorization<br/>secret/token to shiro perms<br/><i>resolves a subject, but selects<br/>no data context</i>"]
+        BUS["bus<br/>tick 60 s; debounce 1 s, maxWait 5 s"]
+        GUARD["dataloadRunning flag<br/>one guard, one shared ddata"]
+        ENV["env / env.settings<br/>units, thresholds, plugin set,<br/>vendor credentials"]
+        LOADER["dataloader<br/>9 parallel loaders, ~14 DB ops/cycle"]
+        CACHE["cache<br/>48 h entries, 60 h treatments,<br/>+ removal generations"]
+        DDATA["ddata<br/>the site's whole recent world<br/>~1.2 MB measured"]
+        SBX["sandbox<br/><i>fresh per load, over<br/>settings + data + time</i>"]
+        PLUGINS["plugins registry<br/>IOB, COB, AR2, loop, openaps"]
+        NOTIF["notifications<br/>alarm evaluation and delivery"]
+        WS["websocket.js<br/>one room: 'DataReceivers'"]
+        STORE["mongo-storage<br/><b>hands out raw collection handles</b><br/>no query-model seam exists"]
+    end
+
+    DB[("MongoDB<br/>one database per site")]
+    FOL["<b>Followers and browser</b><br/>REST + socket.io"]
+
+    UP -- "POST /api/v1/*" --> APP
+    APP --> AUTH
+    APP -- "emits data-received" --> BUS
+    BUS --> GUARD
+    GUARD --> LOADER
+    ENV -. "read directly" .-> LOADER
+    LOADER -- "find/sort/limit, Mongo<br/>operators, ObjectId" --> STORE
+    STORE --> DB
+    LOADER -- "incremental window" --> CACHE
+    CACHE -- "retained rows" --> LOADER
+    LOADER -- "idMergePreferNew,<br/>JSON deep clone" --> DDATA
+    DDATA -- "data-loaded" --> SBX
+    ENV -.-> SBX
+    SBX --> PLUGINS
+    PLUGINS --> NOTIF
+    DDATA -- "calcdelta vs lastData" --> WS
+    AUTH -.-> WS
+    WS -- "dataUpdate, one broadcast" --> FOL
+    NOTIF -- "alarms, pushover" --> FOL
+
+    style ENV fill:#f8d7da,stroke:#a33,color:#111
+    style DDATA fill:#f8d7da,stroke:#a33,color:#111
+    style CACHE fill:#f8d7da,stroke:#a33,color:#111
+    style WS fill:#f8d7da,stroke:#a33,color:#111
+    style GUARD fill:#f8d7da,stroke:#a33,color:#111
+    style STORE fill:#fff3cd,stroke:#a1791b,color:#111
+    style SBX fill:#d4edda,stroke:#2c7a3f,color:#111
+```
+
+Two relationships in this graph decide how hard multitenancy is.
+
+**`sandbox` is green because it is already parameterised.** It is constructed fresh on every
+`data-loaded` event over *(settings, data, time)* — so the entire plugin tier downstream of
+it is already tenant-shaped and needs no change. The single-tenant assumption is not in the
+data model; it is in the fact that `bootevent()` is called once and the resulting `ctx` is
+bound to module scope by its caller.
+
+**`mongo-storage` is amber because it is a factory, not an adapter.** It hands `dataloader`
+and every domain module a raw Mongo collection, so driver semantics leak into ~30 call
+sites. That single relationship is why §6.2's repository seam is a prerequisite for every
+storage option, and why isolation currently has nowhere to be enforced except in each
+call site's own filter.
+
 ---
 
 ## 3. Cross-tenant hazards already present in the code
@@ -225,8 +298,9 @@ chain N times — precisely the Layer 2 proposal (§9) — yields N notification
 **sharing one alarm/ack/silence map**. Tenant A acknowledging a hypo alarm would silence
 tenant B's alarm at the same level and group.
 
-This is the one place the "tenants as data" refactor is not merely wiring, and it lands on
-the safety question maintainers should care about most (§11 Q5). It is a small, bounded fix
+§5.1 draws this as a system relationship: every tenant's plugin tier writing into one
+shared box. This is the one place the "tenants as data" refactor is not merely wiring, and
+it lands on the safety question maintainers should care about most (§11 Q5). It is a small, bounded fix
 — thread a tenant key into `getAlarm`'s composite key — but it must be a named
 prerequisite of Layer 2, not discovered during it.
 
@@ -377,7 +451,77 @@ measurement, not assertion.
 radius and GC pause impact, allows rolling upgrades, lets a noisy tenant be moved. Any
 serious deployment ends up here; the open question is *best K*, not B-vs-E.
 
-### 5.1 Cross-cutting requirements for B–E
+### 5.1 The same system, tenant-scoped — and what does not scope with it
+
+Architecture B applied to §2.8's component graph. The per-tenant boxes are the same
+factories called N times; the differences from §2.8 are the three new components at the
+edges (tenant resolution, per-request connection binding, tenant-scoped rooms) — and one
+component that **does not** become per-tenant on its own.
+
+```mermaid
+graph TB
+    CA["<b>alice.example.org</b><br/>uploaders + followers"]
+    CB["<b>bob.example.org</b><br/>uploaders + followers"]
+
+    RES["<b>tenant resolution middleware</b> — new<br/>Host header to slug to tenantId,<br/>path prefix as fallback; a token's tenant<br/>claim must match the host-resolved<br/>tenant, else reject"]
+
+    subgraph PROC["One process — Map&lt;tenantId, ctx&gt;"]
+        direction TB
+
+        subgraph TA["ctxFor('alice')"]
+            direction TB
+            AE["settings"] --> AL["dataloader + cache"] --> AD["ddata ~2.2 MB"] --> AS["sandbox to plugins"]
+        end
+
+        subgraph TB2["ctxFor('bob')"]
+            direction TB
+            BE["settings"] --> BL["dataloader + cache"] --> BD["ddata ~2.2 MB"] --> BS["sandbox to plugins"]
+        end
+
+        ALARMS["<b>notifications.js:15 — the alarms map</b><br/>declared at module scope:<br/><b>ONE per process</b>, keyed level + group,<br/><b>no tenant dimension</b><br/><i>calling the factory N times does<br/>not give you N of these</i>"]
+
+        FAIR["per-tenant concurrency guard,<br/>backpressure, fairness policy"]
+        BIND["<b>per-request connection binding</b> — new<br/>set_config('app.current_tenant_id', id, true)<br/><i>transaction-local, safe under pooling</i>"]
+        WS["websocket<br/>rooms become 'DataReceivers:tenantId'"]
+    end
+
+    PG[("<b>Postgres</b> — shared tables + tenant_id<br/>ENABLE + FORCE ROW LEVEL SECURITY<br/>app role NOSUPERUSER NOBYPASSRLS<br/><i>an unbound connection returns 0 rows</i>")]
+
+    CA --> RES
+    CB --> RES
+    RES -- "alice" --> AE
+    RES -- "bob" --> BE
+    AL --> FAIR
+    BL --> FAIR
+    FAIR --> BIND
+    BIND -- "one bind per request, instead<br/>of a filter per query" --> PG
+    AD --> WS
+    BD --> WS
+    AS == "ack / silence" ==> ALARMS
+    BS == "ack / silence" ==> ALARMS
+    ALARMS -. "alice's ack silences bob's alarm<br/>at the same level and group" .-> CB
+    WS -- "DataReceivers:alice" --> CA
+    WS -- "DataReceivers:bob" --> CB
+
+    style ALARMS fill:#f8d7da,stroke:#a33,color:#111
+    style RES fill:#d4edda,stroke:#2c7a3f,color:#111
+    style BIND fill:#d4edda,stroke:#2c7a3f,color:#111
+    style PG fill:#d4edda,stroke:#2c7a3f,color:#111
+```
+
+The two thick edges converging on one red box are §3.1 drawn as a system relationship
+rather than a code citation: every tenant's plugin tier writes acknowledgement and silence
+state into a **single process-global map**, because that map is declared at module scope
+rather than inside the factory. Everything else in the per-tenant boxes duplicates
+correctly when `bootevent()`'s factory chain is called N times; this does not.
+
+The graph also shows why RLS is the isolation primitive worth adopting (§6.1). `BIND` is a
+**single relationship on the path to storage** — one middleware, one `set_config` per
+request. The alternative on Mongo is a correct filter on every one of the ~30 edges that
+`dataloader`, `lib/api3/generic/*` and each plugin draw to the store, with no component
+able to enforce that they did.
+
+### 5.2 Cross-cutting requirements for B–E
 
 1. Tenant resolution middleware (host, then path prefix as fallback, then token claim
    verified against the resolved tenant — Nocturne's ordering and its rejection rule).
@@ -671,6 +815,69 @@ concept, just a stricter query budget on an existing scope.
 
 This is Layer 0 work (§9), applies whether the store stays Mongo or moves to Postgres, and
 is validated by EXP-MT-042.
+
+### 6.6 Where isolation is enforced, per storage architecture
+
+The engine matters less than **which component is responsible for isolation**, because that
+determines what has to be true for a forgotten filter to be safe. The same question asked
+of five architectures:
+
+```mermaid
+graph TB
+    subgraph S1["A · Today: process and database per tenant"]
+        direction LR
+        A1["N app processes,<br/>one per tenant"] --> A2["<b>enforced by the OS</b><br/>separate process, separate<br/>database; no filter to forget"] --> A3[("N MongoDB<br/>databases")]
+    end
+
+    subgraph S2["B · Shared MongoDB + tenantId field"]
+        direction LR
+        B1["1 app process,<br/>N tenant contexts"] --> B2["<b>enforced by every query</b><br/>~30 call sites in dataloader,<br/>api3/generic and each plugin must<br/><i>each</i> remember the filter"] --> B3[("1 MongoDB; no<br/>server-side<br/>per-document ACL")]
+    end
+
+    subgraph S3["C · SQLite file per tenant"]
+        direction LR
+        C1["1 app process,<br/>N open handles"] --> C2["<b>enforced by the filesystem</b><br/>isolation is a file: backup = copy,<br/>delete = unlink, export = send it"] --> C3[("N SQLite files;<br/>1000 handles<br/>= 66 MB")]
+    end
+
+    subgraph S4["D · PostgreSQL + RLS, one primary"]
+        direction LR
+        D1["1 app process,<br/>N tenant contexts"] --> D2["<b>enforced by the connection</b><br/>one set_config per request; FORCE<br/>RLS means even the table owner<br/>cannot bypass the policy"] --> D3[("1 Postgres primary;<br/>unbound connection<br/>returns 0 rows")]
+    end
+
+    subgraph S5["E · PostgreSQL + RLS, sharded by tenant_id"]
+        direction LR
+        E1["M app shards,<br/>K tenants each"] --> E2["<b>enforced by the connection</b><br/><i>identical to D.</i> RLS is a safety<br/>property on whichever shard answers;<br/>sharding only picks which one does"] --> E3[("N Postgres shards,<br/>tenant_id as the<br/>distribution column")]
+    end
+
+    S1 ~~~ S2 ~~~ S3 ~~~ S4 ~~~ S5
+
+    style A1 fill:#fff3cd,stroke:#a1791b,color:#111
+    style A2 fill:#d4edda,stroke:#2c7a3f,color:#111
+    style B2 fill:#f8d7da,stroke:#a33,color:#111
+    style C2 fill:#d4edda,stroke:#2c7a3f,color:#111
+    style D2 fill:#d4edda,stroke:#2c7a3f,color:#111
+    style E2 fill:#d4edda,stroke:#2c7a3f,color:#111
+```
+
+**B is the only architecture where the enforcement component is "developer discipline",
+and it is the tempting cheap-looking step.** It requires no migration and keeps every
+current query working, which is exactly why it should not be treated as a resting point:
+§6.1's leak table is what its middle box produces in practice. If Mongo must be kept, the
+honest version of B is to make that middle box a *single* enforced query-builder that all
+call sites are structurally required to pass through — which is closable, but is a property
+of the codebase rather than of the database, and has to be re-established after every future
+contribution.
+
+**A is shaded amber on the left, not the right.** Its isolation is excellent and free; what
+it costs is the app tier — ~99 MB per pod against ~1.2 MB of tenant data, and 11–12
+Kubernetes objects per tenant (§7.4). It is not a bad isolation architecture; it is a bad
+*density* architecture, and those are separable choices.
+
+**D and E have the same middle box.** That is the load-bearing observation for §10.4:
+adopting RLS now does not have to be revisited if one primary later proves insufficient,
+because sharding changes which node answers, not what enforces. And the tenant→shard map E
+needs is the same control plane Layer 2 already had to build to route requests to
+`ctxFor(tenantId)`.
 
 ---
 
@@ -1219,7 +1426,8 @@ forever," not "two backends inside the multitenant service forever."
 
 Directionally yes, but for a more specific reason than "Postgres shards better than Mongo."
 The two models differ in **whether the hard part of sharding has already been forced to
-exist**, not in which engine partitions more easily.
+exist**, not in which engine partitions more easily. §6.6's lanes A and E are the two
+models being compared here.
 
 **Today's per-tenant-Mongo model is not hard to shard — it is already sharded to the maximum
 possible degree, which is why it is expensive.** One tenant, one database (or one whole pod)
@@ -1343,7 +1551,12 @@ its own README recording what it measures and the traps it exists to avoid.
 
 This revision (2026-09-09) tightened the document from ~2 200 lines by folding
 question-by-question digressions into §7.6 ("Questions closed with a number") and removing
-diagrams and tables that restated adjacent prose. Four factual corrections were made against
+tables that restated adjacent prose. An earlier pass had also removed four diagrams; three
+system diagrams replace them, drawn as **components and their relationships** rather than as
+views of the roadmap — the single-tenant runtime (§2.8), the same system tenant-scoped with
+the shared alarm map visible as a system relationship (§5.1), and where isolation is
+enforced in each candidate storage architecture (§6.6). All three are rendered and checked
+with `@mermaid-js/mermaid-cli` rather than only eyeballed as source. Four factual corrections were made against
 a re-verification pass in which every code citation was re-checked and the benchmarks re-run:
 
 1. **Added §3** — cross-tenant hazards found in the code, including
