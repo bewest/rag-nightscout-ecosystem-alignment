@@ -315,6 +315,21 @@ module scope. Plugins are per-tenant instances under Layer 2, but module-scope v
 are not. A lint rule or test banning module-level mutable plugin state is a cross-cutting
 requirement (§5), and `speech.js` is the known instance to fix.
 
+**A second, previously unlisted instance: `lib/plugins/bridge.js:4`** holds
+`mostRecentRecord` at module scope, and it is not cosmetic — it is read on every poll to
+compute the next fetch window (`bridge.js:119`, `opts.fetch.minutes = parseInt((new
+Date() - mostRecentRecord) / 60000)`) and to decide whether a poll is due at all
+(`bridge.js:89`, `next_entry_expected = mostRecentRecord + msRUN_AFTER`). Two tenants'
+Dexcom-Share bridges sharing one process would corrupt each other's fetch windows —
+tenant A's bridge could compute its next fetch size from tenant B's most-recent-record
+timestamp, silently over- or under-fetching. This matters specifically for §5.6 below:
+vendor-connectivity plugins are not the "purely stateless" thing §5.3 characterized them
+as at the code-shape level (their *invocation* is interval-shaped and side-effect-free
+between ticks, which is what §5.3 was about) — but this one instance shows the same
+module-scope hazard class as `speech.js`, needing the identical fix (a per-instance
+closure variable, not module scope) before Layer 2 shared-process work, regardless of
+which storage engine or deployment target is chosen.
+
 ### 3.3 Direct `process.env` reads outside the env module
 
 **17 occurrences across 4 files**: `lib/server/app.js` (6), `lib/api3/index.js` (5),
@@ -752,6 +767,60 @@ for computed views and connectors — "PostgREST instead of the CRUD half of Nod
 these (e.g. a `delta` column); IOB/COB curves are not expressible as SQL generated columns
 without reimplementing oref's algorithm in SQL, which nobody here is proposing. This is
 EXP-MT-047 (§8.3).
+
+### 5.6 What sits alongside PostgREST, and does a hoster need a different shape than an indie operator?
+
+Three services beyond PostgREST are needed regardless of tenant count, verified against
+`node_modules/nightscout-connect` (the module `bootevent.js` wires in as
+`ctx.nightscoutConnect`) and `lib/plugins/bridge.js`/`mmconnect.js`:
+
+1. **A tenant-provisioning/auth-minting service.** PostgREST verifies JWTs; it does not
+   issue them. Something has to authenticate a user, look up which `tenant_id` they own,
+   and mint the JWT §5.5's `role`/`tenant_id` claims depend on — a small, genuinely
+   stateless service (session lookup → sign), the one new component this architecture
+   needs that today's Nightscout doesn't have an equivalent of at all (today's Basic-Auth
+   API-secret model doesn't map to per-tenant JWT issuance).
+2. **A realtime fan-out service.** Confirmed in §5.4: PostgREST itself has no WebSocket/MQTT
+   surface. Something has to `LISTEN` on Postgres's `NOTIFY` channel (or read the WAL) and
+   push to connected clients — Supabase Realtime is one implementation of exactly this, not
+   a dependency this architecture requires by name.
+3. **Vendor-connectivity workers — and these are a different problem from (1) and (2), not
+   a variant of the same one.** `nightscout-connect`'s own `builder.js` composes
+   session/fetch/poll `xstate` machines (`createSession`, `createFetch`, `createCycle`,
+   `createPoller`) with real backoff (`lib/backoff.js`) — not a stateless request handler.
+   Every source (`lib/sources/librelinkup.js:74-117`, `lib/sources/glooko/index.js:258-`,
+   `lib/sources/minimedcarelink/index.js:235-`) does `authFromCredentials` → `session` →
+   repeated `dataFromSession(session, last_known)`, reusing the session token across polls
+   rather than re-authenticating every tick (Glooko's is a scraped CSRF-token web login;
+   CareLink's is a multi-step `sessionID`/`sessionData` flow) — re-authenticating every
+   poll would itself risk vendor-side rate limiting or lockout. **A vendor-connectivity
+   worker is a long-lived, credentialed, per-tenant-account actor holding session/backoff
+   state across ticks, structurally unlike (1) and (2), which are stateless per request.**
+   §3.2's newly-flagged `bridge.js:4` module-scope hazard is exactly this class of bug: a
+   worker meant to hold state *per tenant credential set* accidentally holding it globally.
+
+**Single-tenant (indie) vs. multitenant (hoster) shape for each of these — this is where
+the answer genuinely diverges, not a cosmetic detail:**
+
+| Component | Indie / single-tenant target | Hoster / multitenant target (T1Pal-, NSPro-shaped) |
+|---|---|---|
+| CRUD + auth-minting | Today's Node app is already right-sized; no separate service needed | PostgREST + a small auth-mint service, because the economics only work once one process serves many tenants (§7.4) |
+| Realtime fan-out | Today's Socket.IO, in-process, is already right-sized | A shared fan-out service multiplexing many tenants' channels — this is the piece with a real concurrency/isolation requirement (§3.4's socket-room hazard, generalized) |
+| Vendor connectivity | Today's shape (`bridge.js`/`mmconnect.js`/`nightscout-connect`, one process, N in-process actors) is already close to optimal — one indie site has O(1) vendor accounts | **The scaling axis that actually matters for a 1 000-tenant hoster is not "1 pod per tenant," it's "N actors per worker process," and this is *already how `nightscout-connect` is shaped internally*** — one process running many `xstate` actors is exactly the multitenant-friendly shape §7.4 argues for elsewhere in the doc. The hoster-specific work is a scheduler/queue in front (assign tenant accounts to worker processes, rebalance on worker death) plus per-tenant credential storage (§6's RLS/isolation applies to *credentials*, arguably more sensitively than to glucose data) — not a rewrite of the vendor-fetch logic itself |
+
+**Answering "do websocket/MQTT and vendor connectivity need different solutions" directly:
+yes, and the reason is which side initiates.** Realtime push is server→client, triggered by
+a data change already committed to the store (WAL-driven, §5.4) — the natural shape is a
+stateless fan-out multiplexer with no per-tenant business logic of its own, just routing.
+Vendor connectivity is the opposite: an outbound, rate-limited, credentialed *pull* against
+a third party that doesn't know about Nightscout's tenants at all, gated by how each vendor's
+auth works (LibreLinkUp's bearer token, Glooko's scraped CSRF/cookie session, CareLink's
+multi-step session flow) — a session/backoff state machine per tenant account, not a
+routing problem. Collapsing these into "the realtime layer" would be a mistake: the fan-out
+service can be rebuilt stateless and horizontally scaled trivially; the vendor-connectivity
+workers cannot, because vendor sessions are inherently sticky to whichever process
+authenticated them, and losing that session on worker restart costs a re-login (itself
+rate-limit-risky) not just a reconnect. This is a new arm, EXP-MT-048 (§8.3).
 
 ---
 
@@ -1561,6 +1630,7 @@ running at scale, but they are no longer open questions.
 | EXP-MT-045 | Push-delivery comparison for headless/mobile: Socket.IO+resident-ddata vs. Postgres logical-replication push vs. MQTT broker fed by the same WAL stream (§5.4) | Does WAL-driven push match delivery latency without resident `ddata`, and does MQTT's QoS/persistent-session reduce missed alarms under mobile connectivity drops? |
 | EXP-MT-046 | Mongoose-schema casting cost at N-tenant ingest rate, generated from `specs/openapi/`, vs. today's hand-rolled `parseInt`/`find_options` casting (§6.4/§6.5) | Does mongoose's casting close the correctness gap at acceptable CPU cost inside the MongoDB adapter only — feeds the same validation-hot-path concern as EXP-MT-013 |
 | EXP-MT-047 | PostgREST-fronted CRUD (`tools/mt-bench/postgrest-poc/`) vs. a thin Node API layer over the same RLS tables, at realistic tenant/request counts (§5.5) | Does removing the Node process from the request path change p50/p99 or memory per tenant for the storage-scoped CRUD surface specifically, and does it hold up once a companion compute service (IOB/COB/alerts) is added back for the parts PostgREST cannot do |
+| EXP-MT-048 | Vendor-connectivity worker density: how many concurrent `nightscout-connect` session/poll actors (real LibreLinkUp/Glooko/CareLink auth flows) can one worker process hold before session-refresh latency or memory becomes the limit, vs. splitting across N worker processes (§5.6) | Is "N actors per worker process" (already `nightscout-connect`'s internal shape) actually the right multitenant scaling axis, or does per-vendor rate-limiting/session stickiness force a lower density than the CRUD/realtime layers achieve |
 
 `EXP-MT-030` matters disproportionately: the *same* generator against Nocturne gives the
 ecosystem its first apples-to-apples server comparison, and fills the gap that Nocturne's

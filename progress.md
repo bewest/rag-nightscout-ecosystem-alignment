@@ -2499,3 +2499,50 @@ and §5.5, two new live prototypes, EXP-MT-047.
   PostgREST 16.2 + Postgres 16 containers)
 - `lib/server/entries.js:203-205` (re-cited — the raw-collection-handle call site the
   mongo-iso-poc bypass test mirrors)
+
+**Follow-up 14 (what services sit on top of PostgREST; do multitenant hosters like T1Pal/
+NSPro need a different shape than indie single-tenant operators; do websocket/MQTT
+realtime and vendor-cloud connectivity (Tandem, Tidepool, Glooko, Dexcom, Medtronic,
+LibreLinkUp) need different solutions)** — adds new §5.6, a correction to §3.2, EXP-MT-048.
+- Investigated `node_modules/nightscout-connect` (the module `bootevent.js` wires as
+  `ctx.nightscoutConnect`, already referenced but not previously analyzed in depth):
+  `lib/builder.js` composes `xstate` session/fetch/cycle/poll machines with real backoff
+  (`lib/backoff.js`); every vendor source (`lib/sources/librelinkup.js:74-117`,
+  `glooko/index.js:258-`, `minimedcarelink/index.js:235-`) does
+  `authFromCredentials`→session→repeated `dataFromSession(session, last_known)`, reusing
+  the session token across polls rather than re-authenticating every tick (Glooko scrapes
+  a CSRF-token web login; CareLink does a multi-step `sessionID`/`sessionData` flow).
+  Confirms vendor connectivity holds real per-tenant-account state (session + backoff)
+  across ticks — structurally different from a stateless request handler.
+- **Found and documented a second module-scope cross-tenant hazard**, same class as
+  `speech.js` (§3.2, previously the only listed instance): `lib/plugins/bridge.js:4`'s
+  `mostRecentRecord` is read on every poll to size the next fetch window
+  (`bridge.js:119`) and gate whether a poll is due (`bridge.js:89`) — genuinely
+  load-bearing, not cosmetic. Two tenants' bridges sharing one process would corrupt each
+  other's fetch windows. Added to §3.2 as a correction to §5.3's earlier "stateless"
+  characterization of vendor-connectivity plugins (true at the invocation-shape level,
+  not true of this one module-scope variable).
+- **New §5.6** answers the question directly: three services sit alongside PostgREST
+  regardless of tenant count (auth/JWT-minting, realtime fan-out, vendor-connectivity
+  workers), and the indie-vs-hoster split matters differently for each — CRUD/realtime are
+  already right-sized for indie deployments as-is, but for a 1000-tenant hoster the
+  scaling axis is "N actors per worker process," which is *already how nightscout-connect
+  is internally shaped* (one process running many xstate actors); the hoster-specific work
+  is a scheduler/queue and per-tenant credential storage in front of it, not a rewrite of
+  the fetch logic. Argued websocket/MQTT (server→client, WAL-triggered, stateless
+  fan-out/routing) and vendor connectivity (outbound, rate-limited, credentialed pull,
+  session-sticky per tenant account) are genuinely different problems, not two facets of
+  "the realtime layer" — the fan-out service can be rebuilt stateless and scaled
+  trivially; vendor-connectivity workers cannot, because losing a session on restart costs
+  a re-login that itself risks vendor-side rate limiting.
+- Added EXP-MT-048 (vendor-connectivity worker density) to the arms table (§8.3).
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official/node_modules/nightscout-connect/index.js`
+  (the `manage(env, ctx)` entry point wired from `bootevent.js`)
+- `.../nightscout-connect/lib/builder.js` (xstate session/fetch/cycle/poller composition)
+- `.../nightscout-connect/lib/sources/librelinkup.js:74-117`
+- `.../nightscout-connect/lib/sources/glooko/index.js:258-`
+- `.../nightscout-connect/lib/sources/minimedcarelink/index.js:235-`
+- `lib/plugins/bridge.js:4,89,119` (module-scope `mostRecentRecord`, re-examined; new
+  finding, not previously flagged in §3)
