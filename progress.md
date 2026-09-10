@@ -2578,3 +2578,55 @@ already supplied the evidence this question needed to be answered from.
   services-per-concern as a default posture.
 - Added EXP-MT-049 (split topology vs. minimal-sidecar alternative, measuring cost of the
   added hops) to the arms table (§8.3).
+
+**Follow-up 16 (additional experiments for clarity; confirming the nightscout-connect
+in-tree decision; does a Node server scale with additional services or fan out sidecars/
+edge-lambda; should nightscout-roles-gateway's features fold into core like Nocturne, or
+stay separately scoped?)** — adds a correction to §9.1, new §9.4, new prototype
+`tools/mt-bench/nrg-resolution-poc/`, EXP-MT-050.
+- **Confirmed the in-tree Connect decision already exists in this workspace's own docs**
+  (`docs/reports/nightscout-release-planning-2026-09/feature-backlog-prioritization.md:19`,
+  proposing bringing `nightscout-connect` in-tree for PR-ownership reasons, independent of
+  multitenancy) and verified the mechanics: `package.json`'s `nightscout-connect` dependency
+  is a GitHub tarball pinned to a commit sha, not an npm-registry package, meaning any
+  coordinated change already requires touching both repos today. Updated §9.1's
+  `@nightscout/core` package list to note `nightscout-connect` belongs there once in-tree,
+  citing its `manage(env, ctx)` entry point (`node_modules/nightscout-connect/index.js:20`)
+  as already `init`-shaped, consistent with the rest of `core` — in-tree changes where the
+  code lives, not its multitenancy-readiness, which §5.6 already established.
+- **Investigated `~/src/nightscout-roles-gateway` (NRG) in depth**: `lib/policies/
+  index.js:33-49`'s `find_expected_name` (a knex LEFT JOIN across `registered_sites`/
+  `nightscout_authenticity_records`), RBAC group policies with weekly schedules
+  (`lib/policies/`, `migrations/`), ORY Kratos/Hydra-based delegated identity/ownership
+  claims (`env.js:8-13`), JWT brokering against each site's own `API_SECRET` via
+  `/api/v2/authorization/subjects` (`lib/tokens/index.js:9-40`), and the
+  `x-upstream-origin`/`x-forwarded-host` headers it hands NGINX for `auth_request`-style
+  reverse proxying (`lib/routes.js:327-330`, `specify_upstream_handler`).
+- **New prototype `tools/mt-bench/nrg-resolution-poc/`**: measured NRG's actual resolution
+  query shape (knex LEFT JOIN, 2000 seeded sites) against Postgres vs. the same data held
+  in an in-process `Map`. Two independent runs: sidecar p50 0.21/0.45 ms, p99 1.08/1.11 ms;
+  in-core p50 0.0002/0.0004 ms, p99 0.0011/0.0025 ms — **~1 000× for the resolution step
+  specifically**, small in absolute terms but the first concrete number behind §9.3's
+  abstract "every added hop re-derives tenant identity" argument.
+- **New §9.4 answers the fold-in-vs-stay-separate question in three parts, not one**:
+  (1) resolution (hostname→tenant) is worth folding into core's in-process lookup, cheaply,
+  reusing NRG's schema as a data source, not its code; (2) RBAC/group/schedule enforcement
+  should stay separately scoped — it is genuinely richer than `cgm-remote-monitor`'s
+  authorization model, depends on an external OAuth2/OIDC provider relationship (Kratos/
+  Hydra) that Nocturne's own precedent (tenant-claim verification only, no group/schedule
+  policy authoring) does not argue for absorbing either; (3) per-site `API_SECRET`
+  brokering is specific to NRG's fleet-of-single-tenant-instances deployment model and has
+  no equivalent need in the shared-process multitenant target — that problem doesn't exist
+  there. Net: NRG stays the right tool for Architecture A (fleet of single-tenant
+  instances), and only its resolution *data shape*, not its RBAC/brokering scope, should
+  migrate into the shared multitenant target's core.
+- Added EXP-MT-050 (validate the resolution-only migration drops the hop cost without
+  silently losing any production RBAC/schedule rule) to the arms table (§8.3).
+
+**Source Files Analyzed (this round)**:
+- `docs/reports/nightscout-release-planning-2026-09/feature-backlog-prioritization.md:19,149`
+  (existing in-tree-Connect decision context in this workspace)
+- `externals/cgm-remote-monitor-official/package.json` (nightscout-connect tarball pin)
+- `externals/cgm-remote-monitor-official/node_modules/nightscout-connect/index.js:20`
+- `~/src/nightscout-roles-gateway/env.js`, `lib/policies/index.js`, `lib/tokens/index.js`,
+  `lib/routes.js`, `knexfile.js`, `README.md`, `migrations/` (directory listing only)

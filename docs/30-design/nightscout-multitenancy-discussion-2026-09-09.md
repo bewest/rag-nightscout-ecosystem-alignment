@@ -1632,6 +1632,7 @@ running at scale, but they are no longer open questions.
 | EXP-MT-047 | PostgREST-fronted CRUD (`tools/mt-bench/postgrest-poc/`) vs. a thin Node API layer over the same RLS tables, at realistic tenant/request counts (§5.5) | Does removing the Node process from the request path change p50/p99 or memory per tenant for the storage-scoped CRUD surface specifically, and does it hold up once a companion compute service (IOB/COB/alerts) is added back for the parts PostgREST cannot do |
 | EXP-MT-048 | Vendor-connectivity worker density: how many concurrent `nightscout-connect` session/poll actors (real LibreLinkUp/Glooko/CareLink auth flows) can one worker process hold before session-refresh latency or memory becomes the limit, vs. splitting across N worker processes (§5.6) | Is "N actors per worker process" (already `nightscout-connect`'s internal shape) actually the right multitenant scaling axis, or does per-vendor rate-limiting/session stickiness force a lower density than the CRUD/realtime layers achieve |
 | EXP-MT-049 | Split topology (PostgREST + auth-mint + realtime-fanout + Node compute service + vendor-connectivity pool) vs. `@nightscout/multitenant` alone with only vendor-connectivity split out, at N tenants (§9.3) | Does the four-process split add measurable correctness or latency cost from re-deriving/re-forwarding tenant identity at each hop, relative to the minimal-sidecar alternative |
+| EXP-MT-050 | Migrate `nightscout-roles-gateway`'s `registered_sites` schema (`tools/mt-bench/nrg-resolution-poc/`) into an in-core tenant-resolution `Map`, keep RBAC/schedule/OAuth2-brokering features running unchanged in NRG (§9.4) | Does the resolution-only migration actually drop the ~1 000× per-request hop cost measured, and does any production RBAC/schedule rule get silently lost in the process |
 
 `EXP-MT-030` matters disproportionately: the *same* generator against Nocturne gives the
 ecosystem its first apples-to-apples server comparison, and fills the gap that Nocturne's
@@ -1745,7 +1746,19 @@ A natural package boundary already exists:
   `plugins/*` — including vendor connectivity (`bridge.js` Dexcom Share, `mmconnect.js`
   CareLink, `openaps.js`, `loop.js`), all already `init(env, bus, ...)`-shaped and reading
   per-tenant credentials from `env.extendedSettings` rather than a global —
-  `authorization/`, `storage/` adapters, `api3/`.
+  `authorization/`, `storage/` adapters, `api3/`. **`nightscout-connect` belongs here too,
+  once brought in-tree** (already decided independently of multitenancy —
+  `docs/reports/nightscout-release-planning-2026-09/feature-backlog-prioritization.md:19`,
+  proposed for PR-ownership reasons: today it is a tarball dependency pinned to a commit
+  hash, `package.json`'s `"nightscout-connect":
+  "https://github.com/nightscout/nightscout-connect/archive/<sha>.tar.gz"`, so any change
+  needing coordination between the connector and the server already requires touching both
+  repos regardless of tenancy). It fits the same shape as the rest of `core`: its
+  `manage(env, ctx)` entry point   (`node_modules/nightscout-connect/index.js:20`) is already
+  `init`-shaped and per-invocation, not a singleton, and its internal `xstate`
+  session/fetch/poll actors (§5.6) are already tenant-account-scoped by construction —
+  bringing it in-tree changes *where the code lives*, not its multitenancy-readiness,
+  which was already established in §5.6.
 - **`@nightscout/single-tenant`** (target A): today's `server.js` + `lib/server/app.js`, one
   `bootevent()` per process, one Mongo connection, one listener. **Unchanged**, for
   operators running their own instance — a permanently valid deployment target.
@@ -1851,6 +1864,86 @@ running the split topology (PostgREST + auth-mint + realtime-fanout + Node compu
 service + vendor-connectivity pool) at N tenants show a measurable correctness or latency
 cost from the added hops, versus the same feature set in `@nightscout/multitenant` alone
 with only the vendor-connectivity pool split out.
+
+### 9.4 Where does `nightscout-roles-gateway` fit — a sidecar to keep, or features to fold into core?
+
+`~/src/nightscout-roles-gateway` (NRG) is not a hypothetical fourth sidecar — it is an
+**already-built, already-running** gateway that does part of what §5.6/§9.3 assigned to
+the (currently hypothetical) auth/tenant-resolution sidecar, and considerably more:
+host→tenant resolution (`lib/policies/index.js:33-49`'s `find_expected_name`, a knex
+LEFT JOIN across `registered_sites`/`nightscout_authenticity_records`), RBAC group
+policies with weekly schedules (`lib/policies/`, `migrations/20220430225902_*`), delegated
+ownership claims over OAuth2 identity traits via ORY Kratos/Hydra (`env.js:8-13`), and
+brokering existing per-site Nightscout JWTs by calling each site's own
+`/api/v2/authorization/subjects` with its `API_SECRET` (`lib/tokens/index.js:9-40`) —
+then handing NGINX an `x-upstream-origin` header for `auth_request`-style reverse proxying
+(`lib/routes.js:327-330`).
+
+**A live measurement of the resolution step alone**, mirroring NRG's actual query
+(`tools/mt-bench/nrg-resolution-poc/`, committed and reproducible): a knex/Postgres
+`LEFT JOIN` shaped exactly like `find_expected_name`, against 2 000 seeded sites, two
+independent runs:
+
+| Shape | p50 | p99 |
+|---|---:|---:|
+| Sidecar — knex/Postgres LEFT JOIN (NRG's actual query) | 0.21 / 0.45 ms | 1.08 / 1.11 ms |
+| In-core — same data in a `Map<hostname, siteRow>`, no network hop | 0.0002 / 0.0004 ms | 0.0011 / 0.0025 ms |
+
+**~1 000× for the resolution step specifically** — small in absolute terms (§2.3's request
+rate makes even the sidecar path negligible per-request), but it is the concrete number
+behind §9.3's abstract "every added hop is a place to re-derive tenant identity" argument,
+now measured for the piece NRG actually performs.
+
+**But this measurement is deliberately narrow, and answering "should NRG fold into core"
+requires being honest about what it leaves out.** NRG today assumes a *fleet of separate
+single-tenant Nightscout instances* behind one gateway (§5.1 Architecture A, "the same
+system, tenant-scoped" only at the routing layer) — its `upstream_origin` per site is
+literally a different backend process/pod per tenant, the exact model §7.4 measured as
+costly at scale. It is not, today, wired to mint the `tenant_id`-claimed JWTs a *shared*
+Postgres/RLS multitenant target (§5.5's PostgREST prototype, §6.1) would need — it brokers
+each site's own existing JWT subject list, which presumes each site already has its own
+auth surface to broker.
+
+**Three claims, kept separate rather than bundled into one yes/no, mirroring how §6.4
+handled the mongoose question:**
+
+1. **Resolution (hostname → tenant/upstream) — candidate to fold into core, cheaply.** If
+   the multitenant target's need is genuinely "which `tenantId` does this Host header
+   belong to," NRG's schema (`registered_sites`) is a fine source of truth to load into the
+   in-process `Map` §9.1 already proposed — this is a data-shape reuse, not a code reuse,
+   and the ~1 000× number above is the argument for not doing this resolution as a
+   per-request network hop once the target is the shared-process architecture (§5B/§9.1)
+   rather than the fleet-of-single-tenant-pods architecture NRG was built for.
+2. **RBAC/group-policy/schedule enforcement — keep separately scoped, do not fold in.**
+   This is genuinely richer than anything `cgm-remote-monitor`'s authorization model
+   attempts today (`lib/authorization/`'s role/subject model has no notion of a *schedule*
+   or *group inclusion by identity trait*) and depends on ORY Kratos/Hydra as an identity
+   provider — a real external dependency, unlike the resolution step. Folding this into
+   `@nightscout/core` would mean either vendoring an OAuth2/OIDC provider relationship
+   into the server itself (a scope increase Nocturne did not take on either — its
+   `LegacyJwtHandler`/`DirectGrantTokenHandler`, §4, verify a tenant claim, they do not
+   implement group/schedule policy authoring) or reimplementing NRG's policy engine
+   in-process, neither of which this analysis finds a forcing reason to do. **Nocturne's
+   precedent argues for folding in *tenant-claim verification* (already core's job per
+   §5.1's resolution middleware), not for folding in a full RBAC/scheduling product.**
+3. **JWT brokering against per-site `API_SECRET`s (`lib/tokens/index.js`) — specific to the
+   fleet-of-single-tenant-instances model, does not carry over.** In the shared multitenant
+   target, there is one process minting tenant-scoped tokens directly (§5.6's auth-mint
+   sidecar or §9.1's in-core resolution), not N separate sites each with their own
+   `API_SECRET` to broker against — this piece of NRG answers a problem the shared-process
+   architecture does not have.
+
+**Net**: NRG remains the right answer for exactly the deployment model it was built for —
+a hoster running many *separate* single-tenant Nightscout instances behind one gateway
+(§5.1 Architecture A), where its RBAC/schedule richness is the actual value proposition.
+For the shared-process multitenant target this document otherwise recommends (§10.2), only
+the *resolution data shape* (which hostname maps to which tenant) is worth reusing, and
+only by folding it into core's in-process lookup rather than keeping it a per-request
+sidecar call — the RBAC/scheduling/OAuth2-brokering value NRG adds has no shared-process
+equivalent need yet, and inventing one would be scope creep this document has no evidence
+to justify. This is EXP-MT-050 (§8.3): validate NRG's `registered_sites` schema as a
+migration source for the in-core tenant-resolution map, and confirm no RBAC/schedule
+feature currently in production use gets silently dropped by that migration.
 
 ---
 
