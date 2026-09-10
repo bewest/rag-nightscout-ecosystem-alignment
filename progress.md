@@ -2630,3 +2630,32 @@ stay separately scoped?)** — adds a correction to §9.1, new §9.4, new protot
 - `externals/cgm-remote-monitor-official/node_modules/nightscout-connect/index.js:20`
 - `~/src/nightscout-roles-gateway/env.js`, `lib/policies/index.js`, `lib/tokens/index.js`,
   `lib/routes.js`, `knexfile.js`, `README.md`, `migrations/` (directory listing only)
+
+**Follow-up 17 ("for multitenant implementation are we still leaning towards custom Node
+js server built for multitenant compatibility, or towards some kind of PostgREST + edge
+function/lambda architecture?")** — no new prototype needed; synthesized the already-
+measured findings from §5.5/§5.6/§9.3 into an explicit answer at the §10.2 recommendation
+level, since the detailed per-piece analysis in those sections risked leaving the
+top-line lean ambiguous.
+- Added a new passage to §10.2 stating the answer plainly: **the lean is toward extending
+  the Node monolith, with PostgREST/edge-functions positioned as an optional front for one
+  piece (CRUD), not as the architecture** — restated as a false-binary correction, because
+  "custom Node" vs. "PostgREST+edge/lambda" is not the actual choice this document's
+  evidence supports.
+- Grounded this in three already-measured facts, tied together explicitly for the first
+  time at the recommendation level: (1) computed state (calcdelta/IOB/COB/alarms) has no
+  edge/lambda-shaped answer at all — §7.4's 10-20x win is inseparable from that state
+  living in one long-running process's memory, and lambda/edge cold-starts (§7.1's
+  measured ~3-4ms/cold-wake tax) are the opposite of what that finding needs; this is why
+  the recommendation is "extend the monolith," not "go serverless" — the piece that must
+  not be serverless is also the piece the central finding rests on; (2) CRUD is where
+  PostgREST is legitimate and load-bearing (§5.5's live measurement), a choice about which
+  process performs writes made after the isolation-primitive decision, not a substitute for
+  the compute-locality decision; (3) edge/lambda fits vendor connectivity's per-tick
+  invocation shape (§5.3) but not its cross-tick session-continuity requirement (§5.6/
+  §9.3's LibreLinkUp/Glooko/CareLink session state), making it a qualified, not
+  unqualified, fit.
+- Concluded explicitly: a custom Node process for the piece that must stay stateful/
+  colocated, with PostgREST and edge/lambda as independently justified options for the
+  genuinely stateless/interval-shaped pieces (CRUD, realtime fan-out, vendor-connectivity
+  ticks) — not either extreme as the whole architecture.

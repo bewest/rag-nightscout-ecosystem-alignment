@@ -2000,6 +2000,53 @@ primitive; stay on Node.**
 - **A native/WASM core stays in reserve** (Layer 5), conditional on a real CPU-bound hot path
   surfacing under load — and §7.3's typed-first requirement applies regardless of host.
 
+**Where this leaves the PostgREST/edge-function question, stated plainly, since §5.5/§5.6/
+§9.3 explored it in depth and the answer is easy to lose in that detail: the lean is toward
+extending the Node monolith, with PostgREST/edge-functions positioned as an optional
+front for one piece (CRUD), not as the architecture.** Restating §9.3's per-piece table at
+the recommendation level, because "custom Node server" vs. "PostgREST + edge/lambda" is a
+false binary at the level this document can defend:
+
+- **The piece that decides the architecture — computed state (`calcdelta`, IOB/COB, alarm
+  evaluation) — has no edge/lambda-shaped answer and was never a PostgREST candidate.**
+  §7.4's measured 10–20× win is inseparable from that state living in one long-running
+  process's memory alongside the tenant's loaded data; a lambda/edge function is
+  cold-started per-invocation and shares nothing across invocations by design (§5.3's ~3–4
+  ms/cold-wake cost, mostly `JSON.parse`, already establishes this is a real, measured
+  tax, not a theoretical one) — the opposite of what this document's central finding
+  needs. **This is why the recommendation is "extend the monolith," not "go serverless":
+  the one piece that must not be serverless is also the piece the whole 10–20× argument
+  rests on.**
+- **CRUD is where PostgREST is a legitimate, load-bearing option, not a rejected one** —
+  §5.5 measured it working correctly against the same RLS primitive §10.2's isolation
+  recommendation already calls for. If a hoster is *already* standing up Postgres/RLS for
+  isolation reasons, fronting the CRUD surface with PostgREST is a reasonable
+  implementation choice for that piece specifically, at the cost §9.3 named honestly (the
+  monolith doesn't disappear, it now consumes a WAL/NOTIFY stream instead of owning writes
+  directly). It is not, however, a reason to prefer PostgREST's *architecture* over the
+  monolith's — it is a choice about which process performs writes, made after the
+  isolation-primitive decision, not instead of the compute-locality decision.
+- **Edge functions/lambda fit exactly one already-identified piece: vendor connectivity's
+  *invocation shape*, not its runtime state.** §5.3 named `bridge.js`/`mmconnect.js` as
+  near-exact fits for a cron-triggered edge function *at the level of a single fetch
+  tick*; §5.6 and §9.3 then established the actual constraint is session/backoff state
+  held *across* ticks (LibreLinkUp/Glooko/CareLink auth sessions), which most edge/lambda
+  platforms do not preserve between invocations without an explicit external store —
+  making this a qualified fit (good for the interval-triggering half of the problem,
+  requiring extra plumbing for the session-continuity half) rather than an unqualified one.
+  Realtime fan-out is the other place a managed edge platform (Supabase Realtime, §5.3)
+  is a reasonable swap-in, because that piece is genuinely stateless per §5.6/§9.3.
+
+**So: not "custom Node server" vs. "PostgREST + edge/lambda" as competing whole-system
+answers — a custom Node process for the piece that must stay stateful and colocated
+(computed state, §7.4/§9.3), with PostgREST and edge/lambda as legitimate, independently
+justified options for the pieces that are genuinely stateless or interval-shaped (CRUD,
+realtime fan-out, vendor-connectivity's per-tick invocation). Treating either extreme as
+the whole architecture would be a real mistake in different directions: an all-PostgREST/
+edge design has nowhere to put the piece the 10–20× finding depends on; an all-custom-Node
+design forgoes a measured, working, lower-maintenance option (§5.5) for the one piece that
+does not need to be stateful at all.**
+
 ### 10.3 Can it support both MongoDB and Postgres?
 
 **Temporarily yes; permanently no — and this document is not recommending the latter.**
