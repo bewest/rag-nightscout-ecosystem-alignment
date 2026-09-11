@@ -1,0 +1,96 @@
+{
+ "generated_by": "tools/nsschema/sync_cost.py",
+ "note": "Source-derived upper bound on distinct endpoint calls per sync cycle, not a packet capture. Useful for comparing designs.",
+ "cycle_minutes": 5,
+ "cycles_per_day": 288,
+ "clients": {
+  "AndroidAPS": {
+   "source": "AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/networking/NightscoutRemoteService.kt",
+   "api_version": "v3",
+   "endpoints": [
+    "DELETE v3/entries/{identifier}",
+    "DELETE v3/food",
+    "DELETE v3/treatments/{identifier}",
+    "GET v3/devicestatus/history/{from}",
+    "GET v3/entries/history/{from}",
+    "GET v3/entries?sort=date",
+    "GET v3/entries?sort\\$desc=date&type=sgv",
+    "GET v3/food",
+    "GET v3/food/history/{from}",
+    "GET v3/lastModified",
+    "GET v3/profile/history/{from}",
+    "GET v3/profile?sort\\$desc=date&limit=1",
+    "GET v3/status",
+    "GET v3/treatments/history/{from}",
+    "GET v3/treatments?sort=created_at",
+    "POST v3/devicestatus",
+    "POST v3/entries",
+    "POST v3/food",
+    "POST v3/profile",
+    "POST v3/treatments"
+   ],
+   "endpoint_count": 20,
+   "has_watermark": true,
+   "has_delta_endpoint": true,
+   "read_endpoints": 12,
+   "write_endpoints": 5
+  },
+  "Loop/NightscoutKit": {
+   "source": "NightscoutKit/Sources/NightscoutKit/NightscoutClient.swift",
+   "api_version": "v1",
+   "endpoints": [
+    "/api/v1/devicestatus",
+    "/api/v1/entries",
+    "/api/v1/experiments/test",
+    "/api/v1/profile",
+    "/api/v1/profile/current",
+    "/api/v1/profiles",
+    "/api/v1/treatments"
+   ],
+   "endpoint_count": 7,
+   "has_watermark": false,
+   "has_delta_endpoint": false,
+   "read_endpoints": 7,
+   "write_endpoints": 0
+  },
+  "Trio": {
+   "source": "Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift",
+   "api_version": "v1",
+   "endpoints": [
+    "/api/v1/devicestatus.json",
+    "/api/v1/entries.json",
+    "/api/v1/entries/sgv.json",
+    "/api/v1/profile.json",
+    "/api/v1/treatments.json"
+   ],
+   "endpoint_count": 5,
+   "has_watermark": false,
+   "has_delta_endpoint": false,
+   "read_endpoints": 5,
+   "write_endpoints": 0
+  }
+ },
+ "against_a_batched_design": {
+  "AndroidAPS": {
+   "requests_per_cycle_upper_bound": 20,
+   "requests_per_day_upper_bound": 5760,
+   "batched_requests_per_cycle": 2,
+   "batched_requests_per_day": 576,
+   "reduction_factor": 10.0
+  },
+  "Loop/NightscoutKit": {
+   "requests_per_cycle_upper_bound": 7,
+   "requests_per_day_upper_bound": 2016,
+   "batched_requests_per_cycle": 2,
+   "batched_requests_per_day": 576,
+   "reduction_factor": 3.5
+  },
+  "Trio": {
+   "requests_per_cycle_upper_bound": 5,
+   "requests_per_day_upper_bound": 1440,
+   "batched_requests_per_cycle": 2,
+   "batched_requests_per_day": 576,
+   "reduction_factor": 2.5
+  }
+ }
+}

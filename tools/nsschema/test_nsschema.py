@@ -1186,3 +1186,55 @@ def test_loop_inputs_match_the_algorithm_protocol():
               if e.get("algorithm") == "loop"}
     missing = declared - mapped
     assert not missing, f"AlgorithmInput members with no source mapping: {sorted(missing)}"
+
+
+# ── controller state-model registrations ────────────────────────────────
+
+from nsschema import sync_model  # noqa: E402
+import jsonschema  # noqa: E402
+
+
+def test_registration_schema_is_valid():
+    schema = json.loads((corpus.repo_root() / sync_model.SCHEMA).read_text())
+    jsonschema.Draft202012Validator.check_schema(schema)
+
+
+@pytest.mark.parametrize("key", sorted(sync_model.CONTROLLERS))
+def test_generated_registrations_validate(key):
+    root = corpus.repo_root()
+    schema = json.loads((root / sync_model.SCHEMA).read_text())
+    registration = sync_model.build(root, key, sync_model.CONTROLLERS[key])
+    checked = {k: v for k, v in registration.items() if not k.startswith("x-")}
+    jsonschema.Draft202012Validator(schema).validate(checked)
+
+
+def test_a_controller_is_discriminated_structurally_not_by_device_string():
+    # The device string is free text, is the field most effort went into
+    # de-identifying, and is unreliable: one site's device strings read like
+    # a controller while its treatments show no automated dosing.
+    root = corpus.repo_root()
+    for key, spec in sync_model.CONTROLLERS.items():
+        registration = sync_model.build(root, key, spec)
+        for document in registration["spec"]["documents"]:
+            disc = document.get("discriminator")
+            if disc:
+                assert disc["path"] != "device", key
+
+
+def test_an_unrecorded_input_is_declared_with_a_null_path():
+    # "Declared and unrecorded" has to be expressible, or completeness is
+    # a guess. Loop's automaticBolusApplicationFactor is the case.
+    root = corpus.repo_root()
+    registration = sync_model.build(root, "loop", sync_model.CONTROLLERS["loop"])
+    absent = [r for r in registration["spec"]["replayInputs"]
+              if r["status"] == "absent"]
+    assert absent, "Loop has absent inputs and they must appear"
+    assert all(r["path"] is None for r in absent)
+
+
+def test_completeness_is_reported_not_assumed():
+    root = corpus.repo_root()
+    stats = sync_model.completeness(
+        sync_model.build(root, "loop", sync_model.CONTROLLERS["loop"]))
+    assert 0.0 < stats["recorded_share"] < 1.0
+    assert stats["replayable_share"] >= stats["recorded_share"]

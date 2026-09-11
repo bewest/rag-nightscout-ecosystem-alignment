@@ -666,6 +666,7 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
         schema-scan-pii schema-sanitize schema-attribute \
         schema-quirks schema-quirks-check schema-decompose \
         schema-nocturne schema-dosing schema-vendors schema-observability \
+        schema-sync-model schema-sync-cost \
         schema-test schema-clean
 
 PY ?= python3
@@ -756,6 +757,14 @@ schema-vendors:
 ## schema-observability: score real sites against the observability profile
 schema-observability:
 	@$(NSSCHEMA).observability
+
+## schema-sync-model: generate controller state-model registrations
+schema-sync-model:
+	@$(NSSCHEMA).sync_model
+
+## schema-sync-cost: what a controller's Nightscout sync costs on the wire
+schema-sync-cost:
+	@$(NSSCHEMA).sync_cost
 
 ## schema-drift: check tools/ns2parquet against the measured wire model
 schema-drift:
