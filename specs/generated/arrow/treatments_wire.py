@@ -68,7 +68,7 @@ TREATMENTS_WIRE_SCHEMA = pa.schema([
     pa.field("targetTop", pa.float64()),  # 0% docs, 1 sites; sparse
     pa.field("temp", pa.large_string()),  # 46% docs, 10 sites; core
     pa.field("timeshift", pa.int64()),
-    pa.field("timestamp", pa.large_string()),  # 84% docs, 10 sites; core; union of integer, string widened to string
+    pa.field("timestamp", pa.large_string()),  # 84% docs, 10 sites; core; union of number, string widened to string
     pa.field("type", pa.large_string()),  # 35% docs, 10 sites; core
     pa.field("unabsorbed", pa.float64()),  # 35% docs, 10 sites; core
     pa.field("units", pa.large_string()),  # 0% docs, 1 sites; sparse

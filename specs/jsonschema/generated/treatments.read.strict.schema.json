@@ -17,6 +17,10 @@
    "type": "integer",
    "description": "Carb absorption time in MINUTES (Nightscout convention)."
   },
+  "amount": {
+   "type": "number",
+   "description": "Temp-basal rate or bolus amount, written alongside `rate` and"
+  },
   "app": {
    "type": "string",
    "description": "Application identifier"
@@ -39,8 +43,15 @@
     "null",
     "number"
    ],
-   "description": "Carbohydrates in grams",
+   "description": "Carbohydrates in grams.",
    "minimum": 0
+  },
+  "correctionRange": {
+   "type": "array",
+   "description": "Override correction range as a two-element [low, high] array in",
+   "items": {
+    "type": "number"
+   }
   },
   "created_at": {
    "type": "string",
@@ -96,8 +107,12 @@
     "null",
     "number"
    ],
-   "description": "Insulin amount in Units",
+   "description": "Insulin amount in Units.",
    "minimum": 0
+  },
+  "insulinNeedsScaleFactor": {
+   "type": "number",
+   "description": "Override scale factor applied to insulin needs, as a multiplier"
   },
   "insulinType": {
    "type": "string",
@@ -203,10 +218,10 @@
   },
   "timestamp": {
    "type": [
-    "integer",
+    "number",
     "string"
    ],
-   "description": "Epoch milliseconds (alternative to created_at)"
+   "description": "Alternative timestamp to `created_at`."
   },
   "type": {
    "type": "string",
@@ -221,6 +236,16 @@
   "unabsorbed": {
    "type": "number",
    "description": "Unabsorbed insulin at time of bolus"
+  },
+  "userEnteredAt": {
+   "type": "string",
+   "description": "When the user entered the treatment, as distinct from when it was",
+   "format": "date-time"
+  },
+  "userLastModifiedAt": {
+   "type": "string",
+   "description": "When the user last edited the treatment.",
+   "format": "date-time"
   },
   "utcOffset": {
    "type": "integer",

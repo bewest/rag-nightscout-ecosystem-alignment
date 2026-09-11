@@ -65,7 +65,7 @@ export const TreatmentsSchema = z.object({
     targetTop: z.number().optional(),  // 0% of documents, 1 sites, sparse
     temp: z.enum(["absolute", "percent"]).optional(),  // 46% of documents, 10 sites, core
     timeshift: z.number().int().optional(),
-    timestamp: z.union([z.number().int(), z.string()]).optional(),  // 84% of documents, 10 sites, core
+    timestamp: z.union([z.number(), z.string()]).optional(),  // 84% of documents, 10 sites, core
     type: z.enum(["Normal", "Priming", "SMB", "normal"]).optional(),  // 35% of documents, 10 sites, core
     unabsorbed: z.number().optional(),  // 35% of documents, 10 sites, core
     units: z.string().optional(),  // 0% of documents, 1 sites, sparse

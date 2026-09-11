@@ -67,7 +67,7 @@ const TreatmentsSchema = new Schema({
   targetTop: { type: Number },  // 0% of documents, 1 sites; sparse
   temp: { type: String, enum: ["absolute", "percent"] },  // 46% of documents, 10 sites; core
   timeshift: { type: Number },
-  timestamp: { type: Schema.Types.Mixed },  // 84% of documents, 10 sites; core; union of integer, string in live data — not cast
+  timestamp: { type: Schema.Types.Mixed },  // 84% of documents, 10 sites; core; union of number, string in live data — not cast
   type: { type: String, enum: ["Normal", "Priming", "SMB", "normal"] },  // 35% of documents, 10 sites; core
   unabsorbed: { type: Number },  // 35% of documents, 10 sites; core
   units: { type: String },  // 0% of documents, 1 sites; sparse

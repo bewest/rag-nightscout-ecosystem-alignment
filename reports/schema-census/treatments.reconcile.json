@@ -17,94 +17,26 @@
   "j",
   "k"
  ],
- "declared_paths": 47,
+ "declared_paths": 53,
  "observed_paths": 41,
  "summary": {
-  "undeclared": 12,
+  "undeclared": 6,
   "undeclared_by_tier": {
-   "core": 1,
-   "common": 6,
    "rare": 3,
    "vendor": 1,
+   "common": 1,
    "sparse": 1
   },
   "unobserved": 11,
   "v3_metadata_absent": 7,
-  "type_conflicts": 3,
-  "constraint_violations": 1,
+  "type_conflicts": 0,
+  "constraint_violations": 0,
   "enum_unverifiable": 2,
   "required_fields_missing_somewhere": 0
  },
- "type_conflicts": [
-  {
-   "path": "carbs",
-   "tier": "universal",
-   "declared_types": [
-    "number"
-   ],
-   "observed_types": {
-    "integer": 10656,
-    "null": 353734,
-    "number": 5029
-   },
-   "uncovered_types": {
-    "null": 353734
-   },
-   "uncovered_values": 353734,
-   "uncovered_fraction_of_values": 0.957541,
-   "sites_affected": 11
-  },
-  {
-   "path": "timestamp",
-   "tier": "core",
-   "declared_types": [
-    "integer"
-   ],
-   "observed_types": {
-    "string": 311648
-   },
-   "uncovered_types": {
-    "string": 311648
-   },
-   "uncovered_values": 311648,
-   "uncovered_fraction_of_values": 1.0,
-   "sites_affected": 10
-  },
-  {
-   "path": "insulin",
-   "tier": "universal",
-   "declared_types": [
-    "number"
-   ],
-   "observed_types": {
-    "integer": 2791,
-    "null": 224268,
-    "number": 142360
-   },
-   "uncovered_types": {
-    "null": 224268
-   },
-   "uncovered_values": 224268,
-   "uncovered_fraction_of_values": 0.607083,
-   "sites_affected": 11
-  }
- ],
+ "type_conflicts": [],
  "required_missing": [],
- "constraint_violations": [
-  {
-   "path": "type",
-   "kind": "enum",
-   "declared_enum": [
-    "Normal",
-    "Priming",
-    "SMB"
-   ],
-   "observed_outside_enum": [
-    "normal"
-   ],
-   "docs_present": 130257
-  }
- ],
+ "constraint_violations": [],
  "enum_unverifiable": [
   {
    "path": "eventType",
@@ -112,8 +44,10 @@
     "<none>",
     "Announcement",
     "BG Check",
+    "Bolus",
     "Bolus Wizard",
     "Carb Correction",
+    "Carbs",
     "Combo Bolus",
     "Correction Bolus",
     "Exercise",
@@ -154,81 +88,6 @@
   }
  ],
  "undeclared": [
-  {
-   "path": "amount",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 45.7% of documents",
-   "docs_present": 168857,
-   "doc_frequency": 0.457088,
-   "site_count": 10,
-   "observed_types": {
-    "integer": 97537,
-    "number": 71320
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "userEnteredAt",
-   "tier": "common",
-   "tier_reason": "10/11 sites, 1.8% of documents",
-   "docs_present": 6491,
-   "doc_frequency": 0.017571,
-   "site_count": 10,
-   "observed_types": {
-    "string": 6491
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "insulinNeedsScaleFactor",
-   "tier": "common",
-   "tier_reason": "9/11 sites, 0.7% of documents",
-   "docs_present": 2720,
-   "doc_frequency": 0.007363,
-   "site_count": 9,
-   "observed_types": {
-    "integer": 1187,
-    "number": 1533
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "correctionRange",
-   "tier": "common",
-   "tier_reason": "7/11 sites, 0.5% of documents",
-   "docs_present": 1673,
-   "doc_frequency": 0.004529,
-   "site_count": 7,
-   "observed_types": {
-    "array": 1673
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "correctionRange[]",
-   "tier": "common",
-   "tier_reason": "7/11 sites, 0.5% of documents",
-   "docs_present": 1673,
-   "doc_frequency": 0.004529,
-   "site_count": 7,
-   "observed_types": {
-    "integer": 2346,
-    "number": 1000
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "userLastModifiedAt",
-   "tier": "common",
-   "tier_reason": "5/11 sites, 0.0% of documents",
-   "docs_present": 131,
-   "doc_frequency": 0.000355,
-   "site_count": 5,
-   "observed_types": {
-    "string": 131
-   },
-   "distinct_values": null
-  },
   {
    "path": "remoteAddress",
    "tier": "common",

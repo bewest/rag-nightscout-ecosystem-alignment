@@ -15,7 +15,7 @@
   },
   "date": {
    "type": "number",
-   "description": "Epoch milliseconds timestamp"
+   "description": "Epoch milliseconds timestamp."
   },
   "dateString": {
    "type": "string",
@@ -60,7 +60,8 @@
    "description": "Calibration intercept (for type=cal)"
   },
   "isCalibration": {
-   "type": "boolean"
+   "type": "boolean",
+   "description": "Marks a reading produced by, or immediately following, a sensor"
   },
   "isReadOnly": {
    "type": "boolean",
@@ -118,10 +119,12 @@
    "format": "date-time"
   },
   "trend": {
-   "type": "integer"
+   "type": "integer",
+   "description": "Numeric trend code, written alongside `direction` by most"
   },
   "trendRate": {
-   "type": "number"
+   "type": "number",
+   "description": "Rate of change in mg/dL/min. More precise than `direction`."
   },
   "type": {
    "type": "string",
@@ -141,7 +144,10 @@
    "description": "Glucose unit indicator.",
    "enum": [
     "mg",
-    "mmol"
+    "mg/dL",
+    "mg/dl",
+    "mmol",
+    "mmol/L"
    ]
   },
   "utcOffset": {

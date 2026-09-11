@@ -27,50 +27,65 @@
   },
   "loopSettings": {
    "type": "object",
+   "description": "Loop's therapy-settings block, written into the profile document",
    "properties": {
     "bundleIdentifier": {
-     "type": "string"
+     "type": "string",
+     "description": "The app bundle identifier of the Loop build that wrote this"
     },
     "deviceToken": {
-     "type": "string"
+     "type": "string",
+     "description": "APNs device token for remote commands. A credential-grade value:"
     },
     "dosingEnabled": {
-     "type": "boolean"
+     "type": "boolean",
+     "description": "Whether closed-loop dosing is enabled."
     },
     "dosingStrategy": {
      "type": "string",
+     "description": "Dosing strategy. Observed values are automaticBolus and",
      "x-observed-values": [
       "automaticBolus"
      ]
     },
     "maximumBasalRatePerHour": {
-     "type": "number"
+     "type": "number",
+     "description": "Safety limit on temp basal rate (U/hr)."
     },
     "maximumBolus": {
-     "type": "integer"
+     "type": "number",
+     "description": "Safety limit on a single bolus (U)."
     },
     "minimumBGGuard": {
-     "type": "number"
+     "type": "number",
+     "description": "Suspend threshold (mg/dL)."
     },
     "overridePresets": {
      "type": "array",
+     "description": "User-defined override presets.",
      "items": {
       "type": "object",
+      "description": "A Loop override preset or an active override.",
       "properties": {
        "duration": {
-        "type": "integer"
+        "type": "integer",
+        "description": "Duration in seconds; 0 means indefinite."
        },
        "insulinNeedsScaleFactor": {
-        "type": "number"
+        "type": "number",
+        "description": "Multiplier applied to insulin needs (1.0 = unchanged)."
        },
        "name": {
-        "type": "string"
+        "type": "string",
+        "description": "User-chosen name. Personal data; do not aggregate."
        },
        "symbol": {
-        "type": "string"
+        "type": "string",
+        "description": "User-chosen emoji for the override. Personal data \u2014 a person's"
        },
        "targetRange": {
         "type": "array",
+        "description": "Two-element [low, high] target range in mg/dL.",
         "items": {
          "type": "number"
         }
@@ -81,27 +96,34 @@
     },
     "preMealTargetRange": {
      "type": "array",
+     "description": "Two-element [low, high] pre-meal target in mg/dL.",
      "items": {
       "type": "number"
      }
     },
     "scheduleOverride": {
      "type": "object",
+     "description": "The currently scheduled or active override, if any.",
      "properties": {
       "duration": {
-       "type": "integer"
+       "type": "integer",
+       "description": "Duration in seconds; 0 means indefinite."
       },
       "insulinNeedsScaleFactor": {
-       "type": "number"
+       "type": "number",
+       "description": "Multiplier applied to insulin needs (1.0 = unchanged)."
       },
       "name": {
-       "type": "string"
+       "type": "string",
+       "description": "User-chosen name. Personal data; do not aggregate."
       },
       "symbol": {
-       "type": "string"
+       "type": "string",
+       "description": "User-chosen emoji for the override. Personal data \u2014 a person's"
       },
       "targetRange": {
        "type": "array",
+       "description": "Two-element [low, high] target range in mg/dL.",
        "items": {
         "type": "number"
        }
@@ -117,6 +139,7 @@
     "integer",
     "string"
    ],
+   "description": "Epoch milliseconds.",
    "x-observed-values": [
     "<n>"
    ]
@@ -190,7 +213,7 @@
        "number",
        "string"
       ],
-      "description": "Carb absorption rate (g/hr) - legacy, rarely used",
+      "description": "Carb absorption rate (g/hr) - legacy, rarely used.",
       "x-observed-values": [
        "0"
       ]
@@ -200,7 +223,7 @@
        "integer",
        "string"
       ],
-      "description": "Delay before carb absorption starts (minutes)",
+      "description": "Delay before carb absorption starts (minutes).",
       "x-observed-values": [
        "0"
       ]
@@ -247,6 +270,11 @@
        },
        "additionalProperties": true
       }
+     },
+     "startDate": {
+      "type": "string",
+      "description": "When this named profile becomes effective.",
+      "format": "date-time"
      },
      "target_high": {
       "type": "array",
@@ -300,6 +328,7 @@
      },
      "units": {
       "type": "string",
+      "description": "Per-profile glucose display units, distinct from the document's",
       "x-observed-values": [
        "mg/dL"
       ]
@@ -310,7 +339,7 @@
   },
   "units": {
    "type": "string",
-   "description": "Glucose display units",
+   "description": "Glucose display units.",
    "x-observed-values": [
     "mg/dL"
    ]

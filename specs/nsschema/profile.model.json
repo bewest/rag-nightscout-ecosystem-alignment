@@ -127,11 +127,12 @@
      "object"
     ],
     "nullable": false,
-    "declared": false,
+    "declared": true,
     "observed": true,
     "placement": "core",
     "tier": "core",
     "tier_reason": "10/11 sites, 99.0% of documents",
+    "description": "Loop's therapy-settings block, written into the profile document\nalongside `store`.\n\nThis is the **attribute-flattening** camp described in\n`docs/sdqctl-proposals/x-aid-extensions-convention-proposal.md`,\nmeasured: a 26-path subtree that 10 of 11 sites in the 2026-04 corpus\nwrite into 99% of their profile documents, and that no spec in this\nrepo described before this revision.\n\nDocumented here because it exists and consumers must read it, not as\nan endorsement of flattening vendor settings into the shared document\nshape.",
     "evidence": {
      "docs_present": 200,
      "doc_frequency": 0.990099,
@@ -140,9 +141,6 @@
       "object": 200
      }
     },
-    "notes": [
-     "proposed addition from evidence (10/11 sites, 99.0% of documents)"
-    ],
     "children": {
      "bundleIdentifier": {
       "path": "loopSettings.bundleIdentifier",
@@ -150,11 +148,12 @@
        "string"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 99.0% of documents",
+      "description": "The app bundle identifier of the Loop build that wrote this\nprofile. Contains the builder's Apple Developer Team ID; treat as\nan identifier and do not display or log it.",
       "evidence": {
        "docs_present": 200,
        "doc_frequency": 0.990099,
@@ -162,10 +161,7 @@
        "observed_types": {
         "string": 200
        }
-      },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
-      ]
+      }
      },
      "deviceToken": {
       "path": "loopSettings.deviceToken",
@@ -173,11 +169,12 @@
        "string"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 99.0% of documents",
+      "description": "APNs device token for remote commands. A credential-grade value:\nnever log, display, or copy into derived data.",
       "evidence": {
        "docs_present": 200,
        "doc_frequency": 0.990099,
@@ -185,10 +182,7 @@
        "observed_types": {
         "string": 200
        }
-      },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
-      ]
+      }
      },
      "dosingEnabled": {
       "path": "loopSettings.dosingEnabled",
@@ -196,11 +190,12 @@
        "boolean"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 99.0% of documents",
+      "description": "Whether closed-loop dosing is enabled.",
       "evidence": {
        "docs_present": 200,
        "doc_frequency": 0.990099,
@@ -208,10 +203,7 @@
        "observed_types": {
         "boolean": 200
        }
-      },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
-      ]
+      }
      },
      "dosingStrategy": {
       "path": "loopSettings.dosingStrategy",
@@ -219,11 +211,12 @@
        "string"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 99.0% of documents",
+      "description": "Dosing strategy. Observed values are automaticBolus and\ntempBasalOnly.",
       "evidence": {
        "docs_present": 200,
        "doc_frequency": 0.990099,
@@ -234,9 +227,6 @@
       },
       "observed_values": [
        "automaticBolus"
-      ],
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
       ]
      },
      "maximumBasalRatePerHour": {
@@ -245,11 +235,12 @@
        "number"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 99.0% of documents",
+      "description": "Safety limit on temp basal rate (U/hr).",
       "evidence": {
        "docs_present": 200,
        "doc_frequency": 0.990099,
@@ -258,22 +249,20 @@
         "integer": 140,
         "number": 60
        }
-      },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
-      ]
+      }
      },
      "maximumBolus": {
       "path": "loopSettings.maximumBolus",
       "types": [
-       "integer"
+       "number"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 99.0% of documents",
+      "description": "Safety limit on a single bolus (U).",
       "evidence": {
        "docs_present": 200,
        "doc_frequency": 0.990099,
@@ -281,10 +270,7 @@
        "observed_types": {
         "integer": 200
        }
-      },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
-      ]
+      }
      },
      "minimumBGGuard": {
       "path": "loopSettings.minimumBGGuard",
@@ -292,11 +278,12 @@
        "number"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 99.0% of documents",
+      "description": "Suspend threshold (mg/dL).",
       "evidence": {
        "docs_present": 200,
        "doc_frequency": 0.990099,
@@ -305,10 +292,7 @@
         "integer": 180,
         "number": 20
        }
-      },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
-      ]
+      }
      },
      "overridePresets": {
       "path": "loopSettings.overridePresets",
@@ -316,11 +300,12 @@
        "array"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 99.0% of documents",
+      "description": "User-defined override presets.",
       "evidence": {
        "docs_present": 200,
        "doc_frequency": 0.990099,
@@ -329,9 +314,6 @@
         "array": 200
        }
       },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
-      ],
       "children": {
        "[]": {
         "path": "loopSettings.overridePresets[]",
@@ -339,11 +321,12 @@
          "object"
         ],
         "nullable": false,
-        "declared": false,
+        "declared": true,
         "observed": true,
         "placement": "core",
         "tier": "core",
         "tier_reason": "10/11 sites, 99.0% of documents",
+        "description": "A Loop override preset or an active override.",
         "evidence": {
          "docs_present": 200,
          "doc_frequency": 0.990099,
@@ -352,9 +335,6 @@
           "object": 1280
          }
         },
-        "notes": [
-         "proposed addition from evidence (10/11 sites, 99.0% of documents)"
-        ],
         "children": {
          "duration": {
           "path": "loopSettings.overridePresets[].duration",
@@ -362,11 +342,12 @@
            "integer"
           ],
           "nullable": false,
-          "declared": false,
+          "declared": true,
           "observed": true,
           "placement": "core",
           "tier": "core",
           "tier_reason": "10/11 sites, 99.0% of documents",
+          "description": "Duration in seconds; 0 means indefinite.",
           "evidence": {
            "docs_present": 200,
            "doc_frequency": 0.990099,
@@ -374,10 +355,7 @@
            "observed_types": {
             "integer": 1280
            }
-          },
-          "notes": [
-           "proposed addition from evidence (10/11 sites, 99.0% of documents)"
-          ]
+          }
          },
          "insulinNeedsScaleFactor": {
           "path": "loopSettings.overridePresets[].insulinNeedsScaleFactor",
@@ -385,11 +363,12 @@
            "number"
           ],
           "nullable": false,
-          "declared": false,
+          "declared": true,
           "observed": true,
           "placement": "core",
           "tier": "core",
           "tier_reason": "9/11 sites, 89.1% of documents",
+          "description": "Multiplier applied to insulin needs (1.0 = unchanged).",
           "evidence": {
            "docs_present": 180,
            "doc_frequency": 0.891089,
@@ -398,10 +377,7 @@
             "integer": 120,
             "number": 980
            }
-          },
-          "notes": [
-           "proposed addition from evidence (9/11 sites, 89.1% of documents)"
-          ]
+          }
          },
          "name": {
           "path": "loopSettings.overridePresets[].name",
@@ -409,11 +385,12 @@
            "string"
           ],
           "nullable": false,
-          "declared": false,
+          "declared": true,
           "observed": true,
           "placement": "core",
           "tier": "core",
           "tier_reason": "10/11 sites, 99.0% of documents",
+          "description": "User-chosen name. Personal data; do not aggregate.",
           "evidence": {
            "docs_present": 200,
            "doc_frequency": 0.990099,
@@ -421,10 +398,7 @@
            "observed_types": {
             "string": 1280
            }
-          },
-          "notes": [
-           "proposed addition from evidence (10/11 sites, 99.0% of documents)"
-          ]
+          }
          },
          "symbol": {
           "path": "loopSettings.overridePresets[].symbol",
@@ -432,11 +406,12 @@
            "string"
           ],
           "nullable": false,
-          "declared": false,
+          "declared": true,
           "observed": true,
           "placement": "core",
           "tier": "core",
           "tier_reason": "10/11 sites, 99.0% of documents",
+          "description": "User-chosen emoji for the override. Personal data \u2014 a person's\nsymbol vocabulary fingerprints them across documents.",
           "evidence": {
            "docs_present": 200,
            "doc_frequency": 0.990099,
@@ -444,10 +419,7 @@
            "observed_types": {
             "string": 1280
            }
-          },
-          "notes": [
-           "proposed addition from evidence (10/11 sites, 99.0% of documents)"
-          ]
+          }
          },
          "targetRange": {
           "path": "loopSettings.overridePresets[].targetRange",
@@ -455,11 +427,12 @@
            "array"
           ],
           "nullable": false,
-          "declared": false,
+          "declared": true,
           "observed": true,
           "placement": "core",
           "tier": "core",
           "tier_reason": "7/11 sites, 69.3% of documents",
+          "description": "Two-element [low, high] target range in mg/dL.",
           "evidence": {
            "docs_present": 140,
            "doc_frequency": 0.693069,
@@ -468,9 +441,6 @@
             "array": 740
            }
           },
-          "notes": [
-           "proposed addition from evidence (7/11 sites, 69.3% of documents)"
-          ],
           "children": {
            "[]": {
             "path": "loopSettings.overridePresets[].targetRange[]",
@@ -478,7 +448,7 @@
              "number"
             ],
             "nullable": false,
-            "declared": false,
+            "declared": true,
             "observed": true,
             "placement": "core",
             "tier": "core",
@@ -491,10 +461,7 @@
               "integer": 1440,
               "number": 40
              }
-            },
-            "notes": [
-             "proposed addition from evidence (7/11 sites, 69.3% of documents)"
-            ]
+            }
            }
           }
          }
@@ -508,11 +475,12 @@
        "array"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "9/11 sites, 89.1% of documents",
+      "description": "Two-element [low, high] pre-meal target in mg/dL.",
       "evidence": {
        "docs_present": 180,
        "doc_frequency": 0.891089,
@@ -521,9 +489,6 @@
         "array": 180
        }
       },
-      "notes": [
-       "proposed addition from evidence (9/11 sites, 89.1% of documents)"
-      ],
       "children": {
        "[]": {
         "path": "loopSettings.preMealTargetRange[]",
@@ -531,7 +496,7 @@
          "number"
         ],
         "nullable": false,
-        "declared": false,
+        "declared": true,
         "observed": true,
         "placement": "core",
         "tier": "core",
@@ -544,10 +509,7 @@
           "integer": 320,
           "number": 40
          }
-        },
-        "notes": [
-         "proposed addition from evidence (9/11 sites, 89.1% of documents)"
-        ]
+        }
        }
       }
      },
@@ -557,11 +519,12 @@
        "object"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "9/11 sites, 61.4% of documents",
+      "description": "The currently scheduled or active override, if any.",
       "evidence": {
        "docs_present": 124,
        "doc_frequency": 0.613861,
@@ -570,9 +533,6 @@
         "object": 124
        }
       },
-      "notes": [
-       "proposed addition from evidence (9/11 sites, 61.4% of documents)"
-      ],
       "children": {
        "duration": {
         "path": "loopSettings.scheduleOverride.duration",
@@ -580,11 +540,12 @@
          "integer"
         ],
         "nullable": false,
-        "declared": false,
+        "declared": true,
         "observed": true,
         "placement": "core",
         "tier": "core",
         "tier_reason": "9/11 sites, 61.4% of documents",
+        "description": "Duration in seconds; 0 means indefinite.",
         "evidence": {
          "docs_present": 124,
          "doc_frequency": 0.613861,
@@ -592,10 +553,7 @@
          "observed_types": {
           "integer": 124
          }
-        },
-        "notes": [
-         "proposed addition from evidence (9/11 sites, 61.4% of documents)"
-        ]
+        }
        },
        "insulinNeedsScaleFactor": {
         "path": "loopSettings.scheduleOverride.insulinNeedsScaleFactor",
@@ -603,11 +561,12 @@
          "number"
         ],
         "nullable": false,
-        "declared": false,
+        "declared": true,
         "observed": true,
         "placement": "core",
         "tier": "core",
         "tier_reason": "9/11 sites, 57.9% of documents",
+        "description": "Multiplier applied to insulin needs (1.0 = unchanged).",
         "evidence": {
          "docs_present": 117,
          "doc_frequency": 0.579208,
@@ -616,10 +575,7 @@
           "integer": 48,
           "number": 69
          }
-        },
-        "notes": [
-         "proposed addition from evidence (9/11 sites, 57.9% of documents)"
-        ]
+        }
        },
        "name": {
         "path": "loopSettings.scheduleOverride.name",
@@ -627,11 +583,12 @@
          "string"
         ],
         "nullable": false,
-        "declared": false,
+        "declared": true,
         "observed": true,
         "placement": "core",
         "tier": "core",
         "tier_reason": "9/11 sites, 59.4% of documents",
+        "description": "User-chosen name. Personal data; do not aggregate.",
         "evidence": {
          "docs_present": 120,
          "doc_frequency": 0.594059,
@@ -639,10 +596,7 @@
          "observed_types": {
           "string": 120
          }
-        },
-        "notes": [
-         "proposed addition from evidence (9/11 sites, 59.4% of documents)"
-        ]
+        }
        },
        "symbol": {
         "path": "loopSettings.scheduleOverride.symbol",
@@ -650,11 +604,12 @@
          "string"
         ],
         "nullable": false,
-        "declared": false,
+        "declared": true,
         "observed": true,
         "placement": "core",
         "tier": "core",
         "tier_reason": "9/11 sites, 59.4% of documents",
+        "description": "User-chosen emoji for the override. Personal data \u2014 a person's\nsymbol vocabulary fingerprints them across documents.",
         "evidence": {
          "docs_present": 120,
          "doc_frequency": 0.594059,
@@ -662,10 +617,7 @@
          "observed_types": {
           "string": 120
          }
-        },
-        "notes": [
-         "proposed addition from evidence (9/11 sites, 59.4% of documents)"
-        ]
+        }
        },
        "targetRange": {
         "path": "loopSettings.scheduleOverride.targetRange",
@@ -673,11 +625,12 @@
          "array"
         ],
         "nullable": false,
-        "declared": false,
+        "declared": true,
         "observed": true,
         "placement": "core",
         "tier": "common",
         "tier_reason": "6/11 sites, 25.7% of documents",
+        "description": "Two-element [low, high] target range in mg/dL.",
         "evidence": {
          "docs_present": 52,
          "doc_frequency": 0.257426,
@@ -686,9 +639,6 @@
           "array": 52
          }
         },
-        "notes": [
-         "proposed addition from evidence (6/11 sites, 25.7% of documents)"
-        ],
         "children": {
          "[]": {
           "path": "loopSettings.scheduleOverride.targetRange[]",
@@ -696,7 +646,7 @@
            "number"
           ],
           "nullable": false,
-          "declared": false,
+          "declared": true,
           "observed": true,
           "placement": "core",
           "tier": "common",
@@ -709,10 +659,7 @@
             "integer": 84,
             "number": 20
            }
-          },
-          "notes": [
-           "proposed addition from evidence (6/11 sites, 25.7% of documents)"
-          ]
+          }
          }
         }
        }
@@ -732,7 +679,7 @@
     "placement": "core",
     "tier": "universal",
     "tier_reason": "all 11 sites, 100.0% of documents",
-    "format": "int64",
+    "description": "Epoch milliseconds.\n\nDeclared `integer` by the 2025 spec and observed as a **string in\n200 of 202 profile documents (99%)** across all 11 sites in the\n2026-04 corpus. Both forms must be read.",
     "evidence": {
      "docs_present": 202,
      "doc_frequency": 1.0,
@@ -1086,7 +1033,7 @@
         "placement": "core",
         "tier": "universal",
         "tier_reason": "all 11 sites, 100.0% of documents",
-        "description": "Carb absorption rate (g/hr) - legacy, rarely used",
+        "description": "Carb absorption rate (g/hr) - legacy, rarely used.\n\nWritten as a string in 99% of profile documents in the 2026-04\ncorpus, not as a number.",
         "evidence": {
          "docs_present": 202,
          "doc_frequency": 1.0,
@@ -1112,7 +1059,7 @@
         "placement": "core",
         "tier": "universal",
         "tier_reason": "all 11 sites, 100.0% of documents",
-        "description": "Delay before carb absorption starts (minutes)",
+        "description": "Delay before carb absorption starts (minutes).\n\nWritten as a string in 99% of profile documents, as with\n`carbs_hr`.",
         "evidence": {
          "docs_present": 202,
          "doc_frequency": 1.0,
@@ -1293,11 +1240,13 @@
          "string"
         ],
         "nullable": false,
-        "declared": false,
+        "declared": true,
         "observed": true,
-        "placement": "extension",
+        "placement": "core",
         "tier": "rare",
         "tier_reason": "2 documents in the whole corpus",
+        "format": "date-time",
+        "description": "When this named profile becomes effective.",
         "evidence": {
          "docs_present": 2,
          "doc_frequency": 0.009901,
@@ -1305,10 +1254,7 @@
          "observed_types": {
           "string": 2
          }
-        },
-        "notes": [
-         "extension-bag candidate (2 documents in the whole corpus)"
-        ]
+        }
        },
        "target_high": {
         "path": "store.{}.target_high",
@@ -1557,11 +1503,12 @@
          "string"
         ],
         "nullable": false,
-        "declared": false,
+        "declared": true,
         "observed": true,
         "placement": "core",
         "tier": "universal",
         "tier_reason": "all 11 sites, 100.0% of documents",
+        "description": "Per-profile glucose display units, distinct from the document's\ntop-level `units`.\n\nPresent in **100% of profile documents on all 11 sites** and\nentirely undeclared before this revision \u2014 the highest-confidence\nomission the census found in this collection.",
         "evidence": {
          "docs_present": 202,
          "doc_frequency": 1.0,
@@ -1574,7 +1521,7 @@
          "mg/dL"
         ],
         "notes": [
-         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+         "declared enum not enforced: 2 of 3 observed values could not be published, so the enum cannot be shown to be complete"
         ]
        }
       }
@@ -1592,7 +1539,7 @@
     "placement": "core",
     "tier": "universal",
     "tier_reason": "all 11 sites, 100.0% of documents",
-    "description": "Glucose display units",
+    "description": "Glucose display units.\n\nEnum widened to cover live data. Three specs in this repo declared\nthree different vocabularies (`[mg, mmol]` in entries, `[mg/dl,\nmmol]` here) and the corpus contains `mg/dL`, `mg/dl` and\n`mmol/L` \u2014 none matching any declaration. Settling on one\nvocabulary is an ecosystem question; until then a reader must\naccept all of these.",
     "evidence": {
      "docs_present": 202,
      "doc_frequency": 1.0,

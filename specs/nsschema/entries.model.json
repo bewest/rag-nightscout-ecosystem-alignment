@@ -60,8 +60,7 @@
     "placement": "core",
     "tier": "universal",
     "tier_reason": "all 11 sites, 100.0% of documents",
-    "format": "int64",
-    "description": "Epoch milliseconds timestamp",
+    "description": "Epoch milliseconds timestamp.\n\nDeclared `number`, not `integer`: 551,257 of 896,589 values in the\n2026-04 corpus (61.5%), on 11 of 11 sites, carry a fractional part \u2014\na 13-digit epoch millisecond value with 1-4 decimal places. A\nconforming reader MUST accept a fractional value here; a conforming\nwriter SHOULD emit a whole number.",
     "evidence": {
      "docs_present": 896589,
      "doc_frequency": 1.0,
@@ -72,10 +71,7 @@
      }
     },
     "required_read": true,
-    "required_write": true,
-    "notes": [
-     "widened integer -> number: the spec declares integer and 551,257 fractional values were observed"
-    ]
+    "required_write": true
    },
    "dateString": {
     "path": "dateString",
@@ -250,11 +246,12 @@
      "boolean"
     ],
     "nullable": false,
-    "declared": false,
+    "declared": true,
     "observed": true,
     "placement": "core",
     "tier": "core",
     "tier_reason": "10/11 sites, 61.9% of documents",
+    "description": "Marks a reading produced by, or immediately following, a sensor\ncalibration.",
     "evidence": {
      "docs_present": 554992,
      "doc_frequency": 0.619004,
@@ -262,10 +259,7 @@
      "observed_types": {
       "boolean": 554992
      }
-    },
-    "notes": [
-     "proposed addition from evidence (10/11 sites, 61.9% of documents)"
-    ]
+    }
    },
    "isReadOnly": {
     "path": "isReadOnly",
@@ -482,11 +476,12 @@
      "integer"
     ],
     "nullable": false,
-    "declared": false,
+    "declared": true,
     "observed": true,
     "placement": "core",
     "tier": "core",
     "tier_reason": "10/11 sites, 71.6% of documents",
+    "description": "Numeric trend code, written alongside `direction` by most\nuploaders. Dexcom-style 0-9 scale.",
     "evidence": {
      "docs_present": 642337,
      "doc_frequency": 0.716423,
@@ -494,10 +489,7 @@
      "observed_types": {
       "integer": 642337
      }
-    },
-    "notes": [
-     "proposed addition from evidence (10/11 sites, 71.6% of documents)"
-    ]
+    }
    },
    "trendRate": {
     "path": "trendRate",
@@ -505,11 +497,12 @@
      "number"
     ],
     "nullable": false,
-    "declared": false,
+    "declared": true,
     "observed": true,
     "placement": "core",
     "tier": "core",
     "tier_reason": "10/11 sites, 46.0% of documents",
+    "description": "Rate of change in mg/dL/min. More precise than `direction`.\n\nPreviously declared only on `EntryExtended` as a 2026 extension\n(GAP-ENTRY-003); it is already in production use and belongs on\nthe base schema.",
     "evidence": {
      "docs_present": 412355,
      "doc_frequency": 0.459915,
@@ -518,10 +511,7 @@
       "integer": 46488,
       "number": 365867
      }
-    },
-    "notes": [
-     "proposed addition from evidence (10/11 sites, 46.0% of documents)"
-    ]
+    }
    },
    "type": {
     "path": "type",
@@ -581,10 +571,13 @@
     "declared": true,
     "observed": false,
     "placement": "core",
-    "description": "Glucose unit indicator.\nNote: Values are always stored as mg/dL; this is display preference.",
+    "description": "Glucose unit indicator.\nNote: Values are always stored as mg/dL; this is display preference.\n\nThe enum is the union of three mutually inconsistent declarations\nand what live data contains: this spec declared `[mg, mmol]`,\naid-profile-2025.yaml declared `[mg/dl, mmol]`, and the corpus\nholds `mg/dL`, `mg/dl` and `mmol/L`. No declared enum matched any\nother, or the data. Reconciling these three to one vocabulary is\nan ecosystem question, not a spec edit; until then a reader must\naccept all five.",
     "enum": [
      "mg",
-     "mmol"
+     "mg/dL",
+     "mg/dl",
+     "mmol",
+     "mmol/L"
     ]
    },
    "utcOffset": {

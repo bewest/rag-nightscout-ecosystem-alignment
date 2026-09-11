@@ -58,16 +58,16 @@ private field look common.
 | `override.active` | `boolean` | 85.1% | 10 |  |
 | `override.timestamp` | `string` | 85.1% | 10 |  |
 | `pump` | `object` | 95.6% | 10 |  |
-| `pump.bolusing` | `boolean` | 85.1% | 10 | **not in spec** |
+| `pump.bolusing` | `boolean` | 85.1% | 10 |  |
 | `pump.clock` | `string` | 95.6% | 10 |  |
-| `pump.manufacturer` | `string` | 83.8% | 10 | **not in spec** |
-| `pump.model` | `string` | 83.8% | 10 | **not in spec** |
-| `pump.pumpID` | `string` | 85.1% | 10 | **not in spec** |
+| `pump.manufacturer` | `string` | 83.8% | 10 |  |
+| `pump.model` | `string` | 83.8% | 10 |  |
+| `pump.pumpID` | `string` | 85.1% | 10 |  |
 | `pump.reservoir` | `number` | 14.5% | 10 |  |
-| `pump.secondsFromGMT` | `integer` | 85.1% | 10 | **not in spec** |
-| `pump.suspended` | `boolean` | 85.1% | 10 | **not in spec** |
+| `pump.secondsFromGMT` | `integer` | 85.1% | 10 |  |
+| `pump.suspended` | `boolean` | 85.1% | 10 |  |
 | `uploader.name` | `string` | 85.1% | 10 |  |
-| `uploader.timestamp` | `string` | 85.1% | 10 | **not in spec** |
+| `uploader.timestamp` | `string` | 85.1% | 10 |  |
 
 ## Common — at least three independent sites
 
@@ -83,8 +83,8 @@ private field look common.
 | `override.duration` | `number` | 4.8% | 9 |  |
 | `override.multiplier` | `number` | 7.5% | 9 |  |
 | `override.name` | `string` | 8.9% | 9 |  |
-| `pump.reservoir_display_override` | `string` | 0.6% | 10 | **not in spec** |
-| `pump.reservoir_level_override` | `integer` | 0.6% | 10 | **not in spec** |
+| `pump.reservoir_display_override` | `string` | 0.6% | 10 |  |
+| `pump.reservoir_level_override` | `integer` | 0.6% | 10 |  |
 
 ## Vendor — one or two sites, but written consistently there
 
@@ -176,16 +176,16 @@ private field look common.
 | `openaps.suggested.timestamp` | `string` | 9.9% | 1 |  |
 | `openaps.version` | `string` | 10.5% | 1 | **not in spec** |
 | `pump.battery` | `object` | 11.8% | 2 |  |
-| `pump.battery.display` | `boolean` | 10.3% | 1 | **not in spec** |
+| `pump.battery.display` | `boolean` | 10.3% | 1 |  |
 | `pump.battery.percent` | `integer` | 11.6% | 2 |  |
-| `pump.battery.string` | `string` | 10.5% | 1 | **not in spec** |
+| `pump.battery.string` | `string` | 10.5% | 1 |  |
 | `pump.status` | `object` | 10.5% | 1 |  |
 | `pump.status.bolusing` | `boolean` | 10.5% | 1 |  |
 | `pump.status.status` | `string` | 10.5% | 1 |  |
 | `pump.status.suspended` | `boolean` | 10.5% | 1 |  |
 | `pump.status.timestamp` | `string` | 10.5% | 1 |  |
-| `uploader.isCharging` | `boolean` | 10.5% | 1 | **not in spec** |
-| `uploader.type` | `string` | 4.4% | 1 | **not in spec** |
+| `uploader.isCharging` | `boolean` | 10.5% | 1 |  |
+| `uploader.type` | `string` | 4.4% | 1 |  |
 
 ## Sparse — one or two sites, inconsistently
 

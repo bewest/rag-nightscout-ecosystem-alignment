@@ -33,9 +33,9 @@ private field look common.
 |---|---|---|---|---|
 | `device` | `string` | 93.6% | 11 |  |
 | `direction` | `string` | 84.6% | 11 |  |
-| `isCalibration` | `boolean` | 61.9% | 10 | **not in spec** |
-| `trend` | `integer` | 71.6% | 10 | **not in spec** |
-| `trendRate` | `number` | 46.0% | 10 | **not in spec** |
+| `isCalibration` | `boolean` | 61.9% | 10 |  |
+| `trend` | `integer` | 71.6% | 10 |  |
+| `trendRate` | `number` | 46.0% | 10 |  |
 
 ## Common — at least three independent sites
 

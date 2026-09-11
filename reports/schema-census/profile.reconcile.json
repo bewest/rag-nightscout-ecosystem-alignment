@@ -17,440 +17,48 @@
   "j",
   "k"
  ],
- "declared_paths": 45,
+ "declared_paths": 72,
  "observed_paths": 66,
  "summary": {
-  "undeclared": 27,
-  "undeclared_by_tier": {
-   "core": 23,
-   "common": 2,
-   "rare": 1,
-   "universal": 1
-  },
+  "undeclared": 0,
+  "undeclared_by_tier": {},
   "unobserved": 3,
   "v3_metadata_absent": 3,
-  "type_conflicts": 3,
-  "constraint_violations": 1,
-  "enum_unverifiable": 1,
+  "type_conflicts": 0,
+  "constraint_violations": 0,
+  "enum_unverifiable": 2,
   "required_fields_missing_somewhere": 0
  },
- "type_conflicts": [
-  {
-   "path": "mills",
-   "tier": "universal",
-   "declared_types": [
-    "integer"
-   ],
-   "observed_types": {
-    "integer": 2,
-    "string": 200
-   },
-   "uncovered_types": {
-    "string": 200
-   },
-   "uncovered_values": 200,
-   "uncovered_fraction_of_values": 0.990099,
-   "sites_affected": 11
-  },
-  {
-   "path": "store.{}.carbs_hr",
-   "tier": "universal",
-   "declared_types": [
-    "number"
-   ],
-   "observed_types": {
-    "integer": 2,
-    "string": 200
-   },
-   "uncovered_types": {
-    "string": 200
-   },
-   "uncovered_values": 200,
-   "uncovered_fraction_of_values": 0.990099,
-   "sites_affected": 11
-  },
-  {
-   "path": "store.{}.delay",
-   "tier": "universal",
-   "declared_types": [
-    "integer"
-   ],
-   "observed_types": {
-    "integer": 2,
-    "string": 200
-   },
-   "uncovered_types": {
-    "string": 200
-   },
-   "uncovered_values": 200,
-   "uncovered_fraction_of_values": 0.990099,
-   "sites_affected": 11
-  }
- ],
+ "type_conflicts": [],
  "required_missing": [],
- "constraint_violations": [
-  {
-   "path": "units",
-   "kind": "enum",
-   "declared_enum": [
-    "mg/dl",
-    "mmol"
-   ],
-   "observed_outside_enum": [
-    "mg/dL"
-   ],
-   "docs_present": 202
-  }
- ],
+ "constraint_violations": [],
  "enum_unverifiable": [
   {
+   "path": "store.{}.units",
+   "declared_enum": [
+    "mg/dL",
+    "mg/dl",
+    "mmol",
+    "mmol/L"
+   ],
+   "distinct_values_observed": 3,
+   "values_published": 1,
+   "reason": "2 value(s) withheld: seen on fewer than 3 sites"
+  },
+  {
    "path": "units",
    "declared_enum": [
+    "mg/dL",
     "mg/dl",
-    "mmol"
+    "mmol",
+    "mmol/L"
    ],
    "distinct_values_observed": 3,
    "values_published": 1,
    "reason": "2 value(s) withheld: seen on fewer than 3 sites"
   }
  ],
- "undeclared": [
-  {
-   "path": "store.{}.units",
-   "tier": "universal",
-   "tier_reason": "all 11 sites, 100.0% of documents",
-   "docs_present": 202,
-   "doc_frequency": 1.0,
-   "site_count": 11,
-   "observed_types": {
-    "string": 202
-   },
-   "distinct_values": [
-    "mg/dL"
-   ]
-  },
-  {
-   "path": "loopSettings",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "object": 200
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.bundleIdentifier",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "string": 200
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.deviceToken",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "string": 200
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.dosingEnabled",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "boolean": 200
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.dosingStrategy",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "string": 200
-   },
-   "distinct_values": [
-    "automaticBolus"
-   ]
-  },
-  {
-   "path": "loopSettings.maximumBasalRatePerHour",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "integer": 140,
-    "number": 60
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.maximumBolus",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "integer": 200
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.minimumBGGuard",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "integer": 180,
-    "number": 20
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.overridePresets",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "array": 200
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.overridePresets[]",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "object": 1280
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.overridePresets[].duration",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "integer": 1280
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.overridePresets[].name",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "string": 1280
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.overridePresets[].symbol",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 99.0% of documents",
-   "docs_present": 200,
-   "doc_frequency": 0.990099,
-   "site_count": 10,
-   "observed_types": {
-    "string": 1280
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.overridePresets[].insulinNeedsScaleFactor",
-   "tier": "core",
-   "tier_reason": "9/11 sites, 89.1% of documents",
-   "docs_present": 180,
-   "doc_frequency": 0.891089,
-   "site_count": 9,
-   "observed_types": {
-    "integer": 120,
-    "number": 980
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.preMealTargetRange",
-   "tier": "core",
-   "tier_reason": "9/11 sites, 89.1% of documents",
-   "docs_present": 180,
-   "doc_frequency": 0.891089,
-   "site_count": 9,
-   "observed_types": {
-    "array": 180
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.preMealTargetRange[]",
-   "tier": "core",
-   "tier_reason": "9/11 sites, 89.1% of documents",
-   "docs_present": 180,
-   "doc_frequency": 0.891089,
-   "site_count": 9,
-   "observed_types": {
-    "integer": 320,
-    "number": 40
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.overridePresets[].targetRange",
-   "tier": "core",
-   "tier_reason": "7/11 sites, 69.3% of documents",
-   "docs_present": 140,
-   "doc_frequency": 0.693069,
-   "site_count": 7,
-   "observed_types": {
-    "array": 740
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.overridePresets[].targetRange[]",
-   "tier": "core",
-   "tier_reason": "7/11 sites, 69.3% of documents",
-   "docs_present": 140,
-   "doc_frequency": 0.693069,
-   "site_count": 7,
-   "observed_types": {
-    "integer": 1440,
-    "number": 40
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.scheduleOverride",
-   "tier": "core",
-   "tier_reason": "9/11 sites, 61.4% of documents",
-   "docs_present": 124,
-   "doc_frequency": 0.613861,
-   "site_count": 9,
-   "observed_types": {
-    "object": 124
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.scheduleOverride.duration",
-   "tier": "core",
-   "tier_reason": "9/11 sites, 61.4% of documents",
-   "docs_present": 124,
-   "doc_frequency": 0.613861,
-   "site_count": 9,
-   "observed_types": {
-    "integer": 124
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.scheduleOverride.name",
-   "tier": "core",
-   "tier_reason": "9/11 sites, 59.4% of documents",
-   "docs_present": 120,
-   "doc_frequency": 0.594059,
-   "site_count": 9,
-   "observed_types": {
-    "string": 120
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.scheduleOverride.symbol",
-   "tier": "core",
-   "tier_reason": "9/11 sites, 59.4% of documents",
-   "docs_present": 120,
-   "doc_frequency": 0.594059,
-   "site_count": 9,
-   "observed_types": {
-    "string": 120
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.scheduleOverride.insulinNeedsScaleFactor",
-   "tier": "core",
-   "tier_reason": "9/11 sites, 57.9% of documents",
-   "docs_present": 117,
-   "doc_frequency": 0.579208,
-   "site_count": 9,
-   "observed_types": {
-    "integer": 48,
-    "number": 69
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.scheduleOverride.targetRange",
-   "tier": "common",
-   "tier_reason": "6/11 sites, 25.7% of documents",
-   "docs_present": 52,
-   "doc_frequency": 0.257426,
-   "site_count": 6,
-   "observed_types": {
-    "array": 52
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "loopSettings.scheduleOverride.targetRange[]",
-   "tier": "common",
-   "tier_reason": "6/11 sites, 25.7% of documents",
-   "docs_present": 52,
-   "doc_frequency": 0.257426,
-   "site_count": 6,
-   "observed_types": {
-    "integer": 84,
-    "number": 20
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "store.{}.startDate",
-   "tier": "rare",
-   "tier_reason": "2 documents in the whole corpus",
-   "docs_present": 2,
-   "doc_frequency": 0.009901,
-   "site_count": 1,
-   "observed_types": {
-    "string": 2
-   },
-   "distinct_values": null
-  }
- ],
+ "undeclared": [],
  "unobserved": [
   {
    "path": "store.{}.insulinCurve",

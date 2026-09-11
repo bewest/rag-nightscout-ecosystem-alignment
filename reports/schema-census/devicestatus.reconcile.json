@@ -17,42 +17,22 @@
   "j",
   "k"
  ],
- "declared_paths": 117,
+ "declared_paths": 130,
  "observed_paths": 166,
  "summary": {
-  "undeclared": 65,
+  "undeclared": 52,
   "undeclared_by_tier": {
-   "vendor": 52,
-   "sparse": 4,
-   "core": 7,
-   "common": 2
+   "vendor": 48,
+   "sparse": 4
   },
   "unobserved": 12,
   "v3_metadata_absent": 4,
-  "type_conflicts": 1,
+  "type_conflicts": 0,
   "constraint_violations": 0,
   "enum_unverifiable": 1,
   "required_fields_missing_somewhere": 0
  },
- "type_conflicts": [
-  {
-   "path": "openaps.iob.lastTemp.duration",
-   "tier": "vendor",
-   "declared_types": [
-    "integer"
-   ],
-   "observed_types": {
-    "integer": 2048,
-    "number": 71843
-   },
-   "uncovered_types": {
-    "number": 71843
-   },
-   "uncovered_values": 71843,
-   "uncovered_fraction_of_values": 0.972283,
-   "sites_affected": 1
-  }
- ],
+ "type_conflicts": [],
  "required_missing": [],
  "constraint_violations": [],
  "enum_unverifiable": [
@@ -68,126 +48,6 @@
   }
  ],
  "undeclared": [
-  {
-   "path": "uploader.timestamp",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 85.1% of documents",
-   "docs_present": 597335,
-   "doc_frequency": 0.850597,
-   "site_count": 10,
-   "observed_types": {
-    "string": 597335
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "pump.bolusing",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 85.1% of documents",
-   "docs_present": 597334,
-   "doc_frequency": 0.850595,
-   "site_count": 10,
-   "observed_types": {
-    "boolean": 597334
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "pump.pumpID",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 85.1% of documents",
-   "docs_present": 597334,
-   "doc_frequency": 0.850595,
-   "site_count": 10,
-   "observed_types": {
-    "string": 597334
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "pump.secondsFromGMT",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 85.1% of documents",
-   "docs_present": 597334,
-   "doc_frequency": 0.850595,
-   "site_count": 10,
-   "observed_types": {
-    "integer": 597334
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "pump.suspended",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 85.1% of documents",
-   "docs_present": 597334,
-   "doc_frequency": 0.850595,
-   "site_count": 10,
-   "observed_types": {
-    "boolean": 597334
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "pump.manufacturer",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 83.8% of documents",
-   "docs_present": 588152,
-   "doc_frequency": 0.83752,
-   "site_count": 10,
-   "observed_types": {
-    "string": 588152
-   },
-   "distinct_values": [
-    "Insulet"
-   ]
-  },
-  {
-   "path": "pump.model",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 83.8% of documents",
-   "docs_present": 588152,
-   "doc_frequency": 0.83752,
-   "site_count": 10,
-   "observed_types": {
-    "string": 588152
-   },
-   "distinct_values": [
-    "Dash"
-   ]
-  },
-  {
-   "path": "pump.reservoir_display_override",
-   "tier": "common",
-   "tier_reason": "10/11 sites, 0.6% of documents",
-   "docs_present": 4427,
-   "doc_frequency": 0.006304,
-   "site_count": 10,
-   "observed_types": {
-    "string": 4427
-   },
-   "distinct_values": [
-    "Comms Issue",
-    "Finish Setup",
-    "Insulin Suspended",
-    "No Insulin",
-    "No Pod",
-    "Pod Expired",
-    "Signal Loss"
-   ]
-  },
-  {
-   "path": "pump.reservoir_level_override",
-   "tier": "common",
-   "tier_reason": "10/11 sites, 0.6% of documents",
-   "docs_present": 4427,
-   "doc_frequency": 0.006304,
-   "site_count": 10,
-   "observed_types": {
-    "integer": 4427
-   },
-   "distinct_values": null
-  },
   {
    "path": "openaps.suggested.CR",
    "tier": "vendor",
@@ -346,30 +206,6 @@
    "site_count": 1,
    "observed_types": {
     "string": 73898
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "pump.battery.string",
-   "tier": "vendor",
-   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
-   "docs_present": 73898,
-   "doc_frequency": 0.10523,
-   "site_count": 1,
-   "observed_types": {
-    "string": 73898
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "uploader.isCharging",
-   "tier": "vendor",
-   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
-   "docs_present": 73898,
-   "doc_frequency": 0.10523,
-   "site_count": 1,
-   "observed_types": {
-    "boolean": 73898
    },
    "distinct_values": null
   },
@@ -800,18 +636,6 @@
    "distinct_values": null
   },
   {
-   "path": "pump.battery.display",
-   "tier": "vendor",
-   "tier_reason": "1/11 sites, but written in 87% of documents on 1 of them",
-   "docs_present": 72563,
-   "doc_frequency": 0.103329,
-   "site_count": 1,
-   "observed_types": {
-    "boolean": 72563
-   },
-   "distinct_values": null
-  },
-  {
    "path": "openaps.suggested.TDD",
    "tier": "vendor",
    "tier_reason": "1/11 sites, but written in 84% of documents on 1 of them",
@@ -821,18 +645,6 @@
    "observed_types": {
     "integer": 3363,
     "number": 66395
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "uploader.type",
-   "tier": "vendor",
-   "tier_reason": "1/11 sites, but written in 100% of documents on 1 of them",
-   "docs_present": 31021,
-   "doc_frequency": 0.044173,
-   "site_count": 1,
-   "observed_types": {
-    "string": 31021
    },
    "distinct_values": null
   },

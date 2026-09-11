@@ -43,7 +43,7 @@ export const EntriesSchema = z.object({
     trendRate: z.number().optional(),  // 46% of documents, 10 sites, core
     type: z.enum(["cal", "mbg", "sgv"]),  // 100% of documents, 11 sites, universal
     unfiltered: z.number().optional(),  // 13% of documents, 2 sites, vendor
-    units: z.enum(["mg", "mmol"]).optional(),
+    units: z.enum(["mg", "mg/dL", "mg/dl", "mmol", "mmol/L"]).optional(),
     utcOffset: z.number().int().optional(),  // 100% of documents, 11 sites, universal
   }).passthrough();
 

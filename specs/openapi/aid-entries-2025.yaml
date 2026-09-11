@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: AID Entries Collection - De Facto 2025
-  version: 2025.1.0
+  version: 2025.2.0
   description: |
     OpenAPI specification for the Nightscout `entries` collection documenting
     the de facto standard as implemented across AID systems circa 2025.
@@ -13,6 +13,23 @@ info:
     ## Source References
     - Nightscout API v3: `externals/cgm-remote-monitor/lib/api3/swagger.yaml`
     - Deep Dive: `docs/10-domain/entries-deep-dive.md`
+
+    ## Changelog
+
+    ### 2025.2.0 — corrected against measured data
+
+    Reconciled against 896,589 real entry documents from 11 Nightscout sites
+    (`reports/schema-census/entries.census.json`). Evidence and method:
+    `docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md`.
+
+    - `date`: `integer` -> `number` (61.5% of live values are fractional)
+    - `direction`: enum extended with `NONE`
+    - `trend`, `trendRate`, `isCalibration`: added; each on 10 of 11 sites
+    - `units`: enum widened to the union of the three inconsistent
+      declarations across our own specs and the values in live data
+
+    Fields carry `x-aid-evidence` pointing at the census record that
+    justifies them. Re-derive with `make schema`.
     
   contact:
     name: AID Alignment Workspace
@@ -106,6 +123,7 @@ components:
         - DoubleDown
         - NOT COMPUTABLE
         - RATE OUT OF RANGE
+        - NONE
       description: |
         Glucose trend direction. Maps to rate of change:
         - DoubleUp: > 3 mg/dL/min
@@ -122,6 +140,11 @@ components:
         xDrip: Numeric enum 1-9
       x-aid-gap: GAP-ENTRY-001
       x-aid-gap-note: Triple arrows (TRIPLE_UP, TRIPLE_DOWN) in AAPS/Trio map to DoubleUp/DoubleDown, losing granularity
+      x-aid-evidence:
+        source: reports/schema-census/entries.census.json
+        note: >-
+          `NONE` added from observation: it appears in live data on multiple
+          sites and was absent from the declared enum.
 
     NoiseLevel:
       type: integer
@@ -181,10 +204,23 @@ components:
         direction:
           $ref: '#/components/schemas/Direction'
         date:
-          type: integer
-          format: int64
-          description: Epoch milliseconds timestamp
+          type: number
+          description: |
+            Epoch milliseconds timestamp.
+
+            Declared `number`, not `integer`: 551,257 of 896,589 values in the
+            2026-04 corpus (61.5%), on 11 of 11 sites, carry a fractional part —
+            a 13-digit epoch millisecond value with 1-4 decimal places. A
+            conforming reader MUST accept a fractional value here; a conforming
+            writer SHOULD emit a whole number.
           x-aid-req: [REQ-TREAT-042, REQ-INTEROP-001]
+          x-aid-evidence:
+            source: reports/schema-census/entries.census.json
+            observed: {integer: 345332, number: 551257}
+            sites: 11
+            note: >-
+              Same defect class as Trio PR #1476; not confined to one client.
+              See docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md §4.1
           x-aid-controllers:
             Loop: startDate (converted)
             AAPS: timestamp
@@ -251,12 +287,58 @@ components:
           description: System time when reading was captured (Dexcom Share)
         units:
           type: string
-          enum: [mg, mmol]
+          enum: [mg, mg/dl, mg/dL, mmol, mmol/L]
           description: |
             Glucose unit indicator.
             Note: Values are always stored as mg/dL; this is display preference.
+
+            The enum is the union of three mutually inconsistent declarations
+            and what live data contains: this spec declared `[mg, mmol]`,
+            aid-profile-2025.yaml declared `[mg/dl, mmol]`, and the corpus
+            holds `mg/dL`, `mg/dl` and `mmol/L`. No declared enum matched any
+            other, or the data. Reconciling these three to one vocabulary is
+            an ecosystem question, not a spec edit; until then a reader must
+            accept all five.
           x-aid-gap: GAP-ENTRY-002
           x-aid-gap-note: Unit field usage is inconsistent across uploaders
+          x-aid-evidence:
+            source: reports/schema-census/profile.census.json
+            observed_in_profiles: [mg/dL, mg/dl, mmol/L]
+
+        # Fields in universal use that the 2025 spec omitted. Each was
+        # measured on 10 of 11 sites in the 2026-04 corpus; see
+        # docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md §4.1.
+        trend:
+          type: integer
+          description: |
+            Numeric trend code, written alongside `direction` by most
+            uploaders. Dexcom-style 0-9 scale.
+          x-aid-evidence:
+            source: reports/schema-census/entries.census.json
+            doc_frequency: 0.7164
+            sites: 10
+        trendRate:
+          type: number
+          description: |
+            Rate of change in mg/dL/min. More precise than `direction`.
+
+            Previously declared only on `EntryExtended` as a 2026 extension
+            (GAP-ENTRY-003); it is already in production use and belongs on
+            the base schema.
+          x-aid-evidence:
+            source: reports/schema-census/entries.census.json
+            doc_frequency: 0.4599
+            sites: 10
+            note: fractional in 365,867 of 412,355 values
+        isCalibration:
+          type: boolean
+          description: |
+            Marks a reading produced by, or immediately following, a sensor
+            calibration.
+          x-aid-evidence:
+            source: reports/schema-census/entries.census.json
+            doc_frequency: 0.6190
+            sites: 10
 
         # API v3 metadata fields
         utcOffset:

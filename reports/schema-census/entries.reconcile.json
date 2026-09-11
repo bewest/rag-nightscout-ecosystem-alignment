@@ -17,62 +17,23 @@
   "j",
   "k"
  ],
- "declared_paths": 27,
+ "declared_paths": 30,
  "observed_paths": 19,
  "summary": {
-  "undeclared": 4,
+  "undeclared": 1,
   "undeclared_by_tier": {
-   "vendor": 1,
-   "core": 3
+   "vendor": 1
   },
   "unobserved": 4,
   "v3_metadata_absent": 8,
-  "type_conflicts": 1,
-  "constraint_violations": 1,
+  "type_conflicts": 0,
+  "constraint_violations": 0,
   "enum_unverifiable": 1,
   "required_fields_missing_somewhere": 0
  },
- "type_conflicts": [
-  {
-   "path": "date",
-   "tier": "universal",
-   "declared_types": [
-    "integer"
-   ],
-   "observed_types": {
-    "integer": 345332,
-    "number": 551257
-   },
-   "uncovered_types": {
-    "number": 551257
-   },
-   "uncovered_values": 551257,
-   "uncovered_fraction_of_values": 0.614838,
-   "sites_affected": 11
-  }
- ],
+ "type_conflicts": [],
  "required_missing": [],
- "constraint_violations": [
-  {
-   "path": "direction",
-   "kind": "enum",
-   "declared_enum": [
-    "DoubleDown",
-    "DoubleUp",
-    "Flat",
-    "FortyFiveDown",
-    "FortyFiveUp",
-    "NOT COMPUTABLE",
-    "RATE OUT OF RANGE",
-    "SingleDown",
-    "SingleUp"
-   ],
-   "observed_outside_enum": [
-    "NONE"
-   ],
-   "docs_present": 758390
-  }
- ],
+ "constraint_violations": [],
  "enum_unverifiable": [
   {
    "path": "direction",
@@ -82,6 +43,7 @@
     "Flat",
     "FortyFiveDown",
     "FortyFiveUp",
+    "NONE",
     "NOT COMPUTABLE",
     "RATE OUT OF RANGE",
     "SingleDown",
@@ -93,43 +55,6 @@
   }
  ],
  "undeclared": [
-  {
-   "path": "trend",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 71.6% of documents",
-   "docs_present": 642337,
-   "doc_frequency": 0.716423,
-   "site_count": 10,
-   "observed_types": {
-    "integer": 642337
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "isCalibration",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 61.9% of documents",
-   "docs_present": 554992,
-   "doc_frequency": 0.619004,
-   "site_count": 10,
-   "observed_types": {
-    "boolean": 554992
-   },
-   "distinct_values": null
-  },
-  {
-   "path": "trendRate",
-   "tier": "core",
-   "tier_reason": "10/11 sites, 46.0% of documents",
-   "docs_present": 412355,
-   "doc_frequency": 0.459915,
-   "site_count": 10,
-   "observed_types": {
-    "integer": 46488,
-    "number": 365867
-   },
-   "distinct_values": null
-  },
   {
    "path": "glucose",
    "tier": "vendor",

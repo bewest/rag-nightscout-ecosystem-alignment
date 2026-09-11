@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: AID Treatments Collection - De Facto 2025
-  version: 2025.1.0
+  version: 2025.2.0
   description: |
     OpenAPI specification for the Nightscout `treatments` collection documenting
     the de facto standard as implemented across AID systems circa 2025.
@@ -18,6 +18,27 @@ info:
     ## Source References
     - Deep Dive: `docs/10-domain/treatments-deep-dive.md`
     - Nightscout API: `externals/cgm-remote-monitor/lib/api3/swagger.yaml`
+
+    ## Changelog
+
+    ### 2025.2.0 — corrected against measured data
+
+    Reconciled against 369,419 real treatment documents from 11 Nightscout
+    sites (`reports/schema-census/treatments.census.json`). Evidence and
+    method: `docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md`.
+
+    - `carbs`, `insulin`: now nullable; null is the majority case (95.8% and
+      60.7% of documents)
+    - `timestamp`: `integer` -> `[string, number]`; string in 100% of
+      occurrences
+    - `eventType`: enum extended with `Bolus`, `Carbs`
+    - `type`: enum extended with lowercase `normal`, the only value in live
+      data
+    - added `amount`, `userEnteredAt`, `userLastModifiedAt`,
+      `insulinNeedsScaleFactor`, `correctionRange`
+
+    Fields carry `x-aid-evidence` pointing at the census record that
+    justifies them. Re-derive with `make schema`.
 
   contact:
     name: AID Alignment Workspace
@@ -106,10 +127,18 @@ components:
         - SMB
         - Target Range
         - NS Carbs
+        # Observed in live data, previously undeclared
+        - Bolus
+        - Carbs
         # Legacy
         - Prime
         - <none>
       x-aid-source: docs/10-domain/treatments-deep-dive.md
+      x-aid-evidence:
+        source: reports/schema-census/treatments.census.json
+        note: >-
+          `Bolus` and `Carbs` added from observation across 369,419 live
+          treatment documents; both were absent from the declared enum.
       x-aid-controllers:
         Loop: Uses Meal Bolus, Correction Bolus, Temp Basal, Temporary Override
         AAPS: Full range including SMB, Profile Switch, Combo Bolus
@@ -168,16 +197,34 @@ components:
           format: date-time
           description: Event timestamp (ISO 8601)
         timestamp:
-          type: integer
-          format: int64
-          description: Epoch milliseconds (alternative to created_at)
+          type: [string, number]
+          description: |
+            Alternative timestamp to `created_at`.
+
+            Declared `integer` by the 2025 spec and observed as a **string in
+            100% of its 311,648 occurrences** across 10 sites — an ISO 8601
+            datetime, not epoch milliseconds. `number` is retained because
+            clients that do write epoch milliseconds are plausible and the
+            corpus is Loop-dominant; a reader must handle both.
+          x-aid-evidence:
+            source: reports/schema-census/treatments.census.json
+            observed: {string: 311648}
+            sites: 10
 
         # Insulin fields
         insulin:
-          type: number
+          type: [number, "null"]
           minimum: 0
-          description: Insulin amount in Units
+          description: |
+            Insulin amount in Units.
+
+            Nullable for the same reason as `carbs`: present in 100% of
+            documents on all 11 sites, null in 224,268 of 369,419 (60.7%).
           x-aid-req: [REQ-TREAT-040]
+          x-aid-evidence:
+            source: reports/schema-census/treatments.census.json
+            observed: {"null": 224268, number: 142360, integer: 2791}
+            sites: 11
           x-aid-controllers:
             Loop: deliveredUnits (preferred) or programmedUnits
             AAPS: amount
@@ -205,7 +252,16 @@ components:
           description: |
             AAPS-specific bolus subtype.
             IMPORTANT: Check this field to identify SMBs, not just eventType.
-          enum: [Normal, SMB, Priming]
+          enum: [Normal, SMB, Priming, normal]
+          x-aid-evidence:
+            source: reports/schema-census/treatments.census.json
+            observed: [normal]
+            documents: 130257
+            note: >-
+              Live data contains lowercase `normal` only. Adding it to the
+              enum keeps readers working; normalising case at the write
+              boundary would be the better long-term fix and is an ecosystem
+              question, not a spec edit.
           x-aid-controllers:
             AAPS: Bolus.Type.toBolusType()
             Loop: Not used
@@ -231,10 +287,22 @@ components:
 
         # Carb fields
         carbs:
-          type: number
+          type: [number, "null"]
           minimum: 0
-          description: Carbohydrates in grams
+          description: |
+            Carbohydrates in grams.
+
+            Nullable, and null is the common case: Nightscout writes the key
+            on every treatment regardless of whether the event has carbs. In
+            the 2026-04 corpus the field is present in 100% of documents on
+            all 11 sites and null in 353,734 of 369,419 (95.8%). A consumer
+            that types this as a bare number will break on the majority of
+            real documents.
           x-aid-req: [REQ-TREAT-041]
+          x-aid-evidence:
+            source: reports/schema-census/treatments.census.json
+            observed: {"null": 353734, integer: 10656, number: 5029}
+            sites: 11
           x-aid-controllers:
             Loop: quantity (HKQuantity grams)
             AAPS: amount
@@ -360,6 +428,58 @@ components:
           x-aid-controllers:
             AAPS: interfaceIDs.pumpSerial
             Loop: Not used
+
+        # Fields in cross-client use that the 2025 spec omitted. Measured in
+        # the 2026-04 corpus; see
+        # docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md §4.2.
+        amount:
+          type: number
+          description: |
+            Temp-basal rate or bolus amount, written alongside `rate` and
+            `absolute` by most uploaders.
+          x-aid-evidence:
+            source: reports/schema-census/treatments.census.json
+            doc_frequency: 0.4571
+            sites: 10
+        userEnteredAt:
+          type: string
+          format: date-time
+          description: |
+            When the user entered the treatment, as distinct from when it was
+            recorded or delivered.
+          x-aid-evidence:
+            source: reports/schema-census/treatments.census.json
+            doc_frequency: 0.0176
+            sites: 10
+        userLastModifiedAt:
+          type: string
+          format: date-time
+          description: When the user last edited the treatment.
+          x-aid-evidence:
+            source: reports/schema-census/treatments.census.json
+            doc_frequency: 0.0004
+            sites: 5
+        insulinNeedsScaleFactor:
+          type: number
+          description: |
+            Override scale factor applied to insulin needs, as a multiplier
+            (1.0 = unchanged). Written with override treatments.
+          x-aid-evidence:
+            source: reports/schema-census/treatments.census.json
+            doc_frequency: 0.0074
+            sites: 9
+        correctionRange:
+          type: array
+          description: |
+            Override correction range as a two-element [low, high] array in
+            the profile's glucose units.
+          items:
+            type: number
+          x-aid-evidence:
+            source: reports/schema-census/treatments.census.json
+            doc_frequency: 0.0045
+            sites: 7
+            note: observed array length is always 2
 
         # API v3 metadata
         utcOffset:

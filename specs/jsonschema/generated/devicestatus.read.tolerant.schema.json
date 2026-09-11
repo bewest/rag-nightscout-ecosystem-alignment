@@ -363,7 +363,8 @@
          "type": "integer"
         },
         "duration": {
-         "type": "number"
+         "type": "number",
+         "description": "Minutes. Declared `integer` by the 2025 spec and fractional in"
         },
         "rate": {
          "type": "number"
@@ -579,13 +580,15 @@
   },
   "pump": {
    "type": "object",
-   "description": "Pump status (may be absent if communication failed)",
+   "description": "Pump status (may be absent if communication failed).",
    "properties": {
     "battery": {
      "type": "object",
+     "description": "Battery state. Note that `status` is declared but never observed;",
      "properties": {
       "display": {
-       "type": "boolean"
+       "type": "boolean",
+       "description": "Whether the uploader displays the battery level."
       },
       "percent": {
        "type": "integer"
@@ -599,7 +602,8 @@
        ]
       },
       "string": {
-       "type": "string"
+       "type": "string",
+       "description": "Battery state as a string; observed values are normal and error."
       },
       "voltage": {
        "type": "number"
@@ -611,7 +615,8 @@
      "type": "number"
     },
     "bolusing": {
-     "type": "boolean"
+     "type": "boolean",
+     "description": "Flat form of `status.bolusing`. Written by 10 of 11 sites; the"
     },
     "clock": {
      "type": "string",
@@ -625,25 +630,29 @@
     },
     "manufacturer": {
      "type": "string",
+     "description": "Pump manufacturer.",
      "x-observed-values": [
       "Insulet"
      ]
     },
     "model": {
      "type": "string",
+     "description": "Pump model name.",
      "x-observed-values": [
       "Dash"
      ]
     },
     "pumpID": {
-     "type": "string"
+     "type": "string",
+     "description": "Pump identifier as reported by the uploader. Opaque; may be a"
     },
     "reservoir": {
      "type": "number",
-     "description": "Reservoir level (U)"
+     "description": "Reservoir level (U)."
     },
     "reservoir_display_override": {
      "type": "string",
+     "description": "Replaces the numeric reservoir reading with a UI state string",
      "x-observed-values": [
       "Comms Issue",
       "Finish Setup",
@@ -655,13 +664,16 @@
      ]
     },
     "reservoir_level_override": {
-     "type": "integer"
+     "type": "integer",
+     "description": "Replaces the numeric reservoir reading with a level code."
     },
     "secondsFromGMT": {
-     "type": "integer"
+     "type": "integer",
+     "description": "The pump clock's UTC offset in seconds."
     },
     "status": {
      "type": "object",
+     "description": "Nested status form. Observed on 1 of 11 sites; see the flat",
      "properties": {
       "bolusing": {
        "type": "boolean"
@@ -680,7 +692,8 @@
      "additionalProperties": false
     },
     "suspended": {
-     "type": "boolean"
+     "type": "boolean",
+     "description": "Flat form of `status.suspended`."
     }
    },
    "additionalProperties": false
@@ -702,17 +715,21 @@
      "type": "number"
     },
     "isCharging": {
-     "type": "boolean"
+     "type": "boolean",
+     "description": "Whether the uploader device is charging."
     },
     "name": {
      "type": "string",
      "description": "Uploader device name"
     },
     "timestamp": {
-     "type": "string"
+     "type": "string",
+     "description": "When the uploader captured this status, as distinct from the",
+     "format": "date-time"
     },
     "type": {
-     "type": "string"
+     "type": "string",
+     "description": "Uploader device class; the observed value is PHONE."
     }
    },
    "additionalProperties": false

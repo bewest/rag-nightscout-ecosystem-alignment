@@ -26,7 +26,7 @@ export const ProfileSchema = z.object({
       dosingEnabled: z.boolean().optional(),  // 99% of documents, 10 sites, core
       dosingStrategy: z.string().optional(),  // 99% of documents, 10 sites, core
       maximumBasalRatePerHour: z.number().optional(),  // 99% of documents, 10 sites, core
-      maximumBolus: z.number().int().optional(),  // 99% of documents, 10 sites, core
+      maximumBolus: z.number().optional(),  // 99% of documents, 10 sites, core
       minimumBGGuard: z.number().optional(),  // 99% of documents, 10 sites, core
       overridePresets: z.array(z.object({
         duration: z.number().int().optional(),  // 99% of documents, 10 sites, core

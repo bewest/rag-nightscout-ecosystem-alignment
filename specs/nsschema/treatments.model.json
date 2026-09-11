@@ -87,11 +87,12 @@
      "number"
     ],
     "nullable": false,
-    "declared": false,
+    "declared": true,
     "observed": true,
     "placement": "core",
     "tier": "core",
     "tier_reason": "10/11 sites, 45.7% of documents",
+    "description": "Temp-basal rate or bolus amount, written alongside `rate` and\n`absolute` by most uploaders.",
     "evidence": {
      "docs_present": 168857,
      "doc_frequency": 0.457088,
@@ -100,10 +101,7 @@
       "integer": 97537,
       "number": 71320
      }
-    },
-    "notes": [
-     "proposed addition from evidence (10/11 sites, 45.7% of documents)"
-    ]
+    }
    },
    "app": {
     "path": "app",
@@ -156,6 +154,7 @@
    "carbs": {
     "path": "carbs",
     "types": [
+     "null",
      "number"
     ],
     "nullable": true,
@@ -164,7 +163,7 @@
     "placement": "core",
     "tier": "universal",
     "tier_reason": "all 11 sites, 100.0% of documents",
-    "description": "Carbohydrates in grams",
+    "description": "Carbohydrates in grams.\n\nNullable, and null is the common case: Nightscout writes the key\non every treatment regardless of whether the event has carbs. In\nthe 2026-04 corpus the field is present in 100% of documents on\nall 11 sites and null in 353,734 of 369,419 (95.8%). A consumer\nthat types this as a bare number will break on the majority of\nreal documents.",
     "evidence": {
      "docs_present": 369419,
      "doc_frequency": 1.0,
@@ -189,11 +188,12 @@
      "array"
     ],
     "nullable": false,
-    "declared": false,
+    "declared": true,
     "observed": true,
     "placement": "core",
     "tier": "common",
     "tier_reason": "7/11 sites, 0.5% of documents",
+    "description": "Override correction range as a two-element [low, high] array in\nthe profile's glucose units.",
     "evidence": {
      "docs_present": 1673,
      "doc_frequency": 0.004529,
@@ -202,9 +202,6 @@
       "array": 1673
      }
     },
-    "notes": [
-     "proposed addition from evidence (7/11 sites, 0.5% of documents)"
-    ],
     "children": {
      "[]": {
       "path": "correctionRange[]",
@@ -212,7 +209,7 @@
        "number"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "common",
@@ -225,10 +222,7 @@
         "integer": 2346,
         "number": 1000
        }
-      },
-      "notes": [
-       "proposed addition from evidence (7/11 sites, 0.5% of documents)"
-      ]
+      }
      }
     }
    },
@@ -529,6 +523,7 @@
    "insulin": {
     "path": "insulin",
     "types": [
+     "null",
      "number"
     ],
     "nullable": true,
@@ -537,7 +532,7 @@
     "placement": "core",
     "tier": "universal",
     "tier_reason": "all 11 sites, 100.0% of documents",
-    "description": "Insulin amount in Units",
+    "description": "Insulin amount in Units.\n\nNullable for the same reason as `carbs`: present in 100% of\ndocuments on all 11 sites, null in 224,268 of 369,419 (60.7%).",
     "evidence": {
      "docs_present": 369419,
      "doc_frequency": 1.0,
@@ -562,11 +557,12 @@
      "number"
     ],
     "nullable": false,
-    "declared": false,
+    "declared": true,
     "observed": true,
     "placement": "core",
     "tier": "common",
     "tier_reason": "9/11 sites, 0.7% of documents",
+    "description": "Override scale factor applied to insulin needs, as a multiplier\n(1.0 = unchanged). Written with override treatments.",
     "evidence": {
      "docs_present": 2720,
      "doc_frequency": 0.007363,
@@ -575,10 +571,7 @@
       "integer": 1187,
       "number": 1533
      }
-    },
-    "notes": [
-     "proposed addition from evidence (9/11 sites, 0.7% of documents)"
-    ]
+    }
    },
    "insulinType": {
     "path": "insulinType",
@@ -1011,7 +1004,7 @@
    "timestamp": {
     "path": "timestamp",
     "types": [
-     "integer",
+     "number",
      "string"
     ],
     "nullable": false,
@@ -1020,8 +1013,7 @@
     "placement": "core",
     "tier": "core",
     "tier_reason": "10/11 sites, 84.4% of documents",
-    "format": "int64",
-    "description": "Epoch milliseconds (alternative to created_at)",
+    "description": "Alternative timestamp to `created_at`.\n\nDeclared `integer` by the 2025 spec and observed as a **string in\n100% of its 311,648 occurrences** across 10 sites \u2014 an ISO 8601\ndatetime, not epoch milliseconds. `number` is retained because\nclients that do write epoch milliseconds are plausible and the\ncorpus is Loop-dominant; a reader must handle both.",
     "evidence": {
      "docs_present": 311648,
      "doc_frequency": 0.843617,
@@ -1056,9 +1048,6 @@
      "Priming",
      "SMB",
      "normal"
-    ],
-    "notes": [
-     "enum extended by observation: normal \u2014 present in live data but absent from the declared enum"
     ]
    },
    "unabsorbed": {
@@ -1111,11 +1100,13 @@
      "string"
     ],
     "nullable": false,
-    "declared": false,
+    "declared": true,
     "observed": true,
     "placement": "core",
     "tier": "common",
     "tier_reason": "10/11 sites, 1.8% of documents",
+    "format": "date-time",
+    "description": "When the user entered the treatment, as distinct from when it was\nrecorded or delivered.",
     "evidence": {
      "docs_present": 6491,
      "doc_frequency": 0.017571,
@@ -1123,10 +1114,7 @@
      "observed_types": {
       "string": 6491
      }
-    },
-    "notes": [
-     "proposed addition from evidence (10/11 sites, 1.8% of documents)"
-    ]
+    }
    },
    "userLastModifiedAt": {
     "path": "userLastModifiedAt",
@@ -1134,11 +1122,13 @@
      "string"
     ],
     "nullable": false,
-    "declared": false,
+    "declared": true,
     "observed": true,
     "placement": "core",
     "tier": "common",
     "tier_reason": "5/11 sites, 0.0% of documents",
+    "format": "date-time",
+    "description": "When the user last edited the treatment.",
     "evidence": {
      "docs_present": 131,
      "doc_frequency": 0.000355,
@@ -1146,10 +1136,7 @@
      "observed_types": {
       "string": 131
      }
-    },
-    "notes": [
-     "proposed addition from evidence (5/11 sites, 0.0% of documents)"
-    ]
+    }
    },
    "utcOffset": {
     "path": "utcOffset",

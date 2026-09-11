@@ -2002,6 +2002,7 @@
           "placement": "core",
           "tier": "vendor",
           "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "description": "Minutes. Declared `integer` by the 2025 spec and fractional in\n71,843 of 73,891 observed values (97.2%).",
           "evidence": {
            "docs_present": 73891,
            "doc_frequency": 0.10522,
@@ -2010,10 +2011,7 @@
             "integer": 2048,
             "number": 71843
            }
-          },
-          "notes": [
-           "widened integer -> number: the spec declares integer and 71,843 fractional values were observed"
-          ]
+          }
          },
          "rate": {
           "path": "openaps.iob.lastTemp.rate",
@@ -3217,7 +3215,7 @@
     "placement": "core",
     "tier": "core",
     "tier_reason": "10/11 sites, 95.6% of documents",
-    "description": "Pump status (may be absent if communication failed)",
+    "description": "Pump status (may be absent if communication failed).\n\n**Two incompatible shapes exist in production** and both must be\nread. The 2025 spec described only the nested one:\n\n- *Nested* (`pump.status.{bolusing,suspended,status,timestamp}`) \u2014\n  the shape this spec declared. Observed on 1 of 11 sites in the\n  2026-04 corpus, in 10.5% of device statuses.\n- *Flat* (`pump.{bolusing,suspended,secondsFromGMT,pumpID}`) \u2014\n  undeclared until now. Observed on **10 of 11 sites**, in 85.1% of\n  device statuses.\n\nThe flat shape is the majority in practice and was entirely absent\nfrom the spec. See\n`docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md` \u00a74.3.",
     "evidence": {
      "docs_present": 671232,
      "doc_frequency": 0.955825,
@@ -3238,6 +3236,7 @@
       "placement": "core",
       "tier": "vendor",
       "tier_reason": "2/11 sites, but written in 89% of documents on 1 of them",
+      "description": "Battery state. Note that `status` is declared but never observed;\nlive data uses `string` and `display` instead.",
       "evidence": {
        "docs_present": 83080,
        "doc_frequency": 0.118305,
@@ -3253,11 +3252,12 @@
          "boolean"
         ],
         "nullable": false,
-        "declared": false,
+        "declared": true,
         "observed": true,
-        "placement": "extension",
+        "placement": "core",
         "tier": "vendor",
         "tier_reason": "1/11 sites, but written in 87% of documents on 1 of them",
+        "description": "Whether the uploader displays the battery level.",
         "evidence": {
          "docs_present": 72563,
          "doc_frequency": 0.103329,
@@ -3265,10 +3265,7 @@
          "observed_types": {
           "boolean": 72563
          }
-        },
-        "notes": [
-         "extension-bag candidate (1/11 sites, but written in 87% of documents on 1 of them)"
-        ]
+        }
        },
        "percent": {
         "path": "pump.battery.percent",
@@ -3311,11 +3308,12 @@
          "string"
         ],
         "nullable": false,
-        "declared": false,
+        "declared": true,
         "observed": true,
-        "placement": "extension",
+        "placement": "core",
         "tier": "vendor",
         "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Battery state as a string; observed values are normal and error.",
         "evidence": {
          "docs_present": 73898,
          "doc_frequency": 0.10523,
@@ -3323,10 +3321,7 @@
          "observed_types": {
           "string": 73898
          }
-        },
-        "notes": [
-         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
-        ]
+        }
        },
        "voltage": {
         "path": "pump.battery.voltage",
@@ -3369,11 +3364,12 @@
        "boolean"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 85.1% of documents",
+      "description": "Flat form of `status.bolusing`. Written by 10 of 11 sites; the\nnested form by 1.",
       "evidence": {
        "docs_present": 597334,
        "doc_frequency": 0.850595,
@@ -3381,10 +3377,7 @@
        "observed_types": {
         "boolean": 597334
        }
-      },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 85.1% of documents)"
-      ]
+      }
      },
      "clock": {
       "path": "pump.clock",
@@ -3425,11 +3418,12 @@
        "string"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 83.8% of documents",
+      "description": "Pump manufacturer.",
       "evidence": {
        "docs_present": 588152,
        "doc_frequency": 0.83752,
@@ -3440,9 +3434,6 @@
       },
       "observed_values": [
        "Insulet"
-      ],
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 83.8% of documents)"
       ]
      },
      "model": {
@@ -3451,11 +3442,12 @@
        "string"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 83.8% of documents",
+      "description": "Pump model name.",
       "evidence": {
        "docs_present": 588152,
        "doc_frequency": 0.83752,
@@ -3466,9 +3458,6 @@
       },
       "observed_values": [
        "Dash"
-      ],
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 83.8% of documents)"
       ]
      },
      "pumpID": {
@@ -3477,11 +3466,12 @@
        "string"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 85.1% of documents",
+      "description": "Pump identifier as reported by the uploader. Opaque; may be a\nserial number, so treat it as an identifier, not a display value.",
       "evidence": {
        "docs_present": 597334,
        "doc_frequency": 0.850595,
@@ -3489,10 +3479,7 @@
        "observed_types": {
         "string": 597334
        }
-      },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 85.1% of documents)"
-      ]
+      }
      },
      "reservoir": {
       "path": "pump.reservoir",
@@ -3505,7 +3492,7 @@
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 14.5% of documents",
-      "description": "Reservoir level (U)",
+      "description": "Reservoir level (U).\n\nA sentinel value of 3735928559 (0xDEADBEEF) appears in live data\nwhere the reservoir level is unknown; treat it as \"no reading\",\nnot as a quantity.",
       "evidence": {
        "docs_present": 101633,
        "doc_frequency": 0.144724,
@@ -3522,11 +3509,12 @@
        "string"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "common",
       "tier_reason": "10/11 sites, 0.6% of documents",
+      "description": "Replaces the numeric reservoir reading with a UI state string\n(for example a pod error or a pairing state).",
       "evidence": {
        "docs_present": 4427,
        "doc_frequency": 0.006304,
@@ -3543,9 +3531,6 @@
        "No Pod",
        "Pod Expired",
        "Signal Loss"
-      ],
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 0.6% of documents)"
       ]
      },
      "reservoir_level_override": {
@@ -3554,11 +3539,12 @@
        "integer"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "common",
       "tier_reason": "10/11 sites, 0.6% of documents",
+      "description": "Replaces the numeric reservoir reading with a level code.",
       "evidence": {
        "docs_present": 4427,
        "doc_frequency": 0.006304,
@@ -3566,10 +3552,7 @@
        "observed_types": {
         "integer": 4427
        }
-      },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 0.6% of documents)"
-      ]
+      }
      },
      "secondsFromGMT": {
       "path": "pump.secondsFromGMT",
@@ -3577,11 +3560,12 @@
        "integer"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 85.1% of documents",
+      "description": "The pump clock's UTC offset in seconds.",
       "evidence": {
        "docs_present": 597334,
        "doc_frequency": 0.850595,
@@ -3589,10 +3573,7 @@
        "observed_types": {
         "integer": 597334
        }
-      },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 85.1% of documents)"
-      ]
+      }
      },
      "status": {
       "path": "pump.status",
@@ -3605,6 +3586,7 @@
       "placement": "core",
       "tier": "vendor",
       "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+      "description": "Nested status form. Observed on 1 of 11 sites; see the flat\nfields above for the majority shape.",
       "evidence": {
        "docs_present": 73898,
        "doc_frequency": 0.10523,
@@ -3706,11 +3688,12 @@
        "boolean"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 85.1% of documents",
+      "description": "Flat form of `status.suspended`.",
       "evidence": {
        "docs_present": 597334,
        "doc_frequency": 0.850595,
@@ -3718,10 +3701,7 @@
        "observed_types": {
         "boolean": 597334
        }
-      },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 85.1% of documents)"
-      ]
+      }
      }
     }
    },
@@ -3809,11 +3789,12 @@
        "boolean"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
-      "placement": "extension",
+      "placement": "core",
       "tier": "vendor",
       "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+      "description": "Whether the uploader device is charging.",
       "evidence": {
        "docs_present": 73898,
        "doc_frequency": 0.10523,
@@ -3821,10 +3802,7 @@
        "observed_types": {
         "boolean": 73898
        }
-      },
-      "notes": [
-       "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
-      ]
+      }
      },
      "name": {
       "path": "uploader.name",
@@ -3853,11 +3831,13 @@
        "string"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
       "placement": "core",
       "tier": "core",
       "tier_reason": "10/11 sites, 85.1% of documents",
+      "format": "date-time",
+      "description": "When the uploader captured this status, as distinct from the\ndocument's `created_at`.",
       "evidence": {
        "docs_present": 597335,
        "doc_frequency": 0.850597,
@@ -3865,10 +3845,7 @@
        "observed_types": {
         "string": 597335
        }
-      },
-      "notes": [
-       "proposed addition from evidence (10/11 sites, 85.1% of documents)"
-      ]
+      }
      },
      "type": {
       "path": "uploader.type",
@@ -3876,11 +3853,12 @@
        "string"
       ],
       "nullable": false,
-      "declared": false,
+      "declared": true,
       "observed": true,
-      "placement": "extension",
+      "placement": "core",
       "tier": "vendor",
       "tier_reason": "1/11 sites, but written in 100% of documents on 1 of them",
+      "description": "Uploader device class; the observed value is PHONE.",
       "evidence": {
        "docs_present": 31021,
        "doc_frequency": 0.044173,
@@ -3888,10 +3866,7 @@
        "observed_types": {
         "string": 31021
        }
-      },
-      "notes": [
-       "extension-bag candidate (1/11 sites, but written in 100% of documents on 1 of them)"
-      ]
+      }
      }
     }
    },

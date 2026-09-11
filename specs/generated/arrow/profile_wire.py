@@ -29,7 +29,7 @@ PROFILE_WIRE_SCHEMA = pa.schema([
         pa.field("dosingEnabled", pa.bool_()),
         pa.field("dosingStrategy", pa.large_string()),
         pa.field("maximumBasalRatePerHour", pa.float64()),
-        pa.field("maximumBolus", pa.int64()),
+        pa.field("maximumBolus", pa.float64()),
         pa.field("minimumBGGuard", pa.float64()),
         pa.field("overridePresets", pa.list_(pa.struct([
                 pa.field("duration", pa.int64()),

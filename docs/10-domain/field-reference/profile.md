@@ -54,7 +54,7 @@ private field look common.
 | `store.{}.target_low[].timeAsSeconds` | `integer` | 100.0% | 11 |  |
 | `store.{}.target_low[].value` | `number` | 100.0% | 11 |  |
 | `store.{}.timezone` | `string` | 100.0% | 11 |  |
-| `store.{}.units` | `string` | 100.0% | 11 | **not in spec** |
+| `store.{}.units` | `string` | 100.0% | 11 |  |
 | `units` | `string` | 100.0% | 11 | always returned |
 
 ## Core — most sites, substantial share of documents
@@ -62,36 +62,36 @@ private field look common.
 | Field | Type | Documents | Sites | Notes |
 |---|---|---|---|---|
 | `enteredBy` | `string` | 99.0% | 10 |  |
-| `loopSettings` | `object` | 99.0% | 10 | **not in spec** |
-| `loopSettings.bundleIdentifier` | `string` | 99.0% | 10 | **not in spec** |
-| `loopSettings.deviceToken` | `string` | 99.0% | 10 | **not in spec** |
-| `loopSettings.dosingEnabled` | `boolean` | 99.0% | 10 | **not in spec** |
-| `loopSettings.dosingStrategy` | `string` | 99.0% | 10 | **not in spec** |
-| `loopSettings.maximumBasalRatePerHour` | `number` | 99.0% | 10 | **not in spec** |
-| `loopSettings.maximumBolus` | `integer` | 99.0% | 10 | **not in spec** |
-| `loopSettings.minimumBGGuard` | `number` | 99.0% | 10 | **not in spec** |
-| `loopSettings.overridePresets` | `array` | 99.0% | 10 | **not in spec** |
-| `loopSettings.overridePresets[]` | `object` | 99.0% | 10 | **not in spec** |
-| `loopSettings.overridePresets[].duration` | `integer` | 99.0% | 10 | **not in spec** |
-| `loopSettings.overridePresets[].insulinNeedsScaleFactor` | `number` | 89.1% | 9 | **not in spec** |
-| `loopSettings.overridePresets[].name` | `string` | 99.0% | 10 | **not in spec** |
-| `loopSettings.overridePresets[].symbol` | `string` | 99.0% | 10 | **not in spec** |
-| `loopSettings.overridePresets[].targetRange` | `array` | 69.3% | 7 | **not in spec** |
-| `loopSettings.overridePresets[].targetRange[]` | `number` | 69.3% | 7 | **not in spec** |
-| `loopSettings.preMealTargetRange` | `array` | 89.1% | 9 | **not in spec** |
-| `loopSettings.preMealTargetRange[]` | `number` | 89.1% | 9 | **not in spec** |
-| `loopSettings.scheduleOverride` | `object` | 61.4% | 9 | **not in spec** |
-| `loopSettings.scheduleOverride.duration` | `integer` | 61.4% | 9 | **not in spec** |
-| `loopSettings.scheduleOverride.insulinNeedsScaleFactor` | `number` | 57.9% | 9 | **not in spec** |
-| `loopSettings.scheduleOverride.name` | `string` | 59.4% | 9 | **not in spec** |
-| `loopSettings.scheduleOverride.symbol` | `string` | 59.4% | 9 | **not in spec** |
+| `loopSettings` | `object` | 99.0% | 10 |  |
+| `loopSettings.bundleIdentifier` | `string` | 99.0% | 10 |  |
+| `loopSettings.deviceToken` | `string` | 99.0% | 10 |  |
+| `loopSettings.dosingEnabled` | `boolean` | 99.0% | 10 |  |
+| `loopSettings.dosingStrategy` | `string` | 99.0% | 10 |  |
+| `loopSettings.maximumBasalRatePerHour` | `number` | 99.0% | 10 |  |
+| `loopSettings.maximumBolus` | `number` | 99.0% | 10 |  |
+| `loopSettings.minimumBGGuard` | `number` | 99.0% | 10 |  |
+| `loopSettings.overridePresets` | `array` | 99.0% | 10 |  |
+| `loopSettings.overridePresets[]` | `object` | 99.0% | 10 |  |
+| `loopSettings.overridePresets[].duration` | `integer` | 99.0% | 10 |  |
+| `loopSettings.overridePresets[].insulinNeedsScaleFactor` | `number` | 89.1% | 9 |  |
+| `loopSettings.overridePresets[].name` | `string` | 99.0% | 10 |  |
+| `loopSettings.overridePresets[].symbol` | `string` | 99.0% | 10 |  |
+| `loopSettings.overridePresets[].targetRange` | `array` | 69.3% | 7 |  |
+| `loopSettings.overridePresets[].targetRange[]` | `number` | 69.3% | 7 |  |
+| `loopSettings.preMealTargetRange` | `array` | 89.1% | 9 |  |
+| `loopSettings.preMealTargetRange[]` | `number` | 89.1% | 9 |  |
+| `loopSettings.scheduleOverride` | `object` | 61.4% | 9 |  |
+| `loopSettings.scheduleOverride.duration` | `integer` | 61.4% | 9 |  |
+| `loopSettings.scheduleOverride.insulinNeedsScaleFactor` | `number` | 57.9% | 9 |  |
+| `loopSettings.scheduleOverride.name` | `string` | 59.4% | 9 |  |
+| `loopSettings.scheduleOverride.symbol` | `string` | 59.4% | 9 |  |
 
 ## Common — at least three independent sites
 
 | Field | Type | Documents | Sites | Notes |
 |---|---|---|---|---|
-| `loopSettings.scheduleOverride.targetRange` | `array` | 25.7% | 6 | **not in spec** |
-| `loopSettings.scheduleOverride.targetRange[]` | `number` | 25.7% | 6 | **not in spec** |
+| `loopSettings.scheduleOverride.targetRange` | `array` | 25.7% | 6 |  |
+| `loopSettings.scheduleOverride.targetRange[]` | `number` | 25.7% | 6 |  |
 
 ## Vendor — one or two sites, but written consistently there
 
@@ -104,7 +104,7 @@ private field look common.
 | Field | Type | Documents | Sites | Notes |
 |---|---|---|---|---|
 | `srvModified` | `integer` | 1.0% | 1 |  |
-| `store.{}.startDate` | `string` | 1.0% | 1 | **not in spec** |
+| `store.{}.startDate` | `string` | 1.0% | 1 |  |
 
 ## Declared in the spec, never observed
 

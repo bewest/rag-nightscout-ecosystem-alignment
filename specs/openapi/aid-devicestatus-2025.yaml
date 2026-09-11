@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: AID DeviceStatus Collection - De Facto 2025
-  version: 2025.1.0
+  version: 2025.2.0
   description: |
     OpenAPI specification for the Nightscout `devicestatus` collection documenting
     the de facto standard as implemented across AID systems circa 2025.
@@ -17,6 +17,29 @@ info:
     ## Source References
     - Deep Dive: `docs/10-domain/devicestatus-deep-dive.md`
     - Algorithm Comparison: `docs/10-domain/algorithm-comparison-deep-dive.md`
+
+    ## Changelog
+
+    ### 2025.2.0 — corrected against measured data
+
+    Reconciled against 702,254 real device-status documents from 11
+    Nightscout sites (`reports/schema-census/devicestatus.census.json`).
+    Evidence and method:
+    `docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md`.
+
+    - `PumpStatus`: the **flat** status shape (`pump.bolusing`,
+      `pump.suspended`, `pump.pumpID`, `pump.secondsFromGMT`,
+      `pump.manufacturer`, `pump.model`) is documented for the first time. It
+      is written by 10 of 11 sites; the nested `pump.status.*` shape this
+      spec previously described alone is written by 1.
+    - `PumpStatus.battery`: added `string` and `display`; marked the declared
+      `status` and `voltage` as never observed.
+    - `UploaderStatus`: added `timestamp` (10 sites), `isCharging`, `type`.
+    - `Oref0IOB.lastTemp.duration`: `integer` -> `number` (97.2% fractional).
+    - Documented the 0xDEADBEEF reservoir sentinel.
+
+    Fields carry `x-aid-evidence` pointing at the census record that
+    justifies them. Re-derive with `make schema`.
 
   contact:
     name: AID Alignment Workspace
@@ -301,7 +324,13 @@ components:
             rate:
               type: number
             duration:
-              type: integer
+              type: number
+              description: |
+                Minutes. Declared `integer` by the 2025 spec and fractional in
+                71,843 of 73,891 observed values (97.2%).
+              x-aid-evidence:
+                source: reports/schema-census/devicestatus.census.json
+                observed: {integer: 2048, number: 71843}
             started_at:
               type: string
               format: date-time
@@ -433,27 +462,104 @@ components:
     # =========================================================================
     PumpStatus:
       type: object
-      description: Pump status (may be absent if communication failed)
+      description: |
+        Pump status (may be absent if communication failed).
+
+        **Two incompatible shapes exist in production** and both must be
+        read. The 2025 spec described only the nested one:
+
+        - *Nested* (`pump.status.{bolusing,suspended,status,timestamp}`) —
+          the shape this spec declared. Observed on 1 of 11 sites in the
+          2026-04 corpus, in 10.5% of device statuses.
+        - *Flat* (`pump.{bolusing,suspended,secondsFromGMT,pumpID}`) —
+          undeclared until now. Observed on **10 of 11 sites**, in 85.1% of
+          device statuses.
+
+        The flat shape is the majority in practice and was entirely absent
+        from the spec. See
+        `docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md` §4.3.
       properties:
         clock:
           type: string
           format: date-time
           description: Pump internal clock
+          x-aid-evidence: {doc_frequency: 0.956, sites: 10}
         reservoir:
           type: number
-          description: Reservoir level (U)
+          description: |
+            Reservoir level (U).
+
+            A sentinel value of 3735928559 (0xDEADBEEF) appears in live data
+            where the reservoir level is unknown; treat it as "no reading",
+            not as a quantity.
+          x-aid-evidence: {doc_frequency: 0.145, sites: 10}
+        manufacturer:
+          type: string
+          description: Pump manufacturer.
+          x-aid-evidence: {doc_frequency: 0.8375, sites: 10}
+        model:
+          type: string
+          description: Pump model name.
+          x-aid-evidence: {doc_frequency: 0.8375, sites: 10}
+        pumpID:
+          type: string
+          description: |
+            Pump identifier as reported by the uploader. Opaque; may be a
+            serial number, so treat it as an identifier, not a display value.
+          x-aid-evidence: {doc_frequency: 0.851, sites: 10}
+        secondsFromGMT:
+          type: integer
+          description: The pump clock's UTC offset in seconds.
+          x-aid-evidence: {doc_frequency: 0.851, sites: 10}
+        bolusing:
+          type: boolean
+          description: |
+            Flat form of `status.bolusing`. Written by 10 of 11 sites; the
+            nested form by 1.
+          x-aid-evidence: {doc_frequency: 0.851, sites: 10}
+        suspended:
+          type: boolean
+          description: Flat form of `status.suspended`.
+          x-aid-evidence: {doc_frequency: 0.851, sites: 10}
+        reservoir_display_override:
+          type: string
+          description: |
+            Replaces the numeric reservoir reading with a UI state string
+            (for example a pod error or a pairing state).
+          x-aid-evidence: {doc_frequency: 0.0063, sites: 10}
+        reservoir_level_override:
+          type: integer
+          description: Replaces the numeric reservoir reading with a level code.
+          x-aid-evidence: {doc_frequency: 0.0063, sites: 10}
         battery:
           type: object
+          description: |
+            Battery state. Note that `status` is declared but never observed;
+            live data uses `string` and `display` instead.
           properties:
             percent:
               type: integer
+              x-aid-evidence: {doc_frequency: 0.116, sites: 2}
             voltage:
               type: number
+              x-aid-evidence: {observed: false}
             status:
               type: string
               enum: [normal, low, critical]
+              x-aid-evidence: {observed: false}
+            string:
+              type: string
+              description: Battery state as a string; observed values are normal and error.
+              x-aid-evidence: {doc_frequency: 0.105, sites: 1}
+            display:
+              type: boolean
+              description: Whether the uploader displays the battery level.
+              x-aid-evidence: {doc_frequency: 0.103, sites: 1}
         status:
           type: object
+          description: |
+            Nested status form. Observed on 1 of 11 sites; see the flat
+            fields above for the majority shape.
           properties:
             status:
               type: string
@@ -476,11 +582,29 @@ components:
         battery:
           type: integer
           description: Phone/rig battery percentage
+          x-aid-evidence: {doc_frequency: 1.0, sites: 11}
         batteryVoltage:
           type: number
+          x-aid-evidence: {observed: false}
         name:
           type: string
           description: Uploader device name
+          x-aid-evidence: {doc_frequency: 0.851, sites: 10}
+        timestamp:
+          type: string
+          format: date-time
+          description: |
+            When the uploader captured this status, as distinct from the
+            document's `created_at`.
+          x-aid-evidence: {doc_frequency: 0.851, sites: 10}
+        isCharging:
+          type: boolean
+          description: Whether the uploader device is charging.
+          x-aid-evidence: {doc_frequency: 0.105, sites: 1}
+        type:
+          type: string
+          description: Uploader device class; the observed value is PHONE.
+          x-aid-evidence: {doc_frequency: 0.044, sites: 1}
 
     OverrideStatus:
       type: object

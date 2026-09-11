@@ -20,11 +20,11 @@ private field look common.
 | Field | Type | Documents | Sites | Notes |
 |---|---|---|---|---|
 | `_id` | `string` | 100.0% | 11 | always returned |
-| `carbs` | `number`, `null` | 100.0% | 11 | always returned · nullable |
+| `carbs` | `null`, `number`, `null` | 100.0% | 11 | always returned · nullable |
 | `created_at` | `string` | 100.0% | 11 | always returned |
 | `enteredBy` | `string` | 100.0% | 11 | always returned |
 | `eventType` | `string` | 100.0% | 11 | always returned |
-| `insulin` | `number`, `null` | 100.0% | 11 | always returned · nullable |
+| `insulin` | `null`, `number`, `null` | 100.0% | 11 | always returned · nullable |
 | `utcOffset` | `integer` | 100.0% | 11 | always returned |
 
 ## Core — most sites, substantial share of documents
@@ -32,7 +32,7 @@ private field look common.
 | Field | Type | Documents | Sites | Notes |
 |---|---|---|---|---|
 | `absolute` | `number` | 54.9% | 10 |  |
-| `amount` | `number` | 45.7% | 10 | **not in spec** |
+| `amount` | `number` | 45.7% | 10 |  |
 | `automatic` | `boolean` | 81.3% | 10 |  |
 | `duration` | `number` | 91.0% | 10 |  |
 | `insulinType` | `string` | 80.4% | 10 |  |
@@ -40,7 +40,7 @@ private field look common.
 | `rate` | `number` | 54.9% | 10 |  |
 | `syncIdentifier` | `string` | 83.0% | 10 |  |
 | `temp` | `string` | 46.0% | 10 |  |
-| `timestamp` | `integer`, `string` | 84.4% | 10 |  |
+| `timestamp` | `number`, `string` | 84.4% | 10 |  |
 | `type` | `string` | 35.3% | 10 |  |
 | `unabsorbed` | `number` | 35.3% | 10 |  |
 
@@ -49,15 +49,15 @@ private field look common.
 | Field | Type | Documents | Sites | Notes |
 |---|---|---|---|---|
 | `absorptionTime` | `integer` | 1.8% | 10 |  |
-| `correctionRange` | `array` | 0.5% | 7 | **not in spec** |
-| `correctionRange[]` | `number` | 0.5% | 7 | **not in spec** |
+| `correctionRange` | `array` | 0.5% | 7 |  |
+| `correctionRange[]` | `number` | 0.5% | 7 |  |
 | `foodType` | `string` | 2.2% | 10 |  |
-| `insulinNeedsScaleFactor` | `number` | 0.7% | 9 | **not in spec** |
+| `insulinNeedsScaleFactor` | `number` | 0.7% | 9 |  |
 | `notes` | `string` | 0.7% | 10 |  |
 | `reason` | `string` | 1.1% | 10 |  |
 | `remoteAddress` | `string` | 0.0% | 3 | **not in spec** |
-| `userEnteredAt` | `string` | 1.8% | 10 | **not in spec** |
-| `userLastModifiedAt` | `string` | 0.0% | 5 | **not in spec** |
+| `userEnteredAt` | `string` | 1.8% | 10 |  |
+| `userLastModifiedAt` | `string` | 0.0% | 5 |  |
 
 ## Vendor — one or two sites, but written consistently there
 
