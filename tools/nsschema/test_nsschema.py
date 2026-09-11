@@ -1238,3 +1238,60 @@ def test_completeness_is_reported_not_assumed():
         sync_model.build(root, "loop", sync_model.CONTROLLERS["loop"]))
     assert 0.0 < stats["recorded_share"] < 1.0
     assert stats["replayable_share"] >= stats["recorded_share"]
+
+
+# ── therapy effects ─────────────────────────────────────────────────────
+
+from nsschema import effects  # noqa: E402
+
+
+def test_effect_and_motivation_are_classified_separately():
+    assert effects.classify(
+        {"insulinNeedsScaleFactor": 1.2, "reason": "Cardio"}) == "effect+motivation"
+    assert effects.classify({"insulinNeedsScaleFactor": 1.2}) == "effect-only"
+    # Trio's Exercise: a label and a duration, and no idea what it did.
+    assert effects.classify({"duration": 90, "notes": "run"}) == "motivation-only"
+    assert effects.classify({"duration": 90}) == "neither"
+
+
+def test_an_empty_string_motivation_is_not_a_motivation():
+    assert effects.classify({"insulinNeedsScaleFactor": 1.2,
+                             "reason": ""}) == "effect-only"
+
+
+def test_therapy_effect_schema_is_valid_and_effect_only_needs_no_motivation():
+    schema = json.loads(
+        (corpus.repo_root() / "specs/sync/therapy-effect.schema.json").read_text())
+    jsonschema.Draft202012Validator.check_schema(schema)
+    jsonschema.Draft202012Validator(schema).validate({
+        "startTimestamp": "2026-09-11T08:00:00Z",
+        "effect": {"insulinNeedsScaleFactor": 1.2},
+        "disclosure": "effect-only",
+    })
+
+
+def test_a_label_is_not_required_at_any_disclosure_level():
+    schema = json.loads(
+        (corpus.repo_root() / "specs/sync/therapy-effect.schema.json").read_text())
+    motivation = schema["properties"]["motivation"]
+    assert "required" not in motivation, "motivation must never require a label"
+
+
+def test_basal_and_insulin_needs_scale_factors_stay_distinct():
+    # An AAPS profile-switch percentage scales basal; a Loop override
+    # multiplier scales overall insulin needs, moving ISF and CR too.
+    # Collapsing them would misprice every replayed dose.
+    schema = json.loads(
+        (corpus.repo_root() / "specs/sync/therapy-effect.schema.json").read_text())
+    effect = schema["properties"]["effect"]["properties"]
+    assert "basalScaleFactor" in effect and "insulinNeedsScaleFactor" in effect
+
+
+def test_remapping_rules_declare_their_lossiness():
+    rules = yaml.safe_load(
+        (corpus.repo_root() / "specs/sync/effect-remapping.yaml").read_text())
+    for rule in rules["rules"]:
+        assert "lossy" in rule, rule["id"]
+        assert rule.get("evidence") or rule.get("note"), rule["id"]
+    trio = next(r for r in rules["rules"] if r["id"] == "MAP-TRIO-EXERCISE")
+    assert trio["lossy"] and trio["to"]["effect"] == {}

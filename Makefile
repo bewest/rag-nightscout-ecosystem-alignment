@@ -666,7 +666,7 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
         schema-scan-pii schema-sanitize schema-attribute \
         schema-quirks schema-quirks-check schema-decompose \
         schema-nocturne schema-dosing schema-vendors schema-observability \
-        schema-sync-model schema-sync-cost \
+        schema-sync-model schema-sync-cost schema-effects \
         schema-test schema-clean
 
 PY ?= python3
@@ -765,6 +765,10 @@ schema-sync-model:
 ## schema-sync-cost: what a controller's Nightscout sync costs on the wire
 schema-sync-cost:
 	@$(NSSCHEMA).sync_cost
+
+## schema-effects: can a temporary effect be separated from its motivation?
+schema-effects:
+	@$(NSSCHEMA).effects
 
 ## schema-drift: check tools/ns2parquet against the measured wire model
 schema-drift:

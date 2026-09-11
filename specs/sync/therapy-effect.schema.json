@@ -1,0 +1,71 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://nightscout.dev/schemas/sync/therapy-effect.json",
+ "title": "TherapyEffect",
+ "description": "A time-ranged modification to how a controller doses, separated from why it was asked for. The effect is what a replay needs and what a follower must see; the motivation is what a reviewer may want and what a person may not wish to disclose. Keeping them in one record but in separate objects is what makes a privacy-preserving projection a field selection rather than a redaction pass - `disclosure: effect-only` publishes 'sensitivity was scaled by 1.2 for 90 minutes' without publishing why.",
+ "type": "object",
+ "required": ["startTimestamp", "effect", "disclosure"],
+ "additionalProperties": false,
+ "properties": {
+  "id": {"type": "string"},
+  "correlationId": {"type": "string", "description": "Links the effect to the decisions taken under it."},
+  "startTimestamp": {"type": "string", "format": "date-time"},
+  "endTimestamp": {"type": ["string", "null"], "format": "date-time", "description": "Null while still running. An effect is a span, not an event: 'was an override active when this dose was skipped' is unanswerable from point events."},
+  "source": {"type": "string", "description": "Controller or agent that applied it. Structural identity, not the free-text device string."},
+  "supersededById": {"type": ["string", "null"], "description": "Set when a later effect replaces this one, so a human overriding a controller is recorded rather than implied by last-write-wins."},
+
+  "effect": {
+   "type": "object",
+   "description": "The dosing-relevant content. Every member is optional and absent means unchanged; a scale factor of 1.0 is not the same as 'not set', because the first says the controller considered it and the second says nothing.",
+   "additionalProperties": false,
+   "properties": {
+    "insulinNeedsScaleFactor": {"type": "number", "exclusiveMinimum": 0, "description": "Scales overall insulin needs. Loop's override multiplier; Trio's percentage."},
+    "basalScaleFactor": {"type": "number", "exclusiveMinimum": 0, "description": "Scales basal only. AAPS profile-switch percentage, which is NOT the same quantity as insulinNeedsScaleFactor and must not be merged into it."},
+    "sensitivityScaleFactor": {"type": "number", "exclusiveMinimum": 0},
+    "carbRatioScaleFactor": {"type": "number", "exclusiveMinimum": 0},
+    "targetRange": {
+     "type": "object",
+     "description": "Absolute target override in mg/dL, replacing the schedule for the span.",
+     "required": ["min", "max"],
+     "additionalProperties": false,
+     "properties": {"min": {"type": "number"}, "max": {"type": "number"}}
+    },
+    "timeShiftSeconds": {"type": "integer", "description": "AAPS profile timeshift: the schedule is read as though the clock were offset."},
+    "smbAllowed": {"type": "boolean", "description": "Whether micro-boluses are permitted under this effect. Currently unrecorded by every controller; it is a dosing input a replay needs."},
+    "maxSmbMinutes": {"type": "number"},
+    "suspendDelivery": {"type": "boolean", "description": "Delivery suspended for the span. Distinguishes 'chose not to dose' from 'could not dose'."}
+   }
+  },
+
+  "motivation": {
+   "type": ["object", "null"],
+   "description": "Why. Optional by construction, and omitted entirely under effect-only disclosure.",
+   "additionalProperties": false,
+   "properties": {
+    "classification": {
+     "description": "A closed vocabulary, so a record can be coarsened rather than redacted. `unspecified` is a legitimate published value, not a missing one.",
+     "enum": ["exercise", "meal", "illness", "sleep", "stress", "travel", "hormonal", "hypoglycaemia-risk", "manual", "automation", "unspecified"]
+    },
+    "label": {"type": "string", "description": "User's own words. Personal data; never required, and never published above effect+classification disclosure."},
+    "decidedBy": {"type": "string", "description": "Human, controller, or delegated agent."}
+   }
+  },
+
+  "disclosure": {
+   "description": "What this record is authorised to reveal, chosen by the person whose data it is. The projection is a field selection, which is why it can be enforced in storage rather than applied by a scrubber that has to be remembered.",
+   "enum": ["effect-only", "effect+classification", "full"]
+  },
+
+  "provenance": {
+   "type": "object",
+   "description": "How faithfully this was recovered, because most of it is remapped from a controller vocabulary that did not carry all of it.",
+   "additionalProperties": false,
+   "properties": {
+    "originalEventType": {"type": "string"},
+    "mapping": {"type": "string", "description": "Remapping rule applied, from specs/sync/effect-remapping.yaml."},
+    "lossy": {"type": "boolean"},
+    "note": {"type": "string"}
+   }
+  }
+ }
+}

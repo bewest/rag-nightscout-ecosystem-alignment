@@ -1,0 +1,139 @@
+# Remapping each controller's temporary-effect concept onto TherapyEffect.
+#
+# The three systems disagree about where a temporary effect lives, what it
+# carries, and what its numbers mean. Remapping is possible and is partly
+# lossy, and the lossiness is per-rule rather than general — so it is
+# recorded per rule.
+#
+# Measured with `make schema-effects` over the corpus: 85.9% of
+# temporary-effect treatments already carry both an effect and a motivation
+# and are separable today; 14.1% carry a motivation and no effect at all.
+#
+# `lossy: true` means the mapping cannot recover the full effect from what
+# is on the wire. It is not a reason to skip the mapping — it is the thing
+# to fix in the controller.
+
+version: 0.1-draft
+status: >-
+  Draft for maintainer and controller-maintainer discussion. The scale-factor
+  semantics in particular need confirming against each algorithm by someone
+  who maintains it; they are read from source, not from a specification.
+
+rules:
+  - id: MAP-LOOP-OVERRIDE
+    controller: Loop
+    from:
+      collection: treatments
+      eventType: Temporary Override
+      fields: [insulinNeedsScaleFactor, correctionRange, duration, reason]
+    to:
+      effect:
+        insulinNeedsScaleFactor: insulinNeedsScaleFactor
+        targetRange: "correctionRange[0], correctionRange[1]"
+      motivation:
+        label: reason
+        classification: inferred-from-label
+    lossy: false
+    evidence: >-
+      2,892 documents across 9 sites, every one carrying both halves.
+      `reason` holds the preset name the user chose, which is why it is
+      mapped to `label` and not to `classification`.
+
+  - id: MAP-LOOP-DEVICESTATUS-OVERRIDE
+    controller: Loop
+    from:
+      collection: devicestatus
+      path: override
+      fields: [active, multiplier, currentCorrectionRange, duration, name]
+    to:
+      effect:
+        insulinNeedsScaleFactor: multiplier
+        targetRange: "currentCorrectionRange.minValue, currentCorrectionRange.maxValue"
+      motivation:
+        label: name
+    lossy: false
+    evidence: >-
+      64,674 active overrides; 77.3% carry both halves, 18.9% a name and no
+      effect, 3.7% an effect and no name. The same override is often also in
+      treatments, so the two views must be reconciled by time span rather
+      than both counted.
+
+  - id: MAP-TRIO-EXERCISE
+    controller: Trio
+    from:
+      collection: treatments
+      eventType: Exercise
+      fields: [duration, notes]
+    to:
+      effect: {}
+      motivation:
+        label: notes
+        classification: exercise
+    lossy: true
+    evidence: >-
+      481 documents, one site, and **no effect is present at all**. Trio's
+      `NightscoutExercise` model carries duration, eventType, createdAt,
+      enteredBy, notes and id — and no percentage, target or multiplier.
+    note: >-
+      This is the case that matters, and it is backwards from what either
+      requirement wants. The record publishes the motivation — the user's own
+      note — and withholds the dosing effect. It can be neither replayed nor
+      usefully anonymised: redacting it leaves nothing, and keeping it
+      reveals only the sensitive half. Fixing this is a Trio change, and it
+      is the single highest-value one in this table.
+
+  - id: MAP-AAPS-TEMPTARGET
+    controller: AndroidAPS
+    from:
+      collection: treatments
+      eventType: Temporary Target
+      fields: [targetTop, targetBottom, duration, reason]
+    to:
+      effect:
+        targetRange: "targetBottom, targetTop"
+      motivation:
+        classification: from-reason-enum
+    lossy: false
+    evidence: >-
+      42 documents in this corpus, which has no AAPS closed-loop site — this
+      rule is read from AAPS's `NSTemporaryTarget`, not confirmed from data.
+    note: >-
+      AAPS is the only controller with a **closed** motivation vocabulary:
+      Custom, Hypo, Activity, Eating Soon, Automation, Wear. That maps
+      directly onto `motivation.classification` with no free text, which is
+      the design the other two should copy.
+
+  - id: MAP-AAPS-PROFILESWITCH
+    controller: AndroidAPS
+    from:
+      collection: treatments
+      eventType: Profile Switch
+      fields: [percentage, timeshift, profile, duration]
+    to:
+      effect:
+        basalScaleFactor: "percentage / 100"
+        timeShiftSeconds: "timeshift * 3600"
+      motivation:
+        classification: manual
+    lossy: true
+    note: >-
+      **Do not merge `percentage` into `insulinNeedsScaleFactor`.** An AAPS
+      profile-switch percentage scales the profile's basal rates; a Loop
+      override multiplier scales overall insulin needs, which moves ISF and
+      carb ratio inversely as well. They are different quantities with
+      similar names, and collapsing them would silently misprice every
+      replayed dose. That is why `TherapyEffect` carries both
+      `basalScaleFactor` and `insulinNeedsScaleFactor` rather than one
+      normalised factor.
+
+unmapped:
+  - field: smbAllowed
+    note: >-
+      No controller records whether micro-boluses were permitted under an
+      effect, and it is a dosing input (`microBolusAllowed`). Present in
+      TherapyEffect so it has somewhere to go once one does.
+  - field: suspendDelivery
+    note: >-
+      Pump suspension is recorded as a device event and as pump state, not as
+      an effect span, so "could not dose" and "chose not to dose" still look
+      alike to a replay that reads effects only.

@@ -1,0 +1,99 @@
+{
+ "generated_by": "tools/nsschema/effects.py",
+ "treatments": {
+  "total": 3415,
+  "by_verdict": {
+   "effect+motivation": 2934,
+   "motivation-only": 481
+  },
+  "by_site": {
+   "a": {
+    "effect+motivation": 1192
+   },
+   "b": {
+    "effect+motivation": 147,
+    "motivation-only": 481
+   },
+   "c": {
+    "effect+motivation": 162
+   },
+   "d": {
+    "effect+motivation": 6
+   },
+   "e": {
+    "effect+motivation": 183
+   },
+   "g": {
+    "effect+motivation": 397
+   },
+   "h": {
+    "effect+motivation": 178
+   },
+   "i": {
+    "effect+motivation": 571
+   },
+   "k": {
+    "effect+motivation": 98
+   }
+  },
+  "by_event_type": {
+   "exercise": {
+    "motivation-only": 481
+   },
+   "temporary override": {
+    "effect+motivation": 2892
+   },
+   "temporary target": {
+    "effect+motivation": 42
+   }
+  }
+ },
+ "devicestatus_active_overrides": {
+  "total": 64674,
+  "by_verdict": {
+   "effect+motivation": 49990,
+   "effect-only": 2411,
+   "motivation-only": 12202,
+   "neither": 71
+  },
+  "by_site": {
+   "a": {
+    "effect+motivation": 14255,
+    "effect-only": 67
+   },
+   "b": {
+    "effect+motivation": 2186,
+    "effect-only": 98
+   },
+   "c": {
+    "effect-only": 1740,
+    "effect+motivation": 6280
+   },
+   "d": {
+    "effect+motivation": 40
+   },
+   "e": {
+    "effect+motivation": 5061
+   },
+   "g": {
+    "effect+motivation": 7938,
+    "effect-only": 388
+   },
+   "h": {
+    "effect+motivation": 2064,
+    "effect-only": 34,
+    "motivation-only": 54
+   },
+   "i": {
+    "motivation-only": 11806,
+    "effect+motivation": 11762,
+    "neither": 71,
+    "effect-only": 84
+   },
+   "k": {
+    "effect+motivation": 404,
+    "motivation-only": 342
+   }
+  }
+ }
+}
