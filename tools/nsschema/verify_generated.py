@@ -21,8 +21,16 @@ from . import corpus, specload
 from .emit import fieldref_emit, jsonschema_emit, mongoose_emit, pyarrow_emit, zod_emit
 
 
+def _read_optional(path: Path):
+    return json.loads(path.read_text()) if path.is_file() else None
+
+
 def expected_files(root: Path):
     """Yield (path, expected_content) for every generated artifact."""
+    census_dir = root / "reports" / "schema-census"
+    attribution = _read_optional(census_dir / "attribution.json")
+    quirk_report = _read_optional(census_dir / "quirks.json")
+    quirks = (quirk_report or {}).get("results", [])
     for collection in specload.ROOT_SCHEMA:
         model_path = root / "specs" / "nsschema" / f"{collection}.model.json"
         if not model_path.is_file():
@@ -47,7 +55,7 @@ def expected_files(root: Path):
         if census_path.is_file():
             census = json.loads(census_path.read_text())
             yield (root / "docs" / "10-domain" / "field-reference" / f"{collection}.md",
-                   fieldref_emit.emit(model, census))
+                   fieldref_emit.emit(model, census, attribution, quirks))
 
 
 def main(argv=None):

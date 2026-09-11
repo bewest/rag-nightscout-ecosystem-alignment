@@ -1,0 +1,119 @@
+# Quirks in the `treatments` collection. See README.md for the format.
+collection: treatments
+quirks:
+  - id: QUIRK-TREATMENTS-001
+    title: carbs and insulin are present-but-null on most treatments
+    status: active
+    path: carbs
+    kind: nullability
+    description: >-
+      Nightscout writes `carbs` and `insulin` onto every treatment
+      regardless of whether the event has either. The keys are present in
+      essentially every document and null in most of them. A schema typing
+      them as a bare `number`, or a client deserializing into a
+      non-optional numeric, is wrong for the majority case rather than for
+      an edge case.
+    detect:
+      path: carbs
+      test: is-null
+    expect:
+      min_share: 0.8
+      min_sites: 10
+    reader_guidance: >-
+      Treat null and absent identically, and distinguish both from zero. A
+      zero-carb treatment is a real, different thing from a treatment that
+      carries no carb information.
+    writer_guidance: >-
+      Omit the key rather than writing null, on collections where that is
+      safe. Existing readers tolerate absence.
+    references:
+      - docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md#42-treatments--null-is-the-common-case
+
+  - id: QUIRK-TREATMENTS-002
+    title: insulin is present-but-null on most treatments
+    status: active
+    path: insulin
+    kind: nullability
+    description: The `carbs` case above, for the insulin field.
+    detect:
+      path: insulin
+      test: is-null
+    expect:
+      min_share: 0.4
+      min_sites: 10
+    reader_guidance: See QUIRK-TREATMENTS-001.
+    writer_guidance: See QUIRK-TREATMENTS-001.
+    references:
+      - docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md#42-treatments--null-is-the-common-case
+
+  - id: QUIRK-TREATMENTS-003
+    title: timestamp is an ISO 8601 string, not the declared epoch integer
+    status: active
+    path: timestamp
+    kind: type-union
+    description: >-
+      The 2025.1.0 spec declared `timestamp` as `integer` epoch
+      milliseconds. Every occurrence in the corpus is an ISO 8601 string —
+      a duplicate of `created_at` rather than a numeric alternative to it.
+    detect:
+      path: timestamp
+      test: is-string
+    expect:
+      min_share: 0.6
+      min_sites: 8
+    reader_guidance: >-
+      Accept both a string and a number here. Prefer `created_at` as the
+      authoritative time; use `timestamp` only as a fallback.
+    writer_guidance: >-
+      Do not write `timestamp` at all on new integrations. It duplicates
+      `created_at` with no agreed type.
+    references:
+      - specs/openapi/aid-treatments-2025.yaml
+
+  - id: QUIRK-TREATMENTS-004
+    title: bolus subtype is written lower-case as `normal`
+    status: active
+    path: type
+    kind: case-mismatch
+    description: >-
+      The declared enum is `Normal`, `SMB`, `Priming`. Live data holds
+      lower-case `normal` only. A case-sensitive enum check rejects every
+      document that carries the field.
+    detect:
+      path: type
+      test: equals
+      value: normal
+    expect:
+      min_share: 0.2
+      min_sites: 8
+    reader_guidance: Compare this field case-insensitively.
+    writer_guidance: >-
+      Emit the documented casing. Changing it is safe only once readers
+      compare case-insensitively, so the reader fix comes first.
+    references:
+      - specs/openapi/aid-treatments-2025.yaml#/components/schemas/Treatment/properties/type
+
+  - id: QUIRK-TREATMENTS-005
+    title: eventType carries values absent from every declared enum
+    status: active
+    path: eventType
+    kind: enum-gap
+    description: >-
+      `Bolus` and `Carbs` appear in live data and were in no declared enum,
+      alongside the documented `Meal Bolus`, `Correction Bolus` and
+      `Carb Correction`. The ecosystem has more names for the same events
+      than any one spec lists.
+    detect:
+      path: eventType
+      test: in
+      values: [Bolus, Carbs]
+    expect:
+      min_share: 0.0
+      min_sites: 2
+    reader_guidance: >-
+      Never reject an unknown `eventType`. Classify by the fields present —
+      `insulin`, `carbs`, `duration`, `absolute` — and use `eventType` as a
+      hint, not a discriminator.
+    writer_guidance: Prefer a documented value.
+    references:
+      - specs/openapi/aid-treatments-2025.yaml#/components/schemas/EventType

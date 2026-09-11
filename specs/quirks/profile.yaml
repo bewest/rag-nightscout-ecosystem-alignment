@@ -1,0 +1,106 @@
+# Quirks in the `profile` collection. See README.md for the format.
+collection: profile
+quirks:
+  - id: QUIRK-PROFILE-001
+    title: mills is a string, not the declared epoch integer
+    status: active
+    path: mills
+    kind: type-union
+    description: >-
+      `mills` is declared `integer` epoch milliseconds and is written as a
+      decimal *string* in almost every profile document in the corpus. This
+      is the field Nocturne's V4 model makes the authoritative timestamp,
+      which is why its reader parses numeric strings as well as numbers.
+    detect:
+      path: mills
+      test: is-string
+    expect:
+      min_share: 0.8
+      min_sites: 8
+    reader_guidance: >-
+      Parse a string here, and fall back through `startDate` and
+      `created_at` when it is absent or unparseable.
+    writer_guidance: Emit a number.
+    references:
+      - externals/nocturne/src/Core/Nocturne.Core.Models/Entry.cs
+      - specs/openapi/aid-profile-2025.yaml
+
+  - id: QUIRK-PROFILE-002
+    title: numeric profile settings are written as strings
+    status: active
+    path: store.{}.carbs_hr
+    kind: type-union
+    description: >-
+      `carbs_hr` and `delay` are declared numeric and written as strings.
+      The same is true of several schedule values in some clients, so a
+      reader that trusts the declared type fails on arithmetic rather than
+      on parsing.
+    detect:
+      path: store.{}.carbs_hr
+      test: is-string
+    expect:
+      min_share: 0.8
+      min_sites: 8
+    reader_guidance: >-
+      Coerce every numeric profile setting through a tolerant parse, and
+      treat an unparseable value as absent rather than as zero. Zero is a
+      meaningful carb-absorption delay; "unknown" is not.
+    writer_guidance: Emit numbers.
+    references:
+      - specs/openapi/aid-profile-2025.yaml#/components/schemas/Profile
+
+  - id: QUIRK-PROFILE-003
+    title: glucose units have four spellings and no spec matched the data
+    status: active
+    path: store.{}.units
+    kind: unit-mismatch
+    description: >-
+      `aid-entries-2025.yaml` declared `[mg, mmol]`, `aid-profile-2025.yaml`
+      declared `[mg/dl, mmol]`, and the corpus contains `mg/dL`, `mg/dl` and
+      `mmol/L`. No declared enum matched any other, or the data. The
+      per-profile `store.{}.units` — present in every profile document on
+      every site — was undeclared entirely.
+    detect:
+      path: store.{}.units
+      test: exists
+    expect:
+      min_share: 0.9
+      min_sites: 10
+    reader_guidance: >-
+      Compare case-insensitively and accept a `/dl`, `/dL` or `/L` suffix.
+      Prefer the per-profile `store.{}.units` over the document-level
+      `units` when they disagree; the per-profile value is what the
+      schedules inside that profile are expressed in.
+    writer_guidance: >-
+      Write `mg/dl` or `mmol`, and write the same value at both levels.
+    references:
+      - specs/openapi/aid-profile-2025.yaml
+      - specs/openapi/aid-entries-2025.yaml
+
+  - id: QUIRK-PROFILE-004
+    title: Loop flattens 26 paths of its own settings into the profile document
+    status: active
+    path: loopSettings
+    kind: undeclared-field
+    description: >-
+      `loopSettings` is a 26-path subtree of Loop's therapy and app settings
+      written directly into the profile document. It is the
+      attribute-flattening camp of the x-aid-extensions proposal, at scale,
+      and no spec in this repo described it before 2025.2.0. Two of its
+      leaves are credential-grade — `deviceToken` is an APNs token and
+      `bundleIdentifier` embeds the builder's Apple Developer Team ID.
+    detect:
+      path: loopSettings
+      test: is-object
+    expect:
+      min_share: 0.8
+      min_sites: 8
+    reader_guidance: >-
+      Tolerate the subtree; do not assume its shape is stable. Never log,
+      display or copy `deviceToken` or `bundleIdentifier` into derived data.
+    writer_guidance: >-
+      New integrations should use a named extension location rather than
+      flattening vendor settings into the shared document shape.
+    references:
+      - docs/sdqctl-proposals/x-aid-extensions-convention-proposal.md
+      - specs/openapi/aid-profile-2025.yaml#/components/schemas/LoopSettings

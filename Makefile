@@ -663,14 +663,16 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
 # reconciled model. See tools/nsschema/README.md.
 .PHONY: schema schema-census schema-reconcile schema-model schema-emit \
         schema-impact schema-impact-smoke schema-drift schema-verify \
-        schema-scan-pii schema-sanitize \
+        schema-scan-pii schema-sanitize schema-attribute \
+        schema-quirks schema-quirks-check \
         schema-test schema-clean
 
 PY ?= python3
 NSSCHEMA = PYTHONPATH=tools $(PY) -m nsschema
 
 ## schema: full pipeline — census, reconcile, model, emit, impact, drift
-schema: schema-census schema-reconcile schema-model schema-emit schema-impact schema-drift
+schema: schema-census schema-reconcile schema-model schema-quirks schema-emit \
+        schema-impact schema-drift
 
 ## schema-census: walk the raw corpus (~4 min over ~2.5 GB of JSON)
 schema-census:
@@ -721,6 +723,18 @@ schema-scan-pii:
 ## schema-sanitize: mask personal data in captured-document files
 schema-sanitize:
 	@$(NSSCHEMA).sanitize --write $(or $(FILES),$(SANITIZE_TARGETS))
+
+## schema-attribute: which ecosystem projects serialize each field (slow, ~10 min)
+schema-attribute:
+	@$(NSSCHEMA).attribute
+
+## schema-quirks: measure the quirks registry against the corpus
+schema-quirks:
+	@$(NSSCHEMA).quirks
+
+## schema-quirks-check: fail if a quirks registry claim no longer holds
+schema-quirks-check:
+	@$(NSSCHEMA).quirks --check
 
 ## schema-drift: check tools/ns2parquet against the measured wire model
 schema-drift:

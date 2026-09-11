@@ -2,12 +2,15 @@
 
 The audience is a contributor deciding what to write into a Nightscout
 document, or a reviewer deciding whether a proposed schema change is safe.
-Both need the same two facts about every field: what type it holds, and
-how much of the ecosystem actually uses it. Neither is currently written
-down in one place.
+Both need the same three facts about every field: what type it holds, how
+much of the ecosystem actually uses it, and **which projects handle it** —
+none of which was written down in one place.
 
-Each field's row carries the evidence rather than an assertion, so a reader
-can disagree with the tiering without having to re-derive the measurement.
+Each row carries the evidence rather than an assertion, so a reader can
+disagree with the tiering without re-deriving the measurement. Attribution
+comes from ``reports/schema-census/attribution.json`` (source-code evidence,
+not document provenance) and quirks from
+``reports/schema-census/quirks.json``.
 """
 
 import json
@@ -48,8 +51,28 @@ def _types(node):
     return ", ".join(f"`{t}`" for t in types) or "—"
 
 
-def emit(model, census_meta):
+def _attribution_index(attribution):
+    """Leaf field name -> the projects with strong source evidence."""
+    if not attribution:
+        return {}
+    return {f["name"]: f for f in attribution.get("fields", [])}
+
+
+def _projects_for(path, index):
+    entry = index.get(path.split(".")[-1].rstrip("[]"))
+    if not entry or entry.get("low_confidence"):
+        return ""
+    projects = entry.get("attributed_to") or []
+    if not projects:
+        return ""
+    shown = projects[:4]
+    more = f" +{len(projects) - 4}" if len(projects) > 4 else ""
+    return ", ".join(shown) + more
+
+
+def emit(model, census_meta, attribution=None, quirks=None):
     collection = model["collection"]
+    index = _attribution_index(attribution)
     rows_by_tier = {tier: [] for tier in ORDER}
     undeclared_only = []
 
@@ -70,7 +93,8 @@ def emit(model, census_meta):
         if node.get("nullable"):
             marks.append("nullable")
         rows_by_tier.setdefault(tier, []).append(
-            f"| `{path}` | {_types(node)} | {freq:.1%} | {sites} | {' · '.join(marks)} |"
+            f"| `{path}` | {_types(node)} | {freq:.1%} | {sites} | "
+            f"{_projects_for(path, index)} | {' · '.join(marks)} |"
         )
 
     lines = [
@@ -90,6 +114,11 @@ def emit(model, census_meta):
         "The second number matters more: one busy site can make a single client's ",
         "private field look common.",
         "",
+        "**Handled by** lists projects whose source code serializes the field, from ",
+        "`reports/schema-census/attribution.json`. It is source evidence, not document ",
+        "provenance: a project that *reads* a field looks identical to one that ",
+        "*writes* it, and names too generic to attribute are left blank.",
+        "",
         "> This corpus is Loop-dominant (see the census `site_documents`). A field ",
         "> marked universal here is universal *in this corpus*, which is not the same ",
         "> as universal across the ecosystem.",
@@ -103,11 +132,30 @@ def emit(model, census_meta):
         lines += [
             f"## {tier.title()} — {TIER_NOTE[tier]}",
             "",
-            "| Field | Type | Documents | Sites | Notes |",
-            "|---|---|---|---|---|",
+            "| Field | Type | Documents | Sites | Handled by | Notes |",
+            "|---|---|---|---|---|---|",
             *rows,
             "",
         ]
+
+    collection_quirks = [q for q in (quirks or []) if q["collection"] == collection]
+    if collection_quirks:
+        lines += [
+            "## Known quirks",
+            "",
+            "Deviations from the schema that enough of the ecosystem exhibits that "
+            "a reader has to handle them. Prevalence is measured, not asserted; see "
+            "`specs/quirks/` for guidance on each.",
+            "",
+            "| Quirk | Kind | Documents | Sites | Title |",
+            "|---|---|---|---|---|",
+        ]
+        for quirk in sorted(collection_quirks, key=lambda q: -q["share"]):
+            lines.append(
+                f"| `{quirk['id']}` | {quirk['kind']} | {quirk['share']:.1%} | "
+                f"{quirk['sites']} | {quirk['title']} |"
+            )
+        lines.append("")
 
     if undeclared_only:
         lines += [
@@ -126,6 +174,10 @@ def emit(model, census_meta):
     return "\n".join(lines) + "\n"
 
 
+def _read_optional(path):
+    return json.loads(path.read_text()) if path.is_file() else None
+
+
 def main(argv=None):
     import argparse
     from pathlib import Path
@@ -139,13 +191,16 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     root = corpus.repo_root()
+    attribution = _read_optional(root / args.census_dir / "attribution.json")
+    quirk_report = _read_optional(root / args.census_dir / "quirks.json")
+    quirks = (quirk_report or {}).get("results", [])
     out_dir = root / args.out
     out_dir.mkdir(parents=True, exist_ok=True)
     for collection in (args.collections or list(specload.ROOT_SCHEMA)):
         model = json.loads((root / args.model_dir / f"{collection}.model.json").read_text())
         census = json.loads((root / args.census_dir / f"{collection}.census.json").read_text())
         dest = out_dir / f"{collection}.md"
-        dest.write_text(emit(model, census))
+        dest.write_text(emit(model, census, attribution, quirks))
         print(f"{collection}: -> {dest.relative_to(root)}")
     return 0
 

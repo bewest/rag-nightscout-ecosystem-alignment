@@ -1,0 +1,505 @@
+{
+ "generated_by": "tools/nsschema/quirks.py",
+ "registry": "specs/quirks",
+ "quirks": 17,
+ "results": [
+  {
+   "id": "QUIRK-DEVICESTATUS-001",
+   "title": "pump status exists in two incompatible shapes, flat and nested",
+   "collection": "devicestatus",
+   "kind": "shape-divergence",
+   "status": "active",
+   "path": "pump.bolusing",
+   "documents": 597334,
+   "collection_documents": 702254,
+   "share": 0.850595,
+   "sites": 10,
+   "site_share": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 0.999977
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.5,
+    "min_sites": 8
+   }
+  },
+  {
+   "id": "QUIRK-DEVICESTATUS-002",
+   "title": "nested pump.status shape",
+   "collection": "devicestatus",
+   "kind": "shape-divergence",
+   "status": "active",
+   "path": "pump.status.bolusing",
+   "documents": 73898,
+   "collection_documents": 702254,
+   "share": 0.10523,
+   "sites": 1,
+   "site_share": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.0,
+    "min_sites": 1
+   }
+  },
+  {
+   "id": "QUIRK-DEVICESTATUS-003",
+   "title": "battery state is written as `string`, not the declared `status`",
+   "collection": "devicestatus",
+   "kind": "shape-divergence",
+   "status": "active",
+   "path": "pump.battery.string",
+   "documents": 73898,
+   "collection_documents": 702254,
+   "share": 0.10523,
+   "sites": 1,
+   "site_share": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.0,
+    "min_sites": 1
+   }
+  },
+  {
+   "id": "QUIRK-DEVICESTATUS-004",
+   "title": "reservoir uses 0xDEADBEEF as an unknown-value sentinel",
+   "collection": "devicestatus",
+   "kind": "sentinel",
+   "status": "active",
+   "path": "openaps.suggested.reservoir",
+   "documents": 68566,
+   "collection_documents": 702254,
+   "share": 0.097637,
+   "sites": 1,
+   "site_share": {
+    "b": 0.82245
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.0,
+    "min_sites": 1
+   }
+  },
+  {
+   "id": "QUIRK-DEVICESTATUS-005",
+   "title": "oref0 lastTemp.duration is fractional minutes",
+   "collection": "devicestatus",
+   "kind": "type-union",
+   "status": "active",
+   "path": "openaps.iob.lastTemp.duration",
+   "documents": 71843,
+   "collection_documents": 702254,
+   "share": 0.102303,
+   "sites": 1,
+   "site_share": {
+    "b": 0.861758
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.0,
+    "min_sites": 1
+   }
+  },
+  {
+   "id": "QUIRK-ENTRIES-001",
+   "title": "date carries sub-millisecond precision as a fractional number",
+   "collection": "entries",
+   "kind": "type-union",
+   "status": "active",
+   "path": "date",
+   "documents": 551257,
+   "collection_documents": 896589,
+   "share": 0.614838,
+   "sites": 10,
+   "site_share": {
+    "a": 0.999354,
+    "b": 0.999463,
+    "c": 0.499302,
+    "d": 0.742837,
+    "e": 0.334778,
+    "f": 0.061895,
+    "g": 0.997039,
+    "h": 0.99907,
+    "i": 0.498989,
+    "k": 0.998842
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.5,
+    "min_sites": 8
+   }
+  },
+  {
+   "id": "QUIRK-ENTRIES-002",
+   "title": "direction carries NONE, which no declared enum listed",
+   "collection": "entries",
+   "kind": "enum-gap",
+   "status": "active",
+   "path": "direction",
+   "documents": 995,
+   "collection_documents": 896589,
+   "share": 0.00111,
+   "sites": 5,
+   "site_share": {
+    "c": 0.001787,
+    "d": 0.000848,
+    "f": 0.003216,
+    "i": 0.003328,
+    "j": 1.7e-05
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.0,
+    "min_sites": 3
+   }
+  },
+  {
+   "id": "QUIRK-ENTRIES-003",
+   "title": "trend, trendRate and isCalibration are written but were undeclared",
+   "collection": "entries",
+   "kind": "undeclared-field",
+   "status": "active",
+   "path": "trend",
+   "documents": 642337,
+   "collection_documents": 896589,
+   "share": 0.716423,
+   "sites": 10,
+   "site_share": {
+    "a": 0.99991,
+    "b": 0.139204,
+    "c": 0.999657,
+    "d": 0.516415,
+    "e": 0.3272,
+    "f": 1.0,
+    "g": 0.973623,
+    "h": 1.0,
+    "i": 0.999649,
+    "k": 0.693831
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.5,
+    "min_sites": 8
+   }
+  },
+  {
+   "id": "QUIRK-PROFILE-001",
+   "title": "mills is a string, not the declared epoch integer",
+   "collection": "profile",
+   "kind": "type-union",
+   "status": "active",
+   "path": "mills",
+   "documents": 200,
+   "collection_documents": 202,
+   "share": 0.990099,
+   "sites": 10,
+   "site_share": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.8,
+    "min_sites": 8
+   }
+  },
+  {
+   "id": "QUIRK-PROFILE-002",
+   "title": "numeric profile settings are written as strings",
+   "collection": "profile",
+   "kind": "type-union",
+   "status": "active",
+   "path": "store.{}.carbs_hr",
+   "documents": 200,
+   "collection_documents": 202,
+   "share": 0.990099,
+   "sites": 10,
+   "site_share": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.8,
+    "min_sites": 8
+   }
+  },
+  {
+   "id": "QUIRK-PROFILE-003",
+   "title": "glucose units have four spellings and no spec matched the data",
+   "collection": "profile",
+   "kind": "unit-mismatch",
+   "status": "active",
+   "path": "store.{}.units",
+   "documents": 202,
+   "collection_documents": 202,
+   "share": 1.0,
+   "sites": 11,
+   "site_share": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.9,
+    "min_sites": 10
+   }
+  },
+  {
+   "id": "QUIRK-PROFILE-004",
+   "title": "Loop flattens 26 paths of its own settings into the profile document",
+   "collection": "profile",
+   "kind": "undeclared-field",
+   "status": "active",
+   "path": "loopSettings",
+   "documents": 200,
+   "collection_documents": 202,
+   "share": 0.990099,
+   "sites": 10,
+   "site_share": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.8,
+    "min_sites": 8
+   }
+  },
+  {
+   "id": "QUIRK-TREATMENTS-001",
+   "title": "carbs and insulin are present-but-null on most treatments",
+   "collection": "treatments",
+   "kind": "nullability",
+   "status": "active",
+   "path": "carbs",
+   "documents": 353734,
+   "collection_documents": 369419,
+   "share": 0.957541,
+   "sites": 11,
+   "site_share": {
+    "a": 0.971039,
+    "b": 0.855441,
+    "c": 0.984001,
+    "d": 0.982048,
+    "e": 0.987142,
+    "f": 0.975045,
+    "g": 0.954398,
+    "h": 0.96405,
+    "i": 0.996642,
+    "j": 0.516224,
+    "k": 0.996534
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.8,
+    "min_sites": 10
+   }
+  },
+  {
+   "id": "QUIRK-TREATMENTS-002",
+   "title": "insulin is present-but-null on most treatments",
+   "collection": "treatments",
+   "kind": "nullability",
+   "status": "active",
+   "path": "insulin",
+   "documents": 224268,
+   "collection_documents": 369419,
+   "share": 0.607083,
+   "sites": 11,
+   "site_share": {
+    "a": 0.963921,
+    "b": 0.730746,
+    "c": 0.561244,
+    "d": 0.42198,
+    "e": 0.504047,
+    "f": 0.95916,
+    "g": 0.514426,
+    "h": 0.531369,
+    "i": 0.465513,
+    "j": 0.642085,
+    "k": 0.446005
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.4,
+    "min_sites": 10
+   }
+  },
+  {
+   "id": "QUIRK-TREATMENTS-003",
+   "title": "timestamp is an ISO 8601 string, not the declared epoch integer",
+   "collection": "treatments",
+   "kind": "type-union",
+   "status": "active",
+   "path": "timestamp",
+   "documents": 311648,
+   "collection_documents": 369419,
+   "share": 0.843617,
+   "sites": 10,
+   "site_share": {
+    "a": 1.0,
+    "b": 0.082882,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 0.999902,
+    "k": 0.999785
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.6,
+    "min_sites": 8
+   }
+  },
+  {
+   "id": "QUIRK-TREATMENTS-004",
+   "title": "bolus subtype is written lower-case as `normal`",
+   "collection": "treatments",
+   "kind": "case-mismatch",
+   "status": "active",
+   "path": "type",
+   "documents": 130257,
+   "collection_documents": 369419,
+   "share": 0.3526,
+   "sites": 10,
+   "site_share": {
+    "a": 0.036079,
+    "b": 0.03441,
+    "c": 0.438756,
+    "d": 0.57802,
+    "e": 0.495953,
+    "f": 0.04084,
+    "g": 0.485574,
+    "h": 0.468631,
+    "i": 0.534487,
+    "k": 0.553995
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.2,
+    "min_sites": 8
+   }
+  },
+  {
+   "id": "QUIRK-TREATMENTS-005",
+   "title": "eventType carries values absent from every declared enum",
+   "collection": "treatments",
+   "kind": "enum-gap",
+   "status": "active",
+   "path": "eventType",
+   "documents": 3549,
+   "collection_documents": 369419,
+   "share": 0.009607,
+   "sites": 2,
+   "site_share": {
+    "b": 0.043526,
+    "j": 0.841691
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "expect": {
+    "min_share": 0.0,
+    "min_sites": 2
+   }
+  }
+ ]
+}

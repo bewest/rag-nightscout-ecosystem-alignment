@@ -756,3 +756,93 @@ def test_short_hardware_serials_are_masked_despite_the_shape_guard(value):
 def test_serial_fields_use_the_serial_rule():
     for path in ("[].pump.pumpID", "[].pumpSerial", "[].transmitterId"):
         assert sanitize.rule_for(path) == "serial"
+
+
+# ── quirks registry ─────────────────────────────────────────────────────
+
+from nsschema import quirks as quirks_mod  # noqa: E402
+
+
+def test_resolve_walks_arrays_and_maps():
+    doc = {"store": {"Default": {"basal": [{"value": 1.0}, {"value": 2.0}]},
+                     "Weekend": {"basal": [{"value": 3.0}]}}}
+    assert sorted(quirks_mod.resolve(doc, "store.{}.basal[].value")) == [1.0, 2.0, 3.0]
+
+
+def test_resolve_returns_nothing_for_a_missing_path():
+    assert quirks_mod.resolve({"a": 1}, "b.c") == []
+
+
+def test_is_fractional_distinguishes_a_whole_float():
+    detect = {"path": "date", "test": "is-fractional"}
+    assert quirks_mod.evaluate(detect, {"date": 1743465600000.25})
+    assert not quirks_mod.evaluate(detect, {"date": 1743465600000.0})
+    assert not quirks_mod.evaluate(detect, {"date": 1743465600000})
+
+
+def test_is_null_is_not_the_same_as_absent():
+    assert quirks_mod.evaluate({"path": "carbs", "test": "is-null"}, {"carbs": None})
+    assert not quirks_mod.evaluate({"path": "carbs", "test": "is-null"}, {})
+    assert quirks_mod.evaluate({"path": "carbs", "test": "absent"}, {})
+    assert not quirks_mod.evaluate({"path": "carbs", "test": "absent"}, {"carbs": None})
+
+
+def test_exists_fires_on_a_null_value():
+    # A key written as null is present on the wire, which is the whole point
+    # of QUIRK-TREATMENTS-001.
+    assert quirks_mod.evaluate({"path": "carbs", "test": "exists"}, {"carbs": None})
+
+
+def test_equals_matches_the_deadbeef_sentinel():
+    detect = {"path": "reservoir", "test": "equals", "value": 3735928559}
+    assert quirks_mod.evaluate(detect, {"reservoir": 3735928559})
+    assert not quirks_mod.evaluate(detect, {"reservoir": 42.5})
+
+
+def test_in_matches_any_listed_value():
+    detect = {"path": "eventType", "test": "in", "values": ["Bolus", "Carbs"]}
+    assert quirks_mod.evaluate(detect, {"eventType": "Carbs"})
+    assert not quirks_mod.evaluate(detect, {"eventType": "Meal Bolus"})
+
+
+def test_registry_loads_and_every_detector_is_known():
+    registry = quirks_mod.load_registry(corpus.repo_root() / "specs" / "quirks")
+    assert registry
+    for quirk in registry:
+        assert quirk["detect"]["test"] in quirks_mod.TESTS
+        for required in ("id", "title", "status", "kind", "path",
+                         "reader_guidance", "references"):
+            assert quirk.get(required), f"{quirk['id']} missing {required}"
+
+
+def test_registry_ids_are_unique():
+    registry = quirks_mod.load_registry(corpus.repo_root() / "specs" / "quirks")
+    ids = [q["id"] for q in registry]
+    assert len(ids) == len(set(ids))
+
+
+def test_an_unknown_detector_is_rejected_at_load(tmp_path):
+    (tmp_path / "x.yaml").write_text(
+        "collection: entries\nquirks:\n  - id: Q\n    title: t\n    status: active\n"
+        "    path: p\n    kind: type-union\n    detect: {path: p, test: nonsense}\n")
+    with pytest.raises(ValueError, match="unknown test"):
+        quirks_mod.load_registry(tmp_path)
+
+
+def test_check_fails_a_quirk_that_vanished():
+    rows = [{"id": "Q-1", "status": "active", "documents": 0, "share": 0.0,
+             "sites": 0, "expect": {"min_share": 0.5}}]
+    assert quirks_mod.check(rows) == [("Q-1", "no longer observed in the corpus")]
+
+
+def test_check_fails_a_collapsed_share():
+    rows = [{"id": "Q-1", "status": "active", "documents": 5, "share": 0.01,
+             "sites": 9, "expect": {"min_share": 0.5, "min_sites": 8}}]
+    failures = quirks_mod.check(rows)
+    assert len(failures) == 1 and "below claimed minimum" in failures[0][1]
+
+
+def test_check_ignores_a_historical_quirk():
+    rows = [{"id": "Q-1", "status": "historical", "documents": 0, "share": 0.0,
+             "sites": 0, "expect": {"min_share": 0.5}}]
+    assert quirks_mod.check(rows) == []

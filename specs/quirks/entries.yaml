@@ -1,0 +1,88 @@
+# Quirks in the `entries` collection. See README.md for the format.
+collection: entries
+quirks:
+  - id: QUIRK-ENTRIES-001
+    title: date carries sub-millisecond precision as a fractional number
+    status: active
+    path: date
+    kind: type-union
+    description: >-
+      `date` is epoch milliseconds and every spec and client treats it as an
+      integer, but a majority of live entries carry one to four decimal
+      places. The shape is consistently a 13-digit value with a fractional
+      tail, i.e. sub-millisecond precision leaking out of a source that
+      holds a floating-point instant. A validator declaring
+      `type: integer` rejects most real CGM traffic; a reader parsing into
+      a 64-bit integer without a fallback throws.
+    detect:
+      path: date
+      test: is-fractional
+    expect:
+      min_share: 0.5
+      min_sites: 8
+    reader_guidance: >-
+      Accept a fractional value and round to the nearest millisecond. Do not
+      truncate: truncation biases every timestamp backwards by up to 1 ms,
+      which matters when entries are matched to treatments by time.
+    writer_guidance: >-
+      Emit a whole number. Round at the point the instant is converted, not
+      at serialization, so `date` and `dateString` cannot disagree.
+    attribution:
+      note: >-
+        Observed on 9 of 11 sites, which is broader than any single client.
+        Trio PR #1476 fixed one source of it; the corpus shows it is not
+        confined to Trio.
+    references:
+      - https://github.com/nightscout/Trio/pull/1476
+      - specs/openapi/aid-entries-2025.yaml#/components/schemas/Entry/properties/date
+      - externals/nocturne/src/Core/Nocturne.Core.Models/Serializers/FlexibleNumberConverters.cs
+      - docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md#41-entries--the-timestamp-is-not-an-integer
+
+  - id: QUIRK-ENTRIES-002
+    title: direction carries NONE, which no declared enum listed
+    status: active
+    path: direction
+    kind: enum-gap
+    description: >-
+      Uploaders write `NONE` when no trend is available, alongside the
+      documented `NOT COMPUTABLE` and `RATE OUT OF RANGE`. Three spellings
+      of "no trend" therefore coexist.
+    detect:
+      path: direction
+      test: equals
+      value: NONE
+    expect:
+      min_share: 0.0
+      min_sites: 3
+    reader_guidance: >-
+      Treat `NONE`, `NOT COMPUTABLE` and `RATE OUT OF RANGE` as the same
+      absent-trend case. Do not map any of them to a numeric slope.
+    writer_guidance: >-
+      Prefer omitting `direction` entirely over writing a sentinel string.
+    references:
+      - specs/openapi/aid-entries-2025.yaml#/components/schemas/Direction
+
+  - id: QUIRK-ENTRIES-003
+    title: trend, trendRate and isCalibration are written but were undeclared
+    status: active
+    path: trend
+    kind: undeclared-field
+    description: >-
+      Three fields that most uploaders write were absent from the 2025.1.0
+      spec. `trendRate` was declared only on `EntryExtended` as a future
+      2026 extension while already being in production use. Added to the
+      base schema in 2025.2.0; the quirk is retained because stored
+      documents and third-party readers predate the correction.
+    detect:
+      path: trend
+      test: exists
+    expect:
+      min_share: 0.5
+      min_sites: 8
+    reader_guidance: >-
+      Treat `trend` (numeric) and `direction` (string) as two encodings of
+      the same signal and prefer whichever is present; they can disagree
+      when one is stale.
+    writer_guidance: Write both, derived from the same source value.
+    references:
+      - docs/10-domain/field-reference/entries.md

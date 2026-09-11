@@ -1,0 +1,118 @@
+# Quirks in the `devicestatus` collection. See README.md for the format.
+collection: devicestatus
+quirks:
+  - id: QUIRK-DEVICESTATUS-001
+    title: pump status exists in two incompatible shapes, flat and nested
+    status: active
+    path: pump.bolusing
+    kind: shape-divergence
+    description: >-
+      The same three facts — is the pump bolusing, is it suspended, what
+      time does it think it is — are written either flat on `pump`
+      (`pump.bolusing`, `pump.suspended`, `pump.secondsFromGMT`) or nested
+      under `pump.status` (`pump.status.bolusing`,
+      `pump.status.suspended`, `pump.status.timestamp`). The 2025.1.0 spec
+      described only the nested shape; the flat shape is the majority in
+      the corpus by an order of magnitude.
+    detect:
+      path: pump.bolusing
+      test: exists
+    expect:
+      min_share: 0.5
+      min_sites: 8
+    reader_guidance: >-
+      Read the flat fields first and fall back to the nested ones. Do not
+      assume the presence of `pump.status` means the flat fields are
+      absent; a document may carry both.
+    writer_guidance: >-
+      Write both shapes until readers converge. This is a genuine fork, not
+      a deprecation.
+    references:
+      - specs/openapi/aid-devicestatus-2025.yaml#/components/schemas/PumpStatus
+
+  - id: QUIRK-DEVICESTATUS-002
+    title: nested pump.status shape
+    status: active
+    path: pump.status.bolusing
+    kind: shape-divergence
+    description: The minority half of QUIRK-DEVICESTATUS-001.
+    detect:
+      path: pump.status.bolusing
+      test: exists
+    expect:
+      min_share: 0.0
+      min_sites: 1
+    reader_guidance: See QUIRK-DEVICESTATUS-001.
+    writer_guidance: See QUIRK-DEVICESTATUS-001.
+    references:
+      - specs/openapi/aid-devicestatus-2025.yaml#/components/schemas/PumpStatus
+
+  - id: QUIRK-DEVICESTATUS-003
+    title: battery state is written as `string`, not the declared `status`
+    status: active
+    path: pump.battery.string
+    kind: shape-divergence
+    description: >-
+      The spec declared `pump.battery.status` with an enum of `normal`,
+      `low`, `critical`, and `pump.battery.voltage`. Neither appears in the
+      corpus. What does appear is `pump.battery.string` (values `normal`
+      and `error`) and `pump.battery.display` (a boolean).
+    detect:
+      path: pump.battery.string
+      test: exists
+    expect:
+      min_share: 0.0
+      min_sites: 1
+    reader_guidance: >-
+      Read `percent` for a level and `string` for a state; treat `status`
+      and `voltage` as absent in practice.
+    writer_guidance: >-
+      Write `percent`. The state strings are not a shared vocabulary.
+    references:
+      - specs/openapi/aid-devicestatus-2025.yaml#/components/schemas/PumpStatus
+
+  - id: QUIRK-DEVICESTATUS-004
+    title: reservoir uses 0xDEADBEEF as an unknown-value sentinel
+    status: active
+    path: openaps.suggested.reservoir
+    kind: sentinel
+    description: >-
+      Where the reservoir level is unknown, the value 3735928559 appears —
+      0xDEADBEEF. It is a quantity field, so nothing in the schema stops a
+      consumer averaging it into a reservoir trend or alerting on a
+      3.7-billion-unit reservoir.
+    detect:
+      path: openaps.suggested.reservoir
+      test: equals
+      value: 3735928559
+    expect:
+      min_share: 0.0
+      min_sites: 1
+    reader_guidance: >-
+      Treat 3735928559 as "no reading". Range-check reservoir values
+      generally: a real reservoir is under a few hundred units.
+    writer_guidance: Omit the field rather than writing a sentinel.
+    references:
+      - specs/openapi/aid-devicestatus-2025.yaml#/components/schemas/PumpStatus/properties/reservoir
+
+  - id: QUIRK-DEVICESTATUS-005
+    title: oref0 lastTemp.duration is fractional minutes
+    status: active
+    path: openaps.iob.lastTemp.duration
+    kind: type-union
+    description: >-
+      Declared `integer` minutes; almost every observed value has a
+      fractional part, because it is computed as an elapsed interval rather
+      than read back from the pump's programmed duration.
+    detect:
+      path: openaps.iob.lastTemp.duration
+      test: is-fractional
+    expect:
+      min_share: 0.0
+      min_sites: 1
+    reader_guidance: Accept a fractional value; round only for display.
+    writer_guidance: >-
+      Keep the fraction. Rounding here loses information the dosing maths
+      uses.
+    references:
+      - specs/openapi/aid-devicestatus-2025.yaml
