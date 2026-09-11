@@ -11,6 +11,38 @@ a worked example, then the evidence.**
 
 ---
 
+## 0. What this series is for
+
+Nine documents precede this one and none of them said this plainly, which is
+a defect worth fixing before the tenth. The work has three motivations, and
+every measurement in the series serves one of them:
+
+| | Motivation | Why it is not optional | Where the evidence is |
+|---|---|---|---|
+| **a** | **Unify typed representations of data.** One place says what a field means, what type it holds, and which controller writes it | Today every reader re-derives it and they disagree. 56 of 166 `devicestatus` paths are dropped by a typed consumer because the shape was never written down | [Typed schemas](./nightscout-typed-schema-evidence-2026-09-10.md), [Primitive coverage](./nightscout-primitive-coverage-2026-09-11.md), `specs/sync/primitives.yaml` |
+| **b** | **Provide ways to extend it.** A controller can ship a feature nobody else has without negotiating with the ecosystem first | The current answer is "invent an `eventType` and hope". The [quirks registry](../../specs/quirks/) is the archaeology of that answer | [Extensibility models](./nightscout-extensibility-models-2026-09-10.md) §1, §5 |
+| **c** | **Offer full data fidelity — replay and observability.** What a controller decided, on what inputs, in what state, is recoverable afterwards | Replay completeness is **20% for Loop, 50% for the oref0 family**. A real consumer reads settings from screenshots because there is nowhere else | [devicestatus and profile fidelity](./nightscout-devicestatus-profile-fidelity-2026-09-10.md) §3, [Hub-and-spoke sync](./nightscout-hub-sync-architecture-2026-09-11.md) §4.2, `specs/conformance/observability-profile.yaml` |
+
+**These pull against each other, and the controller description is the
+artifact that resolves the tension.** Unification (a) pushes toward one
+fixed schema; extensibility (b) pushes toward letting each controller differ;
+fidelity (c) fails if either wins outright — a schema too fixed drops the
+vendor subtrees, and a schema too open cannot say what is missing. A
+description is the third option: **the shape stays per-controller, and the
+*fact* of it is unified.** That is also how (c) becomes measurable at all,
+because "Loop does not publish `automaticBolusApplicationFactor`" is only
+sayable once something enumerates what Loop publishes.
+
+**And the practical outcome, which is the point of the whole exercise:** a
+controller keeps innovating on the features unique to it, while every
+controller gets a sync and observability floor for free. Being *described*
+earns the floor with no controller change (§3); publishing a description of
+your own is how you go above it. Nothing in this series asks a controller to
+give up what makes it different — it asks that the difference be written
+down where other software can read it.
+
+---
+
 ## 1. The problem, in one paragraph
 
 Nightscout already knows what kind of controller wrote a document — it has to,
@@ -54,9 +86,48 @@ A **controller description** is a static file that says: here is how to
 recognise this controller's documents, here is what it writes, here is which
 dosing inputs it publishes and which it does not.
 
-**Nightscout ships these files.** A controller that never changes anything
-still gets described correctly, because the descriptions are generated from
-measurements of what controllers actually write — not from what they promise.
+**Nightscout ships these files, and serves them.** A controller that never
+changes anything still gets described correctly, because the descriptions are
+generated from measurements of what controllers actually write — not from what
+they promise.
+
+### 2.1 Serving the catalogue: `.well-known`
+
+Shipping the files only helps software that vendors this repository. Serving
+them helps everything that can make an HTTP request:
+
+```
+GET /.well-known/nightscout/controllers          → the catalogue index
+GET /.well-known/nightscout/controllers/loop      → one description
+```
+
+Static JSON or YAML, cacheable, no authentication — a description of a
+*controller product* contains nothing about a person, which is what makes it
+servable at all (`specs/sync/sensitivity.yaml` carries the type-level
+sensitivity annotation that says so).
+
+This is a small change with a disproportionate effect on motivation (a),
+because it moves the unification from *this repository* to *the deployment*:
+
+| Reader | Today | With a served catalogue |
+|---|---|---|
+| Nightscout's own UI | re-derives the shape inline | reads its own catalogue |
+| Nocturne | re-derives it differently — 56 paths dropped | reads the same file |
+| A report or replay tool | vendors this repo, or reverse-engineers four codebases | one GET, no dependency on this repo |
+| `oref-digital-twin` | vision model over screenshots | discovers which settings *should* exist, then reads them |
+| A follower app | guesses from the device string | structural discriminator, published |
+| The site operator | — | can see what their own site believes it is talking to |
+
+It also gives the operator-declared posture a runtime home: a site configured
+with `ENABLE=loop` (see the [roadmap](./nightscout-adoption-roadmap-2026-09-11.md) §2.2)
+serves the Loop description as its declared expectation, and a controller
+that disagrees overrides it by publishing its own. The precedence is the
+same three-way order in both places — controller-published, then
+operator-declared, then structurally inferred.
+
+**What this is still not:** a required endpoint. A hub that does not serve it
+behaves exactly as it does today, and a client that cannot fetch it falls back
+to what it does today. It is discovery, not dependency.
 
 ## 3. What changes, for whom
 
@@ -99,7 +170,10 @@ The word "registration" did the damage. Concretely:
 The closest familiar thing is not a Kubernetes CRD. It is **a browser's list
 of known user agents**, or **`.well-known`**: a description of something that
 already exists, kept where everyone can read it, which the thing described
-may correct but need not publish.
+may correct but need not publish. §2.1 takes that from analogy to mechanism —
+the catalogue is *served* at a well-known path — but the properties that make
+it not-a-control-plane survive the change: it is fetched, not called; it is
+advisory, not gating; and its absence is indistinguishable from today.
 
 ## 5. Worked example
 
@@ -146,8 +220,21 @@ and a corpus of documents. `oref-digital-twin` currently gets settings out of
 **screenshots, with a vision model**, because there is nowhere to read them
 from.
 
+**Step 2a — the same thing over HTTP**, for a reader that does not vendor this
+repository:
+
+```
+GET https://<site>/.well-known/nightscout/controllers/loop
+```
+
+Same document, no checkout, no authentication, cacheable. This is what makes
+Nocturne and a report tool able to agree without either depending on the
+other.
+
 **Step 3 — a controller that wants to correct it** posts the same document to
-the hub. One request, per release, optional.
+the hub. One request, per release, optional. The served catalogue then
+reflects the correction, so every other reader of that site picks it up
+without coordinating with anyone.
 
 ## 6. Impact, measured
 
@@ -157,8 +244,11 @@ the hub. One request, per release, optional.
 | Loop's dose recommendation reaching a typed consumer | dropped, 10 of 11 sites | described, so droppable only on purpose |
 | "Which dosing inputs can I not replay?" | unanswerable without source | 8, named, per controller |
 | A new controller's on-ramp | improvise an `eventType`, hope | a file to copy |
+| Two readers agreeing on a controller's shape | vendor the same repo, or diverge | fetch the same URL |
+| Sync request floor for a described controller | 1,440–5,760 requests/day, per controller's own design | the batched contract's 576, earned by being described |
+| A controller's unique feature | negotiate, or be silently dropped | declared in its own description; readers can choose to handle it |
 | Cost to Loop | — | **zero** |
-| Cost to Nightscout | — | read a file it can already generate |
+| Cost to Nightscout | — | read a file it can already generate; optionally serve it |
 
 ## 7. If you only do one thing
 
@@ -207,3 +297,5 @@ Every number above is reproducible from this repository:
 | Effects versus motivations, and privacy | [Effects and versioning](./nightscout-effects-and-versioning-2026-09-11.md) |
 | The sync contract, if descriptions are adopted | [Hub-and-spoke sync](./nightscout-hub-sync-architecture-2026-09-11.md) |
 | Who should do what, in what order | [Adoption roadmap](./nightscout-adoption-roadmap-2026-09-11.md) |
+| Whether the primitives are actually evidenced | [Primitive coverage](./nightscout-primitive-coverage-2026-09-11.md) |
+| Prior art for all of this in the hub's own tree | `cgm-remote-monitor/docs/proposals/` — `agent-control-plane-rfc.md`, `bridge-rules.md`, `conflict-resolution.md`, `integration-questionnaire.md`. See [hub-and-spoke sync](./nightscout-hub-sync-architecture-2026-09-11.md) §5.2 |

@@ -1,4 +1,4 @@
-# Extending the Nightscout document model: three designs, measured
+# Extending the Nightscout document model: four designs, measured
 
 Date: 2026-09-10. Status: draft for maintainer discussion. Companion to
 [Typed schemas for Nightscout](./nightscout-typed-schema-evidence-2026-09-10.md)
@@ -19,14 +19,22 @@ table, and they are not equally knowable: two can be measured against
 1.97 million real documents, and one cannot be measured at all because
 nothing implements it.
 
-| | Extension bag | Granular primitives | Tenant-registered resources |
-|---|---|---|---|
-| **Implemented?** | Proposed here; `devicestatus.extended` is a partial precedent | **Yes — Nocturne V4, in production shape** | Nowhere in the ecosystem |
-| **Migration cost** | **6.4% / 15.2% / 10.5% / 0.0%** of live documents per collection | **0.01%** of treatments unroutable | Unknown |
-| **Coverage of the corpus** | Total, by construction | **99.99%** of treatments reach a typed primitive | Unknown |
-| **Fields with no typed home** | n/a — the bag is the home | **5 field names**, one of them common | Whatever a tenant declares |
-| **Validation cost** | Measured: 85k–330k docs/s | Same class | Per-tenant compiled schemas; unmeasured |
-| **Who has to change** | Every client that flattens today | Server only; clients keep writing legacy documents | Server, plus a registration flow |
+**Scope is the axis that matters, and the first version of this document
+missed it.** "Extensibility" at *tenant* scope and at *controller-product*
+scope are different problems with different evidence, and lumping them
+together made this document read as a rejection of extensibility when it is
+only a rejection of one scope of it. Four designs, not three:
+
+| | Extension bag | Granular primitives | Controller descriptions | Tenant-registered resources |
+|---|---|---|---|---|
+| **Scope** | per field | per record type | **per controller product** | per tenant |
+| **Implemented?** | Proposed here; `devicestatus.extended` is a partial precedent | **Yes — Nocturne V4, in production shape** | Generated in `specs/sync/registrations/`; not yet consumed | Nowhere in the ecosystem |
+| **Migration cost** | **6.4% / 15.2% / 10.5% / 0.0%** of live documents per collection | **0.01%** of treatments unroutable | **Zero** — describes documents already being written | Unknown |
+| **Coverage of the corpus** | Total, by construction | **99.99%** of treatments reach a typed primitive | 3 controllers described from measurement | Unknown |
+| **Fields with no typed home** | n/a — the bag is the home | **5 field names**, one of them common | n/a — names the absences too (`status: absent`) | Whatever a tenant declares |
+| **Validation cost** | Measured: 85k–330k docs/s | Same class | None; it describes, it does not gate | Per-tenant compiled schemas; unmeasured |
+| **Who has to change** | Every client that flattens today | Server only; clients keep writing legacy documents | **Nobody, by default**; a controller may publish its own | Server, plus a registration flow |
+| **Number of schema stores** | one | one | one per *product* — a handful, reviewed in a PR | one per *site* — unbounded |
 
 **The finding that should move the discussion:** the granular-primitive
 model is not hypothetical and not expensive. Replaying Nocturne's own V4
@@ -72,18 +80,39 @@ insulin and carbs becomes a `Bolus` **and** a `CarbIntake` sharing a
 **This is Nocturne's V4 model**, 65 types in
 `src/Core/Nocturne.Core.Models/V4/`, with the decomposition implemented in
 `TreatmentDecomposer` and partners for profile, activity and devicestatus.
-It is the only one of the three designs with a working implementation to
+It is the only one of the four designs with a working implementation to
 measure.
 
-### 1.3 Tenant-registered custom resources
+### 1.3 Controller descriptions — per product, not per site
 
-A tenant or a controller registers a schema for a named resource; the server
-stores and validates documents of that kind against the registered schema —
-the Kubernetes CRD pattern, raised in §6.5.1 of the multitenancy discussion.
+One file per *controller product* declares how to recognise its documents,
+what it writes, which dosing inputs it publishes, which it has but does not,
+and the state categories it exposes. The hub ships a generated set and may
+serve them; a controller may publish its own to correct or extend one.
+
+This is the design in
+[the controller-descriptions proposal](./PROPOSAL-controller-descriptions-2026-09-11.md),
+and §3.4 argues it is the answer to controller-scoped extensibility — the
+ability to ship a feature nobody else has without negotiating for it. Three
+descriptions are generated in `specs/sync/registrations/`; **none has been
+consumed by a reader yet**, so it sits between §1.2's measured model and
+§1.4's unmeasured one.
+
+### 1.4 Tenant-registered custom resources
+
+A tenant registers a schema for a named resource; the server stores and
+validates documents of that kind against the registered schema — the
+Kubernetes CRD pattern, raised in §6.5.1 of the multitenancy discussion.
 
 Nothing in the ecosystem implements this. It is included because it is the
-design the other two are often argued against, and because being explicit
-about *what is unknown* is more useful than leaving it implied.
+design the others are often argued against, and because being explicit about
+*what is unknown* is more useful than leaving it implied.
+
+**The difference from §1.3 is the number of schema stores, and it decides
+everything.** Per product there are four or five, each reviewed in a pull
+request. Per site there are as many as there are deployments, reviewed by
+nobody. §4's three costs all follow from the second, and none from the
+first.
 
 ## 2. What the extension bag costs — measured
 
@@ -197,10 +226,45 @@ primitives absorb all of the structure and 99.99% of the documents; a named
 extension location is still needed, for roughly five leaf fields rather than
 for the long tail people assume.
 
-## 4. Tenant-registered resources — what can and cannot be said
+### 3.4 Controller-scoped extensibility, which is a different question
+
+The design that lets a controller ship something unique is not in §1's
+original three. It is the **controller description**
+([proposal](./PROPOSAL-controller-descriptions-2026-09-11.md)), and the
+distinction from §4's tenant-registered resources is the count of schema
+stores: **one per controller *product*, of which there are four or five and
+each is reviewed in a pull request** — against one per *site*, of which there
+are thousands and none is reviewed by anyone.
+
+That single difference removes all three of §4's costs:
+
+| §4's objection to tenant registration | Why controller descriptions avoid it |
+|---|---|
+| Query cost becomes unbounded per tenant | `queryProfile` is declared per product and reviewed. The filterable set is finite and known before deployment |
+| Validation stops being one compiled validator | Descriptions do not validate anything. They describe; nothing is rejected that is not rejected today |
+| A registered schema is a migration surface | True, and it stays true — but versioning four product descriptions in a repo is a pull request, not a per-tenant migration story |
+
+**So (b) in the motivation triad is answered by descriptions, not by CRDs.**
+A controller that wants to ship an effect type, a state category, or a
+dosing input nobody else has declares it in its own description and starts
+writing it. Readers that do not understand it still store it; readers that
+want to can look it up. What it does *not* require is agreement from the
+ecosystem before the feature ships — which is the actual complaint.
+
+The evidence for this is thinner than for §3's primitive coverage, and should
+be labelled that way: three descriptions exist, generated from one corpus,
+and **none has been consumed by a reader in production.** The claim that this
+shape supports per-controller innovation is a design argument, not a
+measurement.
+
+## 4. Tenant-registered resources (§1.4) — what can and cannot be said
 
 No implementation exists, so nothing here is measured. What the other two
 measurements *do* constrain:
+
+**This section is about *tenant*-scoped registration specifically.** For
+controller-product-scoped extensibility, which is the thing this series
+actually proposes, see §3.4 — the conclusion below does not apply to it.
 
 **The case for it is weaker than it looks, on this evidence.** The argument
 for CRD-style registration is that the long tail is large and diverse enough
@@ -250,9 +314,16 @@ designs avoid:
 3. **Keep an extension location even with primitives.** Five fields, one of
    them on 10 of 11 sites, have no typed home. That is a small, concrete
    requirement rather than an open-ended one.
-4. **Do not build tenant-registered resources on this evidence.** Revisit if
+4. **Do not build *tenant*-registered resources on this evidence.** Revisit if
    a controller maintainer names a new *kind* of record, with its own
    lifecycle, that the primitives cannot express.
+   **But do use controller-product-scoped descriptions as the extensibility
+   mechanism** (§3.4). Same idea, at a scope where none of §4's three costs
+   apply — a handful of schema stores, reviewed in pull requests, describing
+   rather than validating. This is how a controller ships a feature unique to
+   it without ecosystem negotiation. It is also the weakest-evidenced
+   recommendation in this document: three descriptions exist, and **nothing
+   has consumed one yet.**
 5. **Report the `Suspend Pump` mismatch upstream.** It is a two-character
    fix with a measurable effect, found by replaying real data.
 

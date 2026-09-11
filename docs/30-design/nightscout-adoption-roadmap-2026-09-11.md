@@ -272,8 +272,10 @@ records today; both are single-symbol fixes in one project each.
 ### Phase 3 — the shipped registration catalogue. Hub only
 
 The hub ships registrations for known controllers, generated from measured
-evidence (`specs/sync/registrations/`), and resolves which one applies from
-three sources in precedence order: a controller-uploaded registration, then
+evidence (`specs/sync/registrations/`), **serves them at a well-known path**
+so any reader can fetch the same description
+([proposal](./PROPOSAL-controller-descriptions-2026-09-11.md) §2.1), and
+resolves which one applies from three sources in precedence order: a controller-uploaded registration, then
 the operator's declared expectation (§2.2), then a **structural
 discriminator** — a devicestatus carrying `loop` versus `openaps`. Never by
 the device string.
@@ -321,11 +323,26 @@ batched idempotent writes, then decomposition behind the contract.
 
 * **A v5.** Two of three controllers have not adopted v3. See
   [versioning](./nightscout-effects-and-versioning-2026-09-11.md) §5.
-* **Tenant-registered CRDs**, on current evidence.
+* **Tenant-registered CRDs**, on current evidence. Note the scope: this
+  excludes *tenant*-scoped schema registration, not the per-controller-product
+  descriptions Phase 3 ships — see
+  [extensibility models](./nightscout-extensibility-models-2026-09-10.md) §3.4.
+* **A liveness or channel-ownership model.** cgm-remote-monitor's
+  `docs/proposals/` already drafts one (`ControllerInstanceRegistration`,
+  `CapabilitySnapshot`), this series has measured nothing about it, and
+  writing a competing design before reading theirs is the duplication this
+  work exists to prevent. See
+  [hub-and-spoke sync](./nightscout-hub-sync-architecture-2026-09-11.md) §5.2.
 * **Anything requiring a Loop change**, until something else has proved the
   value and Loop has capacity.
 
 ## 5. What this is actually for
+
+The three technical motivations — unify typed representations, provide
+extensibility, offer full replay and observability — are stated with their
+evidence in
+[the controller-descriptions proposal](./PROPOSAL-controller-descriptions-2026-09-11.md)
+§0. This section is about the *process* goal that sits above them.
 
 **The purpose of the discovery and evidentiary work in this repository is to
 produce proposals that help unify efforts already underway.** That is worth

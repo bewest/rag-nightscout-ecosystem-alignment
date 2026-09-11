@@ -136,6 +136,26 @@ the field this work spent the most effort de-identifying, and it is not
 reliable: one site's device strings read like a controller while its
 treatments showed no automated dosing at all.
 
+**Read the registration as an affordance, not a constraint.** §3.2 says a
+controller never negotiates a query shape *at request time*; that is about
+timing, not about who decides. What a controller may sync, how often, and
+which filters it uses are **declared by the controller in its own
+registration** — `cadence` and `queryProfile` are per-controller fields, not
+hub policy. A controller with an idiomatic channel says so there. The hub's
+job is to honour a declaration it can bound, not to impose a uniform shape.
+
+**The catalogue is the default, and it is served.** The hub ships
+registrations for controllers that have not declared one
+(`specs/sync/registrations/`) and serves them at a well-known path, so the
+common case needs no controller action at all — see the
+[controller-descriptions proposal](./PROPOSAL-controller-descriptions-2026-09-11.md)
+§2.1. Precedence is controller-published, then operator-declared, then
+structurally inferred.
+
+**What the registration describes is a controller *kind*, not a running
+instance.** That distinction is the subject of §5.2 and is where this design
+is least complete.
+
 ### 3.2 The contract the hub returns
 
 Everything the hub offers is derived from the registration, so a controller
@@ -249,6 +269,8 @@ add: nine fields for Loop, four for the oref0 family.
 
 ## 5. Observing the state machine
 
+### 5.1 Spans, not point events
+
 Point events cannot answer "was the pump suspended when this dose was
 skipped". Nocturne's `StateSpan` can: `Category`, `State`,
 `StartTimestamp`, `EndTimestamp`, `Source`, `Metadata`, and — the part that
@@ -273,6 +295,62 @@ hypothetical v3 backport and records that Nocturne's author prefers
 StateSpan stay v4-only. That preference is worth respecting: the span model
 is the clearest thing to put behind a registered contract rather than to
 retrofit into the collection API.
+
+### 5.2 Liveness and channel ownership — open here, already drafted upstream
+
+**This section is an open question, not a design.** It is written as a
+reconciliation target because the honest finding is that cgm-remote-monitor
+has drafted most of it already, and this series had not noticed.
+
+The question is real and this design does not answer it. A registration says
+what a controller *kind* writes. It does not say which controller is
+*running right now*, which one owns a given channel, or what to do when two
+of them write. §7 records "cursor semantics under concurrent writers" as
+unmeasured, and that is the whole of what this series has to say on the
+subject.
+
+**`cgm-remote-monitor/docs/proposals/` (added 2026-01-01) already carries the
+missing half**, and it carves the problem at a joint this series did not:
+
+| Their concept | What it is | Our nearest thing | Verdict |
+|---|---|---|---|
+| `ControllerKindDefinition` | Per *product*: supported features, pumps, CGMs, `eventCapabilities.minimalEventSet` | `ControllerStateModel` (`specs/sync/`) | **Complementary, not competing.** Theirs says what a controller *can do*; ours says what it *writes*. Neither contains the other's half |
+| `ControllerInstanceRegistration` | Per *running instance*: `instanceId`, `pumpBinding.connectedSince`, `cgmBinding`, `registeredAt`, **`lastSeenAt`** | **nothing** | This *is* liveness, and we have no equivalent |
+| `CapabilitySnapshot` | Liveness over time: `pumpConnected`, `closedLoopEnabled`, `suspended`, `lastLoopTime`, reservoir, battery | `StateSpan` categories `PumpConnectivity`, `PumpMode` | Same phenomenon, different container — theirs a point snapshot, ours a span. Reconcilable; a span is the stronger form for replay |
+| `bridge-rules.md` detection | `if (devicestatus.loop) … if (devicestatus.openaps) …` | our structural discriminator | **Independently identical.** Two efforts reached the same answer, which is the strongest evidence in this document that it is the right one |
+| Authority hierarchy, composition, delegation grants | `conflict-resolution.md` | `docs/10-domain/authority-model.md` | **Duplicated.** Near-identical authority levels, conflict scenarios and grant structures exist in both trees. This is the clearest single place to converge |
+| Global monotonic event cursor | `assignEventCursor`, `/events?cursor=` | §3.2's opaque server watermark | Same role, different implementation. Whether they are one cursor is an open design question |
+
+**The kind/instance split is the answer to the liveness question**, and it is
+theirs, not ours. A catalogue entry describes the kind; liveness belongs to
+the instance. Adopting that split costs this series one new field group in
+`specs/sync/controller-state-model.schema.json` — which today has
+`cadence`, `documents`, `stateSpans`, `replayInputs`, `settings`,
+`queryProfile`, `sensitivity` and nothing about instances at all.
+
+**Two corrections we can offer back, because we measured them.** Both are
+small and both are the kind of thing only a corpus can catch:
+
+1. `bridge-rules.md` detects Trio with `if (devicestatus.trio) return 'trio'`.
+   **No document in the corpus carries a top-level `trio` key.** The observed
+   top-level `devicestatus` objects are `loop`, `openaps`, `pump`, `uploader`
+   and `override`. Trio is an oref derivative and writes under `openaps` —
+   which our own generated `specs/sync/registrations/trio.yaml` and
+   `androidaps.yaml` both confirm, since **both discriminate on `openaps` and
+   are therefore not distinguishable from each other at the top level.** That
+   is a limit in our work as much as a bug in theirs, and it should be stated
+   in both.
+2. `CapabilitySnapshot` sets `controllerInstanceId: devicestatus.device` —
+   the free-text device string. That is the field this series found least
+   reliable (§3.1), and using it as an instance identity makes liveness
+   inherit the unreliability. If instances need identity, it should not come
+   from that string.
+
+**What should happen before anyone builds this.** Ask, rather than design:
+the `integration-questionnaire.md` in that same directory is addressed to
+Loop, AAPS and Trio implementers and asks a version of this question already.
+Writing a competing liveness model before answering it would be the exact
+duplication this work exists to prevent.
 
 ## 6. Sequencing
 
@@ -308,7 +386,13 @@ alone.
   can happen behind the existing API at all.
 * **Cursor semantics under concurrent writers.** Two controllers plus a
   care-portal user writing to one site is the normal case, and `srvModified`
-  ordering under that load is unexamined.
+  ordering under that load is unexamined. `conflict-resolution.md` upstream
+  proposes optimistic locking on `srvModified` plus a global monotonic
+  cursor; neither is measured here, and whether that cursor and §3.2's
+  watermark are the same object is undecided (§5.2).
+* **Liveness and channel ownership entirely.** No measurement, no design —
+  see §5.2. Nothing in the corpus can say which controller was running when,
+  because nothing records it.
 * **Anything about AndroidAPS from data.** Still no AAPS closed-loop site in
   the corpus.
 * **The registration's own lifecycle.** How a controller updates a
