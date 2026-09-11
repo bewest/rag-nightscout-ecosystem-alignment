@@ -2659,3 +2659,52 @@ top-line lean ambiguous.
   colocated, with PostgREST and edge/lambda as independently justified options for the
   genuinely stateless/interval-shaped pieces (CRUD, realtime fan-out, vendor-connectivity
   ticks) — not either extreme as the whole architecture.
+
+**Follow-up 18 (mature architecture at 10k/100k/1M tenants, router facade, Elixir/Phoenix
+vs. Unix-composable tooling, how many deployment targets, rate-limiting/proxy-IP-pool
+concern for vendor connectivity at density)** — synthesis across already-established
+sections plus one new gap identified and investigated live.
+- Investigated whether `nightscout-connect` has any existing egress-proxy or per-IP rate
+  accounting: `lib/backoff.js` implements exponential backoff with jitter, which is a
+  **per-account** retry policy only; grepped the module for `proxy`/`rate limit`/`429`/
+  `blocked`/`banned` — none present. Confirmed this is a genuinely new gap, not a variant
+  of the backoff problem already solved: backoff answers "should this account retry,"
+  the density problem is "does my IP's aggregate request rate look like abuse to the
+  vendor regardless of any single account's behavior" — a problem invisible in today's
+  pod-per-tenant model because each tenant's vendor traffic already has its own IP, and
+  one this document's own worker-pool-density recommendation (§5.6/§9.3) would
+  reintroduce if not designed for.
+- Added new **§10.5** ("The mature architecture: components at k tenants, the router
+  facade, and how many deployment targets"), assembling §5.5/§5.6/§9.3/§9.4/§10.2/§10.4
+  findings into one component diagram (`ROUTER`, `AUTH`, N `APP` shards, `REALTIME`,
+  `VCPOOL`) plus the new rate-limiting/proxy-pool finding.
+- Answered Elixir/Phoenix vs. Unix-composability directly and narrowly: Phoenix/OTP is a
+  genuinely strong fit for exactly two boxes (`REALTIME`, `VCPOOL` — both "hold many
+  small per-tenant state machines, supervised, distributable" problems BEAM was built
+  for), but not for `APP` (compute-state box), where §7.3's "representation beats
+  language" finding applies regardless of runtime. Concluded: use whichever runtime
+  measures best per-box, not one runtime for the whole system — a restatement of the
+  existing per-piece answer with a third runtime added, not a reason to prefer Elixir or
+  Unix-style composition as an abstract value.
+- Answered the deployment-target-count question by separating two conflated axes:
+  **codebase targets** (still 3 — `@nightscout/core`, `@nightscout/single-tenant`,
+  `@nightscout/multitenant`, per §9.1, since `ROUTER`/`AUTH`/`REALTIME`/`VCPOOL` are all
+  thin enough to be additional entry points within existing packages) vs. **deployable
+  units** (legitimately grows to 4-5 processes at mature scale, an operational scaling
+  decision made per-deployment, not a codebase decision).
+- Answered the repo-transformation-size question with a concrete, bounded 4-item list
+  (close §3's module-scope leaks; bring `nightscout-connect` in-tree; build four new thin
+  components; land the storage/query-model seam) — explicitly not a rewrite of `APP`,
+  consistent with §9.1's "most of the codebase is already factory-shaped" finding.
+- Added EXP-MT-051 (simulated vendor rate-limiter + egress-proxy-pool test) and
+  EXP-MT-052 (end-to-end multi-component harness at increasing shard count) to the
+  canonical §8.3 arms table.
+- Validated the new §10.5 mermaid diagram with `npx @mermaid-js/mermaid-cli` (renders
+  clean) and re-ran `tools/verify_refs.py` — no new broken refs introduced by this doc
+  (all 96 broken refs reported are pre-existing, in unrelated files).
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official/node_modules/nightscout-connect/lib/backoff.js`
+  (confirmed per-account exponential backoff only, no IP/proxy-pool awareness)
+- `docs/sdqctl-proposals/nightscout-connect-vendor-interop.md` (grepped for existing
+  rate-limit/proxy coverage — none found, confirming this is a new topic for the doc)

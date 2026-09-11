@@ -1633,6 +1633,8 @@ running at scale, but they are no longer open questions.
 | EXP-MT-048 | Vendor-connectivity worker density: how many concurrent `nightscout-connect` session/poll actors (real LibreLinkUp/Glooko/CareLink auth flows) can one worker process hold before session-refresh latency or memory becomes the limit, vs. splitting across N worker processes (§5.6) | Is "N actors per worker process" (already `nightscout-connect`'s internal shape) actually the right multitenant scaling axis, or does per-vendor rate-limiting/session stickiness force a lower density than the CRUD/realtime layers achieve |
 | EXP-MT-049 | Split topology (PostgREST + auth-mint + realtime-fanout + Node compute service + vendor-connectivity pool) vs. `@nightscout/multitenant` alone with only vendor-connectivity split out, at N tenants (§9.3) | Does the four-process split add measurable correctness or latency cost from re-deriving/re-forwarding tenant identity at each hop, relative to the minimal-sidecar alternative |
 | EXP-MT-050 | Migrate `nightscout-roles-gateway`'s `registered_sites` schema (`tools/mt-bench/nrg-resolution-poc/`) into an in-core tenant-resolution `Map`, keep RBAC/schedule/OAuth2-brokering features running unchanged in NRG (§9.4) | Does the resolution-only migration actually drop the ~1 000× per-request hop cost measured, and does any production RBAC/schedule rule get silently lost in the process |
+| EXP-MT-051 | Simulated vendor-endpoint rate limiter (e.g. HTTP 429 past N req/min per source IP) in front of a `nightscout-connect` worker pool holding many tenant accounts on one egress IP, with and without an egress-proxy-pool layer routing accounts across multiple apparent IPs (§10.5) | Does per-IP vendor rate limiting actually degrade poll success/latency at density with a single egress path, and does distributing accounts across a small proxy pool restore the density `nightscout-connect`'s per-account backoff alone cannot |
+| EXP-MT-052 | End-to-end harness running all five component types (`ROUTER`, `AUTH`, `APP` shards, `REALTIME`, `VCPOOL`) together at increasing shard/tenant count (§10.5) | Does the composed router-facade picture hold together operationally — correct routing, no cross-shard leakage, realtime delivery latency stable — or does a component interaction appear that no single-component benchmark (EXP-MT-041/045/047/048/050) would have caught |
 
 `EXP-MT-030` matters disproportionately: the *same* generator against Nocturne gives the
 ecosystem its first apples-to-apples server comparison, and fills the gap that Nocturne's
@@ -2110,6 +2112,141 @@ prerequisite). **The multitenancy program is what buys the option to shard stora
 later, by reusing infrastructure it needed anyway.** That is a reason to expect "10 000" to
 be reachable even if one primary is not enough — not a reason to skip measuring where that
 primary's ceiling is (EXP-MT-040).
+
+### 10.5 The mature architecture: components at k tenants, the router facade, and how many deployment targets
+
+Pulling together §5.5, §5.6, §9.3, §9.4 and §10.2 into one picture, because the per-piece
+tables in those sections can leave the *composed system* implicit. This restates nothing
+new as a finding — it is the assembly of findings already made.
+
+**A new constraint not yet covered: vendor-side rate limiting scales with tenant *density
+per egress path*, not with tenant count alone.** `nightscout-connect`'s `lib/backoff.js`
+implements exponential backoff with jitter — but that is a **per-account** retry policy for
+one account's own failures. It has no notion of a *shared egress IP* being the unit a
+vendor's rate limiter actually keys on. At low density (an indie site, or even one hoster's
+process holding tens of accounts) this is invisible; at the density this document's
+multitenancy work specifically aims for — many vendor-connectivity actors sharing one
+process, one pod, one outbound IP (§5.6/§9.3) — many *distinct* tenant accounts polling
+LibreLinkUp, Glooko, Dexcom Share, CareLink etc. all appear to the vendor as one client.
+This is structurally new, not a variant of the backoff problem already solved: backoff
+answers "should I retry," this answers "does my IP's *aggregate* request rate look like
+abuse regardless of any single account's behavior," and the fix (proxying vendor-facing
+egress through a rotating/varied IP pool, keyed so one tenant's polling cadence cannot
+degrade another's, and per-egress-path — not just per-account — rate accounting) is not
+present in `nightscout-connect` today (verified: no egress-proxy or per-IP accounting code
+exists in the module). **This is exactly the kind of cost the pod-per-tenant model hides by
+accident** — one account per IP today, so the vendor never sees the aggregate — and exactly
+the kind of cost a naive "just run more actors in one process" multitenancy answer
+(§5.6/§9.3's own recommendation) would reintroduce at scale if not designed for up front.
+This is new: EXP-MT-051 (§8.3).
+
+**The component picture, assembled from already-recommended pieces — not a new
+architecture, a naming of what the prior sections already imply exists together:**
+
+```mermaid
+graph TB
+    CLIENT["uploaders, followers,<br/>mobile clients"]
+    VENDOR["Tandem, Tidepool, Glooko,<br/>Dexcom, Medtronic, LibreLinkUp..."]
+
+    ROUTER["<b>router facade</b> — new, per §5E/§9.4<br/>Host/JWT to tenant to shard,<br/>userspace SNI/HTTP router first (§7.6),<br/>the ONLY component that grows with<br/>shard count, not tenant count"]
+
+    subgraph APP["N shards — @nightscout/multitenant, §9.1/§9.3<br/>each: Map&lt;tenantId, ctx&gt;, computed state, CRUD, writes"]
+        S1["shard 1<br/>~K tenants"]
+        S2["shard 2<br/>~K tenants"]
+        SN["shard N<br/>~K tenants"]
+    end
+
+    REALTIME["<b>realtime fan-out</b> — sidecar, §5.6/§9.3<br/>stateless, scales independently of<br/>shard count, WAL/NOTIFY-driven"]
+
+    VCPOOL["<b>vendor-connectivity worker pool</b> — sidecar, §5.6/§9.3<br/>nightscout-connect in-tree, xstate actors,<br/>per-tenant-account session/backoff state<br/>routed through an egress-proxy pool — new, §10.5"]
+
+    AUTH["<b>auth/JWT-mint + tenant-resolution</b> — sidecar or<br/>in-core map, §9.1/§9.4<br/>NRG's schema as data source, not its RBAC scope"]
+
+    PG[("Postgres/RLS, sharded by tenant_id<br/>past one primary's ceiling, §10.4")]
+
+    CLIENT --> ROUTER
+    ROUTER --> S1 & S2 & SN
+    ROUTER --> AUTH
+    S1 & S2 & SN --> PG
+    S1 & S2 & SN -.->|writes trigger| REALTIME
+    REALTIME --> CLIENT
+    VCPOOL -->|writes| PG
+    VCPOOL -.->|egress proxy pool| VENDOR
+
+    style ROUTER fill:#d4edda,stroke:#2c7a3f,color:#111
+    style VCPOOL fill:#fff3cd,stroke:#a67c00,color:#111
+```
+
+**Reading this against the "custom Node vs. PostgREST + edge/lambda" framing from
+§10.2 one more time, at the level of the whole picture**: `APP` (the shards) is where the
+compute-locality argument (§7.4, §10.2) is absolute — this is the one box that cannot be
+serverless or PostgREST-only. `REALTIME` and `VCPOOL` are the two boxes that can be, and
+Elixir/Phoenix or a managed platform (Supabase Realtime) are legitimate implementations of
+`REALTIME` specifically. `ROUTER` and `AUTH` are thin and framework-agnostic by design —
+their entire job is "resolve an identity, forward a connection," which is precisely the
+shape a userspace SNI/HTTP router or a small stateless function handles well.
+
+**Does Elixir/Phoenix "fill all the concerns," or does a Unix-style composition of
+right-tool pieces describe the tradeoffs better?** The honest answer, following directly
+from the picture above rather than from a preference: **Phoenix (via OTP's process/actor
+model, `:global`/`pg` process groups, and Phoenix Channels/Presence) is a genuinely strong
+fit for exactly two boxes — `REALTIME` and `VCPOOL`** — both are "hold many small pieces of
+per-tenant state, supervised, restartable, distributable across nodes" problems, which is
+what BEAM was built for, more so than what an `xstate`-in-one-Node-process pool
+approximates today. **It is not a fit for `APP`**: the compute-state box needs a typed
+schema and columnar representation to win (§7.2/§7.3's measured 9.9 KB/tenant JS result,
+carried, not language-specific), not an actor model — nothing about BEAM's concurrency
+model changes the representation lever, and rewriting `APP` in Elixir would face the same
+"representation beats language" finding §7.3 already made for Rust. **This is the same
+per-piece answer as §9.3/§10.2, now with a third runtime added to the comparison, not a
+reason to prefer one runtime for the whole system.** A Unix-style composition — small,
+independently-scaled, right-tool components, communicating over well-defined boundaries
+(HTTP/gRPC, Postgres NOTIFY, a queue) — describes the tradeoffs *because* the system
+already decomposes this way on its own evidence, not because composability is a value
+preferred in the abstract. The practical takeaway is narrower than "pick Elixir" or "stay
+Unix-y": **use whichever runtime is measured best per-box** (§7.6's carried "representation
+buys a slope, language buys a constant" applies uniformly), and do not let one runtime's
+strength in one box argue for adopting it everywhere.
+
+**How many deployment targets should `cgm-remote-monitor` have?** Distinguish two axes
+that get conflated: **codebase targets** (what §9.1 already proposed — `@nightscout/core`,
+`@nightscout/single-tenant`, `@nightscout/multitenant`, three packages) and **deployable
+units** (how many separately-running processes the mature picture above implies). The
+codebase-target count does not need to grow past three for this picture to work: `ROUTER`,
+`AUTH`, `REALTIME`, and `VCPOOL` are all thin enough to be small additional entry points
+*within* `@nightscout/multitenant` or `@nightscout/core` (vendor connectivity already lives
+in `core` per §9.1's in-tree-Connect note), not separate codebases needing independent
+release cycles — a `bin/` of small servers sharing one `package.json`'s dependencies and
+one CI pipeline is a materially smaller commitment than N repositories. **The deployable
+count, by contrast, legitimately grows to 4–5** at mature scale (N `APP` shards, 1
+`ROUTER`, 1 `REALTIME`, 1 `VCPOOL` pool, optionally 1 `AUTH`) — but that is an operational
+scaling decision made per-deployment, not a codebase decision; an indie single-tenant
+operator's `@nightscout/single-tenant` deploys as one process today and continues to,
+unaffected by how many processes a hoster chooses to run `@nightscout/multitenant` as.
+
+**How much does the repo need to transform to become this composable?** Less than the
+picture implies, per §9.1's central finding: **most of the codebase is already
+factory-shaped** (`bootevent()`, `sandbox.js`, `plugins/index.js`, `data/*` are already
+`init(ctx/env, ...)` constructors, not singletons). The concrete, bounded transformation
+list this section adds nothing new to, beyond making it explicit as one list:
+
+1. Close §3's module-scope leaks (alarm map, `speech.js`, `bridge.js`'s
+   `mostRecentRecord`) — a hard prerequisite regardless of how many deployable units exist,
+   because every one of `ROUTER`/`REALTIME`/`VCPOOL`/`APP` calls the same shared factories.
+2. Bring `nightscout-connect` in-tree into `@nightscout/core` (§9.1) — already decided,
+   independent of this analysis.
+3. Build the four *new* thin components (`ROUTER`, `AUTH`, `REALTIME`'s WAL-listener,
+   `VCPOOL`'s egress-proxy layer) — genuinely new code, but each is small, bounded, and
+   independently testable, not a rewrite of `APP`.
+4. Land the storage/query-model seam (§6.2) so `APP` can run against Postgres/RLS.
+
+**Nothing here requires the number of codebase targets to exceed three, and nothing
+requires the transformation to be a rewrite** — it is closing named leaks, moving one
+already-external dependency in-tree, and adding a handful of new, small, single-purpose
+services around an `APP` core that is already shaped to be called this way. This is
+EXP-MT-052 (§8.3): full end-to-end harness running all five component types together at
+increasing shard count, to validate the router-facade/shard picture holds together
+operationally, not just per-component.
 
 ---
 
