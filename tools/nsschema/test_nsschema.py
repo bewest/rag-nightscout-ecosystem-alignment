@@ -1014,3 +1014,64 @@ def test_check_flags_an_absent_claim_the_data_contradicts():
         "doc_frequency": 0.5, "site_count": 9}}}
     rows = dosing_inputs.check(mapping, census)
     assert rows[0]["verdict"] == "claim-contradicted"
+
+
+# ── vendor wire surfaces ────────────────────────────────────────────────
+
+from nsschema import vendor_surface  # noqa: E402
+
+
+def test_swift_wire_names_come_from_coding_keys():
+    # `case tdd = "TDD"` ships as TDD. Reading property names instead
+    # reported Trio's tdd as never-written when the corpus carries TDD.
+    text = """
+    struct Determination: Codable {
+        var tdd: Decimal?
+        var minGuardBG: Decimal?
+        var reasonParts: [String] { parts() }
+        private enum CodingKeys: String, CodingKey {
+            case tdd = "TDD"
+            case minGuardBG
+        }
+    }
+    """
+    assert vendor_surface._swift_coding_keys(text) == {"TDD", "minGuardBG"}
+
+
+def test_computed_properties_are_not_wire_fields():
+    # Trio's Determination.swift says in a comment that reasonParts and
+    # reasonConclusion are excluded from CodingKeys "so the serialized JSON
+    # is unchanged". A surface that lists them is wrong.
+    text = """
+    struct X: Codable {
+        var a: Int
+        var b: String { compute() }
+        private enum CodingKeys: String, CodingKey { case a }
+    }
+    """
+    assert vendor_surface._swift_coding_keys(text) == {"a"}
+
+
+def test_a_swift_type_without_coding_keys_falls_back_to_stored_properties(tmp_path):
+    src = tmp_path / "externals" / "x" / "Y.swift"
+    src.parent.mkdir(parents=True)
+    src.write_text("struct Y: Codable {\n    var iob: Double\n"
+                   "    var computed: Double { iob * 2 }\n}\n")
+    names = vendor_surface.extract(tmp_path, "x/Y.swift", "swift-coding-keys")
+    assert names == ["iob"]
+
+
+def test_extraction_can_stop_before_an_unrelated_model(tmp_path):
+    # Trio's NightscoutStatus.swift also defines its *profile* upload models;
+    # without a bound, dia and deviceToken look like devicestatus fields.
+    src = tmp_path / "externals" / "x" / "Y.swift"
+    src.parent.mkdir(parents=True)
+    src.write_text("struct Status {\n    let reservoir: Decimal\n}\n"
+                   "struct ScheduledNightscoutProfile {\n    let dia: Decimal\n}\n")
+    names = vendor_surface.extract(tmp_path, "x/Y.swift", r'^\s*let\s+(\w+)\s*:',
+                                   stop_at="struct ScheduledNightscoutProfile")
+    assert names == ["reservoir"]
+
+
+def test_a_missing_source_is_reported_not_guessed(tmp_path):
+    assert vendor_surface.extract(tmp_path, "nope/Missing.kt", r'(\w+)') is None

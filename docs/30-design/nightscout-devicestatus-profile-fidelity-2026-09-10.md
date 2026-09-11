@@ -220,6 +220,84 @@ because `tools/ns2parquet/ns_fetch.py` requests only `entries`, `treatments`,
 evidence; the prevalence and shape of real activity data is unmeasured, and
 extending the fetcher is the obvious next step.
 
+## 4a. Vendor variation: what each system *can* write
+
+The census says what 11 sites did write. With one AAPS site and one Trio
+site it under-represents both. `make schema-vendors` reads each project's
+own wire model instead, so "nobody writes this" and "our corpus has one site
+of that client" stop being the same observation.
+
+| Project | Declared | Observed in corpus | Declared but never seen |
+|---|---|---|---|
+| AndroidAPS (`RemoteDeviceStatus.kt`) | 35 | 18 | **17** |
+| Trio (`NightscoutStatus.swift`) | 19 | 16 | 3 |
+| Trio determination (`Determination.swift`) | 29 | 27 | 2 |
+| Trio IOB (`IOBEntry.swift`) | 17 | 16 | 1 |
+| Loop (`LoopStatus.swift`) | 14 | 11 | 3 |
+| Loop dose rec. (`AutomaticDoseRecommendation.swift`) | 3 | 3 | 0 |
+| oref0 (`determine-basal.js`) | 18 | 14 | 4 |
+| oref0 IOB (`iob/total.js`) | 10 | 7 | 3 |
+
+Every surface is partial — a payload is assembled across several files and
+only the named ones are read — so a gap means "not in the file we parsed",
+never "the project cannot write it".
+
+### 4a.1 AAPS uploads its running configuration; nobody else does
+
+Of AAPS's 17 unobserved fields, ten are one feature:
+
+```
+configuration  apsConfiguration  sensitivityConfiguration  safetyConfiguration
+overviewConfiguration  insulinConfiguration  smoothing  aps  insulin  sensitivity
+```
+
+`RunningConfigurationImpl.kt` populates these from the live plugin set, so an
+AAPS device status can carry *which algorithm, which sensitivity model, which
+insulin model and which smoothing* were running at the moment of the
+decision. That is dosing provenance no other system records, and our corpus
+contains none of it — the one AAPS site never emitted it.
+
+What is in there is narrower than the names suggest, and the distinction
+matters for §3.2. From AAPS's own test fixtures:
+
+* `sensitivityConfiguration` — `autosens_max`, `autosens_min`,
+  `openapsama_min_5m_carbimpact`, `absorption_cutoff`. Real algorithm
+  parameters.
+* `apsConfiguration` — for the SMB plugin, only `ApsUseDynamicSensitivity`
+  and `ApsDynIsfAdjustmentFactor`.
+* `safetyConfiguration` — `age`, `treatmentssafety_maxbolus`,
+  `treatmentssafety_maxcarbs`: caps on *manual entry*, not the loop's dosing
+  ceilings.
+
+So §3.2 stands as written: `maxIob` and `maxBasal` are AAPS *preferences*
+(`DoubleKey.ApsMaxBasal`, `DoubleKey.ApsAmaMaxIob`) and are in none of the
+uploaded configuration blocks. AAPS records more of its configuration than
+any other system and still does not record the two limits a replay needs.
+
+### 4a.2 Trio declares two safety predictions the corpus never carried
+
+`minGuardBG` and `minPredBG` — the minimum guarded and predicted glucose
+behind a dosing decision. Declared in `Determination.swift`'s `CodingKeys`,
+absent from 702,254 device statuses. Either conditional on a code path our
+one Trio site did not take, or newer than the April snapshot.
+
+### 4a.3 Two near-misses worth recording as method
+
+Both were wrong in a first pass and corrected before anything was published,
+and both are now regression tests:
+
+* Trio's `tdd` ships as `TDD` — its `CodingKeys` renames it — and the corpus
+  carries `TDD`. Reading Swift *property* names instead of `CodingKeys`
+  reported it as never written.
+* `reasonParts` and `reasonConclusion` look like a structured replacement for
+  oref0's free-text `reason` field, which would be a notable finding. They
+  are computed properties, deliberately excluded from `CodingKeys` — a
+  comment in that file says so explicitly — and are never serialized. Trio
+  structures the reason *for its own UI*, not on the wire.
+
+The general lesson for any vendor-surface analysis: in Swift the wire
+contract is `CodingKeys`, and a property is not a field.
+
 ## 5. What this supports
 
 1. **Report two upstream defects, both found by measurement.** Nocturne's
@@ -243,6 +321,10 @@ extending the fetcher is the obvious next step.
    than the proposed `/heartrate` collection, and rename or namespace one of
    the two meanings of `activity` before generated types make the collision
    permanent.
+5a. **Ask AAPS to keep uploading its configuration block, and declare it.**
+   It is the only record in the ecosystem of which algorithm and which
+   sensitivity model produced a decision (§4a.1). The spec declares it only
+   as `configuration: {type: object}`; it deserves a real shape.
 6. **Treat "replayable from Nightscout" as a stated non-goal, or close the
    8 absent inputs.** Today a stored decision cannot be reproduced: the run
    flags and the meal-detection state are simply not written.
@@ -255,8 +337,10 @@ extending the fetcher is the obvious next step.
   `LoopJson`), so "retained" there means "stored", not "queryable".
 * **Whether dropped fields matter to any consumer.** Nothing downstream was
   checked for a dependency on them.
-* **AAPS and Trio profile/devicestatus variation beyond this corpus** — one
-  site each.
+* **Whether AAPS's configuration block appears in the wild at all.** §4a.1
+  reads the uploader, not data: our one AAPS site emitted none of it, and
+  the conditions under which `RunningConfigurationImpl` runs were not traced.
+* **AAPS and Trio profile variation beyond this corpus** — one site each.
 * **Real `activity` documents**, per §4.
 * **`heartrate` as a v3 collection.** Not implemented anywhere; the spec in
   this repo is a proposal, not a description.

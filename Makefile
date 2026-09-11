@@ -665,7 +665,7 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
         schema-impact schema-impact-smoke schema-drift schema-verify \
         schema-scan-pii schema-sanitize schema-attribute \
         schema-quirks schema-quirks-check schema-decompose \
-        schema-nocturne schema-dosing \
+        schema-nocturne schema-dosing schema-vendors \
         schema-test schema-clean
 
 PY ?= python3
@@ -748,6 +748,10 @@ schema-nocturne:
 ## schema-dosing: which dosing inputs are recoverable from Nightscout
 schema-dosing:
 	@$(NSSCHEMA).dosing_inputs --check
+
+## schema-vendors: what each AID system declares it can write to devicestatus
+schema-vendors:
+	@$(NSSCHEMA).vendor_surface
 
 ## schema-drift: check tools/ns2parquet against the measured wire model
 schema-drift:
