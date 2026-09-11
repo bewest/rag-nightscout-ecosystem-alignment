@@ -1,0 +1,618 @@
+{
+ "collection": "entries",
+ "generated_by": "tools/nsschema/model.py",
+ "source_spec": "aid-entries-2025.yaml",
+ "census": "reports/schema-census/entries.census.json",
+ "root": {
+  "path": "",
+  "types": [
+   "object"
+  ],
+  "nullable": false,
+  "declared": false,
+  "observed": false,
+  "placement": "core",
+  "children": {
+   "_id": {
+    "path": "_id",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "MongoDB document ID (ObjectId as string in v1, any string in v3)",
+    "evidence": {
+     "docs_present": 896589,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 896589
+     }
+    },
+    "required_read": true,
+    "notes": [
+     "server-assigned: required on read, never on write"
+    ]
+   },
+   "app": {
+    "path": "app",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Origin application identifier"
+   },
+   "date": {
+    "path": "date",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "format": "int64",
+    "description": "Epoch milliseconds timestamp",
+    "evidence": {
+     "docs_present": 896589,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "integer": 345332,
+      "number": 551257
+     }
+    },
+    "required_read": true,
+    "required_write": true,
+    "notes": [
+     "widened integer -> number: the spec declares integer and 551,257 fractional values were observed"
+    ]
+   },
+   "dateString": {
+    "path": "dateString",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "format": "date-time",
+    "description": "ISO 8601 timestamp",
+    "evidence": {
+     "docs_present": 896589,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 896589
+     }
+    },
+    "required_read": true,
+    "required_write": true
+   },
+   "delta": {
+    "path": "delta",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "sparse",
+    "tier_reason": "1/11 sites, 3.58% of documents",
+    "description": "Change from previous reading (mg/dL).\nComputed field, not always present.",
+    "evidence": {
+     "docs_present": 32098,
+     "doc_frequency": 0.0358,
+     "site_count": 1,
+     "observed_types": {
+      "integer": 6035,
+      "number": 26063
+     }
+    }
+   },
+   "device": {
+    "path": "device",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "11/11 sites, 93.6% of documents",
+    "description": "Source device identifier. Format varies by uploader.",
+    "evidence": {
+     "docs_present": 838867,
+     "doc_frequency": 0.93562,
+     "site_count": 11,
+     "observed_types": {
+      "string": 838867
+     }
+    }
+   },
+   "direction": {
+    "path": "direction",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "11/11 sites, 84.6% of documents",
+    "description": "Glucose trend direction. Maps to rate of change:\n- DoubleUp: > 3 mg/dL/min\n- SingleUp: 2-3 mg/dL/min\n- FortyFiveUp: 1-2 mg/dL/min\n- Flat: -1 to 1 mg/dL/min\n- FortyFiveDown: -1 to -2 mg/dL/min\n- SingleDown: -2 to -3 mg/dL/min\n- DoubleDown: < -3 mg/dL/min",
+    "evidence": {
+     "docs_present": 758390,
+     "doc_frequency": 0.845861,
+     "site_count": 11,
+     "observed_types": {
+      "string": 758390
+     }
+    },
+    "observed_values": [
+     "DoubleDown",
+     "DoubleUp",
+     "Flat",
+     "FortyFiveDown",
+     "FortyFiveUp",
+     "NONE",
+     "SingleDown",
+     "SingleUp"
+    ],
+    "notes": [
+     "declared enum not enforced: 1 of 9 observed values could not be published, so the enum cannot be shown to be complete"
+    ]
+   },
+   "filtered": {
+    "path": "filtered",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "vendor",
+    "tier_reason": "2/11 sites, but written in 100% of documents on 2 of them",
+    "description": "Filtered raw sensor value. Used for calibration algorithms.\nTypically only populated by xDrip+.",
+    "evidence": {
+     "docs_present": 116054,
+     "doc_frequency": 0.129439,
+     "site_count": 2,
+     "observed_types": {
+      "integer": 116054
+     }
+    }
+   },
+   "glucose": {
+    "path": "glucose",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "extension",
+    "tier": "vendor",
+    "tier_reason": "1/11 sites, but written in 86% of documents on 1 of them",
+    "evidence": {
+     "docs_present": 57722,
+     "doc_frequency": 0.06438,
+     "site_count": 1,
+     "observed_types": {
+      "integer": 57722
+     }
+    },
+    "notes": [
+     "extension-bag candidate (1/11 sites, but written in 86% of documents on 1 of them)"
+    ]
+   },
+   "identifier": {
+    "path": "identifier",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "API v3 primary key. Server-assigned, immutable after creation.\nUsed for document addressing in v3 endpoints."
+   },
+   "intercept": {
+    "path": "intercept",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Calibration intercept (for type=cal)"
+   },
+   "isCalibration": {
+    "path": "isCalibration",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 61.9% of documents",
+    "evidence": {
+     "docs_present": 554992,
+     "doc_frequency": 0.619004,
+     "site_count": 10,
+     "observed_types": {
+      "boolean": 554992
+     }
+    },
+    "notes": [
+     "proposed addition from evidence (10/11 sites, 61.9% of documents)"
+    ]
+   },
+   "isReadOnly": {
+    "path": "isReadOnly",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Lock document permanently (HTTP 422 on modify attempts)"
+   },
+   "isValid": {
+    "path": "isValid",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Soft-delete flag. false = document is deleted.\nOnly visible via history endpoint or explicit query."
+   },
+   "mbg": {
+    "path": "mbg",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "common",
+    "tier_reason": "10/11 sites, 0.1% of documents",
+    "description": "Meter blood glucose value in mg/dL.\nRequired when type=mbg.",
+    "evidence": {
+     "docs_present": 1171,
+     "doc_frequency": 0.001306,
+     "site_count": 10,
+     "observed_types": {
+      "integer": 1169,
+      "number": 2
+     }
+    }
+   },
+   "modifiedBy": {
+    "path": "modifiedBy",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Last modifier identifier"
+   },
+   "noise": {
+    "path": "noise",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "vendor",
+    "tier_reason": "1/11 sites, but written in 100% of documents on 1 of them",
+    "description": "Signal quality indicator:\n- 0: None/unknown\n- 1: Clean\n- 2: Light\n- 3: Medium\n- 4: Heavy\n- 5: Noise blocked reading",
+    "evidence": {
+     "docs_present": 58332,
+     "doc_frequency": 0.06506,
+     "site_count": 1,
+     "observed_types": {
+      "integer": 58332
+     }
+    },
+    "minimum": 0,
+    "maximum": 5
+   },
+   "rssi": {
+    "path": "rssi",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "sparse",
+    "tier_reason": "1/11 sites, 3.58% of documents",
+    "description": "Signal strength indicator (dBm)",
+    "evidence": {
+     "docs_present": 32098,
+     "doc_frequency": 0.0358,
+     "site_count": 1,
+     "observed_types": {
+      "integer": 32098
+     }
+    }
+   },
+   "scale": {
+    "path": "scale",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Calibration scale factor (for type=cal)"
+   },
+   "sgv": {
+    "path": "sgv",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 99.9% of documents",
+    "description": "Sensor glucose value in mg/dL.\nRequired when type=sgv.",
+    "evidence": {
+     "docs_present": 895418,
+     "doc_frequency": 0.998694,
+     "site_count": 11,
+     "observed_types": {
+      "integer": 895418
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "slope": {
+    "path": "slope",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Calibration slope (for type=cal)"
+   },
+   "srvCreated": {
+    "path": "srvCreated",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "format": "int64",
+    "description": "Server creation timestamp (epoch ms)"
+   },
+   "srvModified": {
+    "path": "srvModified",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "format": "int64",
+    "description": "Server modification timestamp (epoch ms)"
+   },
+   "subject": {
+    "path": "subject",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Creating user/token identifier"
+   },
+   "sysTime": {
+    "path": "sysTime",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "format": "date-time",
+    "description": "System time when reading was captured (Dexcom Share)",
+    "evidence": {
+     "docs_present": 896589,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 896589
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "trend": {
+    "path": "trend",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 71.6% of documents",
+    "evidence": {
+     "docs_present": 642337,
+     "doc_frequency": 0.716423,
+     "site_count": 10,
+     "observed_types": {
+      "integer": 642337
+     }
+    },
+    "notes": [
+     "proposed addition from evidence (10/11 sites, 71.6% of documents)"
+    ]
+   },
+   "trendRate": {
+    "path": "trendRate",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 46.0% of documents",
+    "evidence": {
+     "docs_present": 412355,
+     "doc_frequency": 0.459915,
+     "site_count": 10,
+     "observed_types": {
+      "integer": 46488,
+      "number": 365867
+     }
+    },
+    "notes": [
+     "proposed addition from evidence (10/11 sites, 46.0% of documents)"
+    ]
+   },
+   "type": {
+    "path": "type",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "Entry classification:\n- `sgv`: Sensor Glucose Value (CGM reading)\n- `mbg`: Meter Blood Glucose (fingerstick)\n- `cal`: Calibration record",
+    "evidence": {
+     "docs_present": 896589,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 896589
+     }
+    },
+    "enum": [
+     "cal",
+     "mbg",
+     "sgv"
+    ],
+    "required_read": true,
+    "required_write": true
+   },
+   "unfiltered": {
+    "path": "unfiltered",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "vendor",
+    "tier_reason": "2/11 sites, but written in 100% of documents on 2 of them",
+    "description": "Unfiltered raw sensor value. Used for calibration algorithms.\nTypically only populated by xDrip+.",
+    "evidence": {
+     "docs_present": 116054,
+     "doc_frequency": 0.129439,
+     "site_count": 2,
+     "observed_types": {
+      "integer": 116054
+     }
+    }
+   },
+   "units": {
+    "path": "units",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Glucose unit indicator.\nNote: Values are always stored as mg/dL; this is display preference.",
+    "enum": [
+     "mg",
+     "mmol"
+    ]
+   },
+   "utcOffset": {
+    "path": "utcOffset",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "Timezone offset in minutes from UTC",
+    "evidence": {
+     "docs_present": 896589,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "integer": 896589
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,2020 @@
+{
+ "generated_by": "tools/nsschema/replay.js",
+ "ajv": "8.20.0",
+ "collections": {
+  "entries": {
+   "documents": 896589,
+   "sources": 22,
+   "policies": {
+    "write/permissive": {
+     "documents": 896589,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 66531,
+      "b": 67060,
+      "c": 125339,
+      "d": 112034,
+      "e": 91583,
+      "f": 71217,
+      "g": 67218,
+      "h": 36566,
+      "i": 134023,
+      "j": 58496,
+      "k": 66522
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 57722,
+     "documents_with_unknown": 57722,
+     "elapsed_ms": 2782,
+     "rejection_rate": 0,
+     "docs_per_second": 322249,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "write/tolerant": {
+     "documents": 896589,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 66531,
+      "b": 67060,
+      "c": 125339,
+      "d": 112034,
+      "e": 91583,
+      "f": 71217,
+      "g": 67218,
+      "h": 36566,
+      "i": 134023,
+      "j": 58496,
+      "k": 66522
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 2881,
+     "rejection_rate": 0,
+     "docs_per_second": 311259,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "write/extension-bag": {
+     "documents": 896589,
+     "rejected": 57722,
+     "rejected_by_site": {
+      "b": 57722
+     },
+     "documents_by_site": {
+      "a": 66531,
+      "b": 67060,
+      "c": 125339,
+      "d": 112034,
+      "e": 91583,
+      "f": 71217,
+      "g": 67218,
+      "h": 36566,
+      "i": 134023,
+      "j": 58496,
+      "k": 66522
+     },
+     "error_keywords": {
+      "additionalProperties": 57722
+     },
+     "unknown_values_dropped": 57722,
+     "documents_with_unknown": 57722,
+     "elapsed_ms": 2930,
+     "rejection_rate": 0.06437955406546367,
+     "docs_per_second": 305968,
+     "top_error_fields": [
+      {
+       "field": "glucose",
+       "count": 57722,
+       "share_of_documents": 0.06437955406546367
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0.8607515657620042,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "write/strict": {
+     "documents": 896589,
+     "rejected": 838093,
+     "rejected_by_site": {
+      "a": 66531,
+      "b": 67060,
+      "c": 125339,
+      "d": 112034,
+      "e": 91583,
+      "f": 71217,
+      "g": 67218,
+      "h": 36566,
+      "i": 134023,
+      "k": 66522
+     },
+     "documents_by_site": {
+      "a": 66531,
+      "b": 67060,
+      "c": 125339,
+      "d": 112034,
+      "e": 91583,
+      "f": 71217,
+      "g": 67218,
+      "h": 36566,
+      "i": 134023,
+      "j": 58496,
+      "k": 66522
+     },
+     "error_keywords": {
+      "additionalProperties": 1667406
+     },
+     "unknown_values_dropped": 1667406,
+     "documents_with_unknown": 838093,
+     "elapsed_ms": 3360,
+     "rejection_rate": 0.9347571741344138,
+     "docs_per_second": 266803,
+     "top_error_fields": [
+      {
+       "field": "trend",
+       "count": 642337,
+       "share_of_documents": 0.7164230210274719
+      },
+      {
+       "field": "isCalibration",
+       "count": 554992,
+       "share_of_documents": 0.6190038021880706
+      },
+      {
+       "field": "trendRate",
+       "count": 412355,
+       "share_of_documents": 0.4599153012138226
+      },
+      {
+       "field": "glucose",
+       "count": 57722,
+       "share_of_documents": 0.06437955406546367
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 1,
+      "b": 1,
+      "c": 1,
+      "d": 1,
+      "e": 1,
+      "f": 1,
+      "g": 1,
+      "h": 1,
+      "i": 1,
+      "j": 0,
+      "k": 1
+     }
+    },
+    "read/permissive": {
+     "documents": 896589,
+     "rejected": 1171,
+     "rejected_by_site": {
+      "a": 3,
+      "b": 3,
+      "c": 36,
+      "d": 42,
+      "e": 20,
+      "g": 766,
+      "i": 51,
+      "j": 164,
+      "k": 85,
+      "f": 1
+     },
+     "documents_by_site": {
+      "a": 66531,
+      "b": 67060,
+      "c": 125339,
+      "d": 112034,
+      "e": 91583,
+      "f": 71217,
+      "g": 67218,
+      "h": 36566,
+      "i": 134023,
+      "j": 58496,
+      "k": 66522
+     },
+     "error_keywords": {
+      "required": 1171
+     },
+     "unknown_values_dropped": 57722,
+     "documents_with_unknown": 57722,
+     "elapsed_ms": 2629,
+     "rejection_rate": 0.001306061082614219,
+     "docs_per_second": 341053,
+     "top_error_fields": [
+      {
+       "field": "sgv",
+       "count": 1171,
+       "share_of_documents": 0.001306061082614219
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 0.00004509176173513099,
+      "b": 0.0000447360572621533,
+      "c": 0.00028722105649478616,
+      "d": 0.0003748861952621526,
+      "e": 0.00021838114060469737,
+      "f": 0.000014041591193114003,
+      "g": 0.011395757088875004,
+      "h": 0,
+      "i": 0.00038053169978287307,
+      "j": 0.002803610503282276,
+      "k": 0.001277772766904182
+     }
+    },
+    "read/tolerant": {
+     "documents": 896589,
+     "rejected": 1171,
+     "rejected_by_site": {
+      "a": 3,
+      "b": 3,
+      "c": 36,
+      "d": 42,
+      "e": 20,
+      "g": 766,
+      "i": 51,
+      "j": 164,
+      "k": 85,
+      "f": 1
+     },
+     "documents_by_site": {
+      "a": 66531,
+      "b": 67060,
+      "c": 125339,
+      "d": 112034,
+      "e": 91583,
+      "f": 71217,
+      "g": 67218,
+      "h": 36566,
+      "i": 134023,
+      "j": 58496,
+      "k": 66522
+     },
+     "error_keywords": {
+      "required": 1171
+     },
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 2894,
+     "rejection_rate": 0.001306061082614219,
+     "docs_per_second": 309793,
+     "top_error_fields": [
+      {
+       "field": "sgv",
+       "count": 1171,
+       "share_of_documents": 0.001306061082614219
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 0.00004509176173513099,
+      "b": 0.0000447360572621533,
+      "c": 0.00028722105649478616,
+      "d": 0.0003748861952621526,
+      "e": 0.00021838114060469737,
+      "f": 0.000014041591193114003,
+      "g": 0.011395757088875004,
+      "h": 0,
+      "i": 0.00038053169978287307,
+      "j": 0.002803610503282276,
+      "k": 0.001277772766904182
+     }
+    },
+    "read/extension-bag": {
+     "documents": 896589,
+     "rejected": 58893,
+     "rejected_by_site": {
+      "a": 3,
+      "b": 57725,
+      "c": 36,
+      "d": 42,
+      "e": 20,
+      "g": 766,
+      "i": 51,
+      "j": 164,
+      "k": 85,
+      "f": 1
+     },
+     "documents_by_site": {
+      "a": 66531,
+      "b": 67060,
+      "c": 125339,
+      "d": 112034,
+      "e": 91583,
+      "f": 71217,
+      "g": 67218,
+      "h": 36566,
+      "i": 134023,
+      "j": 58496,
+      "k": 66522
+     },
+     "error_keywords": {
+      "required": 1171,
+      "additionalProperties": 57722
+     },
+     "unknown_values_dropped": 57722,
+     "documents_with_unknown": 57722,
+     "elapsed_ms": 2901,
+     "rejection_rate": 0.06568561514807789,
+     "docs_per_second": 309066,
+     "top_error_fields": [
+      {
+       "field": "glucose",
+       "count": 57722,
+       "share_of_documents": 0.06437955406546367
+      },
+      {
+       "field": "sgv",
+       "count": 1171,
+       "share_of_documents": 0.001306061082614219
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 0.00004509176173513099,
+      "b": 0.8607963018192664,
+      "c": 0.00028722105649478616,
+      "d": 0.0003748861952621526,
+      "e": 0.00021838114060469737,
+      "f": 0.000014041591193114003,
+      "g": 0.011395757088875004,
+      "h": 0,
+      "i": 0.00038053169978287307,
+      "j": 0.002803610503282276,
+      "k": 0.001277772766904182
+     }
+    },
+    "read/strict": {
+     "documents": 896589,
+     "rejected": 838257,
+     "rejected_by_site": {
+      "a": 66531,
+      "b": 67060,
+      "c": 125339,
+      "d": 112034,
+      "e": 91583,
+      "f": 71217,
+      "g": 67218,
+      "h": 36566,
+      "i": 134023,
+      "j": 164,
+      "k": 66522
+     },
+     "documents_by_site": {
+      "a": 66531,
+      "b": 67060,
+      "c": 125339,
+      "d": 112034,
+      "e": 91583,
+      "f": 71217,
+      "g": 67218,
+      "h": 36566,
+      "i": 134023,
+      "j": 58496,
+      "k": 66522
+     },
+     "error_keywords": {
+      "additionalProperties": 1667406,
+      "required": 1171
+     },
+     "unknown_values_dropped": 1667406,
+     "documents_with_unknown": 838093,
+     "elapsed_ms": 3290,
+     "rejection_rate": 0.9349400896062744,
+     "docs_per_second": 272557,
+     "top_error_fields": [
+      {
+       "field": "trend",
+       "count": 642337,
+       "share_of_documents": 0.7164230210274719
+      },
+      {
+       "field": "isCalibration",
+       "count": 554992,
+       "share_of_documents": 0.6190038021880706
+      },
+      {
+       "field": "trendRate",
+       "count": 412355,
+       "share_of_documents": 0.4599153012138226
+      },
+      {
+       "field": "glucose",
+       "count": 57722,
+       "share_of_documents": 0.06437955406546367
+      },
+      {
+       "field": "sgv",
+       "count": 1171,
+       "share_of_documents": 0.001306061082614219
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 1,
+      "b": 1,
+      "c": 1,
+      "d": 1,
+      "e": 1,
+      "f": 1,
+      "g": 1,
+      "h": 1,
+      "i": 1,
+      "j": 0.002803610503282276,
+      "k": 1
+     }
+    }
+   }
+  },
+  "treatments": {
+   "documents": 369419,
+   "sources": 22,
+   "policies": {
+    "write/permissive": {
+     "documents": 369419,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 39053,
+      "b": 61871,
+      "c": 35628,
+      "d": 32921,
+      "e": 40520,
+      "f": 19515,
+      "g": 35700,
+      "h": 29791,
+      "i": 40798,
+      "j": 1017,
+      "k": 32605
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 56105,
+     "documents_with_unknown": 56103,
+     "elapsed_ms": 2588,
+     "rejection_rate": 0,
+     "docs_per_second": 142723,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "write/tolerant": {
+     "documents": 369419,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 39053,
+      "b": 61871,
+      "c": 35628,
+      "d": 32921,
+      "e": 40520,
+      "f": 19515,
+      "g": 35700,
+      "h": 29791,
+      "i": 40798,
+      "j": 1017,
+      "k": 32605
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 2737,
+     "rejection_rate": 0,
+     "docs_per_second": 134964,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "write/extension-bag": {
+     "documents": 369419,
+     "rejected": 56103,
+     "rejected_by_site": {
+      "b": 55940,
+      "i": 2,
+      "j": 161
+     },
+     "documents_by_site": {
+      "a": 39053,
+      "b": 61871,
+      "c": 35628,
+      "d": 32921,
+      "e": 40520,
+      "f": 19515,
+      "g": 35700,
+      "h": 29791,
+      "i": 40798,
+      "j": 1017,
+      "k": 32605
+     },
+     "error_keywords": {
+      "additionalProperties": 56105
+     },
+     "unknown_values_dropped": 56105,
+     "documents_with_unknown": 56103,
+     "elapsed_ms": 2510,
+     "rejection_rate": 0.15186820385524297,
+     "docs_per_second": 147190,
+     "top_error_fields": [
+      {
+       "field": "id",
+       "count": 55939,
+       "share_of_documents": 0.151424263505667
+      },
+      {
+       "field": "units",
+       "count": 161,
+       "share_of_documents": 0.00043581948952273707
+      },
+      {
+       "field": "mills",
+       "count": 2,
+       "share_of_documents": 0.000005413906702145802
+      },
+      {
+       "field": "endmills",
+       "count": 2,
+       "share_of_documents": 0.000005413906702145802
+      },
+      {
+       "field": "durationType",
+       "count": 1,
+       "share_of_documents": 0.000002706953351072901
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0.9041392574873527,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0.000049022010882886415,
+      "j": 0.1583087512291052,
+      "k": 0
+     }
+    },
+    "write/strict": {
+     "documents": 369419,
+     "rejected": 234340,
+     "rejected_by_site": {
+      "a": 37327,
+      "b": 58888,
+      "c": 19698,
+      "d": 13506,
+      "e": 20080,
+      "f": 18401,
+      "g": 18103,
+      "h": 15443,
+      "i": 18556,
+      "j": 161,
+      "k": 14177
+     },
+     "documents_by_site": {
+      "a": 39053,
+      "b": 61871,
+      "c": 35628,
+      "d": 32921,
+      "e": 40520,
+      "f": 19515,
+      "g": 35700,
+      "h": 29791,
+      "i": 40798,
+      "j": 1017,
+      "k": 32605
+     },
+     "error_keywords": {
+      "additionalProperties": 236075
+     },
+     "unknown_values_dropped": 236075,
+     "documents_with_unknown": 234340,
+     "elapsed_ms": 2380,
+     "rejection_rate": 0.6343474482904237,
+     "docs_per_second": 155214,
+     "top_error_fields": [
+      {
+       "field": "amount",
+       "count": 168857,
+       "share_of_documents": 0.45708802200211684
+      },
+      {
+       "field": "id",
+       "count": 55939,
+       "share_of_documents": 0.151424263505667
+      },
+      {
+       "field": "userEnteredAt",
+       "count": 6491,
+       "share_of_documents": 0.0175708342018142
+      },
+      {
+       "field": "insulinNeedsScaleFactor",
+       "count": 2720,
+       "share_of_documents": 0.007362913114918291
+      },
+      {
+       "field": "correctionRange",
+       "count": 1673,
+       "share_of_documents": 0.004528732956344963
+      },
+      {
+       "field": "units",
+       "count": 161,
+       "share_of_documents": 0.00043581948952273707
+      },
+      {
+       "field": "userLastModifiedAt",
+       "count": 131,
+       "share_of_documents": 0.00035461088899055
+      },
+      {
+       "field": "remoteAddress",
+       "count": 98,
+       "share_of_documents": 0.0002652814284051443
+      },
+      {
+       "field": "mills",
+       "count": 2,
+       "share_of_documents": 0.000005413906702145802
+      },
+      {
+       "field": "endmills",
+       "count": 2,
+       "share_of_documents": 0.000005413906702145802
+      },
+      {
+       "field": "durationType",
+       "count": 1,
+       "share_of_documents": 0.000002706953351072901
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 0.9558036514480321,
+      "b": 0.9517867821758175,
+      "c": 0.5528797574941058,
+      "d": 0.41025485252574345,
+      "e": 0.49555774925962487,
+      "f": 0.9429157058672816,
+      "g": 0.5070868347338936,
+      "h": 0.5183780336343191,
+      "i": 0.45482621697142017,
+      "j": 0.1583087512291052,
+      "k": 0.43481061186934516
+     }
+    },
+    "read/permissive": {
+     "documents": 369419,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 39053,
+      "b": 61871,
+      "c": 35628,
+      "d": 32921,
+      "e": 40520,
+      "f": 19515,
+      "g": 35700,
+      "h": 29791,
+      "i": 40798,
+      "j": 1017,
+      "k": 32605
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 56105,
+     "documents_with_unknown": 56103,
+     "elapsed_ms": 2290,
+     "rejection_rate": 0,
+     "docs_per_second": 161315,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "read/tolerant": {
+     "documents": 369419,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 39053,
+      "b": 61871,
+      "c": 35628,
+      "d": 32921,
+      "e": 40520,
+      "f": 19515,
+      "g": 35700,
+      "h": 29791,
+      "i": 40798,
+      "j": 1017,
+      "k": 32605
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 2692,
+     "rejection_rate": 0,
+     "docs_per_second": 137250,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "read/extension-bag": {
+     "documents": 369419,
+     "rejected": 56103,
+     "rejected_by_site": {
+      "b": 55940,
+      "i": 2,
+      "j": 161
+     },
+     "documents_by_site": {
+      "a": 39053,
+      "b": 61871,
+      "c": 35628,
+      "d": 32921,
+      "e": 40520,
+      "f": 19515,
+      "g": 35700,
+      "h": 29791,
+      "i": 40798,
+      "j": 1017,
+      "k": 32605
+     },
+     "error_keywords": {
+      "additionalProperties": 56105
+     },
+     "unknown_values_dropped": 56105,
+     "documents_with_unknown": 56103,
+     "elapsed_ms": 2598,
+     "rejection_rate": 0.15186820385524297,
+     "docs_per_second": 142175,
+     "top_error_fields": [
+      {
+       "field": "id",
+       "count": 55939,
+       "share_of_documents": 0.151424263505667
+      },
+      {
+       "field": "units",
+       "count": 161,
+       "share_of_documents": 0.00043581948952273707
+      },
+      {
+       "field": "mills",
+       "count": 2,
+       "share_of_documents": 0.000005413906702145802
+      },
+      {
+       "field": "endmills",
+       "count": 2,
+       "share_of_documents": 0.000005413906702145802
+      },
+      {
+       "field": "durationType",
+       "count": 1,
+       "share_of_documents": 0.000002706953351072901
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0.9041392574873527,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0.000049022010882886415,
+      "j": 0.1583087512291052,
+      "k": 0
+     }
+    },
+    "read/strict": {
+     "documents": 369419,
+     "rejected": 234340,
+     "rejected_by_site": {
+      "a": 37327,
+      "b": 58888,
+      "c": 19698,
+      "d": 13506,
+      "e": 20080,
+      "f": 18401,
+      "g": 18103,
+      "h": 15443,
+      "i": 18556,
+      "j": 161,
+      "k": 14177
+     },
+     "documents_by_site": {
+      "a": 39053,
+      "b": 61871,
+      "c": 35628,
+      "d": 32921,
+      "e": 40520,
+      "f": 19515,
+      "g": 35700,
+      "h": 29791,
+      "i": 40798,
+      "j": 1017,
+      "k": 32605
+     },
+     "error_keywords": {
+      "additionalProperties": 236075
+     },
+     "unknown_values_dropped": 236075,
+     "documents_with_unknown": 234340,
+     "elapsed_ms": 2386,
+     "rejection_rate": 0.6343474482904237,
+     "docs_per_second": 154825,
+     "top_error_fields": [
+      {
+       "field": "amount",
+       "count": 168857,
+       "share_of_documents": 0.45708802200211684
+      },
+      {
+       "field": "id",
+       "count": 55939,
+       "share_of_documents": 0.151424263505667
+      },
+      {
+       "field": "userEnteredAt",
+       "count": 6491,
+       "share_of_documents": 0.0175708342018142
+      },
+      {
+       "field": "insulinNeedsScaleFactor",
+       "count": 2720,
+       "share_of_documents": 0.007362913114918291
+      },
+      {
+       "field": "correctionRange",
+       "count": 1673,
+       "share_of_documents": 0.004528732956344963
+      },
+      {
+       "field": "units",
+       "count": 161,
+       "share_of_documents": 0.00043581948952273707
+      },
+      {
+       "field": "userLastModifiedAt",
+       "count": 131,
+       "share_of_documents": 0.00035461088899055
+      },
+      {
+       "field": "remoteAddress",
+       "count": 98,
+       "share_of_documents": 0.0002652814284051443
+      },
+      {
+       "field": "mills",
+       "count": 2,
+       "share_of_documents": 0.000005413906702145802
+      },
+      {
+       "field": "endmills",
+       "count": 2,
+       "share_of_documents": 0.000005413906702145802
+      },
+      {
+       "field": "durationType",
+       "count": 1,
+       "share_of_documents": 0.000002706953351072901
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 0.9558036514480321,
+      "b": 0.9517867821758175,
+      "c": 0.5528797574941058,
+      "d": 0.41025485252574345,
+      "e": 0.49555774925962487,
+      "f": 0.9429157058672816,
+      "g": 0.5070868347338936,
+      "h": 0.5183780336343191,
+      "i": 0.45482621697142017,
+      "j": 0.1583087512291052,
+      "k": 0.43481061186934516
+     }
+    }
+   }
+  },
+  "devicestatus": {
+   "documents": 702254,
+   "sources": 22,
+   "policies": {
+    "write/permissive": {
+     "documents": 702254,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 66923,
+      "b": 83368,
+      "c": 68194,
+      "d": 58822,
+      "e": 79313,
+      "f": 67716,
+      "g": 71412,
+      "h": 63608,
+      "i": 67598,
+      "j": 31021,
+      "k": 44279
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 5947,
+     "rejection_rate": 0,
+     "docs_per_second": 118076,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "write/tolerant": {
+     "documents": 702254,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 66923,
+      "b": 83368,
+      "c": 68194,
+      "d": 58822,
+      "e": 79313,
+      "f": 67716,
+      "g": 71412,
+      "h": 63608,
+      "i": 67598,
+      "j": 31021,
+      "k": 44279
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 6712,
+     "rejection_rate": 0,
+     "docs_per_second": 104619,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "write/extension-bag": {
+     "documents": 702254,
+     "rejected": 104919,
+     "rejected_by_site": {
+      "b": 73898,
+      "j": 31021
+     },
+     "documents_by_site": {
+      "a": 66923,
+      "b": 83368,
+      "c": 68194,
+      "d": 58822,
+      "e": 79313,
+      "f": 67716,
+      "g": 71412,
+      "h": 63608,
+      "i": 67598,
+      "j": 31021,
+      "k": 44279
+     },
+     "error_keywords": {
+      "additionalProperties": 3364165
+     },
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 7514,
+     "rejection_rate": 0.14940320738650117,
+     "docs_per_second": 93455,
+     "top_error_fields": [
+      {
+       "field": "openaps/version",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/current_target",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/CR",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/temp",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/ISF",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/insulinForManualBolus",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/minDelta",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/reservoir",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/expectedDelta",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/manualBolusErrorString",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/id",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/threshold",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/received",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "pump/battery/string",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "uploader/isCharging",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0.8864072545820938,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 1,
+      "k": 0
+     }
+    },
+    "write/strict": {
+     "documents": 702254,
+     "rejected": 702254,
+     "rejected_by_site": {
+      "a": 66923,
+      "b": 83368,
+      "c": 68194,
+      "d": 58822,
+      "e": 79313,
+      "f": 67716,
+      "g": 71412,
+      "h": 63608,
+      "i": 67598,
+      "j": 31021,
+      "k": 44279
+     },
+     "documents_by_site": {
+      "a": 66923,
+      "b": 83368,
+      "c": 68194,
+      "d": 58822,
+      "e": 79313,
+      "f": 67716,
+      "g": 71412,
+      "h": 63608,
+      "i": 67598,
+      "j": 31021,
+      "k": 44279
+     },
+     "error_keywords": {
+      "additionalProperties": 7535994
+     },
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 8402,
+     "rejection_rate": 1,
+     "docs_per_second": 83578,
+     "top_error_fields": [
+      {
+       "field": "uploader/timestamp",
+       "count": 597335,
+       "share_of_documents": 0.8505967926134989
+      },
+      {
+       "field": "pump/pumpID",
+       "count": 597334,
+       "share_of_documents": 0.8505953686273058
+      },
+      {
+       "field": "pump/bolusing",
+       "count": 597334,
+       "share_of_documents": 0.8505953686273058
+      },
+      {
+       "field": "pump/secondsFromGMT",
+       "count": 597334,
+       "share_of_documents": 0.8505953686273058
+      },
+      {
+       "field": "pump/suspended",
+       "count": 597334,
+       "share_of_documents": 0.8505953686273058
+      },
+      {
+       "field": "pump/manufacturer",
+       "count": 588152,
+       "share_of_documents": 0.8375203274029055
+      },
+      {
+       "field": "pump/model",
+       "count": 588152,
+       "share_of_documents": 0.8375203274029055
+      },
+      {
+       "field": "openaps/version",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/current_target",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/CR",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/temp",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/ISF",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/insulinForManualBolus",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/minDelta",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/reservoir",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 1,
+      "b": 1,
+      "c": 1,
+      "d": 1,
+      "e": 1,
+      "f": 1,
+      "g": 1,
+      "h": 1,
+      "i": 1,
+      "j": 1,
+      "k": 1
+     }
+    },
+    "read/permissive": {
+     "documents": 702254,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 66923,
+      "b": 83368,
+      "c": 68194,
+      "d": 58822,
+      "e": 79313,
+      "f": 67716,
+      "g": 71412,
+      "h": 63608,
+      "i": 67598,
+      "j": 31021,
+      "k": 44279
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 5391,
+     "rejection_rate": 0,
+     "docs_per_second": 130254,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "read/tolerant": {
+     "documents": 702254,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 66923,
+      "b": 83368,
+      "c": 68194,
+      "d": 58822,
+      "e": 79313,
+      "f": 67716,
+      "g": 71412,
+      "h": 63608,
+      "i": 67598,
+      "j": 31021,
+      "k": 44279
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 6583,
+     "rejection_rate": 0,
+     "docs_per_second": 106671,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "read/extension-bag": {
+     "documents": 702254,
+     "rejected": 104919,
+     "rejected_by_site": {
+      "b": 73898,
+      "j": 31021
+     },
+     "documents_by_site": {
+      "a": 66923,
+      "b": 83368,
+      "c": 68194,
+      "d": 58822,
+      "e": 79313,
+      "f": 67716,
+      "g": 71412,
+      "h": 63608,
+      "i": 67598,
+      "j": 31021,
+      "k": 44279
+     },
+     "error_keywords": {
+      "additionalProperties": 3364165
+     },
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 7628,
+     "rejection_rate": 0.14940320738650117,
+     "docs_per_second": 92061,
+     "top_error_fields": [
+      {
+       "field": "openaps/version",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/current_target",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/CR",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/temp",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/ISF",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/insulinForManualBolus",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/minDelta",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/reservoir",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/expectedDelta",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/manualBolusErrorString",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/id",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/threshold",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/received",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "pump/battery/string",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "uploader/isCharging",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0.8864072545820938,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 1,
+      "k": 0
+     }
+    },
+    "read/strict": {
+     "documents": 702254,
+     "rejected": 702254,
+     "rejected_by_site": {
+      "a": 66923,
+      "b": 83368,
+      "c": 68194,
+      "d": 58822,
+      "e": 79313,
+      "f": 67716,
+      "g": 71412,
+      "h": 63608,
+      "i": 67598,
+      "j": 31021,
+      "k": 44279
+     },
+     "documents_by_site": {
+      "a": 66923,
+      "b": 83368,
+      "c": 68194,
+      "d": 58822,
+      "e": 79313,
+      "f": 67716,
+      "g": 71412,
+      "h": 63608,
+      "i": 67598,
+      "j": 31021,
+      "k": 44279
+     },
+     "error_keywords": {
+      "additionalProperties": 7535994
+     },
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 8456,
+     "rejection_rate": 1,
+     "docs_per_second": 83048,
+     "top_error_fields": [
+      {
+       "field": "uploader/timestamp",
+       "count": 597335,
+       "share_of_documents": 0.8505967926134989
+      },
+      {
+       "field": "pump/pumpID",
+       "count": 597334,
+       "share_of_documents": 0.8505953686273058
+      },
+      {
+       "field": "pump/bolusing",
+       "count": 597334,
+       "share_of_documents": 0.8505953686273058
+      },
+      {
+       "field": "pump/secondsFromGMT",
+       "count": 597334,
+       "share_of_documents": 0.8505953686273058
+      },
+      {
+       "field": "pump/suspended",
+       "count": 597334,
+       "share_of_documents": 0.8505953686273058
+      },
+      {
+       "field": "pump/manufacturer",
+       "count": 588152,
+       "share_of_documents": 0.8375203274029055
+      },
+      {
+       "field": "pump/model",
+       "count": 588152,
+       "share_of_documents": 0.8375203274029055
+      },
+      {
+       "field": "openaps/version",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/current_target",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/CR",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/temp",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/ISF",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/insulinForManualBolus",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/minDelta",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      },
+      {
+       "field": "openaps/suggested/reservoir",
+       "count": 73898,
+       "share_of_documents": 0.1052297316925215
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 1,
+      "b": 1,
+      "c": 1,
+      "d": 1,
+      "e": 1,
+      "f": 1,
+      "g": 1,
+      "h": 1,
+      "i": 1,
+      "j": 1,
+      "k": 1
+     }
+    }
+   }
+  },
+  "profile": {
+   "documents": 202,
+   "sources": 22,
+   "policies": {
+    "write/permissive": {
+     "documents": 202,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 20,
+      "b": 20,
+      "c": 20,
+      "d": 20,
+      "e": 20,
+      "f": 20,
+      "g": 20,
+      "h": 20,
+      "i": 20,
+      "j": 2,
+      "k": 20
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 3,
+     "rejection_rate": 0,
+     "docs_per_second": 66437,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "write/tolerant": {
+     "documents": 202,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 20,
+      "b": 20,
+      "c": 20,
+      "d": 20,
+      "e": 20,
+      "f": 20,
+      "g": 20,
+      "h": 20,
+      "i": 20,
+      "j": 2,
+      "k": 20
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 3,
+     "rejection_rate": 0,
+     "docs_per_second": 74259,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "write/extension-bag": {
+     "documents": 202,
+     "rejected": 2,
+     "rejected_by_site": {
+      "j": 2
+     },
+     "documents_by_site": {
+      "a": 20,
+      "b": 20,
+      "c": 20,
+      "d": 20,
+      "e": 20,
+      "f": 20,
+      "g": 20,
+      "h": 20,
+      "i": 20,
+      "j": 2,
+      "k": 20
+     },
+     "error_keywords": {
+      "additionalProperties": 2
+     },
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 3,
+     "rejection_rate": 0.009900990099009901,
+     "docs_per_second": 76154,
+     "top_error_fields": [
+      {
+       "field": "store/Default/startDate",
+       "count": 2,
+       "share_of_documents": 0.009900990099009901
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 1,
+      "k": 0
+     }
+    },
+    "write/strict": {
+     "documents": 202,
+     "rejected": 202,
+     "rejected_by_site": {
+      "a": 20,
+      "b": 20,
+      "c": 20,
+      "d": 20,
+      "e": 20,
+      "f": 20,
+      "g": 20,
+      "h": 20,
+      "i": 20,
+      "j": 2,
+      "k": 20
+     },
+     "documents_by_site": {
+      "a": 20,
+      "b": 20,
+      "c": 20,
+      "d": 20,
+      "e": 20,
+      "f": 20,
+      "g": 20,
+      "h": 20,
+      "i": 20,
+      "j": 2,
+      "k": 20
+     },
+     "error_keywords": {
+      "additionalProperties": 404
+     },
+     "unknown_values_dropped": 200,
+     "documents_with_unknown": 200,
+     "elapsed_ms": 2,
+     "rejection_rate": 1,
+     "docs_per_second": 92124,
+     "top_error_fields": [
+      {
+       "field": "store/Default/units",
+       "count": 202,
+       "share_of_documents": 1
+      },
+      {
+       "field": "loopSettings",
+       "count": 200,
+       "share_of_documents": 0.9900990099009901
+      },
+      {
+       "field": "store/Default/startDate",
+       "count": 2,
+       "share_of_documents": 0.009900990099009901
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 1,
+      "b": 1,
+      "c": 1,
+      "d": 1,
+      "e": 1,
+      "f": 1,
+      "g": 1,
+      "h": 1,
+      "i": 1,
+      "j": 1,
+      "k": 1
+     }
+    },
+    "read/permissive": {
+     "documents": 202,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 20,
+      "b": 20,
+      "c": 20,
+      "d": 20,
+      "e": 20,
+      "f": 20,
+      "g": 20,
+      "h": 20,
+      "i": 20,
+      "j": 2,
+      "k": 20
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 2,
+     "rejection_rate": 0,
+     "docs_per_second": 113070,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "read/tolerant": {
+     "documents": 202,
+     "rejected": 0,
+     "rejected_by_site": {},
+     "documents_by_site": {
+      "a": 20,
+      "b": 20,
+      "c": 20,
+      "d": 20,
+      "e": 20,
+      "f": 20,
+      "g": 20,
+      "h": 20,
+      "i": 20,
+      "j": 2,
+      "k": 20
+     },
+     "error_keywords": {},
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 2,
+     "rejection_rate": 0,
+     "docs_per_second": 88812,
+     "top_error_fields": [],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 0,
+      "k": 0
+     }
+    },
+    "read/extension-bag": {
+     "documents": 202,
+     "rejected": 2,
+     "rejected_by_site": {
+      "j": 2
+     },
+     "documents_by_site": {
+      "a": 20,
+      "b": 20,
+      "c": 20,
+      "d": 20,
+      "e": 20,
+      "f": 20,
+      "g": 20,
+      "h": 20,
+      "i": 20,
+      "j": 2,
+      "k": 20
+     },
+     "error_keywords": {
+      "additionalProperties": 2
+     },
+     "unknown_values_dropped": 0,
+     "documents_with_unknown": 0,
+     "elapsed_ms": 3,
+     "rejection_rate": 0.009900990099009901,
+     "docs_per_second": 79800,
+     "top_error_fields": [
+      {
+       "field": "store/Default/startDate",
+       "count": 2,
+       "share_of_documents": 0.009900990099009901
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "d": 0,
+      "e": 0,
+      "f": 0,
+      "g": 0,
+      "h": 0,
+      "i": 0,
+      "j": 1,
+      "k": 0
+     }
+    },
+    "read/strict": {
+     "documents": 202,
+     "rejected": 202,
+     "rejected_by_site": {
+      "a": 20,
+      "b": 20,
+      "c": 20,
+      "d": 20,
+      "e": 20,
+      "f": 20,
+      "g": 20,
+      "h": 20,
+      "i": 20,
+      "j": 2,
+      "k": 20
+     },
+     "documents_by_site": {
+      "a": 20,
+      "b": 20,
+      "c": 20,
+      "d": 20,
+      "e": 20,
+      "f": 20,
+      "g": 20,
+      "h": 20,
+      "i": 20,
+      "j": 2,
+      "k": 20
+     },
+     "error_keywords": {
+      "additionalProperties": 404
+     },
+     "unknown_values_dropped": 200,
+     "documents_with_unknown": 200,
+     "elapsed_ms": 2,
+     "rejection_rate": 1,
+     "docs_per_second": 96165,
+     "top_error_fields": [
+      {
+       "field": "store/Default/units",
+       "count": 202,
+       "share_of_documents": 1
+      },
+      {
+       "field": "loopSettings",
+       "count": 200,
+       "share_of_documents": 0.9900990099009901
+      },
+      {
+       "field": "store/Default/startDate",
+       "count": 2,
+       "share_of_documents": 0.009900990099009901
+      }
+     ],
+     "rejection_rate_by_site": {
+      "a": 1,
+      "b": 1,
+      "c": 1,
+      "d": 1,
+      "e": 1,
+      "f": 1,
+      "g": 1,
+      "h": 1,
+      "i": 1,
+      "j": 1,
+      "k": 1
+     }
+    }
+   }
+  }
+ }
+}

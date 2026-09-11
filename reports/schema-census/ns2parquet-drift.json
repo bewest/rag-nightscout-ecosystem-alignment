@@ -1,0 +1,69 @@
+{
+ "generated_by": "tools/nsschema/emit/ns2parquet_drift.py",
+ "pipeline_files": [
+  "normalize.py",
+  "grid.py",
+  "odc_loader.py"
+ ],
+ "distinct_keys_read": 441,
+ "collections": {
+  "entries": {
+   "fields_observed": 19,
+   "never_mentioned_significant_fields": [
+    {
+     "field": "isCalibration",
+     "tier": "core",
+     "doc_frequency": 0.619004,
+     "site_count": 10
+    }
+   ],
+   "type_risk": []
+  },
+  "treatments": {
+   "fields_observed": 40,
+   "never_mentioned_significant_fields": [
+    {
+     "field": "amount",
+     "tier": "core",
+     "doc_frequency": 0.457088,
+     "site_count": 10
+    },
+    {
+     "field": "unabsorbed",
+     "tier": "core",
+     "doc_frequency": 0.3526,
+     "site_count": 10
+    }
+   ],
+   "type_risk": [
+    {
+     "field": "carbs",
+     "risk": "nullable",
+     "detail": "353,734 null values observed (96% of documents carrying the field)"
+    },
+    {
+     "field": "insulin",
+     "risk": "nullable",
+     "detail": "224,268 null values observed (61% of documents carrying the field)"
+    }
+   ]
+  },
+  "devicestatus": {
+   "fields_observed": 9,
+   "never_mentioned_significant_fields": [],
+   "type_risk": []
+  },
+  "profile": {
+   "fields_observed": 10,
+   "never_mentioned_significant_fields": [
+    {
+     "field": "loopSettings",
+     "tier": "core",
+     "doc_frequency": 0.990099,
+     "site_count": 10
+    }
+   ],
+   "type_risk": []
+  }
+ }
+}

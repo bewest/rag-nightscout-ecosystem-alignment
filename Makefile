@@ -656,3 +656,64 @@ elapsed = time.perf_counter() - t0; \
 ok = all(p['grid'].shape[1]==8 and p['pk'].shape[1]==8 and p['df'].attrs.get('isf_schedule') for p in patients); \
 n_rows = sum(len(p['df']) for p in patients); \
 print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\"PASS\" if ok else \"FAIL\"}')"
+
+# ─── Schema evidence pipeline (tools/nsschema) ──────────────────────────
+# Measures what the Nightscout document model actually is, reconciles that
+# against specs/openapi/, and generates every typed artifact from the one
+# reconciled model. See tools/nsschema/README.md.
+.PHONY: schema schema-census schema-reconcile schema-model schema-emit \
+        schema-impact schema-impact-smoke schema-drift schema-verify \
+        schema-test schema-clean
+
+PY ?= python3
+NSSCHEMA = PYTHONPATH=tools $(PY) -m nsschema
+
+## schema: full pipeline — census, reconcile, model, emit, impact, drift
+schema: schema-census schema-reconcile schema-model schema-emit schema-impact schema-drift
+
+## schema-census: walk the raw corpus (~4 min over ~2.5 GB of JSON)
+schema-census:
+	@echo "Censusing raw Nightscout corpus..."
+	@$(NSSCHEMA).census
+
+## schema-reconcile: compare the census against specs/openapi/
+schema-reconcile:
+	@$(NSSCHEMA).diff
+
+## schema-model: merge spec + evidence into the reconciled model
+schema-model:
+	@$(NSSCHEMA).model
+
+## schema-emit: generate JSON Schema, mongoose, zod/TS, Arrow and docs
+schema-emit:
+	@$(NSSCHEMA).emit.jsonschema_emit
+	@$(NSSCHEMA).emit.mongoose_emit
+	@$(NSSCHEMA).emit.zod_emit
+	@$(NSSCHEMA).emit.pyarrow_emit
+	@$(NSSCHEMA).emit.fieldref_emit
+
+## schema-impact: replay the corpus through every strictness policy (Ajv)
+schema-impact:
+	@cd tools/nsschema && npm install --silent --no-audit --no-fund
+	@node --max-old-space-size=12288 tools/nsschema/replay.js \
+		--out reports/schema-census/impact.json
+
+## schema-impact-smoke: same, capped at 3000 documents per source
+schema-impact-smoke:
+	@node tools/nsschema/replay.js --max-docs 3000 \
+		--out reports/schema-census/impact-smoke.json
+
+## schema-verify: fail if a committed generated artifact drifted from its model
+schema-verify:
+	@$(NSSCHEMA).verify_generated
+
+## schema-drift: check tools/ns2parquet against the measured wire model
+schema-drift:
+	@$(NSSCHEMA).emit.ns2parquet_drift
+
+## schema-test: unit tests for the evidence pipeline and the emitters
+schema-test:
+	@$(PY) -m pytest tools/nsschema/test_nsschema.py -q
+
+schema-clean:
+	@rm -rf specs/generated specs/jsonschema/generated reports/schema-census

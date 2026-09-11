@@ -1,0 +1,1626 @@
+{
+ "collection": "profile",
+ "generated_by": "tools/nsschema/model.py",
+ "source_spec": "aid-profile-2025.yaml",
+ "census": "reports/schema-census/profile.census.json",
+ "root": {
+  "path": "",
+  "types": [
+   "object"
+  ],
+  "nullable": false,
+  "declared": false,
+  "observed": false,
+  "placement": "core",
+  "children": {
+   "_id": {
+    "path": "_id",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 202,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 202
+     }
+    },
+    "required_read": true,
+    "notes": [
+     "server-assigned: required on read, never on write"
+    ]
+   },
+   "created_at": {
+    "path": "created_at",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "vendor",
+    "tier_reason": "2/11 sites, but written in 100% of documents on 2 of them",
+    "format": "date-time",
+    "evidence": {
+     "docs_present": 22,
+     "doc_frequency": 0.108911,
+     "site_count": 2,
+     "observed_types": {
+      "string": 22
+     }
+    }
+   },
+   "defaultProfile": {
+    "path": "defaultProfile",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "Name of the default profile in store",
+    "evidence": {
+     "docs_present": 202,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 202
+     }
+    },
+    "required_read": true,
+    "required_write": true
+   },
+   "enteredBy": {
+    "path": "enteredBy",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 99.0% of documents",
+    "evidence": {
+     "docs_present": 200,
+     "doc_frequency": 0.990099,
+     "site_count": 10,
+     "observed_types": {
+      "string": 200
+     }
+    }
+   },
+   "identifier": {
+    "path": "identifier",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core"
+   },
+   "isValid": {
+    "path": "isValid",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core"
+   },
+   "loopSettings": {
+    "path": "loopSettings",
+    "types": [
+     "object"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 99.0% of documents",
+    "evidence": {
+     "docs_present": 200,
+     "doc_frequency": 0.990099,
+     "site_count": 10,
+     "observed_types": {
+      "object": 200
+     }
+    },
+    "notes": [
+     "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+    ],
+    "children": {
+     "bundleIdentifier": {
+      "path": "loopSettings.bundleIdentifier",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 99.0% of documents",
+      "evidence": {
+       "docs_present": 200,
+       "doc_frequency": 0.990099,
+       "site_count": 10,
+       "observed_types": {
+        "string": 200
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+      ]
+     },
+     "deviceToken": {
+      "path": "loopSettings.deviceToken",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 99.0% of documents",
+      "evidence": {
+       "docs_present": 200,
+       "doc_frequency": 0.990099,
+       "site_count": 10,
+       "observed_types": {
+        "string": 200
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+      ]
+     },
+     "dosingEnabled": {
+      "path": "loopSettings.dosingEnabled",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 99.0% of documents",
+      "evidence": {
+       "docs_present": 200,
+       "doc_frequency": 0.990099,
+       "site_count": 10,
+       "observed_types": {
+        "boolean": 200
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+      ]
+     },
+     "dosingStrategy": {
+      "path": "loopSettings.dosingStrategy",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 99.0% of documents",
+      "evidence": {
+       "docs_present": 200,
+       "doc_frequency": 0.990099,
+       "site_count": 10,
+       "observed_types": {
+        "string": 200
+       }
+      },
+      "observed_values": [
+       "automaticBolus"
+      ],
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+      ]
+     },
+     "maximumBasalRatePerHour": {
+      "path": "loopSettings.maximumBasalRatePerHour",
+      "types": [
+       "number"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 99.0% of documents",
+      "evidence": {
+       "docs_present": 200,
+       "doc_frequency": 0.990099,
+       "site_count": 10,
+       "observed_types": {
+        "integer": 140,
+        "number": 60
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+      ]
+     },
+     "maximumBolus": {
+      "path": "loopSettings.maximumBolus",
+      "types": [
+       "integer"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 99.0% of documents",
+      "evidence": {
+       "docs_present": 200,
+       "doc_frequency": 0.990099,
+       "site_count": 10,
+       "observed_types": {
+        "integer": 200
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+      ]
+     },
+     "minimumBGGuard": {
+      "path": "loopSettings.minimumBGGuard",
+      "types": [
+       "number"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 99.0% of documents",
+      "evidence": {
+       "docs_present": 200,
+       "doc_frequency": 0.990099,
+       "site_count": 10,
+       "observed_types": {
+        "integer": 180,
+        "number": 20
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+      ]
+     },
+     "overridePresets": {
+      "path": "loopSettings.overridePresets",
+      "types": [
+       "array"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 99.0% of documents",
+      "evidence": {
+       "docs_present": 200,
+       "doc_frequency": 0.990099,
+       "site_count": 10,
+       "observed_types": {
+        "array": 200
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+      ],
+      "children": {
+       "[]": {
+        "path": "loopSettings.overridePresets[]",
+        "types": [
+         "object"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 99.0% of documents",
+        "evidence": {
+         "docs_present": 200,
+         "doc_frequency": 0.990099,
+         "site_count": 10,
+         "observed_types": {
+          "object": 1280
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+        ],
+        "children": {
+         "duration": {
+          "path": "loopSettings.overridePresets[].duration",
+          "types": [
+           "integer"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "core",
+          "tier": "core",
+          "tier_reason": "10/11 sites, 99.0% of documents",
+          "evidence": {
+           "docs_present": 200,
+           "doc_frequency": 0.990099,
+           "site_count": 10,
+           "observed_types": {
+            "integer": 1280
+           }
+          },
+          "notes": [
+           "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+          ]
+         },
+         "insulinNeedsScaleFactor": {
+          "path": "loopSettings.overridePresets[].insulinNeedsScaleFactor",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "core",
+          "tier": "core",
+          "tier_reason": "9/11 sites, 89.1% of documents",
+          "evidence": {
+           "docs_present": 180,
+           "doc_frequency": 0.891089,
+           "site_count": 9,
+           "observed_types": {
+            "integer": 120,
+            "number": 980
+           }
+          },
+          "notes": [
+           "proposed addition from evidence (9/11 sites, 89.1% of documents)"
+          ]
+         },
+         "name": {
+          "path": "loopSettings.overridePresets[].name",
+          "types": [
+           "string"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "core",
+          "tier": "core",
+          "tier_reason": "10/11 sites, 99.0% of documents",
+          "evidence": {
+           "docs_present": 200,
+           "doc_frequency": 0.990099,
+           "site_count": 10,
+           "observed_types": {
+            "string": 1280
+           }
+          },
+          "notes": [
+           "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+          ]
+         },
+         "symbol": {
+          "path": "loopSettings.overridePresets[].symbol",
+          "types": [
+           "string"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "core",
+          "tier": "core",
+          "tier_reason": "10/11 sites, 99.0% of documents",
+          "evidence": {
+           "docs_present": 200,
+           "doc_frequency": 0.990099,
+           "site_count": 10,
+           "observed_types": {
+            "string": 1280
+           }
+          },
+          "notes": [
+           "proposed addition from evidence (10/11 sites, 99.0% of documents)"
+          ]
+         },
+         "targetRange": {
+          "path": "loopSettings.overridePresets[].targetRange",
+          "types": [
+           "array"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "core",
+          "tier": "core",
+          "tier_reason": "7/11 sites, 69.3% of documents",
+          "evidence": {
+           "docs_present": 140,
+           "doc_frequency": 0.693069,
+           "site_count": 7,
+           "observed_types": {
+            "array": 740
+           }
+          },
+          "notes": [
+           "proposed addition from evidence (7/11 sites, 69.3% of documents)"
+          ],
+          "children": {
+           "[]": {
+            "path": "loopSettings.overridePresets[].targetRange[]",
+            "types": [
+             "number"
+            ],
+            "nullable": false,
+            "declared": false,
+            "observed": true,
+            "placement": "core",
+            "tier": "core",
+            "tier_reason": "7/11 sites, 69.3% of documents",
+            "evidence": {
+             "docs_present": 140,
+             "doc_frequency": 0.693069,
+             "site_count": 7,
+             "observed_types": {
+              "integer": 1440,
+              "number": 40
+             }
+            },
+            "notes": [
+             "proposed addition from evidence (7/11 sites, 69.3% of documents)"
+            ]
+           }
+          }
+         }
+        }
+       }
+      }
+     },
+     "preMealTargetRange": {
+      "path": "loopSettings.preMealTargetRange",
+      "types": [
+       "array"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "9/11 sites, 89.1% of documents",
+      "evidence": {
+       "docs_present": 180,
+       "doc_frequency": 0.891089,
+       "site_count": 9,
+       "observed_types": {
+        "array": 180
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (9/11 sites, 89.1% of documents)"
+      ],
+      "children": {
+       "[]": {
+        "path": "loopSettings.preMealTargetRange[]",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "9/11 sites, 89.1% of documents",
+        "evidence": {
+         "docs_present": 180,
+         "doc_frequency": 0.891089,
+         "site_count": 9,
+         "observed_types": {
+          "integer": 320,
+          "number": 40
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (9/11 sites, 89.1% of documents)"
+        ]
+       }
+      }
+     },
+     "scheduleOverride": {
+      "path": "loopSettings.scheduleOverride",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "9/11 sites, 61.4% of documents",
+      "evidence": {
+       "docs_present": 124,
+       "doc_frequency": 0.613861,
+       "site_count": 9,
+       "observed_types": {
+        "object": 124
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (9/11 sites, 61.4% of documents)"
+      ],
+      "children": {
+       "duration": {
+        "path": "loopSettings.scheduleOverride.duration",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "9/11 sites, 61.4% of documents",
+        "evidence": {
+         "docs_present": 124,
+         "doc_frequency": 0.613861,
+         "site_count": 9,
+         "observed_types": {
+          "integer": 124
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (9/11 sites, 61.4% of documents)"
+        ]
+       },
+       "insulinNeedsScaleFactor": {
+        "path": "loopSettings.scheduleOverride.insulinNeedsScaleFactor",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "9/11 sites, 57.9% of documents",
+        "evidence": {
+         "docs_present": 117,
+         "doc_frequency": 0.579208,
+         "site_count": 9,
+         "observed_types": {
+          "integer": 48,
+          "number": 69
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (9/11 sites, 57.9% of documents)"
+        ]
+       },
+       "name": {
+        "path": "loopSettings.scheduleOverride.name",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "9/11 sites, 59.4% of documents",
+        "evidence": {
+         "docs_present": 120,
+         "doc_frequency": 0.594059,
+         "site_count": 9,
+         "observed_types": {
+          "string": 120
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (9/11 sites, 59.4% of documents)"
+        ]
+       },
+       "symbol": {
+        "path": "loopSettings.scheduleOverride.symbol",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "9/11 sites, 59.4% of documents",
+        "evidence": {
+         "docs_present": 120,
+         "doc_frequency": 0.594059,
+         "site_count": 9,
+         "observed_types": {
+          "string": 120
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (9/11 sites, 59.4% of documents)"
+        ]
+       },
+       "targetRange": {
+        "path": "loopSettings.scheduleOverride.targetRange",
+        "types": [
+         "array"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "tier": "common",
+        "tier_reason": "6/11 sites, 25.7% of documents",
+        "evidence": {
+         "docs_present": 52,
+         "doc_frequency": 0.257426,
+         "site_count": 6,
+         "observed_types": {
+          "array": 52
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (6/11 sites, 25.7% of documents)"
+        ],
+        "children": {
+         "[]": {
+          "path": "loopSettings.scheduleOverride.targetRange[]",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "core",
+          "tier": "common",
+          "tier_reason": "6/11 sites, 25.7% of documents",
+          "evidence": {
+           "docs_present": 52,
+           "doc_frequency": 0.257426,
+           "site_count": 6,
+           "observed_types": {
+            "integer": 84,
+            "number": 20
+           }
+          },
+          "notes": [
+           "proposed addition from evidence (6/11 sites, 25.7% of documents)"
+          ]
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   "mills": {
+    "path": "mills",
+    "types": [
+     "integer",
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "format": "int64",
+    "evidence": {
+     "docs_present": 202,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "integer": 2,
+      "string": 200
+     }
+    },
+    "observed_values": [
+     "<n>"
+    ],
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "srvCreated": {
+    "path": "srvCreated",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "format": "int64"
+   },
+   "srvModified": {
+    "path": "srvModified",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "rare",
+    "tier_reason": "2 documents in the whole corpus",
+    "format": "int64",
+    "evidence": {
+     "docs_present": 2,
+     "doc_frequency": 0.009901,
+     "site_count": 1,
+     "observed_types": {
+      "integer": 2
+     }
+    }
+   },
+   "startDate": {
+    "path": "startDate",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "format": "date-time",
+    "description": "When this profile becomes effective",
+    "evidence": {
+     "docs_present": 202,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 202
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "store": {
+    "path": "store",
+    "types": [
+     "object"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "Map of profile name \u2192 profile settings",
+    "evidence": {
+     "docs_present": 202,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "object": 202
+     }
+    },
+    "required_read": true,
+    "required_write": true,
+    "children": {
+     "{}": {
+      "path": "store.{}",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "description": "Individual profile settings. Contains time-varying arrays\nfor basal, ISF, and carb ratio.",
+      "evidence": {
+       "docs_present": 202,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "object": 202
+       }
+      },
+      "children": {
+       "basal": {
+        "path": "store.{}.basal",
+        "types": [
+         "array"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "description": "Scheduled basal rates (U/hr) by time of day",
+        "evidence": {
+         "docs_present": 202,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "array": 202
+         }
+        },
+        "children": {
+         "[]": {
+          "path": "store.{}.basal[]",
+          "types": [
+           "object"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "universal",
+          "tier_reason": "all 11 sites, 100.0% of documents",
+          "description": "Time-value pair for schedule items (basal, ISF, CR, targets).\nControllers must convert between string time and numeric offsets.\nSee GAP-PROF-006 for format differences.",
+          "evidence": {
+           "docs_present": 202,
+           "doc_frequency": 1.0,
+           "site_count": 11,
+           "observed_types": {
+            "object": 1226
+           }
+          },
+          "children": {
+           "time": {
+            "path": "store.{}.basal[].time",
+            "types": [
+             "string"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Time of day in HH:MM format (24-hour)",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "string": 1226
+             }
+            }
+           },
+           "timeAsSeconds": {
+            "path": "store.{}.basal[].timeAsSeconds",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Seconds since midnight (alternative representation).\nControllers use this internally: Loop/AAPS (seconds), oref0 (minutes).",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "integer": 1226
+             }
+            }
+           },
+           "value": {
+            "path": "store.{}.basal[].value",
+            "types": [
+             "number"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Value at this time",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "integer": 81,
+              "number": 1145
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "carbratio": {
+        "path": "store.{}.carbratio",
+        "types": [
+         "array"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "description": "Carb Ratio (g/U) by time of day.\nNote: Some systems use I:C (insulin per carbs), others C:I (carbs per insulin).",
+        "evidence": {
+         "docs_present": 202,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "array": 202
+         }
+        },
+        "children": {
+         "[]": {
+          "path": "store.{}.carbratio[]",
+          "types": [
+           "object"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "universal",
+          "tier_reason": "all 11 sites, 100.0% of documents",
+          "description": "Time-value pair for schedule items (basal, ISF, CR, targets).\nControllers must convert between string time and numeric offsets.\nSee GAP-PROF-006 for format differences.",
+          "evidence": {
+           "docs_present": 202,
+           "doc_frequency": 1.0,
+           "site_count": 11,
+           "observed_types": {
+            "object": 648
+           }
+          },
+          "children": {
+           "time": {
+            "path": "store.{}.carbratio[].time",
+            "types": [
+             "string"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Time of day in HH:MM format (24-hour)",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "string": 648
+             }
+            }
+           },
+           "timeAsSeconds": {
+            "path": "store.{}.carbratio[].timeAsSeconds",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Seconds since midnight (alternative representation).\nControllers use this internally: Loop/AAPS (seconds), oref0 (minutes).",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "integer": 648
+             }
+            }
+           },
+           "value": {
+            "path": "store.{}.carbratio[].value",
+            "types": [
+             "number"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Value at this time",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "integer": 457,
+              "number": 191
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "carbs_hr": {
+        "path": "store.{}.carbs_hr",
+        "types": [
+         "number",
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "description": "Carb absorption rate (g/hr) - legacy, rarely used",
+        "evidence": {
+         "docs_present": 202,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 2,
+          "string": 200
+         }
+        },
+        "observed_values": [
+         "0"
+        ]
+       },
+       "delay": {
+        "path": "store.{}.delay",
+        "types": [
+         "integer",
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "description": "Delay before carb absorption starts (minutes)",
+        "evidence": {
+         "docs_present": 202,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 2,
+          "string": 200
+         }
+        },
+        "observed_values": [
+         "0"
+        ]
+       },
+       "dia": {
+        "path": "store.{}.dia",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "description": "Duration of Insulin Action in HOURS.\nMinimum 5 hours enforced by all AID systems for exponential model.",
+        "evidence": {
+         "docs_present": 202,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 202
+         }
+        },
+        "minimum": 2,
+        "maximum": 10
+       },
+       "insulinCurve": {
+        "path": "store.{}.insulinCurve",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": false,
+        "placement": "core",
+        "description": "Insulin curve model name.\nAll major AID systems use exponential model.",
+        "enum": [
+         "bilinear",
+         "exponential",
+         "rapid-acting",
+         "ultra-rapid"
+        ]
+       },
+       "insulinPeakTime": {
+        "path": "store.{}.insulinPeakTime",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": false,
+        "placement": "core",
+        "description": "Insulin activity peak time in minutes.\nNot standardized across systems."
+       },
+       "sens": {
+        "path": "store.{}.sens",
+        "types": [
+         "array"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "description": "Insulin Sensitivity Factor by time of day.\nUnits depend on glucose display units (mg/dL or mmol/L per U).",
+        "evidence": {
+         "docs_present": 202,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "array": 202
+         }
+        },
+        "children": {
+         "[]": {
+          "path": "store.{}.sens[]",
+          "types": [
+           "object"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "universal",
+          "tier_reason": "all 11 sites, 100.0% of documents",
+          "description": "Time-value pair for schedule items (basal, ISF, CR, targets).\nControllers must convert between string time and numeric offsets.\nSee GAP-PROF-006 for format differences.",
+          "evidence": {
+           "docs_present": 202,
+           "doc_frequency": 1.0,
+           "site_count": 11,
+           "observed_types": {
+            "object": 642
+           }
+          },
+          "children": {
+           "time": {
+            "path": "store.{}.sens[].time",
+            "types": [
+             "string"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Time of day in HH:MM format (24-hour)",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "string": 642
+             }
+            }
+           },
+           "timeAsSeconds": {
+            "path": "store.{}.sens[].timeAsSeconds",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Seconds since midnight (alternative representation).\nControllers use this internally: Loop/AAPS (seconds), oref0 (minutes).",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "integer": 642
+             }
+            }
+           },
+           "value": {
+            "path": "store.{}.sens[].value",
+            "types": [
+             "number"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Value at this time",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "integer": 622,
+              "number": 20
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "startDate": {
+        "path": "store.{}.startDate",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "rare",
+        "tier_reason": "2 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 2,
+         "doc_frequency": 0.009901,
+         "site_count": 1,
+         "observed_types": {
+          "string": 2
+         }
+        },
+        "notes": [
+         "extension-bag candidate (2 documents in the whole corpus)"
+        ]
+       },
+       "target_high": {
+        "path": "store.{}.target_high",
+        "types": [
+         "array"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "description": "Upper target glucose by time of day",
+        "evidence": {
+         "docs_present": 202,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "array": 202
+         }
+        },
+        "children": {
+         "[]": {
+          "path": "store.{}.target_high[]",
+          "types": [
+           "object"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "universal",
+          "tier_reason": "all 11 sites, 100.0% of documents",
+          "description": "Time-value pair for schedule items (basal, ISF, CR, targets).\nControllers must convert between string time and numeric offsets.\nSee GAP-PROF-006 for format differences.",
+          "evidence": {
+           "docs_present": 202,
+           "doc_frequency": 1.0,
+           "site_count": 11,
+           "observed_types": {
+            "object": 442
+           }
+          },
+          "children": {
+           "time": {
+            "path": "store.{}.target_high[].time",
+            "types": [
+             "string"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Time of day in HH:MM format (24-hour)",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "string": 442
+             }
+            }
+           },
+           "timeAsSeconds": {
+            "path": "store.{}.target_high[].timeAsSeconds",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Seconds since midnight (alternative representation).\nControllers use this internally: Loop/AAPS (seconds), oref0 (minutes).",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "integer": 442
+             }
+            }
+           },
+           "value": {
+            "path": "store.{}.target_high[].value",
+            "types": [
+             "number"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Value at this time",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "integer": 362,
+              "number": 80
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "target_low": {
+        "path": "store.{}.target_low",
+        "types": [
+         "array"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "description": "Lower target glucose by time of day",
+        "evidence": {
+         "docs_present": 202,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "array": 202
+         }
+        },
+        "children": {
+         "[]": {
+          "path": "store.{}.target_low[]",
+          "types": [
+           "object"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "universal",
+          "tier_reason": "all 11 sites, 100.0% of documents",
+          "description": "Time-value pair for schedule items (basal, ISF, CR, targets).\nControllers must convert between string time and numeric offsets.\nSee GAP-PROF-006 for format differences.",
+          "evidence": {
+           "docs_present": 202,
+           "doc_frequency": 1.0,
+           "site_count": 11,
+           "observed_types": {
+            "object": 442
+           }
+          },
+          "children": {
+           "time": {
+            "path": "store.{}.target_low[].time",
+            "types": [
+             "string"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Time of day in HH:MM format (24-hour)",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "string": 442
+             }
+            }
+           },
+           "timeAsSeconds": {
+            "path": "store.{}.target_low[].timeAsSeconds",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Seconds since midnight (alternative representation).\nControllers use this internally: Loop/AAPS (seconds), oref0 (minutes).",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "integer": 442
+             }
+            }
+           },
+           "value": {
+            "path": "store.{}.target_low[].value",
+            "types": [
+             "number"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "universal",
+            "tier_reason": "all 11 sites, 100.0% of documents",
+            "description": "Value at this time",
+            "evidence": {
+             "docs_present": 202,
+             "doc_frequency": 1.0,
+             "site_count": 11,
+             "observed_types": {
+              "integer": 422,
+              "number": 20
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "timezone": {
+        "path": "store.{}.timezone",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "description": "IANA timezone name",
+        "evidence": {
+         "docs_present": 202,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "string": 202
+         }
+        }
+       },
+       "units": {
+        "path": "store.{}.units",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 202,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "string": 202
+         }
+        },
+        "observed_values": [
+         "mg/dL"
+        ],
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     }
+    }
+   },
+   "units": {
+    "path": "units",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "Glucose display units",
+    "evidence": {
+     "docs_present": 202,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 202
+     }
+    },
+    "observed_values": [
+     "mg/dL"
+    ],
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "declared enum not enforced: 2 of 3 observed values could not be published, so the enum cannot be shown to be complete",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "utcOffset": {
+    "path": "utcOffset",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core"
+   }
+  }
+ }
+}

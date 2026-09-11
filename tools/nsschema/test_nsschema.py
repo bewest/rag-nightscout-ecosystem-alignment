@@ -1,0 +1,543 @@
+"""Unit tests for the nsschema evidence pipeline.
+
+Run: python3 -m pytest tools/nsschema/test_nsschema.py
+"""
+
+import json
+import sys
+from pathlib import Path
+
+import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from nsschema import census, corpus, diff, redact, specload, tiers  # noqa: E402
+
+
+# ── redaction ───────────────────────────────────────────────────────────
+
+def test_identifying_field_names_are_denied():
+    for path in ("_id", "treatments._id", "enteredBy", "loopSettings.deviceToken",
+                 "notes", "pump.pumpID", "store.{}.name", "apiSecret"):
+        assert redact.is_denied(path), path
+
+
+def test_enum_like_field_names_are_allowed():
+    for path in ("direction", "eventType", "type", "units", "insulinType",
+                 "pump.manufacturer", "temp"):
+        assert not redact.is_denied(path), path
+
+
+def test_scrub_masks_identifying_substructure():
+    # Runs of four or more digits are masked; shorter runs are model and
+    # version numbers (a Medtronic 754, a Loop 3.12) and are kept.
+    assert redact.scrub("Medtronic-754-12345678") == "Medtronic-754-<n>"
+    assert redact.scrub("https://site.example.com/x") == "<url>"
+    assert redact.scrub("person@example.com") == "<email>"
+    assert redact.scrub("deadbeefdeadbeefdead") == "<hex>"
+
+
+def test_long_strings_are_not_recordable():
+    assert not redact.recordable("direction", "x" * 200)
+    assert redact.recordable("direction", "Flat")
+
+
+def test_census_never_records_a_denied_field_value():
+    stat = census.FieldStat()
+    stat.observe("enteredBy", "a name that would identify someone", "a", "s")
+    stat.observe("enteredBy", "a name that would identify someone", "b", "s")
+    stat.observe("enteredBy", "a name that would identify someone", "c", "s")
+    out = stat.to_dict("enteredBy", 1, {"a": 1})
+    assert out["string"]["distinct_values"] is None
+
+
+def test_census_drops_values_once_cardinality_is_exceeded():
+    stat = census.FieldStat()
+    for i in range(redact.MAX_DISTINCT + 5):
+        stat.observe("device", f"dev-{i}", "a", "s")
+    out = stat.to_dict("device", 1, {"a": 1})
+    assert out["string"]["distinct_values"] is None
+
+
+def test_a_value_seen_on_one_site_only_is_withheld():
+    # A neutral field name, so only the corroboration rule can catch this.
+    stat = census.FieldStat()
+    stat.observe("theme", "a-value-only-this-site-uses", "a", "s")
+    out = stat.to_dict("theme", 1, {"a": 1})
+    assert out["string"]["distinct_values"] is None
+    assert "fewer than" in out["string"]["value_note"]
+
+
+def test_dashboard_label_fields_are_denied_outright():
+    # settings.frameName1/frameName2 held two people's first names on one
+    # site. Neither value matches any personal shape; the field name rule
+    # and the corroboration rule each catch it independently.
+    stat = census.FieldStat()
+    for site in ("a", "b", "c"):
+        stat.observe("settings.frameName1", "Allison", site, "s")
+    out = stat.to_dict("settings.frameName1", 3, {"a": 1, "b": 1, "c": 1})
+    assert out["string"]["distinct_values"] is None
+    assert "identifying field name" in out["string"]["value_note"]
+
+
+def test_a_value_written_by_several_sites_is_recorded():
+    stat = census.FieldStat()
+    for site in ("a", "b", "c", "d"):
+        stat.observe("direction", "Flat", site, "s")
+    out = stat.to_dict("direction", 4, {"a": 1, "b": 1, "c": 1, "d": 1})
+    assert out["string"]["distinct_values"] == ["Flat"]
+
+
+def test_corroboration_keeps_shared_values_and_drops_private_ones():
+    stat = census.FieldStat()
+    for site in ("a", "b", "c"):
+        stat.observe("units", "mg/dl", site, "s")
+    stat.observe("units", "a-private-value", "a", "s")
+    out = stat.to_dict("units", 4, {"a": 2, "b": 1, "c": 1})
+    assert out["string"]["distinct_values"] == ["mg/dl"]
+    assert "1 value(s) withheld" in out["string"]["value_note"]
+
+
+# ── walking ─────────────────────────────────────────────────────────────
+
+def _walk_paths(doc, map_paths=frozenset()):
+    seen = []
+    census._walk(doc, "", map_paths, lambda p, v: seen.append(p))
+    return seen
+
+
+def test_walk_uses_bracket_notation_for_arrays():
+    paths = _walk_paths({"a": [{"b": 1}, {"b": 2}]})
+    assert paths.count("a[].b") == 2
+    assert "a[]" in paths
+
+
+def test_walk_collapses_map_keyed_objects():
+    doc = {"store": {"Default": {"dia": 5}, "Weekend": {"dia": 6}}}
+    paths = set(_walk_paths(doc, map_paths={"store"}))
+    assert "store.{}.dia" in paths
+    assert "store.Default.dia" not in paths
+
+
+def test_map_detection_flags_user_keyed_objects_not_wide_records():
+    # A wide record: many keys, all present on every occurrence.
+    wide = {"suggested": {f"k{i}": i for i in range(40)}}
+    # A user-keyed map: few keys per document, many distinct across documents.
+    class FakeSource:
+        def __init__(self, docs):
+            self.docs = docs
+    docs = [wide] + [{"store": {f"profile-{i}": {"dia": 5}}} for i in range(40)]
+
+    monkey = census.corpus.iter_documents
+    census.corpus.iter_documents = lambda path: iter(docs)
+    try:
+        maps, detected = census.detect_map_paths([type("S", (), {"path": "x"})()])
+    finally:
+        census.corpus.iter_documents = monkey
+    assert "store" in maps
+    assert "suggested" not in detected
+
+
+def test_integer_and_float_are_distinct_json_types():
+    stat = census.FieldStat()
+    stat.observe("date", 1743465600000, "a", "s")
+    stat.observe("date", 1743465600000.25, "a", "s")
+    out = stat.to_dict("date", 2, {"a": 2})
+    assert out["types"] == {"integer": 1, "number": 1}
+
+
+def test_booleans_are_not_counted_as_integers():
+    stat = census.FieldStat()
+    stat.observe("automatic", True, "a", "s")
+    out = stat.to_dict("automatic", 1, {"a": 1})
+    assert out["types"] == {"boolean": 1}
+    assert "numeric" not in out
+
+
+# ── document iteration ──────────────────────────────────────────────────
+
+def test_iter_documents_reads_an_array(tmp_path):
+    p = tmp_path / "x.json"
+    p.write_text('[{"a":1},\n {"a":2}, {"a":3}]')
+    assert [d["a"] for d in corpus.iter_documents(p)] == [1, 2, 3]
+
+
+def test_iter_documents_reads_a_bare_object(tmp_path):
+    p = tmp_path / "settings.json"
+    p.write_text('{"units":"mg/dl"}')
+    assert [d["units"] for d in corpus.iter_documents(p)] == ["mg/dl"]
+
+
+def test_iter_documents_handles_an_empty_array(tmp_path):
+    p = tmp_path / "x.json"
+    p.write_text("[]")
+    assert list(corpus.iter_documents(p)) == []
+
+
+# ── tiering ─────────────────────────────────────────────────────────────
+
+def _field(**kw):
+    base = {"site_count": 1, "doc_frequency": 0.5, "docs_present": 1000,
+            "site_frequency": {"a": 0.5}}
+    base.update(kw)
+    return base
+
+
+def test_universal_requires_every_site():
+    f = _field(site_count=11, doc_frequency=1.0, site_frequency={c: 1.0 for c in "abcdefghijk"})
+    assert tiers.classify(f, 11)[0] == "universal"
+    assert tiers.classify(_field(site_count=10, doc_frequency=1.0), 11)[0] != "universal"
+
+
+def test_one_busy_site_does_not_make_a_field_core():
+    f = _field(site_count=1, doc_frequency=0.9, site_frequency={"b": 0.9})
+    assert tiers.classify(f, 11)[0] == "vendor"
+
+
+def test_rare_wins_over_everything():
+    f = _field(site_count=11, doc_frequency=1.0, docs_present=3)
+    assert tiers.classify(f, 11)[0] == "rare"
+
+
+# ── spec loading and reconciliation ─────────────────────────────────────
+
+def test_declared_number_accepts_observed_integer():
+    assert diff._covers(["number"], "integer")
+
+
+def test_declared_integer_rejects_observed_number():
+    assert not diff._covers(["integer"], "number")
+
+
+def test_declared_type_never_accepts_null_implicitly():
+    assert not diff._covers(["number"], "null")
+
+
+def test_untyped_node_accepts_anything():
+    assert diff._covers([], "string")
+
+
+@pytest.mark.parametrize("collection", sorted(specload.ROOT_SCHEMA))
+def test_every_spec_flattens(collection):
+    root = corpus.repo_root()
+    _, name, flat = specload.load(root, collection)
+    assert flat, f"{collection} ({name}) flattened to nothing"
+    assert all(isinstance(i["types"], list) for i in flat.values())
+
+
+def test_profile_store_flattens_to_map_notation():
+    _, _, flat = specload.load(corpus.repo_root(), "profile")
+    assert "store.{}.basal[].value" in flat
+
+
+def test_reconcile_reports_a_type_conflict():
+    cen = {
+        "documents": 10, "sites": ["a"],
+        "fields": [{
+            "path": "date", "count": 10, "docs_present": 10, "doc_frequency": 1.0,
+            "sites": ["a"], "site_count": 1, "site_frequency": {"a": 1.0},
+            "types": {"number": 10}, "tier": "universal", "tier_reason": "",
+        }],
+    }
+    flat = {"date": {"path": "date", "types": ["integer"], "required": False,
+                     "enum": None, "minimum": None, "maximum": None,
+                     "format": None, "description": "", "schema_name": None,
+                     "additional_properties": None}}
+    out = diff.reconcile(cen, flat, "entries")
+    assert out["summary"]["type_conflicts"] == 1
+    assert out["type_conflicts"][0]["uncovered_values"] == 10
+
+
+def test_v3_metadata_absence_is_reported_separately():
+    cen = {"documents": 1, "sites": ["a"], "fields": []}
+    flat = {p: {"path": p, "types": ["string"], "required": False, "enum": None,
+                "minimum": None, "maximum": None, "format": None,
+                "description": "", "schema_name": None, "additional_properties": None}
+            for p in ("identifier", "somethingElse")}
+    out = diff.reconcile(cen, flat, "entries")
+    assert out["summary"]["v3_metadata_absent"] == 1
+    assert out["summary"]["unobserved"] == 1
+
+
+# ── model ───────────────────────────────────────────────────────────────
+
+from nsschema import model as nsmodel  # noqa: E402
+from nsschema.emit import (  # noqa: E402
+    jsonschema_emit, mongoose_emit, pyarrow_emit, zod_emit,
+)
+
+
+def test_tokenize_separates_array_and_map_structure():
+    assert nsmodel.tokenize("store.{}.basal[].value") == [
+        "store", "{}", "basal", "[]", "value"]
+    assert nsmodel.tokenize("a[][]") == ["a", "[]", "[]"]
+
+
+def _census(fields, sites=("a",), documents=100):
+    return {"documents": documents, "sites": list(sites), "fields": fields}
+
+
+def _cfield(path, types, **kw):
+    base = {"path": path, "count": 100, "docs_present": 100, "doc_frequency": 1.0,
+            "sites": ["a"], "site_count": 1, "site_frequency": {"a": 1.0},
+            "types": types, "tier": "universal", "tier_reason": ""}
+    base.update(kw)
+    return base
+
+
+def _decl(types, **kw):
+    base = {"types": types, "required": False, "enum": None, "minimum": None,
+            "maximum": None, "format": None, "description": "",
+            "schema_name": None, "additional_properties": None}
+    base.update(kw)
+    return base
+
+
+def test_model_widens_integer_to_number_when_data_is_fractional():
+    tree = nsmodel.build(
+        _census([_cfield("date", {"integer": 10, "number": 90})]),
+        {"date": _decl(["integer"])}, "entries")
+    node = tree.children["date"]
+    assert node.types == ["number"]
+    assert any("widened integer" in n for n in node.notes)
+
+
+def test_model_does_not_invent_an_enum_from_observation():
+    # loop.version has few distinct values in one corpus; that does not make
+    # the set closed.
+    tree = nsmodel.build(
+        _census([_cfield("version", {"string": 100},
+                         string={"distinct_values": ["3.2.3", "3.6.4"]})]),
+        {}, "devicestatus")
+    node = tree.children["version"]
+    assert node.enum is None
+    assert node.observed_values == ["3.2.3", "3.6.4"]
+
+
+def test_model_extends_a_declared_enum_with_observed_values():
+    tree = nsmodel.build(
+        _census([_cfield("direction", {"string": 100},
+                         string={"distinct_values": ["Flat", "NONE"]})]),
+        {"direction": _decl(["string"], enum=["Flat"])}, "entries")
+    node = tree.children["direction"]
+    assert node.enum == ["Flat", "NONE"]
+    assert any("enum extended" in n for n in node.notes)
+
+
+def test_model_marks_nullable_from_observed_nulls():
+    tree = nsmodel.build(
+        _census([_cfield("carbs", {"number": 4, "null": 96})]),
+        {"carbs": _decl(["number"])}, "treatments")
+    assert tree.children["carbs"].nullable
+
+
+def test_server_assigned_fields_are_required_on_read_only():
+    tree = nsmodel.build(
+        _census([_cfield("_id", {"string": 100})]),
+        {"_id": _decl(["string"])}, "entries")
+    node = tree.children["_id"]
+    assert node.required_read and not node.required_write
+
+
+def test_a_write_requirement_is_not_invented_from_evidence():
+    # Universal in a Loop-dominant corpus is not grounds for rejecting
+    # another client's write.
+    tree = nsmodel.build(
+        _census([_cfield("sysTime", {"string": 100})]),
+        {"sysTime": _decl(["string"], required=False)}, "entries")
+    node = tree.children["sysTime"]
+    assert node.required_read
+    assert not node.required_write
+    assert node.candidate_required_write
+
+
+def test_a_declared_write_requirement_survives():
+    tree = nsmodel.build(
+        _census([_cfield("date", {"integer": 100})]),
+        {"date": _decl(["integer"], required=True)}, "entries")
+    assert tree.children["date"].required_write
+
+
+def test_weak_evidence_is_placed_in_the_extension_bag():
+    field = _cfield("glucose", {"integer": 50}, site_count=1, doc_frequency=0.06,
+                    site_frequency={"b": 0.86}, tier="vendor")
+    tree = nsmodel.build(_census([field], sites="abcdefghijk"), {}, "entries")
+    assert tree.children["glucose"].placement == "extension"
+
+
+# ── emitters ────────────────────────────────────────────────────────────
+
+def _model_doc(tree):
+    return {"collection": "entries", "source_spec": "x.yaml", "census": "y.json",
+            "root": nsmodel.to_dict(tree)}
+
+
+def _fractional_date_model():
+    return _model_doc(nsmodel.build(
+        _census([_cfield("date", {"integer": 10, "number": 90}),
+                 _cfield("vendorish", {"string": 5}, site_count=1,
+                         doc_frequency=0.05, site_frequency={"b": 0.9},
+                         tier="vendor")],
+                sites="abcdefghijk"),
+        {"date": _decl(["integer"], required=True)}, "entries"))
+
+
+@pytest.mark.parametrize("strictness", jsonschema_emit.STRICTNESS)
+def test_jsonschema_emits_every_strictness(strictness):
+    schema = jsonschema_emit.emit(_fractional_date_model(), "write", strictness)
+    assert schema["$schema"] == jsonschema_emit.DIALECT
+    assert schema["properties"]["date"]["type"] == "number"
+
+
+def test_permissive_allows_unknown_fields_and_strict_does_not():
+    m = _fractional_date_model()
+    assert jsonschema_emit.emit(m, "write", "permissive")["additionalProperties"] is True
+    assert jsonschema_emit.emit(m, "write", "strict")["additionalProperties"] is False
+
+
+def test_strict_drops_undeclared_fields_entirely():
+    schema = jsonschema_emit.emit(_fractional_date_model(), "write", "strict")
+    assert "vendorish" not in schema["properties"]
+
+
+def test_extension_bag_relocates_weak_fields():
+    schema = jsonschema_emit.emit(_fractional_date_model(), "write", "extension-bag")
+    assert "vendorish" not in schema["properties"]
+    assert "vendorish" in schema["properties"][jsonschema_emit.EXTENSION_KEY]["properties"]
+
+
+def test_tolerant_keeps_weak_fields_where_clients_write_them():
+    schema = jsonschema_emit.emit(_fractional_date_model(), "write", "tolerant")
+    assert "vendorish" in schema["properties"]
+    assert schema["additionalProperties"] is False
+
+
+def test_generated_schemas_compile_as_json():
+    schema = jsonschema_emit.emit(_fractional_date_model(), "read", "tolerant")
+    json.loads(json.dumps(schema))
+
+
+def test_zod_marks_nullable_fields_nullable():
+    m = _model_doc(nsmodel.build(
+        _census([_cfield("carbs", {"number": 4, "null": 96})]),
+        {"carbs": _decl(["number"])}, "treatments"))
+    out = zod_emit.emit(m)
+    assert "carbs: z.number().nullable().optional()" in out
+
+
+def test_mongoose_does_not_cast_a_type_union():
+    m = _model_doc(nsmodel.build(
+        _census([_cfield("mills", {"string": 200, "integer": 2})]), {}, "profile"))
+    out = mongoose_emit.emit(m)
+    assert "Schema.Types.Mixed" in out
+
+
+def test_pyarrow_widens_a_union_rather_than_truncating():
+    tree = nsmodel.build(
+        _census([_cfield("mills", {"string": 200, "integer": 2})]), {}, "profile")
+    arrow, note = pyarrow_emit.arrow_type(nsmodel.to_dict(tree.children["mills"]))
+    assert arrow == "pa.large_string()"
+    assert "widened" in note
+
+
+def test_pyarrow_maps_a_user_keyed_object_to_an_arrow_map():
+    tree = nsmodel.build(
+        _census([_cfield("store", {"object": 100}),
+                 _cfield("store.{}", {"object": 100}),
+                 _cfield("store.{}.dia", {"number": 100})]), {}, "profile")
+    arrow, _ = pyarrow_emit.arrow_type(nsmodel.to_dict(tree.children["store"]))
+    assert arrow.startswith("pa.map_(pa.large_string()")
+
+
+# ── value-shape redaction ───────────────────────────────────────────────
+
+@pytest.mark.parametrize("value", [
+    "2026-03-29T17:18:36.569Z",       # exact moment a profile was edited
+    "<n>-03-29T17:18:36.569Z",        # the same, after digit masking
+    "00:00", "22:30",                 # a person's insulin schedule
+    "com.ZZRU3JT3YW.loopkit.Loop",    # an Apple Developer Team ID
+    "org.turing.loop83.Loop",
+    "Japan", "Etc/GMT+4",             # location
+    "\U0001F680",                     # a user's own override-preset emoji
+])
+def test_personal_value_shapes_are_rejected(value):
+    assert redact.is_personal_shape(value), value
+
+
+@pytest.mark.parametrize("value", [
+    "3.12.0.2", "0.6.0",              # version numbers, not bundle ids
+    "loop://iPhone", "Sony SO-53B",   # device vocabulary
+    "mg/dL", "mmol/L",                # the units finding depends on these
+    "Flat", "Temp Basal", "absolute", "Insulet", "Comms Issue",
+])
+def test_vocabulary_values_survive(value):
+    assert not redact.is_personal_shape(value), value
+
+
+def test_a_personal_shaped_value_withholds_the_whole_field():
+    stat = census.FieldStat()
+    stat.observe("created_at", "2026-03-29T17:18:36.569Z", "a", "s")
+    stat.observe("created_at", "2026-03-29T17:18:36.569Z", "b", "s")
+    stat.observe("created_at", "2026-03-29T17:18:36.569Z", "c", "s")
+    out = stat.to_dict("created_at", 1, {"a": 1})
+    assert out["string"]["distinct_values"] is None
+    assert "personal-shaped" in out["string"]["value_note"]
+
+
+def test_small_sample_numeric_ranges_are_withheld():
+    stat = census.FieldStat()
+    stat.observe("mills", 1774199071000, "a", "s")
+    out = stat.to_dict("mills", 1, {"a": 1})
+    assert "min" not in out["numeric"]
+    assert "withheld" in out["numeric"]["range_note"]
+
+
+def test_large_sample_numeric_ranges_are_reported():
+    stat = census.FieldStat()
+    for i in range(census.MIN_NUMERIC_SAMPLES):
+        stat.observe("sgv", 100 + i, "a", "s")
+    out = stat.to_dict("sgv", 1, {"a": 1})
+    assert out["numeric"]["min"] == 100
+
+
+@pytest.mark.parametrize("path", [
+    "extendedSettings.loop.apnsDeveloperTeamId",   # an Apple Developer Team ID
+    "loopSettings.bundleIdentifier",
+    "transmitterId", "sensorId", "pump.pumpID",
+    "settings.frameName1", "settings.customTitle",
+    "settings.baseURL", "uploader.name",
+])
+def test_identity_shaped_field_names_are_denied_by_suffix(path):
+    assert redact.is_denied(path), path
+
+
+@pytest.mark.parametrize("path", [
+    "direction", "eventType", "type", "units", "insulinType",
+    "pump.manufacturer", "pump.model", "temp", "runtimeState",
+    "loopSettings.dosingStrategy",
+])
+def test_vocabulary_field_names_survive_the_suffix_rule(path):
+    assert not redact.is_denied(path), path
+
+
+def test_a_declared_enum_is_not_enforced_when_values_were_withheld():
+    # The privacy rule can hide observed values. An enum we know to be
+    # incomplete rejects real documents, so it must not be emitted.
+    tree = nsmodel.build(
+        _census([_cfield("eventType", {"string": 100},
+                         string={"distinct_values": ["Meal Bolus"],
+                                 "distinct_value_count": 14,
+                                 "values_withheld": 8})]),
+        {"eventType": _decl(["string"], enum=["Meal Bolus"])}, "treatments")
+    node = tree.children["eventType"]
+    assert node.enum is None
+    assert any("not enforced" in n for n in node.notes)
+
+
+def test_a_declared_enum_is_enforced_when_nothing_was_withheld():
+    tree = nsmodel.build(
+        _census([_cfield("type", {"string": 100},
+                         string={"distinct_values": ["sgv"],
+                                 "distinct_value_count": 1})]),
+        {"type": _decl(["string"], enum=["sgv", "mbg"])}, "entries")
+    assert tree.children["type"].enum == ["mbg", "sgv"]

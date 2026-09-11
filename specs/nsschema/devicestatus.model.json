@@ -1,0 +1,3936 @@
+{
+ "collection": "devicestatus",
+ "generated_by": "tools/nsschema/model.py",
+ "source_spec": "aid-devicestatus-2025.yaml",
+ "census": "reports/schema-census/devicestatus.census.json",
+ "root": {
+  "path": "",
+  "types": [
+   "object"
+  ],
+  "nullable": false,
+  "declared": false,
+  "observed": false,
+  "placement": "core",
+  "children": {
+   "_id": {
+    "path": "_id",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 702254,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 702254
+     }
+    },
+    "required_read": true,
+    "notes": [
+     "server-assigned: required on read, never on write"
+    ]
+   },
+   "configuration": {
+    "path": "configuration",
+    "types": [
+     "object"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Algorithm configuration snapshot (AAPS only)"
+   },
+   "created_at": {
+    "path": "created_at",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "format": "date-time",
+    "evidence": {
+     "docs_present": 702254,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 702254
+     }
+    },
+    "required_read": true,
+    "required_write": true
+   },
+   "device": {
+    "path": "device",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "Device identifier string. Format varies by system:\n- Loop: \"loop://{deviceName}\"\n- AAPS: \"openaps://{model}\"\n- Trio: \"Trio\"",
+    "evidence": {
+     "docs_present": 702254,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 702254
+     }
+    },
+    "observed_values": [
+     "loop://iPhone"
+    ],
+    "required_read": true,
+    "required_write": true
+   },
+   "identifier": {
+    "path": "identifier",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core"
+   },
+   "isCharging": {
+    "path": "isCharging",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Charging status (AAPS)"
+   },
+   "isValid": {
+    "path": "isValid",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core"
+   },
+   "loop": {
+    "path": "loop",
+    "types": [
+     "object"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 85.1% of documents",
+    "description": "Loop-specific status. Uses FLAT structure with direct children.\nSource: NightscoutService/NightscoutServiceKit/Extensions/StoredDosingDecision.swift",
+    "evidence": {
+     "docs_present": 597335,
+     "doc_frequency": 0.850597,
+     "site_count": 10,
+     "observed_types": {
+      "object": 597335
+     }
+    },
+    "children": {
+     "automaticDoseRecommendation": {
+      "path": "loop.automaticDoseRecommendation",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 26.1% of documents",
+      "evidence": {
+       "docs_present": 183049,
+       "doc_frequency": 0.260659,
+       "site_count": 10,
+       "observed_types": {
+        "object": 183049
+       }
+      },
+      "children": {
+       "bolusVolume": {
+        "path": "loop.automaticDoseRecommendation.bolusVolume",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 26.1% of documents",
+        "description": "Recommended auto-bolus (U)",
+        "evidence": {
+         "docs_present": 183049,
+         "doc_frequency": 0.260659,
+         "site_count": 10,
+         "observed_types": {
+          "integer": 82819,
+          "number": 100230
+         }
+        }
+       },
+       "tempBasalAdjustment": {
+        "path": "loop.automaticDoseRecommendation.tempBasalAdjustment",
+        "types": [
+         "object"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "common",
+        "tier_reason": "10/11 sites, 6.1% of documents",
+        "evidence": {
+         "docs_present": 42687,
+         "doc_frequency": 0.060786,
+         "site_count": 10,
+         "observed_types": {
+          "object": 42687
+         }
+        },
+        "children": {
+         "duration": {
+          "path": "loop.automaticDoseRecommendation.tempBasalAdjustment.duration",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "common",
+          "tier_reason": "10/11 sites, 6.1% of documents",
+          "description": "Duration in SECONDS",
+          "evidence": {
+           "docs_present": 42687,
+           "doc_frequency": 0.060786,
+           "site_count": 10,
+           "observed_types": {
+            "integer": 42687
+           }
+          }
+         },
+         "rate": {
+          "path": "loop.automaticDoseRecommendation.tempBasalAdjustment.rate",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "common",
+          "tier_reason": "10/11 sites, 6.1% of documents",
+          "description": "Recommended temp basal (U/hr)",
+          "evidence": {
+           "docs_present": 42687,
+           "doc_frequency": 0.060786,
+           "site_count": 10,
+           "observed_types": {
+            "integer": 14830,
+            "number": 27857
+           }
+          }
+         }
+        }
+       },
+       "timestamp": {
+        "path": "loop.automaticDoseRecommendation.timestamp",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 26.1% of documents",
+        "format": "date-time",
+        "evidence": {
+         "docs_present": 183049,
+         "doc_frequency": 0.260659,
+         "site_count": 10,
+         "observed_types": {
+          "string": 183049
+         }
+        }
+       }
+      }
+     },
+     "cob": {
+      "path": "loop.cob",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "evidence": {
+       "docs_present": 597319,
+       "doc_frequency": 0.850574,
+       "site_count": 10,
+       "observed_types": {
+        "object": 597319
+       }
+      },
+      "children": {
+       "cob": {
+        "path": "loop.cob.cob",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 85.1% of documents",
+        "description": "Carbs on board (g)",
+        "evidence": {
+         "docs_present": 597319,
+         "doc_frequency": 0.850574,
+         "site_count": 10,
+         "observed_types": {
+          "integer": 469676,
+          "number": 127643
+         }
+        }
+       },
+       "timestamp": {
+        "path": "loop.cob.timestamp",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 85.1% of documents",
+        "format": "date-time",
+        "evidence": {
+         "docs_present": 597319,
+         "doc_frequency": 0.850574,
+         "site_count": 10,
+         "observed_types": {
+          "string": 597319
+         }
+        }
+       }
+      }
+     },
+     "enacted": {
+      "path": "loop.enacted",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 57.7% of documents",
+      "evidence": {
+       "docs_present": 405228,
+       "doc_frequency": 0.577039,
+       "site_count": 10,
+       "observed_types": {
+        "object": 405228
+       }
+      },
+      "children": {
+       "bolusVolume": {
+        "path": "loop.enacted.bolusVolume",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 57.7% of documents",
+        "description": "Enacted auto-bolus (U)",
+        "evidence": {
+         "docs_present": 405228,
+         "doc_frequency": 0.577039,
+         "site_count": 10,
+         "observed_types": {
+          "integer": 277769,
+          "number": 127459
+         }
+        }
+       },
+       "duration": {
+        "path": "loop.enacted.duration",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 57.7% of documents",
+        "description": "Duration in SECONDS",
+        "evidence": {
+         "docs_present": 405228,
+         "doc_frequency": 0.577039,
+         "site_count": 10,
+         "observed_types": {
+          "integer": 405228
+         }
+        }
+       },
+       "rate": {
+        "path": "loop.enacted.rate",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 57.7% of documents",
+        "description": "Enacted temp basal rate (U/hr)",
+        "evidence": {
+         "docs_present": 405228,
+         "doc_frequency": 0.577039,
+         "site_count": 10,
+         "observed_types": {
+          "integer": 307662,
+          "number": 97566
+         }
+        }
+       },
+       "received": {
+        "path": "loop.enacted.received",
+        "types": [
+         "boolean"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 57.7% of documents",
+        "description": "Whether pump confirmed",
+        "evidence": {
+         "docs_present": 405228,
+         "doc_frequency": 0.577039,
+         "site_count": 10,
+         "observed_types": {
+          "boolean": 405228
+         }
+        }
+       },
+       "timestamp": {
+        "path": "loop.enacted.timestamp",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 57.7% of documents",
+        "format": "date-time",
+        "evidence": {
+         "docs_present": 405228,
+         "doc_frequency": 0.577039,
+         "site_count": 10,
+         "observed_types": {
+          "string": 405228
+         }
+        }
+       }
+      }
+     },
+     "failureReason": {
+      "path": "loop.failureReason",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "common",
+      "tier_reason": "10/11 sites, 2.4% of documents",
+      "description": "Error message if loop cycle failed",
+      "evidence": {
+       "docs_present": 16550,
+       "doc_frequency": 0.023567,
+       "site_count": 10,
+       "observed_types": {
+        "string": 16550
+       }
+      }
+     },
+     "iob": {
+      "path": "loop.iob",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "evidence": {
+       "docs_present": 597320,
+       "doc_frequency": 0.850575,
+       "site_count": 10,
+       "observed_types": {
+        "object": 597320
+       }
+      },
+      "children": {
+       "iob": {
+        "path": "loop.iob.iob",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 85.1% of documents",
+        "description": "Total insulin on board (U)",
+        "evidence": {
+         "docs_present": 597320,
+         "doc_frequency": 0.850575,
+         "site_count": 10,
+         "observed_types": {
+          "integer": 2398,
+          "number": 594922
+         }
+        }
+       },
+       "timestamp": {
+        "path": "loop.iob.timestamp",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 85.1% of documents",
+        "format": "date-time",
+        "evidence": {
+         "docs_present": 597320,
+         "doc_frequency": 0.850575,
+         "site_count": 10,
+         "observed_types": {
+          "string": 597320
+         }
+        }
+       }
+      }
+     },
+     "name": {
+      "path": "loop.name",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "description": "App bundle name",
+      "evidence": {
+       "docs_present": 597335,
+       "doc_frequency": 0.850597,
+       "site_count": 10,
+       "observed_types": {
+        "string": 597335
+       }
+      }
+     },
+     "predicted": {
+      "path": "loop.predicted",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.0% of documents",
+      "description": "Loop prediction - SINGLE COMBINED CURVE.\nUnlike oref0, does not provide separate IOB/COB/UAM/ZT curves.",
+      "evidence": {
+       "docs_present": 597146,
+       "doc_frequency": 0.850328,
+       "site_count": 10,
+       "observed_types": {
+        "object": 597146
+       }
+      },
+      "children": {
+       "startDate": {
+        "path": "loop.predicted.startDate",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 85.0% of documents",
+        "format": "date-time",
+        "evidence": {
+         "docs_present": 597146,
+         "doc_frequency": 0.850328,
+         "site_count": 10,
+         "observed_types": {
+          "string": 597146
+         }
+        }
+       },
+       "values": {
+        "path": "loop.predicted.values",
+        "types": [
+         "array"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "core",
+        "tier_reason": "10/11 sites, 85.0% of documents",
+        "description": "Predicted BG values at 5-minute intervals.\nUNIT WARNING: Follows user's configured glucose units.",
+        "evidence": {
+         "docs_present": 597146,
+         "doc_frequency": 0.850328,
+         "site_count": 10,
+         "observed_types": {
+          "array": 597146
+         }
+        },
+        "children": {
+         "[]": {
+          "path": "loop.predicted.values[]",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "core",
+          "tier_reason": "10/11 sites, 85.0% of documents",
+          "evidence": {
+           "docs_present": 597146,
+           "doc_frequency": 0.850328,
+           "site_count": 10,
+           "observed_types": {
+            "integer": 1092421,
+            "number": 45472305
+           }
+          }
+         }
+        }
+       }
+      }
+     },
+     "recommendedBolus": {
+      "path": "loop.recommendedBolus",
+      "types": [
+       "number"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.0% of documents",
+      "description": "Recommended manual bolus (U)",
+      "evidence": {
+       "docs_present": 597143,
+       "doc_frequency": 0.850323,
+       "site_count": 10,
+       "observed_types": {
+        "integer": 333957,
+        "number": 263186
+       }
+      }
+     },
+     "timestamp": {
+      "path": "loop.timestamp",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "format": "date-time",
+      "evidence": {
+       "docs_present": 597335,
+       "doc_frequency": 0.850597,
+       "site_count": 10,
+       "observed_types": {
+        "string": 597335
+       }
+      }
+     },
+     "version": {
+      "path": "loop.version",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "description": "App version",
+      "evidence": {
+       "docs_present": 597335,
+       "doc_frequency": 0.850597,
+       "site_count": 10,
+       "observed_types": {
+        "string": 597335
+       }
+      },
+      "observed_values": [
+       "3.12.1.<n>",
+       "3.6.2.<n>",
+       "3.8.1.<n>"
+      ]
+     }
+    }
+   },
+   "mills": {
+    "path": "mills",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "format": "int64",
+    "description": "Epoch milliseconds"
+   },
+   "openaps": {
+    "path": "openaps",
+    "types": [
+     "object"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "vendor",
+    "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+    "description": "oref0-based status (AAPS, Trio, OpenAPS). Uses NESTED structure.\nContains `suggested` (always) and `enacted` (null in open loop).",
+    "evidence": {
+     "docs_present": 73898,
+     "doc_frequency": 0.10523,
+     "site_count": 1,
+     "observed_types": {
+      "object": 73898
+     }
+    },
+    "children": {
+     "enacted": {
+      "path": "openaps.enacted",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "vendor",
+      "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+      "description": "Actually enacted recommendation.\nNULL when running in open loop mode (suggestions only).",
+      "evidence": {
+       "docs_present": 73834,
+       "doc_frequency": 0.105139,
+       "site_count": 1,
+       "observed_types": {
+        "object": 73834
+       }
+      },
+      "children": {
+       "COB": {
+        "path": "openaps.enacted.COB",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73834
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "CR": {
+        "path": "openaps.enacted.CR",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 19379,
+          "number": 54455
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "IOB": {
+        "path": "openaps.enacted.IOB",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 86,
+          "number": 73748
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "ISF": {
+        "path": "openaps.enacted.ISF",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73834
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "TDD": {
+        "path": "openaps.enacted.TDD",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 88% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73306,
+         "doc_frequency": 0.104387,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 3517,
+          "number": 69789
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 88% of documents on 1 of them)"
+        ]
+       },
+       "bg": {
+        "path": "openaps.enacted.bg",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73834
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "carbsReq": {
+        "path": "openaps.enacted.carbsReq",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "sparse",
+        "tier_reason": "1/11 sites, 0.43% of documents",
+        "evidence": {
+         "docs_present": 2989,
+         "doc_frequency": 0.004256,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 2989
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, 0.43% of documents)"
+        ]
+       },
+       "current_target": {
+        "path": "openaps.enacted.current_target",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73834
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "deliverAt": {
+        "path": "openaps.enacted.deliverAt",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73834
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "duration": {
+        "path": "openaps.enacted.duration",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Duration in MINUTES",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73834
+         }
+        }
+       },
+       "eventualBG": {
+        "path": "openaps.enacted.eventualBG",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73819,
+         "doc_frequency": 0.105117,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73819
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "expectedDelta": {
+        "path": "openaps.enacted.expectedDelta",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 7466,
+          "number": 66368
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "id": {
+        "path": "openaps.enacted.id",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73834
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "insulinForManualBolus": {
+        "path": "openaps.enacted.insulinForManualBolus",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 6797,
+          "number": 67037
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "insulinReq": {
+        "path": "openaps.enacted.insulinReq",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 40926,
+          "number": 32908
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "manualBolusErrorString": {
+        "path": "openaps.enacted.manualBolusErrorString",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73834
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "minDelta": {
+        "path": "openaps.enacted.minDelta",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 38909,
+          "number": 34925
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "predBGs": {
+        "path": "openaps.enacted.predBGs",
+        "types": [
+         "object"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Four prediction curves, each representing a different scenario.\nValues are BG in mg/dL at 5-minute intervals.",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "object": 73834
+         }
+        },
+        "children": {
+         "COB": {
+          "path": "openaps.enacted.predBGs.COB",
+          "types": [
+           "array"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "sparse",
+          "tier_reason": "1/11 sites, 7.15% of documents",
+          "description": "Prediction including expected carb absorption.",
+          "evidence": {
+           "docs_present": 50240,
+           "doc_frequency": 0.071541,
+           "site_count": 1,
+           "observed_types": {
+            "array": 50240
+           }
+          },
+          "children": {
+           "[]": {
+            "path": "openaps.enacted.predBGs.COB[]",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "sparse",
+            "tier_reason": "1/11 sites, 7.15% of documents",
+            "evidence": {
+             "docs_present": 50240,
+             "doc_frequency": 0.071541,
+             "site_count": 1,
+             "observed_types": {
+              "integer": 2349895
+             }
+            }
+           }
+          }
+         },
+         "IOB": {
+          "path": "openaps.enacted.predBGs.IOB",
+          "types": [
+           "array"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "description": "Prediction assuming no carb absorption.\nMost conservative curve.",
+          "evidence": {
+           "docs_present": 73819,
+           "doc_frequency": 0.105117,
+           "site_count": 1,
+           "observed_types": {
+            "array": 73819
+           }
+          },
+          "children": {
+           "[]": {
+            "path": "openaps.enacted.predBGs.IOB[]",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "vendor",
+            "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+            "evidence": {
+             "docs_present": 73819,
+             "doc_frequency": 0.105117,
+             "site_count": 1,
+             "observed_types": {
+              "integer": 2576197
+             }
+            }
+           }
+          }
+         },
+         "UAM": {
+          "path": "openaps.enacted.predBGs.UAM",
+          "types": [
+           "array"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "sparse",
+          "tier_reason": "1/11 sites, 9.09% of documents",
+          "description": "Unannounced Meal prediction.\nAssumes current rise will continue.",
+          "evidence": {
+           "docs_present": 63822,
+           "doc_frequency": 0.090882,
+           "site_count": 1,
+           "observed_types": {
+            "array": 63822
+           }
+          },
+          "children": {
+           "[]": {
+            "path": "openaps.enacted.predBGs.UAM[]",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "sparse",
+            "tier_reason": "1/11 sites, 9.09% of documents",
+            "evidence": {
+             "docs_present": 63822,
+             "doc_frequency": 0.090882,
+             "site_count": 1,
+             "observed_types": {
+              "integer": 2224981
+             }
+            }
+           }
+          }
+         },
+         "ZT": {
+          "path": "openaps.enacted.predBGs.ZT",
+          "types": [
+           "array"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "description": "Zero Temp prediction.\nWhat happens if no more insulin is delivered.",
+          "evidence": {
+           "docs_present": 73819,
+           "doc_frequency": 0.105117,
+           "site_count": 1,
+           "observed_types": {
+            "array": 73819
+           }
+          },
+          "children": {
+           "[]": {
+            "path": "openaps.enacted.predBGs.ZT[]",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "vendor",
+            "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+            "evidence": {
+             "docs_present": 73819,
+             "doc_frequency": 0.105117,
+             "site_count": 1,
+             "observed_types": {
+              "integer": 2645445
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "rate": {
+        "path": "openaps.enacted.rate",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Enacted rate (U/hr)",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 57405,
+          "number": 16429
+         }
+        }
+       },
+       "reason": {
+        "path": "openaps.enacted.reason",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73834
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "received": {
+        "path": "openaps.enacted.received",
+        "types": [
+         "boolean"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Pump confirmation status",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "boolean": 73834
+         }
+        }
+       },
+       "reservoir": {
+        "path": "openaps.enacted.reservoir",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 68706,
+          "number": 5128
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "sensitivityRatio": {
+        "path": "openaps.enacted.sensitivityRatio",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 49572,
+          "number": 24262
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "temp": {
+        "path": "openaps.enacted.temp",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73834
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "threshold": {
+        "path": "openaps.enacted.threshold",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73834
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "timestamp": {
+        "path": "openaps.enacted.timestamp",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "format": "date-time",
+        "evidence": {
+         "docs_present": 73834,
+         "doc_frequency": 0.105139,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73834
+         }
+        }
+       },
+       "units": {
+        "path": "openaps.enacted.units",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "sparse",
+        "tier_reason": "1/11 sites, 2.64% of documents",
+        "description": "Enacted SMB units",
+        "evidence": {
+         "docs_present": 18560,
+         "doc_frequency": 0.026429,
+         "site_count": 1,
+         "observed_types": {
+          "number": 18560
+         }
+        }
+       }
+      }
+     },
+     "iob": {
+      "path": "openaps.iob",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "vendor",
+      "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+      "description": "IOB breakdown with component separation (unlike Loop).",
+      "evidence": {
+       "docs_present": 73891,
+       "doc_frequency": 0.10522,
+       "site_count": 1,
+       "observed_types": {
+        "object": 73891
+       }
+      },
+      "children": {
+       "activity": {
+        "path": "openaps.iob.activity",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Current insulin activity (U/hr)",
+        "evidence": {
+         "docs_present": 73891,
+         "doc_frequency": 0.10522,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 192,
+          "number": 73699
+         }
+        }
+       },
+       "basaliob": {
+        "path": "openaps.iob.basaliob",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "IOB from temp basals (U)",
+        "evidence": {
+         "docs_present": 73891,
+         "doc_frequency": 0.10522,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 71,
+          "number": 73820
+         }
+        }
+       },
+       "bolusinsulin": {
+        "path": "openaps.iob.bolusinsulin",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73891,
+         "doc_frequency": 0.10522,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 4323,
+          "number": 69568
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "bolusiob": {
+        "path": "openaps.iob.bolusiob",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73891,
+         "doc_frequency": 0.10522,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 157,
+          "number": 73734
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "bolussnooze": {
+        "path": "openaps.iob.bolussnooze",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": false,
+        "placement": "core",
+        "description": "IOB from recent boluses affecting snooze"
+       },
+       "iob": {
+        "path": "openaps.iob.iob",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Total IOB (U)",
+        "evidence": {
+         "docs_present": 73891,
+         "doc_frequency": 0.10522,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 74,
+          "number": 73817
+         }
+        }
+       },
+       "iobWithZeroTemp": {
+        "path": "openaps.iob.iobWithZeroTemp",
+        "types": [
+         "object"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73891,
+         "doc_frequency": 0.10522,
+         "site_count": 1,
+         "observed_types": {
+          "object": 73891
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ],
+        "children": {
+         "activity": {
+          "path": "openaps.iob.iobWithZeroTemp.activity",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "extension",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "evidence": {
+           "docs_present": 73891,
+           "doc_frequency": 0.10522,
+           "site_count": 1,
+           "observed_types": {
+            "integer": 192,
+            "number": 73699
+           }
+          },
+          "notes": [
+           "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+          ]
+         },
+         "basaliob": {
+          "path": "openaps.iob.iobWithZeroTemp.basaliob",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "extension",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "evidence": {
+           "docs_present": 73891,
+           "doc_frequency": 0.10522,
+           "site_count": 1,
+           "observed_types": {
+            "integer": 71,
+            "number": 73820
+           }
+          },
+          "notes": [
+           "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+          ]
+         },
+         "bolusinsulin": {
+          "path": "openaps.iob.iobWithZeroTemp.bolusinsulin",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "extension",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "evidence": {
+           "docs_present": 73891,
+           "doc_frequency": 0.10522,
+           "site_count": 1,
+           "observed_types": {
+            "integer": 4323,
+            "number": 69568
+           }
+          },
+          "notes": [
+           "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+          ]
+         },
+         "bolusiob": {
+          "path": "openaps.iob.iobWithZeroTemp.bolusiob",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "extension",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "evidence": {
+           "docs_present": 73891,
+           "doc_frequency": 0.10522,
+           "site_count": 1,
+           "observed_types": {
+            "integer": 157,
+            "number": 73734
+           }
+          },
+          "notes": [
+           "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+          ]
+         },
+         "iob": {
+          "path": "openaps.iob.iobWithZeroTemp.iob",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "extension",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "evidence": {
+           "docs_present": 73891,
+           "doc_frequency": 0.10522,
+           "site_count": 1,
+           "observed_types": {
+            "integer": 74,
+            "number": 73817
+           }
+          },
+          "notes": [
+           "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+          ]
+         },
+         "netbasalinsulin": {
+          "path": "openaps.iob.iobWithZeroTemp.netbasalinsulin",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "extension",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "evidence": {
+           "docs_present": 73891,
+           "doc_frequency": 0.10522,
+           "site_count": 1,
+           "observed_types": {
+            "integer": 3636,
+            "number": 70255
+           }
+          },
+          "notes": [
+           "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+          ]
+         },
+         "time": {
+          "path": "openaps.iob.iobWithZeroTemp.time",
+          "types": [
+           "string"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "extension",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "evidence": {
+           "docs_present": 73891,
+           "doc_frequency": 0.10522,
+           "site_count": 1,
+           "observed_types": {
+            "string": 73891
+           }
+          },
+          "notes": [
+           "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+          ]
+         }
+        }
+       },
+       "lastBolusTime": {
+        "path": "openaps.iob.lastBolusTime",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "format": "int64",
+        "description": "Timestamp of last bolus (epoch ms)",
+        "evidence": {
+         "docs_present": 73891,
+         "doc_frequency": 0.10522,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73891
+         }
+        }
+       },
+       "lastTemp": {
+        "path": "openaps.iob.lastTemp",
+        "types": [
+         "object"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73891,
+         "doc_frequency": 0.10522,
+         "site_count": 1,
+         "observed_types": {
+          "object": 73891
+         }
+        },
+        "children": {
+         "date": {
+          "path": "openaps.iob.lastTemp.date",
+          "types": [
+           "integer"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "extension",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "evidence": {
+           "docs_present": 73891,
+           "doc_frequency": 0.10522,
+           "site_count": 1,
+           "observed_types": {
+            "integer": 73891
+           }
+          },
+          "notes": [
+           "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+          ]
+         },
+         "duration": {
+          "path": "openaps.iob.lastTemp.duration",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "evidence": {
+           "docs_present": 73891,
+           "doc_frequency": 0.10522,
+           "site_count": 1,
+           "observed_types": {
+            "integer": 2048,
+            "number": 71843
+           }
+          },
+          "notes": [
+           "widened integer -> number: the spec declares integer and 71,843 fractional values were observed"
+          ]
+         },
+         "rate": {
+          "path": "openaps.iob.lastTemp.rate",
+          "types": [
+           "number"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "evidence": {
+           "docs_present": 73891,
+           "doc_frequency": 0.10522,
+           "site_count": 1,
+           "observed_types": {
+            "integer": 51324,
+            "number": 22567
+           }
+          }
+         },
+         "started_at": {
+          "path": "openaps.iob.lastTemp.started_at",
+          "types": [
+           "string"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "format": "date-time",
+          "evidence": {
+           "docs_present": 73891,
+           "doc_frequency": 0.10522,
+           "site_count": 1,
+           "observed_types": {
+            "string": 73891
+           }
+          }
+         },
+         "timestamp": {
+          "path": "openaps.iob.lastTemp.timestamp",
+          "types": [
+           "string"
+          ],
+          "nullable": false,
+          "declared": false,
+          "observed": true,
+          "placement": "extension",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "evidence": {
+           "docs_present": 73891,
+           "doc_frequency": 0.10522,
+           "site_count": 1,
+           "observed_types": {
+            "string": 73891
+           }
+          },
+          "notes": [
+           "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+          ]
+         }
+        }
+       },
+       "netbasalinsulin": {
+        "path": "openaps.iob.netbasalinsulin",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73891,
+         "doc_frequency": 0.10522,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 3636,
+          "number": 70255
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "time": {
+        "path": "openaps.iob.time",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73891,
+         "doc_frequency": 0.10522,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73891
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       }
+      }
+     },
+     "recommendedBolus": {
+      "path": "openaps.recommendedBolus",
+      "types": [
+       "number"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "extension",
+      "tier": "sparse",
+      "tier_reason": "1/11 sites, 5.91% of documents",
+      "evidence": {
+       "docs_present": 41474,
+       "doc_frequency": 0.059058,
+       "site_count": 1,
+       "observed_types": {
+        "integer": 18832,
+        "number": 22642
+       }
+      },
+      "notes": [
+       "extension-bag candidate (1/11 sites, 5.91% of documents)"
+      ]
+     },
+     "suggested": {
+      "path": "openaps.suggested",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "vendor",
+      "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+      "description": "Algorithm suggestion. Always present.\nContains prediction curves in `predBGs`.",
+      "evidence": {
+       "docs_present": 73898,
+       "doc_frequency": 0.10523,
+       "site_count": 1,
+       "observed_types": {
+        "object": 73898
+       }
+      },
+      "children": {
+       "COB": {
+        "path": "openaps.suggested.COB",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Carbs on board (g)",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73898
+         }
+        }
+       },
+       "CR": {
+        "path": "openaps.suggested.CR",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 19289,
+          "number": 54609
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "IOB": {
+        "path": "openaps.suggested.IOB",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Insulin on board (U)",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 97,
+          "number": 73801
+         }
+        }
+       },
+       "ISF": {
+        "path": "openaps.suggested.ISF",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73898
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "TDD": {
+        "path": "openaps.suggested.TDD",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 84% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 69758,
+         "doc_frequency": 0.099334,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 3363,
+          "number": 66395
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 84% of documents on 1 of them)"
+        ]
+       },
+       "bg": {
+        "path": "openaps.suggested.bg",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Current BG (mg/dL)",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73898
+         }
+        }
+       },
+       "carbsReq": {
+        "path": "openaps.suggested.carbsReq",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "sparse",
+        "tier_reason": "1/11 sites, 0.43% of documents",
+        "evidence": {
+         "docs_present": 3042,
+         "doc_frequency": 0.004332,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 3042
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, 0.43% of documents)"
+        ]
+       },
+       "current_target": {
+        "path": "openaps.suggested.current_target",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73898
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "deliverAt": {
+        "path": "openaps.suggested.deliverAt",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "format": "date-time",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73898
+         }
+        }
+       },
+       "duration": {
+        "path": "openaps.suggested.duration",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Duration in MINUTES (oref0 convention)",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73898
+         }
+        }
+       },
+       "eventualBG": {
+        "path": "openaps.suggested.eventualBG",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Predicted eventual BG",
+        "evidence": {
+         "docs_present": 73872,
+         "doc_frequency": 0.105193,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73872
+         }
+        }
+       },
+       "expectedDelta": {
+        "path": "openaps.suggested.expectedDelta",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 7427,
+          "number": 66471
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "id": {
+        "path": "openaps.suggested.id",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73898
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "insulinForManualBolus": {
+        "path": "openaps.suggested.insulinForManualBolus",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 6713,
+          "number": 67185
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "insulinReq": {
+        "path": "openaps.suggested.insulinReq",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Insulin required to reach target",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 41227,
+          "number": 32671
+         }
+        }
+       },
+       "manualBolusErrorString": {
+        "path": "openaps.suggested.manualBolusErrorString",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73898
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "minDelta": {
+        "path": "openaps.suggested.minDelta",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 39323,
+          "number": 34575
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "predBGs": {
+        "path": "openaps.suggested.predBGs",
+        "types": [
+         "object"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Four prediction curves, each representing a different scenario.\nValues are BG in mg/dL at 5-minute intervals.",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "object": 73898
+         }
+        },
+        "children": {
+         "COB": {
+          "path": "openaps.suggested.predBGs.COB",
+          "types": [
+           "array"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "sparse",
+          "tier_reason": "1/11 sites, 7.22% of documents",
+          "description": "Prediction including expected carb absorption.",
+          "evidence": {
+           "docs_present": 50672,
+           "doc_frequency": 0.072156,
+           "site_count": 1,
+           "observed_types": {
+            "array": 50672
+           }
+          },
+          "children": {
+           "[]": {
+            "path": "openaps.suggested.predBGs.COB[]",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "sparse",
+            "tier_reason": "1/11 sites, 7.22% of documents",
+            "evidence": {
+             "docs_present": 50672,
+             "doc_frequency": 0.072156,
+             "site_count": 1,
+             "observed_types": {
+              "integer": 2369828
+             }
+            }
+           }
+          }
+         },
+         "IOB": {
+          "path": "openaps.suggested.predBGs.IOB",
+          "types": [
+           "array"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "description": "Prediction assuming no carb absorption.\nMost conservative curve.",
+          "evidence": {
+           "docs_present": 73872,
+           "doc_frequency": 0.105193,
+           "site_count": 1,
+           "observed_types": {
+            "array": 73872
+           }
+          },
+          "children": {
+           "[]": {
+            "path": "openaps.suggested.predBGs.IOB[]",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "vendor",
+            "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+            "evidence": {
+             "docs_present": 73872,
+             "doc_frequency": 0.105193,
+             "site_count": 1,
+             "observed_types": {
+              "integer": 2537252
+             }
+            }
+           }
+          }
+         },
+         "UAM": {
+          "path": "openaps.suggested.predBGs.UAM",
+          "types": [
+           "array"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "sparse",
+          "tier_reason": "1/11 sites, 9.11% of documents",
+          "description": "Unannounced Meal prediction.\nAssumes current rise will continue.",
+          "evidence": {
+           "docs_present": 63976,
+           "doc_frequency": 0.091101,
+           "site_count": 1,
+           "observed_types": {
+            "array": 63976
+           }
+          },
+          "children": {
+           "[]": {
+            "path": "openaps.suggested.predBGs.UAM[]",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "sparse",
+            "tier_reason": "1/11 sites, 9.11% of documents",
+            "evidence": {
+             "docs_present": 63976,
+             "doc_frequency": 0.091101,
+             "site_count": 1,
+             "observed_types": {
+              "integer": 2191658
+             }
+            }
+           }
+          }
+         },
+         "ZT": {
+          "path": "openaps.suggested.predBGs.ZT",
+          "types": [
+           "array"
+          ],
+          "nullable": false,
+          "declared": true,
+          "observed": true,
+          "placement": "core",
+          "tier": "vendor",
+          "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+          "description": "Zero Temp prediction.\nWhat happens if no more insulin is delivered.",
+          "evidence": {
+           "docs_present": 73872,
+           "doc_frequency": 0.105193,
+           "site_count": 1,
+           "observed_types": {
+            "array": 73872
+           }
+          },
+          "children": {
+           "[]": {
+            "path": "openaps.suggested.predBGs.ZT[]",
+            "types": [
+             "integer"
+            ],
+            "nullable": false,
+            "declared": true,
+            "observed": true,
+            "placement": "core",
+            "tier": "vendor",
+            "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+            "evidence": {
+             "docs_present": 73872,
+             "doc_frequency": 0.105193,
+             "site_count": 1,
+             "observed_types": {
+              "integer": 2670269
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "rate": {
+        "path": "openaps.suggested.rate",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Suggested temp basal rate (U/hr)",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 57580,
+          "number": 16318
+         }
+        }
+       },
+       "reason": {
+        "path": "openaps.suggested.reason",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Human-readable explanation of recommendation",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73898
+         }
+        }
+       },
+       "received": {
+        "path": "openaps.suggested.received",
+        "types": [
+         "boolean"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "boolean": 73898
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "reservoir": {
+        "path": "openaps.suggested.reservoir",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 68841,
+          "number": 5057
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "sensitivityRatio": {
+        "path": "openaps.suggested.sensitivityRatio",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "description": "Autosens ratio (1.0 = normal)",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 49614,
+          "number": 24284
+         }
+        }
+       },
+       "targetBG": {
+        "path": "openaps.suggested.targetBG",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": false,
+        "placement": "core",
+        "description": "Current target BG"
+       },
+       "temp": {
+        "path": "openaps.suggested.temp",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73898
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "threshold": {
+        "path": "openaps.suggested.threshold",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 73898
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "tick": {
+        "path": "openaps.suggested.tick",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": false,
+        "placement": "core",
+        "description": "BG delta indicator (+, -, etc.)"
+       },
+       "timestamp": {
+        "path": "openaps.suggested.timestamp",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 84% of documents on 1 of them",
+        "format": "date-time",
+        "evidence": {
+         "docs_present": 69779,
+         "doc_frequency": 0.099364,
+         "site_count": 1,
+         "observed_types": {
+          "string": 69779
+         }
+        }
+       },
+       "units": {
+        "path": "openaps.suggested.units",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "sparse",
+        "tier_reason": "1/11 sites, 2.50% of documents",
+        "description": "SMB units to deliver",
+        "evidence": {
+         "docs_present": 17560,
+         "doc_frequency": 0.025005,
+         "site_count": 1,
+         "observed_types": {
+          "number": 17560
+         }
+        }
+       },
+       "variable_sens": {
+        "path": "openaps.suggested.variable_sens",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": false,
+        "placement": "core",
+        "description": "Dynamic ISF value (AAPS DynamicISF)"
+       }
+      }
+     },
+     "version": {
+      "path": "openaps.version",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "extension",
+      "tier": "vendor",
+      "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+      "evidence": {
+       "docs_present": 73898,
+       "doc_frequency": 0.10523,
+       "site_count": 1,
+       "observed_types": {
+        "string": 73898
+       }
+      },
+      "notes": [
+       "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+      ]
+     }
+    }
+   },
+   "override": {
+    "path": "override",
+    "types": [
+     "object"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 85.1% of documents",
+    "description": "Loop active override (Loop only)",
+    "evidence": {
+     "docs_present": 597335,
+     "doc_frequency": 0.850597,
+     "site_count": 10,
+     "observed_types": {
+      "object": 597335
+     }
+    },
+    "children": {
+     "active": {
+      "path": "override.active",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "evidence": {
+       "docs_present": 597335,
+       "doc_frequency": 0.850597,
+       "site_count": 10,
+       "observed_types": {
+        "boolean": 597335
+       }
+      }
+     },
+     "currentCorrectionRange": {
+      "path": "override.currentCorrectionRange",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "common",
+      "tier_reason": "9/11 sites, 9.2% of documents",
+      "evidence": {
+       "docs_present": 64674,
+       "doc_frequency": 0.092095,
+       "site_count": 9,
+       "observed_types": {
+        "object": 64674
+       }
+      },
+      "children": {
+       "maxValue": {
+        "path": "override.currentCorrectionRange.maxValue",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "common",
+        "tier_reason": "9/11 sites, 9.2% of documents",
+        "evidence": {
+         "docs_present": 64674,
+         "doc_frequency": 0.092095,
+         "site_count": 9,
+         "observed_types": {
+          "integer": 50352,
+          "number": 14322
+         }
+        }
+       },
+       "minValue": {
+        "path": "override.currentCorrectionRange.minValue",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "common",
+        "tier_reason": "9/11 sites, 9.2% of documents",
+        "evidence": {
+         "docs_present": 64674,
+         "doc_frequency": 0.092095,
+         "site_count": 9,
+         "observed_types": {
+          "integer": 50352,
+          "number": 14322
+         }
+        }
+       }
+      }
+     },
+     "duration": {
+      "path": "override.duration",
+      "types": [
+       "number"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "common",
+      "tier_reason": "9/11 sites, 4.8% of documents",
+      "description": "Duration in seconds (Loop convention)",
+      "evidence": {
+       "docs_present": 33676,
+       "doc_frequency": 0.047954,
+       "site_count": 9,
+       "observed_types": {
+        "integer": 33676
+       }
+      }
+     },
+     "multiplier": {
+      "path": "override.multiplier",
+      "types": [
+       "number"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "common",
+      "tier_reason": "9/11 sites, 7.5% of documents",
+      "description": "Overall insulin needs multiplier",
+      "evidence": {
+       "docs_present": 52401,
+       "doc_frequency": 0.074618,
+       "site_count": 9,
+       "observed_types": {
+        "integer": 22687,
+        "number": 29714
+       }
+      }
+     },
+     "name": {
+      "path": "override.name",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "common",
+      "tier_reason": "9/11 sites, 8.9% of documents",
+      "evidence": {
+       "docs_present": 62192,
+       "doc_frequency": 0.088561,
+       "site_count": 9,
+       "observed_types": {
+        "string": 62192
+       }
+      }
+     },
+     "timestamp": {
+      "path": "override.timestamp",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "format": "date-time",
+      "evidence": {
+       "docs_present": 597335,
+       "doc_frequency": 0.850597,
+       "site_count": 10,
+       "observed_types": {
+        "string": 597335
+       }
+      }
+     }
+    }
+   },
+   "pump": {
+    "path": "pump",
+    "types": [
+     "object"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 95.6% of documents",
+    "description": "Pump status (may be absent if communication failed)",
+    "evidence": {
+     "docs_present": 671232,
+     "doc_frequency": 0.955825,
+     "site_count": 10,
+     "observed_types": {
+      "object": 671232
+     }
+    },
+    "children": {
+     "battery": {
+      "path": "pump.battery",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "vendor",
+      "tier_reason": "2/11 sites, but written in 89% of documents on 1 of them",
+      "evidence": {
+       "docs_present": 83080,
+       "doc_frequency": 0.118305,
+       "site_count": 2,
+       "observed_types": {
+        "object": 83080
+       }
+      },
+      "children": {
+       "display": {
+        "path": "pump.battery.display",
+        "types": [
+         "boolean"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 87% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 72563,
+         "doc_frequency": 0.103329,
+         "site_count": 1,
+         "observed_types": {
+          "boolean": 72563
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 87% of documents on 1 of them)"
+        ]
+       },
+       "percent": {
+        "path": "pump.battery.percent",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "2/11 sites, but written in 87% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 81745,
+         "doc_frequency": 0.116404,
+         "site_count": 2,
+         "observed_types": {
+          "integer": 81745
+         }
+        }
+       },
+       "status": {
+        "path": "pump.battery.status",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": false,
+        "placement": "core",
+        "enum": [
+         "critical",
+         "low",
+         "normal"
+        ]
+       },
+       "string": {
+        "path": "pump.battery.string",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73898
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+        ]
+       },
+       "voltage": {
+        "path": "pump.battery.voltage",
+        "types": [
+         "number"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": false,
+        "placement": "core"
+       }
+      }
+     },
+     "bolusIncrement": {
+      "path": "pump.bolusIncrement",
+      "types": [
+       "number"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "extension",
+      "tier": "sparse",
+      "tier_reason": "1/11 sites, 5.91% of documents",
+      "evidence": {
+       "docs_present": 41474,
+       "doc_frequency": 0.059058,
+       "site_count": 1,
+       "observed_types": {
+        "number": 41474
+       }
+      },
+      "notes": [
+       "extension-bag candidate (1/11 sites, 5.91% of documents)"
+      ]
+     },
+     "bolusing": {
+      "path": "pump.bolusing",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "evidence": {
+       "docs_present": 597334,
+       "doc_frequency": 0.850595,
+       "site_count": 10,
+       "observed_types": {
+        "boolean": 597334
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 85.1% of documents)"
+      ]
+     },
+     "clock": {
+      "path": "pump.clock",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 95.6% of documents",
+      "format": "date-time",
+      "description": "Pump internal clock",
+      "evidence": {
+       "docs_present": 671232,
+       "doc_frequency": 0.955825,
+       "site_count": 10,
+       "observed_types": {
+        "string": 671232
+       }
+      }
+     },
+     "extended": {
+      "path": "pump.extended",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": false,
+      "placement": "core",
+      "description": "Pump-specific extended data"
+     },
+     "manufacturer": {
+      "path": "pump.manufacturer",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 83.8% of documents",
+      "evidence": {
+       "docs_present": 588152,
+       "doc_frequency": 0.83752,
+       "site_count": 10,
+       "observed_types": {
+        "string": 588152
+       }
+      },
+      "observed_values": [
+       "Insulet"
+      ],
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 83.8% of documents)"
+      ]
+     },
+     "model": {
+      "path": "pump.model",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 83.8% of documents",
+      "evidence": {
+       "docs_present": 588152,
+       "doc_frequency": 0.83752,
+       "site_count": 10,
+       "observed_types": {
+        "string": 588152
+       }
+      },
+      "observed_values": [
+       "Dash"
+      ],
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 83.8% of documents)"
+      ]
+     },
+     "pumpID": {
+      "path": "pump.pumpID",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "evidence": {
+       "docs_present": 597334,
+       "doc_frequency": 0.850595,
+       "site_count": 10,
+       "observed_types": {
+        "string": 597334
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 85.1% of documents)"
+      ]
+     },
+     "reservoir": {
+      "path": "pump.reservoir",
+      "types": [
+       "number"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 14.5% of documents",
+      "description": "Reservoir level (U)",
+      "evidence": {
+       "docs_present": 101633,
+       "doc_frequency": 0.144724,
+       "site_count": 10,
+       "observed_types": {
+        "integer": 5536,
+        "number": 96097
+       }
+      }
+     },
+     "reservoir_display_override": {
+      "path": "pump.reservoir_display_override",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "common",
+      "tier_reason": "10/11 sites, 0.6% of documents",
+      "evidence": {
+       "docs_present": 4427,
+       "doc_frequency": 0.006304,
+       "site_count": 10,
+       "observed_types": {
+        "string": 4427
+       }
+      },
+      "observed_values": [
+       "Comms Issue",
+       "Finish Setup",
+       "Insulin Suspended",
+       "No Insulin",
+       "No Pod",
+       "Pod Expired",
+       "Signal Loss"
+      ],
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 0.6% of documents)"
+      ]
+     },
+     "reservoir_level_override": {
+      "path": "pump.reservoir_level_override",
+      "types": [
+       "integer"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "common",
+      "tier_reason": "10/11 sites, 0.6% of documents",
+      "evidence": {
+       "docs_present": 4427,
+       "doc_frequency": 0.006304,
+       "site_count": 10,
+       "observed_types": {
+        "integer": 4427
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 0.6% of documents)"
+      ]
+     },
+     "secondsFromGMT": {
+      "path": "pump.secondsFromGMT",
+      "types": [
+       "integer"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "evidence": {
+       "docs_present": 597334,
+       "doc_frequency": 0.850595,
+       "site_count": 10,
+       "observed_types": {
+        "integer": 597334
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 85.1% of documents)"
+      ]
+     },
+     "status": {
+      "path": "pump.status",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "vendor",
+      "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+      "evidence": {
+       "docs_present": 73898,
+       "doc_frequency": 0.10523,
+       "site_count": 1,
+       "observed_types": {
+        "object": 73898
+       }
+      },
+      "children": {
+       "bolusing": {
+        "path": "pump.status.bolusing",
+        "types": [
+         "boolean"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "boolean": 73898
+         }
+        }
+       },
+       "status": {
+        "path": "pump.status.status",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73898
+         }
+        },
+        "notes": [
+         "declared enum not enforced: 3 of 3 observed values could not be published, so the enum cannot be shown to be complete"
+        ]
+       },
+       "suspended": {
+        "path": "pump.status.suspended",
+        "types": [
+         "boolean"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "boolean": 73898
+         }
+        }
+       },
+       "timestamp": {
+        "path": "pump.status.timestamp",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "declared": true,
+        "observed": true,
+        "placement": "core",
+        "tier": "vendor",
+        "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+        "format": "date-time",
+        "evidence": {
+         "docs_present": 73898,
+         "doc_frequency": 0.10523,
+         "site_count": 1,
+         "observed_types": {
+          "string": 73898
+         }
+        }
+       }
+      }
+     },
+     "suspended": {
+      "path": "pump.suspended",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "evidence": {
+       "docs_present": 597334,
+       "doc_frequency": 0.850595,
+       "site_count": 10,
+       "observed_types": {
+        "boolean": 597334
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 85.1% of documents)"
+      ]
+     }
+    }
+   },
+   "srvCreated": {
+    "path": "srvCreated",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "format": "int64"
+   },
+   "srvModified": {
+    "path": "srvModified",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "format": "int64"
+   },
+   "uploader": {
+    "path": "uploader",
+    "types": [
+     "object"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 702254,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "object": 702254
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ],
+    "children": {
+     "battery": {
+      "path": "uploader.battery",
+      "types": [
+       "integer"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "description": "Phone/rig battery percentage",
+      "evidence": {
+       "docs_present": 702254,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "integer": 702254
+       }
+      }
+     },
+     "batteryVoltage": {
+      "path": "uploader.batteryVoltage",
+      "types": [
+       "number"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": false,
+      "placement": "core"
+     },
+     "isCharging": {
+      "path": "uploader.isCharging",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "extension",
+      "tier": "vendor",
+      "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+      "evidence": {
+       "docs_present": 73898,
+       "doc_frequency": 0.10523,
+       "site_count": 1,
+       "observed_types": {
+        "boolean": 73898
+       }
+      },
+      "notes": [
+       "extension-bag candidate (1/11 sites, but written in 89% of documents on 1 of them)"
+      ]
+     },
+     "name": {
+      "path": "uploader.name",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": true,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "description": "Uploader device name",
+      "evidence": {
+       "docs_present": 597335,
+       "doc_frequency": 0.850597,
+       "site_count": 10,
+       "observed_types": {
+        "string": 597335
+       }
+      }
+     },
+     "timestamp": {
+      "path": "uploader.timestamp",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "core",
+      "tier_reason": "10/11 sites, 85.1% of documents",
+      "evidence": {
+       "docs_present": 597335,
+       "doc_frequency": 0.850597,
+       "site_count": 10,
+       "observed_types": {
+        "string": 597335
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (10/11 sites, 85.1% of documents)"
+      ]
+     },
+     "type": {
+      "path": "uploader.type",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "extension",
+      "tier": "vendor",
+      "tier_reason": "1/11 sites, but written in 100% of documents on 1 of them",
+      "evidence": {
+       "docs_present": 31021,
+       "doc_frequency": 0.044173,
+       "site_count": 1,
+       "observed_types": {
+        "string": 31021
+       }
+      },
+      "notes": [
+       "extension-bag candidate (1/11 sites, but written in 100% of documents on 1 of them)"
+      ]
+     }
+    }
+   },
+   "uploaderBattery": {
+    "path": "uploaderBattery",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Alternate battery field (AAPS)"
+   },
+   "utcOffset": {
+    "path": "utcOffset",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 702254,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "integer": 702254
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   }
+  }
+ }
+}

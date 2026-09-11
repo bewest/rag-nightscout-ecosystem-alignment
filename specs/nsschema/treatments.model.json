@@ -1,0 +1,1182 @@
+{
+ "collection": "treatments",
+ "generated_by": "tools/nsschema/model.py",
+ "source_spec": "aid-treatments-2025.yaml",
+ "census": "reports/schema-census/treatments.census.json",
+ "root": {
+  "path": "",
+  "types": [
+   "object"
+  ],
+  "nullable": false,
+  "declared": false,
+  "observed": false,
+  "placement": "core",
+  "children": {
+   "_id": {
+    "path": "_id",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "MongoDB document ID",
+    "evidence": {
+     "docs_present": 369419,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 369419
+     }
+    },
+    "required_read": true,
+    "notes": [
+     "server-assigned: required on read, never on write"
+    ]
+   },
+   "absolute": {
+    "path": "absolute",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 54.9% of documents",
+    "description": "Temp basal as absolute rate (U/hr)",
+    "evidence": {
+     "docs_present": 202677,
+     "doc_frequency": 0.548637,
+     "site_count": 10,
+     "observed_types": {
+      "integer": 100212,
+      "number": 102465
+     }
+    }
+   },
+   "absorptionTime": {
+    "path": "absorptionTime",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "common",
+    "tier_reason": "10/11 sites, 1.8% of documents",
+    "description": "Carb absorption time in MINUTES (Nightscout convention).\nWARNING: Loop/Trio use SECONDS internally.",
+    "evidence": {
+     "docs_present": 6491,
+     "doc_frequency": 0.017571,
+     "site_count": 10,
+     "observed_types": {
+      "integer": 6491
+     }
+    }
+   },
+   "amount": {
+    "path": "amount",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 45.7% of documents",
+    "evidence": {
+     "docs_present": 168857,
+     "doc_frequency": 0.457088,
+     "site_count": 10,
+     "observed_types": {
+      "integer": 97537,
+      "number": 71320
+     }
+    },
+    "notes": [
+     "proposed addition from evidence (10/11 sites, 45.7% of documents)"
+    ]
+   },
+   "app": {
+    "path": "app",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Application identifier"
+   },
+   "automatic": {
+    "path": "automatic",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 81.3% of documents",
+    "description": "Whether insulin was automatically delivered.\ntrue = auto-bolus/SMB, false = manual bolus",
+    "evidence": {
+     "docs_present": 300228,
+     "doc_frequency": 0.812703,
+     "site_count": 10,
+     "observed_types": {
+      "boolean": 300228
+     }
+    }
+   },
+   "bolusType": {
+    "path": "bolusType",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Bolus delivery pattern:\n- Normal: Immediate delivery\n- Square: Extended over time\n- Dual: Immediate + extended",
+    "enum": [
+     "Dual",
+     "Normal",
+     "Square"
+    ]
+   },
+   "carbs": {
+    "path": "carbs",
+    "types": [
+     "number"
+    ],
+    "nullable": true,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "Carbohydrates in grams",
+    "evidence": {
+     "docs_present": 369419,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "integer": 10656,
+      "null": 353734,
+      "number": 5029
+     }
+    },
+    "minimum": 0,
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "nullable: null observed in live documents",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "correctionRange": {
+    "path": "correctionRange",
+    "types": [
+     "array"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "tier": "common",
+    "tier_reason": "7/11 sites, 0.5% of documents",
+    "evidence": {
+     "docs_present": 1673,
+     "doc_frequency": 0.004529,
+     "site_count": 7,
+     "observed_types": {
+      "array": 1673
+     }
+    },
+    "notes": [
+     "proposed addition from evidence (7/11 sites, 0.5% of documents)"
+    ],
+    "children": {
+     "[]": {
+      "path": "correctionRange[]",
+      "types": [
+       "number"
+      ],
+      "nullable": false,
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "tier": "common",
+      "tier_reason": "7/11 sites, 0.5% of documents",
+      "evidence": {
+       "docs_present": 1673,
+       "doc_frequency": 0.004529,
+       "site_count": 7,
+       "observed_types": {
+        "integer": 2346,
+        "number": 1000
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (7/11 sites, 0.5% of documents)"
+      ]
+     }
+    }
+   },
+   "created_at": {
+    "path": "created_at",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "format": "date-time",
+    "description": "Event timestamp (ISO 8601)",
+    "evidence": {
+     "docs_present": 369419,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 369419
+     }
+    },
+    "required_read": true,
+    "required_write": true
+   },
+   "device": {
+    "path": "device",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Device identifier"
+   },
+   "duration": {
+    "path": "duration",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 91.0% of documents",
+    "description": "Duration in MINUTES for temp basal, override, eCarbs.\nWARNING: Loop enacted uses SECONDS.",
+    "evidence": {
+     "docs_present": 336348,
+     "doc_frequency": 0.910478,
+     "site_count": 10,
+     "observed_types": {
+      "integer": 39116,
+      "number": 297232
+     }
+    }
+   },
+   "durationType": {
+    "path": "durationType",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "extension",
+    "tier": "rare",
+    "tier_reason": "1 documents in the whole corpus",
+    "evidence": {
+     "docs_present": 1,
+     "doc_frequency": 3e-06,
+     "site_count": 1,
+     "observed_types": {
+      "string": 1
+     }
+    },
+    "notes": [
+     "extension-bag candidate (1 documents in the whole corpus)"
+    ]
+   },
+   "endmills": {
+    "path": "endmills",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "extension",
+    "tier": "rare",
+    "tier_reason": "2 documents in the whole corpus",
+    "evidence": {
+     "docs_present": 2,
+     "doc_frequency": 5e-06,
+     "site_count": 1,
+     "observed_types": {
+      "integer": 2
+     }
+    },
+    "notes": [
+     "extension-bag candidate (2 documents in the whole corpus)"
+    ]
+   },
+   "enteredBy": {
+    "path": "enteredBy",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "User/device nickname that created treatment.\nWARNING: Unverified free-form string.",
+    "evidence": {
+     "docs_present": 369419,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 369419
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "eventType": {
+    "path": "eventType",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "Treatment classification. This is the primary discriminator for treatment types.\nNote: The same `eventType` may have different semantics across controllers.",
+    "evidence": {
+     "docs_present": 369419,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 369419
+     }
+    },
+    "observed_values": [
+     "Carb Correction",
+     "Correction Bolus",
+     "Sensor Start",
+     "Site Change",
+     "Temp Basal",
+     "Temporary Override"
+    ],
+    "required_read": true,
+    "required_write": true,
+    "notes": [
+     "declared enum not enforced: 8 of 14 observed values could not be published, so the enum cannot be shown to be complete"
+    ]
+   },
+   "fat": {
+    "path": "fat",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "sparse",
+    "tier_reason": "1/11 sites, 2.36% of documents",
+    "description": "Fat grams (for FPU calculation)",
+    "evidence": {
+     "docs_present": 8703,
+     "doc_frequency": 0.023559,
+     "site_count": 1,
+     "observed_types": {
+      "integer": 8703
+     }
+    }
+   },
+   "foodType": {
+    "path": "foodType",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "common",
+    "tier_reason": "10/11 sites, 2.2% of documents",
+    "description": "Food category/description",
+    "evidence": {
+     "docs_present": 8208,
+     "doc_frequency": 0.022219,
+     "site_count": 10,
+     "observed_types": {
+      "string": 8208
+     }
+    }
+   },
+   "glucose": {
+    "path": "glucose",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "sparse",
+    "tier_reason": "1/11 sites, 0.04% of documents",
+    "description": "Blood glucose value at time of treatment",
+    "evidence": {
+     "docs_present": 161,
+     "doc_frequency": 0.000436,
+     "site_count": 1,
+     "observed_types": {
+      "integer": 161
+     }
+    }
+   },
+   "glucoseType": {
+    "path": "glucoseType",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "sparse",
+    "tier_reason": "1/11 sites, 0.04% of documents",
+    "description": "Source of glucose reading",
+    "evidence": {
+     "docs_present": 161,
+     "doc_frequency": 0.000436,
+     "site_count": 1,
+     "observed_types": {
+      "string": 161
+     }
+    },
+    "notes": [
+     "declared enum not enforced: 1 of 1 observed values could not be published, so the enum cannot be shown to be complete"
+    ]
+   },
+   "id": {
+    "path": "id",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "extension",
+    "tier": "vendor",
+    "tier_reason": "1/11 sites, but written in 90% of documents on 1 of them",
+    "evidence": {
+     "docs_present": 55939,
+     "doc_frequency": 0.151424,
+     "site_count": 1,
+     "observed_types": {
+      "string": 55939
+     }
+    },
+    "notes": [
+     "extension-bag candidate (1/11 sites, but written in 90% of documents on 1 of them)"
+    ]
+   },
+   "identifier": {
+    "path": "identifier",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "sparse",
+    "tier_reason": "1/11 sites, 0.01% of documents",
+    "description": "API v3 primary key. Server-assigned.\nAAPS uses this for sync identity.",
+    "evidence": {
+     "docs_present": 48,
+     "doc_frequency": 0.00013,
+     "site_count": 1,
+     "observed_types": {
+      "string": 48
+     }
+    }
+   },
+   "insulin": {
+    "path": "insulin",
+    "types": [
+     "number"
+    ],
+    "nullable": true,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "Insulin amount in Units",
+    "evidence": {
+     "docs_present": 369419,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "integer": 2791,
+      "null": 224268,
+      "number": 142360
+     }
+    },
+    "minimum": 0,
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "nullable: null observed in live documents",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "insulinNeedsScaleFactor": {
+    "path": "insulinNeedsScaleFactor",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "tier": "common",
+    "tier_reason": "9/11 sites, 0.7% of documents",
+    "evidence": {
+     "docs_present": 2720,
+     "doc_frequency": 0.007363,
+     "site_count": 9,
+     "observed_types": {
+      "integer": 1187,
+      "number": 1533
+     }
+    },
+    "notes": [
+     "proposed addition from evidence (9/11 sites, 0.7% of documents)"
+    ]
+   },
+   "insulinType": {
+    "path": "insulinType",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 80.4% of documents",
+    "description": "Insulin product name (Humalog, NovoRapid, Fiasp, etc.)",
+    "evidence": {
+     "docs_present": 297054,
+     "doc_frequency": 0.804111,
+     "site_count": 10,
+     "observed_types": {
+      "string": 297054
+     }
+    },
+    "observed_values": [
+     "Humalog",
+     "Novolog"
+    ]
+   },
+   "isBasalInsulin": {
+    "path": "isBasalInsulin",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "AAPS MDI basal injection tracking"
+   },
+   "isReadOnly": {
+    "path": "isReadOnly",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core"
+   },
+   "isValid": {
+    "path": "isValid",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core"
+   },
+   "mills": {
+    "path": "mills",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "extension",
+    "tier": "rare",
+    "tier_reason": "2 documents in the whole corpus",
+    "evidence": {
+     "docs_present": 2,
+     "doc_frequency": 5e-06,
+     "site_count": 1,
+     "observed_types": {
+      "integer": 2
+     }
+    },
+    "notes": [
+     "extension-bag candidate (2 documents in the whole corpus)"
+    ]
+   },
+   "modifiedBy": {
+    "path": "modifiedBy",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core"
+   },
+   "notes": {
+    "path": "notes",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "common",
+    "tier_reason": "10/11 sites, 0.7% of documents",
+    "description": "Free-form notes",
+    "evidence": {
+     "docs_present": 2744,
+     "doc_frequency": 0.007428,
+     "site_count": 10,
+     "observed_types": {
+      "string": 2744
+     }
+    }
+   },
+   "percent": {
+    "path": "percent",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Temp basal as percentage of scheduled basal"
+   },
+   "percentage": {
+    "path": "percentage",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "AAPS profile percentage (100 = normal)"
+   },
+   "profile": {
+    "path": "profile",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Profile name for profile switch"
+   },
+   "profileJson": {
+    "path": "profileJson",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Full profile JSON (for inline profile switch)"
+   },
+   "programmed": {
+    "path": "programmed",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 35.3% of documents",
+    "description": "Originally programmed insulin (before cancellation)",
+    "evidence": {
+     "docs_present": 130257,
+     "doc_frequency": 0.3526,
+     "site_count": 10,
+     "observed_types": {
+      "integer": 1894,
+      "number": 128363
+     }
+    }
+   },
+   "protein": {
+    "path": "protein",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "sparse",
+    "tier_reason": "1/11 sites, 2.36% of documents",
+    "description": "Protein grams (for FPU calculation)",
+    "evidence": {
+     "docs_present": 8703,
+     "doc_frequency": 0.023559,
+     "site_count": 1,
+     "observed_types": {
+      "integer": 8703
+     }
+    }
+   },
+   "pumpId": {
+    "path": "pumpId",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "format": "int64",
+    "description": "Pump internal ID for this treatment"
+   },
+   "pumpSerial": {
+    "path": "pumpSerial",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Pump serial number"
+   },
+   "pumpType": {
+    "path": "pumpType",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "Pump type enum name"
+   },
+   "rate": {
+    "path": "rate",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 54.9% of documents",
+    "description": "Temp basal rate (U/hr) - alias for absolute",
+    "evidence": {
+     "docs_present": 202677,
+     "doc_frequency": 0.548637,
+     "site_count": 10,
+     "observed_types": {
+      "integer": 100212,
+      "number": 102465
+     }
+    }
+   },
+   "reason": {
+    "path": "reason",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "common",
+    "tier_reason": "10/11 sites, 1.1% of documents",
+    "description": "Override/temp target reason (e.g., \"Exercise\", \"Eating Soon\")",
+    "evidence": {
+     "docs_present": 3954,
+     "doc_frequency": 0.010703,
+     "site_count": 10,
+     "observed_types": {
+      "string": 3954
+     }
+    }
+   },
+   "remoteAddress": {
+    "path": "remoteAddress",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "tier": "common",
+    "tier_reason": "3/11 sites, 0.0% of documents",
+    "evidence": {
+     "docs_present": 98,
+     "doc_frequency": 0.000265,
+     "site_count": 3,
+     "observed_types": {
+      "string": 98
+     }
+    },
+    "notes": [
+     "proposed addition from evidence (3/11 sites, 0.0% of documents)"
+    ]
+   },
+   "srvCreated": {
+    "path": "srvCreated",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "format": "int64"
+   },
+   "srvModified": {
+    "path": "srvModified",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "format": "int64"
+   },
+   "subject": {
+    "path": "subject",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core"
+   },
+   "syncIdentifier": {
+    "path": "syncIdentifier",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 83.0% of documents",
+    "description": "Client-assigned sync identity (UUID).\nLoop and Trio primary sync mechanism.",
+    "evidence": {
+     "docs_present": 306741,
+     "doc_frequency": 0.830334,
+     "site_count": 10,
+     "observed_types": {
+      "string": 306741
+     }
+    }
+   },
+   "targetBottom": {
+    "path": "targetBottom",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "sparse",
+    "tier_reason": "1/11 sites, 0.01% of documents",
+    "description": "Lower target glucose (mg/dL)",
+    "evidence": {
+     "docs_present": 42,
+     "doc_frequency": 0.000114,
+     "site_count": 1,
+     "observed_types": {
+      "integer": 42
+     }
+    }
+   },
+   "targetTop": {
+    "path": "targetTop",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "sparse",
+    "tier_reason": "1/11 sites, 0.01% of documents",
+    "description": "Upper target glucose (mg/dL)",
+    "evidence": {
+     "docs_present": 42,
+     "doc_frequency": 0.000114,
+     "site_count": 1,
+     "observed_types": {
+      "integer": 42
+     }
+    }
+   },
+   "temp": {
+    "path": "temp",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 46.0% of documents",
+    "description": "Whether temp basal is expressed as rate or percentage",
+    "evidence": {
+     "docs_present": 169971,
+     "doc_frequency": 0.460104,
+     "site_count": 10,
+     "observed_types": {
+      "string": 169971
+     }
+    },
+    "enum": [
+     "absolute",
+     "percent"
+    ]
+   },
+   "timeshift": {
+    "path": "timeshift",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": false,
+    "placement": "core",
+    "description": "AAPS profile time shift in hours"
+   },
+   "timestamp": {
+    "path": "timestamp",
+    "types": [
+     "integer",
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 84.4% of documents",
+    "format": "int64",
+    "description": "Epoch milliseconds (alternative to created_at)",
+    "evidence": {
+     "docs_present": 311648,
+     "doc_frequency": 0.843617,
+     "site_count": 10,
+     "observed_types": {
+      "string": 311648
+     }
+    }
+   },
+   "type": {
+    "path": "type",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 35.3% of documents",
+    "description": "AAPS-specific bolus subtype.\nIMPORTANT: Check this field to identify SMBs, not just eventType.",
+    "evidence": {
+     "docs_present": 130257,
+     "doc_frequency": 0.3526,
+     "site_count": 10,
+     "observed_types": {
+      "string": 130257
+     }
+    },
+    "enum": [
+     "Normal",
+     "Priming",
+     "SMB",
+     "normal"
+    ],
+    "notes": [
+     "enum extended by observation: normal \u2014 present in live data but absent from the declared enum"
+    ]
+   },
+   "unabsorbed": {
+    "path": "unabsorbed",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "core",
+    "tier_reason": "10/11 sites, 35.3% of documents",
+    "description": "Unabsorbed insulin at time of bolus",
+    "evidence": {
+     "docs_present": 130257,
+     "doc_frequency": 0.3526,
+     "site_count": 10,
+     "observed_types": {
+      "integer": 130257
+     }
+    }
+   },
+   "units": {
+    "path": "units",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "extension",
+    "tier": "sparse",
+    "tier_reason": "1/11 sites, 0.04% of documents",
+    "evidence": {
+     "docs_present": 161,
+     "doc_frequency": 0.000436,
+     "site_count": 1,
+     "observed_types": {
+      "string": 161
+     }
+    },
+    "notes": [
+     "extension-bag candidate (1/11 sites, 0.04% of documents)"
+    ]
+   },
+   "userEnteredAt": {
+    "path": "userEnteredAt",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "tier": "common",
+    "tier_reason": "10/11 sites, 1.8% of documents",
+    "evidence": {
+     "docs_present": 6491,
+     "doc_frequency": 0.017571,
+     "site_count": 10,
+     "observed_types": {
+      "string": 6491
+     }
+    },
+    "notes": [
+     "proposed addition from evidence (10/11 sites, 1.8% of documents)"
+    ]
+   },
+   "userLastModifiedAt": {
+    "path": "userLastModifiedAt",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "tier": "common",
+    "tier_reason": "5/11 sites, 0.0% of documents",
+    "evidence": {
+     "docs_present": 131,
+     "doc_frequency": 0.000355,
+     "site_count": 5,
+     "observed_types": {
+      "string": 131
+     }
+    },
+    "notes": [
+     "proposed addition from evidence (5/11 sites, 0.0% of documents)"
+    ]
+   },
+   "utcOffset": {
+    "path": "utcOffset",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "declared": true,
+    "observed": true,
+    "placement": "core",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "description": "Timezone offset in minutes",
+    "evidence": {
+     "docs_present": 369419,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "integer": 369419
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   }
+  }
+ }
+}
