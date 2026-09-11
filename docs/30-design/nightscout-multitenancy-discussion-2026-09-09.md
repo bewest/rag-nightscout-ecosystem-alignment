@@ -1265,6 +1265,76 @@ concept, just a stricter query budget on an existing scope.
 This is Layer 0 work (§9), applies whether the store stays Mongo or moves to Postgres, and
 is validated by EXP-MT-042.
 
+### 6.5.1 If tenants can upload their own resource schemas (a CRD-like extensibility model), does that simplify the analysis?
+
+Short answer: it simplifies the *decision* (adopt a typed vocabulary now, not provisionally
+— §9.2's "Layer 0" already recommended this, so committing early costs nothing new), but
+it does **not** simplify away the tension §7.2/§7.3 already surfaced — it relocates it to a
+boundary that has to be drawn explicitly rather than left implicit. Two genuinely separate
+claims, not one:
+
+**What it simplifies: the query-profile and casting story in §6.5 becomes a runtime
+concern instead of a build-time one, and that is the *easier* direction to extend, not a
+new problem.** §6.5's proposal already treats "queryable fields + operators + bounds" as
+data generated from `specs/openapi/`. A Kubernetes-CRD-shaped registration flow (a tenant
+or plugin author submits a schema for a new resource type, the system compiles it into
+casting validators *and* a query profile, the same way `kubectl apply -f
+mycrd.yaml` triggers the API server to register a new `/apis/.../mycrd` route backed by
+its OpenAPI v3 structural schema) is the same generation step §6.5 already needs, just
+triggered at registration time rather than at `specs/openapi/` build time. Nothing about
+multitenancy or isolation changes: a custom resource is still just rows carrying
+`tenant_id` (§6.1/§6.2), still needs a query profile before any consumer class touches it
+(§6.5), and still needs the boundary validator generated from one source, not
+hand-maintained per resource type (§6.4/§6.4.1). Deciding *now* to make every resource —
+built-in and custom — pass through the same "generate casting + query profile from a
+declared schema" pipeline removes an entire later migration (retrofitting typing onto
+resources that shipped untyped), which is exactly the sequencing risk the roadmap's
+"Layer 0 first" ordering (§9.2) already exists to avoid.
+
+**What it does not simplify: which resources are eligible for the columnar,
+resident-in-`ddata` representation that §7.2/§7.3 measured the 9.9 KB/tenant and 10-20×
+wins from.** Those wins came from the representation being **known and fixed at compile/
+build time** — a columnar layout, or a Rust/WASM struct, is a bet on shape stability that
+open-ended, tenant-uploaded schemas are structurally unable to make, because the whole
+point of CRD-like extensibility is that the shape is not known until a tenant registers
+one. This is not a Nightscout-specific problem; it is the same tradeoff Kubernetes itself
+made and is open about: built-in resource types (`Pod`, `Deployment`) get typed Go
+structs, protobuf codecs, and dedicated storage/index paths, while CRDs are stored as
+generic JSON validated against a structural schema, with `list`/`watch` cost scaling with
+object count rather than getting the same specialized caching built-ins receive — CRD
+authors are explicitly warned about this ceiling in Kubernetes' own API conventions. That
+is an architectural pattern being cited by analogy, not a benchmark run against this
+codebase; it is not a substitute for measuring Nightscout's own case.
+
+**The reconciliation is a boundary, not a single answer, and it should be decided
+explicitly rather than left to accrete implicitly:**
+
+- **A closed, versioned "core" set (SGV, treatments, devicestatus, profile — the existing
+  four `specs/openapi/aid-*.yaml` collections) stays compile-time-typed and eligible for
+  the columnar/resident representation.** This is the set the 10-20× win and the
+  alarm/IOB/COB compute path (§3, §7.2) actually depend on, and it is closed by design —
+  extending it is a maintainer-reviewed spec change, not a tenant action.
+- **Tenant-uploaded custom resources are a second, explicitly separate tier**: validated
+  at write time against their registered schema (closing the casting gap §6.5 already
+  wants), stored as schema-validated JSON/JSONB rather than promoted into the hot columnar
+  cache, and given their own query profile (bounded fields/operators/limits, §6.5) so an
+  open-ended custom type cannot become a new unbounded-query surface the moment it exists.
+  A custom resource is available to plugins/reports through the normal repository seam
+  (§6.2) — it is simply not a candidate for the resident-memory fast path until and unless
+  it is promoted into the closed core set through the same reviewed process.
+
+**Net effect on the roadmap: this argues for committing to the typed-vocabulary step
+(§9.2 Layer 0) immediately and unconditionally**, since it is the one piece of
+infrastructure both tiers need regardless of which tier a given resource ends up in — and
+it argues against a single "schema" concept covering both tiers, since conflating them
+would either freeze the core set's performance eligibility criteria out of a
+generic-JSON model (losing §7.2/§7.3's win) or require the columnar representation to
+handle arbitrary, runtime-registered shapes (a materially harder engineering problem than
+either tier alone, and not the thing this document's evidence has shown is needed to hit
+"10 000 tenants"). This is EXP-MT-053 (§8.3): register a synthetic custom resource type
+through a CRD-like flow and confirm the generated casting/query-profile pipeline and the
+tier boundary hold together, before any tenant-facing custom-schema feature ships.
+
 ### 6.6 Where isolation is enforced, per storage architecture
 
 The engine matters less than **which component is responsible for isolation**, because that
@@ -1635,6 +1705,7 @@ running at scale, but they are no longer open questions.
 | EXP-MT-050 | Migrate `nightscout-roles-gateway`'s `registered_sites` schema (`tools/mt-bench/nrg-resolution-poc/`) into an in-core tenant-resolution `Map`, keep RBAC/schedule/OAuth2-brokering features running unchanged in NRG (§9.4) | Does the resolution-only migration actually drop the ~1 000× per-request hop cost measured, and does any production RBAC/schedule rule get silently lost in the process |
 | EXP-MT-051 | Simulated vendor-endpoint rate limiter (e.g. HTTP 429 past N req/min per source IP) in front of a `nightscout-connect` worker pool holding many tenant accounts on one egress IP, with and without an egress-proxy-pool layer routing accounts across multiple apparent IPs (§10.5) | Does per-IP vendor rate limiting actually degrade poll success/latency at density with a single egress path, and does distributing accounts across a small proxy pool restore the density `nightscout-connect`'s per-account backoff alone cannot |
 | EXP-MT-052 | End-to-end harness running all five component types (`ROUTER`, `AUTH`, `APP` shards, `REALTIME`, `VCPOOL`) together at increasing shard/tenant count (§10.5) | Does the composed router-facade picture hold together operationally — correct routing, no cross-shard leakage, realtime delivery latency stable — or does a component interaction appear that no single-component benchmark (EXP-MT-041/045/047/048/050) would have caught |
+| EXP-MT-053 | Register a synthetic custom resource type through a CRD-like schema-submission flow; confirm casting validators and a query profile (§6.5) are generated automatically and the resource is excluded from the resident columnar cache by default (§6.5.1) | Does the registration-time generation pipeline actually produce the same casting/allowlist guarantees §6.5 requires for built-in resources, and does the core-vs-custom tier boundary hold without manual per-resource wiring |
 
 `EXP-MT-030` matters disproportionately: the *same* generator against Nocturne gives the
 ecosystem its first apples-to-apples server comparison, and fills the gap that Nocturne's

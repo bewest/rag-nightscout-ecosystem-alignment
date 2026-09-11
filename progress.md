@@ -2708,3 +2708,25 @@ sections plus one new gap identified and investigated live.
   (confirmed per-account exponential backoff only, no IP/proxy-pool awareness)
 - `docs/sdqctl-proposals/nightscout-connect-vendor-interop.md` (grepped for existing
   rate-limit/proxy coverage — none found, confirming this is a new topic for the doc)
+
+**Follow-up 19 (VCPOOL vs REALTIME clarification; does committing early to typed
+schemas — including tenant-uploadable custom-resource/CRD-like schemas — simplify the
+multitenancy analysis?)**
+- Clarified in chat: `VCPOOL` = vendor-connectivity worker pool (outbound pull from
+  Dexcom/Tandem/Glooko/etc., §5.6/§9.3); `REALTIME` = fan-out push to connected clients
+  (websocket/WAL-driven, §5.4/§9.3) — different directions, different statefulness shape.
+- Added new **§6.5.1**: committing early to a typed vocabulary (§9.2 Layer 0) is
+  unconditionally good regardless of CRD-like extensibility — it is the same
+  casting+query-profile generation pipeline §6.5 already wants, just triggered at
+  registration time instead of `specs/openapi/` build time. But it does **not** dissolve
+  the §7.2/§7.3 columnar-representation tension: that win required a shape known at
+  compile/build time, which open-ended tenant-registered schemas structurally cannot
+  provide. Cited Kubernetes' own built-in-vs-CRD storage/performance split as an
+  analogous, explicitly-labeled-as-analogy precedent (not a benchmark run here).
+  Concluded a two-tier boundary: closed core set (existing 4 `specs/openapi/aid-*.yaml`
+  collections) stays compile-time-typed/columnar-eligible; tenant-uploaded custom
+  resources are schema-validated JSON/JSONB with their own query profile, promoted into
+  the core set only via a reviewed spec change, not automatically.
+- Added EXP-MT-053 (register a synthetic custom resource via CRD-like flow, confirm
+  casting/query-profile generation and cache-tier exclusion) to the canonical §8.3 table.
+- Re-ran `tools/verify_refs.py` — no new broken refs from this doc.
