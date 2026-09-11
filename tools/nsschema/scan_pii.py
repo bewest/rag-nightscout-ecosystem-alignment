@@ -22,6 +22,13 @@ list of thousands of timestamps hides the one device token in it:
     Not identifying alone, narrowing in combination — exact timestamps,
     clock times, timezones, a person's own emoji. A captured-document
     corpus is *made of* these, so they are reported only under ``--all``.
+``review``
+    A value a rule cannot decide. Device strings are the case that matters:
+    they are mostly app and hardware names, which are exactly the evidence
+    this corpus exists to record, but LibreLinkUp and some uploaders can
+    surface a user-chosen name there. Masking them by vocabulary was tried
+    and every value it touched was a false positive, so the unrecognised
+    ones are surfaced for a person to judge instead of being destroyed.
 
 It reports **paths and categories, never the values themselves** — a report
 about a leak should not be a second copy of it. ``--count`` shows how many
@@ -51,8 +58,25 @@ from . import redact
 # Opaque high-entropy strings: APNs device tokens, API keys, session ids.
 _OPAQUE = re.compile(r"^[0-9a-fA-F]{32,}$|^[A-Za-z0-9_\-]{40,}$")
 
-CATEGORIES = ("credential", "identity", "quasi-identifier")
+CATEGORIES = ("credential", "identity", "quasi-identifier", "review")
 DEFAULT_CATEGORIES = ("credential", "identity")
+
+# Device strings are app, bridge and hardware names. This list exists to
+# quieten the ones already recognised, not to define what is allowed: a
+# token missing from it is reported for review, never masked.
+_DEVICE_VOCABULARY = frozenset({
+    "dexcom", "libre", "librelink", "librelinkup", "libreview", "freestyle",
+    "xdrip", "xdrip+", "xdrip4ios", "xdripswift", "spike", "diable", "zukka",
+    "loop", "trio", "aaps", "androidaps", "openaps", "nightscout", "nocturne",
+    "share", "share2", "webfollower", "follower", "bridge", "connect",
+    "medtronic", "minimed", "omnipod", "dash", "eros", "tandem", "tslim",
+    "insulet", "roche", "accuchek", "combo", "dana", "ypsopump", "kaleido",
+    "pump", "cgm", "sensor", "transmitter", "phone", "iphone", "ipad",
+    "watch", "android", "ios", "uploader", "carelink", "glooko", "tidepool",
+    "enlite", "guardian", "eversense", "sibionics", "poctech", "device",
+    "sony", "samsung", "google", "pixel", "xiaomi", "huawei", "motorola",
+    "via", "and", "on", "by", "with", "from",
+})
 
 # Field-name fragments that make a value a credential rather than an
 # identifier: it grants access, or names the account that built the app.
@@ -72,8 +96,25 @@ _VOCABULARY = frozenset({
 })
 
 
+def _device_tokens_for_review(value):
+    """Device-string tokens that no vocabulary or pattern explains."""
+    unknown = []
+    for token in value.split():
+        bare = token.strip("()[]{},")
+        if not bare or any(ch.isdigit() for ch in bare) or "://" in token:
+            continue
+        parts = [p for p in re.split(r"[-_.:/+]+", bare.lower()) if p]
+        if not any(p in _DEVICE_VOCABULARY for p in parts):
+            unknown.append(bare)
+    return unknown
+
+
 def categorize(path: str, value: str):
     low_path = path.lower()
+    if low_path.rsplit(".", 1)[-1].rstrip("[]") == "device":
+        # Never `identity`: a device string is evidence first. Only the
+        # tokens nothing explains are worth a human's attention.
+        return "review" if _device_tokens_for_review(value) else None
     if any(f in low_path for f in _CREDENTIAL_FRAGMENTS) or _OPAQUE.match(value):
         return "credential"
     if value.strip().lower() in _VOCABULARY:

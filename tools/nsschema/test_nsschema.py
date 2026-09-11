@@ -1078,26 +1078,40 @@ def test_a_missing_source_is_reported_not_guessed(tmp_path):
 
 
 @pytest.mark.parametrize("value,expected", [
-    # LibreLinkUp puts the connection's *display name* in the device string.
-    ("Zukka (LibreLinkUp)", "device-01 (LibreLinkUp)"),
-    ("Dexcom G7 DXCM3Y", "Dexcom G7"),          # appended serial
-    ("xDrip-WebFollower", "xDrip-WebFollower"),  # vocabulary in a sub-token
+    ("Dexcom G7 DXCM3Y", "Dexcom G7"),          # appended serial, stripped
+    # Everything else survives. Each of these was masked by an earlier
+    # vocabulary rule and each was a false positive: a bridge app, a phone
+    # model, and a placeholder in a public research export.
+    ("Zukka (LibreLinkUp)", "Zukka (LibreLinkUp)"),
+    ("Sony SO-53B", "Sony SO-53B"),
+    ("device", "device"),
+    ("xDrip-WebFollower", "xDrip-WebFollower"),
     ("xDrip4iOS via Nightscout", "xDrip4iOS via Nightscout"),
     ("loop://iPhone", "loop://iPhone"),
     ("com.dexcom.g7app", "com.dexcom.g7app"),
-    ("share2", "share2"),
-    ("Trio", "Trio"),
 ])
-def test_device_strings_keep_technology_and_lose_people(value, expected):
+def test_device_strings_keep_everything_but_serials(value, expected):
     assert sanitize.Masker().device_string(value) == expected
 
 
-def test_only_restricts_which_rules_run(tmp_path, monkeypatch):
+def test_a_device_string_is_never_graded_as_identity():
+    # It is evidence first. Grading it identity invites masking it.
+    assert scan_pii.categorize("[].device", "Zukka (LibreLinkUp)") is None
+    assert scan_pii.categorize("[].device", "loop://iPhone") is None
+
+
+def test_an_unrecognised_device_token_is_raised_for_review_not_masked():
+    assert scan_pii.categorize("[].device", "Someones Phone") == "review"
+    assert scan_pii._device_tokens_for_review("Zukka (LibreLinkUp)") == []
+    assert scan_pii._device_tokens_for_review("Dexcom G7") == []
+
+
+def test_only_restricts_which_rules_run(monkeypatch):
     # Adding a rule later must not re-mask what earlier passes settled.
     monkeypatch.setattr(sanitize, "_ONLY_RULES", frozenset({"device-string"}))
-    doc = {"device": "Zukka (LibreLinkUp)", "_id": "69c85c022b390b801650a69a"}
+    doc = {"device": "Dexcom G7 DXCM3Y", "_id": "69c85c022b390b801650a69a"}
     out = sanitize.transform(doc, sanitize.Masker())
-    assert out["device"] != doc["device"]
+    assert out["device"] == "Dexcom G7"
     assert out["_id"] == doc["_id"]
 
 

@@ -111,25 +111,6 @@ RULES = OrderedDict([
     ("baseurl", "url"),
 ])
 
-# Technology words that may appear inside a device string. A token sharing
-# none of these is free text — and in a device string, free text is usually
-# a person: LibreLinkUp puts the *connection's display name* in there, so
-# "<a first name> (LibreLinkUp)" is a real observed value.
-DEVICE_VOCABULARY = frozenset({
-    "dexcom", "libre", "librelink", "librelinkup", "libreview", "freestyle",
-    "xdrip", "xdrip+", "xdrip4ios", "xdripswift", "spike", "diable",
-    "loop", "trio", "aaps", "androidaps", "openaps", "nightscout", "nocturne",
-    "share", "share2", "sharefollow", "webfollower", "follower", "bridge",
-    "medtronic", "minimed", "omnipod", "dash", "eros", "tandem", "tslim",
-    "insulet", "roche", "accuchek", "combo", "dana", "danar", "danars",
-    "ypsopump", "ypso", "kaleido", "equil", "pump", "cgm", "sensor",
-    "transmitter", "phone", "iphone", "ipad", "watch", "android", "ios",
-    "uploader", "connect", "carelink", "glooko", "tidepool", "sim",
-    "enlite", "guardian", "eversense", "sibionics", "poctech",
-    # Joining words that appear between two technology tokens.
-    "via", "and", "on", "by", "with", "from", "to", "for", "the",
-})
-
 # Values that are ecosystem vocabulary rather than a person's device name.
 KNOWN_CLIENTS = frozenset({
     "loop", "trio", "androidaps", "aaps", "xdrip", "xdrip+", "xdrip4ios",
@@ -253,36 +234,29 @@ class Masker:
             f"device-{self._counter('device', value):02d}"
 
     def device_string(self, value):
-        """Keep the technology, drop serials and names.
+        """Strip an appended hardware serial. Keep everything else.
 
         `device` drives controller detection in the analysis pipeline and is
-        core schema evidence, so it cannot simply be replaced. But uploaders
-        put two kinds of personal data in it: a hardware serial appended to
-        a model ("Dexcom G7 <serial>"), and — via LibreLinkUp — the
-        connection's display name, which is a person's name.
+        core schema evidence, so it is stripped as little as possible: only
+        serial-shaped tokens, which are unambiguous by pattern
+        ("Dexcom G7 <serial>").
 
-        A token survives if it is recognisably about technology: it shares a
-        part with the device vocabulary, or it carries a digit (a model
-        number such as G7 or share2), or it is structured (``loop://iPhone``,
-        ``com.dexcom.g7app``). Anything else is replaced by a counter, which
-        keeps distinct devices distinct without saying what they were.
+        An earlier version also masked any token it did not recognise as
+        technology, on the theory that free text in a device string is
+        usually a person — LibreLinkUp does surface a connection's display
+        name. Every value it actually touched was a false positive: "Zukka
+        (LibreLinkUp)" is a bridge app, "Sony SO-53B" is a phone model, and
+        "device" is a placeholder in a public research export. Three for
+        three, destroying exactly the ecosystem evidence this corpus exists
+        to record. A vocabulary cannot keep up with the bridge apps people
+        write, and masking is a one-way door on evidence.
+
+        A personal name in a device string remains possible. It is handled
+        by review rather than by guessing: `scan_pii.py` reports device
+        strings whose tokens it does not recognise, for a human to judge.
         """
-        out = []
-        for token in value.split():
-            bare = token.strip("()[]{},")
-            if not bare:
-                continue
-            if _SERIAL_TOKEN.match(bare):
-                continue
-            parts = re.split(r"[-_.:/+]+", bare.lower())
-            technological = (
-                any(part in DEVICE_VOCABULARY for part in parts if part)
-                or any(ch.isdigit() for ch in bare)
-                or "://" in token
-            )
-            out.append(token if technological
-                       else f"device-{self._counter('devicename', bare):02d}")
-        return " ".join(out) if out else "device"
+        tokens = [t for t in value.split() if not _SERIAL_TOKEN.match(t)]
+        return " ".join(tokens) if tokens else "device"
 
     def entered_by(self, value):
         low = value.strip().lower()
