@@ -453,8 +453,8 @@ The cgm-remote-monitor team has documented a comprehensive modernization roadmap
 
 ## Related Documents
 
-- `externals/cgm-remote-monitor/docs/proposals/mongodb-modernization-implementation-plan.md`
-- `externals/cgm-remote-monitor/docs/proposals/websocket-array-deduplication-issue.md`
+- `externals/cgm-remote-monitor-official/docs/proposals/mongodb-modernization-implementation-plan.md`
+- `externals/cgm-remote-monitor-official/docs/proposals/websocket-array-deduplication-issue.md`
 - `externals/cgm-remote-monitor/docs/meta/modernization-roadmap.md`
 - `externals/cgm-remote-monitor/docs/meta/DOCUMENTATION-PROGRESS.md`
 - `externals/cgm-remote-monitor/docs/test-specs/flaky-tests.md`

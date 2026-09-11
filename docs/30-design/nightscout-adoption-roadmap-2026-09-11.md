@@ -423,14 +423,17 @@ Those are the two complaints this series started from.
   collected through `/api/v1/`.
 * **Nocturne's appetite for a shipped registration catalogue**, which would
   land mostly on the hub side.
-* **How much of `docs/proposals/` is live.** The documents are in `dev` and
-  dated January 2026, and several phases here overlap them directly —
-  registration versus the control-plane RFC, the sync contract versus bridge
-  rules, decomposition versus multi-writer conflict resolution. Whether they
-  are active, parked, or superseded is not observable from the tree, and
-  reconciling this series against them is the obvious next step — arguably
-  ahead of Phase 1, since duplicating an existing RFC is the specific
-  failure this work is supposed to prevent.
+* **How much of `docs/proposals/` is live.** *Partly answered since this was
+  written.* The reconciliation is done —
+  [Reconciling the agentic control plane RFC](./nightscout-control-plane-reconciliation-2026-09-11.md)
+  — and the overlap is as expected: registration versus the control-plane
+  RFC, the sync contract versus bridge rules, decomposition versus
+  multi-writer conflict resolution. What the tree can say about *live* is
+  narrow and negative: **nothing in `lib/` or `tests/` references any of
+  these documents**, the only mention outside the directory is one line in
+  `docs/INDEX.md`, and all four questionnaire responses are still *Pending*.
+  Drafted and parked is the reading; nobody has said so, and asking a
+  maintainer is still the only way to know.
 * **Whether the pump/CGM connectivity push has a shared bottleneck** that a
   data-layer proposal could relieve. Five projects widening device coverage
   in parallel is the ecosystem's revealed priority; nothing here tests

@@ -151,7 +151,7 @@ An RFC exists for integrating OpenID Connect into Nightscout:
 | **Actor claims in JWT** | ❌ Needed | Identity metadata |
 | **Nightscout OIDC plugin** | ❌ Needed | Redirect/extract claims |
 
-**Source**: `externals/cgm-remote-monitor/docs/proposals/oidc-actor-identity-proposal.md`
+**Source**: `externals/cgm-remote-monitor-official/docs/proposals/oidc-actor-identity-proposal.md`
 
 ### Benefits of OIDC
 
@@ -278,7 +278,7 @@ Based on this inventory, a community identity provider should:
 
 ## Related Documentation
 
-- [OIDC Actor Identity Proposal](../../externals/cgm-remote-monitor/docs/proposals/oidc-actor-identity-proposal.md)
+- [OIDC Actor Identity Proposal](../../externals/cgm-remote-monitor-official/docs/proposals/oidc-actor-identity-proposal.md)
 - [Nocturne Auth Compatibility](nocturne-auth-compatibility.md)
 - [Interoperability Matrix](../../mapping/cross-project/interoperability-matrix.md)
 - [Nocturne Connectors](../../mapping/nocturne/connectors.md)
@@ -300,5 +300,5 @@ Based on this inventory, a community identity provider should:
 - `mapping/cross-project/interoperability-matrix.md`
 - `mapping/nocturne/connectors.md`
 - `traceability/nightscout-api-gaps.md`
-- `externals/cgm-remote-monitor/docs/proposals/oidc-actor-identity-proposal.md`
+- `externals/cgm-remote-monitor-official/docs/proposals/oidc-actor-identity-proposal.md`
 - `externals/nocturne/docs/plans/authentication-oidc-implementation.md`

@@ -410,7 +410,7 @@ class NightscoutOIDCAuth(
 ## Related Documents
 
 - `docs/10-domain/trusted-identity-providers.md` - Prerequisite inventory
-- `externals/cgm-remote-monitor/docs/proposals/oidc-actor-identity-proposal.md` - NRG OIDC RFC
+- `externals/cgm-remote-monitor-official/docs/proposals/oidc-actor-identity-proposal.md` - NRG OIDC RFC
 - `specs/openapi/nocturne-v4-extension.yaml` - V4 API (uses OIDC)
 - `docs/sdqctl-proposals/nightscout-v4-integration-proposal.md` - V4 integration context
 

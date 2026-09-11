@@ -332,10 +332,10 @@ These changes would unblock the most downstream value:
 ### Phase 4: Ecosystem Enablement (High effort, strategic)
 
 1. **Swift SDK for v3 API** (GAP-API-003)
-2. **Authority hierarchy implementation** (GAP-AUTH-002) - Depends on [OIDC Actor Identity proposal](../../externals/cgm-remote-monitor/docs/proposals/oidc-actor-identity-proposal.md)
+2. **Authority hierarchy implementation** (GAP-AUTH-002) - Depends on [OIDC Actor Identity proposal](../../externals/cgm-remote-monitor-official/docs/proposals/oidc-actor-identity-proposal.md)
 3. **Effect timeline schema and uploads** (GAP-SYNC-002)
 
-**Note**: Phases 2-4 benefit from coordination with the Nightscout [Conflict Resolution](../../externals/cgm-remote-monitor/docs/proposals/conflict-resolution.md) and [Agent Control Plane](../../externals/cgm-remote-monitor/docs/proposals/agent-control-plane-rfc.md) proposals.
+**Note**: Phases 2-4 benefit from coordination with the Nightscout [Conflict Resolution](../../externals/cgm-remote-monitor-official/docs/proposals/conflict-resolution.md) and [Agent Control Plane](../../externals/cgm-remote-monitor-official/docs/proposals/agent-control-plane-rfc.md) proposals.
 
 ---
 

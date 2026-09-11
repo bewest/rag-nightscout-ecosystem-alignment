@@ -194,8 +194,8 @@ Deep analysis of the cgm-remote-monitor team's latest work on the `wip/replit/wi
 - `tests/api.aaps-client.test.js` - 375 lines
 
 **Key Documentation** (verified line counts):
-- `externals/cgm-remote-monitor/docs/proposals/mongodb-modernization-implementation-plan.md` (940 lines)
-- `externals/cgm-remote-monitor/docs/proposals/websocket-array-deduplication-issue.md` (262 lines)
+- `externals/cgm-remote-monitor-official/docs/proposals/mongodb-modernization-implementation-plan.md` (940 lines)
+- `externals/cgm-remote-monitor-official/docs/proposals/websocket-array-deduplication-issue.md` (262 lines)
 - `externals/cgm-remote-monitor/docs/INDEX.md` (75 lines)
 - `externals/cgm-remote-monitor/scripts/flaky-test-runner.js` (513 lines)
 

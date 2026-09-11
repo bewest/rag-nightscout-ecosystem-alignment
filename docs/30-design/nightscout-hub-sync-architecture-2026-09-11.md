@@ -302,6 +302,11 @@ retrofit into the collection API.
 reconciliation target because the honest finding is that cgm-remote-monitor
 has drafted most of it already, and this series had not noticed.
 
+> **The reconciliation has since been done.** This section remains the map;
+> the specific edits it implies — twelve of them, across four upstream files,
+> plus five corrections the corpus supplies — are in
+> [Reconciling the agentic control plane RFC](./nightscout-control-plane-reconciliation-2026-09-11.md).
+
 The question is real and this design does not answer it. A registration says
 what a controller *kind* writes. It does not say which controller is
 *running right now*, which one owns a given channel, or what to do when two
@@ -392,7 +397,10 @@ alone.
   watermark are the same object is undecided (§5.2).
 * **Liveness and channel ownership entirely.** No measurement, no design —
   see §5.2. Nothing in the corpus can say which controller was running when,
-  because nothing records it.
+  because nothing records it. The upstream `ControllerInstanceRegistration`
+  is the nearest thing to an answer, and its instance identity is taken from
+  the `device` string, which §3.1 found unreliable — see the
+  [reconciliation](./nightscout-control-plane-reconciliation-2026-09-11.md) §3.3.
 * **Anything about AndroidAPS from data.** Still no AAPS closed-loop site in
   the corpus.
 * **The registration's own lifecycle.** How a controller updates a

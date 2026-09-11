@@ -44,6 +44,23 @@ In multi-user AID systems, conflicts arise when different actors (humans, caregi
 
 ---
 
+> **This document is a near-duplicate of upstream prior art.**
+> `cgm-remote-monitor/docs/proposals/conflict-resolution.md` (added
+> 2026-01-01) carries the same authority levels, the same five conflict
+> scenarios, and the same delegation-grant structure. Two trees maintaining
+> one model is the failure this alignment work exists to prevent, so one of
+> them should become the source and the other a pointer. Which one is a
+> maintainer's call, not this repository's. See
+> [Reconciling the agentic control plane RFC](../30-design/nightscout-control-plane-reconciliation-2026-09-11.md)
+> §6, edit 10.
+>
+> What is *not* duplicated, and is this document's own contribution, is the
+> preamble above: the credential rationale and the zero-trust direction that
+> say why identity is federated rather than stored. Upstream has no
+> equivalent.
+
+---
+
 ## Actor Types
 
 ### Primary Actors
@@ -247,10 +264,10 @@ Identity-based access requires explicit consent:
 ## Cross-References
 
 - [ADR-003: No Custom Credentials](../90-decisions/adr-003-no-custom-credentials.md)
-- [Nightscout Conflict Resolution Proposal](../../externals/cgm-remote-monitor/docs/proposals/conflict-resolution.md)
+- [Nightscout Conflict Resolution Proposal](../../externals/cgm-remote-monitor-official/docs/proposals/conflict-resolution.md)
 - [NRG Access Modes](../../externals/nightscout-roles-gateway/docs/access-modes.md)
 - [NRG Policies and Permissions](../../externals/nightscout-roles-gateway/docs/policies-and-permissions.md)
-- [OIDC Actor Identity Proposal](../../externals/cgm-remote-monitor/docs/proposals/oidc-actor-identity-proposal.md)
+- [OIDC Actor Identity Proposal](../../externals/cgm-remote-monitor-official/docs/proposals/oidc-actor-identity-proposal.md)
 
 ---
 
