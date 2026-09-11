@@ -18,8 +18,8 @@ rather than to a controller.
 | | |
 |---|---|
 | **Seven claims the corpus confirms** | Including two the RFC treats as open questions that already have answers on the wire: an idempotency key (`syncIdentifier`, 306,741 treatments) and a human/automation flag (`automatic`, 300,228 treatments) |
-| **Five things the corpus corrects** | The Trio discriminator never fires; instance identity is taken from the least reliable field; `OverrideInstance.effectiveEffects` would be empty for 19% of observed active overrides; Loop has no `suggested` at all |
-| **Two simplifications with arithmetic behind them** | The ten new collections would *add* 2,880 requests/day per client under the same model that measured the existing fan-out — and the RFC already contains the endpoint that removes the need for them |
+| **Five things the corpus corrects** | The Trio discriminator never fires; instance identity is taken from the least reliable field; `OverrideInstance.effectiveEffects` would be empty for 19% of observed active overrides; the suggested/enacted split already exists under three different key names |
+| **Two simplifications with arithmetic behind them** | The ten new collections would add 2,880 requests/day *only because the delta is per collection*. Fix that first — a small change to already-generic code — and their cost is zero. The RFC does not have to choose between typed resources and cheap sync |
 | **One thing to do before any of it** | `integration-questionnaire.md` is twenty questions and fourteen empty tables. Roughly half can be pre-filled from measurement and source. An implementer corrects a wrong table far faster than they fill an empty one |
 
 **The single most useful finding for the RFC's own case:** `CapabilitySnapshot.effectiveLimits.maxIOB`
@@ -168,63 +168,84 @@ confidence or completeness flag, and `PolicyComposition` must be able to say
 vocabulary — `DeliveryObservation.confidence: confirmed | inferred |
 reported` — it just is not applied to overrides.
 
-### 3.5 Loop has no `suggested`, so question C7 has no single answer
+### 3.5 All three publish a suggestion, under three different names
 
 `integration-questionnaire.md` C7 asks all three controllers to fill in one
-table for suggested / requested / confirmed. The corpus says the three states
-live in different places per controller:
+table for suggested / requested / confirmed. All three publish a suggestion —
+but under three different key names, and Loop publishes **two** of them for
+two different purposes:
 
 | State | Loop | oref0 family (Trio, AAPS) |
 |---|---|---|
-| Suggested | `loop.automaticDoseRecommendation` — **183,049 docs (26%, 10 sites)** | `openaps.suggested` — **73,898 docs (1 site)** |
+| Suggested — manual bolus | `loop.recommendedBolus` — **597,143 docs (85%, 10 sites)** | `openaps.recommendedBolus` — 41,474 (1 site) |
+| Suggested — automatic dose | `loop.automaticDoseRecommendation` (`bolusVolume`, `tempBasalAdjustment`) — **183,049 (26%, 10 sites)** | `openaps.suggested` — **73,898 (1 site)** |
 | Requested | not separately published | not separately published |
 | Confirmed | `loop.enacted` + `loop.enacted.received` (bool) — **405,228 (58%)** | `openaps.enacted` + `.received` (bool) — **73,834** |
 
-Neither publishes *requested* as distinct from *confirmed*. Both publish a
-boolean ACK and neither publishes an error code except Loop's sparse
+So the *suggested* row is already satisfied everywhere — `OBS-LOOP-003`
+("what the algorithm recommended, separately from what was enacted") is met
+on 10 of 10 sites. What no controller publishes is **requested** as distinct
+from confirmed, and neither publishes an error code beyond Loop's sparse
 `failureReason` (2.4%).
 
 **Recommended edit:** replace C7's empty table with this one, marked
 *"pre-filled from corpus; correct what is wrong"*, and add the real question
 underneath, which is narrower and answerable: **is there a point in your code
 where a command has been sent and not yet acknowledged, and can you emit
-it?**
+it?** That is the only one of the three states that is genuinely missing, and
+asking for it alone is a far smaller request than asking for all three.
 
 ---
 
 ## 4. Two simplifications, with arithmetic
 
-### 4.1 The ten new collections work against the RFC's own goal
+### 4.1 Fix the sync primitive, then the collections are free
+
+**This is not an argument against the ten collections.** It is an argument
+that their cost is an artifact of the sync primitive, and that the primitive
+should be fixed first — after which the RFC can have as many typed resources
+as fidelity needs.
 
 `agent-control-plane-rfc.md`'s API table has eleven rows: **ten new
-collections**, eight of them "CRUD + history" and two "Read + history" —
-and, in the eleventh row, a single `GET /api/v3/events?cursor=` stream that
-carries everything those ten would carry.
+collections**, eight "CRUD + history" and two "Read + history" — and, in the
+eleventh row, a single `GET /api/v3/events?cursor=` stream that carries
+everything those ten would carry.
 
 Under the model in `reports/schema-census/sync-cost.json` (distinct endpoints
 per 5-minute cycle × 288 cycles/day, a source-derived upper bound, not a
 packet capture):
 
-| | Endpoints/cycle | Requests/day |
-|---|---|---|
-| AndroidAPS today | 20 | 5,760 |
-| **+ one `history/{from}` read per new collection** | **30** | **8,640** (+50%) |
-| The event stream alone | 1 | 288 |
-| A batched contract (this series, §3.2) | 2 | 576 |
+| | Endpoints/cycle | Requests/day | Cost of the ten new collections |
+|---|---|---|---|
+| AndroidAPS today, per-collection deltas | 20 | 5,760 | **+2,880/day** |
+| The event stream alone | 1 | 288 | 0 |
+| A collection-agnostic delta + batch write | 2 | 576 | **0** |
 
 The measured finding that motivates the whole sync section of this series is
 that **the client using v3 correctly has the worst fan-out, because v3 gives
-it a delta per collection.** Ten more collections is ten more deltas, and
-that is before any write endpoint.
+it a delta per collection.** Under that shape, every resource added to
+improve replay makes sync worse, and a fidelity proposal reads as a cost
+proposal. That trade is not inherent — it is the per-collection delta, and it
+is a small change to code that is already generic:
+`lib/api3/specific/lastModified.js` already loops every collection with a
+per-collection permission check, and `lib/api3/generic/history/operation.js`
+is already generic in `opCtx.col`.
+[The concrete endpoints, the merged-cursor correctness rule, and the
+arithmetic are in the replay-fidelity proposal](./PROPOSAL-replay-fidelity-changes-2026-09-11.md) §1.
 
-**Recommended edit:** make `/events` the **only** read path in Phase 1. Keep
-the collections as *projections* — materialized views a UI or a legacy client
-can read — not as a sync surface. Move "New Collections (API v3)" from the
-Phase 1 deliverables to a later phase, and mark the table "projection
-endpoints, not sync endpoints."
+**Recommended edits, in this order:**
 
-This costs the RFC nothing: the event stream is already its Phase 1
-deliverable.
+1. **Land the collection-agnostic delta read and the batch write first.**
+   They are independently useful — they are the largest single sync
+   improvement available to AAPS today — and they remove the cost objection
+   to everything after them.
+2. **Then make `/events` the Phase 1 read path** and the ten collections
+   *projections*: materialized views a UI or legacy client reads, not a sync
+   surface each client must poll separately.
+
+Neither costs the RFC anything it wanted. The event stream is already its
+Phase 1 deliverable, and the collections survive intact — they simply stop
+being the thing a controller has to iterate.
 
 ### 4.2 One cursor, not two
 
@@ -288,7 +309,7 @@ each is independently useful, and none requires this series to be adopted.
 | # | File | Change | Source |
 |---|---|---|---|
 | 1 | `agent-control-plane-rfc.md` § Motivation | Add "safety limits and effective parameters are not recoverable", with the 20%/50% replay figures and `max_iob` | §3.1 |
-| 2 | `agent-control-plane-rfc.md` § API Design | Retitle "New Collections" → "Projection endpoints"; move the ten collections out of Phase 1; make `/events` the only Phase 1 read path | §4.1 |
+| 2 | `agent-control-plane-rfc.md` § API Design | Land a collection-agnostic delta read and batch write **first**; then make `/events` the Phase 1 read path and the ten collections projections rather than a sync surface | §4.1 |
 | 3 | `agent-control-plane-rfc.md` § Capabilities | Note that `loop.version` and `openaps.version` are already published, so `ControllerKindDefinition.version` needs no controller change | §2 |
 | 4 | `agent-control-plane-rfc.md` § Implementation Phases | Add the write-serialization question about the global cursor to open questions | §4.2 |
 | 5 | `bridge-rules.md:68` | Delete `if (devicestatus.trio)`; document that oref derivatives share `openaps` and need a second-order signal | §3.2 |

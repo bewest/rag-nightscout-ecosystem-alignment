@@ -23,6 +23,14 @@ every measurement in the series serves one of them:
 | **b** | **Provide ways to extend it.** A controller can ship a feature nobody else has without negotiating with the ecosystem first | The current answer is "invent an `eventType` and hope". The [quirks registry](../../specs/quirks/) is the archaeology of that answer | [Extensibility models](./nightscout-extensibility-models-2026-09-10.md) §1, §5 |
 | **c** | **Offer full data fidelity — replay and observability.** What a controller decided, on what inputs, in what state, is recoverable afterwards | Replay completeness is **20% for Loop, 50% for the oref0 family**. A real consumer reads settings from screenshots because there is nowhere else | [devicestatus and profile fidelity](./nightscout-devicestatus-profile-fidelity-2026-09-10.md) §3, [Hub-and-spoke sync](./nightscout-hub-sync-architecture-2026-09-11.md) §4.2, `specs/conformance/observability-profile.yaml` |
 
+**Motivation (c) now has a change list rather than a measurement.**
+[Concrete changes for replay fidelity](./PROPOSAL-replay-fidelity-changes-2026-09-11.md)
+names them: eight more keys in a settings block Loop already writes takes it
+from 20% to 65% recorded and 100% recorded-or-derivable; one input-vector
+object takes the oref0 family from 50% to 78% and 100%. Neither needs a new
+API version, and the same document shows why adding typed resources need not
+cost a single extra request.
+
 **These pull against each other, and the controller description is the
 artifact that resolves the tension.** Unification (a) pushes toward one
 fixed schema; extensibility (b) pushes toward letting each controller differ;
@@ -300,3 +308,4 @@ Every number above is reproducible from this repository:
 | Whether the primitives are actually evidenced | [Primitive coverage](./nightscout-primitive-coverage-2026-09-11.md) |
 | Prior art for all of this in the hub's own tree | `cgm-remote-monitor/docs/proposals/` — `agent-control-plane-rfc.md`, `bridge-rules.md`, `conflict-resolution.md`, `integration-questionnaire.md`. See [hub-and-spoke sync](./nightscout-hub-sync-architecture-2026-09-11.md) §5.2 |
 | What to change in that prior art, and what it already gets right | [Reconciling the agentic control plane RFC](./nightscout-control-plane-reconciliation-2026-09-11.md) — seven claims the corpus confirms, five it corrects, twelve proposed edits |
+| The concrete changes that raise replay fidelity, per project | [Replay fidelity changes](./PROPOSAL-replay-fidelity-changes-2026-09-11.md) — five changes, measured before and after |

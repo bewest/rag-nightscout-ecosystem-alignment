@@ -27,7 +27,7 @@ decomposes into primitives so queries stay bounded and replay stays possible.
 | 1 | **The three controllers have three different sync designs, and two have none.** AAPS uses v3's `lastModified` watermark and `history/{from}` deltas. Loop and Trio are on v1 with **no watermark and no delta endpoint at all** | §2 |
 | 2 | **Cost is dominated by per-collection fan-out, whichever API version.** Up to 5,760 requests/day for AAPS, 2,016 for Loop, 1,440 for Trio, against 576 for a two-request-per-cycle batched design | §2.1 |
 | 3 | **Replay completeness is 20% for Loop and 50% for oref0 derivatives** — the share of declared dosing inputs actually recorded. Including derivable inputs: 55% and 72% | §4.2 |
-| 4 | **A real replay consumer already works around this.** `oref-digital-twin` reads settings from *screenshots* with a vision model, or from AAPS's encrypted preference export, because Nightscout does not carry them. Its replay code documents `currenttemp` and insulin `activity` as unrecoverable and approximates both | §4.1 |
+| 4 | **A real replay consumer already works around this.** `oref-digital-twin` reads settings from *screenshots* with a vision model, or from AAPS's encrypted preference export, because Nightscout does not carry them. `max_iob` is in its `REQUIRED_SETTINGS` and is recorded by no controller anywhere | §4.1 |
 | 5 | **The state machine primitive already exists.** Nocturne's `StateSpan` — category, state, start, end, source, supersession — is the shape needed to observe modes, overrides, exclusions and coordination between sources | §5 |
 
 **The design in one sentence.** A controller registers its state model once;
@@ -181,6 +181,17 @@ about, what page size suits its cadence, and which filters it may use. v3's
 `lastModified` tells a client what changed everywhere and leaves it to fan
 out; a registered contract lets the hub answer the whole question once.
 
+**And it does not need a registration to start.** A collection-agnostic
+`GET /api/v3/history/{lastModified}` plus a single batch write gets the same
+two-requests-per-cycle result on v3 today, with no registration, no new
+version, and no controller-side model — `lastModified.js` already loops every
+collection with a per-collection permission check and
+`history/operation.js` is already generic in `opCtx.col`. That is the
+cheapest first step and it is specified in the
+[replay-fidelity proposal](./PROPOSAL-replay-fidelity-changes-2026-09-11.md)
+§1, including the merged-cursor rule that makes it correct under per-collection
+page limits.
+
 ### 3.3 Composite on the wire, primitive in storage
 
 The edge device sends what it has, in the shape it has it. The hub
@@ -219,21 +230,26 @@ only the shapes a registration declared does not.
 `determine-basal` under altered settings. To do that it needs the settings.
 It cannot get them from Nightscout, so it gets them from **a screenshot, via
 a vision model**, or from AAPS's client-side-decrypted preference export.
-Its own settings module says so plainly, and its replay code is equally
-direct:
-
-> Two inputs cannot be recovered faithfully from devicestatus alone and are
-> approximated: `currenttemp` — the temp basal running at decision time
-> (assumed none); insulin `activity` — the IOB curve's instantaneous
-> activity (assumed 0), which degrades bgi/eventualBG.
-
-and
+Its own settings module says so plainly, and its replay code names the one
+input it cannot proceed without:
 
 > `REQUIRED_SETTINGS = ("max_iob",)`
 
 `max_iob` is the input measured as recorded by no controller anywhere. A
-serious replay tool, written independently, hits exactly the three gaps this
-series measured. That is the physician complaint in code form.
+serious replay tool, written independently, hits the gap this series
+measured. That is the physician complaint in code form.
+
+**One correction to an earlier reading of this file.** Its module docstring
+also lists `currenttemp` and insulin `activity` as unrecoverable from
+devicestatus and approximates both. Neither claim survives measurement:
+`activity` is **already read** by its own `_iob_data_from_cycle` when
+`openaps.iob.activity` is present, and `currenttemp` **is published** —
+`openaps.iob.lastTemp` carries `rate`, `duration` and `started_at` on 73,891
+documents, the dosing map classifies it as *recorded*, and `OBS-OREF-006`
+checks for it. The tool still substitutes a zero temp basal. That is a
+consumer fix, not a Nightscout gap, and it is the cheapest fidelity gain
+identified anywhere in this series — see the
+[replay-fidelity proposal](./PROPOSAL-replay-fidelity-changes-2026-09-11.md) §6.
 
 ### 4.2 Completeness as a published number
 
@@ -364,7 +380,9 @@ alone.
 
 1. **Publish settings.** Additive, no migration, no new API. Closes the
    physician complaint and the digital-twin workaround. The registrations
-   name the fields.
+   name the fields, and for Loop it is **eight more keys in the
+   `loopSettings` block it already writes on 200 of 202 profile documents** —
+   see the [replay-fidelity proposal](./PROPOSAL-replay-fidelity-changes-2026-09-11.md) §3.
 2. **Registration and the derived contract, read-only first.** A controller
    registers; the hub offers the cursor envelope. No write path yet, so
    nothing can be corrupted by an early adopter.
