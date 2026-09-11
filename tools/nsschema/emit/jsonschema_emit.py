@@ -55,6 +55,13 @@ def node_schema(node, profile, strictness, include_extensions=True):
 
     if node.get("description"):
         schema["description"] = node["description"].strip().split("\n")[0][:300]
+    # Sensitivity travels with the field, so a consumer strips by label
+    # rather than by a bespoke scrubber. Annotation keywords; validators
+    # ignore them.
+    if node.get("sensitivity"):
+        schema["x-sensitivity"] = node["sensitivity"]
+    if node.get("data_category"):
+        schema["x-data-category"] = node["data_category"]
     if node.get("observed_values"):
         # Annotation keyword: documents what live data holds without
         # constraining the field. Validators ignore unknown keywords.

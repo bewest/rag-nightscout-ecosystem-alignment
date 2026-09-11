@@ -1,0 +1,141 @@
+# Sensitivity as a type-level annotation on schema primitives.
+#
+# The idea: a field's sensitivity is a property of the field, declared once
+# where the field is declared, and carried by every artifact generated from
+# it — JSON Schema, zod, mongoose, Arrow, protobuf descriptors, and the
+# controller registration. Then stripping is a projection over labels rather
+# than a bespoke scrubber written per consumer, and the same policy can be
+# evaluated on the mobile controller before it serialises, in the hub before
+# it stores, and at a delegate's boundary before it reads.
+#
+# Two axes, because one is not enough. "How identifying is it" and "what
+# kind of thing is it" are different questions, and a policy usually needs
+# both: a research export wants low identifiability *and* health category;
+# a clinician view wants therapy category at high identifiability.
+#
+# Ordering note, stated because it looks wrong at a glance: `descriptive`
+# sits below `quasi-identifying`, and glucose values are `descriptive`. That
+# is a statement about *identifiability*, not about importance or
+# confidentiality. Glucose is health data and a policy may refuse it
+# outright — the `category` axis is how. What the sensitivity axis says is
+# that a glucose value re-identifies a person far less readily than their
+# name, their device serial or a millisecond-precision timestamp.
+
+version: 0.1-draft
+status: >-
+  Draft for maintainer discussion. The label assignments are derived from
+  the redaction policy this repository already applies and from the census,
+  not asserted from scratch — see `derivation` below. What may lawfully be
+  disclosed under any policy is a question for qualified review.
+
+# Ordered most-restrictive first. A policy names the lowest level it admits.
+sensitivity_levels:
+  - id: secret
+    title: Credential or key material
+    rule: >-
+      Never leaves the party that needs it, never logged, never in derived
+      data. Not merely sensitive — actionable by a holder.
+    examples: [deviceToken, apiSecret, teamID, bundleIdentifier]
+  - id: identifying
+    title: Directly identifies a person, install or device
+    rule: >-
+      Stripped or pseudonymised for any recipient not entitled to identity.
+      Pseudonyms must be stable to preserve joins, and non-reversible.
+    examples: [_id, syncIdentifier, pumpID, uploader.name, enteredBy]
+  - id: quasi-identifying
+    title: Narrowing in combination
+    rule: >-
+      Safe individually, identifying when combined. Coarsen rather than
+      strip where the analysis allows — a timestamp to the hour, a timezone
+      to an offset.
+    examples: [created_at, "store.{}.timezone", "overridePresets[].name", symbol]
+  - id: descriptive
+    title: Measurement, setting or vocabulary
+    rule: >-
+      Carries no identity on its own. Still health data; the category axis
+      is what a policy uses to refuse it.
+    examples: [sgv, insulin, carbs, eventType, direction, units]
+
+categories:
+  - id: credential
+    note: Grants access or attests identity.
+  - id: identity
+    note: Names a person, an account or an installation.
+  - id: device
+    note: Names or serialises hardware. Often mixed with useful model vocabulary.
+  - id: health-measurement
+    note: Observed physiology — glucose, heart rate, steps.
+  - id: health-derived
+    note: Computed state — IOB, COB, predictions, algorithm output.
+  - id: therapy-setting
+    note: Configuration that determines dosing. What a replay and a clinician need.
+  - id: temporal
+    note: When something happened. Precision is the dial.
+  - id: location
+    note: Timezone, geolocation, anything placing a person.
+  - id: free-text
+    note: The user's own words. Unbounded, so unlabelable in advance.
+  - id: vocabulary
+    note: Closed enumerations and structural keys.
+
+# How labels are assigned, so they are checkable rather than opinions.
+derivation:
+  source: tools/nsschema/sensitivity.py
+  rules:
+    - "A field whose name the redaction denylist rejects is `identifying`
+       (or `secret` where the name matches a credential fragment)."
+    - "A field whose observed values the census withheld as personal-shaped
+       is `quasi-identifying`."
+    - "A field whose values the census could publish, having survived
+       cross-site corroboration, is `descriptive` with category
+       `vocabulary`."
+    - "A numeric field with a published range is `descriptive`."
+    - "Anything unlabelled defaults to `identifying`. A new field must be
+       argued *down*, never silently up: the failure mode of the opposite
+       default is a leak on the next schema change."
+
+# Named projections. A policy is a floor on sensitivity plus a category
+# allow-list; a field passes if it satisfies both.
+profiles:
+  - id: full
+    title: Everything, to a party entitled to identity
+    max_sensitivity: secret
+    categories: ["*"]
+  - id: clinical
+    title: A clinician or care team reviewing therapy
+    max_sensitivity: quasi-identifying
+    categories: [health-measurement, health-derived, therapy-setting, temporal, vocabulary]
+    note: >-
+      Deliberately admits quasi-identifying temporal data: a clinician
+      reviewing dosing needs real timestamps. It excludes credentials and
+      direct identifiers, which they do not.
+  - id: replay
+    title: A replay or conformance tool
+    max_sensitivity: quasi-identifying
+    categories: [health-measurement, health-derived, therapy-setting, temporal, vocabulary]
+    note: >-
+      Same shape as clinical, and separate because its needs will diverge —
+      a replay needs settings history a clinician view may not show.
+  - id: effect-only
+    title: A delegate that may see consequences, not motivations
+    max_sensitivity: descriptive
+    categories: [health-derived, therapy-setting, vocabulary]
+    note: >-
+      The projection behind TherapyEffect's `effect-only` disclosure:
+      "insulin needs were scaled 1.15x for six hours" without why.
+  - id: research
+    title: De-identified aggregate analysis
+    max_sensitivity: descriptive
+    categories: [health-measurement, health-derived, therapy-setting, vocabulary]
+    note: >-
+      Excludes `temporal` entirely rather than coarsening it, because
+      coarsening is analysis-specific and belongs to the exporter, not to a
+      static label.
+  - id: schema-evidence
+    title: What this repository's own census publishes
+    max_sensitivity: descriptive
+    categories: [vocabulary]
+    note: >-
+      The narrowest profile here, and the one with a track record: it is the
+      policy the census arrived at after five successive rules, each added
+      because the previous set demonstrably leaked.

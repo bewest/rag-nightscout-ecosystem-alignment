@@ -6,88 +6,132 @@
  "type": "object",
  "properties": {
   "_id": {
-   "type": "string"
+   "type": "string",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "created_at": {
    "type": "string",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "temporal",
    "format": "date-time"
   },
   "defaultProfile": {
    "type": "string",
-   "description": "Name of the default profile in store"
+   "description": "Name of the default profile in store",
+   "x-sensitivity": "identifying",
+   "x-data-category": "therapy-setting"
   },
   "enteredBy": {
-   "type": "string"
+   "type": "string",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "identifier": {
-   "type": "string"
+   "type": "string",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "isValid": {
-   "type": "boolean"
+   "type": "boolean",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary"
   },
   "loopSettings": {
    "type": "object",
    "description": "Loop's therapy-settings block, written into the profile document",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary",
    "properties": {
     "bundleIdentifier": {
      "type": "string",
-     "description": "The app bundle identifier of the Loop build that wrote this"
+     "description": "The app bundle identifier of the Loop build that wrote this",
+     "x-sensitivity": "identifying",
+     "x-data-category": "identity"
     },
     "deviceToken": {
      "type": "string",
-     "description": "APNs device token for remote commands. A credential-grade value:"
+     "description": "APNs device token for remote commands. A credential-grade value:",
+     "x-sensitivity": "secret",
+     "x-data-category": "credential"
     },
     "dosingEnabled": {
      "type": "boolean",
-     "description": "Whether closed-loop dosing is enabled."
+     "description": "Whether closed-loop dosing is enabled.",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary"
     },
     "dosingStrategy": {
      "type": "string",
      "description": "Dosing strategy. Observed values are automaticBolus and",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "therapy-setting",
      "x-observed-values": [
       "automaticBolus"
      ]
     },
     "maximumBasalRatePerHour": {
      "type": "number",
-     "description": "Safety limit on temp basal rate (U/hr)."
+     "description": "Safety limit on temp basal rate (U/hr).",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "therapy-setting"
     },
     "maximumBolus": {
      "type": "number",
-     "description": "Safety limit on a single bolus (U)."
+     "description": "Safety limit on a single bolus (U).",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "therapy-setting"
     },
     "minimumBGGuard": {
      "type": "number",
-     "description": "Suspend threshold (mg/dL)."
+     "description": "Suspend threshold (mg/dL).",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "therapy-setting"
     },
     "overridePresets": {
      "type": "array",
      "description": "User-defined override presets.",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "therapy-setting",
      "items": {
       "type": "object",
       "description": "A Loop override preset or an active override.",
+      "x-sensitivity": "descriptive",
+      "x-data-category": "therapy-setting",
       "properties": {
        "duration": {
         "type": "integer",
-        "description": "Duration in seconds; 0 means indefinite."
+        "description": "Duration in seconds; 0 means indefinite.",
+        "x-sensitivity": "descriptive",
+        "x-data-category": "therapy-setting"
        },
        "insulinNeedsScaleFactor": {
         "type": "number",
-        "description": "Multiplier applied to insulin needs (1.0 = unchanged)."
+        "description": "Multiplier applied to insulin needs (1.0 = unchanged).",
+        "x-sensitivity": "descriptive",
+        "x-data-category": "therapy-setting"
        },
        "name": {
         "type": "string",
-        "description": "User-chosen name. Personal data; do not aggregate."
+        "description": "User-chosen name. Personal data; do not aggregate.",
+        "x-sensitivity": "identifying",
+        "x-data-category": "identity"
        },
        "symbol": {
         "type": "string",
-        "description": "User-chosen emoji for the override. Personal data \u2014 a person's"
+        "description": "User-chosen emoji for the override. Personal data \u2014 a person's",
+        "x-sensitivity": "quasi-identifying",
+        "x-data-category": "free-text"
        },
        "targetRange": {
         "type": "array",
         "description": "Two-element [low, high] target range in mg/dL.",
+        "x-sensitivity": "descriptive",
+        "x-data-category": "therapy-setting",
         "items": {
-         "type": "number"
+         "type": "number",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "therapy-setting"
         }
        }
       },
@@ -97,35 +141,53 @@
     "preMealTargetRange": {
      "type": "array",
      "description": "Two-element [low, high] pre-meal target in mg/dL.",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "therapy-setting",
      "items": {
-      "type": "number"
+      "type": "number",
+      "x-sensitivity": "descriptive",
+      "x-data-category": "therapy-setting"
      }
     },
     "scheduleOverride": {
      "type": "object",
      "description": "The currently scheduled or active override, if any.",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "therapy-setting",
      "properties": {
       "duration": {
        "type": "integer",
-       "description": "Duration in seconds; 0 means indefinite."
+       "description": "Duration in seconds; 0 means indefinite.",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "insulinNeedsScaleFactor": {
        "type": "number",
-       "description": "Multiplier applied to insulin needs (1.0 = unchanged)."
+       "description": "Multiplier applied to insulin needs (1.0 = unchanged).",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "name": {
        "type": "string",
-       "description": "User-chosen name. Personal data; do not aggregate."
+       "description": "User-chosen name. Personal data; do not aggregate.",
+       "x-sensitivity": "identifying",
+       "x-data-category": "identity"
       },
       "symbol": {
        "type": "string",
-       "description": "User-chosen emoji for the override. Personal data \u2014 a person's"
+       "description": "User-chosen emoji for the override. Personal data \u2014 a person's",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "free-text"
       },
       "targetRange": {
        "type": "array",
        "description": "Two-element [low, high] target range in mg/dL.",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting",
        "items": {
-        "type": "number"
+        "type": "number",
+        "x-sensitivity": "descriptive",
+        "x-data-category": "therapy-setting"
        }
       }
      },
@@ -140,46 +202,68 @@
     "string"
    ],
    "description": "Epoch milliseconds.",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "temporal",
    "x-observed-values": [
     "<n>"
    ]
   },
   "srvCreated": {
-   "type": "integer"
+   "type": "integer",
+   "x-sensitivity": "identifying",
+   "x-data-category": "temporal"
   },
   "srvModified": {
-   "type": "integer"
+   "type": "integer",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "temporal"
   },
   "startDate": {
    "type": "string",
    "description": "When this profile becomes effective",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "temporal",
    "format": "date-time"
   },
   "store": {
    "type": "object",
    "description": "Map of profile name \u2192 profile settings",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary",
    "additionalProperties": {
     "type": "object",
     "description": "Individual profile settings. Contains time-varying arrays",
+    "x-sensitivity": "descriptive",
+    "x-data-category": "vocabulary",
     "properties": {
      "basal": {
       "type": "array",
       "description": "Scheduled basal rates (U/hr) by time of day",
+      "x-sensitivity": "descriptive",
+      "x-data-category": "therapy-setting",
       "items": {
        "type": "object",
        "description": "Time-value pair for schedule items (basal, ISF, CR, targets).",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting",
        "properties": {
         "time": {
          "type": "string",
-         "description": "Time of day in HH:MM format (24-hour)"
+         "description": "Time of day in HH:MM format (24-hour)",
+         "x-sensitivity": "quasi-identifying",
+         "x-data-category": "temporal"
         },
         "timeAsSeconds": {
          "type": "integer",
-         "description": "Seconds since midnight (alternative representation)."
+         "description": "Seconds since midnight (alternative representation).",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "therapy-setting"
         },
         "value": {
          "type": "number",
-         "description": "Value at this time"
+         "description": "Value at this time",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "vocabulary"
         }
        },
        "additionalProperties": false
@@ -188,21 +272,31 @@
      "carbratio": {
       "type": "array",
       "description": "Carb Ratio (g/U) by time of day.",
+      "x-sensitivity": "descriptive",
+      "x-data-category": "therapy-setting",
       "items": {
        "type": "object",
        "description": "Time-value pair for schedule items (basal, ISF, CR, targets).",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting",
        "properties": {
         "time": {
          "type": "string",
-         "description": "Time of day in HH:MM format (24-hour)"
+         "description": "Time of day in HH:MM format (24-hour)",
+         "x-sensitivity": "quasi-identifying",
+         "x-data-category": "temporal"
         },
         "timeAsSeconds": {
          "type": "integer",
-         "description": "Seconds since midnight (alternative representation)."
+         "description": "Seconds since midnight (alternative representation).",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "therapy-setting"
         },
         "value": {
          "type": "number",
-         "description": "Value at this time"
+         "description": "Value at this time",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "vocabulary"
         }
        },
        "additionalProperties": false
@@ -214,6 +308,8 @@
        "string"
       ],
       "description": "Carb absorption rate (g/hr) - legacy, rarely used.",
+      "x-sensitivity": "descriptive",
+      "x-data-category": "therapy-setting",
       "x-observed-values": [
        "0"
       ]
@@ -224,6 +320,8 @@
        "string"
       ],
       "description": "Delay before carb absorption starts (minutes).",
+      "x-sensitivity": "descriptive",
+      "x-data-category": "vocabulary",
       "x-observed-values": [
        "0"
       ]
@@ -231,12 +329,16 @@
      "dia": {
       "type": "number",
       "description": "Duration of Insulin Action in HOURS.",
+      "x-sensitivity": "descriptive",
+      "x-data-category": "therapy-setting",
       "minimum": 2,
       "maximum": 10
      },
      "insulinCurve": {
       "type": "string",
       "description": "Insulin curve model name.",
+      "x-sensitivity": "identifying",
+      "x-data-category": "therapy-setting",
       "enum": [
        "bilinear",
        "exponential",
@@ -246,26 +348,38 @@
      },
      "insulinPeakTime": {
       "type": "integer",
-      "description": "Insulin activity peak time in minutes."
+      "description": "Insulin activity peak time in minutes.",
+      "x-sensitivity": "identifying",
+      "x-data-category": "temporal"
      },
      "sens": {
       "type": "array",
       "description": "Insulin Sensitivity Factor by time of day.",
+      "x-sensitivity": "descriptive",
+      "x-data-category": "therapy-setting",
       "items": {
        "type": "object",
        "description": "Time-value pair for schedule items (basal, ISF, CR, targets).",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting",
        "properties": {
         "time": {
          "type": "string",
-         "description": "Time of day in HH:MM format (24-hour)"
+         "description": "Time of day in HH:MM format (24-hour)",
+         "x-sensitivity": "quasi-identifying",
+         "x-data-category": "temporal"
         },
         "timeAsSeconds": {
          "type": "integer",
-         "description": "Seconds since midnight (alternative representation)."
+         "description": "Seconds since midnight (alternative representation).",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "therapy-setting"
         },
         "value": {
          "type": "number",
-         "description": "Value at this time"
+         "description": "Value at this time",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "vocabulary"
         }
        },
        "additionalProperties": false
@@ -274,26 +388,38 @@
      "startDate": {
       "type": "string",
       "description": "When this named profile becomes effective.",
+      "x-sensitivity": "quasi-identifying",
+      "x-data-category": "temporal",
       "format": "date-time"
      },
      "target_high": {
       "type": "array",
       "description": "Upper target glucose by time of day",
+      "x-sensitivity": "descriptive",
+      "x-data-category": "therapy-setting",
       "items": {
        "type": "object",
        "description": "Time-value pair for schedule items (basal, ISF, CR, targets).",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting",
        "properties": {
         "time": {
          "type": "string",
-         "description": "Time of day in HH:MM format (24-hour)"
+         "description": "Time of day in HH:MM format (24-hour)",
+         "x-sensitivity": "quasi-identifying",
+         "x-data-category": "temporal"
         },
         "timeAsSeconds": {
          "type": "integer",
-         "description": "Seconds since midnight (alternative representation)."
+         "description": "Seconds since midnight (alternative representation).",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "therapy-setting"
         },
         "value": {
          "type": "number",
-         "description": "Value at this time"
+         "description": "Value at this time",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "vocabulary"
         }
        },
        "additionalProperties": false
@@ -302,21 +428,31 @@
      "target_low": {
       "type": "array",
       "description": "Lower target glucose by time of day",
+      "x-sensitivity": "descriptive",
+      "x-data-category": "therapy-setting",
       "items": {
        "type": "object",
        "description": "Time-value pair for schedule items (basal, ISF, CR, targets).",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting",
        "properties": {
         "time": {
          "type": "string",
-         "description": "Time of day in HH:MM format (24-hour)"
+         "description": "Time of day in HH:MM format (24-hour)",
+         "x-sensitivity": "quasi-identifying",
+         "x-data-category": "temporal"
         },
         "timeAsSeconds": {
          "type": "integer",
-         "description": "Seconds since midnight (alternative representation)."
+         "description": "Seconds since midnight (alternative representation).",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "therapy-setting"
         },
         "value": {
          "type": "number",
-         "description": "Value at this time"
+         "description": "Value at this time",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "vocabulary"
         }
        },
        "additionalProperties": false
@@ -324,11 +460,15 @@
      },
      "timezone": {
       "type": "string",
-      "description": "IANA timezone name"
+      "description": "IANA timezone name",
+      "x-sensitivity": "quasi-identifying",
+      "x-data-category": "location"
      },
      "units": {
       "type": "string",
       "description": "Per-profile glucose display units, distinct from the document's",
+      "x-sensitivity": "descriptive",
+      "x-data-category": "vocabulary",
       "x-observed-values": [
        "mg/dL"
       ]
@@ -340,12 +480,16 @@
   "units": {
    "type": "string",
    "description": "Glucose display units.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary",
    "x-observed-values": [
     "mg/dL"
    ]
   },
   "utcOffset": {
-   "type": "integer"
+   "type": "integer",
+   "x-sensitivity": "identifying",
+   "x-data-category": "location"
   }
  },
  "required": [

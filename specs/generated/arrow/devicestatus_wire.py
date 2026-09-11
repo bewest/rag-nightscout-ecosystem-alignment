@@ -17,13 +17,13 @@ checks that the two do not contradict each other.
 import pyarrow as pa
 
 DEVICESTATUS_WIRE_SCHEMA = pa.schema([
-    pa.field("_id", pa.large_string()),  # 100% docs, 11 sites; universal
-    pa.field("configuration", pa.large_string()),  # object with no observed fields; stored as JSON text
-    pa.field("created_at", pa.large_string()),  # 100% docs, 11 sites; universal
-    pa.field("device", pa.large_string()),  # 100% docs, 11 sites; universal
-    pa.field("identifier", pa.large_string()),
-    pa.field("isCharging", pa.bool_()),
-    pa.field("isValid", pa.bool_()),
+    pa.field("_id", pa.large_string(), metadata={"sensitivity": "identifying", "category": "identity"}),  # 100% docs, 11 sites; universal
+    pa.field("configuration", pa.large_string(), metadata={"sensitivity": "identifying", "category": "therapy-setting"}),  # object with no observed fields; stored as JSON text
+    pa.field("created_at", pa.large_string(), metadata={"sensitivity": "quasi-identifying", "category": "temporal"}),  # 100% docs, 11 sites; universal
+    pa.field("device", pa.large_string(), metadata={"sensitivity": "descriptive", "category": "device"}),  # 100% docs, 11 sites; universal
+    pa.field("identifier", pa.large_string(), metadata={"sensitivity": "identifying", "category": "identity"}),
+    pa.field("isCharging", pa.bool_(), metadata={"sensitivity": "identifying", "category": "vocabulary"}),
+    pa.field("isValid", pa.bool_(), metadata={"sensitivity": "identifying", "category": "vocabulary"}),
     pa.field("loop", pa.struct([
         pa.field("automaticDoseRecommendation", pa.struct([
             pa.field("bolusVolume", pa.float64()),
@@ -57,8 +57,8 @@ DEVICESTATUS_WIRE_SCHEMA = pa.schema([
         pa.field("recommendedBolus", pa.float64()),
         pa.field("timestamp", pa.large_string()),
         pa.field("version", pa.large_string()),
-    ])),  # 85% docs, 10 sites; core
-    pa.field("mills", pa.int64()),
+    ]), metadata={"sensitivity": "descriptive", "category": "vocabulary"}),  # 85% docs, 10 sites; core
+    pa.field("mills", pa.int64(), metadata={"sensitivity": "identifying", "category": "temporal"}),
     pa.field("openaps", pa.struct([
         pa.field("enacted", pa.struct([
             pa.field("COB", pa.int64()),
@@ -160,7 +160,7 @@ DEVICESTATUS_WIRE_SCHEMA = pa.schema([
             pa.field("variable_sens", pa.float64()),
         ])),
         pa.field("version", pa.large_string()),
-    ])),  # 11% docs, 1 sites; vendor
+    ]), metadata={"sensitivity": "descriptive", "category": "vocabulary"}),  # 11% docs, 1 sites; vendor
     pa.field("override", pa.struct([
         pa.field("active", pa.bool_()),
         pa.field("currentCorrectionRange", pa.struct([
@@ -171,7 +171,7 @@ DEVICESTATUS_WIRE_SCHEMA = pa.schema([
         pa.field("multiplier", pa.float64()),
         pa.field("name", pa.large_string()),
         pa.field("timestamp", pa.large_string()),
-    ])),  # 85% docs, 10 sites; core
+    ]), metadata={"sensitivity": "descriptive", "category": "therapy-setting"}),  # 85% docs, 10 sites; core
     pa.field("pump", pa.struct([
         pa.field("battery", pa.struct([
             pa.field("display", pa.bool_()),
@@ -198,9 +198,9 @@ DEVICESTATUS_WIRE_SCHEMA = pa.schema([
             pa.field("timestamp", pa.large_string()),
         ])),
         pa.field("suspended", pa.bool_()),
-    ])),  # 96% docs, 10 sites; core
-    pa.field("srvCreated", pa.int64()),
-    pa.field("srvModified", pa.int64()),
+    ]), metadata={"sensitivity": "descriptive", "category": "device"}),  # 96% docs, 10 sites; core
+    pa.field("srvCreated", pa.int64(), metadata={"sensitivity": "identifying", "category": "temporal"}),
+    pa.field("srvModified", pa.int64(), metadata={"sensitivity": "identifying", "category": "temporal"}),
     pa.field("uploader", pa.struct([
         pa.field("battery", pa.int64()),
         pa.field("batteryVoltage", pa.float64()),
@@ -208,7 +208,7 @@ DEVICESTATUS_WIRE_SCHEMA = pa.schema([
         pa.field("name", pa.large_string()),
         pa.field("timestamp", pa.large_string()),
         pa.field("type", pa.large_string()),
-    ])),  # 100% docs, 11 sites; universal
-    pa.field("uploaderBattery", pa.int64()),
-    pa.field("utcOffset", pa.int64()),  # 100% docs, 11 sites; universal
+    ]), metadata={"sensitivity": "descriptive", "category": "device"}),  # 100% docs, 11 sites; universal
+    pa.field("uploaderBattery", pa.int64(), metadata={"sensitivity": "identifying", "category": "device"}),
+    pa.field("utcOffset", pa.int64(), metadata={"sensitivity": "quasi-identifying", "category": "location"}),  # 100% docs, 11 sites; universal
 ])

@@ -146,6 +146,14 @@ def build(root: Path, key: str, spec: dict):
                 "effectiveDated": True,
                 "fields": settings_fields,
             },
+            "sensitivity": {
+                "labelsSource": "specs/jsonschema/generated/"
+                                " (x-sensitivity, x-data-category)",
+                "enforcesLocally": False,
+                "supportedProfiles": ["full", "clinical", "replay", "effect-only"],
+                "defaultProfile": "clinical",
+                "unlabelledPolicy": "withhold",
+            },
             "queryProfile": {
                 "filterableFields": ["date", "created_at", "srvModified", "identifier"],
                 "maxPageSize": 1000,

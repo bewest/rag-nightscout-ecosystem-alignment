@@ -11,6 +11,11 @@ Corpus: 369,419 documents from 11 Nightscout sites across 2 snapshots (2026-04-0
 The second number matters more: one busy site can make a single client's 
 private field look common.
 
+**Sensitivity** is the derived label (`secret`, `identifying`, 
+`quasi-identifying`, `descriptive`) that projections strip by; see 
+`specs/sync/sensitivity.yaml`. It is derived from the redaction policy and 
+the census, not asserted, and an unlabelled field defaults to `identifying`.
+
 **Handled by** lists projects whose source code serializes the field, from 
 `reports/schema-census/attribution.json`. It is source evidence, not document 
 provenance: a project that *reads* a field looks identical to one that 
@@ -22,74 +27,74 @@ provenance: a project that *reads* a field looks identical to one that
 
 ## Universal — every site, effectively every document
 
-| Field | Type | Documents | Sites | Handled by | Notes |
-|---|---|---|---|---|---|
-| `_id` | `string` | 100.0% | 11 | AndroidAPS, LoopFollow, Nightguard, NightscoutKit +7 | always returned |
-| `carbs` | `null`, `number`, `null` | 100.0% | 11 | AndroidAPS, Loop, LoopFollow, Nightguard +8 | always returned · nullable |
-| `created_at` | `string` | 100.0% | 11 | AndroidAPS, LoopFollow, Nightguard, NightscoutKit +8 | always returned |
-| `enteredBy` | `string` | 100.0% | 11 | AndroidAPS, LoopFollow, Nightguard, NightscoutKit +6 | always returned |
-| `eventType` | `string` | 100.0% | 11 | AndroidAPS, LoopFollow, Nightguard, NightscoutKit +6 | always returned |
-| `insulin` | `null`, `number`, `null` | 100.0% | 11 | AndroidAPS, Loop, LoopFollow, Nightguard +9 | always returned · nullable |
-| `utcOffset` | `integer` | 100.0% | 11 | AndroidAPS, Nocturne, nightscout-reporter | always returned |
+| Field | Type | Documents | Sites | Handled by | Sensitivity | Notes |
+|---|---|---|---|---|---|---|
+| `_id` | `string` | 100.0% | 11 | AndroidAPS, LoopFollow, Nightguard, NightscoutKit +7 | identifying | always returned |
+| `carbs` | `null`, `number`, `null` | 100.0% | 11 | AndroidAPS, Loop, LoopFollow, Nightguard +8 | descriptive | always returned · nullable |
+| `created_at` | `string` | 100.0% | 11 | AndroidAPS, LoopFollow, Nightguard, NightscoutKit +8 | quasi-identifying | always returned |
+| `enteredBy` | `string` | 100.0% | 11 | AndroidAPS, LoopFollow, Nightguard, NightscoutKit +6 | identifying | always returned |
+| `eventType` | `string` | 100.0% | 11 | AndroidAPS, LoopFollow, Nightguard, NightscoutKit +6 | descriptive | always returned |
+| `insulin` | `null`, `number`, `null` | 100.0% | 11 | AndroidAPS, Loop, LoopFollow, Nightguard +9 | descriptive | always returned · nullable |
+| `utcOffset` | `integer` | 100.0% | 11 | AndroidAPS, Nocturne, nightscout-reporter | quasi-identifying | always returned |
 
 ## Core — most sites, substantial share of documents
 
-| Field | Type | Documents | Sites | Handled by | Notes |
-|---|---|---|---|---|---|
-| `absolute` | `number` | 54.9% | 10 | AndroidAPS, Loop, LoopFollow, NightscoutKit +5 |  |
-| `amount` | `number` | 45.7% | 10 |  |  |
-| `automatic` | `boolean` | 81.3% | 10 | Loop, LoopFollow, NightscoutKit, Nocturne +1 |  |
-| `duration` | `number` | 91.0% | 10 |  |  |
-| `insulinType` | `string` | 80.4% | 10 | Loop, NightscoutKit, Nocturne, Trio |  |
-| `programmed` | `number` | 35.3% | 10 | Loop, NightscoutKit, Nocturne, Trio +1 |  |
-| `rate` | `number` | 54.9% | 10 |  |  |
-| `syncIdentifier` | `string` | 83.0% | 10 | Loop, NightscoutKit, Nocturne, Trio +1 |  |
-| `temp` | `string` | 46.0% | 10 | AndroidAPS, Loop, NightscoutKit, Nocturne +4 |  |
-| `timestamp` | `number`, `string` | 84.4% | 10 |  |  |
-| `type` | `string` | 35.3% | 10 |  |  |
-| `unabsorbed` | `number` | 35.3% | 10 | Loop, NightscoutKit, Nocturne, Trio |  |
+| Field | Type | Documents | Sites | Handled by | Sensitivity | Notes |
+|---|---|---|---|---|---|---|
+| `absolute` | `number` | 54.9% | 10 | AndroidAPS, Loop, LoopFollow, NightscoutKit +5 | descriptive |  |
+| `amount` | `number` | 45.7% | 10 |  | descriptive |  |
+| `automatic` | `boolean` | 81.3% | 10 | Loop, LoopFollow, NightscoutKit, Nocturne +1 | descriptive |  |
+| `duration` | `number` | 91.0% | 10 |  | descriptive |  |
+| `insulinType` | `string` | 80.4% | 10 | Loop, NightscoutKit, Nocturne, Trio | descriptive |  |
+| `programmed` | `number` | 35.3% | 10 | Loop, NightscoutKit, Nocturne, Trio +1 | descriptive |  |
+| `rate` | `number` | 54.9% | 10 |  | descriptive |  |
+| `syncIdentifier` | `string` | 83.0% | 10 | Loop, NightscoutKit, Nocturne, Trio +1 | identifying |  |
+| `temp` | `string` | 46.0% | 10 | AndroidAPS, Loop, NightscoutKit, Nocturne +4 | descriptive |  |
+| `timestamp` | `number`, `string` | 84.4% | 10 |  | quasi-identifying |  |
+| `type` | `string` | 35.3% | 10 |  | descriptive |  |
+| `unabsorbed` | `number` | 35.3% | 10 | Loop, NightscoutKit, Nocturne, Trio | descriptive |  |
 
 ## Common — at least three independent sites
 
-| Field | Type | Documents | Sites | Handled by | Notes |
-|---|---|---|---|---|---|
-| `absorptionTime` | `integer` | 1.8% | 10 | Loop, LoopFollow, NightscoutKit, Nocturne +1 |  |
-| `correctionRange` | `array` | 0.5% | 7 | LoopFollow, NightscoutKit, Nocturne, nightscout-reporter |  |
-| `correctionRange[]` | `number` | 0.5% | 7 | LoopFollow, NightscoutKit, Nocturne, nightscout-reporter |  |
-| `foodType` | `string` | 2.2% | 10 | Loop, NightscoutKit, Nocturne, Trio |  |
-| `insulinNeedsScaleFactor` | `number` | 0.7% | 9 | Loop, LoopFollow, NightscoutKit, Nocturne +3 |  |
-| `notes` | `string` | 0.7% | 10 |  |  |
-| `reason` | `string` | 1.1% | 10 |  |  |
-| `remoteAddress` | `string` | 0.0% | 3 | Loop, NightscoutKit, Trio | **not in spec** |
-| `userEnteredAt` | `string` | 1.8% | 10 | NightscoutKit |  |
-| `userLastModifiedAt` | `string` | 0.0% | 5 | NightscoutKit |  |
+| Field | Type | Documents | Sites | Handled by | Sensitivity | Notes |
+|---|---|---|---|---|---|---|
+| `absorptionTime` | `integer` | 1.8% | 10 | Loop, LoopFollow, NightscoutKit, Nocturne +1 | descriptive |  |
+| `correctionRange` | `array` | 0.5% | 7 | LoopFollow, NightscoutKit, Nocturne, nightscout-reporter | descriptive |  |
+| `correctionRange[]` | `number` | 0.5% | 7 | LoopFollow, NightscoutKit, Nocturne, nightscout-reporter | descriptive |  |
+| `foodType` | `string` | 2.2% | 10 | Loop, NightscoutKit, Nocturne, Trio | quasi-identifying |  |
+| `insulinNeedsScaleFactor` | `number` | 0.7% | 9 | Loop, LoopFollow, NightscoutKit, Nocturne +3 | descriptive |  |
+| `notes` | `string` | 0.7% | 10 |  | identifying |  |
+| `reason` | `string` | 1.1% | 10 |  | identifying |  |
+| `remoteAddress` | `string` | 0.0% | 3 | Loop, NightscoutKit, Trio | identifying | **not in spec** |
+| `userEnteredAt` | `string` | 1.8% | 10 | NightscoutKit | quasi-identifying |  |
+| `userLastModifiedAt` | `string` | 0.0% | 5 | NightscoutKit | quasi-identifying |  |
 
 ## Vendor — one or two sites, but written consistently there
 
-| Field | Type | Documents | Sites | Handled by | Notes |
-|---|---|---|---|---|---|
-| `id` | `string` | 15.1% | 1 |  | **not in spec** |
+| Field | Type | Documents | Sites | Handled by | Sensitivity | Notes |
+|---|---|---|---|---|---|---|
+| `id` | `string` | 15.1% | 1 |  | identifying | **not in spec** |
 
 ## Sparse — one or two sites, inconsistently
 
-| Field | Type | Documents | Sites | Handled by | Notes |
-|---|---|---|---|---|---|
-| `fat` | `number` | 2.4% | 1 | AndroidAPS, Nocturne |  |
-| `glucose` | `number` | 0.0% | 1 | AndroidAPS, Loop, LoopFollow, NightscoutKit +5 |  |
-| `glucoseType` | `string` | 0.0% | 1 | AndroidAPS, NightscoutKit, Nocturne, tconnectsync +1 |  |
-| `identifier` | `string` | 0.0% | 1 | AndroidAPS, Loop, Nightguard, NightscoutKit +2 |  |
-| `protein` | `number` | 2.4% | 1 | AndroidAPS, Nocturne |  |
-| `targetBottom` | `number` | 0.0% | 1 | AndroidAPS, LoopFollow, Nightguard, Nocturne |  |
-| `targetTop` | `number` | 0.0% | 1 | AndroidAPS, LoopFollow, Nightguard, Nocturne |  |
-| `units` | `string` | 0.0% | 1 |  | **not in spec** |
+| Field | Type | Documents | Sites | Handled by | Sensitivity | Notes |
+|---|---|---|---|---|---|---|
+| `fat` | `number` | 2.4% | 1 | AndroidAPS, Nocturne | descriptive |  |
+| `glucose` | `number` | 0.0% | 1 | AndroidAPS, Loop, LoopFollow, NightscoutKit +5 | descriptive |  |
+| `glucoseType` | `string` | 0.0% | 1 | AndroidAPS, NightscoutKit, Nocturne, tconnectsync +1 | quasi-identifying |  |
+| `identifier` | `string` | 0.0% | 1 | AndroidAPS, Loop, Nightguard, NightscoutKit +2 | identifying |  |
+| `protein` | `number` | 2.4% | 1 | AndroidAPS, Nocturne | descriptive |  |
+| `targetBottom` | `number` | 0.0% | 1 | AndroidAPS, LoopFollow, Nightguard, Nocturne | descriptive |  |
+| `targetTop` | `number` | 0.0% | 1 | AndroidAPS, LoopFollow, Nightguard, Nocturne | descriptive |  |
+| `units` | `string` | 0.0% | 1 |  | quasi-identifying | **not in spec** |
 
 ## Rare — fewer than ten documents in the whole corpus
 
-| Field | Type | Documents | Sites | Handled by | Notes |
-|---|---|---|---|---|---|
-| `durationType` | `string` | 0.0% | 1 | LoopFollow, NightscoutKit, Nocturne | **not in spec** |
-| `endmills` | `integer` | 0.0% | 1 | Nocturne | **not in spec** |
-| `mills` | `integer` | 0.0% | 1 | AndroidAPS, Nightguard, NightscoutKit, Nocturne +2 | **not in spec** |
+| Field | Type | Documents | Sites | Handled by | Sensitivity | Notes |
+|---|---|---|---|---|---|---|
+| `durationType` | `string` | 0.0% | 1 | LoopFollow, NightscoutKit, Nocturne | quasi-identifying | **not in spec** |
+| `endmills` | `integer` | 0.0% | 1 | Nocturne | quasi-identifying | **not in spec** |
+| `mills` | `integer` | 0.0% | 1 | AndroidAPS, Nightguard, NightscoutKit, Nocturne +2 | quasi-identifying | **not in spec** |
 
 ## Known quirks
 

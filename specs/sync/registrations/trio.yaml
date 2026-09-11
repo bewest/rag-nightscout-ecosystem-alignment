@@ -315,6 +315,16 @@ spec:
     - profile.maxBasal
     - profile.maxIob
     - profile.suspendThreshold
+  sensitivity:
+    labelsSource: specs/jsonschema/generated/ (x-sensitivity, x-data-category)
+    enforcesLocally: false
+    supportedProfiles:
+    - full
+    - clinical
+    - replay
+    - effect-only
+    defaultProfile: clinical
+    unlabelledPolicy: withhold
   queryProfile:
     filterableFields:
     - date

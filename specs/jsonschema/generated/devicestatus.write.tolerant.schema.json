@@ -6,61 +6,89 @@
  "type": "object",
  "properties": {
   "_id": {
-   "type": "string"
+   "type": "string",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "configuration": {
    "type": "object",
    "description": "Algorithm configuration snapshot (AAPS only)",
+   "x-sensitivity": "identifying",
+   "x-data-category": "therapy-setting",
    "additionalProperties": false
   },
   "created_at": {
    "type": "string",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "temporal",
    "format": "date-time"
   },
   "device": {
    "type": "string",
    "description": "Device identifier string. Format varies by system:",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "device",
    "x-observed-values": [
     "loop://iPhone"
    ]
   },
   "identifier": {
-   "type": "string"
+   "type": "string",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "isCharging": {
    "type": "boolean",
-   "description": "Charging status (AAPS)"
+   "description": "Charging status (AAPS)",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary"
   },
   "isValid": {
-   "type": "boolean"
+   "type": "boolean",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary"
   },
   "loop": {
    "type": "object",
    "description": "Loop-specific status. Uses FLAT structure with direct children.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary",
    "properties": {
     "automaticDoseRecommendation": {
      "type": "object",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary",
      "properties": {
       "bolusVolume": {
        "type": "number",
-       "description": "Recommended auto-bolus (U)"
+       "description": "Recommended auto-bolus (U)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "tempBasalAdjustment": {
        "type": "object",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting",
        "properties": {
         "duration": {
          "type": "number",
-         "description": "Duration in SECONDS"
+         "description": "Duration in SECONDS",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "therapy-setting"
         },
         "rate": {
          "type": "number",
-         "description": "Recommended temp basal (U/hr)"
+         "description": "Recommended temp basal (U/hr)",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "therapy-setting"
         }
        },
        "additionalProperties": false
       },
       "timestamp": {
        "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "temporal",
        "format": "date-time"
       }
      },
@@ -68,13 +96,19 @@
     },
     "cob": {
      "type": "object",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "health-derived",
      "properties": {
       "cob": {
        "type": "number",
-       "description": "Carbs on board (g)"
+       "description": "Carbs on board (g)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "timestamp": {
        "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "temporal",
        "format": "date-time"
       }
      },
@@ -82,25 +116,37 @@
     },
     "enacted": {
      "type": "object",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary",
      "properties": {
       "bolusVolume": {
        "type": "number",
-       "description": "Enacted auto-bolus (U)"
+       "description": "Enacted auto-bolus (U)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "duration": {
        "type": "number",
-       "description": "Duration in SECONDS"
+       "description": "Duration in SECONDS",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "rate": {
        "type": "number",
-       "description": "Enacted temp basal rate (U/hr)"
+       "description": "Enacted temp basal rate (U/hr)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "received": {
        "type": "boolean",
-       "description": "Whether pump confirmed"
+       "description": "Whether pump confirmed",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "timestamp": {
        "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "temporal",
        "format": "date-time"
       }
      },
@@ -108,17 +154,25 @@
     },
     "failureReason": {
      "type": "string",
-     "description": "Error message if loop cycle failed"
+     "description": "Error message if loop cycle failed",
+     "x-sensitivity": "quasi-identifying",
+     "x-data-category": "free-text"
     },
     "iob": {
      "type": "object",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "health-derived",
      "properties": {
       "iob": {
        "type": "number",
-       "description": "Total insulin on board (U)"
+       "description": "Total insulin on board (U)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "timestamp": {
        "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "temporal",
        "format": "date-time"
       }
      },
@@ -126,21 +180,31 @@
     },
     "name": {
      "type": "string",
-     "description": "App bundle name"
+     "description": "App bundle name",
+     "x-sensitivity": "identifying",
+     "x-data-category": "identity"
     },
     "predicted": {
      "type": "object",
      "description": "Loop prediction - SINGLE COMBINED CURVE.",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "health-derived",
      "properties": {
       "startDate": {
        "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "temporal",
        "format": "date-time"
       },
       "values": {
        "type": "array",
        "description": "Predicted BG values at 5-minute intervals.",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary",
        "items": {
-        "type": "number"
+        "type": "number",
+        "x-sensitivity": "descriptive",
+        "x-data-category": "vocabulary"
        }
       }
      },
@@ -148,15 +212,21 @@
     },
     "recommendedBolus": {
      "type": "number",
-     "description": "Recommended manual bolus (U)"
+     "description": "Recommended manual bolus (U)",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary"
     },
     "timestamp": {
      "type": "string",
+     "x-sensitivity": "quasi-identifying",
+     "x-data-category": "temporal",
      "format": "date-time"
     },
     "version": {
      "type": "string",
      "description": "App version",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary",
      "x-observed-values": [
       "3.12.1.<n>",
       "3.6.2.<n>",
@@ -168,98 +238,156 @@
   },
   "mills": {
    "type": "integer",
-   "description": "Epoch milliseconds"
+   "description": "Epoch milliseconds",
+   "x-sensitivity": "identifying",
+   "x-data-category": "temporal"
   },
   "openaps": {
    "type": "object",
    "description": "oref0-based status (AAPS, Trio, OpenAPS). Uses NESTED structure.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary",
    "properties": {
     "enacted": {
      "type": "object",
      "description": "Actually enacted recommendation.",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary",
      "properties": {
       "COB": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "CR": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "IOB": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "ISF": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "TDD": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "bg": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "carbsReq": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "current_target": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "deliverAt": {
-       "type": "string"
+       "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "vocabulary"
       },
       "duration": {
        "type": "integer",
-       "description": "Duration in MINUTES"
+       "description": "Duration in MINUTES",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "eventualBG": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "expectedDelta": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "id": {
-       "type": "string"
+       "type": "string",
+       "x-sensitivity": "identifying",
+       "x-data-category": "identity"
       },
       "insulinForManualBolus": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "insulinReq": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "manualBolusErrorString": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "minDelta": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "predBGs": {
        "type": "object",
        "description": "Four prediction curves, each representing a different scenario.",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary",
        "properties": {
         "COB": {
          "type": "array",
          "description": "Prediction including expected carb absorption.",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "health-derived",
          "items": {
-          "type": "integer"
+          "type": "integer",
+          "x-sensitivity": "descriptive",
+          "x-data-category": "health-derived"
          }
         },
         "IOB": {
          "type": "array",
          "description": "Prediction assuming no carb absorption.",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "health-derived",
          "items": {
-          "type": "integer"
+          "type": "integer",
+          "x-sensitivity": "descriptive",
+          "x-data-category": "health-derived"
          }
         },
         "UAM": {
          "type": "array",
          "description": "Unannounced Meal prediction.",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "vocabulary",
          "items": {
-          "type": "integer"
+          "type": "integer",
+          "x-sensitivity": "descriptive",
+          "x-data-category": "vocabulary"
          }
         },
         "ZT": {
          "type": "array",
          "description": "Zero Temp prediction.",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "vocabulary",
          "items": {
-          "type": "integer"
+          "type": "integer",
+          "x-sensitivity": "descriptive",
+          "x-data-category": "vocabulary"
          }
         }
        },
@@ -267,34 +395,52 @@
       },
       "rate": {
        "type": "number",
-       "description": "Enacted rate (U/hr)"
+       "description": "Enacted rate (U/hr)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "reason": {
-       "type": "string"
+       "type": "string",
+       "x-sensitivity": "identifying",
+       "x-data-category": "free-text"
       },
       "received": {
        "type": "boolean",
-       "description": "Pump confirmation status"
+       "description": "Pump confirmation status",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "reservoir": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "sensitivityRatio": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "temp": {
-       "type": "string"
+       "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "vocabulary"
       },
       "threshold": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "timestamp": {
        "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "temporal",
        "format": "date-time"
       },
       "units": {
        "type": "number",
-       "description": "Enacted SMB units"
+       "description": "Enacted SMB units",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       }
      },
      "additionalProperties": false
@@ -302,187 +448,291 @@
     "iob": {
      "type": "object",
      "description": "IOB breakdown with component separation (unlike Loop).",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "health-derived",
      "properties": {
       "activity": {
        "type": "number",
-       "description": "Current insulin activity (U/hr)"
+       "description": "Current insulin activity (U/hr)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "basaliob": {
        "type": "number",
-       "description": "IOB from temp basals (U)"
+       "description": "IOB from temp basals (U)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "bolusinsulin": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "bolusiob": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "bolussnooze": {
        "type": "number",
-       "description": "IOB from recent boluses affecting snooze"
+       "description": "IOB from recent boluses affecting snooze",
+       "x-sensitivity": "identifying",
+       "x-data-category": "vocabulary"
       },
       "iob": {
        "type": "number",
-       "description": "Total IOB (U)"
+       "description": "Total IOB (U)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "iobWithZeroTemp": {
        "type": "object",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived",
        "properties": {
         "activity": {
-         "type": "number"
+         "type": "number",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "health-derived"
         },
         "basaliob": {
-         "type": "number"
+         "type": "number",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "health-derived"
         },
         "bolusinsulin": {
-         "type": "number"
+         "type": "number",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "therapy-setting"
         },
         "bolusiob": {
-         "type": "number"
+         "type": "number",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "health-derived"
         },
         "iob": {
-         "type": "number"
+         "type": "number",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "health-derived"
         },
         "netbasalinsulin": {
-         "type": "number"
+         "type": "number",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "therapy-setting"
         },
         "time": {
-         "type": "string"
+         "type": "string",
+         "x-sensitivity": "quasi-identifying",
+         "x-data-category": "temporal"
         }
        },
        "additionalProperties": false
       },
       "lastBolusTime": {
        "type": "integer",
-       "description": "Timestamp of last bolus (epoch ms)"
+       "description": "Timestamp of last bolus (epoch ms)",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "temporal"
       },
       "lastTemp": {
        "type": "object",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary",
        "properties": {
         "date": {
-         "type": "integer"
+         "type": "integer",
+         "x-sensitivity": "quasi-identifying",
+         "x-data-category": "temporal"
         },
         "duration": {
          "type": "number",
-         "description": "Minutes. Declared `integer` by the 2025 spec and fractional in"
+         "description": "Minutes. Declared `integer` by the 2025 spec and fractional in",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "therapy-setting"
         },
         "rate": {
-         "type": "number"
+         "type": "number",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "therapy-setting"
         },
         "started_at": {
          "type": "string",
+         "x-sensitivity": "quasi-identifying",
+         "x-data-category": "vocabulary",
          "format": "date-time"
         },
         "timestamp": {
-         "type": "string"
+         "type": "string",
+         "x-sensitivity": "quasi-identifying",
+         "x-data-category": "temporal"
         }
        },
        "additionalProperties": false
       },
       "netbasalinsulin": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "time": {
-       "type": "string"
+       "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "temporal"
       }
      },
      "additionalProperties": false
     },
     "recommendedBolus": {
-     "type": "number"
+     "type": "number",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary"
     },
     "suggested": {
      "type": "object",
      "description": "Algorithm suggestion. Always present.",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary",
      "properties": {
       "COB": {
        "type": "integer",
-       "description": "Carbs on board (g)"
+       "description": "Carbs on board (g)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "CR": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "IOB": {
        "type": "number",
-       "description": "Insulin on board (U)"
+       "description": "Insulin on board (U)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "ISF": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "TDD": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "bg": {
        "type": "integer",
-       "description": "Current BG (mg/dL)"
+       "description": "Current BG (mg/dL)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "carbsReq": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "current_target": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "deliverAt": {
        "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "vocabulary",
        "format": "date-time"
       },
       "duration": {
        "type": "integer",
-       "description": "Duration in MINUTES (oref0 convention)"
+       "description": "Duration in MINUTES (oref0 convention)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "eventualBG": {
        "type": "integer",
-       "description": "Predicted eventual BG"
+       "description": "Predicted eventual BG",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "expectedDelta": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "id": {
-       "type": "string"
+       "type": "string",
+       "x-sensitivity": "identifying",
+       "x-data-category": "identity"
       },
       "insulinForManualBolus": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "insulinReq": {
        "type": "number",
-       "description": "Insulin required to reach target"
+       "description": "Insulin required to reach target",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "manualBolusErrorString": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "minDelta": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "predBGs": {
        "type": "object",
        "description": "Four prediction curves, each representing a different scenario.",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary",
        "properties": {
         "COB": {
          "type": "array",
          "description": "Prediction including expected carb absorption.",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "health-derived",
          "items": {
-          "type": "integer"
+          "type": "integer",
+          "x-sensitivity": "descriptive",
+          "x-data-category": "health-derived"
          }
         },
         "IOB": {
          "type": "array",
          "description": "Prediction assuming no carb absorption.",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "health-derived",
          "items": {
-          "type": "integer"
+          "type": "integer",
+          "x-sensitivity": "descriptive",
+          "x-data-category": "health-derived"
          }
         },
         "UAM": {
          "type": "array",
          "description": "Unannounced Meal prediction.",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "vocabulary",
          "items": {
-          "type": "integer"
+          "type": "integer",
+          "x-sensitivity": "descriptive",
+          "x-data-category": "vocabulary"
          }
         },
         "ZT": {
          "type": "array",
          "description": "Zero Temp prediction.",
+         "x-sensitivity": "descriptive",
+         "x-data-category": "vocabulary",
          "items": {
-          "type": "integer"
+          "type": "integer",
+          "x-sensitivity": "descriptive",
+          "x-data-category": "vocabulary"
          }
         }
        },
@@ -490,53 +740,79 @@
       },
       "rate": {
        "type": "number",
-       "description": "Suggested temp basal rate (U/hr)"
+       "description": "Suggested temp basal rate (U/hr)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "reason": {
        "type": "string",
-       "description": "Human-readable explanation of recommendation"
+       "description": "Human-readable explanation of recommendation",
+       "x-sensitivity": "identifying",
+       "x-data-category": "free-text"
       },
       "received": {
-       "type": "boolean"
+       "type": "boolean",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "reservoir": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "sensitivityRatio": {
        "type": "number",
-       "description": "Autosens ratio (1.0 = normal)"
+       "description": "Autosens ratio (1.0 = normal)",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "health-derived"
       },
       "targetBG": {
        "type": "integer",
-       "description": "Current target BG"
+       "description": "Current target BG",
+       "x-sensitivity": "identifying",
+       "x-data-category": "therapy-setting"
       },
       "temp": {
-       "type": "string"
+       "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "vocabulary"
       },
       "threshold": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "tick": {
        "type": "string",
-       "description": "BG delta indicator (+, -, etc.)"
+       "description": "BG delta indicator (+, -, etc.)",
+       "x-sensitivity": "identifying",
+       "x-data-category": "vocabulary"
       },
       "timestamp": {
        "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "temporal",
        "format": "date-time"
       },
       "units": {
        "type": "number",
-       "description": "SMB units to deliver"
+       "description": "SMB units to deliver",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "variable_sens": {
        "type": "number",
-       "description": "Dynamic ISF value (AAPS DynamicISF)"
+       "description": "Dynamic ISF value (AAPS DynamicISF)",
+       "x-sensitivity": "identifying",
+       "x-data-category": "therapy-setting"
       }
      },
      "additionalProperties": false
     },
     "version": {
-     "type": "string"
+     "type": "string",
+     "x-sensitivity": "quasi-identifying",
+     "x-data-category": "vocabulary"
     }
    },
    "additionalProperties": false
@@ -544,35 +820,53 @@
   "override": {
    "type": "object",
    "description": "Loop active override (Loop only)",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "therapy-setting",
    "properties": {
     "active": {
-     "type": "boolean"
+     "type": "boolean",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary"
     },
     "currentCorrectionRange": {
      "type": "object",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary",
      "properties": {
       "maxValue": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "minValue": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       }
      },
      "additionalProperties": false
     },
     "duration": {
      "type": "number",
-     "description": "Duration in seconds (Loop convention)"
+     "description": "Duration in seconds (Loop convention)",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "therapy-setting"
     },
     "multiplier": {
      "type": "number",
-     "description": "Overall insulin needs multiplier"
+     "description": "Overall insulin needs multiplier",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "therapy-setting"
     },
     "name": {
-     "type": "string"
+     "type": "string",
+     "x-sensitivity": "identifying",
+     "x-data-category": "identity"
     },
     "timestamp": {
      "type": "string",
+     "x-sensitivity": "quasi-identifying",
+     "x-data-category": "temporal",
      "format": "date-time"
     }
    },
@@ -581,20 +875,30 @@
   "pump": {
    "type": "object",
    "description": "Pump status (may be absent if communication failed).",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "device",
    "properties": {
     "battery": {
      "type": "object",
      "description": "Battery state. Note that `status` is declared but never observed;",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary",
      "properties": {
       "display": {
        "type": "boolean",
-       "description": "Whether the uploader displays the battery level."
+       "description": "Whether the uploader displays the battery level.",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "percent": {
-       "type": "integer"
+       "type": "integer",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "therapy-setting"
       },
       "status": {
        "type": "string",
+       "x-sensitivity": "identifying",
+       "x-data-category": "vocabulary",
        "enum": [
         "critical",
         "low",
@@ -603,34 +907,48 @@
       },
       "string": {
        "type": "string",
-       "description": "Battery state as a string; observed values are normal and error."
+       "description": "Battery state as a string; observed values are normal and error.",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "vocabulary"
       },
       "voltage": {
-       "type": "number"
+       "type": "number",
+       "x-sensitivity": "identifying",
+       "x-data-category": "vocabulary"
       }
      },
      "additionalProperties": false
     },
     "bolusIncrement": {
-     "type": "number"
+     "type": "number",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary"
     },
     "bolusing": {
      "type": "boolean",
-     "description": "Flat form of `status.bolusing`. Written by 10 of 11 sites; the"
+     "description": "Flat form of `status.bolusing`. Written by 10 of 11 sites; the",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary"
     },
     "clock": {
      "type": "string",
      "description": "Pump internal clock",
+     "x-sensitivity": "quasi-identifying",
+     "x-data-category": "temporal",
      "format": "date-time"
     },
     "extended": {
      "type": "object",
      "description": "Pump-specific extended data",
+     "x-sensitivity": "identifying",
+     "x-data-category": "vocabulary",
      "additionalProperties": false
     },
     "manufacturer": {
      "type": "string",
      "description": "Pump manufacturer.",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "device",
      "x-observed-values": [
       "Insulet"
      ]
@@ -638,21 +956,29 @@
     "model": {
      "type": "string",
      "description": "Pump model name.",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "device",
      "x-observed-values": [
       "Dash"
      ]
     },
     "pumpID": {
      "type": "string",
-     "description": "Pump identifier as reported by the uploader. Opaque; may be a"
+     "description": "Pump identifier as reported by the uploader. Opaque; may be a",
+     "x-sensitivity": "identifying",
+     "x-data-category": "device"
     },
     "reservoir": {
      "type": "number",
-     "description": "Reservoir level (U)."
+     "description": "Reservoir level (U).",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary"
     },
     "reservoir_display_override": {
      "type": "string",
      "description": "Replaces the numeric reservoir reading with a UI state string",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "therapy-setting",
      "x-observed-values": [
       "Comms Issue",
       "Finish Setup",
@@ -665,27 +991,41 @@
     },
     "reservoir_level_override": {
      "type": "integer",
-     "description": "Replaces the numeric reservoir reading with a level code."
+     "description": "Replaces the numeric reservoir reading with a level code.",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "therapy-setting"
     },
     "secondsFromGMT": {
      "type": "integer",
-     "description": "The pump clock's UTC offset in seconds."
+     "description": "The pump clock's UTC offset in seconds.",
+     "x-sensitivity": "quasi-identifying",
+     "x-data-category": "location"
     },
     "status": {
      "type": "object",
      "description": "Nested status form. Observed on 1 of 11 sites; see the flat",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary",
      "properties": {
       "bolusing": {
-       "type": "boolean"
+       "type": "boolean",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "status": {
-       "type": "string"
+       "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "vocabulary"
       },
       "suspended": {
-       "type": "boolean"
+       "type": "boolean",
+       "x-sensitivity": "descriptive",
+       "x-data-category": "vocabulary"
       },
       "timestamp": {
        "type": "string",
+       "x-sensitivity": "quasi-identifying",
+       "x-data-category": "temporal",
        "format": "date-time"
       }
      },
@@ -693,53 +1033,77 @@
     },
     "suspended": {
      "type": "boolean",
-     "description": "Flat form of `status.suspended`."
+     "description": "Flat form of `status.suspended`.",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary"
     }
    },
    "additionalProperties": false
   },
   "srvCreated": {
-   "type": "integer"
+   "type": "integer",
+   "x-sensitivity": "identifying",
+   "x-data-category": "temporal"
   },
   "srvModified": {
-   "type": "integer"
+   "type": "integer",
+   "x-sensitivity": "identifying",
+   "x-data-category": "temporal"
   },
   "uploader": {
    "type": "object",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "device",
    "properties": {
     "battery": {
      "type": "integer",
-     "description": "Phone/rig battery percentage"
+     "description": "Phone/rig battery percentage",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary"
     },
     "batteryVoltage": {
-     "type": "number"
+     "type": "number",
+     "x-sensitivity": "identifying",
+     "x-data-category": "vocabulary"
     },
     "isCharging": {
      "type": "boolean",
-     "description": "Whether the uploader device is charging."
+     "description": "Whether the uploader device is charging.",
+     "x-sensitivity": "descriptive",
+     "x-data-category": "vocabulary"
     },
     "name": {
      "type": "string",
-     "description": "Uploader device name"
+     "description": "Uploader device name",
+     "x-sensitivity": "identifying",
+     "x-data-category": "identity"
     },
     "timestamp": {
      "type": "string",
      "description": "When the uploader captured this status, as distinct from the",
+     "x-sensitivity": "quasi-identifying",
+     "x-data-category": "temporal",
      "format": "date-time"
     },
     "type": {
      "type": "string",
-     "description": "Uploader device class; the observed value is PHONE."
+     "description": "Uploader device class; the observed value is PHONE.",
+     "x-sensitivity": "quasi-identifying",
+     "x-data-category": "vocabulary"
     }
    },
    "additionalProperties": false
   },
   "uploaderBattery": {
    "type": "integer",
-   "description": "Alternate battery field (AAPS)"
+   "description": "Alternate battery field (AAPS)",
+   "x-sensitivity": "identifying",
+   "x-data-category": "device"
   },
   "utcOffset": {
-   "type": "integer"
+   "type": "integer",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "location"
   }
  },
  "required": [

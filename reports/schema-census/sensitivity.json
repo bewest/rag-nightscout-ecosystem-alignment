@@ -1,0 +1,2124 @@
+{
+ "generated_by": "tools/nsschema/sensitivity.py",
+ "vocabulary": "specs/sync/sensitivity.yaml",
+ "levels_by_collection": {
+  "devicestatus": {
+   "identifying": 9,
+   "quasi-identifying": 30,
+   "descriptive": 127
+  },
+  "entries": {
+   "identifying": 1,
+   "quasi-identifying": 5,
+   "descriptive": 13
+  },
+  "profile": {
+   "identifying": 6,
+   "quasi-identifying": 13,
+   "descriptive": 46,
+   "secret": 1
+  },
+  "settings": {
+   "descriptive": 80,
+   "quasi-identifying": 15,
+   "secret": 1,
+   "identifying": 19
+  },
+  "treatments": {
+   "identifying": 8,
+   "descriptive": 22,
+   "quasi-identifying": 11
+  }
+ },
+ "admitted_by_profile": {
+  "full": {
+   "devicestatus": 166,
+   "entries": 19,
+   "profile": 66,
+   "settings": 115,
+   "treatments": 41
+  },
+  "clinical": {
+   "devicestatus": 149,
+   "entries": 16,
+   "profile": 56,
+   "settings": 92,
+   "treatments": 32
+  },
+  "replay": {
+   "devicestatus": 149,
+   "entries": 16,
+   "profile": 56,
+   "settings": 92,
+   "treatments": 32
+  },
+  "effect-only": {
+   "devicestatus": 122,
+   "entries": 7,
+   "profile": 46,
+   "settings": 77,
+   "treatments": 19
+  },
+  "research": {
+   "devicestatus": 122,
+   "entries": 13,
+   "profile": 46,
+   "settings": 77,
+   "treatments": 22
+  },
+  "schema-evidence": {
+   "devicestatus": 54,
+   "entries": 3,
+   "profile": 12,
+   "settings": 56,
+   "treatments": 12
+  }
+ },
+ "labels": {
+  "devicestatus": {
+   "_id": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "created_at": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "device": {
+    "sensitivity": "descriptive",
+    "category": "device",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "loop": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "loop.automaticDoseRecommendation": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "loop.automaticDoseRecommendation.bolusVolume": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "loop.automaticDoseRecommendation.tempBasalAdjustment": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "loop.automaticDoseRecommendation.tempBasalAdjustment.duration": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loop.automaticDoseRecommendation.tempBasalAdjustment.rate": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loop.automaticDoseRecommendation.timestamp": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "loop.cob": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "structural"
+   },
+   "loop.cob.cob": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "loop.cob.timestamp": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "loop.enacted": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "loop.enacted.bolusVolume": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "loop.enacted.duration": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loop.enacted.rate": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loop.enacted.received": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "loop.enacted.timestamp": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "loop.failureReason": {
+    "sensitivity": "quasi-identifying",
+    "category": "free-text",
+    "why": "values were withheld as personal-shaped"
+   },
+   "loop.iob": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "structural"
+   },
+   "loop.iob.iob": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "loop.iob.timestamp": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "loop.name": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "loop.predicted": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "structural"
+   },
+   "loop.predicted.startDate": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "loop.predicted.values": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "loop.predicted.values[]": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "loop.recommendedBolus": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "loop.timestamp": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "loop.version": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "openaps": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "openaps.enacted": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "openaps.enacted.COB": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.CR": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.IOB": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.ISF": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.TDD": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.bg": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.carbsReq": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.current_target": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.deliverAt": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values were withheld as personal-shaped"
+   },
+   "openaps.enacted.duration": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.eventualBG": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.expectedDelta": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.id": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "openaps.enacted.insulinForManualBolus": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.insulinReq": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.manualBolusErrorString": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.minDelta": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.predBGs": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "openaps.enacted.predBGs.COB": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "structural"
+   },
+   "openaps.enacted.predBGs.COB[]": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.predBGs.IOB": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "structural"
+   },
+   "openaps.enacted.predBGs.IOB[]": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.predBGs.UAM": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "openaps.enacted.predBGs.UAM[]": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.predBGs.ZT": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "openaps.enacted.predBGs.ZT[]": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.rate": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.reason": {
+    "sensitivity": "identifying",
+    "category": "free-text",
+    "why": "name is on the redaction denylist"
+   },
+   "openaps.enacted.received": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.reservoir": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.sensitivityRatio": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.temp": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "openaps.enacted.threshold": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.enacted.timestamp": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "openaps.enacted.units": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "structural"
+   },
+   "openaps.iob.activity": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.basaliob": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.bolusinsulin": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.bolusiob": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.iob": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.iobWithZeroTemp": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "structural"
+   },
+   "openaps.iob.iobWithZeroTemp.activity": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.iobWithZeroTemp.basaliob": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.iobWithZeroTemp.bolusinsulin": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.iobWithZeroTemp.bolusiob": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.iobWithZeroTemp.iob": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.iobWithZeroTemp.netbasalinsulin": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.iobWithZeroTemp.time": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "openaps.iob.lastBolusTime": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "openaps.iob.lastTemp": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "openaps.iob.lastTemp.date": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "openaps.iob.lastTemp.duration": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.lastTemp.rate": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.lastTemp.started_at": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values were withheld as personal-shaped"
+   },
+   "openaps.iob.lastTemp.timestamp": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "openaps.iob.netbasalinsulin": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.iob.time": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "openaps.recommendedBolus": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "openaps.suggested.COB": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.CR": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.IOB": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.ISF": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.TDD": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.bg": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.carbsReq": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.current_target": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.deliverAt": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values were withheld as personal-shaped"
+   },
+   "openaps.suggested.duration": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.eventualBG": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.expectedDelta": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.id": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "openaps.suggested.insulinForManualBolus": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.insulinReq": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.manualBolusErrorString": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.minDelta": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.predBGs": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "openaps.suggested.predBGs.COB": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "structural"
+   },
+   "openaps.suggested.predBGs.COB[]": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.predBGs.IOB": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "structural"
+   },
+   "openaps.suggested.predBGs.IOB[]": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.predBGs.UAM": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "openaps.suggested.predBGs.UAM[]": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.predBGs.ZT": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "openaps.suggested.predBGs.ZT[]": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.rate": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.reason": {
+    "sensitivity": "identifying",
+    "category": "free-text",
+    "why": "name is on the redaction denylist"
+   },
+   "openaps.suggested.received": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.reservoir": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.sensitivityRatio": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.temp": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "openaps.suggested.threshold": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.suggested.timestamp": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "openaps.suggested.units": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "openaps.version": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "override": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "override.active": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "override.currentCorrectionRange": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "override.currentCorrectionRange.maxValue": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "override.currentCorrectionRange.minValue": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "override.duration": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "override.multiplier": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "override.name": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "override.timestamp": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "pump": {
+    "sensitivity": "descriptive",
+    "category": "device",
+    "why": "structural"
+   },
+   "pump.battery": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "pump.battery.display": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "pump.battery.percent": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "pump.battery.string": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "pump.bolusIncrement": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "pump.bolusing": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "pump.clock": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "pump.manufacturer": {
+    "sensitivity": "descriptive",
+    "category": "device",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "pump.model": {
+    "sensitivity": "descriptive",
+    "category": "device",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "pump.pumpID": {
+    "sensitivity": "identifying",
+    "category": "device",
+    "why": "name is on the redaction denylist"
+   },
+   "pump.reservoir": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "pump.reservoir_display_override": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "pump.reservoir_level_override": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "pump.secondsFromGMT": {
+    "sensitivity": "quasi-identifying",
+    "category": "location",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is location"
+   },
+   "pump.status": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "pump.status.bolusing": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "pump.status.status": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "pump.status.suspended": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "pump.status.timestamp": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "pump.suspended": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "uploader": {
+    "sensitivity": "descriptive",
+    "category": "device",
+    "why": "structural"
+   },
+   "uploader.battery": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "uploader.isCharging": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "uploader.name": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "uploader.timestamp": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "uploader.type": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "utcOffset": {
+    "sensitivity": "quasi-identifying",
+    "category": "location",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is location"
+   }
+  },
+  "entries": {
+   "_id": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "date": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "dateString": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "delta": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "device": {
+    "sensitivity": "quasi-identifying",
+    "category": "device",
+    "why": "values were withheld as personal-shaped"
+   },
+   "direction": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "filtered": {
+    "sensitivity": "descriptive",
+    "category": "health-measurement",
+    "why": "numeric or boolean measurement"
+   },
+   "glucose": {
+    "sensitivity": "descriptive",
+    "category": "health-measurement",
+    "why": "numeric or boolean measurement"
+   },
+   "isCalibration": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "mbg": {
+    "sensitivity": "descriptive",
+    "category": "health-measurement",
+    "why": "numeric or boolean measurement"
+   },
+   "noise": {
+    "sensitivity": "descriptive",
+    "category": "health-measurement",
+    "why": "numeric or boolean measurement"
+   },
+   "rssi": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "sgv": {
+    "sensitivity": "descriptive",
+    "category": "health-measurement",
+    "why": "numeric or boolean measurement"
+   },
+   "sysTime": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "trend": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "trendRate": {
+    "sensitivity": "descriptive",
+    "category": "health-derived",
+    "why": "numeric or boolean measurement"
+   },
+   "type": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "unfiltered": {
+    "sensitivity": "descriptive",
+    "category": "health-measurement",
+    "why": "numeric or boolean measurement"
+   },
+   "utcOffset": {
+    "sensitivity": "quasi-identifying",
+    "category": "location",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is location"
+   }
+  },
+  "profile": {
+   "_id": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "created_at": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "defaultProfile": {
+    "sensitivity": "identifying",
+    "category": "therapy-setting",
+    "why": "name is on the redaction denylist"
+   },
+   "enteredBy": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "loopSettings": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "loopSettings.bundleIdentifier": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "loopSettings.deviceToken": {
+    "sensitivity": "secret",
+    "category": "credential",
+    "why": "name matches a credential fragment"
+   },
+   "loopSettings.dosingEnabled": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "loopSettings.dosingStrategy": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "loopSettings.maximumBasalRatePerHour": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loopSettings.maximumBolus": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loopSettings.minimumBGGuard": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loopSettings.overridePresets": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "loopSettings.overridePresets[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "loopSettings.overridePresets[].duration": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loopSettings.overridePresets[].insulinNeedsScaleFactor": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loopSettings.overridePresets[].name": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "loopSettings.overridePresets[].symbol": {
+    "sensitivity": "quasi-identifying",
+    "category": "free-text",
+    "why": "values were withheld as personal-shaped"
+   },
+   "loopSettings.overridePresets[].targetRange": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "loopSettings.overridePresets[].targetRange[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loopSettings.preMealTargetRange": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "loopSettings.preMealTargetRange[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loopSettings.scheduleOverride": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "loopSettings.scheduleOverride.duration": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loopSettings.scheduleOverride.insulinNeedsScaleFactor": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "loopSettings.scheduleOverride.name": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "loopSettings.scheduleOverride.symbol": {
+    "sensitivity": "quasi-identifying",
+    "category": "free-text",
+    "why": "values were withheld as personal-shaped"
+   },
+   "loopSettings.scheduleOverride.targetRange": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "loopSettings.scheduleOverride.targetRange[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "mills": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary; raised to quasi-identifying because it is temporal"
+   },
+   "srvModified": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "startDate": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "store": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "store.{}": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "store.{}.basal": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "store.{}.basal[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "store.{}.basal[].time": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "store.{}.basal[].timeAsSeconds": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "store.{}.basal[].value": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "store.{}.carbratio": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "store.{}.carbratio[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "store.{}.carbratio[].time": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "store.{}.carbratio[].timeAsSeconds": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "store.{}.carbratio[].value": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "store.{}.carbs_hr": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "store.{}.delay": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "store.{}.dia": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "store.{}.sens": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "store.{}.sens[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "store.{}.sens[].time": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "store.{}.sens[].timeAsSeconds": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "store.{}.sens[].value": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "store.{}.startDate": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "store.{}.target_high": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "store.{}.target_high[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "store.{}.target_high[].time": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "store.{}.target_high[].timeAsSeconds": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "store.{}.target_high[].value": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "store.{}.target_low": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "store.{}.target_low[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "store.{}.target_low[].time": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "store.{}.target_low[].timeAsSeconds": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "store.{}.target_low[].value": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "store.{}.timezone": {
+    "sensitivity": "quasi-identifying",
+    "category": "location",
+    "why": "values were withheld as personal-shaped"
+   },
+   "store.{}.units": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "units": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   }
+  },
+  "settings": {
+   "apiEnabled": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "authorized": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "boluscalcEnabled": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "careportalEnabled": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "extendedSettings.bage": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "extendedSettings.bage.warn": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings.basal": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "extendedSettings.basal.render": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "extendedSettings.cage": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "extendedSettings.cage.display": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "extendedSettings.cage.enableAlert": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings.cage.info": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings.cage.urgent": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings.cage.warn": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings.dbsize": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "extendedSettings.dbsize.max": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings.devicestatus": {
+    "sensitivity": "descriptive",
+    "category": "device",
+    "why": "structural"
+   },
+   "extendedSettings.devicestatus.advanced": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings.devicestatus.days": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings.iage": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "extendedSettings.iage.info": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings.iage.warn": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings.loop": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "extendedSettings.loop.apnsDeveloperTeamId": {
+    "sensitivity": "secret",
+    "category": "credential",
+    "why": "name matches a credential fragment"
+   },
+   "extendedSettings.loop.pushServerEnvironment": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "extendedSettings.pump": {
+    "sensitivity": "descriptive",
+    "category": "device",
+    "why": "structural"
+   },
+   "extendedSettings.pump.fields": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "extendedSettings.pump.warnOnSuspend": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings.sage": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "extendedSettings.sage.enableAlert": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "extendedSettings.sage.info": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "name": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "runtimeState": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary; raised to quasi-identifying because it is temporal"
+   },
+   "serverTime": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "serverTimeEpoch": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "settings": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "settings.DEFAULT_FEATURES": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "settings.DEFAULT_FEATURES[]": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "settings.adminNotifiesEnabled": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.alarmHigh": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.alarmHighMins": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "settings.alarmHighMins[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.alarmLow": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.alarmLowMins": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "settings.alarmLowMins[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.alarmPumpBatteryLow": {
+    "sensitivity": "descriptive",
+    "category": "device",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.alarmTimeagoUrgent": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "settings.alarmTimeagoUrgentMins": {
+    "sensitivity": "quasi-identifying",
+    "category": "therapy-setting",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "settings.alarmTimeagoWarn": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "settings.alarmTimeagoWarnMins": {
+    "sensitivity": "quasi-identifying",
+    "category": "therapy-setting",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "settings.alarmTypes": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "settings.alarmTypes[]": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "settings.alarmUrgentHigh": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.alarmUrgentHighMins": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "settings.alarmUrgentHighMins[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.alarmUrgentLow": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.alarmUrgentLowMins": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "settings.alarmUrgentLowMins[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.alarmUrgentMins": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "settings.alarmUrgentMins[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.alarmWarnMins": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "settings.alarmWarnMins[]": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.authDefaultRoles": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "settings.authFailDelay": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.authenticationPromptOnLoad": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.baseURL": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.customTitle": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.dayEnd": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.dayStart": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.deNormalizeDates": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "settings.editMode": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.enable": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "settings.enable[]": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "settings.focusHours": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.frameName1": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameName2": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameName3": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameName4": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameName5": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameName6": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameName7": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameName8": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameUrl1": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameUrl2": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameUrl3": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameUrl4": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameUrl5": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameUrl6": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameUrl7": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.frameUrl8": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "settings.heartbeat": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.insecureUseHttp": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.language": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "settings.nightMode": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.scaleY": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "settings.secureCsp": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.secureHstsHeader": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.secureHstsHeaderIncludeSubdomains": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.secureHstsHeaderPreload": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.showClockDelta": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "settings.showClockLastTime": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "settings.showForecast": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "settings.showPlugins": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values were withheld as personal-shaped"
+   },
+   "settings.showRawbg": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "settings.theme": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "settings.thresholds": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "structural"
+   },
+   "settings.thresholds.bgHigh": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.thresholds.bgLow": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.thresholds.bgTargetBottom": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.thresholds.bgTargetTop": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "settings.timeFormat": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "settings.units": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "status": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "version": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   }
+  },
+  "treatments": {
+   "_id": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "absolute": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "absorptionTime": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "amount": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "automatic": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "carbs": {
+    "sensitivity": "descriptive",
+    "category": "health-measurement",
+    "why": "numeric or boolean measurement"
+   },
+   "correctionRange": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "structural"
+   },
+   "correctionRange[]": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "created_at": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "duration": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "durationType": {
+    "sensitivity": "quasi-identifying",
+    "category": "therapy-setting",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "endmills": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "enteredBy": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "eventType": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "fat": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "foodType": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values were withheld as personal-shaped"
+   },
+   "glucose": {
+    "sensitivity": "descriptive",
+    "category": "health-measurement",
+    "why": "numeric or boolean measurement"
+   },
+   "glucoseType": {
+    "sensitivity": "quasi-identifying",
+    "category": "health-measurement",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "id": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "identifier": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "insulin": {
+    "sensitivity": "descriptive",
+    "category": "health-measurement",
+    "why": "numeric or boolean measurement"
+   },
+   "insulinNeedsScaleFactor": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "insulinType": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "mills": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal"
+   },
+   "notes": {
+    "sensitivity": "identifying",
+    "category": "free-text",
+    "why": "name is on the redaction denylist"
+   },
+   "programmed": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "protein": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "rate": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "reason": {
+    "sensitivity": "identifying",
+    "category": "free-text",
+    "why": "name is on the redaction denylist"
+   },
+   "remoteAddress": {
+    "sensitivity": "identifying",
+    "category": "vocabulary",
+    "why": "name is on the redaction denylist"
+   },
+   "syncIdentifier": {
+    "sensitivity": "identifying",
+    "category": "identity",
+    "why": "name is on the redaction denylist"
+   },
+   "targetBottom": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "targetTop": {
+    "sensitivity": "descriptive",
+    "category": "therapy-setting",
+    "why": "numeric or boolean measurement"
+   },
+   "temp": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "timestamp": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "type": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "values survived cross-site corroboration, so they are shared vocabulary"
+   },
+   "unabsorbed": {
+    "sensitivity": "descriptive",
+    "category": "vocabulary",
+    "why": "numeric or boolean measurement"
+   },
+   "units": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values appeared on too few sites to be shared vocabulary"
+   },
+   "userEnteredAt": {
+    "sensitivity": "quasi-identifying",
+    "category": "vocabulary",
+    "why": "values were withheld as personal-shaped"
+   },
+   "userLastModifiedAt": {
+    "sensitivity": "quasi-identifying",
+    "category": "temporal",
+    "why": "values were withheld as personal-shaped"
+   },
+   "utcOffset": {
+    "sensitivity": "quasi-identifying",
+    "category": "location",
+    "why": "numeric or boolean measurement; raised to quasi-identifying because it is location"
+   }
+  }
+ }
+}

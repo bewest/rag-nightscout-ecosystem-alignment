@@ -37,7 +37,7 @@ from dataclasses import dataclass, field as dc_field
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from . import corpus, specload, tiers
+from . import corpus, sensitivity, specload, tiers
 
 # Server-assigned; a client never sends these, every reader receives them.
 SERVER_ASSIGNED = frozenset({
@@ -98,6 +98,9 @@ class Node:
     nullable: bool = False
     declared_integer: bool = False
     # policy outcome
+    sensitivity: Optional[str] = None
+    data_category: Optional[str] = None
+    sensitivity_why: str = ""
     placement: str = "core"      # core | extension
     required_write: bool = False
     required_read: bool = False
@@ -147,6 +150,10 @@ def build(census: dict, flat: dict, collection: str) -> Node:
         node.doc_frequency = record["doc_frequency"]
         node.site_count = record["site_count"]
         node.nullable = "null" in record["types"]
+        label = sensitivity.label(record["path"], record)
+        node.sensitivity = label["sensitivity"]
+        node.data_category = label["category"]
+        node.sensitivity_why = label["why"]
         observed = [t for t in record["types"] if t != "null"]
         node.types = sorted(set(node.types) | set(observed))
         string_info = record.get("string") or {}
@@ -163,6 +170,12 @@ def build(census: dict, flat: dict, collection: str) -> Node:
     for path, decl in flat.items():
         node = _insert(root, path)
         node.declared = True
+        if node.sensitivity is None:
+            # Declared but never observed: unlabelled defaults to identifying.
+            label = sensitivity.label(path, None)
+            node.sensitivity = label["sensitivity"]
+            node.data_category = label["category"]
+            node.sensitivity_why = label["why"]
         node.declared_integer = "integer" in decl["types"]
         node.types = sorted(set(node.types) | set(decl["types"]))
         node.declared_required = decl["required"]
@@ -280,7 +293,8 @@ def to_dict(node: Node) -> dict:
         "observed": node.observed,
         "placement": node.placement,
     }
-    for key in ("tier", "tier_reason", "format", "description"):
+    for key in ("sensitivity", "data_category", "sensitivity_why",
+                "tier", "tier_reason", "format", "description"):
         if getattr(node, key):
             out[key] = getattr(node, key)
     if node.observed:

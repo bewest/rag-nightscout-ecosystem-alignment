@@ -7,32 +7,46 @@
  "properties": {
   "_id": {
    "type": "string",
-   "description": "MongoDB document ID (ObjectId as string in v1, any string in v3)"
+   "description": "MongoDB document ID (ObjectId as string in v1, any string in v3)",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "app": {
    "type": "string",
-   "description": "Origin application identifier"
+   "description": "Origin application identifier",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary"
   },
   "date": {
    "type": "number",
-   "description": "Epoch milliseconds timestamp."
+   "description": "Epoch milliseconds timestamp.",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "temporal"
   },
   "dateString": {
    "type": "string",
    "description": "ISO 8601 timestamp",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "temporal",
    "format": "date-time"
   },
   "delta": {
    "type": "number",
-   "description": "Change from previous reading (mg/dL)."
+   "description": "Change from previous reading (mg/dL).",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "health-derived"
   },
   "device": {
    "type": "string",
-   "description": "Source device identifier. Format varies by uploader."
+   "description": "Source device identifier. Format varies by uploader.",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "device"
   },
   "direction": {
    "type": "string",
    "description": "Glucose trend direction. Maps to rate of change:",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary",
    "x-observed-values": [
     "DoubleDown",
     "DoubleUp",
@@ -46,86 +60,126 @@
   },
   "filtered": {
    "type": "number",
-   "description": "Filtered raw sensor value. Used for calibration algorithms."
+   "description": "Filtered raw sensor value. Used for calibration algorithms.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "health-measurement"
   },
   "identifier": {
    "type": "string",
-   "description": "API v3 primary key. Server-assigned, immutable after creation."
+   "description": "API v3 primary key. Server-assigned, immutable after creation.",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "intercept": {
    "type": "number",
-   "description": "Calibration intercept (for type=cal)"
+   "description": "Calibration intercept (for type=cal)",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary"
   },
   "isCalibration": {
    "type": "boolean",
-   "description": "Marks a reading produced by, or immediately following, a sensor"
+   "description": "Marks a reading produced by, or immediately following, a sensor",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "therapy-setting"
   },
   "isReadOnly": {
    "type": "boolean",
-   "description": "Lock document permanently (HTTP 422 on modify attempts)"
+   "description": "Lock document permanently (HTTP 422 on modify attempts)",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary"
   },
   "isValid": {
    "type": "boolean",
-   "description": "Soft-delete flag. false = document is deleted."
+   "description": "Soft-delete flag. false = document is deleted.",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary"
   },
   "mbg": {
    "type": "number",
-   "description": "Meter blood glucose value in mg/dL."
+   "description": "Meter blood glucose value in mg/dL.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "health-measurement"
   },
   "modifiedBy": {
    "type": "string",
-   "description": "Last modifier identifier"
+   "description": "Last modifier identifier",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "noise": {
    "type": "integer",
    "description": "Signal quality indicator:",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "health-measurement",
    "minimum": 0,
    "maximum": 5
   },
   "rssi": {
    "type": "integer",
-   "description": "Signal strength indicator (dBm)"
+   "description": "Signal strength indicator (dBm)",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary"
   },
   "scale": {
    "type": "number",
-   "description": "Calibration scale factor (for type=cal)"
+   "description": "Calibration scale factor (for type=cal)",
+   "x-sensitivity": "identifying",
+   "x-data-category": "therapy-setting"
   },
   "sgv": {
    "type": "number",
-   "description": "Sensor glucose value in mg/dL."
+   "description": "Sensor glucose value in mg/dL.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "health-measurement"
   },
   "slope": {
    "type": "number",
-   "description": "Calibration slope (for type=cal)"
+   "description": "Calibration slope (for type=cal)",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary"
   },
   "srvCreated": {
    "type": "integer",
-   "description": "Server creation timestamp (epoch ms)"
+   "description": "Server creation timestamp (epoch ms)",
+   "x-sensitivity": "identifying",
+   "x-data-category": "temporal"
   },
   "srvModified": {
    "type": "integer",
-   "description": "Server modification timestamp (epoch ms)"
+   "description": "Server modification timestamp (epoch ms)",
+   "x-sensitivity": "identifying",
+   "x-data-category": "temporal"
   },
   "subject": {
    "type": "string",
-   "description": "Creating user/token identifier"
+   "description": "Creating user/token identifier",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "sysTime": {
    "type": "string",
    "description": "System time when reading was captured (Dexcom Share)",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "temporal",
    "format": "date-time"
   },
   "trend": {
    "type": "integer",
-   "description": "Numeric trend code, written alongside `direction` by most"
+   "description": "Numeric trend code, written alongside `direction` by most",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "health-derived"
   },
   "trendRate": {
    "type": "number",
-   "description": "Rate of change in mg/dL/min. More precise than `direction`."
+   "description": "Rate of change in mg/dL/min. More precise than `direction`.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "health-derived"
   },
   "type": {
    "type": "string",
    "description": "Entry classification:",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary",
    "enum": [
     "cal",
     "mbg",
@@ -134,11 +188,15 @@
   },
   "unfiltered": {
    "type": "number",
-   "description": "Unfiltered raw sensor value. Used for calibration algorithms."
+   "description": "Unfiltered raw sensor value. Used for calibration algorithms.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "health-measurement"
   },
   "units": {
    "type": "string",
    "description": "Glucose unit indicator.",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary",
    "enum": [
     "mg",
     "mg/dL",
@@ -149,7 +207,9 @@
   },
   "utcOffset": {
    "type": "integer",
-   "description": "Timezone offset in minutes from UTC"
+   "description": "Timezone offset in minutes from UTC",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "location"
   }
  },
  "required": [

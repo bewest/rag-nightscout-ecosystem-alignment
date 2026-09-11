@@ -85,7 +85,14 @@ def emit(model):
         if note:
             bits.append(note)
         comment = f"  # {'; '.join(bits)}" if bits else ""
-        lines.append(f"    pa.field({json.dumps(name)}, {ctype}),{comment}")
+        meta = {}
+        if child.get("sensitivity"):
+            meta["sensitivity"] = child["sensitivity"]
+        if child.get("data_category"):
+            meta["category"] = child["data_category"]
+        metadata = f", metadata={json.dumps(meta)}" if meta else ""
+        lines.append(
+            f"    pa.field({json.dumps(name)}, {ctype}{metadata}),{comment}")
     body = "\n".join(lines)
     const = collection.upper()
     return f'''"""GENERATED FILE — do not edit.

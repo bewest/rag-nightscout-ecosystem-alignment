@@ -7,31 +7,45 @@
  "properties": {
   "_id": {
    "type": "string",
-   "description": "MongoDB document ID"
+   "description": "MongoDB document ID",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "absolute": {
    "type": "number",
-   "description": "Temp basal as absolute rate (U/hr)"
+   "description": "Temp basal as absolute rate (U/hr)",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary"
   },
   "absorptionTime": {
    "type": "integer",
-   "description": "Carb absorption time in MINUTES (Nightscout convention)."
+   "description": "Carb absorption time in MINUTES (Nightscout convention).",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "therapy-setting"
   },
   "amount": {
    "type": "number",
-   "description": "Temp-basal rate or bolus amount, written alongside `rate` and"
+   "description": "Temp-basal rate or bolus amount, written alongside `rate` and",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary"
   },
   "app": {
    "type": "string",
-   "description": "Application identifier"
+   "description": "Application identifier",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary"
   },
   "automatic": {
    "type": "boolean",
-   "description": "Whether insulin was automatically delivered."
+   "description": "Whether insulin was automatically delivered.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary"
   },
   "bolusType": {
    "type": "string",
    "description": "Bolus delivery pattern:",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary",
    "enum": [
     "Dual",
     "Normal",
@@ -44,35 +58,51 @@
     "number"
    ],
    "description": "Carbohydrates in grams.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "health-measurement",
    "minimum": 0
   },
   "correctionRange": {
    "type": "array",
    "description": "Override correction range as a two-element [low, high] array in",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary",
    "items": {
-    "type": "number"
+    "type": "number",
+    "x-sensitivity": "descriptive",
+    "x-data-category": "vocabulary"
    }
   },
   "created_at": {
    "type": "string",
    "description": "Event timestamp (ISO 8601)",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "temporal",
    "format": "date-time"
   },
   "device": {
    "type": "string",
-   "description": "Device identifier"
+   "description": "Device identifier",
+   "x-sensitivity": "identifying",
+   "x-data-category": "device"
   },
   "duration": {
    "type": "number",
-   "description": "Duration in MINUTES for temp basal, override, eCarbs."
+   "description": "Duration in MINUTES for temp basal, override, eCarbs.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "therapy-setting"
   },
   "enteredBy": {
    "type": "string",
-   "description": "User/device nickname that created treatment."
+   "description": "User/device nickname that created treatment.",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "eventType": {
    "type": "string",
    "description": "Treatment classification. This is the primary discriminator for treatment types.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary",
    "x-observed-values": [
     "Carb Correction",
     "Correction Bolus",
@@ -84,23 +114,33 @@
   },
   "fat": {
    "type": "number",
-   "description": "Fat grams (for FPU calculation)"
+   "description": "Fat grams (for FPU calculation)",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary"
   },
   "foodType": {
    "type": "string",
-   "description": "Food category/description"
+   "description": "Food category/description",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "vocabulary"
   },
   "glucose": {
    "type": "number",
-   "description": "Blood glucose value at time of treatment"
+   "description": "Blood glucose value at time of treatment",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "health-measurement"
   },
   "glucoseType": {
    "type": "string",
-   "description": "Source of glucose reading"
+   "description": "Source of glucose reading",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "health-measurement"
   },
   "identifier": {
    "type": "string",
-   "description": "API v3 primary key. Server-assigned."
+   "description": "API v3 primary key. Server-assigned.",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "insulin": {
    "type": [
@@ -108,15 +148,21 @@
     "number"
    ],
    "description": "Insulin amount in Units.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "health-measurement",
    "minimum": 0
   },
   "insulinNeedsScaleFactor": {
    "type": "number",
-   "description": "Override scale factor applied to insulin needs, as a multiplier"
+   "description": "Override scale factor applied to insulin needs, as a multiplier",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "therapy-setting"
   },
   "insulinType": {
    "type": "string",
    "description": "Insulin product name (Humalog, NovoRapid, Fiasp, etc.)",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "therapy-setting",
    "x-observed-values": [
     "Humalog",
     "Novolog"
@@ -124,92 +170,140 @@
   },
   "isBasalInsulin": {
    "type": "boolean",
-   "description": "AAPS MDI basal injection tracking"
+   "description": "AAPS MDI basal injection tracking",
+   "x-sensitivity": "identifying",
+   "x-data-category": "therapy-setting"
   },
   "isReadOnly": {
-   "type": "boolean"
+   "type": "boolean",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary"
   },
   "isValid": {
-   "type": "boolean"
+   "type": "boolean",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary"
   },
   "modifiedBy": {
-   "type": "string"
+   "type": "string",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "notes": {
    "type": "string",
-   "description": "Free-form notes"
+   "description": "Free-form notes",
+   "x-sensitivity": "identifying",
+   "x-data-category": "free-text"
   },
   "percent": {
    "type": "number",
-   "description": "Temp basal as percentage of scheduled basal"
+   "description": "Temp basal as percentage of scheduled basal",
+   "x-sensitivity": "identifying",
+   "x-data-category": "therapy-setting"
   },
   "percentage": {
    "type": "integer",
-   "description": "AAPS profile percentage (100 = normal)"
+   "description": "AAPS profile percentage (100 = normal)",
+   "x-sensitivity": "identifying",
+   "x-data-category": "therapy-setting"
   },
   "profile": {
    "type": "string",
-   "description": "Profile name for profile switch"
+   "description": "Profile name for profile switch",
+   "x-sensitivity": "identifying",
+   "x-data-category": "therapy-setting"
   },
   "profileJson": {
    "type": "string",
-   "description": "Full profile JSON (for inline profile switch)"
+   "description": "Full profile JSON (for inline profile switch)",
+   "x-sensitivity": "identifying",
+   "x-data-category": "therapy-setting"
   },
   "programmed": {
    "type": "number",
-   "description": "Originally programmed insulin (before cancellation)"
+   "description": "Originally programmed insulin (before cancellation)",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary"
   },
   "protein": {
    "type": "number",
-   "description": "Protein grams (for FPU calculation)"
+   "description": "Protein grams (for FPU calculation)",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary"
   },
   "pumpId": {
    "type": "integer",
-   "description": "Pump internal ID for this treatment"
+   "description": "Pump internal ID for this treatment",
+   "x-sensitivity": "identifying",
+   "x-data-category": "device"
   },
   "pumpSerial": {
    "type": "string",
-   "description": "Pump serial number"
+   "description": "Pump serial number",
+   "x-sensitivity": "identifying",
+   "x-data-category": "device"
   },
   "pumpType": {
    "type": "string",
-   "description": "Pump type enum name"
+   "description": "Pump type enum name",
+   "x-sensitivity": "identifying",
+   "x-data-category": "device"
   },
   "rate": {
    "type": "number",
-   "description": "Temp basal rate (U/hr) - alias for absolute"
+   "description": "Temp basal rate (U/hr) - alias for absolute",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "therapy-setting"
   },
   "reason": {
    "type": "string",
-   "description": "Override/temp target reason (e.g., \"Exercise\", \"Eating Soon\")"
+   "description": "Override/temp target reason (e.g., \"Exercise\", \"Eating Soon\")",
+   "x-sensitivity": "identifying",
+   "x-data-category": "free-text"
   },
   "remoteAddress": {
-   "type": "string"
+   "type": "string",
+   "x-sensitivity": "identifying",
+   "x-data-category": "vocabulary"
   },
   "srvCreated": {
-   "type": "integer"
+   "type": "integer",
+   "x-sensitivity": "identifying",
+   "x-data-category": "temporal"
   },
   "srvModified": {
-   "type": "integer"
+   "type": "integer",
+   "x-sensitivity": "identifying",
+   "x-data-category": "temporal"
   },
   "subject": {
-   "type": "string"
+   "type": "string",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "syncIdentifier": {
    "type": "string",
-   "description": "Client-assigned sync identity (UUID)."
+   "description": "Client-assigned sync identity (UUID).",
+   "x-sensitivity": "identifying",
+   "x-data-category": "identity"
   },
   "targetBottom": {
    "type": "number",
-   "description": "Lower target glucose (mg/dL)"
+   "description": "Lower target glucose (mg/dL)",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "therapy-setting"
   },
   "targetTop": {
    "type": "number",
-   "description": "Upper target glucose (mg/dL)"
+   "description": "Upper target glucose (mg/dL)",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "therapy-setting"
   },
   "temp": {
    "type": "string",
    "description": "Whether temp basal is expressed as rate or percentage",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary",
    "enum": [
     "absolute",
     "percent"
@@ -217,18 +311,24 @@
   },
   "timeshift": {
    "type": "integer",
-   "description": "AAPS profile time shift in hours"
+   "description": "AAPS profile time shift in hours",
+   "x-sensitivity": "identifying",
+   "x-data-category": "temporal"
   },
   "timestamp": {
    "type": [
     "number",
     "string"
    ],
-   "description": "Alternative timestamp to `created_at`."
+   "description": "Alternative timestamp to `created_at`.",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "temporal"
   },
   "type": {
    "type": "string",
    "description": "AAPS-specific bolus subtype.",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary",
    "enum": [
     "Normal",
     "Priming",
@@ -238,21 +338,29 @@
   },
   "unabsorbed": {
    "type": "number",
-   "description": "Unabsorbed insulin at time of bolus"
+   "description": "Unabsorbed insulin at time of bolus",
+   "x-sensitivity": "descriptive",
+   "x-data-category": "vocabulary"
   },
   "userEnteredAt": {
    "type": "string",
    "description": "When the user entered the treatment, as distinct from when it was",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "vocabulary",
    "format": "date-time"
   },
   "userLastModifiedAt": {
    "type": "string",
    "description": "When the user last edited the treatment.",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "temporal",
    "format": "date-time"
   },
   "utcOffset": {
    "type": "integer",
-   "description": "Timezone offset in minutes"
+   "description": "Timezone offset in minutes",
+   "x-sensitivity": "quasi-identifying",
+   "x-data-category": "location"
   }
  },
  "required": [

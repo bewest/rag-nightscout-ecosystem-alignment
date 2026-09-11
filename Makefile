@@ -666,15 +666,15 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
         schema-scan-pii schema-sanitize schema-attribute \
         schema-quirks schema-quirks-check schema-decompose \
         schema-nocturne schema-dosing schema-vendors schema-observability \
-        schema-sync-model schema-sync-cost schema-effects \
+        schema-sync-model schema-sync-cost schema-effects schema-sensitivity \
         schema-test schema-clean
 
 PY ?= python3
 NSSCHEMA = PYTHONPATH=tools $(PY) -m nsschema
 
 ## schema: full pipeline — census, reconcile, model, emit, impact, drift
-schema: schema-census schema-reconcile schema-model schema-quirks schema-emit \
-        schema-impact schema-drift
+schema: schema-census schema-reconcile schema-sensitivity schema-model \
+        schema-quirks schema-emit schema-impact schema-drift
 
 ## schema-census: walk the raw corpus (~4 min over ~2.5 GB of JSON)
 schema-census:
@@ -769,6 +769,10 @@ schema-sync-cost:
 ## schema-effects: can a temporary effect be separated from its motivation?
 schema-effects:
 	@$(NSSCHEMA).effects
+
+## schema-sensitivity: derive field sensitivity labels and projection coverage
+schema-sensitivity:
+	@$(NSSCHEMA).sensitivity
 
 ## schema-drift: check tools/ns2parquet against the measured wire model
 schema-drift:

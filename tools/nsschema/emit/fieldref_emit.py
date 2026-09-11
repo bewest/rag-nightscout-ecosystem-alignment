@@ -94,7 +94,8 @@ def emit(model, census_meta, attribution=None, quirks=None):
             marks.append("nullable")
         rows_by_tier.setdefault(tier, []).append(
             f"| `{path}` | {_types(node)} | {freq:.1%} | {sites} | "
-            f"{_projects_for(path, index)} | {' · '.join(marks)} |"
+            f"{_projects_for(path, index)} | {node.get('sensitivity', '?')} | "
+            f"{' · '.join(marks)} |"
         )
 
     lines = [
@@ -114,6 +115,11 @@ def emit(model, census_meta, attribution=None, quirks=None):
         "The second number matters more: one busy site can make a single client's ",
         "private field look common.",
         "",
+        "**Sensitivity** is the derived label (`secret`, `identifying`, ",
+        "`quasi-identifying`, `descriptive`) that projections strip by; see ",
+        "`specs/sync/sensitivity.yaml`. It is derived from the redaction policy and ",
+        "the census, not asserted, and an unlabelled field defaults to `identifying`.",
+        "",
         "**Handled by** lists projects whose source code serializes the field, from ",
         "`reports/schema-census/attribution.json`. It is source evidence, not document ",
         "provenance: a project that *reads* a field looks identical to one that ",
@@ -132,8 +138,8 @@ def emit(model, census_meta, attribution=None, quirks=None):
         lines += [
             f"## {tier.title()} — {TIER_NOTE[tier]}",
             "",
-            "| Field | Type | Documents | Sites | Handled by | Notes |",
-            "|---|---|---|---|---|---|",
+            "| Field | Type | Documents | Sites | Handled by | Sensitivity | Notes |",
+            "|---|---|---|---|---|---|---|",
             *rows,
             "",
         ]

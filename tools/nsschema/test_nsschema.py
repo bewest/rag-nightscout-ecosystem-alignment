@@ -1295,3 +1295,106 @@ def test_remapping_rules_declare_their_lossiness():
         assert rule.get("evidence") or rule.get("note"), rule["id"]
     trio = next(r for r in rules["rules"] if r["id"] == "MAP-TRIO-EXERCISE")
     assert trio["lossy"] and trio["to"]["effect"] == {}
+
+
+# ── sensitivity labels and projections ──────────────────────────────────
+
+from nsschema import sensitivity as sens  # noqa: E402
+
+
+def test_vocabulary_loads_and_levels_match_the_code():
+    sens.load_vocabulary(corpus.repo_root())
+
+
+def test_unlabelled_defaults_to_identifying():
+    # A field must be argued down, never silently up: the opposite default
+    # fails open on the next schema change.
+    label = sens.label("somethingNobodyHasSeen", None)
+    assert label["sensitivity"] == "identifying"
+
+
+def test_credentials_outrank_identifiers():
+    assert sens.label("loopSettings.deviceToken", None)["sensitivity"] == "secret"
+    assert sens.label("loopSettings.bundleIdentifier", None)["sensitivity"] == "identifying"
+
+
+def test_a_numeric_timestamp_is_not_freely_publishable():
+    # `date` is a number, and the numeric rule alone called it descriptive.
+    field = {"path": "date", "types": {"number": 10}, "numeric": {"count": 10}}
+    label = sens.label("date", field)
+    assert label["category"] == "temporal"
+    assert label["sensitivity"] == "quasi-identifying"
+
+
+def test_a_span_is_not_an_instant():
+    # A duration says how long, not when. Treating it as temporal stripped
+    # it from projections that need it - a replay cannot price a temp basal
+    # without its duration.
+    for path in ("duration", "absorptionTime", "store.{}.basal[].timeAsSeconds"):
+        label = sens.label(path, {"numeric": {"count": 99}})
+        assert label["category"] == "therapy-setting", path
+        assert label["sensitivity"] == "descriptive", path
+
+
+def test_a_utc_offset_is_location_not_time():
+    assert sens.label("utcOffset", {"numeric": {"count": 9}})["category"] == "location"
+    assert sens.label("pump.secondsFromGMT",
+                      {"numeric": {"count": 9}})["category"] == "location"
+
+
+def test_corroborated_values_are_vocabulary_and_withheld_ones_are_not():
+    shared = {"string": {"distinct_values": ["Flat", "NONE"]}}
+    private = {"string": {"distinct_values": None,
+                          "value_note": "withheld: personal-shaped or over-long values"}}
+    assert sens.label("direction", shared)["sensitivity"] == "descriptive"
+    assert sens.label("direction", private)["sensitivity"] == "quasi-identifying"
+
+
+def test_projection_is_a_whitelist():
+    # An unlabelled path must not appear in a projection.
+    profile = {"max_sensitivity": "descriptive", "categories": ["*"]}
+    labels = {"known": {"sensitivity": "descriptive", "category": "vocabulary"}}
+    out = sens.project({"known": 1, "brandNew": 2}, labels, profile)
+    assert out == {"known": 1}
+
+
+def test_projection_strips_credentials_and_identity_below_full():
+    root = corpus.repo_root()
+    labels = sens.label_census(root)["profile"]
+    profiles = {p["id"]: p for p in sens.load_vocabulary(root)["profiles"]}
+    doc = {"_id": "x", "units": "mg/dl",
+           "loopSettings": {"deviceToken": "t", "maximumBolus": 9}}
+    full = sens.project(doc, labels, profiles["full"])
+    clinical = sens.project(doc, labels, profiles["clinical"])
+    assert full["loopSettings"]["deviceToken"] == "t"
+    assert "_id" not in clinical
+    assert "deviceToken" not in clinical["loopSettings"]
+    assert clinical["loopSettings"]["maximumBolus"] == 9
+
+
+def test_effect_only_drops_timestamps_but_keeps_the_dose():
+    root = corpus.repo_root()
+    labels = sens.label_census(root)["devicestatus"]
+    profiles = {p["id"]: p for p in sens.load_vocabulary(root)["profiles"]}
+    doc = {"created_at": "2026-09-11T08:00:00Z",
+           "loop": {"iob": {"iob": 1.4}}, "override": {"multiplier": 1.2}}
+    out = sens.project(doc, labels, profiles["effect-only"])
+    assert "created_at" not in out
+    assert out["loop"]["iob"]["iob"] == 1.4
+    assert out["override"]["multiplier"] == 1.2
+
+
+def test_generated_schemas_carry_the_label():
+    schema = json.loads((corpus.repo_root() / "specs/jsonschema/generated"
+                         / "profile.write.tolerant.schema.json").read_text())
+    token = schema["properties"]["loopSettings"]["properties"]["deviceToken"]
+    assert token["x-sensitivity"] == "secret"
+    assert token["x-data-category"] == "credential"
+
+
+def test_registrations_declare_a_withholding_default():
+    root = corpus.repo_root()
+    for key, spec in sync_model.CONTROLLERS.items():
+        block = sync_model.build(root, key, spec)["spec"]["sensitivity"]
+        assert block["unlabelledPolicy"] == "withhold", key
+        assert block["defaultProfile"] != "full", key
