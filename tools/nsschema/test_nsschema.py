@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -912,3 +913,104 @@ def test_every_branch_declares_what_it_produces():
         assert branch in decompose.BRANCHES
     assert decompose.BRANCHES["unroutable"] == []
     assert decompose.BRANCHES["meal-bolus"] == ["Bolus", "CarbIntake"]
+
+
+# ── Nocturne model coverage ─────────────────────────────────────────────
+
+from nsschema import nocturne_model  # noqa: E402
+
+_NOCTURNE = corpus.repo_root() / nocturne_model.MODELS_DIR
+_HAS_NOCTURNE = _NOCTURNE.is_dir()
+_skip_nocturne = pytest.mark.skipif(not _HAS_NOCTURNE,
+                                    reason="externals/nocturne not checked out")
+
+
+@pytest.fixture(scope="module")
+def nocturne_classes():
+    return nocturne_model.parse_models(_NOCTURNE)
+
+
+@_skip_nocturne
+@pytest.mark.parametrize("cls,prop", [
+    # Expression-bodied properties: an earlier regex required `{ get;` and
+    # reported all of these as undeclared.
+    ("Entry", "date"), ("Entry", "dateString"), ("Profile", "srvModified"),
+    # Plain auto-properties.
+    ("PumpStatus", "reservoir"), ("UploaderStatus", "battery"),
+    ("Profile", "loopSettings"),
+])
+def test_parser_finds_properties_that_exist(nocturne_classes, cls, prop):
+    assert prop in nocturne_classes[cls]["props"], f"{cls}.{prop}"
+
+
+@_skip_nocturne
+@pytest.mark.parametrize("cls,prop", [
+    # The corpus's majority flat pump shape; Nocturne declares only the
+    # nested `pump.status.*` form.
+    ("PumpStatus", "bolusing"), ("PumpStatus", "suspended"),
+    ("PumpStatus", "pumpID"), ("PumpStatus", "secondsFromGMT"),
+    ("UploaderStatus", "timestamp"),
+])
+def test_parser_reports_properties_that_really_are_missing(nocturne_classes, cls, prop):
+    assert prop not in nocturne_classes[cls]["props"], f"{cls}.{prop}"
+
+
+@_skip_nocturne
+def test_only_the_top_level_document_keeps_unknown_keys(nocturne_classes):
+    # This is why a nested vendor field is dropped rather than captured:
+    # [JsonExtensionData] is on DeviceStatus, not on PumpStatus.
+    assert nocturne_classes["DeviceStatus"]["extension"]
+    for nested in ("PumpStatus", "UploaderStatus", "LoopStatus", "PumpBattery"):
+        assert not nocturne_classes[nested]["extension"], nested
+
+
+@_skip_nocturne
+def test_resolution_verdicts(nocturne_classes):
+    resolve = nocturne_model.resolve
+    assert resolve(nocturne_classes, "Entry", "sgv")[0] == "retained"
+    assert resolve(nocturne_classes, "DeviceStatus", "pump.reservoir")[0] == "retained"
+    assert resolve(nocturne_classes, "DeviceStatus", "pump.bolusing")[0] == "dropped"
+    # Treatment carries [JsonExtensionData], so an unknown key survives.
+    assert resolve(nocturne_classes, "Treatment", "somethingNobodyDeclared")[0] == "captured"
+
+
+def test_element_type_unwraps_collections():
+    assert nocturne_model._element_type("List<TimeValue>") == "TimeValue"
+    assert nocturne_model._element_type("Dictionary<string, ProfileData>") == "ProfileData"
+    assert nocturne_model._element_type("double") is None
+
+
+# ── dosing-input recoverability ─────────────────────────────────────────
+
+from nsschema import dosing_inputs  # noqa: E402
+
+
+def test_dosing_input_map_loads_and_is_well_formed():
+    mapping = yaml.safe_load(
+        (corpus.repo_root() / dosing_inputs.MAP).read_text())
+    assert mapping["inputs"]
+    for entry in mapping["inputs"]:
+        assert entry["kind"] in dosing_inputs.KIND_ORDER, entry["input"]
+        assert entry.get("confidence") in ("high", "medium", "low"), entry["input"]
+        if entry["kind"] in ("recorded", "partial"):
+            assert entry.get("sources"), f"{entry['input']} claims a source"
+        if entry["kind"] == "absent":
+            assert not entry.get("sources"), f"{entry['input']} claims absent"
+
+
+def test_check_flags_a_source_that_does_not_exist():
+    mapping = {"inputs": [{"input": "x", "kind": "recorded",
+                           "collection": "devicestatus",
+                           "sources": ["nope.not.here"], "confidence": "high"}]}
+    rows = dosing_inputs.check(mapping, {"devicestatus": {}})
+    assert rows[0]["verdict"] == "claim-unsupported"
+
+
+def test_check_flags_an_absent_claim_the_data_contradicts():
+    mapping = {"inputs": [{"input": "x", "kind": "absent",
+                           "collection": "devicestatus",
+                           "sources": ["pump.reservoir"], "confidence": "high"}]}
+    census = {"devicestatus": {"pump.reservoir": {
+        "doc_frequency": 0.5, "site_count": 9}}}
+    rows = dosing_inputs.check(mapping, census)
+    assert rows[0]["verdict"] == "claim-contradicted"

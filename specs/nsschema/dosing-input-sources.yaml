@@ -1,0 +1,267 @@
+# Where an oref0 dosing input can be recovered from, in Nightscout.
+#
+# The input list is evidence-based: it is the union of `input.*` paths across
+# the 385 replay vectors in `conformance/` — real inputs captured from AAPS
+# and Loop phone runs, not a reading of the algorithm's signature.
+#
+# Each entry names the Nightscout paths that could carry the value, and how:
+#
+#   recorded     a path holds the value directly
+#   derivable    reconstructible from stored history (entries, treatments),
+#                at the cost of recomputing what the controller already knew
+#   absent       nothing in Nightscout carries it
+#
+# `sources` are census paths; `collection` says which census to look in.
+# `confidence` is stated because several of these are judgement calls about
+# whether two similarly-named things are the same quantity.
+inputs:
+  # ── glucose status ────────────────────────────────────────────────
+  - input: glucoseStatus.glucose
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.suggested.bg, openaps.enacted.bg]
+    confidence: high
+  - input: glucoseStatus.delta
+    kind: derivable
+    collection: entries
+    sources: [delta, sgv]
+    note: >-
+      oref0 computes delta from its own glucose window. `entries.delta` is
+      written by one site only; everyone else's is recomputed from `sgv`.
+    confidence: high
+  - input: glucoseStatus.shortAvgDelta
+    kind: derivable
+    collection: entries
+    sources: [sgv]
+    note: Never stored; recomputable from the sgv series.
+    confidence: high
+  - input: glucoseStatus.longAvgDelta
+    kind: derivable
+    collection: entries
+    sources: [sgv]
+    confidence: high
+  - input: glucoseStatus.noise
+    kind: recorded
+    collection: entries
+    sources: [noise]
+    note: Written by one site in this corpus; absent elsewhere.
+    confidence: high
+  - input: glucoseStatus.direction
+    kind: recorded
+    collection: entries
+    sources: [direction, trend]
+    confidence: high
+  - input: glucoseStatus.timestamp
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.suggested.timestamp, openaps.enacted.timestamp]
+    confidence: high
+  - input: glucoseStatus.glucoseUnit
+    kind: recorded
+    collection: profile
+    sources: [units, "store.{}.units"]
+    confidence: medium
+
+  # ── insulin on board ──────────────────────────────────────────────
+  - input: iob.iob
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.iob.iob, loop.iob.iob]
+    confidence: high
+  - input: iob.basalIob
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.iob.basaliob, loop.iob.basaliob]
+    confidence: high
+  - input: iob.bolusIob
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.iob.bolusiob]
+    confidence: high
+  - input: iob.activity
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.iob.activity]
+    confidence: high
+  - input: iob.iobWithZeroTemp.iob
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.iob.iobWithZeroTemp.iob]
+    note: >-
+      The zero-temp projection oref0 uses for its naive prediction and for
+      low-glucose suspend. Recorded by oref0 derivatives only.
+    confidence: high
+  - input: iob.iobWithZeroTemp.activity
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.iob.iobWithZeroTemp.activity]
+    confidence: high
+  - input: iob.iobWithZeroTemp.bolussnooze
+    kind: absent
+    collection: devicestatus
+    sources: []
+    note: Present in replay vectors; not observed in any corpus document.
+    confidence: medium
+  - input: iob.bolusSnooze
+    kind: absent
+    collection: devicestatus
+    sources: []
+    confidence: medium
+
+  # ── current temp basal ────────────────────────────────────────────
+  - input: currentTemp.rate
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.iob.lastTemp.rate]
+    note: Also derivable from the treatments Temp Basal history.
+    confidence: high
+  - input: currentTemp.duration
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.iob.lastTemp.duration]
+    confidence: high
+
+  # ── profile: therapy settings at the moment of the decision ───────
+  - input: profile.sensitivity
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.suggested.ISF, openaps.enacted.ISF]
+    note: >-
+      The *effective* ISF at decision time, which is what a replay needs;
+      the profile schedule gives the scheduled value, which autosens and
+      dynamic-ISF modify.
+    confidence: high
+  - input: profile.carbRatio
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.suggested.CR, openaps.enacted.CR]
+    confidence: high
+  - input: profile.basalRate
+    kind: derivable
+    collection: profile
+    sources: ["store.{}.basal[].value"]
+    note: >-
+      The scheduled rate is stored; the rate oref0 actually used, after a
+      profile switch or percentage, is not recorded as a scalar.
+    confidence: medium
+  - input: profile.dia
+    kind: recorded
+    collection: profile
+    sources: ["store.{}.dia"]
+    confidence: high
+  - input: profile.targetLow
+    kind: derivable
+    collection: profile
+    sources: ["store.{}.target_low[].value"]
+    note: >-
+      `openaps.suggested.current_target` records a single effective target,
+      losing the low/high distinction a replay needs.
+    confidence: medium
+  - input: profile.targetHigh
+    kind: derivable
+    collection: profile
+    sources: ["store.{}.target_high[].value"]
+    confidence: medium
+  - input: profile.maxIob
+    kind: absent
+    collection: devicestatus
+    sources: []
+    note: >-
+      A dosing *safety limit*. Loop records its equivalents in
+      profile.loopSettings; no oref0 derivative records maxIob anywhere in
+      Nightscout. A replay must assume it.
+    confidence: high
+  - input: profile.maxBasal
+    kind: partial
+    collection: profile
+    sources: [loopSettings.maximumBasalRatePerHour]
+    note: >-
+      Loop records this as loopSettings.maximumBasalRatePerHour. AAPS and
+      Trio record no equivalent.
+    confidence: high
+  - input: profile.maxDailyBasal
+    kind: derivable
+    collection: profile
+    sources: ["store.{}.basal[].value"]
+    confidence: medium
+  - input: profile.suspendThreshold
+    kind: partial
+    collection: profile
+    sources: [loopSettings.minimumBGGuard]
+    note: >-
+      Loop-only, under the same subtree. oref0 derivatives write
+      `openaps.suggested.threshold`, which is the computed threshold rather
+      than the configured one.
+    confidence: medium
+  - input: profile.dosingStrategy
+    kind: partial
+    collection: profile
+    sources: [loopSettings.dosingStrategy]
+    confidence: high
+  - input: profile.units
+    kind: recorded
+    collection: profile
+    sources: [units, "store.{}.units"]
+    confidence: high
+
+  # ── meal state ────────────────────────────────────────────────────
+  - input: mealData.cob
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.suggested.COB, openaps.enacted.COB, loop.cob.cob]
+    confidence: high
+  - input: mealData.carbs
+    kind: derivable
+    collection: treatments
+    sources: [carbs]
+    confidence: high
+  - input: mealData.lastCarbTime
+    kind: derivable
+    collection: treatments
+    sources: [carbs, created_at]
+    confidence: high
+  - input: mealData.slopeFromMaxDeviation
+    kind: absent
+    collection: devicestatus
+    sources: []
+    note: >-
+      oref0's unannounced-meal detection state. Not recorded anywhere; a
+      replay must recompute it from the glucose series and may not agree.
+    confidence: high
+  - input: mealData.slopeFromMinDeviation
+    kind: absent
+    collection: devicestatus
+    sources: []
+    confidence: high
+  - input: mealData.mealCOB
+    kind: absent
+    collection: devicestatus
+    sources: []
+    confidence: medium
+
+  # ── autosens and run flags ────────────────────────────────────────
+  - input: autosensData.ratio
+    kind: recorded
+    collection: devicestatus
+    sources: [openaps.suggested.sensitivityRatio, openaps.enacted.sensitivityRatio]
+    confidence: high
+  - input: microBolusAllowed
+    kind: absent
+    collection: devicestatus
+    sources: []
+    note: >-
+      Whether SMB was permitted on this run. Inferable after the fact from
+      whether an SMB was enacted, which is not the same thing — a run that
+      allowed SMB and chose not to is indistinguishable from one that
+      forbade it.
+    confidence: high
+  - input: flatBGsDetected
+    kind: absent
+    collection: devicestatus
+    sources: []
+    confidence: high
+  - input: clock
+    kind: recorded
+    collection: devicestatus
+    sources: [created_at, mills]
+    confidence: high

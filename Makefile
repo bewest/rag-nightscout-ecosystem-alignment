@@ -665,6 +665,7 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
         schema-impact schema-impact-smoke schema-drift schema-verify \
         schema-scan-pii schema-sanitize schema-attribute \
         schema-quirks schema-quirks-check schema-decompose \
+        schema-nocturne schema-dosing \
         schema-test schema-clean
 
 PY ?= python3
@@ -739,6 +740,14 @@ schema-quirks-check:
 ## schema-decompose: can a granular-primitive model express the corpus?
 schema-decompose:
 	@$(NSSCHEMA).decompose
+
+## schema-nocturne: what Nocturne's typed model retains, captures or drops
+schema-nocturne:
+	@$(NSSCHEMA).nocturne_model
+
+## schema-dosing: which dosing inputs are recoverable from Nightscout
+schema-dosing:
+	@$(NSSCHEMA).dosing_inputs --check
 
 ## schema-drift: check tools/ns2parquet against the measured wire model
 schema-drift:

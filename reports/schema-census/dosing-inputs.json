@@ -1,0 +1,757 @@
+{
+ "generated_by": "tools/nsschema/dosing_inputs.py",
+ "mapping": "specs/nsschema/dosing-input-sources.yaml",
+ "inputs": 40,
+ "by_kind": {
+  "recorded": 20,
+  "derivable": 9,
+  "absent": 8,
+  "partial": 3
+ },
+ "by_verdict": {
+  "confirmed": 40
+ },
+ "rows": [
+  {
+   "input": "glucoseStatus.glucose",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.suggested.bg",
+     "doc_frequency": 0.10523,
+     "sites": 1
+    },
+    {
+     "path": "openaps.enacted.bg",
+     "doc_frequency": 0.105139,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.10523,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "glucoseStatus.delta",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "entries",
+   "sources_found": [
+    {
+     "path": "delta",
+     "doc_frequency": 0.0358,
+     "sites": 1
+    },
+    {
+     "path": "sgv",
+     "doc_frequency": 0.998694,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 0.998694,
+   "confidence": "high",
+   "note": "oref0 computes delta from its own glucose window. `entries.delta` is written by one site only; everyone else's is recomputed from `sgv`."
+  },
+  {
+   "input": "glucoseStatus.shortAvgDelta",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "entries",
+   "sources_found": [
+    {
+     "path": "sgv",
+     "doc_frequency": 0.998694,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 0.998694,
+   "confidence": "high",
+   "note": "Never stored; recomputable from the sgv series."
+  },
+  {
+   "input": "glucoseStatus.longAvgDelta",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "entries",
+   "sources_found": [
+    {
+     "path": "sgv",
+     "doc_frequency": 0.998694,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 0.998694,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "glucoseStatus.noise",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "entries",
+   "sources_found": [
+    {
+     "path": "noise",
+     "doc_frequency": 0.06506,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.06506,
+   "confidence": "high",
+   "note": "Written by one site in this corpus; absent elsewhere."
+  },
+  {
+   "input": "glucoseStatus.direction",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "entries",
+   "sources_found": [
+    {
+     "path": "direction",
+     "doc_frequency": 0.845861,
+     "sites": 11
+    },
+    {
+     "path": "trend",
+     "doc_frequency": 0.716423,
+     "sites": 10
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 0.845861,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "glucoseStatus.timestamp",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.suggested.timestamp",
+     "doc_frequency": 0.099364,
+     "sites": 1
+    },
+    {
+     "path": "openaps.enacted.timestamp",
+     "doc_frequency": 0.105139,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.105139,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "glucoseStatus.glucoseUnit",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "units",
+     "doc_frequency": 1.0,
+     "sites": 11
+    },
+    {
+     "path": "store.{}.units",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "medium",
+   "note": null
+  },
+  {
+   "input": "iob.iob",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.iob.iob",
+     "doc_frequency": 0.10522,
+     "sites": 1
+    },
+    {
+     "path": "loop.iob.iob",
+     "doc_frequency": 0.850575,
+     "sites": 10
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 10,
+   "best_doc_frequency": 0.850575,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "iob.basalIob",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.iob.basaliob",
+     "doc_frequency": 0.10522,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [
+    "loop.iob.basaliob"
+   ],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.10522,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "iob.bolusIob",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.iob.bolusiob",
+     "doc_frequency": 0.10522,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.10522,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "iob.activity",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.iob.activity",
+     "doc_frequency": 0.10522,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.10522,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "iob.iobWithZeroTemp.iob",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.iob.iobWithZeroTemp.iob",
+     "doc_frequency": 0.10522,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.10522,
+   "confidence": "high",
+   "note": "The zero-temp projection oref0 uses for its naive prediction and for low-glucose suspend. Recorded by oref0 derivatives only."
+  },
+  {
+   "input": "iob.iobWithZeroTemp.activity",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.iob.iobWithZeroTemp.activity",
+     "doc_frequency": 0.10522,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.10522,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "iob.iobWithZeroTemp.bolussnooze",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "medium",
+   "note": "Present in replay vectors; not observed in any corpus document."
+  },
+  {
+   "input": "iob.bolusSnooze",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "medium",
+   "note": null
+  },
+  {
+   "input": "currentTemp.rate",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.iob.lastTemp.rate",
+     "doc_frequency": 0.10522,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.10522,
+   "confidence": "high",
+   "note": "Also derivable from the treatments Temp Basal history."
+  },
+  {
+   "input": "currentTemp.duration",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.iob.lastTemp.duration",
+     "doc_frequency": 0.10522,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.10522,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "profile.sensitivity",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.suggested.ISF",
+     "doc_frequency": 0.10523,
+     "sites": 1
+    },
+    {
+     "path": "openaps.enacted.ISF",
+     "doc_frequency": 0.105139,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.10523,
+   "confidence": "high",
+   "note": "The *effective* ISF at decision time, which is what a replay needs; the profile schedule gives the scheduled value, which autosens and dynamic-ISF modify."
+  },
+  {
+   "input": "profile.carbRatio",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.suggested.CR",
+     "doc_frequency": 0.10523,
+     "sites": 1
+    },
+    {
+     "path": "openaps.enacted.CR",
+     "doc_frequency": 0.105139,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.10523,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "profile.basalRate",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "store.{}.basal[].value",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "medium",
+   "note": "The scheduled rate is stored; the rate oref0 actually used, after a profile switch or percentage, is not recorded as a scalar."
+  },
+  {
+   "input": "profile.dia",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "store.{}.dia",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "profile.targetLow",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "store.{}.target_low[].value",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "medium",
+   "note": "`openaps.suggested.current_target` records a single effective target, losing the low/high distinction a replay needs."
+  },
+  {
+   "input": "profile.targetHigh",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "store.{}.target_high[].value",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "medium",
+   "note": null
+  },
+  {
+   "input": "profile.maxIob",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "high",
+   "note": "A dosing *safety limit*. Loop records its equivalents in profile.loopSettings; no oref0 derivative records maxIob anywhere in Nightscout. A replay must assume it."
+  },
+  {
+   "input": "profile.maxBasal",
+   "kind": "partial",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "loopSettings.maximumBasalRatePerHour",
+     "doc_frequency": 0.990099,
+     "sites": 10
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 10,
+   "best_doc_frequency": 0.990099,
+   "confidence": "high",
+   "note": "Loop records this as loopSettings.maximumBasalRatePerHour. AAPS and Trio record no equivalent."
+  },
+  {
+   "input": "profile.maxDailyBasal",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "store.{}.basal[].value",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "medium",
+   "note": null
+  },
+  {
+   "input": "profile.suspendThreshold",
+   "kind": "partial",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "loopSettings.minimumBGGuard",
+     "doc_frequency": 0.990099,
+     "sites": 10
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 10,
+   "best_doc_frequency": 0.990099,
+   "confidence": "medium",
+   "note": "Loop-only, under the same subtree. oref0 derivatives write `openaps.suggested.threshold`, which is the computed threshold rather than the configured one."
+  },
+  {
+   "input": "profile.dosingStrategy",
+   "kind": "partial",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "loopSettings.dosingStrategy",
+     "doc_frequency": 0.990099,
+     "sites": 10
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 10,
+   "best_doc_frequency": 0.990099,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "profile.units",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "units",
+     "doc_frequency": 1.0,
+     "sites": 11
+    },
+    {
+     "path": "store.{}.units",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "mealData.cob",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.suggested.COB",
+     "doc_frequency": 0.10523,
+     "sites": 1
+    },
+    {
+     "path": "openaps.enacted.COB",
+     "doc_frequency": 0.105139,
+     "sites": 1
+    },
+    {
+     "path": "loop.cob.cob",
+     "doc_frequency": 0.850574,
+     "sites": 10
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 10,
+   "best_doc_frequency": 0.850574,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "mealData.carbs",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "treatments",
+   "sources_found": [
+    {
+     "path": "carbs",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "mealData.lastCarbTime",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "treatments",
+   "sources_found": [
+    {
+     "path": "carbs",
+     "doc_frequency": 1.0,
+     "sites": 11
+    },
+    {
+     "path": "created_at",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "mealData.slopeFromMaxDeviation",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "high",
+   "note": "oref0's unannounced-meal detection state. Not recorded anywhere; a replay must recompute it from the glucose series and may not agree."
+  },
+  {
+   "input": "mealData.slopeFromMinDeviation",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "mealData.mealCOB",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "medium",
+   "note": null
+  },
+  {
+   "input": "autosensData.ratio",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "openaps.suggested.sensitivityRatio",
+     "doc_frequency": 0.10523,
+     "sites": 1
+    },
+    {
+     "path": "openaps.enacted.sensitivityRatio",
+     "doc_frequency": 0.105139,
+     "sites": 1
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 1,
+   "best_doc_frequency": 0.10523,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "microBolusAllowed",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "high",
+   "note": "Whether SMB was permitted on this run. Inferable after the fact from whether an SMB was enacted, which is not the same thing \u2014 a run that allowed SMB and chose not to is indistinguishable from one that forbade it."
+  },
+  {
+   "input": "flatBGsDetected",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "clock",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "created_at",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [
+    "mills"
+   ],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "high",
+   "note": null
+  }
+ ]
+}

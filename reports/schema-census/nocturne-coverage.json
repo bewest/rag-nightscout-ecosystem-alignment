@@ -1,0 +1,478 @@
+{
+ "generated_by": "tools/nsschema/nocturne_model.py",
+ "models_dir": "externals/nocturne/src/Core/Nocturne.Core.Models",
+ "classes_parsed": 466,
+ "classes_with_extension_data": [
+  "Activity",
+  "DeviceStatus",
+  "Treatment"
+ ],
+ "collections": {
+  "entries": {
+   "root_class": "Entry",
+   "paths": 19,
+   "summary": {
+    "dropped": 1,
+    "retained": 18
+   },
+   "documents_by_verdict": {
+    "retained": 9837700,
+    "dropped": 57722
+   },
+   "dropped": [
+    {
+     "path": "glucose",
+     "doc_frequency": 0.06438,
+     "sites": 1,
+     "detail": "glucose not declared on Entry"
+    }
+   ],
+   "captured": [],
+   "unknown": []
+  },
+  "treatments": {
+   "root_class": "Treatment",
+   "paths": 41,
+   "summary": {
+    "captured": 9,
+    "retained": 32
+   },
+   "documents_by_verdict": {
+    "retained": 4961294,
+    "captured": 419759
+   },
+   "dropped": [],
+   "captured": [
+    {
+     "path": "duration",
+     "doc_frequency": 0.910478,
+     "sites": 10,
+     "detail": "duration not declared on Treatment; class keeps unknown keys"
+    },
+    {
+     "path": "id",
+     "doc_frequency": 0.151424,
+     "sites": 1,
+     "detail": "id not declared on Treatment; class keeps unknown keys"
+    },
+    {
+     "path": "fat",
+     "doc_frequency": 0.023559,
+     "sites": 1,
+     "detail": "fat not declared on Treatment; class keeps unknown keys"
+    },
+    {
+     "path": "protein",
+     "doc_frequency": 0.023559,
+     "sites": 1,
+     "detail": "protein not declared on Treatment; class keeps unknown keys"
+    },
+    {
+     "path": "userEnteredAt",
+     "doc_frequency": 0.017571,
+     "sites": 10,
+     "detail": "userEnteredAt not declared on Treatment; class keeps unknown keys"
+    },
+    {
+     "path": "correctionRange",
+     "doc_frequency": 0.004529,
+     "sites": 7,
+     "detail": "correctionRange not declared on Treatment; class keeps unknown keys"
+    },
+    {
+     "path": "correctionRange[]",
+     "doc_frequency": 0.004529,
+     "sites": 7,
+     "detail": "correctionRange not declared on Treatment; class keeps unknown keys"
+    },
+    {
+     "path": "userLastModifiedAt",
+     "doc_frequency": 0.000355,
+     "sites": 5,
+     "detail": "userLastModifiedAt not declared on Treatment; class keeps unknown keys"
+    },
+    {
+     "path": "remoteAddress",
+     "doc_frequency": 0.000265,
+     "sites": 3,
+     "detail": "remoteAddress not declared on Treatment; class keeps unknown keys"
+    }
+   ],
+   "unknown": []
+  },
+  "devicestatus": {
+   "root_class": "DeviceStatus",
+   "paths": 166,
+   "summary": {
+    "dropped": 56,
+    "retained": 110
+   },
+   "documents_by_verdict": {
+    "retained": 25584413,
+    "dropped": 6699249
+   },
+   "dropped": [
+    {
+     "path": "uploader.timestamp",
+     "doc_frequency": 0.850597,
+     "sites": 10,
+     "detail": "timestamp not declared on UploaderStatus"
+    },
+    {
+     "path": "pump.bolusing",
+     "doc_frequency": 0.850595,
+     "sites": 10,
+     "detail": "bolusing not declared on PumpStatus"
+    },
+    {
+     "path": "pump.pumpID",
+     "doc_frequency": 0.850595,
+     "sites": 10,
+     "detail": "pumpID not declared on PumpStatus"
+    },
+    {
+     "path": "pump.secondsFromGMT",
+     "doc_frequency": 0.850595,
+     "sites": 10,
+     "detail": "secondsFromGMT not declared on PumpStatus"
+    },
+    {
+     "path": "pump.suspended",
+     "doc_frequency": 0.850595,
+     "sites": 10,
+     "detail": "suspended not declared on PumpStatus"
+    },
+    {
+     "path": "loop.automaticDoseRecommendation.bolusVolume",
+     "doc_frequency": 0.260659,
+     "sites": 10,
+     "detail": "bolusVolume not declared on LoopAutomaticDoseRecommendation"
+    },
+    {
+     "path": "openaps.suggested.CR",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "CR not declared on OpenApsSuggested"
+    },
+    {
+     "path": "openaps.suggested.ISF",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "ISF not declared on OpenApsSuggested"
+    },
+    {
+     "path": "openaps.suggested.current_target",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "current_target not declared on OpenApsSuggested"
+    },
+    {
+     "path": "openaps.suggested.expectedDelta",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "expectedDelta not declared on OpenApsSuggested"
+    },
+    {
+     "path": "openaps.suggested.id",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "id not declared on OpenApsSuggested"
+    },
+    {
+     "path": "openaps.suggested.insulinForManualBolus",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "insulinForManualBolus not declared on OpenApsSuggested"
+    },
+    {
+     "path": "openaps.suggested.manualBolusErrorString",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "manualBolusErrorString not declared on OpenApsSuggested"
+    },
+    {
+     "path": "openaps.suggested.minDelta",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "minDelta not declared on OpenApsSuggested"
+    },
+    {
+     "path": "openaps.suggested.received",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "received not declared on OpenApsSuggested"
+    },
+    {
+     "path": "openaps.suggested.reservoir",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "reservoir not declared on OpenApsSuggested"
+    },
+    {
+     "path": "openaps.suggested.temp",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "temp not declared on OpenApsSuggested"
+    },
+    {
+     "path": "openaps.suggested.threshold",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "threshold not declared on OpenApsSuggested"
+    },
+    {
+     "path": "pump.battery.string",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "string not declared on PumpBattery"
+    },
+    {
+     "path": "pump.status.timestamp",
+     "doc_frequency": 0.10523,
+     "sites": 1,
+     "detail": "timestamp not declared on PumpStatusDetails"
+    },
+    {
+     "path": "openaps.iob.bolusinsulin",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "bolusinsulin not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.iobWithZeroTemp",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "iobWithZeroTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.iobWithZeroTemp.activity",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "iobWithZeroTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.iobWithZeroTemp.basaliob",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "iobWithZeroTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.iobWithZeroTemp.bolusinsulin",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "iobWithZeroTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.iobWithZeroTemp.bolusiob",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "iobWithZeroTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.iobWithZeroTemp.iob",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "iobWithZeroTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.iobWithZeroTemp.netbasalinsulin",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "iobWithZeroTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.iobWithZeroTemp.time",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "iobWithZeroTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.lastBolusTime",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "lastBolusTime not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.lastTemp",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "lastTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.lastTemp.date",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "lastTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.lastTemp.duration",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "lastTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.lastTemp.rate",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "lastTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.lastTemp.started_at",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "lastTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.lastTemp.timestamp",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "lastTemp not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.iob.netbasalinsulin",
+     "doc_frequency": 0.10522,
+     "sites": 1,
+     "detail": "netbasalinsulin not declared on OpenApsIobData"
+    },
+    {
+     "path": "openaps.enacted.CR",
+     "doc_frequency": 0.105139,
+     "sites": 1,
+     "detail": "CR not declared on OpenApsEnacted"
+    },
+    {
+     "path": "openaps.enacted.ISF",
+     "doc_frequency": 0.105139,
+     "sites": 1,
+     "detail": "ISF not declared on OpenApsEnacted"
+    },
+    {
+     "path": "openaps.enacted.current_target",
+     "doc_frequency": 0.105139,
+     "sites": 1,
+     "detail": "current_target not declared on OpenApsEnacted"
+    },
+    {
+     "path": "openaps.enacted.expectedDelta",
+     "doc_frequency": 0.105139,
+     "sites": 1,
+     "detail": "expectedDelta not declared on OpenApsEnacted"
+    },
+    {
+     "path": "openaps.enacted.id",
+     "doc_frequency": 0.105139,
+     "sites": 1,
+     "detail": "id not declared on OpenApsEnacted"
+    },
+    {
+     "path": "openaps.enacted.insulinForManualBolus",
+     "doc_frequency": 0.105139,
+     "sites": 1,
+     "detail": "insulinForManualBolus not declared on OpenApsEnacted"
+    },
+    {
+     "path": "openaps.enacted.manualBolusErrorString",
+     "doc_frequency": 0.105139,
+     "sites": 1,
+     "detail": "manualBolusErrorString not declared on OpenApsEnacted"
+    },
+    {
+     "path": "openaps.enacted.minDelta",
+     "doc_frequency": 0.105139,
+     "sites": 1,
+     "detail": "minDelta not declared on OpenApsEnacted"
+    },
+    {
+     "path": "openaps.enacted.reservoir",
+     "doc_frequency": 0.105139,
+     "sites": 1,
+     "detail": "reservoir not declared on OpenApsEnacted"
+    },
+    {
+     "path": "openaps.enacted.temp",
+     "doc_frequency": 0.105139,
+     "sites": 1,
+     "detail": "temp not declared on OpenApsEnacted"
+    },
+    {
+     "path": "openaps.enacted.threshold",
+     "doc_frequency": 0.105139,
+     "sites": 1,
+     "detail": "threshold not declared on OpenApsEnacted"
+    },
+    {
+     "path": "openaps.enacted.TDD",
+     "doc_frequency": 0.104387,
+     "sites": 1,
+     "detail": "TDD not declared on OpenApsEnacted"
+    },
+    {
+     "path": "pump.battery.display",
+     "doc_frequency": 0.103329,
+     "sites": 1,
+     "detail": "display not declared on PumpBattery"
+    },
+    {
+     "path": "openaps.suggested.TDD",
+     "doc_frequency": 0.099334,
+     "sites": 1,
+     "detail": "TDD not declared on OpenApsSuggested"
+    },
+    {
+     "path": "loop.automaticDoseRecommendation.tempBasalAdjustment",
+     "doc_frequency": 0.060786,
+     "sites": 10,
+     "detail": "tempBasalAdjustment not declared on LoopAutomaticDoseRecommendation"
+    },
+    {
+     "path": "loop.automaticDoseRecommendation.tempBasalAdjustment.duration",
+     "doc_frequency": 0.060786,
+     "sites": 10,
+     "detail": "tempBasalAdjustment not declared on LoopAutomaticDoseRecommendation"
+    },
+    {
+     "path": "loop.automaticDoseRecommendation.tempBasalAdjustment.rate",
+     "doc_frequency": 0.060786,
+     "sites": 10,
+     "detail": "tempBasalAdjustment not declared on LoopAutomaticDoseRecommendation"
+    },
+    {
+     "path": "openaps.recommendedBolus",
+     "doc_frequency": 0.059058,
+     "sites": 1,
+     "detail": "recommendedBolus not declared on OpenApsStatus"
+    },
+    {
+     "path": "pump.bolusIncrement",
+     "doc_frequency": 0.059058,
+     "sites": 1,
+     "detail": "bolusIncrement not declared on PumpStatus"
+    }
+   ],
+   "captured": [],
+   "unknown": []
+  },
+  "profile": {
+   "root_class": "Profile",
+   "paths": 66,
+   "summary": {
+    "dropped": 1,
+    "retained": 65
+   },
+   "documents_by_verdict": {
+    "retained": 11827,
+    "dropped": 2
+   },
+   "dropped": [
+    {
+     "path": "store.{}.startDate",
+     "doc_frequency": 0.009901,
+     "sites": 1,
+     "detail": "startDate not declared on ProfileData"
+    }
+   ],
+   "captured": [],
+   "unknown": []
+  }
+ }
+}
