@@ -54,6 +54,38 @@ high-cardinality field, and never an unmasked digit run, URL or email. The
 tests in `test_nsschema.py` assert this directly. Sites appear only under
 the single-letter pseudonyms the collection pass assigned.
 
+## Protecting files already in the repo
+
+`redact.py` governs what the census emits. Two more tools govern what is
+already committed:
+
+```bash
+make schema-scan-pii     # report personal data in captured-document files
+make schema-sanitize     # mask it, shape-preserving and deterministic
+```
+
+`scan_pii.py` grades findings `credential` / `identity` / `quasi-identifier`
+and prints **paths and counts, never values** — a report about a leak should
+not be a second copy of it. `tools/nsschema/pii-baseline.tsv` records the
+findings that have been reviewed and accepted, so the scanner fails on new
+leaks rather than on the known state of the repo.
+
+What the accepted baseline contains, and why each class is acceptable:
+
+| Class | Example paths | Why accepted |
+|---|---|---|
+| Masked values that still *look* like what they replaced | `deviceToken`, `_id`, `syncIdentifier`, `pumpID`, `teamID` | The scanner cannot tell a masked token from a real one by shape. That is the point: parsers cannot either. |
+| Algorithm output | `openaps.suggested.reason`, `expected.reason`, `comparison.reason` | oref0's own reasoning string, and the value conformance tests assert on. |
+| Test-vector documentation | `testCases[].id`, `metadata.name`, `test_cases[].notes` | Human-readable case names and notes. Masking them destroys the vector and protects nobody. |
+| Product and schema vocabulary | `loop.name`, `enteredBy`, `title`, `$id` | Distribution names, client names, JSON Schema keywords. |
+| Synthetic fixture values | `installation_id` | Hand-written telemetry fixtures. |
+
+`sanitize.py` masks deterministically and shape-preservingly, so cross-file
+joins and format-sensitive parsers keep working; its docstring records
+exactly what it leaves alone — timestamps, therapy schedules, algorithm
+reason strings — and why. Those are judgement calls, written down so they
+can be disputed rather than discovered.
+
 ## Reading a census record
 
 ```json

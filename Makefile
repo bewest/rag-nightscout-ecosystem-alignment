@@ -663,7 +663,7 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
 # reconciled model. See tools/nsschema/README.md.
 .PHONY: schema schema-census schema-reconcile schema-model schema-emit \
         schema-impact schema-impact-smoke schema-drift schema-verify \
-        schema-scan-pii \
+        schema-scan-pii schema-sanitize \
         schema-test schema-clean
 
 PY ?= python3
@@ -708,9 +708,19 @@ schema-impact-smoke:
 schema-verify:
 	@$(NSSCHEMA).verify_generated
 
-## schema-scan-pii: check committed JSON fixtures for personal data
+## schema-scan-pii: check committed captured-document files for personal data
+SANITIZE_TARGETS = $(shell git ls-files 'tools/ns2parquet/fixtures/*.json' \
+	'tools/ns2parquet/fixtures/**/*.json' 'conformance/**/*.json' \
+	'specs/fixtures/**/*.json')
+
 schema-scan-pii:
-	@$(NSSCHEMA).scan_pii --count $(or $(FILES),tools/ns2parquet/fixtures/*.json)
+	@$(NSSCHEMA).scan_pii --count \
+		--baseline tools/nsschema/pii-baseline.tsv \
+		$(or $(FILES),$(SANITIZE_TARGETS))
+
+## schema-sanitize: mask personal data in captured-document files
+schema-sanitize:
+	@$(NSSCHEMA).sanitize --write $(or $(FILES),$(SANITIZE_TARGETS))
 
 ## schema-drift: check tools/ns2parquet against the measured wire model
 schema-drift:

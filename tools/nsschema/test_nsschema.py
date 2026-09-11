@@ -4,6 +4,7 @@ Run: python3 -m pytest tools/nsschema/test_nsschema.py
 """
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -549,17 +550,26 @@ def test_a_declared_enum_is_enforced_when_nothing_was_withheld():
 from nsschema import scan_pii  # noqa: E402
 
 
-def test_scanner_flags_a_credential_field():
-    assert scan_pii.categorize("loopSettings.deviceToken", "abc") == "identifying-name"
+def test_scanner_grades_a_credential_above_an_identifier():
+    assert scan_pii.categorize("loopSettings.deviceToken", "abc") == "credential"
+    assert scan_pii.categorize("extendedSettings.loop.apnsDeveloperTeamId",
+                               "ABCDEFGHIJ") == "credential"
+    assert scan_pii.categorize("profile[]._id", "69c85c022b390b80") == "identity"
 
 
 def test_scanner_flags_an_opaque_token_under_a_neutral_name():
-    token = "0" * 64
-    assert scan_pii.categorize("payload", token) == "opaque-token"
+    assert scan_pii.categorize("payload", "0" * 64) == "credential"
 
 
-def test_scanner_flags_a_personal_shape_under_a_neutral_name():
-    assert scan_pii.categorize("theme", "Europe/Belgrade") == "personal-shape"
+def test_scanner_grades_a_timezone_as_a_quasi_identifier():
+    assert scan_pii.categorize("theme", "Europe/Belgrade") == "quasi-identifier"
+
+
+def test_scanner_does_not_flag_ecosystem_vocabulary():
+    # Without this, every `enteredBy: "Loop"` is a finding and the real ones
+    # are lost in the noise.
+    assert scan_pii.categorize("[].enteredBy", "Loop") is None
+    assert scan_pii.categorize("[].defaultProfile", "Default") is None
 
 
 def test_scanner_passes_ordinary_vocabulary():
@@ -574,7 +584,7 @@ def test_scanner_reports_paths_but_never_values(tmp_path):
     doc.write_text(json.dumps([{"deviceToken": secret}]))
     findings, error = scan_pii.scan_file(doc)
     assert error is None
-    assert ("[].deviceToken", "identifying-name") in findings
+    assert ("[].deviceToken", "credential") in findings
     # The scanner's own report must not become a second copy of the leak.
     import io
     import contextlib
@@ -582,3 +592,167 @@ def test_scanner_reports_paths_but_never_values(tmp_path):
     with contextlib.redirect_stdout(buf):
         scan_pii.main([str(doc), "--count"])
     assert secret not in buf.getvalue()
+
+
+# ── sanitizing committed files ──────────────────────────────────────────
+
+from nsschema import sanitize  # noqa: E402
+
+
+def test_rule_matching_covers_digit_suffixed_names():
+    assert sanitize.rule_for("settings.frameName1") == "label"
+    assert sanitize.rule_for("settings.frameUrl8") == "url"
+
+
+def test_credential_replacement_preserves_length_and_alphabet():
+    m = sanitize.Masker()
+    token = "150b7fba0285a0d1cad422ec9eef38518b62539f7217"
+    out = m.credential(token)
+    assert len(out) == len(token)
+    assert out != token
+    assert all(c in "0123456789abcdef" for c in out)
+
+
+def test_masking_is_deterministic_so_joins_survive():
+    a, b = sanitize.Masker(), sanitize.Masker()
+    oid = "69c85c022b390b801650a69a"
+    assert a.opaque_id(oid) == b.opaque_id(oid)
+
+
+def test_objectid_shape_is_preserved():
+    out = sanitize.Masker().opaque_id("69c85c022b390b801650a69a")
+    assert len(out) == 24 and all(c in "0123456789abcdef" for c in out)
+
+
+def test_uuid_shape_is_preserved():
+    out = sanitize.Masker().opaque_id("535D272E-B815-4893-BDB4-5F62FBE1B10C")
+    assert re.match(r"^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-"
+                    r"[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$", out)
+
+
+@pytest.mark.parametrize("value,expected", [
+    ("com.ZZRU3JT3YW.loopkit.Loop", "com.example.Loop"),
+    # Trio's format puts the Team ID third; an earlier rule kept it.
+    ("org.nightscout.GSLNR9RJSR.trio", "com.example.trio"),
+    # A personal build namespace is identifying even without a Team ID.
+    ("org.turing.loop83.Loop", "com.example.Loop"),
+])
+def test_bundle_identifier_keeps_only_the_app_name(value, expected):
+    assert sanitize.Masker().bundle_id(value) == expected
+
+
+def test_a_treatment_note_is_masked_but_an_algorithm_reason_is_not():
+    # A real note read: "Failed to enact bolus. Details: User: <a name>."
+    assert sanitize.rule_for("[].notes") == "label"
+    assert sanitize.rule_for("[].reason") == "label"
+    assert sanitize.rule_for("[].openaps.suggested.reason") is None
+
+
+def test_low_entropy_values_use_counters_not_hashes():
+    # A person's override name is guessable from a hash; a counter is not.
+    m = sanitize.Masker()
+    assert m.label("Cardio") == "Label 1"
+    assert m.label("Weights") == "Label 2"
+    assert m.label("Cardio") == "Label 1"
+
+
+def test_client_vocabulary_survives_but_a_rig_name_does_not():
+    m = sanitize.Masker()
+    assert m.entered_by("Loop") == "Loop"
+    assert m.entered_by("loop://iPhone") == "loop://iPhone"
+    assert m.entered_by("xDrip4iOS") == "xDrip4iOS"
+    assert m.entered_by("OZQT18").startswith("uploader-")
+
+
+def test_therapy_values_and_timestamps_are_left_alone():
+    doc = {"store": {"Default": {"basal": [{"time": "05:00", "value": 0.85}]},
+                     "timezone": "Japan"},
+           "created_at": "2026-03-29T17:18:36.569Z", "sgv": 142}
+    assert sanitize.transform(doc, sanitize.Masker()) == doc
+
+
+def test_lockfile_and_schema_urls_are_not_masked():
+    # A blanket "any http(s) value" rule rewrote workspace.lock.json clone
+    # URLs and JSON Schema $id keywords. Those are load-bearing, not personal.
+    doc = {"$schema": "https://json-schema.org/draft/2020-12/schema",
+           "repos": [{"url": "https://github.com/nightscout/Trio.git"}]}
+    assert sanitize.transform(doc, sanitize.Masker()) == doc
+
+
+def test_a_dashboard_frame_url_is_masked():
+    doc = {"settings": {"frameUrl1": "https://a-personal-site.example/x"}}
+    out = sanitize.transform(doc, sanitize.Masker())
+    assert out["settings"]["frameUrl1"] == "https://example.invalid/frame"
+
+
+def test_sanitizing_removes_what_the_scanner_flags(tmp_path):
+    doc = [{"_id": "69c85c022b390b801650a69a",
+            "loopSettings": {"deviceToken": "0145ce85934cdae539b64e7aedcd08ea",
+                             "bundleIdentifier": "com.ZZRU3JT3YW.loopkit.Loop",
+                             "overridePresets": [{"name": "Cardio", "symbol": "X"}]}}]
+    p = tmp_path / "f.json"
+    p.write_text(json.dumps(doc))
+    sanitize.sanitize_file(p, write=True)
+    after = json.loads(p.read_text())
+    settings = after[0]["loopSettings"]
+    assert settings["deviceToken"] != doc[0]["loopSettings"]["deviceToken"]
+    assert "ZZRU3JT3YW" not in json.dumps(after)
+    assert settings["overridePresets"][0]["name"] == "Label 1"
+
+
+@pytest.mark.parametrize("value,expected", [
+    ("Dexcom G7 DXCM3Y", "Dexcom G7"),      # transmitter serial appended
+    ("Dexcom G6", "Dexcom G6"),             # model tokens are too short
+    ("share2", "share2"),
+    ("loop://iPhone", "loop://iPhone"),
+    ("com.dexcom.g7app", "com.dexcom.g7app"),
+    ("openaps://AAPS", "openaps://AAPS"),
+])
+def test_device_strings_keep_the_model_and_lose_the_serial(value, expected):
+    assert sanitize.Masker().device_string(value) == expected
+
+
+def test_a_conformance_test_name_is_not_treated_as_an_identifier():
+    # Vectors name their cases COB-001, IOB-003, LV-175-2026-02-03. Masking
+    # those destroys the vector's readability and protects nobody.
+    m = sanitize.Masker()
+    for name in ("COB-001", "IOB-003", "LV-175-2026-02-03", "odc-1611964958000"):
+        assert m.opaque_id(name) == name
+
+
+def test_machine_identifiers_are_still_masked():
+    m = sanitize.Masker()
+    for value in ("69c85c022b390b801650a69a",
+                  "535D272E-B815-4893-BDB4-5F62FBE1B10C",
+                  "0145ce85934cdae539b64e7aedcd08eaf54f0b92f9ff"):
+        assert m.opaque_id(value) != value
+
+
+def test_expected_outputs_in_conformance_vectors_are_left_alone():
+    # `reason` under an expected/comparison block is the value a test
+    # asserts on, not a person's words.
+    assert sanitize.rule_for("testCases[].expected.reason") is None
+    assert sanitize.rule_for("files[].testResults[].comparison.reason") is None
+    assert sanitize.rule_for("test_cases[].notes") is None
+    # ...but a treatment's own note still is.
+    assert sanitize.rule_for("treatments[].notes") == "label"
+
+
+def test_a_devicestatus_override_name_is_masked():
+    # Found by reviewing the baseline: `[].override.name` held a real
+    # user-chosen override name that earlier rules missed.
+    assert sanitize.rule_for("[].override.name") == "label"
+
+
+@pytest.mark.parametrize("value", ["175F78A9", "208850", "17AA00C5"])
+def test_short_hardware_serials_are_masked_despite_the_shape_guard(value):
+    # Found by reviewing the baseline: pump serials are shorter than the
+    # opaque-id shape guard's threshold, so they need their own rule.
+    out = sanitize.Masker().serial(value)
+    assert out != value
+    assert len(out) == len(value)
+
+
+def test_serial_fields_use_the_serial_rule():
+    for path in ("[].pump.pumpID", "[].pumpSerial", "[].transmitterId"):
+        assert sanitize.rule_for(path) == "serial"

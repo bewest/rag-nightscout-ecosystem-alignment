@@ -1,0 +1,63 @@
+# Reviewed and accepted findings for tools/nsschema/scan_pii.py.
+# One `path<TAB>category` per line. Regenerate with
+# `python3 -m nsschema.scan_pii --update-baseline <file> <paths>`
+# after reviewing every new entry — this file is an assertion that
+# a human looked, not a way to silence the scanner.
+
+$id	identity
+[]._id	identity
+[].bundleIdentifier	identity
+[].deviceToken	credential
+[].enteredBy	identity
+[].id	identity
+[].loop.name	identity
+[].loopSettings.bundleIdentifier	identity
+[].loopSettings.deviceToken	credential
+[].loopSettings.overridePresets[].name	identity
+[].loopSettings.scheduleOverride.name	identity
+[].notes	identity
+[].openaps.enacted.id	identity
+[].openaps.enacted.reason	identity
+[].openaps.suggested.id	identity
+[].openaps.suggested.reason	identity
+[].override.name	identity
+[].overridePresets[].name	identity
+[].pump.pumpID	identity
+[].reason	identity
+[].syncIdentifier	credential
+[].syncIdentifier	identity
+[].teamID	credential
+deviceStatus[]._id	identity
+deviceStatus[].loop.name	identity
+deviceStatus[].pump.pumpID	identity
+entries[]._id	identity
+expected.reason	identity
+files[].sha256	credential
+files[].testResults[].comparison.reason	identity
+files[].testResults[].expected.reason	identity
+files[].testResults[].id	identity
+files[].testResults[].oref0_output.reason	identity
+installation_id	identity
+metadata.id	identity
+metadata.name	identity
+name	identity
+originalOutput.reason	identity
+profile[]._id	identity
+profile[].loopSettings.bundleIdentifier	identity
+profile[].loopSettings.deviceToken	credential
+profile[].loopSettings.overridePresets[].name	identity
+reason	identity
+testCases[].expected.notes	identity
+testCases[].expected.reason	identity
+testCases[].id	identity
+testCases[].notes	identity
+test_cases[].id	identity
+test_cases[].notes	identity
+title	identity
+treatments[]._id	identity
+treatments[].notes	identity
+treatments[].reason	identity
+treatments[].syncIdentifier	credential
+treatments[].syncIdentifier	identity
+url	identity
+vectors[].id	identity

@@ -1,0 +1,8 @@
+# Files sanitize.py is expected to operate on: captured Nightscout documents
+# and derived test vectors. Everything else in the repo is configuration,
+# schemas or lockfiles, whose string values are load-bearing and not personal.
+tools/ns2parquet/fixtures
+conformance/t1pal
+conformance/loop
+conformance/scenarios
+specs/fixtures

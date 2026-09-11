@@ -7,21 +7,36 @@ captured from live Nightscout sites, saved API responses, debugging dumps.
 This applies the same policy in reverse — reads a JSON file, walks every
 value, and reports anything the census would have refused to publish:
 
-* a value under an identifying field name (the denylist and suffix rules)
-* a value whose *shape* is personal (timestamps, clock times, timezones,
-  reverse-DNS bundle identifiers, non-ASCII glyphs)
-* long opaque tokens, which are credentials more often than not
+Findings are graded, because triage order matters and an undifferentiated
+list of thousands of timestamps hides the one device token in it:
 
-It reports **paths and categories, never the values themselves** — a
-report about a leak should not be a second copy of it. Use ``--count`` to
-see how many distinct values each path holds.
+``credential``
+    A secret or a value that acts as one — API secrets, APNs device
+    tokens, Apple Developer Team IDs, and any high-entropy opaque string.
+    Act on these first; they may need rotating, not just masking.
+``identity``
+    Identifies a person, an install or a device — document ids, sync
+    identifiers, serial numbers, bundle identifiers, user-chosen names,
+    dashboard URLs.
+``quasi-identifier``
+    Not identifying alone, narrowing in combination — exact timestamps,
+    clock times, timezones, a person's own emoji. A captured-document
+    corpus is *made of* these, so they are reported only under ``--all``.
 
-Exit status is 1 when anything is found, so it can gate CI.
+It reports **paths and categories, never the values themselves** — a report
+about a leak should not be a second copy of it. ``--count`` shows how many
+distinct values each path holds.
+
+A ``--baseline`` file lists findings already reviewed and accepted, one
+``path<TAB>category`` per line, so CI fails on new leaks rather than on the
+known state of the repo. Exit status is 1 when anything unbaselined is
+found.
 
 Usage::
 
     python3 -m nsschema.scan_pii tools/ns2parquet/fixtures/*.json
-    python3 -m nsschema.scan_pii --count specs/fixtures/**/*.json
+    python3 -m nsschema.scan_pii --all --count conformance/t1pal/scenarios/*.json
+    python3 -m nsschema.scan_pii --baseline tools/nsschema/pii-baseline.tsv <files>
 """
 
 import argparse
@@ -36,17 +51,52 @@ from . import redact
 # Opaque high-entropy strings: APNs device tokens, API keys, session ids.
 _OPAQUE = re.compile(r"^[0-9a-fA-F]{32,}$|^[A-Za-z0-9_\-]{40,}$")
 
-CATEGORIES = ("identifying-name", "personal-shape", "opaque-token")
+CATEGORIES = ("credential", "identity", "quasi-identifier")
+DEFAULT_CATEGORIES = ("credential", "identity")
+
+# Field-name fragments that make a value a credential rather than an
+# identifier: it grants access, or names the account that built the app.
+_CREDENTIAL_FRAGMENTS = (
+    "token", "secret", "password", "apikey", "api_key", "teamid",
+    "privatekey", "accesskey",
+)
+
+# Values that are ecosystem vocabulary, not a person's text. Without this,
+# every `enteredBy: "Loop"` and `defaultProfile: "Default"` is a finding.
+_VOCABULARY = frozenset({
+    "default", "loop", "trio", "androidaps", "aaps", "openaps", "nightscout",
+    "xdrip", "xdrip+", "xdrip4ios", "xdripswift", "spike", "diable",
+    "nightguard", "iphone", "ipad", "phone", "loop://iphone", "dexcom",
+    "libre", "insulet", "dash", "eros", "omnipod", "medtronic", "tandem",
+    "normal", "suspended", "bolusing", "error", "ok", "loaded", "readable",
+})
 
 
 def categorize(path: str, value: str):
+    low_path = path.lower()
+    if any(f in low_path for f in _CREDENTIAL_FRAGMENTS) or _OPAQUE.match(value):
+        return "credential"
+    if value.strip().lower() in _VOCABULARY:
+        return None
     if redact.is_denied(path):
-        return "identifying-name"
-    if _OPAQUE.match(value):
-        return "opaque-token"
+        return "identity"
     if redact.is_personal_shape(value):
-        return "personal-shape"
+        return "quasi-identifier"
     return None
+
+
+def load_baseline(path):
+    """Accepted findings, one `path<TAB>category` per line; # comments."""
+    accepted = set()
+    if path is None or not Path(path).is_file():
+        return accepted
+    for line in Path(path).read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        field, _, category = line.partition("\t")
+        accepted.add((field.strip(), category.strip()))
+    return accepted
 
 
 def scan_document(doc, findings, prefix=""):
@@ -79,28 +129,50 @@ def main(argv=None):
                     help="show how many distinct values each path holds")
     ap.add_argument("--category", action="append", choices=CATEGORIES,
                     help="report only these categories")
+    ap.add_argument("--all", action="store_true",
+                    help="include quasi-identifiers (timestamps, clock times, "
+                         "timezones) — a captured corpus is full of them")
+    ap.add_argument("--baseline", help="file of reviewed, accepted findings")
+    ap.add_argument("--update-baseline", metavar="FILE",
+                    help="write the current findings to FILE and exit 0")
     args = ap.parse_args(argv)
 
-    wanted = set(args.category or CATEGORIES)
+    wanted = set(args.category or (CATEGORIES if args.all else DEFAULT_CATEGORIES))
+    accepted = load_baseline(args.baseline)
     total = 0
+    seen = set()
     for path in args.paths:
         findings, error = scan_file(path)
         if error:
             print(f"{path}: unreadable ({error})", file=sys.stderr)
             continue
-        rows = sorted((p, c, len(v)) for (p, c), v in findings.items() if c in wanted)
+        rows = sorted((p, c, len(v)) for (p, c), v in findings.items()
+                      if c in wanted and (p, c) not in accepted)
+        seen.update((p, c) for (p, c), _ in findings.items() if c in wanted)
         if not rows:
             continue
         print(f"{path}")
         for field, category, n in rows:
             suffix = f"  ({n} distinct)" if args.count else ""
-            print(f"    {category:17s} {field}{suffix}")
+            print(f"    {category:16s} {field}{suffix}")
             total += 1
+
+    if args.update_baseline:
+        lines = ["# Reviewed and accepted findings for tools/nsschema/scan_pii.py.",
+                 "# One `path<TAB>category` per line. Regenerate with",
+                 "# `python3 -m nsschema.scan_pii --update-baseline <file> <paths>`",
+                 "# after reviewing every new entry — this file is an assertion that",
+                 "# a human looked, not a way to silence the scanner.", ""]
+        lines += [f"{p}\t{c}" for p, c in sorted(seen)]
+        Path(args.update_baseline).write_text("\n".join(lines) + "\n")
+        print(f"\nwrote {len(seen)} accepted findings to {args.update_baseline}")
+        return 0
+
     if total:
-        print(f"\n{total} field/category findings. Values are deliberately not "
-              f"printed.", file=sys.stderr)
+        print(f"\n{total} unaccepted field/category findings. Values are "
+              f"deliberately not printed.", file=sys.stderr)
         return 1
-    print("no personal data found")
+    print("no unaccepted findings")
     return 0
 
 
