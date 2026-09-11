@@ -892,8 +892,11 @@ Three conclusions, in order of importance:
    hand-written predicate. Quote it as a range, not a point. At Nightscout's actual query
    rate (~14 ops per tenant load cycle, once per 1–5 s — §2.3) this is noise, not a
    capacity concern. EXP-MT-036/040 should establish it properly under load.
-3. **This has no equivalent in MongoDB as Nightscout uses it today.** MongoDB has no
-   server-enforced per-document ACL comparable to RLS.
+3. **This has no equivalent in MongoDB as Nightscout uses it today** — but the
+   stronger claim this bullet originally made, that *MongoDB has no server-enforced
+   per-document ACL comparable to RLS*, **was wrong and is corrected in §6.1.2.**
+   MongoDB 7.0+ does have one, via a read-only view keyed on `$$USER_ROLES`. What
+   remains true is the "as Nightscout uses it today" half:
    `ctx.store.collection(env.entries_collection)` (`lib/server/entries.js:203-205`) hands
    back a raw collection handle; isolation would be whatever filter every call site
    remembers to add. The honest Mongo options are: (a) application-only isolation behind a
@@ -901,6 +904,63 @@ Three conclusions, in order of importance:
    database property; (b) database-per-tenant — real isolation, no RLS needed, but N
    connections and index sets; (c) migrate tenant-scoped collections to Postgres and keep
    the rest on Mongo.
+
+#### 6.1.2 Correction: MongoDB does have a server-enforced equivalent for reads — **measured**
+
+Added 2026-09-11, after a maintainer pushed back that Mongo's projections and views
+should be equally feasible and that the preference for tables may be familiarity.
+**They were substantially right, and §6.1 bullet 3 overstated the case.**
+
+§6.1.1 tested an *application-level* seam. Neither section tested the mechanism MongoDB
+actually provides: a **read-only view whose pipeline reads `$$USER_ROLES`** (7.0+), with
+users granted `find` on the view and **no privilege on the base collection**. Measured
+against a live MongoDB 8.3.9 container (`tools/mt-bench/mongo-views-poc/`, committed and
+reproducible):
+
+| Test | Result |
+|---|---|
+| `alice` (role `tenant_a`) reads the view | her tenant's rows only |
+| `bob` (role `tenant_b`), **the same view definition** | his tenant's rows only |
+| A user holding the view privilege but **no tenant role** | **0 rows** — not an error, not everything |
+| Base collection, read directly or via `aggregate` | `Unauthorized` |
+| Client re-requests a projected-out credential field | still absent; cannot be filtered on either |
+
+One view definition serves every tenant, because the predicate reads the connected
+user's roles rather than a literal. That is fail-closed in precisely the sense this
+section called the value proposition, and it covers **field-level** projection in the
+same place — which the RLS demonstration above does not.
+
+**What survives the correction, measured in the same run**, and it is narrower and more
+specific than "Mongo can't":
+
+1. **Views are read-only.** Insert and update through the view are refused, and the user
+   has no write privilege on the base collection. Reads are server-enforced; **writes are
+   not covered at all**, and granting write on the base collection reopens exactly the
+   bypass §6.1.1 measured. Postgres RLS policies cover `INSERT`/`UPDATE`/`DELETE` too.
+   This is the sharpest remaining difference.
+2. **The role-keyed predicate cannot seek to one tenant.** With 60,004 rows and an index
+   on `{tenantId, sgv}`: the view does a COLLSCAN (60,004 docs examined, 60 ms); coaxed
+   with a static `$in` prefix it manages an IXSCAN but examines **every tenant's keys**
+   (25,003 keys, 45 ms); the direct query with an explicit `tenantId` filter examines
+   12,500 keys in 11 ms. `$expr` over a value computed from `$$USER_ROLES` gives the
+   planner no constant to build index bounds from. So it is O(all tenants), not O(one
+   tenant) — the wrong direction for the thing it would be adopted for.
+3. **Tenant identity binds to the authenticated user, not to connection state.** Postgres
+   rebinds per transaction on a shared pool via `set_config(..., is_local => true)`;
+   MongoDB needs a distinct authenticated identity per tenant, so a hub cannot multiplex
+   tenants over one pool. At the counts §7.4 discusses that is an operational difference,
+   not a detail.
+
+One shared caveat: `root` reads everything, as a Postgres table owner does — except
+Postgres has `FORCE ROW LEVEL SECURITY` to close that even for the owner, and MongoDB has
+no equivalent for `root`.
+
+**Effect on the recommendation.** The storage-engine argument should now rest on writes,
+index locality and connection multiplexing — not on "Mongo has no server-enforced
+isolation", which is false for 7.0+. It does not by itself overturn §10.2, because those
+three are the properties a multitenant hot path actually exercises; it does mean anyone
+re-arguing the engine choice should argue against *these*, and that a single-tenant or
+low-tenant-count deployment has materially less to gain from moving.
 
 #### 6.1.1 Is switching engines actually required, or is most of the change "just add a tenant discriminator"? — **measured**
 
