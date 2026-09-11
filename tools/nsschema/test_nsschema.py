@@ -1420,3 +1420,55 @@ def test_a_moved_source_file_is_found_at_either_root(tmp_path):
         tmp_path, ["p/main/M.kt", "p/commonMain/M.kt"],
         r'@Serial(?:ized)?Name\(\s*"([^"]+)"\s*\)')
     assert names == ["sgv"]
+
+
+# ── the proposal's worked example ───────────────────────────────────────
+
+def test_the_proposal_tutorial_still_runs_as_printed():
+    """PROPOSAL-controller-descriptions-2026-09-11.md §5 prints output.
+
+    A tutorial that has rotted is worse than none, because a reader who
+    tries it and gets something else stops trusting the rest.
+    """
+    root = corpus.repo_root()
+    reg = yaml.safe_load(
+        (root / "specs/sync/registrations/loop.yaml").read_text())
+    absent = [i["input"] for i in reg["spec"]["replayInputs"]
+              if i["status"] == "absent"]
+    assert len(absent) == 8, f"the proposal says 8, got {len(absent)}"
+    assert absent[:3] == ["automaticBolusApplicationFactor",
+                          "carbAbsorptionModel", "gradualTransitionsThreshold"]
+
+    inputs = {i["input"]: i for i in reg["spec"]["replayInputs"]}
+    assert inputs["maxBolus"] == {
+        "input": "maxBolus", "path": "loopSettings.maximumBolus",
+        "collection": "profile", "status": "recorded"}
+    # "declared and unpublished" must stay expressible, or the example's
+    # whole point goes with it.
+    assert inputs["automaticBolusApplicationFactor"]["status"] == "absent"
+    assert inputs["automaticBolusApplicationFactor"]["path"] is None
+
+    document = reg["spec"]["documents"][0]
+    assert document["discriminator"] == {"path": "loop", "test": "is-object"}
+    assert document["decomposesTo"] == [
+        "ApsSnapshot", "PumpSnapshot", "UploaderSnapshot"]
+
+
+def test_the_proposal_headline_numbers_match_their_reports():
+    root = corpus.repo_root()
+    census_dir = root / "reports" / "schema-census"
+
+    coverage = json.loads((census_dir / "nocturne-coverage.json").read_text())
+    ds = coverage["collections"]["devicestatus"]
+    assert ds["summary"]["dropped"] == 56 and ds["paths"] == 166
+
+    dosing = json.loads((census_dir / "dosing-inputs.json").read_text())
+    loop = dosing["by_algorithm"]["loop"]
+    assert loop["recorded"] == 4 and loop["absent"] == 8
+    assert sum(loop.values()) == 20
+
+    effects_report = json.loads((census_dir / "effects.json").read_text())
+    treatments = effects_report["treatments"]
+    assert treatments["total"] == 3415
+    assert treatments["by_verdict"]["effect+motivation"] == 2934
+    assert treatments["by_verdict"]["motivation-only"] == 481

@@ -34,19 +34,19 @@
       "alias": "aaps",
       "name": "AndroidAPS",
       "url": "https://github.com/nightscout/AndroidAPS.git",
-      "ref": "05a3433598ac49a3ecafcbd218fc5c1fc39c8719",
+      "ref": "598e2eb39c7e15876e4c42876a2162bffcb4fe5f",
       "description": "Android Artificial Pancreas System",
-      "frozen_at": "2026-06-17T14:54:05.544071",
+      "frozen_at": "2026-09-11T11:24:51.463397",
       "frozen_from": "master"
     },
     {
       "alias": "trio",
       "name": "Trio",
       "url": "https://github.com/nightscout/Trio.git",
-      "ref": "a708381782825c03745db1c6377efe632b5f2161",
+      "ref": "40f097fddda733537aea986f63346aa405b628e3",
       "description": "Trio iOS closed-loop system",
       "submodules": true,
-      "frozen_at": "2026-09-10T17:47:03.433796",
+      "frozen_at": "2026-09-11T11:24:52.208316",
       "frozen_from": "dev"
     },
     {
@@ -155,9 +155,9 @@
     {
       "name": "nocturne",
       "url": "https://github.com/nightscout/nocturne.git",
-      "ref": "cb43fae566f6a18158b19e956e9033a84eab673c",
+      "ref": "d9e1430975c7a05967cba66374392f75f08c858f",
       "description": "C#/.NET rewrite of the Nightscout server/API (not a client app) with SvelteKit web frontend",
-      "frozen_at": "2026-09-10T17:47:10.501771",
+      "frozen_at": "2026-09-11T11:24:58.935079",
       "frozen_from": "main"
     },
     {
@@ -214,9 +214,9 @@
     {
       "name": "LoopAlgorithm",
       "url": "https://github.com/LoopKit/LoopAlgorithm.git",
-      "ref": "2f5c630084aa0d72b8d14999e1e0f7c836b0c341",
+      "ref": "7d016fb55ded96ef25ef612a153c69a9c911ca19",
       "description": "Standalone LoopAlgorithm Swift package for glucose prediction and dosing",
-      "frozen_at": "2026-06-17T14:54:33.546747",
+      "frozen_at": "2026-09-11T11:25:06.048102",
       "frozen_from": "main"
     },
     {
@@ -247,9 +247,9 @@
     {
       "name": "OmnipodKit",
       "url": "git@github.com:loopandlearn/OmnipodKit.git",
-      "ref": "b47560e317212a6d58bc4a982b192ef1a69eba87",
+      "ref": "aee61f93d8fc55f0539e6d2e599d4609fc908af1",
       "description": "Universal Omnipod pump manager (Eros/Dash/Omnipod5) shared by Loop and Trio",
-      "frozen_at": "2026-09-09T11:28:24.543822",
+      "frozen_at": "2026-09-11T11:25:08.982582",
       "frozen_from": "main"
     },
     {

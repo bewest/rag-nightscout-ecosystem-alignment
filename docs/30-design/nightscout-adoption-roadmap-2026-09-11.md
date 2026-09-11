@@ -5,9 +5,15 @@ sequencing companion to
 [the hub-and-spoke sync design](./nightscout-hub-sync-architecture-2026-09-11.md)
 and [effects and versioning](./nightscout-effects-and-versioning-2026-09-11.md).
 
-Based on the state of each project's **dev branch on 2026-09-11**, fetched
-for this analysis rather than read from the workspace pins — several of which
-were badly stale (AndroidAPS by 2,614 commits).
+Based on the state of each project's **development branch on 2026-09-11**.
+The workspace pins have since been advanced (`workspace.lock.json`) and every
+measured claim in this series re-run against them: Nocturne coverage,
+treatment decomposition, vendor surfaces, dosing inputs and sync cost are
+unchanged, and both reported upstream defects are still present.
+
+One distinction runs through this document and is easy to lose: **AAPS tracks
+`master` in the lockfile, and almost all the work described here is on
+`dev`.** Where a claim depends on which branch, it says so.
 
 **Nothing here is a proposal to merge.**
 
@@ -20,10 +26,19 @@ first" — is less true than it looks, in one specific and useful way.**
 
 `settings` is already an enabled v3 collection in cgm-remote-monitor
 (`lib/api3/index.js`: `enabledCollections` = devicestatus, entries, food,
-profile, **settings**, treatments). And AndroidAPS's dev branch already
-carries a **complete v3 settings client** — create, read, patch, upsert,
-delete, `history/{from}`, search — in `core/nssdk`, typed as a bare
-`JsonObject` and not yet wired to any sync worker.
+profile, **settings**, treatments). And AndroidAPS's **development**
+branch carries a complete v3 settings client — create, read, patch, upsert,
+delete, `history/{from}`, search — typed as a bare `JsonObject` and not yet
+wired to any sync worker.
+
+That second half needs stating carefully, because it is easy to over-read.
+The settings client is **not released**: AAPS `master` (tip 2026-08-02) has
+**zero** settings endpoints; `dev` has seven, and they landed on 2026-08-06
+in a commit titled *":core:nssdk ktor migration"*. They arrived as part of
+porting the whole v3 surface to ktor, which makes *incidental completeness*
+at least as likely an explanation as an intent to publish controller
+settings. What it establishes is that the **client-side cost is already
+paid** — not that anyone has decided to spend it.
 
 So the single highest-value item in this series — publishing controller
 settings, the thing physicians cannot see and `oref-digital-twin` reads from
@@ -32,7 +47,7 @@ convention for what goes in a collection that already exists.
 
 | Finding | Consequence for sequencing |
 |---|---|
-| `settings` v3 collection exists; AAPS has the client | Phase 1 is a schema, not an API. Weeks, not quarters |
+| `settings` v3 collection exists; AAPS `dev` has the client (unreleased) | Phase 1 is a schema, not an API. Weeks, not quarters |
 | Loop: 24 commits in 6 months, none touching Nightscout | Anything requiring a Loop change is the long pole. Design so Loop needs none |
 | AAPS: 2,434 commits, Nightscout SDK moved to `commonMain` with an iOS target | Their sync layer is malleable *right now* — the best window to agree a convention, the worst to demand stability |
 | Trio: 1,365 commits, fixes and a11y; `NightscoutExercise` unchanged | Willing and active, but override effects still unpublished |
@@ -56,7 +71,7 @@ Commits on the current dev branch in the six months to 2026-09-11.
 | Project | Branch | Commits | What it is doing |
 |---|---|---|---|
 | Nocturne | `main` | 2,546 | Active hub development |
-| AndroidAPS | `dev` | 2,434 | **Kotlin Multiplatform**: iOS and desktop targets, `kmp` merged to `dev`, Dagger/Hilt removed, NS client and `nssdk` moved to `commonMain`, settings export made platform-neutral |
+| AndroidAPS | `dev` | 2,434 | **Kotlin Multiplatform**: iOS and desktop targets, Dagger/Hilt removed, NS client and `nssdk` moved to `commonMain`, settings export made platform-neutral. `dev` is **2,597 commits ahead of `master`**, and the migration is nearly all on `dev`: 1,869 `commonMain` files there against 36 on `master` |
 | Trio | `dev` | 1,365 | Fixes, accessibility, tests; oref runnable from CLI; fractional-date fix landed (#1476) |
 | xDrip+ | `master` | 538 | Preference-manager modernisation; **Nocturne uploader and auth** |
 | cgm-remote-monitor | `dev` | 513 | Bug fixes and dependency bumps; profile-switch and unnamed-profile fixes; **no protocol work** |
@@ -98,10 +113,11 @@ It is better than additive: **the channel already exists on both sides.**
   `enabledCollections = ['devicestatus','entries','food','profile','settings','treatments']`.
   The v3 generic layer gives `settings` the same CRUD, `history/{from}`
   delta, soft delete and dedup as every other collection.
-* `AndroidAPS/core/nssdk/.../NightscoutApi.kt` on `dev` implements
+* `AndroidAPS/core/nssdk/.../NightscoutApi.kt` **on `dev`** implements
   `getSetting`, `getSettingsModifiedSince`, `searchSettings`,
   `createSetting`, `patchSetting`, `updateSetting` (documented as upsert) and
-  `deleteSetting` with a soft/hard distinction.
+  `deleteSetting` with a soft/hard distinction. Not on `master`, and five
+  weeks old.
 
 What is missing is **not transport**. The payload is `JsonObject` — no
 schema, no declared shape, and no plugin wiring that writes one. That is
@@ -245,8 +261,10 @@ Those are the two complaints this series started from.
   and every phase that names a project is a proposal to that project, not a
   plan for it.
 * **Whether AAPS's `settings` client is intended for controller settings at
-  all.** It exists in the SDK and is unwired; it may be aimed at NSClient
-  configuration sync rather than therapy settings.
+  all.** It is unwired, unreleased, and arrived inside a ktor migration
+  commit, which makes incidental completeness at least as likely as intent.
+  Asking is a one-line question to that project and would settle the most
+  load-bearing assumption in this document.
 * **Whether cgm-remote-monitor's `settings` collection has ever been used.**
   Enabled is not the same as exercised, and the corpus cannot say — it was
   collected through `/api/v1/`.
