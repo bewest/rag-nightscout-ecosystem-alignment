@@ -153,12 +153,28 @@ tests the replayer as much as the algorithm.
 
 ### 3.2 Safety limits are a Loop-only record
 
-| Input | Loop | oref0 derivatives |
-|---|---|---|
-| `profile.maxBasal` | `loopSettings.maximumBasalRatePerHour` | — |
-| `profile.suspendThreshold` | `loopSettings.minimumBGGuard` | `openaps.suggested.threshold` is the *computed* threshold, not the configured one |
-| `profile.dosingStrategy` | `loopSettings.dosingStrategy` | — |
-| `profile.maxIob` | — | — |
+| Input | Loop | Trio | AndroidAPS |
+|---|---|---|---|
+| `profile.maxBasal` | `loopSettings.maximumBasalRatePerHour` | — | — |
+| `profile.suspendThreshold` | `loopSettings.minimumBGGuard` | — | — |
+| `profile.dosingStrategy` | `loopSettings.dosingStrategy` | — | — |
+| `profile.maxIob` | — | — | — |
+
+Trio is separated from Loop here deliberately. Trio is LoopKit-derived and
+holds `maximumBasalRatePerHour` in its vendored `SettingsStore.swift`, so it
+is tempting to assume it uploads it. It does not: Trio's
+`NightscoutProfileStore` declares `store`, `overridePresets`,
+`bundleIdentifier`, `deviceToken`, `teamID` and `expirationDate`, and no
+`loopSettings` and no limits.
+
+The corpus cannot confirm this on its own and is worth showing as a trap.
+`loopSettings.maximumBasalRatePerHour` appears on the Trio site in 100% of
+its profile documents — but those documents carry `loopSettings` and *not*
+Trio's own top-level `teamID`/`bundleIdentifier` markers, so they were
+written by Loop before that site switched. Reading the corpus alone would
+have credited Trio with recording limits it never writes. `openaps.suggested.threshold`
+is present for oref0 derivatives but is the *computed* threshold, not the
+configured one.
 
 This reframes `loopSettings` considerably. In the schema work it looked like
 a vendor subtree that had been flattened into a shared document — 26
@@ -340,7 +356,12 @@ contract is `CodingKeys`, and a property is not a field.
 * **Whether AAPS's configuration block appears in the wild at all.** §4a.1
   reads the uploader, not data: our one AAPS site emitted none of it, and
   the conditions under which `RunningConfigurationImpl` runs were not traced.
-* **AAPS and Trio profile variation beyond this corpus** — one site each.
+* **AndroidAPS behaviour of any kind, from data.** The corpus contains no
+  AAPS closed-loop site: the site previously described as AAPS runs no loop
+  at all (xDrip4iOS and LibreLinkUp, manual treatments, `automatic` never
+  true). Every AAPS statement in this document is read from its wire models.
+* **Trio profile variation** — one site, and that site's profile documents
+  were written by Loop.
 * **Real `activity` documents**, per §4.
 * **`heartrate` as a v3 collection.** Not implemented anywhere; the spec in
   this repo is a proposal, not a description.

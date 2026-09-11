@@ -111,6 +111,25 @@ RULES = OrderedDict([
     ("baseurl", "url"),
 ])
 
+# Technology words that may appear inside a device string. A token sharing
+# none of these is free text — and in a device string, free text is usually
+# a person: LibreLinkUp puts the *connection's display name* in there, so
+# "<a first name> (LibreLinkUp)" is a real observed value.
+DEVICE_VOCABULARY = frozenset({
+    "dexcom", "libre", "librelink", "librelinkup", "libreview", "freestyle",
+    "xdrip", "xdrip+", "xdrip4ios", "xdripswift", "spike", "diable",
+    "loop", "trio", "aaps", "androidaps", "openaps", "nightscout", "nocturne",
+    "share", "share2", "sharefollow", "webfollower", "follower", "bridge",
+    "medtronic", "minimed", "omnipod", "dash", "eros", "tandem", "tslim",
+    "insulet", "roche", "accuchek", "combo", "dana", "danar", "danars",
+    "ypsopump", "ypso", "kaleido", "equil", "pump", "cgm", "sensor",
+    "transmitter", "phone", "iphone", "ipad", "watch", "android", "ios",
+    "uploader", "connect", "carelink", "glooko", "tidepool", "sim",
+    "enlite", "guardian", "eversense", "sibionics", "poctech",
+    # Joining words that appear between two technology tokens.
+    "via", "and", "on", "by", "with", "from", "to", "for", "the",
+})
+
 # Values that are ecosystem vocabulary rather than a person's device name.
 KNOWN_CLIENTS = frozenset({
     "loop", "trio", "androidaps", "aaps", "xdrip", "xdrip+", "xdrip4ios",
@@ -234,14 +253,36 @@ class Masker:
             f"device-{self._counter('device', value):02d}"
 
     def device_string(self, value):
-        """Keep the model, drop an appended serial.
+        """Keep the technology, drop serials and names.
 
         `device` drives controller detection in the analysis pipeline and is
-        core schema evidence, so it cannot simply be replaced — but uploaders
-        append hardware serials to it ("Dexcom G7 <serial>").
+        core schema evidence, so it cannot simply be replaced. But uploaders
+        put two kinds of personal data in it: a hardware serial appended to
+        a model ("Dexcom G7 <serial>"), and — via LibreLinkUp — the
+        connection's display name, which is a person's name.
+
+        A token survives if it is recognisably about technology: it shares a
+        part with the device vocabulary, or it carries a digit (a model
+        number such as G7 or share2), or it is structured (``loop://iPhone``,
+        ``com.dexcom.g7app``). Anything else is replaced by a counter, which
+        keeps distinct devices distinct without saying what they were.
         """
-        tokens = [t for t in value.split() if not _SERIAL_TOKEN.match(t)]
-        return " ".join(tokens) if tokens else "device"
+        out = []
+        for token in value.split():
+            bare = token.strip("()[]{},")
+            if not bare:
+                continue
+            if _SERIAL_TOKEN.match(bare):
+                continue
+            parts = re.split(r"[-_.:/+]+", bare.lower())
+            technological = (
+                any(part in DEVICE_VOCABULARY for part in parts if part)
+                or any(ch.isdigit() for ch in bare)
+                or "://" in token
+            )
+            out.append(token if technological
+                       else f"device-{self._counter('devicename', bare):02d}")
+        return " ".join(out) if out else "device"
 
     def entered_by(self, value):
         low = value.strip().lower()
@@ -298,6 +339,10 @@ def apply_rule(masker, rule, value):
     }[rule](value)
 
 
+# When set, only these rules run. See --only.
+_ONLY_RULES = None
+
+
 def transform(doc, masker, prefix=""):
     if isinstance(doc, dict):
         return {k: transform(v, masker, f"{prefix}.{k}" if prefix else k)
@@ -310,6 +355,8 @@ def transform(doc, masker, prefix=""):
         # repository URLs and JSON Schema $id keywords, which are not
         # personal data and whose values are load-bearing.
         rule = rule_for(prefix)
+        if rule and _ONLY_RULES is not None and rule not in _ONLY_RULES:
+            rule = None
         if rule:
             replaced = apply_rule(masker, rule, doc)
             if replaced != doc:
@@ -343,7 +390,14 @@ def main(argv=None):
     group = ap.add_mutually_exclusive_group(required=True)
     group.add_argument("--write", action="store_true", help="rewrite files in place")
     group.add_argument("--dry-run", action="store_true", help="report only")
+    ap.add_argument("--only", action="append", dest="only",
+                    help="apply only these rules (repeatable), leaving every "
+                         "other value untouched — used to add a rule without "
+                         "re-masking what earlier passes already handled")
     args = ap.parse_args(argv)
+
+    if args.only:
+        globals()["_ONLY_RULES"] = frozenset(args.only)
 
     totals = {}
     touched = 0

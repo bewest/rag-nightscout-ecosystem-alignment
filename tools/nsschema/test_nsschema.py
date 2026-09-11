@@ -1075,3 +1075,76 @@ def test_extraction_can_stop_before_an_unrelated_model(tmp_path):
 
 def test_a_missing_source_is_reported_not_guessed(tmp_path):
     assert vendor_surface.extract(tmp_path, "nope/Missing.kt", r'(\w+)') is None
+
+
+@pytest.mark.parametrize("value,expected", [
+    # LibreLinkUp puts the connection's *display name* in the device string.
+    ("Zukka (LibreLinkUp)", "device-01 (LibreLinkUp)"),
+    ("Dexcom G7 DXCM3Y", "Dexcom G7"),          # appended serial
+    ("xDrip-WebFollower", "xDrip-WebFollower"),  # vocabulary in a sub-token
+    ("xDrip4iOS via Nightscout", "xDrip4iOS via Nightscout"),
+    ("loop://iPhone", "loop://iPhone"),
+    ("com.dexcom.g7app", "com.dexcom.g7app"),
+    ("share2", "share2"),
+    ("Trio", "Trio"),
+])
+def test_device_strings_keep_technology_and_lose_people(value, expected):
+    assert sanitize.Masker().device_string(value) == expected
+
+
+def test_only_restricts_which_rules_run(tmp_path, monkeypatch):
+    # Adding a rule later must not re-mask what earlier passes settled.
+    monkeypatch.setattr(sanitize, "_ONLY_RULES", frozenset({"device-string"}))
+    doc = {"device": "Zukka (LibreLinkUp)", "_id": "69c85c022b390b801650a69a"}
+    out = sanitize.transform(doc, sanitize.Masker())
+    assert out["device"] != doc["device"]
+    assert out["_id"] == doc["_id"]
+
+
+# ── observability profile ───────────────────────────────────────────────
+
+from nsschema import observability  # noqa: E402
+
+
+def test_observability_profile_loads_and_is_well_formed():
+    profile = observability.load_profile(corpus.repo_root())
+    assert profile["obligations"] and profile["roles"]
+    for obligation in profile["obligations"]:
+        for required in ("id", "role", "level", "collection", "path",
+                         "test", "title", "rationale"):
+            assert obligation.get(required), f"{obligation['id']} missing {required}"
+
+
+def test_obligation_ids_are_unique():
+    profile = observability.load_profile(corpus.repo_root())
+    ids = [o["id"] for o in profile["obligations"]]
+    assert len(ids) == len(set(ids))
+
+
+def test_an_unknown_role_is_rejected(tmp_path):
+    (tmp_path / "p.yaml").write_text(
+        "roles: [{id: r, title: t, detect: {collection: entries, path: p, test: exists}}]\n"
+        "obligations: [{id: O, role: nope, level: MUST, collection: entries,\n"
+        "  path: p, test: exists, title: t, rationale: r}]\n")
+    with pytest.raises(ValueError, match="unknown role"):
+        observability.load_profile(tmp_path, "p.yaml")
+
+
+def test_an_unknown_level_is_rejected(tmp_path):
+    (tmp_path / "p.yaml").write_text(
+        "roles: [{id: r, title: t, detect: {collection: entries, path: p, test: exists}}]\n"
+        "obligations: [{id: O, role: r, level: OUGHT, collection: entries,\n"
+        "  path: p, test: exists, title: t, rationale: r}]\n")
+    with pytest.raises(ValueError, match="unknown level"):
+        observability.load_profile(tmp_path, "p.yaml")
+
+
+def test_the_controller_role_is_not_detected_by_what_it_is_asked_to_write():
+    # Detecting a controller by "it wrote a devicestatus" would make the
+    # profile unfalsifiable: a system that uploads nothing would be
+    # classified as not-a-controller and therefore conformant.
+    profile = observability.load_profile(corpus.repo_root())
+    controller = next(r for r in profile["roles"] if r["id"] == "aid-controller")
+    detectors = controller["detect_any"]
+    assert any(d["collection"] == "treatments" for d in detectors), \
+        "the controller role must be detectable from evidence of dosing"

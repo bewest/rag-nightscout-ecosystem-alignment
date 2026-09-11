@@ -75,9 +75,20 @@ pipeline.
 
 ### 1.2 The three limits that matter
 
-**The corpus is Loop-dominant.** By `devicestatus.device`, 9 of 11 sites
-are Loop (100% of their device statuses), one is Trio (98%), one is AAPS
-(100%). Ten of eleven report an Insulet Dash pump. **A field marked
+**The corpus is Loop-dominant, and contains no AndroidAPS closed-loop
+site at all.** Nine of eleven sites are Loop (100% of their device
+statuses) and one is Trio (98%, having previously run Loop). The eleventh
+runs no closed loop: its device statuses carry only uploader battery, its
+treatments are `Carbs`, `Bolus` and `BG Check` with `automatic` never
+true, and its entries come from xDrip4iOS and LibreLinkUp. Ten of eleven
+report an Insulet Dash pump.
+
+An earlier revision of this document described that eleventh site as
+AndroidAPS, on the strength of its `devicestatus.device` string. That was
+wrong: the device string there identifies the *uploading phone*, not a
+controller, and the treatment record shows no automated dosing. Every
+statement about AndroidAPS in this series is therefore source-derived —
+from its own wire models — and none of it is corroborated by data. **A field marked
 "universal" in this report is universal *in a Loop-dominant corpus*,** which
 is not the same as universal across the ecosystem. This is why the model
 never promotes an observation into a *write* requirement (§3.3): requiring

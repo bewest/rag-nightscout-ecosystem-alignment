@@ -1,0 +1,393 @@
+# Observability conformance profile — who must upload what.
+#
+# Nightscout is how an automated insulin delivery system becomes observable:
+# how a user, a caregiver or a clinician can see what it did and why. That
+# only works if the systems writing to it agree on what has to be there.
+#
+# `specs/interoperability-spec-v1.md` defines conformance levels (Reader,
+# Uploader, Controller) and the fields a *document* needs to be well-formed:
+# `device` and `created_at` on a devicestatus, `eventType` and `created_at`
+# on a treatment. Those are transport obligations. A controller can satisfy
+# every one of them, upload `{device, created_at}` and nothing else, and
+# record nothing whatsoever about the dose it just delivered.
+#
+# This profile states the *content* obligations instead, per role, and each
+# one is grounded in a measurement rather than an opinion:
+#
+#   - MUST    without it the system is not observable at all: you cannot
+#             tell what it did. Only asserted where the corpus shows it is
+#             already near-universal for that role, so it breaks nobody.
+#   - SHOULD  without it you can see what the system did but not why.
+#             These are the fields a reviewer needs to judge a decision.
+#   - MAY     useful, not load-bearing.
+#
+# `rationale` cites what makes the level defensible. `evidence` names the
+# measured share for that role's sites, so an obligation that is not already
+# met is visible as a gap rather than hidden as an aspiration.
+#
+# Detectors use the vocabulary of specs/quirks/README.md. Score a corpus
+# against this file with `make schema-observability`.
+
+version: 0.1-draft
+status: >-
+  Draft for maintainer and controller-maintainer discussion. This repository
+  is not a standards body; nothing here is adopted. The point is to make the
+  obligations explicit enough to argue with.
+
+roles:
+  - id: cgm-uploader
+    title: A CGM source writing glucose
+    examples: [xDrip+, xDrip4iOS, DiaBLE, Dexcom Share bridge, LibreLink Up]
+    detect:
+      collection: entries
+      path: sgv
+      test: exists
+
+  - id: aid-controller
+    title: Any closed-loop controller writing its state
+    examples: [Loop, Trio, AndroidAPS, OpenAPS]
+    # Detected from *evidence of automated dosing*, not from the presence of
+    # the fields the obligations then ask for. Detecting a controller by
+    # "it wrote a devicestatus" makes the profile unfalsifiable: a system
+    # that uploads nothing is classified as not-a-controller and therefore
+    # conformant. A treatment the system delivered on its own is evidence it
+    # was looping, whatever it chose to record about it.
+    detect_any:
+      - collection: treatments
+        path: automatic
+        test: equals
+        value: true
+      - collection: treatments
+        path: eventType
+        test: in
+        values: [Temp Basal, TempBasal, SMB, Automatic Bolus]
+      - collection: devicestatus
+        path: loop
+        test: is-object
+      - collection: devicestatus
+        path: openaps
+        test: is-object
+
+  - id: aid-controller-loop
+    title: A Loop-family controller
+    examples: [Loop, LoopCaregiver-driven Loop]
+    detect:
+      collection: devicestatus
+      path: loop
+      test: is-object
+
+  - id: aid-controller-oref0
+    title: An oref0-derived controller
+    examples: [AndroidAPS, Trio, OpenAPS]
+    detect:
+      collection: devicestatus
+      path: openaps
+      test: is-object
+
+  - id: pump-uploader
+    title: Whatever reports pump state
+    examples: [Loop, Trio, AndroidAPS, minimed-connect]
+    detect:
+      collection: devicestatus
+      path: pump
+      test: is-object
+
+  - id: profile-writer
+    title: Whatever maintains therapy settings
+    examples: [Loop, Trio, AndroidAPS, Nightscout care portal]
+    detect:
+      collection: profile
+      path: store
+      test: is-object
+
+obligations:
+  # ── CGM source ────────────────────────────────────────────────────
+  - id: OBS-CGM-001
+    role: cgm-uploader
+    level: MUST
+    collection: entries
+    path: date
+    test: exists
+    title: every reading carries its own time
+    rationale: >-
+      Universal on all 11 sites. Without it a reading cannot be placed
+      against a dose.
+  - id: OBS-CGM-002
+    role: cgm-uploader
+    level: MUST
+    collection: entries
+    path: dateString
+    test: exists
+    title: and an unambiguous string form of it
+    rationale: >-
+      Universal on all 11 sites, and the fallback every reader uses when
+      `date` is unusable — which QUIRK-ENTRIES-001 shows is common.
+  - id: OBS-CGM-003
+    role: cgm-uploader
+    level: MUST
+    collection: entries
+    path: device
+    test: exists
+    title: which device produced the reading
+    rationale: >-
+      93.6% of documents on 11 of 11 sites. Provenance is the difference
+      between "glucose was 62" and "this sensor said 62 while that one said
+      88"; a corpus without it cannot attribute a reading to a sensor.
+  - id: OBS-CGM-004
+    role: cgm-uploader
+    level: SHOULD
+    collection: entries
+    path: direction
+    test: exists
+    title: the trend the controller saw
+    rationale: >-
+      84.6% on 11 sites. `direction` and `trend` are two encodings of the
+      same signal; writing neither leaves a reviewer unable to see the
+      rate of change the controller acted on.
+  - id: OBS-CGM-005
+    role: cgm-uploader
+    level: MAY
+    collection: entries
+    path: noise
+    test: exists
+    title: signal quality
+    rationale: >-
+      One site. Real and useful, far from universal; an oref0 input
+      (`glucoseStatus.noise`) that is simply unavailable for most data.
+
+  # ── Any AID controller ────────────────────────────────────────────
+  - id: OBS-AID-000
+    role: aid-controller
+    level: MUST
+    collection: devicestatus
+    path: device
+    test: exists
+    title: a system that doses automatically writes a devicestatus at all
+    rationale: >-
+      The obligation the role detector exists to make checkable. A
+      controller is identified by evidence that it dosed on its own; if it
+      then records no controller state, it is unobservable by construction.
+      No site in the corpus fails this, which is the point of asserting it
+      now rather than after one does.
+  - id: OBS-AID-001
+    role: aid-controller
+    level: MUST
+    collection: devicestatus
+    path: device
+    test: exists
+    title: which controller is speaking
+    rationale: Already required by specs/interoperability-spec-v1.md §7.1.
+  - id: OBS-AID-002
+    role: aid-controller
+    level: MUST
+    collection: devicestatus
+    path: created_at
+    test: exists
+    title: when it was speaking
+    rationale: Already required by specs/interoperability-spec-v1.md §7.1.
+
+  # ── Loop-family ───────────────────────────────────────────────────
+  - id: OBS-LOOP-001
+    role: aid-controller-loop
+    level: MUST
+    collection: devicestatus
+    path: loop.iob.iob
+    test: exists
+    title: insulin on board at the moment of the decision
+    rationale: >-
+      Present on every Loop site in the corpus. IOB is the single number
+      that makes a dose interpretable after the fact.
+  - id: OBS-LOOP-002
+    role: aid-controller-loop
+    level: MUST
+    collection: devicestatus
+    path: loop.enacted
+    test: exists
+    title: what was actually enacted
+    rationale: >-
+      57.7% of Loop device statuses — not every cycle enacts, so this is
+      "when a dose happens, record it", not "record something every cycle".
+  - id: OBS-LOOP-003
+    role: aid-controller-loop
+    level: SHOULD
+    collection: devicestatus
+    path: loop.automaticDoseRecommendation
+    test: exists
+    title: what the algorithm recommended, separately from what was enacted
+    rationale: >-
+      26.1% on 10 of 11 sites. The recommendation and the enactment differ
+      when a safety limit binds, and that difference is exactly what a
+      reviewer needs. Note that a typed consumer drops this today
+      (nightscout-devicestatus-profile-fidelity-2026-09-10.md §2.2).
+  - id: OBS-LOOP-004
+    role: aid-controller-loop
+    level: SHOULD
+    collection: devicestatus
+    path: loop.predicted.values
+    test: exists
+    title: the forecast it acted on
+    rationale: >-
+      Without the prediction curve, a dose can be seen but not second-guessed.
+  - id: OBS-LOOP-005
+    role: aid-controller-loop
+    level: SHOULD
+    collection: devicestatus
+    path: loop.cob.cob
+    test: exists
+    title: carbs on board
+    rationale: The other half of the state a dose is computed from.
+  - id: OBS-LOOP-006
+    role: aid-controller-loop
+    level: SHOULD
+    collection: devicestatus
+    path: loop.version
+    test: exists
+    title: which build produced the decision
+    rationale: >-
+      85.1% on 10 sites. Algorithm behaviour changes between releases; a
+      decision without a version cannot be reproduced against the right code.
+
+  # ── oref0-family ──────────────────────────────────────────────────
+  - id: OBS-OREF-001
+    role: aid-controller-oref0
+    level: MUST
+    collection: devicestatus
+    path: openaps.iob.iob
+    test: exists
+    title: insulin on board at the moment of the decision
+    rationale: Present on every oref0-family document in the corpus.
+  - id: OBS-OREF-002
+    role: aid-controller-oref0
+    level: MUST
+    collection: devicestatus
+    path: openaps.suggested
+    test: exists
+    title: the decision the algorithm reached
+    rationale: >-
+      Universal for this family. `suggested` is present whether or not a
+      change was enacted, so it is the record of every cycle.
+  - id: OBS-OREF-003
+    role: aid-controller-oref0
+    level: SHOULD
+    collection: devicestatus
+    path: openaps.suggested.reason
+    test: exists
+    title: why, in the algorithm's own words
+    rationale: >-
+      oref0's reason string is the only human-readable account of a dosing
+      decision anywhere in the ecosystem.
+  - id: OBS-OREF-004
+    role: aid-controller-oref0
+    level: SHOULD
+    collection: devicestatus
+    path: openaps.suggested.ISF
+    test: exists
+    title: the effective sensitivity used
+    rationale: >-
+      The *effective* ISF after autosens and dynamic-ISF, which the profile
+      schedule does not give. A replay input (`profile.sensitivity`).
+  - id: OBS-OREF-005
+    role: aid-controller-oref0
+    level: SHOULD
+    collection: devicestatus
+    path: openaps.suggested.sensitivityRatio
+    test: exists
+    title: the autosens ratio applied
+    rationale: The `autosensData.ratio` replay input.
+  - id: OBS-OREF-006
+    role: aid-controller-oref0
+    level: SHOULD
+    collection: devicestatus
+    path: openaps.iob.lastTemp
+    test: exists
+    title: the temp basal already running
+    rationale: >-
+      The `currentTemp` replay input. Derivable from treatment history, but
+      only by reconstructing what the controller already knew.
+  - id: OBS-OREF-007
+    role: aid-controller-oref0
+    level: SHOULD
+    collection: devicestatus
+    path: openaps.version
+    test: exists
+    title: which algorithm build produced the decision
+    rationale: As OBS-LOOP-006.
+
+  # ── Pump state ────────────────────────────────────────────────────
+  - id: OBS-PUMP-001
+    role: pump-uploader
+    level: SHOULD
+    collection: devicestatus
+    path: pump.reservoir
+    test: exists
+    title: how much insulin is available
+    rationale: >-
+      A dose that could not be delivered is not the same as one that was
+      not chosen. Beware the 0xDEADBEEF sentinel (QUIRK-DEVICESTATUS-004).
+  - id: OBS-PUMP-002
+    role: pump-uploader
+    level: SHOULD
+    collection: devicestatus
+    path: pump.clock
+    test: exists
+    title: what time the pump thinks it is
+    rationale: >-
+      95.6% on 10 sites. Pump clock drift silently misplaces every dose the
+      pump reports.
+  - id: OBS-PUMP-003
+    role: pump-uploader
+    level: SHOULD
+    collection: devicestatus
+    path: pump.suspended
+    test: exists
+    title: whether delivery was suspended
+    rationale: >-
+      A suspended pump explains an absence of insulin that otherwise looks
+      like an algorithm choice. Written flat by 10 sites and nested by one
+      (QUIRK-DEVICESTATUS-001), so a reader must check both.
+
+  # ── Therapy settings ──────────────────────────────────────────────
+  - id: OBS-PROF-001
+    role: profile-writer
+    level: MUST
+    collection: profile
+    path: store
+    test: is-object
+    title: the therapy settings in force
+    rationale: Universal. Without it no dose can be checked against intent.
+  - id: OBS-PROF-002
+    role: profile-writer
+    level: MUST
+    collection: profile
+    path: "store.{}.basal"
+    test: exists
+    title: the basal schedule
+    rationale: Universal on all 11 sites.
+  - id: OBS-PROF-003
+    role: profile-writer
+    level: SHOULD
+    collection: profile
+    path: "store.{}.units"
+    test: exists
+    title: the units its numbers are in
+    rationale: >-
+      Present in 100% of documents on all 11 sites and undeclared until
+      2025.2.0. Four spellings exist (QUIRK-PROFILE-003); a schedule whose
+      units are guessed is a clinical hazard, not a formatting one.
+  - id: OBS-PROF-004
+    role: aid-controller
+    level: SHOULD
+    collection: profile
+    path: loopSettings
+    test: is-object
+    title: the dosing safety limits in force
+    rationale: >-
+      THE OPEN ONE. Loop records maximumBasalRatePerHour, maximumBolus,
+      minimumBGGuard and dosingStrategy here; no oref0 derivative records
+      its equivalents anywhere in Nightscout, and AAPS's uploaded
+      configuration blocks do not contain maxIob or maxBasal either. So
+      "was this dose within the configured ceiling?" is unanswerable for
+      AAPS and Trio data. The obligation is stated against the only
+      existing precedent; the location deserves a better, vendor-neutral
+      name before anyone else adopts it.
+      See nightscout-devicestatus-profile-fidelity-2026-09-10.md §3.2, §4a.1.
