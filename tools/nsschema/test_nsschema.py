@@ -1398,3 +1398,25 @@ def test_registrations_declare_a_withholding_default():
         block = sync_model.build(root, key, spec)["spec"]["sensitivity"]
         assert block["unlabelledPolicy"] == "withhold", key
         assert block["defaultProfile"] != "full", key
+
+
+def test_vendor_extraction_accepts_both_kotlin_serialization_styles():
+    # AAPS moved to Kotlin Multiplatform and from Gson to
+    # kotlinx.serialization during 2026: @SerializedName became @SerialName
+    # and the file moved from src/main to src/commonMain. Matching only the
+    # old pair made a refreshed pin report an empty surface, which would
+    # have read as "AAPS declares nothing".
+    pattern = next(entry[2] for entry in vendor_surface.SOURCES
+                   if entry[0] == "AndroidAPS")
+    assert re.search(pattern, '@SerializedName("device")')
+    assert re.search(pattern, '@SerialName("device")')
+
+
+def test_a_moved_source_file_is_found_at_either_root(tmp_path):
+    base = tmp_path / "externals" / "p" / "commonMain"
+    base.mkdir(parents=True)
+    (base / "M.kt").write_text('@SerialName("sgv") val sgv: Int')
+    names = vendor_surface.extract(
+        tmp_path, ["p/main/M.kt", "p/commonMain/M.kt"],
+        r'@Serial(?:ized)?Name\(\s*"([^"]+)"\s*\)')
+    assert names == ["sgv"]

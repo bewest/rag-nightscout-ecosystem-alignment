@@ -32,10 +32,18 @@ from . import corpus, specload
 
 # (label, path under externals/, extraction pattern, note)
 SOURCES = [
+    # AAPS's Nightscout SDK moved to Kotlin Multiplatform during 2026 and
+    # switched from Gson to kotlinx.serialization with it, so the file lives
+    # under commonMain and the annotation is @SerialName, not
+    # @SerializedName. Both source roots and both annotations are accepted:
+    # matching only the old pair made a refreshed pin silently report an
+    # empty surface, which would have read as "AAPS declares nothing".
     ("AndroidAPS",
-     "AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/remotemodel/"
-     "RemoteDeviceStatus.kt",
-     r'@SerializedName\("([^"]+)"\)',
+     ["AndroidAPS/core/nssdk/src/commonMain/kotlin/app/aaps/core/nssdk/"
+      "remotemodel/RemoteDeviceStatus.kt",
+      "AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/"
+      "remotemodel/RemoteDeviceStatus.kt"],
+     r'@Serial(?:ized)?Name\(\s*"([^"]+)"\s*\)',
      "AAPS's Nightscout SDK wire model for devicestatus"),
     ("Trio",
      "Trio/Trio/Sources/Models/NightscoutStatus.swift",
@@ -98,8 +106,12 @@ def _swift_coding_keys(text):
 
 
 def extract(root: Path, rel, pattern, stop_at=None):
-    path = root / "externals" / rel
-    if not path.is_file():
+    # `rel` may be a list of candidate paths: a project can move a file
+    # between source roots without changing what it declares.
+    candidates = [rel] if isinstance(rel, str) else list(rel)
+    path = next((root / "externals" / c for c in candidates
+                 if (root / "externals" / c).is_file()), None)
+    if path is None:
         return None
     text = path.read_text(errors="replace")
     if stop_at:
@@ -155,7 +167,13 @@ def main(argv=None):
         if names is None:
             print(f"  {label:22s} source not present, skipped")
             continue
-        surfaces[label] = {"source": rel, "note": note, "names": names,
+        resolved = next(
+            (c for c in ([rel] if isinstance(rel, str) else rel)
+             if (root / "externals" / c).is_file()), rel)
+        if not names:
+            print(f"  {label:22s} WARNING: source present but nothing matched — "
+                  f"the project may have changed annotation style")
+        surfaces[label] = {"source": resolved, "note": note, "names": names,
                            "truncated_at": stop_at}
         under = sorted(n for n in names if n not in observed_leaves)
         print(f"  {label:22s} {len(names):3d} declared, "
