@@ -664,7 +664,7 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
 .PHONY: schema schema-census schema-reconcile schema-model schema-emit \
         schema-impact schema-impact-smoke schema-drift schema-verify \
         schema-scan-pii schema-sanitize schema-attribute \
-        schema-quirks schema-quirks-check \
+        schema-quirks schema-quirks-check schema-decompose \
         schema-test schema-clean
 
 PY ?= python3
@@ -735,6 +735,10 @@ schema-quirks:
 ## schema-quirks-check: fail if a quirks registry claim no longer holds
 schema-quirks-check:
 	@$(NSSCHEMA).quirks --check
+
+## schema-decompose: can a granular-primitive model express the corpus?
+schema-decompose:
+	@$(NSSCHEMA).decompose
 
 ## schema-drift: check tools/ns2parquet against the measured wire model
 schema-drift:

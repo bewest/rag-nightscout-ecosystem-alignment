@@ -1,0 +1,178 @@
+{
+ "generated_by": "tools/nsschema/decompose.py",
+ "source": "externals/nocturne/src/API/Nocturne.API/Services/V4/TreatmentDecomposer.cs",
+ "documents": 369419,
+ "branches": {
+  "temp-basal": {
+   "documents": 202677,
+   "share": 0.548637,
+   "produces": [
+    "TempBasal"
+   ]
+  },
+  "correction-bolus": {
+   "documents": 142094,
+   "share": 0.384642,
+   "produces": [
+    "Bolus"
+   ]
+  },
+  "carb-correction": {
+   "documents": 15194,
+   "share": 0.041129,
+   "produces": [
+    "CarbIntake"
+   ]
+  },
+  "plain-bolus": {
+   "documents": 3057,
+   "share": 0.008275,
+   "produces": [
+    "Bolus"
+   ]
+  },
+  "override": {
+   "documents": 2892,
+   "share": 0.007829,
+   "produces": [
+    "TherapySettings"
+   ]
+  },
+  "device-event": {
+   "documents": 2112,
+   "share": 0.005717,
+   "produces": [
+    "DeviceEvent"
+   ]
+  },
+  "note": {
+   "documents": 676,
+   "share": 0.00183,
+   "produces": [
+    "Note"
+   ]
+  },
+  "data-fallback": {
+   "documents": 492,
+   "share": 0.001332,
+   "produces": [
+    "Bolus",
+    "CarbIntake"
+   ]
+  },
+  "bg-check": {
+   "documents": 161,
+   "share": 0.000436,
+   "produces": [
+    "BGCheck"
+   ]
+  },
+  "temporary-target": {
+   "documents": 42,
+   "share": 0.000114,
+   "produces": [
+    "TherapySettings"
+   ]
+  },
+  "unroutable": {
+   "documents": 22,
+   "share": 6e-05,
+   "produces": []
+  }
+ },
+ "routed_by_event_type": 368905,
+ "routed_by_data_fallback": 492,
+ "unroutable": 22,
+ "unroutable_share": 6e-05,
+ "unroutable_event_types": {
+  "Suspend Pump": 22
+ },
+ "fields_without_a_typed_home": {
+  "userEnteredAt": 6491,
+  "userLastModifiedAt": 131,
+  "remoteAddress": 98,
+  "endmills": 2,
+  "durationType": 1
+ },
+ "per_site": {
+  "a": {
+   "temp-basal": 35106,
+   "override": 1192,
+   "correction-bolus": 1409,
+   "carb-correction": 1131,
+   "device-event": 211,
+   "note": 4
+  },
+  "b": {
+   "temp-basal": 35326,
+   "correction-bolus": 13966,
+   "carb-correction": 8944,
+   "override": 105,
+   "device-event": 123,
+   "note": 672,
+   "plain-bolus": 2693,
+   "temporary-target": 42
+  },
+  "c": {
+   "temp-basal": 19059,
+   "correction-bolus": 15632,
+   "carb-correction": 570,
+   "device-event": 205,
+   "override": 162
+  },
+  "d": {
+   "temp-basal": 13036,
+   "correction-bolus": 19029,
+   "carb-correction": 592,
+   "device-event": 258,
+   "override": 6
+  },
+  "e": {
+   "temp-basal": 19571,
+   "correction-bolus": 20096,
+   "carb-correction": 521,
+   "device-event": 149,
+   "override": 183
+  },
+  "f": {
+   "temp-basal": 18014,
+   "correction-bolus": 797,
+   "carb-correction": 487,
+   "device-event": 217
+  },
+  "g": {
+   "temp-basal": 16229,
+   "correction-bolus": 17335,
+   "carb-correction": 1628,
+   "override": 397,
+   "device-event": 111
+  },
+  "h": {
+   "temp-basal": 14307,
+   "correction-bolus": 13961,
+   "carb-correction": 1071,
+   "override": 178,
+   "device-event": 274
+  },
+  "i": {
+   "correction-bolus": 21806,
+   "temp-basal": 17996,
+   "device-event": 266,
+   "override": 571,
+   "carb-correction": 137,
+   "unroutable": 22
+  },
+  "j": {
+   "data-fallback": 492,
+   "plain-bolus": 364,
+   "bg-check": 161
+  },
+  "k": {
+   "temp-basal": 14033,
+   "correction-bolus": 18063,
+   "carb-correction": 113,
+   "override": 98,
+   "device-event": 298
+  }
+ }
+}

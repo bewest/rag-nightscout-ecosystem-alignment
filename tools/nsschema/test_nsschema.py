@@ -846,3 +846,69 @@ def test_check_ignores_a_historical_quirk():
     rows = [{"id": "Q-1", "status": "historical", "documents": 0, "share": 0.0,
              "sites": 0, "expect": {"min_share": 0.5}}]
     assert quirks_mod.check(rows) == []
+
+
+# ── granular-primitive decomposition ────────────────────────────────────
+
+from nsschema import decompose  # noqa: E402
+
+
+@pytest.mark.parametrize("event,branch", [
+    ("Temp Basal", "temp-basal"),
+    ("TempBasal", "temp-basal"),
+    ("temp basal start", "temp-basal"),       # comparison is case-insensitive
+    ("Meal Bolus", "meal-bolus"),
+    ("Snack Bolus", "meal-bolus"),
+    ("SMB", "correction-bolus"),
+    ("Correction Bolus", "correction-bolus"),
+    ("Bolus", "plain-bolus"),
+    ("Carb Correction", "carb-correction"),
+    ("BG Check", "bg-check"),
+    ("Site Change", "device-event"),
+    ("Profile Switch", "profile-switch"),
+    ("Temporary Override", "override"),
+    ("Exercise", "note"),
+])
+def test_treatments_route_to_their_primitive(event, branch):
+    assert decompose.classify({"eventType": event})[0] == branch
+
+
+def test_an_unknown_event_type_falls_back_to_the_data():
+    branch, reason = decompose.classify({"eventType": "Something New", "insulin": 1.5})
+    assert branch == "data-fallback" and "insulin" in reason
+
+
+def test_a_null_valued_field_is_not_data():
+    # carbs and insulin are present-but-null on most treatments
+    # (QUIRK-TREATMENTS-001); treating presence as data would route
+    # everything to the fallback branch.
+    branch, _ = decompose.classify({"eventType": "Something New",
+                                    "insulin": None, "carbs": None})
+    assert branch == "unroutable"
+
+
+def test_a_zero_dose_is_not_data():
+    branch, _ = decompose.classify({"eventType": "Something New",
+                                    "insulin": 0, "carbs": 0})
+    assert branch == "unroutable"
+
+
+def test_a_boolean_is_not_a_number():
+    assert not decompose._number(True)
+    assert decompose._number(1.5)
+
+
+def test_suspend_pump_is_unroutable_which_is_the_finding():
+    # Nightscout's documented eventType, and the only spelling in the
+    # corpus, is "Suspend Pump". Nocturne's V4 decomposition routes through
+    # TreatmentTypes.PumpSuspend = "Pump Suspend" — the reversed word order
+    # — so it skips these, while the rest of that codebase recognises them.
+    assert decompose.classify({"eventType": "Suspend Pump"})[0] == "unroutable"
+    assert decompose.classify({"eventType": "Pump Suspend"})[0] == "device-event"
+
+
+def test_every_branch_declares_what_it_produces():
+    for branch in decompose.BRANCHES:
+        assert branch in decompose.BRANCHES
+    assert decompose.BRANCHES["unroutable"] == []
+    assert decompose.BRANCHES["meal-bolus"] == ["Bolus", "CarbIntake"]
