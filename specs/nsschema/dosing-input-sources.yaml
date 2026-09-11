@@ -1,8 +1,18 @@
-# Where an oref0 dosing input can be recovered from, in Nightscout.
+# Where a dosing input can be recovered from, in Nightscout.
 #
-# The input list is evidence-based: it is the union of `input.*` paths across
-# the 385 replay vectors in `conformance/` — real inputs captured from AAPS
-# and Loop phone runs, not a reading of the algorithm's signature.
+# Two algorithms, two input sets, and they are not interchangeable.
+#
+# The oref0 set is the union of `input.*` paths across the 385 replay
+# vectors in `conformance/` — real inputs captured from AAPS and Loop phone
+# runs. Note that the Loop vectors there are Loop *data* replayed through the
+# oref0 harness for cross-validation, so they describe oref0's input shape,
+# not Loop's.
+#
+# The Loop set is read from `AlgorithmInput` in
+# `externals/LoopAlgorithm/Sources/LoopAlgorithm/AlgorithmInput.swift` — the
+# protocol every Loop dosing decision is computed from. It is source-derived
+# rather than capture-derived, because no vector set in this repo carries
+# Loop's native inputs.
 #
 # Each entry names the Nightscout paths that could carry the value, and how:
 #
@@ -11,17 +21,22 @@
 #                at the cost of recomputing what the controller already knew
 #   absent       nothing in Nightscout carries it
 #
+# `algorithm` says whose input this is: `oref0` (AndroidAPS, Trio, OpenAPS)
+# or `loop` (Loop, and Trio's LoopKit-derived layers).
+#
 # `sources` are census paths; `collection` says which census to look in.
 # `confidence` is stated because several of these are judgement calls about
 # whether two similarly-named things are the same quantity.
 inputs:
   # ── glucose status ────────────────────────────────────────────────
   - input: glucoseStatus.glucose
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.suggested.bg, openaps.enacted.bg]
     confidence: high
   - input: glucoseStatus.delta
+    algorithm: oref0
     kind: derivable
     collection: entries
     sources: [delta, sgv]
@@ -30,33 +45,39 @@ inputs:
       written by one site only; everyone else's is recomputed from `sgv`.
     confidence: high
   - input: glucoseStatus.shortAvgDelta
+    algorithm: oref0
     kind: derivable
     collection: entries
     sources: [sgv]
     note: Never stored; recomputable from the sgv series.
     confidence: high
   - input: glucoseStatus.longAvgDelta
+    algorithm: oref0
     kind: derivable
     collection: entries
     sources: [sgv]
     confidence: high
   - input: glucoseStatus.noise
+    algorithm: oref0
     kind: recorded
     collection: entries
     sources: [noise]
     note: Written by one site in this corpus; absent elsewhere.
     confidence: high
   - input: glucoseStatus.direction
+    algorithm: oref0
     kind: recorded
     collection: entries
     sources: [direction, trend]
     confidence: high
   - input: glucoseStatus.timestamp
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.suggested.timestamp, openaps.enacted.timestamp]
     confidence: high
   - input: glucoseStatus.glucoseUnit
+    algorithm: oref0
     kind: recorded
     collection: profile
     sources: [units, "store.{}.units"]
@@ -64,26 +85,31 @@ inputs:
 
   # ── insulin on board ──────────────────────────────────────────────
   - input: iob.iob
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.iob.iob, loop.iob.iob]
     confidence: high
   - input: iob.basalIob
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.iob.basaliob, loop.iob.basaliob]
     confidence: high
   - input: iob.bolusIob
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.iob.bolusiob]
     confidence: high
   - input: iob.activity
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.iob.activity]
     confidence: high
   - input: iob.iobWithZeroTemp.iob
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.iob.iobWithZeroTemp.iob]
@@ -92,17 +118,20 @@ inputs:
       low-glucose suspend. Recorded by oref0 derivatives only.
     confidence: high
   - input: iob.iobWithZeroTemp.activity
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.iob.iobWithZeroTemp.activity]
     confidence: high
   - input: iob.iobWithZeroTemp.bolussnooze
+    algorithm: oref0
     kind: absent
     collection: devicestatus
     sources: []
     note: Present in replay vectors; not observed in any corpus document.
     confidence: medium
   - input: iob.bolusSnooze
+    algorithm: oref0
     kind: absent
     collection: devicestatus
     sources: []
@@ -110,12 +139,14 @@ inputs:
 
   # ── current temp basal ────────────────────────────────────────────
   - input: currentTemp.rate
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.iob.lastTemp.rate]
     note: Also derivable from the treatments Temp Basal history.
     confidence: high
   - input: currentTemp.duration
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.iob.lastTemp.duration]
@@ -123,6 +154,7 @@ inputs:
 
   # ── profile: therapy settings at the moment of the decision ───────
   - input: profile.sensitivity
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.suggested.ISF, openaps.enacted.ISF]
@@ -132,11 +164,13 @@ inputs:
       dynamic-ISF modify.
     confidence: high
   - input: profile.carbRatio
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.suggested.CR, openaps.enacted.CR]
     confidence: high
   - input: profile.basalRate
+    algorithm: oref0
     kind: derivable
     collection: profile
     sources: ["store.{}.basal[].value"]
@@ -145,11 +179,13 @@ inputs:
       profile switch or percentage, is not recorded as a scalar.
     confidence: medium
   - input: profile.dia
+    algorithm: oref0
     kind: recorded
     collection: profile
     sources: ["store.{}.dia"]
     confidence: high
   - input: profile.targetLow
+    algorithm: oref0
     kind: derivable
     collection: profile
     sources: ["store.{}.target_low[].value"]
@@ -158,11 +194,13 @@ inputs:
       losing the low/high distinction a replay needs.
     confidence: medium
   - input: profile.targetHigh
+    algorithm: oref0
     kind: derivable
     collection: profile
     sources: ["store.{}.target_high[].value"]
     confidence: medium
   - input: profile.maxIob
+    algorithm: oref0
     kind: absent
     collection: devicestatus
     sources: []
@@ -172,6 +210,7 @@ inputs:
       Nightscout. A replay must assume it.
     confidence: high
   - input: profile.maxBasal
+    algorithm: oref0
     kind: partial
     collection: profile
     sources: [loopSettings.maximumBasalRatePerHour]
@@ -180,11 +219,13 @@ inputs:
       Trio record no equivalent.
     confidence: high
   - input: profile.maxDailyBasal
+    algorithm: oref0
     kind: derivable
     collection: profile
     sources: ["store.{}.basal[].value"]
     confidence: medium
   - input: profile.suspendThreshold
+    algorithm: oref0
     kind: partial
     collection: profile
     sources: [loopSettings.minimumBGGuard]
@@ -194,11 +235,13 @@ inputs:
       than the configured one.
     confidence: medium
   - input: profile.dosingStrategy
+    algorithm: oref0
     kind: partial
     collection: profile
     sources: [loopSettings.dosingStrategy]
     confidence: high
   - input: profile.units
+    algorithm: oref0
     kind: recorded
     collection: profile
     sources: [units, "store.{}.units"]
@@ -206,21 +249,25 @@ inputs:
 
   # ── meal state ────────────────────────────────────────────────────
   - input: mealData.cob
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.suggested.COB, openaps.enacted.COB, loop.cob.cob]
     confidence: high
   - input: mealData.carbs
+    algorithm: oref0
     kind: derivable
     collection: treatments
     sources: [carbs]
     confidence: high
   - input: mealData.lastCarbTime
+    algorithm: oref0
     kind: derivable
     collection: treatments
     sources: [carbs, created_at]
     confidence: high
   - input: mealData.slopeFromMaxDeviation
+    algorithm: oref0
     kind: absent
     collection: devicestatus
     sources: []
@@ -229,11 +276,13 @@ inputs:
       replay must recompute it from the glucose series and may not agree.
     confidence: high
   - input: mealData.slopeFromMinDeviation
+    algorithm: oref0
     kind: absent
     collection: devicestatus
     sources: []
     confidence: high
   - input: mealData.mealCOB
+    algorithm: oref0
     kind: absent
     collection: devicestatus
     sources: []
@@ -241,11 +290,13 @@ inputs:
 
   # ── autosens and run flags ────────────────────────────────────────
   - input: autosensData.ratio
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [openaps.suggested.sensitivityRatio, openaps.enacted.sensitivityRatio]
     confidence: high
   - input: microBolusAllowed
+    algorithm: oref0
     kind: absent
     collection: devicestatus
     sources: []
@@ -256,12 +307,163 @@ inputs:
       forbade it.
     confidence: high
   - input: flatBGsDetected
+    algorithm: oref0
     kind: absent
     collection: devicestatus
     sources: []
     confidence: high
   - input: clock
+    algorithm: oref0
     kind: recorded
     collection: devicestatus
     sources: [created_at, mills]
     confidence: high
+
+  # ── Loop's native algorithm inputs ────────────────────────────────
+  # From AlgorithmInput.swift. Loop's therapy data and safety limits reach
+  # Nightscout; its algorithm *behaviour* switches do not, and several of
+  # them change the delivered dose.
+  - input: predictionStart
+    algorithm: loop
+    kind: recorded
+    collection: devicestatus
+    sources: [created_at, loop.predicted.startDate]
+    confidence: high
+  - input: glucoseHistory
+    algorithm: loop
+    kind: derivable
+    collection: entries
+    sources: [sgv, date]
+    confidence: high
+  - input: doses
+    algorithm: loop
+    kind: derivable
+    collection: treatments
+    sources: [insulin, absolute, rate, duration, created_at]
+    confidence: high
+  - input: carbEntries
+    algorithm: loop
+    kind: derivable
+    collection: treatments
+    sources: [carbs, absorptionTime, created_at]
+    confidence: high
+  - input: basal
+    algorithm: loop
+    kind: derivable
+    collection: profile
+    sources: ["store.{}.basal[].value"]
+    confidence: high
+  - input: sensitivity
+    algorithm: loop
+    kind: derivable
+    collection: profile
+    sources: ["store.{}.sens[].value"]
+    confidence: high
+  - input: carbRatio
+    algorithm: loop
+    kind: derivable
+    collection: profile
+    sources: ["store.{}.carbratio[].value"]
+    confidence: high
+  - input: target
+    algorithm: loop
+    kind: derivable
+    collection: profile
+    sources: ["store.{}.target_low[].value", "store.{}.target_high[].value"]
+    note: >-
+      Overrides change the effective target, and the override is recorded
+      separately (devicestatus.override, treatments Temporary Override), so
+      reconstructing the target timeline means replaying both.
+    confidence: medium
+  - input: suspendThreshold
+    algorithm: loop
+    kind: recorded
+    collection: profile
+    sources: [loopSettings.minimumBGGuard]
+    confidence: high
+  - input: maxBolus
+    algorithm: loop
+    kind: recorded
+    collection: profile
+    sources: [loopSettings.maximumBolus]
+    confidence: high
+  - input: maxBasalRate
+    algorithm: loop
+    kind: recorded
+    collection: profile
+    sources: [loopSettings.maximumBasalRatePerHour]
+    confidence: high
+  - input: recommendationType
+    algorithm: loop
+    kind: partial
+    collection: profile
+    sources: [loopSettings.dosingStrategy]
+    note: >-
+      `dosingStrategy` distinguishes automaticBolus from tempBasalOnly, which
+      covers the common case but is not the same enumeration.
+    confidence: medium
+  - input: automaticBolusApplicationFactor
+    algorithm: loop
+    kind: absent
+    collection: profile
+    sources: []
+    note: >-
+      The fraction of a recommended bolus that is actually delivered,
+      defaulting to 0.4. It scales every automatic dose Loop gives, is
+      user-adjustable in some builds, and is recorded nowhere. Two sites
+      with identical therapy settings and identical glucose will dose
+      differently, and nothing in Nightscout says why.
+    confidence: high
+  - input: carbAbsorptionModel
+    algorithm: loop
+    kind: absent
+    collection: profile
+    sources: []
+    note: >-
+      Piecewise-linear versus nonlinear carb absorption changes the carb
+      effect curve, and so the dose.
+    confidence: high
+  - input: recommendationInsulinModel
+    algorithm: loop
+    kind: absent
+    collection: profile
+    sources: []
+    note: >-
+      Which insulin activity curve the recommendation uses. `insulinType` on
+      a treatment names the product, which is related but not the same
+      choice.
+    confidence: high
+  - input: useIntegralRetrospectiveCorrection
+    algorithm: loop
+    kind: absent
+    collection: profile
+    sources: []
+    note: >-
+      Integral RC is a materially different correction behaviour and a
+      user-facing toggle.
+    confidence: high
+  - input: includePositiveVelocityAndRC
+    algorithm: loop
+    kind: absent
+    collection: profile
+    sources: []
+    confidence: high
+  - input: useMidAbsorptionISF
+    algorithm: loop
+    kind: absent
+    collection: profile
+    sources: []
+    confidence: high
+  - input: maxActiveInsulinMultiplier
+    algorithm: loop
+    kind: absent
+    collection: profile
+    sources: []
+    note: Loop's IOB ceiling, as a multiple of maxBolus. Defaults to 2.
+    confidence: high
+  - input: gradualTransitionsThreshold
+    algorithm: loop
+    kind: absent
+    collection: profile
+    sources: []
+    confidence: medium

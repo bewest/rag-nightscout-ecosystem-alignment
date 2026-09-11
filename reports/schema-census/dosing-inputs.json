@@ -1,19 +1,34 @@
 {
  "generated_by": "tools/nsschema/dosing_inputs.py",
  "mapping": "specs/nsschema/dosing-input-sources.yaml",
- "inputs": 40,
+ "inputs": 60,
  "by_kind": {
-  "recorded": 20,
-  "derivable": 9,
-  "absent": 8,
-  "partial": 3
+  "recorded": 24,
+  "derivable": 16,
+  "absent": 16,
+  "partial": 4
+ },
+ "by_algorithm": {
+  "loop": {
+   "recorded": 4,
+   "derivable": 7,
+   "partial": 1,
+   "absent": 8
+  },
+  "oref0": {
+   "recorded": 20,
+   "derivable": 9,
+   "absent": 8,
+   "partial": 3
+  }
  },
  "by_verdict": {
-  "confirmed": 40
+  "confirmed": 60
  },
  "rows": [
   {
    "input": "glucoseStatus.glucose",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -37,6 +52,7 @@
   },
   {
    "input": "glucoseStatus.delta",
+   "algorithm": "oref0",
    "kind": "derivable",
    "verdict": "confirmed",
    "collection": "entries",
@@ -60,6 +76,7 @@
   },
   {
    "input": "glucoseStatus.shortAvgDelta",
+   "algorithm": "oref0",
    "kind": "derivable",
    "verdict": "confirmed",
    "collection": "entries",
@@ -78,6 +95,7 @@
   },
   {
    "input": "glucoseStatus.longAvgDelta",
+   "algorithm": "oref0",
    "kind": "derivable",
    "verdict": "confirmed",
    "collection": "entries",
@@ -96,6 +114,7 @@
   },
   {
    "input": "glucoseStatus.noise",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "entries",
@@ -114,6 +133,7 @@
   },
   {
    "input": "glucoseStatus.direction",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "entries",
@@ -137,6 +157,7 @@
   },
   {
    "input": "glucoseStatus.timestamp",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -160,6 +181,7 @@
   },
   {
    "input": "glucoseStatus.glucoseUnit",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "profile",
@@ -183,6 +205,7 @@
   },
   {
    "input": "iob.iob",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -206,6 +229,7 @@
   },
   {
    "input": "iob.basalIob",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -226,6 +250,7 @@
   },
   {
    "input": "iob.bolusIob",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -244,6 +269,7 @@
   },
   {
    "input": "iob.activity",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -262,6 +288,7 @@
   },
   {
    "input": "iob.iobWithZeroTemp.iob",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -280,6 +307,7 @@
   },
   {
    "input": "iob.iobWithZeroTemp.activity",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -298,6 +326,7 @@
   },
   {
    "input": "iob.iobWithZeroTemp.bolussnooze",
+   "algorithm": "oref0",
    "kind": "absent",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -310,6 +339,7 @@
   },
   {
    "input": "iob.bolusSnooze",
+   "algorithm": "oref0",
    "kind": "absent",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -322,6 +352,7 @@
   },
   {
    "input": "currentTemp.rate",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -340,6 +371,7 @@
   },
   {
    "input": "currentTemp.duration",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -358,6 +390,7 @@
   },
   {
    "input": "profile.sensitivity",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -381,6 +414,7 @@
   },
   {
    "input": "profile.carbRatio",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -404,6 +438,7 @@
   },
   {
    "input": "profile.basalRate",
+   "algorithm": "oref0",
    "kind": "derivable",
    "verdict": "confirmed",
    "collection": "profile",
@@ -422,6 +457,7 @@
   },
   {
    "input": "profile.dia",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "profile",
@@ -440,6 +476,7 @@
   },
   {
    "input": "profile.targetLow",
+   "algorithm": "oref0",
    "kind": "derivable",
    "verdict": "confirmed",
    "collection": "profile",
@@ -458,6 +495,7 @@
   },
   {
    "input": "profile.targetHigh",
+   "algorithm": "oref0",
    "kind": "derivable",
    "verdict": "confirmed",
    "collection": "profile",
@@ -476,6 +514,7 @@
   },
   {
    "input": "profile.maxIob",
+   "algorithm": "oref0",
    "kind": "absent",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -488,6 +527,7 @@
   },
   {
    "input": "profile.maxBasal",
+   "algorithm": "oref0",
    "kind": "partial",
    "verdict": "confirmed",
    "collection": "profile",
@@ -506,6 +546,7 @@
   },
   {
    "input": "profile.maxDailyBasal",
+   "algorithm": "oref0",
    "kind": "derivable",
    "verdict": "confirmed",
    "collection": "profile",
@@ -524,6 +565,7 @@
   },
   {
    "input": "profile.suspendThreshold",
+   "algorithm": "oref0",
    "kind": "partial",
    "verdict": "confirmed",
    "collection": "profile",
@@ -542,6 +584,7 @@
   },
   {
    "input": "profile.dosingStrategy",
+   "algorithm": "oref0",
    "kind": "partial",
    "verdict": "confirmed",
    "collection": "profile",
@@ -560,6 +603,7 @@
   },
   {
    "input": "profile.units",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "profile",
@@ -583,6 +627,7 @@
   },
   {
    "input": "mealData.cob",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -611,6 +656,7 @@
   },
   {
    "input": "mealData.carbs",
+   "algorithm": "oref0",
    "kind": "derivable",
    "verdict": "confirmed",
    "collection": "treatments",
@@ -629,6 +675,7 @@
   },
   {
    "input": "mealData.lastCarbTime",
+   "algorithm": "oref0",
    "kind": "derivable",
    "verdict": "confirmed",
    "collection": "treatments",
@@ -652,6 +699,7 @@
   },
   {
    "input": "mealData.slopeFromMaxDeviation",
+   "algorithm": "oref0",
    "kind": "absent",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -664,6 +712,7 @@
   },
   {
    "input": "mealData.slopeFromMinDeviation",
+   "algorithm": "oref0",
    "kind": "absent",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -676,6 +725,7 @@
   },
   {
    "input": "mealData.mealCOB",
+   "algorithm": "oref0",
    "kind": "absent",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -688,6 +738,7 @@
   },
   {
    "input": "autosensData.ratio",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -711,6 +762,7 @@
   },
   {
    "input": "microBolusAllowed",
+   "algorithm": "oref0",
    "kind": "absent",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -723,6 +775,7 @@
   },
   {
    "input": "flatBGsDetected",
+   "algorithm": "oref0",
    "kind": "absent",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -735,6 +788,7 @@
   },
   {
    "input": "clock",
+   "algorithm": "oref0",
    "kind": "recorded",
    "verdict": "confirmed",
    "collection": "devicestatus",
@@ -751,6 +805,383 @@
    "best_site_count": 11,
    "best_doc_frequency": 1.0,
    "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "predictionStart",
+   "algorithm": "loop",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "devicestatus",
+   "sources_found": [
+    {
+     "path": "created_at",
+     "doc_frequency": 1.0,
+     "sites": 11
+    },
+    {
+     "path": "loop.predicted.startDate",
+     "doc_frequency": 0.850328,
+     "sites": 10
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "glucoseHistory",
+   "algorithm": "loop",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "entries",
+   "sources_found": [
+    {
+     "path": "sgv",
+     "doc_frequency": 0.998694,
+     "sites": 11
+    },
+    {
+     "path": "date",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "doses",
+   "algorithm": "loop",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "treatments",
+   "sources_found": [
+    {
+     "path": "insulin",
+     "doc_frequency": 1.0,
+     "sites": 11
+    },
+    {
+     "path": "absolute",
+     "doc_frequency": 0.548637,
+     "sites": 10
+    },
+    {
+     "path": "rate",
+     "doc_frequency": 0.548637,
+     "sites": 10
+    },
+    {
+     "path": "duration",
+     "doc_frequency": 0.910478,
+     "sites": 10
+    },
+    {
+     "path": "created_at",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "carbEntries",
+   "algorithm": "loop",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "treatments",
+   "sources_found": [
+    {
+     "path": "carbs",
+     "doc_frequency": 1.0,
+     "sites": 11
+    },
+    {
+     "path": "absorptionTime",
+     "doc_frequency": 0.017571,
+     "sites": 10
+    },
+    {
+     "path": "created_at",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "basal",
+   "algorithm": "loop",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "store.{}.basal[].value",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "sensitivity",
+   "algorithm": "loop",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "store.{}.sens[].value",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "carbRatio",
+   "algorithm": "loop",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "store.{}.carbratio[].value",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "target",
+   "algorithm": "loop",
+   "kind": "derivable",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "store.{}.target_low[].value",
+     "doc_frequency": 1.0,
+     "sites": 11
+    },
+    {
+     "path": "store.{}.target_high[].value",
+     "doc_frequency": 1.0,
+     "sites": 11
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 11,
+   "best_doc_frequency": 1.0,
+   "confidence": "medium",
+   "note": "Overrides change the effective target, and the override is recorded separately (devicestatus.override, treatments Temporary Override), so reconstructing the target timeline means replaying both."
+  },
+  {
+   "input": "suspendThreshold",
+   "algorithm": "loop",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "loopSettings.minimumBGGuard",
+     "doc_frequency": 0.990099,
+     "sites": 10
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 10,
+   "best_doc_frequency": 0.990099,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "maxBolus",
+   "algorithm": "loop",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "loopSettings.maximumBolus",
+     "doc_frequency": 0.990099,
+     "sites": 10
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 10,
+   "best_doc_frequency": 0.990099,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "maxBasalRate",
+   "algorithm": "loop",
+   "kind": "recorded",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "loopSettings.maximumBasalRatePerHour",
+     "doc_frequency": 0.990099,
+     "sites": 10
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 10,
+   "best_doc_frequency": 0.990099,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "recommendationType",
+   "algorithm": "loop",
+   "kind": "partial",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [
+    {
+     "path": "loopSettings.dosingStrategy",
+     "doc_frequency": 0.990099,
+     "sites": 10
+    }
+   ],
+   "sources_missing": [],
+   "best_site_count": 10,
+   "best_doc_frequency": 0.990099,
+   "confidence": "medium",
+   "note": "`dosingStrategy` distinguishes automaticBolus from tempBasalOnly, which covers the common case but is not the same enumeration."
+  },
+  {
+   "input": "automaticBolusApplicationFactor",
+   "algorithm": "loop",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "high",
+   "note": "The fraction of a recommended bolus that is actually delivered, defaulting to 0.4. It scales every automatic dose Loop gives, is user-adjustable in some builds, and is recorded nowhere. Two sites with identical therapy settings and identical glucose will dose differently, and nothing in Nightscout says why."
+  },
+  {
+   "input": "carbAbsorptionModel",
+   "algorithm": "loop",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "high",
+   "note": "Piecewise-linear versus nonlinear carb absorption changes the carb effect curve, and so the dose."
+  },
+  {
+   "input": "recommendationInsulinModel",
+   "algorithm": "loop",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "high",
+   "note": "Which insulin activity curve the recommendation uses. `insulinType` on a treatment names the product, which is related but not the same choice."
+  },
+  {
+   "input": "useIntegralRetrospectiveCorrection",
+   "algorithm": "loop",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "high",
+   "note": "Integral RC is a materially different correction behaviour and a user-facing toggle."
+  },
+  {
+   "input": "includePositiveVelocityAndRC",
+   "algorithm": "loop",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "useMidAbsorptionISF",
+   "algorithm": "loop",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "high",
+   "note": null
+  },
+  {
+   "input": "maxActiveInsulinMultiplier",
+   "algorithm": "loop",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "high",
+   "note": "Loop's IOB ceiling, as a multiple of maxBolus. Defaults to 2."
+  },
+  {
+   "input": "gradualTransitionsThreshold",
+   "algorithm": "loop",
+   "kind": "absent",
+   "verdict": "confirmed",
+   "collection": "profile",
+   "sources_found": [],
+   "sources_missing": [],
+   "best_site_count": 0,
+   "best_doc_frequency": 0.0,
+   "confidence": "medium",
    "note": null
   }
  ]

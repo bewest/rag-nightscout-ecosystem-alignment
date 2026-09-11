@@ -1162,3 +1162,27 @@ def test_the_controller_role_is_not_detected_by_what_it_is_asked_to_write():
     detectors = controller["detect_any"]
     assert any(d["collection"] == "treatments" for d in detectors), \
         "the controller role must be detectable from evidence of dosing"
+
+
+def test_both_algorithm_input_sets_are_present():
+    mapping = yaml.safe_load(
+        (corpus.repo_root() / dosing_inputs.MAP).read_text())
+    algorithms = {e.get("algorithm") for e in mapping["inputs"]}
+    assert algorithms == {"oref0", "loop"}, algorithms
+
+
+def test_loop_inputs_match_the_algorithm_protocol():
+    # The Loop set is source-derived from AlgorithmInput.swift. If that
+    # protocol gains or loses a member, this map is stale.
+    protocol = (corpus.repo_root() / "externals" / "LoopAlgorithm" / "Sources" /
+                "LoopAlgorithm" / "AlgorithmInput.swift")
+    if not protocol.is_file():
+        pytest.skip("externals/LoopAlgorithm not checked out")
+    declared = set(re.findall(r'var\s+(\w+)\s*:\s*[^\n]+\{\s*get\s*\}',
+                              protocol.read_text()))
+    mapping = yaml.safe_load(
+        (corpus.repo_root() / dosing_inputs.MAP).read_text())
+    mapped = {e["input"] for e in mapping["inputs"]
+              if e.get("algorithm") == "loop"}
+    missing = declared - mapped
+    assert not missing, f"AlgorithmInput members with no source mapping: {sorted(missing)}"

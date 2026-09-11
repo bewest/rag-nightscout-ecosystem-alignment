@@ -26,7 +26,7 @@ on which controller produced the data.
 
 import argparse
 import json
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 import yaml
@@ -78,6 +78,7 @@ def check(mapping, censuses):
 
         rows.append({
             "input": entry["input"],
+            "algorithm": entry.get("algorithm", "oref0"),
             "kind": claimed,
             "verdict": verdict,
             "collection": collection,
@@ -105,18 +106,26 @@ def main(argv=None):
     censuses = load_census(root, args.census_dir)
     rows = check(mapping, censuses)
 
+    by_algorithm = defaultdict(Counter)
+    for row in rows:
+        by_algorithm[row["algorithm"]][row["kind"]] += 1
     kinds = Counter(r["kind"] for r in rows)
     verdicts = Counter(r["verdict"] for r in rows)
     print(f"{len(rows)} dosing inputs: " +
           "  ".join(f"{k}={kinds[k]}" for k in KIND_ORDER if kinds[k]))
     print("  claim checks: " + "  ".join(f"{k}={v}" for k, v in sorted(verdicts.items())))
 
+    for algorithm, counts in sorted(by_algorithm.items()):
+        print(f"    {algorithm:6s} " +
+              "  ".join(f"{k}={counts[k]}" for k in KIND_ORDER if counts[k]))
+
     print("\n  not fully recoverable:")
-    for row in rows:
+    for row in sorted(rows, key=lambda r: (r["algorithm"], r["input"])):
         if row["kind"] in ("absent", "partial"):
             where = (row["sources_found"][0]["path"] + f" ({row['sources_found'][0]['sites']} sites)"
                      if row["sources_found"] else "nothing")
-            print(f"    {row['kind']:9s} {row['input']:34s} {where}")
+            print(f"    {row['algorithm']:6s} {row['kind']:9s} "
+                  f"{row['input']:34s} {where}")
 
     problems = [r for r in rows if r["verdict"] != "confirmed"]
     if problems:
@@ -130,6 +139,7 @@ def main(argv=None):
         "mapping": MAP,
         "inputs": len(rows),
         "by_kind": dict(kinds),
+        "by_algorithm": {a: dict(c) for a, c in sorted(by_algorithm.items())},
         "by_verdict": dict(verdicts),
         "rows": rows,
     }
