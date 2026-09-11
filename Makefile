@@ -667,6 +667,7 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
         schema-quirks schema-quirks-check schema-decompose \
         schema-nocturne schema-dosing schema-vendors schema-observability \
         schema-sync-model schema-sync-cost schema-effects schema-sensitivity \
+        schema-primitives schema-settings \
         schema-test schema-clean
 
 PY ?= python3
@@ -773,6 +774,14 @@ schema-effects:
 ## schema-sensitivity: derive field sensitivity labels and projection coverage
 schema-sensitivity:
 	@$(NSSCHEMA).sensitivity
+
+## schema-primitives: generate the primitive catalogue with evidence grading
+schema-primitives:
+	@$(NSSCHEMA).primitives
+
+## schema-settings: generate the ControllerSettings document schema
+schema-settings:
+	@$(NSSCHEMA).settings_schema
 
 ## schema-drift: check tools/ns2parquet against the measured wire model
 schema-drift:

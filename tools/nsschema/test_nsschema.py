@@ -1472,3 +1472,72 @@ def test_the_proposal_headline_numbers_match_their_reports():
     assert treatments["total"] == 3415
     assert treatments["by_verdict"]["effect+motivation"] == 2934
     assert treatments["by_verdict"]["motivation-only"] == 481
+
+
+# ── primitive catalogue and settings schema ─────────────────────────────
+
+from nsschema import primitives, settings_schema  # noqa: E402
+
+
+def test_every_named_primitive_is_defined():
+    # Five documents referenced `decomposesTo: [...]` and nothing defined
+    # those types. The catalogue closes that, so the registrations and the
+    # catalogue must not drift apart.
+    root = corpus.repo_root()
+    catalogue, _gaps = primitives.build(root)
+    named = set()
+    for path in (root / "specs" / "sync" / "registrations").glob("*.yaml"):
+        registration = yaml.safe_load(path.read_text())
+        for document in registration["spec"]["documents"]:
+            named.update(document["decomposesTo"])
+    missing = named - set(catalogue)
+    assert not missing, f"registrations name undefined primitives: {sorted(missing)}"
+
+
+def test_catalogue_grades_every_field():
+    root = corpus.repo_root()
+    catalogue, _ = primitives.build(root)
+    for name, primitive in catalogue.items():
+        for field in primitive["fields"]:
+            assert field["evidence"] in ("measured", "declared"), (name, field)
+            assert field["why"], (name, field["name"])
+
+
+def test_decomposer_assignments_are_read_from_source():
+    # Name-level matching under-counted: V4 renames on the way in (Mgdl from
+    # sgv) and a generic name like `programmed` was suppressed. The
+    # decomposer states the mapping outright, so it is the better evidence.
+    root = corpus.repo_root()
+    assignments = primitives._decomposer_sources(root)
+    assert "Sgv" in assignments.get("Mgdl", set())
+    assert "Basal" in assignments.get("Entries", set())
+
+
+def test_settings_schema_is_valid_and_accepts_a_partial_publication():
+    root = corpus.repo_root()
+    schema, _unmapped, _excluded = settings_schema.build(root)
+    jsonschema.Draft202012Validator.check_schema(schema)
+    # A controller publishes what it has; absent is not the same as default.
+    jsonschema.Draft202012Validator(schema).validate({
+        "effectiveFrom": "2026-09-11T08:00:00Z",
+        "controller": {"product": "Loop", "version": "3.12.1"},
+        "settings": {"maxBolus": 9.0},
+    })
+
+
+def test_settings_schema_requires_a_build_version():
+    root = corpus.repo_root()
+    schema, _, _ = settings_schema.build(root)
+    controller = schema["properties"]["controller"]
+    assert "version" in controller["required"], (
+        "algorithm behaviour changes between releases; a setting without a "
+        "build cannot be replayed against the right code")
+
+
+def test_per_cycle_state_is_kept_out_of_settings():
+    root = corpus.repo_root()
+    schema, _unmapped, excluded = settings_schema.build(root)
+    properties = schema["properties"]["settings"]["properties"]
+    assert excluded, "the settings/state boundary must be stated, not implied"
+    for name in ("flatBGsDetected", "mealCOB", "slopeFromMaxDeviation"):
+        assert name not in properties, f"{name} is per-cycle state"

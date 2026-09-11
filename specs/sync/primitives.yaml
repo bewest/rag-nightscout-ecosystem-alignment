@@ -1,0 +1,1524 @@
+version: 0.1-draft
+generated_by: tools/nsschema/primitives.py
+status: 'Draft. Grades are evidence, not endorsement: `measured` means a wire path in this corpus
+  populates the field, `declared` that a typed model has it and this corpus does not show it, `proposed`
+  that we are asking for it.'
+grades:
+  measured: 84
+  declared: 50
+primitives:
+  SensorGlucose:
+    group: observation
+    description: A CGM reading.
+    typed_by: Nocturne V4 SensorGlucose.cs
+    fields:
+    - name: Mgdl
+      wire_name: mgdl
+      type: double
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Mbg
+      mapped_from:
+      - Mbg
+      - Sgv
+    - name: Mmol
+      wire_name: mmol
+      type: double
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+    - name: Direction
+      wire_name: direction
+      type: GlucoseDirection
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Direction
+      mapped_from:
+      - Direction
+      observed:
+      - collection: entries
+        path: direction
+        doc_frequency: 0.845861
+        sites: 11
+    - name: Trend
+      wire_name: trend
+      type: GlucoseTrend
+      nullable: true
+      evidence: measured
+      why: entries.trend on 10 sites
+      observed:
+      - collection: entries
+        path: trend
+        doc_frequency: 0.716423
+        sites: 10
+    - name: TrendRate
+      wire_name: trend_rate
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from TrendRate
+      mapped_from:
+      - TrendRate
+      observed:
+      - collection: entries
+        path: trendRate
+        doc_frequency: 0.459915
+        sites: 10
+    - name: Noise
+      wire_name: noise
+      type: int
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Noise
+      mapped_from:
+      - Noise
+      observed:
+      - collection: entries
+        path: noise
+        doc_frequency: 0.06506
+        sites: 1
+    - name: Filtered
+      wire_name: filtered
+      type: double
+      nullable: true
+      evidence: measured
+      why: entries.filtered on 2 sites
+      observed:
+      - collection: entries
+        path: filtered
+        doc_frequency: 0.129439
+        sites: 2
+    - name: Unfiltered
+      wire_name: unfiltered
+      type: double
+      nullable: true
+      evidence: measured
+      why: entries.unfiltered on 2 sites
+      observed:
+      - collection: entries
+        path: unfiltered
+        doc_frequency: 0.129439
+        sites: 2
+    - name: Delta
+      wire_name: delta
+      type: double
+      nullable: true
+      evidence: measured
+      why: entries.delta on 1 sites
+      observed:
+      - collection: entries
+        path: delta
+        doc_frequency: 0.0358
+        sites: 1
+    - name: GlucoseProcessing
+      wire_name: glucose_processing
+      type: GlucoseProcessing
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+    - name: SmoothedMgdl
+      wire_name: smoothed_mgdl
+      type: double
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+    - name: SmoothedMmol
+      wire_name: smoothed_mmol
+      type: double
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+    - name: UnsmoothedMgdl
+      wire_name: unsmoothed_mgdl
+      type: double
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+    - name: UnsmoothedMmol
+      wire_name: unsmoothed_mmol
+      type: double
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+  BGCheck:
+    group: observation
+    description: A fingerstick or meter reading.
+    typed_by: Nocturne V4 BGCheck.cs
+    fields:
+    - name: Glucose
+      wire_name: glucose
+      type: double
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Glucose
+      mapped_from:
+      - Glucose
+      observed:
+      - collection: entries
+        path: glucose
+        doc_frequency: 0.06438
+        sites: 1
+      - collection: treatments
+        path: glucose
+        doc_frequency: 0.000436
+        sites: 1
+    - name: GlucoseType
+      wire_name: glucose_type
+      type: GlucoseType
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from GlucoseType
+      mapped_from:
+      - GlucoseType
+      observed:
+      - collection: treatments
+        path: glucoseType
+        doc_frequency: 0.000436
+        sites: 1
+    - name: Units
+      wire_name: units
+      type: GlucoseUnit
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Units
+      mapped_from:
+      - Units
+    - name: Mgdl
+      wire_name: mgdl
+      type: double
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Mbg
+      mapped_from:
+      - Mbg
+      - Sgv
+    - name: Mmol
+      wire_name: mmol
+      type: double
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+  Bolus:
+    group: delivery
+    description: A discrete insulin dose, manual or algorithm-initiated.
+    typed_by: Nocturne V4 Bolus.cs
+    fields:
+    - name: Insulin
+      wire_name: insulin
+      type: double
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Insulin
+      mapped_from:
+      - Insulin
+      observed:
+      - collection: treatments
+        path: insulin
+        doc_frequency: 1.0
+        sites: 11
+    - name: Programmed
+      wire_name: programmed
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Programmed
+      mapped_from:
+      - Programmed
+    - name: Delivered
+      wire_name: delivered
+      type: double
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from InsulinDelivered, which this corpus does not carry
+      mapped_from:
+      - InsulinDelivered
+    - name: BolusType
+      wire_name: bolus_type
+      type: BolusType
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from BolusType, which this corpus does not carry
+      mapped_from:
+      - BolusType
+    - name: Automatic
+      wire_name: automatic
+      type: bool
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Automatic
+      mapped_from:
+      - Automatic
+      observed:
+      - collection: treatments
+        path: automatic
+        doc_frequency: 0.812703
+        sites: 10
+    - name: Kind
+      wire_name: kind
+      type: BolusKind
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+    - name: Duration
+      wire_name: duration
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Duration
+      mapped_from:
+      - Duration
+    - name: InsulinType
+      wire_name: insulin_type
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from InsulinType
+      mapped_from:
+      - InsulinType
+      observed:
+      - collection: treatments
+        path: insulinType
+        doc_frequency: 0.804111
+        sites: 10
+    - name: InsulinContext
+      wire_name: insulin_context
+      type: TreatmentInsulinContext
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+    - name: Unabsorbed
+      wire_name: unabsorbed
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Unabsorbed
+      mapped_from:
+      - Unabsorbed
+      observed:
+      - collection: treatments
+        path: unabsorbed
+        doc_frequency: 0.3526
+        sites: 10
+    - name: PumpRecordId
+      wire_name: pump_record_id
+      type: string
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from PumpId.ToString, which this corpus does not carry
+      mapped_from:
+      - PumpId.ToString
+    - name: BolusCalculationId
+      wire_name: bolus_calculation_id
+      type: Guid
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+    - name: ApsSnapshotId
+      wire_name: aps_snapshot_id
+      type: Guid
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+  TempBasal:
+    group: delivery
+    description: A temporary basal rate for a bounded interval.
+    typed_by: Nocturne V4 TempBasal.cs
+    fields:
+    - name: StartTimestamp
+      wire_name: start_timestamp
+      type: DateTime
+      nullable: false
+      evidence: declared
+      why: decomposer maps it from FromUnixTimeMilliseconds, which this corpus does not carry
+      mapped_from:
+      - FromUnixTimeMilliseconds
+    - name: EndTimestamp
+      wire_name: end_timestamp
+      type: DateTime
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Duration
+      mapped_from:
+      - Duration
+      - Override
+    - name: StartMills
+      wire_name: start_mills
+      type: long
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+    - name: EndMills
+      wire_name: end_mills
+      type: long
+      nullable: true
+      evidence: measured
+      why: treatments.endmills on 1 sites
+      observed:
+      - &id006
+        collection: treatments
+        path: endmills
+        doc_frequency: 5.0e-06
+        sites: 1
+    - name: UtcOffset
+      wire_name: utc_offset
+      type: int
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from UtcOffset
+      mapped_from:
+      - UtcOffset
+      observed:
+      - collection: devicestatus
+        path: utcOffset
+        doc_frequency: 1.0
+        sites: 11
+      - collection: entries
+        path: utcOffset
+        doc_frequency: 1.0
+        sites: 11
+    - name: Device
+      wire_name: device
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Device
+      mapped_from:
+      - Device
+      - EnteredBy
+    - name: App
+      wire_name: app
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from EnteredBy
+      mapped_from:
+      - App
+      - EnteredBy
+    - name: ModifiedAt
+      wire_name: modified_at
+      type: DateTime
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+    - name: Rate
+      wire_name: rate
+      type: double
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Absolute
+      mapped_from:
+      - Absolute
+    - name: ScheduledRate
+      wire_name: scheduled_rate
+      type: double
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+    - name: Origin
+      wire_name: origin
+      type: TempBasalOrigin
+      nullable: false
+      evidence: declared
+      why: decomposer maps it from TempBasalOrigin.Manual, which this corpus does not carry
+      mapped_from:
+      - TempBasalOrigin.Manual
+    - name: PumpRecordId
+      wire_name: pump_record_id
+      type: string
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from PumpId.ToString, which this corpus does not carry
+      mapped_from:
+      - PumpId.ToString
+    - name: ApsSnapshotId
+      wire_name: aps_snapshot_id
+      type: Guid
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+    - name: InsulinContext
+      wire_name: insulin_context
+      type: TreatmentInsulinContext
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+  CarbIntake:
+    group: delivery
+    description: A carbohydrate entry.
+    typed_by: Nocturne V4 CarbIntake.cs
+    fields:
+    - name: Carbs
+      wire_name: carbs
+      type: double
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Carbs
+      mapped_from:
+      - Carbs
+      observed:
+      - collection: treatments
+        path: carbs
+        doc_frequency: 1.0
+        sites: 11
+    - name: CarbTime
+      wire_name: carb_time
+      type: double
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from CarbTime, which this corpus does not carry
+      mapped_from:
+      - CarbTime
+    - name: AbsorptionTime
+      wire_name: absorption_time
+      type: int
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from AbsorptionTime
+      mapped_from:
+      - AbsorptionTime
+      observed:
+      - collection: treatments
+        path: absorptionTime
+        doc_frequency: 0.017571
+        sites: 10
+    - name: FatGrams
+      wire_name: fat_grams
+      type: double
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+    - name: ProteinGrams
+      wire_name: protein_grams
+      type: double
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+  ApsSnapshot:
+    group: decision
+    description: 'One controller cycle: the state it saw and what it decided. The record a replay
+      is checked against.'
+    typed_by: Nocturne V4 ApsSnapshot.cs
+    fields:
+    - name: AidAlgorithm
+      wire_name: aid_algorithm
+      type: AidAlgorithm
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from AidAlgorithm.Loop
+      mapped_from:
+      - AidAlgorithm.Loop
+    - name: Iob
+      wire_name: iob
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Loop
+      mapped_from:
+      - Loop
+      - OpenAps.Iob.Iob
+      - Pump.Iob.Iob
+      observed:
+      - &id001
+        collection: devicestatus
+        path: loop.iob
+        doc_frequency: 0.850575
+        sites: 10
+      - &id002
+        collection: devicestatus
+        path: loop.iob.iob
+        doc_frequency: 0.850575
+        sites: 10
+    - name: BasalIob
+      wire_name: basal_iob
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Loop.Iob.BasalIob
+      mapped_from:
+      - Loop.Iob.BasalIob
+      - OpenAps.Iob.BasalIob
+      observed:
+      - collection: devicestatus
+        path: openaps.iob.basaliob
+        doc_frequency: 0.10522
+        sites: 1
+      - collection: devicestatus
+        path: openaps.iob.iobWithZeroTemp.basaliob
+        doc_frequency: 0.10522
+        sites: 1
+    - name: BolusIob
+      wire_name: bolus_iob
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from OpenAps.Iob.BolusIob
+      mapped_from:
+      - OpenAps.Iob.BolusIob
+      - Pump.Iob.BolusIob
+      observed:
+      - &id003
+        collection: devicestatus
+        path: openaps.iob.bolusiob
+        doc_frequency: 0.10522
+        sites: 1
+      - &id004
+        collection: devicestatus
+        path: openaps.iob.iobWithZeroTemp.bolusiob
+        doc_frequency: 0.10522
+        sites: 1
+    - name: Cob
+      wire_name: cob
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Loop.Cob.Cob
+      mapped_from:
+      - Loop.Cob.Cob
+      - OpenAps.Cob
+      observed:
+      - collection: devicestatus
+        path: loop.cob
+        doc_frequency: 0.850574
+        sites: 10
+      - collection: devicestatus
+        path: loop.cob.cob
+        doc_frequency: 0.850574
+        sites: 10
+    - name: CurrentBg
+      wire_name: current_bg
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Bg
+      mapped_from:
+      - Bg
+      - Loop.Predicted.Values.FirstOrDefault
+    - name: EventualBg
+      wire_name: eventual_bg
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from EventualBG
+      mapped_from:
+      - EventualBG
+      - Loop.Predicted.Values.LastOrDefault
+      observed:
+      - collection: devicestatus
+        path: openaps.enacted.eventualBG
+        doc_frequency: 0.105117
+        sites: 1
+      - collection: devicestatus
+        path: openaps.suggested.eventualBG
+        doc_frequency: 0.105193
+        sites: 1
+    - name: TargetBg
+      wire_name: target_bg
+      type: double
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from TargetBG, which this corpus does not carry
+      mapped_from:
+      - TargetBG
+    - name: RecommendedBolus
+      wire_name: recommended_bolus
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from InsulinReq
+      mapped_from:
+      - InsulinReq
+      - Loop.RecommendedBolus
+      observed:
+      - collection: devicestatus
+        path: loop.recommendedBolus
+        doc_frequency: 0.850323
+        sites: 10
+      - collection: devicestatus
+        path: openaps.recommendedBolus
+        doc_frequency: 0.059058
+        sites: 1
+    - name: SensitivityRatio
+      wire_name: sensitivity_ratio
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from SensitivityRatio
+      mapped_from:
+      - SensitivityRatio
+      observed:
+      - collection: devicestatus
+        path: openaps.enacted.sensitivityRatio
+        doc_frequency: 0.105139
+        sites: 1
+      - collection: devicestatus
+        path: openaps.suggested.sensitivityRatio
+        doc_frequency: 0.10523
+        sites: 1
+    - name: Enacted
+      wire_name: enacted
+      type: bool
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Loop.Enacted.Received
+      mapped_from:
+      - Loop.Enacted.Received
+      - OpenAps.Enacted
+      observed:
+      - collection: devicestatus
+        path: loop.enacted
+        doc_frequency: 0.577039
+        sites: 10
+      - collection: devicestatus
+        path: openaps.enacted
+        doc_frequency: 0.105139
+        sites: 1
+    - name: EnactedRate
+      wire_name: enacted_rate
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Loop.Enacted.Rate
+      mapped_from:
+      - Loop.Enacted.Rate
+      - OpenAps.Enacted.Rate
+    - name: EnactedDuration
+      wire_name: enacted_duration
+      type: int
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Loop.Enacted.Duration
+      mapped_from:
+      - Loop.Enacted.Duration
+      - OpenAps.Enacted.Duration
+    - name: EnactedBolusVolume
+      wire_name: enacted_bolus_volume
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Loop.Enacted.BolusVolume
+      mapped_from:
+      - Loop.Enacted.BolusVolume
+      - OpenAps.Enacted.Smb
+    - name: SuggestedJson
+      wire_name: suggested_json
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from OpenAps.Suggested
+      mapped_from:
+      - Loop.Recommended
+      - OpenAps.Suggested
+    - name: EnactedJson
+      wire_name: enacted_json
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Loop.Enacted
+      mapped_from:
+      - Loop.Enacted
+      - OpenAps.Enacted
+    - name: PredictedDefaultJson
+      wire_name: predicted_default_json
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Loop.Predicted.Values
+      mapped_from:
+      - Loop.Predicted.Values
+    - name: PredictedIobJson
+      wire_name: predicted_iob_json
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from IOB
+      mapped_from:
+      - IOB
+    - name: PredictedZtJson
+      wire_name: predicted_zt_json
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from ZT
+      mapped_from:
+      - ZT
+    - name: PredictedCobJson
+      wire_name: predicted_cob_json
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from COB
+      mapped_from:
+      - COB
+    - name: PredictedUamJson
+      wire_name: predicted_uam_json
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from UAM
+      mapped_from:
+      - UAM
+    - name: PredictedStartTimestamp
+      wire_name: predicted_start_timestamp
+      type: DateTime
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Loop.Predicted.StartDate
+      mapped_from:
+      - Loop.Predicted.StartDate
+      - Timestamp
+    - name: PredictedStartMills
+      wire_name: predicted_start_mills
+      type: long
+      nullable: true
+      evidence: declared
+      why: typed model only; no observed path
+    - name: LoopJson
+      wire_name: loop_json
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Loop
+      mapped_from:
+      - Loop
+    - name: AidVersion
+      wire_name: aid_version
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from OpenAps.Version
+      mapped_from:
+      - OpenAps.Version
+  PumpSnapshot:
+    group: device
+    description: Pump state at a point in time.
+    typed_by: Nocturne V4 PumpSnapshot.cs
+    fields:
+    - name: Manufacturer
+      wire_name: manufacturer
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Pump
+      mapped_from:
+      - Pump
+      observed:
+      - collection: devicestatus
+        path: pump.manufacturer
+        doc_frequency: 0.83752
+        sites: 10
+    - name: Model
+      wire_name: model
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Pump.Model
+      mapped_from:
+      - Pump.Model
+      observed:
+      - collection: devicestatus
+        path: pump.model
+        doc_frequency: 0.83752
+        sites: 10
+    - name: Reservoir
+      wire_name: reservoir
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Pump.Reservoir
+      mapped_from:
+      - Pump.Reservoir
+      observed:
+      - collection: devicestatus
+        path: openaps.enacted.reservoir
+        doc_frequency: 0.105139
+        sites: 1
+      - collection: devicestatus
+        path: openaps.suggested.reservoir
+        doc_frequency: 0.10523
+        sites: 1
+    - name: ReservoirDisplay
+      wire_name: reservoir_display
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Pump.ReservoirDisplayOverride
+      mapped_from:
+      - Pump.ReservoirDisplayOverride
+    - name: BatteryPercent
+      wire_name: battery_percent
+      type: int
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Pump.Battery.Percent
+      mapped_from:
+      - Pump.Battery.Percent
+    - name: BatteryVoltage
+      wire_name: battery_voltage
+      type: double
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from Pump.Battery.Voltage, which this corpus does not carry
+      mapped_from:
+      - Pump.Battery.Voltage
+      - Uploader.BatteryVoltage
+    - name: Bolusing
+      wire_name: bolusing
+      type: bool
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Pump.Status.Bolusing
+      mapped_from:
+      - Pump.Status.Bolusing
+      observed:
+      - collection: devicestatus
+        path: pump.bolusing
+        doc_frequency: 0.850595
+        sites: 10
+      - collection: devicestatus
+        path: pump.status.bolusing
+        doc_frequency: 0.10523
+        sites: 1
+    - name: Suspended
+      wire_name: suspended
+      type: bool
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Pump.Status.Suspended
+      mapped_from:
+      - Pump.Status.Suspended
+      observed:
+      - collection: devicestatus
+        path: pump.status.suspended
+        doc_frequency: 0.10523
+        sites: 1
+      - collection: devicestatus
+        path: pump.suspended
+        doc_frequency: 0.850595
+        sites: 10
+    - name: PumpStatus
+      wire_name: pump_status
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Pump.Status.Status
+      mapped_from:
+      - Pump.Status.Status
+    - name: PumpMode
+      wire_name: pump_mode
+      type: string
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from Pump.PumpMode, which this corpus does not carry
+      mapped_from:
+      - Pump.PumpMode
+    - name: Clock
+      wire_name: clock
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Pump.Clock
+      mapped_from:
+      - Pump.Clock
+      observed:
+      - collection: devicestatus
+        path: pump.clock
+        doc_frequency: 0.955825
+        sites: 10
+    - name: Iob
+      wire_name: iob
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Loop
+      mapped_from:
+      - Loop
+      - OpenAps.Iob.Iob
+      - Pump.Iob.Iob
+      observed:
+      - *id001
+      - *id002
+    - name: BolusIob
+      wire_name: bolus_iob
+      type: double
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from OpenAps.Iob.BolusIob
+      mapped_from:
+      - OpenAps.Iob.BolusIob
+      - Pump.Iob.BolusIob
+      observed:
+      - *id003
+      - *id004
+  UploaderSnapshot:
+    group: device
+    description: The uploading device's own state.
+    typed_by: Nocturne V4 UploaderSnapshot.cs
+    fields:
+    - name: Name
+      wire_name: name
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Uploader.Name
+      mapped_from:
+      - Uploader.Name
+    - name: Battery
+      wire_name: battery
+      type: int
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Uploader.Battery
+      mapped_from:
+      - Uploader.Battery
+      observed:
+      - collection: devicestatus
+        path: pump.battery
+        doc_frequency: 0.118305
+        sites: 2
+      - collection: devicestatus
+        path: uploader.battery
+        doc_frequency: 1.0
+        sites: 11
+    - name: BatteryVoltage
+      wire_name: battery_voltage
+      type: double
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from Pump.Battery.Voltage, which this corpus does not carry
+      mapped_from:
+      - Pump.Battery.Voltage
+      - Uploader.BatteryVoltage
+    - name: IsCharging
+      wire_name: is_charging
+      type: bool
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from IsCharging
+      mapped_from:
+      - IsCharging
+      observed:
+      - collection: devicestatus
+        path: uploader.isCharging
+        doc_frequency: 0.10523
+        sites: 1
+    - name: Temperature
+      wire_name: temperature
+      type: double
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from Uploader.Temperature, which this corpus does not carry
+      mapped_from:
+      - Uploader.Temperature
+    - name: Type
+      wire_name: type
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Uploader.Type
+      mapped_from:
+      - Uploader.Type
+  DeviceEvent:
+    group: device
+    description: A site change, sensor start, cartridge change.
+    typed_by: Nocturne V4 DeviceEvent.cs
+    fields:
+    - name: EventType
+      wire_name: event_type
+      type: DeviceEventType
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from EventType
+      mapped_from:
+      - EventType
+      observed:
+      - &id005
+        collection: treatments
+        path: eventType
+        doc_frequency: 1.0
+        sites: 11
+    - name: Notes
+      wire_name: notes
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Notes
+      mapped_from:
+      - Notes
+  TherapySettings:
+    group: settings
+    description: The therapy configuration in force.
+    typed_by: Nocturne V4 TherapySettings.cs
+    fields:
+    - name: ProfileName
+      wire_name: profile_name
+      type: string
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+    - name: Timezone
+      wire_name: timezone
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Timezone
+      mapped_from:
+      - Timezone
+      observed:
+      - collection: profile
+        path: store.{}.timezone
+        doc_frequency: 1.0
+        sites: 11
+    - name: Units
+      wire_name: units
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Units
+      mapped_from:
+      - Units
+    - name: Dia
+      wire_name: dia
+      type: double
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Dia
+      mapped_from:
+      - Dia
+      - Round
+      observed:
+      - collection: profile
+        path: store.{}.dia
+        doc_frequency: 1.0
+        sites: 11
+    - name: CarbsHr
+      wire_name: carbs_hr
+      type: int
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from CarbsHr
+      mapped_from:
+      - CarbsHr
+      observed:
+      - collection: profile
+        path: store.{}.carbs_hr
+        doc_frequency: 1.0
+        sites: 11
+    - name: Delay
+      wire_name: delay
+      type: int
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Delay
+      mapped_from:
+      - Delay
+      observed:
+      - collection: profile
+        path: store.{}.delay
+        doc_frequency: 1.0
+        sites: 11
+    - name: PerGIValues
+      wire_name: per_g_i_values
+      type: bool
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from PerGIValues, which this corpus does not carry
+      mapped_from:
+      - PerGIValues
+    - name: CarbsHrHigh
+      wire_name: carbs_hr_high
+      type: int
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from CarbsHrHigh, which this corpus does not carry
+      mapped_from:
+      - CarbsHrHigh
+    - name: CarbsHrMedium
+      wire_name: carbs_hr_medium
+      type: int
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from CarbsHrMedium, which this corpus does not carry
+      mapped_from:
+      - CarbsHrMedium
+    - name: CarbsHrLow
+      wire_name: carbs_hr_low
+      type: int
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from CarbsHrLow, which this corpus does not carry
+      mapped_from:
+      - CarbsHrLow
+    - name: DelayHigh
+      wire_name: delay_high
+      type: int
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from DelayHigh, which this corpus does not carry
+      mapped_from:
+      - DelayHigh
+    - name: DelayMedium
+      wire_name: delay_medium
+      type: int
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from DelayMedium, which this corpus does not carry
+      mapped_from:
+      - DelayMedium
+    - name: DelayLow
+      wire_name: delay_low
+      type: int
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from DelayLow, which this corpus does not carry
+      mapped_from:
+      - DelayLow
+    - name: LoopSettings
+      wire_name: loop_settings
+      type: LoopProfileSettings
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from LoopSettings
+      mapped_from:
+      - LoopSettings
+      observed:
+      - collection: profile
+        path: loopSettings
+        doc_frequency: 0.990099
+        sites: 10
+    - name: IsDefault
+      wire_name: is_default
+      type: bool
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+    - name: EnteredBy
+      wire_name: entered_by
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from EnteredBy
+      mapped_from:
+      - EnteredBy
+      observed:
+      - collection: profile
+        path: enteredBy
+        doc_frequency: 0.990099
+        sites: 10
+      - collection: treatments
+        path: enteredBy
+        doc_frequency: 1.0
+        sites: 11
+    - name: IsExternallyManaged
+      wire_name: is_externally_managed
+      type: bool
+      nullable: false
+      evidence: declared
+      why: decomposer maps it from IsExternallyManaged, which this corpus does not carry
+      mapped_from:
+      - IsExternallyManaged
+    - name: StartDate
+      wire_name: start_date
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from StartDate
+      mapped_from:
+      - StartDate
+      observed:
+      - collection: devicestatus
+        path: loop.predicted.startDate
+        doc_frequency: 0.850328
+        sites: 10
+      - collection: profile
+        path: startDate
+        doc_frequency: 1.0
+        sites: 11
+  BasalSchedule:
+    group: settings
+    description: Scheduled basal rates by time of day.
+    typed_by: Nocturne V4 BasalSchedule.cs
+    fields:
+    - name: ProfileName
+      wire_name: profile_name
+      type: string
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+    - name: Entries
+      wire_name: entries
+      type: List<ScheduleEntry>
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Basal
+      mapped_from:
+      - Basal
+      - CarbRatio
+      - Sens
+  CarbRatioSchedule:
+    group: settings
+    description: Carb ratio by time of day.
+    typed_by: Nocturne V4 CarbRatioSchedule.cs
+    fields:
+    - name: ProfileName
+      wire_name: profile_name
+      type: string
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+    - name: Entries
+      wire_name: entries
+      type: List<ScheduleEntry>
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Basal
+      mapped_from:
+      - Basal
+      - CarbRatio
+      - Sens
+  SensitivitySchedule:
+    group: settings
+    description: Insulin sensitivity by time of day.
+    typed_by: Nocturne V4 SensitivitySchedule.cs
+    fields:
+    - name: ProfileName
+      wire_name: profile_name
+      type: string
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+    - name: Entries
+      wire_name: entries
+      type: List<ScheduleEntry>
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Basal
+      mapped_from:
+      - Basal
+      - CarbRatio
+      - Sens
+  TargetRangeSchedule:
+    group: settings
+    description: Glucose targets by time of day.
+    typed_by: Nocturne V4 TargetRangeSchedule.cs
+    fields:
+    - name: ProfileName
+      wire_name: profile_name
+      type: string
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+    - name: Entries
+      wire_name: entries
+      type: List<TargetRangeEntry>
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Basal
+      mapped_from:
+      - Basal
+      - CarbRatio
+      - Sens
+  Note:
+    group: narrative
+    description: Free text attached to a time.
+    typed_by: Nocturne V4 Note.cs
+    fields:
+    - name: Text
+      wire_name: text
+      type: string
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Notes
+      mapped_from:
+      - Notes
+    - name: EventType
+      wire_name: event_type
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from EventType
+      mapped_from:
+      - EventType
+      observed:
+      - *id005
+    - name: IsAnnouncement
+      wire_name: is_announcement
+      type: bool
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+  StateSpan:
+    group: state
+    description: 'A time-ranged state: pump mode, override, data exclusion. The state machine, not
+      a point event.'
+    typed_by: Nocturne V4 StateSpan.cs
+    fields:
+    - name: Category
+      wire_name: category
+      type: StateSpanCategory
+      nullable: false
+      evidence: measured
+      why: decomposer maps it from Override
+      mapped_from:
+      - Override
+      - Profile
+      - PumpMode
+    - name: State
+      wire_name: state
+      type: string
+      nullable: true
+      evidence: declared
+      why: decomposer maps it from Active.ToString, which this corpus does not carry
+      mapped_from:
+      - Active.ToString
+      - Custom.ToString
+      - Suspended.ToString
+    - name: StartTimestamp
+      wire_name: start_timestamp
+      type: DateTime
+      nullable: false
+      evidence: declared
+      why: decomposer maps it from FromUnixTimeMilliseconds, which this corpus does not carry
+      mapped_from:
+      - FromUnixTimeMilliseconds
+    - name: EndTimestamp
+      wire_name: end_timestamp
+      type: DateTime
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Duration
+      mapped_from:
+      - Duration
+      - Override
+    - name: StartMills
+      wire_name: start_mills
+      type: long
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+    - name: EndMills
+      wire_name: end_mills
+      type: long
+      nullable: true
+      evidence: measured
+      why: treatments.endmills on 1 sites
+      observed:
+      - *id006
+    - name: Source
+      wire_name: source
+      type: string
+      nullable: true
+      evidence: measured
+      why: decomposer maps it from Device
+      mapped_from:
+      - DataSource
+      - Device
+    - name: IsActive
+      wire_name: is_active
+      type: bool
+      nullable: false
+      evidence: declared
+      why: typed model only; no observed path
+proposed_not_carried_by_any_primitive:
+- field: automaticBolusApplicationFactor
+  algorithm: loop
+  status_today: absent
+  evidence: proposed
+  why: The fraction of a recommended bolus that is actually delivered, defaulting to 0.4. It scales
+    every automatic dose Loop gives, is user-adjustable in some builds,
+- field: iob.bolusSnooze
+  algorithm: oref0
+  status_today: absent
+  evidence: proposed
+  why: a dosing input no controller publishes
+- field: carbAbsorptionModel
+  algorithm: loop
+  status_today: absent
+  evidence: proposed
+  why: Piecewise-linear versus nonlinear carb absorption changes the carb effect curve, and so the
+    dose.
+- field: profile.dosingStrategy
+  algorithm: oref0
+  status_today: partial
+  evidence: proposed
+  why: a dosing input no controller publishes
+- field: flatBGsDetected
+  algorithm: oref0
+  status_today: absent
+  evidence: proposed
+  why: a dosing input no controller publishes
+- field: gradualTransitionsThreshold
+  algorithm: loop
+  status_today: absent
+  evidence: proposed
+  why: a dosing input no controller publishes
+- field: includePositiveVelocityAndRC
+  algorithm: loop
+  status_today: absent
+  evidence: proposed
+  why: a dosing input no controller publishes
+- field: maxActiveInsulinMultiplier
+  algorithm: loop
+  status_today: absent
+  evidence: proposed
+  why: Loop's IOB ceiling, as a multiple of maxBolus. Defaults to 2.
+- field: profile.maxBasal
+  algorithm: oref0
+  status_today: partial
+  evidence: proposed
+  why: Loop records this as loopSettings.maximumBasalRatePerHour. AAPS and Trio record no equivalent.
+- field: profile.maxIob
+  algorithm: oref0
+  status_today: absent
+  evidence: proposed
+  why: A dosing *safety limit*. Loop records its equivalents in profile.loopSettings; no oref0 derivative
+    records maxIob anywhere in Nightscout. A replay must assume i
+- field: mealData.mealCOB
+  algorithm: oref0
+  status_today: absent
+  evidence: proposed
+  why: a dosing input no controller publishes
+- field: microBolusAllowed
+  algorithm: oref0
+  status_today: absent
+  evidence: proposed
+  why: "Whether SMB was permitted on this run. Inferable after the fact from whether an SMB was enacted,\
+    \ which is not the same thing \u2014 a run that allowed SMB and chose "
+- field: recommendationInsulinModel
+  algorithm: loop
+  status_today: absent
+  evidence: proposed
+  why: Which insulin activity curve the recommendation uses. `insulinType` on a treatment names the
+    product, which is related but not the same choice.
+- field: recommendationType
+  algorithm: loop
+  status_today: partial
+  evidence: proposed
+  why: '`dosingStrategy` distinguishes automaticBolus from tempBasalOnly, which covers the common
+    case but is not the same enumeration.'
+- field: mealData.slopeFromMaxDeviation
+  algorithm: oref0
+  status_today: absent
+  evidence: proposed
+  why: oref0's unannounced-meal detection state. Not recorded anywhere; a replay must recompute it
+    from the glucose series and may not agree.
+- field: mealData.slopeFromMinDeviation
+  algorithm: oref0
+  status_today: absent
+  evidence: proposed
+  why: a dosing input no controller publishes
+- field: profile.suspendThreshold
+  algorithm: oref0
+  status_today: partial
+  evidence: proposed
+  why: Loop-only, under the same subtree. oref0 derivatives write `openaps.suggested.threshold`, which
+    is the computed threshold rather than the configured one.
+- field: useIntegralRetrospectiveCorrection
+  algorithm: loop
+  status_today: absent
+  evidence: proposed
+  why: Integral RC is a materially different correction behaviour and a user-facing toggle.
+- field: useMidAbsorptionISF
+  algorithm: loop
+  status_today: absent
+  evidence: proposed
+  why: a dosing input no controller publishes
