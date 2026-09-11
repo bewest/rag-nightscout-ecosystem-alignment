@@ -1,0 +1,1025 @@
+{
+ "collection": "devicestatus",
+ "generated_by": "tools/nsschema/diff.py",
+ "spec": "aid-devicestatus-2025.yaml",
+ "root_schema": "DeviceStatus",
+ "documents": 702254,
+ "sites": [
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k"
+ ],
+ "declared_paths": 117,
+ "observed_paths": 166,
+ "summary": {
+  "undeclared": 65,
+  "undeclared_by_tier": {
+   "vendor": 52,
+   "sparse": 4,
+   "core": 7,
+   "common": 2
+  },
+  "unobserved": 12,
+  "v3_metadata_absent": 4,
+  "type_conflicts": 1,
+  "constraint_violations": 0,
+  "enum_unverifiable": 1,
+  "required_fields_missing_somewhere": 0
+ },
+ "type_conflicts": [
+  {
+   "path": "openaps.iob.lastTemp.duration",
+   "tier": "vendor",
+   "declared_types": [
+    "integer"
+   ],
+   "observed_types": {
+    "integer": 2048,
+    "number": 71843
+   },
+   "uncovered_types": {
+    "number": 71843
+   },
+   "uncovered_values": 71843,
+   "uncovered_fraction_of_values": 0.972283,
+   "sites_affected": 1
+  }
+ ],
+ "required_missing": [],
+ "constraint_violations": [],
+ "enum_unverifiable": [
+  {
+   "path": "pump.status.status",
+   "declared_enum": [
+    "bolusing",
+    "normal",
+    "suspended"
+   ],
+   "distinct_values_observed": 3,
+   "reason": "3 value(s) withheld: seen on fewer than 3 sites"
+  }
+ ],
+ "undeclared": [
+  {
+   "path": "uploader.timestamp",
+   "tier": "core",
+   "tier_reason": "10/11 sites, 85.1% of documents",
+   "docs_present": 597335,
+   "doc_frequency": 0.850597,
+   "site_count": 10,
+   "observed_types": {
+    "string": 597335
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "pump.bolusing",
+   "tier": "core",
+   "tier_reason": "10/11 sites, 85.1% of documents",
+   "docs_present": 597334,
+   "doc_frequency": 0.850595,
+   "site_count": 10,
+   "observed_types": {
+    "boolean": 597334
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "pump.pumpID",
+   "tier": "core",
+   "tier_reason": "10/11 sites, 85.1% of documents",
+   "docs_present": 597334,
+   "doc_frequency": 0.850595,
+   "site_count": 10,
+   "observed_types": {
+    "string": 597334
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "pump.secondsFromGMT",
+   "tier": "core",
+   "tier_reason": "10/11 sites, 85.1% of documents",
+   "docs_present": 597334,
+   "doc_frequency": 0.850595,
+   "site_count": 10,
+   "observed_types": {
+    "integer": 597334
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "pump.suspended",
+   "tier": "core",
+   "tier_reason": "10/11 sites, 85.1% of documents",
+   "docs_present": 597334,
+   "doc_frequency": 0.850595,
+   "site_count": 10,
+   "observed_types": {
+    "boolean": 597334
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "pump.manufacturer",
+   "tier": "core",
+   "tier_reason": "10/11 sites, 83.8% of documents",
+   "docs_present": 588152,
+   "doc_frequency": 0.83752,
+   "site_count": 10,
+   "observed_types": {
+    "string": 588152
+   },
+   "distinct_values": [
+    "Insulet"
+   ]
+  },
+  {
+   "path": "pump.model",
+   "tier": "core",
+   "tier_reason": "10/11 sites, 83.8% of documents",
+   "docs_present": 588152,
+   "doc_frequency": 0.83752,
+   "site_count": 10,
+   "observed_types": {
+    "string": 588152
+   },
+   "distinct_values": [
+    "Dash"
+   ]
+  },
+  {
+   "path": "pump.reservoir_display_override",
+   "tier": "common",
+   "tier_reason": "10/11 sites, 0.6% of documents",
+   "docs_present": 4427,
+   "doc_frequency": 0.006304,
+   "site_count": 10,
+   "observed_types": {
+    "string": 4427
+   },
+   "distinct_values": [
+    "Comms Issue",
+    "Finish Setup",
+    "Insulin Suspended",
+    "No Insulin",
+    "No Pod",
+    "Pod Expired",
+    "Signal Loss"
+   ]
+  },
+  {
+   "path": "pump.reservoir_level_override",
+   "tier": "common",
+   "tier_reason": "10/11 sites, 0.6% of documents",
+   "docs_present": 4427,
+   "doc_frequency": 0.006304,
+   "site_count": 10,
+   "observed_types": {
+    "integer": 4427
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.CR",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 19289,
+    "number": 54609
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.ISF",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 73898
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.current_target",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 73898
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.expectedDelta",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 7427,
+    "number": 66471
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.id",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "string": 73898
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.insulinForManualBolus",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 6713,
+    "number": 67185
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.manualBolusErrorString",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 73898
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.minDelta",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 39323,
+    "number": 34575
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.received",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "boolean": 73898
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.reservoir",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 68841,
+    "number": 5057
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.temp",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "string": 73898
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.threshold",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 73898
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.version",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "string": 73898
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "pump.battery.string",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "string": 73898
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "uploader.isCharging",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "site_count": 1,
+   "observed_types": {
+    "boolean": 73898
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.bolusinsulin",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 4323,
+    "number": 69568
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.bolusiob",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 157,
+    "number": 73734
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "object": 73891
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.activity",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 192,
+    "number": 73699
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.basaliob",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 71,
+    "number": 73820
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.bolusinsulin",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 4323,
+    "number": 69568
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.bolusiob",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 157,
+    "number": 73734
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.iob",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 74,
+    "number": 73817
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.netbasalinsulin",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 3636,
+    "number": 70255
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.time",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "string": 73891
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.lastTemp.date",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 73891
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.lastTemp.timestamp",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "string": 73891
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.netbasalinsulin",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 3636,
+    "number": 70255
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.iob.time",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "site_count": 1,
+   "observed_types": {
+    "string": 73891
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.COB",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 73834
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.CR",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 19379,
+    "number": 54455
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.IOB",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 86,
+    "number": 73748
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.ISF",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 73834
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.bg",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 73834
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.current_target",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 73834
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.deliverAt",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "string": 73834
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.expectedDelta",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 7466,
+    "number": 66368
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.id",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "string": 73834
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.insulinForManualBolus",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 6797,
+    "number": 67037
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.insulinReq",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 40926,
+    "number": 32908
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.manualBolusErrorString",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 73834
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.minDelta",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 38909,
+    "number": 34925
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.reason",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "string": 73834
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.reservoir",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 68706,
+    "number": 5128
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.sensitivityRatio",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 49572,
+    "number": 24262
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.temp",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "string": 73834
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.threshold",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 73834
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.eventualBG",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 89% of documents on 1 of them",
+   "docs_present": 73819,
+   "doc_frequency": 0.105117,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 73819
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.TDD",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 88% of documents on 1 of them",
+   "docs_present": 73306,
+   "doc_frequency": 0.104387,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 3517,
+    "number": 69789
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "pump.battery.display",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 87% of documents on 1 of them",
+   "docs_present": 72563,
+   "doc_frequency": 0.103329,
+   "site_count": 1,
+   "observed_types": {
+    "boolean": 72563
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.TDD",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 84% of documents on 1 of them",
+   "docs_present": 69758,
+   "doc_frequency": 0.099334,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 3363,
+    "number": 66395
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "uploader.type",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 100% of documents on 1 of them",
+   "docs_present": 31021,
+   "doc_frequency": 0.044173,
+   "site_count": 1,
+   "observed_types": {
+    "string": 31021
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.recommendedBolus",
+   "tier": "sparse",
+   "tier_reason": "1/11 sites, 5.91% of documents",
+   "docs_present": 41474,
+   "doc_frequency": 0.059058,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 18832,
+    "number": 22642
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "pump.bolusIncrement",
+   "tier": "sparse",
+   "tier_reason": "1/11 sites, 5.91% of documents",
+   "docs_present": 41474,
+   "doc_frequency": 0.059058,
+   "site_count": 1,
+   "observed_types": {
+    "number": 41474
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.suggested.carbsReq",
+   "tier": "sparse",
+   "tier_reason": "1/11 sites, 0.43% of documents",
+   "docs_present": 3042,
+   "doc_frequency": 0.004332,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 3042
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "openaps.enacted.carbsReq",
+   "tier": "sparse",
+   "tier_reason": "1/11 sites, 0.43% of documents",
+   "docs_present": 2989,
+   "doc_frequency": 0.004256,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 2989
+   },
+   "distinct_values": null
+  }
+ ],
+ "unobserved": [
+  {
+   "path": "configuration",
+   "declared_types": [
+    "object"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "isCharging",
+   "declared_types": [
+    "boolean"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "mills",
+   "declared_types": [
+    "integer"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "openaps.iob.bolussnooze",
+   "declared_types": [
+    "number"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "openaps.suggested.targetBG",
+   "declared_types": [
+    "integer"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "openaps.suggested.tick",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "openaps.suggested.variable_sens",
+   "declared_types": [
+    "number"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "pump.battery.status",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "pump.battery.voltage",
+   "declared_types": [
+    "number"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "pump.extended",
+   "declared_types": [
+    "object"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "uploader.batteryVoltage",
+   "declared_types": [
+    "number"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "uploaderBattery",
+   "declared_types": [
+    "integer"
+   ],
+   "required": false,
+   "schema_name": null
+  }
+ ],
+ "v3_metadata_absent": [
+  {
+   "path": "identifier",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "isValid",
+   "declared_types": [
+    "boolean"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "srvCreated",
+   "declared_types": [
+    "integer"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "srvModified",
+   "declared_types": [
+    "integer"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  }
+ ]
+}

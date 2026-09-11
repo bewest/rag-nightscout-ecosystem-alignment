@@ -1,0 +1,6003 @@
+{
+ "collection": "devicestatus",
+ "generated_by": "tools/nsschema/census.py",
+ "documents": 702254,
+ "sources": {
+  "2026-04-01/a/devicestatus": 50213,
+  "2026-04-01/b/devicestatus": 62386,
+  "2026-04-01/c/devicestatus": 51856,
+  "2026-04-01/d/devicestatus": 40490,
+  "2026-04-01/e/devicestatus": 56338,
+  "2026-04-01/f/devicestatus": 51375,
+  "2026-04-01/g/devicestatus": 54001,
+  "2026-04-01/h/devicestatus": 47014,
+  "2026-04-01/i/devicestatus": 51470,
+  "2026-04-01/j/devicestatus": 15181,
+  "2026-04-01/k/devicestatus": 33935,
+  "2026-04-26/a/devicestatus": 16710,
+  "2026-04-26/b/devicestatus": 20982,
+  "2026-04-26/c/devicestatus": 16338,
+  "2026-04-26/d/devicestatus": 18332,
+  "2026-04-26/e/devicestatus": 22975,
+  "2026-04-26/f/devicestatus": 16341,
+  "2026-04-26/g/devicestatus": 17411,
+  "2026-04-26/h/devicestatus": 16594,
+  "2026-04-26/i/devicestatus": 16128,
+  "2026-04-26/j/devicestatus": 15840,
+  "2026-04-26/k/devicestatus": 10344
+ },
+ "sites": [
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k"
+ ],
+ "site_documents": {
+  "a": 66923,
+  "b": 83368,
+  "c": 68194,
+  "d": 58822,
+  "e": 79313,
+  "f": 67716,
+  "g": 71412,
+  "h": 63608,
+  "i": 67598,
+  "j": 31021,
+  "k": 44279
+ },
+ "snapshots": [
+  "2026-04-01",
+  "2026-04-26"
+ ],
+ "map_paths": [
+  "store"
+ ],
+ "map_paths_detected": {},
+ "truncated": false,
+ "path_cap_reached": false,
+ "elapsed_seconds": 114.7,
+ "fields": [
+  {
+   "path": "_id",
+   "count": 702254,
+   "docs_present": 702254,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 702254
+   },
+   "string": {
+    "count": 702254,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "created_at",
+   "count": 702254,
+   "docs_present": 702254,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 702254
+   },
+   "string": {
+    "count": 702254,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "device",
+   "count": 702254,
+   "docs_present": 702254,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 702254
+   },
+   "string": {
+    "count": 702254,
+    "len_min": 4,
+    "len_max": 13,
+    "len_mean": 11.96,
+    "distinct_values": [
+     "loop://iPhone"
+    ],
+    "distinct_value_count": 3,
+    "values_withheld": 2,
+    "value_note": "2 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "loop",
+   "count": 597335,
+   "docs_present": 597335,
+   "doc_frequency": 0.850597,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 597335
+   }
+  },
+  {
+   "path": "loop.automaticDoseRecommendation",
+   "count": 183049,
+   "docs_present": 183049,
+   "doc_frequency": 0.260659,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.530565,
+    "b": 0.022047,
+    "c": 0.226648,
+    "d": 0.293173,
+    "e": 0.256099,
+    "f": 0.31034,
+    "g": 0.182546,
+    "h": 0.17993,
+    "i": 0.441359,
+    "k": 0.392059
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 183049
+   }
+  },
+  {
+   "path": "loop.automaticDoseRecommendation.bolusVolume",
+   "count": 183049,
+   "docs_present": 183049,
+   "doc_frequency": 0.260659,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.530565,
+    "b": 0.022047,
+    "c": 0.226648,
+    "d": 0.293173,
+    "e": 0.256099,
+    "f": 0.31034,
+    "g": 0.182546,
+    "h": 0.17993,
+    "i": 0.441359,
+    "k": 0.392059
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 82819,
+    "number": 100230
+   },
+   "numeric": {
+    "count": 183049,
+    "min": 0.0,
+    "max": 8.0,
+    "mean": 0.098727,
+    "integral_values": 82819,
+    "fractional_values": 100230,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loop.automaticDoseRecommendation.tempBasalAdjustment",
+   "count": 42687,
+   "docs_present": 42687,
+   "doc_frequency": 0.060786,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.137576,
+    "b": 0.007317,
+    "c": 0.03927,
+    "d": 0.03072,
+    "e": 0.067328,
+    "f": 0.097761,
+    "g": 0.032011,
+    "h": 0.030342,
+    "i": 0.122459,
+    "k": 0.088778
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 42687
+   }
+  },
+  {
+   "path": "loop.automaticDoseRecommendation.tempBasalAdjustment.duration",
+   "count": 42687,
+   "docs_present": 42687,
+   "doc_frequency": 0.060786,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.137576,
+    "b": 0.007317,
+    "c": 0.03927,
+    "d": 0.03072,
+    "e": 0.067328,
+    "f": 0.097761,
+    "g": 0.032011,
+    "h": 0.030342,
+    "i": 0.122459,
+    "k": 0.088778
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 42687
+   },
+   "numeric": {
+    "count": 42687,
+    "min": 0.0,
+    "max": 30.0,
+    "mean": 27.372268,
+    "integral_values": 42687,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loop.automaticDoseRecommendation.tempBasalAdjustment.rate",
+   "count": 42687,
+   "docs_present": 42687,
+   "doc_frequency": 0.060786,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.137576,
+    "b": 0.007317,
+    "c": 0.03927,
+    "d": 0.03072,
+    "e": 0.067328,
+    "f": 0.097761,
+    "g": 0.032011,
+    "h": 0.030342,
+    "i": 0.122459,
+    "k": 0.088778
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 14830,
+    "number": 27857
+   },
+   "numeric": {
+    "count": 42687,
+    "min": 0.0,
+    "max": 8.0,
+    "mean": 1.307091,
+    "integral_values": 14830,
+    "fractional_values": 27857,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loop.automaticDoseRecommendation.timestamp",
+   "count": 183049,
+   "docs_present": 183049,
+   "doc_frequency": 0.260659,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.530565,
+    "b": 0.022047,
+    "c": 0.226648,
+    "d": 0.293173,
+    "e": 0.256099,
+    "f": 0.31034,
+    "g": 0.182546,
+    "h": 0.17993,
+    "i": 0.441359,
+    "k": 0.392059
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 183049
+   },
+   "string": {
+    "count": 183049,
+    "len_min": 20,
+    "len_max": 20,
+    "len_mean": 20.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "loop.cob",
+   "count": 597319,
+   "docs_present": 597319,
+   "doc_frequency": 0.850574,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113581,
+    "c": 1.0,
+    "d": 0.999847,
+    "e": 0.999924,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 597319
+   }
+  },
+  {
+   "path": "loop.cob.cob",
+   "count": 597319,
+   "docs_present": 597319,
+   "doc_frequency": 0.850574,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113581,
+    "c": 1.0,
+    "d": 0.999847,
+    "e": 0.999924,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 469676,
+    "number": 127643
+   },
+   "numeric": {
+    "count": 597319,
+    "min": 0.0,
+    "max": 182.93913498037674,
+    "mean": 4.524085,
+    "integral_values": 469676,
+    "fractional_values": 127643,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loop.cob.timestamp",
+   "count": 597319,
+   "docs_present": 597319,
+   "doc_frequency": 0.850574,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113581,
+    "c": 1.0,
+    "d": 0.999847,
+    "e": 0.999924,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 597319
+   },
+   "string": {
+    "count": 597319,
+    "len_min": 20,
+    "len_max": 20,
+    "len_mean": 20.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "loop.enacted",
+   "count": 405228,
+   "docs_present": 405228,
+   "doc_frequency": 0.577039,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "a": 0.965647,
+    "b": 0.060719,
+    "c": 0.600419,
+    "d": 0.652035,
+    "e": 0.615965,
+    "f": 0.976475,
+    "g": 0.504215,
+    "h": 0.509637,
+    "i": 0.609412,
+    "k": 0.714718
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 405228
+   }
+  },
+  {
+   "path": "loop.enacted.bolusVolume",
+   "count": 405228,
+   "docs_present": 405228,
+   "doc_frequency": 0.577039,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "a": 0.965647,
+    "b": 0.060719,
+    "c": 0.600419,
+    "d": 0.652035,
+    "e": 0.615965,
+    "f": 0.976475,
+    "g": 0.504215,
+    "h": 0.509637,
+    "i": 0.609412,
+    "k": 0.714718
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 277769,
+    "number": 127459
+   },
+   "numeric": {
+    "count": 405228,
+    "min": 0.0,
+    "max": 9.6,
+    "mean": 0.086424,
+    "integral_values": 277769,
+    "fractional_values": 127459,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loop.enacted.duration",
+   "count": 405228,
+   "docs_present": 405228,
+   "doc_frequency": 0.577039,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "a": 0.965647,
+    "b": 0.060719,
+    "c": 0.600419,
+    "d": 0.652035,
+    "e": 0.615965,
+    "f": 0.976475,
+    "g": 0.504215,
+    "h": 0.509637,
+    "i": 0.609412,
+    "k": 0.714718
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 405228
+   },
+   "numeric": {
+    "count": 405228,
+    "min": 0.0,
+    "max": 30.0,
+    "mean": 13.638988,
+    "integral_values": 405228,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loop.enacted.rate",
+   "count": 405228,
+   "docs_present": 405228,
+   "doc_frequency": 0.577039,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "a": 0.965647,
+    "b": 0.060719,
+    "c": 0.600419,
+    "d": 0.652035,
+    "e": 0.615965,
+    "f": 0.976475,
+    "g": 0.504215,
+    "h": 0.509637,
+    "i": 0.609412,
+    "k": 0.714718
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 307662,
+    "number": 97566
+   },
+   "numeric": {
+    "count": 405228,
+    "min": 0.0,
+    "max": 8.0,
+    "mean": 0.411941,
+    "integral_values": 307662,
+    "fractional_values": 97566,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loop.enacted.received",
+   "count": 405228,
+   "docs_present": 405228,
+   "doc_frequency": 0.577039,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "a": 0.965647,
+    "b": 0.060719,
+    "c": 0.600419,
+    "d": 0.652035,
+    "e": 0.615965,
+    "f": 0.976475,
+    "g": 0.504215,
+    "h": 0.509637,
+    "i": 0.609412,
+    "k": 0.714718
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 405228
+   },
+   "boolean": {
+    "true": 405228,
+    "false": 0
+   }
+  },
+  {
+   "path": "loop.enacted.timestamp",
+   "count": 405228,
+   "docs_present": 405228,
+   "doc_frequency": 0.577039,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "a": 0.965647,
+    "b": 0.060719,
+    "c": 0.600419,
+    "d": 0.652035,
+    "e": 0.615965,
+    "f": 0.976475,
+    "g": 0.504215,
+    "h": 0.509637,
+    "i": 0.609412,
+    "k": 0.714718
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 405228
+   },
+   "string": {
+    "count": 405228,
+    "len_min": 20,
+    "len_max": 20,
+    "len_mean": 20.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "loop.failureReason",
+   "count": 16550,
+   "docs_present": 16550,
+   "doc_frequency": 0.023567,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.012328,
+    "b": 0.003203,
+    "c": 0.009928,
+    "d": 0.011645,
+    "e": 0.037522,
+    "f": 0.011873,
+    "g": 0.016874,
+    "h": 0.014401,
+    "i": 0.11669,
+    "k": 0.006933
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 16550
+   },
+   "string": {
+    "count": 16550,
+    "len_min": 13,
+    "len_max": 76,
+    "len_mean": 71.57,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "loop.iob",
+   "count": 597320,
+   "docs_present": 597320,
+   "doc_frequency": 0.850575,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113581,
+    "c": 1.0,
+    "d": 0.999847,
+    "e": 0.999937,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 597320
+   }
+  },
+  {
+   "path": "loop.iob.iob",
+   "count": 597320,
+   "docs_present": 597320,
+   "doc_frequency": 0.850575,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113581,
+    "c": 1.0,
+    "d": 0.999847,
+    "e": 0.999937,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2398,
+    "number": 594922
+   },
+   "numeric": {
+    "count": 597320,
+    "min": -10.918725815759965,
+    "max": 35.5021081519043,
+    "mean": 2.415439,
+    "integral_values": 2398,
+    "fractional_values": 594922,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loop.iob.timestamp",
+   "count": 597320,
+   "docs_present": 597320,
+   "doc_frequency": 0.850575,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113581,
+    "c": 1.0,
+    "d": 0.999847,
+    "e": 0.999937,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 597320
+   },
+   "string": {
+    "count": 597320,
+    "len_min": 20,
+    "len_max": 20,
+    "len_mean": 20.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "loop.name",
+   "count": 597335,
+   "docs_present": 597335,
+   "doc_frequency": 0.850597,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 597335
+   },
+   "string": {
+    "count": 597335,
+    "len_min": 4,
+    "len_max": 15,
+    "len_mean": 12.21,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "loop.predicted",
+   "count": 597146,
+   "docs_present": 597146,
+   "doc_frequency": 0.850328,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 0.999806,
+    "b": 0.113497,
+    "c": 0.999985,
+    "d": 0.998504,
+    "e": 0.999559,
+    "f": 0.99966,
+    "g": 0.999986,
+    "h": 0.999701,
+    "i": 0.999985,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 597146
+   }
+  },
+  {
+   "path": "loop.predicted.startDate",
+   "count": 597146,
+   "docs_present": 597146,
+   "doc_frequency": 0.850328,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 0.999806,
+    "b": 0.113497,
+    "c": 0.999985,
+    "d": 0.998504,
+    "e": 0.999559,
+    "f": 0.99966,
+    "g": 0.999986,
+    "h": 0.999701,
+    "i": 0.999985,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 597146
+   },
+   "string": {
+    "count": 597146,
+    "len_min": 20,
+    "len_max": 20,
+    "len_mean": 20.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "loop.predicted.values",
+   "count": 597146,
+   "docs_present": 597146,
+   "doc_frequency": 0.850328,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 0.999806,
+    "b": 0.113497,
+    "c": 0.999985,
+    "d": 0.998504,
+    "e": 0.999559,
+    "f": 0.99966,
+    "g": 0.999986,
+    "h": 0.999701,
+    "i": 0.999985,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 597146
+   },
+   "array": {
+    "count": 597146,
+    "len_min": 2,
+    "len_max": 149,
+    "len_mean": 77.98
+   }
+  },
+  {
+   "path": "loop.predicted.values[]",
+   "count": 46564726,
+   "docs_present": 597146,
+   "doc_frequency": 0.850328,
+   "values_per_doc": 77.979,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 0.999806,
+    "b": 0.113497,
+    "c": 0.999985,
+    "d": 0.998504,
+    "e": 0.999559,
+    "f": 0.99966,
+    "g": 0.999986,
+    "h": 0.999701,
+    "i": 0.999985,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 1092421,
+    "number": 45472305
+   },
+   "numeric": {
+    "count": 46564726,
+    "min": -1919.37,
+    "max": 1622.37,
+    "mean": 114.445012,
+    "integral_values": 1092421,
+    "fractional_values": 45472305,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loop.recommendedBolus",
+   "count": 597143,
+   "docs_present": 597143,
+   "doc_frequency": 0.850323,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 0.999806,
+    "b": 0.113497,
+    "c": 0.999985,
+    "d": 0.998504,
+    "e": 0.999546,
+    "f": 0.99966,
+    "g": 0.999986,
+    "h": 0.99967,
+    "i": 0.999985,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 333957,
+    "number": 263186
+   },
+   "numeric": {
+    "count": 597143,
+    "min": 0.0,
+    "max": 20.0,
+    "mean": 0.344776,
+    "integral_values": 333957,
+    "fractional_values": 263186,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loop.timestamp",
+   "count": 597335,
+   "docs_present": 597335,
+   "doc_frequency": 0.850597,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 597335
+   },
+   "string": {
+    "count": 597335,
+    "len_min": 20,
+    "len_max": 20,
+    "len_mean": 20.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "loop.version",
+   "count": 597335,
+   "docs_present": 597335,
+   "doc_frequency": 0.850597,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 597335
+   },
+   "string": {
+    "count": 597335,
+    "len_min": 8,
+    "len_max": 17,
+    "len_mean": 15.94,
+    "distinct_values": [
+     "3.12.1.<n>",
+     "3.6.2.<n>",
+     "3.8.1.<n>"
+    ],
+    "distinct_value_count": 8,
+    "values_withheld": 5,
+    "value_note": "5 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "openaps",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 73898
+   }
+  },
+  {
+   "path": "openaps.enacted",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 73834
+   }
+  },
+  {
+   "path": "openaps.enacted.COB",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73834
+   },
+   "numeric": {
+    "count": 73834,
+    "min": 0.0,
+    "max": 196.0,
+    "mean": 29.676206,
+    "integral_values": 73834,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.CR",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 19379,
+    "number": 54455
+   },
+   "numeric": {
+    "count": 73834,
+    "min": 0.0,
+    "max": 36.8,
+    "mean": 12.323807,
+    "integral_values": 19379,
+    "fractional_values": 54455,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.IOB",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 86,
+    "number": 73748
+   },
+   "numeric": {
+    "count": 73834,
+    "min": -2.357,
+    "max": 14.726,
+    "mean": 2.119843,
+    "integral_values": 86,
+    "fractional_values": 73748,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.ISF",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73834
+   },
+   "numeric": {
+    "count": 73834,
+    "min": 0.0,
+    "max": 368.0,
+    "mean": 114.709971,
+    "integral_values": 73834,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.TDD",
+   "count": 73306,
+   "docs_present": 73306,
+   "doc_frequency": 0.104387,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.879306
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 3517,
+    "number": 69789
+   },
+   "numeric": {
+    "count": 73306,
+    "min": 14.5,
+    "max": 77.6,
+    "mean": 41.22762,
+    "integral_values": 3517,
+    "fractional_values": 69789,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.bg",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73834
+   },
+   "numeric": {
+    "count": 73834,
+    "min": 0.0,
+    "max": 400.0,
+    "mean": 177.735,
+    "integral_values": 73834,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.carbsReq",
+   "count": 2989,
+   "docs_present": 2989,
+   "doc_frequency": 0.004256,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.035853
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2989
+   },
+   "numeric": {
+    "count": 2989,
+    "min": 1.0,
+    "max": 171.0,
+    "mean": 15.136835,
+    "integral_values": 2989,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.current_target",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73834
+   },
+   "numeric": {
+    "count": 73834,
+    "min": 0.0,
+    "max": 270.0,
+    "mean": 139.60464,
+    "integral_values": 73834,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.deliverAt",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73834
+   },
+   "string": {
+    "count": 73834,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "openaps.enacted.duration",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73834
+   },
+   "numeric": {
+    "count": 73834,
+    "min": 0.0,
+    "max": 120.0,
+    "mean": 34.315898,
+    "integral_values": 73834,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.eventualBG",
+   "count": 73819,
+   "docs_present": 73819,
+   "doc_frequency": 0.105117,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88546
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73819
+   },
+   "numeric": {
+    "count": 73819,
+    "min": -347.0,
+    "max": 1191.0,
+    "mean": 234.749685,
+    "integral_values": 73819,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.expectedDelta",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 7466,
+    "number": 66368
+   },
+   "numeric": {
+    "count": 73834,
+    "min": -26.7,
+    "max": 32.2,
+    "mean": -2.331913,
+    "integral_values": 7466,
+    "fractional_values": 66368,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.id",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73834
+   },
+   "string": {
+    "count": 73834,
+    "len_min": 36,
+    "len_max": 36,
+    "len_mean": 36.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "openaps.enacted.insulinForManualBolus",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 6797,
+    "number": 67037
+   },
+   "numeric": {
+    "count": 73834,
+    "min": -6.52,
+    "max": 8.57,
+    "mean": 0.859221,
+    "integral_values": 6797,
+    "fractional_values": 67037,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.insulinReq",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 40926,
+    "number": 32908
+   },
+   "numeric": {
+    "count": 73834,
+    "min": -1.68,
+    "max": 4.75,
+    "mean": 0.157705,
+    "integral_values": 40926,
+    "fractional_values": 32908,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.manualBolusErrorString",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73834
+   },
+   "numeric": {
+    "count": 73834,
+    "min": 0.0,
+    "max": 6.0,
+    "mean": 1.592722,
+    "integral_values": 73834,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.minDelta",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 38909,
+    "number": 34925
+   },
+   "numeric": {
+    "count": 73834,
+    "min": -61.0,
+    "max": 54.0,
+    "mean": -0.721567,
+    "integral_values": 38909,
+    "fractional_values": 34925,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.predBGs",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 73834
+   }
+  },
+  {
+   "path": "openaps.enacted.predBGs.COB",
+   "count": 50240,
+   "docs_present": 50240,
+   "doc_frequency": 0.071541,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.602629
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 50240
+   },
+   "array": {
+    "count": 50240,
+    "len_min": 13,
+    "len_max": 48,
+    "len_mean": 46.77
+   }
+  },
+  {
+   "path": "openaps.enacted.predBGs.COB[]",
+   "count": 2349895,
+   "docs_present": 50240,
+   "doc_frequency": 0.071541,
+   "values_per_doc": 46.773,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.602629
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2349895
+   },
+   "numeric": {
+    "count": 2349895,
+    "min": 39.0,
+    "max": 1191.0,
+    "mean": 228.579681,
+    "integral_values": 2349895,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.predBGs.IOB",
+   "count": 73819,
+   "docs_present": 73819,
+   "doc_frequency": 0.105117,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88546
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 73819
+   },
+   "array": {
+    "count": 73819,
+    "len_min": 13,
+    "len_max": 48,
+    "len_mean": 34.9
+   }
+  },
+  {
+   "path": "openaps.enacted.predBGs.IOB[]",
+   "count": 2576197,
+   "docs_present": 73819,
+   "doc_frequency": 0.105117,
+   "values_per_doc": 34.899,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88546
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2576197
+   },
+   "numeric": {
+    "count": 2576197,
+    "min": 39.0,
+    "max": 401.0,
+    "mean": 138.344365,
+    "integral_values": 2576197,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.predBGs.UAM",
+   "count": 63822,
+   "docs_present": 63822,
+   "doc_frequency": 0.090882,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.765546
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 63822
+   },
+   "array": {
+    "count": 63822,
+    "len_min": 13,
+    "len_max": 48,
+    "len_mean": 34.86
+   }
+  },
+  {
+   "path": "openaps.enacted.predBGs.UAM[]",
+   "count": 2224981,
+   "docs_present": 63822,
+   "doc_frequency": 0.090882,
+   "values_per_doc": 34.862,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.765546
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2224981
+   },
+   "numeric": {
+    "count": 2224981,
+    "min": 39.0,
+    "max": 401.0,
+    "mean": 146.433673,
+    "integral_values": 2224981,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.predBGs.ZT",
+   "count": 73819,
+   "docs_present": 73819,
+   "doc_frequency": 0.105117,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88546
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 73819
+   },
+   "array": {
+    "count": 73819,
+    "len_min": 7,
+    "len_max": 48,
+    "len_mean": 35.84
+   }
+  },
+  {
+   "path": "openaps.enacted.predBGs.ZT[]",
+   "count": 2645445,
+   "docs_present": 73819,
+   "doc_frequency": 0.105117,
+   "values_per_doc": 35.837,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88546
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2645445
+   },
+   "numeric": {
+    "count": 2645445,
+    "min": 39.0,
+    "max": 401.0,
+    "mean": 105.831494,
+    "integral_values": 2645445,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.rate",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 57405,
+    "number": 16429
+   },
+   "numeric": {
+    "count": 73834,
+    "min": 0.0,
+    "max": 2.0,
+    "mean": 0.241839,
+    "integral_values": 57405,
+    "fractional_values": 16429,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.reason",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73834
+   },
+   "string": {
+    "count": 73834,
+    "len_min": 129,
+    "len_max": 415,
+    "len_mean": 231.73,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "openaps.enacted.received",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 73834
+   },
+   "boolean": {
+    "true": 73834,
+    "false": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.reservoir",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 68706,
+    "number": 5128
+   },
+   "numeric": {
+    "count": 73834,
+    "min": 0.0,
+    "max": 3735928559.0,
+    "mean": 3462542018.867274,
+    "integral_values": 68706,
+    "fractional_values": 5128,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.sensitivityRatio",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 49572,
+    "number": 24262
+   },
+   "numeric": {
+    "count": 73834,
+    "min": 0.0,
+    "max": 1.5,
+    "mean": 1.045729,
+    "integral_values": 49572,
+    "fractional_values": 24262,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.temp",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73834
+   },
+   "string": {
+    "count": 73834,
+    "len_min": 8,
+    "len_max": 8,
+    "len_mean": 8.0,
+    "distinct_values": null,
+    "distinct_value_count": 1,
+    "values_withheld": 1,
+    "value_note": "1 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "openaps.enacted.threshold",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73834
+   },
+   "numeric": {
+    "count": 73834,
+    "min": 0.0,
+    "max": 120.0,
+    "mean": 93.815925,
+    "integral_values": 73834,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.enacted.timestamp",
+   "count": 73834,
+   "docs_present": 73834,
+   "doc_frequency": 0.105139,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.88564
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73834
+   },
+   "string": {
+    "count": 73834,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "openaps.enacted.units",
+   "count": 18560,
+   "docs_present": 18560,
+   "doc_frequency": 0.026429,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.222627
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "number": 18560
+   },
+   "numeric": {
+    "count": 18560,
+    "min": 0.05,
+    "max": 1.1,
+    "mean": 0.225698,
+    "integral_values": 0,
+    "fractional_values": 18560,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 73891
+   }
+  },
+  {
+   "path": "openaps.iob.activity",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 192,
+    "number": 73699
+   },
+   "numeric": {
+    "count": 73891,
+    "min": -0.0201,
+    "max": 0.0877,
+    "mean": 0.015161,
+    "integral_values": 192,
+    "fractional_values": 73699,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.basaliob",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 71,
+    "number": 73820
+   },
+   "numeric": {
+    "count": 73891,
+    "min": -3.049,
+    "max": 0.758,
+    "mean": -1.159337,
+    "integral_values": 71,
+    "fractional_values": 73820,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.bolusinsulin",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 4323,
+    "number": 69568
+   },
+   "numeric": {
+    "count": 73891,
+    "min": 0.0,
+    "max": 45.9,
+    "mean": 13.971718,
+    "integral_values": 4323,
+    "fractional_values": 69568,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.bolusiob",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 157,
+    "number": 73734
+   },
+   "numeric": {
+    "count": 73891,
+    "min": 0.0,
+    "max": 16.01,
+    "mean": 3.364587,
+    "integral_values": 157,
+    "fractional_values": 73734,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.iob",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 74,
+    "number": 73817
+   },
+   "numeric": {
+    "count": 73891,
+    "min": -2.818,
+    "max": 14.996,
+    "mean": 2.205251,
+    "integral_values": 74,
+    "fractional_values": 73817,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 73891
+   }
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.activity",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 192,
+    "number": 73699
+   },
+   "numeric": {
+    "count": 73891,
+    "min": -0.0201,
+    "max": 0.0877,
+    "mean": 0.015161,
+    "integral_values": 192,
+    "fractional_values": 73699,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.basaliob",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 71,
+    "number": 73820
+   },
+   "numeric": {
+    "count": 73891,
+    "min": -3.049,
+    "max": 0.758,
+    "mean": -1.159337,
+    "integral_values": 71,
+    "fractional_values": 73820,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.bolusinsulin",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 4323,
+    "number": 69568
+   },
+   "numeric": {
+    "count": 73891,
+    "min": 0.0,
+    "max": 45.9,
+    "mean": 13.971718,
+    "integral_values": 4323,
+    "fractional_values": 69568,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.bolusiob",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 157,
+    "number": 73734
+   },
+   "numeric": {
+    "count": 73891,
+    "min": 0.0,
+    "max": 16.01,
+    "mean": 3.364587,
+    "integral_values": 157,
+    "fractional_values": 73734,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.iob",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 74,
+    "number": 73817
+   },
+   "numeric": {
+    "count": 73891,
+    "min": -2.818,
+    "max": 14.996,
+    "mean": 2.205251,
+    "integral_values": 74,
+    "fractional_values": 73817,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.netbasalinsulin",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 3636,
+    "number": 70255
+   },
+   "numeric": {
+    "count": 73891,
+    "min": -12.3,
+    "max": 1.15,
+    "mean": -4.993069,
+    "integral_values": 3636,
+    "fractional_values": 70255,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.iobWithZeroTemp.time",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73891
+   },
+   "string": {
+    "count": 73891,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "openaps.iob.lastBolusTime",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73891
+   },
+   "numeric": {
+    "count": 73891,
+    "min": 1759521823893.0,
+    "max": 1774755848976.0,
+    "mean": 1768652197001.2065,
+    "integral_values": 73891,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.lastTemp",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 73891
+   }
+  },
+  {
+   "path": "openaps.iob.lastTemp.date",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73891
+   },
+   "numeric": {
+    "count": 73891,
+    "min": 1759521725734.0,
+    "max": 1774755847957.0,
+    "mean": 1768653998872.8923,
+    "integral_values": 73891,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.lastTemp.duration",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2048,
+    "number": 71843
+   },
+   "numeric": {
+    "count": 73891,
+    "min": 0.22,
+    "max": 120.0,
+    "mean": 10.139102,
+    "integral_values": 2048,
+    "fractional_values": 71843,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.lastTemp.rate",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 51324,
+    "number": 22567
+   },
+   "numeric": {
+    "count": 73891,
+    "min": 0.0,
+    "max": 2.0,
+    "mean": 0.349587,
+    "integral_values": 51324,
+    "fractional_values": 22567,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.lastTemp.started_at",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73891
+   },
+   "string": {
+    "count": 73891,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "openaps.iob.lastTemp.timestamp",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73891
+   },
+   "string": {
+    "count": 73891,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "openaps.iob.netbasalinsulin",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 3636,
+    "number": 70255
+   },
+   "numeric": {
+    "count": 73891,
+    "min": -12.3,
+    "max": 1.15,
+    "mean": -4.993069,
+    "integral_values": 3636,
+    "fractional_values": 70255,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.iob.time",
+   "count": 73891,
+   "docs_present": 73891,
+   "doc_frequency": 0.10522,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886323
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73891
+   },
+   "string": {
+    "count": 73891,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "openaps.recommendedBolus",
+   "count": 41474,
+   "docs_present": 41474,
+   "doc_frequency": 0.059058,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.497481
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 18832,
+    "number": 22642
+   },
+   "numeric": {
+    "count": 41474,
+    "min": 0.0,
+    "max": 8.7,
+    "mean": 0.726746,
+    "integral_values": 18832,
+    "fractional_values": 22642,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 73898
+   }
+  },
+  {
+   "path": "openaps.suggested.COB",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73898
+   },
+   "numeric": {
+    "count": 73898,
+    "min": 0.0,
+    "max": 197.0,
+    "mean": 30.670492,
+    "integral_values": 73898,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.CR",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 19289,
+    "number": 54609
+   },
+   "numeric": {
+    "count": 73898,
+    "min": 0.0,
+    "max": 36.8,
+    "mean": 12.301401,
+    "integral_values": 19289,
+    "fractional_values": 54609,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.IOB",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 97,
+    "number": 73801
+   },
+   "numeric": {
+    "count": 73898,
+    "min": -2.818,
+    "max": 14.951,
+    "mean": 2.204557,
+    "integral_values": 97,
+    "fractional_values": 73801,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.ISF",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73898
+   },
+   "numeric": {
+    "count": 73898,
+    "min": 0.0,
+    "max": 368.0,
+    "mean": 114.350862,
+    "integral_values": 73898,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.TDD",
+   "count": 69758,
+   "docs_present": 69758,
+   "doc_frequency": 0.099334,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.836748
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 3363,
+    "number": 66395
+   },
+   "numeric": {
+    "count": 69758,
+    "min": 14.5,
+    "max": 77.6,
+    "mean": 41.282426,
+    "integral_values": 3363,
+    "fractional_values": 66395,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.bg",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73898
+   },
+   "numeric": {
+    "count": 73898,
+    "min": 0.0,
+    "max": 400.0,
+    "mean": 177.867195,
+    "integral_values": 73898,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.carbsReq",
+   "count": 3042,
+   "docs_present": 3042,
+   "doc_frequency": 0.004332,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.036489
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 3042
+   },
+   "numeric": {
+    "count": 3042,
+    "min": 1.0,
+    "max": 172.0,
+    "mean": 15.059829,
+    "integral_values": 3042,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.current_target",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73898
+   },
+   "numeric": {
+    "count": 73898,
+    "min": 0.0,
+    "max": 270.0,
+    "mean": 139.517362,
+    "integral_values": 73898,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.deliverAt",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73898
+   },
+   "string": {
+    "count": 73898,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "openaps.suggested.duration",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73898
+   },
+   "numeric": {
+    "count": 73898,
+    "min": 0.0,
+    "max": 120.0,
+    "mean": 36.298141,
+    "integral_values": 73898,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.eventualBG",
+   "count": 73872,
+   "docs_present": 73872,
+   "doc_frequency": 0.105193,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886095
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73872
+   },
+   "numeric": {
+    "count": 73872,
+    "min": -347.0,
+    "max": 1286.0,
+    "mean": 235.485651,
+    "integral_values": 73872,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.expectedDelta",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 7427,
+    "number": 66471
+   },
+   "numeric": {
+    "count": 73898,
+    "min": -26.7,
+    "max": 39.2,
+    "mean": -1.960228,
+    "integral_values": 7427,
+    "fractional_values": 66471,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.id",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73898
+   },
+   "string": {
+    "count": 73898,
+    "len_min": 36,
+    "len_max": 36,
+    "len_mean": 36.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "openaps.suggested.insulinForManualBolus",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 6713,
+    "number": 67185
+   },
+   "numeric": {
+    "count": 73898,
+    "min": -6.52,
+    "max": 10.44,
+    "mean": 0.871245,
+    "integral_values": 6713,
+    "fractional_values": 67185,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.insulinReq",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 41227,
+    "number": 32671
+   },
+   "numeric": {
+    "count": 73898,
+    "min": -1.68,
+    "max": 6.92,
+    "mean": 0.160498,
+    "integral_values": 41227,
+    "fractional_values": 32671,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.manualBolusErrorString",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73898
+   },
+   "numeric": {
+    "count": 73898,
+    "min": 0.0,
+    "max": 6.0,
+    "mean": 1.635186,
+    "integral_values": 73898,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.minDelta",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 39323,
+    "number": 34575
+   },
+   "numeric": {
+    "count": 73898,
+    "min": -61.0,
+    "max": 109.73,
+    "mean": -0.76502,
+    "integral_values": 39323,
+    "fractional_values": 34575,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.predBGs",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 73898
+   }
+  },
+  {
+   "path": "openaps.suggested.predBGs.COB",
+   "count": 50672,
+   "docs_present": 50672,
+   "doc_frequency": 0.072156,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.607811
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 50672
+   },
+   "array": {
+    "count": 50672,
+    "len_min": 13,
+    "len_max": 48,
+    "len_mean": 46.77
+   }
+  },
+  {
+   "path": "openaps.suggested.predBGs.COB[]",
+   "count": 2369828,
+   "docs_present": 50672,
+   "doc_frequency": 0.072156,
+   "values_per_doc": 46.768,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.607811
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2369828
+   },
+   "numeric": {
+    "count": 2369828,
+    "min": 39.0,
+    "max": 1286.0,
+    "mean": 228.868752,
+    "integral_values": 2369828,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.predBGs.IOB",
+   "count": 73872,
+   "docs_present": 73872,
+   "doc_frequency": 0.105193,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886095
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 73872
+   },
+   "array": {
+    "count": 73872,
+    "len_min": 13,
+    "len_max": 48,
+    "len_mean": 34.35
+   }
+  },
+  {
+   "path": "openaps.suggested.predBGs.IOB[]",
+   "count": 2537252,
+   "docs_present": 73872,
+   "doc_frequency": 0.105193,
+   "values_per_doc": 34.347,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886095
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2537252
+   },
+   "numeric": {
+    "count": 2537252,
+    "min": 39.0,
+    "max": 401.0,
+    "mean": 138.258254,
+    "integral_values": 2537252,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.predBGs.UAM",
+   "count": 63976,
+   "docs_present": 63976,
+   "doc_frequency": 0.091101,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.767393
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 63976
+   },
+   "array": {
+    "count": 63976,
+    "len_min": 13,
+    "len_max": 48,
+    "len_mean": 34.26
+   }
+  },
+  {
+   "path": "openaps.suggested.predBGs.UAM[]",
+   "count": 2191658,
+   "docs_present": 63976,
+   "doc_frequency": 0.091101,
+   "values_per_doc": 34.258,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.767393
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2191658
+   },
+   "numeric": {
+    "count": 2191658,
+    "min": 39.0,
+    "max": 401.0,
+    "mean": 146.192931,
+    "integral_values": 2191658,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.predBGs.ZT",
+   "count": 73872,
+   "docs_present": 73872,
+   "doc_frequency": 0.105193,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886095
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 73872
+   },
+   "array": {
+    "count": 73872,
+    "len_min": 7,
+    "len_max": 48,
+    "len_mean": 36.15
+   }
+  },
+  {
+   "path": "openaps.suggested.predBGs.ZT[]",
+   "count": 2670269,
+   "docs_present": 73872,
+   "doc_frequency": 0.105193,
+   "values_per_doc": 36.147,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886095
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2670269
+   },
+   "numeric": {
+    "count": 2670269,
+    "min": 39.0,
+    "max": 401.0,
+    "mean": 104.663989,
+    "integral_values": 2670269,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.rate",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 57580,
+    "number": 16318
+   },
+   "numeric": {
+    "count": 73898,
+    "min": 0.0,
+    "max": 2.0,
+    "mean": 0.238898,
+    "integral_values": 57580,
+    "fractional_values": 16318,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.reason",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73898
+   },
+   "string": {
+    "count": 73898,
+    "len_min": 113,
+    "len_max": 415,
+    "len_mean": 230.69,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "openaps.suggested.received",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 73898
+   },
+   "boolean": {
+    "true": 37525,
+    "false": 36373
+   }
+  },
+  {
+   "path": "openaps.suggested.reservoir",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 68841,
+    "number": 5057
+   },
+   "numeric": {
+    "count": 73898,
+    "min": 0.0,
+    "max": 3735928559.0,
+    "mean": 3466368207.175449,
+    "integral_values": 68841,
+    "fractional_values": 5057,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.sensitivityRatio",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 49614,
+    "number": 24284
+   },
+   "numeric": {
+    "count": 73898,
+    "min": 0.0,
+    "max": 1.5,
+    "mean": 1.045835,
+    "integral_values": 49614,
+    "fractional_values": 24284,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.temp",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73898
+   },
+   "string": {
+    "count": 73898,
+    "len_min": 8,
+    "len_max": 8,
+    "len_mean": 8.0,
+    "distinct_values": null,
+    "distinct_value_count": 1,
+    "values_withheld": 1,
+    "value_note": "1 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "openaps.suggested.threshold",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 73898
+   },
+   "numeric": {
+    "count": 73898,
+    "min": 0.0,
+    "max": 120.0,
+    "mean": 93.788019,
+    "integral_values": 73898,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.suggested.timestamp",
+   "count": 69779,
+   "docs_present": 69779,
+   "doc_frequency": 0.099364,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.837
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 69779
+   },
+   "string": {
+    "count": 69779,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "openaps.suggested.units",
+   "count": 17560,
+   "docs_present": 17560,
+   "doc_frequency": 0.025005,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.210632
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "number": 17560
+   },
+   "numeric": {
+    "count": 17560,
+    "min": 0.05,
+    "max": 1.1,
+    "mean": 0.228243,
+    "integral_values": 0,
+    "fractional_values": 17560,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "openaps.version",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73898
+   },
+   "string": {
+    "count": 73898,
+    "len_min": 5,
+    "len_max": 5,
+    "len_mean": 5.0,
+    "distinct_values": null,
+    "distinct_value_count": 2,
+    "values_withheld": 2,
+    "value_note": "2 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "override",
+   "count": 597335,
+   "docs_present": 597335,
+   "doc_frequency": 0.850597,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 597335
+   }
+  },
+  {
+   "path": "override.active",
+   "count": 597335,
+   "docs_present": 597335,
+   "doc_frequency": 0.850597,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 597335
+   },
+   "boolean": {
+    "true": 64674,
+    "false": 532661
+   }
+  },
+  {
+   "path": "override.currentCorrectionRange",
+   "count": 64674,
+   "docs_present": 64674,
+   "doc_frequency": 0.092095,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.214007,
+    "b": 0.027397,
+    "c": 0.117606,
+    "d": 0.00068,
+    "e": 0.06381,
+    "g": 0.116591,
+    "h": 0.033832,
+    "i": 0.350942,
+    "k": 0.016848
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 64674
+   }
+  },
+  {
+   "path": "override.currentCorrectionRange.maxValue",
+   "count": 64674,
+   "docs_present": 64674,
+   "doc_frequency": 0.092095,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.214007,
+    "b": 0.027397,
+    "c": 0.117606,
+    "d": 0.00068,
+    "e": 0.06381,
+    "g": 0.116591,
+    "h": 0.033832,
+    "i": 0.350942,
+    "k": 0.016848
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 50352,
+    "number": 14322
+   },
+   "numeric": {
+    "count": 64674,
+    "min": 72.0,
+    "max": 235.0,
+    "mean": 112.408262,
+    "integral_values": 50352,
+    "fractional_values": 14322,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "override.currentCorrectionRange.minValue",
+   "count": 64674,
+   "docs_present": 64674,
+   "doc_frequency": 0.092095,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.214007,
+    "b": 0.027397,
+    "c": 0.117606,
+    "d": 0.00068,
+    "e": 0.06381,
+    "g": 0.116591,
+    "h": 0.033832,
+    "i": 0.350942,
+    "k": 0.016848
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 50352,
+    "number": 14322
+   },
+   "numeric": {
+    "count": 64674,
+    "min": 70.0,
+    "max": 225.0,
+    "mean": 100.557358,
+    "integral_values": 50352,
+    "fractional_values": 14322,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "override.duration",
+   "count": 33676,
+   "docs_present": 33676,
+   "doc_frequency": 0.047954,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.213559,
+    "b": 0.006273,
+    "c": 0.025281,
+    "d": 0.00068,
+    "e": 0.047735,
+    "g": 0.095684,
+    "h": 0.033832,
+    "i": 0.057369,
+    "k": 0.010118
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 33676
+   },
+   "numeric": {
+    "count": 33676,
+    "min": 0.0,
+    "max": 28785.0,
+    "mean": 6408.962911,
+    "integral_values": 33676,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "override.multiplier",
+   "count": 52401,
+   "docs_present": 52401,
+   "doc_frequency": 0.074618,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.214007,
+    "b": 0.027397,
+    "c": 0.117606,
+    "d": 0.00068,
+    "e": 0.06381,
+    "g": 0.116591,
+    "h": 0.032983,
+    "i": 0.175242,
+    "k": 0.009124
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 22687,
+    "number": 29714
+   },
+   "numeric": {
+    "count": 52401,
+    "min": 0.1,
+    "max": 2.0,
+    "mean": 1.190017,
+    "integral_values": 22687,
+    "fractional_values": 29714,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "override.name",
+   "count": 62192,
+   "docs_present": 62192,
+   "doc_frequency": 0.088561,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.213006,
+    "b": 0.026221,
+    "c": 0.09209,
+    "d": 0.00068,
+    "e": 0.06381,
+    "g": 0.111158,
+    "h": 0.033298,
+    "i": 0.348649,
+    "k": 0.016848
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 62192
+   },
+   "string": {
+    "count": 62192,
+    "len_min": 2,
+    "len_max": 34,
+    "len_mean": 6.42,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "override.timestamp",
+   "count": 597335,
+   "docs_present": 597335,
+   "doc_frequency": 0.850597,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 597335
+   },
+   "string": {
+    "count": 597335,
+    "len_min": 20,
+    "len_max": 20,
+    "len_mean": 20.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "pump",
+   "count": 671232,
+   "docs_present": 671232,
+   "doc_frequency": 0.955825,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 0.999977
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 671232
+   }
+  },
+  {
+   "path": "pump.battery",
+   "count": 83080,
+   "docs_present": 83080,
+   "doc_frequency": 0.118305,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b",
+    "k"
+   ],
+   "site_count": 2,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407,
+    "k": 0.207367
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 83080
+   }
+  },
+  {
+   "path": "pump.battery.display",
+   "count": 72563,
+   "docs_present": 72563,
+   "doc_frequency": 0.103329,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.870394
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 72563
+   },
+   "boolean": {
+    "true": 0,
+    "false": 72563
+   }
+  },
+  {
+   "path": "pump.battery.percent",
+   "count": 81745,
+   "docs_present": 81745,
+   "doc_frequency": 0.116404,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b",
+    "k"
+   ],
+   "site_count": 2,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.870394,
+    "k": 0.207367
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 81745
+   },
+   "numeric": {
+    "count": 81745,
+    "min": 100.0,
+    "max": 100.0,
+    "mean": 100.0,
+    "integral_values": 81745,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "pump.battery.string",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73898
+   },
+   "string": {
+    "count": 73898,
+    "len_min": 5,
+    "len_max": 6,
+    "len_mean": 5.98,
+    "distinct_values": null,
+    "distinct_value_count": 2,
+    "values_withheld": 2,
+    "value_note": "2 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "pump.bolusIncrement",
+   "count": 41474,
+   "docs_present": 41474,
+   "doc_frequency": 0.059058,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.497481
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "number": 41474
+   },
+   "numeric": {
+    "count": 41474,
+    "min": 0.05,
+    "max": 0.05,
+    "mean": 0.05,
+    "integral_values": 0,
+    "fractional_values": 41474,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "pump.bolusing",
+   "count": 597334,
+   "docs_present": 597334,
+   "doc_frequency": 0.850595,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 0.999977
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 597334
+   },
+   "boolean": {
+    "true": 131456,
+    "false": 465878
+   }
+  },
+  {
+   "path": "pump.clock",
+   "count": 671232,
+   "docs_present": 671232,
+   "doc_frequency": 0.955825,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 0.999977
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 671232
+   },
+   "string": {
+    "count": 671232,
+    "len_min": 20,
+    "len_max": 24,
+    "len_mean": 20.44,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "pump.manufacturer",
+   "count": 588152,
+   "docs_present": 588152,
+   "doc_frequency": 0.83752,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 8,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 0.79261
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 588152
+   },
+   "string": {
+    "count": 588152,
+    "len_min": 7,
+    "len_max": 7,
+    "len_mean": 7.0,
+    "distinct_values": [
+     "Insulet"
+    ],
+    "distinct_value_count": 1
+   }
+  },
+  {
+   "path": "pump.model",
+   "count": 588152,
+   "docs_present": 588152,
+   "doc_frequency": 0.83752,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 8,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 0.79261
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 588152
+   },
+   "string": {
+    "count": 588152,
+    "len_min": 4,
+    "len_max": 4,
+    "len_mean": 4.0,
+    "distinct_values": [
+     "Dash"
+    ],
+    "distinct_value_count": 1
+   }
+  },
+  {
+   "path": "pump.pumpID",
+   "count": 597334,
+   "docs_present": 597334,
+   "doc_frequency": 0.850595,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 0.999977
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 597334
+   },
+   "string": {
+    "count": 597334,
+    "len_min": 7,
+    "len_max": 8,
+    "len_mean": 7.98,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "pump.reservoir",
+   "count": 101633,
+   "docs_present": 101633,
+   "doc_frequency": 0.144724,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.073831,
+    "b": 0.070315,
+    "c": 0.22128,
+    "d": 0.097243,
+    "e": 0.169909,
+    "f": 0.200529,
+    "g": 0.228281,
+    "h": 0.059301,
+    "i": 0.190671,
+    "k": 0.225886
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 5536,
+    "number": 96097
+   },
+   "numeric": {
+    "count": 101633,
+    "min": 0.0,
+    "max": 18934.825000000328,
+    "mean": 724.802953,
+    "integral_values": 5536,
+    "fractional_values": 96097,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "pump.reservoir_display_override",
+   "count": 4427,
+   "docs_present": 4427,
+   "doc_frequency": 0.006304,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.004214,
+    "b": 0.000396,
+    "c": 0.011643,
+    "d": 0.00119,
+    "e": 0.01199,
+    "f": 0.010839,
+    "g": 0.003109,
+    "h": 0.001619,
+    "i": 0.016258,
+    "k": 0.003139
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 4427
+   },
+   "string": {
+    "count": 4427,
+    "len_min": 6,
+    "len_max": 17,
+    "len_mean": 9.77,
+    "distinct_values": [
+     "Comms Issue",
+     "Finish Setup",
+     "Insulin Suspended",
+     "No Insulin",
+     "No Pod",
+     "Pod Expired",
+     "Signal Loss"
+    ],
+    "distinct_value_count": 10,
+    "values_withheld": 3,
+    "value_note": "3 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "pump.reservoir_level_override",
+   "count": 4427,
+   "docs_present": 4427,
+   "doc_frequency": 0.006304,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.004214,
+    "b": 0.000396,
+    "c": 0.011643,
+    "d": 0.00119,
+    "e": 0.01199,
+    "f": 0.010839,
+    "g": 0.003109,
+    "h": 0.001619,
+    "i": 0.016258,
+    "k": 0.003139
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 4427
+   },
+   "numeric": {
+    "count": 4427,
+    "min": 1.0,
+    "max": 2.0,
+    "mean": 1.739779,
+    "integral_values": 4427,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "pump.secondsFromGMT",
+   "count": 597334,
+   "docs_present": 597334,
+   "doc_frequency": 0.850595,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 0.999977
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 597334
+   },
+   "numeric": {
+    "count": 597334,
+    "min": -28800.0,
+    "max": 7200.0,
+    "mean": -20409.35557,
+    "integral_values": 597334,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "pump.status",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 73898
+   }
+  },
+  {
+   "path": "pump.status.bolusing",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 73898
+   },
+   "boolean": {
+    "true": 13925,
+    "false": 59973
+   }
+  },
+  {
+   "path": "pump.status.status",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73898
+   },
+   "string": {
+    "count": 73898,
+    "len_min": 6,
+    "len_max": 9,
+    "len_mean": 6.38,
+    "distinct_values": null,
+    "distinct_value_count": 3,
+    "values_withheld": 3,
+    "value_note": "3 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "pump.status.suspended",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 73898
+   },
+   "boolean": {
+    "true": 1,
+    "false": 73897
+   }
+  },
+  {
+   "path": "pump.status.timestamp",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 73898
+   },
+   "string": {
+    "count": 73898,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "pump.suspended",
+   "count": 597334,
+   "docs_present": 597334,
+   "doc_frequency": 0.850595,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 0.999977
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 597334
+   },
+   "boolean": {
+    "true": 84,
+    "false": 597250
+   }
+  },
+  {
+   "path": "uploader",
+   "count": 702254,
+   "docs_present": 702254,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 702254
+   }
+  },
+  {
+   "path": "uploader.battery",
+   "count": 702254,
+   "docs_present": 702254,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 702254
+   },
+   "numeric": {
+    "count": 702254,
+    "min": 1.0,
+    "max": 100.0,
+    "mean": 74.106265,
+    "integral_values": 702254,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "uploader.isCharging",
+   "count": 73898,
+   "docs_present": 73898,
+   "doc_frequency": 0.10523,
+   "values_per_doc": 1.0,
+   "sites": [
+    "b"
+   ],
+   "site_count": 1,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "b": 0.886407
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 73898
+   },
+   "boolean": {
+    "true": 22210,
+    "false": 51688
+   }
+  },
+  {
+   "path": "uploader.name",
+   "count": 597335,
+   "docs_present": 597335,
+   "doc_frequency": 0.850597,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 597335
+   },
+   "string": {
+    "count": 597335,
+    "len_min": 6,
+    "len_max": 6,
+    "len_mean": 6.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "uploader.timestamp",
+   "count": 597335,
+   "docs_present": 597335,
+   "doc_frequency": 0.850597,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 0.113593,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 597335
+   },
+   "string": {
+    "count": 597335,
+    "len_min": 20,
+    "len_max": 20,
+    "len_mean": 20.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "uploader.type",
+   "count": 31021,
+   "docs_present": 31021,
+   "doc_frequency": 0.044173,
+   "values_per_doc": 1.0,
+   "sites": [
+    "j"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "j": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 31021
+   },
+   "string": {
+    "count": 31021,
+    "len_min": 5,
+    "len_max": 5,
+    "len_mean": 5.0,
+    "distinct_values": null,
+    "distinct_value_count": 1,
+    "values_withheld": 1,
+    "value_note": "1 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "utcOffset",
+   "count": 702254,
+   "docs_present": 702254,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 702254
+   },
+   "numeric": {
+    "count": 702254,
+    "min": 0.0,
+    "max": 0.0,
+    "mean": 0.0,
+    "integral_values": 702254,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  }
+ ]
+}

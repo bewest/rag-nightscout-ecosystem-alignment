@@ -1,0 +1,3182 @@
+{
+ "collection": "profile",
+ "generated_by": "tools/nsschema/census.py",
+ "documents": 202,
+ "sources": {
+  "2026-04-01/a/profile": 10,
+  "2026-04-01/b/profile": 10,
+  "2026-04-01/c/profile": 10,
+  "2026-04-01/d/profile": 10,
+  "2026-04-01/e/profile": 10,
+  "2026-04-01/f/profile": 10,
+  "2026-04-01/g/profile": 10,
+  "2026-04-01/h/profile": 10,
+  "2026-04-01/i/profile": 10,
+  "2026-04-01/j/profile": 1,
+  "2026-04-01/k/profile": 10,
+  "2026-04-26/a/profile": 10,
+  "2026-04-26/b/profile": 10,
+  "2026-04-26/c/profile": 10,
+  "2026-04-26/d/profile": 10,
+  "2026-04-26/e/profile": 10,
+  "2026-04-26/f/profile": 10,
+  "2026-04-26/g/profile": 10,
+  "2026-04-26/h/profile": 10,
+  "2026-04-26/i/profile": 10,
+  "2026-04-26/j/profile": 1,
+  "2026-04-26/k/profile": 10
+ },
+ "sites": [
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k"
+ ],
+ "site_documents": {
+  "a": 20,
+  "b": 20,
+  "c": 20,
+  "d": 20,
+  "e": 20,
+  "f": 20,
+  "g": 20,
+  "h": 20,
+  "i": 20,
+  "j": 2,
+  "k": 20
+ },
+ "snapshots": [
+  "2026-04-01",
+  "2026-04-26"
+ ],
+ "map_paths": [
+  "store"
+ ],
+ "map_paths_detected": {},
+ "truncated": false,
+ "path_cap_reached": false,
+ "elapsed_seconds": 0.0,
+ "fields": [
+  {
+   "path": "_id",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 202
+   },
+   "string": {
+    "count": 202,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "created_at",
+   "count": 22,
+   "docs_present": 22,
+   "doc_frequency": 0.108911,
+   "values_per_doc": 1.0,
+   "sites": [
+    "i",
+    "j"
+   ],
+   "site_count": 2,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "i": 1.0,
+    "j": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 22
+   },
+   "string": {
+    "count": 22,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "defaultProfile",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 202
+   },
+   "string": {
+    "count": 202,
+    "len_min": 7,
+    "len_max": 7,
+    "len_mean": 7.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "enteredBy",
+   "count": 200,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 200
+   },
+   "string": {
+    "count": 200,
+    "len_min": 4,
+    "len_max": 4,
+    "len_mean": 4.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "loopSettings",
+   "count": 200,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 200
+   }
+  },
+  {
+   "path": "loopSettings.bundleIdentifier",
+   "count": 200,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 200
+   },
+   "string": {
+    "count": 200,
+    "len_min": 22,
+    "len_max": 39,
+    "len_mean": 36.1,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "loopSettings.deviceToken",
+   "count": 200,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 200
+   },
+   "string": {
+    "count": 200,
+    "len_min": 64,
+    "len_max": 64,
+    "len_mean": 64.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "loopSettings.dosingEnabled",
+   "count": 200,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 200
+   },
+   "boolean": {
+    "true": 191,
+    "false": 9
+   }
+  },
+  {
+   "path": "loopSettings.dosingStrategy",
+   "count": 200,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 200
+   },
+   "string": {
+    "count": 200,
+    "len_min": 13,
+    "len_max": 14,
+    "len_mean": 13.8,
+    "distinct_values": [
+     "automaticBolus"
+    ],
+    "distinct_value_count": 2,
+    "values_withheld": 1,
+    "value_note": "1 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "loopSettings.maximumBasalRatePerHour",
+   "count": 200,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 140,
+    "number": 60
+   },
+   "numeric": {
+    "count": 200,
+    "min": 2.8,
+    "max": 8.0,
+    "mean": 4.3,
+    "integral_values": 140,
+    "fractional_values": 60,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loopSettings.maximumBolus",
+   "count": 200,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 200
+   },
+   "numeric": {
+    "count": 200,
+    "min": 5.0,
+    "max": 20.0,
+    "mean": 13.1,
+    "integral_values": 200,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loopSettings.minimumBGGuard",
+   "count": 200,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 180,
+    "number": 20
+   },
+   "numeric": {
+    "count": 200,
+    "min": 4.5,
+    "max": 90.0,
+    "mean": 69.665,
+    "integral_values": 180,
+    "fractional_values": 20,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loopSettings.overridePresets",
+   "count": 200,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 200
+   },
+   "array": {
+    "count": 200,
+    "len_min": 1,
+    "len_max": 14,
+    "len_mean": 6.4
+   }
+  },
+  {
+   "path": "loopSettings.overridePresets[]",
+   "count": 1280,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 6.4,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 1280
+   }
+  },
+  {
+   "path": "loopSettings.overridePresets[].duration",
+   "count": 1280,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 6.4,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 1280
+   },
+   "numeric": {
+    "count": 1280,
+    "min": 0.0,
+    "max": 64800.0,
+    "mean": 6637.5,
+    "integral_values": 1280,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loopSettings.overridePresets[].insulinNeedsScaleFactor",
+   "count": 1100,
+   "docs_present": 180,
+   "doc_frequency": 0.891089,
+   "values_per_doc": 6.111,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 120,
+    "number": 980
+   },
+   "numeric": {
+    "count": 1100,
+    "min": 0.1,
+    "max": 2.0,
+    "mean": 1.044545,
+    "integral_values": 120,
+    "fractional_values": 980,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loopSettings.overridePresets[].name",
+   "count": 1280,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 6.4,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 1280
+   },
+   "string": {
+    "count": 1280,
+    "len_min": 2,
+    "len_max": 35,
+    "len_mean": 9.58,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "loopSettings.overridePresets[].symbol",
+   "count": 1280,
+   "docs_present": 200,
+   "doc_frequency": 0.990099,
+   "values_per_doc": 6.4,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 10,
+   "sites_saturated": 10,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 1280
+   },
+   "string": {
+    "count": 1280,
+    "len_min": 1,
+    "len_max": 6,
+    "len_mean": 2.31,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "loopSettings.overridePresets[].targetRange",
+   "count": 740,
+   "docs_present": 140,
+   "doc_frequency": 0.693069,
+   "values_per_doc": 5.286,
+   "sites": [
+    "a",
+    "b",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 7,
+   "sites_saturated": 7,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 740
+   },
+   "array": {
+    "count": 740,
+    "len_min": 2,
+    "len_max": 2,
+    "len_mean": 2.0
+   }
+  },
+  {
+   "path": "loopSettings.overridePresets[].targetRange[]",
+   "count": 1480,
+   "docs_present": 140,
+   "doc_frequency": 0.693069,
+   "values_per_doc": 10.571,
+   "sites": [
+    "a",
+    "b",
+    "f",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 7,
+   "sites_saturated": 7,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 1440,
+    "number": 40
+   },
+   "numeric": {
+    "count": 1480,
+    "min": 4.999999999999998,
+    "max": 235.0,
+    "mean": 111.459459,
+    "integral_values": 1440,
+    "fractional_values": 40,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loopSettings.preMealTargetRange",
+   "count": 180,
+   "docs_present": 180,
+   "doc_frequency": 0.891089,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 180
+   },
+   "array": {
+    "count": 180,
+    "len_min": 2,
+    "len_max": 2,
+    "len_mean": 2.0
+   }
+  },
+  {
+   "path": "loopSettings.preMealTargetRange[]",
+   "count": 360,
+   "docs_present": 180,
+   "doc_frequency": 0.891089,
+   "values_per_doc": 2.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 320,
+    "number": 40
+   },
+   "numeric": {
+    "count": 360,
+    "min": 4.8,
+    "max": 120.0,
+    "mean": 74.683333,
+    "integral_values": 320,
+    "fractional_values": 40,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loopSettings.scheduleOverride",
+   "count": 124,
+   "docs_present": 124,
+   "doc_frequency": 0.613861,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 3,
+   "site_frequency": {
+    "a": 0.95,
+    "b": 0.6,
+    "c": 0.55,
+    "d": 1.0,
+    "e": 1.0,
+    "g": 0.25,
+    "h": 0.7,
+    "i": 0.5,
+    "k": 0.65
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 124
+   }
+  },
+  {
+   "path": "loopSettings.scheduleOverride.duration",
+   "count": 124,
+   "docs_present": 124,
+   "doc_frequency": 0.613861,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 3,
+   "site_frequency": {
+    "a": 0.95,
+    "b": 0.6,
+    "c": 0.55,
+    "d": 1.0,
+    "e": 1.0,
+    "g": 0.25,
+    "h": 0.7,
+    "i": 0.5,
+    "k": 0.65
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 124
+   },
+   "numeric": {
+    "count": 124,
+    "min": 0.0,
+    "max": 18000.0,
+    "mean": 4318.548387,
+    "integral_values": 124,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loopSettings.scheduleOverride.insulinNeedsScaleFactor",
+   "count": 117,
+   "docs_present": 117,
+   "doc_frequency": 0.579208,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 3,
+   "site_frequency": {
+    "a": 0.95,
+    "b": 0.6,
+    "c": 0.55,
+    "d": 1.0,
+    "e": 1.0,
+    "g": 0.25,
+    "h": 0.7,
+    "i": 0.15,
+    "k": 0.65
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 48,
+    "number": 69
+   },
+   "numeric": {
+    "count": 117,
+    "min": 0.1,
+    "max": 2.0,
+    "mean": 1.315641,
+    "integral_values": 48,
+    "fractional_values": 69,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "loopSettings.scheduleOverride.name",
+   "count": 120,
+   "docs_present": 120,
+   "doc_frequency": 0.594059,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 3,
+   "site_frequency": {
+    "a": 0.95,
+    "b": 0.6,
+    "c": 0.35,
+    "d": 1.0,
+    "e": 1.0,
+    "g": 0.25,
+    "h": 0.7,
+    "i": 0.5,
+    "k": 0.65
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 120
+   },
+   "string": {
+    "count": 120,
+    "len_min": 2,
+    "len_max": 21,
+    "len_mean": 7.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "loopSettings.scheduleOverride.symbol",
+   "count": 120,
+   "docs_present": 120,
+   "doc_frequency": 0.594059,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 3,
+   "site_frequency": {
+    "a": 0.95,
+    "b": 0.6,
+    "c": 0.35,
+    "d": 1.0,
+    "e": 1.0,
+    "g": 0.25,
+    "h": 0.7,
+    "i": 0.5,
+    "k": 0.65
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 120
+   },
+   "string": {
+    "count": 120,
+    "len_min": 1,
+    "len_max": 6,
+    "len_mean": 2.28,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "loopSettings.scheduleOverride.targetRange",
+   "count": 52,
+   "docs_present": 52,
+   "doc_frequency": 0.257426,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 6,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.5,
+    "b": 0.05,
+    "g": 0.25,
+    "h": 0.7,
+    "i": 0.5,
+    "k": 0.6
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 52
+   },
+   "array": {
+    "count": 52,
+    "len_min": 2,
+    "len_max": 2,
+    "len_mean": 2.0
+   }
+  },
+  {
+   "path": "loopSettings.scheduleOverride.targetRange[]",
+   "count": 104,
+   "docs_present": 52,
+   "doc_frequency": 0.257426,
+   "values_per_doc": 2.0,
+   "sites": [
+    "a",
+    "b",
+    "g",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 6,
+   "sites_saturated": 0,
+   "site_frequency": {
+    "a": 0.5,
+    "b": 0.05,
+    "g": 0.25,
+    "h": 0.7,
+    "i": 0.5,
+    "k": 0.6
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 84,
+    "number": 20
+   },
+   "numeric": {
+    "count": 104,
+    "min": 4.999999999999998,
+    "max": 165.0,
+    "mean": 70.221154,
+    "integral_values": 84,
+    "fractional_values": 20,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "mills",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2,
+    "string": 200
+   },
+   "numeric": {
+    "count": 2,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 2,
+    "fractional_values": 0
+   },
+   "string": {
+    "count": 200,
+    "len_min": 13,
+    "len_max": 13,
+    "len_mean": 13.0,
+    "distinct_values": [
+     "<n>"
+    ],
+    "distinct_value_count": 1
+   }
+  },
+  {
+   "path": "srvModified",
+   "count": 2,
+   "docs_present": 2,
+   "doc_frequency": 0.009901,
+   "values_per_doc": 1.0,
+   "sites": [
+    "j"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "j": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2
+   },
+   "numeric": {
+    "count": 2,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 2,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "startDate",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 202
+   },
+   "string": {
+    "count": 202,
+    "len_min": 20,
+    "len_max": 24,
+    "len_mean": 20.04,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "store",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 202
+   }
+  },
+  {
+   "path": "store.{}",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 202
+   }
+  },
+  {
+   "path": "store.{}.basal",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 202
+   },
+   "array": {
+    "count": 202,
+    "len_min": 3,
+    "len_max": 11,
+    "len_mean": 6.07
+   }
+  },
+  {
+   "path": "store.{}.basal[]",
+   "count": 1226,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 6.069,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 1226
+   }
+  },
+  {
+   "path": "store.{}.basal[].time",
+   "count": 1226,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 6.069,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 1226
+   },
+   "string": {
+    "count": 1226,
+    "len_min": 5,
+    "len_max": 5,
+    "len_mean": 5.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "store.{}.basal[].timeAsSeconds",
+   "count": 1226,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 6.069,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 1226
+   },
+   "numeric": {
+    "count": 1226,
+    "min": 0.0,
+    "max": 84600.0,
+    "mean": 34925.285481,
+    "integral_values": 1226,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "store.{}.basal[].value",
+   "count": 1226,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 6.069,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 81,
+    "number": 1145
+   },
+   "numeric": {
+    "count": 1226,
+    "min": 0.0,
+    "max": 7.0,
+    "mean": 1.000163,
+    "integral_values": 81,
+    "fractional_values": 1145,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "store.{}.carbratio",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 202
+   },
+   "array": {
+    "count": 202,
+    "len_min": 1,
+    "len_max": 8,
+    "len_mean": 3.21
+   }
+  },
+  {
+   "path": "store.{}.carbratio[]",
+   "count": 648,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 3.208,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 648
+   }
+  },
+  {
+   "path": "store.{}.carbratio[].time",
+   "count": 648,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 3.208,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 648
+   },
+   "string": {
+    "count": 648,
+    "len_min": 5,
+    "len_max": 5,
+    "len_mean": 5.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "store.{}.carbratio[].timeAsSeconds",
+   "count": 648,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 3.208,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 648
+   },
+   "numeric": {
+    "count": 648,
+    "min": 0.0,
+    "max": 81000.0,
+    "mean": 32483.333333,
+    "integral_values": 648,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "store.{}.carbratio[].value",
+   "count": 648,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 3.208,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 457,
+    "number": 191
+   },
+   "numeric": {
+    "count": 648,
+    "min": 3.0,
+    "max": 15.0,
+    "mean": 7.353549,
+    "integral_values": 457,
+    "fractional_values": 191,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "store.{}.carbs_hr",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2,
+    "string": 200
+   },
+   "numeric": {
+    "count": 2,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 2,
+    "fractional_values": 0
+   },
+   "string": {
+    "count": 200,
+    "len_min": 1,
+    "len_max": 1,
+    "len_mean": 1.0,
+    "distinct_values": [
+     "0"
+    ],
+    "distinct_value_count": 1
+   }
+  },
+  {
+   "path": "store.{}.delay",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2,
+    "string": 200
+   },
+   "numeric": {
+    "count": 2,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 2,
+    "fractional_values": 0
+   },
+   "string": {
+    "count": 200,
+    "len_min": 1,
+    "len_max": 1,
+    "len_mean": 1.0,
+    "distinct_values": [
+     "0"
+    ],
+    "distinct_value_count": 1
+   }
+  },
+  {
+   "path": "store.{}.dia",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 202
+   },
+   "numeric": {
+    "count": 202,
+    "min": 3.0,
+    "max": 6.0,
+    "mean": 5.980198,
+    "integral_values": 202,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "store.{}.sens",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 202
+   },
+   "array": {
+    "count": 202,
+    "len_min": 1,
+    "len_max": 6,
+    "len_mean": 3.18
+   }
+  },
+  {
+   "path": "store.{}.sens[]",
+   "count": 642,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 3.178,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 642
+   }
+  },
+  {
+   "path": "store.{}.sens[].time",
+   "count": 642,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 3.178,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 642
+   },
+   "string": {
+    "count": 642,
+    "len_min": 5,
+    "len_max": 5,
+    "len_mean": 5.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "store.{}.sens[].timeAsSeconds",
+   "count": 642,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 3.178,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 642
+   },
+   "numeric": {
+    "count": 642,
+    "min": 0.0,
+    "max": 81000.0,
+    "mean": 31738.317757,
+    "integral_values": 642,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "store.{}.sens[].value",
+   "count": 642,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 3.178,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 622,
+    "number": 20
+   },
+   "numeric": {
+    "count": 642,
+    "min": 2.7,
+    "max": 110.0,
+    "mean": 64.320872,
+    "integral_values": 622,
+    "fractional_values": 20,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "store.{}.startDate",
+   "count": 2,
+   "docs_present": 2,
+   "doc_frequency": 0.009901,
+   "values_per_doc": 1.0,
+   "sites": [
+    "j"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "j": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 2
+   },
+   "string": {
+    "count": 2,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "store.{}.target_high",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 202
+   },
+   "array": {
+    "count": 202,
+    "len_min": 1,
+    "len_max": 5,
+    "len_mean": 2.19
+   }
+  },
+  {
+   "path": "store.{}.target_high[]",
+   "count": 442,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 2.188,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 442
+   }
+  },
+  {
+   "path": "store.{}.target_high[].time",
+   "count": 442,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 2.188,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 442
+   },
+   "string": {
+    "count": 442,
+    "len_min": 5,
+    "len_max": 5,
+    "len_mean": 5.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "store.{}.target_high[].timeAsSeconds",
+   "count": 442,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 2.188,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 442
+   },
+   "numeric": {
+    "count": 442,
+    "min": 0.0,
+    "max": 79200.0,
+    "mean": 24434.38914,
+    "integral_values": 442,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "store.{}.target_high[].value",
+   "count": 442,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 2.188,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 362,
+    "number": 80
+   },
+   "numeric": {
+    "count": 442,
+    "min": 5.3,
+    "max": 180.0,
+    "mean": 91.325792,
+    "integral_values": 362,
+    "fractional_values": 80,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "store.{}.target_low",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 202
+   },
+   "array": {
+    "count": 202,
+    "len_min": 1,
+    "len_max": 5,
+    "len_mean": 2.19
+   }
+  },
+  {
+   "path": "store.{}.target_low[]",
+   "count": 442,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 2.188,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 442
+   }
+  },
+  {
+   "path": "store.{}.target_low[].time",
+   "count": 442,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 2.188,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 442
+   },
+   "string": {
+    "count": 442,
+    "len_min": 5,
+    "len_max": 5,
+    "len_mean": 5.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "store.{}.target_low[].timeAsSeconds",
+   "count": 442,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 2.188,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 442
+   },
+   "numeric": {
+    "count": 442,
+    "min": 0.0,
+    "max": 79200.0,
+    "mean": 24434.38914,
+    "integral_values": 442,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "store.{}.target_low[].value",
+   "count": 442,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 2.188,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 422,
+    "number": 20
+   },
+   "numeric": {
+    "count": 442,
+    "min": 4.9,
+    "max": 125.0,
+    "mean": 83.615385,
+    "integral_values": 422,
+    "fractional_values": 20,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "store.{}.timezone",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 202
+   },
+   "string": {
+    "count": 202,
+    "len_min": 5,
+    "len_max": 9,
+    "len_mean": 8.96,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "store.{}.units",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 202
+   },
+   "string": {
+    "count": 202,
+    "len_min": 5,
+    "len_max": 6,
+    "len_mean": 5.1,
+    "distinct_values": [
+     "mg/dL"
+    ],
+    "distinct_value_count": 3,
+    "values_withheld": 2,
+    "value_note": "2 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "units",
+   "count": 202,
+   "docs_present": 202,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-01",
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 202
+   },
+   "string": {
+    "count": 202,
+    "len_min": 5,
+    "len_max": 6,
+    "len_mean": 5.1,
+    "distinct_values": [
+     "mg/dL"
+    ],
+    "distinct_value_count": 3,
+    "values_withheld": 2,
+    "value_note": "2 value(s) withheld: seen on fewer than 3 sites"
+   }
+  }
+ ]
+}

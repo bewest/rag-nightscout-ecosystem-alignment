@@ -1,0 +1,254 @@
+{
+ "collection": "entries",
+ "generated_by": "tools/nsschema/diff.py",
+ "spec": "aid-entries-2025.yaml",
+ "root_schema": "Entry",
+ "documents": 896589,
+ "sites": [
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k"
+ ],
+ "declared_paths": 27,
+ "observed_paths": 19,
+ "summary": {
+  "undeclared": 4,
+  "undeclared_by_tier": {
+   "vendor": 1,
+   "core": 3
+  },
+  "unobserved": 4,
+  "v3_metadata_absent": 8,
+  "type_conflicts": 1,
+  "constraint_violations": 1,
+  "enum_unverifiable": 1,
+  "required_fields_missing_somewhere": 0
+ },
+ "type_conflicts": [
+  {
+   "path": "date",
+   "tier": "universal",
+   "declared_types": [
+    "integer"
+   ],
+   "observed_types": {
+    "integer": 345332,
+    "number": 551257
+   },
+   "uncovered_types": {
+    "number": 551257
+   },
+   "uncovered_values": 551257,
+   "uncovered_fraction_of_values": 0.614838,
+   "sites_affected": 11
+  }
+ ],
+ "required_missing": [],
+ "constraint_violations": [
+  {
+   "path": "direction",
+   "kind": "enum",
+   "declared_enum": [
+    "DoubleDown",
+    "DoubleUp",
+    "Flat",
+    "FortyFiveDown",
+    "FortyFiveUp",
+    "NOT COMPUTABLE",
+    "RATE OUT OF RANGE",
+    "SingleDown",
+    "SingleUp"
+   ],
+   "observed_outside_enum": [
+    "NONE"
+   ],
+   "docs_present": 758390
+  }
+ ],
+ "enum_unverifiable": [
+  {
+   "path": "direction",
+   "declared_enum": [
+    "DoubleDown",
+    "DoubleUp",
+    "Flat",
+    "FortyFiveDown",
+    "FortyFiveUp",
+    "NOT COMPUTABLE",
+    "RATE OUT OF RANGE",
+    "SingleDown",
+    "SingleUp"
+   ],
+   "distinct_values_observed": 9,
+   "values_published": 8,
+   "reason": "1 value(s) withheld: seen on fewer than 3 sites"
+  }
+ ],
+ "undeclared": [
+  {
+   "path": "trend",
+   "tier": "core",
+   "tier_reason": "10/11 sites, 71.6% of documents",
+   "docs_present": 642337,
+   "doc_frequency": 0.716423,
+   "site_count": 10,
+   "observed_types": {
+    "integer": 642337
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "isCalibration",
+   "tier": "core",
+   "tier_reason": "10/11 sites, 61.9% of documents",
+   "docs_present": 554992,
+   "doc_frequency": 0.619004,
+   "site_count": 10,
+   "observed_types": {
+    "boolean": 554992
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "trendRate",
+   "tier": "core",
+   "tier_reason": "10/11 sites, 46.0% of documents",
+   "docs_present": 412355,
+   "doc_frequency": 0.459915,
+   "site_count": 10,
+   "observed_types": {
+    "integer": 46488,
+    "number": 365867
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "glucose",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 86% of documents on 1 of them",
+   "docs_present": 57722,
+   "doc_frequency": 0.06438,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 57722
+   },
+   "distinct_values": null
+  }
+ ],
+ "unobserved": [
+  {
+   "path": "intercept",
+   "declared_types": [
+    "number"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "scale",
+   "declared_types": [
+    "number"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "slope",
+   "declared_types": [
+    "number"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "units",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null
+  }
+ ],
+ "v3_metadata_absent": [
+  {
+   "path": "app",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "identifier",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "isReadOnly",
+   "declared_types": [
+    "boolean"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "isValid",
+   "declared_types": [
+    "boolean"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "modifiedBy",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "srvCreated",
+   "declared_types": [
+    "integer"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "srvModified",
+   "declared_types": [
+    "integer"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "subject",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  }
+ ]
+}

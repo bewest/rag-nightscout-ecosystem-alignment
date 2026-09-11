@@ -1,0 +1,460 @@
+{
+ "collection": "treatments",
+ "generated_by": "tools/nsschema/diff.py",
+ "spec": "aid-treatments-2025.yaml",
+ "root_schema": "Treatment",
+ "documents": 369419,
+ "sites": [
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k"
+ ],
+ "declared_paths": 47,
+ "observed_paths": 41,
+ "summary": {
+  "undeclared": 12,
+  "undeclared_by_tier": {
+   "core": 1,
+   "common": 6,
+   "rare": 3,
+   "vendor": 1,
+   "sparse": 1
+  },
+  "unobserved": 11,
+  "v3_metadata_absent": 7,
+  "type_conflicts": 3,
+  "constraint_violations": 1,
+  "enum_unverifiable": 2,
+  "required_fields_missing_somewhere": 0
+ },
+ "type_conflicts": [
+  {
+   "path": "carbs",
+   "tier": "universal",
+   "declared_types": [
+    "number"
+   ],
+   "observed_types": {
+    "integer": 10656,
+    "null": 353734,
+    "number": 5029
+   },
+   "uncovered_types": {
+    "null": 353734
+   },
+   "uncovered_values": 353734,
+   "uncovered_fraction_of_values": 0.957541,
+   "sites_affected": 11
+  },
+  {
+   "path": "timestamp",
+   "tier": "core",
+   "declared_types": [
+    "integer"
+   ],
+   "observed_types": {
+    "string": 311648
+   },
+   "uncovered_types": {
+    "string": 311648
+   },
+   "uncovered_values": 311648,
+   "uncovered_fraction_of_values": 1.0,
+   "sites_affected": 10
+  },
+  {
+   "path": "insulin",
+   "tier": "universal",
+   "declared_types": [
+    "number"
+   ],
+   "observed_types": {
+    "integer": 2791,
+    "null": 224268,
+    "number": 142360
+   },
+   "uncovered_types": {
+    "null": 224268
+   },
+   "uncovered_values": 224268,
+   "uncovered_fraction_of_values": 0.607083,
+   "sites_affected": 11
+  }
+ ],
+ "required_missing": [],
+ "constraint_violations": [
+  {
+   "path": "type",
+   "kind": "enum",
+   "declared_enum": [
+    "Normal",
+    "Priming",
+    "SMB"
+   ],
+   "observed_outside_enum": [
+    "normal"
+   ],
+   "docs_present": 130257
+  }
+ ],
+ "enum_unverifiable": [
+  {
+   "path": "eventType",
+   "declared_enum": [
+    "<none>",
+    "Announcement",
+    "BG Check",
+    "Bolus Wizard",
+    "Carb Correction",
+    "Combo Bolus",
+    "Correction Bolus",
+    "Exercise",
+    "Insulin Change",
+    "Meal Bolus",
+    "NS Carbs",
+    "Note",
+    "OpenAPS Offline",
+    "Prime",
+    "Profile Switch",
+    "Pump Battery Change",
+    "Question",
+    "Resume Pump",
+    "SMB",
+    "Sensor Change",
+    "Sensor Start",
+    "Site Change",
+    "Snack Bolus",
+    "Suspend Pump",
+    "Target Range",
+    "Temp Basal",
+    "Temporary Override",
+    "Temporary Target"
+   ],
+   "distinct_values_observed": 14,
+   "values_published": 6,
+   "reason": "8 value(s) withheld: seen on fewer than 3 sites"
+  },
+  {
+   "path": "glucoseType",
+   "declared_enum": [
+    "Finger",
+    "Manual",
+    "Sensor"
+   ],
+   "distinct_values_observed": 1,
+   "reason": "1 value(s) withheld: seen on fewer than 3 sites"
+  }
+ ],
+ "undeclared": [
+  {
+   "path": "amount",
+   "tier": "core",
+   "tier_reason": "10/11 sites, 45.7% of documents",
+   "docs_present": 168857,
+   "doc_frequency": 0.457088,
+   "site_count": 10,
+   "observed_types": {
+    "integer": 97537,
+    "number": 71320
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "userEnteredAt",
+   "tier": "common",
+   "tier_reason": "10/11 sites, 1.8% of documents",
+   "docs_present": 6491,
+   "doc_frequency": 0.017571,
+   "site_count": 10,
+   "observed_types": {
+    "string": 6491
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "insulinNeedsScaleFactor",
+   "tier": "common",
+   "tier_reason": "9/11 sites, 0.7% of documents",
+   "docs_present": 2720,
+   "doc_frequency": 0.007363,
+   "site_count": 9,
+   "observed_types": {
+    "integer": 1187,
+    "number": 1533
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "correctionRange",
+   "tier": "common",
+   "tier_reason": "7/11 sites, 0.5% of documents",
+   "docs_present": 1673,
+   "doc_frequency": 0.004529,
+   "site_count": 7,
+   "observed_types": {
+    "array": 1673
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "correctionRange[]",
+   "tier": "common",
+   "tier_reason": "7/11 sites, 0.5% of documents",
+   "docs_present": 1673,
+   "doc_frequency": 0.004529,
+   "site_count": 7,
+   "observed_types": {
+    "integer": 2346,
+    "number": 1000
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "userLastModifiedAt",
+   "tier": "common",
+   "tier_reason": "5/11 sites, 0.0% of documents",
+   "docs_present": 131,
+   "doc_frequency": 0.000355,
+   "site_count": 5,
+   "observed_types": {
+    "string": 131
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "remoteAddress",
+   "tier": "common",
+   "tier_reason": "3/11 sites, 0.0% of documents",
+   "docs_present": 98,
+   "doc_frequency": 0.000265,
+   "site_count": 3,
+   "observed_types": {
+    "string": 98
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "id",
+   "tier": "vendor",
+   "tier_reason": "1/11 sites, but written in 90% of documents on 1 of them",
+   "docs_present": 55939,
+   "doc_frequency": 0.151424,
+   "site_count": 1,
+   "observed_types": {
+    "string": 55939
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "units",
+   "tier": "sparse",
+   "tier_reason": "1/11 sites, 0.04% of documents",
+   "docs_present": 161,
+   "doc_frequency": 0.000436,
+   "site_count": 1,
+   "observed_types": {
+    "string": 161
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "endmills",
+   "tier": "rare",
+   "tier_reason": "2 documents in the whole corpus",
+   "docs_present": 2,
+   "doc_frequency": 5e-06,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 2
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "mills",
+   "tier": "rare",
+   "tier_reason": "2 documents in the whole corpus",
+   "docs_present": 2,
+   "doc_frequency": 5e-06,
+   "site_count": 1,
+   "observed_types": {
+    "integer": 2
+   },
+   "distinct_values": null
+  },
+  {
+   "path": "durationType",
+   "tier": "rare",
+   "tier_reason": "1 documents in the whole corpus",
+   "docs_present": 1,
+   "doc_frequency": 3e-06,
+   "site_count": 1,
+   "observed_types": {
+    "string": 1
+   },
+   "distinct_values": null
+  }
+ ],
+ "unobserved": [
+  {
+   "path": "bolusType",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": "BolusType"
+  },
+  {
+   "path": "device",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "isBasalInsulin",
+   "declared_types": [
+    "boolean"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "percent",
+   "declared_types": [
+    "number"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "percentage",
+   "declared_types": [
+    "integer"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "profile",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "profileJson",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "pumpId",
+   "declared_types": [
+    "integer"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "pumpSerial",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "pumpType",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null
+  },
+  {
+   "path": "timeshift",
+   "declared_types": [
+    "integer"
+   ],
+   "required": false,
+   "schema_name": null
+  }
+ ],
+ "v3_metadata_absent": [
+  {
+   "path": "app",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "isReadOnly",
+   "declared_types": [
+    "boolean"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "isValid",
+   "declared_types": [
+    "boolean"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "modifiedBy",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "srvCreated",
+   "declared_types": [
+    "integer"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "srvModified",
+   "declared_types": [
+    "integer"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  },
+  {
+   "path": "subject",
+   "declared_types": [
+    "string"
+   ],
+   "required": false,
+   "schema_name": null,
+   "note": "API v3 metadata; not returned by the v1 endpoint the corpus was collected from"
+  }
+ ]
+}

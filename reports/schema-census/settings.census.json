@@ -1,0 +1,5142 @@
+{
+ "collection": "settings",
+ "generated_by": "tools/nsschema/census.py",
+ "documents": 11,
+ "sources": {
+  "2026-04-26/a/settings": 1,
+  "2026-04-26/b/settings": 1,
+  "2026-04-26/c/settings": 1,
+  "2026-04-26/d/settings": 1,
+  "2026-04-26/e/settings": 1,
+  "2026-04-26/f/settings": 1,
+  "2026-04-26/g/settings": 1,
+  "2026-04-26/h/settings": 1,
+  "2026-04-26/i/settings": 1,
+  "2026-04-26/j/settings": 1,
+  "2026-04-26/k/settings": 1
+ },
+ "sites": [
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k"
+ ],
+ "site_documents": {
+  "a": 1,
+  "b": 1,
+  "c": 1,
+  "d": 1,
+  "e": 1,
+  "f": 1,
+  "g": 1,
+  "h": 1,
+  "i": 1,
+  "j": 1,
+  "k": 1
+ },
+ "snapshots": [
+  "2026-04-26"
+ ],
+ "map_paths": [
+  "store"
+ ],
+ "map_paths_detected": {},
+ "truncated": false,
+ "path_cap_reached": false,
+ "elapsed_seconds": 0.0,
+ "fields": [
+  {
+   "path": "apiEnabled",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 11,
+    "false": 0
+   }
+  },
+  {
+   "path": "authorized",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "null": 11
+   },
+   "null_count": 11
+  },
+  {
+   "path": "boluscalcEnabled",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 10,
+    "false": 1
+   }
+  },
+  {
+   "path": "careportalEnabled",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 11,
+    "false": 0
+   }
+  },
+  {
+   "path": "extendedSettings",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 11
+   }
+  },
+  {
+   "path": "extendedSettings.bage",
+   "count": 1,
+   "docs_present": 1,
+   "doc_frequency": 0.090909,
+   "values_per_doc": 1.0,
+   "sites": [
+    "e"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "e": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 1
+   }
+  },
+  {
+   "path": "extendedSettings.bage.warn",
+   "count": 1,
+   "docs_present": 1,
+   "doc_frequency": 0.090909,
+   "values_per_doc": 1.0,
+   "sites": [
+    "e"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "e": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 1
+   },
+   "numeric": {
+    "count": 1,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 1,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "extendedSettings.basal",
+   "count": 9,
+   "docs_present": 9,
+   "doc_frequency": 0.818182,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 9
+   }
+  },
+  {
+   "path": "extendedSettings.basal.render",
+   "count": 9,
+   "docs_present": 9,
+   "doc_frequency": 0.818182,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "h",
+    "i",
+    "k"
+   ],
+   "site_count": 9,
+   "sites_saturated": 9,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 9
+   },
+   "string": {
+    "count": 9,
+    "len_min": 6,
+    "len_max": 7,
+    "len_mean": 6.78,
+    "distinct_values": [
+     "default"
+    ],
+    "distinct_value_count": 2,
+    "values_withheld": 1,
+    "value_note": "1 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "extendedSettings.cage",
+   "count": 2,
+   "docs_present": 2,
+   "doc_frequency": 0.181818,
+   "values_per_doc": 1.0,
+   "sites": [
+    "f",
+    "k"
+   ],
+   "site_count": 2,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "f": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 2
+   }
+  },
+  {
+   "path": "extendedSettings.cage.display",
+   "count": 1,
+   "docs_present": 1,
+   "doc_frequency": 0.090909,
+   "values_per_doc": 1.0,
+   "sites": [
+    "f"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "f": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 1
+   },
+   "string": {
+    "count": 1,
+    "len_min": 5,
+    "len_max": 5,
+    "len_mean": 5.0,
+    "distinct_values": null,
+    "distinct_value_count": 1,
+    "values_withheld": 1,
+    "value_note": "1 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "extendedSettings.cage.enableAlert",
+   "count": 1,
+   "docs_present": 1,
+   "doc_frequency": 0.090909,
+   "values_per_doc": 1.0,
+   "sites": [
+    "f"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "f": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 1
+   },
+   "boolean": {
+    "true": 0,
+    "false": 1
+   }
+  },
+  {
+   "path": "extendedSettings.cage.info",
+   "count": 2,
+   "docs_present": 2,
+   "doc_frequency": 0.181818,
+   "values_per_doc": 1.0,
+   "sites": [
+    "f",
+    "k"
+   ],
+   "site_count": 2,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "f": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 2
+   },
+   "numeric": {
+    "count": 2,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 2,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "extendedSettings.cage.urgent",
+   "count": 1,
+   "docs_present": 1,
+   "doc_frequency": 0.090909,
+   "values_per_doc": 1.0,
+   "sites": [
+    "k"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 1
+   },
+   "numeric": {
+    "count": 1,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 1,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "extendedSettings.cage.warn",
+   "count": 1,
+   "docs_present": 1,
+   "doc_frequency": 0.090909,
+   "values_per_doc": 1.0,
+   "sites": [
+    "k"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 1
+   },
+   "numeric": {
+    "count": 1,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 1,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "extendedSettings.dbsize",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 11
+   }
+  },
+  {
+   "path": "extendedSettings.dbsize.max",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "extendedSettings.devicestatus",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 11
+   }
+  },
+  {
+   "path": "extendedSettings.devicestatus.advanced",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 11,
+    "false": 0
+   }
+  },
+  {
+   "path": "extendedSettings.devicestatus.days",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "extendedSettings.iage",
+   "count": 1,
+   "docs_present": 1,
+   "doc_frequency": 0.090909,
+   "values_per_doc": 1.0,
+   "sites": [
+    "c"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "c": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 1
+   }
+  },
+  {
+   "path": "extendedSettings.iage.info",
+   "count": 1,
+   "docs_present": 1,
+   "doc_frequency": 0.090909,
+   "values_per_doc": 1.0,
+   "sites": [
+    "c"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "c": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 1
+   },
+   "numeric": {
+    "count": 1,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 1,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "extendedSettings.iage.warn",
+   "count": 1,
+   "docs_present": 1,
+   "doc_frequency": 0.090909,
+   "values_per_doc": 1.0,
+   "sites": [
+    "c"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "c": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 1
+   },
+   "numeric": {
+    "count": 1,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 1,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "extendedSettings.loop",
+   "count": 2,
+   "docs_present": 2,
+   "doc_frequency": 0.181818,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "k"
+   ],
+   "site_count": 2,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "a": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 2
+   }
+  },
+  {
+   "path": "extendedSettings.loop.apnsDeveloperTeamId",
+   "count": 2,
+   "docs_present": 2,
+   "doc_frequency": 0.181818,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "k"
+   ],
+   "site_count": 2,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "a": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 2
+   },
+   "string": {
+    "count": 2,
+    "len_min": 10,
+    "len_max": 10,
+    "len_mean": 10.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "extendedSettings.loop.pushServerEnvironment",
+   "count": 2,
+   "docs_present": 2,
+   "doc_frequency": 0.181818,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "k"
+   ],
+   "site_count": 2,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "a": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 2
+   },
+   "string": {
+    "count": 2,
+    "len_min": 10,
+    "len_max": 10,
+    "len_mean": 10.0,
+    "distinct_values": null,
+    "distinct_value_count": 1,
+    "values_withheld": 1,
+    "value_note": "1 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "extendedSettings.pump",
+   "count": 2,
+   "docs_present": 2,
+   "doc_frequency": 0.181818,
+   "values_per_doc": 1.0,
+   "sites": [
+    "e",
+    "f"
+   ],
+   "site_count": 2,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "e": 1.0,
+    "f": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 2
+   }
+  },
+  {
+   "path": "extendedSettings.pump.fields",
+   "count": 1,
+   "docs_present": 1,
+   "doc_frequency": 0.090909,
+   "values_per_doc": 1.0,
+   "sites": [
+    "f"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "f": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 1
+   },
+   "string": {
+    "count": 1,
+    "len_min": 9,
+    "len_max": 9,
+    "len_mean": 9.0,
+    "distinct_values": null,
+    "distinct_value_count": 1,
+    "values_withheld": 1,
+    "value_note": "1 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "extendedSettings.pump.warnOnSuspend",
+   "count": 1,
+   "docs_present": 1,
+   "doc_frequency": 0.090909,
+   "values_per_doc": 1.0,
+   "sites": [
+    "e"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "e": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 1
+   },
+   "boolean": {
+    "true": 1,
+    "false": 0
+   }
+  },
+  {
+   "path": "extendedSettings.sage",
+   "count": 2,
+   "docs_present": 2,
+   "doc_frequency": 0.181818,
+   "values_per_doc": 1.0,
+   "sites": [
+    "c",
+    "f"
+   ],
+   "site_count": 2,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "c": 1.0,
+    "f": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 2
+   }
+  },
+  {
+   "path": "extendedSettings.sage.enableAlert",
+   "count": 2,
+   "docs_present": 2,
+   "doc_frequency": 0.181818,
+   "values_per_doc": 1.0,
+   "sites": [
+    "c",
+    "f"
+   ],
+   "site_count": 2,
+   "sites_saturated": 2,
+   "site_frequency": {
+    "c": 1.0,
+    "f": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 2
+   },
+   "boolean": {
+    "true": 1,
+    "false": 1
+   }
+  },
+  {
+   "path": "extendedSettings.sage.info",
+   "count": 1,
+   "docs_present": 1,
+   "doc_frequency": 0.090909,
+   "values_per_doc": 1.0,
+   "sites": [
+    "c"
+   ],
+   "site_count": 1,
+   "sites_saturated": 1,
+   "site_frequency": {
+    "c": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 1
+   },
+   "numeric": {
+    "count": 1,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 1,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "name",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 10,
+    "len_max": 10,
+    "len_mean": 10.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "runtimeState",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 6,
+    "len_max": 6,
+    "len_mean": 6.0,
+    "distinct_values": [
+     "loaded"
+    ],
+    "distinct_value_count": 1
+   }
+  },
+  {
+   "path": "serverTime",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 24,
+    "len_max": 24,
+    "len_mean": 24.0,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "serverTimeEpoch",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "settings",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 11
+   }
+  },
+  {
+   "path": "settings.DEFAULT_FEATURES",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 11
+   },
+   "array": {
+    "count": 11,
+    "len_min": 13,
+    "len_max": 13,
+    "len_mean": 13.0
+   }
+  },
+  {
+   "path": "settings.DEFAULT_FEATURES[]",
+   "count": 143,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 13.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 143
+   },
+   "string": {
+    "count": 143,
+    "len_min": 5,
+    "len_max": 12,
+    "len_mean": 7.54,
+    "distinct_values": [
+     "basal",
+     "bgnow",
+     "bolus",
+     "careportal",
+     "dbsize",
+     "delta",
+     "devicestatus",
+     "direction",
+     "errorcodes",
+     "profile",
+     "runtimestate",
+     "timeago",
+     "upbat"
+    ],
+    "distinct_value_count": 13
+   }
+  },
+  {
+   "path": "settings.adminNotifiesEnabled",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 0,
+    "false": 11
+   }
+  },
+  {
+   "path": "settings.alarmHigh",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 11,
+    "false": 0
+   }
+  },
+  {
+   "path": "settings.alarmHighMins",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 11
+   },
+   "array": {
+    "count": 11,
+    "len_min": 4,
+    "len_max": 4,
+    "len_mean": 4.0
+   }
+  },
+  {
+   "path": "settings.alarmHighMins[]",
+   "count": 44,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 4.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 44
+   },
+   "numeric": {
+    "count": 44,
+    "min": 30.0,
+    "max": 120.0,
+    "mean": 75.0,
+    "integral_values": 44,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "settings.alarmLow",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 11,
+    "false": 0
+   }
+  },
+  {
+   "path": "settings.alarmLowMins",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 11
+   },
+   "array": {
+    "count": 11,
+    "len_min": 4,
+    "len_max": 4,
+    "len_mean": 4.0
+   }
+  },
+  {
+   "path": "settings.alarmLowMins[]",
+   "count": 44,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 4.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 44
+   },
+   "numeric": {
+    "count": 44,
+    "min": 15.0,
+    "max": 60.0,
+    "mean": 37.5,
+    "integral_values": 44,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "settings.alarmPumpBatteryLow",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 0,
+    "false": 11
+   }
+  },
+  {
+   "path": "settings.alarmTimeagoUrgent",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 11,
+    "false": 0
+   }
+  },
+  {
+   "path": "settings.alarmTimeagoUrgentMins",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 9,
+    "string": 2
+   },
+   "numeric": {
+    "count": 9,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 9,
+    "fractional_values": 0
+   },
+   "string": {
+    "count": 2,
+    "len_min": 2,
+    "len_max": 3,
+    "len_mean": 2.5,
+    "distinct_values": null,
+    "distinct_value_count": 2,
+    "values_withheld": 2,
+    "value_note": "2 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "settings.alarmTimeagoWarn",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 10,
+    "false": 1
+   }
+  },
+  {
+   "path": "settings.alarmTimeagoWarnMins",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 9,
+    "string": 2
+   },
+   "numeric": {
+    "count": 9,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 9,
+    "fractional_values": 0
+   },
+   "string": {
+    "count": 2,
+    "len_min": 2,
+    "len_max": 2,
+    "len_mean": 2.0,
+    "distinct_values": null,
+    "distinct_value_count": 2,
+    "values_withheld": 2,
+    "value_note": "2 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "settings.alarmTypes",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 11
+   },
+   "array": {
+    "count": 11,
+    "len_min": 1,
+    "len_max": 1,
+    "len_mean": 1.0
+   }
+  },
+  {
+   "path": "settings.alarmTypes[]",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 6,
+    "len_max": 7,
+    "len_mean": 6.36,
+    "distinct_values": [
+     "predict",
+     "simple"
+    ],
+    "distinct_value_count": 2
+   }
+  },
+  {
+   "path": "settings.alarmUrgentHigh",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 11,
+    "false": 0
+   }
+  },
+  {
+   "path": "settings.alarmUrgentHighMins",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 11
+   },
+   "array": {
+    "count": 11,
+    "len_min": 4,
+    "len_max": 4,
+    "len_mean": 4.0
+   }
+  },
+  {
+   "path": "settings.alarmUrgentHighMins[]",
+   "count": 44,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 4.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 44
+   },
+   "numeric": {
+    "count": 44,
+    "min": 30.0,
+    "max": 120.0,
+    "mean": 75.0,
+    "integral_values": 44,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "settings.alarmUrgentLow",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 11,
+    "false": 0
+   }
+  },
+  {
+   "path": "settings.alarmUrgentLowMins",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 11
+   },
+   "array": {
+    "count": 11,
+    "len_min": 3,
+    "len_max": 3,
+    "len_mean": 3.0
+   }
+  },
+  {
+   "path": "settings.alarmUrgentLowMins[]",
+   "count": 33,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 3.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 33
+   },
+   "numeric": {
+    "count": 33,
+    "min": 15.0,
+    "max": 45.0,
+    "mean": 30.0,
+    "integral_values": 33,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "settings.alarmUrgentMins",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 11
+   },
+   "array": {
+    "count": 11,
+    "len_min": 4,
+    "len_max": 4,
+    "len_mean": 4.0
+   }
+  },
+  {
+   "path": "settings.alarmUrgentMins[]",
+   "count": 44,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 4.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 44
+   },
+   "numeric": {
+    "count": 44,
+    "min": 30.0,
+    "max": 120.0,
+    "mean": 75.0,
+    "integral_values": 44,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "settings.alarmWarnMins",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 11
+   },
+   "array": {
+    "count": 11,
+    "len_min": 4,
+    "len_max": 4,
+    "len_mean": 4.0
+   }
+  },
+  {
+   "path": "settings.alarmWarnMins[]",
+   "count": 44,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 4.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 44
+   },
+   "numeric": {
+    "count": 44,
+    "min": 30.0,
+    "max": 120.0,
+    "mean": 75.0,
+    "integral_values": 44,
+    "fractional_values": 0,
+    "nonfinite": 0
+   }
+  },
+  {
+   "path": "settings.authDefaultRoles",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 8,
+    "len_max": 8,
+    "len_mean": 8.0,
+    "distinct_values": [
+     "readable"
+    ],
+    "distinct_value_count": 1
+   }
+  },
+  {
+   "path": "settings.authFailDelay",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "settings.authenticationPromptOnLoad",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 0,
+    "false": 11
+   }
+  },
+  {
+   "path": "settings.baseURL",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.customTitle",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 3,
+    "len_max": 10,
+    "len_mean": 7.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.dayEnd",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "settings.dayStart",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "settings.deNormalizeDates",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 0,
+    "false": 11
+   }
+  },
+  {
+   "path": "settings.editMode",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 11,
+    "false": 0
+   }
+  },
+  {
+   "path": "settings.enable",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "array": 11
+   },
+   "array": {
+    "count": 11,
+    "len_min": 19,
+    "len_max": 28,
+    "len_mean": 26.36
+   }
+  },
+  {
+   "path": "settings.enable[]",
+   "count": 290,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 26.364,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 290
+   },
+   "string": {
+    "count": 290,
+    "len_min": 3,
+    "len_max": 15,
+    "len_mean": 6.8,
+    "distinct_values": [
+     "ar2",
+     "bage",
+     "basal",
+     "bgnow",
+     "bolus",
+     "boluscalc",
+     "bwp",
+     "cage",
+     "careportal",
+     "cob",
+     "dbsize",
+     "delta",
+     "devicestatus",
+     "direction",
+     "errorcodes",
+     "food",
+     "iage",
+     "iob",
+     "loop",
+     "profile",
+     "pump",
+     "runtimestate",
+     "sage",
+     "simplealarms",
+     "timeago",
+     "treatmentnotify",
+     "upbat"
+    ],
+    "distinct_value_count": 30,
+    "values_withheld": 3,
+    "value_note": "3 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "settings.focusHours",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "settings.frameName1",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 7,
+    "len_mean": 0.64,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameName2",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 3,
+    "len_mean": 0.27,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameName3",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameName4",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameName5",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameName6",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameName7",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameName8",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameUrl1",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 42,
+    "len_mean": 3.82,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameUrl2",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 42,
+    "len_mean": 3.82,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameUrl3",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameUrl4",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameUrl5",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameUrl6",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameUrl7",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.frameUrl8",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 0,
+    "len_max": 0,
+    "len_mean": 0.0,
+    "distinct_values": null,
+    "value_note": "withheld: identifying field name"
+   }
+  },
+  {
+   "path": "settings.heartbeat",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "settings.insecureUseHttp",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 11,
+    "false": 0
+   }
+  },
+  {
+   "path": "settings.language",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 2,
+    "len_max": 2,
+    "len_mean": 2.0,
+    "distinct_values": [
+     "en"
+    ],
+    "distinct_value_count": 1
+   }
+  },
+  {
+   "path": "settings.nightMode",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 0,
+    "false": 11
+   }
+  },
+  {
+   "path": "settings.scaleY",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 3,
+    "len_max": 3,
+    "len_mean": 3.0,
+    "distinct_values": [
+     "log"
+    ],
+    "distinct_value_count": 1
+   }
+  },
+  {
+   "path": "settings.secureCsp",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 0,
+    "false": 11
+   }
+  },
+  {
+   "path": "settings.secureHstsHeader",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 11,
+    "false": 0
+   }
+  },
+  {
+   "path": "settings.secureHstsHeaderIncludeSubdomains",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 0,
+    "false": 11
+   }
+  },
+  {
+   "path": "settings.secureHstsHeaderPreload",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 0,
+    "false": 11
+   }
+  },
+  {
+   "path": "settings.showClockDelta",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 0,
+    "false": 11
+   }
+  },
+  {
+   "path": "settings.showClockLastTime",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "boolean": 11
+   },
+   "boolean": {
+    "true": 0,
+    "false": 11
+   }
+  },
+  {
+   "path": "settings.showForecast",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 3,
+    "len_max": 4,
+    "len_mean": 3.82,
+    "distinct_values": [
+     "loop"
+    ],
+    "distinct_value_count": 2,
+    "values_withheld": 1,
+    "value_note": "1 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "settings.showPlugins",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 25,
+    "len_max": 148,
+    "len_mean": 109.73,
+    "distinct_values": null,
+    "value_note": "withheld: personal-shaped or over-long values"
+   }
+  },
+  {
+   "path": "settings.showRawbg",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 5,
+    "len_max": 5,
+    "len_mean": 5.0,
+    "distinct_values": [
+     "never"
+    ],
+    "distinct_value_count": 1
+   }
+  },
+  {
+   "path": "settings.theme",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 6,
+    "len_max": 7,
+    "len_mean": 6.55,
+    "distinct_values": [
+     "colors",
+     "default"
+    ],
+    "distinct_value_count": 2
+   }
+  },
+  {
+   "path": "settings.thresholds",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "object": 11
+   }
+  },
+  {
+   "path": "settings.thresholds.bgHigh",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "settings.thresholds.bgLow",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "settings.thresholds.bgTargetBottom",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "settings.thresholds.bgTargetTop",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "settings.timeFormat",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "integer": 11
+   },
+   "numeric": {
+    "count": 11,
+    "range_note": "withheld: fewer than 20 observations, so an extreme would be one site's individual data point",
+    "integral_values": 11,
+    "fractional_values": 0
+   }
+  },
+  {
+   "path": "settings.units",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 4,
+    "len_max": 5,
+    "len_mean": 4.91,
+    "distinct_values": [
+     "mg/dl"
+    ],
+    "distinct_value_count": 2,
+    "values_withheld": 1,
+    "value_note": "1 value(s) withheld: seen on fewer than 3 sites"
+   }
+  },
+  {
+   "path": "status",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 2,
+    "len_max": 2,
+    "len_mean": 2.0,
+    "distinct_values": [
+     "ok"
+    ],
+    "distinct_value_count": 1
+   }
+  },
+  {
+   "path": "version",
+   "count": 11,
+   "docs_present": 11,
+   "doc_frequency": 1.0,
+   "values_per_doc": 1.0,
+   "sites": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k"
+   ],
+   "site_count": 11,
+   "sites_saturated": 11,
+   "site_frequency": {
+    "a": 1.0,
+    "b": 1.0,
+    "c": 1.0,
+    "d": 1.0,
+    "e": 1.0,
+    "f": 1.0,
+    "g": 1.0,
+    "h": 1.0,
+    "i": 1.0,
+    "j": 1.0,
+    "k": 1.0
+   },
+   "snapshots": [
+    "2026-04-26"
+   ],
+   "types": {
+    "string": 11
+   },
+   "string": {
+    "count": 11,
+    "len_min": 6,
+    "len_max": 6,
+    "len_mean": 6.0,
+    "distinct_values": [
+     "15.0.3"
+    ],
+    "distinct_value_count": 4,
+    "values_withheld": 3,
+    "value_note": "3 value(s) withheld: seen on fewer than 3 sites"
+   }
+  }
+ ]
+}

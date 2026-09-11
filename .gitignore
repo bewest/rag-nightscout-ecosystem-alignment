@@ -71,3 +71,7 @@ attached_assets/
 .build/
 .copilot-session.db
 checkpoints/
+
+# nsschema validator replay dependencies
+tools/nsschema/node_modules/
+tools/nsschema/package-lock.json
