@@ -663,6 +663,7 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
 # reconciled model. See tools/nsschema/README.md.
 .PHONY: schema schema-census schema-reconcile schema-model schema-emit \
         schema-impact schema-impact-smoke schema-drift schema-verify \
+        schema-scan-pii \
         schema-test schema-clean
 
 PY ?= python3
@@ -706,6 +707,10 @@ schema-impact-smoke:
 ## schema-verify: fail if a committed generated artifact drifted from its model
 schema-verify:
 	@$(NSSCHEMA).verify_generated
+
+## schema-scan-pii: check committed JSON fixtures for personal data
+schema-scan-pii:
+	@$(NSSCHEMA).scan_pii --count $(or $(FILES),tools/ns2parquet/fixtures/*.json)
 
 ## schema-drift: check tools/ns2parquet against the measured wire model
 schema-drift:

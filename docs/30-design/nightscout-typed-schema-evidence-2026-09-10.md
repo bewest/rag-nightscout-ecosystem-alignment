@@ -141,6 +141,27 @@ zero.
 
 None of the leaked material was needed to know a field is a string.
 
+### 1.3.1 The same policy, pointed at files already in the repo
+
+`redact.py` protects what this pipeline emits. It cannot protect what was
+committed before it existed. `tools/nsschema/scan_pii.py` applies the same
+rules in reverse to any JSON file — reporting *paths and categories, never
+values*, because a report about a leak should not be a second copy of it:
+
+```bash
+make schema-scan-pii                       # the ns2parquet fixtures
+make schema-scan-pii FILES='path/to/*.json'
+```
+
+Run against `tools/ns2parquet/fixtures/` it reports live personal data in
+committed test fixtures — APNs `deviceToken` values, Loop
+`bundleIdentifier` values carrying Apple Developer Team IDs, override-preset
+names and symbols, pump identifiers, timezones and exact timestamps. Those
+fixtures predate this work and are already published; remediating them is a
+maintainer decision, not something this pipeline should do silently, and it
+is raised here rather than fixed. The scanner exists so the question can be
+asked of any file, repeatably.
+
 ## 2. Method
 
 ```mermaid

@@ -71,10 +71,11 @@ def test_a_value_seen_on_one_site_only_is_withheld():
 def test_dashboard_label_fields_are_denied_outright():
     # settings.frameName1/frameName2 held two people's first names on one
     # site. Neither value matches any personal shape; the field name rule
-    # and the corroboration rule each catch it independently.
+    # and the corroboration rule each catch it independently. The value
+    # below is invented — a test must not reproduce what it protects.
     stat = census.FieldStat()
     for site in ("a", "b", "c"):
-        stat.observe("settings.frameName1", "Allison", site, "s")
+        stat.observe("settings.frameName1", "A-Persons-Name", site, "s")
     out = stat.to_dict("settings.frameName1", 3, {"a": 1, "b": 1, "c": 1})
     assert out["string"]["distinct_values"] is None
     assert "identifying field name" in out["string"]["value_note"]
@@ -541,3 +542,43 @@ def test_a_declared_enum_is_enforced_when_nothing_was_withheld():
                                  "distinct_value_count": 1})]),
         {"type": _decl(["string"], enum=["sgv", "mbg"])}, "entries")
     assert tree.children["type"].enum == ["mbg", "sgv"]
+
+
+# ── scanning committed files ────────────────────────────────────────────
+
+from nsschema import scan_pii  # noqa: E402
+
+
+def test_scanner_flags_a_credential_field():
+    assert scan_pii.categorize("loopSettings.deviceToken", "abc") == "identifying-name"
+
+
+def test_scanner_flags_an_opaque_token_under_a_neutral_name():
+    token = "0" * 64
+    assert scan_pii.categorize("payload", token) == "opaque-token"
+
+
+def test_scanner_flags_a_personal_shape_under_a_neutral_name():
+    assert scan_pii.categorize("theme", "Europe/Belgrade") == "personal-shape"
+
+
+def test_scanner_passes_ordinary_vocabulary():
+    for path, value in (("eventType", "Temp Basal"), ("units", "mg/dl"),
+                        ("direction", "Flat"), ("manufacturer", "Insulet")):
+        assert scan_pii.categorize(path, value) is None, (path, value)
+
+
+def test_scanner_reports_paths_but_never_values(tmp_path):
+    secret = "a-value-that-must-not-be-echoed"
+    doc = tmp_path / "f.json"
+    doc.write_text(json.dumps([{"deviceToken": secret}]))
+    findings, error = scan_pii.scan_file(doc)
+    assert error is None
+    assert ("[].deviceToken", "identifying-name") in findings
+    # The scanner's own report must not become a second copy of the leak.
+    import io
+    import contextlib
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        scan_pii.main([str(doc), "--count"])
+    assert secret not in buf.getvalue()
