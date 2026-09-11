@@ -2730,3 +2730,26 @@ multitenancy analysis?)**
 - Added EXP-MT-053 (register a synthetic custom resource via CRD-like flow, confirm
   casting/query-profile generation and cache-tier exclusion) to the canonical §8.3 table.
 - Re-ran `tools/verify_refs.py` — no new broken refs from this doc.
+
+**Follow-up 20 (where does the multitenant monolith struggle first, and does Redis
+instead of resident `ddata` help cold-start / db-op cases?)**
+- Added new **§7.7**, synthesizing §7.1/§7.2/§7.5/§6.1 into a direct answer rather than a
+  new prototype: the monolith's first bottleneck is **event-loop CPU budget**, not RSS
+  (§7.2 keeps memory to 9.9-202.5 KB/tenant) and not the database (§6.1's RLS overhead is
+  ~0.3-0.6 ms/query and I/O is async, non-blocking) — it is the *synchronous* per-tenant
+  work (wake/clone ~3-4ms §7.1, O(n²) merge/delta up to 81.2ms §7.5) that stalls every
+  co-resident tenant sharing one process, restating §7.5's fairness finding as the answer
+  to "which area breaks first."
+- Answered the Redis question by separating what it replaces: (1) it legitimately removes
+  a DB round-trip for a shard's first touch of a tenant (a real win, and it also loosens
+  tenant-shard pinning for §10.5's `ROUTER`); (2) it does **not** remove the materialisation
+  cost, which §7.1's own row ("`JSON.parse` of a 795 KB snapshot — the hot cache in
+  Redis/keyv path" = 2.52 ms) already measured as the dominant cost, not the round-trip —
+  so Redis is only as fast as what is stored in it, the same representation lever as
+  §7.2/§7.3 applied one layer up (a columnar blob in Redis removes the parse cost the way
+  it does in-process).
+- Named the one honest gap: no measurement yet of the actual network round-trip for a
+  Redis-held columnar blob (only in-process 0.001 ms and JSON-in-Redis 2.52 ms are
+  measured); added EXP-MT-054 to close it.
+- Added EXP-MT-054 to the canonical §8.3 table; re-ran `tools/verify_refs.py` — no new
+  broken refs from this doc.

@@ -1608,6 +1608,65 @@ unifying idea worth testing is **one columnar format used as wire, storage and c
 format**, deleting the JSON encode/decode hops that exist only because the format changes
 at every hop (EXP-MT-031).
 
+### 7.7 If the monolith struggles first, where — and does Redis change the cold-start/DB-op picture?
+
+Two related questions, answered from measurements already in this section rather than
+speculation, plus one honest gap.
+
+**Where the monolith struggles first: the event loop's CPU budget, not memory and not the
+database.** Node is single-threaded; every synchronous per-tenant operation — the ~3–4 ms
+wake/clone (§7.1), and especially the O(n²) merge/delta at a long-history tenant, measured
+at **81.2 ms for one 5 000-treatment tenant (§7.5)** — blocks *every other tenant sharing
+that process* for its duration, not just the tenant that caused it. This is already the
+document's central fairness finding (§7.5: "a fairness problem, not a throughput
+problem"), restated here as the answer to "which area breaks first": **not RSS** (§7.2
+shows representation keeps memory to 9.9–202.5 KB/tenant, nowhere near a ceiling at 10k),
+and **not the database** (§6.1's RLS overhead is ~0.3–0.6 ms/query, and DB I/O is async —
+it yields the event loop rather than blocking it, unlike a synchronous JS merge/clone). The
+practical signature: **p99 latency degrades for the whole shard whenever one co-resident
+tenant does something CPU-heavy synchronously** — a large incremental sync, a
+long-history delta, a wide unbounded query (§6.5) run against a co-resident tenant's data.
+This is why §9.2's roadmap and EXP-MT-005 (§8.3) already frame the scaling knob as
+**tenants-per-process (K)**, not total tenant count: the ceiling is set by how much
+synchronous CPU work K tenants can collectively spend inside one event loop's budget
+before the slowest one's tail latency drags down all K, not by how much data K tenants can
+fit in RAM.
+
+**Does Redis (in place of the resident in-process `ddata` cache) help with cold start, or
+wherever a DB round-trip would otherwise be required?** Partially, and the honest answer
+depends on separating two things Redis is being asked to replace, which the existing §7.1
+and §7.6 numbers already distinguish:
+
+1. **It can remove a Mongo/Postgres round-trip specifically** — the case where a shard has
+   never held a given tenant and must otherwise query the primary store to rebuild
+   `ddata` from scratch. Serving that tenant's warm snapshot from Redis instead is a
+   real win over paying full query latency plus §7.1's materialisation cost on every
+   shard's first touch, and it is also what makes tenant→shard routing (§10.5's `ROUTER`)
+   less brittle: a tenant is no longer pinned to "whichever shard already warmed it,"
+   because any shard can rehydrate from the shared cache instead of the primary store.
+2. **It does not remove the materialisation cost, and that cost — not the round-trip — is
+   what §7.1 actually measured as dominant.** §7.1's own row for exactly this scenario,
+   "`JSON.parse` of a 795 KB snapshot (the hot cache in Redis/keyv path)," costs **2.52
+   ms** — that is *after* the network fetch, purely the cost of turning cached JSON back
+   into a live object graph. Redis holding JSON changes *where* the bytes come from, not
+   the ~2.5 ms parse tax paid on every wake. This is the same representation lever as
+   §7.2/§7.3, now applied one layer up: **a Redis/keyv cache is only as fast as what is
+   stored in it.** Storing the §7.2 columnar buffer (an opaque typed-array-backed blob,
+   already the shape §6.2/§7.6 recommend keyv for) instead of JSON removes the parse cost
+   the same way it does in-process — `Buffer`-in, typed-array-view-out, no `JSON.parse`.
+
+**The honest gap: this document has not measured the network round-trip cost of fetching
+that columnar blob from Redis**, only the in-process case (§7.2's 0.001 ms is a same-
+process typed-array view, no network hop). A loopback Redis GET is typically sub-
+millisecond, but is not free, and it is **strictly slower than the resident in-process
+map** a shard already holding that tenant would use instead — so Redis is a win *only* for
+the "this shard doesn't have this tenant warm yet" case (point 1) and the
+"process just restarted" case, not a replacement for the in-process resident cache once a
+shard already holds a tenant. This is EXP-MT-054 (§8.3): measure Redis GET-plus-columnar-
+deserialise round-trip time against (a) the in-process resident map and (b) a full
+DB-backed rebuild, to confirm the ordering the reasoning above predicts rather than assert
+it.
+
 ---
 
 ## 8. Benchmark plan
@@ -1706,6 +1765,7 @@ running at scale, but they are no longer open questions.
 | EXP-MT-051 | Simulated vendor-endpoint rate limiter (e.g. HTTP 429 past N req/min per source IP) in front of a `nightscout-connect` worker pool holding many tenant accounts on one egress IP, with and without an egress-proxy-pool layer routing accounts across multiple apparent IPs (§10.5) | Does per-IP vendor rate limiting actually degrade poll success/latency at density with a single egress path, and does distributing accounts across a small proxy pool restore the density `nightscout-connect`'s per-account backoff alone cannot |
 | EXP-MT-052 | End-to-end harness running all five component types (`ROUTER`, `AUTH`, `APP` shards, `REALTIME`, `VCPOOL`) together at increasing shard/tenant count (§10.5) | Does the composed router-facade picture hold together operationally — correct routing, no cross-shard leakage, realtime delivery latency stable — or does a component interaction appear that no single-component benchmark (EXP-MT-041/045/047/048/050) would have caught |
 | EXP-MT-053 | Register a synthetic custom resource type through a CRD-like schema-submission flow; confirm casting validators and a query profile (§6.5) are generated automatically and the resource is excluded from the resident columnar cache by default (§6.5.1) | Does the registration-time generation pipeline actually produce the same casting/allowlist guarantees §6.5 requires for built-in resources, and does the core-vs-custom tier boundary hold without manual per-resource wiring |
+| EXP-MT-054 | Redis GET-plus-columnar-deserialise round-trip for a cold-on-this-shard tenant, vs. the in-process resident map (already-warm shard) and a full DB-backed rebuild (§7.7) | Does an external cache actually sit between "resident" and "full rebuild" in the ordering §7.1/§7.2's numbers predict, and by how much |
 
 `EXP-MT-030` matters disproportionately: the *same* generator against Nocturne gives the
 ecosystem its first apples-to-apples server comparison, and fills the gap that Nocturne's
