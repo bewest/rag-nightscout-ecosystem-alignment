@@ -2,10 +2,11 @@
 
 **Experiments**: EXP-MT-026 (query cost, load cycle, cold wake, event-loop behaviour under
 RTT), **EXP-MT-040b** (where database-per-tenant breaks), **EXP-MT-011b** (one logical
-database with a tenant discriminator)
+database with a tenant discriminator), **EXP-MT-057** (RLS and the change feed, on Postgres)
 **Date**: 2026-09-14
-**Harness**: `tools/mt-bench/{dbloop,nsfiles,shared-tenant,latency-proxy}.js`; raw results in
-`results/exp-mt-026*.json`, `exp-mt-040b.json`, `exp-mt-011b.json`
+**Harness**: `tools/mt-bench/{dbloop,nsfiles,shared-tenant,latency-proxy}.js` and
+`pgfeed/pgfeed.js`; raw results in `results/exp-mt-026*.json`, `exp-mt-040b.json`,
+`exp-mt-011b.json`, `exp-mt-057.json`
 **Under test**: MongoDB **7.0.43**, single-node replica set in Docker, `mongodb` driver
 5.9.2 (the version `cgm-remote-monitor` pins), real `indexedFields` index set, queries
 transcribed from `lib/data/dataloader.js`. Shapes: **database-per-tenant** (§6.7's A′ rung,
@@ -434,6 +435,144 @@ The ladder's stages are unchanged; their justifications are not.
   is an argument about consolidating storage, which both engines support, and it should not be
   cited as an argument for Postgres specifically.
 
+## 8. EXP-MT-057 — how the evaluator learns, on Postgres
+
+The component design calls `ns-evaluator` "change-driven" and never says by what mechanism.
+Four candidates, and they are not interchangeable, because the consumer is an **alarm** path:
+a delayed event is a nuisance, a dropped event is a missed hypo alert. **The question that
+separates them is not throughput — it is what happens while the consumer is not there.** So
+every arm below is a disconnect test.
+
+PostgreSQL 16.14, `wal_level=logical`, 400 tenants × 576 entries = 230,400 rows, 53 MB.
+
+### 8.1 A methodology correction first, because it nearly became a finding
+
+The first run measured RLS as the `postgres` superuser. **Superusers bypass RLS
+unconditionally** — `BYPASSRLS` is implicit, and `FORCE ROW LEVEL SECURITY` subjects the table
+*owner*, not a superuser. So the policy was never enforced: an unbound connection returned all
+230,400 rows and the planner, never seeing the predicate, chose the global date index. Both
+results were about to be written up — the first as "RLS fails open", the second as "RLS does
+not get index bounds". Both are artifacts of connecting as the wrong role.
+
+**§6.1's parenthetical "app role `NOSUPERUSER NOBYPASSRLS`" is not a detail. It is the entire
+mechanism**, and it is silently absent in any environment where the application connects as
+the database owner — which is the default in most quick-start Postgres setups, including the
+one this experiment started from.
+
+### 8.2 RLS on Nightscout query shapes
+
+As `ns_app` (`NOSUPERUSER NOBYPASSRLS`), bound per transaction with `set_config(..., true)`:
+
+| | p50 | p99 |
+|---|---:|---:|
+| **RLS-bound, no tenant predicate in the SQL at all** | **0.383 ms** | 1.993 ms |
+| explicit `WHERE tenant_id = $1` (RLS also active) | 0.585 ms | 2.535 ms |
+| RLS-bound, full 48 h window (576 rows) | 1.452 ms | 3.770 ms |
+
+```
+Limit  (actual time=0.013..0.023 rows=10)
+  ->  Index Scan using entries_tenant_date on entries  (actual rows=10)
+        Index Cond: (tenant_id = (NULLIF(current_setting('app.current_tenant_id', true), ''))::uuid)
+        Buffers: shared hit=9
+```
+
+**The policy predicate becomes an `Index Cond` on the tenant-leading index.** Index locality
+is not merely comparable to the explicit filter — the RLS form is *faster* (0.383 vs 0.585 ms,
+9 buffers either way), because the planner resolves `current_setting` once rather than
+handling a bound parameter. This is the Postgres counterpart of EXP-MT-011b's "10 keys
+examined for 10 returned", and it settles the question that §6.1 could only answer on a
+generic corpus.
+
+| | as `ns_app` | as superuser |
+|---|---:|---:|
+| unbound connection, no predicate | **0 rows** | 231,700 rows |
+| bound connection, no predicate in SQL | 581 rows (that tenant's) | 231,700 rows |
+
+**Fail-closed, confirmed on Nightscout's shapes**, and the contrast with EXP-MT-011b's Mongo
+discriminator — where the same forgotten filter returned all 230,400 rows — is the reason the
+recommendation lands where it does.
+
+### 8.3 The four mechanisms, and the disconnect test
+
+| | delivered while connected | latency | **written while consumer down** | **delivered after it returned** |
+|---|---:|---:|---:|---:|
+| **LISTEN/NOTIFY** | 500/500 | **1 ms p50** | 200 | **0 — all lost** |
+| **logical replication slot** | — | — | 200 | **200/200 — nothing lost** |
+
+- **`NOTIFY` is fast and lossy.** 1 ms delivery latency, and **every event written while the
+  listener was disconnected is gone permanently** — there is no backlog, no cursor, nothing to
+  resume from. Re-`LISTEN` starts from now. For a browser refresh that is fine. **For alarm
+  delivery it is disqualifying on its own.**
+- **A replication slot loses nothing and does not replay.** 200/200 INSERT changes delivered
+  when the consumer finally arrived; re-consuming immediately after returned **0** changes,
+  because `pg_logical_slot_get_changes` advances the slot. That is exactly the
+  at-least-once-with-a-cursor semantic an alarm path needs.
+- **The slot's cost is WAL retention, and it is affordable.** 574 bytes of pinned WAL per row.
+  At 10,000 tenants writing once per five minutes (33 rows/s), **an abandoned slot pins
+  ~0.06 GB/hour** — about 1.4 GB/day. That needs monitoring and an alert, but it is a slow
+  leak, not a fast one: an operator has days, not minutes, to notice.
+
+### 8.4 The poll is not what it used to be
+
+Today's polling is per-tenant and O(tenants) — the 6,183 DB ops/s of option A. The poll a
+change-driven design needs is **one aggregate query returning only the tenants whose newest
+reading is later than their last evaluation**:
+
+| | p50 | tenants returned |
+|---|---:|---:|
+| all tenants due (watermarks at zero — the cold-start case) | 20.89 ms | 400 |
+| steady state, watermarks current | 13.69 ms | 0 |
+| **bounded by the `date` index (last 10 minutes)** | **1.02 ms** | 0 |
+
+**Bounded by a date index, the entire "who needs evaluating" sweep costs ~1 ms** regardless of
+how many tenants are registered, because it touches only rows written since the last sweep. At
+one sweep every 30 seconds that is 0.03 ms/s of database work — **four orders of magnitude
+below the resident model's polling.**
+
+So polling is not the alternative to CDC; **it is the affordable backstop underneath it.**
+
+### 8.5 The recommendation that follows: a spine, an accelerator, and a backstop
+
+None of the four mechanisms is sufficient alone, and the right answer uses three of them for
+different reasons:
+
+1. **Logical replication slot as the spine.** The only mechanism measured here that survives a
+   consumer restart without losing an alarm. Requires slot monitoring (§8.3).
+2. **`LISTEN`/`NOTIFY` as a latency accelerator**, optional. It cuts the tail between a write
+   and an evaluation to ~1 ms where a slot reader's poll interval would otherwise set it. It
+   carries no correctness weight, so its lossiness does not matter.
+3. **The bounded aggregate poll as a safety backstop**, non-optional. Slots get dropped,
+   consumers get partitioned, replication breaks. At ~1 ms per sweep there is no reason not to
+   run it, and **for an alarm path "the feed was broken and nobody noticed" is the failure
+   that matters.** It is also the mechanism that closes the cold-start case, where every
+   watermark is behind.
+4. **Write-path publish is rejected** — it misses anything not written through the api
+   (backfills, migrations, `nightscout-connect` writing directly) and couples two components
+   that otherwise share only storage.
+
+### 8.6 The consequence nobody had drawn: RLS cannot protect the feed
+
+This follows directly from §8.1 and is a real constraint on the component design.
+
+**The evaluator must see every tenant** — that is its job. So it cannot run under a policy that
+binds it to one tenant. Likewise, reading a replication slot requires the `REPLICATION`
+attribute, which is not tenant-scoped at all: **the WAL is one stream containing every
+tenant's rows.**
+
+So the isolation story is split, and honestly it should be stated that way:
+
+| path | isolation enforced by |
+|---|---|
+| `ns-api` — arbitrary client queries | **the database** (RLS, per-transaction bind, fail-closed) |
+| `ns-evaluator`, `ns-realtime` — feed consumers | **code review**. They hold cross-tenant privilege by construction |
+
+**RLS protects the path that takes untrusted input, which is the one that needs it most.** But
+the change-feed components are privileged, their blast radius is every tenant, and no storage
+mechanism will fix that. The design consequence is that they must stay **small, single-purpose
+and genuinely reviewed** — which is an argument for them being separate, narrow entrypoints
+rather than modes of a large shared process, and it is a better argument for the decomposition
+than the cost model is.
+
 ## L. Limits — read before quoting any of this
 
 This is a laptop. The numbers above rank hypotheses and settle mechanism questions; **none of
@@ -468,10 +607,13 @@ them is a capacity result**, and several would move on real infrastructure.
 
 **What was not tested:**
 
-- **PostgreSQL + RLS.** The whole engine half of §6.7's ladder is unmeasured with a database
-  in the loop. The `rls-poc` figures remain the only evidence there — which matters more after
-  §7.1, since the case for Postgres now rests entirely on fail-closed isolation and write
-  coverage rather than on anything measured here.
+- ~~**PostgreSQL + RLS** is unmeasured with a database in the loop.~~ **Wrong when written,
+  and now doubly so.** `rls-poc/` already ran against a live `postgres:16-alpine` container —
+  that is where §6.1's figures come from — and §8 adds RLS and the change feed on Nightscout's
+  own query shapes. What remains unmeasured on Postgres is **writes at ingest rate**, the
+  **shared-collection working set past cache size**, and **`pgbouncer` in transaction mode**,
+  which §6.7 flags as possibly required and which interacts with `set_config(..., is_local)`
+  in ways nothing here tested.
 - **§7 tops out at 400 tenants and 701,200 documents**, where working-set pressure against a
   1 GB cache is only beginning to show. The shape of the curve past the point where the
   working set exceeds cache is the open question for the shared model, and it is the normal

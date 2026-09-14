@@ -51,6 +51,15 @@ ecosystem. Replacing it with a query is 533 ops/s at 10,000 tenants — affordab
 collapsible with a shared response cache keyed on `(tenant, lastUpdated)`. **A cache, which
 is evictable and correctness-neutral, not a resident `ddata`, which is neither.**
 
+**Storage: Postgres + RLS, and the evidence for it is now narrower and firmer.** EXP-MT-011b
+showed index locality no longer separates the engines — an explicit discriminator gives
+MongoDB's planner perfect bounds. EXP-MT-057 shows what does: under RLS an unbound connection
+returns **0 rows** and a bound one with **no tenant predicate in the SQL at all** returns only
+that tenant's, at **0.383 ms p50** — *faster* than writing the filter by hand, with the policy
+predicate compiled into an `Index Cond`. The same forgotten filter against a Mongo
+discriminator returns **every tenant's rows**. For a system holding other people's clinical
+data, fail-closed is the deciding property.
+
 **At 1,000 tenants all three options cost 3–5 processes.** The stateless decomposition is
 never materially more expensive to start and is 2–3× cheaper by 10,000. There is no scale at
 which it is the wrong first move.
@@ -303,6 +312,91 @@ that chain:
 The genuinely new code is small and bounded: **a change-feed consumer**, **ack/snooze state
 in storage instead of a module-scope map**, **tenant rooms**, and **the storage seam**
 ({M} §6.2) that everything else already depended on.
+
+## 3.5 How the evaluator is woken, and how alarms reach subscribers
+
+**Measured 2026-09-14, EXP-MT-057** — PostgreSQL 16.14, 400 tenants, 230,400 rows.
+
+**No single mechanism is sufficient, and the split is not about throughput.** For an alarm
+path, a delayed event is a nuisance and a dropped event is a missed hypo alert, so the
+question that separates the candidates is *what happens while the consumer is not there*:
+
+| mechanism | while connected | **written while consumer down** | **delivered when it returned** |
+|---|---|---:|---:|
+| `LISTEN`/`NOTIFY` | 500/500, **1 ms** p50 | 200 | **0 — all lost, permanently** |
+| logical replication slot | — | 200 | **200/200, and no replay on re-consume** |
+| write-path publish | — | — | misses anything not written through `ns-api` |
+| bounded aggregate poll | — | — | **~1 ms per sweep, any backlog** |
+
+**The recommendation is three of them, layered:**
+
+1. **A logical replication slot is the spine.** The only mechanism that survives a consumer
+   restart without losing an alarm. Its cost is WAL retention — 574 bytes per row, so an
+   *abandoned* slot pins ~0.06 GB/hour at a 10,000-tenant write rate. That needs an alert, but
+   an operator has days to react, not minutes.
+2. **`NOTIFY` is an optional latency accelerator.** It cuts write-to-evaluation to ~1 ms. It
+   carries no correctness weight, so its lossiness is irrelevant.
+3. **A bounded aggregate poll is the non-optional backstop.** Not today's per-tenant poll —
+   *one* query for "which tenants have a reading newer than their last evaluation", bounded by
+   a `date` index: **1.02 ms per sweep** whatever the tenant count, against 13.7 ms unbounded
+   and 20.9 ms at cold start. At one sweep per 30 s that is 0.03 ms/s. **Slots get dropped and
+   consumers get partitioned; for an alarm path, "the feed broke and nobody noticed" is the
+   failure that matters.** It also handles cold start, where every watermark is behind.
+
+**Write-path publish is rejected**: it misses backfills, migrations and anything
+`nightscout-connect` writes directly, and it couples two components that otherwise share only
+storage.
+
+### 3.5.1 What controls the evaluator's scaling
+
+**The change rate, not the tenant count** — 33 evaluations/s at 10,000 tenants uploading every
+five minutes, 0.92 ms each (EXP-MT-026 §5), so one process with room to spare.
+
+Scaling out has one structural constraint worth stating: **a replication slot is a single
+ordered stream and cannot be consumed by N workers.** The shape that follows is one cheap slot
+reader feeding a queue partitioned by tenant hash, with N stateless workers behind it. The
+partition is not for throughput — it is because two changes for the same tenant evaluated
+concurrently would race on that tenant's ack/snooze state. **Per-tenant ordering is required;
+cross-tenant ordering is not.** Because ack state lives in storage, any worker can take any
+partition, so there is still no tenant→worker affinity to maintain.
+
+### 3.5.2 Does the evaluator tell the socket engine?
+
+**For data updates, no.** `ns-realtime` consumes the same feed independently. Chaining them
+would make socket latency depend on alarm evaluation finishing, for no benefit.
+
+**For alarms, yes — but not by calling it.** The evaluator **writes the alarm as a row**, and
+the feed carries it to `ns-realtime` like any other change. One mechanism, and three
+properties fall out that the current design has to work for:
+
+- **Alarms become durable and auditable** — today they exist only as a socket emit and a
+  push notification.
+- **A reconnecting client can query what it missed**, which is the offline-delivery property
+  §5.4 of {M} wanted an MQTT broker for. No broker.
+- **`lib/api3/alarmSocket.js` barely changes.** It is already bound to
+  `ctx.bus.on('notification')` rather than to `calcdelta`; the bus event becomes a feed event.
+
+```
+writes ──> storage ──> feed ──┬──> ns-realtime ──> dataUpdate to tenant room
+                              └──> ns-evaluator ──> alarm row ──> storage ──> feed ──> ns-realtime ──> /alarm
+```
+
+### 3.5.3 The constraint this exposes: RLS cannot protect the feed
+
+**The evaluator must see every tenant** — that is its job — so it cannot run under a policy
+binding it to one. Reading a replication slot needs the `REPLICATION` attribute, which is not
+tenant-scoped at all: the WAL is one stream containing every tenant's rows. So the isolation
+story is genuinely split, and the design should say so rather than imply RLS covers everything:
+
+| path | isolation enforced by |
+|---|---|
+| `ns-api` — arbitrary client queries | **the database** — RLS, per-transaction bind, fail-closed |
+| `ns-evaluator`, `ns-realtime` — feed consumers | **code review**. Cross-tenant privilege by construction |
+
+RLS protects the path that takes untrusted input, which is the one that most needs it. But the
+feed consumers are privileged and their blast radius is every tenant. **That is an argument
+for them being small, single-purpose, separately-reviewed entrypoints rather than modes of one
+large process — and it is a better argument for this decomposition than the cost model is.**
 
 ## 4. Integration: the change feed
 

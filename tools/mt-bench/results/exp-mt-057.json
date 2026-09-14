@@ -1,0 +1,23 @@
+{
+  "date": "2026-09-14T23:35:37.908Z",
+  "pg": "16.14",
+  "tenants": 400,
+  "rls": {
+    "rlsRead": {
+      "p50": 0.383,
+      "p99": 1.993
+    },
+    "explicit": {
+      "p50": 0.585,
+      "p99": 2.535
+    },
+    "window576": {
+      "p50": 1.452,
+      "p99": 3.77
+    },
+    "usesTenantIndex": true,
+    "unboundRows": 0,
+    "superuserRows": 231700,
+    "planNodes": "\"Node Type\":\"Limit\" \"Node Type\":\"Index Scan\""
+  }
+}
