@@ -6,6 +6,20 @@ deliberately *tangential* to that work and not dependent on its outcome.
 
 **Nothing here is a proposal to merge. The deliverable being requested is evidence.**
 
+**Revised 2026-09-14** after maintainer direction, on five counts. (a) The tenancy target
+is settled: **bulk Nightscout-as-a-service hosting**, treated as a superset so that
+families, small communities and clinics are configurations of the same system; **self-hosted
+single-tenant remains first-class, permanently**, on data-rights and mission grounds
+(§11). (b) Per-tenant export and delete are **confirmed requirements**, not options.
+(c) Host-based routing is the lean, to avoid forcing changes on edge devices and mobile
+uploaders (§11 Q3). (d) §3's hazard list is **partly overtaken by events** — the §3.1
+blocker is already fixed on `chore/nightscout-modernization`, and one §3.2 instance is
+deleted there; §3 now carries per-branch status. (e) **§7.4 overstated resident memory**
+by assuming every tenant's `ddata` stays resident; residency is a policy, and the
+correction moves the binding constraint from memory to load-cycle query rate — see the new
+§7.4.1. A storage recommendation answering "Postgres+RLS or Mongo?" with a migration path
+for an existing hoster is added as **§6.7**.
+
 ---
 
 ## TL;DR
@@ -26,10 +40,21 @@ pass (§1 explains the confidence tiers):
 | 4 | **Multitenancy and a runtime rewrite are substitutes, not complements.** Both attack the same ~41 MB per-process constant. Doing both buys the second one almost nothing — **this is the actual fork in the road** (§11 Q8) | §7.3 |
 | 5 | **RLS is fail-closed by construction, and cheap.** A query with *zero* `tenant_id` predicate in the SQL returns only the bound tenant's rows; an unbound connection returns zero rows, not an error and not everything. Overhead ~0.3–0.6 ms — noise at Nightscout's ~14 queries per 1–5 s. It converts "every query must remember to filter" into "every *connection* must remember to bind": one call site instead of every call site | §6.1 |
 
-**One blocker, in the code today.** `lib/notifications.js:15` holds the alarm/ack/silence
-map at **module scope with no tenant dimension**. N tenants in one process would share it —
-tenant A acknowledging a hypo alarm silences tenant B's. Small, bounded fix; **must be a
-named prerequisite of shared-process work, not discovered during it** (§3.1).
+**The blocker has been fixed — on a branch that has not landed.** `lib/notifications.js:15`
+holds the alarm/ack/silence map at **module scope with no tenant dimension** on `dev`: N
+tenants in one process would share it, and tenant A acknowledging a hypo alarm would silence
+tenant B's. On `chore/nightscout-modernization` (PR #8605) commit `9e869662`, *Own
+notification alarm state per service and clear it on teardown*, moves that map inside
+`init(env, ctx)` with a teardown guard — **for teardown-ownership reasons, not tenancy
+ones**. The safety blocker is therefore closed on the modernization branch and open on
+`dev`, which makes #8605 the vehicle for this work rather than an obstacle to wait out
+(§3.1, §11 Q7).
+
+**Storage: do not start with the engine question.** §6.7 recommends a three-stage ladder
+that **decouples the tenancy migration from the storage migration**, because the second is
+the expensive, irreversible one and the first delivers the measured 10–20× win on its own.
+The number that decides when stage 3 becomes necessary is **35 secondary indexes per tenant
+database** (counted from `indexedFields`), not a preference between engines.
 
 **What ships regardless of the tenancy decision** — and is the entire near-term roadmap for
 a maintainer not yet sold on multitenancy (§9.2 steps 1–4):
@@ -308,6 +333,16 @@ Note this is also the **only** module-level mutable state of this shape in serve
 `lib/` (repo-wide scan; `lib/client/*` hits are browser-side). The general instinct in
 §9.1 — that the factories are already tenant-shaped — is right. This is its exception.
 
+> **Status, re-checked 2026-09-14.** Still present on `origin/dev` (`a8888f0d`). **Fixed on
+> `origin/chore/nightscout-modernization`** by commit `9e869662`, which moves `var alarms =
+> {}` inside `init(env, ctx)`, adds a `closed` flag guarding `getAlarm`, `initRequests` and
+> `requestNotify`, and comments the intent: *"Snoozes and pending requests belong to this
+> service, not the module cache."* The change was made to own teardown, not to enable
+> tenancy, but it is the fix this section asks for. **Two consequences:** the Layer 2
+> prerequisite is satisfied by #8605 rather than by separate work; and it must be protected
+> by a regression test, because nothing in that branch records *why* the state is
+> per-instance, so a future refactor could hoist it back with green CI.
+
 ### 3.2 Plugin closure state
 
 `lib/plugins/speech.js:3-5` holds `lastEntryValue`, `lastMinutes`, `lastEntryTime` at
@@ -330,10 +365,27 @@ module-scope hazard class as `speech.js`, needing the identical fix (a per-insta
 closure variable, not module scope) before Layer 2 shared-process work, regardless of
 which storage engine or deployment target is chosen.
 
+> **Status, re-checked 2026-09-14.** `lib/plugins/speech.js:3-5` is **unchanged on both
+> branches** — still the open instance. `lib/plugins/bridge.js` is **deleted on
+> `chore/nightscout-modernization`** by the legacy-Dexcom retirement, which removes the
+> `mostRecentRecord` hazard as a side effect; `lib/plugins/mmconnect.js` goes the same way.
+> That the hazard class was closed twice by accident and once not at all is the argument for
+> the lint rule this section asks for: **a test banning module-scope mutable state in
+> `lib/plugins/` is what makes the fix durable**, and it is cheap enough to land against
+> either branch today.
+
 ### 3.3 Direct `process.env` reads outside the env module
 
-**17 occurrences across 4 files**: `lib/server/app.js` (6), `lib/api3/index.js` (5),
+**17 occurrences across 4 files** on `dev`: `lib/server/app.js` (6), `lib/api3/index.js` (5),
 `lib/plugins/webhook.js` (4), `lib/server/bridge-connect-compat.js` (2).
+
+> **Status, re-checked 2026-09-14.** On `chore/nightscout-modernization` the count is **14
+> across 4 files** — `bridge-connect-compat.js` is gone with the bridge retirement and
+> `app.js` drops one — but **4 of the 14 are new**, in
+> `lib/storage/mongo-client-configuration.js`. That file did not exist before; it reads
+> connection configuration directly from `process.env`, which is precisely the per-tenant
+> configuration this section warns about, now in the storage layer rather than the API
+> layer. Net progress is roughly zero and the *location* got more load-bearing.
 
 `lib/api3/index.js:22-25` is the consequential one — a generic
 `CUSTOMCONNSTR_<var>`/`<var>` resolver, i.e. **connection-string resolution**, which is
@@ -1325,6 +1377,17 @@ concept, just a stricter query budget on an existing scope.
 This is Layer 0 work (§9), applies whether the store stays Mongo or moves to Postgres, and
 is validated by EXP-MT-042.
 
+> **Status, re-checked 2026-09-14.** The finding stands on both branches: **neither `dev`
+> nor `chore/nightscout-modernization` contains a single `maxTimeMS` or `.hint()` anywhere
+> under `lib/`**. What changed is that the fix got much cheaper. The modernization branch
+> adds `lib/storage/mongo-read-options.js` — one frozen options object — and passes it at
+> the `findMany` call site, and calls a new `lib/storage/assert-no-query-javascript.js` at
+> three choke points in `lib/api3/storage/mongoCollection/find.js`. **A cross-cutting
+> refactor has become a one-file change at one call site**: `maxTimeMS` belongs in that
+> frozen object, and the regex/pattern guard belongs beside the JavaScript assertion. This
+> is a live ReDoS and full-scan vector today, independent of tenancy, and it is now small
+> enough that there is no scheduling reason to defer it.
+
 ### 6.5.1 If tenants can upload their own resource schemas (a CRD-like extensibility model), does that simplify the analysis?
 
 Short answer: it simplifies the *decision* (adopt a typed vocabulary now, not provisionally
@@ -1457,6 +1520,169 @@ adopting RLS now does not have to be revisited if one primary later proves insuf
 because sharding changes which node answers, not what enforces. And the tenant→shard map E
 needs is the same control plane Layer 2 already had to build to route requests to
 `ctxFor(tenantId)`.
+
+### 6.7 Storage decision: a ladder, and the number that decides the last rung
+
+Added 2026-09-14, answering the maintainer question directly: **Postgres + RLS, or
+multitenant MongoDB?** — asked with the constraint that a hoster running many single-tenant
+sites today needs a migration plan, not just an end state.
+
+**The short answer: the engine question is real but it is not the first question, and
+answering it first is what makes the migration frightening.** §6.1.2 already established
+that "Mongo has no server-enforced isolation" is false. What it did *not* do is separate the
+two migrations bundled inside "go multitenant" — consolidating *processes* and consolidating
+*databases*. They have different costs, different reversibility and different payoffs, and
+**the measured 10–20× density win belongs entirely to the first one** (§7.4).
+
+#### The three differences that actually decide the engine
+
+From §6.1.2, restated as they bear on a bulk hoster:
+
+| Axis | MongoDB (role-keyed view, 7.0+) | PostgreSQL + RLS |
+|---|---|---|
+| **Writes** | Not covered. Views are read-only; granting write on the base collection reopens the full bypass | Policies cover `INSERT`/`UPDATE`/`DELETE` |
+| **Index locality** | `$expr` over `$$USER_ROLES` gives the planner no constant. Measured: COLLSCAN 60,004 docs / 60 ms, or a coaxed IXSCAN examining **every tenant's keys** (25,003 / 45 ms) against 12,500 / 11 ms for an explicit filter. **O(all tenants)** | The policy predicate is an ordinary equality the planner uses for index bounds. Measured 0.95–1.03 ms for a tenant-scoped read over 300,000 rows / 500 tenants |
+| **Connection multiplexing** | Tenant identity binds to the **authenticated user**, so server-enforced isolation requires a distinct credential per tenant — which means a distinct `MongoClient` and pool per tenant | `set_config('app.current_tenant_id', …, is_local => true)` rebinds **per transaction on one shared pool** |
+
+The third is the one that settles it for a *shared-process* design, and it is a mechanism
+argument rather than a benchmark:
+
+> **In MongoDB, server-enforced tenant isolation and connection-pool multiplexing are
+> mutually exclusive.** Authentication is per-connection. Getting the database to enforce
+> isolation means one authenticated identity per tenant, hence one pool per tenant — which
+> reintroduces exactly the per-tenant resource multiplication that §7.4's `shared`
+> architecture exists to delete. Postgres's transaction-scoped `set_config` is precisely
+> the primitive that dissolves this tension, and it is why RLS composes with a shared
+> process while Mongo's view mechanism does not.
+
+**So for the multitenant service, the recommendation stands: PostgreSQL + RLS, with JSONB
+plus generated columns for the 22 already-indexed fields (§6.3).** Not because Mongo cannot
+isolate — it can, for reads — but because the mechanism it offers fails on all three axes a
+multitenant hot path exercises.
+
+#### The rung the earlier analysis under-weighted
+
+§6.6's taxonomy jumps from **B** (shared Mongo collection, isolation by developer
+discipline) to **D** (Postgres + RLS). It omits the architecture that a hoster is already
+most of the way to:
+
+> **A′ · One shared process, database-per-tenant on one Mongo cluster.**
+> `Map<tenantId, ctx>` as in §5B, but each `ctx` holds `client.db(tenantDbName)` rather than
+> a filtered collection. **A `MongoClient`'s connection pool is per-cluster, not per-database
+> — `client.db(name)` returns a handle, not a connection** — so one pool serves every tenant
+> and the §7.4 density win is preserved intact.
+
+What A′ buys, and it is more than it looks:
+
+- **The whole measured 10–20× win, with no engine migration and no schema change.** It is
+  §7.4's `shared` architecture exactly; only the storage binding differs.
+- **The "one call site" property that §6.1 identifies as RLS's actual value proposition.**
+  Isolation becomes "select the right `db` handle once per tenant context" instead of
+  "remember a filter in ~30 call sites". A forgotten filter inside a tenant's context can
+  only reach that tenant's database.
+- **Per-tenant export and delete stay trivial** — `mongodump` one database, `dropDatabase`
+  one database. Given that export/delete are confirmed requirements (§11 Q6), this is a
+  real and immediate digital-rights property, not a promise about a future schema.
+- **It deletes §7.4's actual ceiling.** The 11–12 Kubernetes objects per tenant collapse to
+  one Deployment, because the per-tenant objects came from database-per-tenant *plus
+  process-per-tenant*, and A′ removes the second.
+
+What A′ does **not** buy, stated plainly: isolation is enforced by *handle selection*, which
+is a property of the code, not of the database. It sits between §6.6's A and D — far
+stronger than B, weaker than RLS. It is the right answer for a hoster whose tenants are
+mutually non-hostile and the wrong answer as a permanent contract for hosting strangers.
+
+#### The number that decides when A′ stops working
+
+Counted from the `indexedFields` declarations on `chore/nightscout-modernization`:
+
+| Collection | Secondary indexes |
+|---|---:|
+| `treatments` | 15 (13 single + 2 compound) |
+| `entries` | 9 (7 single + 2 compound) |
+| `profile` | 4 |
+| `devicestatus` | 3 |
+| `food` | 3 |
+| `activity` | 1 |
+| **Total** | **35**, plus 6 `_id` indexes |
+
+Add `settings` and the `auth_*` collections and a tenant database is roughly **9
+collections and 41+ indexes**. Under WiredTiger each collection and each index is its own
+file with its own cache metadata:
+
+| Tenants | Collections | Index files |
+|---:|---:|---:|
+| 100 | ~900 | ~4,100 |
+| 1,000 | ~9,000 | ~41,000 |
+| 10,000 | ~90,000 | ~410,000 |
+
+**That is the ceiling on A′, and it is a namespace-count ceiling, not a data-volume one.**
+It is also the sharpest structural argument for consolidation that this document can make:
+in the Postgres model the index count is **35 total with `tenant_id` as the leading column**,
+not 35 per tenant. The curve is flat instead of linear.
+
+Two things follow that are worth more than the recommendation itself:
+
+1. **The 35 indexes have never been reviewed for a multitenant world.** They were declared
+   for single-tenant deployments where 35 indexes over one person's data is free. Several
+   read as speculative — single-field indexes on `notes`, `enteredBy`, `percent`, `absolute`
+   and `boluscalc.foods._id`. **Pruning that list moves the A′ ceiling directly**, costs
+   nothing structural, and is the *same* list §6.3 wants to formalize as Postgres generated
+   columns. Layer 0 therefore pays off on both branches of the ladder — which is the
+   strongest available argument for doing Layer 0 before deciding anything else.
+2. **Where A′ actually breaks is an experiment, not an opinion.** Stand up one cluster,
+   create N tenant databases with the real index set, and find where p99 read latency,
+   WiredTiger cache pressure or open-file limits turn. That number — call it N\*, and the
+   guess worth testing is low thousands — is what tells a hoster whether they need stage 3
+   this year or in five. It should be filed alongside EXP-MT-040.
+
+#### The ladder
+
+| Stage | Shape | Buys | Costs | Reversible? |
+|---|---|---|---|---|
+| **0** | Today: process + database per tenant | Works; OS-enforced isolation | ~99 MB/pod against ~1.2 MB of data; 11–12 K8s objects per tenant | — |
+| **1** | Stage 0 code, plus the §6.2 query-model seam | Proves the seam with **no behaviour change**; makes the backend choice invisible to most call sites | Refactor effort only; validated by existing suites | Fully |
+| **2** | **A′** — one shared process, database-per-tenant on one cluster | The **entire measured 10–20× density win**; K8s object collapse; per-tenant export/delete stays a `mongodump` | Isolation becomes code-enforced handle selection; bounded by N\* | Largely — tenant databases are untouched |
+| **3** | **D** — Postgres + RLS, JSONB + generated columns | Database-enforced isolation covering writes; flat index curve; pool multiplexing | Engine migration; ops learning curve; §6.3's per-tenant strangler | Per tenant, during the dual-write window |
+
+**Stage 2 is the recommendation for what to build next**, and stage 3 is the recommendation
+for where to end up. Splitting them is the point: stage 2 delivers the density result that
+justifies the whole programme while stage 3's cost is still unspent, and it does so without
+asking a hoster to migrate a clinical database and change their process model in the same
+change window.
+
+#### Migrating an existing hoster
+
+The hoster's starting position is more favourable than a generic Mongo-to-Postgres
+migration, and the document should say so:
+
+- **Stage 0 → 2 is not a data migration at all.** Tenant databases stay where they are,
+  byte for byte. What changes is which process opens them. Rollback is redeploying the
+  single-tenant target against the same databases — which, because self-hosted single-tenant
+  remains first-class (§9.1, §11), is a target that is being maintained and tested anyway
+  rather than a dead code path kept alive for one rollback.
+- **Stage 2 → 3 is §6.3's strangler fig, and the existing per-database split makes it
+  cleaner than §6.3 assumed.** Backfill reads one logical database and writes rows carrying
+  one `tenant_id`; there is no filtering step and therefore no class of bug where one
+  tenant's backfill picks up another's documents. Per-tenant backfill → bounded dual-write →
+  diff → cut reads over → decommission, one tenant at a time, no flag day.
+- **Build the export path first and reuse it as the backfill reader.** Per-tenant export is a
+  confirmed requirement (§11 Q6); the migration needs exactly the same traversal. Writing it
+  once as a first-class, tested, user-facing feature rather than as migration scaffolding
+  means the riskiest code in the migration is code that has already been exercised in
+  production for its own sake.
+- **Keep the plain change-stream-tailing script; do not stand up Kafka** for this
+  (§6.3, EXP-MT-037).
+
+#### What would change this recommendation
+
+- If N\* measures comfortably above the hoster's ceiling ambitions, **stage 3 may simply
+  never be needed** — and the honest form of that outcome is to say so rather than migrate
+  on principle.
+- If MongoDB ships a per-document ACL that the planner can build index bounds from, the
+  index-locality row changes and this section should be re-argued.
+- If the isolation contract offered to tenants is ever "the database refuses", stage 3 stops
+  being optional, because A′ cannot make that promise truthfully.
 
 ---
 
@@ -1618,6 +1844,77 @@ count comes from the *database-per-tenant* and *CDC-per-tenant* choices, not fro
 Shrinking object count (shared database with tenant isolation, shared topic with a
 tenant-keyed payload, one Deployment scaled horizontally) removes the ceiling regardless of
 language, and is a **strict prerequisite** for any "radically more tenants" option here.
+
+#### 7.4.1 Correction: `ddata` residency is a policy, not a property — **inferred**
+
+Added 2026-09-14, after a maintainer pointed out that it was never clear a multitenant
+monolith would keep every tenant's `ddata`/`dataloader` cache resident at scale — that the
+cache exists to **bound the cost of incoming queries**, and that other mitigations for that
+cost exist. **This is correct, and §7.4's headline number should be read more narrowly than
+it was written.**
+
+**What §7.4 actually measured.** In the `shared` arm every tenant loads the identical
+fixture and *stays loaded*. So `2.2 MB/tenant` is the marginal cost of a **resident** tenant,
+not of a registered one. §7.4 never tested eviction, and the document then carried the
+figure into §10.2's "10 000 tenants at a few MB marginal each" as though residency were a
+property of the architecture. It is a policy, and the architecture admits others.
+
+**Why the correction matters in both directions.** Under full residency, 10 000 tenants is
+~22 GB of `ddata` before any headroom — enough that memory alone would force sharding, which
+would have made §10.4's sharding discussion load-bearing much earlier than it claims. Under
+tiered residency the resident set is bounded by *concurrently active* tenants, and the total
+count stops being a memory question at all. The two existing measurements say the eviction
+side is cheap:
+
+- Re-materialising an evicted tenant costs **~2.5–4 ms**, ~80 % of it `JSON.parse` (§7.1).
+- In columnar form that falls to **~0.001 ms and ~20× less memory** (§7.2).
+
+These compose rather than compete: **tiering bounds how many tenants are resident, columnar
+representation bounds what each resident tenant costs.** A columnar hot window also makes
+the eviction decision far less consequential, because waking is nearly free — which is an
+additional argument for Layer 3 that this document had not made.
+
+**What replaces memory as the binding constraint: the load cycle.** §2.3 measures ~14
+database operations per load, debounced at 1 s with a 5 s maximum wait and a 60 s heartbeat.
+That cost is incurred **per tenant being loaded**, and incremental loads shrink the rows but
+not the query count. So:
+
+| Loading policy | DB ops/s at 10 000 tenants |
+|---|---:|
+| Every tenant on the 60 s heartbeat alone | ~2,300 |
+| Every tenant at the 5 s maximum wait | ~28,000 |
+| Every tenant at the 1 s debounce | ~140,000 |
+| Only tenants with a connected client or a recent upload | proportional to the **active fraction**, not the total |
+
+(Arithmetic from §2.3's figures; **inferred**, not measured — it needs EXP-MT-026 with a
+real remote database in the loop before being quoted as capacity.)
+
+**The design consequence, which this document had not stated.** Residency tiering cannot be
+"evict the idle tenant", because §11 Q5 requires alarm delivery for idle tenants — the
+requirement most likely to be dropped by a cost-optimising design and the one that hurts
+people when it is. `ddata` therefore has to split along a seam it does not currently have:
+
+- an **alarm-critical slice** — latest SGV and direction, active thresholds, snooze and
+  acknowledgement state — which is small enough to keep resident for every registered tenant
+  and is what a cold alarm path evaluates;
+- a **display/computation slice** — the 48 h entries window, 60 h treatments, devicestatus
+  and the derived arrays built at `lib/data/ddata.js:249-337` — which is the 2.2 MB and is
+  what tiering evicts.
+
+That seam makes §3.1's fix load-bearing rather than merely hygienic: **per-service alarm
+state is the precondition for an alarm slice that can outlive the eviction of everything
+else around it.** It also means the residency work (§9.2 step 10) is not the late optional
+step the ordering implies — the *shape* of the split has to be decided at Layer 2, even if
+the eviction policy itself ships later.
+
+**Corrections to record:**
+
+1. §7.4's `2.2 MB/tenant` is **per resident tenant**. Quote it that way.
+2. §10.2's "10 000 tenants at a few MB marginal each" assumes full residency and should be
+   read as an upper bound on memory, not a plan.
+3. EXP-MT-035 should measure the real `ddata`/`dataloader` code **resident and evicted**,
+   and add a new question: what active fraction does a real hoster see? That ratio, not the
+   per-tenant byte count, is what sizes the machine.
 
 ### 7.5 The quadratics are a fairness problem, not a throughput problem — **measured**
 
@@ -2443,26 +2740,63 @@ operationally, not just per-component.
 
 ## 11. Open questions for the maintainers
 
-1. Is the target **"many people on one operator's instance"** (a hosted service — needs
-   billing, support, liability and an explicit trust/threat model) or **"one family or clinic
-   runs a few sites cheaply"**? These lead to different architectures, and the second is far
-   easier.
+**Answered 2026-09-14** by maintainer direction: Q1, Q2 (by implication), Q3 and Q6 are
+settled below; Q5 is reframed as a design constraint rather than a question; Q7 is
+overtaken by events. **Q4, Q8 and Q9 remain genuinely open**, and Q8 is still the fork that
+gates the most expensive work.
+
+1. ~~Is the target "many people on one operator's instance" or "one family or clinic runs a
+   few sites cheaply"?~~ **ANSWERED: bulk Nightscout-as-a-service hosting**, chosen
+   deliberately as a **superset** so that families, small communities and clinics are
+   *configurations of the same system* rather than a separate, cheaper build. Self-hosted
+   single-tenant remains **first-class and permanent**, justified on data rights, project
+   purpose and mission — not on convenience — and expected to remain the easier on-ramp for
+   independent developer setup and contribution (§9.1's two-targets-over-one-core is
+   therefore a **requirement**, not an option). A follow-on requirement is **parked pending
+   its own discussion**: the scope of operator-supplied deployment metadata (support contact
+   and related information) — specifically whether it is static per-deployment or
+   per-tenant-group. It is parked explicitly so it does not delay the rest.
 2. What **isolation contract** are we willing to promise, and who is the adversary — another
    tenant, the operator, or a bug? Nocturne's answer is "the storage engine refuses," which
-   is the strongest available and should probably be the floor (§6.1).
-3. **Host-based routing** (Nocturne-compatible) or path prefix? Host preserves every existing
-   uploader and follower config; paths are cheaper to host without wildcard TLS.
+   is the strongest available and should probably be the floor (§6.1). **Largely settled by
+   Q1**: hosting mutually-untrusting tenants makes storage-enforced isolation the
+   destination. §6.7 adds the nuance that matters operationally — the ladder's stage 2
+   (database-per-tenant in a shared process) offers a *narrower seam* rather than a database
+   property, which is an honest resting place for non-hostile tenants and **cannot truthfully
+   promise "the database refuses"**. The remaining question is therefore not *whether* but
+   *when* that promise is made, and to whom.
+3. ~~**Host-based routing** or path prefix?~~ **ANSWERED: leaning host-based**, to avoid
+   forcing configuration changes on edge devices and mobile uploaders — which is the same
+   reasoning that makes it Nocturne-compatible. The cost to accept explicitly is wildcard
+   TLS and per-tenant hostname provisioning. This should be treated as decided for design
+   purposes, because every uploader configured in the field is a change that cannot be
+   recalled later.
 4. Do we accept a **hard dependency on Nocturne**, or align on shared contracts and shared
    algorithm cores (§4.1)?
 5. Who owns per-tenant **safety**? Alarm delivery for idle tenants is the requirement most
    likely to be dropped by a cost-optimising design, and the one that hurts people. **§3.1
    shows the current code would already get this wrong under Layer 2** — this question is now
-   concrete, not hypothetical.
-6. Is **data portability** (per-tenant export and delete as first-class operations) a
-   requirement? If yes it strongly favours file- or DB-per-tenant isolation, and is a
-   `docs/DIGITAL-RIGHTS.md` matter, not only an engineering one.
-7. Sequencing against the modernization gate: this work should stay **measurement-only** until
-   #8605 is resolved, to avoid a second moving baseline.
+   concrete, not hypothetical. **Reframed 2026-09-14:** §7.4.1 turns this from a question
+   into a design constraint. Because idle tenants must still be alarmed, `ddata` has to split
+   into an alarm-critical slice that survives eviction and a display slice that does not —
+   and that split has to be decided at Layer 2 even if the eviction policy ships later. The
+   §3.1 fix (already on `chore/nightscout-modernization`) is its precondition.
+6. ~~Is **data portability** (per-tenant export and delete as first-class operations) a
+   requirement?~~ **ANSWERED: yes, required.** This is the reasoning that also keeps
+   self-hosted single-tenant first-class, so the two are one commitment, not two. Two
+   consequences are recorded in §6.7: it is an argument for the ladder's stage 2, where
+   export and delete are a `mongodump` and a `dropDatabase` of one database; and the export
+   path should be **built first and reused as the stage-3 backfill reader**, so the riskiest
+   code in the migration is code already exercised in production for its own sake.
+7. ~~Sequencing against the modernization gate: stay **measurement-only** until #8605 is
+   resolved.~~ **OVERTAKEN BY EVENTS, and the conclusion flips.** #8605 is not a baseline to
+   wait out — it is already doing this work: it **closes the §3.1 safety blocker**, deletes
+   one of the two §3.2 instances, and creates the single `READ_OPTIONS` choke point §6.5
+   needs. The correct posture is not "wait", it is: keep measurement work off `dev`, file the
+   remaining §3 hazards as issues **now** so the modernization tree does not re-break them,
+   and queue a named Layer 1b′ follow-up directly behind #8605 against the post-modernization
+   tree. See the release-sequencing companion,
+   [cgm-remote-monitor release readiness](./cgm-remote-monitor-release-readiness-2026-09-14.md).
 8. Given §7.3 — that multitenancy and a runtime rewrite are **substitutes** for the same
    ~41 MB per-process cost — does the project prefer to keep one process per person and shrink
    the process, or keep Node and share the process? Both are defensible; doing both buys
@@ -2556,3 +2890,40 @@ Every number now carries a confidence tier (§1). Numbers marked **carried** wer
 a committed script but not re-run on the verification pass — `handles.js`, `wasmvsnative.js`
 and the Rust comparison need their dependencies and fixtures reinstalled, and should be
 re-run before being quoted.
+
+### Revision, 2026-09-14
+
+Prompted by maintainer direction on the tenancy target and by a re-check of §3 against the
+current branches. No benchmark was re-run in this pass; every new number is either counted
+from source or derived from figures already in the document, and is labelled accordingly.
+
+1. **§3 is partly overtaken by events, and §11 Q7's conclusion flips.** The §3.1 alarm-map
+   blocker is **fixed on `chore/nightscout-modernization`** (commit `9e869662`) and still
+   open on `dev`; §3.2's `bridge.js` instance is **deleted** there with the legacy-Dexcom
+   retirement while `speech.js` is untouched; §3.3's count moves 17 → 14 but gains four new
+   reads in a new file, `lib/storage/mongo-client-configuration.js`; and §6.5's fix is now a
+   one-call-site change because the branch created `lib/storage/mongo-read-options.js`. The
+   document previously advised waiting for #8605; it should have advised treating #8605 as
+   the vehicle.
+2. **New §6.7 — the storage ladder.** Answers "Postgres+RLS or multitenant Mongo?" by first
+   separating the process migration from the database migration. Adds the architecture the
+   §6.6 taxonomy omitted (**A′**: shared process, database-per-tenant on one cluster, viable
+   because a `MongoClient` pool is per-cluster rather than per-database), states the
+   mutual exclusivity of Mongo's server-enforced isolation and pool multiplexing as a
+   mechanism argument rather than a benchmark, and counts the number that bounds A′: **35
+   secondary indexes per tenant database**.
+3. **New §7.4.1 — `ddata` residency is a policy.** §7.4's `2.2 MB/tenant` was measured with
+   every tenant resident and should be quoted as *per resident tenant*. Under tiering the
+   binding constraint becomes the load cycle's query rate, not memory; and because idle
+   tenants must still be alarmed, `ddata` needs an alarm-critical slice that survives
+   eviction — a Layer 2 design decision, not a Layer 10 policy one.
+4. **§11 Q1, Q3 and Q6 answered; Q2 largely settled; Q5 reframed as a constraint; Q7
+   reversed.** Q4, Q8 and Q9 remain open, and Q8 (share the process vs shrink the process)
+   is still the fork gating the most expensive work. Operator-supplied deployment metadata
+   is recorded as parked, by explicit direction, so it does not block the rest.
+
+**Still not measured, and load-bearing:** EXP-MT-035 against the real `ddata`/`dataloader`
+code (now with a resident-vs-evicted dimension and an active-fraction question); **N\***, the
+tenant count at which database-per-tenant on one Mongo cluster degrades, which is what
+decides whether stage 3 is urgent or distant; and the load-cycle arithmetic in §7.4.1, which
+is derived from §2.3 rather than run.
