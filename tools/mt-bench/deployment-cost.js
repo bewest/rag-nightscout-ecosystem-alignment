@@ -49,12 +49,32 @@ const IN = {
   socketsPerTenant: 4,           // assumption
   utilisation: 0.3,              // headroom target used throughout the K report
   heapBudgetGb: 4,               // per process
-  dbQueryCpu_ms: 0.15,           // app-side CPU to issue+parse one query; RTT is async.
-                                 // UNMEASURED — EXP-MT-026. The single largest risk here.
+  // --- EXP-MT-026: MEASURED, with a real MongoDB 7.0 in the loop ------------
+  // Event-loop CPU per operation at concurrency 256 (a loaded server, which is
+  // the case that matters; the sequential figure over-attributes idle-loop
+  // overhead). RTT_MS selects which measurement is used.
+  //   loopback   0.151 ms/op      7,866 ops/s
+  //   10 ms RTT  0.207 ms/op      5,435 ops/s   <- default: same-region managed DB
+  //   50 ms RTT  0.379 ms/op      1,457 ops/s
+  dbQueryCpuByRtt: { 0: 0.151, 10: 0.207, 50: 0.379 },
+  cycleDbCpu_ms: 1.824,          // the 14 ops of one cycle, in parallel, loopback
+  evalDbCpu_ms: 1.189,           // the alarm-slice fetch, loopback
+  coldWakeCpu_ms: 6.817,         // fetch whole window + build ddata, loopback
+  restCacheHitTyped_ms: 0.02,    // EXP-MT-055, for comparison against a query
   dbOpsPerCycle: 14,             // §2.3, nine parallel loaders expanding to ~14 operations
   dbOpsPerApiRead: 1,            // a v3/v1 read is one indexed query
   dbOpsPerEval: 3,               // latest entry + latest devicestatus + DIA treatment window
 };
+
+// Added RTT to the database, in ms. Loopback measurements scale by the ratio of
+// measured CPU-per-op, since the extra CPU is epoll/partial-read overhead that
+// applies to every operation rather than a fixed per-batch cost.
+const RTT_MS = parseInt(process.env.RTT_MS, 10) || 10;
+IN.dbQueryCpu_ms = IN.dbQueryCpuByRtt[RTT_MS];
+if (!IN.dbQueryCpu_ms) throw new Error(`no measurement for RTT_MS=${RTT_MS}; have 0, 10, 50`);
+const RTT_SCALE = IN.dbQueryCpu_ms / IN.dbQueryCpuByRtt[0];
+IN.cycleDbCpu_ms = +(IN.cycleDbCpu_ms * RTT_SCALE).toFixed(3);
+IN.evalDbCpu_ms = +(IN.evalDbCpu_ms * RTT_SCALE).toFixed(3);
 
 const perTenantReqPerS =
   IN.followersPerTenant / IN.followerPollSeconds + 1 / IN.uploadIntervalSeconds;
@@ -73,7 +93,7 @@ function gb (kb) { return +(kb / 1048576).toFixed(1); }
 
 function optionStatefulResident () {
   const active = TENANTS * IN.activeFraction;
-  const cycle = IN.cycleDdataFixed_ms + IN.cacheCloneCycle_ms;
+  const cycle = IN.cycleDdataFixed_ms + IN.cacheCloneCycle_ms + IN.cycleDbCpu_ms;
 
   // CPU: only active tenants run a cycle at 5 s; the rest ride the 60 s heartbeat.
   const cpuMsPerS = active * cycle * loadsPerS
@@ -113,10 +133,10 @@ function optionStatefulResident () {
 
 function optionStatefulTiered () {
   const active = TENANTS * IN.activeFraction;
-  const cycle = IN.cycleDdataFixed_ms + IN.cacheCloneCycle_ms;
+  const cycle = IN.cycleDdataFixed_ms + IN.cacheCloneCycle_ms + IN.cycleDbCpu_ms;
 
   const cpuMsPerS = active * cycle * loadsPerS
-                  + (TENANTS - active) * (IN.pluginTier_ms + IN.dbQueryCpu_ms) * (1 / IN.uploadIntervalSeconds)
+                  + (TENANTS - active) * (IN.pluginTier_ms + IN.evalDbCpu_ms) * (1 / IN.uploadIntervalSeconds)
                   + TENANTS * perTenantReqPerS * IN.restUntyped_ms;
   const byCpu = cpuMsPerS / budgetMsPerS;
 
@@ -163,7 +183,7 @@ function optionStateless () {
   // One evaluation per tenant per upload. Materialise 50.6 KB + run 30 plugins.
   const evalPerS = TENANTS / IN.uploadIntervalSeconds;
   const materialise_ms = IN.jsonParsePer795kb_ms * (IN.alarmSliceShipped_kb / 795);
-  const evalCost_ms = materialise_ms + IN.pluginTier_ms + IN.dbQueryCpu_ms;
+  const evalCost_ms = materialise_ms + IN.pluginTier_ms + IN.evalDbCpu_ms;
   const evalCpuMsPerS = evalPerS * evalCost_ms;
   const evalProcs = procs(evalCpuMsPerS / budgetMsPerS);
 
@@ -203,13 +223,15 @@ function main () {
   const C = optionStateless();
 
   console.log(`\n=== Deployable-component cost model, ${TENANTS.toLocaleString()} tenants ===`);
-  console.log(`baseline: PR #8733 landed. Per-tenant demand ${perTenantReqPerS.toFixed(3)} req/s,`);
+  console.log(`baseline: PR #8733 landed. DB: ${RTT_MS} ms RTT, ${IN.dbQueryCpu_ms} ms CPU/op (EXP-MT-026, measured).`);
+  console.log(`Per-tenant demand ${perTenantReqPerS.toFixed(3)} req/s,`);
   console.log(`active fraction ${IN.activeFraction}, ${IN.utilisation * 100} % event-loop budget, ${IN.heapBudgetGb} GB/process.\n`);
 
   console.log('--- where the post-#8733 load cycle goes -------------------------');
-  const cycle = IN.cycleDdataFixed_ms + IN.cacheCloneCycle_ms;
+  const cycle = IN.cycleDdataFixed_ms + IN.cacheCloneCycle_ms + IN.cycleDbCpu_ms;
   console.log(`  ddata work (post-#8733)        ${IN.cycleDdataFixed_ms.toFixed(2)} ms   ${pct(IN.cycleDdataFixed_ms, cycle)}`);
   console.log(`  cache.insertData deep clone    ${IN.cacheCloneCycle_ms.toFixed(2)} ms   ${pct(IN.cacheCloneCycle_ms, cycle)}   <- residency bookkeeping`);
+  console.log(`  database, 14 ops in parallel   ${IN.cycleDbCpu_ms.toFixed(2)} ms   ${pct(IN.cycleDbCpu_ms, cycle)}   <- EXP-MT-026, measured`);
   console.log(`  total                          ${cycle.toFixed(2)} ms`);
   console.log(`  K_cpu per shard                ${Math.floor(budgetMsPerS / (cycle * loadsPerS))} active tenants\n`);
 
@@ -229,7 +251,7 @@ function main () {
     console.log(`  routing                             ${o.affinity}\n`);
   }
 
-  const out = { tenants: TENANTS, inputs: IN, derived: { perTenantReqPerS, loadsPerS },
+  const out = { tenants: TENANTS, rttMs: RTT_MS, inputs: IN, derived: { perTenantReqPerS, loadsPerS },
     options: { A, B, C } };
   const dest = path.join(__dirname, 'results', 'exp-mt-deployment-cost.json');
   fs.writeFileSync(dest, JSON.stringify(out, null, 2));

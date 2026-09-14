@@ -1,5 +1,6 @@
 {
   "tenants": 10000,
+  "rttMs": 10,
   "inputs": {
     "cycleDdataFixed_ms": 2.19,
     "cacheCloneCycle_ms": 4.08,
@@ -21,10 +22,19 @@
     "socketsPerTenant": 4,
     "utilisation": 0.3,
     "heapBudgetGb": 4,
-    "dbQueryCpu_ms": 0.15,
+    "dbQueryCpuByRtt": {
+      "0": 0.151,
+      "10": 0.207,
+      "50": 0.379
+    },
+    "cycleDbCpu_ms": 2.5,
+    "evalDbCpu_ms": 1.63,
+    "coldWakeCpu_ms": 6.817,
+    "restCacheHitTyped_ms": 0.02,
     "dbOpsPerCycle": 14,
     "dbOpsPerApiRead": 1,
-    "dbOpsPerEval": 3
+    "dbOpsPerEval": 3,
+    "dbQueryCpu_ms": 0.207
   },
   "derived": {
     "perTenantReqPerS": 0.05333333333333334,
@@ -34,28 +44,28 @@
     "A": {
       "dbOpsPerS": 6183,
       "name": "A · stateful shards, all tenants resident",
-      "cycle_ms": 6.27,
-      "K_cpu": 239,
+      "cycle_ms": 8.77,
+      "K_cpu": 171,
       "K_mem": 1581,
-      "shards": 11,
-      "byCpu": 10.7,
+      "shards": 15,
+      "byCpu": 14.4,
       "byMem": 6.3,
-      "totalProcs": 13,
-      "ramGb": 26.4,
+      "totalProcs": 17,
+      "ramGb": 26.7,
       "affinity": "tenant -> shard map, sticky, rebalancing on scale",
       "bindsOn": "CPU"
     },
     "B": {
       "dbOpsPerS": 4285,
       "name": "B · stateful shards, residency tiered (hot/cold)",
-      "cycle_ms": 6.27,
-      "K_cpu": 239,
+      "cycle_ms": 8.77,
+      "K_cpu": 171,
       "K_mem": 1581,
-      "shards": 8,
-      "byCpu": 7.8,
+      "shards": 11,
+      "byCpu": 10.5,
       "byMem": 1.1,
-      "totalProcs": 10,
-      "ramGb": 5,
+      "totalProcs": 13,
+      "ramGb": 5.3,
       "affinity": "tenant -> shard map, sticky, + eviction policy + cold-alarm path",
       "bindsOn": "CPU"
     },
@@ -64,13 +74,13 @@
       "name": "C · stateless api + evaluator + realtime",
       "api": {
         "reqPerS": 533,
-        "cpuMsPerS": 80,
+        "cpuMsPerS": 110,
         "procs": 1
       },
       "evaluator": {
         "perS": 33,
-        "cost_ms": 0.92,
-        "cpuMsPerS": 31,
+        "cost_ms": 2.4,
+        "cpuMsPerS": 80,
         "procs": 1
       },
       "realtime": {

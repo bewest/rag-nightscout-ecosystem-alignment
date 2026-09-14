@@ -1,0 +1,42 @@
+{
+  "date": "2026-09-14T23:03:49.791Z",
+  "mongo": "7.0.43",
+  "node": "v24.15.0",
+  "url": "mongodb://127.0.0.1:27099/?directConnection=true",
+  "tenants": 50,
+  "rttLabel": "rtt50ms",
+  "loopdelay": [
+    {
+      "concurrency": 1,
+      "ops": 1024,
+      "throughputPerS": 37,
+      "loopDelayP50_ms": 1.106,
+      "loopDelayP99_ms": 1.836,
+      "cpuPerOp_ms": 2.377
+    },
+    {
+      "concurrency": 16,
+      "ops": 1024,
+      "throughputPerS": 428,
+      "loopDelayP50_ms": 1.105,
+      "loopDelayP99_ms": 5.374,
+      "cpuPerOp_ms": 0.5854
+    },
+    {
+      "concurrency": 64,
+      "ops": 1024,
+      "throughputPerS": 637,
+      "loopDelayP50_ms": 1.107,
+      "loopDelayP99_ms": 9.019,
+      "cpuPerOp_ms": 0.5832
+    },
+    {
+      "concurrency": 256,
+      "ops": 1024,
+      "throughputPerS": 1457,
+      "loopDelayP50_ms": 1.093,
+      "loopDelayP99_ms": 9.961,
+      "cpuPerOp_ms": 0.3787
+    }
+  ]
+}

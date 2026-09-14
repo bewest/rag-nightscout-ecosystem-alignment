@@ -24,8 +24,9 @@ per second — not milliseconds.
 **Recommendation: three hosted entrypoints — `api` (stateless), `evaluator` (change-driven),
 `realtime` (socket fan-out) — plus `vcpool`, over one shared core, with the existing
 single-tenant server as a fourth entrypoint that changes nothing.** At 10,000 tenants that is
-**5 processes, 0.5 GB and 633 database operations per second**, against 10–13 processes,
-5–26 GB and 4,285–6,183 ops/s for the resident-shard options.
+**5 processes, 0.5 GB and 633 database operations per second**, against **13–17 processes**,
+5–27 GB and 4,285–6,183 ops/s for the resident-shard options — process counts now measured
+with a real database in the loop (EXP-MT-026), not modelled.
 
 **This reverses the [K report](../60-research/multitenancy-k-and-residency-2026-09-14.md)
 §7's rejection of architecture D**, and the maintainer's objection is why: an 8–15 ms CPU
@@ -54,9 +55,22 @@ is evictable and correctness-neutral, not a resident `ddata`, which is neither.*
 never materially more expensive to start and is 2–3× cheaper by 10,000. There is no scale at
 which it is the wrong first move.
 
-**The largest unmeasured risk sits squarely on this recommendation**: no database has been in
-the loop for any experiment in this programme. The stateless model trades memory for queries,
-so **EXP-MT-026 is now the highest-value unrun experiment**, not a footnote.
+> **EXP-MT-026 has now been run** with MongoDB 7.0 in the loop, including real RTT via
+> `tc netem` —
+> [the report](../60-research/exp-mt-026-database-in-the-loop-2026-09-14.md). **The
+> recommendation survives and its margin widens**: the measured database cost moves A from 13
+> to **17** processes and B from 10 to **13**, leaving C at **5**. The assumption the model
+> rested on is confirmed — CPU per operation grows **2.5×** between loopback and 50 ms RTT
+> while wall time grows ~75×, and event-loop delay p50 stays flat at 1.1 ms — so **process
+> count is RTT-insensitive** and what RTT buys you is a pool-depth requirement (~100 in flight
+> at 50 ms), not more machines. Two things changed: a typed cache hit is **10×** cheaper than
+> the equivalent query (0.02 vs 0.207 ms CPU), making §2.1's response cache load-bearing
+> rather than optional; and **§6.7's A′ storage rung does not scale** — `mongod` holds ~3.7 MB
+> of non-evictable RSS per tenant database containing zero documents, more than the app-side
+> state A′ was supposed to save.
+>
+> What remains unmeasured, and it is not small: **no TLS and no authentication** were in the
+> loop, and both land on exactly the CPU-per-operation term the recommendation depends on.
 
 ---
 
@@ -396,11 +410,17 @@ merits.** Steps 4–5 are reorganisation with no behaviour change. Only 6–8 ar
 
 ## 8. What would change this recommendation
 
-- **EXP-MT-026 — a real database in the loop.** No experiment in this programme has had one.
-  C trades memory for queries, so it is the option most exposed to this, and a bad result here
-  is the one thing that could restore B. **Run this before committing to §7 step 5.**
-- **`dbQueryCpu_ms = 0.15` is a guess.** At 1 ms the api tier needs 3 processes instead of 1.
-  That changes no ordering, but it should be measured.
+- ~~**EXP-MT-026 — a real database in the loop.**~~ **Run** — see
+  [the report](../60-research/exp-mt-026-database-in-the-loop-2026-09-14.md). It went C's way:
+  the ordering held at every RTT tested, and the measured numbers moved A and B further from
+  C, not closer. `dbQueryCpu_ms` measured at **0.207 ms** at 10 ms RTT against the 0.15 ms
+  guess.
+- **TLS and authentication were not in the loop, and they land on the term that matters.**
+  Every EXP-MT-026 figure is an unencrypted, unauthenticated connection. A managed database is
+  neither. This is the most likely direction for CPU-per-operation to be understated, and the
+  api tier has the least headroom (110 ms/s of a 300 ms/s budget at 10,000 tenants). **This is
+  now the highest-value follow-up.**
+- **Writes were not measured.** Every EXP-MT-026 arm is a read; uploaders generate writes.
 - **The 15 % active fraction is unvalidated** against a real hoster. It drives A and B much
   harder than C, so a higher real figure widens C's margin rather than narrowing it.
 - **If the change feed proves unreliable at tenant scale** — oplog rollover under load, slot

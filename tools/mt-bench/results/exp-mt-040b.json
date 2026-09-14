@@ -1,0 +1,53 @@
+{
+  "date": "2026-09-14T23:11:58.425Z",
+  "baseline": {
+    "files": 51,
+    "rss": 168.8,
+    "fds": 121
+  },
+  "rows": [
+    {
+      "tenants": 50,
+      "wtFiles": 2401,
+      "mongodRssMb": 339.7,
+      "openFds": 2471,
+      "createMsPerTenant": 667.9,
+      "probeP50_ms": 0.923,
+      "probeP99_ms": 5.081,
+      "filesPerTenant": 47
+    },
+    {
+      "tenants": 100,
+      "wtFiles": 4751,
+      "mongodRssMb": 547,
+      "openFds": 4818,
+      "createMsPerTenant": 656.6,
+      "probeP50_ms": 1.112,
+      "probeP99_ms": 2.09,
+      "filesPerTenant": 47
+    },
+    {
+      "tenants": 150,
+      "wtFiles": 7101,
+      "mongodRssMb": 714.8,
+      "openFds": 7168,
+      "createMsPerTenant": 652.9,
+      "probeP50_ms": 1.218,
+      "probeP99_ms": 1.507,
+      "filesPerTenant": 47
+    },
+    {
+      "tenants": 200,
+      "wtFiles": 9451,
+      "mongodRssMb": 909.7,
+      "openFds": 9518,
+      "createMsPerTenant": 718.3,
+      "probeP50_ms": 1.108,
+      "probeP99_ms": 1.901,
+      "filesPerTenant": 47
+    }
+  ],
+  "filesPerTenant": 47,
+  "rssKbPerTenant": 3793,
+  "tenantsAt64kFds": 1361
+}

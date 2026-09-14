@@ -1711,11 +1711,22 @@ Two things follow that are worth more than the recommendation itself:
    nothing structural, and is the *same* list §6.3 wants to formalize as Postgres generated
    columns. Layer 0 therefore pays off on both branches of the ladder — which is the
    strongest available argument for doing Layer 0 before deciding anything else.
-2. **Where A′ actually breaks is an experiment, not an opinion.** Stand up one cluster,
-   create N tenant databases with the real index set, and find where p99 read latency,
-   WiredTiger cache pressure or open-file limits turn. That number — call it N\*, and the
-   guess worth testing is low thousands — is what tells a hoster whether they need stage 3
-   this year or in five. It should be filed alongside EXP-MT-040.
+2. ~~**Where A′ actually breaks is an experiment, not an opinion.**~~ **Run 2026-09-14 —
+   EXP-MT-040b, and it goes against A′.** Measured on MongoDB 7.0 with the real index set:
+   **exactly 47 WiredTiger files per tenant database** (6 collections + 41 indexes), and
+   **~3.7 MB of `mongod` resident memory per tenant database holding zero documents** —
+   confirmed non-evictable, since capping the WiredTiger cache at 1 GB did not change the
+   slope. At 10,000 tenants that is ~470,000 files and **~37 GB of database RAM before a
+   single reading is stored**, against the 26.5 GB of *evictable* app-side state A′ exists to
+   save. **A′ relocates per-tenant memory from a tier that can evict to one that cannot.**
+   The guess of "low thousands" for N\* holds on file descriptors — MongoDB's recommended
+   `nofile 64000` is ~1,360 tenant databases — but memory binds first on any normally-sized
+   database host. Read latency stays flat (0.92–1.22 ms p50) right up to the wall, so **there
+   is no gradual warning**: the observed failure mode is an immediate `fassert()` abort of the
+   whole `mongod`, which in database-per-tenant takes down every tenant at once. See
+   [EXP-MT-026](../60-research/exp-mt-026-database-in-the-loop-2026-09-14.md) §4.
+   **Index pruning now has a measured slope**: each of the 35 secondary indexes removed is one
+   file and a share of 3.7 MB, on every tenant, permanently.
 
 #### The ladder
 
@@ -1725,6 +1736,14 @@ Two things follow that are worth more than the recommendation itself:
 | **1** | Stage 0 code, plus the §6.2 query-model seam | Proves the seam with **no behaviour change**; makes the backend choice invisible to most call sites | Refactor effort only; validated by existing suites | Fully |
 | **2** | **A′** — one shared process, database-per-tenant on one cluster | The **entire measured 10–20× density win**; K8s object collapse; per-tenant export/delete stays a `mongodump` | Isolation becomes code-enforced handle selection; bounded by N\* | Largely — tenant databases are untouched |
 | **3** | **D** — Postgres + RLS, JSONB + generated columns | Database-enforced isolation covering writes; flat index curve; pool multiplexing | Engine migration; ops learning curve; §6.3's per-tenant strangler | Per tenant, during the dual-write window |
+
+> **Qualified 2026-09-14 by EXP-MT-040b.** Stage 2's density win is real on the *application*
+> tier and is partly given back on the *database* tier: ~3.7 MB of non-evictable `mongod` RSS
+> per tenant database, which exceeds the 2.65 MB of evictable app-side state it removes.
+> Stage 2 remains the right next step for a hoster in the hundreds of tenants — the K8s object
+> collapse and the `mongodump`-per-tenant export are unaffected — but it **does not scale to
+> 10,000 tenants**, and the flat index curve in stage 3 is now its main justification rather
+> than a refinement.
 
 **Stage 2 is the recommendation for what to build next**, and stage 3 is the recommendation
 for where to end up. Splitting them is the point: stage 2 delivers the density result that

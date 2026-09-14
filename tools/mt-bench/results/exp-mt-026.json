@@ -1,0 +1,15 @@
+{
+  "date": "2026-09-14T23:01:14.374Z",
+  "mongo": "7.0.43",
+  "node": "v24.15.0",
+  "url": "mongodb://127.0.0.1:27099/?directConnection=true",
+  "tenants": 50,
+  "rttLabel": "loopback",
+  "load": {
+    "tenants": 50,
+    "loadSeconds": 194.3,
+    "perTenantDataMb": 0.9,
+    "perTenantIndexMb": 0.9,
+    "indexes": 41
+  }
+}
