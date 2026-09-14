@@ -20,6 +20,13 @@ correction moves the binding constraint from memory to load-cycle query rate —
 §7.4.1. A storage recommendation answering "Postgres+RLS or Mongo?" with a migration path
 for an existing hoster is added as **§6.7**.
 
+**Experiments run 2026-09-14** — see [K, residency and the two quadratics](../60-research/multitenancy-k-and-residency-2026-09-14.md). They resolve §5's B/C/D/E choice and size K, and
+they **invalidate part of §7.5**: `tools/mt-bench/gen.js` gives every document the same
+`_id`, so both hot loops break on first match and the quadratics were never exercised. The
+real per-cycle cost is **9.5 ms, not 0.03 ms**, 63 % of it in `processDurations` — a fourth
+cost centre §2.1 does not list. Corrections are marked inline in §2.1, §5, §7.4, §7.4.1
+and §7.5.
+
 ---
 
 ## TL;DR
@@ -133,6 +140,11 @@ Mongo/Atlas round-trips expected to dominate every local cost here.
 | JSON deep clone of every loaded document | `lib/data/ddata.js:29-79` (`processRawDataForRuntime`) | `JSON.parse(JSON.stringify(...))` per load |
 | Old/new merge | `lib/data/ddata.js:82-106` (`idMergePreferNew`) | O(old × new), not hash-indexed |
 | Client delta | `lib/data/calcdelta.js:15-76` | O(old × new) with deep compares |
+| **Duration processing** | `lib/data/ddata.js:198-247` (`processDurations`) | **O(n²) twice** — a `filter`/`findIndex` dedup and an explicit treatments × treatments overlap cut |
+
+**Added 2026-09-14.** The fourth row was missing and is the largest of the four: measured at
+**63 % of one load cycle**, against 34 % for the delta and under 1 % for the merge. At 5 000
+temp basals it alone costs **343 ms per load**. See the [experiment report](../60-research/multitenancy-k-and-residency-2026-09-14.md) §3.
 
 `clone()` (`:108-123`) and `dataWithRecentStatuses()` (`:126-145`) produce the
 client-facing projection.
@@ -517,6 +529,30 @@ measurement, not assertion.
 **E. Sharded: K tenants per process, M processes.** Orthogonal and pragmatic. Bounds blast
 radius and GC pause impact, allows rolling upgrades, lets a noisy tenant be moved. Any
 serious deployment ends up here; the open question is *best K*, not B-vs-E.
+
+> **Measured 2026-09-14 — the choice is largely settled.** See
+> [the experiment report](../60-research/multitenancy-k-and-residency-2026-09-14.md).
+>
+> - **B is the right substrate and cheaper than believed**: a fully-processed real `ddata`
+>   tenant is **1,204 KB**, not the synthetic 2.2 MB.
+> - **C is what makes a hoster's numbers work.** The alarm-critical slice §7.4.1 requires
+>   measures **0.6 KB** — a **2,000×** hot/cold ratio, so alarm coverage for 10,000 cold
+>   tenants costs ~6 MB.
+> - **D loses, and the margin is the finding.** A full stateless rebuild is **10.8 ms**
+>   against **9.5 ms** for an *incremental* cycle — no margin at all today, which indicts the
+>   resident path rather than vindicating D. With the quadratics fixed the incremental cycle
+>   is 1.5 ms and D loses by 7×. **D only looks competitive while B is broken.**
+> - **E is confirmed as deployment shape, not a peer — and M is small.** For 10,000 tenants
+>   at a 15 % active fraction, M ≈ 16 application shards on current code and **M ≈ 2 with
+>   two functions fixed**. Shard for blast radius, upgrades and noisy-tenant relocation;
+>   **do not shard for capacity**, which would be buying hardware to run an O(n²) loop.
+>
+> **K is not one number.** It is ~10²–10³ active tenants for an APP shard (CPU-bound),
+> ~10⁴ sockets for realtime fan-out, effectively unbounded for stateless router/auth, and
+> plausibly ~10¹–10² accounts for the vendor-connectivity pool — which binds on *somebody
+> else's rate limiter*, the one limit no amount of code quality moves. **Split components
+> where their K differs by an order of magnitude**, which on present evidence means the APP
+> shard and the vendor pool first, and nothing else until EXP-MT-045/048/051 run.
 
 ### 5.1 The same system, tenant-scoped — and what does not scope with it
 
@@ -1812,6 +1848,12 @@ fixture, so architecture is the only variable:
 | **worker** (`worker_threads`) | threads in one process | 15.0 MB | 13.0 MB | 56.8 / 54.4 MB |
 | **shared** (`Map<tenantId, ctx>`) | the `ctxFor(tenantId)` proposal, §5B | **2.2 MB** | **2.3 MB** | 5.4 / 5.1 MB |
 
+> **Corrected 2026-09-14.** The `shared` row holds `gen.js` fixtures in a `Map`, which skips
+> `processRawDataForRuntime`'s clone, the eight derived treatment arrays and the retained
+> client projection. Measured against the **real** `ddata` path, a tenant costs **1,204 KB**,
+> not 2.2 MB — the synthetic arm was *pessimistic*, and the figure matches §2.7's independent
+> ~1.2 MB. Flat from N=25 to N=300. **Memory is not the constraint**; see §7.4.1 and the {R}.
+
 1. **RSS and PSS diverge hugely for `process`, barely for the others.** The kernel
    deduplicates the Node binary's text segment and shared libraries across forks, so the
    *physical* cost of process-per-tenant is much less alarming than the *provisioned* cost
@@ -1845,7 +1887,7 @@ Shrinking object count (shared database with tenant isolation, shared topic with
 tenant-keyed payload, one Deployment scaled horizontally) removes the ceiling regardless of
 language, and is a **strict prerequisite** for any "radically more tenants" option here.
 
-#### 7.4.1 Correction: `ddata` residency is a policy, not a property — **inferred**
+#### 7.4.1 Correction: `ddata` residency is a policy, not a property — **measured 2026-09-14**
 
 Added 2026-09-14, after a maintainer pointed out that it was never clear a multitenant
 monolith would keep every tenant's `ddata`/`dataloader` cache resident at scale — that the
@@ -1886,8 +1928,23 @@ not the query count. So:
 | Every tenant at the 1 s debounce | ~140,000 |
 | Only tenants with a connected client or a recent upload | proportional to the **active fraction**, not the total |
 
-(Arithmetic from §2.3's figures; **inferred**, not measured — it needs EXP-MT-026 with a
-real remote database in the loop before being quoted as capacity.)
+(Arithmetic from §2.3's figures; the *rate* still needs EXP-MT-026 with a real remote
+database before being quoted as capacity.)
+
+> **Measured 2026-09-14, and the conclusion holds with room to spare.** Resident cost is
+> **1,204 KB/tenant**; the alarm-critical slice is **0.6 KB**. One incremental load cycle
+> costs **9.5 ms p50 / 12.6 ms p99** for a typical 600-treatment tenant. Solving both
+> bounds at a 30 % event-loop utilisation target:
+>
+> | Tenant | code | K (CPU, active) | K (memory, 4 GB) |
+> |---|---|---:|---:|
+> | typical | current | **157** | 3 471 |
+> | typical | quadratics fixed | **987** | 3 471 |
+> | heavy (2 400 treatments) | current | **12** | 3 471 |
+> | heavy | quadratics fixed | **335** | 3 471 |
+>
+> **CPU binds before memory in every row, by 3–280×.** The load cycle is the constraint, as
+> argued — and it is ~8× more expensive than any previously recorded figure. See the {R}.
 
 **The design consequence, which this document had not stated.** Residency tiering cannot be
 "evict the idle tenant", because §11 Q5 requires alarm delivery for idle tenants — the
@@ -1927,6 +1984,30 @@ the eviction policy itself ships later.
 At typical sizes the nested scan is **already fine, and the "fix" is over 3× slower** —
 building an index costs more than scanning three new documents. The quadratic only bites
 the tail: at 5 000 treatments it is a **31× difference and an 81 ms event-loop stall.**
+
+> **Corrected 2026-09-14 — the table above blends two different functions, and the delta
+> rows are a fixture artifact.** `gen.js` gives every document the same `_id`, and both hot
+> loops break on first match, so the O(n²) scan never ran. Re-measured with distinct ids
+> ({R} §1):
+>
+> | n | ids | nested | Map-indexed | |
+> |---:|---|---:|---:|---|
+> | 600 | identical | 0.568 ms | 0.545 ms | a wash — *the published row* |
+> | 600 | **distinct** | **1.369 ms** | **0.507 ms** | indexed wins **2.7×** |
+> | 2 000 | **distinct** | 11.717 ms | 1.751 ms | indexed wins 6.7× |
+> | 5 000 | **distinct** | 66.391 ms | 4.389 ms | indexed wins 15× |
+>
+> **The delta should just be indexed — there is no crossover at any size measured**, so the
+> "adaptive, scan when small" advice below is withdrawn for `nsArrayTreatments`.
+>
+> **The merge survives, for a reason this section did not state.** `idMergePreferNew`'s
+> second argument is the incremental batch (~3 documents), so it is O(n×3) and never
+> quadratic. With distinct ids at 600 old / 3 new: nested 0.031 ms vs indexed 0.053 ms; at
+> 5 000 / 3: 0.144 ms vs 0.404 ms. **Leave it alone.**
+>
+> And the real fairness problem is neither of these: **`processDurations` is 63 % of the
+> cycle** (§2.1), reaching **343 ms per load** at 5 000 temp basals. Fixing both quadratics
+> takes a typical cycle from 9.5 ms to 1.5 ms and a heavy one from 121 ms to 4.5 ms.
 
 In single-tenant Nightscout an 81 ms hiccup is invisible. In a shared process it is a
 **fairness incident**: one person with a long treatment history stalls everyone else's
@@ -2922,8 +3003,37 @@ from source or derived from figures already in the document, and is labelled acc
    is still the fork gating the most expensive work. Operator-supplied deployment metadata
    is recorded as parked, by explicit direction, so it does not block the rest.
 
-**Still not measured, and load-bearing:** EXP-MT-035 against the real `ddata`/`dataloader`
-code (now with a resident-vs-evicted dimension and an active-fraction question); **N\***, the
-tenant count at which database-per-tenant on one Mongo cluster degrades, which is what
-decides whether stage 3 is urgent or distant; and the load-cycle arithmetic in §7.4.1, which
-is derived from §2.3 rather than run.
+**Still not measured, and load-bearing:** **N\***, the tenant count at which
+database-per-tenant on one Mongo cluster degrades, which is what decides whether stage 3 is
+urgent or distant.
+
+### Revision, 2026-09-14 (second pass — experiments)
+
+EXP-MT-035/003/004/005 and an extended EXP-MT-028 were run; results in
+[K, residency and the two quadratics](../60-research/multitenancy-k-and-residency-2026-09-14.md),
+harness in `tools/mt-bench/{residency,cycle-fix}.js`, raw output in
+`tools/mt-bench/results/exp-mt-035.json`. Headline numbers reproduced within 4 % on a second
+pass. **No database was in the loop**; these are event-loop CPU and heap measurements.
+
+1. **A fixture defect invalidated part of §7.5.** `gen.js` gives every document the same
+   `_id`; both hot loops break on first match, so the quadratics never ran. The delta rows
+   are artifacts — with distinct ids the Map-indexed fix wins at every size (2.7× at 600,
+   15× at 5 000), so the "adaptive, scan when small" advice is withdrawn for the delta. The
+   merge rows survive, because that function's second argument is a ~3-document batch.
+2. **§2.1 was missing its largest cost centre.** `processDurations` (`ddata.js:198-247`) is
+   quadratic twice over and is **63 %** of a load cycle, reaching **343 ms** at 5 000 temp
+   basals — on single-tenant Nightscout today.
+3. **§7.4's 2.2 MB/tenant was pessimistic**: the real `ddata` path costs **1,204 KB**, and
+   the alarm slice §7.4.1 requires costs **0.6 KB**.
+4. **§7.4.1's inferred conclusion is confirmed**: CPU binds before memory by 3–280×.
+   K ≈ 157 active tenants per shard today, ≈ 987 with two functions fixed; M ≈ 16 → ≈ 2 for
+   a 10 000-tenant hoster.
+5. **§5's B/C/D/E is resolved**: B as substrate, C for the economics, E as deployment shape
+   with a small M, D rejected — noting that D is only close *because* B is currently broken.
+
+**What the experiments do not cover, in priority order:** plugin execution after each load
+(§2.3) is absent from the 9.5 ms and will lower K, possibly a lot; no database round-trips;
+no socket fan-out or GC-at-N; the load-rate assumption drives K linearly and comes from
+`UPDATE_MAX_WAIT` rather than observed uploader behaviour; and the proposed
+`processDurations` replacement is asserted output-equivalent on a fixture, not proved against
+the suites.

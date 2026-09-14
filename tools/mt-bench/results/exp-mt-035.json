@@ -1,0 +1,308 @@
+{
+  "generated": "2026-09-14T12:21:08-07:00",
+  "node": "v24.15.0",
+  "nightscout_ref": "origin/dev a8888f0d",
+  "host": "shared development machine, no remote database in the loop",
+  "memory": [
+{
+  "arm": "raw",
+  "unique": true,
+  "marks": [
+    {
+      "n": 1,
+      "totalMB": 1.298,
+      "rssMB": 9.48,
+      "perTenantKB": 1329.6,
+      "perTenantRssKB": 9708
+    },
+    {
+      "n": 10,
+      "totalMB": 12.53,
+      "rssMB": 28.855,
+      "perTenantKB": 1283,
+      "perTenantRssKB": 2954.8
+    },
+    {
+      "n": 25,
+      "totalMB": 31.25,
+      "rssMB": 68.23,
+      "perTenantKB": 1280,
+      "perTenantRssKB": 2794.7
+    },
+    {
+      "n": 50,
+      "totalMB": 62.443,
+      "rssMB": 109.605,
+      "perTenantKB": 1278.8,
+      "perTenantRssKB": 2244.7
+    },
+    {
+      "n": 100,
+      "totalMB": 124.83,
+      "rssMB": 192.109,
+      "perTenantKB": 1278.3,
+      "perTenantRssKB": 1967.2
+    },
+    {
+      "n": 200,
+      "totalMB": 249.602,
+      "rssMB": 370.895,
+      "perTenantKB": 1278,
+      "perTenantRssKB": 1899
+    },
+    {
+      "n": 300,
+      "totalMB": 374.379,
+      "rssMB": 499.27,
+      "perTenantKB": 1277.9,
+      "perTenantRssKB": 1704.2
+    }
+  ]
+}
+,
+{
+  "arm": "resident",
+  "unique": true,
+  "marks": [
+    {
+      "n": 1,
+      "totalMB": 1.274,
+      "rssMB": 18.043,
+      "perTenantKB": 1304.5,
+      "perTenantRssKB": 18476
+    },
+    {
+      "n": 10,
+      "totalMB": 11.86,
+      "rssMB": 90.57,
+      "perTenantKB": 1214.5,
+      "perTenantRssKB": 9274.4
+    },
+    {
+      "n": 25,
+      "totalMB": 29.455,
+      "rssMB": 171.363,
+      "perTenantKB": 1206.5,
+      "perTenantRssKB": 7019
+    },
+    {
+      "n": 50,
+      "totalMB": 58.777,
+      "rssMB": 203.84,
+      "perTenantKB": 1203.8,
+      "perTenantRssKB": 4174.6
+    },
+    {
+      "n": 100,
+      "totalMB": 117.422,
+      "rssMB": 274.695,
+      "perTenantKB": 1202.4,
+      "perTenantRssKB": 2812.9
+    },
+    {
+      "n": 200,
+      "totalMB": 235.174,
+      "rssMB": 415.406,
+      "perTenantKB": 1204.1,
+      "perTenantRssKB": 2126.9
+    },
+    {
+      "n": 300,
+      "totalMB": 352.92,
+      "rssMB": 536.184,
+      "perTenantKB": 1204.6,
+      "perTenantRssKB": 1830.2
+    }
+  ]
+}
+,
+{
+  "arm": "alarm",
+  "unique": true,
+  "marks": [
+    {
+      "n": 1,
+      "totalMB": 0.051,
+      "rssMB": 9.184,
+      "perTenantKB": 52.2,
+      "perTenantRssKB": 9404
+    },
+    {
+      "n": 10,
+      "totalMB": 0.057,
+      "rssMB": 12.109,
+      "perTenantKB": 5.8,
+      "perTenantRssKB": 1240
+    },
+    {
+      "n": 25,
+      "totalMB": 0.062,
+      "rssMB": 16.109,
+      "perTenantKB": 2.5,
+      "perTenantRssKB": 659.8
+    },
+    {
+      "n": 50,
+      "totalMB": 0.071,
+      "rssMB": 23.984,
+      "perTenantKB": 1.5,
+      "perTenantRssKB": 491.2
+    },
+    {
+      "n": 100,
+      "totalMB": 0.09,
+      "rssMB": 40.859,
+      "perTenantKB": 0.9,
+      "perTenantRssKB": 418.4
+    },
+    {
+      "n": 200,
+      "totalMB": 0.129,
+      "rssMB": 40.984,
+      "perTenantKB": 0.7,
+      "perTenantRssKB": 209.8
+    },
+    {
+      "n": 300,
+      "totalMB": 0.167,
+      "rssMB": 57.484,
+      "perTenantKB": 0.6,
+      "perTenantRssKB": 196.2
+    }
+  ]
+}
+  ],
+  "cycle_by_treatment_count": [
+{
+  "durationsEquivalence": "MATCH",
+  "arms": [
+    {
+      "arm": "current",
+      "treatments": 300,
+      "ms": {
+        "p50": 2.889,
+        "p95": 4.272,
+        "p99": 7.732
+      }
+    },
+    {
+      "arm": "+delta indexed",
+      "treatments": 300,
+      "ms": {
+        "p50": 2.62,
+        "p95": 3.054,
+        "p99": 3.873
+      }
+    },
+    {
+      "arm": "+both",
+      "treatments": 300,
+      "ms": {
+        "p50": 1.017,
+        "p95": 1.427,
+        "p99": 1.56
+      }
+    }
+  ]
+}
+,
+{
+  "durationsEquivalence": "MATCH",
+  "arms": [
+    {
+      "arm": "current",
+      "treatments": 600,
+      "ms": {
+        "p50": 9.186,
+        "p95": 11.54,
+        "p99": 15.383
+      }
+    },
+    {
+      "arm": "+delta indexed",
+      "treatments": 600,
+      "ms": {
+        "p50": 8.038,
+        "p95": 9.889,
+        "p99": 13.747
+      }
+    },
+    {
+      "arm": "+both",
+      "treatments": 600,
+      "ms": {
+        "p50": 1.538,
+        "p95": 3.492,
+        "p99": 3.739
+      }
+    }
+  ]
+}
+,
+{
+  "durationsEquivalence": "MATCH",
+  "arms": [
+    {
+      "arm": "current",
+      "treatments": 1200,
+      "ms": {
+        "p50": 32.487,
+        "p95": 34.78,
+        "p99": 37.331
+      }
+    },
+    {
+      "arm": "+delta indexed",
+      "treatments": 1200,
+      "ms": {
+        "p50": 27.88,
+        "p95": 36.163,
+        "p99": 37.533
+      }
+    },
+    {
+      "arm": "+both",
+      "treatments": 1200,
+      "ms": {
+        "p50": 2.601,
+        "p95": 10.978,
+        "p99": 11.273
+      }
+    }
+  ]
+}
+,
+{
+  "durationsEquivalence": "MATCH",
+  "arms": [
+    {
+      "arm": "current",
+      "treatments": 2400,
+      "ms": {
+        "p50": 116.573,
+        "p95": 129.466,
+        "p99": 138.094
+      }
+    },
+    {
+      "arm": "+delta indexed",
+      "treatments": 2400,
+      "ms": {
+        "p50": 98.171,
+        "p95": 130.818,
+        "p99": 131.942
+      }
+    },
+    {
+      "arm": "+both",
+      "treatments": 2400,
+      "ms": {
+        "p50": 4.342,
+        "p95": 36.782,
+        "p99": 38.587
+      }
+    }
+  ]
+}
+  ]
+}
