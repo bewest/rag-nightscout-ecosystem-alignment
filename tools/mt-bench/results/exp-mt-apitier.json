@@ -1,0 +1,113 @@
+{
+  "node": "v24.15.0",
+  "date": "2026-09-14T22:41:04.994Z",
+  "N": 200,
+  "read": {
+    "rows": [
+      {
+        "count": 1,
+        "untyped": {
+          "p50": 0.8289,
+          "p99": 1.5651,
+          "mean": 0.8678
+        },
+        "typed": {
+          "p50": 0.0077,
+          "p99": 0.0236,
+          "mean": 0.0089
+        },
+        "ratio": 107.6
+      },
+      {
+        "count": 10,
+        "untyped": {
+          "p50": 0.838,
+          "p99": 1.9368,
+          "mean": 0.8766
+        },
+        "typed": {
+          "p50": 0.0199,
+          "p99": 0.0392,
+          "mean": 0.0214
+        },
+        "ratio": 42.1
+      },
+      {
+        "count": 144,
+        "untyped": {
+          "p50": 1.0151,
+          "p99": 1.8241,
+          "mean": 1.0368
+        },
+        "typed": {
+          "p50": 0.1978,
+          "p99": 0.3401,
+          "mean": 0.2057
+        },
+        "ratio": 5.1
+      },
+      {
+        "count": 576,
+        "untyped": {
+          "p50": 1.6487,
+          "p99": 2.7959,
+          "mean": 1.689
+        },
+        "typed": {
+          "p50": 0.8294,
+          "p99": 1.81,
+          "mean": 0.853
+        },
+        "ratio": 2
+      }
+    ],
+    "kRest": {
+      "untyped": 7159,
+      "typed": 301507
+    }
+  },
+  "mem": {
+    "ddataOnly": 1330.7,
+    "withCache": 2651.2,
+    "kMemBefore": 3151,
+    "kMemAfter": 1582
+  },
+  "cycle": {
+    "per": {
+      "entries": {
+        "p50": 0.8474,
+        "p99": 1.5094,
+        "mean": 0.8805
+      },
+      "treatments": {
+        "p50": 0.7253,
+        "p99": 0.8112,
+        "mean": 0.7424
+      },
+      "devicestatus": {
+        "p50": 2.3607,
+        "p99": 4.8065,
+        "mean": 2.3896
+      }
+    },
+    "total": 3.933,
+    "cycleCurrent": 9.457,
+    "cycleCurrentWithClones": 13.39,
+    "cycleFixed": 2.19,
+    "cycleFixedWithClones": 6.12,
+    "kCurrent": 158,
+    "kCurrentWithClones": 112,
+    "kFixed": 684,
+    "kFixedWithClones": 244,
+    "cloneShareOfFixed": 64
+  },
+  "alarm": {
+    "minimal": 0.5,
+    "shipped": 50.6,
+    "resident": 2509.4,
+    "ratioBefore": 5019,
+    "ratioAfter": 50,
+    "coldMbBefore": 5,
+    "coldMbAfter": 494
+  }
+}

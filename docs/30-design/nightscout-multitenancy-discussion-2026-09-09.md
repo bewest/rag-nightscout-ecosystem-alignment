@@ -20,6 +20,19 @@ correction moves the binding constraint from memory to load-cycle query rate —
 §7.4.1. A storage recommendation answering "Postgres+RLS or Mongo?" with a migration path
 for an existing hoster is added as **§6.7**.
 
+> **Superseded in part, 2026-09-14 (third pass) — read this first.** The quadratics are now
+> [PR #8733](https://github.com/nightscout/cgm-remote-monitor/pull/8733), so the *fixed* cycle
+> is the baseline and no longer a branch of the decision tree. Measuring the REST tier for the
+> first time ({R} §12) corrected three figures below and **reversed §5's rejection of D**:
+> `cache.insertData`'s defensive deep clone is **4.08 ms — 65 % of the post-#8733 load cycle**,
+> dropping K from 685 to **239**; the resident figure omits `ctx.cache` (1,204 → **2,652
+> KB/tenant**); and the alarm slice models one plugin of eighteen (0.6 → **50.6 KB**). At
+> 10,000 tenants a stateless decomposition costs **5 processes, 0.5 GB and 633 DB ops/s**
+> against **10–13 processes, 5–26 GB and 4,285–6,183 ops/s** resident. The component
+> recommendation that follows now lives in
+> [Deployable components](nightscout-deployable-components-2026-09-14.md); §5, §7.4, §7.5
+> and §10.5 below are the record of how it was reached, not the current recommendation.
+
 **Experiments run 2026-09-14** — see [K, residency and the two quadratics](../60-research/multitenancy-k-and-residency-2026-09-14.md). They resolve §5's B/C/D/E choice and size K, and
 they **invalidate part of §7.5**: `tools/mt-bench/gen.js` gives every document the same
 `_id`, so both hot loops break on first match and the quadratics were never exercised. The
@@ -30,6 +43,11 @@ and §7.5.
 ---
 
 ## TL;DR
+
+> **The first clause of this recommendation did not survive the third pass.** "Hold many
+> tenants in one process" assumed residency was required; it is not, and it is the expensive
+> half. The isolation and runtime clauses stand. Current recommendation:
+> [Deployable components](nightscout-deployable-components-2026-09-14.md).
 
 **Recommendation: extend cgm-remote-monitor to hold many tenants in one process; adopt
 Postgres RLS (or an equivalent storage-enforced predicate) as the isolation primitive; stay
@@ -538,10 +556,17 @@ serious deployment ends up here; the open question is *best K*, not B-vs-E.
 > - **C is what makes a hoster's numbers work.** The alarm-critical slice §7.4.1 requires
 >   measures **0.6 KB** — a **2,000×** hot/cold ratio, so alarm coverage for 10,000 cold
 >   tenants costs ~6 MB.
-> - **D loses, and the margin is the finding.** A full stateless rebuild is **10.8 ms**
->   against **9.5 ms** for an *incremental* cycle — no margin at all today, which indicts the
->   resident path rather than vindicating D. With the quadratics fixed the incremental cycle
->   is 1.5 ms and D loses by 7×. **D only looks competitive while B is broken.**
+> - ~~**D loses, and the margin is the finding.**~~ **Reversed on the third pass.** The
+>   original claim: a full stateless rebuild is 10.8 ms against 9.5 ms for an incremental
+>   cycle, and once the quadratics are fixed the incremental path wins by 7×. Two things
+>   were wrong with deciding it that way. The cycle figure **omitted `cache.insertData`'s
+>   4.08 ms defensive clone** ({R} §12.3), so the comparison flattered the resident path; and
+>   a CPU margin is the wrong axis for choosing between a design needing a tenant→shard map,
+>   sticky routing, an eviction policy and a rebalancer and one needing none. On cost —
+>   the operator's stated objective — stateless wins by 2–3× in processes and **~10× in
+>   database operations**, because the resident path polls ~14 ops per tenant per cycle on a
+>   timer whether or not anything changed. See
+>   [Deployable components](nightscout-deployable-components-2026-09-14.md).
 > - **E is confirmed as deployment shape, not a peer — and M is small.** For 10,000 tenants
 >   at a 15 % active fraction, M ≈ 16 application shards on current code and **M ≈ 2 with
 >   two functions fixed**. Shard for blast radius, upgrades and noisy-tenant relocation;
@@ -552,7 +577,8 @@ serious deployment ends up here; the open question is *best K*, not B-vs-E.
 > | Component | Binds on | K (tenants/process) |
 > |---|---|---:|
 > | APP shard, current code | event-loop CPU, 10.2 ms/cycle | **147** |
-> | APP shard, quadratics fixed | event-loop CPU, 2.2 ms/cycle | **685** |
+> | ~~APP shard, quadratics fixed~~ | ~~event-loop CPU, 2.2 ms/cycle~~ | ~~**685**~~ |
+> | **APP shard, post-#8733, incl. `cache.insertData`** | event-loop CPU, **6.27 ms/cycle** | **239** |
 > | VCPOOL machinery | actor memory, 419 KB/account | **~9 700** |
 > | REALTIME fan-out | ~31 KB/socket + ~55 µs/tenant emit | **~27 500** |
 > | ROUTER / AUTH | stateless | unbounded at this scale (unmeasured) |
@@ -1952,7 +1978,19 @@ database before being quoted as capacity.)
 
 > **Measured 2026-09-14, and the conclusion holds with room to spare.** Resident cost is
 > **1,204 KB/tenant**; the alarm-critical slice is **0.6 KB**. One incremental load cycle
-> costs **9.5 ms p50 / 12.6 ms p99** for a typical 600-treatment tenant. Solving both
+> costs **9.5 ms p50 / 12.6 ms p99** for a typical 600-treatment tenant.
+>
+> **All three figures corrected on the third pass ({R} §12.3–12.5) — do not quote the row
+> below.** Resident cost omits `ctx.cache`, which is a second independent object graph over
+> the same window: **2,652 KB/tenant**, K_memory 3,152 → **1,581**. The alarm slice models
+> `simplealarms` alone; across all 18 shipped alarm plugins it is **50.6 KB**, so the
+> hot/cold ratio is ~**50×**, not 2,000×, and 10,000 cold tenants cost **~494 MB**, not 6 MB.
+> The cycle omits `cache.insertData`'s **4.08 ms** clone. The *direction* of §7.4.1's argument
+> survives — CPU still binds before memory, and tiering is still tractable — but the slice's
+> real significance turned out to be its **lifetime, not its size**: 50.6 KB is transient
+> (materialise, evaluate, discard), and the only durable part is ack/snooze state, which
+> belongs in storage. That is what makes a change-driven evaluator possible without residency
+> at all — see [Deployable components](nightscout-deployable-components-2026-09-14.md) §2.2. Solving both
 > bounds at a 30 % event-loop utilisation target:
 >
 > | Tenant | code | K (CPU, active) | K (memory, 4 GB) |
@@ -2956,8 +2994,16 @@ inspected. Cheap follow-up, and it materially affects the shared-cores option in
 `tests/Integration/**/Rls/`, `CLAUDE.md`.
 
 **Harness**: `tools/mt-bench/` (`gen.js`, `coldwake.js`, `columnar.js`, `handles.js`,
-`amplifiers.js`, `footprint.js`, `arch.js`, `wasmvsnative.js`, `rust/`, `rls-poc/`), each with
-its own README recording what it measures and the traps it exists to avoid.
+`amplifiers.js`, `footprint.js`, `arch.js`, `wasmvsnative.js`, `residency.js`, `cycle-fix.js`,
+`plugin-cycle.js`, `realtime.js`, `vcpool.js`, `apitier.js`, `deployment-cost.js`, `rust/`,
+`rls-poc/`), each with its own README recording what it measures and the traps it exists to
+avoid.
+
+**{R}** — [What sets K: residency, the load cycle, and two quadratics](../60-research/multitenancy-k-and-residency-2026-09-14.md).
+**Component recommendation** — [Deployable components: entrypoints, program structure, and
+what an operator actually runs](nightscout-deployable-components-2026-09-14.md).
+**Upstream** — [PR #8733](https://github.com/nightscout/cgm-remote-monitor/pull/8733),
+the two quadratic scans over the treatment window.
 
 **Workspace**: `docs/60-research/nightscout-modernization-next-steps-2026-09-09.md`,
 `docs/reports/nightscout-release-planning-2026-09/tooling-evaluation-keyv-mongoose-zod-wasm.md`,

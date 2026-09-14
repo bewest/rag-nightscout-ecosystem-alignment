@@ -1,0 +1,89 @@
+{
+  "tenants": 10000,
+  "inputs": {
+    "cycleDdataFixed_ms": 2.19,
+    "cacheCloneCycle_ms": 4.08,
+    "pluginTier_ms": 0.61,
+    "residentDdata_kb": 1331,
+    "residentWithCache_kb": 2652,
+    "alarmSliceShipped_kb": 50.6,
+    "restUntyped_ms": 0.83,
+    "restTyped_ms": 0.02,
+    "socketMem_kb": 31,
+    "socketEmit_us": 55,
+    "vcpoolActor_kb": 419,
+    "procFloor_mb": 99,
+    "jsonParsePer795kb_ms": 2.52,
+    "activeFraction": 0.15,
+    "followersPerTenant": 3,
+    "followerPollSeconds": 60,
+    "uploadIntervalSeconds": 300,
+    "socketsPerTenant": 4,
+    "utilisation": 0.3,
+    "heapBudgetGb": 4,
+    "dbQueryCpu_ms": 0.15,
+    "dbOpsPerCycle": 14,
+    "dbOpsPerApiRead": 1,
+    "dbOpsPerEval": 3
+  },
+  "derived": {
+    "perTenantReqPerS": 0.05333333333333334,
+    "loadsPerS": 0.2
+  },
+  "options": {
+    "A": {
+      "dbOpsPerS": 6183,
+      "name": "A · stateful shards, all tenants resident",
+      "cycle_ms": 6.27,
+      "K_cpu": 239,
+      "K_mem": 1581,
+      "shards": 11,
+      "byCpu": 10.7,
+      "byMem": 6.3,
+      "totalProcs": 13,
+      "ramGb": 26.4,
+      "affinity": "tenant -> shard map, sticky, rebalancing on scale",
+      "bindsOn": "CPU"
+    },
+    "B": {
+      "dbOpsPerS": 4285,
+      "name": "B · stateful shards, residency tiered (hot/cold)",
+      "cycle_ms": 6.27,
+      "K_cpu": 239,
+      "K_mem": 1581,
+      "shards": 8,
+      "byCpu": 7.8,
+      "byMem": 1.1,
+      "totalProcs": 10,
+      "ramGb": 5,
+      "affinity": "tenant -> shard map, sticky, + eviction policy + cold-alarm path",
+      "bindsOn": "CPU"
+    },
+    "C": {
+      "dbOpsPerS": 633,
+      "name": "C · stateless api + evaluator + realtime",
+      "api": {
+        "reqPerS": 533,
+        "cpuMsPerS": 80,
+        "procs": 1
+      },
+      "evaluator": {
+        "perS": 33,
+        "cost_ms": 0.92,
+        "cpuMsPerS": 31,
+        "procs": 1
+      },
+      "realtime": {
+        "sockets": 6000,
+        "ramGb": 0.2,
+        "cpuMsPerS": 1.8,
+        "procs": 1
+      },
+      "shards": 3,
+      "totalProcs": 5,
+      "ramGb": 0.5,
+      "affinity": "none for api/evaluator; sockets sticky within realtime only",
+      "bindsOn": "request rate (api), change rate (evaluator), sockets (realtime)"
+    }
+  }
+}

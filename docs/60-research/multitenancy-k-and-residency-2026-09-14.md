@@ -3,11 +3,14 @@
 **Experiments**: EXP-MT-035 (resident cost against real `ddata`), EXP-MT-003 (residency
 tiering), EXP-MT-004 (stateless rebuild), EXP-MT-005 (tenants per process),
 EXP-MT-028 (adaptive merge/delta, extended), **EXP-MT-035b (plugin tier)**,
-**EXP-MT-045a (realtime fan-out)**, **EXP-MT-048a (vendor-connectivity density)**
-**Date**: 2026-09-14 (components added in a second session the same day)
-**Harness**: `tools/mt-bench/{residency,cycle-fix,plugin-cycle,realtime,vcpool}.js`;
+**EXP-MT-045a (realtime fan-out)**, **EXP-MT-048a (vendor-connectivity density)**,
+**EXP-MT-055/055b (REST tier, cache clone)**, **EXP-MT-035c/035d (resident cost, alarm
+slice)**, **EXP-MT-056 (deployment cost model)**
+**Date**: 2026-09-14 (components added in a second session, §12 in a third, same day)
+**Harness**: `tools/mt-bench/{residency,cycle-fix,plugin-cycle,realtime,vcpool,apitier,deployment-cost}.js`;
 figures from `tools/mt-bench/figures.py`; raw results in
-`tools/mt-bench/results/exp-mt-035.json` and `exp-mt-components.json`
+`tools/mt-bench/results/exp-mt-035.json`, `exp-mt-components.json`,
+`exp-mt-apitier.json` and `exp-mt-deployment-cost.json`
 **Under test**: `cgm-remote-monitor` `origin/dev` @ `a8888f0d`, real `lib/data/ddata.js`
 and `lib/data/calcdelta.js`
 **Environment**: Node v24.15.0, Linux, shared development machine, **no database in the
@@ -68,6 +71,18 @@ everything else.** `Map<tenantId, ctx>` (§5B) is the substrate, with tiering (�
 on it. But the two quadratics are **not multitenancy work**: they are defects in the current
 product that stall single-tenant sites today, and they should be fixed upstream whether or
 not multitenancy ever happens. §8 lists them as a standalone change set.
+
+> **Superseded in part by §12, added the same day.** The quadratics are now
+> [PR #8733](https://github.com/nightscout/cgm-remote-monitor/pull/8733), so the fixed cycle
+> is the baseline rather than a hypothetical. Measuring the REST tier for the first time
+> turned up three corrections to figures above — the resident cost omits `ctx.cache` (1,204
+> → **2,652 KB**), the alarm slice models one plugin of eighteen (0.6 → **50.6 KB**), and the
+> cycle measurement stops at `ddata`'s door, missing `cache.insertData`'s **4.08 ms**
+> defensive clone, which is **65 % of the post-#8733 cycle** and drops K from 685 to **239**.
+> Point 7 above — "D is not competitive" — **does not survive**: it was decided on a CPU
+> margin, and §12.6 shows the stateless decomposition needs **5 processes and 633 DB ops/s at
+> 10,000 tenants against 10–13 processes and 4,285–6,183 ops/s** for the resident options.
+> Read §12 before quoting §2, §5 or §7.
 
 ---
 
@@ -502,3 +517,211 @@ python3 figures.py                                    # regenerate both SVGs
 Raw results: `tools/mt-bench/results/exp-mt-035.json` (memory, cycle),
 `exp-mt-components.json` (plugins, realtime, vcpool), `exp-mt-cycle-stages.json`.
 Figures: `docs/visualizations/mt-load-cycle-composition.svg`, `mt-k-by-component.svg`.
+
+---
+
+## 12. Third pass: the REST tier, and three corrections
+
+**Experiments**: EXP-MT-055 (api/entries cached read), EXP-MT-055b (`cache.insertData`
+clone), EXP-MT-035c (resident cost including `ctx.cache`), EXP-MT-035d (alarm slice
+re-scoped), EXP-MT-056 (deployment cost model)
+**Harness**: `tools/mt-bench/apitier.js`, `deployment-cost.js`; raw results in
+`results/exp-mt-apitier.json` and `exp-mt-deployment-cost.json`
+**Added**: 2026-09-14, third session. Same machine, same conditions, no database in the loop.
+
+This pass was prompted by two maintainer questions the first two passes could not answer:
+whether the REST tier scales differently from the websocket tier, and whether an 8–15 ms
+margin is the right thing to decide an architecture on. Answering the first required
+measuring a tier no pass had measured. Doing that turned up three corrections to figures
+this report already published.
+
+### 12.1 API v3 holds no resident state — counted, not estimated
+
+Every server-side reader of `ctx.ddata` on `dev` @ `a8888f0d`:
+
+| Reader | Reads | Residency needed |
+|---|---|---|
+| `lib/sandbox.js:52,60-61` | `ddata.clone()` + profiles deep clone | full |
+| `lib/server/websocket.js:813,820` | full `ddata`, plus the retained `lastData` | full |
+| `lib/api2/summary/index.js:116-119` | `ddata.sgvs`, `ddata.treatments` | full |
+| `lib/api/entries/index.js:93-97` | last SGV, for the `Last-Modified` header | latest only |
+| `lib/server/loop.js:31-36` | `ddata.profiles[0].loopSettings` | profile only |
+| `lib/notifications.js:60-65` | `ddata.lastUpdated` | one scalar |
+| `lib/server/{entries,treatments,devicestatus}.js` | `processRawDataForRuntime` **as a function** | none |
+| `lib/server/cache.js:58` | `idMergePreferNew` **as a function** | none |
+| **`lib/api3/**`** | — | **none — zero references** |
+
+**API v3 is already the stateless tier this programme kept proposing to build.** Its
+`mongoCachedCollection` wrapper is write-through only: `findOne`, `findOneFilter` and
+`findMany` all delegate straight to `baseStorage`, so the cache it maintains exists to keep
+*v1's* read path warm, not to serve v3.
+
+Only two paths genuinely require a whole resident `ddata` — API v2's summary and the socket
+delta — and both are derivable from a query or a change feed rather than from residency.
+
+### 12.2 EXP-MT-055 — what residency buys, and a 42× defect in how it buys it
+
+`lib/api/entries/index.js:459-500` answers `/api/v1/entries.json` **from resident memory with
+no database operation at all** whenever the query is a bare count, or a count plus a `type`
+filter, and the cache holds enough documents. That is the highest-QPS endpoint in the
+Nightscout ecosystem — every follower app polls it — and no document in this workspace had
+recorded that it is served this way.
+
+The two branches of that one function do not cost the same:
+
+| `?count=` | untyped branch | typed branch (`find[type]=sgv`) | ratio |
+|---:|---:|---:|---:|
+| 1 | 0.827 ms | 0.007 ms | **110×** |
+| 10 | 0.830 ms | 0.020 ms | **42×** |
+| 144 | 1.008 ms | 0.197 ms | 5.1× |
+| 576 | 1.629 ms | 0.823 ms | 2.0× |
+
+The untyped branch calls `ctx.cache.getData('entries')`, which deep-clones the **entire**
+48-hour array (`cache.js:73-76`) before anything is sliced, then clones the slice again. The
+typed branch reaches `ctx.cache.entries` through `Array.filter`, which copies references, and
+clones only the slice. **So `?count=10` costs 0.83 ms or 0.02 ms for a byte-identical
+response, depending on whether the caller happened to pass a type filter.**
+
+Slicing before cloning preserves the defensive property exactly — the documents handed out
+are still clones — so this is behaviour-preserving. K for this tier, at three followers per
+tenant polling once a minute and a 30 % budget: **7,555 tenants untyped, 314,136 typed.**
+Either way the REST tier is nowhere near binding.
+
+### 12.3 EXP-MT-055b — after #8733, the largest cost in the load cycle is a defensive clone
+
+§3's cycle measurement times `ddata`'s own functions. It does not include what the
+*dataloader* does on either side of them. `dataloader.js:196`, `:333` and `:490` each call
+`ctx.cache.insertData(type, batch)`, and `insertData` ends with `return data.getData(type)` —
+a JSON round-trip over the **whole retained array**, not over the incremental batch just
+merged. Three datatypes, every cycle:
+
+| `getData` | n | p50 | p99 |
+|---|---:|---:|---:|
+| `entries` | 576 | 0.876 ms | 1.033 ms |
+| `treatments` | 600 | 0.747 ms | 0.920 ms |
+| `devicestatus` | 576 | **2.454 ms** | 4.579 ms |
+| **total per cycle** | | **4.08 ms** | |
+
+With **PR #8733 treated as landed** — the maintainer's own fix for the two quadratic scans,
+differential-tested over 636 randomised fixtures:
+
+| | ddata work | cache clone | cycle | K (active tenants/shard) |
+|---|---:|---:|---:|---:|
+| as §3/§4 reported | 2.19 ms | *not counted* | 2.19 ms | 684 |
+| **actual** | 2.19 ms | **4.08 ms** | **6.27 ms** | **239** |
+
+**#8733 does not make the load cycle cheap; it makes a defensive deep clone the dominant
+term.** 65 % of the post-#8733 cycle is `cache.insertData` reconciling a resident copy, and
+§5's K of 685 is optimistic by 2.7× because the measurement stopped at `ddata`'s door.
+
+The caller does not keep the returned array — it reverses it and projects each element into
+a fresh object — so the clone defends against a mutation that mostly does not happen. There
+are only five `getData` call sites. **But `dataloader.js:203` does `if (!element.mills)
+element.mills = element.date`, which writes to the element**, and any change here has to
+resolve that write first. The number sizes the prize; it does not license the patch.
+
+An earlier draft of this section asserted that `insertData` returns the live array and that
+`.reverse()` therefore flips the cache order, which would have made `/api/v1/entries` return
+the oldest rows. It does not — `insertData` returns `getData(...)`, a clone. Recorded because
+the claim was one read away from going into a document.
+
+### 12.4 EXP-MT-035c — the resident figure omits `ctx.cache`
+
+§2's `resident` arm holds `ddata` plus the retained client projection. A real `ctx` also
+holds `lib/server/cache.js`'s arrays, and they are **not** a view onto `ddata`: the loader
+deep-clones each batch into the cache and separately *projects* entries into new objects for
+`ddata.sgvs`/`mbgs`/`cals`. Two independent object graphs over the same window.
+
+| Held | Per tenant | K_memory @ 4 GB |
+|---|---:|---:|
+| `ddata` + client projection (as §2 reported) | 1,331 KB | 3,152 |
+| **+ `ctx.cache` arrays (what a `ctx` actually holds)** | **2,652 KB** | **1,581** |
+
+§2's figure reproduces here at 1,331 KB rather than 1,204 KB because this fixture carries a
+real profile document where `gen.js` has `{}` — a fixture gap worth fixing in its own right.
+The ~2× cache factor is the finding.
+
+CPU still binds before memory, so §5's conclusion survives. The margin narrows from 4–290×
+to about 2–6×.
+
+### 12.5 EXP-MT-035d — the alarm slice is 50.6 KB, not 0.6 KB
+
+§2's `alarm` arm (`residency.js:111-122`) models `simplealarms` only: last SGV, thresholds,
+ack state. The shipped alarm set is 18 plugins. Surveying what each actually reads on
+`dev` @ `a8888f0d`:
+
+| Class | Plugins | Needs |
+|---|---|---|
+| latest value only | `simplealarms` `errorcodes` `timeago` `dbsize` `pump` `loop` `openaps` `xdripjs` `upbat` `treatmentnotify` | one document |
+| short SGV window | `ar2`, via `bgnow`'s buckets | ~20 minutes of SGVs |
+| latest-of-type | `cannulaage` `insulinage` `sensorage` `batteryage` | newest of six event types — which `dataloader.js:396-418` already fetches as six `count:1` queries |
+| DIA window | `boluswizardpreview` | profile + IOB/COB over the treatment window |
+
+| Slice | Per tenant | vs resident | 10,000 cold tenants |
+|---|---:|---:|---:|
+| minimal (`simplealarms` only, as §2 reported) | 0.5 KB | 5,017× | 5 MB |
+| **shipped (all 18 plugins)** | **50.6 KB** | **50×** | **494 MB** |
+
+**§2's 2,000× hot/cold ratio is really about 50×**, and alarm coverage for a 10,000-tenant
+hoster is a few hundred MB rather than "the noise of one process". The conclusion that
+tiering is tractable survives; the number does not, and it should not be quoted as published.
+
+The important part is not the size but the *lifetime*: 50.6 KB is a **transient** working set
+— materialise, evaluate, discard — not something that must stay resident. The only alarm
+state that must be durable is ack/snooze, which is a few hundred bytes and belongs in storage
+rather than in process memory. That is what makes §12.6 possible.
+
+### 12.6 EXP-MT-056 — the cost model, and why the 8–15 ms margin was the wrong axis
+
+§7 rejected architecture D on a CPU margin: a stateless rebuild costs 10.8 ms against 9.5 ms
+for an incremental cycle, 1.5 ms once the quadratics are fixed. The maintainer's objection is
+that a constant-factor CPU difference should not decide between a component that scales
+horizontally without constraint and one that does not. **That objection is correct, and the
+numbers this report collected support it rather than the conclusion it drew.**
+
+Three things, none of them latency, decide it:
+
+**1. After #8733, most of the resident path's remaining cost is bookkeeping for residency
+itself.** Of the 6.27 ms cycle, 4.08 ms is `cache.insertData`'s defensive clone and ~1.0 ms
+is `calcDelta` deep-comparing two snapshots to rediscover what the write path already knew.
+**About 81 % is reconciliation, not derivation.** A stateless tier does not do any of it.
+
+**2. Polling costs more database than querying on demand.** The resident model runs ~14
+database operations per tenant per cycle on a timer, whether or not anything changed. A
+stateless model queries when asked. At 10,000 tenants:
+
+| | processes | resident RAM | **database ops/s** |
+|---|---:|---:|---:|
+| A · stateful shards, all tenants resident | 13 | 26.4 GB | **6,183** |
+| B · stateful shards, residency tiered | 10 | 5.0 GB | **4,285** |
+| **C · stateless api + evaluator + realtime** | **5** | **0.5 GB** | **633** |
+
+**The stateless decomposition puts an order of magnitude *less* load on the database**, which
+inverts the usual objection to it. The resident cache is not absorbing database load; the
+polling loop that fills it is *generating* database load, for tenants nobody is asking about.
+
+**3. At small scale the options converge, so the cheap choice costs nothing to start.** At
+1,000 tenants: A is 4 processes, B is 3, C is 5. The stateless decomposition is never
+materially more expensive and becomes 2–3× cheaper by 10,000.
+
+Reproduce: `node deployment-cost.js 10000` and `node deployment-cost.js 1000`. Every input is
+listed at the top of that file with its provenance; the assumptions (active fraction,
+followers per tenant, sockets per tenant) are flagged as assumptions.
+
+### 12.7 What is still not measured, and would change this
+
+1. **No database is in the loop, and option C is the option most exposed to that.** Every
+   figure here is local CPU and heap. C trades resident memory for queries, so its real cost
+   is dominated by something this harness cannot see. **EXP-MT-026 is now the highest-value
+   unrun experiment in the programme**, not a footnote.
+2. **`dbQueryCpu_ms = 0.15` is a guess.** It is the app-side CPU to issue and parse one
+   query, not the round-trip. If it is 1 ms rather than 0.15 ms, option C's api tier needs 3
+   processes instead of 1 — which changes nothing about the ordering, but should be measured
+   rather than assumed.
+3. **The active fraction (15 %) is still unvalidated** against a real hoster, and it drives
+   A and B far harder than it drives C.
+4. **`/api/v1/entries` without its cache becomes 533 queries/s** at 10,000 tenants. That is
+   included in the 633 above, and it is the one place where a shared response cache — keyed
+   on `(tenant, lastUpdated)`, not a resident `ddata` — would pay for itself. Unmeasured.
+5. **Alarm evaluation driven by a change feed is a design, not a measurement.** Nothing here
+   ran a Mongo change stream or a Postgres replication slot at tenant scale.
