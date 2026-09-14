@@ -1,0 +1,384 @@
+{
+  "generated": "2026-09-14T14:36:57-07:00",
+  "node": "v24.15.0",
+  "plugin_tier": [
+    {
+      "experiment": "EXP-MT-035b plugin tier",
+      "treatments": 300,
+      "enabledPluginCount": 30,
+      "enable": [
+        "careportal",
+        "boluscalc",
+        "food",
+        "bwp",
+        "cage",
+        "sage",
+        "iage",
+        "iob",
+        "cob",
+        "basal",
+        "ar2",
+        "rawbg",
+        "bgi",
+        "delta",
+        "direction",
+        "upbat",
+        "timeago",
+        "devicestatus",
+        "openaps",
+        "loop",
+        "pump",
+        "speech",
+        "treatmentnotify",
+        "bgnow",
+        "errorcodes",
+        "profile",
+        "bolus",
+        "dbsize",
+        "runtimestate",
+        "ar2"
+      ],
+      "meanMsByStage": {
+        "serverInit": 0.065,
+        "setProperties": 0.536,
+        "checkNotifications": 0.033,
+        "process": 0.003
+      },
+      "sharePct": {
+        "serverInit": 10.2,
+        "setProperties": 84.1,
+        "checkNotifications": 5.2,
+        "process": 0.5
+      },
+      "totalMs": {
+        "p50": 0.581,
+        "p95": 1.033,
+        "p99": 1.125
+      }
+    },
+    {
+      "experiment": "EXP-MT-035b plugin tier",
+      "treatments": 600,
+      "enabledPluginCount": 30,
+      "enable": [
+        "careportal",
+        "boluscalc",
+        "food",
+        "bwp",
+        "cage",
+        "sage",
+        "iage",
+        "iob",
+        "cob",
+        "basal",
+        "ar2",
+        "rawbg",
+        "bgi",
+        "delta",
+        "direction",
+        "upbat",
+        "timeago",
+        "devicestatus",
+        "openaps",
+        "loop",
+        "pump",
+        "speech",
+        "treatmentnotify",
+        "bgnow",
+        "errorcodes",
+        "profile",
+        "bolus",
+        "dbsize",
+        "runtimestate",
+        "ar2"
+      ],
+      "meanMsByStage": {
+        "serverInit": 0.114,
+        "setProperties": 0.569,
+        "checkNotifications": 0.043,
+        "process": 0.003
+      },
+      "sharePct": {
+        "serverInit": 15.7,
+        "setProperties": 78,
+        "checkNotifications": 5.9,
+        "process": 0.5
+      },
+      "totalMs": {
+        "p50": 0.663,
+        "p95": 1.171,
+        "p99": 1.543
+      }
+    },
+    {
+      "experiment": "EXP-MT-035b plugin tier",
+      "treatments": 1200,
+      "enabledPluginCount": 30,
+      "enable": [
+        "careportal",
+        "boluscalc",
+        "food",
+        "bwp",
+        "cage",
+        "sage",
+        "iage",
+        "iob",
+        "cob",
+        "basal",
+        "ar2",
+        "rawbg",
+        "bgi",
+        "delta",
+        "direction",
+        "upbat",
+        "timeago",
+        "devicestatus",
+        "openaps",
+        "loop",
+        "pump",
+        "speech",
+        "treatmentnotify",
+        "bgnow",
+        "errorcodes",
+        "profile",
+        "bolus",
+        "dbsize",
+        "runtimestate",
+        "ar2"
+      ],
+      "meanMsByStage": {
+        "serverInit": 0.175,
+        "setProperties": 0.586,
+        "checkNotifications": 0.07,
+        "process": 0.004
+      },
+      "sharePct": {
+        "serverInit": 20.9,
+        "setProperties": 70.3,
+        "checkNotifications": 8.4,
+        "process": 0.4
+      },
+      "totalMs": {
+        "p50": 0.769,
+        "p95": 1.293,
+        "p99": 1.815
+      }
+    },
+    {
+      "experiment": "EXP-MT-035b plugin tier",
+      "treatments": 2400,
+      "enabledPluginCount": 30,
+      "enable": [
+        "careportal",
+        "boluscalc",
+        "food",
+        "bwp",
+        "cage",
+        "sage",
+        "iage",
+        "iob",
+        "cob",
+        "basal",
+        "ar2",
+        "rawbg",
+        "bgi",
+        "delta",
+        "direction",
+        "upbat",
+        "timeago",
+        "devicestatus",
+        "openaps",
+        "loop",
+        "pump",
+        "speech",
+        "treatmentnotify",
+        "bgnow",
+        "errorcodes",
+        "profile",
+        "bolus",
+        "dbsize",
+        "runtimestate",
+        "ar2"
+      ],
+      "meanMsByStage": {
+        "serverInit": 0.332,
+        "setProperties": 0.539,
+        "checkNotifications": 0.117,
+        "process": 0.004
+      },
+      "sharePct": {
+        "serverInit": 33.5,
+        "setProperties": 54.4,
+        "checkNotifications": 11.8,
+        "process": 0.4
+      },
+      "totalMs": {
+        "p50": 0.913,
+        "p95": 1.487,
+        "p99": 1.776
+      }
+    }
+  ],
+  "realtime": [
+    {
+      "experiment": "EXP-MT-045a realtime fan-out",
+      "requestedSockets": 500,
+      "connectedSockets": 500,
+      "rooms": 1,
+      "serverBaselineRssMB": 63.1,
+      "serverLoadedRssMB": 82.3,
+      "marginalKBPerSocket": 39.3,
+      "broadcastMs": {
+        "p50": 11.587,
+        "p95": 12.548,
+        "max": 13.257
+      },
+      "broadcastMsPerSocketUs": 23.17,
+      "deliveredPerBroadcast": 500
+    },
+    {
+      "experiment": "EXP-MT-045a realtime fan-out",
+      "requestedSockets": 1000,
+      "connectedSockets": 1000,
+      "rooms": 1,
+      "serverBaselineRssMB": 63.3,
+      "serverLoadedRssMB": 105.3,
+      "marginalKBPerSocket": 42.9,
+      "broadcastMs": {
+        "p50": 19.699,
+        "p95": 24.603,
+        "max": 25.284
+      },
+      "broadcastMsPerSocketUs": 19.7,
+      "deliveredPerBroadcast": 1000
+    },
+    {
+      "experiment": "EXP-MT-045a realtime fan-out",
+      "requestedSockets": 2000,
+      "connectedSockets": 2000,
+      "rooms": 1,
+      "serverBaselineRssMB": 63.6,
+      "serverLoadedRssMB": 134.3,
+      "marginalKBPerSocket": 36.2,
+      "broadcastMs": {
+        "p50": 26.843,
+        "p95": 28.771,
+        "max": 30.806
+      },
+      "broadcastMsPerSocketUs": 13.42,
+      "deliveredPerBroadcast": 2000
+    },
+    {
+      "experiment": "EXP-MT-045a realtime fan-out",
+      "requestedSockets": 4000,
+      "connectedSockets": 4000,
+      "rooms": 1,
+      "serverBaselineRssMB": 63.1,
+      "serverLoadedRssMB": 183.8,
+      "marginalKBPerSocket": 30.9,
+      "broadcastMs": {
+        "p50": 42.007,
+        "p95": 45.574,
+        "max": 53.084
+      },
+      "broadcastMsPerSocketUs": 10.5,
+      "deliveredPerBroadcast": 4000
+    },
+    {
+      "experiment": "EXP-MT-045a realtime fan-out",
+      "requestedSockets": 2000,
+      "connectedSockets": 2000,
+      "rooms": 500,
+      "serverBaselineRssMB": 63.3,
+      "serverLoadedRssMB": 132.6,
+      "marginalKBPerSocket": 35.5,
+      "broadcastMs": {
+        "p50": 36.003,
+        "p95": 41.523,
+        "max": 41.94
+      },
+      "broadcastMsPerSocketUs": 18,
+      "deliveredPerBroadcast": 2000
+    },
+    {
+      "experiment": "EXP-MT-045a realtime fan-out",
+      "requestedSockets": 4000,
+      "connectedSockets": 4000,
+      "rooms": 1000,
+      "serverBaselineRssMB": 63.4,
+      "serverLoadedRssMB": 187,
+      "marginalKBPerSocket": 31.6,
+      "broadcastMs": {
+        "p50": 54.653,
+        "p95": 58.497,
+        "max": 59.672
+      },
+      "broadcastMsPerSocketUs": 13.66,
+      "deliveredPerBroadcast": 4000
+    }
+  ],
+  "vcpool": {
+    "experiment": "EXP-MT-048a vendor-connectivity machinery density",
+    "requestedAccounts": 800,
+    "constructedActors": 800,
+    "pollIntervalMs": 300000,
+    "note": "mock upstream only; no vendor endpoint contacted, no credentials used",
+    "growth": [
+      {
+        "n": 1,
+        "constructed": 1,
+        "rssMB": 0.5,
+        "kbPerActor": 508,
+        "activeHandles": 0
+      },
+      {
+        "n": 10,
+        "constructed": 10,
+        "rssMB": 1.2,
+        "kbPerActor": 119.6,
+        "activeHandles": 0
+      },
+      {
+        "n": 50,
+        "constructed": 50,
+        "rssMB": 9.1,
+        "kbPerActor": 186.2,
+        "activeHandles": 0
+      },
+      {
+        "n": 100,
+        "constructed": 100,
+        "rssMB": 16.6,
+        "kbPerActor": 170.4,
+        "activeHandles": 0
+      },
+      {
+        "n": 200,
+        "constructed": 200,
+        "rssMB": 38.8,
+        "kbPerActor": 198.5,
+        "activeHandles": 0
+      },
+      {
+        "n": 400,
+        "constructed": 400,
+        "rssMB": 84.1,
+        "kbPerActor": 215.5,
+        "activeHandles": 0
+      },
+      {
+        "n": 800,
+        "constructed": 800,
+        "rssMB": 155,
+        "kbPerActor": 198.4,
+        "activeHandles": 0
+      }
+    ],
+    "startAllMs": 156.9,
+    "settleWindowMs": 4002,
+    "rssAfterStartMB": 327.6,
+    "kbPerRunningActor": 419.3,
+    "activeHandlesWhileRunning": 256,
+    "upstreamRequestsInWindow": 800
+  }
+}

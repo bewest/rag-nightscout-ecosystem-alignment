@@ -153,8 +153,43 @@ function checkDurations () {
   return JSON.stringify(a) === JSON.stringify(b) ? 'MATCH' : `MISMATCH (${a.length} vs ${b.length})`;
 }
 
+// Per-stage breakdown for a given arm, so the figures can show composition.
+function stagesArm (useFastDurations, useFastDelta) {
+  const dd = initDdata();
+  if (useFastDurations) dd.processDurations = fastProcessDurations;
+  Object.assign(dd, dd.processRawDataForRuntime(rawTenant()));
+  dd.processTreatments(false);
+  let lastClone = dd.dataWithRecentStatuses();
+  const delta = useFastDelta ? fastCalcDelta : calcDelta;
+  const acc = { process: 0, merge: 0, treatments: 0, projection: 0, delta: 0 };
+  let n = 0;
+  for (let k = 0; k < ITER; k++) {
+    const fresh = { sgvs: [mkSgv(-k - 1)], treatments: k % 12 === 0 ? [mkTr(-k - 1)] : [],
+      devicestatus: [mkDs(-k - 1)], mbgs: [], cals: [], profiles: [], food: [], activity: [], dbstats: {} };
+    const a = process.hrtime.bigint();
+    const p = dd.processRawDataForRuntime(fresh);
+    const b = process.hrtime.bigint();
+    dd.sgvs = dd.idMergePreferNew(dd.sgvs, p.sgvs);
+    if (p.treatments.length) dd.treatments = dd.idMergePreferNew(dd.treatments, p.treatments);
+    dd.devicestatus = dd.idMergePreferNew(dd.devicestatus, p.devicestatus);
+    const c = process.hrtime.bigint();
+    dd.processTreatments(false);
+    const d = process.hrtime.bigint();
+    const proj = dd.dataWithRecentStatuses();
+    const e = process.hrtime.bigint();
+    delta(lastClone, proj); lastClone = proj;
+    const f = process.hrtime.bigint();
+    if (k >= ITER / 5) {
+      acc.process += Number(b - a); acc.merge += Number(c - b); acc.treatments += Number(d - c);
+      acc.projection += Number(e - d); acc.delta += Number(f - e); n++;
+    }
+  }
+  return Object.fromEntries(Object.entries(acc).map(([k, v]) => [k, +(v / n / 1e6).toFixed(3)]));
+}
+
 console.log(JSON.stringify({
   durationsEquivalence: checkDurations(),
+  stages: { current: stagesArm(false, false), both: stagesArm(true, true) },
   arms: [
     runArm('current', false, false),
     runArm('+delta indexed', false, true),

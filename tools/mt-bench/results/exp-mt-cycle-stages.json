@@ -1,0 +1,48 @@
+{
+  "durationsEquivalence": "MATCH",
+  "stages": {
+    "current": {
+      "process": 0.024,
+      "merge": 0.049,
+      "treatments": 6.106,
+      "projection": 0.197,
+      "delta": 3.246
+    },
+    "both": {
+      "process": 0.015,
+      "merge": 0.031,
+      "treatments": 0.107,
+      "projection": 0.17,
+      "delta": 1.399
+    }
+  },
+  "arms": [
+    {
+      "arm": "current",
+      "treatments": 600,
+      "ms": {
+        "p50": 9.96,
+        "p95": 10.478,
+        "p99": 11.035
+      }
+    },
+    {
+      "arm": "+delta indexed",
+      "treatments": 600,
+      "ms": {
+        "p50": 8.058,
+        "p95": 9.875,
+        "p99": 10.42
+      }
+    },
+    {
+      "arm": "+both",
+      "treatments": 600,
+      "ms": {
+        "p50": 1.598,
+        "p95": 3.44,
+        "p99": 3.581
+      }
+    }
+  ]
+}

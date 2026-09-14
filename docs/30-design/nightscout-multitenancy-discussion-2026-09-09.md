@@ -547,12 +547,31 @@ serious deployment ends up here; the open question is *best K*, not B-vs-E.
 >   two functions fixed**. Shard for blast radius, upgrades and noisy-tenant relocation;
 >   **do not shard for capacity**, which would be buying hardware to run an O(n²) loop.
 >
-> **K is not one number.** It is ~10²–10³ active tenants for an APP shard (CPU-bound),
-> ~10⁴ sockets for realtime fan-out, effectively unbounded for stateless router/auth, and
-> plausibly ~10¹–10² accounts for the vendor-connectivity pool — which binds on *somebody
-> else's rate limiter*, the one limit no amount of code quality moves. **Split components
-> where their K differs by an order of magnitude**, which on present evidence means the APP
-> shard and the vendor pool first, and nothing else until EXP-MT-045/048/051 run.
+> **K is not one number — measured 2026-09-14 for three of five components:**
+>
+> | Component | Binds on | K (tenants/process) |
+> |---|---|---:|
+> | APP shard, current code | event-loop CPU, 10.2 ms/cycle | **147** |
+> | APP shard, quadratics fixed | event-loop CPU, 2.2 ms/cycle | **685** |
+> | VCPOOL machinery | actor memory, 419 KB/account | **~9 700** |
+> | REALTIME fan-out | ~31 KB/socket + ~55 µs/tenant emit | **~27 500** |
+> | ROUTER / AUTH | stateless | unbounded at this scale (unmeasured) |
+>
+> ![K by component](../visualizations/mt-k-by-component.svg)
+>
+> **One earlier guess here was wrong by two orders of magnitude**: the vendor pool's
+> *machinery* holds ~9 700 accounts, not 10¹–10². What binds it is the vendor's per-account
+> and per-egress-IP rate limiting, which cannot be measured without credentials
+> (EXP-MT-051). Two structural findings that do not need them: **actor start is a thundering
+> herd** — 800 accounts fire their first request inside one second, on every restart and
+> deploy, because `run()` has no jitter — and they stay **phase-locked** on the same
+> five-minute boundary afterwards. Start and interval jitter are small, obviously correct
+> changes to make before any pool runs at density. The exponential backoff in
+> `lib/backoff.js` does work: under a failing auth mock one actor made 4 attempts in 12 s.
+>
+> **Split where K differs by an order of magnitude** — that is the APP shard against
+> everything else. Realtime and the vendor pool are within an order of magnitude of each
+> other, so splitting *them* apart costs a hop for no measured benefit.
 
 ### 5.1 The same system, tenant-scoped — and what does not scope with it
 
@@ -2008,6 +2027,12 @@ the tail: at 5 000 treatments it is a **31× difference and an 81 ms event-loop 
 > And the real fairness problem is neither of these: **`processDurations` is 63 % of the
 > cycle** (§2.1), reaching **343 ms per load** at 5 000 temp basals. Fixing both quadratics
 > takes a typical cycle from 9.5 ms to 1.5 ms and a heavy one from 121 ms to 4.5 ms.
+>
+> ![Composition of one load cycle, and how each arm scales](../visualizations/mt-load-cycle-composition.svg)
+>
+> **The plugin tier, measured separately, is flat**: 0.64 ms at 300 treatments to 0.93 ms at
+> 2 400, with `setProperties` across 30 plugins not moving at all. It is not part of this
+> problem.
 
 In single-tenant Nightscout an 81 ms hiccup is invisible. In a shared process it is a
 **fairness incident**: one person with a long treatment history stalls everyone else's
@@ -3031,9 +3056,16 @@ pass. **No database was in the loop**; these are event-loop CPU and heap measure
 5. **§5's B/C/D/E is resolved**: B as substrate, C for the economics, E as deployment shape
    with a small M, D rejected — noting that D is only close *because* B is currently broken.
 
-**What the experiments do not cover, in priority order:** plugin execution after each load
-(§2.3) is absent from the 9.5 ms and will lower K, possibly a lot; no database round-trips;
-no socket fan-out or GC-at-N; the load-rate assumption drives K linearly and comes from
-`UPDATE_MAX_WAIT` rather than observed uploader behaviour; and the proposed
-`processDurations` replacement is asserted output-equivalent on a fixture, not proved against
-the suites.
+6. **Components measured (second session, same day):** the plugin tier is **flat** at
+   0.61–0.93 ms and is not part of the quadratic problem; realtime fan-out costs **~31 KB per
+   socket** and **~10–14 µs per socket per broadcast**, giving K ≈ 27 500 tenants; the vendor
+   pool's machinery holds **~9 700 accounts** at 419 KB each, correcting an earlier guess by
+   two orders of magnitude. **Storage is deliberately not measured** — the engines' own
+   documented properties govern, and the only project-specific number is N\* (§6.7).
+
+**What the experiments still do not cover, in priority order:** the vendor pool's real limit
+(a vendor rate limit, needing credentials — EXP-MT-051); no database round-trips; realtime
+measured with idle, non-reconnecting clients; router/auth unmeasured; the load-rate
+assumption drives K linearly and comes from `UPDATE_MAX_WAIT` rather than observed uploader
+behaviour; and the proposed `processDurations` replacement is asserted output-equivalent on a
+fixture, not proved against the suites.
