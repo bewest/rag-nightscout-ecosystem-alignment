@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-14T23:56:24.353Z",
+  "listeners": 32,
+  "queue": {
+    "sent": 20000,
+    "failed": null,
+    "queueBefore": 0,
+    "queueAfter": 0.0077533721923828125,
+    "writeLatency": {
+      "p50": 0.09,
+      "p99": 0.86,
+      "max": 1.85
+    },
+    "insertMs": 2.373,
+    "notifiesToFill": 2579522,
+    "hoursAt33Rps": 21.7
+  }
+}

@@ -2,11 +2,12 @@
 
 **Experiments**: EXP-MT-026 (query cost, load cycle, cold wake, event-loop behaviour under
 RTT), **EXP-MT-040b** (where database-per-tenant breaks), **EXP-MT-011b** (one logical
-database with a tenant discriminator), **EXP-MT-057** (RLS and the change feed, on Postgres)
+database with a tenant discriminator), **EXP-MT-057** (RLS and the change feed, on Postgres),
+**EXP-MT-058** (fan-out to one tenant's subscribers)
 **Date**: 2026-09-14
 **Harness**: `tools/mt-bench/{dbloop,nsfiles,shared-tenant,latency-proxy}.js` and
-`pgfeed/pgfeed.js`; raw results in `results/exp-mt-026*.json`, `exp-mt-040b.json`,
-`exp-mt-011b.json`, `exp-mt-057.json`
+`pgfeed/{pgfeed,fanout}.js`; raw results in `results/exp-mt-026*.json`, `exp-mt-040b.json`,
+`exp-mt-011b.json`, `exp-mt-057.json`, `exp-mt-058.json`
 **Under test**: MongoDB **7.0.43**, single-node replica set in Docker, `mongodb` driver
 5.9.2 (the version `cgm-remote-monitor` pins), real `indexedFields` index set, queries
 transcribed from `lib/data/dataloader.js`. Shapes: **database-per-tenant** (§6.7's A′ rung,
@@ -573,6 +574,134 @@ and genuinely reviewed** — which is an argument for them being separate, narro
 rather than modes of a large shared process, and it is a better argument for the decomposition
 than the cost model is.
 
+## 9. EXP-MT-058 — the last hop: reaching one tenant's subscribers
+
+§8 settled how `ns-evaluator` *learns* about a change. It left the hop after that unexamined:
+a change for tenant X must reach the sockets subscribed to tenant X, which are held by one of
+N `ns-realtime` processes, and the process that learns about the change is not necessarily the
+one holding the socket. Does that hop need its own stateful routing — tenant→process affinity,
+a Redis adapter, per-tenant cursors — or are Postgres's primitives enough?
+
+**The asymmetry that makes this tractable**, and which §8 established but did not apply here:
+
+| | losing a change means | so it needs |
+|---|---|---|
+| `ns-evaluator` | a missed hypo alarm | the replication slot |
+| `ns-realtime` | a browser is stale until the next reading, and re-syncs on reconnect | **it can tolerate loss** |
+
+The cheap lossy mechanism is admissible precisely where correctness does not rest on it.
+
+### 9.1 Fan-out: every listener gets everything, and no affinity is needed
+
+32 concurrent `LISTEN` connections on one channel, 200 `NOTIFY`s:
+
+```
+200 NOTIFYs -> 6400 deliveries across 32 listeners (expected 6400, 32/32 complete)
+notify cost 0.490 ms/event at the writer; delivery latency 0 ms p50 / 2 p99 / 4 max
+```
+
+**Every listener received every event.** So N `ns-realtime` processes can each subscribe, and
+each emits to whichever of its own local socket rooms match — **no tenant→process affinity, no
+Redis adapter, no coordination.** A process that holds no sockets for a tenant simply ignores
+that tenant's event.
+
+### 9.2 Postgres will do the per-tenant routing itself
+
+Better than ignoring events is not receiving them. `LISTEN` takes a channel name, so a channel
+per tenant means the server filters:
+
+| channels on one connection | subscribe cost | targeted `NOTIFY` delivered |
+|---:|---:|---:|
+| 100 | 0.14 ms/channel | 1 (unsubscribed channel filtered out) |
+| 1,000 | 0.10 ms/channel | 1 |
+| 5,000 | 0.05 ms/channel | 1 |
+| **10,000** | **0.08 ms/channel** | **1** |
+
+**One connection held 10,000 tenant channels**, and a `NOTIFY` to a channel it had not
+subscribed to was filtered server-side. `LISTEN`/`UNLISTEN` as sockets connect and disconnect
+costs ~0.1 ms.
+
+This narrows §8.6's privilege finding in a useful way. **`ns-realtime` does not need
+cross-tenant privilege on the data path** — it receives only the tenants it currently holds
+sockets for. Only the slot reader and `ns-evaluator` are unavoidably cross-tenant, which
+shrinks the code that must be reviewed as privileged to one small component.
+
+### 9.3 A real delta fits in the payload
+
+| | |
+|---|---:|
+| realistic `dataUpdate` delta (1 SGV + 1 Loop devicestatus, 72-point prediction) | **1,039 bytes** |
+| largest `NOTIFY` payload accepted | 7,900 bytes (8,000 rejected: *payload string too long*) |
+| fallback: `NOTIFY` carries a row id, listener reads the row | **0.183 ms** per lookup |
+
+**The common case carries the delta inline.** A batch upload — AAPS posting many treatments at
+once — can exceed 7,900 bytes, and the fallback is an identifier plus one indexed lookup at
+0.183 ms. Both paths are cheap; the design should implement the fallback rather than assume
+the payload always fits.
+
+### 9.4 The hazard, and the design change it argues for
+
+A `LISTEN`ing session that stops consuming cannot be cleaned up by the server. Its
+un-consumed notifications are retained in a shared **8 GB SLRU queue** until it reads them or
+disconnects. So: can one wedged `ns-realtime` degrade or stop *ingest*?
+
+With one listener holding its connection open and never reading its socket, 20,000 × 4 KB
+notifications:
+
+```
+queue usage 0.0000% -> 0.7753%
+write latency {"p50":0.09,"p99":0.86,"max":1.85} ms      <- flat, no degradation
+ordinary INSERT with the queue in this state: 2.373 ms   <- ingest unaffected
+~2,579,522 notifies to fill the queue
+at 33 changes/s (10,000 tenants), a stuck listener has ~21.7 hours
+```
+
+**The hazard is real but slow, and it is monitorable.** ~21.7 hours of headroom at 4 KB
+payloads; at the realistic 1,039-byte delta it is roughly four times that. Write latency does
+not degrade on the way — there is no early warning in the timings, so
+`pg_notification_queue_usage()` must be an actual alert rather than something noticed.
+
+**What matters is what happens when it does fill: `NOTIFY` blocks.** If the `NOTIFY` is fired
+by an `AFTER INSERT` trigger — which is how §8 implemented it, and how most examples do — then
+it is *inside the ingest transaction*, and a wedged realtime process eventually stops uploads.
+**A CGM uploader failing to POST because a display component is stuck is not an acceptable
+coupling.**
+
+> **Design consequence: do not `NOTIFY` from a trigger. `NOTIFY` from the slot reader.** The
+> slot reader is already consuming every change for `ns-evaluator`; having it also emit the
+> per-tenant `NOTIFY` costs nothing and removes the notification queue from the write path
+> entirely. Ingest then depends only on the WAL, and the worst case of a wedged `ns-realtime`
+> is that realtime is stale — which §9's opening asymmetry already says is tolerable.
+
+This is the second time in this programme that the measured hazard was not the thing being
+measured: §4's file-descriptor `fassert()` and this one both arrived as "the mechanism works
+fine, and here is how it takes the system down anyway."
+
+### 9.5 The assembled answer
+
+**How a change reaches one tenant's subscribers, with no stateful tracking beyond the sockets
+themselves:**
+
+```
+write ──> WAL ──> slot reader (privileged, cross-tenant)
+                    ├──> queue partitioned by tenant hash ──> ns-evaluator workers
+                    │                                            └──> alarm row ──> WAL ──┐
+                    └──> pg_notify('tenant_<id>', delta)  ───────────────────────────────┤
+                                                                                          │
+                       ns-realtime ── LISTEN only on tenants it holds sockets for ◄────────┘
+                            └──> io.to('DataReceivers:<id>').emit(...)
+```
+
+- **State held by `ns-realtime`**: the socket rooms (inherent to the protocol) and one
+  `LISTEN` per tenant it currently serves. Both are *connection* state, discarded on
+  disconnect. **No per-tenant cursor, no delivery tracking, no polling.**
+- **Durability does not live in this path.** It lives in the alarm row: a reconnecting client
+  queries what it missed, and the push channel (Pushover/APNS) is emitted by `ns-evaluator`
+  directly, so the safety-critical delivery never traverses a socket at all.
+- **Postgres's primitives are sufficient for this hop.** Fan-out, server-side per-tenant
+  filtering, and a payload large enough for the common delta — with one indexed lookup as the
+  documented fallback. No Redis, no broker, no affinity.
+
 ## L. Limits — read before quoting any of this
 
 This is a laptop. The numbers above rank hypotheses and settle mechanism questions; **none of
@@ -651,6 +780,13 @@ docker exec nsbench-mongo tc qdisc del dev eth0 root
 
 node nsfiles.js 200 50           # EXP-MT-040b, namespace cost, database-per-tenant
 node shared-tenant.js 400 100    # EXP-MT-011b, one database + tenant discriminator
+
+docker run -d --name nspg -e POSTGRES_PASSWORD=poc -p 15433:5432 postgres:16-alpine \
+  -c wal_level=logical -c max_replication_slots=10 -c max_connections=300
+cd pgfeed && npm install pg
+node pgfeed.js all 400           # EXP-MT-057, RLS + change feed
+node fanout.js  all 32           # EXP-MT-058, fan-out to subscribers
+docker rm -f nspg
 RTT_MS=10 node deployment-cost.js 10000
 ```
 

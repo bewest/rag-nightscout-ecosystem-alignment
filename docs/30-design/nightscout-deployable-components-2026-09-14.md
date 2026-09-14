@@ -381,7 +381,52 @@ writes ──> storage ──> feed ──┬──> ns-realtime ──> dataUpd
                               └──> ns-evaluator ──> alarm row ──> storage ──> feed ──> ns-realtime ──> /alarm
 ```
 
-### 3.5.3 The constraint this exposes: RLS cannot protect the feed
+### 3.5.3 How a change actually reaches one tenant's subscribers
+
+**Measured 2026-09-14, EXP-MT-058.** The evaluator does not push to subscribers at all — and
+neither hop needs stateful tracking beyond the sockets themselves.
+
+- **Fan-out works without affinity.** 32 concurrent `LISTEN` connections, 200 `NOTIFY`s:
+  **6,400/6,400 deliveries, 0 ms p50 / 4 ms max.** Every `ns-realtime` process sees every
+  event it subscribed to, so none of them needs to be *the* process for a given tenant.
+- **Postgres does the per-tenant routing itself.** One connection held **10,000 `LISTEN`
+  channels** at ~0.1 ms per subscribe, and a `NOTIFY` to an unsubscribed channel was filtered
+  server-side. So `ns-realtime` `LISTEN`s on `tenant_<id>` for exactly the tenants it holds
+  sockets for, and `UNLISTEN`s on last disconnect.
+- **A real delta fits inline.** A `dataUpdate` with one SGV and one Loop devicestatus
+  (72-point prediction) is **1,039 bytes** against a 7,900-byte usable limit. A batch upload
+  can exceed it, so the fallback — `NOTIFY` carries a row id, the listener reads the row at
+  **0.183 ms** — should be implemented rather than assumed away.
+
+**What state `ns-realtime` holds: the socket rooms, and one `LISTEN` per tenant it currently
+serves.** Both are connection state, discarded on disconnect. **No per-tenant cursor, no
+delivery tracking, no polling.** Durability is not in this path — it is in the alarm row, which
+a reconnecting client queries, and in the push channel, which `ns-evaluator` emits directly so
+the safety-critical delivery never traverses a socket.
+
+```
+write ──> WAL ──> slot reader (privileged, cross-tenant)
+                    ├──> queue partitioned by tenant hash ──> ns-evaluator workers
+                    │                                            └──> alarm row ──> WAL ──┐
+                    └──> pg_notify('tenant_<id>', delta) ────────────────────────────────┤
+                                                                                          │
+                       ns-realtime ── LISTEN only on tenants it holds sockets for ◄────────┘
+                            └──> io.to('DataReceivers:<id>').emit(...)
+```
+
+**One hazard, and it changes the implementation.** A `LISTEN`ing session that stops consuming
+pins the shared 8 GB notification queue: measured at **~2.6 M notifications to fill, ~21.7
+hours** at a 10,000-tenant change rate with 4 KB payloads (roughly 4× that at the realistic
+1,039 bytes). Write latency does not degrade on the way, so there is no early warning —
+`pg_notification_queue_usage()` has to be a real alert. **And when it fills, `NOTIFY` blocks.**
+
+> **So do not `NOTIFY` from an `AFTER INSERT` trigger.** That puts it inside the ingest
+> transaction, and a wedged display component would eventually stop CGM uploads. **`NOTIFY`
+> from the slot reader instead** — it is already consuming every change for the evaluator, so
+> this costs nothing and removes the notification queue from the write path entirely. Ingest
+> then depends only on the WAL, and a stuck `ns-realtime` can only make realtime stale.
+
+### 3.5.4 The constraint this exposes: RLS cannot protect the feed
 
 **The evaluator must see every tenant** — that is its job — so it cannot run under a policy
 binding it to one. Reading a replication slot needs the `REPLICATION` attribute, which is not
@@ -391,12 +436,19 @@ story is genuinely split, and the design should say so rather than imply RLS cov
 | path | isolation enforced by |
 |---|---|
 | `ns-api` — arbitrary client queries | **the database** — RLS, per-transaction bind, fail-closed |
-| `ns-evaluator`, `ns-realtime` — feed consumers | **code review**. Cross-tenant privilege by construction |
+| slot reader + `ns-evaluator` | **code review**. Cross-tenant privilege by construction |
+| `ns-realtime` | **the database** — it `LISTEN`s only on the tenants it serves (§3.5.3) |
 
-RLS protects the path that takes untrusted input, which is the one that most needs it. But the
-feed consumers are privileged and their blast radius is every tenant. **That is an argument
-for them being small, single-purpose, separately-reviewed entrypoints rather than modes of one
-large process — and it is a better argument for this decomposition than the cost model is.**
+RLS protects the path that takes untrusted input, which is the one that most needs it. §3.5.3
+narrows the privileged surface further than expected: because Postgres filters per-tenant
+channels server-side, **`ns-realtime` never receives another tenant's data at all**, leaving
+only the slot reader and the evaluator unavoidably cross-tenant.
+
+**That is still a blast radius of every tenant, and no storage mechanism will fix it** — a
+replication slot is one stream containing everyone's rows. The design consequence is that the
+privileged part must stay **small, single-purpose and genuinely reviewed**, which is an
+argument for these being separate narrow entrypoints rather than modes of one large process —
+and a better argument for this decomposition than the cost model is.
 
 ## 4. Integration: the change feed
 
