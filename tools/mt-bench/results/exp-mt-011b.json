@@ -1,0 +1,150 @@
+{
+  "date": "2026-09-14T23:22:20.363Z",
+  "baseline": {
+    "files": 51,
+    "rss": 169.1,
+    "fds": 116
+  },
+  "indexCount": 41,
+  "indexFilesTotal": 53,
+  "rows": [
+    {
+      "tenants": 100,
+      "docs": 175300,
+      "wtFiles": 104,
+      "mongodRssMb": 544.8,
+      "openFds": 169,
+      "dataMb": 94.5,
+      "indexMb": 55.1,
+      "loadMsPerTenant": 73,
+      "read10": {
+        "p50": 0.702,
+        "p99": 1.367,
+        "cpu": 0.5409
+      },
+      "readWindow": {
+        "p50": 3.94,
+        "p99": 4.485,
+        "cpu": 2.8589
+      },
+      "latestSingle": {
+        "p50": 0.477,
+        "p99": 1.072,
+        "cpu": 0.2493
+      },
+      "dsLatest": {
+        "p50": 0.337,
+        "p99": 0.669,
+        "cpu": 0.163
+      },
+      "plan": "LIMIT",
+      "keysExamined": 10,
+      "docsExamined": 10,
+      "returned": 10
+    },
+    {
+      "tenants": 200,
+      "docs": 350600,
+      "wtFiles": 104,
+      "mongodRssMb": 765.1,
+      "openFds": 171,
+      "dataMb": 189.2,
+      "indexMb": 113.9,
+      "loadMsPerTenant": 74,
+      "read10": {
+        "p50": 0.745,
+        "p99": 1.221,
+        "cpu": 0.4193
+      },
+      "readWindow": {
+        "p50": 3.991,
+        "p99": 5.708,
+        "cpu": 2.7915
+      },
+      "latestSingle": {
+        "p50": 0.397,
+        "p99": 0.972,
+        "cpu": 0.1988
+      },
+      "dsLatest": {
+        "p50": 0.791,
+        "p99": 1.249,
+        "cpu": 0.3234
+      },
+      "plan": "LIMIT",
+      "keysExamined": 10,
+      "docsExamined": 10,
+      "returned": 10
+    },
+    {
+      "tenants": 300,
+      "docs": 525900,
+      "wtFiles": 104,
+      "mongodRssMb": 973.8,
+      "openFds": 171,
+      "dataMb": 284,
+      "indexMb": 172.6,
+      "loadMsPerTenant": 73,
+      "read10": {
+        "p50": 0.554,
+        "p99": 0.997,
+        "cpu": 0.246
+      },
+      "readWindow": {
+        "p50": 4.044,
+        "p99": 5.919,
+        "cpu": 3.4579
+      },
+      "latestSingle": {
+        "p50": 1.086,
+        "p99": 1.382,
+        "cpu": 0.4323
+      },
+      "dsLatest": {
+        "p50": 1.076,
+        "p99": 1.384,
+        "cpu": 0.5098
+      },
+      "plan": "LIMIT",
+      "keysExamined": 10,
+      "docsExamined": 10,
+      "returned": 10
+    },
+    {
+      "tenants": 400,
+      "docs": 701200,
+      "wtFiles": 104,
+      "mongodRssMb": 1075.6,
+      "openFds": 171,
+      "dataMb": 378.7,
+      "indexMb": 233.6,
+      "loadMsPerTenant": 73,
+      "read10": {
+        "p50": 1.011,
+        "p99": 1.425,
+        "cpu": 0.4496
+      },
+      "readWindow": {
+        "p50": 3.986,
+        "p99": 6.708,
+        "cpu": 3.332
+      },
+      "latestSingle": {
+        "p50": 1.076,
+        "p99": 1.434,
+        "cpu": 0.3547
+      },
+      "dsLatest": {
+        "p50": 1.023,
+        "p99": 1.384,
+        "cpu": 0.3958
+      },
+      "plan": "LIMIT",
+      "keysExamined": 10,
+      "docsExamined": 10,
+      "returned": 10
+    }
+  ],
+  "filesPerTenant": 0.26,
+  "rssKbPerTenant": 2321
+}

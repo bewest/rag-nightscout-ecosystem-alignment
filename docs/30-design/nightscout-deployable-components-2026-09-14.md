@@ -67,7 +67,11 @@ which it is the wrong first move.
 > the equivalent query (0.02 vs 0.207 ms CPU), making §2.1's response cache load-bearing
 > rather than optional; and **§6.7's A′ storage rung does not scale** — `mongod` holds ~3.7 MB
 > of non-evictable RSS per tenant database containing zero documents, more than the app-side
-> state A′ was supposed to save.
+> state A′ was supposed to save — though **that ceiling is a property of database-per-tenant,
+> not of multitenancy**: one logical database with a tenant discriminator holds **104
+> WiredTiger files in total at 400 tenants**, flat, with the planner examining 10 keys per
+> 10-document read at every scale (EXP-MT-011b). The storage shape these components sit on
+> should be **shared-collection with a storage-enforced predicate**, not database-per-tenant.
 >
 > What remains unmeasured, and it is not small: **no TLS and no authentication** were in the
 > loop, and both land on exactly the CPU-per-operation term the recommendation depends on.
@@ -176,6 +180,16 @@ costs 0.83 ms or 0.02 ms for a byte-identical response depending on whether the 
 `find[type]=sgv`, because the untyped branch deep-clones the whole 48-hour array before
 slicing ({R} §12.2). A **42× overcharge on the ecosystem's busiest endpoint**, fixed by
 slicing before cloning, which preserves the defensive property exactly.
+
+**Storage shape.** These components assume one logical store with a tenant discriminator, not
+database-per-tenant. EXP-MT-011b measures the namespace cost of that choice as flat (104 files
+total at 400 tenants, against 47 per tenant for database-per-tenant) and index locality as
+exact (10 keys examined per 10-document read at every tenant count). The cost it trades for is
+that **a query omitting the discriminator silently returns every tenant's rows** — 230,400
+documents in 92 ms, no error — which is why the isolation predicate has to be enforced by the
+storage engine (Postgres RLS binding per transaction) rather than by ~30 call sites
+remembering a filter. `ns-api` is the component where that matters most, because it is the one
+that takes arbitrary client queries.
 
 ### 2.2 `ns-evaluator` — change-driven
 

@@ -1,14 +1,15 @@
 # EXP-MT-026: a real database in the loop
 
 **Experiments**: EXP-MT-026 (query cost, load cycle, cold wake, event-loop behaviour under
-RTT), **EXP-MT-040b** (where database-per-tenant breaks)
+RTT), **EXP-MT-040b** (where database-per-tenant breaks), **EXP-MT-011b** (one logical
+database with a tenant discriminator)
 **Date**: 2026-09-14
-**Harness**: `tools/mt-bench/{dbloop,nsfiles,latency-proxy}.js`; raw results in
-`results/exp-mt-026*.json` and `exp-mt-040b.json`
+**Harness**: `tools/mt-bench/{dbloop,nsfiles,shared-tenant,latency-proxy}.js`; raw results in
+`results/exp-mt-026*.json`, `exp-mt-040b.json`, `exp-mt-011b.json`
 **Under test**: MongoDB **7.0.43**, single-node replica set in Docker, `mongodb` driver
 5.9.2 (the version `cgm-remote-monitor` pins), real `indexedFields` index set, queries
-transcribed from `lib/data/dataloader.js`. Shape: **database-per-tenant on one cluster** —
-§6.7's A′ rung.
+transcribed from `lib/data/dataloader.js`. Shapes: **database-per-tenant** (§6.7's A′ rung,
+§§1–6) and **one logical database with a tenant discriminator** (§6.6's B, §7).
 **Environment**: Linux, 16 cores, 62 GB, Node v24.15.0. **A laptop.** See §L before quoting
 anything.
 **Confidence**: **measured**, with the scope limits in §L. RTT arms use `tc netem` inside the
@@ -53,11 +54,19 @@ most operationally important finding here.
    requirement for the busiest endpoint.
 6. **MongoDB took a fatal assertion at 50 tenant databases.** Not slow — a hard crash of the
    whole server, in the middle of an unrelated benchmark, on a file-descriptor limit. §4.
-7. **And probing that deliberately found the more important number: `mongod` holds ~3.8 MB of
+7. **And probing that deliberately found the more important number: `mongod` holds ~3.7 MB of
    non-evictable RSS per tenant database containing *zero documents*** — more than the 2.65 MB
    of app-side resident state that database-per-tenant is supposed to save, and unlike it,
    impossible to evict. **§6.7's A′ rung relocates per-tenant memory rather than deleting
    it.** §4.1.
+8. **But A′ was never the destination, and the destination has none of this.** A maintainer
+   asked the obvious question this report had failed to ask: wouldn't a multitenant version
+   use one logical database with a tenant discriminator? Measured, §7: **104 WiredTiger files
+   in total at 400 tenants — 0.26 per tenant, flat — against A′'s 47.0 per tenant**, with the
+   planner examining **10 index keys to return 10 documents at every tenant count**. The
+   namespace ceiling, the RSS slope and the `fassert()` cliff are all properties of
+   database-per-tenant specifically. **They are arguments for consolidating storage, not
+   against multitenancy**, and §4's findings should be read that way.
 
 ---
 
@@ -317,6 +326,114 @@ budget spent on reads that residency serves nearly free. It does not change the 
 count, but it does mean the shared response cache keyed on `(tenant, lastUpdated)` in the
 component design is **load-bearing, not optional**, for `/api/v1/entries` specifically.
 
+## 7. EXP-MT-011b — one logical database with a tenant discriminator
+
+**§4 measured the wrong shape for the destination, and a maintainer said so.** A′
+(database-per-tenant) is §6.7's stage 2 — a migration rung chosen because it requires no
+schema change. The multitenant target is §6.6's B on Mongo or D on Postgres: **one logical
+database, every document carrying a tenant discriminator, the index set tenant-prefixed.**
+Then 6 collections and 41 indexes are *totals*, not per-tenant.
+
+§6.7 asserts this outright — "35 total with `tenant_id` as the leading column, not 35 per
+tenant; the curve is flat instead of linear" — and never measured it. Same corpus, same index
+set mechanically tenant-prefixed, same queries, same server config, so the two are directly
+comparable.
+
+| tenants | documents | **WT files** | mongod RSS | data | index | read `?count=10` p50 | keys examined |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 100 | 175,300 | **104** | 544.8 MB | 94.5 MB | 55.1 MB | 0.702 ms | **10** |
+| 200 | 350,600 | **104** | 765.1 MB | 189.2 MB | 113.9 MB | 0.745 ms | **10** |
+| 300 | 525,900 | **104** | 973.8 MB | 284.0 MB | 172.6 MB | 0.554 ms | **10** |
+| 400 | 701,200 | **104** | 1,075.6 MB | 378.7 MB | 233.6 MB | 1.011 ms | **10** |
+
+**The ceiling does not exist in this shape.**
+
+- **104 files in total at 400 tenants — 0.26 per tenant, and flat.** A′ needs 47.0 *per
+  tenant*: 18,800 files for the same 400 tenants, and 470,000 at 10,000. The file-descriptor
+  `fassert()` of §4 is unreachable here, because file count does not grow with tenant count at
+  all.
+- **Index locality holds, which is the result that actually had to be checked.** The planner
+  examines **10 keys to return 10 documents at every tenant count**. This is the opposite of
+  §6.1's measurement of MongoDB's *role-keyed view* mechanism, which gave the planner no
+  constant and forced either a COLLSCAN or an IXSCAN over every tenant's keys. **An explicit
+  discriminator in the query is a constant the planner can build index bounds from; a
+  server-injected `$expr` over `$$USER_ROLES` is not.** That distinction, not the engine, is
+  what decides index locality.
+- **Indexes are cheaper in aggregate**: 233.6 MB for 400 tenants against A′'s ~0.9 MB/tenant,
+  ~360 MB for the same corpus. One B-tree over 400 tenants packs better than 400 B-trees.
+- **Memory is now data, not namespace.** The 2,321 KB/tenant slope here is *not* comparable to
+  A′'s 3,793 KB/tenant: A′'s probe held **zero documents**, so that figure was pure namespace
+  overhead, while this one is loaded with 701,200 real documents and is therefore
+  data-and-index cache — evictable, proportional to stored data, and a cost both shapes pay.
+  **The like-for-like comparison is A′'s ~3.7 MB/tenant of non-evictable namespace overhead
+  against this shape's approximately zero.**
+
+Read latency is roughly flat with noise (0.554–1.011 ms p50, non-monotonic) and the p50 at 400
+tenants is the highest measured. Since keys examined never moved, that is working-set pressure
+against the 1 GB WiredTiger cache — 612 MB of data and index at 400 tenants — not index
+degradation. **It is the first sign of the constraint that replaces namespace count: ordinary
+cache pressure, which is the constraint every database has and which sharding addresses
+normally.**
+
+### 7.1 What the shared shape costs instead: the forgotten filter
+
+Shared collections trade a namespace ceiling for an isolation problem, and it is worth being
+precise about which parts of that trade are real. Explain plans against the 400-tenant,
+230,400-document `entries` collection:
+
+| query | keys examined | **docs examined** | returned | time |
+|---|---:|---:|---:|---:|
+| tenant + indexed field (`sgv`) | 154 | 154 | 154 | 1 ms |
+| tenant + **unindexed** field (`rssi`) | 576 | **576** | 576 | 2 ms |
+| tenant + **regex** on unindexed field | 576 | **576** | 576 | 2 ms |
+| **forgotten tenant filter**, unindexed | 0 | **230,400** | **230,400** | 92 ms |
+| **forgotten tenant filter**, regex | 0 | **230,400** | **230,400** | 118 ms |
+
+**The good news is real: a tenant-scoped query stays bounded to one tenant's 576 documents
+even when the other predicate is unindexed, even for a regex.** The tenant-prefixed index
+bounds the scan and the unindexed predicate is applied as a residual within those bounds. So
+§6.5's unbounded-query exposure **does not get worse** in the shared shape — a noisy tenant's
+regex costs one tenant's documents, exactly as it does under A′.
+
+**The bad news is the whole argument for RLS, now demonstrated rather than asserted.** A query
+that simply omits the discriminator does not fail, does not error, and does not return
+nothing. It returns **every tenant's data** — 230,400 documents of other people's glucose
+readings — and it does so in 92 ms, fast enough that nothing looks wrong. §6.6 calls B "the
+only architecture where the enforcement component is developer discipline"; this is what that
+sentence costs when the discipline lapses at one of ~30 call sites.
+
+Against §6.1's measured Postgres result — *a query with zero `tenant_id` predicate in the SQL
+returns only the bound tenant's rows, and an unbound connection returns zero rows* — the
+comparison is stark, and it is not about performance:
+
+| | forgotten filter on Mongo + discriminator | forgotten filter on Postgres + RLS |
+|---|---|---|
+| result | **every tenant's rows** | the bound tenant's rows |
+| unbound connection | every tenant's rows | **zero rows** |
+| failure mode | silent, fast, undetectable in tests that use one tenant | fail-closed |
+
+**So the engine question is settled by this and not by the namespace curve.** Both engines
+handle the shared shape's *performance* well. Only one of them makes the forgotten filter
+safe, and for a system holding other people's clinical data that is the deciding property.
+
+### 7.2 What this does to §6.7's ladder
+
+The ladder's stages are unchanged; their justifications are not.
+
+- **Stage 2 (A′) is a transitional rung, not a resting place.** Its case was "the entire
+  measured density win with no schema change", and §4 shows it pays for that with a
+  non-evictable ~3.7 MB/tenant on the database tier and a hard cliff at ~1,360 tenants. It
+  remains a reasonable *migration* step for a hoster in the hundreds of tenants, and its
+  per-tenant `mongodump` export is a genuine asset. It does not reach 10,000.
+- **Stage 3's case is stronger and differently argued.** §6.7 justified Postgres+RLS on three
+  axes: write coverage, index locality and connection multiplexing. **Index locality is no
+  longer the discriminator between engines** — §7 shows an explicit discriminator gives the
+  Mongo planner perfect bounds. What survives, and is now demonstrated, is **fail-closed
+  isolation** (§7.1) and write coverage. Those are sufficient.
+- **The namespace argument moves from "A′ versus Postgres" to "per-tenant versus shared."** It
+  is an argument about consolidating storage, which both engines support, and it should not be
+  cited as an argument for Postgres specifically.
+
 ## L. Limits — read before quoting any of this
 
 This is a laptop. The numbers above rank hypotheses and settle mechanism questions; **none of
@@ -352,7 +469,13 @@ them is a capacity result**, and several would move on real infrastructure.
 **What was not tested:**
 
 - **PostgreSQL + RLS.** The whole engine half of §6.7's ladder is unmeasured with a database
-  in the loop. The `rls-poc` figures remain the only evidence there.
+  in the loop. The `rls-poc` figures remain the only evidence there — which matters more after
+  §7.1, since the case for Postgres now rests entirely on fail-closed isolation and write
+  coverage rather than on anything measured here.
+- **§7 tops out at 400 tenants and 701,200 documents**, where working-set pressure against a
+  1 GB cache is only beginning to show. The shape of the curve past the point where the
+  working set exceeds cache is the open question for the shared model, and it is the normal
+  database capacity question rather than a Nightscout-specific one.
 - **Change streams at tenant scale** — the mechanism `ns-evaluator` and `ns-realtime` both
   depend on. §4 of the component design flags the one-cursor-per-database tension with A′;
   nothing here tested it.
@@ -384,7 +507,8 @@ docker exec nsbench-mongo tc qdisc change dev eth0 root netem delay 25ms # 50 ms
 RTT_LABEL=rtt50ms node dbloop.js loopdelay 50
 docker exec nsbench-mongo tc qdisc del dev eth0 root
 
-node nsfiles.js 200 50           # EXP-MT-040b, namespace cost
+node nsfiles.js 200 50           # EXP-MT-040b, namespace cost, database-per-tenant
+node shared-tenant.js 400 100    # EXP-MT-011b, one database + tenant discriminator
 RTT_MS=10 node deployment-cost.js 10000
 ```
 

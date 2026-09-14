@@ -1622,7 +1622,7 @@ From §6.1.2, restated as they bear on a bulk hoster:
 | Axis | MongoDB (role-keyed view, 7.0+) | PostgreSQL + RLS |
 |---|---|---|
 | **Writes** | Not covered. Views are read-only; granting write on the base collection reopens the full bypass | Policies cover `INSERT`/`UPDATE`/`DELETE` |
-| **Index locality** | `$expr` over `$$USER_ROLES` gives the planner no constant. Measured: COLLSCAN 60,004 docs / 60 ms, or a coaxed IXSCAN examining **every tenant's keys** (25,003 / 45 ms) against 12,500 / 11 ms for an explicit filter. **O(all tenants)** | The policy predicate is an ordinary equality the planner uses for index bounds. Measured 0.95–1.03 ms for a tenant-scoped read over 300,000 rows / 500 tenants |
+| **Index locality** | `$expr` over `$$USER_ROLES` gives the planner no constant. Measured: COLLSCAN 60,004 docs / 60 ms, or a coaxed IXSCAN examining **every tenant's keys** (25,003 / 45 ms) against 12,500 / 11 ms for an explicit filter. **O(all tenants)** — but this is a property of the **view mechanism**, not of MongoDB: with an explicit discriminator and a tenant-prefixed index, EXP-MT-011b measures **10 keys examined for 10 returned at 400 tenants**, flat. The engine can bound the scan perfectly; what it cannot do is *inject* the predicate itself | The policy predicate is an ordinary equality the planner uses for index bounds. Measured 0.95–1.03 ms for a tenant-scoped read over 300,000 rows / 500 tenants |
 | **Connection multiplexing** | Tenant identity binds to the **authenticated user**, so server-enforced isolation requires a distinct credential per tenant — which means a distinct `MongoClient` and pool per tenant | `set_config('app.current_tenant_id', …, is_local => true)` rebinds **per transaction on one shared pool** |
 
 The third is the one that settles it for a *shared-process* design, and it is a mechanism
@@ -1640,6 +1640,17 @@ argument rather than a benchmark:
 plus generated columns for the 22 already-indexed fields (§6.3).** Not because Mongo cannot
 isolate — it can, for reads — but because the mechanism it offers fails on all three axes a
 multitenant hot path exercises.
+
+> **Re-argued 2026-09-14 by EXP-MT-011b, to the same conclusion on narrower grounds.** The
+> index-locality axis **no longer separates the engines**: an explicit tenant discriminator
+> with a tenant-prefixed index gives MongoDB's planner perfect bounds (10 keys for 10
+> returned at 400 tenants). What survives is **writes** and **connection multiplexing** —
+> plus the axis this table did not have, now demonstrated: with a discriminator, a query that
+> **omits** the filter silently returns **every tenant's rows** (230,400 documents of other
+> people's readings in 92 ms, no error), where RLS returns the bound tenant's rows and an
+> unbound connection returns **zero**. For a system holding other people's clinical data,
+> **fail-closed isolation is the deciding property**, and it is the one an application-level
+> discriminator cannot provide on any engine.
 
 #### The rung the earlier analysis under-weighted
 
@@ -1727,6 +1738,14 @@ Two things follow that are worth more than the recommendation itself:
    [EXP-MT-026](../60-research/exp-mt-026-database-in-the-loop-2026-09-14.md) §4.
    **Index pruning now has a measured slope**: each of the 35 secondary indexes removed is one
    file and a share of 3.7 MB, on every tenant, permanently.
+
+   **All of which is a property of A′, not of multitenancy** — EXP-MT-011b, the same day.
+   Measured against one logical database with a tenant discriminator and the identical index
+   set tenant-prefixed: **104 WiredTiger files in total at 400 tenants (0.26/tenant, flat)**
+   against A′'s 47.0 per tenant, with the planner examining **10 keys to return 10 documents
+   at every tenant count**. §6.7's assertion that "the curve is flat instead of linear" is
+   confirmed, and it is flat on **MongoDB** too — so it is an argument for consolidating
+   storage, not an argument between engines.
 
 #### The ladder
 
