@@ -370,9 +370,12 @@ rule 2's identifier opacity rather than by the AST.
 
 ### 8.5 Honest limits
 
-- **mingo is a reimplementation of MongoDB's query language, not MongoDB.** Agreement is strong
-  evidence about the AST; it is not proof about MongoDB. Re-running the same harness against a
-  real `mongod` is a small change to `validate.js` and should happen before T1.2 lands.
+- ~~**mingo is a reimplementation of MongoDB's query language, not MongoDB.**~~ **CLOSED** —
+  re-run as a three-arm comparison (mingo / live `mongod` / live PostgreSQL) in
+  [{3A}](../60-research/seam-filter-ast-three-arm-validation-2026-09-14.md). All three arms
+  agree 3000/3000 on same-type values. Turning on **cross-type** values breaks that
+  (mongod-vs-postgres 96.15 %), in four nameable classes — which is a finding about type
+  coercion above the seam, not about the AST, and it is why T0.5 matters.
 - **The regex result covers a deliberately plain subset** — literals, anchors, character
   classes. Mongo's `$regex` is PCRE-flavoured and Postgres `~` is POSIX; they diverge on lazy
   quantifiers, lookaround and `\d`-style shorthands. **The measured 100 % describes the subset
@@ -416,7 +419,7 @@ The tiering in §2 changes the order the plan assumed:
 
 1. ~~**The filter AST**~~ — **built and validated, §8.** `tools/seam/filter-ast.js`, 3,000
    randomised filters at 100 % agreement across mingo and real PostgreSQL, 10/10 v1 shapes
-   covered. Remaining: re-run against a real `mongod` (§8.5), and write down the allowed regex
+   covered. Remaining: write down the allowed regex
    subset.
 2. ~~**Add the transaction scope**~~ — **designed, §9**, including the finding that MongoDB
    needs an explicit assertion to match RLS's fail-closed behaviour and cannot offer
@@ -428,3 +431,96 @@ The tiering in §2 changes the order the plan assumed:
 
 **T0's 15 sites need no work at all**, and T1's 14 are mostly already correct — which is the
 practical headline: **the conversion is ~55 sites, not 85.**
+
+
+## 10. As built — what T1.2 actually delivered, and where it diverged from §4.1
+
+The proposal in §4.1 survived contact with the code, with three deviations. Each is recorded
+here rather than edited into §4.1, because the reason for a deviation is worth more than a
+tidy-looking proposal.
+
+### 10.1 The delivered surface
+
+```js
+// ---- reads
+findOne(identifier, projection?, options?)
+findOneFilter(filter, projection?, options?)
+findMany({ filter, sort, limit, skip, projection, options })
+findFiltered(ast, { sort, limit, skip, projection, readOptions, options })   // NEW
+count(ast)                                                                   // NEW
+getLastModified(fieldName)                    // now routed through findMany
+
+// ---- writes
+insertOne(doc, options?)
+insertMany(docs, options?)                                                   // NEW
+replaceOne(identifier, doc)
+updateOne(identifier, setFields)
+updateMany(ast, { set, unset })                                              // NEW
+deleteOne(identifier)
+deleteMany(ast)                                                              // NEW
+deleteManyOr(filterDef)                       // v3's existing OR-of-clauses form, kept
+bulkUpsert(ops, { mode, ordered })                                           // NEW
+```
+
+`aggregate()` is absent, as §4.3 argued it should be.
+
+### 10.2 Deviation 1 — `bulkUpsert(ops, {mode})`, not `bulkUpsert(docs, {matchOn})`
+
+§4.1 assumed one match rule for a batch. The call sites do not share one: each operation
+carries **its own filter**, and more importantly `entries` upserts with `$set` (stored fields
+absent from the incoming document survive) while `treatments`, `food` and `activity` replace
+wholesale. That is a real semantic difference on a write path, so `mode: 'merge' | 'replace'`
+is explicit and has no safe default — defaulting it away would silently change behaviour for
+whichever group lost.
+
+### 10.3 Deviation 2 — `updateMany(ast, {set, unset})`, not a null-sentinel patch
+
+§4.1 rule 3 proposed that `$unset` become "an explicit null-or-sentinel convention in the
+patch". Rejected once the caller was read: a sentinel makes "set this field to null" and
+"remove this field" the same wire shape, and `websocket.js` genuinely does both. Two named maps
+cost nothing and cannot be confused.
+
+The method also **validates field names**, refusing any that begins with `$`. On the socket
+path those names arrive straight off the wire and go into `$set`/`$unset`, which is precisely
+where a field name becomes an update *operator*. MongoDB rejects most of these itself; making
+it structural is the same argument as the AST's operator allowlist.
+
+### 10.4 Deviation 3 — `deleteMany` returns three fields, and the wire is shaped elsewhere
+
+It returns `{ deleted, deletedCount, acknowledged }`. `deleted` matches `deleteManyOr`'s
+existing contract; `deletedCount` and `acknowledged` are what the v1 delete endpoints put on
+the wire, because `normalizeDeleteStatus` copies the whole object into the response body.
+
+Three modules independently re-synthesised `acknowledged: true` before this was centralised —
+which would misreport an unacknowledged write. The driver's value is passed through instead,
+and the internal `deleted` alias is stripped in `normalizeDeleteStatus`, the single choke point
+for all four v1 delete endpoints. **Three agents converging on the same workaround was the
+signal that the interface, not the callers, was wrong.**
+
+### 10.5 One change to the AST itself: `re` carries `options`
+
+`fromMongo` originally lost a native `RegExp` **silently** — `Object.keys(/x/i)` is `[]`, so the
+clause produced no nodes and vanished. `lib/server/query.js`'s `parseRegEx` returns a native
+RegExp for the treatments `notes`/`eventType`/`enteredBy` filters, so this was live: a request
+for boluses returned every treatment.
+
+Flags now live on the node (`{op: 're', field, value, options: 'i'}`) rather than inline in the
+pattern. Two reasons, and the second is the one that matters for Phase 2:
+
+1. flags must not consume the `RE_MAX_LEN` budget, which is the ReDoS bound;
+2. the adapters spell them differently — MongoDB has `$options`, while PostgreSQL has a
+   case-insensitive **operator** (`~*`) and no inline `i` at all. A flag smuggled into the
+   pattern string would have made the SQL adapter's job incorrect rather than merely awkward.
+
+Only the flags MongoDB honours (`imsx`) are kept; `g`/`y`/`u` say nothing about whether a single
+document matches, and the driver drops them too. Verified against live MongoDB 7 that
+`/Bolus/i`, `/Bolus/gi` and `/change/ims` select the same documents through the seam as they do
+natively.
+
+### 10.6 What is still on the raw collection
+
+| site | reason |
+|---|---|
+| `profile.list_query` | accepts `$expr` today, with a test asserting it. A query-surface decision (D8/T2.4), not a conversion detail. The T2.4 census found **no client in the corpus sends `$expr`**, so rejecting it is a security fix rather than a compatibility break — but it is still a deliberate behaviour change and belongs with the allowlist. |
+| `websocket.js` | its dedup logic is knowingly inconsistent with `lib/server/treatments.js` (§4.4). Converting the storage calls is mechanical; unifying the dedup is a behaviour change and is filed separately. |
+| each module's `api()` / collection accessor | bootevent still needs raw collections for `ensureIndexes`. Removing these is the *last* step, once index creation moves behind `ensureSchema`. |
