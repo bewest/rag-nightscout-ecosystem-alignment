@@ -529,12 +529,54 @@ reading is later than their last evaluation**:
 | steady state, watermarks current | 13.69 ms | 0 |
 | **bounded by the `date` index (last 10 minutes)** | **1.02 ms** | 0 |
 
-**Bounded by a date index, the entire "who needs evaluating" sweep costs ~1 ms** regardless of
-how many tenants are registered, because it touches only rows written since the last sweep. At
-one sweep every 30 seconds that is 0.03 ms/s of database work — **four orders of magnitude
-below the resident model's polling.**
+~~**Bounded by a date index, the entire "who needs evaluating" sweep costs ~1 ms** regardless of
+how many tenants are registered~~ — **the measurement is sound; the invariant hung on it is
+not. Corrected 2026-09-15 by T4.2, which built the component.** At one sweep every 30 seconds
+1.02 ms is 0.03 ms/s of database work, four orders of magnitude below the resident model's
+polling, and that part stands.
 
-So polling is not the alternative to CDC; **it is the affordable backstop underneath it.**
+**What does not stand is "regardless of how many tenants are registered", because the run above
+varied neither axis.** Reproducing this run's own query *and* its own index configuration across
+corpora it never built (`tools/measure-feed-poll-bound.js` in `cgm-remote-monitor`):
+
+| registered tenants | 100 | 400 | 1600 | 3200 |
+|---|---:|---:|---:|---:|
+| sweep p50, writing set held at 100 | 0.696 ms | **0.979 ms** | 2.909 ms | 5.236 ms |
+
+The plan is a nested loop with one index descent per row of the watermark table, so **as
+published the sweep is O(registered tenants)** — about 1.4 µs each. It lands on 1.02 ms at 400
+tenants because 400 tenants is what was measured. At 10,000 it would be **~15 ms a sweep, not
+1**.
+
+**What makes it genuinely bounded is an index no emitted schema contains — and cannot contain
+under its current rule.** Every index `tools/nsschema/emit/postgres_emit.py` produces is
+**tenant-leading**, because every tenant-facing query runs under a policy predicate on
+`tenant_id` (§8.2). This sweep has **no tenant predicate by construction** (§8.6), so it needs a
+**global** index on `date`, and the emitter will never write one. With it, the same four corpora
+cost 0.806 / 0.731 / 0.761 / **0.865 ms — flat across 32× the corpus**; and holding the corpus
+at 1600 tenants while varying the writing set 25 → 1600 gives 0.579 / 0.790 / 1.209 / 3.001 ms.
+
+**So the real bound is rows written since the last sweep** — ~0.57 ms fixed plus ~0.8 µs per row
+inside the window — which is what this section's own sentence *claimed* without the index that
+makes it true. Without it the same statement costs 6.6 ms at 57.6k rows and **108 ms at 1.84M**,
+flat against the writing set, which is the signature of scanning everything.
+
+So polling is not the alternative to CDC; **it is the affordable backstop underneath it** — on a
+schema that carries one index the emitter does not currently know how to produce.
+
+**Two things this lands on the emitter** (`{P}` T2.1), neither of which it can do today:
+
+1. **A global, non-tenant-leading index** for the cross-tenant sweep. The emitter's rule —
+   tenant first, always — is correct for every tenant-facing query and wrong for the two
+   components §8.6 says can never be tenant-bound. The rule needs an exception it can express.
+2. **An insertion-ordered column on `entries`.** The window predicate is over the **uploader's
+   clock**, because the emitted schema has no server-assigned insertion column at all. A device
+   running slow writes rows a bounded sweep cannot see — which makes the periodic full sweep a
+   *detection latency* rather than a tidy-up — and a device running fast drags its tenant's
+   watermark past real time, after which honest readings sit below it and **that tenant goes
+   quiet until the clock catches up**. The second cannot be fixed at this layer: clamping
+   re-reports the same row forever, and dropping a reading is not something an alarm path may
+   do. T4.2 counts it instead.
 
 ### 8.5 The recommendation that follows: a spine, an accelerator, and a backstop
 
