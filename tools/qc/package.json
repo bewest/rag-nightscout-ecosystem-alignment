@@ -1,0 +1,11 @@
+{
+  "name": "seam-qc",
+  "private": true,
+  "description": "Independent verification of the storage seam. Separate from tools/seam so the thing being checked and the thing doing the checking do not share a dependency tree.",
+  "type": "commonjs",
+  "dependencies": {
+    "mingo": "^7.2.4",
+    "mongodb": "^6.10.0",
+    "pg": "^8.13.0"
+  }
+}
