@@ -1,0 +1,86 @@
+tier	class	file	line	op	reason	src
+T0-consumer	fits	lib/api3/generic/create/insert.js	32	insertOne	maps onto the existing api3 storage interface	const identifier = await col.storage.insertOne(doc);
+T0-consumer	fits	lib/api3/generic/delete/operation.js	33	findOne	maps onto the existing api3 storage interface	const result = await col.storage.findOne(identifier);
+T0-consumer	fits	lib/api3/generic/delete/operation.js	59	deleteOne	maps onto the existing api3 storage interface	const result = await col.storage.deleteOne(identifier);
+T0-consumer	fits	lib/api3/generic/delete/operation.js	86	updateOne	maps onto the existing api3 storage interface	const result = await col.storage.updateOne(identifier, setFields);
+T0-consumer	fits	lib/api3/generic/patch/operation.js	85	updateOne	maps onto the existing api3 storage interface	const matchedCount = await col.storage.updateOne(identifier, doc);
+T0-consumer	fits	lib/api3/generic/read/operation.js	22	findOne	maps onto the existing api3 storage interface	const result = await col.storage.findOne(req.params.identifier
+T0-consumer	fits	lib/api3/generic/update/replace.js	38	replaceOne	maps onto the existing api3 storage interface	const matchedCount = await col.storage.replaceOne(storageDoc.identifier, doc);
+T0-consumer	fits	lib/api3/storage/mongoCachedCollection/index.js	18	findOne	maps onto the existing api3 storage interface	self.findOne = (...args) => baseStorage.findOne(...args);
+T0-consumer	fits	lib/api3/storage/mongoCachedCollection/index.js	26	insertOne	maps onto the existing api3 storage interface	const result = await baseStorage.insertOne(doc, { normalize: false });
+T0-consumer	fits	lib/api3/storage/mongoCachedCollection/index.js	40	replaceOne	maps onto the existing api3 storage interface	const result = await baseStorage.replaceOne(identifier, doc);
+T0-consumer	fits	lib/api3/storage/mongoCachedCollection/index.js	43	findOne	maps onto the existing api3 storage interface	const rawDocs = await baseStorage.findOne(identifier, null, { normalize: false })
+T0-consumer	fits	lib/api3/storage/mongoCachedCollection/index.js	52	updateOne	maps onto the existing api3 storage interface	const result = await baseStorage.updateOne(identifier, setFields);
+T0-consumer	fits	lib/api3/storage/mongoCachedCollection/index.js	55	findOne	maps onto the existing api3 storage interface	const rawDocs = await baseStorage.findOne(identifier, null, { normalize: false })
+T0-consumer	fits	lib/api3/storage/mongoCachedCollection/index.js	71	findOne	maps onto the existing api3 storage interface	invalidateDocs = await baseStorage.findOne(identifier, { _id: 1 }, { normalize: false })
+T0-consumer	fits	lib/api3/storage/mongoCachedCollection/index.js	74	deleteOne	maps onto the existing api3 storage interface	const result = await baseStorage.deleteOne(identifier);
+T1-adapter	needs-escape-hatch	lib/api3/storage/mongoCollection/find.js	36	find	bare find — map to findMany	const result = await col.find(filter)
+T1-adapter	needs-escape-hatch	lib/api3/storage/mongoCollection/find.js	55	find	bare find — map to findMany	const result = await col.find(filter)
+T1-adapter	needs-escape-hatch	lib/api3/storage/mongoCollection/find.js	73	find	bare find — map to findMany	const result = await col.find(filter)
+T1-adapter	fits	lib/api3/storage/mongoCollection/modify.js	14	insertOne	maps onto the existing api3 storage interface	const result = await col.insertOne(doc);
+T1-adapter	needs-escape-hatch	lib/api3/storage/mongoCollection/modify.js	34	replaceOne	upsert semantics must be explicit in the interface	const result = await col.replaceOne(filter, doc, { upsert: true });
+T1-adapter	must-change	lib/api3/storage/mongoCollection/modify.js	49	updateOne	Mongo update operators — needs an explicit patch contract (jsonb_set / - key)	const result = await col.updateOne(filter, { $set: setFields });
+T1-adapter	fits	lib/api3/storage/mongoCollection/modify.js	63	deleteOne	maps onto the existing api3 storage interface	const result = await col.deleteOne(filter);
+T1-adapter	needs-escape-hatch	lib/api3/storage/mongoCollection/modify.js	75	deleteMany	delete by filter (non-query_for callers)	const result = await col.deleteMany(filter);
+T1-interface	fits	lib/api3/storage/mongoCollection/index.js	29	findOne	maps onto the existing api3 storage interface	self.findOne = (...args) => find.findOne(self.col, ...args);
+T1-interface	fits	lib/api3/storage/mongoCollection/index.js	35	insertOne	maps onto the existing api3 storage interface	self.insertOne = (...args) => modify.insertOne(self.col, ...args);
+T1-interface	fits	lib/api3/storage/mongoCollection/index.js	37	replaceOne	maps onto the existing api3 storage interface	self.replaceOne = (...args) => modify.replaceOne(self.col, ...args);
+T1-interface	fits	lib/api3/storage/mongoCollection/index.js	39	updateOne	maps onto the existing api3 storage interface	self.updateOne = (...args) => modify.updateOne(self.col, ...args);
+T1-interface	fits	lib/api3/storage/mongoCollection/index.js	41	deleteOne	maps onto the existing api3 storage interface	self.deleteOne = (...args) => modify.deleteOne(self.col, ...args);
+T1-interface	must-change	lib/api3/storage/mongoCollection/index.js	65	find	exposes the driver cursor; getLastModified must go through the adapter	const [ result ] = await self.col.find()
+T2-v1-domain	needs-escape-hatch	lib/api/entries/index.js	520	aggregate	aggregation pipeline — needs a declared contract, not pass-through	storage.aggregate(query, function payload (err, entries) {
+T2-v1-domain	fits	lib/authorization/storage.js	49	insertOne	maps onto the existing api3 storage interface	await collection.insertOne(obj);
+T2-v1-domain	must-change	lib/authorization/storage.js	88	find	filter is a Mongo query document built by query.js — must become a neutral filter	.find(query_for(opts))
+T2-v1-domain	must-change	lib/authorization/storage.js	100	deleteOne	ObjectId construction — identifier must be opaque to the caller	await collection.deleteOne({ '_id': new ObjectID(_id) });
+T2-v1-domain	needs-escape-hatch	lib/authorization/storage.js	122	replaceOne	upsert semantics must be explicit in the interface	await collection.replaceOne({ _id: obj._id }, obj, { upsert: true });
+T2-v1-domain	needs-escape-hatch	lib/server/activity.js	54	bulkWrite	batch upsert — Postgres INSERT ... ON CONFLICT	bulkResult = await api().bulkWrite(bulkOps, { ordered: true });
+T2-v1-domain	needs-escape-hatch	lib/server/activity.js	91	replaceOne	upsert semantics must be explicit in the interface	await api().replaceOne({ _id: obj._id }, obj, { upsert: true });
+T2-v1-domain	must-change	lib/server/activity.js	120	find	filter is a Mongo query document built by query.js — must become a neutral filter	.find(query_for(opts))
+T2-v1-domain	fits	lib/server/activity.js	129	deleteOne	maps onto the existing api3 storage interface	return api().deleteOne({ '_id': objId });
+T2-v1-domain	needs-escape-hatch	lib/server/aggregate.js	26	aggregate	aggregation pipeline — needs a declared contract, not pass-through	return api().aggregate(groupBy).toArray();
+T2-v1-domain	needs-escape-hatch	lib/server/devicestatus.js	70	insertMany	batch insert	insertResult = await api().insertMany(statuses, { ordered: true });
+T2-v1-domain	must-change	lib/server/devicestatus.js	129	find	filter is a Mongo query document built by query.js — must become a neutral filter	.find(query_for(opts))
+T2-v1-domain	must-change	lib/server/devicestatus.js	138	deleteMany	delete by Mongo query document — same filter problem	var stat = await api().deleteMany(query_for(opts));
+T2-v1-domain	must-change	lib/server/entries.js	44	find	filter is a Mongo query document built by query.js — must become a neutral filter	.find(query_for(opts))
+T2-v1-domain	must-change	lib/server/entries.js	52	deleteMany	delete by Mongo query document — same filter problem	var stat = await api().deleteMany(query_for(opts));
+T2-v1-domain	needs-escape-hatch	lib/server/entries.js	147	bulkWrite	batch upsert — Postgres INSERT ... ON CONFLICT	bulkResult = await api().bulkWrite(bulkOps, { ordered: true });
+T2-v1-domain	must-change	lib/server/entries.js	179	findOne	ObjectId construction — identifier must be opaque to the caller	"return api().findOne({ ""_id"": new ObjectId(id) });"
+T2-v1-domain	needs-escape-hatch	lib/server/food.js	54	bulkWrite	batch upsert — Postgres INSERT ... ON CONFLICT	bulkResult = await api().bulkWrite(bulkOps, { ordered: true });
+T2-v1-domain	needs-escape-hatch	lib/server/food.js	115	bulkWrite	batch upsert — Postgres INSERT ... ON CONFLICT	bulkResult = await api().bulkWrite(bulkOps, { ordered: true });
+T2-v1-domain	needs-escape-hatch	lib/server/food.js	140	find	bare find — map to findMany	return api().find({ }).toArray();
+T2-v1-domain	must-change	lib/server/food.js	146	find	literal Mongo filter document in domain code	return api().find({ $and: [ { 'type': 'quickpick'} , { 'hidden' : 'false' } ] }).sort({'position': 1}).toArray();
+T2-v1-domain	needs-escape-hatch	lib/server/food.js	152	find	bare find — map to findMany	return api().find( { 'type': 'food'} ).toArray();
+T2-v1-domain	fits	lib/server/food.js	159	deleteOne	maps onto the existing api3 storage interface	return api().deleteOne({ '_id': objId });
+T2-v1-domain	needs-escape-hatch	lib/server/profile.js	38	insertMany	batch insert	const result = await api().insertMany(docs);
+T2-v1-domain	needs-escape-hatch	lib/server/profile.js	79	replaceOne	upsert semantics must be explicit in the interface	await api().replaceOne({ _id: obj._id }, obj, { upsert: true });
+T2-v1-domain	needs-escape-hatch	lib/server/profile.js	90	find	cursor chaining — must become findMany args	return api().find({ }).limit(limit).sort(profileSort).toArray();
+T2-v1-domain	must-change	lib/server/profile.js	110	find	filter is a Mongo query document built by query.js — must become a neutral filter	.find(query_for(opts))
+T2-v1-domain	needs-escape-hatch	lib/server/profile.js	140	find	cursor chaining — must become findMany args	return api().find().sort(profileSort).limit(1).toArray();
+T2-v1-domain	fits	lib/server/profile.js	147	deleteOne	maps onto the existing api3 storage interface	return api().deleteOne({ '_id': objId });
+T2-v1-domain	needs-escape-hatch	lib/server/profile.js	157	find	projection — findMany already takes one, caller must stop chaining	.find({}, { projection: { _id: 1, startDate: 1 } })
+T2-v1-domain	needs-escape-hatch	lib/server/profile.js	169	deleteMany	delete by filter (non-query_for callers)	var stat = await api().deleteMany(pruneFilter);
+T2-v1-domain	needs-escape-hatch	lib/server/treatments.js	91	bulkWrite	batch upsert — Postgres INSERT ... ON CONFLICT	bulkResult = await api().bulkWrite(bulkOps, { ordered: true });
+T2-v1-domain	must-change	lib/server/treatments.js	114	find	literal Mongo filter document in domain code	var existing = await api().find({ identifier: { $in: identifiers } }).toArray();
+T2-v1-domain	needs-escape-hatch	lib/server/treatments.js	162	replaceOne	upsert semantics must be explicit in the interface	var updateResults = await api().replaceOne(query, obj, {upsert: true});
+T2-v1-domain	fits	lib/server/treatments.js	170	findOne	maps onto the existing api3 storage interface	var existing = await api().findOne(query);
+T2-v1-domain	needs-escape-hatch	lib/server/treatments.js	207	replaceOne	upsert semantics must be explicit in the interface	updateResults = await api().replaceOne(pbQuery, pbTreat, {upsert: true});
+T2-v1-domain	must-change	lib/server/treatments.js	251	find	filter is a Mongo query document built by query.js — must become a neutral filter	.find(query_for(opts))
+T2-v1-domain	must-change	lib/server/treatments.js	276	deleteMany	delete by Mongo query document — same filter problem	var stat = await api().deleteMany(query_for(opts), {});
+T2-v1-domain	needs-escape-hatch	lib/server/treatments.js	307	replaceOne	upsert semantics must be explicit in the interface	var updateResults = await api().replaceOne(query, obj, {upsert: true});
+T2-v1-domain	fits	lib/server/treatments.js	314	findOne	maps onto the existing api3 storage interface	var existing = await api().findOne(query);
+T3-factory	needs-escape-hatch	lib/storage/mongo-storage.js	216	createIndex	schema management — becomes migrations on Postgres	collection.createIndex(field).catch(function (err) {
+T3-socket-write-path	must-change	lib/server/websocket.js	358	updateOne	Mongo update operators — needs an explicit patch contract (jsonb_set / - key)	await mongoCollection.updateOne({ '_id': id }, { $set: data.data });
+T3-socket-write-path	fits	lib/server/websocket.js	366	findOne	maps onto the existing api3 storage interface	var results = await mongoCollection.findOne({ '_id': id });
+T3-socket-write-path	must-change	lib/server/websocket.js	411	updateOne	Mongo update operators — needs an explicit patch contract (jsonb_set / - key)	await mongoCollection.updateOne({ '_id': objId }, { $unset: data.data });
+T3-socket-write-path	fits	lib/server/websocket.js	419	findOne	maps onto the existing api3 storage interface	var results = await mongoCollection.findOne({ '_id': objId });
+T3-socket-write-path	fits	lib/server/websocket.js	528	findOne	maps onto the existing api3 storage interface	var exactTreatment = await mongoCollection.findOne(query);
+T3-socket-write-path	fits	lib/server/websocket.js	572	findOne	maps onto the existing api3 storage interface	var similar = await mongoCollection.findOne(query_similiar);
+T3-socket-write-path	must-change	lib/server/websocket.js	578	updateOne	Mongo update operators — needs an explicit patch contract (jsonb_set / - key)	await mongoCollection.updateOne({ '_id': objId }, { $set: { created_at: data.data.created_at } });
+T3-socket-write-path	fits	lib/server/websocket.js	590	insertOne	maps onto the existing api3 storage interface	var insertResult = await mongoCollection.insertOne(data.data);
+T3-socket-write-path	fits	lib/server/websocket.js	622	findOne	maps onto the existing api3 storage interface	var existingStatus = await mongoCollection.findOne(queryDev);
+T3-socket-write-path	fits	lib/server/websocket.js	633	insertOne	maps onto the existing api3 storage interface	var devicestatusInsertResult = await mongoCollection.insertOne(data.data);
+T3-socket-write-path	fits	lib/server/websocket.js	663	findOne	maps onto the existing api3 storage interface	var existingProfile = await mongoCollection.findOne(profileQuery);
+T3-socket-write-path	fits	lib/server/websocket.js	668	replaceOne	maps onto the existing api3 storage interface	await mongoCollection.replaceOne({ _id: existingProfile._id }, replacementDoc);
+T3-socket-write-path	fits	lib/server/websocket.js	686	insertOne	maps onto the existing api3 storage interface	var profileInsertResult = await mongoCollection.insertOne(data.data);
+T3-socket-write-path	fits	lib/server/websocket.js	707	insertOne	maps onto the existing api3 storage interface	var genericInsertResult = await mongoCollection.insertOne(data.data);
+T3-socket-write-path	must-change	lib/server/websocket.js	749	deleteOne	raw collection handle — the §2.5 leak itself	stat = await ctx.store.collection(collection).deleteOne({ '_id': objId });

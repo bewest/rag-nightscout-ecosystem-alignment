@@ -11,6 +11,7 @@ that work can be picked up without re-reading the evidence chain.
 | **{C}** | [Deployable components](nightscout-deployable-components-2026-09-14.md) |
 | **{R}** | [What sets K](../60-research/multitenancy-k-and-residency-2026-09-14.md) |
 | **{DB}** | [A real database in the loop](../60-research/exp-mt-026-database-in-the-loop-2026-09-14.md) |
+| **{S}** | [T1.1 — the storage seam: interface and call-site classification](nightscout-storage-seam-interface-2026-09-14.md) |
 
 ---
 
@@ -299,16 +300,38 @@ after. Independent of everything else here.
 
 ### Phase 1 — the seam (the real prerequisite)
 
-**T1.1 · Define the repository interface.**
-**Design task, produces a document + interface stub, no behaviour change.** Must be the
-intersection of MongoDB and PostgreSQL capability (D4), not Mongo's shape. Inputs: the 68
-unambiguous driver call sites across 19 files (`grep -rE
-"\.(findOne|insertOne|insertMany|updateOne|updateMany|deleteOne|deleteMany|countDocuments|aggregate|replaceOne|findOneAndUpdate|createIndex|bulkWrite)\(" lib/ --include=*.js`),
-concentrated: `lib/server/websocket.js` 15, `lib/api3/storage/mongoCachedCollection/index.js` 8,
-`lib/server/treatments.js` 7. `lib/api3/storage/*` is already half an abstraction and should be
-the model, not a thing to replace.
-*Done*: a reviewed interface definition covering all 68 sites, with each site classified as
-`fits` / `needs-escape-hatch` / `must-change`.
+**T1.1 · Define the repository interface. — DONE 2026-09-14**, see
+[the seam interface document](nightscout-storage-seam-interface-2026-09-14.md) and
+`reports/storage-seam/t1-1-call-site-classification.tsv`.
+
+**Three corrections it produced, which change the tasks below:**
+
+1. **The count is 85, not 68.** The grep in the original task text excluded `.find(` to dodge
+   `Array.find`, which also dropped every `col.find(filter)` — the commonest read in the
+   codebase. Scripts to re-derive it are committed beside the classification.
+2. **The conversion is ~55 sites, not 85.** 15 are already interface consumers
+   (`api3/generic/*`, `mongoCachedCollection`) and 14 are the interface and its Mongo adapter.
+   **API v3 is three-quarters of a seam that already exists** — `MongoCollection` exposes a
+   real interface with a real decorator over it. The task is to finish it and bring v1 to it,
+   not to design one.
+3. **There is a third write path.** `lib/server/websocket.js` implements full CRUD over
+   Socket.IO (`dbAdd`/`dbUpdate`/`dbUpdateUnset`/`dbRemove`) with **its own dedup logic**,
+   parallel to v1's and v3's. Every "v1 and v3" statement in {M}, {C} and this plan is
+   incomplete. Convert it last; file dedup unification separately, as it is a behaviour change.
+
+**Classification**: 39 `fits`, 27 `needs-escape-hatch`, 19 `must-change` — and the 19 are
+**four root causes**, of which **9 sites are the single cause "`query_for` returns a Mongo
+filter document"**.
+
+**The recommendation that follows**: do the **filter AST** first, standalone, before converting
+anything. Make v3's nine operators the seam's filter language; then T0.5's coercion table has
+somewhere to apply, T2.3 is already done by construction, and **T2.4's allowlist falls out
+structurally — an AST that cannot express an unlisted operator *is* the allowlist**, which is
+{M} §6.5's security fix arriving for free.
+
+**One gap to close before T1.2 starts**: the interface has no **transaction scope**, and D3's
+RLS binding is per-transaction ({DB} §8.2). Retrofitting one through the call sites twice
+would be avoidable waste.
 
 **T1.2 · Convert the 19 files to the interface, MongoDB only.**
 **Zero behaviour change.** No Postgres, no tenancy, no schema.
