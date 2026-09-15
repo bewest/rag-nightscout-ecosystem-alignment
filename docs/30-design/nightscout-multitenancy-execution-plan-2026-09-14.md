@@ -34,6 +34,9 @@ a preference.
 | **D10** | **Tenant `slug` is globally unique per deployment, and is a *host label*** — the resolver maps Host → slug by a configured rule, so both `foo.user-content.apex.org` and `foo-user-content.apex.org` name tenant `foo` | **maintainer, 2026-09-14 (second session)** — §2.5 |
 | **D11** | **`devicestatus` gets almost no generated columns.** The body stays JSONB, and the real answer to its 182 nodes is *decomposition into normalised time series driven by registered controller descriptions*, not a wider column list | **maintainer, 2026-09-14 (second session)** — §2.6 |
 | **D12** | **`rag-nightscout-ecosystem-alignment` carries the tooling, documentation and alignment exercises; `cgm-remote-monitor` stays pristine.** This repository is the quality-control system for that one | **maintainer, 2026-09-14 (second session)** — §2.7 |
+| **D13** | **In `TENANCY_MODE=multi` there is no deployment-wide secret on any interface.** `API_SECRET` is a *single-tenant* bootstrapping mechanism and stops existing in multi mode; each tenant holds its own root credential, stored with its configuration. The platform-admin plane remains credential-free, secured by unreachability (D7) | **maintainer, 2026-09-15** — §2.8 |
+| **D14** | **Per-tenant JWT signing key**, stored with tenant configuration. Tenant resolution runs before any credential is examined, so the correct key is known at verify time; cross-tenant token reuse becomes a *signature* failure rather than a claim-check failure | **maintainer, 2026-09-15** — §2.8 |
+| **D15** | **Configuration source diverges by entrypoint.** `single` reads the process environment because there is one tenant to read for; hosted entrypoints read per-tenant configuration from the database. Env-sourced configuration must not reach the multi path | **maintainer, 2026-09-15** — §2.8 |
 
 ## 2. D7 — the admin plane
 
@@ -202,6 +205,78 @@ drift-prone list beside the OpenAPI spec, `indexedFields`, the nsschema model an
 - Findings are written up **here** and referenced from there, not pasted into code comments.
 - `node_modules` is never tracked in either. A manifest plus a lockfile is what makes a tool
   reproducible; the tree is noise in the diff.
+
+### 2.8 D13, D14, D15 — the credential root, and where configuration comes from
+
+**The correction that produced these.** Phase 3 was built on an unexamined inheritance: that
+there is one deployment API secret and one signing key, and that tenants are separated by
+inspecting a claim. That is true of *single-tenant* Nightscout, and it is true only because
+there is one tenant to read the environment for. It is not a property to carry into the hosted
+target. Per-tenant settings, plugin credentials and secrets come from the database, where a
+tenant owner can administer them; the process environment is the single-tenant bootstrap.
+
+**What the built code assumes today**, measured 2026-09-15 on `239f8c25`:
+
+| site | assumption |
+|---|---|
+| `lib/authorization/index.js:169-173` | a matching `api_secret` grants shiro `['*']`; `authorizeAdminSecret` → `env.enclave.isApiKey` → the one secret armed from `process.env` at boot. **No tenant dimension on this path at all** |
+| `lib/server/tenant-middleware.js:139-143` | `tenantClaim` verifies with `enclave.verifyJWT` — one install-wide key signs and verifies every tenant's tokens |
+| `lib/server/enclave.js:29` | the JWT key is read from `node_modules/.cache/_ns_cache/randomString`, so it is per-*install* and survives `setAPISecret`'s scrub of `process.env.API_SECRET` |
+| `lib/admin/platform.sql` | `tenants` and `tenant_members` carry **no settings, no secret, no plugin configuration**; `tenant_members.subject_id` is a `uuid` with no foreign key and no subjects table — the subjects it names are still process-wide, which is BF-25's cause rather than a loose end beside it |
+| `lib/server/tenant-context.js` (T3.3, unlanded) | builds the *mechanism* for per-tenant settings (`deriveEnv`, validated overrides) and takes the overrides as a parameter. Nothing supplies them, because nothing stores them |
+
+**D13 — no deployment secret in multi mode.** The `['*']` grant path becomes unreachable under
+`TENANCY_MODE=multi`; `isApiKey` becomes tenant-scoped. This is consistent with D7 rather than
+an addition to it: the platform-admin plane was already argued to need no credential, so
+removing the deployment secret costs it nothing. A tenant owner administers their own site with
+their own credential, which is what makes the tenant-admin interface (D7: on the consumer
+interface, under RLS) something a tenant can actually hold.
+
+**D14 — per-tenant signing key.** Available because of an ordering property that is easy to
+miss: T3.1 resolves Host → slug → tenant id *before* any credential is examined, so the tenant
+is known by the time a JWT is verified. A token minted for tenant A then fails the signature for
+tenant B, instead of being caught by a claim check — and the claim check is exactly where BF-25
+was found. This converts a class of bug into an impossibility rather than adding another guard
+in front of it. **Not free**: it needs key storage and a rotation story, both of which land with
+the configuration schema.
+
+**D15 — configuration source diverges by entrypoint.** D5 presented `api`/`evaluator`/`realtime`/
+`vcpool` + `single` as a *deployment-shape* decision. It is also a *configuration-source*
+decision, and saying so is what stops env-sourced configuration leaking into the hosted path by
+default — which is how the assumption above arrived unexamined.
+
+**Bootstrap and rotation — direction set, evidence owed.** The hosting operator mints a tenant's
+initial credential through `bin/admin.js` on the unroutable port (it is already the only writer
+of `tenants`), and the tenant owner can rotate on demand. An IdP binding on the tenant row is in
+scope as an alternative to a local secret — see
+[trusted identity providers](../10-domain/trusted-identity-providers.md). **What none of this
+rests on yet is evidence**: the impact of operator-assigned-then-rotated credentials, and what
+the alternatives cost, are unmeasured. That is the first half of the task below.
+
+**Consequences already visible, none of them closed:**
+
+- **T3.3 is held** (see Phase 3). Its `PER_TENANT_ENV_KEYS` excludes `enclave` with the reasoning
+  *"there is exactly one deployment secret"* — which D13 and D14 reject. The isolation work and
+  its structural reachability tests are unaffected and good; the enclave reasoning is not.
+- **`platform.sql` needs a configuration home**, and `tenant_members.subject_id` needs something
+  to reference.
+- **BF-25's framing sharpens**: process-wide subject lookup is not a defect beside the missing
+  per-tenant credential root, it is the same gap seen from the request path.
+
+**T3.0 · Configuration surface and credential bootstrap — research, then schema, then wiring.**
+Two halves, in order, because the second depends on the first.
+
+1. *Research.* Enumerate the per-tenant configuration surface — every `SETTINGS_*` variable,
+   every plugin credential, which are secrets and which are not, what a tenant may override
+   versus what the hoster pins — and gather the evidence D13/D14's bootstrap and rotation story
+   currently lacks. Deliverable: a `docs/60-research/` report.
+2. *Schema.* Add the configuration and credential storage to `lib/admin/platform.sql`, including
+   the per-tenant signing key and whatever `subject_id` should reference.
+3. *Wiring.* Supply T3.3's `deriveEnv` overrides from it, and make `isApiKey`/`verifyJWT`
+   tenant-scoped.
+
+*Blocks*: T3.3. *Blocked by*: nothing.
+
 
 ## 3. D8 — the query surface
 
@@ -1075,10 +1150,33 @@ handshake's URL is the **engine** path, not the page's, so a browser on `apex.or
 handshakes at `/socket.io/` — and that path is a *client option*, so honouring it would let a
 caller pick its own tenant, which is T3.1's departure 1 arriving through a different door.
 
-> **Needs a maintainer's decision.** A `TENANT_PATH_PATTERN`-only deployment therefore **refuses
-> to start**, and that configuration works today over HTTP under T3.1. The judgement was that
-> refusing to boot beats a deployment whose HTTP works and whose alarms silently never arrive.
-> Overrulable.
+> ~~**Needs a maintainer's decision.**~~ **UPHELD 2026-09-15, with the message rewritten.** A
+> `TENANT_PATH_PATTERN`-only deployment **refuses to start**, and that configuration works today
+> over HTTP under T3.1. Refusing to boot beats a deployment whose HTTP works and whose alarms
+> silently never arrive.
+>
+> **But the refusal is narrower than it reads, and the error message was hiding the answer.**
+> Nightscout must never parse the tenant off a socket path — that value is a client option. It
+> does not follow that path-prefix deployments are unsupported. T3.1 already reads the host from
+> a *configurable header* (`TENANT_HOST_HEADER`, default `host`), and a Socket.IO handshake is an
+> ordinary HTTP request (polling) or an upgrade (websocket) — **both carry headers**. So a proxy
+> that derives the tenant from its own location block and asserts it in a header gives
+> path-prefix multitenancy that works over sockets, because the tenant is asserted by the proxy
+> rather than chosen by the caller:
+>
+> ```nginx
+> location ~ ^/(?<tenant>[a-z0-9-]+)/ {
+>     proxy_set_header X-Tenant-Host "$tenant.internal";
+>     proxy_pass http://nightscout;
+> }
+> ```
+>
+> with `TENANT_HOST_HEADER=x-tenant-host` and a matching `TENANT_HOST_PATTERN`.
+>
+> **Blocked on BF-24.** This is exactly the guard BF-24 defeats — `TRUST_PROXY=false` currently
+> lets a non-`host` tenant header through unchecked. Publishing this recipe before BF-24 lands
+> would put operators on a configuration known to be bypassable. **Fix BF-24 first, then
+> document.**
 
 T3.1's rejection rule is now **one function** called by the HTTP middleware and both socket entry
 points — which is why breaking it fails T3.1's tests as well as T3.5's. A refusal on a

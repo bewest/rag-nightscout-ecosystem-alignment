@@ -58,6 +58,7 @@ criterion is what makes the rest of the table mean something.
 | **BF-25** | A credential carried in the request **body** is invisible to the tenant claim check, so tenant A's token authorises A's roles against tenant B's bound data | `lib/server/tenant-middleware.js` `presentedCredential` + `lib/authorization/index.js:40-50` | **high** — cross-tenant read *and write* with any client on default config | open |
 | **BF-24** | `TRUST_PROXY=false` bypasses the guard that refuses a non-`host` `TENANT_HOST_HEADER`, letting a client choose its tenant with a header | `lib/server/env.js` `fromEnv` trust-marker check | **high** — gated on one operator config pairing, which is the pairing the guard exists to catch | open |
 | **BF-26** | The HTTPS redirect rebuilds the URL from the already-rewritten `req.url`, dropping the tenant path prefix | `lib/server/app.js:132` | low–medium — availability; on by default in path mode | open |
+| **BF-27** | `config()` returns one module-scope `env` object, and `setAPISecret()` deletes `API_SECRET` from `process.env` once read — so a second `config()` hands back an enclave that was never armed, and (before the rebind) disarmed the first caller's | `lib/server/env.js` module scope + `setAPISecret` | low — **not reachable in production**: one call site, `lib/server/server.js:33`. 62 test files call it | open |
 | **BF-18** | Driver 7 doubles the getMore batch size when `.limit(0)` is set, abandoning `READ_OPTIONS` | `lib/storage/mongo-read-options.js` + driver 7.6.0 | medium — pre-release; compounds BF-14 | open |
 | **BF-19** | `ORDER BY` reads the generated column, which orders differently from the document — breaking the DDL's own stated invariant | `lib/api3/storage/pgCollection/sql.js` `orderBy` | **high** — silently wrong order, and client-reachable via v3 `?sort=` | open |
 | **BF-20** | `scalarize()` converts a `Date` bound to an ISO string, so a `Date`-valued filter matches nothing on MongoDB and everything on PostgreSQL | `lib/api3/storage/pgCollection/utils.js` | low — no shipping caller passes a `Date` | open |
@@ -272,6 +273,13 @@ source — and that end-to-end test is the gap.
 
 ### BF-24 · `TRUST_PROXY=false` defeats the forwarded-host guard
 
+> **Priority raised 2026-09-15.** BF-24 now **gates a deliverable**, not just a misconfiguration.
+> Path-prefix multitenancy over websockets is only achievable by having the reverse proxy assert
+> the tenant in a header derived from its own location block (T3.5 in the execution plan) — which
+> is precisely the mechanism this defect makes bypassable. The maintainer's decision is to **land
+> BF-24 before publishing the nginx recipe**, rather than ship a documented configuration that is
+> known to be defeatable.
+
 `fromEnv` refuses a `TENANT_HOST_HEADER` other than `host` with
 `if (trust.legacyForwardedHeaders) throw`. That marker is only set on the **compatibility** trust
 function — `TRUST_PROXY` unset or empty. `compileTrust('false')` returns a bare `() => false` with
@@ -302,6 +310,46 @@ GET /foo/api/v1/entries?count=10
 than isolation. *Fix*: use `req.tenantPathPrefix` or `req.originalUrl`.
 
 *Evidence*: same report, M2.
+
+## 1c. Missing capabilities
+
+Not defects — **absent features** with a bounded, measured scope that ship to every operator and
+are landable independently. Kept separate so §1's criterion ("a defect in the current release")
+keeps meaning something.
+
+| id | capability | where | scope | status |
+|---|---|---|---|---|
+| **CAP-01** | **Base-URL / sub-path mounting.** Nightscout cannot be served from a sub-path — `apex.org/nightscout/` behind an `nginx` `proxy_pass` — because nothing in the tree resolves URLs relative to a mount point | client call sites + redirect + Socket.IO client option | 6 client sites, 1 redirect, 1 socket option | open |
+
+### CAP-01 · sub-path mounting
+
+**There is no base-URL support at all.** No `baseUrl`, `basePath` or `SCRIPT_NAME` anywhere in
+`lib/`, `views/` or `static/` — measured 2026-09-15. `env.settings.baseURL` exists but is used
+only to build *outbound* callback URLs (`lib/plugins/pushover.js:45`), never for anything the
+browser loads.
+
+The long-standing reputation of this as a swamp is not borne out; the sites are enumerable:
+
+| site | what it hardcodes |
+|---|---|
+| `lib/client/index.js:61` | `'/api/v1/status.json'` |
+| `lib/client/careportal.js:398` | `'/api/v1/treatments/'` |
+| `lib/client/boluscalc.js:544` | `'/api/v1/treatments/'` |
+| `lib/client/boluscalc.js:598` | `'/api/v1/food/'` |
+| `lib/client/hashauth.js:198` | `'/api/v1/verifyauth'` |
+| `lib/client/adminnotifiesclient.js:17` | `'/api/v1/adminnotifies'` |
+| `lib/server/app.js:132` | the HTTPS redirect rebuilds from `req.url` — **this is BF-26**, and it is the one part of CAP-01 that is a defect rather than an absence, so it can land first and on its own |
+| Socket.IO client | connects to the default `/socket.io/` |
+
+**This is a single-tenant capability and it is the wrong tool for tenant discrimination.** Getting
+sub-path mounting right does not make path-prefix *tenancy* work over websockets, because a
+Socket.IO handshake carries the engine path and that path is a client option — see T3.5 in the
+[execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md). Path-as-tenant needs the
+proxy to assert the tenant in a header regardless of how good base-URL support becomes. Keeping
+the two apart is what makes each of them small.
+
+*Requested by*: the maintainer, as a long-standing goal predating this programme.
+
 
 ## 2. Detail
 
