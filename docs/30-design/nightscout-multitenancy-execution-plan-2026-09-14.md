@@ -811,10 +811,118 @@ one transaction, which is more than the MongoDB path promises.
 
 ### Phase 3 — tenancy
 
-**T3.1 · Tenant resolution middleware.** Host → slug → tenant id, path prefix fallback, token
-claim verified against the resolved tenant (reject on mismatch). {M} §5.2 item 1.
+**T3.1 · Tenant resolution middleware. — DONE 2026-09-15**
+Host → slug → tenant id, path prefix fallback, token claim verified against the resolved tenant
+(reject on mismatch). {M} §5.2 item 1.
 
-**T3.2 · `bin/admin.js`** per §2 — including the refuse-to-start guard on a non-loopback bind.
+The rule is a **configured regular expression with exactly one capture group**, per D10. Three
+things are deliberately *not* configurable, each for a reason that lives in the code:
+
+- **Exactly one group, not "at least one"** — with two, which capture is the slug is a guess made
+  at the isolation boundary.
+- **No flags.** `g` and `y` carry `lastIndex` across calls, so a shared regex would resolve a
+  request by what the *previous* request did. Hosts are lowercased instead of allowing `i`.
+- **The slug charset is re-checked on read**, even though `bin/admin.js` owns it on write,
+  because the capture comes out of a Host header and a loose pattern (`^(.*)\.apex\.org$`) is
+  the realistic mistake.
+
+**Three departures from the letter of §5.2, all deliberate:**
+
+1. **The host comes from `req.headers.host`, not `req.hostname`.** `req.hostname` prefers
+   `X-Forwarded-Host` whenever the trust-proxy function says yes — and `compileTrust('')`,
+   Nightscout's **default**, returns a function that always says yes. Under `req.hostname` any
+   client could choose its own tenant with a header. Naming another header refuses to start
+   unless `TRUST_PROXY` is configured.
+2. **A presented credential with no tenant claim is refused by default.** §5.2 specifies only the
+   mismatch, but `lib/authorization/storage.js` keeps subjects as **one process-wide array loaded
+   at boot**, so a token resolves to its subject regardless of which tenant's host it arrived on
+   and nothing underneath would catch an unclaimed one. A knob, not a constant, so T3.3 can
+   revisit. Anonymous requests still pass.
+3. **The claim carries the tenant *id*, not the slug** — a slug can be reassigned, an id cannot,
+   and the id is what RLS compares, so there is no second mapping to drift.
+
+It **binds** rather than opening a transaction (`tenantScope.withTenant`, not
+`store.withTenant`, which would hold a PostgreSQL transaction open across response streaming).
+That also composes with both backends, which a resolver that *selected a store* would not.
+
+**Single-tenant is not a degraded mode**: `fromEnv` returns `null` unless `TENANCY_MODE=multi`,
+so nothing mounts at all, and `setTenancyMode('multi')` is the **last** thing it does — a refused
+configuration cannot leave a single-tenant process asserting a binding nothing sets.
+
+**18 guards broken one at a time. Three changed nothing, and all three were the tests' fault
+rather than the code's** — the corpus cause of vacuity, found by going looking for it. One of
+them existed because the test app used express's *default* `trust proxy`, so the two headers
+agreed and either answer passed.
+
+*Not done*: never booted a real multi-tenant server end to end, because there is no `tenants`
+table until T3.2's DDL runs. `fromEnv` warns loudly at boot, and the README says it, that `multi`
+is **not safe yet** — settings, plugins, notification state and socket rooms are still
+process-wide. This is the **first** of §5.2's eight cross-cutting requirements, not tenancy.
+
+**T3.2 · `bin/admin.js` — DONE 2026-09-15**, per §2, including the refuse-to-start guard on a
+non-loopback bind.
+
+**The guard's proof is that it refuses for the *right* reason.** Refuse `0.0.0.0:P`, then bind
+`P` successfully by hand — showing nothing was opened and closed and that the port was never
+busy; then bind the *same* address and port through `listen()` with the acknowledgement set and
+serve a real request on it, one environment variable apart. A control squats a port and asserts
+`EADDRINUSE` is **not** the guard's error code, so the two failures are distinguishable. An
+ordering test runs the same broken `STORAGE_URI` twice — once on `0.0.0.0` (fails on the bind),
+once on loopback (fails on the database) — because without it the guard would also pass if it
+ran last.
+
+Classification uses `net.BlockList` rather than a hand-rolled IPv6 parser; a **name is resolved
+and every resolved address must be loopback** (`localhost` is loopback because of a file this
+process does not read, and that also catches `127.1`, which glibc accepts and `net.isIP` does
+not); and an empty `ADMIN_BIND` is refused rather than folded into the default, because
+`listen(port, '')` binds everything.
+
+**Two parts of §2.3's proposal are argued against rather than implemented, and both arguments
+are the same shape:**
+
+- **Quota get/set — left out.** §2.4 has no quota column and **nothing in the system enforces a
+  quota**. Shipping it widens a schema a sibling reads as a contract in order to store a number
+  nobody reads — and *an operator who can set a cap will believe the cap exists*. It wants an
+  enforcement point first.
+- **Health reports only what has a producer.** Replication slots come back as
+  `{status: "absent", reason: …}` naming Phase 4, never `lag_bytes: 0`. Same failure mode as the
+  fabricated quota, one layer up.
+
+**Delete is too dangerous in the shape proposed**: the document tables carry `tenant_id` with
+**no foreign key** back to `tenants`, so deleting the tenant row *orphans* the rows rather than
+removing them — unreachable, unexportable, still on disk. Delete therefore **refuses while any
+tenant-scoped rows exist**, behind four gates (slug echoed in the body, tenant already suspended,
+no rows left, state unchanged since read).
+
+**Schema departures from §2.4**, for anyone reading that as a contract: `slug` gains a `CHECK`
+(writes only — no reader is affected); `tenant_members` gains the `ENABLE`/`FORCE ROW LEVEL
+SECURITY` and policy that §2.4's *prose* requires but its SQL block omits; `tenants.id` has no
+`DEFAULT`, so a reader should not expect `gen_random_uuid()`.
+
+**The admin store refuses to run as `SUPERUSER`/`BYPASSRLS`** — for a different reason than
+`postgres-storage.js` does. Its per-tenant counts are computed *by* RLS, and that count is what
+decides whether a `DELETE` proceeds; as a bypassing role the number would be every tenant's rows.
+
+**B13 was a vacuous check of the agent's own, of the *code* variety** (§T2.5): the health test
+read the endpoint's own `status` and asserted the detail only inside the `absent` branch, so a
+break reporting `ok` steered it down the branch that asserts nothing — and the paired test
+`skip()`ped on the same condition, **which looks exactly like a pass**. Fixed by taking the
+expectation from an independent query against `pg_replication_slots`.
+
+*Not done*: two-role deployments are untested; logical-slot lag arithmetic has no producer until
+Phase 4; the admin plane is **PostgreSQL-only by construction**, with no export for a
+single-tenant MongoDB deployment. **Reserved labels** (`www`, `api`, `admin`) and `xn--` prefixes
+are flagged and not enforced — which labels collide is a fact about a hoster's DNS, not about
+Nightscout, and a homograph policy is one this plan does not contain.
+
+**The seam between T3.1 and T3.2, closed after the merge.** Both were correct and the gap opened
+anyway: `bin/admin.js` creates `tenants` and the role running it **owns** the table, while the
+resolver assumes it can read it. A hoster running the application as a different role — the
+careful shape, since the admin role is the one that can delete tenants — got `permission denied
+for table tenants` as a **503 on every request**, with the fix sitting in a `platform.sql`
+comment. The registry now turns `insufficient_privilege` and `undefined_table` into sentences
+naming the `GRANT` and the admin plane respectively, and passes everything else through, because
+a connection failure is not a configuration mistake.
 
 **T3.3 · `ctxFor(tenantId)`** — the `Map<tenantId, ctx>` substrate, for the single-process
 path. Note {C}'s finding that this is a *cache* with a graceful fallback, not the source of
