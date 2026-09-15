@@ -1442,6 +1442,64 @@ nothing).
 | **Vendor rate limits** (EXP-MT-051) | T0.4 | Needs real credentials; the 9,700-account machinery figure is a ceiling the real answer sits well below |
 | **Reconnect storms, `UNLISTEN` churn** | T4.3 | The interesting realtime case, and not covered |
 
+## 7b. The per-tenant evaluator is cheap, and {R} §12.5's axis was wrong
+
+Measured 2026-09-15 by **two agents working independently**, bottom-up from `checkNotifications`
+and top-down from a two-tenant spike, neither reading the other's results. Reports:
+[alarm-critical slice](../60-research/alarm-critical-slice-2026-09-15.md) and
+[ns-evaluator spike](../60-research/ns-evaluator-spike-2026-09-15.md).
+
+**The verdict, and the number: 32.7 KB and 1.94 ms per tenant per evaluation.** Whole `ddata` on a
+realistic fixture (576 SGVs, 600 treatments, 576 devicestatus, 1 profile) is **852.1 KB**, and one
+evaluation of `bootevent.js:327-333` costs **27.5 ms p50**. Reduced to a window taken from the
+alarm code's own constants, the same evaluation costs **1.94 ms p50 / 2.14 ms p95** over **33,475
+bytes** and **emits the identical alarm** — 26× less memory, 14× less CPU. At a 30 % event-loop
+budget that is ~155 evaluations/s/process.
+
+**{R} §12.5's split is by the wrong axis.** It proposes splitting `ddata` **by field** into
+alarm-critical and display slices. Measured by knockout, **9 of 19 fields are alarm-critical and
+carry 92.4 % of the bytes**; exactly one field (`cals`, 98 B) is display-only. The read inventory
+alone says nothing — all nine scenarios read the *same* fields whether about to wake somebody at
+48 mg/dl or do nothing. What is real is a **depth** split: newest *n* of each type within a time
+bound. §12.5's *size* estimate (50.6 KB) survives within 1.5×; its *axis* does not.
+
+**Consequence for phase 4, and it simplifies the design:** the slice is **transient** —
+materialise, evaluate, discard — and every field in it is "newest *n* of a type within a time
+bound", i.e. a handful of indexed queries (`dataloader.js:360,:416` already issues two as
+`count: 1`). **`ns-evaluator` needs no resident `ddata` and should not be built around one.** That
+strengthens {R} §12.6's option C and removes residency tiering from the alarm critical path.
+
+**Three dependencies the source does not advertise**, each of which can *withhold* an alarm:
+
+- `treatmentnotify.js:64-75` snoozes all URGENT alarms for 10 min after any treatment. Same
+  48 mg/dl reading: a treatment 25 min ago gives an `ar2` URGENT low; 4 min ago gives nothing.
+- `profiles`, via `boluswizardpreview.highSnoozedByIOB` — knock out the profile and the snooze
+  vanishes, so the high fires.
+- `devicestatus` (478 KB), because `iob.js` prefers device-reported IOB — but only its **newest
+  document** is needed.
+
+**A second correction to {R}.** §2's "the plugin tier is small and flat — 0.61 ms p50" does not
+survive contact with the full alarm set: it is **27.5 ms**, about 74 % of it `cob.setProperties`
+and 12 % `openaps.setProperties`. `checkNotifications` itself is **~1 % of the block**. The alarm
+path's cost is in the *property* plugins it depends on. Unmeasured and named: whether
+`cob.setProperties` is quadratic in treatments.
+
+**Where the two agents disagreed, and who was right.** The top-down spike reported a *field* split
+(`sgvs`, `devicestatus`, and three derived change arrays) with raw `treatments` as display-only.
+The bottom-up measurement shows that is wrong — `treatments` can withhold an alarm through
+`treatmentnotify` — and the spike itself flagged its corpus as limited (6 of 17 alarm producers
+armed). **Take the bottom-up answer.** The pair earned its cost here: a single run would have
+shipped the field split.
+
+**Both runs were nearly vacuous, in the same way, independently.** `settings.enable` matches
+`plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`), not the file name, and nothing warns about
+an unknown entry — so alarm plugins measured INERT and nothing looked wrong. Recorded as **BF-29**.
+One run was also saved by disbelieving its own result: `slice(-0)` returns the whole array, so a
+depth probe starting at 0 compared equal every time and reported a minimal tail of 0 for every
+field. The check that refused to believe a tail of zero is why the headline is 32.7 KB and not
+13 bytes.
+
+
 ## 8. How to read a number from this programme
 
 Four passes each found a term the previous one missed — the load cycle went 0.03 ms → 9.5 → 6.27

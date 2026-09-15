@@ -36,6 +36,7 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks silently vanish from the quick-pick list; no shipping client triggers it today | yes | open |
 | **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | open |
 | **BF-28** | `insulinage`'s URGENT branch is unreachable — it compares against `insulinInfo.urgent`, which is never assigned, where all three sibling plugins use `prefs.urgent`. "Insulin reservoir change overdue!" can never fire | `lib/plugins/insulinage.js:92` | **medium** — a site-change reminder that silently never arrives | yes | open |
+| **BF-29** | An unknown name in `ENABLE` is **silently ignored** — matching is against `plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`), not the file name. An operator who writes `ENABLE=cannulaage` gets no plugin and no warning | `lib/plugins/index.js:140` | **medium** — an operator believes an alarm plugin is on when it is off | yes | open |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | open |
@@ -517,6 +518,36 @@ produced by running the shipping `fieldsProjector.js` against real mongod docume
 dead work — `col.resolveDates(doc)` consumes them in between
 (`lib/api3/generic/search/operation.js:46-47`).
 
+### BF-29 · a misspelt or file-named `ENABLE` entry disables a plugin silently
+
+```
+lib/plugins/index.js:140   return enable && enable.indexOf(plugin.name) > -1;
+
+lib/plugins/insulinage.js:9          name: 'iage'
+lib/plugins/boluswizardpreview.js:11 name: 'bwp'
+lib/plugins/cannulaage.js:10         name: 'cage'
+```
+
+`ENABLE` is matched against the **registered plugin name**, which for five of the alarm plugins
+differs from the file name. An unknown entry produces no warning, no log line and no error — the
+plugin is simply absent.
+
+**Why this is a defect and not documentation.** The failure is invisible in exactly the direction
+that matters: an operator who intended to enable an age or bolus-wizard alarm sees a working site
+with that alarm permanently off. Nothing on the status page distinguishes "not enabled" from
+"misspelt".
+
+**Found twice, independently**, by two agents that did not share results — both had alarm plugins
+measure as INERT before noticing the naming rule, and one of them nearly published a wrong
+`ddata` slice because of it. If it can silently defeat an instrument built to look at exactly
+these plugins, it can silently defeat an operator.
+
+*Fix*: warn at registration for any `ENABLE` entry matching no plugin name, and suggest the
+nearest registered name.
+
+*Evidence*: [alarm-critical slice](../60-research/alarm-critical-slice-2026-09-15.md),
+[ns-evaluator spike](../60-research/ns-evaluator-spike-2026-09-15.md).
+
 ### BF-28 · `insulinage` can never raise an urgent alarm
 
 One identifier, and the plugin's most important branch is dead:
@@ -544,6 +575,12 @@ not looked for. Pinned by a check in that harness: at 72 h the plugin requests n
 requests WARN.
 
 *Fix*: `insulinInfo.urgent` → `prefs.urgent`. One identifier, and it matches three siblings.
+
+> **Confirm intent before fixing.** This branch has never executed in any deployment, so repairing
+> it **starts emitting an URGENT alarm that no operator has ever received** — on a threshold they
+> may have set years ago and never seen honoured. That is the right end state, and it is also a
+> behaviour change that should be release-noted rather than shipped as a typo fix. Both agents
+> that found it independently flagged the same caveat.
 
 *Evidence*: [ns-evaluator spike](../60-research/ns-evaluator-spike-2026-09-15.md),
 `tools/qc/ns-evaluator-arm.js`.
