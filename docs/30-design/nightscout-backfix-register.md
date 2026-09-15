@@ -28,6 +28,8 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | **BF-01** | `GET /api/v1/count/entries/where` silently matches nothing | `lib/server/aggregate.js:21` | **high** — wrong answer, HTTP 200 | yes | open |
 | **BF-02** | `insulin`/`carbs` query bounds truncated by `parseInt` | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | open |
 | **BF-03** | Numeric filters on `devicestatus`, `activity`, `food`, `profile` match nothing | `lib/server/query.js` walker, per-collection | **high** — wrong answer, HTTP 200 | yes | open |
+| **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | open |
+| **BF-12** | `entries.rawbg` is coerced but is not in the model — stale walker entry | `lib/server/entries.js:186` | low — dead entry | yes | open |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | open |
@@ -77,7 +79,12 @@ rather than a silent fix. It is not, in itself, advice about dosing, and nothing
 read as such; the point is narrower and worse — **the data returned does not answer the
 question asked.**
 
-*Evidence*: [execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md) §3.4.
+**Measured**, not asserted: `treatments.insulin` was observed as **142,360 fractional values
+against 2,791 integer ones** across 11 sites — 98 % of its non-null values are fractional. So
+`parseInt` on the bound is not a rounding nicety.
+
+*Evidence*: [execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md) §3.4, and
+[the coercion drift measurement](../60-research/query-coercion-drift-2026-09-14.md) §2 Tier 1.
 
 ### BF-03 · Numeric filters that silently match nothing
 
@@ -102,6 +109,14 @@ start returning rows. Release-note it, so it arrives as a fix rather than as a s
 
 *Fix*: plan T0.5 — emit a coercion table from `specs/nsschema/*.model.json` (a sixth emitter)
 and drive the walker from it, instead of four hand-maintained lists that drift.
+**The emitter now exists** (`tools/nsschema/emit/coercion_emit.py`, `make schema-emit`); what
+remains is wiring `lib/server/query.js` to it, which is `cgm-remote-monitor` work.
+
+**The gap is 158 disagreements** — 147 under-coercions, 8 over-coercions, 1 stale entry, and 2
+collections with no model at all. Graded by corpus evidence in
+[the coercion drift measurement](../60-research/query-coercion-drift-2026-09-14.md) §2, because
+they are **not** 158 equivalent bugs: `entries.sgv` is declared `number` but was observed as
+895,418 integers and **zero** fractional values, so truncating its bound harms nobody today.
 
 > **Sharpened by the three-arm validation.** T0.5 was written as a v1 bug fix. It is also a
 > **precondition for the seam's backend-equivalence claim**: with correctly-typed values, all
@@ -175,6 +190,25 @@ databases. **So the fd ceiling is not a scale-only concern** — it is reachable
 running `mongod` in a container with default limits. Not a code defect; it belongs in the
 operator documentation, and it is the kind of failure that looks like data loss to the person
 it happens to.
+
+### BF-11 · `treatments.duration` and `rate` filters match nothing
+
+Neither field has a `walker` entry, so a bound stays a string and MongoDB's type ordering means
+it never matches a numeric field. `find[duration][$gte]=30` returns an empty list and HTTP 200.
+
+`duration` is present on **91 % of treatment documents across 10 sites**, and **88 % of its
+values are fractional**. `rate` is on 55 % of documents. These are temp basals — not an obscure
+corner of the schema. Same root cause as BF-03 and fixed by the same change; listed separately
+because "devicestatus has no coercion" undersells which fields are affected.
+
+*Evidence*: [coercion drift](../60-research/query-coercion-drift-2026-09-14.md) §2 Tier 1.
+
+### BF-12 · `entries.rawbg` is a stale walker entry
+
+The walker coerces `rawbg`, which does not appear in the model at all — not once in **896,589
+documents across 11 sites**. Harmless in itself, and worth recording because it shows the drift
+running both ways: the hand-maintained list is not only missing entries, it carries dead ones.
+It disappears when the table is generated.
 
 ## 3. How to use this register
 

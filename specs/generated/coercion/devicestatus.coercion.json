@@ -1,0 +1,467 @@
+{
+ "collection": "devicestatus",
+ "fields": {
+  "_id": {
+   "kind": "string"
+  },
+  "created_at": {
+   "datelike": true,
+   "kind": "string"
+  },
+  "device": {
+   "kind": "string"
+  },
+  "identifier": {
+   "kind": "string"
+  },
+  "isCharging": {
+   "kind": "boolean"
+  },
+  "isValid": {
+   "kind": "boolean"
+  },
+  "loop.automaticDoseRecommendation.bolusVolume": {
+   "kind": "number"
+  },
+  "loop.automaticDoseRecommendation.tempBasalAdjustment.duration": {
+   "kind": "number"
+  },
+  "loop.automaticDoseRecommendation.tempBasalAdjustment.rate": {
+   "kind": "number"
+  },
+  "loop.automaticDoseRecommendation.timestamp": {
+   "kind": "string"
+  },
+  "loop.cob.cob": {
+   "kind": "number"
+  },
+  "loop.cob.timestamp": {
+   "kind": "string"
+  },
+  "loop.enacted.bolusVolume": {
+   "kind": "number"
+  },
+  "loop.enacted.duration": {
+   "kind": "number"
+  },
+  "loop.enacted.rate": {
+   "kind": "number"
+  },
+  "loop.enacted.received": {
+   "kind": "boolean"
+  },
+  "loop.enacted.timestamp": {
+   "kind": "string"
+  },
+  "loop.failureReason": {
+   "kind": "string"
+  },
+  "loop.iob.iob": {
+   "kind": "number"
+  },
+  "loop.iob.timestamp": {
+   "kind": "string"
+  },
+  "loop.name": {
+   "kind": "string"
+  },
+  "loop.predicted.startDate": {
+   "datelike": true,
+   "kind": "string"
+  },
+  "loop.recommendedBolus": {
+   "kind": "number"
+  },
+  "loop.timestamp": {
+   "kind": "string"
+  },
+  "loop.version": {
+   "kind": "string"
+  },
+  "mills": {
+   "kind": "integer"
+  },
+  "openaps.enacted.COB": {
+   "kind": "integer"
+  },
+  "openaps.enacted.CR": {
+   "kind": "number"
+  },
+  "openaps.enacted.IOB": {
+   "kind": "number"
+  },
+  "openaps.enacted.ISF": {
+   "kind": "integer"
+  },
+  "openaps.enacted.TDD": {
+   "kind": "number"
+  },
+  "openaps.enacted.bg": {
+   "kind": "integer"
+  },
+  "openaps.enacted.carbsReq": {
+   "kind": "integer"
+  },
+  "openaps.enacted.current_target": {
+   "kind": "integer"
+  },
+  "openaps.enacted.deliverAt": {
+   "kind": "string"
+  },
+  "openaps.enacted.duration": {
+   "kind": "integer"
+  },
+  "openaps.enacted.eventualBG": {
+   "kind": "integer"
+  },
+  "openaps.enacted.expectedDelta": {
+   "kind": "number"
+  },
+  "openaps.enacted.id": {
+   "kind": "string"
+  },
+  "openaps.enacted.insulinForManualBolus": {
+   "kind": "number"
+  },
+  "openaps.enacted.insulinReq": {
+   "kind": "number"
+  },
+  "openaps.enacted.manualBolusErrorString": {
+   "kind": "integer"
+  },
+  "openaps.enacted.minDelta": {
+   "kind": "number"
+  },
+  "openaps.enacted.rate": {
+   "kind": "number"
+  },
+  "openaps.enacted.reason": {
+   "kind": "string"
+  },
+  "openaps.enacted.received": {
+   "kind": "boolean"
+  },
+  "openaps.enacted.reservoir": {
+   "kind": "number"
+  },
+  "openaps.enacted.sensitivityRatio": {
+   "kind": "number"
+  },
+  "openaps.enacted.temp": {
+   "kind": "string"
+  },
+  "openaps.enacted.threshold": {
+   "kind": "integer"
+  },
+  "openaps.enacted.timestamp": {
+   "kind": "string"
+  },
+  "openaps.enacted.units": {
+   "kind": "number"
+  },
+  "openaps.iob.activity": {
+   "kind": "number"
+  },
+  "openaps.iob.basaliob": {
+   "kind": "number"
+  },
+  "openaps.iob.bolusinsulin": {
+   "kind": "number"
+  },
+  "openaps.iob.bolusiob": {
+   "kind": "number"
+  },
+  "openaps.iob.bolussnooze": {
+   "kind": "number"
+  },
+  "openaps.iob.iob": {
+   "kind": "number"
+  },
+  "openaps.iob.iobWithZeroTemp.activity": {
+   "kind": "number"
+  },
+  "openaps.iob.iobWithZeroTemp.basaliob": {
+   "kind": "number"
+  },
+  "openaps.iob.iobWithZeroTemp.bolusinsulin": {
+   "kind": "number"
+  },
+  "openaps.iob.iobWithZeroTemp.bolusiob": {
+   "kind": "number"
+  },
+  "openaps.iob.iobWithZeroTemp.iob": {
+   "kind": "number"
+  },
+  "openaps.iob.iobWithZeroTemp.netbasalinsulin": {
+   "kind": "number"
+  },
+  "openaps.iob.iobWithZeroTemp.time": {
+   "kind": "string"
+  },
+  "openaps.iob.lastBolusTime": {
+   "kind": "integer"
+  },
+  "openaps.iob.lastTemp.date": {
+   "kind": "integer"
+  },
+  "openaps.iob.lastTemp.duration": {
+   "kind": "number"
+  },
+  "openaps.iob.lastTemp.rate": {
+   "kind": "number"
+  },
+  "openaps.iob.lastTemp.started_at": {
+   "kind": "string"
+  },
+  "openaps.iob.lastTemp.timestamp": {
+   "kind": "string"
+  },
+  "openaps.iob.netbasalinsulin": {
+   "kind": "number"
+  },
+  "openaps.iob.time": {
+   "kind": "string"
+  },
+  "openaps.recommendedBolus": {
+   "kind": "number"
+  },
+  "openaps.suggested.COB": {
+   "kind": "integer"
+  },
+  "openaps.suggested.CR": {
+   "kind": "number"
+  },
+  "openaps.suggested.IOB": {
+   "kind": "number"
+  },
+  "openaps.suggested.ISF": {
+   "kind": "integer"
+  },
+  "openaps.suggested.TDD": {
+   "kind": "number"
+  },
+  "openaps.suggested.bg": {
+   "kind": "integer"
+  },
+  "openaps.suggested.carbsReq": {
+   "kind": "integer"
+  },
+  "openaps.suggested.current_target": {
+   "kind": "integer"
+  },
+  "openaps.suggested.deliverAt": {
+   "kind": "string"
+  },
+  "openaps.suggested.duration": {
+   "kind": "integer"
+  },
+  "openaps.suggested.eventualBG": {
+   "kind": "integer"
+  },
+  "openaps.suggested.expectedDelta": {
+   "kind": "number"
+  },
+  "openaps.suggested.id": {
+   "kind": "string"
+  },
+  "openaps.suggested.insulinForManualBolus": {
+   "kind": "number"
+  },
+  "openaps.suggested.insulinReq": {
+   "kind": "number"
+  },
+  "openaps.suggested.manualBolusErrorString": {
+   "kind": "integer"
+  },
+  "openaps.suggested.minDelta": {
+   "kind": "number"
+  },
+  "openaps.suggested.rate": {
+   "kind": "number"
+  },
+  "openaps.suggested.reason": {
+   "kind": "string"
+  },
+  "openaps.suggested.received": {
+   "kind": "boolean"
+  },
+  "openaps.suggested.reservoir": {
+   "kind": "number"
+  },
+  "openaps.suggested.sensitivityRatio": {
+   "kind": "number"
+  },
+  "openaps.suggested.targetBG": {
+   "kind": "integer"
+  },
+  "openaps.suggested.temp": {
+   "kind": "string"
+  },
+  "openaps.suggested.threshold": {
+   "kind": "integer"
+  },
+  "openaps.suggested.tick": {
+   "kind": "string"
+  },
+  "openaps.suggested.timestamp": {
+   "kind": "string"
+  },
+  "openaps.suggested.units": {
+   "kind": "number"
+  },
+  "openaps.suggested.variable_sens": {
+   "kind": "number"
+  },
+  "openaps.version": {
+   "kind": "string"
+  },
+  "override.active": {
+   "kind": "boolean"
+  },
+  "override.currentCorrectionRange.maxValue": {
+   "kind": "number"
+  },
+  "override.currentCorrectionRange.minValue": {
+   "kind": "number"
+  },
+  "override.duration": {
+   "kind": "number"
+  },
+  "override.multiplier": {
+   "kind": "number"
+  },
+  "override.name": {
+   "kind": "string"
+  },
+  "override.timestamp": {
+   "kind": "string"
+  },
+  "pump.battery.display": {
+   "kind": "boolean"
+  },
+  "pump.battery.percent": {
+   "kind": "integer"
+  },
+  "pump.battery.status": {
+   "kind": "string"
+  },
+  "pump.battery.string": {
+   "kind": "string"
+  },
+  "pump.battery.voltage": {
+   "kind": "number"
+  },
+  "pump.bolusIncrement": {
+   "kind": "number"
+  },
+  "pump.bolusing": {
+   "kind": "boolean"
+  },
+  "pump.clock": {
+   "kind": "string"
+  },
+  "pump.manufacturer": {
+   "kind": "string"
+  },
+  "pump.model": {
+   "kind": "string"
+  },
+  "pump.pumpID": {
+   "kind": "string"
+  },
+  "pump.reservoir": {
+   "kind": "number"
+  },
+  "pump.reservoir_display_override": {
+   "kind": "string"
+  },
+  "pump.reservoir_level_override": {
+   "kind": "integer"
+  },
+  "pump.secondsFromGMT": {
+   "kind": "integer"
+  },
+  "pump.status.bolusing": {
+   "kind": "boolean"
+  },
+  "pump.status.status": {
+   "kind": "string"
+  },
+  "pump.status.suspended": {
+   "kind": "boolean"
+  },
+  "pump.status.timestamp": {
+   "kind": "string"
+  },
+  "pump.suspended": {
+   "kind": "boolean"
+  },
+  "srvCreated": {
+   "kind": "integer"
+  },
+  "srvModified": {
+   "kind": "integer"
+  },
+  "uploader.battery": {
+   "kind": "integer"
+  },
+  "uploader.batteryVoltage": {
+   "kind": "number"
+  },
+  "uploader.isCharging": {
+   "kind": "boolean"
+  },
+  "uploader.name": {
+   "kind": "string"
+  },
+  "uploader.timestamp": {
+   "kind": "string"
+  },
+  "uploader.type": {
+   "kind": "string"
+  },
+  "uploaderBattery": {
+   "kind": "integer"
+  },
+  "utcOffset": {
+   "kind": "integer"
+  }
+ },
+ "generated_by": "tools/nsschema/emit/coercion_emit.py",
+ "source_model": "specs/nsschema/devicestatus.model.json",
+ "uncoerced": {
+  "configuration": [
+   "object"
+  ],
+  "loop.predicted.values": [
+   "array"
+  ],
+  "openaps.enacted.predBGs.COB": [
+   "array"
+  ],
+  "openaps.enacted.predBGs.IOB": [
+   "array"
+  ],
+  "openaps.enacted.predBGs.UAM": [
+   "array"
+  ],
+  "openaps.enacted.predBGs.ZT": [
+   "array"
+  ],
+  "openaps.suggested.predBGs.COB": [
+   "array"
+  ],
+  "openaps.suggested.predBGs.IOB": [
+   "array"
+  ],
+  "openaps.suggested.predBGs.UAM": [
+   "array"
+  ],
+  "openaps.suggested.predBGs.ZT": [
+   "array"
+  ],
+  "pump.extended": [
+   "object"
+  ]
+ }
+}

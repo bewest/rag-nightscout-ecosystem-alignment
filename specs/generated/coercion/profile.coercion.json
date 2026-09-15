@@ -1,0 +1,93 @@
+{
+ "collection": "profile",
+ "fields": {
+  "_id": {
+   "kind": "string"
+  },
+  "created_at": {
+   "datelike": true,
+   "kind": "string"
+  },
+  "defaultProfile": {
+   "kind": "string"
+  },
+  "enteredBy": {
+   "kind": "string"
+  },
+  "identifier": {
+   "kind": "string"
+  },
+  "isValid": {
+   "kind": "boolean"
+  },
+  "loopSettings.bundleIdentifier": {
+   "kind": "string"
+  },
+  "loopSettings.deviceToken": {
+   "kind": "string"
+  },
+  "loopSettings.dosingEnabled": {
+   "kind": "boolean"
+  },
+  "loopSettings.dosingStrategy": {
+   "kind": "string"
+  },
+  "loopSettings.maximumBasalRatePerHour": {
+   "kind": "number"
+  },
+  "loopSettings.maximumBolus": {
+   "kind": "number"
+  },
+  "loopSettings.minimumBGGuard": {
+   "kind": "number"
+  },
+  "loopSettings.scheduleOverride.duration": {
+   "kind": "integer"
+  },
+  "loopSettings.scheduleOverride.insulinNeedsScaleFactor": {
+   "kind": "number"
+  },
+  "loopSettings.scheduleOverride.name": {
+   "kind": "string"
+  },
+  "loopSettings.scheduleOverride.symbol": {
+   "kind": "string"
+  },
+  "srvCreated": {
+   "kind": "integer"
+  },
+  "srvModified": {
+   "kind": "integer"
+  },
+  "startDate": {
+   "datelike": true,
+   "kind": "string"
+  },
+  "units": {
+   "kind": "string"
+  },
+  "utcOffset": {
+   "kind": "integer"
+  }
+ },
+ "generated_by": "tools/nsschema/emit/coercion_emit.py",
+ "source_model": "specs/nsschema/profile.model.json",
+ "uncoerced": {
+  "loopSettings.overridePresets": [
+   "array"
+  ],
+  "loopSettings.preMealTargetRange": [
+   "array"
+  ],
+  "loopSettings.scheduleOverride.targetRange": [
+   "array"
+  ],
+  "mills": [
+   "integer",
+   "string"
+  ],
+  "store": [
+   "object"
+  ]
+ }
+}

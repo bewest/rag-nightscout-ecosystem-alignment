@@ -1,0 +1,103 @@
+{
+ "collection": "entries",
+ "fields": {
+  "_id": {
+   "kind": "string"
+  },
+  "app": {
+   "kind": "string"
+  },
+  "date": {
+   "kind": "number"
+  },
+  "dateString": {
+   "datelike": true,
+   "kind": "string"
+  },
+  "delta": {
+   "kind": "number"
+  },
+  "device": {
+   "kind": "string"
+  },
+  "direction": {
+   "kind": "string"
+  },
+  "filtered": {
+   "kind": "number"
+  },
+  "glucose": {
+   "kind": "integer"
+  },
+  "identifier": {
+   "kind": "string"
+  },
+  "intercept": {
+   "kind": "number"
+  },
+  "isCalibration": {
+   "kind": "boolean"
+  },
+  "isReadOnly": {
+   "kind": "boolean"
+  },
+  "isValid": {
+   "kind": "boolean"
+  },
+  "mbg": {
+   "kind": "number"
+  },
+  "modifiedBy": {
+   "kind": "string"
+  },
+  "noise": {
+   "kind": "integer"
+  },
+  "rssi": {
+   "kind": "integer"
+  },
+  "scale": {
+   "kind": "number"
+  },
+  "sgv": {
+   "kind": "number"
+  },
+  "slope": {
+   "kind": "number"
+  },
+  "srvCreated": {
+   "kind": "integer"
+  },
+  "srvModified": {
+   "kind": "integer"
+  },
+  "subject": {
+   "kind": "string"
+  },
+  "sysTime": {
+   "datelike": true,
+   "kind": "string"
+  },
+  "trend": {
+   "kind": "integer"
+  },
+  "trendRate": {
+   "kind": "number"
+  },
+  "type": {
+   "kind": "string"
+  },
+  "unfiltered": {
+   "kind": "number"
+  },
+  "units": {
+   "kind": "string"
+  },
+  "utcOffset": {
+   "kind": "integer"
+  }
+ },
+ "generated_by": "tools/nsschema/emit/coercion_emit.py",
+ "source_model": "specs/nsschema/entries.model.json",
+ "uncoerced": {}
+}

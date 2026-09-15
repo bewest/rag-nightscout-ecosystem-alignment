@@ -675,7 +675,7 @@ NSSCHEMA = PYTHONPATH=tools $(PY) -m nsschema
 
 ## schema: full pipeline — census, reconcile, model, emit, impact, drift
 schema: schema-census schema-reconcile schema-sensitivity schema-model \
-        schema-quirks schema-emit schema-impact schema-drift
+        schema-quirks schema-emit schema-coercion-drift schema-impact schema-drift
 
 ## schema-census: walk the raw corpus (~4 min over ~2.5 GB of JSON)
 schema-census:
@@ -690,13 +690,18 @@ schema-reconcile:
 schema-model:
 	@$(NSSCHEMA).model
 
-## schema-emit: generate JSON Schema, mongoose, zod/TS, Arrow and docs
+## schema-emit: generate JSON Schema, mongoose, zod/TS, Arrow, coercion and docs
 schema-emit:
 	@$(NSSCHEMA).emit.jsonschema_emit
 	@$(NSSCHEMA).emit.mongoose_emit
 	@$(NSSCHEMA).emit.zod_emit
 	@$(NSSCHEMA).emit.pyarrow_emit
+	@$(NSSCHEMA).emit.coercion_emit
 	@$(NSSCHEMA).emit.fieldref_emit
+
+## schema-coercion-drift: where the shipping query walkers disagree with the model
+schema-coercion-drift:
+	@$(NSSCHEMA).emit.coercion_emit --drift
 
 ## schema-impact: replay the corpus through every strictness policy (Ajv)
 schema-impact:
@@ -789,7 +794,7 @@ schema-drift:
 
 ## schema-test: unit tests for the evidence pipeline and the emitters
 schema-test:
-	@$(PY) -m pytest tools/nsschema/test_nsschema.py -q
+	@$(PY) -m pytest tools/nsschema/test_nsschema.py tools/nsschema/test_coercion.py -q
 
 schema-clean:
 	@rm -rf specs/generated specs/jsonschema/generated reports/schema-census

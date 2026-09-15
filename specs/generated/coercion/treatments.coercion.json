@@ -1,0 +1,187 @@
+{
+ "collection": "treatments",
+ "fields": {
+  "_id": {
+   "kind": "string"
+  },
+  "absolute": {
+   "kind": "number"
+  },
+  "absorptionTime": {
+   "kind": "integer"
+  },
+  "amount": {
+   "kind": "number"
+  },
+  "app": {
+   "kind": "string"
+  },
+  "automatic": {
+   "kind": "boolean"
+  },
+  "bolusType": {
+   "kind": "string"
+  },
+  "carbs": {
+   "kind": "number",
+   "nullable": true
+  },
+  "created_at": {
+   "datelike": true,
+   "kind": "string"
+  },
+  "device": {
+   "kind": "string"
+  },
+  "duration": {
+   "kind": "number"
+  },
+  "durationType": {
+   "kind": "string"
+  },
+  "endmills": {
+   "kind": "integer"
+  },
+  "enteredBy": {
+   "kind": "string"
+  },
+  "eventType": {
+   "kind": "string"
+  },
+  "fat": {
+   "kind": "number"
+  },
+  "foodType": {
+   "kind": "string"
+  },
+  "glucose": {
+   "kind": "number"
+  },
+  "glucoseType": {
+   "kind": "string"
+  },
+  "id": {
+   "kind": "string"
+  },
+  "identifier": {
+   "kind": "string"
+  },
+  "insulin": {
+   "kind": "number",
+   "nullable": true
+  },
+  "insulinNeedsScaleFactor": {
+   "kind": "number"
+  },
+  "insulinType": {
+   "kind": "string"
+  },
+  "isBasalInsulin": {
+   "kind": "boolean"
+  },
+  "isReadOnly": {
+   "kind": "boolean"
+  },
+  "isValid": {
+   "kind": "boolean"
+  },
+  "mills": {
+   "kind": "integer"
+  },
+  "modifiedBy": {
+   "kind": "string"
+  },
+  "notes": {
+   "kind": "string"
+  },
+  "percent": {
+   "kind": "number"
+  },
+  "percentage": {
+   "kind": "integer"
+  },
+  "profile": {
+   "kind": "string"
+  },
+  "profileJson": {
+   "kind": "string"
+  },
+  "programmed": {
+   "kind": "number"
+  },
+  "protein": {
+   "kind": "number"
+  },
+  "pumpId": {
+   "kind": "integer"
+  },
+  "pumpSerial": {
+   "kind": "string"
+  },
+  "pumpType": {
+   "kind": "string"
+  },
+  "rate": {
+   "kind": "number"
+  },
+  "reason": {
+   "kind": "string"
+  },
+  "remoteAddress": {
+   "kind": "string"
+  },
+  "srvCreated": {
+   "kind": "integer"
+  },
+  "srvModified": {
+   "kind": "integer"
+  },
+  "subject": {
+   "kind": "string"
+  },
+  "syncIdentifier": {
+   "kind": "string"
+  },
+  "targetBottom": {
+   "kind": "number"
+  },
+  "targetTop": {
+   "kind": "number"
+  },
+  "temp": {
+   "kind": "string"
+  },
+  "timeshift": {
+   "kind": "integer"
+  },
+  "type": {
+   "kind": "string"
+  },
+  "unabsorbed": {
+   "kind": "number"
+  },
+  "units": {
+   "kind": "string"
+  },
+  "userEnteredAt": {
+   "kind": "string"
+  },
+  "userLastModifiedAt": {
+   "kind": "string"
+  },
+  "utcOffset": {
+   "kind": "integer"
+  }
+ },
+ "generated_by": "tools/nsschema/emit/coercion_emit.py",
+ "source_model": "specs/nsschema/treatments.model.json",
+ "uncoerced": {
+  "correctionRange": [
+   "array"
+  ],
+  "timestamp": [
+   "number",
+   "string"
+  ]
+ }
+}

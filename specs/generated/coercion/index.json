@@ -1,0 +1,9 @@
+{
+ "generated_by": "tools/nsschema/emit/coercion_emit.py",
+ "collections": [
+  "devicestatus",
+  "entries",
+  "profile",
+  "treatments"
+ ]
+}
