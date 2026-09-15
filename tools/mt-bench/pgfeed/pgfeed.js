@@ -57,10 +57,40 @@ if (!process.env.PGPASSWORD && !/:[^@/]*@/.test(PG_URL)) {
 // connection returns every row, and it all looks like RLS is broken. §6.1's
 // "app role NOSUPERUSER NOBYPASSRLS" is load-bearing, and this is the arm that
 // proves why.
-const APP_URL = process.env.APP_URL || 'postgres://ns_app@127.0.0.1:15433/postgres';
+//
+// The app role's URL defaults to the same host and port as PG_URL, so pointing
+// this at a different container needs one variable rather than two that can
+// silently disagree -- the failure when they do is a connection refused in the
+// middle of an arm, after setup has already run.
+const APP_URL = process.env.APP_URL || PG_URL.replace(/\/\/(?:[^@/]*@)?/, '//ns_app@');
+
+// The app role's password. It used to be the literal 'poc' in the CREATE ROLE
+// below; a throwaway role in a local container is a small thing to hardcode, but
+// a credential in a file is a credential in a file, and this one also had to be
+// guessed by anyone running a single arm -- setup creates the role, and the rls
+// arm connects as it.
+const APP_PASSWORD = process.env.APP_PGPASSWORD || '';
+if (!APP_PASSWORD) {
+  console.error('Set APP_PGPASSWORD: the unprivileged role this benchmark measures as.');
+  console.error('Any throwaway value will do -- the role is dropped and recreated by `setup` --');
+  console.error('but it must be the SAME value for `setup` and for the arms that connect as it.');
+  process.exit(2);
+}
+// Interpolated into DDL, which cannot take a bound parameter, so the charset is
+// restricted rather than escaped. Refusing a quote is honest; escaping one here
+// would be a quoting routine nobody reviews.
+if (!/^[A-Za-z0-9_.~-]{8,128}$/.test(APP_PASSWORD)) {
+  console.error('APP_PGPASSWORD must be 8-128 characters of [A-Za-z0-9_.~-].');
+  console.error('It is interpolated into a CREATE ROLE statement, which takes no bound parameter.');
+  process.exit(2);
+}
 const TENANTS = parseInt(process.argv[3], 10) || 400;
 const N_ENTRIES = 576;
 const SLOT = 'ns_evaluator';
+
+function withPassword (url, password) {
+  return url.replace(/\/\/([^:@/]+)@/, (_, user) => `//${user}:${encodeURIComponent(password)}@`);
+}
 
 function stats (a) {
   const s = [...a].sort((x, y) => x - y);
@@ -86,7 +116,7 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 const APP_ROLE = `
 DROP ROLE IF EXISTS ns_app;
-CREATE ROLE ns_app LOGIN PASSWORD 'poc' NOSUPERUSER NOBYPASSRLS;
+CREATE ROLE ns_app LOGIN PASSWORD '${APP_PASSWORD}' NOSUPERUSER NOBYPASSRLS;
 `;
 const GRANTS = `
 GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO ns_app;
@@ -202,7 +232,13 @@ async function setup (pool) {
 async function armRls (ownerPool) {
   console.log('--- RLS overhead and index locality on Nightscout query shapes ---');
   console.log('  (as ns_app: NOSUPERUSER NOBYPASSRLS — as a superuser RLS is not enforced at all)');
-  const pool = new Pool({ connectionString: APP_URL, max: 20 });
+  // The password goes INTO the URL rather than beside it: pg parses
+  // `connectionString` and then overwrites the config from it, so a sibling
+  // `password` field is discarded and the connection fails 28P01 mid-arm, after
+  // setup has already loaded 230k rows. Checked, not assumed --
+  // ConnectionParameters({connectionString, password}) does not keep the
+  // explicit password. Nothing prints APP_URL unmasked.
+  const pool = new Pool({ connectionString: withPassword(APP_URL, APP_PASSWORD), max: 20 });
   const tid = tenantUuid(0);
 
   // Bound per transaction, which is the §6.7 mechanism: one set_config per
@@ -248,10 +284,25 @@ async function armRls (ownerPool) {
   await c.query('COMMIT');
   c.release();
   const p = plan.rows[0]['QUERY PLAN'][0].Plan;
-  const node = JSON.stringify(p).match(/"Node Type":"([^"]+)"/g).join(' ');
-  const scanned = JSON.stringify(p).match(/"Actual Rows":(\d+)/g);
+  const planJson = JSON.stringify(p);
+  const node = planJson.match(/"Node Type":"([^"]+)"/g).join(' ');
+  const scanned = planJson.match(/"Actual Rows":(\d+)/g);
+
+  // The claim being tested is "the RLS policy predicate gave the planner index
+  // BOUNDS", and the evidence for that is an Index Cond on tenant_id -- not an
+  // index name. Matching the name was a substring test: 'entries_tenant_date'
+  // is a prefix of 'entries_tenant_date_identifier_created_at', so it passed on
+  // an index it was not naming, and would keep passing if the emitted DDL
+  // renamed or merged indexes. Read the condition the planner actually built.
+  const indexConds = (planJson.match(/"Index Cond":"([^"]*)"/g) || []).join(' ');
+  const tenantBounded = /tenant_id/.test(indexConds);
+  const indexName = (planJson.match(/"Index Name":"([^"]+)"/) || [])[1];
+
   console.log(`  plan: ${node}`);
-  console.log(`  index used: ${JSON.stringify(p).includes('entries_tenant_date') ? 'entries_tenant_date (tenant_id leading)' : 'NOT the tenant index'}`);
+  console.log(`  index used: ${indexName || 'none'}`);
+  console.log(`  tenant-bounded: ${tenantBounded
+    ? `yes -- Index Cond carries tenant_id (${indexConds})`
+    : 'NO -- the policy predicate did not become an index bound'}`);
   console.log(`  actual rows at each node: ${scanned ? scanned.join(' ') : 'n/a'}`);
 
   // Fail-closed: a connection that never binds.
@@ -264,7 +315,7 @@ async function armRls (ownerPool) {
   console.log(`  same query as SUPERUSER (RLS not enforced): ${asOwner.rows[0].n} rows`);
 
   const out = { rlsRead, explicit, window576,
-    usesTenantIndex: JSON.stringify(p).includes('entries_tenant_date'),
+    usesTenantIndex: tenantBounded, indexName: indexName || null, indexConds,
     unboundRows: unbound.rows[0].n, superuserRows: asOwner.rows[0].n, planNodes: node };
   await pool.end();
   return out;
@@ -434,14 +485,35 @@ async function main () {
   const v = await pool.query('show server_version');
   console.log(`postgres ${v.rows[0].server_version} at ${PG_URL.replace(/:[^:@]*@/, ':***@')}\n`);
 
-  const out = { date: new Date().toISOString(), pg: v.rows[0].server_version, tenants: TENANTS };
+  const dest = path.join(__dirname, '..', 'results', 'exp-mt-057.json');
+
+  // Merge onto whatever is already published rather than replacing it. This
+  // file IS the EXP-MT-057 record, and a single-arm run used to overwrite it
+  // with a document containing only that arm -- so debugging one arm silently
+  // deleted the other four's published figures. Re-running an arm should
+  // replace that arm and nothing else.
+  let out = {};
+  if (fs.existsSync(dest)) {
+    try {
+      out = JSON.parse(fs.readFileSync(dest, 'utf8'));
+    } catch (err) {
+      // A corrupt file is worth stopping for: overwriting it would destroy a
+      // record nobody can reconstruct without a 230k-row rebuild.
+      console.error(`refusing to overwrite unreadable ${dest}: ${err.message}`);
+      process.exit(1);
+    }
+  }
+  out.date = new Date().toISOString();
+  out.pg = v.rows[0].server_version;
+  out.tenants = TENANTS;
+  out.armsRun = arm;
+
   if (arm === 'all' || arm === 'setup') out.setup = await setup(pool);
   if (arm === 'all' || arm === 'rls') out.rls = await armRls(pool);
   if (arm === 'all' || arm === 'notify') out.notify = await armNotify(pool);
   if (arm === 'all' || arm === 'slot') out.slot = await armSlot(pool);
   if (arm === 'all' || arm === 'poll') out.poll = await armPoll(pool);
 
-  const dest = path.join(__dirname, '..', 'results', 'exp-mt-057.json');
   fs.writeFileSync(dest, JSON.stringify(out, null, 2));
   console.log(`\nresults -> ${path.relative(process.cwd(), dest)}`);
   await pool.end();

@@ -1,23 +1,26 @@
 {
-  "date": "2026-09-14T23:35:37.908Z",
+  "date": "2026-09-15T05:53:52.370Z",
   "pg": "16.14",
   "tenants": 400,
   "rls": {
     "rlsRead": {
-      "p50": 0.383,
-      "p99": 1.993
+      "p50": 0.549,
+      "p99": 1.16
     },
     "explicit": {
-      "p50": 0.585,
-      "p99": 2.535
+      "p50": 0.494,
+      "p99": 1.326
     },
     "window576": {
-      "p50": 1.452,
-      "p99": 3.77
+      "p50": 1.586,
+      "p99": 4.821
     },
     "usesTenantIndex": true,
+    "indexName": "entries_tenant_date_identifier_created_at",
+    "indexConds": "\"Index Cond\":\"(tenant_id = (NULLIF(current_setting('app.current_tenant_id'::text, true), ''::text))::uuid)\"",
     "unboundRows": 0,
-    "superuserRows": 231700,
+    "superuserRows": 231100,
     "planNodes": "\"Node Type\":\"Limit\" \"Node Type\":\"Index Scan\""
-  }
+  },
+  "armsRun": "rls"
 }
