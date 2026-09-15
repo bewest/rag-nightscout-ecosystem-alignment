@@ -278,6 +278,69 @@ Two halves, in order, because the second depends on the first.
 *Blocks*: T3.3. *Blocked by*: nothing.
 
 
+### 2.9 What "declared safe" means, and what suspension means
+
+**The gate is deliberately not written yet, and that is a decision rather than an omission
+(maintainer, 2026-09-15).**
+
+Every tenancy finding in this programme carries the qualifier *"high, within `TENANCY_MODE=multi`,
+which is not yet declared safe."* That qualifier does real work — it is why BF-25 is not an
+emergency — and it was undefined, which makes it a way to defer any finding indefinitely. The
+anchor it actually rests on is **reachability**, and that is measurable today:
+
+| mechanism | effect |
+|---|---|
+| `lib/server/env.js` `mode: readENV('TENANCY_MODE', 'single')` | opt-in; defaults off |
+| `tenant-middleware.buildRegistry` | throws unless the storage URI names postgres |
+| `lib/server/socket-tenancy.js` | refuses to boot on a path-only rule |
+| `lib/server/socket-tenancy.js` | logs `WITHHOLDING` per surface when it does boot |
+
+**So: `TENANCY_MODE=multi` is developer-only until declared otherwise, and that declaration IS the
+gate.** Nobody reaches it by upgrading — it takes a deliberate variable, a PostgreSQL deployment,
+and ignoring a boot-time error saying alarms are off. `fromEnv()`'s boot message should **name what
+is outstanding** rather than saying "not safe" generically.
+
+**The checklist is deferred on purpose.** {M} §5.2's eight cross-cutting requirements are the
+natural basis, extended by four found since (process-wide `authorization.storage.subjects`; the
+per-tenant credential root, D13/D14; process-wide `language`/`levels`, BF-22; per-tenant `ddata`).
+Scored today that is roughly 4 of 12. But items 4, 5 and 7 — per-tenant plugin instances,
+fairness/backpressure, quotas — have not started, and acceptance criteria written for unstarted
+work get rewritten when the work starts. **Write the gate when 4/5/7 have owners.**
+
+### Suspension is two verbs, not one
+
+`is_active = false` today is a **total blackout**: `tenant-middleware.js:233` answers 403 to every
+request — reads, writes, the API, and **CGM ingest** — and `tenant-registry.js:25` deliberately
+keeps no cache so it takes effect immediately. `platform-store.js:321` then requires suspension
+before deletion, so that "people stopped being able to reach it before the data went away."
+
+That single verb is doing several jobs with different right answers. A billing lapse that silently
+stops recording somebody's glucose data is not the same event as a ToS termination.
+
+**Decided 2026-09-15: split the verb.**
+
+| verb | meaning |
+|---|---|
+| **suspend** | total blackout, as built. Abuse/ToS, and the pre-deletion state the delete gate requires |
+| **pause** | **ingest continues; the UI and reads are blocked.** A billing lapse or an owner-requested pause never costs the person their data |
+
+The delete gate must name which state it requires (**suspend**, not pause).
+
+### The socket gap is a display problem, not an enforcement one
+
+`is_active` is checked at the Socket.IO handshake and never again. The consequence is not that
+suspension fails to take effect — it takes effect everywhere *except the surface a person is
+looking at*. A suspended tenant answers 403 to everything new while an already-open browser tab
+keeps its socket and shows a **live-looking chart that will never update again**.
+
+**Decided: disconnect, and make the page say so — but keep the last data visible and plainly
+marked stale.** Blanking the screen is not an improvement for someone mid-decision; a display that
+silently looks current is the failure to design against. Nightscout already has a staleness
+vocabulary (the clock and time-ago going red) and this should use it rather than invent one.
+A silent disconnect leaves exactly the same frozen chart, so the disconnect alone does not close
+this.
+
+
 ## 3. D8 — the query surface
 
 ### 3.1 Your impression is right, and the reason inverts

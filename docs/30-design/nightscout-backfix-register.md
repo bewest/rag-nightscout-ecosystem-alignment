@@ -35,6 +35,7 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | open |
 | **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks silently vanish from the quick-pick list; no shipping client triggers it today | yes | open |
 | **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | open |
+| **BF-28** | `insulinage`'s URGENT branch is unreachable — it compares against `insulinInfo.urgent`, which is never assigned, where all three sibling plugins use `prefs.urgent`. "Insulin reservoir change overdue!" can never fire | `lib/plugins/insulinage.js:92` | **medium** — a site-change reminder that silently never arrives | yes | open |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | open |
@@ -515,6 +516,40 @@ produced by running the shipping `fieldsProjector.js` against real mongod docume
 *Checked*: the system fields `storageProjection` adds and `applyProjection` removes are **not**
 dead work — `col.resolveDates(doc)` consumes them in between
 (`lib/api3/generic/search/operation.js:46-47`).
+
+### BF-28 · `insulinage` can never raise an urgent alarm
+
+One identifier, and the plugin's most important branch is dead:
+
+```
+lib/plugins/insulinage.js:92    if (insulinInfo.age >= insulinInfo.urgent) {
+lib/plugins/insulinage.js:93      sendNotification = insulinInfo.age === prefs.urgent;
+
+lib/plugins/cannulaage.js:87    if (cannulaInfo.age >= prefs.urgent) {
+lib/plugins/cannulaage.js:88      sendNotification = cannulaInfo.age === prefs.urgent;
+```
+
+`urgent` is set on **`prefs`** (`:19`, `sbx.extendedSettings.urgent || 72`), never on
+`insulinInfo`. So line 92 evaluates `age >= undefined`, which is always `false`, and the urgent
+branch is unreachable — while line 93, one line below, reads `prefs.urgent` correctly. The three
+sibling age plugins (`cannulaage`, `sageage`/`sensorage`, `batteryage`) all use `prefs.urgent` on
+both lines.
+
+**Consequence**: a person who has set an urgent insulin-reservoir age threshold never receives the
+urgent notification. The warning branch is unaffected, so the failure is partial and quiet — the
+plugin looks like it works.
+
+*Found*: incidentally, during the `ns-evaluator` spike (T4.4), while ablating alarm producers —
+not looked for. Pinned by a check in that harness: at 72 h the plugin requests nothing; at 48 h it
+requests WARN.
+
+*Fix*: `insulinInfo.urgent` → `prefs.urgent`. One identifier, and it matches three siblings.
+
+*Evidence*: [ns-evaluator spike](../60-research/ns-evaluator-spike-2026-09-15.md),
+`tools/qc/ns-evaluator-arm.js`.
+
+*Not fixed by that task* — it is pre-existing, single-tenant, and belongs here rather than in a
+tenancy commit.
 
 ### BF-04 · No operator allowlist on API v1
 
