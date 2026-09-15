@@ -71,9 +71,18 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 // ---------------------------------------------------------------- schema
 //
-// Mirrors rls-poc/setup.sql (which reimplements Nocturne's verified pattern) and
-// adds the trigger and slot this experiment needs. FORCE is the load-bearing word:
-// without it the table owner bypasses the policy.
+// The `entries` table is NO LONGER WRITTEN HERE. It is read from
+// specs/generated/postgres/entries.sql, emitted by tools/nsschema/emit/
+// postgres_emit.py from specs/nsschema/entries.model.json — so this experiment
+// measures the schema the system will ship rather than a hand-written
+// approximation of it. That swap is plan T2.1's Done criterion.
+//
+// What the emitted schema brings that the hand-written one did not: `date`,
+// `sgv`, `type` and the rest of the indexedFields set are GENERATED columns over
+// the jsonb document rather than independently-supplied columns, so a row is
+// inserted as (tenant_id, doc) and no column can disagree with the document it
+// indexes. The role, the FORCE and the NULLIF policy predicate are unchanged in
+// substance — they came from rls-poc/setup.sql and the emitter reproduces them.
 
 const APP_ROLE = `
 DROP ROLE IF EXISTS ns_app;
@@ -84,30 +93,15 @@ GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO ns_app;
 GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA public TO ns_app;
 `;
 
-const SCHEMA = `
-DROP TABLE IF EXISTS entries CASCADE;
-DROP TABLE IF EXISTS eval_state CASCADE;
+const EMITTED = path.join(__dirname, '..', '..', '..',
+  'specs', 'generated', 'postgres', 'entries.sql');
 
-CREATE TABLE entries (
-  id          bigserial PRIMARY KEY,
-  tenant_id   uuid NOT NULL,
-  date        bigint NOT NULL,
-  sgv         int,
-  direction   text,
-  type        text,
-  device      text,
-  rssi        int,
-  doc         jsonb
-);
--- The §6.3 shape: tenant_id leading, so the policy predicate is an ordinary
--- equality the planner can build index bounds from.
-CREATE INDEX entries_tenant_date ON entries (tenant_id, date DESC);
-CREATE INDEX entries_date ON entries (date DESC);
-
-ALTER TABLE entries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE entries FORCE ROW LEVEL SECURITY;
-CREATE POLICY tenant_isolation ON entries
-  USING (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid);
+// Everything this experiment needs that is NOT part of the document schema. The
+// date index here is deliberately NOT tenant-prefixed: arm 4's "which tenants
+// are due" poll is cross-tenant by construction ({DB} §8.6), so the emitter will
+// never produce this index and the harness has to own it.
+const HARNESS = `
+CREATE INDEX entries_date ON entries ((doc #>> '{date}') DESC);
 
 -- Per-tenant evaluation watermark. This is the ack/snooze table's neighbour: the
 -- small amount of state the evaluator must keep durably so any worker can pick up
@@ -130,16 +124,52 @@ CREATE TRIGGER entries_notify AFTER INSERT ON entries
   FOR EACH ROW EXECUTE FUNCTION notify_entry();
 `;
 
+const SCHEMA = `
+DROP TABLE IF EXISTS entries CASCADE;
+DROP TABLE IF EXISTS eval_state CASCADE;
+` + fs.readFileSync(EMITTED, 'utf8') + HARNESS;
+
 function tenantUuid (t) {
   const h = t.toString(16).padStart(12, '0');
   return `00000000-0000-4000-8000-${h}`;
+}
+
+// One synthetic entry. Every indexed field now lives in the document and the
+// columns are derived from it, so there is exactly one place a value can come
+// from — which is the property the generated-column shape exists to give. `_id`
+// is part of the primary key and is synthesised rather than server-assigned;
+// nothing here is derived from a real person's data.
+let seq = 0;
+function entryDoc (tenant, i) {
+  return {
+    _id: `${tenant.toString(16)}-${i.toString(16)}-${(seq++).toString(36)}`,
+    date: Date.now() - i * 300000,
+    sgv: 70 + ((i * 7 + tenant * 13) % 180),
+    direction: 'Flat',
+    type: 'sgv',
+    device: 'xDrip-DexcomG6',
+    rssi: 100,
+    filtered: 180000,
+    noise: 1,
+  };
+}
+
+// The write shape under the emitted schema: two parameters, whatever the
+// document carries. The generated columns follow from it, which is why the
+// notify trigger above can still read NEW.date — an AFTER ROW trigger sees the
+// computed value.
+function insertOne (pool, tenant, sgv) {
+  const doc = { ...entryDoc(tenant, 0), sgv, date: Date.now() };
+  return pool.query('INSERT INTO entries (tenant_id,doc) VALUES ($1,$2)',
+    [tenantUuid(tenant), JSON.stringify(doc)]);
 }
 
 async function setup (pool) {
   await pool.query(APP_ROLE).catch(() => {});
   await pool.query(SCHEMA);
   await pool.query(GRANTS);
-  console.log('schema created: entries + RLS(FORCE) + tenant_id-leading index + NOTIFY trigger');
+  console.log(`schema created from ${path.relative(process.cwd(), EMITTED)}: `
+    + 'entries + RLS(FORCE) + tenant-leading indexes, plus the harness trigger');
 
   // The trigger makes bulk load expensive and the load is not what is being
   // measured, so it is disabled for the seed and re-enabled afterwards.
@@ -149,14 +179,12 @@ async function setup (pool) {
     const vals = [];
     const params = [];
     for (let i = 0; i < N_ENTRIES; i++) {
-      const base = i * 8;
-      vals.push(`($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5},$${base + 6},$${base + 7},$${base + 8})`);
-      params.push(tenantUuid(t), Date.now() - i * 300000, 70 + ((i * 7 + t * 13) % 180),
-        'Flat', 'sgv', 'xDrip-DexcomG6', 100, JSON.stringify({ filtered: 180000, noise: 1 }));
+      const base = i * 2;
+      vals.push(`($${base + 1},$${base + 2})`);
+      params.push(tenantUuid(t), JSON.stringify(entryDoc(t, i)));
     }
     await pool.query(
-      `INSERT INTO entries (tenant_id,date,sgv,direction,type,device,rssi,doc) VALUES ${vals.join(',')}`,
-      params);
+      `INSERT INTO entries (tenant_id,doc) VALUES ${vals.join(',')}`, params);
     await pool.query('INSERT INTO eval_state (tenant_id) VALUES ($1) ON CONFLICT DO NOTHING',
       [tenantUuid(t)]);
   }
@@ -267,8 +295,7 @@ async function armNotify (pool) {
 
   const t0 = Date.now();
   for (let i = 0; i < N; i++) {
-    await pool.query('INSERT INTO entries (tenant_id,date,sgv,type) VALUES ($1,$2,$3,$4)',
-      [tenantUuid(i % TENANTS), Date.now(), 120, 'sgv']);
+    await insertOne(pool, i % TENANTS, 120);
   }
   await sleep(1500);
   const elapsed = Date.now() - t0;
@@ -281,8 +308,7 @@ async function armNotify (pool) {
   await listener.end();
   const M = 200;
   for (let i = 0; i < M; i++) {
-    await pool.query('INSERT INTO entries (tenant_id,date,sgv,type) VALUES ($1,$2,$3,$4)',
-      [tenantUuid(i % TENANTS), Date.now(), 121, 'sgv']);
+    await insertOne(pool, i % TENANTS, 121);
   }
   const listener2 = new Client({ connectionString: PG_URL });
   await listener2.connect();
@@ -310,8 +336,7 @@ async function armSlot (pool) {
   // There is no consumer at all — the slot is just a position in the WAL.
   const M = 200;
   for (let i = 0; i < M; i++) {
-    await pool.query('INSERT INTO entries (tenant_id,date,sgv,type) VALUES ($1,$2,$3,$4)',
-      [tenantUuid(i % TENANTS), Date.now(), 122, 'sgv']);
+    await insertOne(pool, i % TENANTS, 122);
   }
   const lag1 = await pool.query(
     `SELECT pg_size_pretty(pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)) retained
@@ -334,8 +359,7 @@ async function armSlot (pool) {
   // The cost of the mechanism: an abandoned slot pins WAL forever.
   const K = 400;
   for (let i = 0; i < K; i++) {
-    await pool.query('INSERT INTO entries (tenant_id,date,sgv,type) VALUES ($1,$2,$3,$4)',
-      [tenantUuid(i % TENANTS), Date.now(), 123, 'sgv']);
+    await insertOne(pool, i % TENANTS, 123);
   }
   const lag2 = await pool.query(
     `SELECT pg_size_pretty(pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)) retained,

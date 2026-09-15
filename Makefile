@@ -668,7 +668,7 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
         schema-nocturne schema-dosing schema-vendors schema-observability \
         schema-sync-model schema-sync-cost schema-effects schema-sensitivity \
         schema-primitives schema-settings \
-        schema-test schema-clean
+        schema-test schema-clean schema-postgres-report
 
 PY ?= python3
 NSSCHEMA = PYTHONPATH=tools $(PY) -m nsschema
@@ -698,10 +698,15 @@ schema-emit:
 	@$(NSSCHEMA).emit.pyarrow_emit
 	@$(NSSCHEMA).emit.coercion_emit
 	@$(NSSCHEMA).emit.fieldref_emit
+	@$(NSSCHEMA).emit.postgres_emit
 
 ## schema-coercion-drift: where the shipping query walkers disagree with the model
 schema-coercion-drift:
 	@$(NSSCHEMA).emit.coercion_emit --drift
+
+## schema-postgres-report: emitted index set vs {M} §6.7, and the type divergences
+schema-postgres-report:
+	@$(NSSCHEMA).emit.postgres_emit --report
 
 ## schema-impact: replay the corpus through every strictness policy (Ajv)
 schema-impact:
