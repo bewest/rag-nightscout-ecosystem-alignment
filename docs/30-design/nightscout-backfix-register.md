@@ -51,6 +51,9 @@ criterion is what makes the rest of the table mean something.
 
 | id | defect | where | severity | status |
 |---|---|---|---|---|
+| **BF-21** | `bulkUpsert` on PostgreSQL takes no options argument, so the `{mode:'replace'}` every shipping caller sends is silently ignored and the write merges | `lib/api3/storage/pgCollection/index.js` `bulkUpsert` | **high** — a deleted field survives for good; the two backends drift apart with every write | open |
+| **BF-22** | `updateOne` with a dotted field stores a nested object on MongoDB and a literal dotted key on PostgreSQL | `lib/api3/storage/pgCollection/index.js` + `lib/api3/generic/patch/operation.js:85` | **medium** — client-reachable via v3 `PATCH`; the PostgreSQL key is unreachable by any path lookup | open |
+| **BF-23** | A duplicate-key error reaches the caller as the backend's own error class | both adapters | low — no shipping caller branches on it | open |
 | **BF-18** | Driver 7 doubles the getMore batch size when `.limit(0)` is set, abandoning `READ_OPTIONS` | `lib/storage/mongo-read-options.js` + driver 7.6.0 | medium — pre-release; compounds BF-14 | open |
 | **BF-19** | `ORDER BY` reads the generated column, which orders differently from the document — breaking the DDL's own stated invariant | `lib/api3/storage/pgCollection/sql.js` `orderBy` | **high** — silently wrong order, and client-reachable via v3 `?sort=` | open |
 | **BF-20** | `scalarize()` converts a `Date` bound to an ISO string, so a `Date`-valued filter matches nothing on MongoDB and everything on PostgreSQL | `lib/api3/storage/pgCollection/utils.js` | low — no shipping caller passes a `Date` | open |
@@ -149,6 +152,77 @@ adapter, where `typedRef()`'s type-bracketing `CASE` cannot see it.
 *Not reachable today*: every shipping caller of `findFiltered`, `count` and `deleteMany` was
 checked — `lib/server/query.js` emits epoch numbers or ISO strings, never a `Date`. Recorded
 because the adapter is a published interface and the next caller may not.
+
+### BF-21 · `bulkUpsert` ignores the mode every caller asks for
+
+`mongoCollection/modify.js` `bulkUpsert(col, ops, options)` takes an options bag whose `mode`
+defaults to `'replace'`. `pgCollection/index.js` `bulkUpsert(ops)` **takes no options parameter at
+all** and always writes in merge mode.
+
+Measured on one stored document carrying `stale: 'was-here'`, upserted with a document that does
+not carry it:
+
+```
+bulkUpsert(ops)                      mongod: stale removed   postgres: stale SURVIVES
+bulkUpsert(ops, {mode:'merge'})      mongod: stale survives  postgres: stale survives   agree
+bulkUpsert(ops, {mode:'replace'})    mongod: stale removed   postgres: stale SURVIVES
+```
+
+**Every shipping caller passes `{ mode: 'replace' }` explicitly** — `lib/server/activity.js:61`
+and `:102`, `lib/server/treatments.js:31`. They ask for a replace in writing and the argument
+reaches nothing.
+
+The consequence is an **unremovable field**: any key a client deletes from a treatment or activity
+document stays in the PostgreSQL row for good. Nothing errors, nothing logs, and the two backends
+drift further apart with every write.
+
+*Not yet live, and the deadline is known*: `entries` is the only collection with a PostgreSQL
+schema and it has no `bulkUpsert` caller. `activity` and `treatments` do, so **the exposure
+arrives with T2.6** — the same deadline as BF-19.
+
+*Fix*: give the PostgreSQL `bulkUpsert` the same `(ops, options)` signature and implement
+`'replace'`, or make it refuse a mode it cannot honour. Silently downgrading a replace to a merge
+is the one option that should not survive review.
+
+*Evidence*: [the write path across the seam](../60-research/seam-write-path-2026-09-15.md) §2,
+`tools/qc/write-arm.js`, 23 agree / 4 differ / 0 vacuous.
+
+### BF-22 · a dotted field in `updateOne` stores two different documents
+
+`updateOne(identifier, setFields)` becomes `$set` on MongoDB, where a dot is a **path**. The
+PostgreSQL merge treats the same string as a **literal key**:
+
+```
+setFields = { 'nested.leaf': 7 }
+  mongod     …,"nested":{"leaf":7},…
+  postgres   …,"nested.leaf":7,…
+```
+
+The PostgreSQL document then holds a key no path lookup will find — not `doc #> '{nested,leaf}'`,
+not a generated column, not a client walking the object.
+
+*Reachability*: `lib/api3/generic/patch/operation.js:85` passes the client's PATCH body to
+`updateOne`, so this is reachable through `PATCH /api/v3/<collection>/<identifier>` **subject to a
+validation layer that was not audited** — which bounds the claim and should be checked before this
+is graded any higher. `lib/api3/generic/delete/operation.js:86` passes a fixed
+`{isValid, srvModified}` and is safe.
+
+MongoDB's behaviour is not obviously correct either; a client sending `{"nested.leaf": 7}` may
+have meant a literal key. The defect is that the backends answer differently and neither refuses.
+
+### BF-23 · the duplicate-key error class crosses the seam
+
+```
+mongod     MongoServerError: E11000 duplicate key error collection: …
+postgres   DatabaseError: duplicate key value violates unique constraint "entries_pkey"
+```
+
+Both refuse the duplicate, which is what matters. But an error class is a driver object, and the
+seam exists so that driver objects do not reach callers. `err.code === 11000` is the standard
+MongoDB idiom for "already exists" and would silently stop being true.
+
+*Low on evidence*: `grep` for `11000`, `E11000` and `MongoServerError` across `lib/` finds no
+caller branching on it. Recorded because the interface is published.
 
 ## 2. Detail
 
