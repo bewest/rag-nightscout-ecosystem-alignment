@@ -1,0 +1,7171 @@
+{
+ "code_issued_fields": [
+  "date",
+  "srvModified",
+  "identifier",
+  "created_at"
+ ],
+ "client_choosable_fields": [
+  "sysTime",
+  "srvCreated",
+  "startDate",
+  "_id",
+  "sgv",
+  "NSCLIENT_ID",
+  "mills",
+  "carbs",
+  "insulin"
+ ],
+ "rows": [
+  {
+   "snapshot": "2026-04-01",
+   "site": "a",
+   "collection": "entries",
+   "documents": 49762,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 49762
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 49762,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 49762,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 49762,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 49762
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 49762,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 49762,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 49762
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 2,
+     "types": {
+      "number": 49760
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 49762,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 49762,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 49762,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 49762,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "a",
+   "collection": "treatments",
+   "documents": 28908,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 28908,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 28908,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 28908,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 28908
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 28908,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 28908,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 28908,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 28908
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 28908,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 28908,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 28908,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 28108,
+      "number": 800
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 27914,
+      "number": 994
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "a",
+   "collection": "devicestatus",
+   "documents": 50213,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 50213,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 50213,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 50213,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 50213
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 50213,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 50213,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 50213,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 50213
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 50213,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 50213,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 50213,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 50213,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 50213,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "a",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "b",
+   "collection": "entries",
+   "documents": 49986,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 49986
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 49986,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 49986,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 49986,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 49986
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 49986,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 49986,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 49986
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 1,
+     "types": {
+      "number": 49985
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 49986,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 49986,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 49986,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 49986,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "b",
+   "collection": "treatments",
+   "documents": 48690,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 48690,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 48690,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 48690,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 48690
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 48690,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 48690,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 48690,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 48690
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 48690,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 48690,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 48690,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 41245,
+      "number": 7445
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 36120,
+      "number": 12570
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "b",
+   "collection": "devicestatus",
+   "documents": 62386,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 62386,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 62386,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 62386,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 62386
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 62386,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 62386,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 62386,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 62386
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 62386,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 62386,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 62386,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 62386,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 62386,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "b",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "c",
+   "collection": "entries",
+   "documents": 93677,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 93677
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 93677,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 93677,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 93677,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 93677
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 93677,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 93677,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 93677
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 32,
+     "types": {
+      "number": 93645
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 93677,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 93677,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 93677,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 93677,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "c",
+   "collection": "treatments",
+   "documents": 26514,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 26514,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 26514,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 26514,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 26514
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 26514,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 26514,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 26514,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 26514
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 26514,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 26514,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 26514,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 26070,
+      "number": 444
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 14935,
+      "number": 11579
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "c",
+   "collection": "devicestatus",
+   "documents": 51856,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 51856,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 51856,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 51856,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 51856
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 51856,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 51856,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 51856,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 51856
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 51856,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 51856,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 51856,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 51856,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 51856,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "c",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "d",
+   "collection": "entries",
+   "documents": 87930,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 87930
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 87930,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 87930,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 87930,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 87930
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 87930,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 87930,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 87930
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 25,
+     "types": {
+      "number": 87905
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 87930,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 87930,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 87930,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 87930,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "d",
+   "collection": "treatments",
+   "documents": 22976,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 22976,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 22976,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 22976,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 22976
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 22976,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 22976,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 22976,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 22976
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 22976,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 22976,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 22976,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 22557,
+      "number": 419
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 9571,
+      "number": 13405
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "d",
+   "collection": "devicestatus",
+   "documents": 40490,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 40490,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 40490,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 40490,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 40490
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 40490,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 40490,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 40490,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 40490
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 40490,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 40490,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 40490,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 40490,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 40490,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "d",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "e",
+   "collection": "entries",
+   "documents": 67224,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 67224
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 67224,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 67224,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 67224,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 67224
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 67224,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 67224,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 67224
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 11,
+     "types": {
+      "number": 67213
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 67224,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 67224,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 67224,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 67224,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "e",
+   "collection": "treatments",
+   "documents": 30748,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 30748,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 30748,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 30748,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 30748
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 30748,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 30748,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 30748,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 30748
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 30748,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 30748,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 30748,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 30334,
+      "number": 414
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 15283,
+      "number": 15465
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "e",
+   "collection": "devicestatus",
+   "documents": 56338,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 56338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 56338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 56338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 56338
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 56338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 56338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 56338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 56338
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 56338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 56338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 56338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 56338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 56338,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "e",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "f",
+   "collection": "entries",
+   "documents": 50217,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 50217
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 50217,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 50217,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 50217,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 50217
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 50217,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 50217,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 50217
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 0,
+     "types": {
+      "number": 50217
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 50217,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 50217,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 50217,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 50217,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "f",
+   "collection": "treatments",
+   "documents": 15584,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 15584,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 15584,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 15584,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 15584
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 15584,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 15584,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 15584,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 15584
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 15584,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 15584,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 15584,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 15188,
+      "number": 396
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 14977,
+      "number": 607
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "f",
+   "collection": "devicestatus",
+   "documents": 51375,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 51375,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 51375,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 51375,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 51375
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 51375,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 51375,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 51375,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 51375
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 51375,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 51375,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 51375,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 51375,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 51375,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "f",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "g",
+   "collection": "entries",
+   "documents": 50464,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 50464
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 50464,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 50464,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 50464,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 50464
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 50464,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 50464,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 50464
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 649,
+     "types": {
+      "number": 49815
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 50464,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 50464,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 50464,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 50464,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "g",
+   "collection": "treatments",
+   "documents": 26410,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 26410,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 26410,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 26410,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 26410
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 26410,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 26410,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 26410,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 26410
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 26410,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 26410,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 26410,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 25161,
+      "number": 1249
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 13601,
+      "number": 12809
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "g",
+   "collection": "devicestatus",
+   "documents": 54001,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 54001,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 54001,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 54001,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 54001
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 54001,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 54001,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 54001,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 54001
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 54001,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 54001,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 54001,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 54001,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 54001,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "g",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "h",
+   "collection": "entries",
+   "documents": 20034,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 20034
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 20034,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 20034,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 20034,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 20034
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 20034,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 20034,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 20034
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 0,
+     "types": {
+      "number": 20034
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 20034,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 20034,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 20034,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 20034,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "h",
+   "collection": "treatments",
+   "documents": 21289,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 21289,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 21289,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 21289,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 21289
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 21289,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 21289,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 21289,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 21289
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 21289,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 21289,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 21289,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 20474,
+      "number": 815
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 11549,
+      "number": 9740
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "h",
+   "collection": "devicestatus",
+   "documents": 47014,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 47014,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 47014,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 47014,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 47014
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 47014,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 47014,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 47014,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 47014
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 47014,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 47014,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 47014,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 47014,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 47014,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "h",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "i",
+   "collection": "entries",
+   "documents": 100535,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 100535
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 100535,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 100535,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 100535,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 100535
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 100535,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 100535,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 100535
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 46,
+     "types": {
+      "number": 100489
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 100535,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 100535,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 100535,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 100535,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "i",
+   "collection": "treatments",
+   "documents": 31152,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 31152,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 31152,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 31141,
+     "types": {
+      "string": 11
+     },
+     "verdict": "single:string"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 31152
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 31152,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 31152,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 31152,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 31152
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 31152,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 31152,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 31151,
+     "types": {
+      "number": 1
+     },
+     "verdict": "single:number"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 31033,
+      "number": 119
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "number": 16283,
+      "null": 14869
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "i",
+   "collection": "devicestatus",
+   "documents": 51470,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 51470,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 51470,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 51470,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 51470
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 51470,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 51470,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 51470,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 51470
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 51470,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 51470,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 51470,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 51470,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 51470,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "i",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "j",
+   "collection": "entries",
+   "documents": 29324,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 29324
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 29324,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 29324,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 29324,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 29324
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 29324,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 29324,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 29324
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 51,
+     "types": {
+      "number": 29273
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 29324,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 29324,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 29324,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 29324,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "j",
+   "collection": "treatments",
+   "documents": 436,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 436,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 436,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 436,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 436
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 436,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 436,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 436,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 436
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 436,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 436,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 436,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "number": 215,
+      "null": 221
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 264,
+      "number": 172
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "j",
+   "collection": "devicestatus",
+   "documents": 15181,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 15181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 15181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 15181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 15181
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 15181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 15181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 15181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 15181
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 15181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 15181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 15181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 15181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 15181,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "j",
+   "collection": "profile",
+   "documents": 1,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 0,
+     "types": {
+      "number": 1
+     },
+     "verdict": "single:number"
+    },
+    "identifier": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 1
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 1
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 1
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "number": 1
+     },
+     "verdict": "single:number"
+    },
+    "carbs": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "k",
+   "collection": "entries",
+   "documents": 50687,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 50687
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 50687,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 50687,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 50687,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 50687
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 50687,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 50687,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 50687
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 53,
+     "types": {
+      "number": 50634
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 50687,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 50687,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 50687,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 50687,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "k",
+   "collection": "treatments",
+   "documents": 24983,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 24983,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 24983,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 24983,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 24983
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 24983,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 24983,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 24983,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 24983
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 24983,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 24983,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 24983,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 24905,
+      "number": 78
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 10875,
+      "number": 14108
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "k",
+   "collection": "devicestatus",
+   "documents": 33935,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 33935,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 33935,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 33935,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 33935
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 33935,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 33935,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 33935,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 33935
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 33935,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 33935,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 33935,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 33935,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 33935,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-01",
+   "site": "k",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "a",
+   "collection": "entries",
+   "documents": 16769,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 16769
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 16769,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 16769,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 16769,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 16769
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 16769,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 16769,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 16769
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 1,
+     "types": {
+      "number": 16768
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 16769,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 16769,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 16769,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 16769,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "a",
+   "collection": "treatments",
+   "documents": 10145,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10145,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10145,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10145,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 10145
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 10145,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10145,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 10145,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10145
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10145,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10145,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 10145,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 9814,
+      "number": 331
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 9730,
+      "number": 415
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "a",
+   "collection": "devicestatus",
+   "documents": 16710,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 16710,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 16710,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 16710,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 16710
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 16710,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 16710,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 16710,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 16710
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 16710,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 16710,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 16710,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 16710,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 16710,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "a",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "b",
+   "collection": "entries",
+   "documents": 17074,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 17074
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 17074,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 17074,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 17074,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 17074
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 17074,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 17074,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 17074
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 2,
+     "types": {
+      "number": 17072
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 17074,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 17074,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 17074,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 17074,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "b",
+   "collection": "treatments",
+   "documents": 13181,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 13181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 13181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 13181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 13181
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 13181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 13181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 13181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 13181
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 13181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 13181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 13181,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 11682,
+      "number": 1499
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 9092,
+      "number": 4089
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "b",
+   "collection": "devicestatus",
+   "documents": 20982,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 20982,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 20982,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 20982,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 20982
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 20982,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 20982,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 20982,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 20982
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 20982,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 20982,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 20982,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 20982,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 20982,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "b",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "c",
+   "collection": "entries",
+   "documents": 31662,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 31662
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 31662,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 31662,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 31662,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 31662
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 31662,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 31662,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 31662
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 4,
+     "types": {
+      "number": 31658
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 31662,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 31662,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 31662,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 31662,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "c",
+   "collection": "treatments",
+   "documents": 9114,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 9114,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 9114,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 9114,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 9114
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 9114,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 9114,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 9114,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 9114
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 9114,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 9114,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 9114,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 8988,
+      "number": 126
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 5061,
+      "number": 4053
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "c",
+   "collection": "devicestatus",
+   "documents": 16338,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 16338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 16338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 16338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 16338
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 16338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 16338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 16338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 16338
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 16338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 16338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 16338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 16338,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 16338,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "c",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "d",
+   "collection": "entries",
+   "documents": 24104,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 24104
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 24104,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 24104,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 24104,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 24104
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 24104,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 24104,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 24104
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 17,
+     "types": {
+      "number": 24087
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 24104,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 24104,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 24104,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 24104,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "d",
+   "collection": "treatments",
+   "documents": 9945,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 9945,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 9945,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 9945,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 9945
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 9945,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 9945,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 9945,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 9945
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 9945,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 9945,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 9945,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 9773,
+      "number": 172
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 4321,
+      "number": 5624
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "d",
+   "collection": "devicestatus",
+   "documents": 18332,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 18332,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 18332,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 18332,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 18332
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 18332,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 18332,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 18332,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 18332
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 18332,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 18332,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 18332,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 18332,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 18332,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "d",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "e",
+   "collection": "entries",
+   "documents": 24359,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 24359
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 24359,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 24359,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 24359,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 24359
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 24359,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 24359,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 24359
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 9,
+     "types": {
+      "number": 24350
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 24359,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 24359,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 24359,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 24359,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "e",
+   "collection": "treatments",
+   "documents": 9772,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 9772,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 9772,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 9772,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 9772
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 9772,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 9772,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 9772,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 9772
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 9772,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 9772,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 9772,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 9665,
+      "number": 107
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 5141,
+      "number": 4631
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "e",
+   "collection": "devicestatus",
+   "documents": 22975,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 22975,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 22975,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 22975,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 22975
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 22975,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 22975,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 22975,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 22975
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 22975,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 22975,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 22975,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 22975,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 22975,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "e",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "f",
+   "collection": "entries",
+   "documents": 21000,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 21000
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 21000,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 21000,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 21000,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 21000
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 21000,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 21000,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 21000
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 1,
+     "types": {
+      "number": 20999
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 21000,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 21000,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 21000,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 21000,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "f",
+   "collection": "treatments",
+   "documents": 3931,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 3931,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 3931,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 3931,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 3931
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 3931,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 3931,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 3931,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 3931
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 3931,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 3931,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 3931,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 3840,
+      "number": 91
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "number": 190,
+      "null": 3741
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "f",
+   "collection": "devicestatus",
+   "documents": 16341,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 16341,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 16341,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 16341,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 16341
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 16341,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 16341,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 16341,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 16341
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 16341,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 16341,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 16341,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 16341,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 16341,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "f",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "g",
+   "collection": "entries",
+   "documents": 16754,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 16754
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 16754,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 16754,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 16754,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 16754
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 16754,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 16754,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 16754
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 117,
+     "types": {
+      "number": 16637
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 16754,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 16754,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 16754,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 16754,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "g",
+   "collection": "treatments",
+   "documents": 9290,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 9290,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 9290,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 9290,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 9290
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 9290,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 9290,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 9290,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 9290
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 9290,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 9290,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 9290,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 8911,
+      "number": 379
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 4764,
+      "number": 4526
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "g",
+   "collection": "devicestatus",
+   "documents": 17411,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 17411,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 17411,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 17411,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 17411
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 17411,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 17411,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 17411,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 17411
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 17411,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 17411,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 17411,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 17411,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 17411,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "g",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "h",
+   "collection": "entries",
+   "documents": 16532,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 16532
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 16532,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 16532,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 16532,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 16532
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 16532,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 16532,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 16532
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 0,
+     "types": {
+      "number": 16532
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 16532,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 16532,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 16532,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 16532,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "h",
+   "collection": "treatments",
+   "documents": 8502,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 8502,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 8502,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 8502,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 8502
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 8502,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 8502,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 8502,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 8502
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 8502,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 8502,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 8502,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 8246,
+      "number": 256
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 4281,
+      "number": 4221
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "h",
+   "collection": "devicestatus",
+   "documents": 16594,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 16594,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 16594,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 16594,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 16594
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 16594,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 16594,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 16594,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 16594
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 16594,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 16594,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 16594,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 16594,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 16594,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "h",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "i",
+   "collection": "entries",
+   "documents": 33488,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 33488
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 33488,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 33488,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 33488,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 33488
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 33488,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 33488,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 33488
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 5,
+     "types": {
+      "number": 33483
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 33488,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 33488,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 33488,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 33488,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "i",
+   "collection": "treatments",
+   "documents": 9646,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 9646,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 9646,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 9609,
+     "types": {
+      "string": 37
+     },
+     "verdict": "single:string"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 9646
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 9646,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 9646,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 9646,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 9646
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 9646,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 9646,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 9645,
+     "types": {
+      "number": 1
+     },
+     "verdict": "single:number"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 9628,
+      "number": 18
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "null": 4123,
+      "number": 5523
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "i",
+   "collection": "devicestatus",
+   "documents": 16128,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 16128,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 16128,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 16128,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 16128
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 16128,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 16128,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 16128,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 16128
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 16128,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 16128,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 16128,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 16128,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 16128,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "i",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "j",
+   "collection": "entries",
+   "documents": 29172,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 29172
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 29172,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 29172,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 29172,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 29172
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 29172,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 29172,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 29172
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 113,
+     "types": {
+      "number": 29059
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 29172,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 29172,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 29172,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 29172,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "j",
+   "collection": "treatments",
+   "documents": 581,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 581,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 581,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 581,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 581
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 581,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 581,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 581,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 581
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 581,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 581,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 581,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 304,
+      "number": 277
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "number": 192,
+      "null": 389
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "j",
+   "collection": "devicestatus",
+   "documents": 15840,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 15840,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 15840,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 15840,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 15840
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 15840,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 15840,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 15840,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 15840
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 15840,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 15840,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 15840,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 15840,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 15840,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "j",
+   "collection": "profile",
+   "documents": 1,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 0,
+     "types": {
+      "number": 1
+     },
+     "verdict": "single:number"
+    },
+    "identifier": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 1
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 1
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 1
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "number": 1
+     },
+     "verdict": "single:number"
+    },
+    "carbs": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 1,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "k",
+   "collection": "entries",
+   "documents": 15835,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 0,
+     "types": {
+      "number": 15835
+     },
+     "verdict": "single:number"
+    },
+    "srvModified": {
+     "absent": 15835,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 15835,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 15835,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 0,
+     "types": {
+      "string": 15835
+     },
+     "verdict": "single:string"
+    },
+    "srvCreated": {
+     "absent": 15835,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 15835,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 15835
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 32,
+     "types": {
+      "number": 15803
+     },
+     "verdict": "single:number"
+    },
+    "NSCLIENT_ID": {
+     "absent": 15835,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 15835,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 15835,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 15835,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "k",
+   "collection": "treatments",
+   "documents": 7622,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 7622,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 7622,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 7622,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 7622
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 7622,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 7622,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 7622,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 7622
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 7622,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 7622,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 7622,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 0,
+     "types": {
+      "null": 7587,
+      "number": 35
+     },
+     "verdict": "MIXED:null+number"
+    },
+    "insulin": {
+     "absent": 0,
+     "types": {
+      "number": 3955,
+      "null": 3667
+     },
+     "verdict": "MIXED:null+number"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "k",
+   "collection": "devicestatus",
+   "documents": 10344,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10344,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10344,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10344,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 0,
+     "types": {
+      "string": 10344
+     },
+     "verdict": "single:string"
+    },
+    "sysTime": {
+     "absent": 10344,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10344,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 10344,
+     "types": {},
+     "verdict": "absent"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10344
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10344,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10344,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 10344,
+     "types": {},
+     "verdict": "absent"
+    },
+    "carbs": {
+     "absent": 10344,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10344,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  },
+  {
+   "snapshot": "2026-04-26",
+   "site": "k",
+   "collection": "profile",
+   "documents": 10,
+   "skipped_documents": 0,
+   "fields": {
+    "date": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvModified": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "identifier": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "created_at": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "sysTime": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "srvCreated": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "startDate": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "_id": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "sgv": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "NSCLIENT_ID": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "mills": {
+     "absent": 0,
+     "types": {
+      "string": 10
+     },
+     "verdict": "single:string"
+    },
+    "carbs": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    },
+    "insulin": {
+     "absent": 10,
+     "types": {},
+     "verdict": "absent"
+    }
+   }
+  }
+ ],
+ "file_skips": [],
+ "document_skips": {}
+}
