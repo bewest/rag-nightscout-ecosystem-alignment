@@ -924,9 +924,42 @@ comment. The registry now turns `insufficient_privilege` and `undefined_table` i
 naming the `GRANT` and the admin plane respectively, and passes everything else through, because
 a connection failure is not a configuration mistake.
 
-**T3.3 · `ctxFor(tenantId)`** — the `Map<tenantId, ctx>` substrate, for the single-process
-path. Note {C}'s finding that this is a *cache* with a graceful fallback, not the source of
-truth.
+**T3.3 · `ctxFor(tenantId)` — DONE 2026-09-15** — the `Map<tenantId, ctx>` substrate, for the
+single-process path. {C}'s framing holds: this is a *cache* with a graceful fallback, not the
+source of truth, and an evicted context rebuilds to something **deep-equal** to what was dropped
+— which is the testable form of that sentence.
+
+**Isolation is proved structurally, not field by field.** The tests crawl every object reachable
+from each context and assert the intersection is empty, because *a shallow copy separates every
+top-level field while sharing exactly the alarm configuration*. Per tenant: `settings`,
+`extendedSettings`, `err`, `notifies`. Shared deliberately, with a test saying so: the enclave,
+the tenancy rule, the store, the scalar deployment config.
+
+**`config()` is not how a tenant gets an environment**, and that is the load-bearing consequence:
+it reads the *process* environment, which is deployment-wide and already consumed. Per-tenant
+environments are **derived** from a built one.
+
+**Who owns the cache bound: both T3.1 and T3.3, on different failures.** T3.1 closes the attacker
+path — an unknown slug is refused before a tenant id exists, so a Host header cannot allocate
+anything, measured through the build counter rather than asserted. T3.3 owns the heap: 10,000
+registered tenants on legitimate traffic exceed {R}'s measured ceiling with no attacker involved.
+`DERIVED_CONTEXT_KEYS` is four entries and a test fails if it grows, naming T3.4 — caching
+ack/snooze state would mean eviction silently un-snoozing an alarm.
+
+**Two of its tests exist because the agent's own code failed them first**, both of the
+looks-exactly-like-a-pass variety: nothing in this codebase sets `ctx.env`, so an earlier draft
+returned `null` in the real server while every test that built its own base passed — **the
+substrate would have shipped switched off and silent**; and an unset `TENANT_CONTEXT_MAX` arrives
+as `null`, so `parseInt` gave `NaN` and an ordinary deployment would have refused to boot over a
+knob nobody set.
+
+*Not done, and named*: **`language` and `levels.translate` are per-tenant and are not** —
+`language.set('de')` on the one process-wide instance changes what every tenant reads, level
+names included, and that is how alarm text reaches a push notification. Filed as **BF-22**, since
+it is a live defect in single-tenant deployments too. Authorization subjects remain one
+process-wide array. Tenant settings have no *source* — overrides are an input to the substrate,
+not something read from storage. `ddata`/`cache`/`plugins`/`dataloader` are deliberately absent,
+with the alarm-slice split named as the precondition.
 
 **Two blockers, named before the task starts** — measured 2026-09-15, see
 [the shared-state audit](../60-research/tenant-shared-state-audit-2026-09-15.md) and
@@ -947,15 +980,23 @@ page, by one person, for one site. Two of the six were confirmed by **running** 
    the first, which turns a silent cross-tenant read into a named error. That does not make the
    module multi-store; it makes the failure loud, the same choice `requireTenant` makes.
 
-   **Correction, under review.** Calling this a T3.3 *blocker* was probably wrong, and the
-   reason is D3 and D4 read together: **the multitenant service is PostgreSQL + RLS, and MongoDB
+   **Correction, confirmed by T3.3.** Calling this a T3.3 *blocker* was wrong, and the reason
+   is D3 and D4 read together: **the multitenant service is PostgreSQL + RLS, and MongoDB
    is permanent for the *single-tenant* target.** So multi-tenant never uses MongoDB, and under
    PostgreSQL the store is *deliberately* shared — isolation is a per-transaction `set_config`
    on a pooled connection. A per-tenant **store** is therefore not something `ctxFor` needs at
-   all; the singleton obstructs multi-tenant MongoDB, which D3/D4 rule out. T3.3 has been asked
-   to check this reasoning and to say if it finds a case where `ctxFor` genuinely does need a
-   per-tenant store. **Blocker 1, the `env` singleton, is unaffected** — settings are per-tenant
-   whichever backend is underneath.
+   all; the singleton obstructs multi-tenant MongoDB, which D3/D4 rule out. **The codebase
+   already enforces it**: `tenant-middleware.buildRegistry` throws unless the storage URI names
+   postgres, so `TENANCY_MODE=multi` on MongoDB cannot boot and can never reach `ctxFor`. The
+   stronger form is positive — under D3 the store is *deliberately* shared, so a per-tenant store
+   would be a per-tenant **connection pool**, over a thousand in one process at the measured
+   residency, and it would bypass the binding RLS actually reads. The guard stays; it now guards
+   a path nothing takes, which is the right place for it.
+
+   **Blocker 1, the `env` singleton, was real and worse than the audit recorded.** `enclave` is
+   rebuilt on every `config()` call and `setAPISecret` **deletes `API_SECRET` out of
+   `process.env`** once read, so a second `config()` silently **disarmed the first context's
+   enclave in place** — measured. Fixed in T3.3.
 
 The PostgreSQL backend does not have this shape — its isolation is a per-transaction
 `set_config` on a pooled connection, so two tenants sharing one pool is the *designed* case
@@ -1018,9 +1059,44 @@ shared alarm map makes one person's snooze silence a different person's hypo ala
 `requests` fails two — **and the pre-existing lifecycle test passes through the whole of that
 second break**, which is what makes the new file worth having rather than duplicative.
 
-**T3.5 · Tenant socket rooms** and tenant-bound socket authorization, including
-`lib/api3/alarmSocket.js`, which currently emits to the **whole namespace with no room at all**
-— a worse leak than `DataReceivers`.
+**T3.5 · Tenant socket rooms — DONE 2026-09-15**, and tenant-bound socket authorization.
+
+**This plan's framing was half right and the correction matters.** `alarmSocket.js` does emit to
+the whole namespace with no room — confirmed, all five sites. But under single tenancy *"every
+socket connected to `/alarm`"* and *"every socket belonging to the one person this deployment
+serves"* are **the same set**, so all three namespaces are correct as they stand; a second tenant
+is what makes the two differ. Every single-tenant branch is left character for character as it
+was. `/storage` was covered too, which this plan did not name — one `treatments` room for the
+whole process would have been a known leaking namespace shipped under the title "tenant socket
+rooms".
+
+**A handshake resolves BY HOST ONLY, and the path fallback cannot be honoured.** A Socket.IO
+handshake's URL is the **engine** path, not the page's, so a browser on `apex.org/foo/` still
+handshakes at `/socket.io/` — and that path is a *client option*, so honouring it would let a
+caller pick its own tenant, which is T3.1's departure 1 arriving through a different door.
+
+> **Needs a maintainer's decision.** A `TENANT_PATH_PATTERN`-only deployment therefore **refuses
+> to start**, and that configuration works today over HTTP under T3.1. The judgement was that
+> refusing to boot beats a deployment whose HTTP works and whose alarms silently never arrive.
+> Overrulable.
+
+T3.1's rejection rule is now **one function** called by the HTTP middleware and both socket entry
+points — which is why breaking it fails T3.1's tests as well as T3.5's. A refusal on a
+`subscribe` message **disconnects** rather than merely replying, because the socket already
+joined the tenant's alarm room at connect.
+
+> ### The consequence to read twice
+>
+> Under `TENANCY_MODE=multi`, `/alarm`'s and `/`'s producers run **outside any tenant scope**, so
+> their emissions are **withheld rather than broadcast**. **Turning on `multi` today turns live
+> updates and alarms off.** Failing closed is right — broadcasting is the leak this task exists
+> to close — and it is logged per surface, pinned by a named test, and stated in plain language
+> in the README with a note to talk to a care team. Under `single`, nothing runs and nothing is
+> withheld.
+
+*Not done*: the ack path is untouched, so T3.4's finding stands — rooms fix who *hears* the
+result, not whose state it mutates. A tenant suspended mid-session is not re-checked after the
+handshake.
 
 ### Phase 4 — the feed
 
