@@ -1201,7 +1201,67 @@ handshake.
 **T4.1 · Slot reader** — the spine. Emits `NOTIFY` itself; **never a trigger** ({DB} §9.4: a
 trigger puts `NOTIFY` inside the ingest transaction, and a wedged realtime process would
 eventually stop CGM uploads).
-**T4.2 · Bounded aggregate poll** — the backstop, ~1.02 ms per sweep ({DB} §8.4).
+**T4.2 · Bounded aggregate poll — DONE 2026-09-15.** The backstop: what still notices a change
+when the slot reader is dropped, wedged, partitioned or not yet deployed. ~~~1.02 ms per sweep
+({DB} §8.4)~~ — **that invariant was wrong and building the component is what showed it.**
+
+{DB} §8.4's *measurement* is sound; the claim hung on it — "regardless of how many tenants are
+registered" — came from a run that varied neither axis. Reproducing that run's own query **and
+its own index configuration** across corpora it never built:
+
+| registered tenants | 100 | 400 | 1600 | 3200 |
+|---|---:|---:|---:|---:|
+| sweep p50, writing set held at 100 | 0.696 ms | **0.979 ms** | 2.909 ms | 5.236 ms |
+
+**As published the sweep is O(registered tenants)** — a nested loop with one index descent per
+watermark row, ~1.4 µs each. It lands on 1.02 ms at 400 because 400 is what was measured; at
+10,000 it would be **~15 ms**.
+
+**The thing that makes it bounded is an index no emitted schema contains, and cannot contain
+under its current rule** — see the two items below. With it, the same four corpora are flat
+(0.806 / 0.731 / 0.761 / 0.865 ms across 32× the corpus), and the real bound is **rows written
+since the last sweep**: ~0.57 ms fixed plus ~0.8 µs per row in the window.
+
+Three properties, each with a paired break:
+
+- **The window anchors to the last *successful* sweep**, from a durable row that outlives the
+  process, never to a constant. A poller down for an hour that resumes on a ten-minute window
+  **has skipped fifty minutes and succeeded while doing it.** Past `maxLookbackMs` it escalates
+  to a full sweep deliberately rather than narrowing quietly, and a missing heartbeat is the
+  same escalation — which is what closes §8.5's cold-start case.
+- **The sweep reports and never acknowledges.** The consumer advances the watermark after
+  handling, with the value the *sweep* observed and under `GREATEST()` — so a crash re-reports, a
+  reading that landed between report and acknowledgement is not swallowed, and a late
+  acknowledgement cannot move a watermark backwards.
+- **The observable is an *age*, not an error**, because a dead process raises none and neither
+  does a blind one. `tenants_seen` is stamped beside `tenants_reported` so that "nothing was due"
+  and "I can see nothing" stop being the same row.
+
+One of the suite's own checks was vacuous and the break pass found it: the rows-touched
+assertion read `Actual Rows`, which is what a node emits **after** its filter, so a sequential
+scan of the whole table reported ten. It reads rows *examined* now.
+
+*Not done*: no entrypoint and no wiring — the handler contract belongs to T4.4, and a process
+whose only consumer is a log line is a producer with nothing behind it, which is the argument
+T3.2 made against the fabricated quota. `entries` is the only table swept, because it is the only
+one the PostgreSQL backend implements.
+
+**T2.1a · Two things T4.2 lands on the DDL emitter.** Neither is expressible today.
+
+1. **A global, non-tenant-leading index.** Every index `postgres_emit.py` produces is
+   tenant-leading, because every tenant-facing query runs under a policy predicate on
+   `tenant_id` — correct for all of them, and **wrong for the two components {DB} §8.6 says can
+   never be tenant-bound**. The rule needs an exception it can express. T4.2's `describeBound()`
+   reports the index's absence rather than paying for it forever, and reads the **leading key**
+   from `pg_get_indexdef` rather than matching a substring: seven emitted indexes mention `date`
+   and none of them bounds this query.
+2. **An insertion-ordered column on `entries`.** The bounded window predicate is over the
+   **uploader's clock**, because the emitted schema has no server-assigned insertion column at
+   all. A device running slow writes rows a bounded sweep cannot see — making `fullSweepEveryMs`
+   a *detection latency* rather than a tidy-up — and a device running fast **drags its tenant's
+   watermark past real time, after which that tenant goes quiet until the clock catches up.**
+   Not fixable at the poll layer: clamping re-reports the same row forever, and dropping a
+   reading is not something an alarm path may do. T4.2 counts it instead.
 **T4.3 · `ns-realtime`** — `LISTEN` per served tenant, direct connection **not through
 pgbouncer** ({DB} §10.3: transaction-mode pooling accepts `LISTEN` and silently delivers
 nothing).

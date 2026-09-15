@@ -5,6 +5,14 @@ Under test: `crm-seam` at **`239f8c25`** ("Close the seam between the tenant rea
 writer"), read from an independent detached worktree. **No shipping code was changed by this work
 and nothing was committed to the branch under test.**
 
+**The branch moved during this work and the findings still apply.** `crm-seam` advanced to
+`29749d92` (T3.3 and T3.5 — per-tenant contexts and tenant socket rooms) while this ran;
+`git diff 239f8c25..29749d92` is **empty** for every module measured here —
+`lib/storage/postgres-storage.js`, `lib/storage/tenant-scope.js`, `lib/storage/postgres/`,
+`lib/api3/storage/pgCollection/`, `tests/support/postgres.js`,
+`tests/postgres-entries-rls.test.js` and `package.json`. Checked rather than assumed, because a
+verification of a commit nobody is on any more is worth nothing.
+
 Arms: real PostgreSQL **16.14** and a real **pgbouncer 1.25.2** in front of it, in each of its
 three pooling modes, connected as a `NOSUPERUSER NOBYPASSRLS` role against the **emitted** schema
 (`lib/storage/postgres/generated/entries.sql`) under `FORCE ROW LEVEL SECURITY`.
@@ -17,6 +25,7 @@ This closes one row of the execution plan's *"What is still unmeasured"* table:
 |---|---|
 | **{P}** | [multitenancy execution plan](../30-design/nightscout-multitenancy-execution-plan-2026-09-14.md) — §7 the unmeasured table, and the `is_local` vacuity note above it |
 | **{T}** | [T2.5 PostgreSQL backend verification](t25-postgres-backend-verification-2026-09-15.md) — house style, and the run this one follows |
+| **{M}** | [Nightscout multitenancy: evidence and options](../30-design/nightscout-multitenancy-discussion-2026-09-09.md) — §6.7, the claim this checks |
 | **{B}** | [backfix register](../30-design/nightscout-backfix-register.md) |
 
 ---
@@ -168,10 +177,10 @@ own `idleTimeoutMillis` (10 s by default) closing an idle client. Measured:
 
 | mode | concurrent interleave |
 |---|---|
-| transaction | **25/25 rounds in 193 ms** — 8 ms/round |
-| session | **2/25 rounds in 80 095 ms** — 40 048 ms/round |
+| transaction | **25/25 rounds in 48 ms** — 2 ms/round |
+| session | **2/25 rounds in 80 119 ms** — 40 060 ms/round |
 
-That is a ~5000× difference on the same work, and it is not a subtlety of the configuration: any
+That is roughly a 20 000× difference per round on the same work, and it is not a subtlety of the configuration: any
 deployment whose client-side pool is larger than its pgbouncer pool will do this. It is a
 *performance* result, not an isolation one — isolation held in every round that ran — but it is the
 reason `transaction` is the mode {M} §6.7 is talking about.
@@ -280,22 +289,28 @@ ran, across both tenants' clients and the unbound bystander, across serial and c
 **one distinct pid**. Example, transaction mode, GREEN:
 
 ```
-SERIAL HANDOFF        : 10/10 rounds in 151 ms, 1 distinct backend pid(s) [323]
-CONCURRENT INTERLEAVE : 25/25 rounds in 193 ms, 50 bound txns + 50 unbound reads
-  SHARED BACKEND      : YES (1 distinct pid) [323]
+SERIAL HANDOFF        : 10/10 rounds in 49 ms, 1 distinct backend pid(s) [395]
+CONCURRENT INTERLEAVE : 25/25 rounds in 48 ms, 50 bound txns + 50 unbound reads
+  SHARED BACKEND      : YES (1 distinct pid) [395]
 ```
 
 **pgbouncer's own account**, off the admin console:
 
 ```
 SHOW POOLS   : db=postgres user=ns_test_app_… cl_active=0 sv_active=0 sv_idle=1 sv_used=0 pool_mode=transaction
-SHOW SERVERS : pid=323 state=idle
+SHOW SERVERS : pid=395 state=idle
 SHOW CONFIG  : default_pool_size="1" pool_mode="transaction" server_reset_query="DISCARD ALL"
                server_reset_query_always="0" max_prepared_statements="200" server_lifetime="3600"
 ```
 
 One server connection existed for the pool, its backend pid is the pid both tenants' transactions
 ran on, and pgbouncer agrees.
+
+The whole battery was run **four times** while the harness was being built out. Every isolation
+number above reproduced exactly on each run — `0` green, `50` and `250` red, one backend pid. The
+per-round *timings* did not: the transaction-mode concurrent interleave came in at 39 ms, 48 ms,
+59 ms and 193 ms for the same 25 rounds, which is the ordinary noise of a loopback container and
+the reason §7 measures cost somewhere else.
 
 ---
 
