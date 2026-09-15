@@ -710,7 +710,16 @@ This directly settles the `$expr` question T1.2 deferred: no client sends it, so
 `profile.list_query` site is a decision about a server capability with a test, not about
 breaking a known consumer.
 
-**T2.5 · `entries` end-to-end on Postgres + RLS.**
+**T2.5 · `entries` end-to-end on Postgres + RLS. — IN PROGRESS 2026-09-15**
+
+Every prerequisite is now in place, which is worth stating because they were added in four
+different milestones and it is not obvious from any one of them: the **backend lookup** (T2.0),
+the **transaction scope** RLS binding needs (§9.1 — `set_config(…, is_local => true)` is
+transaction-local), the **DDL and its `columnTypes` manifest** (T2.1), the **filter adapter
+validated against a live mongod** (T2.3 + §8.6.2, 3000/3000 cross-type), and the
+**backend-selectable test harness** (T1.3). The two items left open behind T2.0 — routing
+`storageClear` through the harness, and per-run namespace isolation — fall to this task, because
+it is the first one that actually needs them.
 EXP-MT-037. Connect as a role that is **`NOSUPERUSER NOBYPASSRLS`** — {DB} §8.1 nearly
 published two false findings because the test ran as superuser, and RLS is silently not
 enforced for superusers.
