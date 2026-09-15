@@ -52,6 +52,7 @@ criterion is what makes the rest of the table mean something.
 | id | defect | where | severity | status |
 |---|---|---|---|---|
 | **BF-21** | `bulkUpsert` on PostgreSQL takes no options argument, so the `{mode:'replace'}` every shipping caller sends is silently ignored and the write merges | `lib/api3/storage/pgCollection/index.js` `bulkUpsert` | **high** — a deleted field survives for good; the two backends drift apart with every write | open |
+| **BF-22** | A Google Home request changes the display language **for the whole process**, alarm level names included, until something changes it back | `lib/api/googlehome/index.js:27` + the one `language` instance at `lib/server/server.js:34` | medium — gated on the Google Home plugin being enabled; reaches alarm text | yes | open |
 | **BF-22** | `updateOne` with a dotted field stores a nested object on MongoDB and a literal dotted key on PostgreSQL | `lib/api3/storage/pgCollection/index.js` + `lib/api3/generic/patch/operation.js:85` | **medium** — client-reachable via v3 `PATCH`; the PostgreSQL key is unreachable by any path lookup | open |
 | **BF-23** | A duplicate-key error reaches the caller as the backend's own error class | both adapters | low — no shipping caller branches on it | open |
 | **BF-25** | A credential carried in the request **body** is invisible to the tenant claim check, so tenant A's token authorises A's roles against tenant B's bound data | `lib/server/tenant-middleware.js` `presentedCredential` + `lib/authorization/index.js:40-50` | **high** — cross-tenant read *and write* with any client on default config | open |
@@ -749,6 +750,48 @@ programme** — `delaylist.js` and the `TRUST_PROXY` default both predate it.
 *Related, not the same*: T3.1 avoids this class for tenant resolution by reading
 `req.headers.host` directly and refusing to honour a configured alternative header unless
 `TRUST_PROXY` is set. That is the pattern the fix above generalises.
+
+### BF-22 · One request re-languages the whole process, alarms included
+
+Found while fixing a blind spot in `tools/qc/tenant-shared-state.js` (see
+[the audit](../60-research/tenant-shared-state-audit-2026-09-15.md) §4a): the tool could not see
+a singleton created by a factory and held at a call site, and `language` is the widest one in the
+server.
+
+`lib/server/server.js:34` builds **one** language instance for the process and passes it to
+`bootevent`. `lib/api/googlehome/index.js:20-29` then does this inside a request handler:
+
+```js
+ctx.language.set(locale);
+moment.locale(locale);
+```
+
+`language.set` assigns `language.lang` on that shared instance — it is a persistent mutation, not
+a per-call option — and `moment.locale` is a global mutation of the library. So **one
+authenticated request changes the language for every subsequent request and every notification
+in the process**, until another request changes it back.
+
+`lib/server/bootevent.js:212` carries it into the alarm path: `ctx.levels.translate =
+ctx.language.translate`, so level names (`Urgent`, `Warning`) are translated through the same
+shared instance that the Google Home handler just re-pointed.
+
+**Severity, read honestly.** The route is mounted only `if (ctx.googleHome)`
+(`lib/api/index.js:74`), so it is opt-in, and the caller needs `api:*:read` — which in a family
+deployment is everyone holding the token. The consequence in ordinary use is a display bug. The
+consequence in the alarm path is that a notification can arrive in a language the recipient does
+not read, which for an alarm is a usability failure with a safety edge rather than a cosmetic
+one.
+
+*Fix*: the locale is a property of the **request**, not of the server. Resolve it per request and
+pass it to the handler, rather than setting it on the shared instance; `moment.locale` has a
+per-instance form (`moment().locale(x)`) that avoids the global. Under multitenancy this stops
+being one deployment's bug and becomes a cross-tenant leak, which is why T3.3 named `language`
+and `levels` as still-shared and did not attempt a fix — a correct one is a locale-keyed instance
+cache, since a language file is 45–60 KB and one per tenant is the wrong shape.
+
+*Not reproduced against a live server.* `language.set`'s persistence and the `levels.translate`
+assignment were read and exercised directly; the Google Home route was not driven end to end.
+**Not a regression from this programme** — both predate it.
 
 ## 3. How to use this register
 
