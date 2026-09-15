@@ -156,6 +156,61 @@ down**. That makes it the contract to implement first.
 operators is less code than integrating and constraining a translation library, and the oracle
 is where the leverage is.
 
+### 3.4 Type coercion — and no, mongoose is not where to fix it
+
+**The casting gap {M} §6.5 refers to is worse than "a gap", and it is three different bugs.**
+v1 coerces query values through a **hand-maintained per-collection allowlist** (`walker`), not
+from any schema:
+
+| collection | `walker` | source |
+|---|---|---|
+| entries | 7 fields, all `parseInt` | `lib/server/entries.js:186` |
+| treatments | `insulin carbs glucose` → `parseInt`; `notes eventType enteredBy` → regex | `lib/server/treatments.js:260` |
+| profile | `{}` — empty | `lib/server/profile.js:97` |
+| **devicestatus, activity, food** | **none at all** | — |
+
+Run against `lib/server/query.js` directly:
+
+```
+treatments insulin $gte=1.5                  {"insulin":{"$gte":1}}      <- truncated
+treatments carbs   $gte=7.5                  {"carbs":{"$gte":7}}        <- truncated
+entries    sgv     $gte=120                  {"sgv":{"$gte":120}}        <- correct
+entries    delta   $gte=1.5                  {"delta":{"$gte":"1.5"}}    <- still a string
+devicestatus uploader.battery $lt=50         {"uploader.battery":{"$lt":"50"}}  <- still a string
+```
+
+1. **Over-coercion gives wrong answers.** `insulin` and `carbs` are `parseInt`, but
+   `specs/nsschema/treatments.model.json` declares both as `number`. **A query for boluses
+   ≥ 1.5 U returns boluses of 1.0 U.**
+2. **Under-coercion gives silently empty answers.** Any field with no `walker` entry stays a
+   string, and MongoDB orders BSON types before comparing values, so a numeric field never
+   matches a string bound. `devicestatus` and `activity` have no coercion at all, so *every*
+   numeric filter on them matches nothing and returns 200.
+3. **The `walker` is a fourth drift-prone list** beside the OpenAPI spec, `indexedFields` and
+   the nsschema model — exactly what {M} §7.6 warned about.
+
+**Would mongoose fix it? It would fix (1) and (2), in the wrong place.**
+
+- **Mongoose is MongoDB-only, and D4 makes two backends permanent.** Coercion inside mongoose
+  is coercion in one of them; Postgres would need its own, which recreates the drift problem
+  one level up instead of removing it.
+- **Coercion belongs *above* the seam.** The job is "HTTP query string → typed value", which is
+  backend-independent and must happen *before* the repository interface is called — otherwise
+  that interface's contract is "accepts strings or numbers, the backend decides", which is not
+  a contract.
+- **The types are already derived.** `specs/nsschema/` distinguishes exactly the case that is
+  broken — `treatments.insulin: ['null','number']` against `entries.noise: ['integer']` — and
+  five emitters already consume those models.
+
+> **So: a coercion-table emitter is the sixth emitter, feeding one table used by the query
+> parser above the seam, for both backends.** Mongoose keeps the role {M} §7.6 actually scoped
+> it to — write-path validation *inside the MongoDB adapter*, where cast errors and defaults
+> earn their keep and being Mongo-only is fine.
+
+**Compatibility note for whoever ships this:** fixing (2) is user-visible. Queries that
+silently returned nothing will start returning rows. That is the point, and it belongs in
+release notes rather than arriving as a surprise.
+
 ## 4. D4 — what "MongoDB stays" costs the seam
 
 The seam must carry **two mature backends permanently**, not one plus a migration path. Three
@@ -166,7 +221,9 @@ consequences that change how Task A1 is written:
 2. **Both backends stay in CI forever.** Every storage test runs twice.
 3. **`specs/generated/mongoose/` is the single-tenant validation path** — {M} §7.6 already
    recommends mongoose *scoped to the MongoDB adapter only*, with schemas generated from
-   `specs/` rather than hand-maintained. That recommendation is now load-bearing.
+   `specs/` rather than hand-maintained. That recommendation is now load-bearing — **but see
+   §3.4: mongoose is for write-path validation inside the adapter, not for query coercion**,
+   which has to sit above the seam to serve both backends from one table.
 
 ## 5. D9 — base branch
 
@@ -220,6 +277,19 @@ prize; it does not license the patch.
 *Done*: `node --expose-gc tools/mt-bench/apitier.js cycle` shows clone cost < 1 ms; full suite
 passes; a test pins the mutation semantics either way.
 *Evidence*: {R} §12.3.
+
+**T0.5 · Schema-driven query type coercion.**
+Emit a coercion table from `specs/nsschema/*.model.json` (sixth emitter, beside
+`mongoose_emit.py` et al.) and drive `lib/server/query.js`'s walker from it instead of the
+hand-maintained per-collection lists. Fixes three measured bugs (§3.4): `insulin`/`carbs`
+truncated by `parseInt` despite being declared `number`; every numeric filter on
+`devicestatus`, `activity`, `food` and `profile` silently matching nothing; and a fourth
+drift-prone list. **Ships to single-tenant operators independently of everything else.**
+*Done*: the §3.4 cases produce correctly-typed output; a test asserts the emitted table matches
+the model for every collection; the full suite passes. **Release-note the behaviour change** —
+queries that returned nothing will start returning rows.
+*Depends on*: nothing. *Blocks*: nothing, but makes T2.3/T2.4 much easier because the typed
+value is then backend-independent.
 
 **T0.4 · Start and interval jitter in `nightscout-connect`.**
 800 actors fire their first upstream request inside one second on every restart and deploy
