@@ -820,6 +820,29 @@ claim verified against the resolved tenant (reject on mismatch). {M} §5.2 item 
 path. Note {C}'s finding that this is a *cache* with a graceful fallback, not the source of
 truth.
 
+**Two blockers, named before the task starts** — measured 2026-09-15, see
+[the shared-state audit](../60-research/tenant-shared-state-audit-2026-09-15.md) and
+`tools/qc/tenant-shared-state.js`. Of 70 files carrying module-level mutable state, only **six**
+are server-resident *and* written after load; the other 40 are browser files loaded once per
+page, by one person, for one site. Two of the six were confirmed by **running** them:
+
+1. **`env` is one object for the whole process.** `lib/server/env.js:13` declares
+   `const env = {…}` at module scope and `config()` returns *that* object. So §5.2 item 3 is not
+   "audit every read of `env.settings`" — **there is only one `env` to read**, and a second
+   `config()` overwrites the first's values in place. Two contexts cannot hold different
+   settings.
+2. **The MongoDB connection is a process singleton keyed by nothing.**
+   `lib/storage/mongo-storage.js:7` holds one `client`/`db`, `:111` short-circuits on them, and
+   T2.5's `STORAGE_NAMESPACE` is resolved once at first connect. Measured: tenant B asks for its
+   own namespace and **is handed tenant A's**, while the server logs `Reusing MongoDB connection
+   handler`. Latent today (`bootevent` calls `init()` once) and **not** latent under
+   `ctxFor(tenantId)`, which is exactly the thing that calls it twice.
+
+The PostgreSQL backend does not have this shape — its isolation is a per-transaction
+`set_config` on a pooled connection, so two tenants sharing one pool is the *designed* case
+rather than an accident. That contrast is D4 restated as a code property: two deployment targets
+over one shared core, and this is one of the places the core is not yet shared.
+
 **T3.4 · Ack/snooze state into storage**, replacing `lib/notifications.js:15`'s module-scope
 map. {M} §3.1's blocker, resolved for tenancy reasons rather than teardown reasons, **with a
 regression test** — nothing on the modernization branch records why that state is per-instance,
