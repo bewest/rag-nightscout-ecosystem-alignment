@@ -549,11 +549,58 @@ queries that returned nothing will start returning rows.
 *Depends on*: nothing. *Blocks*: nothing, but makes T2.3/T2.4 much easier because the typed
 value is then backend-independent.
 
-**T0.4 · Start and interval jitter in `nightscout-connect`.**
-800 actors fire their first upstream request inside one second on every restart and deploy
-(`run()` sends `START` with no jitter), and stay phase-locked on the same five-minute boundary
-after. Independent of everything else here.
-*Evidence*: {R} §6.2.
+**T0.4 · Start and interval jitter in `nightscout-connect`. — DONE 2026-09-15**
+`fix/connect-timer-jitter` `c1cce2a`, based on `b77e5bb` (the commit `chore/nightscout-modernization`
+pins). 19 new tests, suite **135 pass / 0 fail**, every part of the change reverted in turn and
+caught by at least one test. Harness: `tools/mt-bench/vcherd.js` (EXP-MT-048b), local mock only —
+no vendor endpoint contacted and no credentials used.
+
+**Two corrections to the task as written, and they point in opposite directions.**
+
+*The task was half wrong about the defect.* "Stay phase-locked on the same five-minute boundary
+after" is not true: all four vendor drivers already spell an 18-second random window into the
+timestamp they align to. At 400 actors over 700 s the later cycles arrive as a band about 15 s
+wide peaking at **30 requests/s**; the first cycle is **400 in one second**, 13× that. The
+unjittered moments are the **start** and the **unaligned interval** (the branch taken when a
+source declines to align — i.e. when the vendor has produced nothing new and the pool is already
+stepping together). Both are now windows on the cycle machine rather than a constant copied into
+four drivers: `CONNECT_START_JITTER_MS` and `CONNECT_INTERVAL_JITTER_MS`. At 400 actors, 60 s of
+start jitter takes the busiest second **400 → 15**.
+
+*And this task does not belong in Phase 0 on the grounds Phase 0 states.* **Both windows default
+to `0`** — one connector is not a herd, and a self-hosted site would only be delaying its own
+first reading. The jitter therefore ships a knob the **hosted vendor pool** must set, not a fix
+every existing operator receives. That does not make it the wrong work; it makes the
+justification different, and §7's EXP-MT-051 row is where it lands.
+
+**What it *did* ship to every operator is a defect found one file over: [BF-34].**
+`lib/backoff.js` merged its options as `{ ...config, ...defaults }` — defaults last — so every
+value any caller passed was discarded. All five sources ask for a 2.5-minute retry interval (the
+`nightscout` source asks 10 s for its frame retry) and every one of them got the 256 ms default:
+**586× faster than written**, with `use_random_slot` forced `false` so a pool that fails together
+retries in lockstep. Measured with the upstream refusing authentication, 100 actors delivered the
+same 800 requests across **3 seconds** before and **67 seconds** after.
+
+The precedence fix could not ship alone — `exponent_ceiling` caps the exponent, not the delay, so
+honouring the configured interval by itself puts attempt 20 at five years. `max_interval_ms` and
+two cadence-relative ceilings landed in the same change; the six-interval cycle cap is a
+**judgement flagged as one** in the code and in the register.
+
+**One thing the vcpool entrypoint has to know.** Start jitter de-phases the first cycle and
+nothing after it: from cycle 2 on, alignment re-anchors every actor to the data's own shared
+boundary, so the pool re-locks and the driver's 18-second window bounds the peak again. Over
+700 s at 400 actors the busiest second falls **400 → 34**, and all of that is the start — the
+later bands peak at 30/s shipped and 34/s jittered. **A permanently flatter profile means
+widening the driver's alignment window**, which is a change to four vendor files and is not in
+this fix. That decision needs the EXP-MT-051 number to be made rather than guessed.
+
+*Lands on operators when* `cgm-remote-monitor`'s `package.json` pin moves off `b77e5bb`.
+**Release-note it**: a vendor outage will look slower to recover, because it stops retrying in a
+burst that could not have worked.
+
+*Evidence*: {R} §6.2 (the original reading, now partly superseded),
+[the register](nightscout-backfix-register.md) BF-08 and BF-34,
+`tools/mt-bench/results/exp-mt-048b-*.json`.
 
 ### Phase 1 — the seam (the real prerequisite)
 
@@ -1494,7 +1541,7 @@ whether a batching or replaying evaluator may own its own clock — `sbx.time` i
 | **Working set past cache size** | T2.5 | {DB} §7's 400-tenant run is where cache pressure *starts* |
 | ~~**pgbouncer + `set_config(is_local)`**~~ **CLOSED 2026-09-15** | T2.5 | [pgbouncer and the D3 binding](../60-research/pgbouncer-tenant-binding-2026-09-15.md): **isolation holds** in both session and transaction pooling, proven on a shared backend pid — transaction mode is the one hosters want and it works |
 | **Active fraction (15 %)** is an assumption | — | Drives A and B far harder than C; a real hoster's figure would sharpen the cost model |
-| **Vendor rate limits** (EXP-MT-051) | T0.4 | Needs real credentials; the 9,700-account machinery figure is a ceiling the real answer sits well below |
+| **Vendor rate limits** (EXP-MT-051) | — (T0.4 is done) | Needs real credentials; the 9,700-account machinery figure is a ceiling the real answer sits well below. T0.4 shipped `CONNECT_START_JITTER_MS`, so the pool can now be spread — **but the window to set it is exactly the number this row says is unmeasured** |
 | **Reconnect storms, `UNLISTEN` churn** | T4.3 | The interesting realtime case, and not covered |
 
 ## 7a. What stands between here and alarms being ON under `multi`

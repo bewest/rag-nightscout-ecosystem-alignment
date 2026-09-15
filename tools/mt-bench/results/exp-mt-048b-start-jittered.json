@@ -1,0 +1,283 @@
+{
+  "experiment": "EXP-MT-048b vendor-pool request arrival distribution",
+  "arm": "start",
+  "ncRoot": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/nc-jitter",
+  "startJitterMs": 60000,
+  "intervalJitterMs": 0,
+  "requestedAccounts": 400,
+  "constructedActors": 400,
+  "actorsHeardFrom": 400,
+  "windowSeconds": 90,
+  "note": "mock upstream only; no vendor endpoint contacted, no credentials used",
+  "startAllMs": 99.4,
+  "firstContact": {
+    "n": 400,
+    "firstMs": 382.9,
+    "p50Ms": 32152.2,
+    "lastMs": 60041.7,
+    "spreadMs": 59658.8,
+    "busiestSecond": 15,
+    "busiestTenSeconds": 83
+  },
+  "dataFetches": {
+    "n": 400,
+    "firstMs": 1239.2,
+    "p50Ms": 32154.8,
+    "lastMs": 60043.7,
+    "spreadMs": 58804.5,
+    "busiestSecond": 15,
+    "busiestTenSeconds": 83
+  },
+  "storedDocuments": 1200,
+  "totalUpstreamRequests": 800,
+  "requestsByPath": {
+    "/api/v1/verifyauth": 400,
+    "/api/v1/entries.json": 400
+  },
+  "requestsPerSecondHistogram": [
+    {
+      "second": 0,
+      "requests": 5
+    },
+    {
+      "second": 1,
+      "requests": 11
+    },
+    {
+      "second": 2,
+      "requests": 10
+    },
+    {
+      "second": 3,
+      "requests": 18
+    },
+    {
+      "second": 4,
+      "requests": 20
+    },
+    {
+      "second": 5,
+      "requests": 20
+    },
+    {
+      "second": 6,
+      "requests": 10
+    },
+    {
+      "second": 7,
+      "requests": 14
+    },
+    {
+      "second": 8,
+      "requests": 8
+    },
+    {
+      "second": 9,
+      "requests": 10
+    },
+    {
+      "second": 10,
+      "requests": 16
+    },
+    {
+      "second": 11,
+      "requests": 8
+    },
+    {
+      "second": 12,
+      "requests": 10
+    },
+    {
+      "second": 13,
+      "requests": 16
+    },
+    {
+      "second": 14,
+      "requests": 12
+    },
+    {
+      "second": 15,
+      "requests": 18
+    },
+    {
+      "second": 16,
+      "requests": 20
+    },
+    {
+      "second": 17,
+      "requests": 8
+    },
+    {
+      "second": 18,
+      "requests": 10
+    },
+    {
+      "second": 19,
+      "requests": 14
+    },
+    {
+      "second": 20,
+      "requests": 8
+    },
+    {
+      "second": 21,
+      "requests": 12
+    },
+    {
+      "second": 22,
+      "requests": 18
+    },
+    {
+      "second": 23,
+      "requests": 14
+    },
+    {
+      "second": 24,
+      "requests": 4
+    },
+    {
+      "second": 25,
+      "requests": 16
+    },
+    {
+      "second": 26,
+      "requests": 16
+    },
+    {
+      "second": 27,
+      "requests": 10
+    },
+    {
+      "second": 28,
+      "requests": 7
+    },
+    {
+      "second": 29,
+      "requests": 11
+    },
+    {
+      "second": 30,
+      "requests": 6
+    },
+    {
+      "second": 31,
+      "requests": 19
+    },
+    {
+      "second": 32,
+      "requests": 9
+    },
+    {
+      "second": 33,
+      "requests": 16
+    },
+    {
+      "second": 34,
+      "requests": 12
+    },
+    {
+      "second": 35,
+      "requests": 12
+    },
+    {
+      "second": 36,
+      "requests": 14
+    },
+    {
+      "second": 37,
+      "requests": 14
+    },
+    {
+      "second": 38,
+      "requests": 10
+    },
+    {
+      "second": 39,
+      "requests": 8
+    },
+    {
+      "second": 40,
+      "requests": 12
+    },
+    {
+      "second": 41,
+      "requests": 16
+    },
+    {
+      "second": 42,
+      "requests": 14
+    },
+    {
+      "second": 43,
+      "requests": 14
+    },
+    {
+      "second": 44,
+      "requests": 18
+    },
+    {
+      "second": 45,
+      "requests": 15
+    },
+    {
+      "second": 46,
+      "requests": 15
+    },
+    {
+      "second": 47,
+      "requests": 20
+    },
+    {
+      "second": 48,
+      "requests": 12
+    },
+    {
+      "second": 49,
+      "requests": 12
+    },
+    {
+      "second": 50,
+      "requests": 10
+    },
+    {
+      "second": 51,
+      "requests": 16
+    },
+    {
+      "second": 52,
+      "requests": 16
+    },
+    {
+      "second": 53,
+      "requests": 8
+    },
+    {
+      "second": 54,
+      "requests": 28
+    },
+    {
+      "second": 55,
+      "requests": 12
+    },
+    {
+      "second": 56,
+      "requests": 18
+    },
+    {
+      "second": 57,
+      "requests": 30
+    },
+    {
+      "second": 58,
+      "requests": 16
+    },
+    {
+      "second": 59,
+      "requests": 2
+    },
+    {
+      "second": 60,
+      "requests": 2
+    }
+  ]
+}

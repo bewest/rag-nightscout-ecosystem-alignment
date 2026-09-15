@@ -1,0 +1,51 @@
+{
+  "experiment": "EXP-MT-048b vendor-pool request arrival distribution",
+  "arm": "fail",
+  "ncRoot": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/nc-base",
+  "startJitterMs": 0,
+  "intervalJitterMs": 0,
+  "requestedAccounts": 100,
+  "constructedActors": 100,
+  "actorsHeardFrom": 100,
+  "windowSeconds": 120,
+  "note": "mock upstream only; no vendor endpoint contacted, no credentials used",
+  "startAllMs": 37.4,
+  "firstContact": {
+    "n": 100,
+    "firstMs": 254.3,
+    "p50Ms": 323.7,
+    "lastMs": 372.5,
+    "spreadMs": 118.3,
+    "busiestSecond": 100,
+    "busiestTenSeconds": 100
+  },
+  "dataFetches": {
+    "n": 0,
+    "firstMs": null,
+    "p50Ms": null,
+    "lastMs": null,
+    "spreadMs": null,
+    "busiestSecond": 0,
+    "busiestTenSeconds": 0
+  },
+  "storedDocuments": 0,
+  "totalUpstreamRequests": 800,
+  "requestsByPath": {
+    "/api/v1/verifyauth": 400,
+    "/api/v2/authorization/subjects": 400
+  },
+  "requestsPerSecondHistogram": [
+    {
+      "second": 0,
+      "requests": 400
+    },
+    {
+      "second": 1,
+      "requests": 200
+    },
+    {
+      "second": 3,
+      "requests": 200
+    }
+  ]
+}

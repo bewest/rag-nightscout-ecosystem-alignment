@@ -52,11 +52,12 @@ raised again).
 | **BF-31** | A Google Home **or Alexa** request re-points the shared `language` instance and `moment`'s global locale **for the whole process**, until something changes it back. **Measured 2026-09-15: it does *not* change alarm text** — the catalogue is read once at boot and never reloaded | `lib/api/googlehome/index.js:27` **and `lib/api/alexa/index.js:28`** + the one `language` instance at `lib/server/server.js:34` | **low–medium** — gated on the assistant plugin being enabled; reaches the assistant's own answers, not alarm text | yes | fixed 2026-09-15 (`bf/alarms` `5dcf783f`) |
 | **BF-32** | Query coercion was applied to operands that are not field values, so `find[sgv][$exists]=true` became `{$exists: NaN}` — falsy, returning exactly the documents that lack the field | `lib/server/query.js` `walk_prop` | **medium** — inverted answer, HTTP 200; reachable on the 10 fields that had a walker entry | yes | **fixed 2026-09-15** (found during T0.5, `bf/coercion` `88d1f8a4`) |
 | **BF-33** | API v3 `?limit=0x10` passes the `API3_MAX_LIMIT` check as 16 and reaches the driver as `.limit(0)` — *no limit*; `?limit=1e2` returns one document | `lib/api3/generic/collection.js` `parseLimit` | **high** — unbounded read, HTTP 200, and the ceiling that exists to prevent it is bypassed | yes | **fixed 2026-09-15** (`bf/reads` `ea50cf52`); found while fixing BF-14, reproduced live |
+| **BF-34** | `backoff()` merges its options as `{ ...config, ...defaults }`, so **every value any caller passes is discarded**. All five vendor sources configure a 2.5-minute retry interval and every one of them gets the 256 ms default — 586× faster — and `use_random_slot` is forced `false`, so a pool that fails together retries in exact lockstep | `nightscout-connect` `lib/backoff.js` | **high** — a vendor that is refusing requests gets hammered by every account at once, which is when it can least afford it | yes | **fixed 2026-09-15** (found during T0.4, `fix/connect-timer-jitter` `c1cce2a`); 100 actors delivered the same 800 requests across 3 s before and 67 s after |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | **fixed 2026-09-15** (`bf/reads` `c8fb536b`) — deleted, not gated; the module has no `env` handle |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | **fixed 2026-09-15** (T0.2, `bf/cache` `ddcdb1a8`); 0.837 → 0.025 ms, response asserted identical over HTTP |
 | **BF-07** | `cache.insertData` JSON round-trips the whole retained array | `lib/server/cache.js:81` | medium — 65 % of the load cycle | yes | **partly fixed 2026-09-15** (T0.3, `bf/cache` `4f86bab1`); 3.75 → 2.66 ms per cycle — **devicestatus keeps its clone on purpose, see detail** |
-| **BF-08** | `nightscout-connect` actors have no start or interval jitter | `nightscout-connect`, `run()` | medium — thundering herd on restart | yes | open |
+| **BF-08** | `nightscout-connect` actors have no start jitter — a pool reaches the vendor inside one second on every restart. **The interval half of this entry was wrong**: all four drivers already jitter the aligned path by 18 s | `nightscout-connect` `lib/machines/cycle.js` `Init`, and `run()` | medium — thundering herd on restart | yes | **fixed 2026-09-15** (T0.4, `fix/connect-timer-jitter` `c1cce2a`); measured at 400 actors, busiest second 400 → 15 |
 | **BF-09** | Socket dedup uses truthiness, so a `0` insulin/carbs value is skipped as a match key | `lib/server/websocket.js:535-568` | **unsettled** — may be intentional | yes | open |
 | **BF-10** | `mongod` fatal-asserts at Docker's default `nofile=1024` | operational, not code | medium — self-hosters in containers | yes | open |
 
@@ -764,11 +765,110 @@ clone added to the insert path in the first draft turned out to be redundant and
 deleting it failed to turn any test red. Write-up, including the non-vacuity runs, in
 [T0.2/T0.3](../60-research/t02-t03-cache-clone-2026-09-15.md).
 
-### BF-08 · No jitter in `nightscout-connect`
+### BF-08 · No start jitter in `nightscout-connect` — **FIXED 2026-09-15**
 
-800 actors fire their first upstream request inside one second on every restart and deploy
-(`run()` sends `START` with no jitter), and stay phase-locked on the same five-minute boundary
-afterwards. Different repository; independent of everything else here. *Evidence*: {R} §6.2.
+The original entry, from {R} §6.2, said two things. The first was right and the second was not.
+
+**Right: the start is a herd.** `run()` sends `START`, and the cycle machine walked
+`Init → Ready → Operating` with no delay on any edge, so every actor in a pool issued its first
+upstream request in the same instant. Measured at **400 actors** against a local mock: all 400
+first contacts inside **216 ms**, busiest second **400**.
+
+**Wrong: "and stay phase-locked on the same five-minute boundary afterwards."** The poll
+interval is *not* unjittered. All four vendor drivers independently spell
+`Math.floor(Math.random() * 18000)` into the timestamp they align to — `nightscout.js:161`,
+`dexcomshare.js:233`, `librelinkup.js:182`, `minimedcarelink/index.js:662`. Over a 700-second
+run at 400 actors the later cycles arrive as a **band about 15 s wide peaking at 30 requests/s**,
+not as a spike. The first cycle is 13× that peak, which is the whole of the effect §6.2 saw.
+
+So the unjittered moments are **the start**, and **the unaligned interval** — the branch taken
+when a source declines to align at all, which is exactly the case where the vendor has produced
+nothing new and the pool is already stepping together.
+
+*Fix*: both are windows on the cycle machine rather than a constant copied into each driver
+(`CONNECT_START_JITTER_MS`, `CONNECT_INTERVAL_JITTER_MS`). The aligned path is left alone: that
+timestamp belongs to the driver, which already carries its own spread, and adding more would
+push the fetch past the window the driver aimed at.
+
+**No `cgm-remote-monitor` change is needed to set them**, and that was checked rather than
+assumed: with `ENABLE=connect`, `lib/server/env.js`'s extended-settings pass turns
+`CONNECT_START_JITTER_MS=60000` into `connect.startJitterMs = 60000` — already a `Number`, and
+already the key `index.js` reads.
+
+**Both default to `0`, so nothing changes for anyone who does not ask.** One connector is not a
+herd; a self-hosted site would only be delaying its own first reading. This is the part of T0.4
+that does *not* ship value to every existing operator — it ships a knob the hosted vendor pool
+must set. What ships to every operator from that task is [BF-34](#bf-34--every-configured-retry-interval-was-discarded--fixed-2026-09-15),
+found while doing it.
+
+With `CONNECT_START_JITTER_MS=60000` at 400 actors the busiest second goes **400 → 15**, and the
+spread **216 ms → 59.7 s**.
+
+**One finding a hoster has to know before relying on this.** Start jitter de-phases the *first*
+cycle and nothing after it. From cycle 2 on, alignment re-anchors every actor to the data's own
+shared boundary, so the pool re-locks and the 18-second driver window is what bounds the peak
+again. Over the full 700-second run:
+
+| 400 actors, 700 s | shipped | `START_JITTER_MS=60000`, `INTERVAL_JITTER_MS=60000` |
+|---|---:|---:|
+| first-contact spread | 211.6 ms | 59.5 s |
+| busiest second, whole run | **400** | **34** |
+| seconds carrying any traffic | 40 | 99 |
+| upstream requests | 1600 | 1636 |
+
+The peak falls 11.8×, and all of that comes from the start: the later bands peak at 30/s
+shipped and 34/s jittered, which is the same number. **A pool that needs a permanently flatter
+profile has to widen the driver's alignment window, not the start** — that is a change to the
+four vendor drivers and is not in this fix.
+
+*Evidence*: `tools/mt-bench/vcherd.js` (EXP-MT-048b) and `tools/mt-bench/results/exp-mt-048b-*.json`;
+{R} §6.2 for the original reading, which §6.2 should now be read against.
+
+### BF-34 · Every configured retry interval was discarded — **FIXED 2026-09-15**
+
+`lib/backoff.js` built its options as `{ ...config, ...defaults }`. **The defaults go last, so
+they win.** Every value a caller passed was silently thrown away.
+
+Every shipped source configures one:
+
+| source | frame retry asks for | cycle backoff asks for | both received |
+|---|---:|---:|---:|
+| `nightscout` | 10 s | 2.5 min | 256 ms |
+| `dexcomshare` | 2.5 min | 2.5 min | 256 ms |
+| `librelinkup` | 2.5 min | 2.5 min | 256 ms |
+| `glooko` | 2.5 min | 2.5 min | 256 ms |
+| `minimedcarelink` | 2.5 min | 2.5 min | 256 ms |
+
+That is **586× faster** than written for four of them and 39× for the fifth. `use_random_slot`
+went the same way: forced to `false`, so the random slot the module implements has never been
+reachable by any caller, and a pool that fails together retries on the same millisecond.
+
+**Measured**, 100 actors against a mock that refuses authentication: the same **800 requests**
+in both arms, delivered across **3 seconds** by the shipped code and across **67 seconds**
+after the repair. The busiest second goes 400 → 200, and the 200 that remain are the first
+attempt, which is immediate by design — spreading *that* is BF-08's job, not this one.
+
+**The precedence fix cannot ship alone**, and this is the part worth carrying:
+`exponent_ceiling: 20` caps the *exponent*, not the delay. Honour the configured 2.5 minutes
+and attempt 10 becomes 42 hours, attempt 12 becomes **7.1 days** and attempt 20 becomes 5 years. Fixing the merge order by
+itself would trade a retry storm for a feed that never comes back — strictly worse for the
+person wearing the sensor. So the same change adds `max_interval_ms`, and `lib/builder.js`
+states both ceilings as a relationship to the loop's own cadence rather than as constants:
+
+- **frame retry → one poll interval.** Waiting longer than the next scheduled cycle cannot
+  help; the cycle would have re-fetched by then anyway.
+- **cycle backoff → six poll intervals** (30 minutes on the five-minute cadence every source
+  declares). This bounds how long a feed stays dark after a long vendor outage. **Six is a
+  judgement, not a measurement**, and says so in the code.
+
+Jitter modes are named — `none`, `full`, `equal` — and default to `equal`, which keeps half the
+delay and spreads the rest. Full jitter can return ~0 on any attempt, which weakens the backoff
+it is there to spread.
+
+*Blast radius*: this changes retry timing for every operator running the connector, in the
+direction the source authors wrote down. It reaches them when `cgm-remote-monitor`'s
+`package.json` pin moves off `b77e5bb`; **release-note it** — a vendor outage will now look
+slower to recover, because it stops retrying in a burst that could not have worked.
 
 ### BF-09 · Socket dedup truthiness — unsettled, deliberately
 

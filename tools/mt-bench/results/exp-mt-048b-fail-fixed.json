@@ -1,0 +1,307 @@
+{
+  "experiment": "EXP-MT-048b vendor-pool request arrival distribution",
+  "arm": "fail",
+  "ncRoot": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/nc-jitter",
+  "startJitterMs": 0,
+  "intervalJitterMs": 0,
+  "requestedAccounts": 100,
+  "constructedActors": 100,
+  "actorsHeardFrom": 100,
+  "windowSeconds": 120,
+  "note": "mock upstream only; no vendor endpoint contacted, no credentials used",
+  "startAllMs": 29,
+  "firstContact": {
+    "n": 100,
+    "firstMs": 239,
+    "p50Ms": 306.4,
+    "lastMs": 355.4,
+    "spreadMs": 116.4,
+    "busiestSecond": 100,
+    "busiestTenSeconds": 100
+  },
+  "dataFetches": {
+    "n": 0,
+    "firstMs": null,
+    "p50Ms": null,
+    "lastMs": null,
+    "spreadMs": null,
+    "busiestSecond": 0,
+    "busiestTenSeconds": 0
+  },
+  "storedDocuments": 0,
+  "totalUpstreamRequests": 800,
+  "requestsByPath": {
+    "/api/v1/verifyauth": 400,
+    "/api/v2/authorization/subjects": 400
+  },
+  "requestsPerSecondHistogram": [
+    {
+      "second": 0,
+      "requests": 200
+    },
+    {
+      "second": 5,
+      "requests": 32
+    },
+    {
+      "second": 6,
+      "requests": 38
+    },
+    {
+      "second": 7,
+      "requests": 42
+    },
+    {
+      "second": 8,
+      "requests": 38
+    },
+    {
+      "second": 9,
+      "requests": 44
+    },
+    {
+      "second": 10,
+      "requests": 6
+    },
+    {
+      "second": 21,
+      "requests": 4
+    },
+    {
+      "second": 22,
+      "requests": 6
+    },
+    {
+      "second": 23,
+      "requests": 10
+    },
+    {
+      "second": 24,
+      "requests": 18
+    },
+    {
+      "second": 25,
+      "requests": 16
+    },
+    {
+      "second": 26,
+      "requests": 10
+    },
+    {
+      "second": 27,
+      "requests": 6
+    },
+    {
+      "second": 28,
+      "requests": 14
+    },
+    {
+      "second": 29,
+      "requests": 14
+    },
+    {
+      "second": 30,
+      "requests": 14
+    },
+    {
+      "second": 31,
+      "requests": 6
+    },
+    {
+      "second": 32,
+      "requests": 20
+    },
+    {
+      "second": 33,
+      "requests": 4
+    },
+    {
+      "second": 34,
+      "requests": 14
+    },
+    {
+      "second": 35,
+      "requests": 18
+    },
+    {
+      "second": 36,
+      "requests": 8
+    },
+    {
+      "second": 37,
+      "requests": 10
+    },
+    {
+      "second": 38,
+      "requests": 8
+    },
+    {
+      "second": 59,
+      "requests": 2
+    },
+    {
+      "second": 61,
+      "requests": 2
+    },
+    {
+      "second": 63,
+      "requests": 2
+    },
+    {
+      "second": 64,
+      "requests": 2
+    },
+    {
+      "second": 66,
+      "requests": 8
+    },
+    {
+      "second": 67,
+      "requests": 6
+    },
+    {
+      "second": 68,
+      "requests": 2
+    },
+    {
+      "second": 69,
+      "requests": 6
+    },
+    {
+      "second": 70,
+      "requests": 6
+    },
+    {
+      "second": 72,
+      "requests": 6
+    },
+    {
+      "second": 73,
+      "requests": 4
+    },
+    {
+      "second": 74,
+      "requests": 6
+    },
+    {
+      "second": 75,
+      "requests": 4
+    },
+    {
+      "second": 76,
+      "requests": 4
+    },
+    {
+      "second": 77,
+      "requests": 2
+    },
+    {
+      "second": 78,
+      "requests": 2
+    },
+    {
+      "second": 79,
+      "requests": 2
+    },
+    {
+      "second": 80,
+      "requests": 4
+    },
+    {
+      "second": 81,
+      "requests": 8
+    },
+    {
+      "second": 82,
+      "requests": 2
+    },
+    {
+      "second": 83,
+      "requests": 12
+    },
+    {
+      "second": 84,
+      "requests": 6
+    },
+    {
+      "second": 85,
+      "requests": 2
+    },
+    {
+      "second": 86,
+      "requests": 6
+    },
+    {
+      "second": 87,
+      "requests": 4
+    },
+    {
+      "second": 88,
+      "requests": 10
+    },
+    {
+      "second": 89,
+      "requests": 6
+    },
+    {
+      "second": 90,
+      "requests": 4
+    },
+    {
+      "second": 91,
+      "requests": 2
+    },
+    {
+      "second": 92,
+      "requests": 10
+    },
+    {
+      "second": 93,
+      "requests": 12
+    },
+    {
+      "second": 94,
+      "requests": 6
+    },
+    {
+      "second": 96,
+      "requests": 6
+    },
+    {
+      "second": 97,
+      "requests": 6
+    },
+    {
+      "second": 98,
+      "requests": 2
+    },
+    {
+      "second": 99,
+      "requests": 10
+    },
+    {
+      "second": 100,
+      "requests": 2
+    },
+    {
+      "second": 101,
+      "requests": 2
+    },
+    {
+      "second": 102,
+      "requests": 4
+    },
+    {
+      "second": 103,
+      "requests": 4
+    },
+    {
+      "second": 104,
+      "requests": 2
+    },
+    {
+      "second": 106,
+      "requests": 2
+    }
+  ]
+}

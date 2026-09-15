@@ -374,12 +374,31 @@ Two structural observations that do not need vendor access:
    real vendor that is 800 requests from one IP in under a second, **on every pool restart
    and every deploy** — precisely the pattern a per-IP limiter penalises. Start jitter is a
    small, obviously correct change to make before any pool runs at density.
-2. **Phase-locking persists.** Actors started together stay on the same 5-minute boundary, so
-   the burst repeats. The poll interval wants jitter too, not just the start.
+2. ~~**Phase-locking persists.** Actors started together stay on the same 5-minute boundary, so
+   the burst repeats. The poll interval wants jitter too, not just the start.~~
+   **CORRECTED 2026-09-15, by T0.4.** The poll interval already has jitter, and this reading
+   could not see it because the 20-second trace above never reached a second cycle. All four
+   vendor drivers independently spell `Math.floor(Math.random() * 18000)` into the timestamp
+   they align to. Measured over **700 s at 400 actors** (EXP-MT-048b,
+   `tools/mt-bench/vcherd.js`), the second and third cycles arrive as a band about **15 s wide
+   peaking at 30 requests/s** — while the first cycle is **400 requests in one second**, 13×
+   that peak. The burst does not repeat; the start is the burst.
+   What *is* unjittered is the **unaligned** interval — the branch taken when a source declines
+   to align, i.e. when the vendor has produced nothing new — and that is the case where the
+   pool is already stepping together. Both are now configurable
+   (`CONNECT_START_JITTER_MS`, `CONNECT_INTERVAL_JITTER_MS`, each defaulting to 0);
+   see the register's BF-08.
 
-3. **Backoff works.** With a deliberately broken auth mock, one actor made 4 `verifyauth`
-   attempts in 12 s rather than spinning — the exponential backoff in `lib/backoff.js` is
-   doing its job. The failure mode is a herd, not a runaway.
+3. ~~**Backoff works.**~~ With a deliberately broken auth mock, one actor made 4 `verifyauth`
+   attempts in 12 s rather than spinning — so `lib/backoff.js` is not spinning, which is what
+   this could see with one actor.
+   **CORRECTED 2026-09-15, by T0.4.** It was not doing its job. `backoff()` merged its options
+   as `{ ...config, ...defaults }`, so **every value every source passed it was discarded** and
+   every retry ran on the 256 ms default instead of the configured 2.5 minutes, which is why
+   the attempts came as fast as they did. `use_random_slot` was discarded the same
+   way, so the pool retried in lockstep. This is the register's **BF-34**, and it is the reason
+   "the failure mode is a herd, not a runaway" understated it: at 100 actors the shipped code
+   delivered **800 requests in 3 seconds** to an upstream that was refusing every one of them.
 
 ### 6.3 What this means for splitting
 

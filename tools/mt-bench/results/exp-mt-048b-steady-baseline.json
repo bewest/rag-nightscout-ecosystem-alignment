@@ -1,0 +1,199 @@
+{
+  "experiment": "EXP-MT-048b vendor-pool request arrival distribution",
+  "arm": "steady",
+  "ncRoot": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/nc-base",
+  "startJitterMs": 0,
+  "intervalJitterMs": 0,
+  "requestedAccounts": 400,
+  "constructedActors": 400,
+  "actorsHeardFrom": 400,
+  "windowSeconds": 700,
+  "note": "mock upstream only; no vendor endpoint contacted, no credentials used",
+  "startAllMs": 94,
+  "firstContact": {
+    "n": 400,
+    "firstMs": 560.5,
+    "p50Ms": 678.8,
+    "lastMs": 772.1,
+    "spreadMs": 211.6,
+    "busiestSecond": 400,
+    "busiestTenSeconds": 400
+  },
+  "dataFetches": {
+    "n": 1200,
+    "firstMs": 1313.5,
+    "p50Ms": 194635.6,
+    "lastMs": 503450.6,
+    "spreadMs": 502137.1,
+    "busiestSecond": 400,
+    "busiestTenSeconds": 400
+  },
+  "storedDocuments": 3600,
+  "totalUpstreamRequests": 1600,
+  "requestsByPath": {
+    "/api/v1/verifyauth": 400,
+    "/api/v1/entries.json": 1200
+  },
+  "requestsPerSecondHistogram": [
+    {
+      "second": 0,
+      "requests": 400
+    },
+    {
+      "second": 1,
+      "requests": 400
+    },
+    {
+      "second": 185,
+      "requests": 15
+    },
+    {
+      "second": 186,
+      "requests": 26
+    },
+    {
+      "second": 187,
+      "requests": 29
+    },
+    {
+      "second": 188,
+      "requests": 22
+    },
+    {
+      "second": 189,
+      "requests": 22
+    },
+    {
+      "second": 190,
+      "requests": 16
+    },
+    {
+      "second": 191,
+      "requests": 25
+    },
+    {
+      "second": 192,
+      "requests": 19
+    },
+    {
+      "second": 193,
+      "requests": 14
+    },
+    {
+      "second": 194,
+      "requests": 21
+    },
+    {
+      "second": 195,
+      "requests": 17
+    },
+    {
+      "second": 196,
+      "requests": 20
+    },
+    {
+      "second": 197,
+      "requests": 22
+    },
+    {
+      "second": 198,
+      "requests": 21
+    },
+    {
+      "second": 199,
+      "requests": 20
+    },
+    {
+      "second": 200,
+      "requests": 26
+    },
+    {
+      "second": 201,
+      "requests": 24
+    },
+    {
+      "second": 202,
+      "requests": 28
+    },
+    {
+      "second": 203,
+      "requests": 13
+    },
+    {
+      "second": 485,
+      "requests": 19
+    },
+    {
+      "second": 486,
+      "requests": 22
+    },
+    {
+      "second": 487,
+      "requests": 21
+    },
+    {
+      "second": 488,
+      "requests": 21
+    },
+    {
+      "second": 489,
+      "requests": 21
+    },
+    {
+      "second": 490,
+      "requests": 26
+    },
+    {
+      "second": 491,
+      "requests": 18
+    },
+    {
+      "second": 492,
+      "requests": 25
+    },
+    {
+      "second": 493,
+      "requests": 25
+    },
+    {
+      "second": 494,
+      "requests": 18
+    },
+    {
+      "second": 495,
+      "requests": 19
+    },
+    {
+      "second": 496,
+      "requests": 19
+    },
+    {
+      "second": 497,
+      "requests": 17
+    },
+    {
+      "second": 498,
+      "requests": 20
+    },
+    {
+      "second": 499,
+      "requests": 30
+    },
+    {
+      "second": 500,
+      "requests": 22
+    },
+    {
+      "second": 501,
+      "requests": 18
+    },
+    {
+      "second": 502,
+      "requests": 30
+    },
+    {
+      "second": 503,
+      "requests": 9
+    }
+  ]
+}
