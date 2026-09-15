@@ -14,6 +14,7 @@
 import { z } from 'zod';
 
 export const TreatmentsSchema = z.object({
+    NSCLIENT_ID: z.union([z.number(), z.string()]).optional(),
     _id: z.string().optional(),  // 100% of documents, 11 sites, universal
     absolute: z.number().optional(),  // 55% of documents, 10 sites, core
     absorptionTime: z.number().int().optional(),  // 2% of documents, 10 sites, common
@@ -21,9 +22,15 @@ export const TreatmentsSchema = z.object({
     app: z.string().optional(),
     automatic: z.boolean().optional(),  // 81% of documents, 10 sites, core
     bolusType: z.enum(["Dual", "Normal", "Square"]).optional(),
+    boluscalc: z.object({
+      foods: z.array(z.object({
+        _id: z.string().optional(),
+      }).passthrough()).optional(),
+    }).passthrough().optional(),
     carbs: z.number().nullable().optional(),  // 100% of documents, 11 sites, universal
     correctionRange: z.array(z.number()).optional(),  // 0% of documents, 7 sites, common
     created_at: z.string(),  // 100% of documents, 11 sites, universal
+    date: z.number().optional(),
     device: z.string().optional(),
     duration: z.number().optional(),  // 91% of documents, 10 sites, core
     durationType: z.string().optional(),  // 0% of documents, 1 sites, rare

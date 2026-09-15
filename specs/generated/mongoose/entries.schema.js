@@ -18,6 +18,7 @@ const { Schema } = require('mongoose');
 const EntriesSchema = new Schema({
   _id: { type: String },  // 100% of documents, 11 sites; universal
   app: { type: String },
+  created_at: { type: String },
   date: { type: Number, required: true },  // 100% of documents, 11 sites; universal
   dateString: { type: String, required: true },  // 100% of documents, 11 sites; universal
   delta: { type: Number },  // 4% of documents, 1 sites; sparse

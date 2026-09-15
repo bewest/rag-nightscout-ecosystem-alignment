@@ -19,6 +19,7 @@ import pyarrow as pa
 ENTRIES_WIRE_SCHEMA = pa.schema([
     pa.field("_id", pa.large_string(), metadata={"sensitivity": "identifying", "category": "identity"}),  # 100% docs, 11 sites; universal
     pa.field("app", pa.large_string(), metadata={"sensitivity": "identifying", "category": "vocabulary"}),
+    pa.field("created_at", pa.large_string(), metadata={"sensitivity": "identifying", "category": "temporal"}),
     pa.field("date", pa.float64(), metadata={"sensitivity": "quasi-identifying", "category": "temporal"}),  # 100% docs, 11 sites; universal
     pa.field("dateString", pa.large_string(), metadata={"sensitivity": "quasi-identifying", "category": "temporal"}),  # 100% docs, 11 sites; universal
     pa.field("delta", pa.float64(), metadata={"sensitivity": "descriptive", "category": "health-derived"}),  # 4% docs, 1 sites; sparse

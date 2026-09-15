@@ -52,6 +52,19 @@
     "Square"
    ]
   },
+  "boluscalc": {
+   "type": "object",
+   "properties": {
+    "foods": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "additionalProperties": true
+     }
+    }
+   },
+   "additionalProperties": true
+  },
   "carbs": {
    "type": [
     "null",

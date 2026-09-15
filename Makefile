@@ -668,14 +668,16 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
         schema-nocturne schema-dosing schema-vendors schema-observability \
         schema-sync-model schema-sync-cost schema-effects schema-sensitivity \
         schema-primitives schema-settings \
+        schema-code-model schema-code-drift \
         schema-test schema-clean schema-postgres-report
 
 PY ?= python3
 NSSCHEMA = PYTHONPATH=tools $(PY) -m nsschema
 
 ## schema: full pipeline — census, reconcile, model, emit, impact, drift
-schema: schema-census schema-reconcile schema-sensitivity schema-model \
-        schema-quirks schema-emit schema-coercion-drift schema-impact schema-drift
+schema: schema-census schema-reconcile schema-sensitivity schema-code-model \
+        schema-model schema-quirks schema-emit schema-coercion-drift \
+        schema-impact schema-drift schema-code-drift
 
 ## schema-census: walk the raw corpus (~4 min over ~2.5 GB of JSON)
 schema-census:
@@ -685,6 +687,20 @@ schema-census:
 ## schema-reconcile: compare the census against specs/openapi/
 schema-reconcile:
 	@$(NSSCHEMA).diff
+
+## schema-code-model: models for the five collections with no census, read
+## from the server source. Also emits specs/nsschema/server-indexes.json,
+## which schema-model needs. Requires a cgm-remote-monitor checkout: it looks
+## in externals/work/crm-seam then externals/cgm-remote-monitor-official, and
+## honours NSSCHEMA_SERVER_SOURCE or --source.
+schema-code-model:
+	@$(NSSCHEMA).code_model
+
+## schema-code-drift: fail if the server source no longer declares what the
+## code-derived models record. The counterpart of schema-verify: that checks
+## emitters against models, this checks models against the code.
+schema-code-drift:
+	@$(NSSCHEMA).code_model --check --cross-check
 
 ## schema-model: merge spec + evidence into the reconciled model
 schema-model:

@@ -1,0 +1,79 @@
+{
+ "collection": "activity",
+ "generated_by": "tools/nsschema/code_model.py",
+ "provenance": "code-derived",
+ "measured": false,
+ "evidence_note": "NOT MEASURED. Every field here was read out of cgm-remote-monitor's source, so it records what the server and its built-in clients CAN write \u2014 not what any deployment DOES write, how often, or on how many sites. No node in this file carries an evidence block, and none may be given one without a census to back it. absent from tools/nsschema/corpus.py's COLLECTIONS and from reports/schema-census/; no snapshot ever fetched it.",
+ "source_root": "externals/work/crm-seam",
+ "source_files": [
+  "lib/server/activity.js",
+  "lib/api/activity/index.js"
+ ],
+ "source_digest": "sha256:4a6459c8e6a6d6a3f63cffdf045215a16ce23e818ac7ddeaf8bfecd3a904c255",
+ "reached_by": [
+  "v1 /api/v1/activity"
+ ],
+ "not_in_v3": "absent from lib/api3/index.js's enabledCollections, so no v3 route reaches it",
+ "indexed_fields": [
+  "created_at"
+ ],
+ "date_field": "created_at",
+ "open_body": "the server imposes no schema: it sets created_at and _id when absent, runs the write purifier, and stores the document wholesale",
+ "root": {
+  "path": "",
+  "types": [
+   "object"
+  ],
+  "nullable": false,
+  "provenance": "structural",
+  "declared": false,
+  "observed": false,
+  "placement": "core",
+  "open_body": true,
+  "children": {
+   "_id": {
+    "path": "_id",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/server/activity.js"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "identity",
+    "sensitivity_why": "name is on the redaction denylist",
+    "required_read": true,
+    "notes": [
+     "server-assigned when absent; a v1 client may supply a 24-character hex string"
+    ]
+   },
+   "created_at": {
+    "path": "created_at",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/server/activity.js"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "temporal",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "format": "date-time",
+    "required_read": true,
+    "notes": [
+     "set only when absent, so a client may supply its own"
+    ]
+   }
+  }
+ }
+}

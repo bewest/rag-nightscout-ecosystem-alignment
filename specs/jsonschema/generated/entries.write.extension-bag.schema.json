@@ -215,6 +215,12 @@
    "type": "object",
    "description": "Vendor- or client-specific fields not part of the core schema. Observed in live data on a minority of sites.",
    "properties": {
+    "created_at": {
+     "type": "string",
+     "x-sensitivity": "identifying",
+     "x-data-category": "temporal",
+     "format": "date-time"
+    },
     "glucose": {
      "type": "integer",
      "x-sensitivity": "descriptive",

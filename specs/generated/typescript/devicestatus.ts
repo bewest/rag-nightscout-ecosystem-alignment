@@ -14,9 +14,11 @@
 import { z } from 'zod';
 
 export const DevicestatusSchema = z.object({
+    NSCLIENT_ID: z.union([z.number(), z.string()]).optional(),
     _id: z.string().optional(),  // 100% of documents, 11 sites, universal
     configuration: z.record(z.string(), z.unknown()).optional(),
     created_at: z.string(),  // 100% of documents, 11 sites, universal
+    date: z.number().optional(),
     device: z.string(),  // 100% of documents, 11 sites, universal
     identifier: z.string().optional(),
     isCharging: z.boolean().optional(),

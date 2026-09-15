@@ -17,9 +17,11 @@ checks that the two do not contradict each other.
 import pyarrow as pa
 
 DEVICESTATUS_WIRE_SCHEMA = pa.schema([
+    pa.field("NSCLIENT_ID", pa.large_string(), metadata={"sensitivity": "identifying", "category": "identity"}),  # union of number, string widened to string
     pa.field("_id", pa.large_string(), metadata={"sensitivity": "identifying", "category": "identity"}),  # 100% docs, 11 sites; universal
     pa.field("configuration", pa.large_string(), metadata={"sensitivity": "identifying", "category": "therapy-setting"}),  # object with no observed fields; stored as JSON text
     pa.field("created_at", pa.large_string(), metadata={"sensitivity": "quasi-identifying", "category": "temporal"}),  # 100% docs, 11 sites; universal
+    pa.field("date", pa.float64(), metadata={"sensitivity": "identifying", "category": "temporal"}),
     pa.field("device", pa.large_string(), metadata={"sensitivity": "descriptive", "category": "device"}),  # 100% docs, 11 sites; universal
     pa.field("identifier", pa.large_string(), metadata={"sensitivity": "identifying", "category": "identity"}),
     pa.field("isCharging", pa.bool_(), metadata={"sensitivity": "identifying", "category": "vocabulary"}),

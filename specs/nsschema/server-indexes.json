@@ -1,0 +1,451 @@
+{
+ "generated_by": "tools/nsschema/code_model.py",
+ "provenance": "code-derived",
+ "measured": false,
+ "note": "Every field cgm-remote-monitor builds a MongoDB index on, read out of each module's `indexedFields` literal rather than transcribed. An index reaches fields no OpenAPI document declares and no census observed; model.py reads this file and gives each of those a node with provenance `code`, so a DDL emitter asking the model for an indexed column finds one. Nothing here carries an evidence block.",
+ "source_root": "externals/work/crm-seam",
+ "source_digest": "sha256:f5f84eeab69aff701951d838f710fb43f7dad954ea207bf242d08b780a0e909a",
+ "collections": {
+  "activity": {
+   "declared_by": "lib/server/activity.js:146",
+   "single": [
+    "created_at"
+   ],
+   "compound": [],
+   "paths": [
+    {
+     "index_path": "created_at",
+     "model_path": "created_at",
+     "types": [
+      "string"
+     ],
+     "format": "date-time",
+     "source": "lib/api3/generic/collection.js (parseDate: doc.created_at = m.toISOString())",
+     "note": "ISO 8601, assigned by API v3 when API3_CREATED_AT_FALLBACK_ENABLED is set and DELETED when it is not \u2014 so on a v3 write this field's presence is a deployment setting, not a client decision",
+     "indexed_by": "lib/server/activity.js:146"
+    }
+   ]
+  },
+  "auth_roles": {
+   "declared_by": "lib/authorization/storage.js:173",
+   "single": [
+    "name"
+   ],
+   "compound": [],
+   "paths": [
+    {
+     "index_path": "name",
+     "model_path": "name",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/authorization/storage.js:173"
+    }
+   ]
+  },
+  "auth_subjects": {
+   "declared_by": "lib/authorization/storage.js:173",
+   "single": [
+    "name"
+   ],
+   "compound": [],
+   "paths": [
+    {
+     "index_path": "name",
+     "model_path": "name",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/authorization/storage.js:173"
+    }
+   ]
+  },
+  "devicestatus": {
+   "declared_by": "lib/server/devicestatus.js:182",
+   "single": [
+    "created_at",
+    "NSCLIENT_ID"
+   ],
+   "compound": [
+    {
+     "created_at": -1,
+     "identifier": -1,
+     "date": -1
+    }
+   ],
+   "paths": [
+    {
+     "index_path": "created_at",
+     "model_path": "created_at",
+     "types": [
+      "string"
+     ],
+     "format": "date-time",
+     "source": "lib/api3/generic/collection.js (parseDate: doc.created_at = m.toISOString())",
+     "note": "ISO 8601, assigned by API v3 when API3_CREATED_AT_FALLBACK_ENABLED is set and DELETED when it is not \u2014 so on a v3 write this field's presence is a deployment setting, not a client decision",
+     "indexed_by": "lib/server/devicestatus.js:182"
+    },
+    {
+     "index_path": "NSCLIENT_ID",
+     "model_path": "NSCLIENT_ID",
+     "types": [
+      "number",
+      "string"
+     ],
+     "type_undetermined": true,
+     "type_undetermined_why": "the server never generates or validates it \u2014 it stores whatever a client sends and compares it with an equality filter (lib/server/websocket.js: query = { NSCLIENT_ID: literal(...) }). AndroidAPS's own documented sample is an epoch-millisecond number; nothing constrains it to be one.",
+     "source": "lib/server/websocket.js (processSingleDbAdd deduplication)",
+     "note": "a client-assigned deduplication key for the websocket write path. When present it is the SOLE match key for an exact duplicate, ahead of created_at and eventType, so two clients that reuse a value collide",
+     "sensitivity": "identifying",
+     "data_category": "identity",
+     "sensitivity_why": "a client-assigned key, opaque to the server; AndroidAPS's own documented sample is a full-precision epoch-millisecond timestamp, which makes it a quasi-identifier as well as an identifier",
+     "indexed_by": "lib/server/devicestatus.js:182"
+    },
+    {
+     "index_path": "identifier",
+     "model_path": "identifier",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/devicestatus.js:182"
+    },
+    {
+     "index_path": "date",
+     "model_path": "date",
+     "types": [
+      "number"
+     ],
+     "source": "lib/api3/generic/collection.js (parseDate: doc.date = m.valueOf())",
+     "note": "epoch milliseconds, assigned by API v3 on every write from the document's own date or created_at. A v1 write never sets it, which is why no document in the corpus has one",
+     "indexed_by": "lib/server/devicestatus.js:182"
+    }
+   ]
+  },
+  "entries": {
+   "declared_by": "lib/server/entries.js:246",
+   "single": [
+    "date",
+    "type",
+    "sgv",
+    "mbg",
+    "sysTime",
+    "dateString",
+    "identifier"
+   ],
+   "compound": [
+    {
+     "type": 1,
+     "date": -1,
+     "dateString": 1
+    },
+    {
+     "date": -1,
+     "identifier": -1,
+     "created_at": -1
+    }
+   ],
+   "paths": [
+    {
+     "index_path": "date",
+     "model_path": "date",
+     "types": [
+      "number"
+     ],
+     "source": "lib/api3/generic/collection.js (parseDate: doc.date = m.valueOf())",
+     "note": "epoch milliseconds, assigned by API v3 on every write from the document's own date or created_at. A v1 write never sets it, which is why no document in the corpus has one",
+     "indexed_by": "lib/server/entries.js:246"
+    },
+    {
+     "index_path": "type",
+     "model_path": "type",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/entries.js:246"
+    },
+    {
+     "index_path": "sgv",
+     "model_path": "sgv",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/entries.js:246"
+    },
+    {
+     "index_path": "mbg",
+     "model_path": "mbg",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/entries.js:246"
+    },
+    {
+     "index_path": "sysTime",
+     "model_path": "sysTime",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/entries.js:246"
+    },
+    {
+     "index_path": "dateString",
+     "model_path": "dateString",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/entries.js:246"
+    },
+    {
+     "index_path": "identifier",
+     "model_path": "identifier",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/entries.js:246"
+    },
+    {
+     "index_path": "created_at",
+     "model_path": "created_at",
+     "types": [
+      "string"
+     ],
+     "format": "date-time",
+     "source": "lib/api3/generic/collection.js (parseDate: doc.created_at = m.toISOString())",
+     "note": "ISO 8601, assigned by API v3 when API3_CREATED_AT_FALLBACK_ENABLED is set and DELETED when it is not \u2014 so on a v3 write this field's presence is a deployment setting, not a client decision",
+     "indexed_by": "lib/server/entries.js:246"
+    }
+   ]
+  },
+  "food": {
+   "declared_by": "lib/server/food.js:199",
+   "single": [
+    "type",
+    "position",
+    "hidden"
+   ],
+   "compound": [],
+   "paths": [
+    {
+     "index_path": "type",
+     "model_path": "type",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/food.js:199"
+    },
+    {
+     "index_path": "position",
+     "model_path": "position",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/food.js:199"
+    },
+    {
+     "index_path": "hidden",
+     "model_path": "hidden",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/food.js:199"
+    }
+   ]
+  },
+  "profile": {
+   "declared_by": "lib/server/profile.js:285",
+   "single": [
+    "startDate",
+    "created_at",
+    "NSCLIENT_ID"
+   ],
+   "compound": [
+    {
+     "startDate": -1,
+     "_id": -1
+    }
+   ],
+   "paths": [
+    {
+     "index_path": "startDate",
+     "model_path": "startDate",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/profile.js:285"
+    },
+    {
+     "index_path": "created_at",
+     "model_path": "created_at",
+     "types": [
+      "string"
+     ],
+     "format": "date-time",
+     "source": "lib/api3/generic/collection.js (parseDate: doc.created_at = m.toISOString())",
+     "note": "ISO 8601, assigned by API v3 when API3_CREATED_AT_FALLBACK_ENABLED is set and DELETED when it is not \u2014 so on a v3 write this field's presence is a deployment setting, not a client decision",
+     "indexed_by": "lib/server/profile.js:285"
+    },
+    {
+     "index_path": "NSCLIENT_ID",
+     "model_path": "NSCLIENT_ID",
+     "types": [
+      "number",
+      "string"
+     ],
+     "type_undetermined": true,
+     "type_undetermined_why": "the server never generates or validates it \u2014 it stores whatever a client sends and compares it with an equality filter (lib/server/websocket.js: query = { NSCLIENT_ID: literal(...) }). AndroidAPS's own documented sample is an epoch-millisecond number; nothing constrains it to be one.",
+     "source": "lib/server/websocket.js (processSingleDbAdd deduplication)",
+     "note": "a client-assigned deduplication key for the websocket write path. When present it is the SOLE match key for an exact duplicate, ahead of created_at and eventType, so two clients that reuse a value collide",
+     "sensitivity": "identifying",
+     "data_category": "identity",
+     "sensitivity_why": "a client-assigned key, opaque to the server; AndroidAPS's own documented sample is a full-precision epoch-millisecond timestamp, which makes it a quasi-identifier as well as an identifier",
+     "indexed_by": "lib/server/profile.js:285"
+    },
+    {
+     "index_path": "_id",
+     "model_path": "_id",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/profile.js:285"
+    }
+   ]
+  },
+  "treatments": {
+   "declared_by": "lib/server/treatments.js:443",
+   "single": [
+    "created_at",
+    "eventType",
+    "insulin",
+    "carbs",
+    "glucose",
+    "enteredBy",
+    "boluscalc.foods._id",
+    "notes",
+    "NSCLIENT_ID",
+    "percent",
+    "absolute",
+    "duration",
+    "identifier"
+   ],
+   "compound": [
+    {
+     "eventType": 1,
+     "duration": 1,
+     "created_at": 1
+    },
+    {
+     "eventType": 1,
+     "created_at": -1,
+     "identifier": -1,
+     "date": -1
+    }
+   ],
+   "paths": [
+    {
+     "index_path": "created_at",
+     "model_path": "created_at",
+     "types": [
+      "string"
+     ],
+     "format": "date-time",
+     "source": "lib/api3/generic/collection.js (parseDate: doc.created_at = m.toISOString())",
+     "note": "ISO 8601, assigned by API v3 when API3_CREATED_AT_FALLBACK_ENABLED is set and DELETED when it is not \u2014 so on a v3 write this field's presence is a deployment setting, not a client decision",
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "eventType",
+     "model_path": "eventType",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "insulin",
+     "model_path": "insulin",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "carbs",
+     "model_path": "carbs",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "glucose",
+     "model_path": "glucose",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "enteredBy",
+     "model_path": "enteredBy",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "boluscalc.foods._id",
+     "model_path": "boluscalc.foods[]._id",
+     "types": [
+      "string"
+     ],
+     "source": "lib/server/treatments.js (indexedFields) + lib/report/reportclient.js (?find[boluscalc.foods._id]=)",
+     "note": "indexed as the MongoDB multikey path `boluscalc.foods._id`; written as `boluscalc.foods[]._id` here because this model spells an array's item node `[]`. No document in the corpus carries a `boluscalc` subtree at all, so only the path is modelled, not the subtree.",
+     "multikey": true,
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "notes",
+     "model_path": "notes",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "NSCLIENT_ID",
+     "model_path": "NSCLIENT_ID",
+     "types": [
+      "number",
+      "string"
+     ],
+     "type_undetermined": true,
+     "type_undetermined_why": "the server never generates or validates it \u2014 it stores whatever a client sends and compares it with an equality filter (lib/server/websocket.js: query = { NSCLIENT_ID: literal(...) }). AndroidAPS's own documented sample is an epoch-millisecond number; nothing constrains it to be one.",
+     "source": "lib/server/websocket.js (processSingleDbAdd deduplication)",
+     "note": "a client-assigned deduplication key for the websocket write path. When present it is the SOLE match key for an exact duplicate, ahead of created_at and eventType, so two clients that reuse a value collide",
+     "sensitivity": "identifying",
+     "data_category": "identity",
+     "sensitivity_why": "a client-assigned key, opaque to the server; AndroidAPS's own documented sample is a full-precision epoch-millisecond timestamp, which makes it a quasi-identifier as well as an identifier",
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "percent",
+     "model_path": "percent",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "absolute",
+     "model_path": "absolute",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "duration",
+     "model_path": "duration",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "identifier",
+     "model_path": "identifier",
+     "types": [],
+     "note": "indexed; whatever this field is, it is described by the collection's own model rather than by this file",
+     "indexed_by": "lib/server/treatments.js:443"
+    },
+    {
+     "index_path": "date",
+     "model_path": "date",
+     "types": [
+      "number"
+     ],
+     "source": "lib/api3/generic/collection.js (parseDate: doc.date = m.valueOf())",
+     "note": "epoch milliseconds, assigned by API v3 on every write from the document's own date or created_at. A v1 write never sets it, which is why no document in the corpus has one",
+     "indexed_by": "lib/server/treatments.js:443"
+    }
+   ]
+  }
+ }
+}

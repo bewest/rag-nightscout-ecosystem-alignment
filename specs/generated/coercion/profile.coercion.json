@@ -73,6 +73,10 @@
  "generated_by": "tools/nsschema/emit/coercion_emit.py",
  "source_model": "specs/nsschema/profile.model.json",
  "uncoerced": {
+  "NSCLIENT_ID": [
+   "number",
+   "string"
+  ],
   "loopSettings.overridePresets": [
    "array"
   ],

@@ -1,24 +1,58 @@
 {
  "collection": "devicestatus",
  "generated_by": "tools/nsschema/model.py",
+ "provenance": "spec+measured",
+ "measured": true,
  "source_spec": "aid-devicestatus-2025.yaml",
  "census": "reports/schema-census/devicestatus.census.json",
+ "server_indexes": "specs/nsschema/server-indexes.json",
+ "code_supplemented_fields": [
+  "NSCLIENT_ID",
+  "date"
+ ],
  "root": {
   "path": "",
   "types": [
    "object"
   ],
   "nullable": false,
+  "provenance": "structural",
   "declared": false,
   "observed": false,
   "placement": "core",
   "children": {
+   "NSCLIENT_ID": {
+    "path": "NSCLIENT_ID",
+    "types": [
+     "number",
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "extension",
+    "code_sources": [
+     "lib/server/websocket.js (processSingleDbAdd deduplication)"
+    ],
+    "type_undetermined": true,
+    "type_undetermined_why": "the server never generates or validates it \u2014 it stores whatever a client sends and compares it with an equality filter (lib/server/websocket.js: query = { NSCLIENT_ID: literal(...) }). AndroidAPS's own documented sample is an epoch-millisecond number; nothing constrains it to be one.",
+    "sensitivity": "identifying",
+    "data_category": "identity",
+    "sensitivity_why": "a client-assigned key, opaque to the server; AndroidAPS's own documented sample is a full-precision epoch-millisecond timestamp, which makes it a quasi-identifier as well as an identifier",
+    "notes": [
+     "indexed by lib/server/devicestatus.js:182",
+     "a client-assigned deduplication key for the websocket write path. When present it is the SOLE match key for an exact duplicate, ahead of created_at and eventType, so two clients that reuse a value collide",
+     "not declared by any spec and not observed in the census; provenance is `code`, so it carries no evidence block"
+    ]
+   },
    "_id": {
     "path": "_id",
     "types": [
      "string"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -46,6 +80,7 @@
      "object"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -60,6 +95,7 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -78,7 +114,32 @@
      }
     },
     "required_read": true,
-    "required_write": true
+    "required_write": true,
+    "notes": [
+     "indexed by lib/server/devicestatus.js:182"
+    ]
+   },
+   "date": {
+    "path": "date",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "extension",
+    "code_sources": [
+     "lib/api3/generic/collection.js (parseDate: doc.date = m.valueOf())"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "temporal",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "indexed by lib/server/devicestatus.js:182",
+     "epoch milliseconds, assigned by API v3 on every write from the document's own date or created_at. A v1 write never sets it, which is why no document in the corpus has one",
+     "not declared by any spec and not observed in the census; provenance is `code`, so it carries no evidence block"
+    ]
    },
    "device": {
     "path": "device",
@@ -86,6 +147,7 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -115,12 +177,16 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
     "sensitivity": "identifying",
     "data_category": "identity",
-    "sensitivity_why": "name is on the redaction denylist"
+    "sensitivity_why": "name is on the redaction denylist",
+    "notes": [
+     "indexed by lib/server/devicestatus.js:182"
+    ]
    },
    "isCharging": {
     "path": "isCharging",
@@ -128,6 +194,7 @@
      "boolean"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -142,6 +209,7 @@
      "boolean"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -155,6 +223,7 @@
      "object"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -179,6 +248,7 @@
        "object"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -202,6 +272,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -227,6 +298,7 @@
          "object"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -250,6 +322,7 @@
            "number"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -274,6 +347,7 @@
            "number"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -301,6 +375,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -327,6 +402,7 @@
        "object"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -350,6 +426,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -375,6 +452,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -401,6 +479,7 @@
        "object"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -424,6 +503,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -449,6 +529,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -473,6 +554,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -498,6 +580,7 @@
          "boolean"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -522,6 +605,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -548,6 +632,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -572,6 +657,7 @@
        "object"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -595,6 +681,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -620,6 +707,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -646,6 +734,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -670,6 +759,7 @@
        "object"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -694,6 +784,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -718,6 +809,7 @@
          "array"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -742,6 +834,7 @@
            "number"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -770,6 +863,7 @@
        "number"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -795,6 +889,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -819,6 +914,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -850,6 +946,7 @@
      "integer"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -865,6 +962,7 @@
      "object"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -889,6 +987,7 @@
        "object"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -913,6 +1012,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -939,6 +1039,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -966,6 +1067,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -993,6 +1095,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1019,6 +1122,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1046,6 +1150,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1072,6 +1177,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1098,6 +1204,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1124,6 +1231,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1150,6 +1258,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -1174,6 +1283,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1200,6 +1310,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1227,6 +1338,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1253,6 +1365,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1280,6 +1393,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1307,6 +1421,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1333,6 +1448,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1360,6 +1476,7 @@
          "object"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -1384,6 +1501,7 @@
            "array"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -1408,6 +1526,7 @@
              "integer"
             ],
             "nullable": false,
+            "provenance": "declared+measured",
             "declared": true,
             "observed": true,
             "placement": "core",
@@ -1433,6 +1552,7 @@
            "array"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -1457,6 +1577,7 @@
              "integer"
             ],
             "nullable": false,
+            "provenance": "declared+measured",
             "declared": true,
             "observed": true,
             "placement": "core",
@@ -1482,6 +1603,7 @@
            "array"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -1506,6 +1628,7 @@
              "integer"
             ],
             "nullable": false,
+            "provenance": "declared+measured",
             "declared": true,
             "observed": true,
             "placement": "core",
@@ -1531,6 +1654,7 @@
            "array"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -1555,6 +1679,7 @@
              "integer"
             ],
             "nullable": false,
+            "provenance": "declared+measured",
             "declared": true,
             "observed": true,
             "placement": "core",
@@ -1582,6 +1707,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -1607,6 +1733,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1633,6 +1760,7 @@
          "boolean"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -1657,6 +1785,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1684,6 +1813,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1711,6 +1841,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1737,6 +1868,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1763,6 +1895,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -1787,6 +1920,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -1813,6 +1947,7 @@
        "object"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -1837,6 +1972,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -1862,6 +1998,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -1887,6 +2024,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1914,6 +2052,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -1941,6 +2080,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared",
         "declared": true,
         "observed": false,
         "placement": "core",
@@ -1955,6 +2095,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -1980,6 +2121,7 @@
          "object"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2006,6 +2148,7 @@
            "number"
           ],
           "nullable": false,
+          "provenance": "measured",
           "declared": false,
           "observed": true,
           "placement": "extension",
@@ -2033,6 +2176,7 @@
            "number"
           ],
           "nullable": false,
+          "provenance": "measured",
           "declared": false,
           "observed": true,
           "placement": "extension",
@@ -2060,6 +2204,7 @@
            "number"
           ],
           "nullable": false,
+          "provenance": "measured",
           "declared": false,
           "observed": true,
           "placement": "extension",
@@ -2087,6 +2232,7 @@
            "number"
           ],
           "nullable": false,
+          "provenance": "measured",
           "declared": false,
           "observed": true,
           "placement": "extension",
@@ -2114,6 +2260,7 @@
            "number"
           ],
           "nullable": false,
+          "provenance": "measured",
           "declared": false,
           "observed": true,
           "placement": "extension",
@@ -2141,6 +2288,7 @@
            "number"
           ],
           "nullable": false,
+          "provenance": "measured",
           "declared": false,
           "observed": true,
           "placement": "extension",
@@ -2168,6 +2316,7 @@
            "string"
           ],
           "nullable": false,
+          "provenance": "measured",
           "declared": false,
           "observed": true,
           "placement": "extension",
@@ -2196,6 +2345,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -2221,6 +2371,7 @@
          "object"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -2244,6 +2395,7 @@
            "integer"
           ],
           "nullable": false,
+          "provenance": "measured",
           "declared": false,
           "observed": true,
           "placement": "extension",
@@ -2270,6 +2422,7 @@
            "number"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -2295,6 +2448,7 @@
            "number"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -2319,6 +2473,7 @@
            "string"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -2343,6 +2498,7 @@
            "string"
           ],
           "nullable": false,
+          "provenance": "measured",
           "declared": false,
           "observed": true,
           "placement": "extension",
@@ -2371,6 +2527,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2398,6 +2555,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2426,6 +2584,7 @@
        "number"
       ],
       "nullable": false,
+      "provenance": "measured",
       "declared": false,
       "observed": true,
       "placement": "extension",
@@ -2453,6 +2612,7 @@
        "object"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -2477,6 +2637,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -2501,6 +2662,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2528,6 +2690,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -2553,6 +2716,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2579,6 +2743,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2606,6 +2771,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -2630,6 +2796,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2656,6 +2823,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2682,6 +2850,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -2706,6 +2875,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -2730,6 +2900,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -2754,6 +2925,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2781,6 +2953,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2807,6 +2980,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2834,6 +3008,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -2859,6 +3034,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2885,6 +3061,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -2912,6 +3089,7 @@
          "object"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -2936,6 +3114,7 @@
            "array"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -2960,6 +3139,7 @@
              "integer"
             ],
             "nullable": false,
+            "provenance": "declared+measured",
             "declared": true,
             "observed": true,
             "placement": "core",
@@ -2985,6 +3165,7 @@
            "array"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -3009,6 +3190,7 @@
              "integer"
             ],
             "nullable": false,
+            "provenance": "declared+measured",
             "declared": true,
             "observed": true,
             "placement": "core",
@@ -3034,6 +3216,7 @@
            "array"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -3058,6 +3241,7 @@
              "integer"
             ],
             "nullable": false,
+            "provenance": "declared+measured",
             "declared": true,
             "observed": true,
             "placement": "core",
@@ -3083,6 +3267,7 @@
            "array"
           ],
           "nullable": false,
+          "provenance": "declared+measured",
           "declared": true,
           "observed": true,
           "placement": "core",
@@ -3107,6 +3292,7 @@
              "integer"
             ],
             "nullable": false,
+            "provenance": "declared+measured",
             "declared": true,
             "observed": true,
             "placement": "core",
@@ -3134,6 +3320,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -3159,6 +3346,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -3183,6 +3371,7 @@
          "boolean"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -3209,6 +3398,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -3236,6 +3426,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -3261,6 +3452,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "declared",
         "declared": true,
         "observed": false,
         "placement": "core",
@@ -3275,6 +3467,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -3301,6 +3494,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "measured",
         "declared": false,
         "observed": true,
         "placement": "extension",
@@ -3327,6 +3521,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared",
         "declared": true,
         "observed": false,
         "placement": "core",
@@ -3341,6 +3536,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -3365,6 +3561,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -3389,6 +3586,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared",
         "declared": true,
         "observed": false,
         "placement": "core",
@@ -3405,6 +3603,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "measured",
       "declared": false,
       "observed": true,
       "placement": "extension",
@@ -3433,6 +3632,7 @@
      "object"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -3457,6 +3657,7 @@
        "boolean"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3480,6 +3681,7 @@
        "object"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3503,6 +3705,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -3527,6 +3730,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -3553,6 +3757,7 @@
        "number"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3577,6 +3782,7 @@
        "number"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3602,6 +3808,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3625,6 +3832,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3651,6 +3859,7 @@
      "object"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -3675,6 +3884,7 @@
        "object"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3699,6 +3909,7 @@
          "boolean"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -3723,6 +3934,7 @@
          "integer"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -3746,6 +3958,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared",
         "declared": true,
         "observed": false,
         "placement": "core",
@@ -3764,6 +3977,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -3788,6 +4002,7 @@
          "number"
         ],
         "nullable": false,
+        "provenance": "declared",
         "declared": true,
         "observed": false,
         "placement": "core",
@@ -3803,6 +4018,7 @@
        "number"
       ],
       "nullable": false,
+      "provenance": "measured",
       "declared": false,
       "observed": true,
       "placement": "extension",
@@ -3829,6 +4045,7 @@
        "boolean"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3853,6 +4070,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3878,6 +4096,7 @@
        "object"
       ],
       "nullable": false,
+      "provenance": "declared",
       "declared": true,
       "observed": false,
       "placement": "core",
@@ -3892,6 +4111,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3919,6 +4139,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3946,6 +4167,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3970,6 +4192,7 @@
        "number"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -3995,6 +4218,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -4028,6 +4252,7 @@
        "integer"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -4052,6 +4277,7 @@
        "integer"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -4076,6 +4302,7 @@
        "object"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -4100,6 +4327,7 @@
          "boolean"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -4123,6 +4351,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -4149,6 +4378,7 @@
          "boolean"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -4172,6 +4402,7 @@
          "string"
         ],
         "nullable": false,
+        "provenance": "declared+measured",
         "declared": true,
         "observed": true,
         "placement": "core",
@@ -4198,6 +4429,7 @@
        "boolean"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -4224,6 +4456,7 @@
      "integer"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -4238,6 +4471,7 @@
      "integer"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -4252,6 +4486,7 @@
      "object"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -4280,6 +4515,7 @@
        "integer"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -4304,6 +4540,7 @@
        "number"
       ],
       "nullable": false,
+      "provenance": "declared",
       "declared": true,
       "observed": false,
       "placement": "core",
@@ -4317,6 +4554,7 @@
        "boolean"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -4341,6 +4579,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -4365,6 +4604,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -4390,6 +4630,7 @@
        "string"
       ],
       "nullable": false,
+      "provenance": "declared+measured",
       "declared": true,
       "observed": true,
       "placement": "core",
@@ -4416,6 +4657,7 @@
      "integer"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -4430,6 +4672,7 @@
      "integer"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",

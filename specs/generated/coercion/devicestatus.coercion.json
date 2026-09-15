@@ -8,6 +8,9 @@
    "datelike": true,
    "kind": "string"
   },
+  "date": {
+   "kind": "number"
+  },
   "device": {
    "kind": "string"
   },
@@ -430,6 +433,10 @@
  "generated_by": "tools/nsschema/emit/coercion_emit.py",
  "source_model": "specs/nsschema/devicestatus.model.json",
  "uncoerced": {
+  "NSCLIENT_ID": [
+   "number",
+   "string"
+  ],
   "configuration": [
    "object"
   ],

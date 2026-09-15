@@ -30,6 +30,9 @@
    "datelike": true,
    "kind": "string"
   },
+  "date": {
+   "kind": "number"
+  },
   "device": {
    "kind": "string"
   },
@@ -176,6 +179,13 @@
  "generated_by": "tools/nsschema/emit/coercion_emit.py",
  "source_model": "specs/nsschema/treatments.model.json",
  "uncoerced": {
+  "NSCLIENT_ID": [
+   "number",
+   "string"
+  ],
+  "boluscalc.foods": [
+   "array"
+  ],
   "correctionRange": [
    "array"
   ],

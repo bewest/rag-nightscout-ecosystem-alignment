@@ -17,6 +17,12 @@
    "x-sensitivity": "identifying",
    "x-data-category": "vocabulary"
   },
+  "created_at": {
+   "type": "string",
+   "x-sensitivity": "identifying",
+   "x-data-category": "temporal",
+   "format": "date-time"
+  },
   "date": {
    "type": "number",
    "description": "Epoch milliseconds timestamp.",
