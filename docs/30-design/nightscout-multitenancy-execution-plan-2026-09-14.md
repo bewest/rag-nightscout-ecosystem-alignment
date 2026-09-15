@@ -474,11 +474,93 @@ mismatches. Each was checked to be **non-vacuous** by reverting the fix under te
 case gives 240 mismatches when removed, several reading `0 vs 98` and `69 vs 333`. A
 differential that has never failed is not yet evidence.
 
-**T1.3 · Parametrise the 10 storage-touching tests by backend.**
-`tests/{mongo-storage,mongo-pool-config,mongo-storage.retry,api3.storage.find,...}.test.js` —
-enumerate with `grep -rl "MONGO_CONNECTION\|mongo-storage\|storage.connect" tests/*.test.js`.
-*Done*: the same 10 files run against a backend selected by env, with MongoDB as the only
-implementation so far, and pass.
+**T1.3 · Parametrise the storage-touching tests by backend. — DONE 2026-09-14**
+*Done*: the storage-touching files run against a backend selected by env, with MongoDB as the
+only implementation so far, and pass. **2207 passing, 1 pending, 0 failing** — identical to the
+pre-merge figure, and no `lib/` file touched.
+
+**The census found 21 files, not 10.** The estimate in this plan was off by more than a factor
+of two. Two of the 21 are grep false positives: `tests/runtime-policy.test.js` matches only
+because `'../storage/mongo-storage'` appears inside a spawned child's module blocklist, and
+`tests/boot-sequence-integration.test.js` matches `ctx.store` only to assert it is `undefined`
+after a *failed* boot. Neither was touched.
+
+The remaining 19 split three ways, and the split is recorded in a comment above each suite
+rather than in this document, because that is where someone editing the file will look:
+
+| class | count | disposition |
+|---|---:|---|
+| backend-agnostic — touch storage only for fixtures | 7 | `describeForEachBackend` |
+| MongoDB's own **by nature** — driver semantics, pooling, retry, URI grammar, AWS auth | 6 | `describeMongoOnly` |
+| MongoDB's own **by mechanism** — intent is agnostic, proof is wire-command counting | 6 | held, see below |
+
+The middle and last rows are not the same thing and the harness says so in two different
+spellings. *By nature* is permanent: `mongo-uri-credentials` is about `mongodb+srv://` grammar
+and there is no backend-agnostic statement hiding inside it. *By mechanism* is temporary: the
+six `monitorCommands` suites assert something genuinely backend-independent — permission is
+enforced before any I/O, no executable predicate reaches the database, the right collection was
+read — but they prove it by counting `find`/`aggregate`/`delete` wire commands. Forcing them
+through the harness today would mean weakening the assertion to something a second backend
+could also satisfy. **They need a per-backend I/O observer first; that is a follow-up task, not
+a skip.**
+
+Two files E classified as blocked were **unblocked before the branch landed**:
+`websocket.shape-handling` and `websocket.xss-purification` were held because
+`lib/server/websocket.js` reached MongoDB directly, which stopped being true at `ef89bdb8`.
+Both are now parametrised. Worth noting as a coordination cost of running conversions in
+parallel: a classification is only as current as the tree it was taken against.
+
+**The visibility contract is the deliverable, not the parametrisation.** A backend that cannot
+run must produce *pending* tests, never absent ones. Two mechanisms, both demonstrated on the
+merged tree:
+
+1. **An unrecognised name is a hard error at require time.** `NS_TEST_BACKEND=postgre` exits 1
+   with `Unknown NS_TEST_BACKEND "postgre"`. A typo can never quietly shrink the suite.
+2. **A known-but-unavailable backend skips one for one.** The unavailable path uses
+   `describe.skip`, which *still evaluates the suite body*, so every `it` is registered and then
+   reported pending rather than never existing:
+
+| run | passing | pending | **total** | failing |
+|---|---:|---:|---:|---|
+| default (`mongodb`) | 2207 | 1 | **2208** | 0 |
+| `NS_TEST_BACKEND=postgres` | 2045 | 163 | **2208** | 0 |
+
+Exactly 162 tests move columns; the total is conserved. This is the property that matters — it
+is what stops a future PostgreSQL run from reaching "0 failing" by making tests disappear.
+
+**Scope honesty.** Under `NS_TEST_BACKEND=postgres` the 2045 still-passing tests are the
+*unconverted* suite running against MongoDB exactly as before. The harness covers the enumerated
+storage-touching files; it does not make the whole suite backend-aware, and does not claim to.
+
+**T2.0 · The storage backend lookup at boot. — BLOCKS T1.3's harness from being more than
+preparation, and blocks T2.5.**
+`lib/server/bootevent.js:145-146` carries `//TODO assume mongo for now, when there are more
+storage options add a lookup` followed by a hardcoded
+`require('../storage/mongo-storage')`. Every backend-agnostic test boots through `bootevent`, so
+**today no test can be handed a non-Mongo store regardless of what the harness selects**. The
+harness is honest preparation until this lookup exists; it is not yet proof that anything runs
+on a second backend.
+
+Two further items land on the same change, which is why they are listed here rather than
+separately:
+
+- `storageClear` in `tests/fixtures/api3/utils.js` calls `ctx.store.db.dropDatabase()` — the
+  single most MongoDB-specific line in the shared fixtures, reached by ten further unconverted
+  `api3.*` files. Routing it through the harness *before* this task would make those files fail
+  loudly under a non-Mongo selection rather than skip, drowning out the pending arithmetic that
+  is the whole point.
+- **Per-run test isolation.** Every worktree in this phase shared one `testdb`, because the
+  database name is buried in the path component of a connection URI in a single env var
+  (`CUSTOMCONNSTR_mongo`) and there is no separate "which database" knob. Two agents running
+  full suites concurrently would have destroyed each other's data, and
+  `tests/lib/production-safety.js` would not have noticed: it guards *destructiveness* (entry
+  count, "test" in the name) and has no concept of *collision*. The natural home for the fix is
+  the harness — an adapter already owns `clearAll`, so it can own "derive an isolated namespace
+  for this run" (a database for Mongo, a schema for Postgres). It cannot be done first: the
+  store is built by `bootevent` from `env.storageURI` before any test code runs.
+
+*Done*: `bootevent` selects a storage module by configuration; a test can be handed a store that
+is not `mongo-storage`; each run gets its own namespace.
 
 ### Phase 2 — Postgres behind the seam
 

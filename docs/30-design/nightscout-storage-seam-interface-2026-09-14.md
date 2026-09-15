@@ -524,6 +524,7 @@ natively.
 |---|---|
 | `profile.list_query` | accepts `$expr` today, with a test asserting it. A query-surface decision (D8/T2.4), not a conversion detail. The T2.4 census found **no client in the corpus sends `$expr`**, so rejecting it is a security fix rather than a compatibility break — but it is still a deliberate behaviour change and belongs with the allowlist. |
 | each module's `api()` / collection accessor | bootevent still needs raw collections for `ensureIndexes`. Removing these is the *last* step, once index creation moves behind `ensureSchema`. |
+| `lib/server/bootevent.js:145-146` | the interface has two callers' worth of implementations behind it and **no way to choose one**: a hardcoded `require('../storage/mongo-storage')` under a `//TODO assume mongo for now` comment. This is the difference between a seam that exists and a seam that is load-bearing — until it is a lookup, no test and no deployment can be handed a store that is not MongoDB, whatever the interface says. Tracked as T2.0 in {P}. |
 
 `websocket.js` **is** converted. Its dedup logic remains knowingly inconsistent with
 `lib/server/treatments.js` (§4.4) — the storage calls moved, the logic did not, and unifying it
