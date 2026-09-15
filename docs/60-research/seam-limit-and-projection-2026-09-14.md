@@ -79,6 +79,45 @@ Worth stating anyway: `findFiltered` calls `toSafeInt(o.limit, 0)` and `0` is pr
 that means *no limit*, so the fallback for unparseable input is an unbounded read. `findMany`, on
 the same file, defaults to `1000`.
 
+### 2.2 Sized against the client corpus — and the measurement downgrades it
+
+[`tools/qc/v1_count_census.py`](../../tools/qc/v1_count_census.py), same method and same limits
+as the operator census: it reads client **source**, not request logs, because there are no
+request logs. **274 `count=` occurrences across 10 projects.**
+
+| kind | n | share |
+|---|---:|---:|
+| literal | 236 | 86.1 % |
+| dynamic (computed at request time) | 25 | 9.1 % |
+| prose (a `?count=` inside a comment or doc) | 11 | 4.0 % |
+| other | 2 | 0.7 % |
+
+**No client sends a literal `count=0`.** Literal values run `1, 2, 3, 5, 10, 20, 24, 50, 100,
+288, 500, 1000, 1500, 10000, 100000, 9999999`.
+
+That does not clear the defect — the literal arm is the arm least able to see it, since a count
+that can be zero is a count that is computed — but it does change the grade. Two things point
+the same way:
+
+1. **Nothing in the corpus reaches it today.** The exposure is the 10 % of call sites that build
+   the count at runtime (`'&count=' + n`), where nothing bounds the value away from zero and an
+   empty window or cleared preference produces zero by construction. `oref0`, the closed loop,
+   has four such sites. But that is a *latent* path, not an observed one.
+2. **An unbounded read is not a novel load for this server.** Clients already ask for everything
+   on purpose: `count=100000` appears 4 times and `count=9999999` once. A deployment that
+   survives those survives `count=0`.
+
+So BF-14 is **medium**, not high: it returns no wrong data, and no shipping client triggers it.
+It stays in the register because a bounded request producing an unbounded read is a defect
+whoever typed the URL — and because the fix is to adopt code that already exists.
+
+The classifier earns a note. A first pass put 16 occurrences in an `empty` bucket; they were
+`'&count=' + n`, cut off at the quote — the most dynamic shape there is, counted as the least.
+A second pass then swept up prose like `// If "?count=" is present` as dynamic. Both were
+corrected before the number above was written; the literal share fell from a misleading 86 % of
+a mis-bucketed total to 86 % of a correct one, and the dynamic share moved 5.8 % -> 13.1 % ->
+9.1 %.
+
 ### 2.2 API v3 already contains the fix
 
 `lib/api3/generic/collection.js:76` validates properly — bounds-checked against
@@ -177,8 +216,7 @@ removes are **not** dead work — `col.resolveDates(doc)` consumes them between 
 - **`readOptions` is still untested.** It is the third driver object in the options bag; it
   bounds getMore batch size and has no SQL analogue at all. Nothing in it is likely to be a
   correctness defect, which is why it is last.
-- **BF-14's blast radius is not sized against the corpus.** BF-13 got that treatment; this one
-  has not. `count=0` requires a client to send it, and no census has asked how many do.
+- **BF-14 is sized now** (§2.2), and the measurement **downgraded it**. See below.
 - The `$slice`-on-a-non-array probe returned the whole document rather than an error, which is
   unexplained and not pursued — it is outside what any caller sends.
 

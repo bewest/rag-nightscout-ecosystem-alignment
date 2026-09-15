@@ -31,7 +31,7 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | open |
 | **BF-12** | `entries.rawbg` is coerced but is not in the model — stale walker entry | `lib/server/entries.js:186` | low — dead entry | yes | open |
 | **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | open |
-| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — unbounded read from a bounded request | yes | open |
+| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | medium — unbounded read from a bounded request; no client triggers it today | yes | open |
 | **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | open |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
@@ -156,8 +156,14 @@ value that means unbounded. `findMany`, in the same file, defaults to `1000`.
 *Evidence*: [limit and projection](../60-research/seam-limit-and-projection-2026-09-14.md) §2,
 `tools/qc/shape-arm.js`, against a real mongod.
 
-*Not sized*: no census has asked how many clients send `count=0`. BF-13 got that treatment and
-this has not.
+*Sized, and the measurement downgraded it from high to medium.*
+`tools/qc/v1_count_census.py` over 10 client projects: **274 `count=` occurrences, no literal
+`count=0`**. 86 % are literals (`1 … 9999999`); 9 % are computed at request time, which is where
+the exposure sits — nothing bounds a computed count away from zero, and `oref0` has four such
+sites. Two facts hold the grade down: nothing in the corpus reaches it today, and an unbounded
+read is not a novel load for a server whose clients already send `count=100000` and
+`count=9999999` deliberately. It returns no wrong data. It stays in the register because a
+bounded request should not produce an unbounded read, and because the fix already exists in v3.
 
 ### BF-15 · `?fields=` with a dotted path returns `{}`
 
