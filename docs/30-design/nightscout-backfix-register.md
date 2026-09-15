@@ -33,6 +33,7 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | open |
 | **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | medium — unbounded read from a bounded request; no client triggers it today | yes | open |
 | **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | open |
+| **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks silently vanish from the quick-pick list; no shipping client triggers it today | yes | open |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | open |
@@ -313,6 +314,56 @@ loses records silently — on the collection replay fidelity depends on.
 *Evidence*: [ordering and pagination](../60-research/seam-ordering-and-pagination-2026-09-14.md) §3.
 **Reproduced synthetically against `mongod` 7.0.43, not against a live Nightscout** — confirm
 before treating as settled.
+
+### BF-16 · `food.hidden` has no type; the server filter and the client disagree
+
+The `food` collection stores quick picks with a `hidden` flag, and the quick-pick list filters on
+it. The two ends of that round trip do not agree on what the value is:
+
+- `lib/server/food.js` `listquickpicks` queries `cmp('eq', 'hidden', 'false')` — the **string**
+  `'false'`. Pre-existing upstream: released `cgm-remote-monitor` spells the same filter
+  `{ 'hidden' : 'false' }` at `lib/server/food.js:146`, so this is not a regression from the
+  storage-seam work.
+- `lib/food/food.js:377` writes `foodquickpick[index].hidden = this.checked` — a **boolean**.
+- `lib/food/food.js:69-73` `restoreBoolValue` reads it back as `record[key] === 'true'`, i.e. the
+  client expects a **string** from storage.
+
+It works today only by an accident of transport. The editor posts with
+`$.ajax({ method: 'PUT', url: '/api/v1/food/', data: foodrec })` and **no `contentType`**, so
+jQuery form-encodes; `wares.urlencodedParser` is `extended: true`, so every leaf arrives as a
+string. `hidden: false` becomes `'false'`, which is what the filter matches and what
+`restoreBoolValue` expects.
+
+**The field therefore has no declared type. Its stored type is a property of the request, not of
+the field.** A client that sends `application/json` with a real boolean stores a boolean, and
+`{hidden: 'false'}` never matches it: that quick pick disappears from `/api/v1/food/quickpicks`
+while remaining in `/api/v1/food/`. Nothing reports an error. The same holds for
+`hideafteruse`.
+
+*Fix*: give the field one type and accept both on read — match `$in: [false, 'false']` (or
+normalise on write) rather than picking a side, since both spellings are already on disk
+wherever a non-jQuery client has ever written. Do not "fix" the client to send JSON without
+fixing the filter first; that is the change that breaks it.
+
+**Secondary consequence, same root cause.** Form encoding stringifies *every* non-string value in
+a food document, not just the booleans — `carbs`, `portion`, `fat`, `protein`, `energy`, `gi` and
+`position`. `listquickpicks` sorts `{ position: 1 }`, and a lexicographic sort of `'0' … '10'`
+orders `'10'` between `'1'` and `'2'`. A user with eleven or more visible quick picks sees them in
+the wrong order. Unlike the `hidden` mismatch this one fires on the **shipping** path, with the
+built-in editor and no third-party client involved.
+
+*Not reproduced against a live instance.* Both readings are derived from the source and from
+jQuery's and `qs`'s documented behaviour; the corpus contains no `food` collection to check
+against — no snapshot ever fetched one.
+
+*Recorded here rather than fixed* because the point is the class, not the instance: this is
+exactly what a typed model exists to prevent. `specs/nsschema/food.model.json` therefore declares
+`hidden` and `hideafteruse` as `["boolean", "string"]` with `type_undetermined`, and says why,
+instead of papering over the ambiguity by choosing one.
+
+*Evidence*: `specs/nsschema/food.model.json` (`type_undetermined_why`);
+`tools/nsschema/code_model.py` `SOURCE_ASSERTIONS` anchors the string comparison so that fixing
+it fails `make schema-code-drift` and forces the model to be revisited.
 
 ## 3. How to use this register
 
