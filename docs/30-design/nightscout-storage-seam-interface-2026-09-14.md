@@ -385,6 +385,62 @@ rule 2's identifier opacity rather than by the AST.
 - **No tenant predicate is in these filters.** Under D3 the tenant bound comes from RLS, not
   from the AST, which is the point — but it means this validation says nothing about isolation.
 
+### 8.6 The cross-type break is also *inside* the adapter — found by T2.1
+
+§8.5 files the cross-type disagreement as "a finding about type coercion above the seam, not
+about the AST." **T2.1 sharpened that, and the sharper version is worse.** Building the DDL
+forced a decision about generated columns, and measuring it produced this, verified
+independently on live PostgreSQL 16 over the same four rows (`sgv: 120`, `sgv: "120"`,
+`sgv: null`, key absent):
+
+| predicate | rows |
+|---|---:|
+| `WHERE "sgv" >= 100` — the guarded generated column | **1** |
+| `WHERE (doc #>> '{sgv}')::numeric >= 100` — `toSql`'s fallback | **2** |
+
+Both are `toSql` emitting `gte sgv 100`. Which one it emits depends only on whether that field
+happens to appear in the column manifest. So **whether a field has an index accelerator can
+change a query's answer** — and the accelerator is supposed to be exactly the thing that
+cannot. The emitted DDL says so in every file header ("dropping every generated column must not
+change an answer"); today, dropping one would.
+
+The guarded column is the *correct* arm: MongoDB orders BSON types before values, so
+`sgv: "120"` does not match `{sgv: {$gte: 100}}`, and the column agrees while the fallback does
+not. Two further consequences of the same mismatch: a dirty value makes the fallback **raise**
+`22P02` at query time where the column is merely NULL, and a numeric field given an ISO-string
+bound raises where MongoDB silently matches nothing — BF-01's live defect arriving as an error
+instead of an empty page. Louder, still a behaviour difference.
+
+**The fix belongs in `toSql`**: apply the same `jsonb_typeof` guard on the fallback path so the
+two agree by construction. Deliberately **not** done yet — `tools/seam/validate.js` is being
+extended concurrently (T2.3) and changing the thing under measurement mid-measurement would
+throw away the run. Sequenced after T2.3 reports.
+
+### 8.7 Two capability gaps T2.1 surfaced
+
+- **Multikey is not expressible as a generated column.** `treatments.boluscalc.foods` is an
+  array and the live query is `?find[boluscalc.foods._id]=…` (`lib/report/reportclient.js:294`).
+  `doc #>> '{boluscalc,foods,_id}'` is NULL on an array, so no column can reproduce MongoDB's
+  multikey semantics. T2.1 emitted **nothing** rather than an approximation that would have
+  looked right and answered wrong. This is why the emitted index count is 30 secondary + 4
+  primary = **34**, not {M} §6.7's 41: 6 of the difference is food and activity, which have no
+  model yet (T2.2), and the remaining 1 is this. Neither figure is wrong — §6.7 counts six
+  collections and T2.1 has four models — but the plan's T2.1 text conflated them.
+- **Seven indexed field paths no model declares**: `NSCLIENT_ID` (treatments, devicestatus,
+  profile), `date` (treatments, devicestatus), `created_at` (entries), plus the multikey one.
+  They get no column and appear in the index as a jsonb expression carrying an inline
+  `UNDECLARED` note, so the index stays faithful to the Mongo declaration and the gap stays
+  visible. `NSCLIENT_ID` is a real field the websocket write path uses
+  (`lib/server/websocket.js:538`) — a T2.2 input, not a T2.1 defect.
+
+### 8.8 Date-like columns are `text`, and cannot be anything else
+
+`created_at`, `startDate`, `sysTime` and `dateString` are declared `string` + `date-time`.
+Range predicates on them are therefore **lexicographic**, which is chronological only while
+every writer emits a UTC-normalised ISO string of constant width. `timestamptz` would fix the
+ordering and break `eq` — **and its cast is not immutable, so it cannot be a generated column at
+all.** Left as text and flagged rather than quietly made wrong.
+
 ## 9. The transaction scope
 
 {S} §6 flagged that the interface had none and that D3's RLS binding is per-transaction.
