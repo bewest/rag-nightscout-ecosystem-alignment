@@ -171,6 +171,29 @@ security fix into an outage for one of the larger clients.
 - ⬜ *The rejected set documented in the API docs* — on this evidence the rejected set is
   everything outside the AST's ten, and **no surveyed client is affected**.
 
+### 5.1 One qualification: what the server accepts is wider than what clients send
+
+This census answers *"what do clients send?"*. It does **not** answer *"what does the server
+accept?"*, and the two must not be conflated.
+
+The T1.2 conversion work found the difference: **`GET /profiles/` accepts `$expr` today, and
+`tests/mongo-query-javascript.http.test.js:100` asserts it** — a non-JavaScript
+`$expr` (`{$expr: {$eq: [{$literal: {$function: 'literal'}}, '$payload']}}`) is expected to
+return 2 documents. `lib/server/profile.js:138-143` records `list_query` as deliberately not
+converted for exactly this reason.
+
+So enforcing the allowlist is **a behaviour change with a test to update**, not a no-op:
+
+| question | answer |
+|---|---|
+| does any surveyed client send an operator outside the AST? | **no** |
+| does the server currently accept one? | **yes — `$expr`, on `/profiles/`** |
+| is that acceptance pinned by a test? | **yes** |
+
+The decision — represent `$expr` in the AST, or drop it and update the test — is a query-surface
+decision under D8, not a conversion detail. **The census supports dropping it** (nothing sends
+it), but that is an argument, not a mandate, and it is the maintainer's call.
+
 **Before enforcing, two things from §3 and §4 must be true of the implementation**, or the fix
 breaks working clients: native `RegExp` values survive translation, and the indexed
 `find[$and][n][field][$op]` form is accepted.
@@ -186,5 +209,7 @@ breaks working clients: native `RegExp` values survive translation, and the inde
 - **Placeholders were filtered by a reviewable list**, not a heuristic — `k` was the only field
   name dropped as a variable. Template forms that survived (`{time_field}`, `${field}`, `%s`) are
   counted for their *operator*, which is literal, and not for their field.
+- **The census measures clients, not the server's accepted surface.** See §5.1 — those are
+  different questions and only the first is measured here.
 - **`$nor` and `$not` were searched for and not found.** Absence of a shape the grep would have
   caught is a weaker claim than presence, but it is not nothing.
