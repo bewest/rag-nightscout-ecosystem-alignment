@@ -125,6 +125,38 @@ const NOTES = [
   'x y', 'DexcomG6', '', 'sgv 120 mg/dL', 'a.b',
 ];
 
+// Cross-type mode, off by default (`--cross-type`).
+//
+// The header of this file has always claimed the corpus carries "mixed types,
+// and a bound of the wrong type for its field". It did not: mkDocs stored each
+// field's own type and randomValue returned it, so every fixture was same-type.
+// That mattered, because it made the differential VACUOUS for the type-bracket
+// question -- removing toSql's type guard entirely changed no result.
+//
+// MongoDB orders BSON types BEFORE values: a document holding the string "120"
+// does not match {sgv: {$gte: 100}}, and $ne DOES match it. That rule is what
+// toSql's CASE guard reproduces, and nothing here could see whether it did.
+//
+// Read the result with {3A} §4 in hand: mingo is a reimplementation, and the
+// three-arm work measured mongod-vs-postgres at 96.15% on cross-type values. So
+// a mingo/postgres agreement here is evidence about the ADAPTER's rule, not
+// proof about MongoDB. tools/qc/three-arm.js is the arm that can settle that.
+const CROSS_TYPE = process.argv.includes('--cross-type');
+
+// Values of the WRONG type for their field: a numeric field holding a numeric
+// STRING is the case that actually occurs (a client that never coerced), and a
+// string field holding a number is its mirror.
+const WRONG_TYPE = {
+  sgv: ['120', '40', 'high', true],
+  date: ['1700000000000', 'yesterday'],
+  noise: ['2', '0', false],
+  delta: ['1.5', '-2'],
+  'uploader.battery': ['87', true],
+  type: [3, 0, true],
+  device: [7, false],
+  notes: [42, true],
+};
+
 function mkDocs (n) {
   const docs = [];
   for (let i = 0; i < n; i++) {
@@ -143,6 +175,18 @@ function mkDocs (n) {
     if (i % 13 === 0) d.sgv = null;          // explicit null vs missing
     if (i % 17 === 0) d.noise = null;
     if (i % 19 === 0) d.notes = null;
+    if (CROSS_TYPE) {
+      // Roughly one document in four carries one field of the wrong type. Kept
+      // sparse on purpose: if most documents were cross-type the same-type
+      // behaviour would stop being exercised, and both have to hold at once.
+      const fields = Object.keys(WRONG_TYPE);
+      if (i % 4 === 1) {
+        const f = fields[i % fields.length];
+        const wrong = WRONG_TYPE[f][i % WRONG_TYPE[f].length];
+        if (f === 'uploader.battery') d.uploader = { battery: wrong };
+        else d[f] = wrong;
+      }
+    }
     docs.push(d);
   }
   return docs;
@@ -158,6 +202,10 @@ const pick = (a) => a[Math.floor(rnd() * a.length)];
 const int = (lo, hi) => lo + Math.floor(rnd() * (hi - lo));
 
 function randomValue (field) {
+  // A bound of the wrong type for its field, one time in six. This is the other
+  // half of cross-type and it is not the same test: the document being wrong and
+  // the QUERY being wrong exercise opposite sides of the type bracket.
+  if (CROSS_TYPE && WRONG_TYPE[field] && rnd() < 1 / 6) return pick(WRONG_TYPE[field]);
   if (field === 'type') return pick(['sgv', 'mbg', 'cal', 'nope']);
   if (field === 'device') return pick(['Loop', 'xDrip-DexcomG6', '', 'absent']);
   if (field === 'notes') return pick([...NOTES, 'nothing like this']);
@@ -274,10 +322,17 @@ async function setup (pg) {
     CREATE TABLE fx (
       id   int PRIMARY KEY,
       doc  jsonb NOT NULL,
-      sgv  numeric GENERATED ALWAYS AS ((doc->>'sgv')::numeric) STORED,
-      date numeric GENERATED ALWAYS AS ((doc->>'date')::numeric) STORED,
-      type text    GENERATED ALWAYS AS (doc->>'type') STORED
+      sgv  numeric GENERATED ALWAYS AS (CASE WHEN jsonb_typeof(doc->'sgv')  = 'number' THEN (doc->>'sgv')::numeric  END) STORED,
+      date numeric GENERATED ALWAYS AS (CASE WHEN jsonb_typeof(doc->'date') = 'number' THEN (doc->>'date')::numeric END) STORED,
+      type text    GENERATED ALWAYS AS (CASE WHEN jsonb_typeof(doc->'type') = 'string' THEN (doc->>'type')           END) STORED
     );`);
+  // The CASE guards are not decoration, and --cross-type is what proved it: with
+  // the bare casts this table used to declare, ONE document holding sgv as the
+  // string "120" fails the INSERT with 22P02 and the whole run dies in setup. On
+  // a real deployment that is an ingest outage caused by a data-quality problem,
+  // which is the argument tools/nsschema/emit/postgres_emit.py makes for
+  // emitting the same guard. This table now matches the DDL that emitter
+  // produces, so the harness measures the storage shape we would actually ship.
   for (const d of DOCS) {
     const { _id, ...body } = d;
     await pg.query('INSERT INTO fx (id, doc) VALUES ($1, $2)', [_id, JSON.stringify(body)]);
@@ -399,7 +454,8 @@ async function main () {
   if (BOUND_PROBE_ONLY) { await boundProbe(pg); await pg.end(); return process.exit(0); }
 
   console.log(`fixtures: ${DOCS.length} documents, ${COLUMNS.length} generated columns, ` +
-    `${JSONB_FIELDS.length} jsonb-only fields`);
+    `${JSONB_FIELDS.length} jsonb-only fields` +
+    (CROSS_TYPE ? ', CROSS-TYPE values and bounds ON' : ''));
   console.log(`running ${ITERATIONS} randomised filters through mingo and postgres`);
   console.log(`operators: ${OPS.join(' ')}   (minimum ${MIN_PER_OP} fixtures each)\n`);
 

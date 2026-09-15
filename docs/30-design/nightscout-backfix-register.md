@@ -43,6 +43,52 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | **BF-09** | Socket dedup uses truthiness, so a `0` insulin/carbs value is skipped as a match key | `lib/server/websocket.js:535-568` | **unsettled** — may be intentional | yes | open |
 | **BF-10** | `mongod` fatal-asserts at Docker's default `nofile=1024` | operational, not code | medium — self-hosters in containers | yes | open |
 
+## 1b. Pre-release findings
+
+Entries here **fail the register's first criterion** — they do not affect anyone running the
+current release. They are recorded separately rather than by widening that criterion, because the
+criterion is what makes the rest of the table mean something.
+
+| id | defect | where | severity | status |
+|---|---|---|---|---|
+| **BF-16** | Driver 7 doubles the getMore batch size when `.limit(0)` is set, abandoning `READ_OPTIONS` | `lib/storage/mongo-read-options.js` + driver 7.6.0 | medium — pre-release; compounds BF-14 | open |
+
+### BF-16 · the read bound is abandoned on `.limit(0)`
+
+`mongo-read-options.js` = `Object.freeze({batchSize: 1000})` exists because **driver 7 stopped
+sending a default `batchSize`** — measured and confirmed: drivers 5 and 6 send `batchSize=1000`
+unprompted, driver 7 sends none and lets the server fill to the 16 MB wire limit. The constant is
+load-bearing, not cargo.
+
+It stops holding when `.limit(0)` is also set. Requested `getMore` batch sizes, same constant:
+
+```
+v5.9.2    1000 x40                          holds
+v6.21.0   1000 x40                          holds
+v7.6.0    1000 2000 4000 8000 16000 32000   ABANDONED
+```
+
+**The `.limit(0)` path is BF-14's path and only BF-14's path.** `findFiltered` calls `.limit()`
+only when a caller supplied one, and v1 supplies `opts.count ? parseInt(opts.count) : undefined`
+— so `.limit(0)` is reached by `?count=0` and by any unparseable `?count=` (`NaN` →
+`toSafeInt(NaN, 0)`). An absent `?count=` never calls `.limit()` and the bound holds. So the two
+defects compound on the same request: `?count=0` removes the document limit *and* dismantles the
+memory bound that would have made the resulting read survivable.
+
+*Not shipped*: `origin/dev` has `mongodb ^5.9.2` and no `mongo-read-options.js`. Both arrive on
+`chore/nightscout-modernization` (`b8fd24c6`). Caught before release.
+
+*Fix*: none needed here. Fixing **BF-14** makes `.limit(0)` unreachable through the API and closes
+this as a side effect. Recorded anyway because `findFiltered` is a published interface — a future
+caller passing `limit: 0` re-opens it, and `toSafeInt(o.limit, 0)` makes `0` the fallback for
+unparseable input. A defensive `if (limit > 0)` in `findFiltered` would also do it.
+
+*Evidence*: [readOptions across the seam](../60-research/seam-readoptions-2026-09-15.md) §2,
+`tools/qc/readoptions-arm.js`, three driver versions against a real mongod.
+
+*Unexplained*: the doubling is measured on the wire, not traced to a line in the driver. That
+establishes when it changed, not why.
+
 ## 2. Detail
 
 ### BF-01 · `count/entries/where` silently matches nothing
@@ -157,6 +203,10 @@ value that means unbounded. `findMany`, in the same file, defaults to `1000`.
 
 *Evidence*: [limit and projection](../60-research/seam-limit-and-projection-2026-09-14.md) §2,
 `tools/qc/shape-arm.js`, against a real mongod.
+
+*Compounds with [BF-16](#bf-16--the-read-bound-is-abandoned-on-limit0)*: the same `.limit(0)`
+that makes the read unbounded also makes driver 7 abandon `READ_OPTIONS`, so the batch size
+doubles as the read runs. Fixing this entry closes that one.
 
 *Sized, and the measurement downgraded it from high to medium.*
 `tools/qc/v1_count_census.py` over 10 client projects: **274 `count=` occurrences, no literal

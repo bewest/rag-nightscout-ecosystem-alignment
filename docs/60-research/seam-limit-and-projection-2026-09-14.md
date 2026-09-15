@@ -213,9 +213,10 @@ removes are **not** dead work — `col.resolveDates(doc)` consumes them between 
   differs. Do not read §3.1 as "PostgreSQL cannot do this" — `jsonb_strip_nulls` and a
   path-existence guard reproduce Mongo's shape. The point is that nobody has written that yet,
   and the seam's interface does not ask anyone to.
-- **`readOptions` is still untested.** It is the third driver object in the options bag; it
-  bounds getMore batch size and has no SQL analogue at all. Nothing in it is likely to be a
-  correctness defect, which is why it is last.
+- ~~**`readOptions` is still untested.**~~ **Closed** by
+  [readOptions across the seam](seam-readoptions-2026-09-15.md). The guess in this bullet —
+  "nothing in it is likely to be a correctness defect" — was wrong: driver 7 abandons the bound
+  precisely on `.limit(0)`, which is BF-14's own path, so the two compound (BF-16).
 - **BF-14 is sized now** (§2.2), and the measurement **downgraded it**. See below.
 - The `$slice`-on-a-non-array probe returned the whole document rather than an error, which is
   unexplained and not pursued — it is outside what any caller sends.

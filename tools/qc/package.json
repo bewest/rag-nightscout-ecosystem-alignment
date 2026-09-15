@@ -6,6 +6,8 @@
   "dependencies": {
     "mingo": "^7.2.4",
     "mongodb": "^6.10.0",
+    "mongodb5": "npm:mongodb@^5.9.2",
+    "mongodb7": "npm:mongodb@^7.6.0",
     "pg": "^8.13.0"
   }
 }
