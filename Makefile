@@ -668,7 +668,7 @@ print(f'  {len(patients)} patients, {n_rows:,} rows, {elapsed*1000:.0f}ms — {\
         schema-nocturne schema-dosing schema-vendors schema-observability \
         schema-sync-model schema-sync-cost schema-effects schema-sensitivity \
         schema-primitives schema-settings \
-        schema-code-model schema-code-drift \
+        schema-code-model schema-code-drift schema-vendor-drift \
         schema-test schema-clean schema-postgres-report
 
 PY ?= python3
@@ -677,7 +677,7 @@ NSSCHEMA = PYTHONPATH=tools $(PY) -m nsschema
 ## schema: full pipeline — census, reconcile, model, emit, impact, drift
 schema: schema-census schema-reconcile schema-sensitivity schema-code-model \
         schema-model schema-quirks schema-emit schema-coercion-drift \
-        schema-impact schema-drift schema-code-drift
+        schema-impact schema-drift schema-code-drift schema-vendor-drift
 
 ## schema-census: walk the raw corpus (~4 min over ~2.5 GB of JSON)
 schema-census:
@@ -701,6 +701,13 @@ schema-code-model:
 ## emitters against models, this checks models against the code.
 schema-code-drift:
 	@$(NSSCHEMA).code_model --check --cross-check
+
+## schema-vendor-drift: fail if the PostgreSQL DDL the server SHIPS is not the
+## DDL this repo emits. The server cannot depend on this repo at runtime, so
+## T2.5 vendored a copy -- and a copy with nothing checking it is a schema that
+## drifts silently.
+schema-vendor-drift:
+	@$(NSSCHEMA).vendor_drift
 
 ## schema-model: merge spec + evidence into the reconciled model
 schema-model:
