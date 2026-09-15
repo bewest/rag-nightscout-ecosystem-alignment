@@ -34,6 +34,7 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | medium — unbounded read from a bounded request; no client triggers it today | yes | open |
 | **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | open |
 | **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks silently vanish from the quick-pick list; no shipping client triggers it today | yes | open |
+| **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | open |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | open |
@@ -364,6 +365,59 @@ instead of papering over the ambiguity by choosing one.
 *Evidence*: `specs/nsschema/food.model.json` (`type_undetermined_why`);
 `tools/nsschema/code_model.py` `SOURCE_ASSERTIONS` anchors the string comparison so that fixing
 it fails `make schema-code-drift` and forces the model to be revisited.
+
+### BF-17 · A subject edit writes the access token into the database in plaintext
+
+Found while deriving `specs/nsschema/auth_subjects.model.json`, by asking the narrow question
+"which of these fields are actually stored?"
+
+**`accessToken` is normally a derived value, not a stored one.** `lib/authorization/storage.js`
+`reload()` recomputes it for every subject from the subject's `_id`, its `name` and the enclave
+key. A stored subject document does not carry it.
+
+Three steps put it there anyway, and each is reasonable on its own:
+
+1. `lib/authorization/endpoints.js:38-42` — `GET /subjects` serves
+   `pick(subject, ['_id', 'name', 'accessToken', 'roles'])`. Including the token is deliberate:
+   the admin UI has to display it so an operator can copy it into a device.
+2. `lib/admin_plugins/subjects.js:43` — the edit dialog sends the object it was given straight
+   back, `data: subject`. It does not construct a payload of changed fields.
+3. `lib/authorization/storage.js` `save` — `replaceOne({_id}, obj, {upsert: true})` replaces the
+   document **wholesale** with the request body.
+
+So changing a subject's name, or its roles, or its notes, writes the bearer token into the
+subject's document as an ordinary string. Nothing warns, and the UI looks identical afterwards.
+
+**Why this is worth more than the tidiness of it.** Derivation is what keeps the database from
+being sufficient on its own: a reader of the stored documents alone — a backup, a replica, a
+hosted MongoDB snapshot, a support export — cannot mint tokens without the enclave key. After any
+subject edit, that separation is gone for that subject, and read access to the collection is read
+access to a working credential. It converts a database-disclosure incident into a full API
+compromise, silently and retroactively, for every subject an operator has ever edited.
+
+Two related observations from the same reading, neither a separate entry:
+
+- `accessTokenDigest` and `digest` are also derived and also not stored, but `GET /subjects` does
+  not serve them, so they are not round-tripped. The exposure is `accessToken` alone.
+- `auth_subjects.notes` has the mirror-image bug: it *is* stored, but `GET /subjects` does not
+  return it, so the dialog populates its input from `undefined` and the wholesale PUT writes `''`
+  back. **Any note an operator saves is erased by the next edit of that subject.**
+
+*Fix*: the durable one is for `save` to write only the fields a subject document owns, rather
+than the request body — which fixes the token and the notes together, and is the same shape of
+fix as "don't replace a document with whatever a client sent". Stripping `accessToken` in the PUT
+handler is the smaller change and closes the exposure; it leaves `notes` broken. Either way, a
+deployment that has edited subjects already has tokens on disk, so a fix should also clear the
+field on the next reload rather than only stopping new writes.
+
+*Not reproduced against a live instance.* The chain is read from the released
+`cgm-remote-monitor` source in `externals/cgm-remote-monitor-official`; every link is a literal
+in that tree. **Not a regression from the storage-seam work** — the seam changed `save` from
+`replaceOne` to a one-operation `bulkUpsert` with `mode: 'replace'`, which is the same wholesale
+replacement.
+
+*Evidence*: `specs/nsschema/auth_subjects.model.json` (`credential_warning`), which also records
+that the field is `secret`/`credential` so no emitter or exporter can treat it as ordinary text.
 
 ## 3. How to use this register
 
