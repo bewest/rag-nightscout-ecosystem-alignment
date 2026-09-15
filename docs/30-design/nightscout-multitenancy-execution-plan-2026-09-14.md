@@ -1,6 +1,25 @@
 # Multitenancy execution plan: decisions, tasks, and the context each one needs
 
 Date: 2026-09-14. Status: draft for maintainer discussion.
+
+> # ⛔ READ THIS BEFORE STARTING ANY TASK — 2026-09-15
+>
+> **NEW TENANCY WORK IS STOPPED.** Phases 1–4 are substantially built; **Phase 0 is 0 of 5**, and
+> the [backfix register](nightscout-backfix-register.md) holds **29 open entries**. Phase 0 and
+> that register are the work that reaches the people running Nightscout *today*, and none of it
+> has shipped. That inversion is the programme's largest misalignment, and it is corrected by
+> **doing Phase 0 next, not by noting it here.**
+>
+> **If you are an agent picking up work: take a Phase 0 task or a register entry.** Do not start a
+> new Phase 3 or Phase 4 task. The two exceptions, both corrections rather than new capability:
+> **T3.0** (§2.8 — the credential rework D13/D14 require) and finishing **T4.3/T4.4**, and only
+> when explicitly briefed for them.
+>
+> **Also check before you brief yourself:** this branch moves several times a day and several
+> sessions share it. Confirm the head commit, confirm the task you were given is still open, and
+> re-read the section you are acting on — three decisions in one day were overtaken between being
+> asked and being answered. Allocate a **BF-** id by reading the register's highest id *at the
+> moment you write it*, not the one your brief quoted; three collisions have already happened.
 **This is the working document.** The evidence lives in {M}, {R} and {DB}; the component
 design in {C}. This says what is decided, what is next, and carries enough context per task
 that work can be picked up without re-reading the evidence chain.
@@ -275,7 +294,21 @@ Two halves, in order, because the second depends on the first.
 3. *Wiring.* Supply T3.3's `deriveEnv` overrides from it, and make `isApiKey`/`verifyJWT`
    tenant-scoped.
 
-*Blocks*: T3.3. *Blocked by*: nothing.
+**T3.0 does NOT block T3.3 — T3.3 landed first. It AMENDS three tasks already marked done**,
+because D13/D14 were decided after they shipped. Their measurements, tests and isolation evidence
+all stand; only the credential assumptions are wrong. Each is marked **DONE-EXCEPT** below with the
+one site at fault, so nothing already proven is re-litigated and nothing wrong reads as settled:
+
+| task | the site D13/D14 reject |
+|---|---|
+| **T3.1** | `tenant-middleware.js:139-143` — `tenantClaim` verifies with one install-wide key |
+| **T3.2** | `lib/admin/platform.sql` — no per-tenant configuration, secret or signing key; `tenant_members.subject_id` is a `uuid` referencing nothing |
+| **T3.3** | `lib/server/tenant-context.js:137` — shares `env.enclave`, reasoning "exactly one deployment secret" |
+
+Plus one site older than this programme: `lib/authorization/index.js:169-173` grants shiro `['*']`
+on a matching deployment `api_secret`, with no tenant dimension on that path at all.
+
+*Blocked by*: nothing. *Amends*: T3.1, T3.2, T3.3.
 
 
 ### 2.9 What "declared safe" means, and what suspension means
@@ -949,7 +982,7 @@ one transaction, which is more than the MongoDB path promises.
 
 ### Phase 3 — tenancy
 
-**T3.1 · Tenant resolution middleware. — DONE 2026-09-15**
+**T3.1 · Tenant resolution middleware. — DONE-EXCEPT 2026-09-15** (amended by T3.0: `tenantClaim` verifies with one install-wide key, which D14 replaces with a per-tenant signing key)
 Host → slug → tenant id, path prefix fallback, token claim verified against the resolved tenant
 (reject on mismatch). {M} §5.2 item 1.
 
@@ -997,7 +1030,7 @@ table until T3.2's DDL runs. `fromEnv` warns loudly at boot, and the README says
 is **not safe yet** — settings, plugins, notification state and socket rooms are still
 process-wide. This is the **first** of §5.2's eight cross-cutting requirements, not tenancy.
 
-**T3.2 · `bin/admin.js` — DONE 2026-09-15**, per §2, including the refuse-to-start guard on a
+**T3.2 · `bin/admin.js` — DONE-EXCEPT 2026-09-15** (amended by T3.0: `platform.sql` carries no per-tenant configuration, secret or signing key, and `tenant_members.subject_id` references nothing), per §2, including the refuse-to-start guard on a
 non-loopback bind.
 
 **The guard's proof is that it refuses for the *right* reason.** Refuse `0.0.0.0:P`, then bind
@@ -1062,7 +1095,7 @@ comment. The registry now turns `insufficient_privilege` and `undefined_table` i
 naming the `GRANT` and the admin plane respectively, and passes everything else through, because
 a connection failure is not a configuration mistake.
 
-**T3.3 · `ctxFor(tenantId)` — DONE 2026-09-15** — the `Map<tenantId, ctx>` substrate, for the
+**T3.3 · `ctxFor(tenantId)` — DONE-EXCEPT 2026-09-15** (amended by T3.0: shares `env.enclave` on reasoning D13/D14 reject) — the `Map<tenantId, ctx>` substrate, for the
 single-process path. {C}'s framing holds: this is a *cache* with a graceful fallback, not the
 source of truth, and an evicted context rebuilds to something **deep-equal** to what was dropped
 — which is the testable form of that sentence.
@@ -1141,8 +1174,15 @@ The PostgreSQL backend does not have this shape — its isolation is a per-trans
 rather than an accident. That contrast is D4 restated as a code property: two deployment targets
 over one shared core, and this is one of the places the core is not yet shared.
 
-**T3.4 · Ack/snooze state into storage. — REGRESSION TEST DONE 2026-09-15; the storage move is
-DEFERRED to T4.4, with reasons.**
+**T3.4 · Ack/snooze state into storage. — REGRESSION TEST DONE 2026-09-15; the storage move was
+deferred with reasons and has since been DONE as T4.4a, 2026-09-15.**
+
+> **The deferral was honoured, not abandoned.** T4.4a took all four objections below seriously and
+> answered three of them in `lib/storage/ack-store.js` and one in `lib/notifications.js`. In
+> particular it did *not* ask the interface for a compare-and-set it declines to promise: the guard
+> is one `INSERT … ON CONFLICT … DO UPDATE … WHERE`, and the row's `tenant_id` is written from
+> `current_setting('app.current_tenant_id')` rather than taken from a caller, so there is no
+> argument to get wrong. Read the four reasons below as the specification T4.4a was held to.
 
 ~~replacing `lib/notifications.js:15`'s module-scope map~~ — **the premise was stale on this
 branch and the agent checked rather than assumed.** `alarms` was moved inside `init(env, ctx)`
@@ -1427,6 +1467,21 @@ one the PostgreSQL backend implements.
 pgbouncer** ({DB} §10.3: transaction-mode pooling accepts `LISTEN` and silently delivers
 nothing).
 **T4.4 · `ns-evaluator`** — hash-partitioned by tenant for per-tenant ordering of ack state.
+**Ack state is already durable (T4.4a); what remains is the per-tenant evaluation loop itself.**
+
+**Build it with no resident `ddata`.** §7b measured the alarm path at **32.7 KB and 1.94 ms per
+tenant per evaluation** against **852 KB and 27.5 ms** for the whole of `ddata`, emitting the
+identical alarm. The slice is **transient — materialise, evaluate, discard** — and every field in
+it is "newest *n* of a type within a time bound", i.e. a handful of indexed queries.
+**So residency tiering is NOT a prerequisite for this task**, and an evaluator built around a
+resident per-tenant `ddata` would be building the expensive version of a cheap problem.
+
+Three things §7b says the loop must not get wrong: `treatments` can *withhold* an alarm
+(`treatmentnotify.js:64-75` snoozes every URGENT for 10 min after any treatment), `profiles` can
+withhold one via `boluswizardpreview.highSnoozedByIOB`, and only the **newest** `devicestatus`
+document is needed despite it being the largest field. Also unresolved and named by the spike:
+whether a batching or replaying evaluator may own its own clock — `sbx.time` is hardcoded
+`Date.now()`, and `lastEntry` silently drops entries ahead of it.
 
 ---
 
@@ -1437,10 +1492,36 @@ nothing).
 | **No TLS or auth in any database measurement** | T2.5 | Both add CPU to the per-operation term the whole cost model rests on; `ns-api` has the least headroom (110 ms/s of 300) |
 | ~~**Writes never measured**~~ **correctness CLOSED**, cost still open | T2.5 | [write path](../60-research/seam-write-path-2026-09-15.md): 23 agree, 4 differ, 0 vacuous — BF-21, BF-22, BF-23. No write *performance* figures yet |
 | **Working set past cache size** | T2.5 | {DB} §7's 400-tenant run is where cache pressure *starts* |
-| **pgbouncer + `set_config(is_local)`** | T2.5 | {M} §6.7 says the pooler may be required; its interaction with transaction-scoped binding is untested |
+| ~~**pgbouncer + `set_config(is_local)`**~~ **CLOSED 2026-09-15** | T2.5 | [pgbouncer and the D3 binding](../60-research/pgbouncer-tenant-binding-2026-09-15.md): **isolation holds** in both session and transaction pooling, proven on a shared backend pid — transaction mode is the one hosters want and it works |
 | **Active fraction (15 %)** is an assumption | — | Drives A and B far harder than C; a real hoster's figure would sharpen the cost model |
 | **Vendor rate limits** (EXP-MT-051) | T0.4 | Needs real credentials; the 9,700-account machinery figure is a ceiling the real answer sits well below |
 | **Reconnect storms, `UNLISTEN` churn** | T4.3 | The interesting realtime case, and not covered |
+
+## 7a. What stands between here and alarms being ON under `multi`
+
+**This is the most safety-relevant line in the document and it had no home until now.** Under
+`TENANCY_MODE=multi` the alarm and live-update producers run outside any tenant scope, so their
+emissions are withheld (T3.5). Turning multi on today turns alarms off. Failing closed is right;
+staying closed indefinitely is not. What is actually left:
+
+| # | what | status |
+|---|---|---|
+| 1 | **Durable ack/snooze keyed by tenant** — without it every snooze fails open and the alarm re-fires forever, which is alarm fatigue on the one path where not firing is the worst outcome this software has | **DONE** — T4.4a |
+| 2 | **A per-tenant evaluation loop** running inside `withTenant`, so an emission has a room | **T4.4**, not started. §7b sized it: 32.7 KB / 1.94 ms per tenant, no resident `ddata` needed |
+| 3 | **A per-tenant error boundary** — `serverInit`/`initRequests`/`process` are unguarded, so in a plain loop one tenant throwing means every *later* tenant is never evaluated | not started; named by the T4.4 spike |
+| 4 | **A health signal for a silent per-tenant outage** — the per-plugin `try/catch` turns bad data into an alarm outage nobody is told about | not started |
+| 5 | **BF-22** — `language` and `levels.translate` are process-wide, and that is how alarm *text* reaches a push notification. One tenant's request re-languages everyone's alarms | open |
+| 6 | **BF-29** — an unknown `ENABLE` entry silently disables an alarm plugin with no warning. An operator can believe an alarm is armed when it is not | open |
+| 7 | **The clock question** — snooze is measured in data time, ack in wall time; `sbx.time` is hardcoded `Date.now()` and `lastEntry` drops entries ahead of it. A batching or replaying evaluator cannot own its clock today | open; T4.4a chose wall time for ack, the rest is unsettled |
+
+**Items 5 and 6 are backfix-register entries, not tenancy work** — they are wrong for
+single-tenant operators today, and they are also prerequisites for trusting alarm text and alarm
+arming per tenant. They are a concrete example of why Phase 0 comes first.
+
+**Nothing here may be marked done by inference.** Alarms go back on when a test shows tenant A's
+alarm reaching A and not B, through the real producer path, with a snooze that survives a restart
+and a process change — not when the last row above is edited.
+
 
 ## 7b. The per-tenant evaluator is cheap, and {R} §12.5's axis was wrong
 
