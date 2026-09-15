@@ -54,6 +54,9 @@ criterion is what makes the rest of the table mean something.
 | **BF-21** | `bulkUpsert` on PostgreSQL takes no options argument, so the `{mode:'replace'}` every shipping caller sends is silently ignored and the write merges | `lib/api3/storage/pgCollection/index.js` `bulkUpsert` | **high** — a deleted field survives for good; the two backends drift apart with every write | open |
 | **BF-22** | `updateOne` with a dotted field stores a nested object on MongoDB and a literal dotted key on PostgreSQL | `lib/api3/storage/pgCollection/index.js` + `lib/api3/generic/patch/operation.js:85` | **medium** — client-reachable via v3 `PATCH`; the PostgreSQL key is unreachable by any path lookup | open |
 | **BF-23** | A duplicate-key error reaches the caller as the backend's own error class | both adapters | low — no shipping caller branches on it | open |
+| **BF-25** | A credential carried in the request **body** is invisible to the tenant claim check, so tenant A's token authorises A's roles against tenant B's bound data | `lib/server/tenant-middleware.js` `presentedCredential` + `lib/authorization/index.js:40-50` | **high** — cross-tenant read *and write* with any client on default config | open |
+| **BF-24** | `TRUST_PROXY=false` bypasses the guard that refuses a non-`host` `TENANT_HOST_HEADER`, letting a client choose its tenant with a header | `lib/server/env.js` `fromEnv` trust-marker check | **high** — gated on one operator config pairing, which is the pairing the guard exists to catch | open |
+| **BF-26** | The HTTPS redirect rebuilds the URL from the already-rewritten `req.url`, dropping the tenant path prefix | `lib/server/app.js:132` | low–medium — availability; on by default in path mode | open |
 | **BF-18** | Driver 7 doubles the getMore batch size when `.limit(0)` is set, abandoning `READ_OPTIONS` | `lib/storage/mongo-read-options.js` + driver 7.6.0 | medium — pre-release; compounds BF-14 | open |
 | **BF-19** | `ORDER BY` reads the generated column, which orders differently from the document — breaking the DDL's own stated invariant | `lib/api3/storage/pgCollection/sql.js` `orderBy` | **high** — silently wrong order, and client-reachable via v3 `?sort=` | open |
 | **BF-20** | `scalarize()` converts a `Date` bound to an ISO string, so a `Date`-valued filter matches nothing on MongoDB and everything on PostgreSQL | `lib/api3/storage/pgCollection/utils.js` | low — no shipping caller passes a `Date` | open |
@@ -223,6 +226,81 @@ MongoDB idiom for "already exists" and would silently stop being true.
 
 *Low on evidence*: `grep` for `11000`, `E11000` and `MongoServerError` across `lib/` finds no
 caller branching on it. Recorded because the interface is published.
+
+### BF-25 · a body-borne credential is invisible to the tenant claim check
+
+`presentedCredential` decides whether a request carries a credential at all. It reads the
+`Authorization` header, `?token=`, `?secret=` and the `api-secret` header — and **not**
+`req.body`. Its own comment explains why, and the explanation is the defect:
+
+> `req.body` is deliberately not consulted. This middleware mounts above the body parsers, so a
+> token in a body is not visible yet … an opaque credential is exactly the case the
+> `requireTokenClaim` default refuses.
+
+It is not refused. `present = false` classifies the request as **anonymous**, and an anonymous
+request is passed through. Later, `lib/authorization/index.js:40-50` reads `req.body.token` and
+`req.body[0].token` (and the `secret` equivalents) and resolves them against the **process-wide**
+`storage.subjects`. `lib/api/entries/index.js:43` mounts a body parser on exactly that route.
+
+Measured on one middleware instance, victim host `bar`:
+
+```
+tenant foo's JWT as ?token=          -> 403
+the IDENTICAL JWT in the JSON body   -> 200, bound to tenant bar, token intact
+```
+
+Same for an opaque access token, `{secret:…}` and `[{secret:…}]`. So tenant A's credential
+authorises A's roles against **tenant B's** data — read and write.
+
+*Verified independently at both halves before publishing*: `presentedCredential` does not read the
+body, and `lib/authorization/index.js` does.
+
+*Tempering, and it is real*: `fromEnv` already warns at boot that `TENANCY_MODE=multi` is not safe
+to serve two people from until T3.3–T3.5 land. This is a pre-release defect on an unfinished mode,
+not something shipping to self-hosters.
+
+*The most dangerous part is the comment*, because it tells the next reader this case is already
+handled. Fix the sentence even if the code takes longer.
+
+*Regression test to write when fixing*: start the real authorization stack with two tenants'
+subjects and assert A's token cannot read B's entries. The agent established the two halves
+separately — middleware pass-through measured live, process-wide subject resolution read from
+source — and that end-to-end test is the gap.
+
+*Evidence*: [tenant resolution, adversarial](../60-research/tenant-resolution-adversarial-2026-09-15.md) C1.
+
+### BF-24 · `TRUST_PROXY=false` defeats the forwarded-host guard
+
+`fromEnv` refuses a `TENANT_HOST_HEADER` other than `host` with
+`if (trust.legacyForwardedHeaders) throw`. That marker is only set on the **compatibility** trust
+function — `TRUST_PROXY` unset or empty. `compileTrust('false')` returns a bare `() => false` with
+no marker, so the guard never fires:
+
+```
+TRUST_PROXY=false  TENANT_HOST_HEADER=x-forwarded-host
+Host: foo…   X-Forwarded-Host: bar…    ->  200, bound to bar
+```
+
+The client picks its tenant with a header, on another tenant's hostname. The pairing is
+contradictory — trust nothing, then read a forwarded header — which is precisely what the guard
+exists to catch.
+
+*Evidence*: same report, H3.
+
+### BF-26 · the HTTPS redirect drops the tenant path prefix
+
+`lib/server/app.js:132` builds `https://${host}${req.url}` and is mounted **below** the tenant
+middleware, which has already stripped the prefix from `req.url`:
+
+```
+GET /foo/api/v1/entries?count=10
+  -> Location: https://apex.org/api/v1/entries?count=10   (slug `api` -> 404)
+```
+
+`INSECURE_USE_HTTP` defaults false, so in path mode this is on by default. Availability rather
+than isolation. *Fix*: use `req.tenantPathPrefix` or `req.originalUrl`.
+
+*Evidence*: same report, M2.
 
 ## 2. Detail
 
