@@ -52,6 +52,33 @@
     "Square"
    ]
   },
+  "boluscalc": {
+   "type": "object",
+   "properties": {
+    "foods": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "x-aid-extensions": {
+        "type": "object",
+        "description": "Vendor- or client-specific fields not part of the core schema. Observed in live data on a minority of sites.",
+        "properties": {
+         "_id": {
+          "type": "string",
+          "x-sensitivity": "identifying",
+          "x-data-category": "identity"
+         }
+        },
+        "additionalProperties": false
+       }
+      },
+      "additionalProperties": false
+     }
+    }
+   },
+   "additionalProperties": false
+  },
   "carbs": {
    "type": [
     "null",
@@ -366,6 +393,19 @@
    "type": "object",
    "description": "Vendor- or client-specific fields not part of the core schema. Observed in live data on a minority of sites.",
    "properties": {
+    "NSCLIENT_ID": {
+     "type": [
+      "number",
+      "string"
+     ],
+     "x-sensitivity": "identifying",
+     "x-data-category": "identity"
+    },
+    "date": {
+     "type": "number",
+     "x-sensitivity": "identifying",
+     "x-data-category": "temporal"
+    },
     "durationType": {
      "type": "string",
      "x-sensitivity": "quasi-identifying",

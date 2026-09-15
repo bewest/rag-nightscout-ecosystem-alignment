@@ -14,6 +14,7 @@
 import { z } from 'zod';
 
 export const ProfileSchema = z.object({
+    NSCLIENT_ID: z.union([z.number(), z.string()]).optional(),
     _id: z.string().optional(),  // 100% of documents, 11 sites, universal
     created_at: z.string().optional(),  // 11% of documents, 2 sites, vendor
     defaultProfile: z.string(),  // 100% of documents, 11 sites, universal

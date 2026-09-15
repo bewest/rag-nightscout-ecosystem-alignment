@@ -1153,6 +1153,26 @@
    "type": "integer",
    "x-sensitivity": "quasi-identifying",
    "x-data-category": "location"
+  },
+  "x-aid-extensions": {
+   "type": "object",
+   "description": "Vendor- or client-specific fields not part of the core schema. Observed in live data on a minority of sites.",
+   "properties": {
+    "NSCLIENT_ID": {
+     "type": [
+      "number",
+      "string"
+     ],
+     "x-sensitivity": "identifying",
+     "x-data-category": "identity"
+    },
+    "date": {
+     "type": "number",
+     "x-sensitivity": "identifying",
+     "x-data-category": "temporal"
+    }
+   },
+   "additionalProperties": false
   }
  },
  "required": [

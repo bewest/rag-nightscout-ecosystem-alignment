@@ -17,7 +17,7 @@
 -- correctly; nothing here licenses a hand-written query to do otherwise.
 --
 -- Indexed fields with no column, and why:
---   created_at               UNDECLARED  the model does not declare this field
+--   (none)
 
 CREATE TABLE entries (
   -- tenant_id leads the table and every index below: under RLS the policy
@@ -41,6 +41,8 @@ CREATE TABLE entries (
     GENERATED ALWAYS AS (CASE WHEN jsonb_typeof(doc #> '{dateString}') = 'string' THEN (doc #>> '{dateString}') END) STORED,
   "identifier" text
     GENERATED ALWAYS AS (CASE WHEN jsonb_typeof(doc #> '{identifier}') = 'string' THEN (doc #>> '{identifier}') END) STORED,
+  "created_at" text
+    GENERATED ALWAYS AS (CASE WHEN jsonb_typeof(doc #> '{created_at}') = 'string' THEN (doc #>> '{created_at}') END) STORED,
 
   -- Scoped to the tenant rather than global: two tenants restored from
   -- different deployments can legitimately carry the same _id, and a
@@ -65,7 +67,7 @@ CREATE INDEX entries_tenant_identifier
 CREATE INDEX entries_tenant_type_date_datestring
   ON entries (tenant_id, "type" ASC, "date" DESC, "dateString" ASC);
 CREATE INDEX entries_tenant_date_identifier_created_at
-  ON entries (tenant_id, "date" DESC, "identifier" DESC, (doc #>> '{created_at}') DESC);
+  ON entries (tenant_id, "date" DESC, "identifier" DESC, "created_at" DESC);
 
 -- FORCE is the load-bearing word: without it the table OWNER bypasses the
 -- policy. It still does not subject a SUPERUSER — BYPASSRLS is implicit for

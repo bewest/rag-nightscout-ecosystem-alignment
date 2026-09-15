@@ -1,0 +1,218 @@
+{
+ "collection": "settings",
+ "generated_by": "tools/nsschema/code_model.py",
+ "provenance": "code-derived",
+ "measured": false,
+ "evidence_note": "NOT MEASURED. Every field here was read out of cgm-remote-monitor's source, so it records what the server and its built-in clients CAN write \u2014 not what any deployment DOES write, how often, or on how many sites. No node in this file carries an evidence block, and none may be given one without a census to back it. reports/schema-census/settings.census.json exists and is NOT a census of this collection. corpus.py collects it from each snapshot's settings.json, which is a capture of the GET /api/v1/status.json response; its twelve top-level fields are the `info` object built in lib/api/status.js. That evidence is modelled in specs/nsschema/status.model.json. This collection itself has never been measured.",
+ "source_root": "externals/work/crm-seam",
+ "source_files": [
+  "lib/api3/generic/setup.js",
+  "lib/api3/index.js",
+  "lib/api3/generic/search/operation.js"
+ ],
+ "source_digest": "sha256:1ad0c63c2e0d2cd1a93b6ab7959e8d315c3e8beff02d215e04ffdf64bf10870c",
+ "reached_by": [
+  "v3 /api/v3/settings"
+ ],
+ "not_in_v1": "no v1 route opens this collection",
+ "permission": "search and history demand api:settings:admin rather than :read (lib/api3/generic/search/operation.js)",
+ "open_body": "beyond API v3's envelope the server imposes no schema and writes no field of its own; nothing in cgm-remote-monitor writes a document here at all",
+ "naming_collision": "reports/schema-census/settings.census.json is NOT a census of this collection \u2014 it captures the GET /api/v1/status.json response. See specs/nsschema/status.model.json.",
+ "proposed_contract": "specs/sync/controller-settings.schema.json proposes what a document here should look like; it is a proposal, not something any deployment has been observed to write.",
+ "root": {
+  "path": "",
+  "types": [
+   "object"
+  ],
+  "nullable": false,
+  "provenance": "structural",
+  "declared": false,
+  "observed": false,
+  "placement": "core",
+  "open_body": true,
+  "children": {
+   "_id": {
+    "path": "_id",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/setup.js"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "identity",
+    "sensitivity_why": "name is on the redaction denylist",
+    "required_read": true,
+    "notes": [
+     "assigned by the storage layer"
+    ]
+   },
+   "app": {
+    "path": "app",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/shared/operationTools.js (rejects a blank app)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "client-supplied application name; v3 requires it to be non-blank"
+    ]
+   },
+   "identifier": {
+    "path": "identifier",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/create/validate.js (rejects a non-string identifier)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "identity",
+    "sensitivity_why": "name is on the redaction denylist",
+    "required_write": true,
+    "notes": [
+     "required by API v3 create; API v1 writes never set it"
+    ]
+   },
+   "isReadOnly": {
+    "path": "isReadOnly",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/update/validate.js (isReadOnly || readOnly || readonly)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "three spellings are honoured \u2014 isReadOnly, readOnly and readonly \u2014 so a model that declares only one is incomplete"
+    ]
+   },
+   "isValid": {
+    "path": "isValid",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/read/operation.js (doc.isValid === false hides the document)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "name is on the redaction denylist",
+    "notes": [
+     "false marks a soft-deleted document; v3 reads skip it"
+    ]
+   },
+   "modifiedBy": {
+    "path": "modifiedBy",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/patch/operation.js (doc.modifiedBy = auth.subject.name)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "identity",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "server-assigned on v3 patch and delete"
+    ]
+   },
+   "srvCreated": {
+    "path": "srvCreated",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/create/insert.js (doc.srvCreated = doc.srvModified)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "temporal",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "server-assigned epoch milliseconds"
+    ]
+   },
+   "srvModified": {
+    "path": "srvModified",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/create/insert.js (doc.srvModified = now.getTime())"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "temporal",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "server-assigned epoch milliseconds"
+    ]
+   },
+   "subject": {
+    "path": "subject",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/create/insert.js (doc.subject = auth.subject.name)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "identity",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "the auth subject's name, written by the server on v3 create"
+    ]
+   }
+  }
+ }
+}

@@ -17,6 +17,7 @@ checks that the two do not contradict each other.
 import pyarrow as pa
 
 PROFILE_WIRE_SCHEMA = pa.schema([
+    pa.field("NSCLIENT_ID", pa.large_string(), metadata={"sensitivity": "identifying", "category": "identity"}),  # union of number, string widened to string
     pa.field("_id", pa.large_string(), metadata={"sensitivity": "identifying", "category": "identity"}),  # 100% docs, 11 sites; universal
     pa.field("created_at", pa.large_string(), metadata={"sensitivity": "quasi-identifying", "category": "temporal"}),  # 11% docs, 2 sites; vendor
     pa.field("defaultProfile", pa.large_string(), metadata={"sensitivity": "identifying", "category": "therapy-setting"}),  # 100% docs, 11 sites; universal

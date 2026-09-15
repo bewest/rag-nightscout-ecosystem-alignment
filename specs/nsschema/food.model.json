@@ -1,0 +1,865 @@
+{
+ "collection": "food",
+ "generated_by": "tools/nsschema/code_model.py",
+ "provenance": "code-derived",
+ "measured": false,
+ "evidence_note": "NOT MEASURED. Every field here was read out of cgm-remote-monitor's source, so it records what the server and its built-in clients CAN write \u2014 not what any deployment DOES write, how often, or on how many sites. No node in this file carries an evidence block, and none may be given one without a census to back it. absent from tools/nsschema/corpus.py's COLLECTIONS and from reports/schema-census/; no snapshot ever fetched it.",
+ "source_root": "externals/work/crm-seam",
+ "source_files": [
+  "lib/food/food.js",
+  "lib/server/food.js",
+  "lib/api/food/index.js",
+  "lib/api3/generic/setup.js"
+ ],
+ "source_digest": "sha256:465ca09f52bdefed51c822562a03dffe028e2483913d23f51eb4436ee27d9fea",
+ "reached_by": [
+  "v1 /api/v1/food",
+  "v3 /api/v3/food"
+ ],
+ "document_types": [
+  "food",
+  "quickpick"
+ ],
+ "discriminator": "type",
+ "indexed_fields": [
+  "type",
+  "position",
+  "hidden"
+ ],
+ "form_encoded_writer": "lib/food/food.js ($.ajax with no contentType)",
+ "root": {
+  "path": "",
+  "types": [
+   "object"
+  ],
+  "nullable": false,
+  "provenance": "structural",
+  "declared": false,
+  "observed": false,
+  "placement": "core",
+  "children": {
+   "_id": {
+    "path": "_id",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/server/food.js"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "identity",
+    "sensitivity_why": "name is on the redaction denylist",
+    "required_read": true,
+    "notes": [
+     "server-assigned when absent; a v1 client may supply a 24-character hex string"
+    ]
+   },
+   "app": {
+    "path": "app",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/shared/operationTools.js (rejects a blank app)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "client-supplied application name; v3 requires it to be non-blank"
+    ]
+   },
+   "carbs": {
+    "path": "carbs",
+    "types": [
+     "number",
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (foodrec_template)",
+     "lib/food/food.js (quickpickrec_template)"
+    ],
+    "document_types": [
+     "food",
+     "quickpick"
+    ],
+    "type_undetermined": true,
+    "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+    "sensitivity": "identifying",
+    "data_category": "health-measurement",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+   },
+   "category": {
+    "path": "category",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (foodrec_template)"
+    ],
+    "document_types": [
+     "food"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+   },
+   "created_at": {
+    "path": "created_at",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/server/food.js"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "temporal",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "format": "date-time",
+    "required_read": true,
+    "notes": [
+     "v1 create() overwrites created_at on every write; save() sets it only when absent, so an updated record keeps its original value and a created one does not"
+    ]
+   },
+   "energy": {
+    "path": "energy",
+    "types": [
+     "number",
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (foodrec_template)"
+    ],
+    "document_types": [
+     "food"
+    ],
+    "type_undetermined": true,
+    "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+   },
+   "fat": {
+    "path": "fat",
+    "types": [
+     "number",
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (foodrec_template)"
+    ],
+    "document_types": [
+     "food"
+    ],
+    "type_undetermined": true,
+    "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+   },
+   "foods": {
+    "path": "foods",
+    "types": [
+     "array"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (quickpickrec_template)"
+    ],
+    "document_types": [
+     "quickpick"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "an empty array is dropped entirely by form encoding, so this field can be absent rather than empty when written by lib/food/food.js ($.ajax with no contentType)"
+    ],
+    "children": {
+     "[]": {
+      "path": "foods[]",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "provenance": "code",
+      "declared": false,
+      "observed": false,
+      "placement": "core",
+      "code_sources": [
+       "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+      ],
+      "notes": [
+       "a whole `type: 'food'` record copied into the quick pick, plus `portions`; edits to the source record do not propagate"
+      ],
+      "children": {
+       "_id": {
+        "path": "foods[]._id",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "sensitivity": "identifying",
+        "data_category": "identity",
+        "sensitivity_why": "name is on the redaction denylist"
+       },
+       "carbs": {
+        "path": "foods[].carbs",
+        "types": [
+         "number",
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "type_undetermined": true,
+        "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+        "sensitivity": "identifying",
+        "data_category": "health-measurement",
+        "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+       },
+       "category": {
+        "path": "foods[].category",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "sensitivity": "identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+       },
+       "energy": {
+        "path": "foods[].energy",
+        "types": [
+         "number",
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "type_undetermined": true,
+        "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+        "sensitivity": "identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+       },
+       "fat": {
+        "path": "foods[].fat",
+        "types": [
+         "number",
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "type_undetermined": true,
+        "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+        "sensitivity": "identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+       },
+       "gi": {
+        "path": "foods[].gi",
+        "types": [
+         "number",
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "type_undetermined": true,
+        "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+        "sensitivity": "identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+       },
+       "name": {
+        "path": "foods[].name",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "sensitivity": "identifying",
+        "data_category": "identity",
+        "sensitivity_why": "name is on the redaction denylist"
+       },
+       "portion": {
+        "path": "foods[].portion",
+        "types": [
+         "number",
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "type_undetermined": true,
+        "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+        "sensitivity": "identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+       },
+       "portions": {
+        "path": "foods[].portions",
+        "types": [
+         "number",
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "type_undetermined": true,
+        "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+        "sensitivity": "identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+       },
+       "protein": {
+        "path": "foods[].protein",
+        "types": [
+         "number",
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "type_undetermined": true,
+        "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+        "sensitivity": "identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+       },
+       "subcategory": {
+        "path": "foods[].subcategory",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "sensitivity": "identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+       },
+       "type": {
+        "path": "foods[].type",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "sensitivity": "identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+       },
+       "unit": {
+        "path": "foods[].unit",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "code",
+        "declared": false,
+        "observed": false,
+        "placement": "core",
+        "code_sources": [
+         "lib/food/food.js (dropFood: Object.assign({}, fi, {portions: 1}))"
+        ],
+        "sensitivity": "identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+       }
+      }
+     }
+    }
+   },
+   "gi": {
+    "path": "gi",
+    "types": [
+     "number",
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (foodrec_template)"
+    ],
+    "document_types": [
+     "food"
+    ],
+    "type_undetermined": true,
+    "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+   },
+   "hidden": {
+    "path": "hidden",
+    "types": [
+     "boolean",
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (quickpickrec_template)"
+    ],
+    "document_types": [
+     "quickpick"
+    ],
+    "type_undetermined": true,
+    "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+   },
+   "hideafteruse": {
+    "path": "hideafteruse",
+    "types": [
+     "boolean",
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (quickpickrec_template)"
+    ],
+    "document_types": [
+     "quickpick"
+    ],
+    "type_undetermined": true,
+    "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+   },
+   "identifier": {
+    "path": "identifier",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/create/validate.js (rejects a non-string identifier)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "identity",
+    "sensitivity_why": "name is on the redaction denylist",
+    "required_write": true,
+    "notes": [
+     "required by API v3 create; API v1 writes never set it"
+    ]
+   },
+   "isReadOnly": {
+    "path": "isReadOnly",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/update/validate.js (isReadOnly || readOnly || readonly)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "three spellings are honoured \u2014 isReadOnly, readOnly and readonly \u2014 so a model that declares only one is incomplete"
+    ]
+   },
+   "isValid": {
+    "path": "isValid",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/read/operation.js (doc.isValid === false hides the document)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "name is on the redaction denylist",
+    "notes": [
+     "false marks a soft-deleted document; v3 reads skip it"
+    ]
+   },
+   "modifiedBy": {
+    "path": "modifiedBy",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/patch/operation.js (doc.modifiedBy = auth.subject.name)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "identity",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "server-assigned on v3 patch and delete"
+    ]
+   },
+   "name": {
+    "path": "name",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (foodrec_template)",
+     "lib/food/food.js (quickpickrec_template)"
+    ],
+    "document_types": [
+     "food",
+     "quickpick"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "identity",
+    "sensitivity_why": "name is on the redaction denylist"
+   },
+   "portion": {
+    "path": "portion",
+    "types": [
+     "number",
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (foodrec_template)"
+    ],
+    "document_types": [
+     "food"
+    ],
+    "type_undetermined": true,
+    "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+   },
+   "position": {
+    "path": "position",
+    "types": [
+     "number",
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (quickpickrec_template)"
+    ],
+    "document_types": [
+     "quickpick"
+    ],
+    "type_undetermined": true,
+    "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "the quick-pick editor writes 99999 (its HIDDEN constant) for a hidden pick and the list index otherwise; form-encoded it is stored as a string, so the `position` index sorts lexicographically"
+    ]
+   },
+   "protein": {
+    "path": "protein",
+    "types": [
+     "number",
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (foodrec_template)"
+    ],
+    "document_types": [
+     "food"
+    ],
+    "type_undetermined": true,
+    "type_undetermined_why": "the stored type depends on the request's content type: lib/food/food.js ($.ajax with no contentType) posts without one, so jQuery form-encodes and every value arrives as a string, while a JSON caller stores the declared type. The server coerces neither.",
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+   },
+   "srvCreated": {
+    "path": "srvCreated",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/create/insert.js (doc.srvCreated = doc.srvModified)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "temporal",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "server-assigned epoch milliseconds"
+    ]
+   },
+   "srvModified": {
+    "path": "srvModified",
+    "types": [
+     "number"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/create/insert.js (doc.srvModified = now.getTime())"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "temporal",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "server-assigned epoch milliseconds"
+    ]
+   },
+   "subcategory": {
+    "path": "subcategory",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (foodrec_template)"
+    ],
+    "document_types": [
+     "food"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying"
+   },
+   "subject": {
+    "path": "subject",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/api3/generic/create/insert.js (doc.subject = auth.subject.name)"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "identity",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "notes": [
+     "the auth subject's name, written by the server on v3 create"
+    ]
+   },
+   "type": {
+    "path": "type",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (foodrec_template)",
+     "lib/food/food.js (quickpickrec_template)"
+    ],
+    "document_types": [
+     "food",
+     "quickpick"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "enum": [
+     "food",
+     "quickpick"
+    ],
+    "notes": [
+     "the collection holds two document kinds discriminated by `type`; the enum is closed by the client source, not by the server, which stores any value"
+    ]
+   },
+   "unit": {
+    "path": "unit",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "core",
+    "code_sources": [
+     "lib/food/food.js (foodrec_template)"
+    ],
+    "document_types": [
+     "food"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "vocabulary",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "enum": [
+     "g",
+     "ml",
+     "oz",
+     "pcs"
+    ],
+    "notes": [
+     "closed by `foodunits` in lib/food/food.js; the server does not check it"
+    ]
+   }
+  }
+ }
+}

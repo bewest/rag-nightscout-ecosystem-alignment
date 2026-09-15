@@ -1,0 +1,3290 @@
+{
+ "collection": "status",
+ "generated_by": "tools/nsschema/model.py",
+ "provenance": "measured",
+ "measured": true,
+ "census": "reports/schema-census/settings.census.json",
+ "document_source": "GET /api/v1/status.json",
+ "note": "The v1 status endpoint's response body: server runtime configuration, not a stored document. Censused as `settings.census.json`, which is a misnomer this model corrects; the `settings` MongoDB collection is modelled separately and has never been censused.",
+ "root": {
+  "path": "",
+  "types": [
+   "object"
+  ],
+  "nullable": false,
+  "provenance": "structural",
+  "declared": false,
+  "observed": false,
+  "placement": "core",
+  "children": {
+   "apiEnabled": {
+    "path": "apiEnabled",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "provenance": "measured",
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "sensitivity": "descriptive",
+    "data_category": "vocabulary",
+    "sensitivity_why": "numeric or boolean measurement",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 11,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "boolean": 11
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "proposed addition from evidence (all 11 sites, 100.0% of documents)",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "authorized": {
+    "path": "authorized",
+    "types": [],
+    "nullable": true,
+    "provenance": "measured",
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "sensitivity": "descriptive",
+    "data_category": "vocabulary",
+    "sensitivity_why": "structural",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 11,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "null": 11
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "nullable: null observed in live documents",
+     "proposed addition from evidence (all 11 sites, 100.0% of documents)",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "boluscalcEnabled": {
+    "path": "boluscalcEnabled",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "provenance": "measured",
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "sensitivity": "descriptive",
+    "data_category": "vocabulary",
+    "sensitivity_why": "numeric or boolean measurement",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 11,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "boolean": 11
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "proposed addition from evidence (all 11 sites, 100.0% of documents)",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "careportalEnabled": {
+    "path": "careportalEnabled",
+    "types": [
+     "boolean"
+    ],
+    "nullable": false,
+    "provenance": "measured",
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "sensitivity": "descriptive",
+    "data_category": "vocabulary",
+    "sensitivity_why": "numeric or boolean measurement",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 11,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "boolean": 11
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "proposed addition from evidence (all 11 sites, 100.0% of documents)",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "extendedSettings": {
+    "path": "extendedSettings",
+    "types": [
+     "object"
+    ],
+    "nullable": false,
+    "provenance": "measured",
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "sensitivity": "descriptive",
+    "data_category": "vocabulary",
+    "sensitivity_why": "structural",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 11,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "object": 11
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "proposed addition from evidence (all 11 sites, 100.0% of documents)",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ],
+    "children": {
+     "bage": {
+      "path": "extendedSettings.bage",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "extension",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "structural",
+      "tier": "rare",
+      "tier_reason": "1 documents in the whole corpus",
+      "evidence": {
+       "docs_present": 1,
+       "doc_frequency": 0.090909,
+       "site_count": 1,
+       "observed_types": {
+        "object": 1
+       }
+      },
+      "notes": [
+       "extension-bag candidate (1 documents in the whole corpus)"
+      ],
+      "children": {
+       "warn": {
+        "path": "extendedSettings.bage.warn",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "rare",
+        "tier_reason": "1 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 1,
+         "doc_frequency": 0.090909,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 1
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1 documents in the whole corpus)"
+        ]
+       }
+      }
+     },
+     "basal": {
+      "path": "extendedSettings.basal",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "extension",
+      "sensitivity": "descriptive",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "structural",
+      "tier": "rare",
+      "tier_reason": "9 documents in the whole corpus",
+      "evidence": {
+       "docs_present": 9,
+       "doc_frequency": 0.818182,
+       "site_count": 9,
+       "observed_types": {
+        "object": 9
+       }
+      },
+      "notes": [
+       "extension-bag candidate (9 documents in the whole corpus)"
+      ],
+      "children": {
+       "render": {
+        "path": "extendedSettings.basal.render",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+        "tier": "rare",
+        "tier_reason": "9 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 9,
+         "doc_frequency": 0.818182,
+         "site_count": 9,
+         "observed_types": {
+          "string": 9
+         }
+        },
+        "observed_values": [
+         "default"
+        ],
+        "notes": [
+         "extension-bag candidate (9 documents in the whole corpus)"
+        ]
+       }
+      }
+     },
+     "cage": {
+      "path": "extendedSettings.cage",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "extension",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "structural",
+      "tier": "rare",
+      "tier_reason": "2 documents in the whole corpus",
+      "evidence": {
+       "docs_present": 2,
+       "doc_frequency": 0.181818,
+       "site_count": 2,
+       "observed_types": {
+        "object": 2
+       }
+      },
+      "notes": [
+       "extension-bag candidate (2 documents in the whole corpus)"
+      ],
+      "children": {
+       "display": {
+        "path": "extendedSettings.cage.display",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "quasi-identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "values appeared on too few sites to be shared vocabulary",
+        "tier": "rare",
+        "tier_reason": "1 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 1,
+         "doc_frequency": 0.090909,
+         "site_count": 1,
+         "observed_types": {
+          "string": 1
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1 documents in the whole corpus)"
+        ]
+       },
+       "enableAlert": {
+        "path": "extendedSettings.cage.enableAlert",
+        "types": [
+         "boolean"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "rare",
+        "tier_reason": "1 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 1,
+         "doc_frequency": 0.090909,
+         "site_count": 1,
+         "observed_types": {
+          "boolean": 1
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1 documents in the whole corpus)"
+        ]
+       },
+       "info": {
+        "path": "extendedSettings.cage.info",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "rare",
+        "tier_reason": "2 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 2,
+         "doc_frequency": 0.181818,
+         "site_count": 2,
+         "observed_types": {
+          "integer": 2
+         }
+        },
+        "notes": [
+         "extension-bag candidate (2 documents in the whole corpus)"
+        ]
+       },
+       "urgent": {
+        "path": "extendedSettings.cage.urgent",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "rare",
+        "tier_reason": "1 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 1,
+         "doc_frequency": 0.090909,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 1
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1 documents in the whole corpus)"
+        ]
+       },
+       "warn": {
+        "path": "extendedSettings.cage.warn",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "rare",
+        "tier_reason": "1 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 1,
+         "doc_frequency": 0.090909,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 1
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1 documents in the whole corpus)"
+        ]
+       }
+      }
+     },
+     "dbsize": {
+      "path": "extendedSettings.dbsize",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "structural",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "object": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ],
+      "children": {
+       "max": {
+        "path": "extendedSettings.dbsize.max",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "therapy-setting",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 11
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     },
+     "devicestatus": {
+      "path": "extendedSettings.devicestatus",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "device",
+      "sensitivity_why": "structural",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "object": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ],
+      "children": {
+       "advanced": {
+        "path": "extendedSettings.devicestatus.advanced",
+        "types": [
+         "boolean"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "boolean": 11
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       },
+       "days": {
+        "path": "extendedSettings.devicestatus.days",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "therapy-setting",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 11
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     },
+     "iage": {
+      "path": "extendedSettings.iage",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "extension",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "structural",
+      "tier": "rare",
+      "tier_reason": "1 documents in the whole corpus",
+      "evidence": {
+       "docs_present": 1,
+       "doc_frequency": 0.090909,
+       "site_count": 1,
+       "observed_types": {
+        "object": 1
+       }
+      },
+      "notes": [
+       "extension-bag candidate (1 documents in the whole corpus)"
+      ],
+      "children": {
+       "info": {
+        "path": "extendedSettings.iage.info",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "rare",
+        "tier_reason": "1 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 1,
+         "doc_frequency": 0.090909,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 1
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1 documents in the whole corpus)"
+        ]
+       },
+       "warn": {
+        "path": "extendedSettings.iage.warn",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "rare",
+        "tier_reason": "1 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 1,
+         "doc_frequency": 0.090909,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 1
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1 documents in the whole corpus)"
+        ]
+       }
+      }
+     },
+     "loop": {
+      "path": "extendedSettings.loop",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "extension",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "structural",
+      "tier": "rare",
+      "tier_reason": "2 documents in the whole corpus",
+      "evidence": {
+       "docs_present": 2,
+       "doc_frequency": 0.181818,
+       "site_count": 2,
+       "observed_types": {
+        "object": 2
+       }
+      },
+      "notes": [
+       "extension-bag candidate (2 documents in the whole corpus)"
+      ],
+      "children": {
+       "apnsDeveloperTeamId": {
+        "path": "extendedSettings.loop.apnsDeveloperTeamId",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "secret",
+        "data_category": "credential",
+        "sensitivity_why": "name matches a credential fragment",
+        "tier": "rare",
+        "tier_reason": "2 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 2,
+         "doc_frequency": 0.181818,
+         "site_count": 2,
+         "observed_types": {
+          "string": 2
+         }
+        },
+        "notes": [
+         "extension-bag candidate (2 documents in the whole corpus)"
+        ]
+       },
+       "pushServerEnvironment": {
+        "path": "extendedSettings.loop.pushServerEnvironment",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "quasi-identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "values appeared on too few sites to be shared vocabulary",
+        "tier": "rare",
+        "tier_reason": "2 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 2,
+         "doc_frequency": 0.181818,
+         "site_count": 2,
+         "observed_types": {
+          "string": 2
+         }
+        },
+        "notes": [
+         "extension-bag candidate (2 documents in the whole corpus)"
+        ]
+       }
+      }
+     },
+     "pump": {
+      "path": "extendedSettings.pump",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "extension",
+      "sensitivity": "descriptive",
+      "data_category": "device",
+      "sensitivity_why": "structural",
+      "tier": "rare",
+      "tier_reason": "2 documents in the whole corpus",
+      "evidence": {
+       "docs_present": 2,
+       "doc_frequency": 0.181818,
+       "site_count": 2,
+       "observed_types": {
+        "object": 2
+       }
+      },
+      "notes": [
+       "extension-bag candidate (2 documents in the whole corpus)"
+      ],
+      "children": {
+       "fields": {
+        "path": "extendedSettings.pump.fields",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "quasi-identifying",
+        "data_category": "vocabulary",
+        "sensitivity_why": "values appeared on too few sites to be shared vocabulary",
+        "tier": "rare",
+        "tier_reason": "1 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 1,
+         "doc_frequency": 0.090909,
+         "site_count": 1,
+         "observed_types": {
+          "string": 1
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1 documents in the whole corpus)"
+        ]
+       },
+       "warnOnSuspend": {
+        "path": "extendedSettings.pump.warnOnSuspend",
+        "types": [
+         "boolean"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "rare",
+        "tier_reason": "1 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 1,
+         "doc_frequency": 0.090909,
+         "site_count": 1,
+         "observed_types": {
+          "boolean": 1
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1 documents in the whole corpus)"
+        ]
+       }
+      }
+     },
+     "sage": {
+      "path": "extendedSettings.sage",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "extension",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "structural",
+      "tier": "rare",
+      "tier_reason": "2 documents in the whole corpus",
+      "evidence": {
+       "docs_present": 2,
+       "doc_frequency": 0.181818,
+       "site_count": 2,
+       "observed_types": {
+        "object": 2
+       }
+      },
+      "notes": [
+       "extension-bag candidate (2 documents in the whole corpus)"
+      ],
+      "children": {
+       "enableAlert": {
+        "path": "extendedSettings.sage.enableAlert",
+        "types": [
+         "boolean"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "rare",
+        "tier_reason": "2 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 2,
+         "doc_frequency": 0.181818,
+         "site_count": 2,
+         "observed_types": {
+          "boolean": 2
+         }
+        },
+        "notes": [
+         "extension-bag candidate (2 documents in the whole corpus)"
+        ]
+       },
+       "info": {
+        "path": "extendedSettings.sage.info",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "extension",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "rare",
+        "tier_reason": "1 documents in the whole corpus",
+        "evidence": {
+         "docs_present": 1,
+         "doc_frequency": 0.090909,
+         "site_count": 1,
+         "observed_types": {
+          "integer": 1
+         }
+        },
+        "notes": [
+         "extension-bag candidate (1 documents in the whole corpus)"
+        ]
+       }
+      }
+     }
+    }
+   },
+   "name": {
+    "path": "name",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "measured",
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "sensitivity": "identifying",
+    "data_category": "identity",
+    "sensitivity_why": "name is on the redaction denylist",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 11,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 11
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "proposed addition from evidence (all 11 sites, 100.0% of documents)",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "runtimeState": {
+    "path": "runtimeState",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "measured",
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "sensitivity": "quasi-identifying",
+    "data_category": "temporal",
+    "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary; raised to quasi-identifying because it is temporal",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 11,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 11
+     }
+    },
+    "observed_values": [
+     "loaded"
+    ],
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "proposed addition from evidence (all 11 sites, 100.0% of documents)",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "serverTime": {
+    "path": "serverTime",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "measured",
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "sensitivity": "quasi-identifying",
+    "data_category": "temporal",
+    "sensitivity_why": "values were withheld as personal-shaped",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 11,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 11
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "proposed addition from evidence (all 11 sites, 100.0% of documents)",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "serverTimeEpoch": {
+    "path": "serverTimeEpoch",
+    "types": [
+     "integer"
+    ],
+    "nullable": false,
+    "provenance": "measured",
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "sensitivity": "quasi-identifying",
+    "data_category": "temporal",
+    "sensitivity_why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 11,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "integer": 11
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "proposed addition from evidence (all 11 sites, 100.0% of documents)",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "settings": {
+    "path": "settings",
+    "types": [
+     "object"
+    ],
+    "nullable": false,
+    "provenance": "measured",
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "sensitivity": "descriptive",
+    "data_category": "vocabulary",
+    "sensitivity_why": "structural",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 11,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "object": 11
+     }
+    },
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "proposed addition from evidence (all 11 sites, 100.0% of documents)",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ],
+    "children": {
+     "DEFAULT_FEATURES": {
+      "path": "settings.DEFAULT_FEATURES",
+      "types": [
+       "array"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "structural",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "array": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ],
+      "children": {
+       "[]": {
+        "path": "settings.DEFAULT_FEATURES[]",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "string": 143
+         }
+        },
+        "observed_values": [
+         "basal",
+         "bgnow",
+         "bolus",
+         "careportal",
+         "dbsize",
+         "delta",
+         "devicestatus",
+         "direction",
+         "errorcodes",
+         "profile",
+         "runtimestate",
+         "timeago",
+         "upbat"
+        ],
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     },
+     "adminNotifiesEnabled": {
+      "path": "settings.adminNotifiesEnabled",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "alarmHigh": {
+      "path": "settings.alarmHigh",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "alarmHighMins": {
+      "path": "settings.alarmHighMins",
+      "types": [
+       "array"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "structural",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "array": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ],
+      "children": {
+       "[]": {
+        "path": "settings.alarmHighMins[]",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "therapy-setting",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 44
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     },
+     "alarmLow": {
+      "path": "settings.alarmLow",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "alarmLowMins": {
+      "path": "settings.alarmLowMins",
+      "types": [
+       "array"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "structural",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "array": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ],
+      "children": {
+       "[]": {
+        "path": "settings.alarmLowMins[]",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "therapy-setting",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 44
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     },
+     "alarmPumpBatteryLow": {
+      "path": "settings.alarmPumpBatteryLow",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "device",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "alarmTimeagoUrgent": {
+      "path": "settings.alarmTimeagoUrgent",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "quasi-identifying",
+      "data_category": "temporal",
+      "sensitivity_why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "alarmTimeagoUrgentMins": {
+      "path": "settings.alarmTimeagoUrgentMins",
+      "types": [
+       "integer",
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "quasi-identifying",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "values appeared on too few sites to be shared vocabulary",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "integer": 9,
+        "string": 2
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "alarmTimeagoWarn": {
+      "path": "settings.alarmTimeagoWarn",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "quasi-identifying",
+      "data_category": "temporal",
+      "sensitivity_why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "alarmTimeagoWarnMins": {
+      "path": "settings.alarmTimeagoWarnMins",
+      "types": [
+       "integer",
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "quasi-identifying",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "values appeared on too few sites to be shared vocabulary",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "integer": 9,
+        "string": 2
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "alarmTypes": {
+      "path": "settings.alarmTypes",
+      "types": [
+       "array"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "structural",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "array": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ],
+      "children": {
+       "[]": {
+        "path": "settings.alarmTypes[]",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "string": 11
+         }
+        },
+        "observed_values": [
+         "predict",
+         "simple"
+        ],
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     },
+     "alarmUrgentHigh": {
+      "path": "settings.alarmUrgentHigh",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "alarmUrgentHighMins": {
+      "path": "settings.alarmUrgentHighMins",
+      "types": [
+       "array"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "structural",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "array": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ],
+      "children": {
+       "[]": {
+        "path": "settings.alarmUrgentHighMins[]",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "therapy-setting",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 44
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     },
+     "alarmUrgentLow": {
+      "path": "settings.alarmUrgentLow",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "alarmUrgentLowMins": {
+      "path": "settings.alarmUrgentLowMins",
+      "types": [
+       "array"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "structural",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "array": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ],
+      "children": {
+       "[]": {
+        "path": "settings.alarmUrgentLowMins[]",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "therapy-setting",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 33
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     },
+     "alarmUrgentMins": {
+      "path": "settings.alarmUrgentMins",
+      "types": [
+       "array"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "structural",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "array": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ],
+      "children": {
+       "[]": {
+        "path": "settings.alarmUrgentMins[]",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "therapy-setting",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 44
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     },
+     "alarmWarnMins": {
+      "path": "settings.alarmWarnMins",
+      "types": [
+       "array"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "structural",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "array": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ],
+      "children": {
+       "[]": {
+        "path": "settings.alarmWarnMins[]",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "therapy-setting",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 44
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     },
+     "authDefaultRoles": {
+      "path": "settings.authDefaultRoles",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "observed_values": [
+       "readable"
+      ],
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "authFailDelay": {
+      "path": "settings.authFailDelay",
+      "types": [
+       "integer"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "integer": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "authenticationPromptOnLoad": {
+      "path": "settings.authenticationPromptOnLoad",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "baseURL": {
+      "path": "settings.baseURL",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "customTitle": {
+      "path": "settings.customTitle",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "dayEnd": {
+      "path": "settings.dayEnd",
+      "types": [
+       "integer"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "integer": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "dayStart": {
+      "path": "settings.dayStart",
+      "types": [
+       "integer"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "integer": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "deNormalizeDates": {
+      "path": "settings.deNormalizeDates",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "quasi-identifying",
+      "data_category": "temporal",
+      "sensitivity_why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "editMode": {
+      "path": "settings.editMode",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "enable": {
+      "path": "settings.enable",
+      "types": [
+       "array"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "structural",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "array": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ],
+      "children": {
+       "[]": {
+        "path": "settings.enable[]",
+        "types": [
+         "string"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "string": 290
+         }
+        },
+        "observed_values": [
+         "ar2",
+         "bage",
+         "basal",
+         "bgnow",
+         "bolus",
+         "boluscalc",
+         "bwp",
+         "cage",
+         "careportal",
+         "cob",
+         "dbsize",
+         "delta",
+         "devicestatus",
+         "direction",
+         "errorcodes",
+         "food",
+         "iage",
+         "iob",
+         "loop",
+         "profile",
+         "pump",
+         "runtimestate",
+         "sage",
+         "simplealarms",
+         "timeago",
+         "treatmentnotify",
+         "upbat"
+        ],
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     },
+     "focusHours": {
+      "path": "settings.focusHours",
+      "types": [
+       "integer"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "integer": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameName1": {
+      "path": "settings.frameName1",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameName2": {
+      "path": "settings.frameName2",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameName3": {
+      "path": "settings.frameName3",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameName4": {
+      "path": "settings.frameName4",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameName5": {
+      "path": "settings.frameName5",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameName6": {
+      "path": "settings.frameName6",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameName7": {
+      "path": "settings.frameName7",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameName8": {
+      "path": "settings.frameName8",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameUrl1": {
+      "path": "settings.frameUrl1",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameUrl2": {
+      "path": "settings.frameUrl2",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameUrl3": {
+      "path": "settings.frameUrl3",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameUrl4": {
+      "path": "settings.frameUrl4",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameUrl5": {
+      "path": "settings.frameUrl5",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameUrl6": {
+      "path": "settings.frameUrl6",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameUrl7": {
+      "path": "settings.frameUrl7",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "frameUrl8": {
+      "path": "settings.frameUrl8",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "name is on the redaction denylist",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "heartbeat": {
+      "path": "settings.heartbeat",
+      "types": [
+       "integer"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "integer": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "insecureUseHttp": {
+      "path": "settings.insecureUseHttp",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "language": {
+      "path": "settings.language",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "observed_values": [
+       "en"
+      ],
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "nightMode": {
+      "path": "settings.nightMode",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "scaleY": {
+      "path": "settings.scaleY",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "observed_values": [
+       "log"
+      ],
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "secureCsp": {
+      "path": "settings.secureCsp",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "secureHstsHeader": {
+      "path": "settings.secureHstsHeader",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "secureHstsHeaderIncludeSubdomains": {
+      "path": "settings.secureHstsHeaderIncludeSubdomains",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "secureHstsHeaderPreload": {
+      "path": "settings.secureHstsHeaderPreload",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "numeric or boolean measurement",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "showClockDelta": {
+      "path": "settings.showClockDelta",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "quasi-identifying",
+      "data_category": "temporal",
+      "sensitivity_why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "showClockLastTime": {
+      "path": "settings.showClockLastTime",
+      "types": [
+       "boolean"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "quasi-identifying",
+      "data_category": "temporal",
+      "sensitivity_why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "boolean": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "showForecast": {
+      "path": "settings.showForecast",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "observed_values": [
+       "loop"
+      ],
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "showPlugins": {
+      "path": "settings.showPlugins",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "quasi-identifying",
+      "data_category": "vocabulary",
+      "sensitivity_why": "values were withheld as personal-shaped",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "showRawbg": {
+      "path": "settings.showRawbg",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "observed_values": [
+       "never"
+      ],
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "theme": {
+      "path": "settings.theme",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "observed_values": [
+       "colors",
+       "default"
+      ],
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "thresholds": {
+      "path": "settings.thresholds",
+      "types": [
+       "object"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "therapy-setting",
+      "sensitivity_why": "structural",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "object": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ],
+      "children": {
+       "bgHigh": {
+        "path": "settings.thresholds.bgHigh",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 11
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       },
+       "bgLow": {
+        "path": "settings.thresholds.bgLow",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "vocabulary",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 11
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       },
+       "bgTargetBottom": {
+        "path": "settings.thresholds.bgTargetBottom",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "therapy-setting",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 11
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       },
+       "bgTargetTop": {
+        "path": "settings.thresholds.bgTargetTop",
+        "types": [
+         "integer"
+        ],
+        "nullable": false,
+        "provenance": "measured",
+        "declared": false,
+        "observed": true,
+        "placement": "core",
+        "sensitivity": "descriptive",
+        "data_category": "therapy-setting",
+        "sensitivity_why": "numeric or boolean measurement",
+        "tier": "universal",
+        "tier_reason": "all 11 sites, 100.0% of documents",
+        "evidence": {
+         "docs_present": 11,
+         "doc_frequency": 1.0,
+         "site_count": 11,
+         "observed_types": {
+          "integer": 11
+         }
+        },
+        "notes": [
+         "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+        ]
+       }
+      }
+     },
+     "timeFormat": {
+      "path": "settings.timeFormat",
+      "types": [
+       "integer"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "quasi-identifying",
+      "data_category": "temporal",
+      "sensitivity_why": "numeric or boolean measurement; raised to quasi-identifying because it is temporal",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "integer": 11
+       }
+      },
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     },
+     "units": {
+      "path": "settings.units",
+      "types": [
+       "string"
+      ],
+      "nullable": false,
+      "provenance": "measured",
+      "declared": false,
+      "observed": true,
+      "placement": "core",
+      "sensitivity": "descriptive",
+      "data_category": "vocabulary",
+      "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+      "tier": "universal",
+      "tier_reason": "all 11 sites, 100.0% of documents",
+      "evidence": {
+       "docs_present": 11,
+       "doc_frequency": 1.0,
+       "site_count": 11,
+       "observed_types": {
+        "string": 11
+       }
+      },
+      "observed_values": [
+       "mg/dl"
+      ],
+      "notes": [
+       "proposed addition from evidence (all 11 sites, 100.0% of documents)"
+      ]
+     }
+    }
+   },
+   "status": {
+    "path": "status",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "measured",
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "sensitivity": "descriptive",
+    "data_category": "vocabulary",
+    "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 11,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 11
+     }
+    },
+    "observed_values": [
+     "ok"
+    ],
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "proposed addition from evidence (all 11 sites, 100.0% of documents)",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   },
+   "version": {
+    "path": "version",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "measured",
+    "declared": false,
+    "observed": true,
+    "placement": "core",
+    "sensitivity": "descriptive",
+    "data_category": "vocabulary",
+    "sensitivity_why": "values survived cross-site corroboration, so they are shared vocabulary",
+    "tier": "universal",
+    "tier_reason": "all 11 sites, 100.0% of documents",
+    "evidence": {
+     "docs_present": 11,
+     "doc_frequency": 1.0,
+     "site_count": 11,
+     "observed_types": {
+      "string": 11
+     }
+    },
+    "observed_values": [
+     "15.0.3"
+    ],
+    "required_read": true,
+    "candidate_required_write": true,
+    "notes": [
+     "proposed addition from evidence (all 11 sites, 100.0% of documents)",
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+    ]
+   }
+  }
+ }
+}

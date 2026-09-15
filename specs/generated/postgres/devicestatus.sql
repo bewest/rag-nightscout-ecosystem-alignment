@@ -17,8 +17,7 @@
 -- correctly; nothing here licenses a hand-written query to do otherwise.
 --
 -- Indexed fields with no column, and why:
---   NSCLIENT_ID              UNDECLARED  the model does not declare this field
---   date                     UNDECLARED  the model does not declare this field
+--   NSCLIENT_ID              AMBIGUOUS   observed as number, string — not one type
 
 CREATE TABLE devicestatus (
   -- tenant_id leads the table and every index below: under RLS the policy
@@ -32,6 +31,8 @@ CREATE TABLE devicestatus (
     GENERATED ALWAYS AS (CASE WHEN jsonb_typeof(doc #> '{created_at}') = 'string' THEN (doc #>> '{created_at}') END) STORED,
   "identifier" text
     GENERATED ALWAYS AS (CASE WHEN jsonb_typeof(doc #> '{identifier}') = 'string' THEN (doc #>> '{identifier}') END) STORED,
+  "date"       numeric
+    GENERATED ALWAYS AS (CASE WHEN jsonb_typeof(doc #> '{date}') = 'number' THEN (doc #>> '{date}')::numeric END) STORED,
 
   -- Scoped to the tenant rather than global: two tenants restored from
   -- different deployments can legitimately carry the same _id, and a
@@ -44,7 +45,7 @@ CREATE INDEX devicestatus_tenant_created_at
 CREATE INDEX devicestatus_tenant_nsclient_id
   ON devicestatus (tenant_id, (doc #>> '{NSCLIENT_ID}') ASC);
 CREATE INDEX devicestatus_tenant_created_at_identifier_date
-  ON devicestatus (tenant_id, "created_at" DESC, "identifier" DESC, (doc #>> '{date}') DESC);
+  ON devicestatus (tenant_id, "created_at" DESC, "identifier" DESC, "date" DESC);
 
 -- FORCE is the load-bearing word: without it the table OWNER bypasses the
 -- policy. It still does not subject a SUPERUSER — BYPASSRLS is implicit for

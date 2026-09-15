@@ -4,6 +4,7 @@
    "columns": [
     "_id",
     "created_at",
+    "date",
     "identifier"
    ],
    "datelike": [
@@ -11,14 +12,9 @@
    ],
    "flagged": [
     {
-     "kind": "UNDECLARED",
+     "kind": "AMBIGUOUS",
      "path": "NSCLIENT_ID",
-     "why": "the model does not declare this field"
-    },
-    {
-     "kind": "UNDECLARED",
-     "path": "date",
-     "why": "the model does not declare this field"
+     "why": "observed as number, string \u2014 not one type"
     }
    ],
    "indexes": [
@@ -30,6 +26,7 @@
   "entries": {
    "columns": [
     "_id",
+    "created_at",
     "date",
     "dateString",
     "identifier",
@@ -39,16 +36,11 @@
     "type"
    ],
    "datelike": [
+    "created_at",
     "dateString",
     "sysTime"
    ],
-   "flagged": [
-    {
-     "kind": "UNDECLARED",
-     "path": "created_at",
-     "why": "the model does not declare this field"
-    }
-   ],
+   "flagged": [],
    "indexes": [
     "entries_tenant_date",
     "entries_tenant_type",
@@ -73,9 +65,9 @@
    ],
    "flagged": [
     {
-     "kind": "UNDECLARED",
+     "kind": "AMBIGUOUS",
      "path": "NSCLIENT_ID",
-     "why": "the model does not declare this field"
+     "why": "observed as number, string \u2014 not one type"
     }
    ],
    "indexes": [
@@ -91,6 +83,7 @@
     "absolute",
     "carbs",
     "created_at",
+    "date",
     "duration",
     "enteredBy",
     "eventType",
@@ -110,14 +103,9 @@
      "why": "traverses an array; no column, no index, capability lost until decomposition"
     },
     {
-     "kind": "UNDECLARED",
+     "kind": "AMBIGUOUS",
      "path": "NSCLIENT_ID",
-     "why": "the model does not declare this field"
-    },
-    {
-     "kind": "UNDECLARED",
-     "path": "date",
-     "why": "the model does not declare this field"
+     "why": "observed as number, string \u2014 not one type"
     }
    ],
    "indexes": [

@@ -16,6 +16,7 @@
 const { Schema } = require('mongoose');
 
 const ProfileSchema = new Schema({
+  NSCLIENT_ID: { type: Schema.Types.Mixed },  // union of number, string in live data — not cast
   _id: { type: String },  // 100% of documents, 11 sites; universal
   created_at: { type: String },  // 11% of documents, 2 sites; vendor
   defaultProfile: { type: String, required: true },  // 100% of documents, 11 sites; universal

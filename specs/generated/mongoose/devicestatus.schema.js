@@ -16,11 +16,13 @@
 const { Schema } = require('mongoose');
 
 const DevicestatusSchema = new Schema({
+  NSCLIENT_ID: { type: Schema.Types.Mixed },  // union of number, string in live data — not cast
   _id: { type: String },  // 100% of documents, 11 sites; universal
   configuration: new Schema({
 
   }, { _id: false, strict: false }),
   created_at: { type: String, required: true },  // 100% of documents, 11 sites; universal
+  date: { type: Number },
   device: { type: String, required: true },  // 100% of documents, 11 sites; universal
   identifier: { type: String },
   isCharging: { type: Boolean },

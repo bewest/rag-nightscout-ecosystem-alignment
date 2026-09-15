@@ -7,6 +7,10 @@
   "app": {
    "kind": "string"
   },
+  "created_at": {
+   "datelike": true,
+   "kind": "string"
+  },
   "date": {
    "kind": "number"
   },

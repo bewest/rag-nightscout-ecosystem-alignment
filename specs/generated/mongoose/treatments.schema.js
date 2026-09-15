@@ -16,6 +16,7 @@
 const { Schema } = require('mongoose');
 
 const TreatmentsSchema = new Schema({
+  NSCLIENT_ID: { type: Schema.Types.Mixed },  // union of number, string in live data — not cast
   _id: { type: String },  // 100% of documents, 11 sites; universal
   absolute: { type: Number },  // 55% of documents, 10 sites; core
   absorptionTime: { type: Number },  // 2% of documents, 10 sites; common
@@ -23,9 +24,15 @@ const TreatmentsSchema = new Schema({
   app: { type: String },
   automatic: { type: Boolean },  // 81% of documents, 10 sites; core
   bolusType: { type: String, enum: ["Dual", "Normal", "Square"] },
+  boluscalc: new Schema({
+    foods: [new Schema({
+        _id: { type: String },
+      }, { _id: false, strict: false })],
+  }, { _id: false, strict: false }),
   carbs: { type: Number, min: 0 },  // 100% of documents, 11 sites; universal; null observed
   correctionRange: [{ type: Number }],  // 0% of documents, 7 sites; common
   created_at: { type: String, required: true },  // 100% of documents, 11 sites; universal
+  date: { type: Number },
   device: { type: String },
   duration: { type: Number },  // 91% of documents, 10 sites; core
   durationType: { type: String },  // 0% of documents, 1 sites; rare

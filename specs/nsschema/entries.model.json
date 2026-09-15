@@ -1,14 +1,21 @@
 {
  "collection": "entries",
  "generated_by": "tools/nsschema/model.py",
+ "provenance": "spec+measured",
+ "measured": true,
  "source_spec": "aid-entries-2025.yaml",
  "census": "reports/schema-census/entries.census.json",
+ "server_indexes": "specs/nsschema/server-indexes.json",
+ "code_supplemented_fields": [
+  "created_at"
+ ],
  "root": {
   "path": "",
   "types": [
    "object"
   ],
   "nullable": false,
+  "provenance": "structural",
   "declared": false,
   "observed": false,
   "placement": "core",
@@ -19,6 +26,7 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -47,6 +55,7 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -55,12 +64,36 @@
     "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
     "description": "Origin application identifier"
    },
+   "created_at": {
+    "path": "created_at",
+    "types": [
+     "string"
+    ],
+    "nullable": false,
+    "provenance": "code",
+    "declared": false,
+    "observed": false,
+    "placement": "extension",
+    "code_sources": [
+     "lib/api3/generic/collection.js (parseDate: doc.created_at = m.toISOString())"
+    ],
+    "sensitivity": "identifying",
+    "data_category": "temporal",
+    "sensitivity_why": "not present in the census; unlabelled defaults to identifying",
+    "format": "date-time",
+    "notes": [
+     "indexed by lib/server/entries.js:246",
+     "ISO 8601, assigned by API v3 when API3_CREATED_AT_FALLBACK_ENABLED is set and DELETED when it is not \u2014 so on a v3 write this field's presence is a deployment setting, not a client decision",
+     "not declared by any spec and not observed in the census; provenance is `code`, so it carries no evidence block"
+    ]
+   },
    "date": {
     "path": "date",
     "types": [
      "number"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -80,7 +113,10 @@
      }
     },
     "required_read": true,
-    "required_write": true
+    "required_write": true,
+    "notes": [
+     "indexed by lib/server/entries.js:246"
+    ]
    },
    "dateString": {
     "path": "dateString",
@@ -88,6 +124,7 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -107,7 +144,10 @@
      }
     },
     "required_read": true,
-    "required_write": true
+    "required_write": true,
+    "notes": [
+     "indexed by lib/server/entries.js:246"
+    ]
    },
    "delta": {
     "path": "delta",
@@ -115,6 +155,7 @@
      "number"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -140,6 +181,7 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -164,6 +206,7 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -201,6 +244,7 @@
      "number"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -225,6 +269,7 @@
      "integer"
     ],
     "nullable": false,
+    "provenance": "measured",
     "declared": false,
     "observed": true,
     "placement": "extension",
@@ -251,13 +296,17 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
     "sensitivity": "identifying",
     "data_category": "identity",
     "sensitivity_why": "name is on the redaction denylist",
-    "description": "API v3 primary key. Server-assigned, immutable after creation.\nUsed for document addressing in v3 endpoints."
+    "description": "API v3 primary key. Server-assigned, immutable after creation.\nUsed for document addressing in v3 endpoints.",
+    "notes": [
+     "indexed by lib/server/entries.js:246"
+    ]
    },
    "intercept": {
     "path": "intercept",
@@ -265,6 +314,7 @@
      "number"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -279,6 +329,7 @@
      "boolean"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -303,6 +354,7 @@
      "boolean"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -317,6 +369,7 @@
      "boolean"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -331,6 +384,7 @@
      "number"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -348,7 +402,10 @@
       "integer": 1169,
       "number": 2
      }
-    }
+    },
+    "notes": [
+     "indexed by lib/server/entries.js:246"
+    ]
    },
    "modifiedBy": {
     "path": "modifiedBy",
@@ -356,6 +413,7 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -370,6 +428,7 @@
      "integer"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -396,6 +455,7 @@
      "integer"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -420,6 +480,7 @@
      "number"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -434,6 +495,7 @@
      "number"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -454,7 +516,8 @@
     "required_read": true,
     "candidate_required_write": true,
     "notes": [
-     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus",
+     "indexed by lib/server/entries.js:246"
     ]
    },
    "slope": {
@@ -463,6 +526,7 @@
      "number"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -477,6 +541,7 @@
      "integer"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -492,6 +557,7 @@
      "integer"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -507,6 +573,7 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -521,6 +588,7 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -542,7 +610,8 @@
     "required_read": true,
     "candidate_required_write": true,
     "notes": [
-     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus"
+     "universal in this corpus but not declared required; a write requirement is not asserted from a Loop-dominant corpus",
+     "indexed by lib/server/entries.js:246"
     ]
    },
    "trend": {
@@ -551,6 +620,7 @@
      "integer"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -575,6 +645,7 @@
      "number"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -600,6 +671,7 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -623,7 +695,10 @@
      "sgv"
     ],
     "required_read": true,
-    "required_write": true
+    "required_write": true,
+    "notes": [
+     "indexed by lib/server/entries.js:246"
+    ]
    },
    "unfiltered": {
     "path": "unfiltered",
@@ -631,6 +706,7 @@
      "number"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",
@@ -655,6 +731,7 @@
      "string"
     ],
     "nullable": false,
+    "provenance": "declared",
     "declared": true,
     "observed": false,
     "placement": "core",
@@ -676,6 +753,7 @@
      "integer"
     ],
     "nullable": false,
+    "provenance": "declared+measured",
     "declared": true,
     "observed": true,
     "placement": "core",

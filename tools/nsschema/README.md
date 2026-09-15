@@ -30,13 +30,72 @@ reports/schema-census/<collection>.census.json      what exists, with counts
 reports/schema-census/<collection>.reconcile.json   spec vs. reality
 ```
 
+### The collections with no corpus
+
+The server opens nine collections. Four of them (`entries`, `treatments`,
+`devicestatus`, `profile`) are censused and specified, and their models come
+out of the pipeline above. The other five have never been measured:
+
+| collection | reached by | why there is no census |
+|---|---|---|
+| `food` | v1 + v3 | no snapshot ever fetched it |
+| `activity` | v1 only (not in v3's `enabledCollections`) | likewise |
+| `settings` | v3 only, `api:settings:admin` | see the warning below |
+| `auth_roles` | admin API | the corpus is public REST reads |
+| `auth_subjects` | admin API | likewise — and a census of it would be a census of bearer tokens |
+
+> `reports/schema-census/settings.census.json` is **not** a census of the
+> `settings` collection. `corpus.py` collects it from each snapshot's
+> `settings.json`, which is a capture of the `GET /api/v1/status.json`
+> response — its twelve top-level fields are the `info` object built in
+> `lib/api/status.js`. That evidence is modelled as
+> `specs/nsschema/status.model.json`. The `settings` collection itself is
+> unmeasured, and nothing in cgm-remote-monitor writes a document to it.
+
+`code_model.py` models those five by reading cgm-remote-monitor's source with
+`jsread.py` — the record templates, the index lists, the default-role literal
+— and marks everything it produces `provenance: "code"` with `measured:
+false` and no `evidence` block anywhere. It also emits
+`specs/nsschema/server-indexes.json`, every field the server builds a MongoDB
+index on, which `model.py` reads so that an indexed field no spec declares
+(`NSCLIENT_ID`, `date` on treatments and devicestatus, `created_at` on
+entries) still gets a node.
+
+**Read `provenance` before you trust a node.** `measured` means the census
+counted it in real deployments; `declared` means an OpenAPI document names
+it; `code` means it was read out of the server source and nobody has ever
+measured it.
+
+```
+externals/work/crm-seam (or cgm-remote-monitor-official)
+                 │
+                 ▼  jsread.py + code_model.py
+specs/nsschema/{food,activity,settings,auth_roles,auth_subjects}.model.json
+specs/nsschema/server-indexes.json                  ─┐
+                                                     ▼  model.py
+                        the four evidence models, supplemented
+```
+
 ## Commands
 
 ```bash
 make schema-census      # walk the corpus (~4 min, ~2.5 GB of JSON)
 make schema-reconcile   # compare the census against specs/openapi/
+make schema-code-model  # models read from the server source
+make schema-model       # merge spec + evidence (needs server-indexes.json)
+make schema-code-drift  # fail if the server source no longer says what the
+                        # code-derived models record
+make schema-verify      # fail if an emitted artifact drifted from its model
 make schema-test        # unit tests
 ```
+
+`schema-code-model` and `schema-code-drift` need a cgm-remote-monitor
+checkout. They look in `externals/work/crm-seam` then
+`externals/cgm-remote-monitor-official`, and honour `NSSCHEMA_SERVER_SOURCE`
+or `--source`. `--cross-check` requires every available checkout to declare
+the same field set. Nothing else in the pipeline needs the source:
+`server-indexes.json` is committed, so `make schema-model` reproduces the
+same bytes with or without `externals/` present.
 
 Smoke run without the full corpus pass:
 

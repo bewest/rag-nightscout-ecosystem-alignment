@@ -17,6 +17,7 @@ checks that the two do not contradict each other.
 import pyarrow as pa
 
 TREATMENTS_WIRE_SCHEMA = pa.schema([
+    pa.field("NSCLIENT_ID", pa.large_string(), metadata={"sensitivity": "identifying", "category": "identity"}),  # union of number, string widened to string
     pa.field("_id", pa.large_string(), metadata={"sensitivity": "identifying", "category": "identity"}),  # 100% docs, 11 sites; universal
     pa.field("absolute", pa.float64(), metadata={"sensitivity": "descriptive", "category": "vocabulary"}),  # 55% docs, 10 sites; core
     pa.field("absorptionTime", pa.int64(), metadata={"sensitivity": "descriptive", "category": "therapy-setting"}),  # 2% docs, 10 sites; common
@@ -24,9 +25,15 @@ TREATMENTS_WIRE_SCHEMA = pa.schema([
     pa.field("app", pa.large_string(), metadata={"sensitivity": "identifying", "category": "vocabulary"}),
     pa.field("automatic", pa.bool_(), metadata={"sensitivity": "descriptive", "category": "vocabulary"}),  # 81% docs, 10 sites; core
     pa.field("bolusType", pa.large_string(), metadata={"sensitivity": "identifying", "category": "vocabulary"}),
+    pa.field("boluscalc", pa.struct([
+        pa.field("foods", pa.list_(pa.struct([
+                pa.field("_id", pa.large_string()),
+            ]))),
+    ])),
     pa.field("carbs", pa.float64(), metadata={"sensitivity": "descriptive", "category": "health-measurement"}),  # 100% docs, 11 sites; universal; null observed
     pa.field("correctionRange", pa.list_(pa.float64()), metadata={"sensitivity": "descriptive", "category": "vocabulary"}),  # 0% docs, 7 sites; common
     pa.field("created_at", pa.large_string(), metadata={"sensitivity": "quasi-identifying", "category": "temporal"}),  # 100% docs, 11 sites; universal
+    pa.field("date", pa.float64(), metadata={"sensitivity": "identifying", "category": "temporal"}),
     pa.field("device", pa.large_string(), metadata={"sensitivity": "identifying", "category": "device"}),
     pa.field("duration", pa.float64(), metadata={"sensitivity": "descriptive", "category": "therapy-setting"}),  # 91% docs, 10 sites; core
     pa.field("durationType", pa.large_string(), metadata={"sensitivity": "quasi-identifying", "category": "therapy-setting"}),  # 0% docs, 1 sites; rare
