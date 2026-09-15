@@ -13,6 +13,9 @@ two quadratic scans over the treatment window — is treated as **landed**, not 
 the decision tree. It is open against `dev` with differential tests over 636 randomised
 fixtures and a measured 6.3×–43× improvement. Every number below is post-#8733.
 
+> **The plan built on this now lives in [Multitenancy execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md)** — decisions D1–D9, phased tasks, and the
+> context each task needs. This document remains the *why*; that one is the *what next*.
+
 **Objective function, as stated by the maintainer: minimise operator cost first, then
 maximise performance.** So the units here are processes, gigabytes and database operations
 per second — not milliseconds.

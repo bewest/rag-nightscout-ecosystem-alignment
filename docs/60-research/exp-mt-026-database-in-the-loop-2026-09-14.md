@@ -18,6 +18,9 @@ anything.
 **Confidence**: **measured**, with the scope limits in §L. RTT arms use `tc netem` inside the
 database container — kernel-level delay, not a userspace shim.
 
+Decisions taken on the strength of this report are recorded in
+[the execution plan](../30-design/nightscout-multitenancy-execution-plan-2026-09-14.md).
+
 Answers the question every other experiment in this programme deferred: **all of them ran
 with no database.** That was tolerable while the question was how much CPU the resident path
 burns. It became the largest open risk the moment the recommendation moved to a stateless

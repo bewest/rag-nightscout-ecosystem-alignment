@@ -20,6 +20,9 @@ correction moves the binding constraint from memory to load-cycle query rate —
 §7.4.1. A storage recommendation answering "Postgres+RLS or Mongo?" with a migration path
 for an existing hoster is added as **§6.7**.
 
+> **Decisions and next steps now live in [Multitenancy execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md).** This document is the evidence base; that
+> one records what was settled and what happens next.
+
 > **Superseded in part, 2026-09-14 (third pass) — read this first.** The quadratics are now
 > [PR #8733](https://github.com/nightscout/cgm-remote-monitor/pull/8733), so the *fixed* cycle
 > is the baseline and no longer a branch of the decision tree. Measuring the REST tier for the
