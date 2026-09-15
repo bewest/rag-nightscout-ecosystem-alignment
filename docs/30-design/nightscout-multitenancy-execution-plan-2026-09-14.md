@@ -1198,9 +1198,107 @@ handshake.
 
 ### Phase 4 — the feed
 
-**T4.1 · Slot reader** — the spine. Emits `NOTIFY` itself; **never a trigger** ({DB} §9.4: a
-trigger puts `NOTIFY` inside the ingest transaction, and a wedged realtime process would
-eventually stop CGM uploads).
+**T4.1 · Slot reader — DONE 2026-09-15.** The spine. Emits `NOTIFY` itself; **never a trigger**
+({DB} §9.4). 321 lines of code in `lib/feed/`, plus `bin/feed.js` at 88 — small on purpose,
+because §8.6 says this component's isolation is review-only.
+
+**Durability**: reader stopped, 200 rows written across two tenants while down (the slot pinned
+234.5 KB of WAL), reader returned → **200/200 delivered**, coalesced into 2 notifications, **0 on
+re-consume**. Implemented as peek → notify → advance, so the slot is not acknowledged until the
+batch's notifications have committed.
+
+**Decoupling, measured against the design it rejects** — a consumer wedged idle-in-transaction,
+200 inserts each arm:
+
+| | writes | per-insert p50 | notification queue |
+|---|---|---|---|
+| **NOTIFY from the reader** (this) | 200 in 79 ms | 0.228 ms | 0.000000% → **0.000000%** |
+| `AFTER INSERT` trigger (the obvious design) | 200 in 187 ms | 0.677 ms | 0.000000% → **0.019073%** |
+
+The same 200 writes **rolled back** moved the gauge not at all — which is what "the `NOTIFY` is
+inside the ingest transaction" means, measured rather than asserted. *Not reproduced*: the queue
+actually filling — PG 16 has no `max_notify_queue_pages`, so 8 GB cannot be filled in a test. The
+*coupling* is what was measured; §9.4 is cited for the blocking itself.
+
+**The payload deviates from {DB} §9.3 and wants review.** §9.3 proposed the delta inline with an
+id-plus-lookup fallback; this takes the fallback **unconditionally** — no document, no row
+identifier, ~127 bytes. Two decisive reasons: a consumer told only "tenant T changed" **reads
+under its own tenant binding, so RLS re-verifies the routing decision this privileged component
+made** — the one part of §8.6's review-only isolation that can be handed back to the storage
+engine; and a misrouting bug then leaks nothing across the queue. Also: the WAL carries **no
+document for a DELETE**, so "always inline" was never on offer. Cost stated: one indexed read per
+notification, ~6 ms/s per consumer at 33 changes/s, and **nothing on the alarm path is traded
+away, because the alarm path is the slot, not the notification.**
+
+**Slot lifecycle.** Created idempotently at start; dropped **only** by `bin/feed.js --drop-slot`,
+never on shutdown, since that would discard exactly what the slot exists to hold. Abandoned, it
+pins WAL at ~3.25 GB/day at 33 rows/s, and the end state is a full disk — at which point
+PostgreSQL stops accepting writes and **ingest dies**. `max_slot_wal_keep_size` caps it by
+invalidating the slot instead, which is the right direction: T4.2's backstop covers a broken
+feed, and nothing covers a database that cannot take an upload. The agent hit this by accident —
+its own teardown dropped the slot as the *application* role, which lacks `REPLICATION`, **failed
+silently, and leaked one slot per run** until `max_replication_slots` ran out.
+
+*Not done*: the durable hand-off into `ns-evaluator`, which is T4.4's — so **the end-to-end alarm
+path is not yet durable past the slot**. The slot's guarantee is real; the hop after it is not
+built.
+
+**T4.4a · Durable ack/snooze state — DONE 2026-09-15.** T3.4's deferred half, picked up now that
+its four reasons are answerable. `lib/storage/ack-store.js` + `lib/storage/postgres/alarm-ack.sql`
+— hand-authored and deliberately **not** under `postgres/generated/`, because that directory is
+the emitter's and holds "the doc is the record"; nobody uploads an acknowledgement, and here the
+row *is* the record.
+
+**The conditional upsert**, which is what replaces the compare-and-set {S} §9 declines to
+promise: `ON CONFLICT … DO UPDATE … WHERE standing.ack_time + standing.silence_ms <=
+EXCLUDED.ack_time`, with `rowCount` as the branch. That boundary is `ack`'s own guard exactly, so
+the map and the table cannot disagree. **Eight concurrent calls apply one and refuse seven**; the
+same eight through the identical statement *minus* the `WHERE` apply eight. `tenant_id` is not an
+argument — it comes from the setting RLS reads, so an unbound write hits `NOT NULL` and a
+misbound one hits `WITH CHECK`.
+
+**The synchronous alarm path is unchanged** — verified: no `async`/`await` anywhere in
+`lib/notifications.js`. The table is touched at two moments off that path: an awaited boot step
+before the `data-loaded` handler is registered (restart survival), and a fire-and-forget refresh
+after `data-processed` (a sibling's ack). Cost stated: **a sibling's ack lands one cycle late, so
+an alarm may fire once more than it had to** — and the reverse trade, holding an alarm while
+storage answers, is never available here.
+
+Two things that bite and are handled. `requireTenant` throws **synchronously**, so it is caught
+inside `recordAck` — otherwise it escapes `ack` and abandons the rest of `process()`, *other
+groups' alarms included*. And the write is **detached** rather than joined to the caller's
+transaction: by the time `ack` returns, that transaction has committed and released its
+connection, so joining it would query a connection **now bound to somebody else** — the precise
+shape of one person's snooze landing on another's alarm.
+
+| arm | T3.4 | now |
+|---|---:|---:|
+| acknowledges, then evaluates | 0 | **0** |
+| a sibling process | 1 | **0** |
+| a restart of the acknowledging process | 1 | **0** |
+| *control*: sibling with the durable read removed | — | **1** |
+| *control*: a different tenant's sibling | — | **1** |
+
+**The two controls are what make the zeros a measurement** rather than a fixture that never built
+an alarm.
+
+**One existing expectation changed** — six assertions in `tests/admin-tenants.test.js`. T3.2's
+`tenantScopedTables` discovers tables by asking the catalogue for a `tenant_id` column, with a
+comment saying a hardcoded list would be "wrong the first time a phase adds another". This is
+that first time. Excluding `alarm_ack` was rejected, because GATE 3's argument — a tenant-scoped
+table with no FK back to `tenants` is *orphaned* by a delete — applies to it word for word.
+**Open for T3.2's owner**: the export manifest now carries ack rows; whether it *should* is not
+this task's call.
+
+**MongoDB keeps the in-memory path**, so a self-hoster's behaviour is byte-for-byte today's, and
+the cost is recorded rather than glossed: **restart survival would be worth something there too
+and is not delivered.**
+
+*What it implies for the withheld-alarm problem*: it does not make it harder — the tenant comes
+from the ambient scope `ns-evaluator` will run a cycle under. It makes the gap **audible**: under
+`multi` the server's own cycle runs unbound, so the first ack now logs a named marker. And it
+**removes one reason for hash partitioning** — the conditional upsert serialises concurrent acks
+in the database, so T4.4 no longer needs partitioning for the guard's *correctness*.
 **T4.2 · Bounded aggregate poll — DONE 2026-09-15.** The backstop: what still notices a change
 when the slot reader is dropped, wedged, partitioned or not yet deployed. ~~~1.02 ms per sweep
 ({DB} §8.4)~~ — **that invariant was wrong and building the component is what showed it.**
