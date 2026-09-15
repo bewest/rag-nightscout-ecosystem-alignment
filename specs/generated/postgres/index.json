@@ -1,0 +1,144 @@
+{
+ "collections": {
+  "devicestatus": {
+   "columns": [
+    "_id",
+    "created_at",
+    "identifier"
+   ],
+   "datelike": [
+    "created_at"
+   ],
+   "flagged": [
+    {
+     "kind": "UNDECLARED",
+     "path": "NSCLIENT_ID",
+     "why": "the model does not declare this field"
+    },
+    {
+     "kind": "UNDECLARED",
+     "path": "date",
+     "why": "the model does not declare this field"
+    }
+   ],
+   "indexes": [
+    "devicestatus_tenant_created_at",
+    "devicestatus_tenant_nsclient_id",
+    "devicestatus_tenant_created_at_identifier_date"
+   ]
+  },
+  "entries": {
+   "columns": [
+    "_id",
+    "date",
+    "dateString",
+    "identifier",
+    "mbg",
+    "sgv",
+    "sysTime",
+    "type"
+   ],
+   "datelike": [
+    "dateString",
+    "sysTime"
+   ],
+   "flagged": [
+    {
+     "kind": "UNDECLARED",
+     "path": "created_at",
+     "why": "the model does not declare this field"
+    }
+   ],
+   "indexes": [
+    "entries_tenant_date",
+    "entries_tenant_type",
+    "entries_tenant_sgv",
+    "entries_tenant_mbg",
+    "entries_tenant_systime",
+    "entries_tenant_datestring",
+    "entries_tenant_identifier",
+    "entries_tenant_type_date_datestring",
+    "entries_tenant_date_identifier_created_at"
+   ]
+  },
+  "profile": {
+   "columns": [
+    "_id",
+    "created_at",
+    "startDate"
+   ],
+   "datelike": [
+    "created_at",
+    "startDate"
+   ],
+   "flagged": [
+    {
+     "kind": "UNDECLARED",
+     "path": "NSCLIENT_ID",
+     "why": "the model does not declare this field"
+    }
+   ],
+   "indexes": [
+    "profile_tenant_startdate",
+    "profile_tenant_created_at",
+    "profile_tenant_nsclient_id",
+    "profile_tenant_startdate__id"
+   ]
+  },
+  "treatments": {
+   "columns": [
+    "_id",
+    "absolute",
+    "carbs",
+    "created_at",
+    "duration",
+    "enteredBy",
+    "eventType",
+    "glucose",
+    "identifier",
+    "insulin",
+    "notes",
+    "percent"
+   ],
+   "datelike": [
+    "created_at"
+   ],
+   "flagged": [
+    {
+     "kind": "MULTIKEY",
+     "path": "boluscalc.foods._id",
+     "why": "traverses an array; no column, no index, capability lost until decomposition"
+    },
+    {
+     "kind": "UNDECLARED",
+     "path": "NSCLIENT_ID",
+     "why": "the model does not declare this field"
+    },
+    {
+     "kind": "UNDECLARED",
+     "path": "date",
+     "why": "the model does not declare this field"
+    }
+   ],
+   "indexes": [
+    "treatments_tenant_created_at",
+    "treatments_tenant_eventtype",
+    "treatments_tenant_insulin",
+    "treatments_tenant_carbs",
+    "treatments_tenant_glucose",
+    "treatments_tenant_enteredby",
+    "treatments_tenant_notes",
+    "treatments_tenant_nsclient_id",
+    "treatments_tenant_percent",
+    "treatments_tenant_absolute",
+    "treatments_tenant_duration",
+    "treatments_tenant_identifier",
+    "treatments_tenant_eventtype_duration_created_at",
+    "treatments_tenant_eventtype_created_at_identifier_date"
+   ]
+  }
+ },
+ "generated_by": "tools/nsschema/emit/postgres_emit.py",
+ "jsonbColumn": "doc",
+ "tenantSetting": "app.current_tenant_id"
+}
