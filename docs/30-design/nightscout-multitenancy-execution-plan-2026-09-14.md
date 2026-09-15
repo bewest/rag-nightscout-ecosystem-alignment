@@ -1510,13 +1510,21 @@ staying closed indefinitely is not. What is actually left:
 | 2 | **A per-tenant evaluation loop** running inside `withTenant`, so an emission has a room | **T4.4**, not started. §7b sized it: 32.7 KB / 1.94 ms per tenant, no resident `ddata` needed |
 | 3 | **A per-tenant error boundary** — `serverInit`/`initRequests`/`process` are unguarded, so in a plain loop one tenant throwing means every *later* tenant is never evaluated | not started; named by the T4.4 spike |
 | 4 | **A health signal for a silent per-tenant outage** — the per-plugin `try/catch` turns bad data into an alarm outage nobody is told about | not started |
-| 5 | **BF-22** — `language` and `levels.translate` are process-wide, and that is how alarm *text* reaches a push notification. One tenant's request re-languages everyone's alarms | open |
-| 6 | **BF-29** — an unknown `ENABLE` entry silently disables an alarm plugin with no warning. An operator can believe an alarm is armed when it is not | open |
+| 5 | **BF-31** (was BF-22) — one assistant request re-points the shared `language` instance and `moment`'s global locale for the whole process | **fixed 2026-09-15** (`bf/alarms` `5dcf783f`) — **and the claim in this row was wrong.** It does *not* reach alarm text: `language.set` only records a code, and the catalogue is read once at boot and never reloaded, so `levels.translate` does not move. What leaks is `moment`'s global locale, which in this tree reaches only the assistant's own answers. Real, and a cross-tenant leak under `multi`, but a shared-state item, not an alarm-text one |
+| 6 | **BF-29** — an unknown `ENABLE` entry silently disables an alarm plugin with no warning. An operator can believe an alarm is armed when it is not | **fixed 2026-09-15** (`bf/alarms` `99e46a52`) — the entry now says so and names the plugin it thinks was meant. Six file-name mismatches, not five. This does not make per-tenant arming trustworthy; it removes the silence that made an untrustworthy answer indistinguishable from a correct one |
 | 7 | **The clock question** — snooze is measured in data time, ack in wall time; `sbx.time` is hardcoded `Date.now()` and `lastEntry` drops entries ahead of it. A batching or replaying evaluator cannot own its clock today | open; T4.4a chose wall time for ack, the rest is unsettled |
 
 **Items 5 and 6 are backfix-register entries, not tenancy work** — they are wrong for
 single-tenant operators today, and they are also prerequisites for trusting alarm text and alarm
-arming per tenant. They are a concrete example of why Phase 0 comes first.
+arming per tenant. They are a concrete example of why Phase 0 comes first. **Both are now fixed
+on `bf/alarms`, with tests and ablations**, along with BF-28 (`insulinage`'s urgent alarm could
+never fire). Neither may be read as making alarms safe to turn on: the rule below still applies.
+See [BF-28/29/31 alarm delivery](../60-research/bf28-29-31-alarm-delivery-2026-09-15.md).
+
+**A hazard that work surfaced and this section should carry**: plugins capture `ctx.moment`,
+`ctx.language` and `ctx.levels` at plugin *init*, not per call. A per-tenant `ctx` therefore
+cannot re-point any of them for an already-initialised plugin — the closure holds the boot-time
+value. That needs settling before a per-tenant `ctx` is designed, not after.
 
 **Nothing here may be marked done by inference.** Alarms go back on when a test shows tenant A's
 alarm reaching A and not B, through the real producer path, with a snooze that survives a restart

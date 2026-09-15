@@ -45,11 +45,11 @@ raised again).
 | **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — on PostgreSQL an empty `200` on a glucose read; unbounded read on MongoDB | yes | open |
 | **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | open |
 | **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks silently vanish from the quick-pick list; no shipping client triggers it today | yes | open |
-| **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | open |
-| **BF-28** | `insulinage`'s URGENT branch is unreachable — it compares against `insulinInfo.urgent`, which is never assigned, where all three sibling plugins use `prefs.urgent`. "Insulin reservoir change overdue!" can never fire | `lib/plugins/insulinage.js:92` | **medium** — a site-change reminder that silently never arrives | yes | open |
-| **BF-29** | An unknown name in `ENABLE` is **silently ignored** — matching is against `plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`), not the file name. An operator who writes `ENABLE=cannulaage` gets no plugin and no warning | `lib/plugins/index.js:140` | **medium** — an operator believes an alarm plugin is on when it is off | yes | open |
-| **BF-30** | The auth-failure delay is keyed on a client-controlled value under the **default** configuration, so brute-force throttling never accumulates | `lib/authorization/delaylist.js` + `TRUST_PROXY` default in `lib/server/env.js:43` | **high** — restores unthrottled guessing against `API_SECRET` and tokens | yes | open |
-| **BF-31** | A Google Home request changes the display language **for the whole process**, alarm level names included, until something changes it back | `lib/api/googlehome/index.js:27` + the one `language` instance at `lib/server/server.js:34` | **medium** — gated on the Google Home plugin being enabled; reaches alarm text | yes | open |
+| **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | fixed 2026-09-15 — `bf/auth` `64db1f35`; reproduced live; **existing rows still hold tokens, see the report** |
+| **BF-28** | `insulinage`'s URGENT branch is unreachable — it compares against `insulinInfo.urgent`, which is never assigned, where all three sibling plugins use `prefs.urgent`. "Insulin reservoir change overdue!" can never fire, **and the reported level stays WARN for as long as the reservoir is overdue** | `lib/plugins/insulinage.js:92` | **medium** — a site-change reminder that silently never arrives, and a severity that is wrong the whole time | yes | fixed 2026-09-15 (`bf/alarms` `8714093b`) |
+| **BF-29** | An unknown name in `ENABLE` is **silently ignored** — matching is against `plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`, **`basal`** — six, not five), not the file name. An operator who writes `ENABLE=cannulaage` gets no plugin and no warning | `lib/plugins/index.js:140` | **medium** — an operator believes an alarm plugin is on when it is off | yes | fixed 2026-09-15 (`bf/alarms` `99e46a52`) |
+| **BF-30** | The auth-failure delay is keyed on a client-controlled value, so brute-force throttling never engages | `lib/authorization/delaylist.js` + the un-whitelisted `forwarded-for` call in `lib/authorization/index.js:9-12` (**not** `TRUST_PROXY`, which does not exist on `dev`) | **high** — restores unthrottled guessing against `API_SECRET` and tokens | yes | fixed 2026-09-15 — `bf/auth` `a26ba416`; reproduced live; **the register's preferred fix was refuted by measurement** |
+| **BF-31** | A Google Home **or Alexa** request re-points the shared `language` instance and `moment`'s global locale **for the whole process**, until something changes it back. **Measured 2026-09-15: it does *not* change alarm text** — the catalogue is read once at boot and never reloaded | `lib/api/googlehome/index.js:27` **and `lib/api/alexa/index.js:28`** + the one `language` instance at `lib/server/server.js:34` | **low–medium** — gated on the assistant plugin being enabled; reaches the assistant's own answers, not alarm text | yes | fixed 2026-09-15 (`bf/alarms` `5dcf783f`) |
 | **BF-32** | Query coercion was applied to operands that are not field values, so `find[sgv][$exists]=true` became `{$exists: NaN}` — falsy, returning exactly the documents that lack the field | `lib/server/query.js` `walk_prop` | **medium** — inverted answer, HTTP 200; reachable on the 10 fields that had a walker entry | yes | **fixed 2026-09-15** (found during T0.5, `bf/coercion` `88d1f8a4`) |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
@@ -568,8 +568,18 @@ these plugins, it can silently defeat an operator.
 *Fix*: warn at registration for any `ENABLE` entry matching no plugin name, and suggest the
 nearest registered name.
 
+**Fixed 2026-09-15**, `bf/alarms` `99e46a52`. Scanning every plugin module `lib/plugins/index.js`
+requires and comparing the file name to the `name:` it registers gives **six** mismatches, not
+five — `basalprofile` → `basal` is the one this entry did not list. The warning is
+suggestion-only on purpose: warning about *every* unmatched entry produces **six warnings on a
+stock install**, because `ENABLE` also carries features that are not plugins (`delta`,
+`devicestatus`, `food`, `cors`) and plugins registered on only one side of the client/server
+split. A test walks `lib/plugins/*.js` and fails if a seventh mismatch is added without an entry
+in the table.
+
 *Evidence*: [alarm-critical slice](../60-research/alarm-critical-slice-2026-09-15.md),
-[ns-evaluator spike](../60-research/ns-evaluator-spike-2026-09-15.md).
+[ns-evaluator spike](../60-research/ns-evaluator-spike-2026-09-15.md),
+[BF-28/29/31 alarm delivery](../60-research/bf28-29-31-alarm-delivery-2026-09-15.md) §2.
 
 ### BF-28 · `insulinage` can never raise an urgent alarm
 
@@ -605,8 +615,20 @@ requests WARN.
 > behaviour change that should be release-noted rather than shipped as a typo fix. Both agents
 > that found it independently flagged the same caveat.
 
+**Fixed 2026-09-15**, `bf/alarms` `8714093b`, with the release note the caveat above asked for.
+Measured through the real sandbox at four ages: 72 h requested **nothing** before and the URGENT
+overdue notification after. The entry understated it — at **80 h**, and at every age past the
+threshold, the plugin reported level **WARN** rather than URGENT, so the severity was wrong for
+as long as the reservoir stayed overdue, not only during the hour the notification would have
+fired. **No grace period**, argued from evidence: the notification is already gated on the
+operator having set `IAGE_ENABLE_ALERTS`, README documents `IAGE_URGENT` as issuing exactly this
+warning, `cannulaage` has always fired on the identical default of 72, and a grace keyed on the
+threshold having been set explicitly would leave the most exposed operators — the ones who
+enabled alerts and trusted the default — exactly where the bug left them.
+
 *Evidence*: [ns-evaluator spike](../60-research/ns-evaluator-spike-2026-09-15.md),
-`tools/qc/ns-evaluator-arm.js`.
+`tools/qc/ns-evaluator-arm.js`,
+[BF-28/29/31 alarm delivery](../60-research/bf28-29-31-alarm-delivery-2026-09-15.md) §1 and §4.
 
 *Not fixed by that task* — it is pre-existing, single-tenant, and belongs here rather than in a
 tenancy commit.
@@ -880,9 +902,12 @@ that the field is `secret`/`credential` so no emitter or exporter can treat it a
 > [the report](../60-research/bf17-bf30-auth-defects-2026-09-15.md) §1.
 >
 > **1. `TRUST_PROXY` does not exist on `dev`.** It is a seam-branch construct, and so is
-> `createClientIP`. `lib/server/env.js:43` is `env.debug = {`. What `dev` actually does is
-> *weaker*: `getRemoteIP` calls `forwarded(req, req.headers)` — `forwarded-for`'s third argument
-> is the proxy whitelist and it is not passed, in four separate copies of that function. So the
+> `createClientIP`. (`lib/server/env.js:43` on `dev` is `env.HOSTNAME = readHostname();`.) What
+> `dev` actually does is *weaker*: `getRemoteIP` calls `forwarded(req, req.headers)` —
+> `forwarded-for`'s third argument is the proxy whitelist and it is not passed, in **six**
+> separate copies of that function, verified 2026-09-15: `lib/authorization/index.js:10`,
+> `lib/api3/security.js:11`, `lib/api3/alarmSocket.js:7`, `lib/api3/storageSocket.js:7`,
+> `lib/server/websocket.js:9`, `lib/api/status.js:25`. So the
 > address is client-controlled unconditionally, with no default to narrow and nothing an operator
 > can configure. Fix option 3 below is therefore not available on `dev`.
 >
@@ -1007,6 +1032,37 @@ cache, since a language file is 45–60 KB and one per tenant is the wrong shape
 
 *Not reproduced against a live server.* `language.set`'s persistence and the `levels.translate`
 assignment were read and exercised directly; the Google Home route was not driven end to end.
+
+**Reproduced and fixed 2026-09-15**, `bf/alarms` `5dcf783f` — and **the heading of this entry is
+wrong**. Alarms are *not* included. `language.set` assigns `lang` and `speechCode` and nothing
+else; the translation catalogue is read once at boot by `loadLocalization` and is never reloaded
+on the server, so `levels.toDisplay(URGENT)` still returns `Urgent` after a German request, as
+does every other translated string. Measured before and after one `de-DE` request: `lang`
+`en`→`de`, `speechCode` `en-US`→`de-DE`, and every relative time `an hour ago`→`vor einer Stunde`
+— all three persisting into every later request. `require('moment') === require('moment-timezone')`
+is `true`, so the global locale does reach `ctx.moment` and every plugin. But enumerating every
+locale-sensitive `moment` format in the server tree puts **all** of them inside virtual-assistant
+handlers: no notification message built in `lib/plugins` passes a date through `moment` at all
+(`timeago` does not use it; the age plugins use `diff(...,'hours')`, a number; `pump`'s
+`buildMessage` concatenates displays). So the real consequence is a cross-request state leak in
+the assistant integration, **not alarm text**, and the severity is lowered accordingly.
+
+**Also, the entry names one route and there are two** — `lib/api/alexa/index.js:28` carries the
+identical two lines. Both are fixed.
+
+**What was deliberately not done.** The prescribed fix — resolve the locale per request and pass
+it to the handler — is blocked structurally: every virtual-assistant handler captures
+`var moment = ctx.moment;` at plugin *init* (`ar2.js:18`, `loop.js:9`, `openaps.js:9`,
+`xdripjs.js:6`, `bgnow.js:9`, `basalprofile.js:6`, `virtAsstBase.js:4`), so a per-request value
+cannot reach a closure captured at boot without threading a locale through six plugins, several
+of them alarm producers. That is wider than this entry's framing and is reported rather than
+done. The fix removes both process-wide mutations; nothing that worked is lost, since
+`language.set` never changed any text and the relative times were only ever in the caller's
+language if that caller happened to be the most recent one. **The same wall applies to any
+per-tenant `ctx`**: a per-tenant `ctx.moment`, `ctx.language` or `ctx.levels` cannot reach a
+closure that captured the boot-time value.
+
+*Evidence*: [BF-28/29/31 alarm delivery](../60-research/bf28-29-31-alarm-delivery-2026-09-15.md) §3.
 
 ### BF-32 · `$exists` was inverted by type coercion — **FIXED 2026-09-15**
 
