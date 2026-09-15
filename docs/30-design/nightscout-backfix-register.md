@@ -54,6 +54,7 @@ criterion is what makes the rest of the table mean something.
 | **BF-18** | Driver 7 doubles the getMore batch size when `.limit(0)` is set, abandoning `READ_OPTIONS` | `lib/storage/mongo-read-options.js` + driver 7.6.0 | medium — pre-release; compounds BF-14 | open |
 | **BF-19** | `ORDER BY` reads the generated column, which orders differently from the document — breaking the DDL's own stated invariant | `lib/api3/storage/pgCollection/sql.js` `orderBy` | **high** — silently wrong order, and client-reachable via v3 `?sort=` | open |
 | **BF-20** | `scalarize()` converts a `Date` bound to an ISO string, so a `Date`-valued filter matches nothing on MongoDB and everything on PostgreSQL | `lib/api3/storage/pgCollection/utils.js` | low — no shipping caller passes a `Date` | open |
+| **BF-21** | The auth-failure delay is keyed on a client-controlled value under the **default** configuration, so brute-force throttling never accumulates | `lib/authorization/delaylist.js` + `TRUST_PROXY` default in `lib/server/env.js:43` | **high** — restores unthrottled guessing against `API_SECRET` and tokens | yes | open |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
 
@@ -535,6 +536,67 @@ replacement.
 
 *Evidence*: `specs/nsschema/auth_subjects.model.json` (`credential_warning`), which also records
 that the field is `secret`/`credential` so no emitter or exporter can treat it as ordinary text.
+
+### BF-21 · The auth-failure delay is keyed on something the caller chooses
+
+Found while verifying T3.1's decision to read `req.headers.host` rather than `req.hostname`.
+That decision is correct, and checking *why* turned up a larger consequence of the same root
+cause.
+
+**`TRUST_PROXY` defaults to the empty string** (`lib/server/env.js:43`), and
+`compileTrust('')` returns express's compatibility mode. Measured:
+
+```
+compileTrust('') trusts an arbitrary hop?  true
+compileTrust('') trusts a second hop?      true
+compileTrust('127.0.0.1') trusts it?       false
+```
+
+So by default the server believes any `X-Forwarded-For` it is handed. Measured again, through
+the code that actually decides:
+
+```
+no header             -> 203.0.113.9      (the real peer)
+client sets header A  -> 198.51.100.1
+client sets header B  -> 198.51.100.2
+```
+
+**`lib/authorization/delaylist.js` keys purely on that string.** `addFailedRequest(ip)` and
+`shouldDelayRequest(ip)` both index `ipDelayList[String(ip)]`, and `lib/authorization/index.js`
+feeds them `data.ip` from `createClientIP(env.trustProxy)`. A caller that presents a different
+forwarded address each time gets a **fresh key every time**, so the 5-second penalty
+(`AUTH_FAIL_DELAY`) never accumulates and the throttle never engages. That throttle is the only
+thing standing between an attacker and unlimited guesses at `API_SECRET` or a token.
+
+**This is not simply "the default is wrong", and the fix is not "stop trusting".** Most
+Nightscout deployments sit behind a platform proxy (Heroku, Railway, Azure) where the real peer
+address *is* only available in `X-Forwarded-For`, and where the operator never configures
+anything. A default that refused the header would report every request as coming from the
+proxy — which collapses every user in a deployment onto one delay-list key and turns the
+throttle into a self-inflicted denial of service. **The permissive default exists for a real
+reason**; what is wrong is that a security control was keyed on a value that default makes
+untrustworthy.
+
+*Fix, in preference order:*
+1. **Key the delay list on something the caller does not choose.** The credential being
+   attempted is the obvious candidate — the point is to slow repeated guesses at *a secret*, and
+   that key is identical whether the attacker rotates addresses or not. It also fixes the
+   behind-a-proxy case, where today every user shares one key.
+2. **Bound the list.** It is an unbounded object keyed by an attacker-controlled string, swept
+   only once a minute; a burst of forged addresses grows it until the sweep. Secondary to (1)
+   and the same root cause.
+3. Narrow the `TRUST_PROXY` default with a documented migration — worth doing, but it is a
+   deployment-compatibility change and it does not fix (1) for deployments that legitimately
+   must trust the header.
+
+*Not reproduced against a live server.* Both measurements above are of the shipping functions in
+`externals/work/crm-seam`, called directly; the chain from `data.ip` to `shouldDelayRequest` is
+read from `lib/authorization/index.js:140-206`. **Not a regression from any work in this
+programme** — `delaylist.js` and the `TRUST_PROXY` default both predate it.
+
+*Related, not the same*: T3.1 avoids this class for tenant resolution by reading
+`req.headers.host` directly and refusing to honour a configured alternative header unless
+`TRUST_PROXY` is set. That is the pattern the fix above generalises.
 
 ## 3. How to use this register
 
