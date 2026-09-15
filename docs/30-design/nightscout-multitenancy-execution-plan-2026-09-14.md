@@ -419,12 +419,51 @@ structurally — an AST that cannot express an unlisted operator *is* the allowl
 RLS binding is per-transaction ({DB} §8.2). Retrofitting one through the call sites twice
 would be avoidable waste.
 
-**T1.2 · Convert the 19 files to the interface, MongoDB only.**
+**T1.2 · Convert the 19 files to the interface, MongoDB only. — SUBSTANTIALLY DONE 2026-09-14**
 **Zero behaviour change.** No Postgres, no tenancy, no schema.
 *Done*: all 159 test files pass unchanged; no file outside `lib/storage/` and the adapter
 imports the `mongodb` driver.
 *This is the highest-value task in the plan* — it is the prerequisite for everything in Phase 2
 and it is checkable by a suite that already exists.
+
+**Status.** Suite **2199 passing, 1 pending, 0 failing** (baseline 2150; the increase is new
+tests only). **No existing test expectation was changed** — the single edit to an existing test
+file is a test double gaining a `project()` method, because the projection now rides on the
+cursor rather than `find()`'s second argument.
+
+Converted: `activity` (4 sites), `treatments` (9), `food` + `devicestatus` (9), `profile` (7 of
+8) + `entries` (4 of 4), `authorization/storage` (4), `aggregate` (1), `api/entries` count (1).
+
+Two sites remain, each recorded in place with its reason:
+
+| site | why it is still on the raw collection |
+|---|---|
+| `profile.list_query` | `GET /profiles/` accepts `$expr` today and a test asserts it. Whether to represent or reject `$expr` is a **query-surface decision (D8/T2.4)**, not a conversion detail. |
+| `websocket.js` (~10 driver calls) | Needs an `$unset` capability the interface does not have, and its dedup unification is a real behaviour change. Deliberately last. |
+
+**Three defects found by doing the conversion**, none of which the plan anticipated:
+
+1. **`fromMongo` silently dropped a native `RegExp`.** `Object.keys(/x/i)` is `[]`, so the
+   clause produced no nodes and vanished with no error. `lib/server/query.js`'s `parseRegEx`
+   returns a native RegExp for the treatments `notes`/`eventType`/`enteredBy` filters, so
+   `find[eventType]=/Bolus/i` returned **every** treatment rather than the boluses. A widened
+   query is the worst available failure mode: it looks like a working answer. Fixed by giving
+   the `re` node an `options` field — flags off the pattern, so they cost nothing against
+   `RE_MAX_LEN` and the SQL adapter can use the operator PostgreSQL actually has (`~*`).
+2. **The count endpoint's date bound** (`aggregate.js` calling `find_options(opts)` with one
+   argument) — already recorded; the fix now routes count and list through the *same*
+   `query_for`, so they bound identically by construction. It affected treatments and
+   devicestatus too, not only entries.
+3. **`acknowledged` was about to disappear from four delete response bodies.** Three modules
+   independently re-synthesised `{acknowledged: true}` to compensate, which would misreport an
+   unacknowledged write. The interface now passes the driver's value through.
+
+**Method note.** The seam is verified by two differentials, both re-run on every change:
+`tools/seam/roundtrip.js` (4000 generated `query.js`-shaped filters, mingo as oracle) and
+`tools/seam/validate.js` (2000 randomised ASTs, mingo vs live PostgreSQL). Both report zero
+mismatches. Each was checked to be **non-vacuous** by reverting the fix under test — the RegExp
+case gives 240 mismatches when removed, several reading `0 vs 98` and `69 vs 333`. A
+differential that has never failed is not yet evidence.
 
 **T1.3 · Parametrise the 10 storage-touching tests by backend.**
 `tests/{mongo-storage,mongo-pool-config,mongo-storage.retry,api3.storage.find,...}.test.js` —
@@ -461,12 +500,41 @@ each against `mingo` over randomised fixtures, following #8733's method.
 *Done*: ≥500 randomised fixtures per operator, zero disagreements with `mingo`; `re` explicitly
 bounded (pattern guard + timeout) since it is {M} §6.5's live exposure.
 
-**T2.4 · v1 operator census, then an allowlist.**
+**T2.4 · v1 operator census, then an allowlist. — CENSUS DONE 2026-09-14**
 Derive the operators clients actually send from the corpus; support those, reject the rest with
 a documented 400. **Ships as a security fix regardless of Postgres** — it is the allowlist that
 does not exist today.
 *Done*: census committed with counts per operator; allowlist enforced; the rejected set
 documented in the API docs.
+
+**Census result** (`tools/qc/v1_operator_census.py`, `reports/v1-query-census/`): 157 literal
+`find[field][$op]` occurrences across **14 client projects**.
+
+| operator | occurrences | projects | in the AST |
+|---|---:|---:|---|
+| `gte` | 55 | 13 | yes |
+| `eq` | 36 | 10 | yes |
+| `lte` | 32 | 10 | yes |
+| `gt` | 22 | 5 | yes |
+| `lt` | 5 | 3 | yes |
+| `ne` | 4 | 3 | yes |
+| `exists` | 3 | 2 | yes |
+
+Plus `$or` (2) and `$and` (1), both from one project. **Every operator any client sends is
+already expressible in the filter AST**, and 21 distinct fields appear, led by `created_at`
+(57), `date` (30) and `eventType` (13). Nothing in the corpus sends `$where`, `$expr`,
+`$elemMatch` or `$near` — which is the evidence that rejecting them is a security fix and not a
+compatibility break.
+
+**Read the limit with the number.** This measures what client *source* contains, not what a
+deployment receives: a filter built by string concatenation at runtime, or typed into a
+browser, is invisible to it. It is a **lower bound on the field set and a strong signal on the
+operator set**, because the operator is almost always a literal even when the field and value
+are not. Same method and same caveat as `reports/schema-census/attribution.json`.
+
+This directly settles the `$expr` question T1.2 deferred: no client sends it, so the remaining
+`profile.list_query` site is a decision about a server capability with a test, not about
+breaking a known consumer.
 
 **T2.5 · `entries` end-to-end on Postgres + RLS.**
 EXP-MT-037. Connect as a role that is **`NOSUPERUSER NOBYPASSRLS`** — {DB} §8.1 nearly

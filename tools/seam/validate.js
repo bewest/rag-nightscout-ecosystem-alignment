@@ -18,7 +18,7 @@
 // worth measuring.
 //
 // Usage:
-//   docker run -d --name seampg -e POSTGRES_PASSWORD=poc -p 15434:5432 postgres:16-alpine
+//   docker run -d --name seampg -e POSTGRES_PASSWORD="$PGPASSWORD" -p 15434:5432 postgres:16-alpine
 //   node validate.js [iterations]
 
 'use strict';
@@ -31,7 +31,18 @@ const FILTER = process.env.FILTER_MODULE ||
   '../../externals/work/crm-seam/lib/storage/filter.js';
 const { toMongo, toSql, validate } = require(FILTER);
 
-const PG_URL = process.env.PG_URL || 'postgres://postgres:poc@127.0.0.1:15434/postgres';
+const PG_URL = process.env.PG_URL || 'postgres://postgres@127.0.0.1:15434/postgres';
+
+// Credentials come from the environment, never from this file. PGPASSWORD is
+// what node-postgres reads when the URL carries no password.
+if (!process.env.PGPASSWORD && !/:[^@/]*@/.test(PG_URL)) {
+  console.error('Set PGPASSWORD before running this (or pass a complete PG_URL).');
+  console.error('The throwaway POC container is created with:');
+  console.error('  docker run -d --name <name> -e POSTGRES_PASSWORD="$PGPASSWORD" \\');
+  console.error('    -p <port>:5432 postgres:16-alpine');
+  process.exit(2);
+}
+
 const ITERATIONS = parseInt(process.argv[2], 10) || 2000;
 
 // Fields modelled as generated columns (the §6.3 indexed set) vs jsonb-only.
@@ -91,8 +102,12 @@ function randomCmp () {
     // anchors, and diverge on lazy quantifiers, lookaround and \d-style
     // shorthands. The generator stays in the agreeing subset so the measured
     // rate describes the subset we would actually allow, not the whole language.
-    return { op, field: pick(['device', 'type']),
+    // Case-insensitivity is exercised too, because it is not a flag inside the
+    // pattern on the Postgres side -- it selects a different OPERATOR (~*).
+    const node = { op, field: pick(['device', 'type']),
       value: pick(['^Loop', 'Dexcom', 'xDrip.*G6', '^$', '[A-Z]', 'connect$']) };
+    if (rnd() < 0.4) node.options = 'i';
+    return node;
   }
   if (op === 'exists') return { op, field, value: rnd() < 0.5 };
   if (op === 'in' || op === 'nin') {

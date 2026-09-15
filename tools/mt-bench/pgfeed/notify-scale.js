@@ -40,8 +40,19 @@ const fs = require('fs');
 const path = require('path');
 const { Client, Pool } = require('pg');
 
-const PG_URL = process.env.PG_URL || 'postgres://postgres:poc@127.0.0.1:15433/postgres';
-const BOUNCER_URL = process.env.BOUNCER_URL || 'postgres://postgres:poc@127.0.0.1:16432/postgres';
+const PG_URL = process.env.PG_URL || 'postgres://postgres@127.0.0.1:15433/postgres';
+
+// Credentials come from the environment, never from this file. PGPASSWORD is
+// what node-postgres reads when the URL carries no password.
+if (!process.env.PGPASSWORD && !/:[^@/]*@/.test(PG_URL)) {
+  console.error('Set PGPASSWORD before running this (or pass a complete PG_URL).');
+  console.error('The throwaway POC container is created with:');
+  console.error('  docker run -d --name <name> -e POSTGRES_PASSWORD="$PGPASSWORD" \\');
+  console.error('    -p <port>:5432 postgres:16-alpine');
+  process.exit(2);
+}
+
+const BOUNCER_URL = process.env.BOUNCER_URL || 'postgres://postgres@127.0.0.1:16432/postgres';
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 // The required rate, from the cost model, so every number has something to be

@@ -39,14 +39,25 @@ const fs = require('fs');
 const path = require('path');
 const { Client, Pool } = require('pg');
 
-const PG_URL = process.env.PG_URL || 'postgres://postgres:poc@127.0.0.1:15433/postgres';
+const PG_URL = process.env.PG_URL || 'postgres://postgres@127.0.0.1:15433/postgres';
+
+// Credentials come from the environment, never from this file. PGPASSWORD is
+// what node-postgres reads when the URL carries no password.
+if (!process.env.PGPASSWORD && !/:[^@/]*@/.test(PG_URL)) {
+  console.error('Set PGPASSWORD before running this (or pass a complete PG_URL).');
+  console.error('The throwaway POC container is created with:');
+  console.error('  docker run -d --name <name> -e POSTGRES_PASSWORD="$PGPASSWORD" \\');
+  console.error('    -p <port>:5432 postgres:16-alpine');
+  process.exit(2);
+}
+
 // RLS is NOT enforced for superusers — BYPASSRLS is implicit, and FORCE ROW LEVEL
 // SECURITY only subjects the table OWNER, not a superuser. Measuring the policy as
 // `postgres` measures nothing: the planner never sees the predicate, an unbound
 // connection returns every row, and it all looks like RLS is broken. §6.1's
 // "app role NOSUPERUSER NOBYPASSRLS" is load-bearing, and this is the arm that
 // proves why.
-const APP_URL = process.env.APP_URL || 'postgres://ns_app:poc@127.0.0.1:15433/postgres';
+const APP_URL = process.env.APP_URL || 'postgres://ns_app@127.0.0.1:15433/postgres';
 const TENANTS = parseInt(process.argv[3], 10) || 400;
 const N_ENTRIES = 576;
 const SLOT = 'ns_evaluator';
