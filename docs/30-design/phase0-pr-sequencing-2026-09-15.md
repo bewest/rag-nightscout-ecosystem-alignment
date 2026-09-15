@@ -56,6 +56,59 @@ T0.4 also corrected its own premise: the actors do *not* stay phase-locked, beca
 drivers already spell an 18-second random window into the timestamp they align to. **The start is
 the burst, and it does not repeat.**
 
+#### DONE 2026-09-15 — tag cut and pin moved, locally, nothing pushed
+
+**The pin move turned out to be a security fix, and BF-34 is the smaller half of it.**
+
+`dev` pinned `234d47c8` — an untagged commit on an **unmerged feature branch**. Measured against
+the `v0.0.13` tag, that pin contains **exactly one commit**. These six are *not* in it:
+
+```
+9fa2c3c  Prevent Dexcom credentials and sessions from reaching runtime logs
+5349d47  Keep MiniMed credentials and patient data out of runtime logs
+77e2396  Keep internal output payloads out of runtime logs
+8406edf  Preserve MiniMed glucose and measurement-time status contracts
+51b6e6e  Release connector listeners and settle output waits on stop
+c1cce2a  BF-34 and start jitter
+```
+
+So **15.0.9 as currently pinned ships without three log-redaction fixes.** Making debug logging
+opt-in (`234d47c`, the one commit the pin *does* have) narrows *when* those leaks can happen; it
+does not stop them happening when an operator turns logging on to diagnose a problem — which is
+precisely when they do it.
+
+**What was done, all local:**
+
+| repo | branch / ref | change |
+|---|---|---|
+| `nightscout-connect` | `release/v0.0.14` → `649a7de` | version `0.0.13` → `0.0.14`; **annotated tag `v0.0.14`** |
+| `cgm-remote-monitor` | `bf/connect-pin` → `0807eb1c` | pin → `…/archive/refs/tags/v0.0.14.tar.gz` |
+
+`v0.0.13` (`b394411`, `origin/main`) **fast-forwards** to the release — no merge to reconcile.
+
+**One thing deliberately left undone, and it must not be papered over.** `package-lock.json` is
+**not** updated. Its `integrity` is a hash over the tarball GitHub generates, which does not exist
+until the tag is pushed, and a hash invented locally would break `npm ci` for everyone. Leaving the
+lock on the old SHA makes `npm ci` fail **loudly** as out-of-sync, which is the correct failure.
+**Regenerate with `npm install` once the tag is pushed, in the same PR.**
+
+**To publish (maintainer, in order):**
+
+```bash
+# 1. connect: fast-forward main and push the tag
+git -C externals/nightscout-connect push origin release/v0.0.14:main
+git -C externals/nightscout-connect push origin v0.0.14
+npm publish                      # optional but see below
+
+# 2. crm: regenerate the lock against the now-real tarball, then push
+cd externals/work/crm-bf-connect-pin && npm install   # updates package-lock.json
+git commit -am "Regenerate the lock against connect v0.0.14"
+```
+
+**`master` is a separate problem.** 15.0.8 depends on `"^0.0.12"` from **npm**, not a tarball — so
+none of this reaches a current operator without an `npm publish`. Three pinning mechanisms across
+three branches is the underlying defect; a published, tagged release on all three is the end state.
+
 #### BF-34 currently reaches nobody, and fixing that is a release decision
 
 `fix/connect-timer-jitter` is based on `b77e5bb`, **not** on `dev` and not on the connect repo's
