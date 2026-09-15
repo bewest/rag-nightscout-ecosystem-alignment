@@ -843,10 +843,61 @@ The PostgreSQL backend does not have this shape — its isolation is a per-trans
 rather than an accident. That contrast is D4 restated as a code property: two deployment targets
 over one shared core, and this is one of the places the core is not yet shared.
 
-**T3.4 · Ack/snooze state into storage**, replacing `lib/notifications.js:15`'s module-scope
-map. {M} §3.1's blocker, resolved for tenancy reasons rather than teardown reasons, **with a
-regression test** — nothing on the modernization branch records why that state is per-instance,
-so a refactor could hoist it back with green CI.
+**T3.4 · Ack/snooze state into storage. — REGRESSION TEST DONE 2026-09-15; the storage move is
+DEFERRED to T4.4, with reasons.**
+
+~~replacing `lib/notifications.js:15`'s module-scope map~~ — **the premise was stale on this
+branch and the agent checked rather than assumed.** `alarms` was moved inside `init(env, ctx)`
+by `9e869662` ("Own notification alarm state per service and clear it on teardown", 2026-09-06)
+on the modernization branch. Still accurate for `origin/dev`; not for here.
+
+**What actually remains, established by running it** — three separate `node` processes, same
+level and group:
+
+| process | alarms emitted | `lastAckTime` |
+|---|---:|---|
+| acknowledges, then evaluates | **0** | set |
+| a sibling process | **1** | 0 |
+| a restart of the acknowledging process | **1** | 0 |
+
+So an acknowledgement is invisible to a sibling and does not survive a restart.
+
+**The storage move is declined here, for four reasons rather than a shrug:**
+
+1. **PostgreSQL has nowhere to put it** — the emitted DDL is one table, `entries`. A
+   `(tenant, level, group)` row is schema work, not this task.
+2. **The interface has no compare-and-set and declines to promise one.** `ack`'s guard is a
+   read-modify-write; `updateOne` takes an *identifier*, not a predicate; and {S} §9 states
+   outright that the interface does not promise atomicity across operations on both backends,
+   because plenty of self-hosters run a standalone `mongod`. **T4.4 already hash-partitions the
+   evaluator "for per-tenant ordering of ack state"** — the design knows this needs serialisation
+   it cannot get here.
+3. **The alarm path is synchronous end to end** (`bootevent.js:330-332` calls
+   `initRequests`/`checkNotifications`/`process` inline in a bus listener). Storage-backed state
+   makes it async and reorders the one path where **an alarm that does not fire is the worst
+   outcome this software has**, with no corpus exercising the new ordering.
+4. **There is no tenant to key by yet.** Under T3.3 the ctx *is* the tenant, so a redundant
+   tenant key in `getAlarm` would imply the map is safe to share — the opposite of the property
+   being pinned.
+
+**Redis was read and rejected as the home, on this programme's own terms**: {M} §7.6 scopes keyv
+to *ephemeral* tenant-keyed state and classifies ack/snooze as the durable part — and `ns-single`
+is "the existing server, unchanged", so a self-hoster should never have to stand up Redis to keep
+a snooze.
+
+*Recommendation carried to T4.4*: do the move where the async path, the tenant id and a real
+table all exist at once, and specify the write as a **single conditional upsert**
+(`INSERT … ON CONFLICT … WHERE`) rather than read-then-write, so `ack`'s "already snoozed" guard
+survives concurrency.
+
+**The durable deliverable is the test**, which is what this task was really for: nothing recorded
+*why* the state is per-instance, so a refactor could hoist it back with green CI.
+`tests/notification-tenant-isolation.test.js` — three cases, one per route to somebody else's
+alarm, with failure messages that explain the tenancy reason rather than the mechanics.
+Verified independently: hoisting `alarms` back to module scope fails three tests, reading *"a
+shared alarm map makes one person's snooze silence a different person's hypo alarm"*. Hoisting
+`requests` fails two — **and the pre-existing lifecycle test passes through the whole of that
+second break**, which is what makes the new file worth having rather than duplicative.
 
 **T3.5 · Tenant socket rooms** and tenant-bound socket authorization, including
 `lib/api3/alarmSocket.js`, which currently emits to the **whole namespace with no room at all**
