@@ -30,6 +30,7 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | **BF-03** | Numeric filters on `devicestatus`, `activity`, `food`, `profile` match nothing | `lib/server/query.js` walker, per-collection | **high** — wrong answer, HTTP 200 | yes | open |
 | **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | open |
 | **BF-12** | `entries.rawbg` is coerced but is not in the model — stale walker entry | `lib/server/entries.js:186` | low — dead entry | yes | open |
+| **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | open |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | open |
@@ -209,6 +210,32 @@ The walker coerces `rawbg`, which does not appear in the model at all — not on
 documents across 11 sites**. Harmless in itself, and worth recording because it shows the drift
 running both ways: the hand-maintained list is not only missing entries, it carries dead ones.
 It disappears when the table is generated.
+
+### BF-13 · v3 paging loses documents when the sort chain ties
+
+`parseSort` appends `identifier`, `created_at` and `date` as tiebreaks. When **all** of them tie
+— documents with no `identifier`, sharing one `created_at` and one `date`, as a bulk import
+stamps them — the order is not total, MongoDB's blocking sort is not stable among equal keys, and
+each `skip` re-runs the query. Measured: **7 of 12 documents never returned, two returned three
+times**, deterministically.
+
+**Not fixable by indexing**: only an index matching the sort exactly gives a stable `IXSCAN`, and
+the sort's leading key is client-chosen (`?sort=`). Under every index set Nightscout creates the
+plan is `SORT <- COLLSCAN`.
+
+**Fires on the default path** — with no `?sort=` the chain is just the three tiebreaks, so an
+ordinary paged read is exposed.
+
+*Fix*: append `sort._id = sortDirection`. `_id` is always present and always unique, so the order
+becomes total. Verified: 0/12 lost. Carry the same rule into the seam's ordering translation, or
+it reappears on PostgreSQL.
+
+*Precondition is specific and should not be overstated*: all three of no-`identifier`,
+tied `created_at`, tied `date`. Any one of them differing makes it safe.
+
+*Evidence*: [ordering and pagination](../60-research/seam-ordering-and-pagination-2026-09-14.md) §3.
+**Reproduced synthetically against `mongod` 7.0.43, not against a live Nightscout** — confirm
+before treating as settled.
 
 ## 3. How to use this register
 
