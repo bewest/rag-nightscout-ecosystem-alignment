@@ -102,7 +102,7 @@ Extends `MongoCollection`'s existing surface; **additions marked NEW**, and each
 findOne(identifier, projection?, options?)
 findOneFilter(filter, projection?, options?)
 findMany({ filter, sort, limit, skip, projection, options })
-count(filter)                                   // NEW — the countable half of §4.3
+count(filter)                                   // NEW — and §4.3 shows it is the ONLY one
 getLastModified(fieldName)
 
 // ---- writes
@@ -114,8 +114,8 @@ deleteOne(identifier)
 deleteMany(filter)                              // NEW — supersedes deleteManyOr
 bulkUpsert(docs, { matchOn })                   // NEW — 5 sites
 
-// ---- declared aggregations, not a pipeline pass-through
-aggregate(spec)                                 // NEW, constrained — §4.3
+// ---- the only aggregation that actually occurs (§4.3)
+//      `aggregate(pipeline)` is deliberately absent
 
 // ---- lifecycle
 ensureSchema(collectionSpec)                    // replaces createIndex
@@ -156,7 +156,54 @@ That single change resolves four planned work items at once:
 **Recommendation: do the filter AST first, as its own change, before converting any call
 site.** It is the highest-leverage piece and everything else gets easier behind it.
 
-### 4.3 Aggregation is the one genuinely hard escape hatch
+### 4.3 Aggregation — investigated, and it is one operation
+
+> **Resolved 2026-09-14.** §4.3 assumed this was the hard escape hatch. It is not.
+
+`lib/server/aggregate.js` builds `[{$match: query}].concat(conf.pipeline).concat(opts.pipeline).concat(template())`,
+and **every extension point is empty in production**:
+
+- `conf.pipeline` has **no supplier** — the factory is constructed in exactly three places
+  (`entries.js:223`, `devicestatus.js:162`, `treatments.js:439`), all with `{}`.
+- `opts.pipeline` is **rejected with HTTP 400** before reaching storage
+  (`lib/api/entries/index.js:452-457`), closed deliberately in commit `479a6a4d`.
+- `template()` is a literal: `[{$group: {_id: null, count: {$sum: 1}}}]`, with `_id` hardcoded
+  to `null` — **there is no code path that sets a grouping key.**
+
+**So there is exactly one shape: `count(collection, filter)` → integer**, over
+`{entries, treatments, devicestatus}`. No `groupBy`, no `distinct`. The
+`[{_id: null, count: N}]` envelope is a MongoDB artifact the API leaks and the route layer can
+reconstruct.
+
+**`aggregate(spec)` therefore comes out of the proposed interface in §4.1** — `count(filter)`
+is sufficient and complete. If a general `aggregate` is kept in the Mongo adapter for future
+use, it must stay *off* the neutral interface or the seam leaks.
+
+Two constraints on doing it: `tests/count-pipeline-boundary.test.js` pins the response shape
+and the exact 400 message; `tests/mongo-query-javascript.test.js:75-94` constructs the helper
+directly and passes `opts.pipeline`, so it depends on that parameter existing even though no
+production caller supplies it.
+
+#### 4.3.1 And a live bug found on the way
+
+`aggregate.js:21` calls `find_options(opts)` with **one argument**, so the collection's
+`queryOpts` never reach it and `lib/server/query.js` falls back to its defaults — `dateField:
+'date'`, no `useEpoch`. The consequence, run directly:
+
+```
+list  path (useEpoch:true):  {"date":{"$gte":1789099222823}}       <- number
+count path (defaults)     :  {"date":{"$gte":"2026-09-11T04:00:22.824Z"}}   <- ISO string
+```
+
+`entries.date` is declared `number` in `specs/nsschema/entries.model.json`, and MongoDB orders
+BSON types before comparing values, so a numeric field never matches a string bound.
+**`GET /api/v1/count/entries/where` with no explicit date filter silently matches nothing** —
+the injected two-day window excludes every document rather than bounding it.
+
+This is the same class as T0.5's under-coercion finding: a string where a number belongs,
+returning 200 and an empty result. It should ship with T0.5 rather than wait for the seam.
+
+### 4.4 Dedup across the three write paths — investigated, and they are not equivalent
 
 Two sites — `lib/server/aggregate.js:26` and `lib/api/entries/index.js:520` — pass a pipeline
 through. A pipeline pass-through cannot be translated in general, for the same reason v1's
@@ -167,6 +214,44 @@ actually compute, express each as a named operation (`count`, `groupBy`, …), a
 those. If the answer turns out to be "arbitrary pipelines", that is a finding worth having
 early — it would mean reporting stays MongoDB-only for a while, which is survivable under D4
 and should be recorded rather than discovered during T2.5.
+
+The §5 recommendation — convert the socket path last, file unification separately — is
+confirmed and strengthened. The three paths disagree on **match key, match scope, post-match
+write semantics, and which collections dedup at all**:
+
+| | socket `dbAdd` | API v3 | API v1 |
+|---|---|---|---|
+| treatments | `NSCLIENT_ID`, else `created_at`+`eventType`, **plus a ±2 s fuzzy window** on amount fields | UUIDv5 of `device_date_eventType`; fallback `created_at`+`eventType` | `identifier` → `_id` → `created_at`+`eventType` |
+| entries | **no dedup** | identifier; fallback `date`+`type` | `sysTime`+`type`, device-blind |
+| devicestatus | `NSCLIENT_ID`, else `created_at` (device-blind) | `created_at`+**`device`** | **no dedup** |
+| profile | `startDate` → full replace | `created_at` | **no dedup** |
+| on a match, writes | treatments: only `$set`s `created_at`, keeps the stored body; devicestatus: **nothing** | **full replace** | treatments: replace; entries: **`$set` merge** |
+| permission on a match | create rights | **`api:<col>:update`** | create rights |
+
+**Divergences that would change behaviour if unified** — the load-bearing ones:
+
+1. **Only the socket path matches fuzzily** (±2 s plus amount fields, `websocket.js:535-568`).
+   Removing it duplicates AAPS/NSClient treatments; adding it elsewhere silently swallows
+   legitimate rapid boluses.
+2. **`NSCLIENT_ID` is a socket-only key**; v1 and v3 treat it as opaque payload.
+3. **v3's fallback clause carries `identifier: {$exists: false}`** (`utils.js:159`), which the
+   others lack. A unified rule would make v3 start matching identifier-bearing documents by
+   `created_at`+`eventType` — a real loosening.
+4. **`created_at` normalisation differs**: v1 normalises through moment to ISO-UTC and lets
+   `eventTime` override it (`treatments.js:449-450, 473-479`); the socket path uses the raw
+   client string. Identical payloads produce different keys.
+5. **Entries get three different answers** for the same SGV, and `devicestatus`/`profile` each
+   dedup in some paths and not others.
+
+**Also worth recording: the socket write API is not browser-only.** It is attached to the same
+HTTP server and uses the same credential model as REST (`websocket.js:81-84`, `:115-131`), so
+`dbAdd`/`dbUpdate`/`dbRemove` are reachable by any client that can reach the site. Anonymous
+writes are denied by default, but a deployment adding `careportal` to `AUTH_DEFAULT_ROLES`
+opens them — exactly as it would for REST.
+
+**One thing the investigation could not settle**, recorded rather than guessed: whether the
+socket similarity branch's use of truthiness (`if (data.data.insulin)`) rather than presence is
+intentional. A `0` insulin or carbs value is skipped as a match key, and no test covers it.
 
 ## 5. A third write path, not previously named
 

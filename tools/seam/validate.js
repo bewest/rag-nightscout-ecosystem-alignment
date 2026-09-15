@@ -25,7 +25,11 @@
 
 const { Client } = require('pg');
 const { Query } = require('mingo');
-const { toMongo, toSql, validate } = require('./filter-ast');
+// The canonical copy now ships in the worktree; this validates THAT code rather
+// than a parallel copy, so the two cannot drift.
+const FILTER = process.env.FILTER_MODULE ||
+  '../../externals/work/crm-seam/lib/storage/filter.js';
+const { toMongo, toSql, validate } = require(FILTER);
 
 const PG_URL = process.env.PG_URL || 'postgres://postgres:poc@127.0.0.1:15434/postgres';
 const ITERATIONS = parseInt(process.argv[2], 10) || 2000;

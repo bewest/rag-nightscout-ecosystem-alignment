@@ -72,6 +72,10 @@ attached_assets/
 .copilot-session.db
 checkpoints/
 
-# nsschema validator replay dependencies
-tools/nsschema/node_modules/
+# Installed dependencies. Never tracked: a manifest plus a lockfile is what
+# makes a tool reproducible, and the tree itself is noise in the diff.
+node_modules/
+
+# nsschema's lockfile is deliberately not tracked; tools/seam's IS, because the
+# differential-test oracle's exact mingo version is part of the evidence.
 tools/nsschema/package-lock.json
