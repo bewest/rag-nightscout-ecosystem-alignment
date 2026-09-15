@@ -36,14 +36,14 @@ raised again).
 
 | id | defect | where | severity | tenancy-independent | status |
 |---|---|---|---|---|---|
-| **BF-01** | `GET /api/v1/count/entries/where` silently matches nothing | `lib/server/aggregate.js:21` | **high** — wrong answer, HTTP 200 | yes | open |
+| **BF-01** | `GET /api/v1/count/entries/where` silently matches nothing | `lib/server/aggregate.js:21` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (`bf/reads` `4a398d47`); reproduced live; `count/treatments/where` was affected too |
 | **BF-02** | `insulin`/`carbs` query bounds truncated by `parseInt` | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (T0.5, `bf/coercion` `88d1f8a4`) |
 | **BF-03** | Numeric filters on `devicestatus`, `activity`, `food`, `profile` match nothing | `lib/server/query.js` walker, per-collection | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15 for `devicestatus` + `profile`** (T0.5, `bf/coercion` `88d1f8a4`); `food` and `activity` misfiled, see detail |
 | **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (T0.5, `bf/coercion` `88d1f8a4`) |
 | **BF-12** | ~~`entries.rawbg` is coerced but is not in the model~~ — **does not reproduce**; the walker entry is `rssi`, which *is* in the model | `lib/server/entries.js:186` | none — not a defect | n/a | **closed 2026-09-15, invalid** |
-| **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | open |
-| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — on PostgreSQL an empty `200` on a glucose read; unbounded read on MongoDB | yes | open |
-| **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | open |
+| **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | **fixed 2026-09-15** (`bf/reads` `399dc283`); reproduced through the v3 HTTP path |
+| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — on PostgreSQL an empty `200` on a glucose read; unbounded read on MongoDB | yes | **fixed 2026-09-15** (`bf/reads` `1640b64b`); reproduced live; **the v3 validation it says to copy is itself defective — see BF-33** |
+| **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | **fixed 2026-09-15** (`bf/reads` `ba70f1fc`); reproduced live |
 | **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks silently vanish from the quick-pick list; no shipping client triggers it today | yes | open |
 | **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | fixed 2026-09-15 — `bf/auth` `64db1f35`; reproduced live; **existing rows still hold tokens, see the report** |
 | **BF-28** | `insulinage`'s URGENT branch is unreachable — it compares against `insulinInfo.urgent`, which is never assigned, where all three sibling plugins use `prefs.urgent`. "Insulin reservoir change overdue!" can never fire, **and the reported level stays WARN for as long as the reservoir is overdue** | `lib/plugins/insulinage.js:92` | **medium** — a site-change reminder that silently never arrives, and a severity that is wrong the whole time | yes | fixed 2026-09-15 (`bf/alarms` `8714093b`) |
@@ -51,8 +51,9 @@ raised again).
 | **BF-30** | The auth-failure delay is keyed on a client-controlled value, so brute-force throttling never engages | `lib/authorization/delaylist.js` + the un-whitelisted `forwarded-for` call in `lib/authorization/index.js:9-12` (**not** `TRUST_PROXY`, which does not exist on `dev`) | **high** — restores unthrottled guessing against `API_SECRET` and tokens | yes | fixed 2026-09-15 — `bf/auth` `a26ba416`; reproduced live; **the register's preferred fix was refuted by measurement** |
 | **BF-31** | A Google Home **or Alexa** request re-points the shared `language` instance and `moment`'s global locale **for the whole process**, until something changes it back. **Measured 2026-09-15: it does *not* change alarm text** — the catalogue is read once at boot and never reloaded | `lib/api/googlehome/index.js:27` **and `lib/api/alexa/index.js:28`** + the one `language` instance at `lib/server/server.js:34` | **low–medium** — gated on the assistant plugin being enabled; reaches the assistant's own answers, not alarm text | yes | fixed 2026-09-15 (`bf/alarms` `5dcf783f`) |
 | **BF-32** | Query coercion was applied to operands that are not field values, so `find[sgv][$exists]=true` became `{$exists: NaN}` — falsy, returning exactly the documents that lack the field | `lib/server/query.js` `walk_prop` | **medium** — inverted answer, HTTP 200; reachable on the 10 fields that had a walker entry | yes | **fixed 2026-09-15** (found during T0.5, `bf/coercion` `88d1f8a4`) |
+| **BF-33** | API v3 `?limit=0x10` passes the `API3_MAX_LIMIT` check as 16 and reaches the driver as `.limit(0)` — *no limit*; `?limit=1e2` returns one document | `lib/api3/generic/collection.js` `parseLimit` | **high** — unbounded read, HTTP 200, and the ceiling that exists to prevent it is bypassed | yes | **fixed 2026-09-15** (`bf/reads` `ea50cf52`); found while fixing BF-14, reproduced live |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
-| **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
+| **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | **fixed 2026-09-15** (`bf/reads` `c8fb536b`) — deleted, not gated; the module has no `env` handle |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | **fixed 2026-09-15** (T0.2, `bf/cache` `ddcdb1a8`); 0.837 → 0.025 ms, response asserted identical over HTTP |
 | **BF-07** | `cache.insertData` JSON round-trips the whole retained array | `lib/server/cache.js:81` | medium — 65 % of the load cycle | yes | **partly fixed 2026-09-15** (T0.3, `bf/cache` `4f86bab1`); 3.75 → 2.66 ms per cycle — **devicestatus keeps its clone on purpose, see detail** |
 | **BF-08** | `nightscout-connect` actors have no start or interval jitter | `nightscout-connect`, `run()` | medium — thundering herd on restart | yes | open |
@@ -107,6 +108,18 @@ memory bound that would have made the resulting read survivable.
 this as a side effect. Recorded anyway because `findFiltered` is a published interface — a future
 caller passing `limit: 0` re-opens it, and `toSafeInt(o.limit, 0)` makes `0` the fallback for
 unparseable input. A defensive `if (limit > 0)` in `findFiltered` would also do it.
+
+**Status after BF-14 was fixed (2026-09-15), stated narrowly.** `.limit(0)` is no longer reachable
+through the v1 API, through the six v1 storage `list()` helpers, or through v3's `?limit=`
+(BF-33). The driver-7 batch behaviour itself was **not** re-measured: `origin/dev` pins
+`mongodb ^5.9.2` and has no `mongo-read-options.js`, so it cannot be observed there.
+
+**`findFiltered` does not exist on `dev`**, so the suggested defensive guard has no landing site
+on that branch. The `dev` equivalent is `lib/api3/storage/mongoCollection/find.js` `findMany`,
+whose `toSafeInt(args.limit, 1000)` returns `0` for a literal `0` and then calls `.limit(0)`.
+**That path was left alone** — `parseLimit` can no longer produce `0`, so it is unreachable from
+the v3 API, but `findMany` is a published interface and a direct caller passing `limit: 0` still
+gets an unbounded read. It belongs with whoever owns the seam's limit translation.
 
 *Evidence*: [readOptions across the seam](../60-research/seam-readoptions-2026-09-15.md) §2,
 `tools/qc/readoptions-arm.js`, three driver versions against a real mongod.
@@ -367,7 +380,7 @@ the two apart is what makes each of them small.
 
 ## 2. Detail
 
-### BF-01 · `count/entries/where` silently matches nothing
+### BF-01 · `count/entries/where` silently matches nothing — **FIXED 2026-09-15**
 
 `aggregate.js:21` calls `find_options(opts)` with **one argument**, so the collection's
 `queryOpts` never arrive and `lib/server/query.js` falls back to its defaults — `dateField:
@@ -385,7 +398,19 @@ injected two-day window excludes every document rather than bounding it. The end
 *Evidence*: [seam interface](nightscout-storage-seam-interface-2026-09-14.md) §4.3.1, verified by
 running `query.js` directly. Independently reconfirmed as a general class by the
 [three-arm validation](../60-research/seam-filter-ast-three-arm-validation-2026-09-14.md) §3 class B.
-*Fix*: pass the collection's `queryOpts` as the second argument. Ship with BF-02/BF-03 (plan T0.5).
+
+*Fix, shipped*: `bf/reads` `4a398d47`. `aggregate()` now calls **`api.query_for(opts)`** — the same
+function the matching list endpoint uses — rather than passing `queryOpts` as a second copy that
+has to be kept in step. No fallback to `find_options(opts)`: a collection that registers
+`aggregate` without a `query_for` should fail loudly, because a silent fallback is the defect.
+
+*Reproduced live and two things learned.* `GET /api/v1/count/entries/where` returned `200 []` with
+20 entries stored. **`count/treatments/where` was affected too**, and worse: the defaults put the
+window on `date` rather than on `created_at`, so the filter lands on the wrong field entirely.
+And on **entries only**, a request that names its own bound (`?find[date][$gte]=`) was already
+correct, because `default_options` happens to set `walker = {date: parseInt, sgv: parseInt}` — so
+the defect fires on entries when the client supplies *no* date constraint, which is the default
+and commonest shape. [Report](../60-research/bf01-13-14-15-read-defects-2026-09-15.md) §1.
 
 ### BF-02 · `insulin` and `carbs` bounds truncated
 
@@ -462,7 +487,7 @@ they are **not** 158 equivalent bugs: `entries.sgv` is declared `number` but was
 > produce *different data* depending on which backend a deployment runs.
 > See [three-arm validation](../60-research/seam-filter-ast-three-arm-validation-2026-09-14.md) §4.
 
-### BF-14 · `?count=0` is an unbounded read
+### BF-14 · `?count=0` is an unbounded read — **FIXED 2026-09-15**
 
 API v1 builds its limit in five places with one expression:
 
@@ -485,6 +510,22 @@ identical driver call.
 `API3_MAX_LIMIT`, returns `HTTP 400` on `0`, `abc` or a negative, and defaults sanely when absent.
 Give v1 the same validation rather than inventing one.
 
+> **That instruction was wrong, and following it literally would have carried a defect across.**
+> v3's `parseLimit` bounds-checks the raw string with `isNaN`/`<=` and then converts with
+> `parseInt(_, 10)`; the two readings disagree, so `?limit=0x10` passes the ceiling as 16 and
+> arrives at the driver as `.limit(0)`. That is **[BF-33](#bf-33--v3s-limit-has-the-same-hole)**,
+> found while doing this one.
+
+*Fix, shipped*: `bf/reads` `1640b64b`, in two layers. One `validateCount` middleware in
+`lib/api/index.js` in front of every v1 route — `count` must be a whole number of documents, 1 or
+greater, otherwise `HTTP 400`. **No upper bound was introduced**, because the census below records
+`count=100000` and `count=9999999` being sent deliberately and capping v1 would break those
+clients for no benefit related to this defect. And `lib/server/count.js`, one reading of the rule,
+used by the six `list()` helpers and by `profile.list()`, so that a caller reaching the storage
+modules directly cannot produce `.limit(0)` either. Measured before the fix, 24 documents stored:
+`count=0` -> 24 rows, `count=abc` -> 24 rows, `count=1e2` -> 1 row, `count=-3` -> 3,
+`count=0x10` -> 16 (v1's `parseInt` has no radix), `count=2.5` -> 2.
+
 *Also relevant to the seam*: `findFiltered` falls back to `toSafeInt(o.limit, 0)`, and `0` is the
 value that means unbounded. `findMany`, in the same file, defaults to `1000`.
 
@@ -493,7 +534,8 @@ value that means unbounded. `findMany`, in the same file, defaults to `1000`.
 
 *Compounds with [BF-18](#bf-18--the-read-bound-is-abandoned-on-limit0)*: the same `.limit(0)`
 that makes the read unbounded also makes driver 7 abandon `READ_OPTIONS`, so the batch size
-doubles as the read runs. Fixing this entry closes that one.
+doubles as the read runs. Fixing this entry closes that one — **narrowly**. See BF-18 for what was
+and was not established.
 
 **Re-graded to high on 2026-09-15.** The medium grade rested on "it returns no wrong data".
 With a second backend that is no longer true. Measured end to end through the shipping
@@ -511,7 +553,7 @@ read is not a novel load for a server whose clients already send `count=100000` 
 `count=9999999` deliberately. It returns no wrong data. It stays in the register because a
 bounded request should not produce an unbounded read, and because the fix already exists in v3.
 
-### BF-15 · `?fields=` with a dotted path returns `{}`
+### BF-15 · `?fields=` with a dotted path returns `{}` — **FIXED 2026-09-15**
 
 v3 projects in two stages. `storageProjection()` is handed to the driver, so MongoDB's
 dotted-path rules apply and a **nested** document comes back. `applyProjection(doc)` then deletes
@@ -533,6 +575,12 @@ Comma-separated top-level fields are unaffected, which is why it has gone unnoti
 *Fix*: `applyProjection` must compare on paths rather than top-level keys — keep a key when any
 requested field equals it or is prefixed by it plus `.`, and prune within the subtree. Either
 that, or reject a dotted `fields` with `HTTP 400` rather than answering `200` with nothing.
+
+*Fix, shipped*: `bf/reads` `ba70f1fc` — the first option, path comparison with subtree pruning.
+The prune recurses into **array members** the way the driver's own dotted projection does, so
+`?fields=foods.name` works as well as `?fields=uploader.battery`. Comma-separated top-level fields
+take exactly the path they took before. Reproduced live before the fix: `200` with `{}`.
+[Report](../60-research/bf01-13-14-15-read-defects-2026-09-15.md) §4.
 
 *Evidence*: [limit and projection](../60-research/seam-limit-and-projection-2026-09-14.md) §3.3,
 produced by running the shipping `fieldsProjector.js` against real mongod documents.
@@ -647,7 +695,7 @@ security fix that ships to every current operator.
 
 *Evidence*: {M} §6.5; seam interface §8.2.
 
-### BF-05 · Debug logging on the count request path
+### BF-05 · Debug logging on the count request path — **FIXED 2026-09-15**
 
 ```js
 console.log('$match query', query);
@@ -659,6 +707,15 @@ every `/api/v1/count/*` request writes the constructed filter to stdout. Two pro
 noise the modernization branch's own quiet-logging work (`c2ac743c`) set out to remove, and a
 filter can carry values a deployment would rather not have in its logs. **Route through the
 existing logger at debug level, or delete.**
+
+*Fix, shipped*: `bf/reads` `c8fb536b` — **deleted**. `aggregate.js` has no `env` handle, so gating
+them on `env.debug.logging` would mean threading `env` through a shared module for a debug print,
+and `/api/v1/echo/*` already exists for inspecting how a query string becomes a filter.
+[Report](../60-research/bf01-13-14-15-read-defects-2026-09-15.md) §2.
+
+*Same shape, not fixed*: `lib/authorization/storage.js:84` has an unguarded
+`console.log('Loading', opts)` on the auth-storage read path. It logs query options rather than
+user-supplied filter values, so it is left for an operator's judgement rather than given an id.
 
 ### BF-06 · Untyped `/api/v1/entries` read costs 42×
 
@@ -769,7 +826,7 @@ The drift report now finds **zero ORPHAN rows** across every collection. The han
 was missing entries — 148 of them — but it was not carrying stale ones, and the claim that the
 drift "runs both ways" is not supported. Write-up: [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md).
 
-### BF-13 · v3 paging loses documents when the sort chain ties
+### BF-13 · v3 paging loses documents when the sort chain ties — **FIXED 2026-09-15**
 
 `parseSort` appends `identifier`, `created_at` and `date` as tiebreaks. When **all** of them tie
 — documents with no `identifier`, sharing one `created_at` and one `date`, as a bulk import
@@ -801,6 +858,14 @@ loses records silently — on the collection replay fidelity depends on.
 *Evidence*: [ordering and pagination](../60-research/seam-ordering-and-pagination-2026-09-14.md) §3.
 **Reproduced synthetically against `mongod` 7.0.43, not against a live Nightscout** — confirm
 before treating as settled.
+
+*Fix, shipped*: `bf/reads` `399dc283` — `sort._id = sortDirection`, as recorded. **Now reproduced
+through the real v3 HTTP path** (`GET /api/v3/devicestatus?limit=3&skip=N`): five of twelve
+documents never returned, three returned more than once. Still synthetic in its fixture, not a
+capture from a live site. The test file carries a separate assertion whose only job is to check
+that the fixture really does tie on all three keys — with the fix reverted **and** the fixture's
+`date` varied, the paging assertions pass vacuously, and that guard is the only thing that fails.
+[Report](../60-research/bf01-13-14-15-read-defects-2026-09-15.md) §3.
 
 ### BF-16 · `food.hidden` has no type; the server filter and the client disagree
 
@@ -1122,6 +1187,41 @@ schema-driven ones, so the pre-existing case is fixed too.
 *Evidence*: [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md) §4, reproduced against
 the original file before the change.
 **Not a regression from this programme** — both predate it.
+
+### BF-33 · v3's `?limit=` has the same hole — **FIXED 2026-09-15**
+
+Found while fixing **BF-14**, whose entry says to copy v3's validation rather than invent one.
+`lib/api3/generic/collection.js` `parseLimit` bounds-checks the raw string, then converts it with
+a different reading of the same string:
+
+| `?limit=` | `isNaN` / `<= maxLimit` sees | `parseInt(_, 10)` produces |
+|---|---|---|
+| `0x10` | 16 — passes | **0 — no limit** |
+| `1e2` | 100 — passes | 1 |
+| `2.5` | 2.5 — passes | 2 |
+
+Measured live against 30 documents with `API3_MAX_LIMIT` set to 20:
+
+```
+?limit=0x10  ->  200, 30 rows   the whole collection, over the ceiling
+?limit=1e2   ->  200,  1 row    a hundred were asked for
+?limit=2.5   ->  200,  2 rows
+```
+
+So **an unbounded read is reachable through v3 by any client with read access**, and it bypasses
+the ceiling that exists to prevent exactly that. `?limit=0`, `-3`, `abc` and `1e400` were already
+`400` and still are.
+
+*Fix, shipped*: `bf/reads` `ea50cf52` — test the digits the client actually wrote, and
+bounds-check the number that will be used rather than a different reading of the same string.
+`0x10`, `1e2` and `2.5` are now `400`.
+
+*Duplication, on purpose*: this and `lib/server/count.js` (BF-14) express the same rule twice, so
+that each commit lands or reverts alone. They should be unified once both are in — two readings of
+one rule is the root cause of this whole family.
+
+*Evidence*: [report](../60-research/bf01-13-14-15-read-defects-2026-09-15.md) §6, reproduced
+against a running server before the change.
 
 ## 3. How to use this register
 
