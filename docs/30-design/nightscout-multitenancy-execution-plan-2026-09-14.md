@@ -589,7 +589,7 @@ its own namespace. Both are now possible; neither is done.
 
 ### Phase 2 — Postgres behind the seam
 
-**T2.1 · Postgres DDL emitter.**
+**T2.1 · Postgres DDL emitter. — DONE 2026-09-14**
 A sixth emitter in `tools/nsschema/emit/` alongside `mongoose_emit.py`, `zod_emit.py`,
 `jsonschema_emit.py`, `pyarrow_emit.py`, `fieldref_emit.py`. Input: `specs/nsschema/*.model.json`
 (entries 31 fields, treatments 58, devicestatus 17 top-level / **182 nodes**, profile 14 / 72).
@@ -604,14 +604,50 @@ seam.
 *Done*: emitted DDL loads clean; `tools/mt-bench/pgfeed/pgfeed.js` RLS arm passes against the
 generated schema instead of its hand-written one.
 
-**T2.2 · The missing collection models.**
-`food`, `activity`, `settings` (mechanical), and **`auth_subjects` / `auth_roles`, which have no
-evidence-derived model and must be read out of `lib/authorization/storage.js`**. Auth is not
+**T2.2 · The missing collection models. — DONE 2026-09-14**
+`food`, `activity`, `settings` (~~mechanical~~), and **`auth_subjects` / `auth_roles`, which have
+no evidence-derived model and must be read out of `lib/authorization/storage.js`**. Auth is not
 optional for a running server.
-*Done*: `specs/nsschema/` carries a model for every collection the server opens.
+*Done*: `specs/nsschema/` carries a model for all **ten** collections, and `provenance` is now on
+every node of every model — `measured` · `declared` · `declared+measured` · `code` ·
+`structural`. The absence of an `evidence` block could not distinguish "declared in a spec but
+never observed" from "nobody ever censused this collection"; now an emitter can tell.
 
-**T2.3 · v3's nine operators in SQL, with `mingo` as oracle. — MEASURED 2026-09-14, BLOCKED ON
-THREE `re` DEFECTS**, see
+**`settings` was not mechanical, because `settings.census.json` is not a census of the `settings`
+collection.** It is collected from each snapshot's `settings.json`, which is a capture of
+`GET /api/v1/status.json` — its twelve fields are exactly the `info` object `lib/api/status.js`
+builds. So `settings` has **no** census, and nothing in `cgm-remote-monitor` writes a document to
+that collection at all. The real evidence is modelled under its own name as `status.model.json`;
+the `settings` collection gets an honest code-derived open-bodied model that records the
+collision, because a reader who finds `settings.census.json` on disk will otherwise conclude the
+model is stale.
+
+**Neither route this plan offered was taken, and the reason generalises.** An OpenAPI document is
+an *assertion*; a census is a *measurement*. Merging an assertion through `model.py` into the
+same directory under the same filename convention produces a file **indistinguishable from an
+evidence-derived one** — which is the poisoning to avoid, arriving by the route that looked
+safest. A wholly separate generator would have duplicated the IR. What landed is a separate
+generator over a real parse of the literals the server declares its shapes in
+(`tools/nsschema/jsread.py`, which refuses what it cannot parse rather than returning a plausible
+empty result), sharing `model.Node` and `to_dict` so all 48 existing artifacts stayed
+byte-identical.
+
+**The drift check is proved, not asserted**: seven mutations of a copied tree (a field added, a
+field renamed, an index dropped, a role added, a digest field renamed, two source anchors moved)
+each exit 1; the unmodified control exits 0. Its `--cross-check` additionally shows
+`externals/work/crm-seam` and `externals/cgm-remote-monitor-official` declare **identical** field
+sets — independent confirmation that none of the seam work moved these anchors.
+
+Three findings worth carrying: **BF-17** (a subject edit persists the API access token in
+plaintext — see the register), **BF-16**'s second half (form encoding stringifies `position`, so
+eleven or more quick picks sort lexicographically and come back in the wrong order **on the
+shipping path**), and that `NSCLIENT_ID` is client-supplied, never generated or validated by the
+server, and is the *sole* match key for websocket duplicate detection when present.
+
+**T2.3 · v3's nine operators in SQL, with `mingo` as oracle. — DONE 2026-09-14; the three `re`
+defects are FIXED** in `lib/storage/filter.js` (`c1218d50` on `seam/t1-2-storage-interface`),
+which cost one existing test expectation — the regex SQL spelling test asserted a match against
+the generated column, and that *was* the first defect. See
 [the `re` validation report](../60-research/seam-filter-re-operator-validation-2026-09-14.md).
 `eq ne gt gte lt lte in nin re` from `lib/api3/generic/search/input.js:111`. Differential-test
 each against `mingo` over randomised fixtures, following #8733's method.
