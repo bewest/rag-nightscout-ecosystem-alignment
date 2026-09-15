@@ -532,17 +532,35 @@ is what stops a future PostgreSQL run from reaching "0 failing" by making tests 
 *unconverted* suite running against MongoDB exactly as before. The harness covers the enumerated
 storage-touching files; it does not make the whole suite backend-aware, and does not claim to.
 
-**T2.0 · The storage backend lookup at boot. — BLOCKS T1.3's harness from being more than
-preparation, and blocks T2.5.**
-`lib/server/bootevent.js:145-146` carries `//TODO assume mongo for now, when there are more
-storage options add a lookup` followed by a hardcoded
-`require('../storage/mongo-storage')`. Every backend-agnostic test boots through `bootevent`, so
-**today no test can be handed a non-Mongo store regardless of what the harness selects**. The
-harness is honest preparation until this lookup exists; it is not yet proof that anything runs
-on a second backend.
+**T2.0 · The storage backend lookup at boot. — DONE 2026-09-14**
+`lib/server/bootevent.js` carried `//TODO assume mongo for now, when there are more storage
+options add a lookup` over a hardcoded `require('../storage/mongo-storage')`. That TODO *was*
+the backend selection: the interface had an implementation behind it and no way to choose one.
 
-Two further items land on the same change, which is why they are listed here rather than
-separately:
+*Done*: `lib/server/storage-backends.js` selects by the **scheme already present in the
+connection URI**, not by a new env var. A separate `NS_STORAGE_BACKEND` can disagree with the
+URI it is supposed to describe, and the disagreement surfaces as a driver parse error rather
+than as the configuration mistake it is — which is precisely today's behaviour, and the reason
+the new boot test is non-vacuous: reverting the lookup makes it fail with `Unable to connect to
+Mongo / MONGODB_URI seems invalid` for a `postgres://` URI, sending the operator to inspect a
+database that was never contacted. It now reports `Unsupported storage backend`, names the
+scheme asked for, and lists the schemes the build actually has.
+
+A URI with **no** scheme, or no URI at all, still resolves to `mongodb`. That is the shape a
+misconfigured deployment has today and `mongo-storage` already has a specific message for it; a
+scheme error would replace a good message with a worse one.
+
+The `require()` calls stay literal, inside thunks, and a test enforces that. `require(spec)`
+over a variable would **retire `tests/runtime-policy.test.js` without failing it** — that test
+intercepts `Module._load` and treats the literal `'../storage/mongo-storage'` as the sentinel
+for "an application service was loaded before the Node version was checked". A check that
+silently stops checking is worse than one that was never written. A second test asserts no
+driver is pulled into the process until a backend is selected and asked for.
+
+8 tests added; **2215 passing, 1 pending, 0 failing**.
+
+**Two further items were blocked behind this and are now unblocked** — they are listed here
+rather than separately because they share the change, and neither is done:
 
 - `storageClear` in `tests/fixtures/api3/utils.js` calls `ctx.store.db.dropDatabase()` — the
   single most MongoDB-specific line in the shared fixtures, reached by ten further unconverted
@@ -559,8 +577,8 @@ separately:
   for this run" (a database for Mongo, a schema for Postgres). It cannot be done first: the
   store is built by `bootevent` from `env.storageURI` before any test code runs.
 
-*Done*: `bootevent` selects a storage module by configuration; a test can be handed a store that
-is not `mongo-storage`; each run gets its own namespace.
+*Remaining for T2.0's dependants*: route `storageClear` through the harness, and give each run
+its own namespace. Both are now possible; neither is done.
 
 ### Phase 2 — Postgres behind the seam
 
