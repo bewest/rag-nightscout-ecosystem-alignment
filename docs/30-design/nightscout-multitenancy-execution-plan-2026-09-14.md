@@ -943,8 +943,19 @@ page, by one person, for one site. Two of the six were confirmed by **running** 
    `lib/storage/mongo-storage.js:7` holds one `client`/`db`, `:111` short-circuits on them, and
    T2.5's `STORAGE_NAMESPACE` is resolved once at first connect. Measured: tenant B asks for its
    own namespace and **is handed tenant A's**, while the server logs `Reusing MongoDB connection
-   handler`. Latent today (`bootevent` calls `init()` once) and **not** latent under
-   `ctxFor(tenantId)`, which is exactly the thing that calls it twice.
+   handler`. **Closed 2026-09-15** — `init()` now refuses a second target rather than returning
+   the first, which turns a silent cross-tenant read into a named error. That does not make the
+   module multi-store; it makes the failure loud, the same choice `requireTenant` makes.
+
+   **Correction, under review.** Calling this a T3.3 *blocker* was probably wrong, and the
+   reason is D3 and D4 read together: **the multitenant service is PostgreSQL + RLS, and MongoDB
+   is permanent for the *single-tenant* target.** So multi-tenant never uses MongoDB, and under
+   PostgreSQL the store is *deliberately* shared — isolation is a per-transaction `set_config`
+   on a pooled connection. A per-tenant **store** is therefore not something `ctxFor` needs at
+   all; the singleton obstructs multi-tenant MongoDB, which D3/D4 rule out. T3.3 has been asked
+   to check this reasoning and to say if it finds a case where `ctxFor` genuinely does need a
+   per-tenant store. **Blocker 1, the `env` singleton, is unaffected** — settings are per-tenant
+   whichever backend is underneath.
 
 The PostgreSQL backend does not have this shape — its isolation is a per-transaction
 `set_config` on a pooled connection, so two tenants sharing one pool is the *designed* case
