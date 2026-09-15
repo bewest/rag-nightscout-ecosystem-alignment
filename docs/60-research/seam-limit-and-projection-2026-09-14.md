@@ -216,7 +216,7 @@ removes are **not** dead work — `col.resolveDates(doc)` consumes them between 
 - ~~**`readOptions` is still untested.**~~ **Closed** by
   [readOptions across the seam](seam-readoptions-2026-09-15.md). The guess in this bullet —
   "nothing in it is likely to be a correctness defect" — was wrong: driver 7 abandons the bound
-  precisely on `.limit(0)`, which is BF-14's own path, so the two compound (BF-16).
+  precisely on `.limit(0)`, which is BF-14's own path, so the two compound (BF-18).
 - **BF-14 is sized now** (§2.2), and the measurement **downgraded it**. See below.
 - The `$slice`-on-a-non-array probe returned the whole document rather than an error, which is
   unexplained and not pursued — it is outside what any caller sends.

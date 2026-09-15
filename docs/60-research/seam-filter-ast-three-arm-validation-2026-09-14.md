@@ -1,5 +1,31 @@
 # Three-arm validation of the storage seam's filter AST: closing §8.5
 
+> ## Superseded in part, 2026-09-15 — read this first
+>
+> Two corrections, both from
+> [verifying the T2.5 backend](t25-postgres-backend-verification-2026-09-15.md) against the
+> shipping adapter rather than against a harness-authored PostgreSQL arm.
+>
+> **1. The four divergence classes are closed.** This document reports classes A–D open, with
+> mongod-vs-postgres at 2694/2802 (96.15 %) and 198/3000 `22P02` runtime errors. Re-run with the
+> same generator, seed and 12 % cross-type injection against the shipped `lib/storage/filter.js`:
+> **3000/3000, zero disagreements, zero arm errors.** A and C are closed by a `nullMatch()` helper
+> reading `doc #> '{path}'` — where an absent key is SQL NULL and an explicit null is jsonb
+> `'null'` — rather than by the `IS NOT DISTINCT FROM` mirror predicted here; B and D by
+> `typedRef()`'s `CASE WHEN jsonb_typeof(…) = '<type>'`, which reproduces BSON type bracketing and
+> makes the cast total.
+>
+> **2. This run never exercised the generated-column branch, and said nothing about it.**
+> `toSql` takes `columns` as either a list of names or a **map** of name → JSON type. This harness
+> passed a list, and with the type unknown every comparison falls back to the jsonb path. So the
+> published figure describes the jsonb path only. The re-run passes the real map from
+> `lib/storage/postgres/generated/index.json`, and the column branch agrees too — but that is new
+> evidence, not evidence this document ever had.
+>
+> The method stands and the numbers below are what they were. They measured a strawman adapter, as
+> §4 of [limit and projection](seam-limit-and-projection-2026-09-14.md) says of its own.
+
+
 Date: 2026-09-14. Status: findings, for the maintainer and for whoever finishes T1.2.
 **Verification only — no shipping code was changed by this work.**
 

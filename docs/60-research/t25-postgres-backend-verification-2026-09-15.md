@@ -22,7 +22,7 @@ on any more is worth nothing.
 | **{F}** | [three-arm validation of the filter AST](seam-filter-ast-three-arm-validation-2026-09-14.md) |
 | **{O}** | [ordering and pagination](seam-ordering-and-pagination-2026-09-14.md) (BF-13) |
 | **{L}** | [limit and projection](seam-limit-and-projection-2026-09-14.md) (BF-14, BF-15) |
-| **{R}** | [readOptions across the seam](seam-readoptions-2026-09-15.md) (BF-16 pre-release) |
+| **{R}** | [readOptions across the seam](seam-readoptions-2026-09-15.md) (BF-18 pre-release) |
 | **{B}** | [backfix register](../30-design/nightscout-backfix-register.md) |
 
 ---
@@ -206,7 +206,7 @@ GET /api/v1/entries?count=-3    mongod 3 rows     postgres ERR 2201W
    MongoDB returns 3 documents. An availability difference on top of the correctness one.
 
 The fix {B} already names — give v1 the validation `lib/api3/generic/collection.js:76` already has
-— closes all three at once, and closes BF-16 as {R} §2.1 predicted. **Nothing in the PostgreSQL
+— closes all three at once, and closes BF-18 as {R} §2.1 predicted. **Nothing in the PostgreSQL
 backend needs to change for that fix to work**, but if the backend is to be safe on its own terms,
 `toSafeInt(o.limit, 0)` should not default to the one value that means "no limit" on the other
 backend.
@@ -431,7 +431,7 @@ weakness is that a measurement of "approximately zero" cannot itself be shown to
 
 ## 6. Not predicted — two findings, and the first is the serious one
 
-### 6.1 The index accelerator changes an answer in `ORDER BY` — proposed **BF-18**
+### 6.1 The index accelerator changes an answer in `ORDER BY` — proposed **BF-19**
 
 The emitted DDL states the invariant in its own header, in capitals:
 
@@ -507,9 +507,10 @@ loses the index; ordering on a type-bucketed expression mirroring BSON's order i
 proposed for the seam and would satisfy both. Either way the choice must not depend on whether a
 column happens to exist.
 
-*Register note*: the next free id is **BF-18**. `BF-16` is currently used **twice** in {B} — once
-in §1 (`food.hidden`) and once in §1b (driver 7 `getMore` doubling). That collision should be
-resolved before another id is assigned.
+*Register note (resolved)*: `BF-16` had been used twice — the other session landed
+`food.hidden` as BF-16 and a plaintext-token defect as BF-17 while this session was adding
+the driver-7 getMore entry under the same number. The pre-release entry was renumbered to
+**BF-18**; the findings below take **BF-19** and **BF-20**.
 
 **Non-vacuity.** The same comparison on a single-typed corpus:
 
@@ -519,7 +520,7 @@ non-vacuity: single-typed corpus, postgres orders both fields THE SAME (comparis
 
 So the comparison is not simply always red. **This finding has non-vacuity evidence.**
 
-### 6.2 A `Date`-valued filter bound compares differently on each backend — proposed **BF-19**, low
+### 6.2 A `Date`-valued filter bound compares differently on each backend — proposed **BF-20**, low
 
 `sql.js` `scalarize()` converts a `Date` to `value.toISOString()` on its way into SQL, for a stated
 and correct reason: `pg` would otherwise send something the jsonb comparison cannot use. But
@@ -566,7 +567,7 @@ Reported so the absence is on the record rather than unexamined.
 ## 7. Honest limits
 
 - **One collection.** T2.5 implements `entries` and nothing else, so everything above is measured
-  on `entries`. The BF-18 exposure is sized against a census that says it does not fire on
+  on `entries`. The BF-19 exposure is sized against a census that says it does not fire on
   `entries`; the collections it *does* fire on have no PostgreSQL implementation to test yet. That
   makes §6.1's sizing a statement about the corpus, not a prediction about T2.6.
 - **Nothing here was driven over HTTP.** Claim 2 reaches `lib/server/entries.js` `list()`, which is

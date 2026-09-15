@@ -78,11 +78,11 @@ The register's first admission criterion is "affects single-tenant self-hosters 
   *"prepare MongoDB 7 migration with bounded read batches"*).
 
 So this is a defect in an **unreleased migration branch**, caught before release. Recorded as
-**BF-16** in a separate pre-release section of the register rather than by quietly widening the
+**BF-18** in a separate pre-release section of the register rather than by quietly widening the
 register's own criterion.
 
 The fix is not in this file. Fixing BF-14 — validating `count` the way v3's `parseLimit` already
-does — makes `.limit(0)` unreachable through the API and closes BF-16 as a side effect. BF-16 is
+does — makes `.limit(0)` unreachable through the API and closes BF-18 as a side effect. BF-18 is
 recorded anyway because `findFiltered` is a *published interface*: any future caller passing
 `limit: 0` re-opens it, and `toSafeInt(o.limit, 0)` makes `0` the fallback for unparseable input.
 

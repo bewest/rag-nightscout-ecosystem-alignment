@@ -31,7 +31,7 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | open |
 | **BF-12** | `entries.rawbg` is coerced but is not in the model — stale walker entry | `lib/server/entries.js:186` | low — dead entry | yes | open |
 | **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | open |
-| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | medium — unbounded read from a bounded request; no client triggers it today | yes | open |
+| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — on PostgreSQL an empty `200` on a glucose read; unbounded read on MongoDB | yes | open |
 | **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | open |
 | **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks silently vanish from the quick-pick list; no shipping client triggers it today | yes | open |
 | **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | open |
@@ -51,9 +51,11 @@ criterion is what makes the rest of the table mean something.
 
 | id | defect | where | severity | status |
 |---|---|---|---|---|
-| **BF-16** | Driver 7 doubles the getMore batch size when `.limit(0)` is set, abandoning `READ_OPTIONS` | `lib/storage/mongo-read-options.js` + driver 7.6.0 | medium — pre-release; compounds BF-14 | open |
+| **BF-18** | Driver 7 doubles the getMore batch size when `.limit(0)` is set, abandoning `READ_OPTIONS` | `lib/storage/mongo-read-options.js` + driver 7.6.0 | medium — pre-release; compounds BF-14 | open |
+| **BF-19** | `ORDER BY` reads the generated column, which orders differently from the document — breaking the DDL's own stated invariant | `lib/api3/storage/pgCollection/sql.js` `orderBy` | **high** — silently wrong order, and client-reachable via v3 `?sort=` | open |
+| **BF-20** | `scalarize()` converts a `Date` bound to an ISO string, so a `Date`-valued filter matches nothing on MongoDB and everything on PostgreSQL | `lib/api3/storage/pgCollection/utils.js` | low — no shipping caller passes a `Date` | open |
 
-### BF-16 · the read bound is abandoned on `.limit(0)`
+### BF-18 · the read bound is abandoned on `.limit(0)`
 
 `mongo-read-options.js` = `Object.freeze({batchSize: 1000})` exists because **driver 7 stopped
 sending a default `batchSize`** — measured and confirmed: drivers 5 and 6 send `batchSize=1000`
@@ -88,6 +90,64 @@ unparseable input. A defensive `if (limit > 0)` in `findFiltered` would also do 
 
 *Unexplained*: the doubling is measured on the wire, not traced to a line in the driver. That
 establishes when it changed, not why.
+
+### BF-19 · the index accelerator changes an answer in `ORDER BY`
+
+The emitted DDL states its own invariant in capitals:
+
+> **THE COLUMNS BELOW ARE AN INDEX ACCELERATOR. THE DOCUMENT IS THE RECORD.**
+> Dropping every generated column must not change an answer.
+
+`lib/storage/filter.js` holds that invariant on the `WHERE` side deliberately and demonstrably —
+`$exists` always reads `doc #> '{path}'` because a column built from `->>` cannot tell an absent
+key from an explicit null, and the randomised differential agrees 3000/3000.
+
+`orderBy()` chooses between **the same two branches** and they do not order the same values the
+same way. Identical values in two fields of the same documents, one with a generated column
+(`sgv`) and one without (`noise`):
+
+```
+postgres sort sgv   (COLUMN)  005 004 003 002 006 001
+postgres sort noise (jsonb)   005 004 002 006 001 003
+mongod   both fields          004 005 006 001 002 003
+```
+
+Three orders where there should be one. The cause is that the typed column is SQL `NULL` for an
+absent key, for an explicit null **and for every value of the wrong type**, collapsing three
+distinct things into one bucket that then sorts together.
+
+**Client-reachable**: v3's `parseSort` puts the client's unvalidated `?sort=<field>` first in the
+chain, so `sql.js`'s own justification — *"every sort this code path issues is on a field that is
+one type in practice"* — describes today's callers, not today's reachable requests.
+
+*Corroborated independently.* [`tools/qc/typeguard-arm.js`](../../tools/qc/typeguard-arm.js)
+reached the same defect from the other direction, comparing one field across both branches and
+mongod: on single-typed data the shipped translation matches mongod **exactly**, the only one of
+five strategies that does; on mixed-typed data a string `sgv` sorts *first* where MongoDB sorts it
+last. Two harnesses, two fixtures, one defect.
+
+*Sizing holds the grade down, and it is a deadline rather than a reprieve*: the emitted manifest
+flags no ambiguous field on `entries`, the only collection T2.5 implements. `NSCLIENT_ID` is
+flagged on `devicestatus`, `profile` and `treatments` — so the exposure arrives **with T2.6**.
+
+*Fix*: see [the ordering design](nightscout-seam-ordering-translation.md) §3. Restricting sortable
+fields to declared single-typed ones makes the adapter's existing assumption checkable; the
+alternative is a type-bucketed sort key, which is real work and still does not handle arrays.
+
+*Evidence*: [T2.5 backend verification](../60-research/t25-postgres-backend-verification-2026-09-15.md) §6,
+`tools/qc/pg-backend-arm.js`; and [ordering design](nightscout-seam-ordering-translation.md) §3.1b.
+
+### BF-20 · a `Date`-valued filter bound silently inverts
+
+`scalarize()` converts a JavaScript `Date` to an ISO string before it reaches the adapter. A
+`gte <Date>` bound against an ISO-string `created_at` therefore matches **nothing on MongoDB**
+(BSON compares only within a type, and Date is not String) and **everything in range on
+PostgreSQL** (where both sides are now text). This is divergence class B moved into the value
+adapter, where `typedRef()`'s type-bracketing `CASE` cannot see it.
+
+*Not reachable today*: every shipping caller of `findFiltered`, `count` and `deleteMany` was
+checked — `lib/server/query.js` emits epoch numbers or ISO strings, never a `Date`. Recorded
+because the adapter is a published interface and the next caller may not.
 
 ## 2. Detail
 
@@ -204,11 +264,18 @@ value that means unbounded. `findMany`, in the same file, defaults to `1000`.
 *Evidence*: [limit and projection](../60-research/seam-limit-and-projection-2026-09-14.md) §2,
 `tools/qc/shape-arm.js`, against a real mongod.
 
-*Compounds with [BF-16](#bf-16--the-read-bound-is-abandoned-on-limit0)*: the same `.limit(0)`
+*Compounds with [BF-18](#bf-18--the-read-bound-is-abandoned-on-limit0)*: the same `.limit(0)`
 that makes the read unbounded also makes driver 7 abandon `READ_OPTIONS`, so the batch size
 doubles as the read runs. Fixing this entry closes that one.
 
-*Sized, and the measurement downgraded it from high to medium.*
+**Re-graded to high on 2026-09-15.** The medium grade rested on "it returns no wrong data".
+With a second backend that is no longer true. Measured end to end through the shipping
+`lib/server/entries.js` `list()`: `?count=0` returns **10 rows on MongoDB and 0 rows on
+PostgreSQL** — an empty `200` on a glucose read. `?count=abc` behaves identically, because
+`parseInt` yields `NaN`, which passes the `!== undefined/null` gate and reaches
+`toSafeInt(NaN, 0)`. And `?count=-3` is a `2201W` — an HTTP 500 — against 3 rows on MongoDB.
+
+*Sized, and at the time the measurement downgraded it from high to medium.*
 `tools/qc/v1_count_census.py` over 10 client projects: **274 `count=` occurrences, no literal
 `count=0`**. 86 % are literals (`1 … 9999999`); 9 % are computed at request time, which is where
 the exposure sits — nothing bounds a computed count away from zero, and `oref0` has four such
