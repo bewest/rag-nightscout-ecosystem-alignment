@@ -23,8 +23,12 @@ is a defect that
 > (the Google Home language leak). **Allocate a new id by reading the highest in this table at the
 > moment you write it**, never the one your brief quoted.
 
-**Status values**: `open` · `fixed-in-seam` (repaired inside the seam branch as a side effect,
-needs extraction to land independently) · `landed` · `wontfix`.
+**Status values**: `open` · `fixed <date>` (repaired on a backfix branch with tests and a
+release note, not yet merged — the row names the branch and commit) · `fixed-in-seam`
+(repaired inside the seam branch as a side effect, needs extraction to land independently) ·
+`landed` · `wontfix` · `invalid` (investigated and does not reproduce; the row is struck
+through and the detail section says why, because a wrong entry that is merely deleted gets
+raised again).
 
 ---
 
@@ -33,10 +37,10 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | id | defect | where | severity | tenancy-independent | status |
 |---|---|---|---|---|---|
 | **BF-01** | `GET /api/v1/count/entries/where` silently matches nothing | `lib/server/aggregate.js:21` | **high** — wrong answer, HTTP 200 | yes | open |
-| **BF-02** | `insulin`/`carbs` query bounds truncated by `parseInt` | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | open |
-| **BF-03** | Numeric filters on `devicestatus`, `activity`, `food`, `profile` match nothing | `lib/server/query.js` walker, per-collection | **high** — wrong answer, HTTP 200 | yes | open |
-| **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | open |
-| **BF-12** | `entries.rawbg` is coerced but is not in the model — stale walker entry | `lib/server/entries.js:186` | low — dead entry | yes | open |
+| **BF-02** | `insulin`/`carbs` query bounds truncated by `parseInt` | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (T0.5, `bf/coercion` `88d1f8a4`) |
+| **BF-03** | Numeric filters on `devicestatus`, `activity`, `food`, `profile` match nothing | `lib/server/query.js` walker, per-collection | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15 for `devicestatus` + `profile`** (T0.5, `bf/coercion` `88d1f8a4`); `food` and `activity` misfiled, see detail |
+| **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (T0.5, `bf/coercion` `88d1f8a4`) |
+| **BF-12** | ~~`entries.rawbg` is coerced but is not in the model~~ — **does not reproduce**; the walker entry is `rssi`, which *is* in the model | `lib/server/entries.js:186` | none — not a defect | n/a | **closed 2026-09-15, invalid** |
 | **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | open |
 | **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — on PostgreSQL an empty `200` on a glucose read; unbounded read on MongoDB | yes | open |
 | **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | open |
@@ -46,6 +50,7 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | **BF-29** | An unknown name in `ENABLE` is **silently ignored** — matching is against `plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`), not the file name. An operator who writes `ENABLE=cannulaage` gets no plugin and no warning | `lib/plugins/index.js:140` | **medium** — an operator believes an alarm plugin is on when it is off | yes | open |
 | **BF-30** | The auth-failure delay is keyed on a client-controlled value under the **default** configuration, so brute-force throttling never accumulates | `lib/authorization/delaylist.js` + `TRUST_PROXY` default in `lib/server/env.js:43` | **high** — restores unthrottled guessing against `API_SECRET` and tokens | yes | open |
 | **BF-31** | A Google Home request changes the display language **for the whole process**, alarm level names included, until something changes it back | `lib/api/googlehome/index.js:27` + the one `language` instance at `lib/server/server.js:34` | **medium** — gated on the Google Home plugin being enabled; reaches alarm text | yes | open |
+| **BF-32** | Query coercion was applied to operands that are not field values, so `find[sgv][$exists]=true` became `{$exists: NaN}` — falsy, returning exactly the documents that lack the field | `lib/server/query.js` `walk_prop` | **medium** — inverted answer, HTTP 200; reachable on the 10 fields that had a walker entry | yes | **fixed 2026-09-15** (found during T0.5, `bf/coercion` `88d1f8a4`) |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | open |
@@ -384,6 +389,8 @@ running `query.js` directly. Independently reconfirmed as a general class by the
 
 ### BF-02 · `insulin` and `carbs` bounds truncated
 
+**FIXED 2026-09-15** by plan T0.5 — cgm-remote-monitor `bf/coercion` `88d1f8a4`, emitter `tools/nsschema/emit/coercion_emit.py`, write-up in [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md).
+
 `treatments.js` coerces query values through a hand-maintained per-collection `walker`:
 
 ```js
@@ -409,6 +416,15 @@ against 2,791 integer ones** across 11 sites — 98 % of its non-null values are
 [the coercion drift measurement](../60-research/query-coercion-drift-2026-09-14.md) §2 Tier 1.
 
 ### BF-03 · Numeric filters that silently match nothing
+
+**PARTLY FIXED 2026-09-15** by plan T0.5 — `devicestatus` (99 fields) and `profile` (10) are now typed from the schema, as are the fields `entries` and `treatments` were missing. cgm-remote-monitor `bf/coercion` `88d1f8a4`; write-up in [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md).
+
+**Two of the four collections named above were misfiled, and neither for the reason given.**
+
+* **`food` reaches `lib/server/query.js` at no point.** `lib/server/food.js` exposes `list(fn)`, `listquickpicks(fn)` and `listregular(fn)` — none takes query options — and `lib/api/food/index.js` passes none. v1 `/food` accepts no filters at all, so there is no under-coercion to fix. (Its numeric fields are also `['number','string']` unions in the model, because the built-in client writes form-encoded; that is BF-16.)
+* **`activity` has no numeric field to fix.** Its model has exactly two leaves, `_id` and `created_at`, both strings. The collection is open-bodied, so a deployment may hold numbers there, but nothing declares them and the table will not guess. It is wired to the table with a legitimately empty entry, so it starts working the day the model gains a field.
+
+**A smaller correction to the table below:** `devicestatus` and `activity` are recorded as having no walker "at all". They actually inherit `query.js`'s *default* walker, `{ date: parseInt, sgv: parseInt }`, because neither sets `walker` and `default_options` fills one in. The conclusion is unchanged — the fields people filter on were untyped — but that is not what the code did.
 
 | collection | `walker` |
 |---|---|
@@ -664,6 +680,10 @@ it happens to.
 
 ### BF-11 · `treatments.duration` and `rate` filters match nothing
 
+**FIXED 2026-09-15** by plan T0.5 — cgm-remote-monitor `bf/coercion` `88d1f8a4`, emitter `tools/nsschema/emit/coercion_emit.py`, write-up in [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md).
+
+Measured against a real `mongod`: `find[duration][$gte]=30` returned **0 rows** before and **2 of 2** after.
+
 Neither field has a `walker` entry, so a bound stays a string and MongoDB's type ordering means
 it never matches a numeric field. `find[duration][$gte]=30` returns an empty list and HTTP 200.
 
@@ -674,12 +694,26 @@ because "devicestatus has no coercion" undersells which fields are affected.
 
 *Evidence*: [coercion drift](../60-research/query-coercion-drift-2026-09-14.md) §2 Tier 1.
 
-### BF-12 · `entries.rawbg` is a stale walker entry
+### BF-12 · `entries.rawbg` is a stale walker entry — **INVALID, closed 2026-09-15**
 
-The walker coerces `rawbg`, which does not appear in the model at all — not once in **896,589
-documents across 11 sites**. Harmless in itself, and worth recording because it shows the drift
-running both ways: the hand-maintained list is not only missing entries, it carries dead ones.
-It disappears when the table is generated.
+**This defect does not reproduce, and the entry above is struck through.** It was raised from a
+mis-transcription of the walker, which this register and
+`tools/nsschema/emit/coercion_emit.py` both carried.
+
+`lib/server/entries.js` does not coerce `rawbg`. Its walker is:
+
+```js
+{ date, sgv, filtered, unfiltered, rssi, noise, mbg }
+```
+
+The entry is **`rssi`**. `git log --all -S"rawbg" -- lib/server/entries.js` returns **no commits
+on any branch** — the string has never been in that file; `origin/chore/nightscout-modernization`
+has `rssi` too. And `rssi` **is** in the model, as `integer`, with 32,098 observed values on one
+site, so it is a *correct* walker entry, not a dead one.
+
+The drift report now finds **zero ORPHAN rows** across every collection. The hand-maintained list
+was missing entries — 148 of them — but it was not carrying stale ones, and the claim that the
+drift "runs both ways" is not supported. Write-up: [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md).
 
 ### BF-13 · v3 paging loses documents when the sort chain ties
 
@@ -766,6 +800,28 @@ it fails `make schema-code-drift` and forces the model to be revisited.
 
 ### BF-17 · A subject edit writes the access token into the database in plaintext
 
+> **Fixed 2026-09-15** on `bf/auth` (`64db1f35`), and **reproduced against a running instance**
+> first — the chain below holds link for link on `dev`. One edit through the stock endpoints puts
+> the token on disk, and the token read straight out of the collection authenticates (HTTP 200).
+> The `notes` erasure reproduces in the same edit.
+>
+> `create` and `save` now build the document from the fields it owns rather than from the request
+> body, and `reload()` drops the derived fields off a stored document before deriving them.
+> `GET /subjects` now serves `notes`, because the durable fix does **not** fix the notes on its
+> own: the client sends `notes: ''` since `GET` never gave it one, and a field whitelist writes
+> that empty string faithfully. The notes fix has to be at the other end of the round-trip.
+>
+> **Rows already written still hold tokens, and clearing the field is not enough.** The token is
+> deterministic in `_id`, `name` and the enclave key, so anyone who already read the collection —
+> or a backup taken while it was in there — still holds a working credential after an `$unset`.
+> Remediation is rotation, and it is the operator's decision. No migration was written. See
+> [the report](../60-research/bf17-bf30-auth-defects-2026-09-15.md) §2.3.
+>
+> **One thing this entry missed**: `created_at` is not served by `GET /subjects` either, so an
+> edit also gives the document a brand-new `created_at`. Data loss, not a security problem, and
+> not fixed — one more field in the `pick` would round-trip it.
+
+
 Found while deriving `specs/nsschema/auth_subjects.model.json`, by asking the narrow question
 "which of these fields are actually stored?"
 
@@ -818,6 +874,39 @@ replacement.
 that the field is `secret`/`credential` so no emitter or exporter can treat it as ordinary text.
 
 ### BF-30 · The auth-failure delay is keyed on something the caller chooses
+
+> **Fixed 2026-09-15** on `bf/auth` (`a26ba416`), **reproduced against a running server**, and
+> **two claims below are corrected by that reproduction**. Full working in
+> [the report](../60-research/bf17-bf30-auth-defects-2026-09-15.md) §1.
+>
+> **1. `TRUST_PROXY` does not exist on `dev`.** It is a seam-branch construct, and so is
+> `createClientIP`. `lib/server/env.js:43` is `env.debug = {`. What `dev` actually does is
+> *weaker*: `getRemoteIP` calls `forwarded(req, req.headers)` — `forwarded-for`'s third argument
+> is the proxy whitelist and it is not passed, in four separate copies of that function. So the
+> address is client-controlled unconditionally, with no default to narrow and nothing an operator
+> can configure. Fix option 3 below is therefore not available on `dev`.
+>
+> **2. Fix option 1 — key on the credential — was implemented and measured, and it is a net
+> regression.** It fixes the rotating-address case and *removes* the throttle from the case the
+> shipping code did cover: a brute force varies the credential by definition, so a counter keyed
+> only on the credential is fresh on every guess. Measured at 200 ms configured delay, four
+> guesses from one fixed address: 200/200/200 ms shipping, 4/3/2 ms under credential keying.
+>
+> **3. The penalty does not accumulate even in the working case.** Per key the shipping code is a
+> flat rate limiter (~200 ms every time, not 200/400/600), because `addFailedRequest` resets to
+> `now + DELAY_ON_FAIL`. The defect is that the throttle never *engages*, not that it fails to
+> grow.
+>
+> What landed: the delay is keyed on both the socket peer address (unforgeable, carries the
+> throttle) and a salted digest of the attempted credential, taking the longer wait. The wait
+> moved from before resolution to the failure path, which is the load-bearing part — behind a
+> platform proxy the peer address is shared, and delaying every request on a shared key is the
+> self-inflicted denial of service this entry rightly warns about. Delaying only failures means a
+> request that authenticates never waits on a neighbour. Option 2 (bound the list) landed too,
+> with the two namespaces bounded separately so a flood of made-up credentials cannot evict the
+> peer entry throttling the flooder; the sweep was also a `setTimeout`, so it had been running
+> once and never again.
+
 
 Found while verifying T3.1's decision to read `req.headers.host` rather than `req.hostname`.
 That decision is correct, and checking *why* turned up a larger consequence of the same root
@@ -918,6 +1007,32 @@ cache, since a language file is 45–60 KB and one per tenant is the wrong shape
 
 *Not reproduced against a live server.* `language.set`'s persistence and the `levels.translate`
 assignment were read and exercised directly; the Google Home route was not driven end to end.
+
+### BF-32 · `$exists` was inverted by type coercion — **FIXED 2026-09-15**
+
+Found while fixing BF-02/BF-03 (plan T0.5): `walk_prop` applied the walker's conversion to
+**every leaf** of a field's query fragment, including operands that are not values drawn from the
+field's domain. On `origin/dev`:
+
+```
+find[sgv][$exists]=true   ->  { sgv: { $exists: NaN } }
+find[sgv][$regex]=^1      ->  { sgv: { $regex: NaN } }
+```
+
+`NaN` is falsy, so **`$exists=true` returned exactly the documents that do not have the field** —
+the opposite of what was asked, with HTTP 200.
+
+It was reachable on the 10 fields that carried a walker entry, which is why it had stayed
+invisible: those are the fields most likely to be present anyway. Generalising coercion to 158
+fields would have generalised this defect with it, which is how it surfaced.
+
+*Fix*: shipped with T0.5. `lib/server/query-coercion.js` leaves `$exists`, `$type`, `$regex`,
+`$options`, `$where`, `$expr`, `$text`, `$comment` and `$jsonSchema` operands alone, while still
+converting every element of an `$in` list. Applied to explicit walker entries as well as
+schema-driven ones, so the pre-existing case is fixed too.
+
+*Evidence*: [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md) §4, reproduced against
+the original file before the change.
 **Not a regression from this programme** — both predate it.
 
 ## 3. How to use this register
@@ -928,6 +1043,8 @@ assignment were read and exercised directly; the Google Home route was not drive
 2. **Prefer landing these independently.** Each one is small, each ships to every current
    operator, and none needs a tenancy decision.
 3. **Release-note the behaviour changes.** BF-02 and BF-03 change what queries return. That is
-   the point, and it should arrive as a documented fix.
+   the point, and it should arrive as a documented fix. **Done 2026-09-15** — the note is in
+   cgm-remote-monitor's `CHANGELOG.md` under `[Unreleased] / Fixed`, naming the collections and
+   fields whose results change, with before/after examples.
 4. **Keep severities honest.** "Wrong answer with HTTP 200" is worse than "slow", and both are
    worse than "noisy". The table is sorted by that, not by effort.

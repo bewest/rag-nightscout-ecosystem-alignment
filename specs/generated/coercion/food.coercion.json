@@ -1,0 +1,94 @@
+{
+ "collection": "food",
+ "fields": {
+  "_id": {
+   "kind": "string"
+  },
+  "app": {
+   "kind": "string"
+  },
+  "category": {
+   "kind": "string"
+  },
+  "created_at": {
+   "datelike": true,
+   "kind": "string"
+  },
+  "identifier": {
+   "kind": "string"
+  },
+  "isReadOnly": {
+   "kind": "boolean"
+  },
+  "isValid": {
+   "kind": "boolean"
+  },
+  "modifiedBy": {
+   "kind": "string"
+  },
+  "name": {
+   "kind": "string"
+  },
+  "srvCreated": {
+   "kind": "number"
+  },
+  "srvModified": {
+   "kind": "number"
+  },
+  "subcategory": {
+   "kind": "string"
+  },
+  "subject": {
+   "kind": "string"
+  },
+  "type": {
+   "kind": "string"
+  },
+  "unit": {
+   "kind": "string"
+  }
+ },
+ "generated_by": "tools/nsschema/emit/coercion_emit.py",
+ "source_model": "specs/nsschema/food.model.json",
+ "uncoerced": {
+  "carbs": [
+   "number",
+   "string"
+  ],
+  "energy": [
+   "number",
+   "string"
+  ],
+  "fat": [
+   "number",
+   "string"
+  ],
+  "foods": [
+   "array"
+  ],
+  "gi": [
+   "number",
+   "string"
+  ],
+  "hidden": [
+   "boolean",
+   "string"
+  ],
+  "hideafteruse": [
+   "boolean",
+   "string"
+  ],
+  "portion": [
+   "number",
+   "string"
+  ],
+  "position": [
+   "number",
+   "string"
+  ],
+  "protein": [
+   "number",
+   "string"
+  ]
+ }
+}

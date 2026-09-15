@@ -125,32 +125,113 @@ def build(model):
 
 # ------------------------------------------------------------------ drift
 #
-# The shipping walkers, transcribed from the branch under test so the
-# comparison is against real code rather than against memory. Each entry is
-# (file:line, {field: coercion}).
+# The shipping walkers, transcribed from `origin/dev` (a8888f0d) so the
+# comparison is against real code rather than against memory.
+#
+# TRANSCRIPTION CORRECTED 2026-09-15. The previous copy of this table recorded
+# `entries.rawbg`, and the backfix register's BF-12 was raised from it. The
+# string "rawbg" has never appeared in `lib/server/entries.js` in any commit on
+# any branch; the entry that is actually there is `rssi`, and `rssi` IS in the
+# model as an integer, so it is a correct entry and not a stale one. BF-12 does
+# not reproduce. See docs/60-research/t05-schema-driven-coercion-2026-09-15.md.
+#
+# THIS TABLE DESCRIBES THE SHIPPING BASELINE, NOT THE FIX. T0.5's fix lives on
+# cgm-remote-monitor's `bf/coercion` (88d1f8a4) and is not merged, so `--drift`
+# still reports the disagreements it closes. When that branch lands, replace
+# these entries with the schema-driven wiring and the report should fall to zero
+# rows; a `--drift` run unchanged afterwards means the merge did not take, not
+# that the measurement is stale.
 
 SHIPPING_WALKERS = {
-    "entries": ("lib/server/entries.js:186", {
-        "date": "integer", "sgv": "integer", "mbg": "integer", "rawbg": "integer",
-        "filtered": "integer", "unfiltered": "integer", "noise": "integer"}),
-    "treatments": ("lib/server/treatments.js:259", {
-        "insulin": "integer", "carbs": "integer", "glucose": "integer",
-        "notes": "regex", "eventType": "regex", "enteredBy": "regex"}),
-    "profile": ("lib/server/profile.js:97", {}),
-    "devicestatus": ("(none)", {}),
-    "food": ("(none)", {}),
-    "activity": ("(none)", {}),
+    "entries": {
+        "where": "lib/server/entries.js:186",
+        "query_path": True,
+        "walker": {"date": "integer", "sgv": "integer", "filtered": "integer",
+                   "unfiltered": "integer", "rssi": "integer", "noise": "integer",
+                   "mbg": "integer"}},
+    "treatments": {
+        "where": "lib/server/treatments.js:259",
+        "query_path": True,
+        "walker": {"insulin": "integer", "carbs": "integer", "glucose": "integer",
+                   "notes": "regex", "eventType": "regex", "enteredBy": "regex"}},
+    "profile": {
+        "where": "lib/server/profile.js:96",
+        "query_path": True,
+        "walker": {}},
+    "devicestatus": {
+        "where": "lib/server/devicestatus.js:173",
+        "query_path": True,
+        "walker": {}},
+    "activity": {
+        "where": "lib/server/activity.js:146",
+        "query_path": True,
+        "walker": {}},
+    # food reaches no `lib/server/query.js` call at all: `lib/server/food.js`
+    # exposes list(fn)/listquickpicks(fn)/listregular(fn), none of which take
+    # query options, and `lib/api/food/index.js` passes none. So v1 /food
+    # accepts no filters to get wrong. Recorded rather than dropped, because
+    # BF-03 names food as an under-coerced collection and it is not one.
+    "food": {
+        "where": "(no query path)",
+        "query_path": False,
+        "walker": {}},
 }
+
+# The collections whose `queryOpts` the shipped bundle has to serve: exactly
+# those with a `lib/server/query.js` call.
+QUERY_COLLECTIONS = tuple(sorted(c for c, w in SHIPPING_WALKERS.items() if w["query_path"]))
+
+# The kinds the query layer actually acts on. `string` is identity on a value
+# that arrived from a query string, so shipping string entries would be dead
+# weight in the served file; `datelike` belongs to BF-01's date-window fix,
+# which is a different change.
+COERCED_KINDS = ("integer", "number", "boolean")
+
+
+def modelled_collections(model_dir):
+    """Every collection with a model on disk, not just the four in
+    ROOT_SCHEMA. activity and food gained models in T2.2 (69e6bc54) after this
+    emitter was first written, and iterating ROOT_SCHEMA silently skipped
+    them."""
+    return sorted(p.name[: -len(".model.json")]
+                  for p in model_dir.glob("*.model.json"))
+
+
+def bundle(tables):
+    """The single table the server loads at runtime: collection -> field ->
+    kind, restricted to the collections query.js serves and the kinds it acts
+    on. Field order is sorted so the file is diffable."""
+    out = {}
+    for collection in QUERY_COLLECTIONS:
+        table = tables.get(collection)
+        if table is None:
+            continue
+        out[collection] = {
+            field: entry["kind"]
+            for field, entry in sorted(table["fields"].items())
+            if entry["kind"] in COERCED_KINDS
+        }
+    return {
+        "_generated_by": "tools/nsschema/emit/coercion_emit.py --bundle",
+        "_source_models": "specs/nsschema/<collection>.model.json",
+        "_regenerate_with": "make schema-emit",
+        "collections": out,
+    }
 
 
 def drift(tables):
     """Rows where the shipping walker disagrees with the model."""
     rows = []
-    for collection, (where, walker) in sorted(SHIPPING_WALKERS.items()):
+    for collection, spec in sorted(SHIPPING_WALKERS.items()):
+        where, walker = spec["where"], spec["walker"]
         table = tables.get(collection)
         if table is None:
-            rows.append((collection, where, "—", "NO MODEL", "no model",
+            rows.append((collection, where, "\u2014", "NO MODEL", "no model",
                          "cannot be emitted; plan T2.2"))
+            continue
+        if not spec["query_path"]:
+            rows.append((collection, where, "\u2014", "(no filters)", "(no filters)",
+                         "NO QUERY PATH \u2014 v1 accepts no filters on this collection"))
             continue
         fields = table["fields"]
         for field, declared in sorted(fields.items()):
@@ -161,11 +242,11 @@ def drift(tables):
             if got is None:
                 if want in ("number", "integer", "boolean"):
                     rows.append((collection, where, field, "(none)", want,
-                                 "UNDER — stays a string, matches nothing"))
+                                 "UNDER \u2014 stays a string, matches nothing"))
                 continue
             if got == "integer" and want == "number":
                 rows.append((collection, where, field, "parseInt", want,
-                             "OVER — fractional bounds truncated"))
+                             "OVER \u2014 fractional bounds truncated"))
             elif got == "regex":
                 continue  # a deliberate search affordance, not a type claim
             else:
@@ -173,14 +254,14 @@ def drift(tables):
         for field, got in sorted(walker.items()):
             if field not in fields and got != "regex":
                 rows.append((collection, where, field, got, "(not in model)",
-                             "ORPHAN — walker coerces a field the model does not declare"))
+                             "ORPHAN \u2014 walker coerces a field the model does not declare"))
     return rows
 
 
 def main(argv=None):
     import argparse
     from pathlib import Path
-    from .. import corpus, specload
+    from .. import corpus
 
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--model-dir", default="specs/nsschema", type=Path)
@@ -188,6 +269,9 @@ def main(argv=None):
     ap.add_argument("--collection", action="append", dest="collections")
     ap.add_argument("--drift", action="store_true",
                     help="report where the shipping walkers disagree with the model")
+    ap.add_argument("--bundle", type=Path, default=None, metavar="PATH",
+                    help="also write the runtime table query.js loads, to PATH "
+                         "(the vendored copy inside a cgm-remote-monitor checkout)")
     args = ap.parse_args(argv)
 
     root = corpus.repo_root()
@@ -195,7 +279,7 @@ def main(argv=None):
     out_dir.mkdir(parents=True, exist_ok=True)
 
     tables = {}
-    for collection in (args.collections or list(specload.ROOT_SCHEMA)):
+    for collection in (args.collections or modelled_collections(root / args.model_dir)):
         path = root / args.model_dir / f"{collection}.model.json"
         if not path.is_file():
             print(f"{collection}: no model — skipped")
@@ -206,6 +290,16 @@ def main(argv=None):
         dest.write_text(json.dumps(table, indent=1, sort_keys=True) + "\n")
         print(f"{collection}: {len(table['fields'])} coercible, "
               f"{len(table['uncoerced'])} left alone -> {dest.relative_to(root)}")
+
+    bundled = bundle(tables)
+    dest = out_dir / "query-coercion.json"
+    dest.write_text(json.dumps(bundled, indent=1, sort_keys=True) + "\n")
+    print(f"bundle: {sum(len(v) for v in bundled['collections'].values())} coercions "
+          f"over {len(bundled['collections'])} collections -> {dest.relative_to(root)}")
+    if args.bundle:
+        args.bundle.parent.mkdir(parents=True, exist_ok=True)
+        args.bundle.write_text(json.dumps(bundled, indent=1, sort_keys=True) + "\n")
+        print(f"bundle: vendored copy -> {args.bundle}")
 
     index = out_dir / "index.json"
     index.write_text(json.dumps(

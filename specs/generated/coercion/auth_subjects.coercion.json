@@ -1,0 +1,34 @@
+{
+ "collection": "auth_subjects",
+ "fields": {
+  "_id": {
+   "kind": "string"
+  },
+  "accessToken": {
+   "kind": "string"
+  },
+  "accessTokenDigest": {
+   "kind": "string"
+  },
+  "created_at": {
+   "datelike": true,
+   "kind": "string"
+  },
+  "digest": {
+   "kind": "string"
+  },
+  "name": {
+   "kind": "string"
+  },
+  "notes": {
+   "kind": "string"
+  }
+ },
+ "generated_by": "tools/nsschema/emit/coercion_emit.py",
+ "source_model": "specs/nsschema/auth_subjects.model.json",
+ "uncoerced": {
+  "roles": [
+   "array"
+  ]
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "collection": "activity",
+ "fields": {
+  "_id": {
+   "kind": "string"
+  },
+  "created_at": {
+   "datelike": true,
+   "kind": "string"
+  }
+ },
+ "generated_by": "tools/nsschema/emit/coercion_emit.py",
+ "source_model": "specs/nsschema/activity.model.json",
+ "uncoerced": {}
+}

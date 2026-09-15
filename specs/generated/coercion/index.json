@@ -1,9 +1,15 @@
 {
  "generated_by": "tools/nsschema/emit/coercion_emit.py",
  "collections": [
+  "activity",
+  "auth_roles",
+  "auth_subjects",
   "devicestatus",
   "entries",
+  "food",
   "profile",
+  "settings",
+  "status",
   "treatments"
  ]
 }

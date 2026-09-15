@@ -1,0 +1,293 @@
+{
+ "collection": "status",
+ "fields": {
+  "apiEnabled": {
+   "kind": "boolean"
+  },
+  "boluscalcEnabled": {
+   "kind": "boolean"
+  },
+  "careportalEnabled": {
+   "kind": "boolean"
+  },
+  "extendedSettings.bage.warn": {
+   "kind": "integer"
+  },
+  "extendedSettings.basal.render": {
+   "kind": "string"
+  },
+  "extendedSettings.cage.display": {
+   "kind": "string"
+  },
+  "extendedSettings.cage.enableAlert": {
+   "kind": "boolean"
+  },
+  "extendedSettings.cage.info": {
+   "kind": "integer"
+  },
+  "extendedSettings.cage.urgent": {
+   "kind": "integer"
+  },
+  "extendedSettings.cage.warn": {
+   "kind": "integer"
+  },
+  "extendedSettings.dbsize.max": {
+   "kind": "integer"
+  },
+  "extendedSettings.devicestatus.advanced": {
+   "kind": "boolean"
+  },
+  "extendedSettings.devicestatus.days": {
+   "kind": "integer"
+  },
+  "extendedSettings.iage.info": {
+   "kind": "integer"
+  },
+  "extendedSettings.iage.warn": {
+   "kind": "integer"
+  },
+  "extendedSettings.loop.apnsDeveloperTeamId": {
+   "kind": "string"
+  },
+  "extendedSettings.loop.pushServerEnvironment": {
+   "kind": "string"
+  },
+  "extendedSettings.pump.fields": {
+   "kind": "string"
+  },
+  "extendedSettings.pump.warnOnSuspend": {
+   "kind": "boolean"
+  },
+  "extendedSettings.sage.enableAlert": {
+   "kind": "boolean"
+  },
+  "extendedSettings.sage.info": {
+   "kind": "integer"
+  },
+  "name": {
+   "kind": "string"
+  },
+  "runtimeState": {
+   "kind": "string"
+  },
+  "serverTime": {
+   "kind": "string"
+  },
+  "serverTimeEpoch": {
+   "kind": "integer"
+  },
+  "settings.adminNotifiesEnabled": {
+   "kind": "boolean"
+  },
+  "settings.alarmHigh": {
+   "kind": "boolean"
+  },
+  "settings.alarmLow": {
+   "kind": "boolean"
+  },
+  "settings.alarmPumpBatteryLow": {
+   "kind": "boolean"
+  },
+  "settings.alarmTimeagoUrgent": {
+   "kind": "boolean"
+  },
+  "settings.alarmTimeagoWarn": {
+   "kind": "boolean"
+  },
+  "settings.alarmUrgentHigh": {
+   "kind": "boolean"
+  },
+  "settings.alarmUrgentLow": {
+   "kind": "boolean"
+  },
+  "settings.authDefaultRoles": {
+   "kind": "string"
+  },
+  "settings.authFailDelay": {
+   "kind": "integer"
+  },
+  "settings.authenticationPromptOnLoad": {
+   "kind": "boolean"
+  },
+  "settings.baseURL": {
+   "kind": "string"
+  },
+  "settings.customTitle": {
+   "kind": "string"
+  },
+  "settings.dayEnd": {
+   "kind": "integer"
+  },
+  "settings.dayStart": {
+   "kind": "integer"
+  },
+  "settings.deNormalizeDates": {
+   "kind": "boolean"
+  },
+  "settings.editMode": {
+   "kind": "boolean"
+  },
+  "settings.focusHours": {
+   "kind": "integer"
+  },
+  "settings.frameName1": {
+   "kind": "string"
+  },
+  "settings.frameName2": {
+   "kind": "string"
+  },
+  "settings.frameName3": {
+   "kind": "string"
+  },
+  "settings.frameName4": {
+   "kind": "string"
+  },
+  "settings.frameName5": {
+   "kind": "string"
+  },
+  "settings.frameName6": {
+   "kind": "string"
+  },
+  "settings.frameName7": {
+   "kind": "string"
+  },
+  "settings.frameName8": {
+   "kind": "string"
+  },
+  "settings.frameUrl1": {
+   "kind": "string"
+  },
+  "settings.frameUrl2": {
+   "kind": "string"
+  },
+  "settings.frameUrl3": {
+   "kind": "string"
+  },
+  "settings.frameUrl4": {
+   "kind": "string"
+  },
+  "settings.frameUrl5": {
+   "kind": "string"
+  },
+  "settings.frameUrl6": {
+   "kind": "string"
+  },
+  "settings.frameUrl7": {
+   "kind": "string"
+  },
+  "settings.frameUrl8": {
+   "kind": "string"
+  },
+  "settings.heartbeat": {
+   "kind": "integer"
+  },
+  "settings.insecureUseHttp": {
+   "kind": "boolean"
+  },
+  "settings.language": {
+   "kind": "string"
+  },
+  "settings.nightMode": {
+   "kind": "boolean"
+  },
+  "settings.scaleY": {
+   "kind": "string"
+  },
+  "settings.secureCsp": {
+   "kind": "boolean"
+  },
+  "settings.secureHstsHeader": {
+   "kind": "boolean"
+  },
+  "settings.secureHstsHeaderIncludeSubdomains": {
+   "kind": "boolean"
+  },
+  "settings.secureHstsHeaderPreload": {
+   "kind": "boolean"
+  },
+  "settings.showClockDelta": {
+   "kind": "boolean"
+  },
+  "settings.showClockLastTime": {
+   "kind": "boolean"
+  },
+  "settings.showForecast": {
+   "kind": "string"
+  },
+  "settings.showPlugins": {
+   "kind": "string"
+  },
+  "settings.showRawbg": {
+   "kind": "string"
+  },
+  "settings.theme": {
+   "kind": "string"
+  },
+  "settings.thresholds.bgHigh": {
+   "kind": "integer"
+  },
+  "settings.thresholds.bgLow": {
+   "kind": "integer"
+  },
+  "settings.thresholds.bgTargetBottom": {
+   "kind": "integer"
+  },
+  "settings.thresholds.bgTargetTop": {
+   "kind": "integer"
+  },
+  "settings.timeFormat": {
+   "kind": "integer"
+  },
+  "settings.units": {
+   "kind": "string"
+  },
+  "status": {
+   "kind": "string"
+  },
+  "version": {
+   "kind": "string"
+  }
+ },
+ "generated_by": "tools/nsschema/emit/coercion_emit.py",
+ "source_model": "specs/nsschema/status.model.json",
+ "uncoerced": {
+  "authorized": [
+   "unknown"
+  ],
+  "settings.DEFAULT_FEATURES": [
+   "array"
+  ],
+  "settings.alarmHighMins": [
+   "array"
+  ],
+  "settings.alarmLowMins": [
+   "array"
+  ],
+  "settings.alarmTimeagoUrgentMins": [
+   "integer",
+   "string"
+  ],
+  "settings.alarmTimeagoWarnMins": [
+   "integer",
+   "string"
+  ],
+  "settings.alarmTypes": [
+   "array"
+  ],
+  "settings.alarmUrgentHighMins": [
+   "array"
+  ],
+  "settings.alarmUrgentLowMins": [
+   "array"
+  ],
+  "settings.alarmUrgentMins": [
+   "array"
+  ],
+  "settings.alarmWarnMins": [
+   "array"
+  ],
+  "settings.enable": [
+   "array"
+  ]
+ }
+}

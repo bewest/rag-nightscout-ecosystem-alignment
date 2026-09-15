@@ -17,14 +17,16 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from nsschema import corpus, specload  # noqa: E402
+from nsschema import corpus  # noqa: E402
 from nsschema.emit import coercion_emit  # noqa: E402
 
 ROOT = corpus.repo_root()
 MODEL_DIR = ROOT / "specs/nsschema"
 
-MODELLED = [c for c in specload.ROOT_SCHEMA
-            if (MODEL_DIR / f"{c}.model.json").is_file()]
+# Every model on disk, not the four in ROOT_SCHEMA. activity and food gained
+# models in T2.2 (69e6bc54) after this emitter was written, and iterating
+# ROOT_SCHEMA skipped them without saying so.
+MODELLED = coercion_emit.modelled_collections(MODEL_DIR)
 
 
 def _model(collection):
@@ -160,10 +162,105 @@ def test_collections_with_no_walker_are_reported_as_under_coerced():
     assert "profile" in under
 
 
-def test_missing_models_are_reported_not_skipped():
-    """food and activity have no model, and the emitter must say so rather
-    than emit an empty table that reads as 'nothing to coerce'."""
+def test_food_is_reported_as_having_no_query_path():
+    """EXPECTATION CHANGED 2026-09-15, deliberately. This test previously read
+    `test_missing_models_are_reported_not_skipped` and asserted that food and
+    activity have NO model, because when it was written they did not. T2.2
+    (69e6bc54) gave both a model, so the old assertion now encodes a fact that
+    stopped being true, and keeping it would have hidden the finding below.
+
+    What is true of food is different and worse for BF-03: food has a model,
+    but it reaches no `lib/server/query.js` call at all. `lib/server/food.js`
+    exposes list(fn)/listquickpicks(fn)/listregular(fn) -- none take query
+    options -- and `lib/api/food/index.js` passes none. So v1 /food accepts no
+    filters, and there is no under-coercion on food to fix."""
+    for collection in ("food", "activity"):
+        assert (MODEL_DIR / f"{collection}.model.json").is_file()
+        assert collection in MODELLED
+
     tables = {c: coercion_emit.build(_model(c)) for c in MODELLED}
     rows = coercion_emit.drift(tables)
-    nomodel = {c for c, _w, _f, _g, model, _note in rows if model == "no model"}
-    assert {"food", "activity"} <= nomodel
+    nopath = {c for c, _w, _f, _g, _m, note in rows
+              if note.startswith("NO QUERY PATH")}
+    assert nopath == {"food"}
+
+
+def test_activity_has_no_numeric_field_to_coerce():
+    """Also for BF-03, which names activity as under-coerced. The activity
+    model has exactly two leaves, `_id` and `created_at`, both strings, so
+    schema-driven coercion cannot give activity a numeric filter that works.
+    The collection is open-bodied -- the server stores what it is handed -- so
+    a deployment may well hold numbers there, but nothing declares them and
+    this table will not guess."""
+    table = coercion_emit.build(_model("activity"))
+    assert set(table["fields"]) == {"_id", "created_at"}
+    assert all(e["kind"] == "string" for e in table["fields"].values())
+    assert coercion_emit.bundle({"activity": table})["collections"]["activity"] == {}
+
+
+def test_no_orphan_rows_because_bf_12_does_not_reproduce():
+    """BF-12 says `entries.rawbg` is coerced but absent from the model. The
+    walker transcription it was raised from was wrong: `lib/server/entries.js`
+    coerces `rssi`, not `rawbg`, and has never contained the string "rawbg" on
+    any branch. `rssi` IS in the model, as an integer, so it is a correct entry.
+    There is no stale walker entry, on any collection."""
+    assert "rawbg" not in coercion_emit.SHIPPING_WALKERS["entries"]["walker"]
+    assert "rssi" in coercion_emit.SHIPPING_WALKERS["entries"]["walker"]
+    assert coercion_emit.build(_model("entries"))["fields"]["rssi"]["kind"] == "integer"
+
+    tables = {c: coercion_emit.build(_model(c)) for c in MODELLED}
+    orphans = [r for r in coercion_emit.drift(tables) if r[5].startswith("ORPHAN")]
+    assert orphans == []
+
+
+# -- the bundle the server actually loads --------------------------------
+
+BUNDLE_PATH = ROOT / "specs/generated/coercion/query-coercion.json"
+
+
+def _fresh_bundle():
+    return coercion_emit.bundle({c: coercion_emit.build(_model(c)) for c in MODELLED})
+
+
+def test_checked_in_bundle_matches_a_fresh_emit():
+    """The anti-drift link. If a model changes and nobody reruns `make
+    schema-emit`, this fails."""
+    assert json.loads(BUNDLE_PATH.read_text()) == _fresh_bundle()
+
+
+def test_bundle_covers_exactly_the_collections_with_a_query_path():
+    assert set(_fresh_bundle()["collections"]) == set(coercion_emit.QUERY_COLLECTIONS)
+    assert "food" not in _fresh_bundle()["collections"]
+
+
+def test_bundle_kinds_are_only_the_ones_the_query_layer_acts_on():
+    """`string` is identity on a value that arrived as text, so a string entry
+    would be dead weight in a file the server parses on every boot."""
+    for collection, fields in _fresh_bundle()["collections"].items():
+        for field, kind in fields.items():
+            assert kind in coercion_emit.COERCED_KINDS, f"{collection}.{field}"
+
+
+@pytest.mark.parametrize("collection", coercion_emit.QUERY_COLLECTIONS)
+def test_bundle_agrees_with_the_per_collection_table(collection):
+    table = coercion_emit.build(_model(collection))
+    shipped = _fresh_bundle()["collections"][collection]
+    for field, entry in table["fields"].items():
+        if entry["kind"] in coercion_emit.COERCED_KINDS:
+            assert shipped[field] == entry["kind"], field
+        else:
+            assert field not in shipped, field
+
+
+# -- the copy vendored into cgm-remote-monitor ---------------------------
+
+VENDORED = ROOT / "externals/work/crm-bf-coercion/lib/server/query-coercion.json"
+
+
+@pytest.mark.skipif(not VENDORED.is_file(),
+                    reason="cgm-remote-monitor worktree not checked out here")
+def test_vendored_copy_matches_the_emitted_bundle():
+    """cgm-remote-monitor has to carry the table to load it at runtime; this
+    repo owns the emitter (decision D12). That is two copies, so something has
+    to hold them together, and this is it."""
+    assert json.loads(VENDORED.read_text()) == _fresh_bundle()

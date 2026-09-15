@@ -1,0 +1,25 @@
+{
+ "collection": "auth_roles",
+ "fields": {
+  "_id": {
+   "kind": "string"
+  },
+  "created_at": {
+   "datelike": true,
+   "kind": "string"
+  },
+  "name": {
+   "kind": "string"
+  },
+  "notes": {
+   "kind": "string"
+  }
+ },
+ "generated_by": "tools/nsschema/emit/coercion_emit.py",
+ "source_model": "specs/nsschema/auth_roles.model.json",
+ "uncoerced": {
+  "permissions": [
+   "array"
+  ]
+ }
+}

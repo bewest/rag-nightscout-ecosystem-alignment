@@ -727,6 +727,15 @@ schema-emit:
 schema-coercion-drift:
 	@$(NSSCHEMA).emit.coercion_emit --drift
 
+## schema-coercion-vendor: refresh the copy of the coercion table that ships
+## inside a cgm-remote-monitor checkout. cgm-remote-monitor has to carry the
+## table to load it at runtime while this repo owns the emitter (decision D12),
+## so the two copies need re-syncing whenever a model changes. Point CRM at the
+## checkout; tools/nsschema/test_coercion.py fails if the copies diverge.
+CRM ?= externals/work/crm-bf-coercion
+schema-coercion-vendor:
+	@$(NSSCHEMA).emit.coercion_emit --bundle $(CRM)/lib/server/query-coercion.json
+
 ## schema-postgres-report: emitted index set vs {M} §6.7, and the type divergences
 schema-postgres-report:
 	@$(NSSCHEMA).emit.postgres_emit --report

@@ -1,0 +1,35 @@
+{
+ "collection": "settings",
+ "fields": {
+  "_id": {
+   "kind": "string"
+  },
+  "app": {
+   "kind": "string"
+  },
+  "identifier": {
+   "kind": "string"
+  },
+  "isReadOnly": {
+   "kind": "boolean"
+  },
+  "isValid": {
+   "kind": "boolean"
+  },
+  "modifiedBy": {
+   "kind": "string"
+  },
+  "srvCreated": {
+   "kind": "number"
+  },
+  "srvModified": {
+   "kind": "number"
+  },
+  "subject": {
+   "kind": "string"
+  }
+ },
+ "generated_by": "tools/nsschema/emit/coercion_emit.py",
+ "source_model": "specs/nsschema/settings.model.json",
+ "uncoerced": {}
+}
