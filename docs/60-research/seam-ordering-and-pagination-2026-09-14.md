@@ -109,7 +109,45 @@ It also fires on the **default path**: with no `?sort=` at all the chain is just
 `{identifier, created_at, date}`, so a client simply paging a collection is exposed without
 having asked for an unusual sort.
 
-### 3.2 The fix is one line
+### 3.2 How much real data holds the shape — measured, and it is concentrated
+
+`tools/qc/bf13_corpus_sizing.py` over the 11-site corpus (`externals/ns-data/patients`,
+~1.5 M documents). It reads structure only — key presence and timestamp equality — and emits no
+field value, document or site identity beyond the single letters the corpus already uses.
+
+**Loss does not require a tie group bigger than a page.** It requires one **straddling a page
+boundary**, because that is where two separately-executed queries must agree about an order
+neither engine promises. For a group of *n*, the chance of straddling is ≈ `(n-1)/page`; summed
+over groups, that is the **expected number of straddles in one full paginated sweep**.
+
+| collection | sites exposed | median E[straddles/sweep] | max |
+|---|---|---:|---:|
+| entries | 7 / 11 | **0.01** | 0.74 |
+| treatments | 11 / 11 | **0.02** | 0.73 |
+| profile | 9 / 11 | **0.09** | 0.09 |
+| **devicestatus** | **10 / 11** | **23.46** | **64.06** |
+
+**So BF-13 is real, and it is concentrated almost entirely in `devicestatus`.** Paging a whole
+`devicestatus` collection is expected to cross roughly two dozen tie-group boundaries; paging
+`entries` or `treatments` will typically cross none. That is the difference between a defect
+worth fixing and a defect worth panicking about, and it is the reason to measure rather than
+extrapolate from the synthetic 7-of-12.
+
+**Why devicestatus**: uploaders write it in bursts that share one `created_at` and `date`.
+Tie groups reach 69 documents (site `e`), and 3–13 % of each site's `devicestatus` documents sit
+in a group larger than one. No group anywhere exceeds one page of 100.
+
+**And it lands on the collection that can least afford it.** `devicestatus` is the replay- and
+observability-bearing collection — the one the controller-description work (D11) exists to make
+faithfully reconstructible. A tool paging it to recover what a controller decided would lose
+records **silently**, which is the failure mode that work is meant to eliminate.
+
+**One number needs its caveat**: `identifier` is absent on essentially 100 % of corpus documents.
+That is not a collection artifact — site `i` carries 11 treatments that *do* have one, so the
+field survives the export path. These sites simply are not written through API v3. A deployment
+whose writers use v3 would carry identifiers and be safe.
+
+### 3.3 The fix is one line
 
 ```js
 sort._id = sortDirection;      // always present, always unique
@@ -138,8 +176,9 @@ free to reorder ties.
   `parseSort`, and the shapes are synthetic. **A maintainer should confirm against a real
   deployment before this is treated as settled** — the reproduction is a strong prediction about
   the endpoint, not an observation of it.
-- **No claim is made about how many deployments hold the triggering shape.** The corpus was not
-  queried for identifier-less documents with tied timestamps, and it should be before anyone
-  sizes the impact.
+- ~~**No claim is made about how many deployments hold the triggering shape.**~~ **Closed — see
+  §3.2.** 11 sites measured; the exposure is real and concentrated in `devicestatus`.
+  What is still *not* measured is how many clients actually page with `skip` rather than
+  fetching whole collections, which is the other half of the impact.
 - **The §2 ordering strategies are the ones a person would plausibly write**, not an exhaustive
   search. A correct translation may well exist; none of the obvious four is it.

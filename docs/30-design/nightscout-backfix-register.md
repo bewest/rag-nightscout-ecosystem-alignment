@@ -233,6 +233,13 @@ it reappears on PostgreSQL.
 *Precondition is specific and should not be overstated*: all three of no-`identifier`,
 tied `created_at`, tied `date`. Any one of them differing makes it safe.
 
+**Sized against the 11-site corpus** (~1.5 M documents) and it is **concentrated in
+`devicestatus`** — expected tie-group straddles per full paginated sweep: `devicestatus` median
+**23.5** (max 64), against `entries` 0.01, `treatments` 0.02, `profile` 0.09. Uploaders write
+`devicestatus` in bursts sharing one `created_at`/`date`. So a client paging `entries` will
+typically lose nothing, and a tool paging `devicestatus` to reconstruct controller behaviour
+loses records silently — on the collection replay fidelity depends on.
+
 *Evidence*: [ordering and pagination](../60-research/seam-ordering-and-pagination-2026-09-14.md) §3.
 **Reproduced synthetically against `mongod` 7.0.43, not against a live Nightscout** — confirm
 before treating as settled.
