@@ -3,6 +3,55 @@
 **Status**: ready to push. **Nothing has been pushed.** Five branches sit on `origin/dev` at
 `a8888f0d` in worktrees under `externals/work/`; a sixth is in the `nightscout-connect` repository.
 
+## 0. Publishing is manual, deliberately
+
+**Nothing in this document pushes, tags remotely, merges or publishes. A human does each of those
+steps, so that each one gets reviewed.** Agents and automated sessions prepare branches, commits
+and tags **locally** and stop. That is a standing rule for this programme, not a property of this
+particular batch — see the execution plan's handoff block.
+
+This matters more than usual here because **pushing some branches publishes artefacts**, and
+because the code goes to people who dose insulin using it.
+
+### Which branches are safe to push — measured, not assumed
+
+#### `cgm-remote-monitor`
+
+| target | safe to push? | what happens |
+|---|---|---|
+| **`dev`** | **NO — publishes** | `.github/workflows/main.yml` job `docker-build`, `if: (github.ref == 'refs/heads/master' \|\| github.ref == 'refs/heads/dev') && github.repository_owner == 'nightscout'`, logs into Docker Hub with `secrets.DOCKER_USER`/`DOCKER_PASS` and **pushes an image** |
+| **`master`** | **NO — publishes** | same job, same condition |
+| **`chore/nightscout-modernization`** | **yes** | no `push:` trigger matches it. PRs *targeting* it run full CI (`main.yml` and CodeQL both list it under `pull_request`) |
+| **any other branch on `origin`** | **yes** | `main.yml` and `codeql-analysis.yml` both trigger on push only for `master` and `dev`. A feature-branch push runs **nothing** |
+| **the `bewest` fork remote** | **yes**, lowest footprint | `git@github.com/bewest/cgm-remote-monitor.git`, already configured as remote `bewest` |
+
+**So: push the seven Phase 0 branches to `origin` (or to the fork) and open PRs against `dev`.
+Never push the branch *onto* `dev`.** The PR is what gets reviewed; the merge is what publishes.
+
+*One trap worth knowing about the fork route.* `close-accidental-sync-prs.yml` auto-closes a PR
+when **all three** hold: it comes from a fork, **its title matches `sync|merge|update|pull|new`**,
+and its diff is empty. A real PR is never auto-closed because the third condition fails — but
+several natural titles for this batch contain those words, so if a PR ever vanishes, that is why.
+
+#### `nightscout-connect`
+
+| target | safe to push? | what happens |
+|---|---|---|
+| **any branch, including `main`** | **yes** | the repo has exactly one workflow, `test.yml`, `on: [push, pull_request]`, `permissions: contents: read`. It runs the suite on Node 22 and 24. No secrets, no registry, no publish |
+| **tags** | **yes** | there is **no release workflow at all**. Pushing `v0.0.14` runs the same tests and publishes nothing |
+
+**`npm publish` for the connector is entirely manual.** Nothing automates it, so cutting and
+pushing the tag is safe and reversible; the publish is a separate, deliberate human act.
+
+### The review rule this encodes
+
+- **Prepare locally, push a branch, open a PR, let a human merge.** Two of five prescribed fixes in
+  the backfix register turned out to be wrong when someone actually ran them, and four register
+  entries had claims that did not survive contact. Review is where that gets caught.
+- **`dev` and `master` are publication events, not branches.** Treat a push to either as shipping.
+- **A release is three separate human decisions** — merge the code, push the tag, publish the
+  package — and this batch needs all three, in that order.
+
 ## 1. Do not build a stack. Four of these are independent.
 
 The instinct with five related branches is a stack — each PR based on the last. **Measured, that

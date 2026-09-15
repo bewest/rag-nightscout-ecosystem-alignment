@@ -28,6 +28,19 @@ Date: 2026-09-14. Status: draft for maintainer discussion.
 > **GATE NOT MET** (the change landed, the numeric target did not, and the reason is recorded) ·
 > **invalid** (the entry was wrong; struck through with why).
 >
+> **Nothing is pushed, merged, tagged remotely or published by an agent. Ever.** Prepare the
+> branch, the commits and the tag **locally**, write down what you did, and stop. A human pushes,
+> reviews and releases, because that review is where wrong work gets caught — in this programme two
+> of five fixes the backfix register *prescribed* turned out to be wrong when someone ran them, and
+> four register entries carried claims that did not survive contact with the code.
+>
+> **On `cgm-remote-monitor`, pushing to `dev` or `master` publishes a Docker image** (`main.yml`
+> job `docker-build`, gated on `github.ref` being those two branches). Treat a push to either as
+> shipping. Any other branch on `origin` runs nothing on push; `chore/nightscout-modernization` is
+> safe to push to and runs full CI on PRs targeting it. On `nightscout-connect` every branch and
+> tag is safe — its one workflow only runs tests, and `npm publish` is entirely manual. The
+> measured detail is in [PR sequencing](phase0-pr-sequencing-2026-09-15.md) §0.
+>
 > **Where things go.** Shipping fixes and their tests go in `cgm-remote-monitor`, as clean
 > reviewable commits — no scaffolding, no findings in code comments. Harnesses, measurements and
 > findings go in this repository and are referenced from there. That is D12, and it is what lets a
