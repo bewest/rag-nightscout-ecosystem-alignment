@@ -111,6 +111,41 @@ is correct and it stays: the AsyncLocalStorage context it guards is process-wide
 that decides how to read it has to be too. It is listed here rather than suppressed, because a
 census with a quiet exception list is a census nobody can check.
 
+## 4a. Correction — the tool could not see the widest singleton in the tree
+
+**Found by T3.3, which is exactly what the "two holes" section below was for.** The first
+version of this tool classified `require('x')()` as a require and excluded it. That is wrong:
+`require(x)` is a require, but **`require(x)()` is a factory invocation** — the module hands back
+a builder and the call site holds the one instance it built.
+
+`lib/server/server.js:34` is precisely that shape:
+
+```js
+const language = require('../language')();      // one per process
+const translate = language.set(env.settings.language).translate;
+```
+
+So the **single largest-blast-radius singleton in the server was the one the audit could not
+see**, and it was absent from the report entirely. `lib/server/server.js:33`'s `env` was hidden
+the same way. Both are now reported as a distinct `factory-binding` kind — kept separate from an
+ordinary mutable binding because the tool genuinely cannot tell whether a call returns something
+frozen, so the reader should weigh it rather than be told.
+
+Revised counts:
+
+| residency | files | bindings | **factories** | writes |
+|---|---:|---:|---:|---:|
+| **server** | 21 | 32 | **9** | 72 |
+| **both** | 15 | 27 | 2 | 7 |
+| browser | 40 | 91 | 8 | 152 |
+
+**The second hole T3.3 named is not fixed**: a property written onto a *required module* from
+another file. `lib/server/bootevent.js:212` does `ctx.levels.translate = ctx.language.translate`,
+mutating `lib/levels.js`'s exported object from outside it. `lib/levels.js` appears in the report
+but not among the server-resident six, because nothing *inside it* writes to module scope. A
+tool that walks one file at a time cannot see this; it needs a cross-file pass over assignments
+whose target resolves to a required module.
+
 ## 5. Two holes in the measurement, stated
 
 - **Static, relative `require()` and `import` only.** A dynamic require, or a module reached

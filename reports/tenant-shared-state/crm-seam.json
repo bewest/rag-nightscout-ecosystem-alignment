@@ -1,8 +1,31 @@
 {
  "root": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-seam",
- "scanned": 242,
+ "scanned": 252,
  "unparsed": [],
  "files": {
+  "lib/admin/platform-store.js": {
+   "residency": "unreached",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "PLATFORM_TABLES",
+     "line": 45,
+     "detail": "const"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "NOT_TENANT_DATA",
+     "line": 51,
+     "detail": "const"
+    },
+    {
+     "kind": "factory-binding",
+     "name": "PLATFORM_DDL",
+     "line": 53,
+     "detail": "const"
+    }
+   ]
+  },
   "lib/admin_plugins/cleanentriesdb.js": {
    "residency": "browser",
    "findings": [
@@ -309,6 +332,17 @@
     }
    ]
   },
+  "lib/api3/shared/operationTools.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "factory-binding",
+     "name": "uuidNamespace",
+     "line": 6,
+     "detail": "const"
+    }
+   ]
+  },
   "lib/api3/shared/writePurifier.js": {
    "residency": "server",
    "findings": [
@@ -316,6 +350,17 @@
      "kind": "mutable-binding",
      "name": "PURIFIED_COLLECTIONS",
      "line": 3,
+     "detail": "const"
+    }
+   ]
+  },
+  "lib/authorization/index.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "factory-binding",
+     "name": "sleep",
+     "line": 6,
      "detail": "const"
     }
    ]
@@ -423,7 +468,7 @@
      "detail": "var"
     },
     {
-     "kind": "mutable-binding",
+     "kind": "factory-binding",
      "name": "loadTime",
      "line": 17,
      "detail": "var"
@@ -463,6 +508,12 @@
   "lib/client/clock-client.js": {
    "residency": "browser",
    "findings": [
+    {
+     "kind": "factory-binding",
+     "name": "units",
+     "line": 5,
+     "detail": "var"
+    },
     {
      "kind": "mutable-binding",
      "name": "client",
@@ -754,6 +805,24 @@
      "detail": "var"
     },
     {
+     "kind": "factory-binding",
+     "name": "language",
+     "line": 9,
+     "detail": "var"
+    },
+    {
+     "kind": "factory-binding",
+     "name": "sandbox",
+     "line": 10,
+     "detail": "var"
+    },
+    {
+     "kind": "factory-binding",
+     "name": "units",
+     "line": 11,
+     "detail": "var"
+    },
+    {
      "kind": "mutable-binding",
      "name": "brushing",
      "line": 16,
@@ -772,7 +841,7 @@
      "detail": "var"
     },
     {
-     "kind": "mutable-binding",
+     "kind": "factory-binding",
      "name": "timezones",
      "line": 20,
      "detail": "var"
@@ -1327,6 +1396,18 @@
    "residency": "browser",
    "findings": [
     {
+     "kind": "factory-binding",
+     "name": "local",
+     "line": 24,
+     "detail": "const"
+    },
+    {
+     "kind": "factory-binding",
+     "name": "session",
+     "line": 24,
+     "detail": "const"
+    },
+    {
      "kind": "mutable-binding",
      "name": "namespaces",
      "line": 25,
@@ -1756,6 +1837,12 @@
    "findings": [
     {
      "kind": "mutable-binding",
+     "name": "translate",
+     "line": 2,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
      "name": "d3",
      "line": 3,
      "detail": "var"
@@ -2021,6 +2108,17 @@
     }
    ]
   },
+  "lib/sandbox.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "factory-binding",
+     "name": "units",
+     "line": 3,
+     "detail": "var"
+    }
+   ]
+  },
   "lib/server/client-ip.js": {
    "residency": "server",
    "findings": [
@@ -2049,85 +2147,31 @@
     {
      "kind": "mutable-binding",
      "name": "env",
-     "line": 13,
-     "detail": "const"
+     "line": 35,
+     "detail": "var"
     },
     {
      "kind": "mutable-binding",
      "name": "shadowEnv",
-     "line": 17,
+     "line": 37,
      "detail": "var"
     },
     {
      "kind": "assignment",
-     "name": "shadowEnv",
-     "line": 37,
+     "name": "env",
+     "line": 55,
      "detail": "rebinds"
     },
     {
      "kind": "assignment",
      "name": "shadowEnv",
-     "line": 39,
-     "detail": "writes a property"
+     "line": 61,
+     "detail": "rebinds"
     },
     {
      "kind": "assignment",
-     "name": "env",
-     "line": 42,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 43,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 44,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 45,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 46,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 47,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 52,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 53,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 54,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 65,
+     "name": "shadowEnv",
+     "line": 63,
      "detail": "writes a property"
     },
     {
@@ -2139,19 +2183,31 @@
     {
      "kind": "assignment",
      "name": "env",
-     "line": 73,
+     "line": 67,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 74,
+     "line": 68,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 75,
+     "line": 69,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 70,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 71,
      "detail": "writes a property"
     },
     {
@@ -2163,31 +2219,13 @@
     {
      "kind": "assignment",
      "name": "env",
+     "line": 77,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
      "line": 78,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 83,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 87,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 88,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 89,
      "detail": "writes a property"
     },
     {
@@ -2205,133 +2243,103 @@
     {
      "kind": "assignment",
      "name": "env",
-     "line": 92,
+     "line": 98,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 94,
+     "line": 99,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 102,
+     "line": 100,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 109,
+     "line": 101,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 138,
+     "line": 103,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 139,
+     "line": 108,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 143,
+     "line": 112,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 152,
+     "line": 113,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 153,
+     "line": 114,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 154,
+     "line": 115,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 155,
+     "line": 116,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 156,
+     "line": 117,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 157,
+     "line": 119,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 158,
+     "line": 127,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 159,
+     "line": 134,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 160,
+     "line": 163,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 166,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 168,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 171,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 174,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 175,
-     "detail": "writes a property"
-    },
-    {
-     "kind": "assignment",
-     "name": "env",
-     "line": 176,
+     "line": 164,
      "detail": "writes a property"
     },
     {
@@ -2343,31 +2351,133 @@
     {
      "kind": "assignment",
      "name": "env",
-     "line": 182,
+     "line": 201,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 183,
+     "line": 210,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 202,
+     "line": 211,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 205,
+     "line": 212,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "env",
-     "line": 206,
+     "line": 213,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 214,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 215,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 216,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 217,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 218,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 224,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 226,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 229,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 232,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 233,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 234,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 235,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 240,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 241,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 260,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 263,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 264,
      "detail": "writes a property"
     }
    ]
@@ -2375,6 +2485,18 @@
   "lib/server/pebble.js": {
    "residency": "server",
    "findings": [
+    {
+     "kind": "factory-binding",
+     "name": "sandbox",
+     "line": 4,
+     "detail": "var"
+    },
+    {
+     "kind": "factory-binding",
+     "name": "units",
+     "line": 5,
+     "detail": "var"
+    },
     {
      "kind": "mutable-binding",
      "name": "DIRECTIONS",
@@ -2415,6 +2537,18 @@
    "residency": "server",
    "findings": [
     {
+     "kind": "factory-binding",
+     "name": "env",
+     "line": 33,
+     "detail": "const"
+    },
+    {
+     "kind": "factory-binding",
+     "name": "language",
+     "line": 34,
+     "detail": "const"
+    },
+    {
      "kind": "mutable-binding",
      "name": "PORT",
      "line": 41,
@@ -2435,6 +2569,17 @@
      "kind": "mutable-binding",
      "name": "BACKENDS",
      "line": 34,
+     "detail": "const"
+    }
+   ]
+  },
+  "lib/server/tenant-context.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "FORBIDDEN_KEYS",
+     "line": 149,
      "detail": "const"
     }
    ]
@@ -2492,74 +2637,133 @@
     {
      "kind": "assignment",
      "name": "mongo",
-     "line": 137,
+     "line": 184,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "mongo",
-     "line": 138,
+     "line": 185,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "mongo",
-     "line": 149,
+     "line": 186,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "mongo",
-     "line": 159,
+     "line": 187,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "mongo",
-     "line": 180,
+     "line": 198,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "mongo",
-     "line": 182,
+     "line": 208,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "mongo",
-     "line": 214,
+     "line": 209,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "mongo",
-     "line": 221,
+     "line": 210,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "mongo",
-     "line": 236,
+     "line": 231,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "mongo",
-     "line": 237,
+     "line": 232,
      "detail": "writes a property"
     },
     {
      "kind": "assignment",
      "name": "mongo",
-     "line": 239,
+     "line": 233,
      "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 235,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 267,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 274,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 289,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 290,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 292,
+     "detail": "writes a property"
+    }
+   ]
+  },
+  "lib/storage/postgres-storage.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "factory-binding",
+     "name": "GENERATED",
+     "line": 49,
+     "detail": "const"
+    },
+    {
+     "kind": "factory-binding",
+     "name": "manifest",
+     "line": 96,
+     "detail": "const"
     }
    ]
   },
   "lib/storage/tenant-scope.js": {
    "residency": "server",
    "findings": [
+    {
+     "kind": "factory-binding",
+     "name": "SINGLE_TENANT",
+     "line": 51,
+     "detail": "const"
+    },
     {
      "kind": "mutable-binding",
      "name": "tenancyMode",
@@ -2590,24 +2794,44 @@
      "detail": "var"
     }
    ]
+  },
+  "lib/utils.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "factory-binding",
+     "name": "units",
+     "line": 3,
+     "detail": "var"
+    }
+   ]
   }
  },
  "counts": {
+  "unreached": {
+   "files": 1,
+   "bindings": 2,
+   "assignments": 0,
+   "factories": 1
+  },
   "browser": {
    "files": 40,
-   "bindings": 92,
-   "assignments": 152
+   "bindings": 91,
+   "assignments": 152,
+   "factories": 8
   },
   "server": {
-   "files": 17,
-   "bindings": 31,
-   "assignments": 64
+   "files": 21,
+   "bindings": 32,
+   "assignments": 72,
+   "factories": 9
   },
   "both": {
-   "files": 13,
+   "files": 15,
    "bindings": 27,
-   "assignments": 7
+   "assignments": 7,
+   "factories": 2
   }
  },
- "filesWithFindings": 70
+ "filesWithFindings": 77
 }

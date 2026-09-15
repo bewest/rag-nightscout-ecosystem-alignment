@@ -68,13 +68,22 @@ function walkFiles (dir, out = []) {
   return out;
 }
 
-// A require() call, or a member/chain rooted in one. Excluded wholesale: every
-// module has them, none of them is the state this is looking for.
+// A require() call, or a member access on one. Excluded wholesale: every module
+// has them, none of them is the state this is looking for.
+//
+// `require(x)()` is NOT one of them, and getting that wrong hid a real finding.
+// It is a FACTORY INVOCATION -- the module hands back a builder and the call
+// site holds the one instance it built. `lib/server/server.js:34` is exactly
+// that shape: `const language = require('../language')()` is one language
+// object per process, passed to bootevent, and `lib/api/googlehome/index.js:27`
+// mutates it from a request handler. The first version of this tool recursed
+// through the callee and classified the whole expression as a require, so the
+// singleton with the widest blast radius in the tree was the one it could not
+// see. A factory call is reported; the bare require is not.
 function isRequire (node) {
   if (!node) return false;
   if (node.type === 'CallExpression') {
-    if (node.callee.type === 'Identifier' && node.callee.name === 'require') return true;
-    return isRequire(node.callee);
+    return node.callee.type === 'Identifier' && node.callee.name === 'require';
   }
   if (node.type === 'MemberExpression') return isRequire(node.object);
   return false;
@@ -96,6 +105,12 @@ function mutableValue (node) {
   if (node.type === 'NewExpression' && node.callee.type === 'Identifier') {
     return ['Map', 'Set', 'WeakMap', 'WeakSet', 'Array', 'Object'].includes(node.callee.name);
   }
+  // A factory invocation at module scope: `require('../language')()`, or any
+  // other call whose result is bound once and held for the life of the process.
+  // Conservative on purpose -- a call could return a frozen value or a
+  // primitive, and this cannot tell. It is reported as `factory-binding` rather
+  // than as an ordinary mutable binding so a reader can weigh it separately.
+  if (node.type === 'CallExpression') return 'factory';
   return false;
 }
 
@@ -118,12 +133,14 @@ function scan (file) {
     if (stmt.type !== 'VariableDeclaration') continue;
     for (const decl of stmt.declarations) {
       if (decl.id.type !== 'Identifier') continue;
-      const mutable = stmt.kind !== 'const' || mutableValue(decl.init);
       if (isRequire(decl.init)) continue;
+      const value = mutableValue(decl.init);
+      const mutable = stmt.kind !== 'const' || Boolean(value);
       moduleScope.set(decl.id.name, { kind: stmt.kind, line: decl.loc.start.line, mutable });
       if (mutable) {
-        findings.push({ kind: 'mutable-binding', name: decl.id.name,
-          line: decl.loc.start.line, detail: stmt.kind });
+        findings.push({
+          kind: value === 'factory' ? 'factory-binding' : 'mutable-binding'
+          , name: decl.id.name, line: decl.loc.start.line, detail: stmt.kind });
       }
     }
   }
@@ -290,7 +307,9 @@ for (const entry of Object.values(report.files)) {
   counts[entry.residency].files++;
   for (const f of entry.findings) {
     if (f.kind === 'assignment') counts[entry.residency].assignments++;
-    else counts[entry.residency].bindings++;
+    else if (f.kind === 'factory-binding') {
+      counts[entry.residency].factories = (counts[entry.residency].factories || 0) + 1;
+    } else counts[entry.residency].bindings++;
   }
 }
 report.counts = counts;
@@ -316,12 +335,13 @@ if (asJson) {
     browser: 'browser-only      one page load, one person, one site -- NOT a hazard',
     unreached: 'unreached         no static require path from either entry',
   };
-  console.log('  residency         files  bindings  writes');
+  console.log('  residency         files  bindings  factories  writes');
   for (const key of ['server', 'both', 'browser', 'unreached']) {
     const c = counts[key];
     if (!c) continue;
     console.log(`  ${key.padEnd(10)}${String(c.files).padStart(11)}`
-      + `${String(c.bindings).padStart(10)}${String(c.assignments).padStart(8)}`
+      + `${String(c.bindings).padStart(10)}${String(c.factories || 0).padStart(11)}`
+      + `${String(c.assignments).padStart(8)}`
       + `   ${LABEL[key].split('   ')[1] || ''}`);
   }
 
