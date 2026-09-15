@@ -39,7 +39,7 @@ Here there is exactly one, so: **four independent PRs off `dev`, and one two-dee
 
 | # | branch | repo | what it is |
 |---|---|---|---|
-| **F** | `fix/connect-timer-jitter` `c1cce2a` | **`nightscout-connect`** | T0.4 (start/interval jitter) and **BF-34** |
+| **F** | `fix/connect-timer-jitter` `c1cce2a`, based on `b77e5bb` | **`nightscout-connect`** | T0.4 (start jitter) and **BF-34**. Stands alone — no cgm-remote-monitor change needed. **But see below: merging it ships nothing** |
 
 **BF-34 is the highest-value fix in the whole Phase 0 set and it is easy to miss** because it is in
 the other repository. `backoff()` merges its options as `{ ...config, ...defaults }` — the spread
@@ -55,6 +55,40 @@ rate-limited. **Land this one first if anything is landed first.**
 T0.4 also corrected its own premise: the actors do *not* stay phase-locked, because all four vendor
 drivers already spell an 18-second random window into the timestamp they align to. **The start is
 the burst, and it does not repeat.**
+
+#### BF-34 currently reaches nobody, and fixing that is a release decision
+
+`fix/connect-timer-jitter` is based on `b77e5bb`, **not** on `dev` and not on the connect repo's
+`main`. `b77e5bb` is the exact commit `chore/nightscout-modernization` pins. Measured across the
+three cgm-remote-monitor branches, **there are three different pinning mechanisms**:
+
+| cgm-remote-monitor branch | how it depends on `nightscout-connect` |
+|---|---|
+| `master` (15.0.8, **what operators run**) | `"^0.0.12"` — a semver range from **npm** |
+| `dev` (15.0.9 candidate) | tarball pinned to **`234d47c8`** |
+| `chore/nightscout-modernization` | tarball pinned to **`b77e5bb`** |
+
+So merging in the connect repository **ships BF-34 to nobody**. It reaches an operator only when a
+cgm-remote-monitor `package.json` pin moves, and the pin that matters for the next release is
+`dev`'s — which is 9 commits behind the base this fix sits on. (Verified: `234d47c8` **is** an
+ancestor of `b77e5bb`, so the line is linear and there is no divergence to reconcile.)
+
+**This collides with an open release decision that predates Phase 0.** The release-readiness
+review already flagged that `dev` pins an *untagged commit SHA*, which is reproducible but
+unreviewable and leaves the release with no connector version to name in its notes.
+
+**One action settles both**: cut a `nightscout-connect` release containing BF-34, publish it, and
+have `dev` pin **the tag** rather than a SHA. That ships the highest-value Phase 0 fix, gives
+15.0.9 a nameable connector version, and retires the untagged-SHA objection — and it is the
+"minutes-long task" the readiness review described.
+
+Note that moving `dev`'s pin forward also pulls in the 9 intervening commits (quiet logging, stop
+cleanup). That is a release-content decision, not a mechanical bump, and it is the maintainer's.
+
+**Release note is BF-34's, and it is counter-intuitive**: a vendor outage will now appear to
+recover *more slowly*, because the connector has stopped retrying in a burst that could not have
+worked. BF-08 needs none — both jitter windows default to `0`, so nothing changes for anyone who
+does not set them.
 
 ### The one stack
 
