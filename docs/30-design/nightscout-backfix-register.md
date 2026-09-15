@@ -37,6 +37,14 @@ is a defect that
 > kind an entry is**, so a later reader knows whether its reachability claim has been tested or
 > inferred. New entries should carry *reproduced* or *derived from source* explicitly, and an
 > entry that says *derived* is a request to go and run it, not a finished finding.
+>
+> **And a corollary, from BF-35 and BF-36.** Both were found under an eslint suppression
+> annotated *"verified false positive"* — somebody examined that exact line, correctly cleared it
+> of the thing the linter flagged, and did not see the defect beside it. A suppression is a
+> record that **one** question was asked and answered, and it reads like a record that the line
+> is fine. Those 34 lines in `lib/` are the cheapest audit surface in the tree: they are
+> pre-selected as places a human already found confusing, and they come with a note saying which
+> question was *not* the interesting one.
 
 **Status values**: `open` · `fixed <date>` (repaired on a backfix branch with tests and a
 release note, not yet merged — the row names the branch and commit) · `fixed-in-seam`
@@ -69,6 +77,7 @@ raised again).
 | **BF-32** | Query coercion was applied to operands that are not field values, so `find[sgv][$exists]=true` became `{$exists: NaN}` — falsy, returning exactly the documents that lack the field | `lib/server/query.js` `walk_prop` | **medium** — inverted answer, HTTP 200; reachable on the 10 fields that had a walker entry | yes | **fixed 2026-09-15** (found during T0.5, `bf/coercion` `88d1f8a4`) |
 | **BF-33** | API v3 `?limit=0x10` passes the `API3_MAX_LIMIT` check as 16 and reaches the driver as `.limit(0)` — *no limit*; `?limit=1e2` returns one document | `lib/api3/generic/collection.js` `parseLimit` | **high** — unbounded read, HTTP 200, and the ceiling that exists to prevent it is bypassed | yes | **fixed 2026-09-15** (`bf/reads` `ea50cf52`); found while fixing BF-14, reproduced live |
 | **BF-34** | `backoff()` merges its options as `{ ...config, ...defaults }`, so **every value any caller passes is discarded**. All five vendor sources configure a 2.5-minute retry interval and every one of them gets the 256 ms default — 586× faster — and `use_random_slot` is forced `false`, so a pool that fails together retries in exact lockstep | `nightscout-connect` `lib/backoff.js` | **high** — a vendor that is refusing requests gets hammered by every account at once, which is when it can least afford it | yes | **fixed 2026-09-15** (found during T0.4, `fix/connect-timer-jitter` `c1cce2a`); 100 actors delivered the same 800 requests across 3 s before and 67 s after |
+| **BF-36** | The client's delta merge captured the cached array's length once and then spliced that array, so a `remove` followed by an item matching nothing read past the end and threw. The throw escapes into `dataUpdate`, which has no `try`/`catch` — the page stops advancing until reloaded | `lib/client/receiveddata.js` `mergeTreatmentUpdate` | **medium** — availability, not a wrong reading: the time-ago watchdog is on its own timer and still marks the page stale | yes | **fixed 2026-09-15** (found by auditing the suppressions BF-35 turned up under, `bf/merge` `b06c6faf`); reproduced directly, ablated against the shipped shape |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | **fixed 2026-09-15** (`bf/reads` `c8fb536b`) — deleted, not gated; the module has no `env` handle |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | **fixed 2026-09-15** (T0.2, `bf/cache` `ddcdb1a8`); 0.837 → 0.025 ms, response asserted identical over HTTP |
@@ -1135,6 +1144,69 @@ collection came back in.
 numeric comparator (1), `isTrue`'s boolean arm (3), the server filter (1), the server sort (1).
 
 *Evidence*: `tests/boluscalc.quickpick.test.js`.
+
+### BF-36 · The delta merge read past the end of the array it was splicing — **FIXED 2026-09-15**
+
+Found by taking BF-35 as a question rather than an answer: **it surfaced under an eslint
+`security/detect-object-injection` suppression annotated "verified false positive", so somebody
+had examined that exact line, correctly cleared it of what the linter flagged, and not seen the
+indexing bug beside it.** There are 34 such suppressions in `lib/`. Reading all of them found
+one more.
+
+`mergeTreatmentUpdate` walks the received items against the cached array while **splicing and
+pushing that same array**, and captured the cached length once, before the walk:
+
+```js
+var m = cachedDataArray.length;           // captured once
+for (var i = 0; i < l; i++) {
+  var no = receivedDataArray[i];
+  if (!no.action) { cachedDataArray.push(no); continue; }   // grows it
+  for (var j = 0; j < m; j++) {                             // stale bound
+    if (no._id === cachedDataArray[j]._id) {                // <- throws
+      if (no.action === 'remove') { cachedDataArray.splice(j, 1); break; }   // shrinks it
+```
+
+```
+mergeTreatmentUpdate(true,
+  [{_id:'a'},{_id:'b'},{_id:'c'}],
+  [{_id:'a', action:'remove'}, {_id:'not-in-cache', action:'update'}])
+-> TypeError: Cannot read properties of undefined (reading '_id')
+```
+
+**It needs a splice followed by a miss**, which is why it has survived. Two removes do not do
+it — the second matches and `break`s before reaching the stale index. An insert does not either
+— `push` grows the array *past* the bound rather than below it. What does it is deleting a
+treatment and editing another that is not in the client's two-day window.
+
+**What the user sees.** The throw escapes `receiveDData` into `lib/client/index.js`
+`dataUpdate`, which has no `try`/`catch`, so the rest of that handler is abandoned: the chart
+stops advancing and treatments stop arriving until the page is reloaded. **It is not silent** —
+`updateClock` runs on its own `setTimeout` chain, so the time-ago indicator keeps working and
+marks the page stale. That is the difference between this and BF-35, and it is why this is
+*medium*: the page stops telling you things rather than telling you a wrong thing. Nothing
+recovers on its own.
+
+*Fix*: read the bound fresh on each comparison. **`mergeDataUpdate`, thirty lines up in the same
+file, already does exactly that**, and its purge walks backwards for the same reason — the two
+functions had drifted apart, and both are now pinned so they cannot silently do so again. Both
+were exported with the comment `//expose for tests` and had none; they have twelve.
+
+*Ablation, and two wrong attempts worth recording.* The first revert put the length capture
+*inside* the outer loop, where it is recomputed every iteration — not the defect, and the tests
+rightly kept passing. The second edited the first matching loop in the file, which belongs to
+`mergeDataUpdate`. Scoped to `mergeTreatmentUpdate` and with both halves applied together, the
+shipped shape fails exactly the two regression tests with exactly the production error. **A
+revert that does not reproduce the bug proves nothing about the test** — it was the arm that
+kept passing that said so.
+
+*What the rest of the audit found*: nothing. The other 32 suppressions index the array their
+bound came from, or guard a keyed lookup with `hasOwnProperty`. The instructive contrast is in
+`boluscalc.js` itself: the **food-database** chooser filters with `continue` inside one loop
+over `foodlist` and appends `.val(i)`, so its index stays valid — while the **quick-pick**
+chooser filtered into a second array and did not. Same file, same author, same pattern, opposite
+outcome.
+
+*Evidence*: `tests/receiveddata.merge.test.js`.
 
 
 ### BF-17 · A subject edit writes the access token into the database in plaintext
