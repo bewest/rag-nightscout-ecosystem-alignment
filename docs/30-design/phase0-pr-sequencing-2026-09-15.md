@@ -84,6 +84,68 @@ Here there is exactly one, so: **four independent PRs off `dev`, and one two-dee
 | **B** | `bf/cache` | 2 | T0.2 and T0.3. Self-contained in `cache.js`/`dataloader.js`/`api/entries` |
 | **C** | `bf/auth` | 2 | BF-17 and BF-30. **Security — get a human on this one first** |
 
+### Independent, and the one to read first
+
+| # | branch | commits | what it is |
+|---|---|---|---|
+| **G** | `bf/food` | 1 (`73495331`) | BF-16 and **BF-35**. Trial-merges clean against **all six** other branches |
+
+**BF-35 — the bolus calculator's quick-pick chooser resolves the wrong record.** Verified
+independently against `origin/dev`:
+
+```js
+lib/client/boluscalc.js:648-652   records.forEach(r => { if (r.type == 'quickpick') quickpicks.push(r); });
+lib/client/boluscalc.js:654-657   for (var i = 0; i < records.length; i++)          // UNFILTERED
+                                    $('#bc_quickpick').append($('<option>').val(i)  // index into records
+                                      .text(r.name + ' (' + r.carbs + ' g)'));
+lib/client/boluscalc.js:579       var qp = quickpicks[parseInt(qpiselected)];        // FILTERED
+lib/client/boluscalc.js:580       foods = JSON.parse(JSON.stringify(qp.foods));      // the carb source
+```
+
+The option's **label** comes from `records[i]`; the **foods the calculator totals carbs from** come
+from `quickpicks[i]`. Different records, no mismatch reported. The list also offers plain foods that
+are not quick picks at all, and selecting a late option throws because `qp` is `undefined`.
+
+**This is the most consequential defect found in Phase 0.** Everything else in this batch returns a
+wrong answer to a query or fails to raise an alarm. This one puts a *carbohydrate total the user did
+not choose* into a bolus calculation, under a label they did read.
+
+**It has shipped in every release since `3457de5b` (2017-10-16) — eight years.** The same commit
+removed the only caller of `/api/v1/food/quickpicks`. In `loadFoodDatabase` the type filter moved
+*into* the loop and stayed correct; in `loadFoodQuickpicks` it became a separate pass and the loop
+kept iterating the original array. Before that commit the source *was* the quickpicks endpoint,
+where every record was a quick pick — **so the code was right when written and made wrong by a
+change that did not appear to touch it.** It only bites a site whose food database holds at least
+one plain food, which is why it survived.
+
+*A detail worth keeping*: line 655 carries
+`/* eslint-disable-next-line security/detect-object-injection */ // verified false positive`.
+Somebody examined that exact line, correctly cleared it of the thing the linter flagged, and did not
+see the indexing bug beside it.
+
+**BF-16 confirmed, and its reachability claim was wrong** — the fourth such entry. The lexicographic
+`position` sort was real and **reached nobody**: `/api/v1/food/quickpicks` has no consumer in the
+tree. The order users actually see was broken by the chooser not sorting at all. The type ambiguity
+is real and is now reproduced over HTTP rather than read. A **fourth** site the entry did not name,
+`restoreBoolValue`, mapped `=== 'true'` and so turned a real boolean `true` into `false`, silently
+un-hiding a hidden quick pick on every editor load — the only one of the four *losing* a setting
+rather than failing to read one.
+
+**Two things this branch needs from whoever lands it:**
+
+1. **It deliberately does not create `CHANGELOG.md`.** That file does not exist on `a8888f0d`; both
+   `bf/reads` and `bf/coercion` add it, and a third add would be a third add/add conflict for no
+   benefit. **BF-35's release note text is in the register** — fold it into whichever branch owns
+   the file. It needs one: the quick-pick list changes contents *and* what selecting an entry does,
+   so anyone who had learned to work around the mislabelling will see different behaviour.
+2. **A drift tripwire fires when this lands, and it is not a breakage.**
+   `tools/nsschema/code_model.py`'s `SOURCE_ASSERTIONS` deliberately pins the quoted `'false'` in
+   `lib/server/food.js` and `record[key] === 'true'` in `lib/food/food.js`, so that fixing them
+   *forces* the food model to be revisited. Both are gone on `bf/food`, so `make schema-code-drift`
+   will fail the day this reaches `externals/work/crm-seam` or `externals/cgm-remote-monitor-official`.
+   The anchors were left alone because they are still true of both trees today; what to replace them
+   with is written into BF-16.
+
 ### Separate repository — open independently, no ordering relationship
 
 | # | branch | repo | what it is |
@@ -269,6 +331,30 @@ behaviour changes*.
 - **E** — `?count=0` was answered with the whole collection. Two new **restrictions** beyond the
   defect (`?count=0x10`, `?count=2.5` now `400`) must be called out as restrictions.
 
+## 4b. Which entries failed, and the one thing they have in common
+
+Five backfix-register entries had claims that did not survive contact with running code:
+
+| entry | what was wrong |
+|---|---|
+| **BF-12** | `entries.js` coerces `rssi`, never `rawbg`. A mis-transcription; the entry was **invalid** |
+| **BF-31** | "reaches alarm text" does not hold — the catalogue is loaded once at boot |
+| **BF-14** | the **prescribed fix** was itself defective; copying it would have spread an unbounded read |
+| **BF-16** | the sort defect was real and **reached nobody**; the endpoint has no consumer |
+| **BF-03** | closes for two of its four collections; the other two have nothing to fix |
+
+Plus **BF-30**, whose preferred fix measured as a net regression, and **BF-08**, where half the
+premise was wrong.
+
+**All of them were derived from reading the source. Not one entry that began with a reproduction
+has had to be retracted.**
+
+That is not an argument for fewer entries — **reading found all five, and four of them were real
+defects sitting next to a wrong explanation.** It is an argument for marking which kind each entry
+is, so a later reader knows whether "the fix is X" has been executed or merely reasoned. A
+suggested fix is a hypothesis until someone runs it, and twice here the hypothesis would have made
+things worse.
+
 ## 5. Follow-ups, deliberately not in these PRs
 
 1. **`aggregate.js` does not pass a collection to `query.js`.** After D and E both land, the count
@@ -283,6 +369,10 @@ behaviour changes*.
    same shape as BF-05, different file.
 5. **T0.4** (`nightscout-connect` jitter) is in a different repository and not in this set.
 6. **BF-04** needs *extraction* from the seam branch, not a fresh fix.
+7. **jsdom test hygiene has no enforcement.** A suite that sets `global.window`/`global.document`
+   must restore them in `afterEach` or it breaks `browser-settings.test.js` later in the same run.
+   `hashauth.modern.test.js` does the restore; nothing requires it, and the failure lands in a
+   different file than the one that caused it.
 
 ## 6. After these land
 
