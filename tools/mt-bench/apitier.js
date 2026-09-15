@@ -52,6 +52,59 @@ const NS_ROOT = process.env.NS_ROOT ||
 
 const initDdata = require(path.join(NS_ROOT, 'lib/data/ddata'));
 
+// ---------------------------------------------------------------- live source
+//
+// 2026-09-15, T0.2/T0.3. The read and cycle arms used to transcribe the modules
+// they measured, which means a fix in the repository would not move them. They now
+// build the REAL lib/server/cache.js and read the REAL lib/api/entries/index.js to
+// decide which shape of the cached-read branch is in front of them. A transcription
+// that has drifted from its source is not evidence, so drift throws rather than
+// prints.
+
+const EventEmitter = require('events');
+
+function liveCache () {
+  // cache.js needs only these three things from env/ctx.
+  const env = { extendedSettings: { devicestatus: { days: 2 } } };
+  const ctx = { bus: new EventEmitter(), ddata: initDdata() };
+  return require(path.join(NS_ROOT, 'lib/server/cache.js'))(env, ctx);
+}
+
+function sourceOf (rel) {
+  return fs.readFileSync(path.join(NS_ROOT, rel), 'utf8');
+}
+
+// The untyped branch of query_models has exactly two known shapes: it either clones
+// the whole retained array and then slices it, or it slices the live array and
+// clones the slice. Which one is in the tree decides which number below is the one
+// this repository actually pays.
+function readBranchShape () {
+  const src = sourceOf('lib/api/entries/index.js');
+  const cloneThenSlice = src.includes("inMemoryCollection = ctx.cache.getData('entries');");
+  const sliceThenClone = src.includes("inMemoryCollection = ctx.cache.getDataRef('entries');");
+  if (!src.includes('res.entries = JSON.parse(JSON.stringify(inMemoryCollection.slice(0, query.count)));')) {
+    throw new Error('read arm: the slice-and-clone line is no longer in lib/api/entries/index.js');
+  }
+  if (cloneThenSlice === sliceThenClone) {
+    throw new Error('read arm: cannot identify the untyped branch in lib/api/entries/index.js');
+  }
+  return cloneThenSlice ? 'clone-then-slice' : 'slice-then-clone';
+}
+
+// Which accessor does each of the three dataloader call sites use? That is what
+// the cycle pays, and it is read from the source rather than assumed.
+function cycleCallSites () {
+  const src = sourceOf('lib/data/dataloader.js');
+  const sites = {};
+  for (const type of ['entries', 'treatments', 'devicestatus']) {
+    const ref = src.includes(`ctx.cache.insertDataRef('${type}', r)`);
+    const clone = src.includes(`ctx.cache.insertData('${type}', r)`);
+    if (ref === clone) throw new Error(`cycle arm: cannot tell which accessor dataloader uses for ${type}`);
+    sites[type] = ref ? 'insertDataRef' : 'insertData';
+  }
+  return sites;
+}
+
 // ---------------------------------------------------------------- fixtures
 //
 // Same shapes as residency.js --unique. Distinct ids throughout: the identical-id
@@ -176,25 +229,50 @@ function memArm (build, N) {
 // first clone because Array.filter copies references, not documents.
 
 function readArm (N) {
-  const cache = { entries: Array.from({ length: 576 }, (_, i) => mkSgv(i, 0)) };
-  const getData = () => JSON.parse(JSON.stringify(cache.entries));
+  const cache = liveCache();
+  for (let i = 0; i < 576; i++) cache.entries.push(mkSgv(i, 0));
+  const shape = readBranchShape();
 
-  function untyped (count) {
-    const coll = getData();
-    return JSON.parse(JSON.stringify(coll.slice(0, count)));
-  }
+  // Both shapes of the untyped branch, transcribed, so one run prices the branch
+  // that is live and the one that is not. cache.getData and cache.entries are the
+  // real module's.
+  const untypedShapes = {
+    'clone-then-slice': (count) => {
+      const coll = cache.getData('entries');
+      return JSON.parse(JSON.stringify(coll.slice(0, count)));
+    }
+    , 'slice-then-clone': (count) => {
+      const coll = cache.getDataRef ? cache.getDataRef('entries') : cache.entries;
+      return JSON.parse(JSON.stringify(coll.slice(0, count)));
+    }
+  };
   function typed (count) {
     const coll = cache.entries.filter(o => 'sgv' in o);
     return JSON.parse(JSON.stringify(coll.slice(0, count)));
   }
 
+  // The fix is only worth anything if the response does not change. Assert it here
+  // rather than claim it: the two shapes must produce identical JSON at every count
+  // the arm reports, and the typed branch must agree too on an all-sgv fixture.
+  for (const count of [1, 10, 144, 576]) {
+    const a = JSON.stringify(untypedShapes['clone-then-slice'](count));
+    const b = JSON.stringify(untypedShapes['slice-then-clone'](count));
+    if (a !== b) throw new Error(`read arm: the two branch shapes disagree at count=${count}`);
+    if (JSON.stringify(typed(count)) !== a) throw new Error(`read arm: typed and untyped disagree at count=${count}`);
+  }
+
+  const untyped = untypedShapes[shape];
+  console.log(`  live source shape: ${shape}  (lib/api/entries/index.js)`);
+
   const rows = [];
   for (const count of [1, 10, 144, 576]) {
     const u = timed(() => untyped(count), N);
     const t = timed(() => typed(count), N);
-    rows.push({ count, untyped: u, typed: t, ratio: +(u.p50 / t.p50).toFixed(1) });
+    const o = timed(() => untypedShapes[shape === 'clone-then-slice' ? 'slice-then-clone' : 'clone-then-slice'](count), N);
+    rows.push({ count, untyped: u, typed: t, other: o, ratio: +(u.p50 / t.p50).toFixed(1) });
     console.log(`  count=${String(count).padStart(3)}  untyped ${u.p50.toFixed(3)} ms p50 / ${u.p99.toFixed(3)} p99` +
-                `   typed ${t.p50.toFixed(3)} ms p50 / ${t.p99.toFixed(3)} p99   ${(u.p50 / t.p50).toFixed(1)}x`);
+                `   typed ${t.p50.toFixed(3)} ms p50 / ${t.p99.toFixed(3)} p99   ${(u.p50 / t.p50).toFixed(1)}x` +
+                `   [other shape ${o.p50.toFixed(3)}]`);
   }
   console.log(`  cache holds ${cache.entries.length} entries, ${JSON.stringify(cache.entries).length} bytes JSON`);
 
@@ -211,7 +289,8 @@ function readArm (N) {
   console.log(`  K_rest at count=10, 3 followers/tenant polling 60 s, 30 % budget:`);
   console.log(`    untyped branch  ${kRest.untyped.toLocaleString()} tenants/process`);
   console.log(`    typed branch    ${kRest.typed.toLocaleString()} tenants/process`);
-  return { rows, kRest };
+  console.log(`  T0.2 gate: untyped within 2x of typed at count=10 -> ${row10.ratio <= 2 ? 'PASS' : 'FAIL'} (${row10.ratio}x)`);
+  return { shape, rows, kRest, gate: row10.ratio <= 2, ratioAt10: row10.ratio };
 }
 
 // ---------------------------------------------------------------- arm: mem
@@ -321,18 +400,42 @@ function alarmArm (N) {
 
 function cycleArm (N) {
   const t = rawTenant(0);
-  const cache = { entries: t.sgvs, treatments: t.treatments, devicestatus: t.devicestatus };
-  const getData = (k) => JSON.parse(JSON.stringify(cache[k]));
+  const cache = liveCache();
+  // seed the retained window directly; the batch below is what a 15-minute
+  // incremental load actually returns, and it is newer than everything seeded.
+  const seeded = { entries: t.sgvs, treatments: t.treatments, devicestatus: t.devicestatus };
+  for (const type of ['entries', 'treatments', 'devicestatus']) {
+    for (const d of seeded[type]) cache[type].push(d);
+  }
+  const batch = {
+    entries: [mkSgv(-1, 0), mkSgv(-2, 0), mkSgv(-3, 0)]
+    , treatments: [mkTr(-1, 0)]
+    , devicestatus: [mkDs(-1, 0), mkDs(-2, 0), mkDs(-3, 0)]
+  };
+
+  const sites = cycleCallSites();
+  console.log(`  live call sites: ` + Object.entries(sites).map(([k, v]) => `${k}=${v}`).join('  '));
 
   const per = {};
-  let total = 0;
+  let cloneTotal = 0;
+  let insertTotal = 0;
   for (const type of ['entries', 'treatments', 'devicestatus']) {
-    const r = timed(() => getData(type), N * 2, 30);
-    per[type] = r;
-    total += r.p50;
-    console.log(`  getData('${type}')`.padEnd(38) + `${r.p50.toFixed(3)} ms p50 / ${r.p99.toFixed(3)} p99   n=${cache[type].length}`);
+    // the clone alone: getData's body, on the real retained array
+    const c = timed(() => JSON.parse(JSON.stringify(cache[type])), N, 30);
+    // what the cycle actually calls, on the real module, through the accessor
+    // the live dataloader uses
+    const call = sites[type];
+    if (typeof cache[call] !== 'function') throw new Error(`cycle arm: cache has no ${call}`);
+    const ins = timed(() => cache[call](type, batch[type]), N, 30);
+    per[type] = { clone: c, call, insertData: ins, n: cache[type].length };
+    cloneTotal += c.p50;
+    insertTotal += ins.p50;
+    console.log(`  ${type.padEnd(13)} n=${String(cache[type].length).padStart(4)}` +
+                `  full clone ${c.p50.toFixed(3)} ms` +
+                `  ${call.padEnd(13)} ${ins.p50.toFixed(3)} ms p50 / ${ins.p99.toFixed(3)} p99`);
   }
-  total = +total.toFixed(3);
+  cloneTotal = +cloneTotal.toFixed(3);
+  insertTotal = +insertTotal.toFixed(3);
 
   // Cycle figures carried from the K report §3 (measured) and §5 (fixes applied).
   const CYCLE_CURRENT = 9.457;
@@ -342,17 +445,13 @@ function cycleArm (N) {
   const k = (ms) => Math.floor((UTIL * 1000) / (ms * LOADS_PER_S));
 
   console.log(`  ---`);
-  console.log(`  clone cost per cycle (3 datatypes)   ${total} ms`);
-  console.log(`  cycle as measured / with clones      ${CYCLE_CURRENT} -> ${(CYCLE_CURRENT + total).toFixed(2)} ms   K ${k(CYCLE_CURRENT)} -> ${k(CYCLE_CURRENT + total)}`);
-  console.log(`  quadratics fixed / with clones       ${CYCLE_FIXED} -> ${(CYCLE_FIXED + total).toFixed(2)} ms   K ${k(CYCLE_FIXED)} -> ${k(CYCLE_FIXED + total)}`);
-  console.log(`  clone share of the FIXED cycle       ${((total / (CYCLE_FIXED + total)) * 100).toFixed(0)} %`);
-
-  return { per, total,
-    cycleCurrent: CYCLE_CURRENT, cycleCurrentWithClones: +(CYCLE_CURRENT + total).toFixed(2),
-    cycleFixed: CYCLE_FIXED, cycleFixedWithClones: +(CYCLE_FIXED + total).toFixed(2),
-    kCurrent: k(CYCLE_CURRENT), kCurrentWithClones: k(CYCLE_CURRENT + total),
-    kFixed: k(CYCLE_FIXED), kFixedWithClones: k(CYCLE_FIXED + total),
-    cloneShareOfFixed: +((total / (CYCLE_FIXED + total)) * 100).toFixed(0) };
+  console.log(`  full clone of all three retained arrays   ${cloneTotal} ms`);
+  console.log(`  the three calls the cycle makes           ${insertTotal} ms   (merge + whatever they clone)`);
+  console.log(`  quadratics fixed / plus insertData        ${CYCLE_FIXED} -> ${(CYCLE_FIXED + insertTotal).toFixed(2)} ms   K ${k(CYCLE_FIXED)} -> ${k(CYCLE_FIXED + insertTotal)}`);
+  return { per, cloneTotal, insertTotal, sites,
+    cycleCurrent: CYCLE_CURRENT, cycleFixed: CYCLE_FIXED,
+    cycleFixedWithInsert: +(CYCLE_FIXED + insertTotal).toFixed(2),
+    kFixed: k(CYCLE_FIXED), kFixedWithInsert: k(CYCLE_FIXED + insertTotal) };
 }
 
 // ---------------------------------------------------------------- main

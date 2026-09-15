@@ -1,113 +1,92 @@
 {
   "node": "v24.15.0",
-  "date": "2026-09-14T22:41:04.994Z",
+  "date": "2026-09-15T21:47:31.935Z",
   "N": 200,
   "read": {
+    "shape": "slice-then-clone",
     "rows": [
       {
         "count": 1,
         "untyped": {
-          "p50": 0.8289,
-          "p99": 1.5651,
-          "mean": 0.8678
+          "p50": 0.0022,
+          "p99": 0.0099,
+          "mean": 0.0032
         },
         "typed": {
-          "p50": 0.0077,
-          "p99": 0.0236,
-          "mean": 0.0089
+          "p50": 0.0074,
+          "p99": 0.0567,
+          "mean": 0.0094
         },
-        "ratio": 107.6
+        "other": {
+          "p50": 0.7993,
+          "p99": 1.473,
+          "mean": 0.847
+        },
+        "ratio": 0.3
       },
       {
         "count": 10,
         "untyped": {
-          "p50": 0.838,
-          "p99": 1.9368,
-          "mean": 0.8766
+          "p50": 0.0137,
+          "p99": 0.0229,
+          "mean": 0.0142
         },
         "typed": {
-          "p50": 0.0199,
-          "p99": 0.0392,
-          "mean": 0.0214
+          "p50": 0.0191,
+          "p99": 0.0357,
+          "mean": 0.0201
         },
-        "ratio": 42.1
+        "other": {
+          "p50": 0.8062,
+          "p99": 1.7895,
+          "mean": 0.857
+        },
+        "ratio": 0.7
       },
       {
         "count": 144,
         "untyped": {
-          "p50": 1.0151,
-          "p99": 1.8241,
-          "mean": 1.0368
+          "p50": 0.1848,
+          "p99": 0.3687,
+          "mean": 0.1966
         },
         "typed": {
-          "p50": 0.1978,
-          "p99": 0.3401,
-          "mean": 0.2057
+          "p50": 0.1905,
+          "p99": 0.3492,
+          "mean": 0.198
         },
-        "ratio": 5.1
+        "other": {
+          "p50": 0.9867,
+          "p99": 1.7399,
+          "mean": 1.0191
+        },
+        "ratio": 1
       },
       {
         "count": 576,
         "untyped": {
-          "p50": 1.6487,
-          "p99": 2.7959,
-          "mean": 1.689
+          "p50": 0.779,
+          "p99": 1.7017,
+          "mean": 0.8139
         },
         "typed": {
-          "p50": 0.8294,
-          "p99": 1.81,
-          "mean": 0.853
+          "p50": 0.7863,
+          "p99": 1.6309,
+          "mean": 0.8176
         },
-        "ratio": 2
+        "other": {
+          "p50": 1.5881,
+          "p99": 2.983,
+          "mean": 1.6723
+        },
+        "ratio": 1
       }
     ],
     "kRest": {
-      "untyped": 7159,
-      "typed": 301507
-    }
-  },
-  "mem": {
-    "ddataOnly": 1330.7,
-    "withCache": 2651.2,
-    "kMemBefore": 3151,
-    "kMemAfter": 1582
-  },
-  "cycle": {
-    "per": {
-      "entries": {
-        "p50": 0.8474,
-        "p99": 1.5094,
-        "mean": 0.8805
-      },
-      "treatments": {
-        "p50": 0.7253,
-        "p99": 0.8112,
-        "mean": 0.7424
-      },
-      "devicestatus": {
-        "p50": 2.3607,
-        "p99": 4.8065,
-        "mean": 2.3896
-      }
+      "untyped": 437956,
+      "typed": 314136
     },
-    "total": 3.933,
-    "cycleCurrent": 9.457,
-    "cycleCurrentWithClones": 13.39,
-    "cycleFixed": 2.19,
-    "cycleFixedWithClones": 6.12,
-    "kCurrent": 158,
-    "kCurrentWithClones": 112,
-    "kFixed": 684,
-    "kFixedWithClones": 244,
-    "cloneShareOfFixed": 64
-  },
-  "alarm": {
-    "minimal": 0.5,
-    "shipped": 50.6,
-    "resident": 2509.4,
-    "ratioBefore": 5019,
-    "ratioAfter": 50,
-    "coldMbBefore": 5,
-    "coldMbAfter": 494
+    "gate": true,
+    "ratioAt10": 0.7
   }
 }

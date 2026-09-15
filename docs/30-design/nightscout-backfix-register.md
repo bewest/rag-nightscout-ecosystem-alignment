@@ -53,8 +53,8 @@ raised again).
 | **BF-32** | Query coercion was applied to operands that are not field values, so `find[sgv][$exists]=true` became `{$exists: NaN}` — falsy, returning exactly the documents that lack the field | `lib/server/query.js` `walk_prop` | **medium** — inverted answer, HTTP 200; reachable on the 10 fields that had a walker entry | yes | **fixed 2026-09-15** (found during T0.5, `bf/coercion` `88d1f8a4`) |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
-| **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | open |
-| **BF-07** | `cache.insertData` JSON round-trips the whole retained array | `lib/server/cache.js:81` | medium — 65 % of the load cycle | yes | open |
+| **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | **fixed 2026-09-15** (T0.2, `bf/cache` `ddcdb1a8`); 0.837 → 0.025 ms, response asserted identical over HTTP |
+| **BF-07** | `cache.insertData` JSON round-trips the whole retained array | `lib/server/cache.js:81` | medium — 65 % of the load cycle | yes | **partly fixed 2026-09-15** (T0.3, `bf/cache` `4f86bab1`); 3.75 → 2.66 ms per cycle — **devicestatus keeps its clone on purpose, see detail** |
 | **BF-08** | `nightscout-connect` actors have no start or interval jitter | `nightscout-connect`, `run()` | medium — thundering herd on restart | yes | open |
 | **BF-09** | Socket dedup uses truthiness, so a `0` insulin/carbs value is skipped as a match key | `lib/server/websocket.js:535-568` | **unsettled** — may be intentional | yes | open |
 | **BF-10** | `mongod` fatal-asserts at Docker's default `nofile=1024` | operational, not code | medium — self-hosters in containers | yes | open |
@@ -667,6 +667,14 @@ response, because `ctx.cache.getData('entries')` deep-clones the whole 48-hour a
 anything is sliced. *Fix*: slice first, then clone the slice — the documents handed out are
 still clones, so the defensive property is preserved. *Evidence*: {R} §12.2. Plan T0.2.
 
+**Fixed 2026-09-15**, `bf/cache` `ddcdb1a8`. Re-measured baseline reproduced the figure exactly
+(0.837 ms vs 0.020 ms, 42.0×). The untyped branch now reads through a new `cache.getDataRef`,
+which returns a fresh array of the cache's own documents; the response is still cloned out of the
+slice. **0.025 ms p50 at `count=10`, 0.7× the typed branch.** Byte-identity is asserted, not
+argued: the same HTTP request is made twice, once with the old cloning read patched back in, and
+the bodies compared. Write-up in
+[T0.2/T0.3](../60-research/t02-t03-cache-clone-2026-09-15.md).
+
 ### BF-07 · `cache.insertData` round-trips the whole retained array
 
 `insertData` returns `getData()` — a JSON round-trip over the **whole** retained array, per
@@ -674,6 +682,30 @@ datatype, per cycle: **4.08 ms**, 65 % of the post-#8733 load cycle.
 **Resolve `dataloader.js:203` first** — `if (!element.mills) element.mills = element.date` writes
 to the element, so a shallow copy changes behaviour there. The measurement sizes the prize; it
 does not license the patch. *Evidence*: {R} §12.3. Plan T0.3.
+
+**Partly fixed 2026-09-15**, `bf/cache` `4f86bab1` — **3.747 ms → 2.657 ms per cycle, not below
+1 ms**, and the shortfall is a decision rather than an omission.
+
+`dataloader.js:203` resolved first, as the entry demanded: **the write is dead.** All three
+branches below it take `mills` from `element.date`, and the array is discarded when the loop
+ends, so under the clone regime it wrote to a throwaway copy that nothing read. It is removed,
+and a test runs a real load cycle and asserts the cached documents come back byte-for-byte as
+they went in — it fails if the write returns.
+
+The three call sites then split. **entries** performs no writes once the dead one is gone;
+**treatments** hands its array to `idMergePreferNew`, which deep-clones what it is given and
+never writes to it, so `insertData`'s clone was the first of two identical clones. Both read by
+reference now (0.845 → 0.035 ms, 0.397 → 0.017 ms). **devicestatus keeps `insertData`**: its
+caller rewrites `uploaderBattery` into `uploader` on every document and `mergeProcessSort` writes
+`_id` and `mills` on top, on documents that then live in `ddata` for the life of the process.
+That is 2.6 ms of the remaining 2.66, and taking it means proving no consumer anywhere in the
+plugin tier writes to a device status document — a larger claim than this change would make.
+
+The by-reference accessors are sound because **the cache already clones on the way in**:
+`mergeCacheArrays` → `idMergePreferNew` → `JSON.parse(JSON.stringify(newData))`. A normalising
+clone added to the insert path in the first draft turned out to be redundant and was removed when
+deleting it failed to turn any test red. Write-up, including the non-vacuity runs, in
+[T0.2/T0.3](../60-research/t02-t03-cache-clone-2026-09-15.md).
 
 ### BF-08 · No jitter in `nightscout-connect`
 
