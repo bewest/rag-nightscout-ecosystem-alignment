@@ -31,6 +31,8 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | open |
 | **BF-12** | `entries.rawbg` is coerced but is not in the model — stale walker entry | `lib/server/entries.js:186` | low — dead entry | yes | open |
 | **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | open |
+| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — unbounded read from a bounded request | yes | open |
+| **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | open |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | open |
@@ -124,6 +126,68 @@ they are **not** 158 equivalent bugs: `entries.sgv` is declared `number` but was
 > three arms agree 3000/3000; with mistyped ones, four divergence classes open, two of which
 > produce *different data* depending on which backend a deployment runs.
 > See [three-arm validation](../60-research/seam-filter-ast-three-arm-validation-2026-09-14.md) §4.
+
+### BF-14 · `?count=0` is an unbounded read
+
+API v1 builds its limit in five places with one expression:
+
+```js
+limit: opts && opts.count ? parseInt(opts.count) : undefined
+```
+
+A truthiness test **on a string**, then `parseInt`. `'0'` is a non-empty string, so it passes the
+test; `parseInt` yields `0`; and **MongoDB defines `.limit(0)` as "no limit"**. `?count=0` returns
+the whole collection. Measured on a ten-document collection: `count=0` -> 10 rows.
+
+Two more from the same expression: `count=-3` silently returns 3 documents (MongoDB reads a
+negative limit as legacy single-batch semantics), and `count=1e2` returns **one** document
+because `parseInt('1e2')` stops at the `e`.
+
+Not a seam regression — `origin/dev` chains `this.limit(parseInt(opts.count))` and reaches the
+identical driver call.
+
+*Fix*: API v3 already has it. `lib/api3/generic/collection.js:76` bounds-checks against
+`API3_MAX_LIMIT`, returns `HTTP 400` on `0`, `abc` or a negative, and defaults sanely when absent.
+Give v1 the same validation rather than inventing one.
+
+*Also relevant to the seam*: `findFiltered` falls back to `toSafeInt(o.limit, 0)`, and `0` is the
+value that means unbounded. `findMany`, in the same file, defaults to `1000`.
+
+*Evidence*: [limit and projection](../60-research/seam-limit-and-projection-2026-09-14.md) §2,
+`tools/qc/shape-arm.js`, against a real mongod.
+
+*Not sized*: no census has asked how many clients send `count=0`. BF-13 got that treatment and
+this has not.
+
+### BF-15 · `?fields=` with a dotted path returns `{}`
+
+v3 projects in two stages. `storageProjection()` is handed to the driver, so MongoDB's
+dotted-path rules apply and a **nested** document comes back. `applyProjection(doc)` then deletes
+any **top-level** key not string-equal to something the client typed. A dotted request survives
+stage one and is destroyed by stage two:
+
+```
+?fields=uploader.battery
+  _id 1  from driver           {"_id":1,"uploader":{"battery":80}}
+         after applyProjection {}          <- driver returned uploader; DESTROYED
+```
+
+The data is read, paid for, and discarded. The client gets `200` and an empty document.
+
+`uploader.battery` is the canonical nested field in Nightscout and `devicestatus` is the
+collection people query for it, so this is an ordinary request, not a contrived one.
+Comma-separated top-level fields are unaffected, which is why it has gone unnoticed.
+
+*Fix*: `applyProjection` must compare on paths rather than top-level keys — keep a key when any
+requested field equals it or is prefixed by it plus `.`, and prune within the subtree. Either
+that, or reject a dotted `fields` with `HTTP 400` rather than answering `200` with nothing.
+
+*Evidence*: [limit and projection](../60-research/seam-limit-and-projection-2026-09-14.md) §3.3,
+produced by running the shipping `fieldsProjector.js` against real mongod documents.
+
+*Checked*: the system fields `storageProjection` adds and `applyProjection` removes are **not**
+dead work — `col.resolveDates(doc)` consumes them in between
+(`lib/api3/generic/search/operation.js:46-47`).
 
 ### BF-04 · No operator allowlist on API v1
 

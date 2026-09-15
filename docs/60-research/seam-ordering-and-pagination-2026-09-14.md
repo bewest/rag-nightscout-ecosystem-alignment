@@ -167,8 +167,10 @@ free to reorder ties.
 
 ## 4. Honest limits
 
-- **`limit` and `projection` are still not differentially tested.** This covers `sort` and the
-  `skip`+`limit` interaction only.
+- ~~**`limit` and `projection` are still not differentially tested.**~~ **Closed** by
+  [seam limit and projection](seam-limit-and-projection-2026-09-14.md), which found BF-14
+  (`?count=0` means unbounded) and BF-15 (`?fields=` with a dotted path returns `{}`).
+  `readOptions`, the third driver object in the options bag, remains uncovered.
 - **One `mongod` version, standalone, small collections.** Sort stability among ties is
   explicitly not promised by MongoDB, so the *defect* does not depend on the version; the exact
   documents lost would differ.
