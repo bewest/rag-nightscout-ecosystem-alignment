@@ -2,36 +2,36 @@
 
 Date: 2026-09-14. Status: draft for maintainer discussion.
 
-> # ⛔ READ THIS BEFORE STARTING ANY TASK — 2026-09-15
+> # How to pick up work here — read this first
 >
-> **NEW TENANCY WORK IS STOPPED.** Phases 1–4 are substantially built; **Phase 0 is 0 of 5**, and
-> the [backfix register](nightscout-backfix-register.md) holds **29 open entries**. Phase 0 and
-> that register are the work that reaches the people running Nightscout *today*, and none of it
-> has shipped. That inversion is the programme's largest misalignment, and it is corrected by
-> **doing Phase 0 next, not by noting it here.**
+> **Phase 0 is done and is not the blocker any more.** Five branches are ready to push; see
+> [PR sequencing](phase0-pr-sequencing-2026-09-15.md). **13 register entries closed, 3 new defects
+> found, 4 register entries corrected as wrong.** Tenancy work is open again.
 >
-> **If you are an agent picking up work: take a Phase 0 task or a register entry.** Do not start a
-> new Phase 3 or Phase 4 task. The two exceptions, both corrections rather than new capability:
-> **T3.0** (§2.8 — the credential rework D13/D14 require) and finishing **T4.3/T4.4**, and only
-> when explicitly briefed for them.
+> **Before you brief yourself, four things.** All four failed at least once on 2026-09-15 and each
+> cost a rerun or a wrong answer:
 >
-> **Also check before you brief yourself:** this branch moves several times a day and several
-> sessions share it. Confirm the head commit, confirm the task you were given is still open, and
-> re-read the section you are acting on — three decisions in one day were overtaken between being
-> asked and being answered. Allocate a **BF-** id by reading the register's highest id *at the
-> moment you write it*, not the one your brief quoted; three collisions have already happened.
-**This is the working document.** The evidence lives in {M}, {R} and {DB}; the component
-design in {C}. This says what is decided, what is next, and carries enough context per task
-that work can be picked up without re-reading the evidence chain.
-
-| ref | document |
-|---|---|
-| **{M}** | [Nightscout multitenancy: evidence and options](nightscout-multitenancy-discussion-2026-09-09.md) |
-| **{C}** | [Deployable components](nightscout-deployable-components-2026-09-14.md) |
-| **{R}** | [What sets K](../60-research/multitenancy-k-and-residency-2026-09-14.md) |
-| **{DB}** | [A real database in the loop](../60-research/exp-mt-026-database-in-the-loop-2026-09-14.md) |
-| **{S}** | [T1.1 — the storage seam: interface and call-site classification](nightscout-storage-seam-interface-2026-09-14.md) |
-
+> 1. **Confirm the head commit and that your task is still open.** Several sessions share this
+>    branch and it moves several times a day. Three decisions were overtaken between being asked
+>    and being answered.
+> 2. **Allocate a `BF-` id by reading the register's highest at the moment you write it**, never
+>    the one your brief quoted. Three ids were allocated twice.
+> 3. **Never create, delete or repoint a worktree you did not create.** One agent had its checkout
+>    removed mid-run and had to re-take every figure.
+> 4. **A "done" command must exercise the shipping module, not a copy of it.** `tools/mt-bench/apitier.js`
+>    had transcribed the modules it priced, so it would have kept reporting a defect after the fix
+>    landed. It now builds the real module and throws rather than printing a number for code that
+>    is not there.
+>
+> **Status vocabulary**, so a later reader can tell these apart:
+> **DONE** · **DONE-EXCEPT** (shipped, one named site superseded by a later decision) ·
+> **GATE NOT MET** (the change landed, the numeric target did not, and the reason is recorded) ·
+> **invalid** (the entry was wrong; struck through with why).
+>
+> **Where things go.** Shipping fixes and their tests go in `cgm-remote-monitor`, as clean
+> reviewable commits — no scaffolding, no findings in code comments. Harnesses, measurements and
+> findings go in this repository and are referenced from there. That is D12, and it is what lets a
+> commit be reviewed by someone who has never read this plan.
 ---
 
 ## 1. Decisions
@@ -515,7 +515,7 @@ the suite is `npm run test:unit` (149 files, no database) and `npm run test:inte
 
 **T0.1 · Land PR #8733.** In flight. The two quadratic scans. Everything downstream assumes it.
 
-**T0.2 · Fix `/api/v1/entries` untyped read.**
+**T0.2 · Fix `/api/v1/entries` untyped read. — DONE 2026-09-15**, `bf/cache` `ddcdb1a8`. Measured **0.837 ms → 0.025 ms**, from 42.0× the typed read to 0.7×. Gate passed.
 `lib/api/entries/index.js:459-500`. `?count=10` costs **0.83 ms** without `find[type]` and
 **0.02 ms** with it — a 42× overcharge for a byte-identical response, because
 `ctx.cache.getData('entries')` (`lib/server/cache.js:73-76`) deep-clones the whole 48-hour
@@ -525,7 +525,7 @@ are still clones, so the defensive property is preserved.
 the typed one at `count=10`; `npm run test:unit` and `test:integration` pass.
 *Evidence*: {R} §12.2.
 
-**T0.3 · Audit `cache.getData`'s five call sites.**
+**T0.3 · Audit `cache.getData`'s five call sites. — GATE NOT MET 2026-09-15**, `bf/cache` `4f86bab1`. The three cache calls went **3.747 ms → 2.657 ms**; the gate asked for under 1 ms. **98 % of the remainder is `devicestatus`**, whose caller rewrites fields in place and whose result lives in `ddata` for the life of the process — taking it needs proof that nothing in the plugin tier writes to a device-status document, and a grep is not that proof when the failure mode is a field silently vanishing from every API read served out of the cache. `dataloader.js:203`'s `mills` write was found to be **dead** (all three branches below it read `element.date`) and removed, with a test that goes red if it returns.
 `lib/server/cache.js:81`, `lib/data/dataloader.js:195/332/489`, `lib/api/entries/index.js:490`.
 `insertData` returns `getData()` — a JSON round-trip over the **whole** retained array, per
 datatype, per cycle: **4.08 ms**, which is 65 % of the post-#8733 load cycle.
@@ -536,7 +536,7 @@ prize; it does not license the patch.
 passes; a test pins the mutation semantics either way.
 *Evidence*: {R} §12.3.
 
-**T0.5 · Schema-driven query type coercion.**
+**T0.5 · Schema-driven query type coercion. — DONE 2026-09-15**, `bf/coercion` `88d1f8a4`. **158 coercions over 5 collections replace 13 hand-written entries.** Closes BF-02 and BF-11; BF-03 for `devicestatus` and `profile` only (`food` reaches `query.js` at no point; `activity`'s model has no numeric field). **BF-12 is invalid** — `entries.js` coerces `rssi`, not `rawbg`, and no commit on any branch ever had `rawbg` there. Found and fixed **BF-32** on the way: the walker coerced *every* leaf including operator operands, so `find[sgv][$exists]=true` became `{$exists: NaN}` and returned the documents that **lack** the field — generalising from 10 fields to 158 would have generalised the bug.
 Emit a coercion table from `specs/nsschema/*.model.json` (sixth emitter, beside
 `mongoose_emit.py` et al.) and drive `lib/server/query.js`'s walker from it instead of the
 hand-maintained per-collection lists. Fixes three measured bugs (§3.4): `insulin`/`carbs`
