@@ -23,6 +23,21 @@ is a defect that
 > (the Google Home language leak). **Allocate a new id by reading the highest in this table at the
 > moment you write it**, never the one your brief quoted.
 
+> **Read or run — mark which.** Five entries have now had a claim fail on contact with the
+> running code: **BF-12** (a mis-transcription — the walker coerces `rssi`, not `rawbg`),
+> **BF-31** ("reaches alarm text" — it does not; the catalogue is read once at boot),
+> **BF-14** (the v3 validation it prescribed copying was itself defective — BF-33), **BF-16**
+> (the built-in editor neither uses the endpoint nor depends on its sort), and **BF-03**
+> (`food` never reaches `query.js`; `activity` has no numeric field). Every one of the five was
+> **derived from reading the source**; not one entry that began with a reproduction has had to
+> be retracted.
+>
+> That is not an argument for fewer entries — reading found all of these, and four of the five
+> were real defects sitting next to a wrong explanation. It is an argument for **saying which
+> kind an entry is**, so a later reader knows whether its reachability claim has been tested or
+> inferred. New entries should carry *reproduced* or *derived from source* explicitly, and an
+> entry that says *derived* is a request to go and run it, not a finished finding.
+
 **Status values**: `open` · `fixed <date>` (repaired on a backfix branch with tests and a
 release note, not yet merged — the row names the branch and commit) · `fixed-in-seam`
 (repaired inside the seam branch as a side effect, needs extraction to land independently) ·
@@ -44,7 +59,8 @@ raised again).
 | **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | **fixed 2026-09-15** (`bf/reads` `399dc283`); reproduced through the v3 HTTP path |
 | **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — on PostgreSQL an empty `200` on a glucose read; unbounded read on MongoDB | yes | **fixed 2026-09-15** (`bf/reads` `1640b64b`); reproduced live; **the v3 validation it says to copy is itself defective — see BF-33** |
 | **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | **fixed 2026-09-15** (`bf/reads` `ba70f1fc`); reproduced live |
-| **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks silently vanish from the quick-pick list; no shipping client triggers it today | yes | open |
+| **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type. **The "wrong order in the built-in editor" half of this entry was wrong** — the editor re-sorts numerically itself and does not use the endpoint | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks vanish from `/api/v1/food/quickpicks`, which has no in-tree consumer; `restoreBoolValue` un-hides a boolean-hidden pick in the editor | yes | **fixed 2026-09-15** (`bf/food` `73495331`); reproduced live, both spellings written over HTTP |
+| **BF-35** | The bolus calculator's quick-pick chooser builds its `<option>` list from the **whole food collection** but resolves the selection against the **filtered** quick-pick array. Picking one quick pick loads a different one's foods; the last entry throws; plain foods appear in the chooser | `lib/client/boluscalc.js` `loadFoodQuickpicks` | **high** — the carbs that reach the insulin calculation come from a record the user did not choose, with no error shown. Regression from `3457de5b` (2017) | yes | **fixed 2026-09-15** (found during BF-16, `bf/food` `73495331`); reproduced in jsdom, ablated six ways |
 | **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | fixed 2026-09-15 — `bf/auth` `64db1f35`; reproduced live; **existing rows still hold tokens, see the report** |
 | **BF-28** | `insulinage`'s URGENT branch is unreachable — it compares against `insulinInfo.urgent`, which is never assigned, where all three sibling plugins use `prefs.urgent`. "Insulin reservoir change overdue!" can never fire, **and the reported level stays WARN for as long as the reservoir is overdue** | `lib/plugins/insulinage.js:92` | **medium** — a site-change reminder that silently never arrives, and a severity that is wrong the whole time | yes | fixed 2026-09-15 (`bf/alarms` `8714093b`) |
 | **BF-29** | An unknown name in `ENABLE` is **silently ignored** — matching is against `plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`, **`basal`** — six, not five), not the file name. An operator who writes `ENABLE=cannulaage` gets no plugin and no warning | `lib/plugins/index.js:140` | **medium** — an operator believes an alarm plugin is on when it is off | yes | fixed 2026-09-15 (`bf/alarms` `99e46a52`) |
@@ -967,7 +983,7 @@ that the fixture really does tie on all three keys — with the fix reverted **a
 `date` varied, the paging assertions pass vacuously, and that guard is the only thing that fails.
 [Report](../60-research/bf01-13-14-15-read-defects-2026-09-15.md) §3.
 
-### BF-16 · `food.hidden` has no type; the server filter and the client disagree
+### BF-16 · `food.hidden` has no type; the server filter and the client disagree — **FIXED 2026-09-15**
 
 The `food` collection stores quick picks with a `hidden` flag, and the quick-pick list filters on
 it. The two ends of that round trip do not agree on what the value is:
@@ -1004,18 +1020,122 @@ orders `'10'` between `'1'` and `'2'`. A user with eleven or more visible quick 
 the wrong order. Unlike the `hidden` mismatch this one fires on the **shipping** path, with the
 built-in editor and no third-party client involved.
 
-*Not reproduced against a live instance.* Both readings are derived from the source and from
-jQuery's and `qs`'s documented behaviour; the corpus contains no `food` collection to check
-against — no snapshot ever fetched one.
+~~*Not reproduced against a live instance.*~~ **Reproduced 2026-09-15**, over HTTP against a live
+MongoDB. The premise holds exactly as read: a form-encoded write stores `hidden: 'false'` and
+`position: '1'`; the same document sent as `application/json` stores `false` and `2`. That is now
+a test (`tests/api.food.quickpicks.test.js`), written as an assertion about the *premise* rather
+than about the fix, so that if the transport ever stops doing this the filter can be simplified.
 
-*Recorded here rather than fixed* because the point is the class, not the instance: this is
-exactly what a typed model exists to prevent. `specs/nsschema/food.model.json` therefore declares
-`hidden` and `hideafteruse` as `["boolean", "string"]` with `type_undetermined`, and says why,
-instead of papering over the ambiguity by choosing one.
+**The "secondary consequence" was wrong, and wrong in an instructive way.** It said the
+lexicographic `position` sort "fires on the shipping path, with the built-in editor and no
+third-party client involved". Neither half survives running the code:
+
+* **The built-in editor never calls `/api/v1/food/quickpicks`.** It reads `/api/v1/food.json` and
+  sorts the quick picks numerically itself — `lib/food/food.js:94`, `parseInt` on both sides.
+* **Nothing else in the tree calls it either.** `3457de5b` (2017) moved the bolus calculator off
+  that endpoint and onto `client.sbx.data.food`, and removed its only consumer. The endpoint has
+  been public API with no in-tree caller for eight years.
+
+So the string sort was real and reached nobody, while **the order users actually see was broken
+by a different mechanism entirely** — the bolus calculator does not sort at all. That is
+[BF-35](#bf-35--the-quick-pick-chooser-resolves-the-wrong-record--fixed-2026-09-15), found by
+going to look.
+
+*Fix*: one predicate, in `lib/food/quickpick.js`, used by every reader — because "accept both on
+read" only works if all the readers agree on what both are.
+
+| site | was | now |
+|---|---|---|
+| `lib/server/food.js` `listquickpicks` | `{ hidden: 'false' }` — the string only, so it hid every JSON-written pick **and** every record saved before the field existed | `{ hidden: { $nin: [true, 'true'] } }` — not-hidden is anything that is not one of the two spellings of true, which a missing field also satisfies |
+| `lib/server/food.js` `listquickpicks` | `.sort({position: 1})` in the query | sorted after the fetch, numerically, because the query cannot coerce |
+| `lib/food/food.js` `restoreBoolValue` | `record[key] === 'true'` — **turned a real boolean `true` into `false`**, silently un-hiding a hidden pick every time the editor loaded | `quickpick.isTrue(record[key])` |
+| `lib/client/boluscalc.js` | did not consider `hidden` at all | hidden picks stay out of the chooser, either spelling |
+
+`restoreBoolValue` was the one this entry did not name and is the only one of the four that was
+losing a user's setting rather than failing to read it.
+
+**The model does not change.** `specs/nsschema/food.model.json` declares `hidden` and
+`hideafteruse` as `["boolean", "string"]` with `type_undetermined`, and that is still exactly
+right: the fix does not settle the type, it makes every reader accept both, which is what an
+undetermined type calls for.
+
+**The anchors did their job and now have to move.** `tools/nsschema/code_model.py`
+`SOURCE_ASSERTIONS` pins `lib/server/food.js`'s quoted `'false'` and `lib/food/food.js`'s
+`record[key] === 'true';`. Both are gone on `bf/food`, so `make schema-code-drift` will fail the
+day that branch reaches a tree the checker reads (`externals/work/crm-seam`, then
+`externals/cgm-remote-monitor-official`). **They are deliberately left alone until then**, because
+they are still true of both of those trees today. When the branch lands, replace them with the
+two that carry the new invariant — `$nin: [ true, 'true' ]` and `quickpick.isTrue` — and add one
+for `lib/food/quickpick.js` `isTrue`.
 
 *Evidence*: `specs/nsschema/food.model.json` (`type_undetermined_why`);
-`tools/nsschema/code_model.py` `SOURCE_ASSERTIONS` anchors the string comparison so that fixing
-it fails `make schema-code-drift` and forces the model to be revisited.
+`tests/api.food.quickpicks.test.js` (live), `tests/boluscalc.quickpick.test.js` (jsdom).
+
+### BF-35 · The quick-pick chooser resolves the wrong record — **FIXED 2026-09-15**
+
+Found while checking BF-16's claim about the built-in editor. It is the more serious of the two
+and it is not in the place BF-16 was looking.
+
+`lib/client/boluscalc.js` `loadFoodQuickpicks` did this:
+
+```js
+quickpicks = [];
+var records = client.sbx.data.food || [];
+records.forEach(function (r) { if (r.type == 'quickpick') quickpicks.push(r); });
+$('#bc_quickpick').empty().append(/* (none), value -1 */);
+for (var i = 0; i < records.length; i++) {          // <- the WHOLE collection
+  var r = records[i];
+  $('#bc_quickpick').append($('<option>').val(i).text(r.name + ' (' + r.carbs + ' g)'));
+}
+```
+
+The option's `value` is an index — and `quickpickChange` and `quickpickHideFood` both look that
+index up in `quickpicks`, the **filtered** array. The loop builds it from `records`, the
+**unfiltered** one. The two agree only when every food record is a quick pick.
+
+**Reproduced** in jsdom with a food collection of one plain food and two quick picks:
+
+| | shipped | fixed |
+|---|---|---|
+| options offered | `Apple (12 g)`, `Breakfast (45 g)`, `Lunch (70 g)` | `Breakfast (45 g)`, `Lunch (70 g)` |
+| pick the one labelled `Breakfast (45 g)` | loads **Lunch** | loads Breakfast |
+| pick the last option | **throws** `Cannot read properties of undefined (reading 'foods')` | loads Lunch |
+
+The test names the record by putting a getter on `foods` — the property `quickpickChange`
+reads — rather than by inspecting the GUI, because the question is which record was resolved,
+not what was computed from it.
+
+**Why it matters more than a mislabelled dropdown.** The selected quick pick's `foods` become
+the carbohydrate total the bolus calculator works from. The label the user read and the carbs
+the calculator used come from different records, and nothing reports a mismatch. This software
+does not decide anyone's dose, but a calculator that answers for a meal the user did not pick is
+the wrong kind of wrong. **A user seeing an unexpected number here should re-check it against
+their own records and their care team's guidance, not assume the calculator is right.**
+
+**Provenance.** `3457de5b` (2017-10-16, "use websockeets instead of rest api for food") moved
+both loaders off the REST endpoints and onto `client.sbx.data.food`. In `loadFoodDatabase` the
+author moved the type filter *into* the loop and it stayed correct. In `loadFoodQuickpicks` the
+filter became a separate pass and the loop was left iterating the original array. Before that
+commit the source was `/api/v1/food/quickpicks`, where every record *was* a quick pick and
+`records` and `quickpicks` were the same array — so the code was right when it was written and
+was made wrong by a change that did not look like it touched it.
+
+**It has been in every release since.** A site whose food database holds only quick picks is
+unaffected, which is why it survived: the food editor's own database is the thing that breaks it,
+and a user who never adds a plain food never sees it.
+
+*Fix*: build the options from `quickpicks`, and make `quickpicks` come from the one shared
+selector (`lib/food/quickpick.js` `selectable`) so that "which quick picks, in what order" is
+answered the same way on the server and in the client. Two behaviours change with it, both
+restoring what the 2017 endpoint did and the move dropped: **hidden quick picks stop appearing**
+in the chooser, and **the chooser is ordered by `position`** instead of by whatever order the
+collection came back in.
+
+*Ablation*: six reverts, each caught — the option loop (5 failures), the hidden filter (1), the
+numeric comparator (1), `isTrue`'s boolean arm (3), the server filter (1), the server sort (1).
+
+*Evidence*: `tests/boluscalc.quickpick.test.js`.
+
 
 ### BF-17 · A subject edit writes the access token into the database in plaintext
 
