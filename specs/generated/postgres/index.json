@@ -1,6 +1,12 @@
 {
  "collections": {
   "devicestatus": {
+   "columnTypes": {
+    "_id": "string",
+    "created_at": "string",
+    "date": "number",
+    "identifier": "string"
+   },
    "columns": [
     "_id",
     "created_at",
@@ -24,6 +30,17 @@
    ]
   },
   "entries": {
+   "columnTypes": {
+    "_id": "string",
+    "created_at": "string",
+    "date": "number",
+    "dateString": "string",
+    "identifier": "string",
+    "mbg": "number",
+    "sgv": "number",
+    "sysTime": "string",
+    "type": "string"
+   },
    "columns": [
     "_id",
     "created_at",
@@ -54,6 +71,11 @@
    ]
   },
   "profile": {
+   "columnTypes": {
+    "_id": "string",
+    "created_at": "string",
+    "startDate": "string"
+   },
    "columns": [
     "_id",
     "created_at",
@@ -78,6 +100,21 @@
    ]
   },
   "treatments": {
+   "columnTypes": {
+    "_id": "string",
+    "absolute": "number",
+    "carbs": "number",
+    "created_at": "string",
+    "date": "number",
+    "duration": "number",
+    "enteredBy": "string",
+    "eventType": "string",
+    "glucose": "number",
+    "identifier": "string",
+    "insulin": "number",
+    "notes": "string",
+    "percent": "number"
+   },
    "columns": [
     "_id",
     "absolute",

@@ -464,6 +464,15 @@ def main(argv=None):
         "collections": {
             name: {
                 "columns": sorted(t["columns"]),
+                # The JSON type each column holds, which is what toSql needs to
+                # decide whether a column may be USED for a given comparison. A
+                # column is typed, and reaching for a numeric one to compare
+                # against a string raises 22P02 at query time -- a 500 where
+                # MongoDB simply matches nothing. With names alone toSql cannot
+                # check that, so it falls back to the (correct, unaccelerated)
+                # jsonb path; this map is what turns the accelerator on.
+                "columnTypes": {p: JSON_TYPEOF[c["type"]]
+                                for p, c in sorted(t["columns"].items())},
                 "datelike": sorted(p for p, c in t["columns"].items() if c["datelike"]),
                 "indexes": [i["name"] for i in t["indexes"]],
                 "flagged": [{"path": p, "kind": k, "why": w} for p, k, w in t["flagged"]],

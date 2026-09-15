@@ -342,6 +342,14 @@ async function setup (pg) {
   await pg.query(`SET statement_timeout = ${PG_TIMEOUT_MS}`);
 }
 
+// True when any comparison in the tree is `lte`/`gte` against a null operand --
+// the one place mingo and mongod are known to differ. See the note at its use.
+function oracleCannotEvaluateNull (node) {
+  if (node.nodes) return node.nodes.some(oracleCannotEvaluateNull);
+  if (node.value !== null) return false;
+  return node.op === 'lte' || node.op === 'gte';
+}
+
 // ---------------------------------------------------------------- one fixture
 
 // Returns {ok} or a described failure. Used both for whole fixtures and, on a
@@ -361,6 +369,24 @@ async function runOne (pg, ast) {
     // is counted apart from everything else.
     const kind = /Invalid flags/.test(e.message) ? 'oracle-cannot-evaluate' : 'mingo-threw';
     return { kind, detail: e.message.slice(0, 110) };
+  }
+
+  // A second class of fixture the ORACLE cannot answer, alongside the `x` flag.
+  // Measured against mongod 7.0.43 and mingo 7.2.4 over {null, missing, 0}:
+  //
+  //             mongod        mingo
+  //   $lte null  null+missing  null only
+  //   $gte null  null+missing  null only
+  //
+  // mingo agrees with mongod on $eq/$ne/$lt/$gt null and disagrees on these two:
+  // it does not match a MISSING field. toSql follows mongod, so a fixture
+  // containing one of these is a fixture where mingo is wrong and this
+  // comparison cannot settle anything. Declared here rather than silently
+  // excluded, and tools/qc/three-arm.js is the arm that CAN settle it -- it
+  // reports mongod-vs-postgres 3000/3000 on the same corpus.
+  if (oracleCannotEvaluateNull(ast)) {
+    return { kind: 'oracle-cannot-evaluate',
+      detail: 'mingo $lte/$gte null does not match a missing field; mongod does' };
   }
 
   try {
