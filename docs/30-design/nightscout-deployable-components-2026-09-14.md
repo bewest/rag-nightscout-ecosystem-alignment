@@ -426,6 +426,42 @@ hours** at a 10,000-tenant change rate with 4 KB payloads (roughly 4× that at t
 > this costs nothing and removes the notification queue from the write path entirely. Ingest
 > then depends only on the WAL, and a stuck `ns-realtime` can only make realtime stale.
 
+### 3.5.3.1 Does `NOTIFY` scale this way, and should this be Kafka?
+
+**Measured 2026-09-14, EXP-MT-059.** `NOTIFY` degrades in **listener count**, not in message
+rate — 7,873 NOTIFY/s at one listener falling to 495 at 256 (**15.9×**), while the message-rate
+ceiling is ~35,000/s, **286× the 33/s this design generates** at 10,000 tenants.
+
+**The design survives because subscribers are not listeners.** Websockets are held by
+`ns-realtime` processes and only the *processes* `LISTEN`. At ~31 KB/socket one process holds
+~10⁵ sockets, so 10,000 tenants × 4 followers is 40,000 sockets — **one or two listeners**, at
+the top of that curve. Reaching 100 listeners needs ~10⁶ tenants.
+
+> **Write this into the design, because the two shapes look alike:** 10,000 channels on **one**
+> connection (§3.5.3) works. 10,000 connections holding one channel each does not. A design in
+> which each subscriber or each tenant holds its own `LISTEN` collapses.
+
+**A live trap between two recommendations.** §6.7 of {M} wants **pgbouncer in transaction
+mode**; `LISTEN` is *session* state. Measured against `edoburu/pgbouncer` at
+`pool_mode = transaction`: `LISTEN` is **accepted with no error and delivers nothing** — 50
+`NOTIFY`s sent, 0 received. Nothing logs a reason. **`ns-realtime` and the slot reader must
+connect directly to Postgres**, not through the transaction-mode pooler; that is a handful of
+direct connections beside a pool serving `ns-api`, so it costs nothing, but it fails silently
+if missed.
+
+**On Kafka: the design already has the durable ordered log — the WAL.** A replication slot
+delivers everything written while the consumer was gone and does not replay (§8.3). Kafka would
+be a *second* log, and its central value is durability and replay, which is precisely what this
+hop deliberately does not want (§3.5's asymmetry). {M} §6.3 reached the same conclusion from
+the migration direction, and {M} §7.4 notes per-tenant Kafka topics were part of the 11–12
+Kubernetes objects per tenant that made the current hosting model expensive.
+
+**If `NOTIFY` ever binds, Kafka is still not the next step** — the limit is listener fan-out,
+and the tools for that are Redis pub/sub or NATS, which are fan-out buses without durability.
+Concrete triggers for revisiting: >~100 listening processes (~10⁶ tenants), a change rate near
+10⁴/s (~100×), storage moving off Postgres, or a requirement that fan-out survive database
+unavailability. **None is within an order of magnitude of the target.**
+
 ### 3.5.4 The constraint this exposes: RLS cannot protect the feed
 
 **The evaluator must see every tenant** — that is its job — so it cannot run under a policy

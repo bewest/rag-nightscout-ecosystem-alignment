@@ -3,11 +3,12 @@
 **Experiments**: EXP-MT-026 (query cost, load cycle, cold wake, event-loop behaviour under
 RTT), **EXP-MT-040b** (where database-per-tenant breaks), **EXP-MT-011b** (one logical
 database with a tenant discriminator), **EXP-MT-057** (RLS and the change feed, on Postgres),
-**EXP-MT-058** (fan-out to one tenant's subscribers)
+**EXP-MT-058** (fan-out to one tenant's subscribers), **EXP-MT-059** (does `NOTIFY` scale;
+Kafka comparison; pgbouncer conflict)
 **Date**: 2026-09-14
 **Harness**: `tools/mt-bench/{dbloop,nsfiles,shared-tenant,latency-proxy}.js` and
-`pgfeed/{pgfeed,fanout}.js`; raw results in `results/exp-mt-026*.json`, `exp-mt-040b.json`,
-`exp-mt-011b.json`, `exp-mt-057.json`, `exp-mt-058.json`
+`pgfeed/{pgfeed,fanout,notify-scale}.js`; raw results in `results/exp-mt-026*.json`, `exp-mt-040b.json`,
+`exp-mt-011b.json`, `exp-mt-057.json`, `exp-mt-058.json`, `exp-mt-059.json`
 **Under test**: MongoDB **7.0.43**, single-node replica set in Docker, `mongodb` driver
 5.9.2 (the version `cgm-remote-monitor` pins), real `indexedFields` index set, queries
 transcribed from `lib/data/dataloader.js`. Shapes: **database-per-tenant** (§6.7's A′ rung,
@@ -702,6 +703,132 @@ write ──> WAL ──> slot reader (privileged, cross-tenant)
   filtering, and a payload large enough for the common delta — with one indexed lookup as the
   documented fallback. No Redis, no broker, no affinity.
 
+## 10. EXP-MT-059 — is `LISTEN`/`NOTIFY` built for this, or would Kafka be better?
+
+§9 showed `NOTIFY` does the fan-out hop correctly at 32 listeners. That is not the same as
+showing it *scales*, and the mechanism has three documented properties that should make anyone
+nervous about leaning on it (`src/backend/commands/async.c`):
+
+1. **`NOTIFY` serialises.** Appending to the notification queue takes an exclusive lock, so all
+   notify traffic in the cluster passes through one lock.
+2. **Delivery is signal-based and O(listeners).** At commit the notifying backend walks every
+   listening backend and signals it.
+3. **A listener is a whole Postgres backend.** `LISTEN` is session state, so every listening
+   process costs a connection out of `max_connections` plus a backend's memory.
+
+Each is a real ceiling. Whether any *binds* depends on how many listeners this design has.
+
+### 10.1 The axis that degrades is listener count, not message rate
+
+| listeners | NOTIFY/s | writer p50 | headroom vs the 33/s required |
+|---:|---:|---:|---:|
+| 1 | 7,873 | 0.072 ms | 239× |
+| 8 | 5,202 | 0.154 ms | 158× |
+| 32 | 3,016 | 0.307 ms | 91× |
+| 128 | 1,016 | 0.980 ms | 31× |
+| 256 | **495** | 1.967 ms | 15× |
+
+**15.9× slower from 1 to 256 listeners.** Sub-linear — strict O(listeners) would be 256× — but
+unmistakably not flat, and the writer's per-event cost grows ~27×. **The concern is
+well-founded: `NOTIFY` is not built to scale in listener count.**
+
+Message rate is a different story:
+
+| | NOTIFY/s |
+|---|---:|
+| sequential, one per transaction | 9,434 |
+| 8 concurrent writers | 32,787 |
+| 32 concurrent writers | **35,398** |
+| batched in one transaction | 12,666 |
+
+**286× headroom on the slowest path** — enough for ~2.8 M tenants at one change per five
+minutes. The queue lock does not bind anywhere near the rate this design generates.
+
+### 10.2 Why the design survives: subscribers are not listeners
+
+**This is the whole answer, and it is a property of the design rather than of `NOTIFY`.**
+
+The subscribers are **websockets**, and they are held by `ns-realtime` processes. Only the
+*processes* `LISTEN`. At ~31 KB/socket (EXP-MT-045a) one process holds ~10⁵ sockets, so 10,000
+tenants at four followers each is **40,000 sockets — one or two processes, hence one or two
+listeners**, sitting at the top of the table above with 239× headroom.
+
+**Reaching 100 listeners would require ~10⁶ tenants.** `NOTIFY`'s listener ceiling is about two
+orders of magnitude beyond the design target.
+
+The failure mode to avoid is therefore architectural, not operational: **a design in which each
+subscriber, or each tenant, holds its own `LISTEN` would collapse.** §9.2's 10,000 channels on
+*one connection* is the shape that works; 10,000 connections holding one channel each is the
+shape that does not. That distinction should be written into the design, because the two look
+superficially similar.
+
+### 10.3 The trap: `LISTEN` through a transaction-mode pooler fails silently
+
+§6.7 recommends **pgbouncer in transaction mode** so one pool serves every tenant with
+`set_config(..., is_local => true)`. §9 recommends `LISTEN`. `LISTEN` is *session* state and a
+transaction-pooled connection is handed to a different client after each `COMMIT`. Measured
+against `edoburu/pgbouncer` in `pool_mode = transaction`:
+
+```
+ordinary query through transaction-mode bouncer: ok
+LISTEN through the bouncer: accepted (no error raised)
+50 NOTIFYs sent direct to Postgres -> 0 received by the bouncer-side listener
+verdict: LISTEN is accepted but delivers NOTHING — silent breakage
+```
+
+**No error is raised at any point.** A realtime component placed behind the pooler would simply
+never update, and nothing would log a reason. This is a live trap in the recommendation as it
+stood: two pieces of advice from two different sections, each correct alone, silently
+incompatible when followed together.
+
+> **`ns-realtime` and the slot reader must connect directly to Postgres, not through the
+> transaction-mode pooler.** That is a handful of direct connections against a pool serving the
+> api tier, so it costs nothing — but it has to be stated, because putting everything behind
+> one pooler is the obvious thing to do and it fails without complaint.
+
+### 10.4 Would Kafka be better?
+
+**The framing to reject first: this is not a choice between `NOTIFY` and Kafka.** The design
+already has a durable, ordered, replayable log — **the WAL, consumed through a replication
+slot** (§8.3: 200/200 delivered after a consumer outage, no replay on re-consume). That is the
+Kafka-shaped primitive, and it is already doing the job Kafka would be brought in to do.
+`NOTIFY` is only the *last hop*, and the last hop is best-effort by design.
+
+So the real question is whether to run a **second** log. What each side buys:
+
+| | Kafka / Redpanda | WAL slot + `NOTIFY` |
+|---|---|---|
+| durable ordered log | yes | **yes, already — the WAL** |
+| replay on the fan-out hop | yes | no — **and §9 establishes it is not needed** |
+| consumer groups, partitions | yes | slot reader + hash-partitioned queue (§8.5) |
+| survives the database being down | yes | no — but with the database down there is nothing to publish |
+| independent of the storage engine | yes | no |
+| **operational cost** | **a cluster: brokers, quorum, retention, upgrades, monitoring** | **none — it is the database already being run** |
+
+**Kafka's central value is durability and replay, which is precisely the property this hop does
+not want.** Paying a cluster's operational cost for a guarantee the design explicitly discards
+is the wrong trade. §6.3 and EXP-MT-037 reached the same conclusion from the migration
+direction ("keep the plain change-stream-tailing script; do not stand up Kafka"), and §7.4
+notes that per-tenant Kafka topics were part of the 11–12 Kubernetes objects per tenant that
+made the current hosting model expensive in the first place.
+
+**And if `NOTIFY` ever does bind, Kafka is still not the next step.** The limit measured here is
+*listener fan-out*, and the tools built for that are **Redis pub/sub or NATS** — fan-out buses
+with no durability, which is exactly the requirement. Reaching for Kafka would be buying the
+one property that is not needed while not directly addressing the one that bound.
+
+**Concrete triggers for revisiting**, so this is falsifiable rather than a preference:
+
+- more than ~100 listening processes — roughly 10⁶ tenants at measured socket density;
+- a change rate approaching 10⁴/s — roughly 100× the current target;
+- storage moving off Postgres, at which point the WAL-slot spine goes too and the whole
+  mechanism has to be re-chosen;
+- a requirement that the fan-out hop survive database unavailability, which would be a change
+  to what the product promises rather than to how it is built.
+
+**None of those is within an order of magnitude of the 10,000-tenant target**, which is the
+honest reason to use the database's own primitives and not run a second distributed system.
+
 ## L. Limits — read before quoting any of this
 
 This is a laptop. The numbers above rank hypotheses and settle mechanism questions; **none of
@@ -786,6 +913,10 @@ docker run -d --name nspg -e POSTGRES_PASSWORD=poc -p 15433:5432 postgres:16-alp
 cd pgfeed && npm install pg
 node pgfeed.js all 400           # EXP-MT-057, RLS + change feed
 node fanout.js  all 32           # EXP-MT-058, fan-out to subscribers
+node notify-scale.js scale       # EXP-MT-059, throughput vs listener count
+node notify-scale.js ceiling     # EXP-MT-059, serialisation limit
+# pgbouncer arm needs a transaction-mode bouncer on :16432 — see §10.3
+node notify-scale.js bouncer
 docker rm -f nspg
 RTT_MS=10 node deployment-cost.js 10000
 ```

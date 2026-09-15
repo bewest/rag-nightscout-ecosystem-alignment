@@ -1,0 +1,11 @@
+{
+  "date": "2026-09-15T00:40:05.041Z",
+  "requiredChangesPerS": 33,
+  "requiredListeners": 5,
+  "bouncer": {
+    "mode": "16.14",
+    "plainQuery": "ok",
+    "listenAccepted": true,
+    "deliveredThroughBouncer": 0
+  }
+}
