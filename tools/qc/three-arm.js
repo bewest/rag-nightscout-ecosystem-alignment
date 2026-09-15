@@ -29,7 +29,7 @@
 //
 // Usage:
 //   docker run -d --name seam-qc-mongo --ulimit nofile=64000:64000 -p 27019:27017 mongo:7
-//   docker run -d --name seampg -e POSTGRES_PASSWORD=poc -p 15434:5432 postgres:16-alpine
+//   docker run -d --name seampg -e POSTGRES_PASSWORD="$PGPASSWORD" -p 15434:5432 postgres:16-alpine
 //   node three-arm.js [iterations]
 //
 // Env: FILTER_MODULE, MONGO_URL, PG_URL, WITH_RE=1
@@ -47,7 +47,18 @@ const FILTER = process.env.FILTER_MODULE ||
 const { toMongo, toSql, validate } = require(FILTER);
 
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27019';
-const PG_URL = process.env.PG_URL || 'postgres://postgres:poc@127.0.0.1:15434/postgres';
+const PG_URL = process.env.PG_URL || 'postgres://postgres@127.0.0.1:15434/postgres';
+
+// Credentials come from the environment, never from this file. PGPASSWORD is
+// what node-postgres reads when the URL carries no password.
+if (!process.env.PGPASSWORD && !/:[^@/]*@/.test(PG_URL)) {
+  console.error('Set PGPASSWORD before running this (or pass a complete PG_URL).');
+  console.error('The throwaway POC container is created with:');
+  console.error('  docker run -d --name <name> -e POSTGRES_PASSWORD="$PGPASSWORD" \\');
+  console.error('    -p <port>:5432 postgres:16-alpine');
+  process.exit(2);
+}
+
 const ITERATIONS = parseInt(process.argv[2], 10) || 3000;
 // Probability that a generated value is drawn from the WRONG type for its field.
 // Set CROSSTYPE=0 to reproduce validate.js's generated shapes, which is how the

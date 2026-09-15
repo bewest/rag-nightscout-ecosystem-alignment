@@ -18,7 +18,18 @@ const FILTER = process.env.FILTER_MODULE ||
 const { toMongo, toSql } = require(FILTER);
 
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27019';
-const PG_URL = process.env.PG_URL || 'postgres://postgres:poc@127.0.0.1:15434/postgres';
+const PG_URL = process.env.PG_URL || 'postgres://postgres@127.0.0.1:15434/postgres';
+
+// Credentials come from the environment, never from this file. PGPASSWORD is
+// what node-postgres reads when the URL carries no password.
+if (!process.env.PGPASSWORD && !/:[^@/]*@/.test(PG_URL)) {
+  console.error('Set PGPASSWORD before running this (or pass a complete PG_URL).');
+  console.error('The throwaway POC container is created with:');
+  console.error('  docker run -d --name <name> -e POSTGRES_PASSWORD="$PGPASSWORD" \\');
+  console.error('    -p <port>:5432 postgres:16-alpine');
+  process.exit(2);
+}
+
 
 // Four documents covering the only distinctions that matter here: a numeric
 // field present, that field explicitly null, that field absent, and a field

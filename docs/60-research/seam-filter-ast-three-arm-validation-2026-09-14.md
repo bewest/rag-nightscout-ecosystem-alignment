@@ -210,14 +210,18 @@ and D largely disappear once values arrive correctly typed.
 ## 6. Reproducing
 
 ```bash
+export PGPASSWORD=...        # throwaway, for the local POC container only
 docker run -d --name seam-qc-mongo --ulimit nofile=64000:64000 -p 27019:27017 mongo:7
-docker run -d --name seampg -e POSTGRES_PASSWORD=poc -p 15434:5432 postgres:16-alpine
+docker run -d --name seampg -e POSTGRES_PASSWORD="$PGPASSWORD" -p 15434:5432 postgres:16-alpine
 cd tools/qc && npm install
 
-node classes.js                 # the deterministic probe table in §3
+node classes.js                      # the deterministic probe table in §3
 CROSSTYPE=0 node three-arm.js 3000   # §2 — all three arms agree
 node three-arm.js 3000               # §3 — the four classes
 ```
+
+Both scripts refuse to run rather than carry a default password, and take `PG_URL` / `MONGO_URL`
+if the containers are elsewhere.
 
 `tools/qc` has its own dependency tree on purpose: the thing being checked and the thing doing
 the checking should not share one.

@@ -1,0 +1,538 @@
+{
+ "generated_by": "tools/qc/v1_operator_census.py",
+ "method": "literal find[field][$op] occurrences in ecosystem project source",
+ "scope": "client projects only",
+ "projects_scanned": 14,
+ "occurrences": 157,
+ "operators": [
+  {
+   "operator": "gte",
+   "occurrences": 55,
+   "projects": [
+    "GluPredKit",
+    "GlycemicGPT",
+    "LoopFollow",
+    "NightscoutKit",
+    "Trio",
+    "cgmsim-lib",
+    "nightguard",
+    "nightscout-cgm-skill",
+    "nightscout-reporter",
+    "oref-digital-twin",
+    "oref0",
+    "tconnectsync",
+    "xdripswift"
+   ],
+   "in_ast": true,
+   "top_fields": [
+    [
+     "created_at",
+     30
+    ],
+    [
+     "date",
+     10
+    ],
+    [
+     "dateString",
+     8
+    ],
+    [
+     "startDate",
+     2
+    ],
+    [
+     "<field>",
+     1
+    ]
+   ]
+  },
+  {
+   "operator": "eq",
+   "occurrences": 36,
+   "projects": [
+    "GlycemicGPT",
+    "LoopFollow",
+    "Trio",
+    "nightguard",
+    "nightscout-cgm-skill",
+    "nightscout-reporter",
+    "oref0",
+    "tconnectsync",
+    "xDrip",
+    "xdripswift"
+   ],
+   "in_ast": true,
+   "top_fields": [
+    [
+     "eventType",
+     13
+    ],
+    [
+     "id",
+     6
+    ],
+    [
+     "created_at",
+     4
+    ],
+    [
+     "enteredBy",
+     4
+    ],
+    [
+     "type",
+     2
+    ]
+   ]
+  },
+  {
+   "operator": "lte",
+   "occurrences": 32,
+   "projects": [
+    "GluPredKit",
+    "LoopFollow",
+    "NightscoutKit",
+    "cgmsim-lib",
+    "nightguard",
+    "nightscout-cgm-skill",
+    "nightscout-reporter",
+    "oref-digital-twin",
+    "tconnectsync",
+    "xdripswift"
+   ],
+   "in_ast": true,
+   "top_fields": [
+    [
+     "created_at",
+     16
+    ],
+    [
+     "date",
+     7
+    ],
+    [
+     "startDate",
+     4
+    ],
+    [
+     "dateString",
+     2
+    ],
+    [
+     "{time_field}",
+     1
+    ]
+   ]
+  },
+  {
+   "operator": "gt",
+   "occurrences": 22,
+   "projects": [
+    "GlycemicGPT",
+    "Trio",
+    "nightguard",
+    "nightscout-reporter",
+    "xDrip"
+   ],
+   "in_ast": true,
+   "top_fields": [
+    [
+     "date",
+     11
+    ],
+    [
+     "_id",
+     7
+    ],
+    [
+     "created_at",
+     3
+    ],
+    [
+     "startDate",
+     1
+    ]
+   ]
+  },
+  {
+   "operator": "lt",
+   "occurrences": 5,
+   "projects": [
+    "LoopFollow",
+    "nightscout-reporter",
+    "xdripswift"
+   ],
+   "in_ast": true,
+   "top_fields": [
+    [
+     "created_at",
+     4
+    ],
+    [
+     "date",
+     1
+    ]
+   ]
+  },
+  {
+   "operator": "ne",
+   "occurrences": 4,
+   "projects": [
+    "LoopFollow",
+    "Trio",
+    "nightscout-reporter"
+   ],
+   "in_ast": true,
+   "top_fields": [
+    [
+     "type",
+     2
+    ],
+    [
+     "enteredBy",
+     1
+    ],
+    [
+     "profilePlugin",
+     1
+    ]
+   ]
+  },
+  {
+   "operator": "exists",
+   "occurrences": 3,
+   "projects": [
+    "Trio",
+    "oref0"
+   ],
+   "in_ast": true,
+   "top_fields": [
+    [
+     "carbs",
+     2
+    ],
+    [
+     "duration",
+     1
+    ]
+   ]
+  }
+ ],
+ "logical_groups": {
+  "$or": {
+   "occurrences": 2,
+   "projects": [
+    "Trio"
+   ]
+  },
+  "$and": {
+   "occurrences": 1,
+   "projects": [
+    "Trio"
+   ]
+  }
+ },
+ "fields": [
+  {
+   "field": "created_at",
+   "occurrences": 57,
+   "projects": [
+    "GluPredKit",
+    "GlycemicGPT",
+    "LoopFollow",
+    "NightscoutKit",
+    "Trio",
+    "cgmsim-lib",
+    "nightguard",
+    "nightscout-cgm-skill",
+    "nightscout-reporter",
+    "oref0",
+    "tconnectsync",
+    "xdripswift"
+   ],
+   "placeholder": false,
+   "operators": {
+    "gte": 30,
+    "lte": 16,
+    "lt": 4,
+    "eq": 4,
+    "gt": 3
+   }
+  },
+  {
+   "field": "date",
+   "occurrences": 30,
+   "projects": [
+    "LoopFollow",
+    "nightguard",
+    "nightscout-cgm-skill",
+    "nightscout-reporter",
+    "oref-digital-twin",
+    "oref0",
+    "xDrip",
+    "xdripswift"
+   ],
+   "placeholder": false,
+   "operators": {
+    "gt": 11,
+    "gte": 10,
+    "lte": 7,
+    "eq": 1,
+    "lt": 1
+   }
+  },
+  {
+   "field": "eventType",
+   "occurrences": 13,
+   "projects": [
+    "LoopFollow",
+    "Trio",
+    "nightguard",
+    "nightscout-cgm-skill",
+    "nightscout-reporter",
+    "oref0",
+    "tconnectsync"
+   ],
+   "placeholder": false,
+   "operators": {
+    "eq": 13
+   }
+  },
+  {
+   "field": "dateString",
+   "occurrences": 11,
+   "projects": [
+    "GluPredKit",
+    "GlycemicGPT",
+    "LoopFollow",
+    "NightscoutKit",
+    "Trio"
+   ],
+   "placeholder": false,
+   "operators": {
+    "gte": 8,
+    "lte": 2,
+    "eq": 1
+   }
+  },
+  {
+   "field": "_id",
+   "occurrences": 7,
+   "projects": [
+    "GlycemicGPT"
+   ],
+   "placeholder": false,
+   "operators": {
+    "gt": 7
+   }
+  },
+  {
+   "field": "startDate",
+   "occurrences": 7,
+   "projects": [
+    "LoopFollow",
+    "NightscoutKit",
+    "nightscout-reporter"
+   ],
+   "placeholder": false,
+   "operators": {
+    "lte": 4,
+    "gte": 2,
+    "gt": 1
+   }
+  },
+  {
+   "field": "id",
+   "occurrences": 6,
+   "projects": [
+    "GlycemicGPT",
+    "Trio"
+   ],
+   "placeholder": false,
+   "operators": {
+    "eq": 6
+   }
+  },
+  {
+   "field": "enteredBy",
+   "occurrences": 5,
+   "projects": [
+    "Trio",
+    "oref0",
+    "tconnectsync"
+   ],
+   "placeholder": false,
+   "operators": {
+    "eq": 4,
+    "ne": 1
+   }
+  },
+  {
+   "field": "type",
+   "occurrences": 4,
+   "projects": [
+    "LoopFollow",
+    "oref0",
+    "xdripswift"
+   ],
+   "placeholder": false,
+   "operators": {
+    "ne": 2,
+    "eq": 2
+   }
+  },
+  {
+   "field": "carbs",
+   "occurrences": 2,
+   "projects": [
+    "Trio",
+    "oref0"
+   ],
+   "placeholder": false,
+   "operators": {
+    "exists": 2
+   }
+  },
+  {
+   "field": "{time_field}",
+   "occurrences": 2,
+   "projects": [
+    "oref-digital-twin"
+   ],
+   "placeholder": false,
+   "operators": {
+    "gte": 1,
+    "lte": 1
+   }
+  },
+  {
+   "field": "${field}",
+   "occurrences": 2,
+   "projects": [
+    "oref-digital-twin"
+   ],
+   "placeholder": false,
+   "operators": {
+    "gte": 1,
+    "lte": 1
+   }
+  },
+  {
+   "field": "%s",
+   "occurrences": 2,
+   "projects": [
+    "tconnectsync"
+   ],
+   "placeholder": false,
+   "operators": {
+    "gte": 1,
+    "lte": 1
+   }
+  },
+  {
+   "field": "device",
+   "occurrences": 2,
+   "projects": [
+    "tconnectsync"
+   ],
+   "placeholder": false,
+   "operators": {
+    "eq": 2
+   }
+  },
+  {
+   "field": "<field>",
+   "occurrences": 1,
+   "projects": [
+    "GlycemicGPT"
+   ],
+   "placeholder": false,
+   "operators": {
+    "gte": 1
+   }
+  },
+  {
+   "field": "{since_field}",
+   "occurrences": 1,
+   "projects": [
+    "GlycemicGPT"
+   ],
+   "placeholder": false,
+   "operators": {
+    "gte": 1
+   }
+  },
+  {
+   "field": "duration",
+   "occurrences": 1,
+   "projects": [
+    "Trio"
+   ],
+   "placeholder": false,
+   "operators": {
+    "exists": 1
+   }
+  },
+  {
+   "field": "profilePlugin",
+   "occurrences": 1,
+   "projects": [
+    "nightscout-reporter"
+   ],
+   "placeholder": false,
+   "operators": {
+    "ne": 1
+   }
+  },
+  {
+   "field": "k",
+   "occurrences": 1,
+   "projects": [
+    "oref0"
+   ],
+   "placeholder": true,
+   "operators": {
+    "eq": 1
+   }
+  },
+  {
+   "field": "activityType",
+   "occurrences": 1,
+   "projects": [
+    "tconnectsync"
+   ],
+   "placeholder": false,
+   "operators": {
+    "eq": 1
+   }
+  },
+  {
+   "field": "uuid",
+   "occurrences": 1,
+   "projects": [
+    "xDrip"
+   ],
+   "placeholder": false,
+   "operators": {
+    "eq": 1
+   }
+  }
+ ],
+ "per_project": {
+  "LoopFollow": 22,
+  "nightscout-reporter": 20,
+  "GlycemicGPT": 18,
+  "xdripswift": 14,
+  "oref0": 13,
+  "Trio": 12,
+  "xDrip": 11,
+  "tconnectsync": 10,
+  "NightscoutKit": 8,
+  "nightguard": 7,
+  "GluPredKit": 6,
+  "nightscout-cgm-skill": 6,
+  "oref-digital-twin": 6,
+  "cgmsim-lib": 4
+ }
+}
