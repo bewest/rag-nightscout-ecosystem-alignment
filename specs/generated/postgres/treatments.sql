@@ -18,8 +18,7 @@
 --
 -- Indexed fields with no column, and why:
 --   boluscalc.foods._id      MULTIKEY    traverses an array; no column, no index, capability lost until decomposition
---   NSCLIENT_ID              UNDECLARED  the model does not declare this field
---   date                     UNDECLARED  the model does not declare this field
+--   NSCLIENT_ID              AMBIGUOUS   observed as number, string — not one type
 
 CREATE TABLE treatments (
   -- tenant_id leads the table and every index below: under RLS the policy
@@ -51,6 +50,8 @@ CREATE TABLE treatments (
     GENERATED ALWAYS AS (CASE WHEN jsonb_typeof(doc #> '{duration}') = 'number' THEN (doc #>> '{duration}')::numeric END) STORED,
   "identifier" text
     GENERATED ALWAYS AS (CASE WHEN jsonb_typeof(doc #> '{identifier}') = 'string' THEN (doc #>> '{identifier}') END) STORED,
+  "date"       numeric
+    GENERATED ALWAYS AS (CASE WHEN jsonb_typeof(doc #> '{date}') = 'number' THEN (doc #>> '{date}')::numeric END) STORED,
 
   -- Scoped to the tenant rather than global: two tenants restored from
   -- different deployments can legitimately carry the same _id, and a
@@ -85,7 +86,7 @@ CREATE INDEX treatments_tenant_identifier
 CREATE INDEX treatments_tenant_eventtype_duration_created_at
   ON treatments (tenant_id, "eventType" ASC, "duration" ASC, "created_at" ASC);
 CREATE INDEX treatments_tenant_eventtype_created_at_identifier_date
-  ON treatments (tenant_id, "eventType" ASC, "created_at" DESC, "identifier" DESC, (doc #>> '{date}') DESC);
+  ON treatments (tenant_id, "eventType" ASC, "created_at" DESC, "identifier" DESC, "date" DESC);
 
 -- FORCE is the load-bearing word: without it the table OWNER bypasses the
 -- policy. It still does not subject a SUPERUSER — BYPASSRLS is implicit for

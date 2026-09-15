@@ -17,7 +17,7 @@
 -- correctly; nothing here licenses a hand-written query to do otherwise.
 --
 -- Indexed fields with no column, and why:
---   NSCLIENT_ID              UNDECLARED  the model does not declare this field
+--   NSCLIENT_ID              AMBIGUOUS   observed as number, string — not one type
 
 CREATE TABLE profile (
   -- tenant_id leads the table and every index below: under RLS the policy
