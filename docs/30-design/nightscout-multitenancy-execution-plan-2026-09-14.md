@@ -710,7 +710,7 @@ This directly settles the `$expr` question T1.2 deferred: no client sends it, so
 `profile.list_query` site is a decision about a server capability with a test, not about
 breaking a known consumer.
 
-**T2.5 · `entries` end-to-end on Postgres + RLS. — IN PROGRESS 2026-09-15**
+**T2.5 · `entries` end-to-end on Postgres + RLS. — DONE 2026-09-15**
 
 Every prerequisite is now in place, which is worth stating because they were added in four
 different milestones and it is not obvious from any one of them: the **backend lookup** (T2.0),
@@ -723,8 +723,91 @@ it is the first one that actually needs them.
 EXP-MT-037. Connect as a role that is **`NOSUPERUSER NOBYPASSRLS`** — {DB} §8.1 nearly
 published two false findings because the test ran as superuser, and RLS is silently not
 enforced for superusers.
-*Done*: T1.3's parametrised tests pass against both backends; an unbound connection returns 0
-rows; `EXPLAIN` shows `Index Cond` on the tenant-leading index.
+*Done*: ~~T1.3's parametrised tests pass against both backends~~ — **this criterion cannot be
+met at this scope, and the reason is worth keeping**; an unbound connection returns **0** rows
+(and **4** on the same connection once bound); `EXPLAIN` shows
+`Index Cond: (tenant_id = (NULLIF(current_setting('app.current_tenant_id'::text, true), ''::text))::uuid)`
+on `entries_tenant_date`, over 12,000 rows across 3 tenants.
+
+**Suite: 2351 passing, 1 pending, 0 failing. Under `NS_TEST_BACKEND=postgres`: 2172 passing, 180
+pending, 0 failing. Total conserved at 2352 both ways.** Lint back to baseline.
+
+#### The scope conflict, reported rather than worked around
+
+**"`entries` only" and "T1.3's parametrised suites pass on PostgreSQL" are mutually exclusive.**
+All seven of those suites boot through `bootevent`, which constructs a storage collection for all
+six v1 modules *and* both authorization collections, and five of them assert on `treatments`,
+`profile`, `food`, `activity` or auth. **Zero of the seven can run against an entries-only
+backend** — including `api3.renderer`, which is otherwise entries-only.
+
+The resolution keeps the visibility contract instead of bending it: a suite now declares the
+collections it needs, and a backend that lacks one skips it **with the collection named**. Still
+pending, never absent. The question the criterion was actually asking is answered by a new suite
+that can answer it — `tests/entries-both-backends.test.js`, 16 HTTP tests over API v1 and API v3
+entries, **16/16 on MongoDB, 16/16 on PostgreSQL, 32 passing in one `mongodb,postgres` run**.
+
+#### The `is_local` check was vacuous, and this one was the *implementation's* fault
+
+§8.6.1 recorded a differential that could not fail because the **corpus** never exercised the
+property. This is the other way it happens. Breaking `set_config(…, is_local => true)` to
+`false` produced **0 failures** — because the adapter binds every operation anyway, so nothing
+distinguished a transaction-local binding from a session-local one. The entire argument for
+`is_local`, which is the reason the interface needed a transaction scope at all (§9), was
+unmeasured.
+
+It *is* measurable, and the thing to measure is not the query: **a connection handed back to the
+pool must carry no binding.** Otherwise a future unbound path — or a transaction-pooling
+pgbouncer, which is how this deployment is expected to scale — serves one tenant's request on
+another tenant's binding. A pool of one plus `store.pooledTenantBinding()` (a *question*, not a
+query hatch) now assert it, and the break fails it.
+
+**Generalise both:** a check is vacuous when *nothing in the run distinguishes the two branches*,
+and that can be a property of the corpus **or** of the code under test. Only breaking it tells
+you which.
+
+#### Three more findings
+
+- **The `Index Cond` criterion is insensitive to `columnTypes`.** The policy predicate alone
+  gives a tenant bound on any index, so that criterion would pass with the manifest thrown away.
+  What `columnTypes` actually decides is whether `date` reaches the typed column, so the test
+  asserts the emitted predicate is `"date" >= $1` as well.
+- **`lib/server/aggregate.js` still took a raw driver collection.** T1.2 moved the count path
+  onto `count()` and left its *argument* behind, so `/count/:storage/where` worked on MongoDB
+  only. Fixed; all three v1 modules now pass their storage accessor.
+- **jsonb's cross-type sort ordering is not BSON's.** Both sort types before values and they
+  disagree on the order of the types. Every sort this path issues is on a field that is one type
+  in practice (`date`, `srvModified`, `identifier`, `created_at`), so it does not bite — but the
+  adapter cannot enforce that, and the limit is documented at the code rather than assumed away.
+
+#### The two items behind T2.0, both closed
+
+`storageClear` routes through the harness adapter — MongoDB drops the database, PostgreSQL
+truncates the run's tables. Per-run namespaces arrive as `STORAGE_NAMESPACE`: a schema on
+PostgreSQL, a database on MongoDB, with the configured database kept as a prefix so
+`production-safety`'s "looks like a test database" check still sees what it saw. Verified: no
+stray databases, schemas or roles after a run.
+
+**`tests/lib/production-safety.js` is not namespace-aware** — it still reads the database name
+out of the URI. Harmless today, wrong under `STORAGE_NAMESPACE`, and left alone rather than
+half-changed.
+
+#### Vendoring, and the check that makes it safe
+
+The server cannot depend on this repository at runtime, so the emitted DDL is **vendored** into
+`lib/storage/postgres/generated/` — and that copy is what creates tables on a deployment. Two
+files in two repositories with nothing relating them is a schema that drifts silently, so
+`make schema-vendor-drift` compares them byte for byte. A checkout that vendors nothing is not a
+failure; a run that checked *nothing* says so rather than exiting 0, which is how a drift check
+quietly stops being one.
+
+#### Not done, and named
+
+Every collection but `entries`, and therefore full-server boot on PostgreSQL. `insertMany`,
+`updateMany` and `replaceFiltered` throw by name (`$unset` has no decided representation —
+removing a jsonb key and setting it to null are different documents). No TLS, no pgbouncer, no
+write-throughput or working-set measurement, all of which §7 lands here. `bulkUpsert` issues one
+statement per operation — a performance gap, not a correctness one, and the whole batch is still
+one transaction, which is more than the MongoDB path promises.
 
 ### Phase 3 — tenancy
 
