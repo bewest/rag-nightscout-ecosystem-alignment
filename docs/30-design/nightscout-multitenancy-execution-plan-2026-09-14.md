@@ -31,6 +31,9 @@ a preference.
 | **D7** | **The platform-admin plane gets its own entrypoint on its own network interface**, ORY-style, unauthenticated-by-network rather than credentialed | **maintainer, this session** — §2 |
 | **D8** | **API v3's closed operator set is the query contract; v1 is bounded by corpus evidence** | **maintainer, this session** — §3 |
 | **D9** | **Base the work on `chore/nightscout-modernization`**, not `dev` | **maintainer, this session** — §5 |
+| **D10** | **Tenant `slug` is globally unique per deployment, and is a *host label*** — the resolver maps Host → slug by a configured rule, so both `foo.user-content.apex.org` and `foo-user-content.apex.org` name tenant `foo` | **maintainer, 2026-09-14 (second session)** — §2.5 |
+| **D11** | **`devicestatus` gets almost no generated columns.** The body stays JSONB, and the real answer to its 182 nodes is *decomposition into normalised time series driven by registered controller descriptions*, not a wider column list | **maintainer, 2026-09-14 (second session)** — §2.6 |
+| **D12** | **`rag-nightscout-ecosystem-alignment` carries the tooling, documentation and alignment exercises; `cgm-remote-monitor` stays pristine.** This repository is the quality-control system for that one | **maintainer, 2026-09-14 (second session)** — §2.7 |
 
 ## 2. D7 — the admin plane
 
@@ -112,10 +115,93 @@ CREATE TABLE tenant_members (
 `tenants` is **not** RLS-protected — it is the map used to *resolve* a tenant, so it is read
 before a tenant context exists. `tenant_members` is.
 
-**Open, needs a decision before Task A5:** whether `slug` is globally unique (simplest,
-matches Nocturne, forces coordination across a hoster) or unique per parent domain (allows two
-hosters to both have `alice`). Recommend globally unique per deployment and defer the harder
-case.
+~~**Open, needs a decision before Task A5**~~ — **settled as D10, see §2.5.**
+
+### 2.5 D10 — the tenant slug is a host label
+
+**Globally unique per deployment.** A hoster coordinates names inside their own deployment;
+two independent hosters may both have `alice`, because nothing joins their tables.
+
+**The part that is not obvious, and that the schema must not foreclose:** the slug is a *label
+inside a hostname*, and hosters will not agree on where the boundary falls.
+
+| shape | example | slug |
+|---|---|---|
+| subdomain of a content domain | `foo.user-content.apex.org` | `foo` |
+| prefixed label on one domain | `foo-user-content.apex.org` | `foo` |
+| path prefix (fallback, {M} §5.2) | `apex.org/foo/api/v1/...` | `foo` |
+
+So **tenant resolution is a configured rule, not a hardcoded "first DNS label"**, and T3.1 owns
+it. The rule needs to be expressible per deployment — a pattern with one capture group is
+sufficient for all three shapes above and is the recommended form.
+
+**Two constraints this puts on the schema, neither of them expensive:**
+
+1. `slug` stores **only the label**, never the full host. A deployment that moves from
+   `foo.a.org` to `foo-a.org` must not rewrite its tenant rows.
+2. The label charset is the intersection of what DNS allows and what is safe in a path segment:
+   lowercase alphanumerics and `-`, not starting or ending with `-`. **Validate on write in
+   `bin/admin.js`** (§2.3), because it is the only writer of `tenants`.
+
+**Still deliberately deferred**: two hosters sharing one deployment and wanting the same slug.
+D10 makes that a per-deployment uniqueness question, which is the tractable version of it.
+
+### 2.6 D11 — devicestatus is a decomposition problem, not a column-selection problem
+
+T2.1 was blocked on "which of devicestatus's 182 nodes get generated columns". **That question
+is now retired rather than answered**, because it assumed the document shape is the thing being
+stored.
+
+**The direction instead:** `devicestatus` is decomposed into idiomatic, normalised time series,
+and *what* it decomposes into is declared by a registered controller description rather than
+hardcoded. The mechanism already exists in the proposal series
+([controller descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) §5):
+
+```yaml
+documents:
+  - collection: devicestatus
+    discriminator: {path: loop, test: is-object}   # structural, not the device string
+    decomposesTo: [ApsSnapshot, PumpSnapshot, UploaderSnapshot]
+```
+
+A known catalogue ships with Nightscout; a controller may publish or correct its own; either
+way the decomposition is **data, not code**, which is what keeps it from becoming a fifth
+drift-prone list beside the OpenAPI spec, `indexedFields`, the nsschema model and the `walker`
+(§3.4).
+
+**What this decides for T2.1, concretely:**
+
+- **Emit almost no generated columns for `devicestatus`.** Its `indexedFields` declares only
+  `created_at`, `NSCLIENT_ID` and one compound; those, and nothing else. The remaining 179
+  nodes stay in JSONB.
+- **Do not widen the column list to anticipate decomposition.** The normalised series are
+  separate relations with their own schemas; adding columns to the document table would be
+  building half of a design that is going somewhere else.
+- **T2.1 is unblocked and smaller.** It emits DDL for the document shape; the decomposition is
+  its own task in its own phase.
+- **One thing to carry, not to solve here:** the 56-of-166 dropped-path finding that motivates
+  decomposition ({M}'s motivation (a)) is a *fidelity* problem, and fixing it in the
+  multitenant backend only would leave single-tenant behind, which D4 forbids. **Decomposition
+  must sit above the seam, like coercion does** (§3.4) — file it accordingly.
+
+### 2.7 D12 — what each repository is for
+
+| repository | role |
+|---|---|
+| **`rag-nightscout-ecosystem-alignment`** (this one) | tooling, documentation, evidence, experiments, alignment exercises. Verification harnesses live here (`tools/seam/`, `tools/qc/`, `tools/mt-bench/`), as do all findings |
+| **`cgm-remote-monitor`** | **kept pristine, neat and tidy.** Shipping code and its tests, nothing else |
+
+**This repository is the quality-control system for that one.** Practical consequences:
+
+- A benchmark, a differential oracle, a census script or a one-off probe belongs **here**, even
+  when it exercises code **there**. Harnesses `require()` the shipping module by path so the
+  two cannot drift, rather than carrying a copy.
+- A commit to `cgm-remote-monitor` should read as ordinary, reviewable upstream work — no
+  scaffolding, no research artifacts, no vendored fixtures that exist only to support an
+  experiment.
+- Findings are written up **here** and referenced from there, not pasted into code comments.
+- `node_modules` is never tracked in either. A manifest plus a lockfile is what makes a tool
+  reproducible; the tree is noise in the diff.
 
 ## 3. D8 — the query surface
 
@@ -355,9 +441,11 @@ A sixth emitter in `tools/nsschema/emit/` alongside `mongoose_emit.py`, `zod_emi
 Output: `CREATE TABLE` with `tenant_id uuid` leading, JSONB for the document body, **generated
 columns for the fields in `indexedFields`** (41 indexes, enumerated in {M} §6.7), each index
 tenant-prefixed.
-*Blocked on a decision*: which of devicestatus's 182 nodes get generated columns. Derivable
-from `indexedFields` — devicestatus declares only `created_at`, `NSCLIENT_ID` and one compound
-— so the default is "almost none, the rest stays JSONB". Confirm before emitting.
+~~*Blocked on a decision*~~ — **unblocked by D11 (§2.6)**: emit `devicestatus`'s
+`indexedFields` set only (`created_at`, `NSCLIENT_ID`, one compound) and leave the other 179
+nodes in JSONB. The 182-node question is retired, not answered: decomposition into normalised
+time series is declared by registered controller descriptions and is its own task, above the
+seam.
 *Done*: emitted DDL loads clean; `tools/mt-bench/pgfeed/pgfeed.js` RLS arm passes against the
 generated schema instead of its hand-written one.
 
