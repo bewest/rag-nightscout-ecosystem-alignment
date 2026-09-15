@@ -76,9 +76,53 @@ function reproduces 1 and 2 for scalars and **cannot** reproduce 3 for arrays wi
 | **O2** declare sortable fields single-typed | restrict `?sort=` to schema-declared single-typed fields; `HTTP 400` otherwise | a schema annotation and a validation branch | clients sorting on an undeclared field |
 | **O3** accept and document | what T2.5 did | none | silent divergence when a sort key is mixed-typed |
 
+### 3.1b The strategy T2.5 shipped is a fifth one, and it is the best of them — conditionally
+
+`order-arm.js` measured four translations and none matched. T2.5 shipped a **fifth** that was not
+in that set. From the emitted DDL:
+
+```sql
+"sgv" numeric GENERATED ALWAYS AS (
+  CASE WHEN jsonb_typeof(doc #> '{sgv}') = 'number'
+       THEN (doc #>> '{sgv}')::numeric END) STORED
+```
+
+`orderBy` sorts on that column whenever one exists. Measured against `mongod` 7 with
+[`tools/qc/typeguard-arm.js`](../../tools/qc/typeguard-arm.js):
+
+**On single-typed data it matches mongod exactly, ascending and descending.** That is the first
+translation of the five to do so, and the guard is what earns it — without it a mixed column
+raises 22P02 (divergence class D).
+
+**On mixed-typed data it does not merely differ, it inverts.** The guard rejects a wrong-typed
+value to SQL `NULL`, which is indistinguishable from an absent key and from an explicit JSON
+null, so under `NULLS FIRST` it sorts to the **front** — where MongoDB sorts it *after* every
+number:
+
+```
+sort {sgv: 1}
+  mongod                   null | ABSENT | 40 | 100 | 400 | "120" | "high" | true
+  pg, typed column (T2.5)  "120" | "high" | null | ABSENT | true | 40 | 100 | 400
+```
+
+A string `sgv` moves from last to first. The emitted DDL already warns that a column built from
+`->>` cannot distinguish an absent key from an explicit null, and directs `$exists` to read
+`doc #> '{path}'` instead. **The same warning applies to `ORDER BY` and is written down nowhere**
+— and unlike `$exists`, ordering has no alternative expression that would be correct, because the
+jsonb path diverges too (it carries jsonb's type order, not BSON's).
+
+This is measured, not derived: the harness reports `matches` on a single-typed corpus in both
+directions, so a `DIFFERS` is a fact about the data rather than about the harness.
+
 ### 3.2 Recommendation, and the measurement that decides it
 
 **O2, falling back to O1 only if the corpus shows a mixed-typed sort key in real data.**
+
+§3.1b turns this from a preference into a measurement: the translation T2.5 already ships is
+*exactly correct* under O2's condition and *inverted* without it. So O2 is not a restriction
+bolted onto the adapter — it is the precondition the adapter is already assuming. Enforcing it
+makes an existing assumption checkable; declining to enforce it leaves a silent inversion behind
+a `200`.
 
 O2 is cheap, it is enforceable, and it converts a silent wrong answer into a loud rejection —
 which is the trade this project has made everywhere else (BF-04's allowlist, v3's `parseLimit`).
@@ -129,10 +173,14 @@ This is also the precondition for keyset pagination later: a total order is what
 | null/missing placement | **done** in T2.5 |
 | `_id` tiebreak in a shared normaliser | **not done** — one line, closes BF-13 on both backends |
 | `sort` as an AST rather than a driver object | **not done** |
-| cross-type ordering | **decide O1/O2/O3** once the corpus measurement lands |
+| typed generated column + guard | **done** in T2.5, and correct under single-typed data |
+| cross-type ordering | **decide O1/O2/O3** — see §3.1b and the corpus measurement |
 
 ## 6. Honest limits
 
+- **§3.1b tested one field, one numeric column, one sort term.** `sgv` with eight values. Text
+  columns, compound sorts and descending-with-`NULLS LAST` on a text column were not measured,
+  and a compound sort could interact with the guard in ways a single term cannot show.
 - **O1 is described, not prototyped.** No `bson_type_rank()` has been written or benchmarked,
   and the index cost of a composite expression sort key is unmeasured.
 - **The array rule is established for one shape.** `[1]` versus scalars, ascending. Descending

@@ -49,6 +49,13 @@ sort {sgv: 1}
 3. **Casting is not available as a fallback**, because a mixed-type column makes `::numeric`
    raise 22P02 — the same class D failure the filter adapter has.
 
+> **Update 2026-09-15.** T2.5 shipped a **fifth** strategy not in this table — a typed generated
+> column guarded by `jsonb_typeof`, plus explicit `NULLS FIRST/LAST`. Measured in
+> [`tools/qc/typeguard-arm.js`](../../tools/qc/typeguard-arm.js): it **matches `mongod` exactly on
+> single-typed data**, the only one of the five that does. On mixed-typed data the guard rejects
+> the wrong-typed value to SQL `NULL`, so it sorts to the front where MongoDB sorts it last. See
+> [the ordering design](../30-design/nightscout-seam-ordering-translation.md) §3.1b.
+
 **So ordering needs a design, not a one-line translation**, and it needs one before T2.5.
 A reasonable shape is to emit a type-bucketed sort key mirroring BSON's order, but that is a
 proposal, not a finding, and it belongs to whoever owns the adapter.
