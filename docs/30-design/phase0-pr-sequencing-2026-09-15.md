@@ -146,6 +146,81 @@ rather than failing to read one.
    The anchors were left alone because they are still true of both trees today; what to replace them
    with is written into BF-16.
 
+### Independent — availability, not correctness
+
+| # | branch | commits | what it is |
+|---|---|---|---|
+| **H** | `bf/merge` | 1 (`b06c6faf`) | **BF-36**. One lib file, one new test file. Trial-merges clean against **all seven** |
+
+**BF-36 — `mergeTreatmentUpdate` reads past the array it is splicing.** Verified against
+`origin/dev`:
+
+```js
+lib/client/receiveddata.js:99    var m = cachedDataArray.length;   // captured ONCE
+lib/client/receiveddata.js:104     cachedDataArray.push(no);       // grows it
+lib/client/receiveddata.js:107     for (var j = 0; j < m; j++) {   // stale bound
+lib/client/receiveddata.js:109       if (no._id === cachedDataArray[j]._id)   // throws
+lib/client/receiveddata.js:111         cachedDataArray.splice(j, 1);          // SHRINKS it
+```
+
+A `remove` splices the array while `m` stays put, so the next received item that matches nothing
+walks `j` past the end and dereferences `undefined._id`. It needs **a splice followed by a miss**,
+which is why it survived: two removes do not do it (the second matches and breaks first), and an
+insert does not either (`push` grows the array *past* the bound rather than below it). Deleting a
+treatment and editing another that is outside the client's two-day window does.
+
+**Severity is medium, and the reasoning is worth keeping because it sets the priority order.** The
+throw escapes `receiveDData` into `dataUpdate`, which has no `try`/`catch`, so the page stops
+advancing until reloaded. But it is **not silent**: `updateClock` runs on its own `setTimeout`
+chain, so the time-ago indicator keeps working and marks the page stale.
+
+> **BF-35 tells you a wrong thing. BF-36 stops telling you things, visibly.** That is the
+> distinction that puts one at the front of this batch and the other with the availability entries.
+
+**The two functions had drifted apart.** `mergeDataUpdate`, thirty lines up in the same file,
+**re-reads** its bound (`l = newArray.length`, `:25`) before its second loop and walks its purge
+backwards. `mergeTreatmentUpdate` does neither. Both are exported with `//expose for tests` and
+**neither had a single test**; both are now pinned.
+
+## 4c. The cheapest audit surface in the tree is the suppression list
+
+BF-35 and BF-36 were both found by the same route, and it generalises.
+
+`boluscalc.js:655` and `receiveddata.js:101`/`:108` each carry
+`/* eslint-disable-next-line security/detect-object-injection */ // verified false positive`.
+In every case somebody examined that exact line, correctly cleared it of **the thing the linter
+flagged**, and did not see the defect beside it.
+
+> **A suppression records that *one* question was asked and answered — and then reads like a record
+> that the line is fine.**
+
+There are **34** such suppressions in `lib/`. They are pre-selected as places a human already found
+confusing *and* annotated with which question was not the interesting one. Reading all 34 turned up
+one further defect (BF-36) and **nothing else** — the other 32 index the array their bound came
+from, or guard a keyed lookup with `hasOwnProperty`. The negative result is worth recording: the
+surface is now audited for this category.
+
+**The sharpest contrast is inside `boluscalc.js` itself.** Its **food-database** chooser filters
+with `continue` inside a single loop over `foodlist` and appends `.val(i)`, so the index stays
+valid. Its **quick-pick** chooser filtered into a second array and did not. Same file, same author,
+same pattern, opposite outcome.
+
+**Only `detect-object-injection` was audited.** `detect-non-literal-fs-filename`,
+`detect-possible-timing-attacks` and `no-cond-assign` are untouched and are the obvious next pass.
+
+### An ablation that kept passing was the finding
+
+Worth propagating, because it is the failure mode the non-vacuity rule does not by itself catch.
+Two of three ablations for BF-36 **did not reproduce the defect, and the tests rightly kept
+passing** — the first moved the length capture *inside* the outer loop, where it is recomputed and
+harmless; the second edited the first matching loop in the file, which belongs to
+`mergeDataUpdate`. Only the third, scoped to the right function with both halves applied together,
+failed with the production error.
+
+**The arm that kept passing is what said the ablation was wrong, rather than the test.** A green
+break is not automatically a vacuous check; it can equally be a break that did not break anything.
+Distinguishing the two is the whole skill.
+
 ### Separate repository — open independently, no ordering relationship
 
 | # | branch | repo | what it is |
@@ -369,7 +444,10 @@ things worse.
    same shape as BF-05, different file.
 5. **T0.4** (`nightscout-connect` jitter) is in a different repository and not in this set.
 6. **BF-04** needs *extraction* from the seam branch, not a fresh fix.
-7. **jsdom test hygiene has no enforcement.** A suite that sets `global.window`/`global.document`
+7. **Audit the other eslint suppression categories** — `detect-non-literal-fs-filename`,
+   `detect-possible-timing-attacks`, `no-cond-assign`. Object-injection's 34 lines yielded two real
+   defects; the same reasoning applies to each remaining category.
+8. **jsdom test hygiene has no enforcement.** A suite that sets `global.window`/`global.document`
    must restore them in `afterEach` or it breaks `browser-settings.test.js` later in the same run.
    `hashauth.modern.test.js` does the restore; nothing requires it, and the failure lands in a
    different file than the one that caused it.
