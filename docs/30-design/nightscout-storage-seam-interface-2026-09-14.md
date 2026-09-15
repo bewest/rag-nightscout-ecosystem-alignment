@@ -411,10 +411,70 @@ not. Two further consequences of the same mismatch: a dirty value makes the fall
 bound raises where MongoDB silently matches nothing — BF-01's live defect arriving as an error
 instead of an empty page. Louder, still a behaviour difference.
 
-**The fix belongs in `toSql`**: apply the same `jsonb_typeof` guard on the fallback path so the
-two agree by construction. Deliberately **not** done yet — `tools/seam/validate.js` is being
-extended concurrently (T2.3) and changing the thing under measurement mid-measurement would
-throw away the run. Sequenced after T2.3 reports.
+**Fixed 2026-09-15** (`d75c1154`): the jsonb path now carries the same
+`CASE WHEN jsonb_typeof(…) = '<type>' THEN … END` the emitted DDL builds its columns with, so
+the two agree by construction rather than by review. `CASE` and not
+`AND jsonb_typeof(…) = t`, because SQL does not promise to evaluate conjuncts in order — a
+planner free to try the cast first turns one dirty value into a `22P02` for the whole query.
+
+Three things came with it, each a defect in its own right:
+
+- **A generated column is *typed*, so `columns` is now a map of name → JSON type.** Comparing a
+  string against a numeric column emitted `numeric = text` and raised `22P02` *at query time* —
+  a 500 where MongoDB simply matches nothing. With names alone the type is unknown, so every
+  comparison takes the (correct, unaccelerated) jsonb path; `specs/generated/postgres/index.json`
+  now carries `columnTypes`, and passing it is what turns the accelerator on.
+- **Mixed-type `in`/`nin` lists get one arm per type.** `{$in: [1, 'a']}` is two questions; a
+  single cast has to pick one and silently loses every value of the other.
+- **A null operand is its own type bracket.** Measured against mongod 7.0.43 over
+  `{null, missing, 0, 'a', false}`: `$eq`, `$lte` and `$gte` against null all match null **and**
+  missing, while `$lt` and `$gt` match **nothing** — there is no value above or below null inside
+  its own bracket. Before this, the ordering operators emitted the literal string `undefined`
+  into the SQL and killed 114 of 3000 three-arm fixtures.
+
+### 8.6.1 The differential was vacuous here, and finding that out is the result
+
+Before claiming the fix: **removing the type guard entirely changed no result.** `validate.js`'s
+header had always said the corpus carried "mixed types, and a bound of the wrong type for its
+field"; it did not — `mkDocs` stored each field's own type and `randomValue` returned it. Every
+fixture was same-type, so the one property the guard exists to enforce was the one property
+nothing measured.
+
+With `--cross-type` (both halves: a document of the wrong type, and a *query* of the wrong type,
+which are opposite sides of the bracket):
+
+| | mismatches over 5000 |
+|---|---:|
+| guard removed | **398 unclassified, plus hard cast errors** — readings like `mongo 0 / sql 140` |
+| guard in place | **0** |
+
+Turning the mode on failed in *setup* first, which is its own confirmation: the harness table
+declared its generated columns with bare casts, and one document holding `sgv` as the string
+`"120"` kills the `INSERT` with `22P02`. That is exactly the argument `postgres_emit.py` makes
+for emitting a `CASE` guard — on a real deployment it is an ingest outage caused by a
+data-quality problem.
+
+### 8.6.2 The seam now matches real MongoDB, and the oracle is what is wrong
+
+`tools/qc/three-arm.js` against a live **mongod 7.0.43**, 3000 fixtures, cross-type injection on,
+regex arm on:
+
+| comparison | result |
+|---|---|
+| **mongod vs postgres** | **3000/3000 — 100 %** |
+| mingo vs mongod | 2977/3000 — **23 disagreements** |
+| mingo vs postgres | 2977/3000 — 23 disagreements |
+
+{3A} measured mongod-vs-postgres at **96.15 %** on cross-type values. That gap is now closed: the
+seam's claim holds exactly against the database self-hosters actually run.
+
+**Every remaining disagreement is the oracle's**, and the defect is pinned to one construct:
+**mingo's `$lte`/`$gte` against a null operand does not match a missing field; mongod's does.**
+mingo agrees with mongod on `$eq`, `$ne`, `$lt` and `$gt` null. This is T2.3's epistemic finding
+arriving from the other direction — there the oracle *masked* a real divergence, here it
+*manufactures* one — and both say the same thing: **`mingo ≡ postgres` is a claim about the AST,
+never about MongoDB.** `validate.js` now declares these fixtures oracle-declined at the point of
+use, the way it already declares the `x` flag, rather than counting them against the adapter.
 
 ### 8.7 Two capability gaps T2.1 surfaced
 
