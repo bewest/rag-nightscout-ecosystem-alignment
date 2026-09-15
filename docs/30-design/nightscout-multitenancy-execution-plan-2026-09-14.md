@@ -1040,7 +1040,7 @@ nothing).
 | gap | lands on | why it matters |
 |---|---|---|
 | **No TLS or auth in any database measurement** | T2.5 | Both add CPU to the per-operation term the whole cost model rests on; `ns-api` has the least headroom (110 ms/s of 300) |
-| **Writes never measured** — every arm is a read | T2.5 | Ingest is what uploaders actually generate |
+| ~~**Writes never measured**~~ **correctness CLOSED**, cost still open | T2.5 | [write path](../60-research/seam-write-path-2026-09-15.md): 23 agree, 4 differ, 0 vacuous — BF-21, BF-22, BF-23. No write *performance* figures yet |
 | **Working set past cache size** | T2.5 | {DB} §7's 400-tenant run is where cache pressure *starts* |
 | **pgbouncer + `set_config(is_local)`** | T2.5 | {M} §6.7 says the pooler may be required; its interaction with transaction-scoped binding is untested |
 | **Active fraction (15 %)** is an assumption | — | Drives A and B far harder than C; a real hoster's figure would sharpen the cost model |
