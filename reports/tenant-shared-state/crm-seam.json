@@ -1,0 +1,2613 @@
+{
+ "root": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-seam",
+ "scanned": 242,
+ "unparsed": [],
+ "files": {
+  "lib/admin_plugins/cleanentriesdb.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "moment",
+     "line": 4,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "cleanentriesdb",
+     "line": 6,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "moment",
+     "line": 13,
+     "detail": "rebinds"
+    }
+   ]
+  },
+  "lib/admin_plugins/cleanprofiledb.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "cleanprofiledb",
+     "line": 5,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/admin_plugins/cleanstatusdb.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "moment",
+     "line": 4,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "cleanstatusdb",
+     "line": 6,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "moment",
+     "line": 13,
+     "detail": "rebinds"
+    }
+   ]
+  },
+  "lib/admin_plugins/cleantreatmentsdb.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "moment",
+     "line": 4,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "cleantreatmentsdb",
+     "line": 6,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "moment",
+     "line": 13,
+     "detail": "rebinds"
+    }
+   ]
+  },
+  "lib/admin_plugins/daterangedelete.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "moment",
+     "line": 3,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "allowedCollections",
+     "line": 4,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "daterangedelete",
+     "line": 6,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "moment",
+     "line": 13,
+     "detail": "rebinds"
+    }
+   ]
+  },
+  "lib/admin_plugins/futureitems.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "futureitems",
+     "line": 5,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "futureitems",
+     "line": 71,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "futureitems",
+     "line": 76,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "futureitems",
+     "line": 80,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "futureitems",
+     "line": 129,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "futureitems",
+     "line": 131,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "futureitems",
+     "line": 135,
+     "detail": "writes a property"
+    }
+   ]
+  },
+  "lib/admin_plugins/roles.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "roles",
+     "line": 5,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "$status",
+     "line": 17,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "$status",
+     "line": 23,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "roles",
+     "line": 84,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "roles",
+     "line": 92,
+     "detail": "writes a property"
+    }
+   ]
+  },
+  "lib/admin_plugins/subjects.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "subjects",
+     "line": 5,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "$status",
+     "line": 17,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "$status",
+     "line": 23,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "subjects",
+     "line": 83,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "subjects",
+     "line": 91,
+     "detail": "writes a property"
+    }
+   ]
+  },
+  "lib/api/shared/objectid-validation.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "OBJECT_ID_PATTERN",
+     "line": 3,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/api/shared/write-payload.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "MAX_BATCH_ITEMS",
+     "line": 6,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/api2/loop-notification-errors.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "messages",
+     "line": 5,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "checkRequest",
+     "line": 30,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "checkCredentials",
+     "line": 31,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "checkEnvironment",
+     "line": 32,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "checkProfile",
+     "line": 33,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "checkService",
+     "line": 34,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "apnsReasons",
+     "line": 38,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/api2/summary/basaldataprocessor.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "dataProcessor",
+     "line": 1,
+     "detail": "const"
+    }
+   ]
+  },
+  "lib/api3/shared/writePurifier.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "PURIFIED_COLLECTIONS",
+     "line": 3,
+     "detail": "const"
+    }
+   ]
+  },
+  "lib/client/browser-settings.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "STORAGE_VERSION",
+     "line": 4,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/client/browser-utils.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "SMALL_SCREEN",
+     "line": 3,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/client/careportal.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "inputMatrix",
+     "line": 34,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "inputMatrix",
+     "line": 75,
+     "detail": "rebinds"
+    }
+   ]
+  },
+  "lib/client/chart.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "scrolling",
+     "line": 5,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "scrollNow",
+     "line": 6,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "scrollBrushExtent",
+     "line": 7,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "scrollRange",
+     "line": 8,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "PADDING_BOTTOM",
+     "line": 10,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "OPEN_TOP_HEIGHT",
+     "line": 11,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "CONTEXT_MAX",
+     "line": 12,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "CONTEXT_MIN",
+     "line": 13,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "FOCUS_MAX",
+     "line": 14,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "FOCUS_MIN",
+     "line": 15,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "loadTime",
+     "line": 17,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "scrolling",
+     "line": 677,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "scrollNow",
+     "line": 681,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "scrollBrushExtent",
+     "line": 682,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "scrollRange",
+     "line": 683,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "scrolling",
+     "line": 689,
+     "detail": "rebinds"
+    }
+   ]
+  },
+  "lib/client/clock-client.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "client",
+     "line": 7,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "latestProperties",
+     "line": 8,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "latestProperties",
+     "line": 60,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 298,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 299,
+     "detail": "writes a property"
+    }
+   ]
+  },
+  "lib/client/d3locales.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "d3locales",
+     "line": 8,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/client/hashauth.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "hashauth",
+     "line": 178,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 184,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 185,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 186,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 187,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 188,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 189,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 190,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 191,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 192,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 194,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 195,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 205,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 206,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 207,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 208,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 211,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 218,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 236,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 239,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 243,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 244,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 252,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 261,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 262,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 263,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 271,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 323,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 326,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 327,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 335,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 364,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 414,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 430,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 434,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "hashauth",
+     "line": 438,
+     "detail": "writes a property"
+    }
+   ]
+  },
+  "lib/client/help-tooltips.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "installed",
+     "line": 3,
+     "detail": "const"
+    }
+   ]
+  },
+  "lib/client/index.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "$",
+     "line": 3,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "d3",
+     "line": 4,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "brushing",
+     "line": 16,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "browserSettings",
+     "line": 18,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "moment",
+     "line": 19,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "timezones",
+     "line": 20,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "client",
+     "line": 22,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 56,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 80,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 97,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 112,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "browserSettings",
+     "line": 127,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 128,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 174,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 180,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 181,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 182,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 183,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 184,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 185,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 186,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 187,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 199,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 203,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 206,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 207,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 209,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 219,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 225,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 226,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 227,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 228,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 229,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 231,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 240,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 242,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 244,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 246,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 247,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 252,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 255,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 256,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 257,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 269,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 282,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 293,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 307,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 323,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 325,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 326,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 327,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 329,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 330,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 334,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 336,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 347,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 355,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "brushing",
+     "line": 499,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 582,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 588,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 589,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 603,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 631,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 633,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "brushing",
+     "line": 692,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 860,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 900,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1005,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1055,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1069,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1070,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1075,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1081,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1090,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1098,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1108,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1119,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1157,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1312,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1343,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1344,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1346,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1350,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1369,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1382,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1383,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1386,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1387,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1389,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "client",
+     "line": 1407,
+     "detail": "writes a property"
+    }
+   ]
+  },
+  "lib/client/receiveddata.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "TWO_DAYS",
+     "line": 3,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/client/renderer.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "DEFAULT_FOCUS",
+     "line": 7,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "WIDTH_SMALL_DOTS",
+     "line": 8,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "WIDTH_BIG_DOTS",
+     "line": 9,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "TOOLTIP_WIDTH",
+     "line": 10,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/client/storage.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "namespaces",
+     "line": 25,
+     "detail": "const"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "exported",
+     "line": 130,
+     "detail": "const"
+    },
+    {
+     "kind": "assignment",
+     "name": "exported",
+     "line": 146,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "exported",
+     "line": 146,
+     "detail": "writes a property"
+    }
+   ]
+  },
+  "lib/client-core/careportal/duration.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "UNIT_MSECS",
+     "line": 3,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/client-core/careportal/event-types.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "INPUT_KEYS",
+     "line": 20,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/client-core/profile-editor/records.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "STRIP_KEYS",
+     "line": 38,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/data/ddata.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "DEVICE_TYPE_FIELDS",
+     "line": 7,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/direction-normalizer.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "directionAliases",
+     "line": 3,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/food/food.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "init",
+     "line": 5,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/levels.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "levels",
+     "line": 5,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "level2Display",
+     "line": 17,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/middleware/index.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "wares",
+     "line": 3,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/notifications.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "THIRTY_MINUTES",
+     "line": 3,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "DEFAULT_GROUPS",
+     "line": 4,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "Alarm",
+     "line": 6,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/plugins/ar2.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "BG_REF",
+     "line": 5,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "BG_MIN",
+     "line": 6,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "BG_MAX",
+     "line": 7,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "WARN_THRESHOLD",
+     "line": 8,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "URGENT_THRESHOLD",
+     "line": 9,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "AR",
+     "line": 11,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "AR2_COLOR",
+     "line": 14,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/plugins/bgnow.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "offset",
+     "line": 5,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/plugins/pluginbase.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "TOOLTIP_WIDTH",
+     "line": 5,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/plugins/pump.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "ALL_STATUS_FIELDS",
+     "line": 6,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/plugins/speech.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "lastEntryValue",
+     "line": 3,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "lastMinutes",
+     "line": 4,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "lastEntryTime",
+     "line": 5,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "lastEntryValue",
+     "line": 51,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "lastEntryTime",
+     "line": 52,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "lastMinutes",
+     "line": 74,
+     "detail": "rebinds"
+    }
+   ]
+  },
+  "lib/plugins/timeago.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "lastChecked",
+     "line": 4,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "lastRecoveryTimeFromSuspend",
+     "line": 5,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "lastChecked",
+     "line": 70,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "lastRecoveryTimeFromSuspend",
+     "line": 75,
+     "detail": "rebinds"
+    }
+   ]
+  },
+  "lib/plugins/treatmentnotify.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "MANUAL_TREATMENTS",
+     "line": 7,
+     "detail": "const"
+    }
+   ]
+  },
+  "lib/profile/profileeditor.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "coreRecords",
+     "line": 7,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "coreProfiles",
+     "line": 8,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "coreRanges",
+     "line": 9,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "coreMigrate",
+     "line": 10,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "coreTime",
+     "line": 11,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "coreBuildDefaultProfile",
+     "line": 12,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "init",
+     "line": 15,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/profilefunctions.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "cacheTTL",
+     "line": 18,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "prevBasalTreatment",
+     "line": 19,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "prevBasalTreatment",
+     "line": 31,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "prevBasalTreatment",
+     "line": 467,
+     "detail": "rebinds"
+    }
+   ]
+  },
+  "lib/report/predictions.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "predictions",
+     "line": 1,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/report/reportclient.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "init",
+     "line": 3,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/report/reportstorage.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "defaultValues",
+     "line": 3,
+     "detail": "const"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "cachedProps",
+     "line": 19,
+     "detail": "let"
+    },
+    {
+     "kind": "assignment",
+     "name": "cachedProps",
+     "line": 33,
+     "detail": "rebinds"
+    }
+   ]
+  },
+  "lib/report_plugins/calibrations.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "d3",
+     "line": 3,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "calibrations",
+     "line": 6,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/report_plugins/dailystats.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "dailystats",
+     "line": 3,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/report_plugins/daytoday.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "moment",
+     "line": 3,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "d3",
+     "line": 5,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "daytoday",
+     "line": 8,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/report_plugins/glucosedistribution.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "glucosedistribution",
+     "line": 5,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/report_plugins/hourlystats.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "hourlystats",
+     "line": 5,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/report_plugins/loopalyzer.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "moment",
+     "line": 3,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "loopalyzer",
+     "line": 8,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "laDebug",
+     "line": 20,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "laVersion",
+     "line": 21,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "risingInterpolationGap",
+     "line": 22,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "fallingInterpolationGap",
+     "line": 23,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "interpolationRatio",
+     "line": 24,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/report_plugins/percentile.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "percentile",
+     "line": 3,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/report_plugins/profiles.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "profiles",
+     "line": 6,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/report_plugins/success.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "success",
+     "line": 5,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/report_plugins/treatments.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "moment",
+     "line": 3,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "treatments",
+     "line": 6,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "ALL_EVENT_TYPES",
+     "line": 117,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "NO_EVENT_TYPE",
+     "line": 118,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "selectedEventType",
+     "line": 121,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "treatments",
+     "line": 426,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "selectedEventType",
+     "line": 443,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "selectedEventType",
+     "line": 457,
+     "detail": "rebinds"
+    }
+   ]
+  },
+  "lib/report_plugins/utils.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "moment",
+     "line": 5,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "utils",
+     "line": 6,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/report_plugins/weektoweek.js": {
+   "residency": "browser",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "moment",
+     "line": 3,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "d3",
+     "line": 4,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "dayColors",
+     "line": 6,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "weektoweek",
+     "line": 16,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "weektoweek",
+     "line": 24,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "weektoweek",
+     "line": 48,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "weektoweek",
+     "line": 73,
+     "detail": "writes a property"
+    }
+   ]
+  },
+  "lib/server/client-ip.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "legacyHeaders",
+     "line": 9,
+     "detail": "const"
+    }
+   ]
+  },
+  "lib/server/entries.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "OBJECT_ID_HEX_RE",
+     "line": 15,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/server/env.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "env",
+     "line": 13,
+     "detail": "const"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "shadowEnv",
+     "line": 17,
+     "detail": "var"
+    },
+    {
+     "kind": "assignment",
+     "name": "shadowEnv",
+     "line": 37,
+     "detail": "rebinds"
+    },
+    {
+     "kind": "assignment",
+     "name": "shadowEnv",
+     "line": 39,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 42,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 43,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 44,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 45,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 46,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 47,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 52,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 53,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 54,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 65,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 66,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 73,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 74,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 75,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 76,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 78,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 83,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 87,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 88,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 89,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 90,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 91,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 92,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 94,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 102,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 109,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 138,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 139,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 143,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 152,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 153,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 154,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 155,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 156,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 157,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 158,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 159,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 160,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 166,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 168,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 171,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 174,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 175,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 176,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 177,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 182,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 183,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 202,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 205,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "env",
+     "line": 206,
+     "detail": "writes a property"
+    }
+   ]
+  },
+  "lib/server/pebble.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "DIRECTIONS",
+     "line": 7,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/server/purifier.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "SANITIZE_OPTIONS",
+     "line": 61,
+     "detail": "const"
+    }
+   ]
+  },
+  "lib/server/query-operator-allowlist.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "FIELD_OPERATORS",
+     "line": 62,
+     "detail": "const"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "LOGICAL_OPERATORS",
+     "line": 68,
+     "detail": "const"
+    }
+   ]
+  },
+  "lib/server/server.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "PORT",
+     "line": 41,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "HOSTNAME",
+     "line": 42,
+     "detail": "var"
+    }
+   ]
+  },
+  "lib/server/storage-backends.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "BACKENDS",
+     "line": 34,
+     "detail": "const"
+    }
+   ]
+  },
+  "lib/storage/filter.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "CMP",
+     "line": 47,
+     "detail": "const"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "GROUP",
+     "line": 48,
+     "detail": "const"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "MONGO_OP",
+     "line": 115,
+     "detail": "const"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "SQL_OP",
+     "line": 182,
+     "detail": "const"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "SQL_CAST",
+     "line": 198,
+     "detail": "const"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "FROM_MONGO_OP",
+     "line": 399,
+     "detail": "const"
+    }
+   ]
+  },
+  "lib/storage/mongo-storage.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "mongo",
+     "line": 7,
+     "detail": "const"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 137,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 138,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 149,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 159,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 180,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 182,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 214,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 221,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 236,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 237,
+     "detail": "writes a property"
+    },
+    {
+     "kind": "assignment",
+     "name": "mongo",
+     "line": 239,
+     "detail": "writes a property"
+    }
+   ]
+  },
+  "lib/storage/tenant-scope.js": {
+   "residency": "server",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "tenancyMode",
+     "line": 58,
+     "detail": "let"
+    },
+    {
+     "kind": "assignment",
+     "name": "tenancyMode",
+     "line": 64,
+     "detail": "rebinds"
+    }
+   ]
+  },
+  "lib/times.js": {
+   "residency": "both",
+   "findings": [
+    {
+     "kind": "mutable-binding",
+     "name": "factories",
+     "line": 3,
+     "detail": "var"
+    },
+    {
+     "kind": "mutable-binding",
+     "name": "times",
+     "line": 42,
+     "detail": "var"
+    }
+   ]
+  }
+ },
+ "counts": {
+  "browser": {
+   "files": 40,
+   "bindings": 92,
+   "assignments": 152
+  },
+  "server": {
+   "files": 17,
+   "bindings": 31,
+   "assignments": 64
+  },
+  "both": {
+   "files": 13,
+   "bindings": 27,
+   "assignments": 7
+  }
+ },
+ "filesWithFindings": 70
+}

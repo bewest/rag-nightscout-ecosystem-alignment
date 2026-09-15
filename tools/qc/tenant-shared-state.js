@@ -160,20 +160,138 @@ function scan (file) {
   return { findings, moduleScope };
 }
 
+// ---------------------------------------------------------------- residency
+//
+// Whether module-level state is a TENANCY hazard depends entirely on where the
+// module runs, and a census that ignores that is misleading rather than
+// incomplete: `lib/client/index.js` is the single largest holder of
+// module-level state in the tree and it is not a hazard at all, because it is
+// loaded once per BROWSER PAGE, by one person, for one site.
+//
+// Residency is computed from the require graph rather than from directory
+// names, because the directories do not line up with it -- lib/plugins/ is
+// loaded by BOTH the server (plugins.checkNotifications) and the bundles (the
+// chart), which is precisely the category that needs naming.
+//
+// Limit worth stating: this follows static, relative require() calls only. A
+// dynamic require, or a module reached only through a package name, is invisible
+// to it. That makes the server set a LOWER BOUND -- the direction that matters,
+// since an unreached module is reported as browser-only and therefore harmless.
+
+const SERVER_ENTRIES = ['server.js', 'lib/server/server.js'];
+const BROWSER_ENTRY_DIR = 'bundle';
+
+// Both spellings. The bundle entry points are ESM and use `import`, while the
+// server tree is CommonJS -- collecting only require() made every browser file
+// look `unreached`, and it did so SILENTLY, because a module-syntax file fails a
+// script-mode parse and the failure was swallowed. Parse failures are counted
+// now rather than discarded.
+const unresolvable = [];
+
+function requiresOf (file) {
+  let ast = null;
+  for (const sourceType of ['script', 'module']) {
+    try {
+      ast = espree.parse(fs.readFileSync(file, 'utf8'), { ...PARSE, sourceType });
+      break;
+    } catch { /* try the other dialect */ }
+  }
+  // A .json or .css dependency is a leaf by definition -- it has no requires of
+  // its own -- so failing to parse one is not a hole. Only a JavaScript file
+  // this cannot read leaves the graph incomplete.
+  if (!ast) {
+    if (file.endsWith('.js')) unresolvable.push(file);
+    return [];
+  }
+
+  const out = [];
+  (function visit (node) {
+    if (!node || typeof node !== 'object') return;
+    if (Array.isArray(node)) { node.forEach(visit); return; }
+    if ((node.type === 'ImportDeclaration'
+         || node.type === 'ExportNamedDeclaration'
+         || node.type === 'ExportAllDeclaration')
+        && node.source && typeof node.source.value === 'string'
+        && node.source.value.startsWith('.')) {
+      out.push(node.source.value);
+    }
+    if (node.type === 'CallExpression' && node.callee.type === 'Identifier'
+        && node.callee.name === 'require'
+        && node.arguments.length === 1 && node.arguments[0].type === 'Literal'
+        && typeof node.arguments[0].value === 'string'
+        && node.arguments[0].value.startsWith('.')) {
+      out.push(node.arguments[0].value);
+    }
+    for (const key of Object.keys(node)) {
+      if (key === 'loc' || key === 'range') continue;
+      visit(node[key]);
+    }
+  })(ast);
+  return out;
+}
+
+function resolveRelative (from, spec) {
+  const base = path.resolve(path.dirname(from), spec);
+  for (const candidate of [base, base + '.js', path.join(base, 'index.js')]) {
+    try { if (fs.statSync(candidate).isFile()) return candidate; } catch { /* next */ }
+  }
+  return null;
+}
+
+function reachableFrom (entries) {
+  const seen = new Set();
+  const queue = entries.filter(f => { try { return fs.statSync(f).isFile(); } catch { return false; } });
+  while (queue.length) {
+    const file = queue.pop();
+    if (seen.has(file)) continue;
+    seen.add(file);
+    for (const spec of requiresOf(file)) {
+      const target = resolveRelative(file, spec);
+      if (target && !seen.has(target)) queue.push(target);
+    }
+  }
+  return seen;
+}
+
 const root = path.resolve(ROOT);
 const files = SCAN_DIRS.flatMap(d => walkFiles(path.join(root, d)));
+
+const serverReach = reachableFrom(SERVER_ENTRIES.map(e => path.join(root, e)));
+const bundleDir = path.join(root, BROWSER_ENTRY_DIR);
+let browserReach = new Set();
+try {
+  browserReach = reachableFrom(fs.readdirSync(bundleDir)
+    .filter(f => f.endsWith('.js')).map(f => path.join(bundleDir, f)));
+} catch { /* a checkout without bundles reports everything as server or neither */ }
+
+function residencyOf (file) {
+  const onServer = serverReach.has(file);
+  const inBrowser = browserReach.has(file);
+  if (onServer && inBrowser) return 'both';
+  if (onServer) return 'server';
+  if (inBrowser) return 'browser';
+  return 'unreached';
+}
+
 const report = { root, scanned: files.length, unparsed: [], files: {} };
 
 for (const file of files) {
   const rel = path.relative(root, file);
   const result = scan(file);
   if (result.unparsed) { report.unparsed.push({ file: rel, error: result.unparsed }); continue; }
-  if (result.findings.length) report.files[rel] = result.findings;
+  if (result.findings.length) {
+    report.files[rel] = { residency: residencyOf(file), findings: result.findings };
+  }
 }
 
-const counts = { 'mutable-binding': 0, assignment: 0 };
-for (const findings of Object.values(report.files)) {
-  for (const f of findings) counts[f.kind] = (counts[f.kind] || 0) + 1;
+const counts = {};
+for (const entry of Object.values(report.files)) {
+  counts[entry.residency] = counts[entry.residency] || { files: 0, bindings: 0, assignments: 0 };
+  counts[entry.residency].files++;
+  for (const f of entry.findings) {
+    if (f.kind === 'assignment') counts[entry.residency].assignments++;
+    else counts[entry.residency].bindings++;
+  }
 }
 report.counts = counts;
 report.filesWithFindings = Object.keys(report.files).length;
@@ -182,20 +300,39 @@ if (asJson) {
   console.log(JSON.stringify(report, null, 1));
 } else {
   console.log(`scanned ${report.scanned} files under ${path.relative(process.cwd(), root)}/lib`);
+  if (unresolvable.length) {
+    console.log(`\nUNPARSEABLE WHILE WALKING THE GRAPH (${unresolvable.length}) -- these files'`
+      + ` dependencies are missing from the residency classification:`);
+    for (const f of unresolvable) console.log(`  ${path.relative(root, f)}`);
+  }
   if (report.unparsed.length) {
     console.log(`\nUNPARSED (${report.unparsed.length}) -- a hole in the measurement, not a pass:`);
     for (const u of report.unparsed) console.log(`  ${u.file}: ${u.error}`);
   }
-  console.log(`\n${report.filesWithFindings} files carry module-level mutable state`);
-  console.log(`  mutable-binding  ${counts['mutable-binding'] || 0}`);
-  console.log(`  assignment       ${counts.assignment || 0}   <- written after load`);
+  console.log(`\n${report.filesWithFindings} files carry module-level mutable state\n`);
+  const LABEL = {
+    server: 'SERVER-RESIDENT   one process, many tenants -- the hazard',
+    both: 'BOTH              server-resident AND bundled; the server copy is the hazard',
+    browser: 'browser-only      one page load, one person, one site -- NOT a hazard',
+    unreached: 'unreached         no static require path from either entry',
+  };
+  console.log('  residency         files  bindings  writes');
+  for (const key of ['server', 'both', 'browser', 'unreached']) {
+    const c = counts[key];
+    if (!c) continue;
+    console.log(`  ${key.padEnd(10)}${String(c.files).padStart(11)}`
+      + `${String(c.bindings).padStart(10)}${String(c.assignments).padStart(8)}`
+      + `   ${LABEL[key].split('   ')[1] || ''}`);
+  }
 
-  const byAssign = Object.entries(report.files)
-    .map(([f, x]) => [f, x.filter(v => v.kind === 'assignment').length, x.length])
-    .filter(([, a]) => a > 0)
-    .sort((a, b) => b[1] - a[1]);
-  console.log(`\nWritten after load, worst first -- these are the ones that hold state:\n`);
-  for (const [file, assigns, total] of byAssign.slice(0, 25)) {
-    console.log(`  ${String(assigns).padStart(3)} writes  ${file}  (${total} findings)`);
+  const hazard = Object.entries(report.files)
+    .filter(([, x]) => x.residency === 'server' || x.residency === 'both')
+    .map(([f, x]) => [f, x.residency, x.findings.filter(v => v.kind === 'assignment').length,
+      x.findings.length])
+    .sort((a, b) => b[2] - a[2]);
+  console.log(`\nServer-resident, written after load, worst first:\n`);
+  for (const [file, residency, assigns, total] of hazard) {
+    if (!assigns) continue;
+    console.log(`  ${String(assigns).padStart(3)} writes  [${residency}] ${file}  (${total} findings)`);
   }
 }
