@@ -473,10 +473,13 @@ rule, not just recording as a fact about this milestone.
 
 **Method note.** The seam is verified by two differentials, both re-run on every change:
 `tools/seam/roundtrip.js` (4000 generated `query.js`-shaped filters, mingo as oracle) and
-`tools/seam/validate.js` (2000 randomised ASTs, mingo vs live PostgreSQL). Both report zero
-mismatches. Each was checked to be **non-vacuous** by reverting the fix under test — the RegExp
-case gives 240 mismatches when removed, several reading `0 vs 98` and `69 vs 333`. A
-differential that has never failed is not yet evidence.
+`tools/seam/validate.js` (5000 randomised ASTs, mingo vs live PostgreSQL, reported per
+operator). `roundtrip.js` reports zero mismatches; `validate.js` reports zero for nine of its
+ten operators and the `re` defects T2.3 records below. Each was checked to be **non-vacuous** by
+reverting the fix under test — the RegExp case gives 240 mismatches when removed, several
+reading `0 vs 98` and `69 vs 333`; `nin`'s `IS NULL` guard gives 588 and `exists` on the
+generated column gives 188, each charged to that operator alone. A differential that has never
+failed is not yet evidence.
 
 **T1.3 · Parametrise the storage-touching tests by backend. — DONE 2026-09-14**
 *Done*: the storage-touching files run against a backend selected by env, with MongoDB as the
@@ -607,11 +610,33 @@ evidence-derived model and must be read out of `lib/authorization/storage.js`**.
 optional for a running server.
 *Done*: `specs/nsschema/` carries a model for every collection the server opens.
 
-**T2.3 · v3's nine operators in SQL, with `mingo` as oracle.**
+**T2.3 · v3's nine operators in SQL, with `mingo` as oracle. — MEASURED 2026-09-14, BLOCKED ON
+THREE `re` DEFECTS**, see
+[the `re` validation report](../60-research/seam-filter-re-operator-validation-2026-09-14.md).
 `eq ne gt gte lt lte in nin re` from `lib/api3/generic/search/input.js:111`. Differential-test
 each against `mingo` over randomised fixtures, following #8733's method.
 *Done*: ≥500 randomised fixtures per operator, zero disagreements with `mingo`; `re` explicitly
 bounded (pattern guard + timeout) since it is {M} §6.5's live exposure.
+
+**Status.** `tools/seam/validate.js` is now per-operator (a focus operator round-robins so the
+counts are built rather than hoped for, blame is isolated to a single node before it is counted,
+and the run fails if any operator lands under 500). Over 5000 fixtures — **981 to 1052 per
+operator** — the eight non-regex operators and `exists` report **zero** disagreements. `re`,
+which was behind a `WITH_RE` flag and had never been measured by any published run, reports
+**54 mismatches and 95 SQL errors**, in three distinct defects in `toSql`'s `re` branch: ARE's
+newline modes are not Mongo's `m`/`s`, jsonb renders non-strings as text that a pattern then
+matches, and `re` against a numeric generated column raises `operator does not exist` — a 500,
+reachable by any client, on 1.9 % of generated fixtures. A fix is proposed and measured (0
+mismatches, 0 errors) against a scratch copy; `externals/work/crm-seam/` was not modified.
+
+**One correction to the criterion itself.** `re` is the only operator whose meaning comes from a
+regex *engine*, and mingo's is V8 while MongoDB's is PCRE2. A new deterministic three-arm probe
+(`tools/qc/re-arms.js`, 21 constructs) finds three where **mongod differs from PostgreSQL and
+mingo agrees with PostgreSQL** — the differential reports 100 % while the real backends return
+different documents. So for `re`, "zero disagreements with `mingo`" does not imply "the backends
+agree", and closing T2.3 needs the mongod arm as well. Same tool measures the bound: `RE_MAX_LEN`
+is a length bound, not a work bound, and on the classic catastrophic patterns the backtracking
+exposure is the **JavaScript** arm's — mongod 7 and PostgreSQL 16 are both flat.
 
 **T2.4 · v1 operator census, then an allowlist. — CENSUS DONE 2026-09-14**
 Derive the operators clients actually send from the corpus; support those, reject the rest with
