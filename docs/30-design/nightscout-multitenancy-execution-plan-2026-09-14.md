@@ -426,7 +426,7 @@ imports the `mongodb` driver.
 *This is the highest-value task in the plan* — it is the prerequisite for everything in Phase 2
 and it is checkable by a suite that already exists.
 
-**Status.** Suite **2199 passing, 1 pending, 0 failing** (baseline 2150; the increase is new
+**Status.** Suite **2207 passing, 1 pending, 0 failing** (baseline 2150; the increase is new
 tests only). **No existing test expectation was changed** — the single edit to an existing test
 file is a test double gaining a `project()` method, because the projection now rides on the
 cursor rather than `find()`'s second argument.
@@ -434,14 +434,16 @@ cursor rather than `find()`'s second argument.
 Converted: `activity` (4 sites), `treatments` (9), `food` + `devicestatus` (9), `profile` (7 of
 8) + `entries` (4 of 4), `authorization/storage` (4), `aggregate` (1), `api/entries` count (1).
 
-Two sites remain, each recorded in place with its reason:
+`websocket.js` is converted too — the last cluster, and the one where a filter and an update
+document are assembled from fields arriving straight off a socket, so it is where "the query
+object is the allowlist" had the least margin.
 
-| site | why it is still on the raw collection |
-|---|---|
-| `profile.list_query` | `GET /profiles/` accepts `$expr` today and a test asserts it. Whether to represent or reject `$expr` is a **query-surface decision (D8/T2.4)**, not a conversion detail. |
-| `websocket.js` (~10 driver calls) | Needs an `$unset` capability the interface does not have, and its dedup unification is a real behaviour change. Deliberately last. |
+**One site remains**: `profile.list_query`. `GET /profiles/` accepts `$expr` today and a test
+asserts it. Whether to represent or reject `$expr` is a **query-surface decision (D8/T2.4)**,
+not a conversion detail — and T2.4's census found no client sends it, so this is now a decision
+about a server capability rather than about breaking a known consumer.
 
-**Three defects found by doing the conversion**, none of which the plan anticipated:
+**Four defects and gaps found by doing the conversion**, none of which the plan anticipated:
 
 1. **`fromMongo` silently dropped a native `RegExp`.** `Object.keys(/x/i)` is `[]`, so the
    clause produced no nodes and vanished with no error. `lib/server/query.js`'s `parseRegEx`
@@ -457,6 +459,13 @@ Two sites remain, each recorded in place with its reason:
 3. **`acknowledged` was about to disappear from four delete response bodies.** Three modules
    independently re-synthesised `{acknowledged: true}` to compensate, which would misreport an
    unacknowledged write. The interface now passes the driver's value through.
+4. **No non-upserting replace existed.** The socket path's profile dedup replaces in place and
+   must not insert; every route the interface offered was an upsert, which would resurrect a
+   profile deleted between the lookup and the write. Closed with `replaceFiltered`.
+
+Three of the four surfaced because a converting agent **stopped and reported a mismatch instead
+of reaching for the nearest working call**. That is worth carrying into Phase 2 as a working
+rule, not just recording as a fact about this milestone.
 
 **Method note.** The seam is verified by two differentials, both re-run on every change:
 `tools/seam/roundtrip.js` (4000 generated `query.js`-shaped filters, mingo as oracle) and

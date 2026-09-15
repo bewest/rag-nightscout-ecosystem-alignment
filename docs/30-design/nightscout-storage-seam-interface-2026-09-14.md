@@ -456,6 +456,7 @@ insertMany(docs, options?)                                                   // 
 replaceOne(identifier, doc)
 updateOne(identifier, setFields)
 updateMany(ast, { set, unset })                                              // NEW
+replaceFiltered(ast, doc)                     // NEW — replace in place, NO upsert
 deleteOne(identifier)
 deleteMany(ast)                                                              // NEW
 deleteManyOr(filterDef)                       // v3's existing OR-of-clauses form, kept
@@ -522,5 +523,25 @@ natively.
 | site | reason |
 |---|---|
 | `profile.list_query` | accepts `$expr` today, with a test asserting it. A query-surface decision (D8/T2.4), not a conversion detail. The T2.4 census found **no client in the corpus sends `$expr`**, so rejecting it is a security fix rather than a compatibility break — but it is still a deliberate behaviour change and belongs with the allowlist. |
-| `websocket.js` | its dedup logic is knowingly inconsistent with `lib/server/treatments.js` (§4.4). Converting the storage calls is mechanical; unifying the dedup is a behaviour change and is filed separately. |
 | each module's `api()` / collection accessor | bootevent still needs raw collections for `ensureIndexes`. Removing these is the *last* step, once index creation moves behind `ensureSchema`. |
+
+`websocket.js` **is** converted. Its dedup logic remains knowingly inconsistent with
+`lib/server/treatments.js` (§4.4) — the storage calls moved, the logic did not, and unifying it
+is filed separately as a behaviour change.
+
+### 10.7 Deviation 4 — `replaceFiltered`, found by converting the socket path
+
+Not in the proposal at all. The socket path's profile dedup is a **replace-in-place that must
+not insert**, and every route §4.1 offered was an upsert: `replaceOne` matches on a v3
+identifier *and* upserts, and `bulkUpsert` is upsert by definition. Either would resurrect a
+profile deleted between the lookup and the write — a user removes a profile, a queued socket
+message recreates it.
+
+It returns `matchedCount` so a caller can distinguish "replaced" from "was already gone". That
+distinction is the reason the method exists, so it is tested directly rather than inferred.
+
+**Process note worth keeping.** This gap was found because the converting agent *stopped and
+reported* rather than reaching for the nearest upsert. The same thing happened with
+`acknowledged` and with the dropped `RegExp`. Three of the four real defects in T1.2 surfaced
+because someone declined to paper over a mismatch — which is an argument about how to run the
+remaining phases, not just a note about this one.
