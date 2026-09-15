@@ -16,6 +16,13 @@ is a defect that
 > forever, so "we will fix it when the Postgres backend lands" is never an answer for anything
 > in this table.
 
+> **Renumbering, 2026-09-15.** Two ids were allocated twice by concurrent sessions. The
+> **write-path trio keeps BF-21/22/23** because a research document references them as a set; the
+> two later arrivals were renumbered. So in commits dated 2026-09-15 or earlier: "BF-21" in
+> `c27f91a4` means **BF-30** (the auth-failure delay), and "BF-22" in `c05e6dac` means **BF-31**
+> (the Google Home language leak). **Allocate a new id by reading the highest in this table at the
+> moment you write it**, never the one your brief quoted.
+
 **Status values**: `open` · `fixed-in-seam` (repaired inside the seam branch as a side effect,
 needs extraction to land independently) · `landed` · `wontfix`.
 
@@ -37,6 +44,8 @@ needs extraction to land independently) · `landed` · `wontfix`.
 | **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | open |
 | **BF-28** | `insulinage`'s URGENT branch is unreachable — it compares against `insulinInfo.urgent`, which is never assigned, where all three sibling plugins use `prefs.urgent`. "Insulin reservoir change overdue!" can never fire | `lib/plugins/insulinage.js:92` | **medium** — a site-change reminder that silently never arrives | yes | open |
 | **BF-29** | An unknown name in `ENABLE` is **silently ignored** — matching is against `plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`), not the file name. An operator who writes `ENABLE=cannulaage` gets no plugin and no warning | `lib/plugins/index.js:140` | **medium** — an operator believes an alarm plugin is on when it is off | yes | open |
+| **BF-30** | The auth-failure delay is keyed on a client-controlled value under the **default** configuration, so brute-force throttling never accumulates | `lib/authorization/delaylist.js` + `TRUST_PROXY` default in `lib/server/env.js:43` | **high** — restores unthrottled guessing against `API_SECRET` and tokens | yes | open |
+| **BF-31** | A Google Home request changes the display language **for the whole process**, alarm level names included, until something changes it back | `lib/api/googlehome/index.js:27` + the one `language` instance at `lib/server/server.js:34` | **medium** — gated on the Google Home plugin being enabled; reaches alarm text | yes | open |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | open |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | open |
@@ -54,7 +63,6 @@ criterion is what makes the rest of the table mean something.
 | id | defect | where | severity | status |
 |---|---|---|---|---|
 | **BF-21** | `bulkUpsert` on PostgreSQL takes no options argument, so the `{mode:'replace'}` every shipping caller sends is silently ignored and the write merges | `lib/api3/storage/pgCollection/index.js` `bulkUpsert` | **high** — a deleted field survives for good; the two backends drift apart with every write | open |
-| **BF-22** | A Google Home request changes the display language **for the whole process**, alarm level names included, until something changes it back | `lib/api/googlehome/index.js:27` + the one `language` instance at `lib/server/server.js:34` | medium — gated on the Google Home plugin being enabled; reaches alarm text | yes | open |
 | **BF-22** | `updateOne` with a dotted field stores a nested object on MongoDB and a literal dotted key on PostgreSQL | `lib/api3/storage/pgCollection/index.js` + `lib/api3/generic/patch/operation.js:85` | **medium** — client-reachable via v3 `PATCH`; the PostgreSQL key is unreachable by any path lookup | open |
 | **BF-23** | A duplicate-key error reaches the caller as the backend's own error class | both adapters | low — no shipping caller branches on it | open |
 | **BF-25** | A credential carried in the request **body** is invisible to the tenant claim check, so tenant A's token authorises A's roles against tenant B's bound data | `lib/server/tenant-middleware.js` `presentedCredential` + `lib/authorization/index.js:40-50` | **high** — cross-tenant read *and write* with any client on default config | open |
@@ -64,7 +72,6 @@ criterion is what makes the rest of the table mean something.
 | **BF-18** | Driver 7 doubles the getMore batch size when `.limit(0)` is set, abandoning `READ_OPTIONS` | `lib/storage/mongo-read-options.js` + driver 7.6.0 | medium — pre-release; compounds BF-14 | open |
 | **BF-19** | `ORDER BY` reads the generated column, which orders differently from the document — breaking the DDL's own stated invariant | `lib/api3/storage/pgCollection/sql.js` `orderBy` | **high** — silently wrong order, and client-reachable via v3 `?sort=` | open |
 | **BF-20** | `scalarize()` converts a `Date` bound to an ISO string, so a `Date`-valued filter matches nothing on MongoDB and everything on PostgreSQL | `lib/api3/storage/pgCollection/utils.js` | low — no shipping caller passes a `Date` | open |
-| **BF-21** | The auth-failure delay is keyed on a client-controlled value under the **default** configuration, so brute-force throttling never accumulates | `lib/authorization/delaylist.js` + `TRUST_PROXY` default in `lib/server/env.js:43` | **high** — restores unthrottled guessing against `API_SECRET` and tokens | yes | open |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
 
@@ -810,7 +817,7 @@ replacement.
 *Evidence*: `specs/nsschema/auth_subjects.model.json` (`credential_warning`), which also records
 that the field is `secret`/`credential` so no emitter or exporter can treat it as ordinary text.
 
-### BF-21 · The auth-failure delay is keyed on something the caller chooses
+### BF-30 · The auth-failure delay is keyed on something the caller chooses
 
 Found while verifying T3.1's decision to read `req.headers.host` rather than `req.hostname`.
 That decision is correct, and checking *why* turned up a larger consequence of the same root
@@ -871,7 +878,7 @@ programme** — `delaylist.js` and the `TRUST_PROXY` default both predate it.
 `req.headers.host` directly and refusing to honour a configured alternative header unless
 `TRUST_PROXY` is set. That is the pattern the fix above generalises.
 
-### BF-22 · One request re-languages the whole process, alarms included
+### BF-31 · One request re-languages the whole process, alarms included
 
 Found while fixing a blind spot in `tools/qc/tenant-shared-state.js` (see
 [the audit](../60-research/tenant-shared-state-audit-2026-09-15.md) §4a): the tool could not see
