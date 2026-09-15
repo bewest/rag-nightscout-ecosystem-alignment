@@ -413,6 +413,43 @@ store.withTenant(tenantId, async (tx) => { … })   // NEW — required before T
 **Implication for implementation order**: adding this after T1.2 means touching ~55 call sites
 twice. It belongs in the interface definition now.
 
+### 9.1 As built — 2026-09-14
+
+It did **not** land before T1.2, so this is the retrofit the note above warned about. It was
+cheap anyway, and for a reason worth recording: T1.2 left **one choke point** — the
+`MongoCollection` delegations — where before there were 68 call sites. The warning was correct
+about the risk and wrong about the cost, because the seam itself removed the cost.
+
+`lib/storage/tenant-scope.js`, with `withTenant` exposed on the store (`lib/storage/mongo-storage.js`)
+and `requireTenant` asserted in `lib/api3/storage/mongoCollection/index.js`. All three findings
+are implemented rather than deferred:
+
+1. **The assertion.** Every document-touching delegation calls `requireTenant(<collection>.<op>)`
+   first. **Non-vacuity checked**: removing the call makes the unbound-multitenant test fail
+   with the query reaching the driver — which is the whole exposure, one tenant's query
+   returning another's documents.
+2. **No transaction on MongoDB.** `withTenant` binds and does not open one. The interface
+   therefore **does not promise atomicity across operations**, and that is stated at the method,
+   not left to be discovered from a partial write.
+3. **`SINGLE_TENANT` is a `Symbol`**, not a reserved string. A Symbol cannot compare equal to a
+   tenant id, be serialised into a log line, or be concatenated into a query — so the
+   single-tenant binding cannot leak into a multitenant code path by accident. Binding a tenant
+   id under `'single'` is refused, and `SINGLE_TENANT` under `'multi'` is refused.
+
+**AsyncLocalStorage, not a threaded handle**, and the *failure mode* is the argument rather than
+the diff size. If the async chain breaks and the scope is lost, the caller has **no** binding —
+which throws here and returns zero rows under RLS. A lost scope cannot silently become a
+*different* tenant's binding, because there is nothing to fall back to. It fails closed in both
+directions. Rebinding a different tenant inside an existing scope is refused outright: crossing
+a tenant boundary is an admin-plane operation and belongs on its own request.
+
+**What this is not yet.** Nothing calls `setTenancyMode('multi')` — tenant resolution is T3.1 —
+so the assertion is **inert in every deployment that exists today**, exercised only by tests
+that set the mode explicitly and restore it. It is the scope T2.5 needs, in place before T2.5
+needs it; it is not tenancy.
+
+14 tests; the suite is **2229 passing, 1 pending, 0 failing**, lint clean.
+
 ## 7. Recommended sequencing, revised
 
 The tiering in §2 changes the order the plan assumed:

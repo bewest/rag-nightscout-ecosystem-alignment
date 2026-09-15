@@ -415,9 +415,13 @@ somewhere to apply, T2.3 is already done by construction, and **T2.4's allowlist
 structurally — an AST that cannot express an unlisted operator *is* the allowlist**, which is
 {M} §6.5's security fix arriving for free.
 
-**One gap to close before T1.2 starts**: the interface has no **transaction scope**, and D3's
-RLS binding is per-transaction ({DB} §8.2). Retrofitting one through the call sites twice
-would be avoidable waste.
+~~**One gap to close before T1.2 starts**: the interface has no **transaction scope**~~ —
+**closed 2026-09-14, after T1.2 rather than before it.** `store.withTenant` plus a
+`requireTenant` assertion at the `MongoCollection` delegations; see {S} §9.1 for what was built
+and why `SINGLE_TENANT` is a `Symbol`. The warning about retrofitting was right about the risk
+and wrong about the cost: T1.2 left **one** choke point where there had been 68, so the retrofit
+touched three files. The assertion is **inert until T3.1** — nothing selects multitenant mode
+yet — and exists so T2.5 has the scope RLS requires.
 
 **T1.2 · Convert the 19 files to the interface, MongoDB only. — SUBSTANTIALLY DONE 2026-09-14**
 **Zero behaviour change.** No Postgres, no tenancy, no schema.
