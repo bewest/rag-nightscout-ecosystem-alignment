@@ -2440,7 +2440,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 |---|---|---|---|---|---|
 | `DOC-SEQUENCING` | phase0-pr-sequencing contradicts itself on the branch count | `not-started` | `main` | n/a | 1 run + 1 no-gate |
 | `DOC-PLAN` | The execution plan's tallies and line references are stale | `not-started` | `main` | n/a | 0 run + 1 no-gate |
-| `DOC-REGISTER` | The register's own header undercounts, and BF-27 has no detail section | `not-started` | `main` | n/a | 1 run + 4 no-gate |
+| `DOC-REGISTER` | The register's own header undercounts and its suppression tally is stale | `not-started` | `main` | n/a | 1 run + 4 no-gate |
 | `DOC-EXPOSURE` | Say in the register that `fixed` does not mean an operator is safe | `not-started` | `main` | n/a | 1 run + 1 no-gate |
 | `DOC-MEMORY` | The two memory files disagree with each other, and one cites a file that does not exist | `not-started` | `main` | n/a | 2 run + 1 no-gate |
 | `DOC-LAYOUT` | The repository-layout preamble names the wrong shipping checkout | `not-started` | `main` | n/a | 1 run + 1 no-gate |
@@ -2505,7 +2505,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 
 **Notes.** GT3's list. L7 says "Phase 0 is done and is not the blocker any more", contradicted by its own L529 (T0.1 "In flight") and L541 (T0.3 "GATE NOT MET"). L8's tallies: "13 register entries closed" (actual 26 closed or partly), "3 new defects found" (actual 8, BF-32..BF-39), "4 register entries corrected as wrong" (at least 7). L351 and L1189 use "BF-22" for what is now BF-31. L1189 still carries the claim BF-31's measurement refuted. The T3.0 amendment table cites tenant-context.js:137, which is a comment.
 
-### `DOC-REGISTER` &mdash; The register's own header undercounts, and BF-27 has no detail section
+### `DOC-REGISTER` &mdash; The register's own header undercounts and its suppression tally is stale
 
 | | |
 |---|---|
@@ -2526,7 +2526,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 **Gates.**
 
 - `[static]` `node tools/queue/gates/register-rows-vs-details.js`
-  - Every table row id has a detail section and vice versa. FAILS today: BF-27 has a row at L124 and NO detail section - the only id in the file without one. GT3 found this by programmatic set difference, and it resolves the earlier suspicion of "a stale detail heading or a second table": no such thing exists.
+  - Every table row id has a detail section and vice versa. IT PASSES as of 2026-09-16, and the history is worth keeping because the describe that was here had gone stale twice over. It said "FAILS today: BF-27 has a row at L124 and NO detail section - the only id in the file without one". BF-27's section was written at some point after that and the text was never updated, so the gate was failing on a DIFFERENT id - BF-68, added later and left without one - while its own description pointed a reader at an id that was already fine. BF-68's section was written 2026-09-16 when its status was corrected to fixed, and the gate is now green at 70 rows / 70 sections.
 - **NO GATE** &mdash; The header's "Five entries have now had a claim fail on contact" is at least seven - the §1 table itself flags two the header omits, BF-08 and BF-30. The same undercount is copied into plan L8 and sequencing L526. Counting "claims that failed on contact" needs a marked field per entry, which the register does not have. Adding one is the real fix.
 - **NO GATE** &mdash; The suppression-audit tally at L48-53 is stale. BF-39 is a THIRD defect from the no-useless-escape category, on BF-37's own site. Correct: five defects, 40 of 45, row = 2 sites / 3 defects. L41's "from BF-35, BF-36, BF-37 and BF-38. All four" should be five.
 - **NO GATE** &mdash; Three entries contradict themselves on PROVENANCE - the one property the header says must be marked. BF-17, BF-30 and BF-31 each carry a prepended "reproduced against a running instance" block while their original bodies still read "*Not reproduced against a live instance.*"

@@ -2861,7 +2861,7 @@ items:
       comment.
 
   - id: DOC-REGISTER
-    title: The register's own header undercounts, and BF-27 has no detail section
+    title: The register's own header undercounts and its suppression tally is stale
     parcel: docs-truth
     repo: rag-nightscout-ecosystem-alignment
     branch: main
@@ -2879,11 +2879,16 @@ items:
       - run: node tools/queue/gates/register-rows-vs-details.js
         kind: static
         describe: >
-          Every table row id has a detail section and vice versa. FAILS today:
-          BF-27 has a row at L124 and NO detail section - the only id in the file
-          without one. GT3 found this by programmatic set difference, and it
-          resolves the earlier suspicion of "a stale detail heading or a second
-          table": no such thing exists.
+          Every table row id has a detail section and vice versa. IT PASSES as of
+          2026-09-16, and the history is worth keeping because the describe that
+          was here had gone stale twice over. It said "FAILS today: BF-27 has a
+          row at L124 and NO detail section - the only id in the file without
+          one". BF-27's section was written at some point after that and the text
+          was never updated, so the gate was failing on a DIFFERENT id - BF-68,
+          added later and left without one - while its own description pointed a
+          reader at an id that was already fine. BF-68's section was written
+          2026-09-16 when its status was corrected to fixed, and the gate is now
+          green at 70 rows / 70 sections.
       - no-gate: >
           The header's "Five entries have now had a claim fail on contact" is at
           least seven - the §1 table itself flags two the header omits, BF-08 and

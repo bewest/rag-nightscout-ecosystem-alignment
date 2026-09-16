@@ -120,14 +120,14 @@ raised again).
 
 | id | defect | where | severity | tenancy-independent | status |
 |---|---|---|---|---|---|
-| **BF-01** | `GET /api/v1/count/entries/where` silently matches nothing | `lib/server/aggregate.js:21` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (`bf/reads` `4a398d47`); reproduced live; `count/treatments/where` was affected too |
-| **BF-02** | `insulin`/`carbs` query bounds truncated by `parseInt` | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (T0.5, `bf/coercion` `88d1f8a4`) |
-| **BF-03** | Numeric filters on `devicestatus`, `activity`, `food`, `profile` match nothing | `lib/server/query.js` walker, per-collection | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15 for `devicestatus` + `profile`** (T0.5, `bf/coercion` `88d1f8a4`); `food` and `activity` misfiled, see detail |
-| **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (T0.5, `bf/coercion` `88d1f8a4`) |
+| **BF-01** | `GET /api/v1/count/entries/where` silently matches nothing | `lib/server/aggregate.js:21` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (`bf/reads` `4772b983`, PR #8738); reproduced live; `count/treatments/where` was affected too |
+| **BF-02** | `insulin`/`carbs` query bounds truncated by `parseInt` | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (T0.5, `bf/coercion` `f829ea11`, PR #8737) |
+| **BF-03** | Numeric filters on `devicestatus`, `activity`, `food`, `profile` match nothing | `lib/server/query.js` walker, per-collection | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15 for `devicestatus` + `profile`** (T0.5, `bf/coercion` `f829ea11`, PR #8737); `food` and `activity` misfiled, see detail |
+| **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (T0.5, `bf/coercion` `f829ea11`, PR #8737) |
 | **BF-12** | ~~`entries.rawbg` is coerced but is not in the model~~ — **does not reproduce**; the walker entry is `rssi`, which *is* in the model | `lib/server/entries.js:186` | none — not a defect | n/a | **closed 2026-09-15, invalid** |
-| **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | **fixed 2026-09-15** (`bf/reads` `399dc283`); reproduced through the v3 HTTP path |
-| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — on PostgreSQL an empty `200` on a glucose read; unbounded read on MongoDB | yes | **fixed 2026-09-15** (`bf/reads` `1640b64b`); reproduced live; **the v3 validation it says to copy is itself defective — see BF-33** |
-| **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | **fixed 2026-09-15** (`bf/reads` `ba70f1fc`); reproduced live |
+| **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | **fixed 2026-09-15** (`bf/reads` `5a5269a3`, PR #8738); reproduced through the v3 HTTP path |
+| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — on PostgreSQL an empty `200` on a glucose read; unbounded read on MongoDB | yes | **fixed 2026-09-15** (`bf/reads` `06b133a7`, PR #8738); reproduced live; **the v3 validation it says to copy is itself defective — see BF-33** |
+| **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | **fixed 2026-09-15** (`bf/reads` `12207df3`, PR #8738); reproduced live |
 | **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type. **The "wrong order in the built-in editor" half of this entry was wrong** — the editor re-sorts numerically itself and does not use the endpoint | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks vanish from `/api/v1/food/quickpicks`, which has no in-tree consumer; `restoreBoolValue` un-hides a boolean-hidden pick in the editor | yes | **fixed 2026-09-15** (`bf/food` `73495331`); reproduced live, both spellings written over HTTP |
 | **BF-35** | The bolus calculator's quick-pick chooser builds its `<option>` list from the **whole food collection** but resolves the selection against the **filtered** quick-pick array. Picking one quick pick loads a different one's foods; the last entry throws; plain foods appear in the chooser | `lib/client/boluscalc.js` `loadFoodQuickpicks` | **high** — the carbs that reach the insulin calculation come from a record the user did not choose, with no error shown. Regression from `3457de5b` (2017) | yes | **fixed 2026-09-15** (found during BF-16, `bf/food` `73495331`); reproduced in jsdom, ablated six ways |
 | **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | fixed 2026-09-15 — `bf/auth` `64db1f35`; reproduced live; **existing rows still hold tokens, see the report** |
@@ -135,15 +135,15 @@ raised again).
 | **BF-29** | An unknown name in `ENABLE` is **silently ignored** — matching is against `plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`, **`basal`** — six, not five), not the file name. An operator who writes `ENABLE=cannulaage` gets no plugin and no warning | `lib/plugins/index.js:140` | **medium** — an operator believes an alarm plugin is on when it is off | yes | fixed 2026-09-15 (`bf/alarms` `99e46a52`) |
 | **BF-30** | The auth-failure delay is keyed on a client-controlled value, so brute-force throttling never engages | `lib/authorization/delaylist.js` + the un-whitelisted `forwarded-for` call in `lib/authorization/index.js:9-12` (**not** `TRUST_PROXY`, which does not exist on `dev`) | **high** — restores unthrottled guessing against `API_SECRET` and tokens | yes | fixed 2026-09-15 — `bf/auth` `a26ba416`; reproduced live; **the register's preferred fix was refuted by measurement** |
 | **BF-31** | A Google Home **or Alexa** request re-points the shared `language` instance and `moment`'s global locale **for the whole process**, until something changes it back. **Measured 2026-09-15: it does *not* change alarm text** — the catalogue is read once at boot and never reloaded | `lib/api/googlehome/index.js:27` **and `lib/api/alexa/index.js:28`** + the one `language` instance at `lib/server/server.js:34` | **low–medium** — gated on the assistant plugin being enabled; reaches the assistant's own answers, not alarm text | yes | fixed 2026-09-15 (`bf/alarms` `5dcf783f`) |
-| **BF-32** | Query coercion was applied to operands that are not field values, so `find[sgv][$exists]=true` became `{$exists: NaN}` and `find[notes][$regex]=ab` became `{$regex: NaN}`. **The consequence this entry claimed is refuted** — `{$exists: NaN}` is read by MongoDB as **true**, not false, so `$exists=true` was already answering correctly by accident. What the coercion actually did on the ten walker fields is turn a `$regex` into a **server error**. The residual `$exists=false` defect that survives the fix is **BF-40** | `lib/server/query.js` `walk_prop` | low — **re-graded from medium**: a 500 on `$regex`, not a wrong answer on `$exists`. The fix remains right; its stated reason was wrong | yes | **fixed 2026-09-15** (found during T0.5, `bf/coercion` `88d1f8a4`); **claim refuted 2026-09-15**, see detail and BF-40 |
-| **BF-33** | API v3 `?limit=0x10` passes the `API3_MAX_LIMIT` check as 16 and reaches the driver as `.limit(0)` — *no limit*; `?limit=1e2` returns one document | `lib/api3/generic/collection.js` `parseLimit` | **high** — unbounded read, HTTP 200, and the ceiling that exists to prevent it is bypassed | yes | **fixed 2026-09-15** (`bf/reads` `ea50cf52`); found while fixing BF-14, reproduced live |
+| **BF-32** | Query coercion was applied to operands that are not field values, so `find[sgv][$exists]=true` became `{$exists: NaN}` and `find[notes][$regex]=ab` became `{$regex: NaN}`. **The consequence this entry claimed is refuted** — `{$exists: NaN}` is read by MongoDB as **true**, not false, so `$exists=true` was already answering correctly by accident. What the coercion actually did on the ten walker fields is turn a `$regex` into a **server error**. The residual `$exists=false` defect that survives the fix is **BF-40** | `lib/server/query.js` `walk_prop` | low — **re-graded from medium**: a 500 on `$regex`, not a wrong answer on `$exists`. The fix remains right; its stated reason was wrong | yes | **fixed 2026-09-15** (found during T0.5, `bf/coercion` `f829ea11`, PR #8737); **claim refuted 2026-09-15**, see detail and BF-40 |
+| **BF-33** | API v3 `?limit=0x10` passes the `API3_MAX_LIMIT` check as 16 and reaches the driver as `.limit(0)` — *no limit*; `?limit=1e2` returns one document | `lib/api3/generic/collection.js` `parseLimit` | **high** — unbounded read, HTTP 200, and the ceiling that exists to prevent it is bypassed | yes | **fixed 2026-09-15** (`bf/reads` `2ecfeb53`, PR #8738); found while fixing BF-14, reproduced live |
 | **BF-34** | `backoff()` merges its options as `{ ...config, ...defaults }`, so **every value any caller passes is discarded**. All five vendor sources configure a 2.5-minute retry interval and every one of them gets the 256 ms default — 586× faster — and `use_random_slot` is forced `false`, so a pool that fails together retries in exact lockstep | `nightscout-connect` `lib/backoff.js` | **high** — a vendor that is refusing requests gets hammered by every account at once, which is when it can least afford it | yes | **fixed 2026-09-15** (found during T0.4, `fix/connect-timer-jitter` `c1cce2a`); 100 actors delivered the same 800 requests across 3 s before and 67 s after |
 | **BF-36** | The client's delta merge captured the cached array's length once and then spliced that array, so a `remove` followed by an item matching nothing read past the end and threw. The throw escapes into `dataUpdate`, which has no `try`/`catch` — the page stops advancing until reloaded | `lib/client/receiveddata.js` `mergeTreatmentUpdate` | **medium** — availability, not a wrong reading: the time-ago watchdog is on its own timer and still marks the page stale | yes | **fixed 2026-09-15** (found by auditing the suppressions BF-35 turned up under, `bf/merge` `b06c6faf`); reproduced directly, ablated against the shipped shape |
 | **BF-37** | `queryParms()` reads `[1]` of each `key=value` split without checking one exists, so a valueless parameter — `?debug`, a trailing `&`, `&&`, a lone `?` — throws. It is the **first statement of `client.init`**, so the page stops loading with nothing on screen but the loading message | `lib/client/browser-utils.js` `queryParms` | **medium–high** — total, silent failure to load, on a URL shape anyone can produce | yes | **fixed 2026-09-15** (suppression audit, `bf/parms` `522c6ffb`); reproduced directly |
 | **BF-38** | Translation substitution loops forwards over `%1`…`%n`; `%1` is a prefix of `%10`, so the first pass rewrites the `%1` inside `%10` and leaves a stray `0`. Same prefix-order trap as sorting a text `position` | `lib/language.js` `translate` | low — **latent**: no shipped catalogue uses more than `%3` | yes | **fixed 2026-09-15** (suppression audit, `bf/parms` `c9a7a21c`); reproduced directly |
 | **BF-39** | `queryParms()` replaced `_` with a space, corrupting every access token whose subject name contains one. **Measured to have no live effect**: `findSubject` matches on the last `-`-separated segment and ignores the abbreviated name the corruption lands in | `lib/client/browser-utils.js` `queryParms` | low — a real corruption absorbed by a leniency nobody chose | yes | **fixed 2026-09-15** (`bf/parms` `eb0bc918`); **reproduced against a live instance**, both spellings authorise |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | **fixed-in-seam — and therefore fixed for nobody.** The repair exists only inside an unmerged seam branch; the extraction this entry's own detail section asks for **has never been done**, so this high-severity defect is live for every operator and appears in no open-work list. See detail |
-| **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | **fixed 2026-09-15** (`bf/reads` `c8fb536b`) — deleted, not gated; the module has no `env` handle |
+| **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | **fixed 2026-09-15** (`bf/reads` `3b588098`, PR #8738) — deleted, not gated; the module has no `env` handle |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | **fixed 2026-09-15** (T0.2, `bf/cache` `ddcdb1a8`); 0.837 → 0.025 ms, response asserted identical over HTTP |
 | **BF-07** | `cache.insertData` JSON round-trips the whole retained array | `lib/server/cache.js:81` | medium — 65 % of the load cycle | yes | **partly fixed 2026-09-15** (T0.3, `bf/cache` `4f86bab1`); 3.75 → 2.66 ms per cycle — **devicestatus keeps its clone on purpose, see detail** |
 | **BF-08** | `nightscout-connect` actors have no start jitter — a pool reaches the vendor inside one second on every restart. **The interval half of this entry was wrong**: all four drivers already jitter the aligned path by 18 s | `nightscout-connect` `lib/machines/cycle.js` `Init`, and `run()` | medium — thundering herd on restart | yes | **fixed 2026-09-15** (T0.4, `fix/connect-timer-jitter` `c1cce2a`); measured at 400 actors, busiest second 400 → 15 |
@@ -204,7 +204,7 @@ out, because the absence of the check is how a future change becomes wrong silen
 | **BF-64** | **The adopted release train specifies a combination of releases that cannot be built.** It ships cut 5 as a "dependency release" while holding cut 4 back behind a deprecation release — but cut 4 is an **ancestor** of cut 5, so that release would ship the CGM ingestion retirement one release early and *before* the deprecation release that exists to warn operators about it | [release readiness](cgm-remote-monitor-release-readiness-2026-09-14.md) §5 and every document repeating it. **No branch is wrong** — the description of how to combine them is | **high** — it silently ships the highest-blast-radius change in the programme ahead of its own warning | open — **reproduced**: `merge-base --is-ancestor` exits 0 (cut 5 is 154 commits past cut 4), and `lib/plugins/bridge.js`/`mmconnect.js` are present on `dev` and cut 3 and **absent** on cuts 4 and 5. Must be resolved before Release 4's contents can be written down |
 | **BF-65** | The adopted train **ships the leaking connector to upgraders first**: cuts 1, 2 and 3 all pin `nightscout-connect` v0.0.13 — the tree **BF-42** describes — and are scheduled first as low-blast-radius releases, while cut 4, which carries most of the redaction, is held back longest | `package.json` on the three lower cut tips, against the adopted train | medium — an operator upgrading to cut 1 or 2 moves from a leaking connector to the same leaking connector | open — the pins are measured; the ordering is **quoted** from the adopted train and was not re-derived. Cheap to remove: all three pin the v0.0.13 **tag**, so moving them to v0.0.14 is the same one-line change as `dev`'s |
 | **BF-66** | The deployment **mints JWTs with no tenant claim**, so under `TENANCY_MODE=multi` with the default `requireTokenClaim` the tenant check refuses every token the deployment itself issues | `lib/authorization/index.js:289` (the only minting path besides `enclave.js:58`); `lib/server/tenant-middleware.js:139-151`, `:181-192`, `:208` | **medium** — **fails safe**, refusing rather than admitting, which is why it has gone unnoticed | open — **reproduced** by executing both modules with the exact payload line 289 mints: `credentialRefusal` returns "This credential does not name a Nightscout site."; the control with a `tenant` field proceeds. Must be fixed by the task that introduces the per-tenant signing key (T3.0), because that task chooses the payload |
-| **BF-68** | `bf/coercion` excludes every non-value operator from type conversion, but **`$type`'s operand has a type of its own**: it takes a BSON type code or a string alias, so `find[sgv][$type]=2` must reach the server as the number `2`. Left as the string `"2"` it is rejected outright. `origin/dev` coerced it along with everything else and it worked, so excluding it turned a working request into an **HTTP 500** — a regression introduced by the fix | `lib/server/query-coercion.js` `NON_VALUE_OPERATORS`, on `bf/coercion` only | **low** — numeric BSON type codes in a v1 filter are rare, and `$type=number` (the alias spelling) was correct throughout | **reproduced** against live mongod 3.6.8 and 7.0.43, identical on both: `{$type: "2"}` → *"Unknown type name alias: 2"*, `{$type: 2}` → valid. **Fixed in the same branch** by `operandReaderFor`, before the PR was opened; the reader takes a digits-only operand to a number and passes aliases through. Never shipped |
+| **BF-68** | `bf/coercion` excludes every non-value operator from type conversion, but **`$type`'s operand has a type of its own**: it takes a BSON type code or a string alias, so `find[sgv][$type]=2` must reach the server as the number `2`. Left as the string `"2"` it is rejected outright. `origin/dev` coerced it along with everything else and it worked, so excluding it turned a working request into an **HTTP 500** — a regression introduced by the fix | `lib/server/query-coercion.js` `NON_VALUE_OPERATORS`, on `bf/coercion` only | **low** — numeric BSON type codes in a v1 filter are rare, and `$type=number` (the alias spelling) was correct throughout | **fixed 2026-09-16** on `bf/coercion` (`f829ea11`), open as PR **#8737** — repaired on a branch, NOT merged. **Reproduced** against live mongod 3.6.8 and 7.0.43, identical on both: `{$type: "2"}` → *"Unknown type name alias: 2"*, `{$type: 2}` → valid. **Fixed in the same branch** by `operandReaderFor`, before the PR was opened; the reader takes a digits-only operand to a number and passes aliases through. Never shipped |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
 
@@ -653,7 +653,7 @@ injected two-day window excludes every document rather than bounding it. The end
 running `query.js` directly. Independently reconfirmed as a general class by the
 [three-arm validation](../60-research/seam-filter-ast-three-arm-validation-2026-09-14.md) §3 class B.
 
-*Fix, shipped*: `bf/reads` `4a398d47`. `aggregate()` now calls **`api.query_for(opts)`** — the same
+*Fix, shipped*: `bf/reads` `4772b983` (PR #8738). `aggregate()` now calls **`api.query_for(opts)`** — the same
 function the matching list endpoint uses — rather than passing `queryOpts` as a second copy that
 has to be kept in step. No fallback to `find_options(opts)`: a collection that registers
 `aggregate` without a `query_for` should fail loudly, because a silent fallback is the defect.
@@ -668,7 +668,7 @@ and commonest shape. [Report](../60-research/bf01-13-14-15-read-defects-2026-09-
 
 ### BF-02 · `insulin` and `carbs` bounds truncated
 
-**FIXED 2026-09-15** by plan T0.5 — cgm-remote-monitor `bf/coercion` `88d1f8a4`, emitter `tools/nsschema/emit/coercion_emit.py`, write-up in [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md).
+**FIXED 2026-09-15** by plan T0.5 — cgm-remote-monitor `bf/coercion` `f829ea11` (PR #8737), emitter `tools/nsschema/emit/coercion_emit.py`, write-up in [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md).
 
 `treatments.js` coerces query values through a hand-maintained per-collection `walker`:
 
@@ -696,7 +696,7 @@ against 2,791 integer ones** across 11 sites — 98 % of its non-null values are
 
 ### BF-03 · Numeric filters that silently match nothing
 
-**PARTLY FIXED 2026-09-15** by plan T0.5 — `devicestatus` (99 fields) and `profile` (10) are now typed from the schema, as are the fields `entries` and `treatments` were missing. cgm-remote-monitor `bf/coercion` `88d1f8a4`; write-up in [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md).
+**PARTLY FIXED 2026-09-15** by plan T0.5 — `devicestatus` (99 fields) and `profile` (10) are now typed from the schema, as are the fields `entries` and `treatments` were missing. cgm-remote-monitor `bf/coercion` `f829ea11` (PR #8737); write-up in [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md).
 
 **Two of the four collections named above were misfiled, and neither for the reason given.**
 
@@ -770,7 +770,7 @@ Give v1 the same validation rather than inventing one.
 > arrives at the driver as `.limit(0)`. That is **[BF-33](#bf-33--v3s-limit-has-the-same-hole)**,
 > found while doing this one.
 
-*Fix, shipped*: `bf/reads` `1640b64b`, in two layers. One `validateCount` middleware in
+*Fix, shipped*: `bf/reads` `06b133a7` (PR #8738), in two layers. One `validateCount` middleware in
 `lib/api/index.js` in front of every v1 route — `count` must be a whole number of documents, 1 or
 greater, otherwise `HTTP 400`. **No upper bound was introduced**, because the census below records
 `count=100000` and `count=9999999` being sent deliberately and capping v1 would break those
@@ -839,7 +839,7 @@ Comma-separated top-level fields are unaffected, which is why it has gone unnoti
 requested field equals it or is prefixed by it plus `.`, and prune within the subtree. Either
 that, or reject a dotted `fields` with `HTTP 400` rather than answering `200` with nothing.
 
-*Fix, shipped*: `bf/reads` `ba70f1fc` — the first option, path comparison with subtree pruning.
+*Fix, shipped*: `bf/reads` `12207df3` (PR #8738) — the first option, path comparison with subtree pruning.
 The prune recurses into **array members** the way the driver's own dotted projection does, so
 `?fields=foods.name` works as well as `?fields=uploader.battery`. Comma-separated top-level fields
 take exactly the path they took before. Reproduced live before the fix: `200` with `{}`.
@@ -997,7 +997,7 @@ noise the modernization branch's own quiet-logging work (`c2ac743c`) set out to 
 filter can carry values a deployment would rather not have in its logs. **Route through the
 existing logger at debug level, or delete.**
 
-*Fix, shipped*: `bf/reads` `c8fb536b` — **deleted**. `aggregate.js` has no `env` handle, so gating
+*Fix, shipped*: `bf/reads` `3b588098` (PR #8738) — **deleted**. `aggregate.js` has no `env` handle, so gating
 them on `env.debug.logging` would mean threading `env` through a shared module for a debug print,
 and `/api/v1/echo/*` already exists for inspecting how a query string becomes a filter.
 [Report](../60-research/bf01-13-14-15-read-defects-2026-09-15.md) §2.
@@ -1226,7 +1226,7 @@ loss to the person it happens to.
 
 ### BF-11 · `treatments.duration` and `rate` filters match nothing
 
-**FIXED 2026-09-15** by plan T0.5 — cgm-remote-monitor `bf/coercion` `88d1f8a4`, emitter `tools/nsschema/emit/coercion_emit.py`, write-up in [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md).
+**FIXED 2026-09-15** by plan T0.5 — cgm-remote-monitor `bf/coercion` `f829ea11` (PR #8737), emitter `tools/nsschema/emit/coercion_emit.py`, write-up in [T0.5](../60-research/t05-schema-driven-coercion-2026-09-15.md).
 
 Measured against a real `mongod`: `find[duration][$gte]=30` returned **0 rows** before and **2 of 2** after.
 
@@ -1294,7 +1294,7 @@ loses records silently — on the collection replay fidelity depends on.
 **Reproduced synthetically against `mongod` 7.0.43, not against a live Nightscout** — confirm
 before treating as settled.
 
-*Fix, shipped*: `bf/reads` `399dc283` — `sort._id = sortDirection`, as recorded. **Now reproduced
+*Fix, shipped*: `bf/reads` `5a5269a3` (PR #8738) — `sort._id = sortDirection`, as recorded. **Now reproduced
 through the real v3 HTTP path** (`GET /api/v3/devicestatus?limit=3&skip=N`): five of twelve
 documents never returned, three returned more than once. Still synthetic in its fixture, not a
 capture from a live site. The test file carries a separate assertion whose only job is to check
@@ -1997,7 +1997,7 @@ So **an unbounded read is reachable through v3 by any client with read access**,
 the ceiling that exists to prevent exactly that. `?limit=0`, `-3`, `abc` and `1e400` were already
 `400` and still are.
 
-*Fix, shipped*: `bf/reads` `ea50cf52` — test the digits the client actually wrote, and
+*Fix, shipped*: `bf/reads` `2ecfeb53` (PR #8738) — test the digits the client actually wrote, and
 bounds-check the number that will be used rather than a different reading of the same string.
 `0x10`, `1e2` and `2.5` are now `400`.
 
@@ -2795,6 +2795,46 @@ partial override leaves the absent paths SQL `NULL`, the `AND` chain evaluates t
 `FALSE`, and PostgreSQL accepts the row. So under hosted tenancy the row would be stored *and then*
 silently rewritten by this function. The defect is in shipping single-tenant code today; the hosted
 design inherits it unless T3.0 decides otherwise.
+
+### BF-68 · `$type`'s operand is a type code, and exempting it from conversion broke a working request
+
+**This entry is a regression the fix introduced, found before the branch was opened.** It is filed
+because a defect a change creates is worth as much of the record as a defect it removes, and
+because the reasoning generalises: *"operands are not values, so leave them alone"* is very nearly
+right, and the exception is the whole entry.
+
+`bf/coercion`'s first draft routed field values through a schema-driven converter and exempted
+every operator whose operand is not a field value — `$regex`, `$options`, `$text` and `$type` — on
+the ground that converting a regular expression to a number is nonsense. It is. But **`$type`'s
+operand has a type of its own**: MongoDB takes either a numeric BSON type code or a string alias.
+
+Measured against live `mongod` **3.6.8 and 7.0.43, identical on both**:
+
+| query reaches the server as | result |
+|---|---|
+| `{$type: 2}` (number) | valid — selects string-typed values |
+| `{$type: "2"}` (string) | **error: *"Unknown type name alias: 2"*** |
+| `{$type: "number"}` (alias) | valid |
+
+`origin/dev` converted `$type` along with everything else, so `find[sgv][$type]=2` **worked on the
+shipping release**. Exempting it would have turned that request into an **HTTP 500** — a request
+that worked before the fix and not after, which is the definition this programme uses for a
+regression, and it would have shipped inside a change whose entire purpose was to make filters
+answer correctly.
+
+**Fix.** `operandReaderFor` in `lib/server/query-coercion.js` gives each non-value operator its own
+reader rather than a blanket exemption. A digits-only `$type` operand becomes a number; anything
+else — `number`, `string`, `objectId` — passes through as the string MongoDB expects. `$regex`,
+`$options` and `$text` keep the blanket exemption, because for them it is correct.
+
+**Severity is low and stated honestly.** Numeric BSON type codes in a v1 filter are rare, and the
+alias spelling was correct throughout. **It never shipped**: it existed only between two drafts of
+`bf/coercion` and was repaired in `f829ea11` before PR #8737 was opened. It is recorded because the
+next person to add an operator exemption needs to know that the blanket form is wrong, and there is
+nothing in the code that would tell them.
+
+**Pinned by test.** `tests/query.operands.test.js` asserts both spellings, and the branch's own
+non-vacuity check confirms adding `$regex` to the reader map fails exactly the `$regex` test.
 
 ### BF-27 · one `env` object, and a secret that deletes itself once read
 
