@@ -146,6 +146,88 @@ rather than failing to read one.
    The anchors were left alone because they are still true of both trees today; what to replace them
    with is written into BF-16.
 
+### Independent — second in the batch
+
+| # | branch | commits | what it is |
+|---|---|---|---|
+| **I** | `bf/parms` | 2 (`522c6ffb`, `c9a7a21c`) | **BF-37** and **BF-38**. Independent of each other; split if preferred. Clean against all seven |
+
+**BF-37 — a bare flag in the URL stops the page loading.** Verified against `origin/dev`:
+
+```js
+lib/client/browser-utils.js:46   // eslint-disable-next-line no-useless-escape
+lib/client/browser-utils.js:47   params[item.split('=')[0]] = item.split('=')[1].replace(/[_\+]/g, ' ');
+lib/client/index.js:48           client.init = function init (callback) {
+lib/client/index.js:52             var token = client.browserUtils.queryParms().token;   // first real statement
+```
+
+`[1]` is read without checking it exists. `?debug`, a trailing `&`, a doubled `&&`, a lone `?` —
+each throws `Cannot read properties of undefined (reading 'replace')`, **four lines into
+`client.init`, before anything is wired up**. No chart, no socket, nothing on screen but the loading
+message and a TypeError in a console nobody is reading.
+
+**Placed second, behind BF-35.** It is not a wrong number, so not BF-35's category — but it is a
+total failure to load, reachable by accident (a link with a trailing ampersand; following the
+`?mute=true` instruction as `?mute`), and it is the only defect in this batch where the user ends up
+with **no working page at all**.
+
+> *The counterweight, recorded so the ordering is not mistaken for a claim about harm:* this failure
+> is **self-announcing**. The user sees a page that never loads and knows the tool is not working.
+> BF-35 hands them a number and tells them nothing. A caregiver with a blank page at 3 a.m. is a
+> serious problem; a caregiver with a confidently wrong carb count is a different and worse one.
+
+The fix reads a valueless parameter as the empty string, which is what both existing callers already
+treat as absence (`|| clientToken`, `!== 'true'`). **The split itself is untouched** — including
+truncation at a second `=`, a latent issue for a token containing `=`, deliberately left alone with
+a test asserting well-formed queries parse byte-identically.
+
+**BF-38 — `%1` ate `%10`.** Substitution loops forwards and `%1` is a prefix of `%10`, so the first
+pass rewrites the `%1` *inside* `%10` and leaves a stray `0`: `'%1|%9|%10|%11'` →
+`one|nine|one0|one1`. The same prefix-ordering trap as BF-16's text `position`. **Latent** — no
+catalogue uses more than `%3` — so it goes at the back. Worth fixing because it would bite the first
+translator to write a tenth substitution, silently, and **it would look like the translation file
+was wrong rather than the substituter.**
+
+## 4d. The audit is complete, and the severity labels point the wrong way
+
+45 suppressions in `lib/`, **four defects, 41 exactly what they claimed to be.**
+
+| rule suppressed | sites | defects |
+|---|---:|---:|
+| `security/detect-object-injection` | 34 | 2 — BF-35, BF-36 |
+| `no-cond-assign` | 3 | 0 |
+| `security/detect-non-literal-fs-filename` | 3 | 0 |
+| **`no-useless-escape`** | **2** | **2 — BF-37, BF-38** |
+| four others | 3 | 0 |
+
+**Both `no-useless-escape` sites had a real defect on the same line.** Two for two, on the most
+trivial rule in the list.
+
+> **A suppression for a *trivial* rule is the strongest signal of all.** It marks a line somebody
+> looked at and dismissed *quickly* — precisely because what the linter said was obviously
+> unimportant. `detect-object-injection` at least makes a reader think about whether the index is
+> right. `/[_\+]/` does not make anyone think about anything.
+
+That inverts the intuition the rule names invite: the security-prefixed rules yielded 2 defects in
+37 sites; the cosmetic one yielded 2 in 2.
+
+**The clean categories are recorded with their reasons**, not as a count, so nobody re-derives them:
+`ss.quantile` sorts internally and returns `null` on empty, so `hourlystats`' truthiness guard is
+cosmetic; two of the three `non-literal-fs-filename` sites are `Dropdown.open()`, not `fs.open`; the
+alexa fallthrough is deliberate and commented.
+
+**`lib/` is now fully audited for suppressions.** The client bundle and `tests/` are not.
+
+### Green ablations, twice in one day
+
+The BF-36 case was three ablations of which two did not reproduce. The second case, within the hour:
+an ablation script mangled its own heredoc quoting, **applied nothing**, and reported every test
+passing. That is indistinguishable from "the tests are vacuous" and is in fact "the break did not
+break" — caught only because a stray traceback appeared above the green line.
+
+> **When a break comes back green, confirm the break landed before concluding anything about the
+> test.**
+
 ### Independent — availability, not correctness
 
 | # | branch | commits | what it is |
@@ -444,10 +526,14 @@ things worse.
    same shape as BF-05, different file.
 5. **T0.4** (`nightscout-connect` jitter) is in a different repository and not in this set.
 6. **BF-04** needs *extraction* from the seam branch, not a fresh fix.
-7. **Audit the other eslint suppression categories** — `detect-non-literal-fs-filename`,
+7. **The alexa `switch` has no `default`** — an unrecognised `request.type` calls neither
+   `res.json` nor `next()`, so the request hangs until the client times out. Low reachability, and
+   it sits beside the `ctx.language.set(locale)` line `bf/alarms` already changes, so **it should
+   land with that branch** rather than on its own.
+8. **Audit suppressions outside `lib/`** — `detect-non-literal-fs-filename`,
    `detect-possible-timing-attacks`, `no-cond-assign`. Object-injection's 34 lines yielded two real
    defects; the same reasoning applies to each remaining category.
-8. **jsdom test hygiene has no enforcement.** A suite that sets `global.window`/`global.document`
+9. **jsdom test hygiene has no enforcement.** A suite that sets `global.window`/`global.document`
    must restore them in `afterEach` or it breaks `browser-settings.test.js` later in the same run.
    `hashauth.modern.test.js` does the restore; nothing requires it, and the failure lands in a
    different file than the one that caused it.
