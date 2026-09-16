@@ -857,13 +857,52 @@ schema-clean:
 # queue/work-queue.yaml  source of truth, hand-edited
 # queue/QUEUE.md         GENERATED — never hand-edit, `make queue` rewrites it
 # tools/queue/gates/     the gate scripts, one measurement each
-.PHONY: queue queue-status queue-validate queue-fidelity queue-check queue-coverage queue-vacuity
+.PHONY: queue queue-status queue-validate queue-fidelity queue-check queue-coverage queue-vacuity views views-check packets packets-check docs-links
 
 QUEUE = $(PY) tools/queue
 
 ## queue: regenerate queue/QUEUE.md from queue/work-queue.yaml
 queue: queue-validate
 	@$(QUEUE)/emit.py
+
+## views: fill the generated blocks inside docs/00-overview/*.md
+##
+## HYBRID DOCUMENTS, unlike queue/QUEUE.md which is generated end to end. The
+## overview pages carry an ARGUMENT -- which of three horizons matters, what a
+## new reviewer should read first -- and an argument cannot be generated from a
+## manifest. So the prose is a human's and the counts are the program's, fenced
+## by BEGIN/END GENERATED markers. Editing inside a fence is destroyed by the
+## next run; views-check is what makes that discoverable rather than surprising.
+views: queue-validate
+	@$(QUEUE)/emit_views.py
+
+## views-check: fail if any generated block in docs/00-overview is stale
+views-check:
+	@$(QUEUE)/emit_views.py --check
+
+## packets: one bounded review packet per item whose next move is a human
+##
+## The section that earns this target is "what these gates do NOT prove",
+## assembled from the item's `no-gate:` reasons. Those are the author writing
+## down what they could not measure; scattered through a 200 KB manifest
+## nobody reads them, and gathered per pull request they are the reviewer's
+## worklist. Fully generated, unlike `views` -- a packet carries no argument.
+packets: queue-validate
+	@$(QUEUE)/emit_packets.py
+
+## packets-check: fail if a packet is stale OR orphaned. Orphaned matters as
+## much as stale: a packet left behind for an item that no longer wants a
+## reviewer points a volunteer at finished work.
+packets-check:
+	@$(QUEUE)/emit_packets.py --check
+
+## docs-links: every path the groomed programme material and the live queue
+## tooling cite must resolve. Three detection passes, because the 2026-09-16
+## programme-subdirectory move was repaired by a rewrite that missed three
+## classes of reference -- and three of the four gates it broke were ALREADY
+## expected to fail, so the ENOENT hid inside an intended red.
+docs-links:
+	@node tools/queue/gates/doc-links.js
 
 ## queue-validate: schema-check the manifest — unique ids, resolving blocks_on,
 ## and the rule that every gate is a command or an explicit no-gate marker
@@ -909,8 +948,10 @@ queue-coverage:
 	@node tools/queue/gates/register-queue-coverage.js
 
 ## queue-check: for CI. Proves the manifest has not fallen behind the register AND
-## that QUEUE.md is not stale. Both, because a current view of an incomplete
-## manifest is exactly the shape of a green check that means nothing.
+## that QUEUE.md, the overview views and the reviewer packets are not stale, and
+## that every path those documents cite still resolves. All of them, because a
+## current view of an incomplete manifest is exactly the shape of a green check
+## that means nothing.
 ##
 ## COVERAGE RUNS FIRST, DELIBERATELY. Make stops at the first failing recipe line,
 ## and any manifest edit also makes QUEUE.md stale -- so with the staleness check
@@ -921,6 +962,11 @@ queue-coverage:
 queue-check: queue-validate
 	@node tools/queue/gates/register-queue-coverage.js
 	@$(QUEUE)/emit.py --check
+	@$(QUEUE)/emit_views.py --check
+	@$(QUEUE)/emit_packets.py --check
+	@node tools/queue/gates/doc-links.js >/dev/null 2>&1 && \
+	  echo "OK     every path the programme documents cite resolves" || \
+	  { node tools/queue/gates/doc-links.js; exit 1; }
 
 ## queue-vacuity: run every gate's NEGATIVE CONTROL and report the gates that
 ## cannot fail. SLOW=1 adds the branch ablations (a throwaway worktree and a

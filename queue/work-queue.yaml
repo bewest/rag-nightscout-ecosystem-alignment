@@ -3117,6 +3117,88 @@ items:
 # PARCEL: register-open -- §1, ships to every operator on today's release
 # ---------------------------------------------------------------------------
 
+  - id: DOC-VIEWS
+    title: "A reviewer-facing surface over the queue: three overview pages and a packet per PR"
+    parcel: docs-truth
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@1a10007b
+    worktree: .
+    state: ready-to-push
+    blast_radius: >
+      docs/00-overview/{PROGRAMME-STATUS,NEEDS-A-HUMAN,REVIEWER-ONBOARDING}.md,
+      reports/reviewer-packets/ (17 generated files),
+      tools/queue/emit_views.py, tools/queue/emit_packets.py, and four Makefile
+      targets. No shipping code.
+    review: >
+      maintainer, and then ideally a person who has NEVER seen this repository -
+      that is the only way to find out whether REVIEWER-ONBOARDING.md works,
+      and this queue cannot gate it. The reading path claims about an hour.
+    operator_visible: >
+      Nothing changes in Nightscout itself. This is a set of pages explaining
+      what the project is working on and what is still waiting on a person.
+    semver: n/a
+    semver_reason: documentation and repository tooling
+    register: []
+    gates:
+      - run: python3 tools/queue/emit_views.py --check
+        kind: static
+        describe: >
+          FAILS when a generated block inside docs/00-overview is stale with
+          respect to the manifest. The overview pages are HYBRID - prose a human
+          writes, wrapped around blocks a program owns - because a fully
+          generated page cannot carry an argument and a fully hand-written one
+          becomes the thing the docs-truth parcel exists to repair. Ablated
+          2026-09-16: editing one row of the horizons table inside the fence is
+          reported stale and queue-check goes red.
+      - run: python3 tools/queue/emit_packets.py --check
+        kind: static
+        describe: >
+          FAILS when a reviewer packet is stale OR orphaned. Both ablated
+          2026-09-16 - a changed semver row in P0-A's packet, and a spare file
+          added to the directory. ORPHANED IS THE ONE THAT MATTERS: a packet
+          left behind for an item that no longer wants a reviewer points a
+          volunteer at finished work, which spends the scarcest resource this
+          programme has on nothing.
+      - no-gate: >
+          NOTHING HERE MEASURES WHETHER THE PROSE IS TRUE. The generated blocks
+          are checked against the manifest; the argument wrapped around them -
+          which horizon matters, what a new reviewer should read first, that
+          review capacity rather than engineering is the binding constraint -
+          is a human claim carrying a date. That is the deliberate half of the
+          hybrid, and it is also exactly where DOC-PLAN and DOC-SEQUENCING's
+          defects live. These pages are new, so they have not drifted yet;
+          treat that as a fact about their age, not their construction.
+      - no-gate: >
+          The 42-defect operator-exposure figure in PROGRAMME-STATUS.md is
+          counted by hand from the register's section 1 (43 rows, less BF-12
+          which is retracted as not reproducing). A gate would need the register
+          to carry machine-readable per-entry status, which it does not - the
+          same missing field DOC-REGISTER names. Until that exists the number
+          is re-counted by whoever edits, and it WILL go stale silently.
+      - no-gate: >
+          Whether REVIEWER-ONBOARDING.md actually onboards anybody is not
+          measurable from inside the repository, and it is the only question
+          about this item that matters. The evidence would be a first-time
+          reviewer completing a packet - which is also the outcome the whole
+          item exists to produce.
+    blocks_on: []
+    evidence:
+      - docs/00-overview/PROGRAMME-STATUS.md
+      - docs/00-overview/NEEDS-A-HUMAN.md
+      - docs/00-overview/REVIEWER-ONBOARDING.md
+      - reports/reviewer-packets/README.md
+    notes: >
+      Built 2026-09-16 on the maintainer's instruction to produce a fresh
+      perspective on progress and a place where reviewers and teammates can
+      collaborate. The shape was chosen explicitly: hybrid generation for the
+      overview pages, full generation for the packets, and an audience of the
+      maintainer plus reviewers being recruited. The finding the pages are
+      built around is the reviewer-load table - 52 of 75 items route to the
+      maintainer, and the SECURITY and SAFETY rows name a KIND of reviewer with
+      no individual attached to any of them. P0-C is the sharpest case: gate-
+      passing, and waiting on a security reviewer who does not exist.
+
   - id: DOC-LINKS
     title: "Every path the programme's documents and tooling cite must resolve"
     parcel: docs-truth

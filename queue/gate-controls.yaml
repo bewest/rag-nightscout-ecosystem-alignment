@@ -1258,6 +1258,43 @@ controls:
       the same extraction at v0.0.13 yields 0.0.13 and the test exits 1.
 
   - gate: |-
+      python3 tools/queue/emit_views.py --check
+    cwd: .
+    control: |-
+      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && mkdir -p "$T/tools/queue" "$T/queue" "$T/docs/00-overview" && cp tools/queue/emit_views.py tools/queue/manifest.py "$T/tools/queue/" && cp queue/work-queue.yaml "$T/queue/" && cp docs/00-overview/*.md "$T/docs/00-overview/" && sed -i 's/| \*\*Remedial\*\*/| **CONTROL-TAMPERED**/' "$T/docs/00-overview/PROGRAMME-STATUS.md" && python3 "$T/tools/queue/emit_views.py" --check
+    positive-control: |-
+      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && mkdir -p "$T/tools/queue" "$T/queue" "$T/docs/00-overview" && cp tools/queue/emit_views.py tools/queue/manifest.py "$T/tools/queue/" && cp queue/work-queue.yaml "$T/queue/" && cp docs/00-overview/*.md "$T/docs/00-overview/" && python3 "$T/tools/queue/emit_views.py" --check
+    control-kind: static
+    proves: >
+      RUN 2026-09-16. A THROWAWAY COPY of the tree is tampered rather than the
+      working tree, because _gate.js forbids a gate that dirties the checkout
+      and two bench gates were already caught doing exactly that. emit_views.py
+      derives its root from its own __file__, so the copy relocates it cleanly.
+      Editing one row INSIDE a generated fence is reported stale and exits 1;
+      the identical copy without the edit exits 0, which is the half that
+      proves the red came from the tamper and not from the copy being
+      incomplete.
+
+  - gate: |-
+      python3 tools/queue/emit_packets.py --check
+    cwd: .
+    control: |-
+      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && mkdir -p "$T/tools/queue" "$T/queue" "$T/reports/reviewer-packets" "$T/reports/phase0-pr-bodies" && cp tools/queue/emit_packets.py tools/queue/manifest.py "$T/tools/queue/" && cp queue/work-queue.yaml "$T/queue/" && cp reports/phase0-pr-bodies/*.md "$T/reports/phase0-pr-bodies/" && cp reports/reviewer-packets/*.md "$T/reports/reviewer-packets/" && rm "$T/reports/reviewer-packets/p0-a-bf-alarms.md" && python3 "$T/tools/queue/emit_packets.py" --check
+    positive-control: |-
+      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && mkdir -p "$T/tools/queue" "$T/queue" "$T/reports/reviewer-packets" "$T/reports/phase0-pr-bodies" && cp tools/queue/emit_packets.py tools/queue/manifest.py "$T/tools/queue/" && cp queue/work-queue.yaml "$T/queue/" && cp reports/phase0-pr-bodies/*.md "$T/reports/phase0-pr-bodies/" && cp reports/reviewer-packets/*.md "$T/reports/reviewer-packets/" && python3 "$T/tools/queue/emit_packets.py" --check
+    control-kind: static
+    proves: >
+      RUN 2026-09-16, AND THE FIRST VERSION OF THIS CONTROL WAS RED FOR THE
+      WRONG REASON - which is the failure this whole file exists to catch, met
+      while writing an entry for it. The first copy omitted
+      reports/phase0-pr-bodies/, so pr_body_path() found nothing and ALL NINE
+      PR packets differed in their Evidence section. The control exited 1 and
+      would have read as proof, while proving only that an incomplete copy
+      produces different output. Corrected, it names exactly one file - the
+      deleted p0-a-bf-alarms.md - and the identical copy WITHOUT the deletion
+      exits 0.
+
+  - gate: |-
       node tools/queue/gates/doc-links.js
     cwd: .
     control: |-

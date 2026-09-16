@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 75 |
-| runnable gates | 119 |
-| explicit `no-gate:` markers | 110 |
+| items | 76 |
+| runnable gates | 121 |
+| explicit `no-gate:` markers | 113 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 110 of the 229 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 113 of the 234 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,7 +43,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 10 | RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 4 | P0-C, P0-C-REMEDIATE, P0-TAG, DOC-LINKS |
+| `ready-to-push` | 5 | P0-C, P0-C-REMEDIATE, P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 9 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01 |
 | `needs-decision` | 3 | RT-D3, RT-0, BFQ-47 |
@@ -2431,7 +2431,7 @@ alarm-readiness items, and the seam branch refresh.
 
 ## Document-truth sweeps
 
-`parcel: docs-truth` &mdash; 8 items
+`parcel: docs-truth` &mdash; 9 items
 
 Rule 6 work. Agents read SECTIONS, not documents, so a fact stated twice and
 differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
@@ -2445,6 +2445,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | `DOC-MEMORY` | The two memory files disagree with each other, and one cites a file that does not exist | `not-started` | `main` | n/a | 2 run + 1 no-gate |
 | `DOC-LAYOUT` | The repository-layout preamble names the wrong shipping checkout | `not-started` | `main` | n/a | 1 run + 1 no-gate |
 | `DOC-TESTSCRIPTS` | 52 test files match neither local test script | `not-started` | `origin/dev` | n/a | 1 run + 1 no-gate |
+| `DOC-VIEWS` | A reviewer-facing surface over the queue: three overview pages and a packet per PR | `ready-to-push` | `main` | n/a | 2 run + 3 no-gate |
 | `DOC-LINKS` | Every path the programme's documents and tooling cite must resolve | `ready-to-push` | `main` | n/a | 1 run + 2 no-gate |
 
 ### `DOC-SEQUENCING` &mdash; phase0-pr-sequencing contradicts itself on the branch count
@@ -2661,6 +2662,43 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 - `docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md`
 
 **Notes.** Also: test:unit is NOT database-free. Without MongoDB it fails 6 tests (verifyauth x4, API_SECRET x2) on pristine dev. Every gate in this manifest that invokes test:unit is therefore filed as `integration`.
+
+### `DOC-VIEWS` &mdash; A reviewer-facing surface over the queue: three overview pages and a packet per PR
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@1a10007b` |
+| worktree | `.` |
+| semver | `n/a` |
+| review | maintainer, and then ideally a person who has NEVER seen this repository - that is the only way to find out whether REVIEWER-ONBOARDING.md works, and this queue cannot gate it. The reading path claims about an hour. |
+
+**Blast radius.** docs/00-overview/{PROGRAMME-STATUS,NEEDS-A-HUMAN,REVIEWER-ONBOARDING}.md, reports/reviewer-packets/ (17 generated files), tools/queue/emit_views.py, tools/queue/emit_packets.py, and four Makefile targets. No shipping code.
+
+**What an operator sees.** Nothing changes in Nightscout itself. This is a set of pages explaining what the project is working on and what is still waiting on a person.
+
+**Why `n/a`.** documentation and repository tooling
+
+**Gates.**
+
+- `[static]` `python3 tools/queue/emit_views.py --check`
+  - FAILS when a generated block inside docs/00-overview is stale with respect to the manifest. The overview pages are HYBRID - prose a human writes, wrapped around blocks a program owns - because a fully generated page cannot carry an argument and a fully hand-written one becomes the thing the docs-truth parcel exists to repair. Ablated 2026-09-16: editing one row of the horizons table inside the fence is reported stale and queue-check goes red.
+- `[static]` `python3 tools/queue/emit_packets.py --check`
+  - FAILS when a reviewer packet is stale OR orphaned. Both ablated 2026-09-16 - a changed semver row in P0-A's packet, and a spare file added to the directory. ORPHANED IS THE ONE THAT MATTERS: a packet left behind for an item that no longer wants a reviewer points a volunteer at finished work, which spends the scarcest resource this programme has on nothing.
+- **NO GATE** &mdash; NOTHING HERE MEASURES WHETHER THE PROSE IS TRUE. The generated blocks are checked against the manifest; the argument wrapped around them - which horizon matters, what a new reviewer should read first, that review capacity rather than engineering is the binding constraint - is a human claim carrying a date. That is the deliberate half of the hybrid, and it is also exactly where DOC-PLAN and DOC-SEQUENCING's defects live. These pages are new, so they have not drifted yet; treat that as a fact about their age, not their construction.
+- **NO GATE** &mdash; The 42-defect operator-exposure figure in PROGRAMME-STATUS.md is counted by hand from the register's section 1 (43 rows, less BF-12 which is retracted as not reproducing). A gate would need the register to carry machine-readable per-entry status, which it does not - the same missing field DOC-REGISTER names. Until that exists the number is re-counted by whoever edits, and it WILL go stale silently.
+- **NO GATE** &mdash; Whether REVIEWER-ONBOARDING.md actually onboards anybody is not measurable from inside the repository, and it is the only question about this item that matters. The evidence would be a first-time reviewer completing a packet - which is also the outcome the whole item exists to produce.
+
+**Evidence.**
+
+- `docs/00-overview/PROGRAMME-STATUS.md`
+- `docs/00-overview/NEEDS-A-HUMAN.md`
+- `docs/00-overview/REVIEWER-ONBOARDING.md`
+- `reports/reviewer-packets/README.md`
+
+**Notes.** Built 2026-09-16 on the maintainer's instruction to produce a fresh perspective on progress and a place where reviewers and teammates can collaborate. The shape was chosen explicitly: hybrid generation for the overview pages, full generation for the packets, and an audience of the maintainer plus reviewers being recruited. The finding the pages are built around is the reviewer-load table - 52 of 75 items route to the maintainer, and the SECURITY and SAFETY rows name a KIND of reviewer with no individual attached to any of them. P0-C is the sharpest case: gate- passing, and waiting on a security reviewer who does not exist.
 
 ### `DOC-LINKS` &mdash; Every path the programme's documents and tooling cite must resolve
 
