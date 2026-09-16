@@ -4,9 +4,38 @@ Date: 2026-09-14. Status: draft for maintainer discussion.
 
 > # How to pick up work here — read this first
 >
-> **Phase 0 is done and is not the blocker any more.** Five branches are ready to push; see
-> [PR sequencing](phase0-pr-sequencing-2026-09-15.md). **13 register entries closed, 3 new defects
-> found, 4 register entries corrected as wrong.** Tenancy work is open again.
+> ## Where this programme actually stands, 2026-09-15 evening
+>
+> **Phase 0 is built LOCALLY and is blocked on PUBLICATION, which is a human decision by design.**
+> That sentence has to be read whole. Both of the shorter versions in circulation are wrong:
+> *"Phase 0 is 0 of 5 and tenancy work is stopped"* is stale, and *"Phase 0 is done"* reads as
+> though something shipped. **Nothing has shipped.** Ten branches sit unpushed in local worktrees
+> — nine on `cgm-remote-monitor`, one on `nightscout-connect`, plus a prepared
+> `release/v0.0.14` and an unpushed tag. Verified live with `git ls-remote` against both remotes,
+> not from tracking refs. The one exception is `fix/quadratic-treatment-processing`, which is
+> T0.1 / PR #8733 and is expected to be there.
+>
+> **So every defect in the backfix register's §1 — `open` and `fixed` alike — is still present for
+> every operator on today's release.** The `fixed` column tracks work done, not operator exposure;
+> the register's own legend now says so. Do not quote "*n* open" as "*n* defects still shipping".
+>
+> | half of the old stop-order | status |
+> |---|---|
+> | "Phase 0 is 0 of 5" | **discharged as work**: T0.2, T0.4 and T0.5 DONE; T0.3 **GATE NOT MET** with the reason recorded; T0.1 in flight upstream. Nine `cgm-remote-monitor` branches exist, all green against `dev`, none pushed |
+> | "the register holds 29 open entries" | **superseded, and it grew rather than shrank**: 40 open `BF-` entries plus CAP-01 and CAP-02, after 28 were filed on 2026-09-15 from the ground-truth and verification passes. 26 entries were closed in the same period. **Finding defects has not been the bottleneck for some time; landing them is** |
+>
+> **The maintainer adopted the release train on 2026-09-15 and selected all four next work areas.**
+> The ordering lives in the [post-Phase-0 roadmap](post-phase0-roadmap-2026-09-15.md), not here. One
+> defect in the train as adopted is open and blocking — **BF-64**: it holds cut 4 back while
+> shipping cut 5, and cut 4 is an ancestor of cut 5, so the combination cannot be built.
+>
+> **Tenancy work is open again**, with T3.0 as the largest correction owed — it amends T3.1, T3.2
+> and T3.3, all currently **DONE-EXCEPT**.
+>
+> **If a memory file, a brief or another document tells you Phase 0 is 0 of 5 and tenancy is
+> STOPPED, it is stale and this block supersedes it.** That wording is known to survive at
+> `memory/multitenancy-target-decision.md:67-68`, which this reconciliation pass did not edit
+> because it is outside the repository and is the user's own configuration. It needs its owner.
 >
 > **Before you brief yourself, four things.** All four failed at least once on 2026-09-15 and each
 > cost a rerun or a wrong answer:
@@ -45,6 +74,75 @@ Date: 2026-09-14. Status: draft for maintainer discussion.
 > reviewable commits — no scaffolding, no findings in code comments. Harnesses, measurements and
 > findings go in this repository and are referenced from there. That is D12, and it is what lets a
 > commit be reviewed by someone who has never read this plan.
+---
+
+## 0. The map — what is where, and which document decides what
+
+**This plan is the reasoning. The queue is the live index of work. They are not competing sources
+of truth, and the split is deliberate.**
+
+> ### The queue is authoritative for item STATE. This plan is not.
+>
+> A `state` column in a Markdown table is an **assertion**: somebody typed it, and it stays
+> true-looking forever regardless of what the code does. `queue/work-queue.yaml` says so in its own
+> README and treats `state` as *only a claim about what the gates will say*; `make queue-status` is
+> the measurement, and the runner prints **`CLAIM DIVERGES`** when an item claims `ready-to-push`
+> and its gate disagrees. It has already fired.
+>
+> So: **when this plan and the queue disagree about whether something is done, the queue wins** —
+> not because it is newer, but because its state is measured and this plan's is written down.
+> When they disagree about *why* something is being done, or what a decision was, **this plan
+> wins**, because the queue has no room for an argument.
+>
+> **Two failure modes the queue has already had**, recorded here because they are the ones to watch
+> for rather than reasons to distrust it. Twelve items declared gates against scripts that did not
+> exist — and node exits non-zero on `MODULE_NOT_FOUND`, so a naive runner reported twelve FAILs: an
+> unbuilt instrument indistinguishable from a measured defect, and later "fixable" by writing a
+> script that exits 0. The runner now reports **NO-INSTRUMENT** distinctly from FAIL. And one gate
+> **passed vacuously** — `grep -q 'landed' <register>` matched this register's own legend and two
+> unrelated prose uses, zero status values, and rendered PASS. Both are the programme's own stated
+> failure mode occurring inside the instrument built to detect it.
+
+| document | what it is for | authoritative for |
+|---|---|---|
+| [`queue/README.md`](../../queue/README.md), [`queue/QUEUE.md`](../../queue/QUEUE.md), `queue/work-queue.yaml` | the live index of every work item across all four programmes, with a gate per item | **item state** |
+| this plan | decisions, their evidence, and the task definitions | **why**, and what a task means |
+| [backfix register](nightscout-backfix-register.md) | every defect found, with provenance | **defect facts and ids** — allocate by reading its highest id at the moment you write |
+| [post-Phase-0 roadmap](post-phase0-roadmap-2026-09-15.md) | the four work areas the maintainer selected, in order | **ordering after Phase 0** |
+| [maintainer release brief](maintainer-release-brief-2026-09-15.md) | the Phase 0 batch as one decision, branch by branch | what a maintainer needs to say yes or no |
+| [PR sequencing](phase0-pr-sequencing-2026-09-15.md) | how the ten branches land | branch mechanics |
+| [semver and release versioning policy](semver-and-release-versioning-policy-2026-09-15.md) | the surface ladder and the version decision procedure | **what number a change gets** |
+| [tenant-owner configuration surface](tenant-owner-config-surface-2026-09-15.md) | T3.0's research deliverable and proposed DDL | the per-tenant configuration surface |
+| [release readiness](cgm-remote-monitor-release-readiness-2026-09-14.md) | the five modernization cuts | **superseded in places** — see the warning below |
+| [operator upgrade path](../40-migration/operator-upgrade-path-2026-09-15.md) | what each release means for someone running a site | operator-facing upgrade guidance |
+| [legacy CGM ingestion → Connect](../40-migration/legacy-cgm-ingestion-to-connect-2026-09-15.md) | the Dexcom and MiniMed retirement | the cut-4 migration |
+| [connector pin consolidation](../40-migration/connector-pin-consolidation-2026-09-15.md) | the four `nightscout-connect` pins in flight | the pin decision |
+| [MongoDB → PostgreSQL, hosted](../40-migration/mongodb-to-postgres-hosted-2026-09-15.md) | what moving a tenant's data actually costs | the migration shape |
+
+> ### Two documents in that list carry measured errors. Do not quote them without checking.
+>
+> **[Release readiness](cgm-remote-monitor-release-readiness-2026-09-14.md) §5** says "the four cuts
+> below are existing branch tips, so each costs zero rebase work today". **False, and false when it
+> was written** — not drift. All four conflict against `origin/dev` in 4-5 files and are each **59
+> commits behind** it; the cut tips date to 2026-09-05/06 and `dev`'s to 2026-09-09. The related TL;DR
+> claim "the stack is 0 commits behind dev" is true of the stack **tip only**, and only because one
+> commit — `0a4109f6`, the tip — is the single commit in the whole 495-commit stack that contains
+> `dev`. The in-sync status is one commit deep. Its §5 table also measures cut 1 on a different basis
+> from cuts 2-5 (21 files ±91/−123 against `dev`, versus a true incremental 11 files ±68/−54 — an
+> error in the project's favour, but not comparable to the rows beneath it), and its §2 attributes
+> three files to the D3 commit that are not in it, burying **BF-57**.
+>
+> **The adopted release train itself has an open blocking defect, BF-64**: it holds cut 4 back while
+> shipping cut 5, and cut 4 is an **ancestor** of cut 5. The combination described cannot be built.
+
+**Repository layout — and a correction worth making loudly.** The pristine shipping checkout is
+`externals/cgm-remote-monitor-official` (origin = `nightscout/cgm-remote-monitor`), and every
+`crm-*` worktree under `externals/work/` belongs to **it**. `externals/cgm-remote-monitor` is a
+detached checkout at a **2014** commit on a different fork and holds none of this programme's work;
+several briefs have named it as the shipping checkout. `git -C externals/cgm-remote-monitor worktree list`
+returns exactly one entry: itself. **Never create, delete or repoint a worktree you did not create**
+— they are other sessions' working state, and the count changes during a working day.
+
 ---
 
 ## 1. Decisions
@@ -116,8 +214,15 @@ protected by RLS**. It joins the small set of privileged components whose correc
 enforced by code review rather than by the database, which is an argument for keeping it
 minimal.
 
-**Endpoints (proposed, to be argued):** tenant create / list / get / suspend / activate /
-delete; per-tenant export (D1's confirmed requirement, {M} §11 Q6); quota get/set; a health
+**Endpoints (proposed, to be argued — except one, which is built):** tenant create / list / get /
+suspend / activate / delete; **per-tenant export — IMPLEMENTED, not proposed**
+(`lib/admin/platform-store.js:386` `exportTenant`, a streaming server-side cursor in one
+repeatable-read transaction that emits the covered-table list before any row; D1's confirmed
+requirement, {M} §11 Q6). **There is no import counterpart anywhere**, which is the more useful
+thing for this plan to say and is filed as **CAP-02**. Note also that this endpoint sits on the
+**platform-admin** plane, which under D7 has no credential and is secured by unreachability — so a
+tenant cannot self-serve an export today, and any user-facing promise that they can is wrong until
+a tenant-admin route exists; quota get/set; a health
 endpoint reporting slot lag and `pg_notification_queue_usage()` — the two things {DB} §8.3 and
 §9.4 say must be alerted on.
 
@@ -298,30 +403,85 @@ the alternatives cost, are unmeasured. That is the first half of the task below.
 **T3.0 · Configuration surface and credential bootstrap — research, then schema, then wiring.**
 Two halves, in order, because the second depends on the first.
 
-1. *Research.* Enumerate the per-tenant configuration surface — every `SETTINGS_*` variable,
-   every plugin credential, which are secrets and which are not, what a tenant may override
-   versus what the hoster pins — and gather the evidence D13/D14's bootstrap and rotation story
-   currently lacks. Deliverable: a `docs/60-research/` report.
+1. *Research.* — **DELIVERED 2026-09-15**:
+   [the tenant-owner configuration surface](tenant-owner-config-surface-2026-09-15.md). Read that
+   document for the surface, the proposed DDL, the rotation story and the open decisions; the
+   points below are only what this plan got wrong when it wrote the task.
+
+   > **The task as written sent the researcher to count the wrong thing.** It said "every
+   > `SETTINGS_*` variable". **There is no such family.** Measured across `lib/server/env.js`,
+   > `lib/settings.js` and `README.md`, the string `SETTINGS_` occurs **exactly once** — at
+   > `env.js:215`, inside `MONGO_SETTINGS_COLLECTION`, a per-deployment storage variable. An agent
+   > enumerating `SETTINGS_*` literally would have found one name and concluded the surface was
+   > trivial. **Nightscout's configuration variables have no common prefix.** The measured union is
+   > **247 names** from four sources, and the real surface is larger still — the spec's own
+   > reconciliation puts it at **277** once the names no regex can see are added.
+   >
+   > **Three families are invisible to any `readENV` census and must not be dropped again**:
+   > the eleven API v3 names read straight from `process.env` (**BF-46**, one family of which
+   > *deletes stored documents*), `WEBHOOK_*` (**BF-48**), and the hosted entrypoints' own
+   > `ADMIN_*` / `FEED_*` names, which are read through injected readers. A census scoped to
+   > `lib/` is the `single` entrypoint's surface presented as Nightscout's.
+   >
+   > **Two dead-name defects fell out and are filed**: `SECURE_HSTS_HEADER_INCLUDESUBDOMAINS` has
+   > two spellings and the settings dictionary produces the one nothing reads, alongside four more
+   > dead keys (**BF-49**); and `MONGODB_COLLECTION` is documented and read by nothing (**BF-50**).
+   > **A tenant-admin UI generated from the settings dictionary would offer five settings that do
+   > nothing, one of them a security header.** That is the concrete cost of not doing this census.
 2. *Schema.* Add the configuration and credential storage to `lib/admin/platform.sql`, including
-   the per-tenant signing key and whatever `subject_id` should reference.
+   the per-tenant signing key and whatever `subject_id` should reference. The spec proposes the DDL
+   — **and states plainly that it has never been parsed**, which is the right disclosure and also
+   the right level of trust to place in it: two of its constraints are already known to be wrong on
+   paper (a `?|` proto guard that tests top-level keys only while the code recurses, and a
+   threshold `CHECK` that a partial override satisfies because SQL `NULL` is not `FALSE`).
 3. *Wiring.* Supply T3.3's `deriveEnv` overrides from it, and make `isApiKey`/`verifyJWT`
-   tenant-scoped.
+   tenant-scoped. **`enclave.setJWTKey` already exists at `lib/server/enclave.js:54` and has no
+   caller anywhere in `lib/` or `bin/`** — either dead code or this step's injection point, and
+   this step is where that gets decided rather than left. Note also that the key is read from a
+   **file** (`enclave.js:30`, `node_modules/.cache/_ns_cache/randomString`), not from the
+   environment, so it appears in no environment-variable census and never could have.
+4. *Two things D13 and D14 also mean, which no document recorded until now.*
+   - **D13 reaches subject access tokens, not only `API_SECRET`.** `enclave.getSubjectHash`
+     (`enclave.js:71-76`) hashes `secrets[apiKeySHA1]`, so every subject's token is derived from
+     the deployment secret. Executed: with no API key set it throws a `TypeError`, and the
+     `isApiKeySet()` guard above the call site converts that throw into **silence** — every subject
+     loads with no digest, no `accessToken` and no `accessTokenDigest`, and the first lookup
+     dereferences `undefined`. So D13 also means **re-rooting the subject hash on the tenant's own
+     credential**.
+   - **D14 does not close BF-25's bug class on its own.** It closes the signed-JWT vector
+     completely. BF-25's actual vector is an opaque token in the request **body**, which carries no
+     signature for a per-tenant key to fail. Killing the class needs D14 **and** scoping the subject
+     store under RLS. The phrase "kills BF-25's bug class structurally" has been repeated in briefs
+     and is half true; the untrue half is the larger one. See the register's BF-25.
+   - **The deployment's own tokens currently fail its own tenant check** (**BF-66**): every JWT is
+     minted with the payload `{accessToken}` and no `tenant` claim, so under `TENANCY_MODE=multi`
+     with the default `requireTokenClaim` the check refuses them all. It fails safe, which is why
+     nobody noticed. **This task must fix it, because this task chooses the payload.**
 
 **T3.0 does NOT block T3.3 — T3.3 landed first. It AMENDS three tasks already marked done**,
 because D13/D14 were decided after they shipped. Their measurements, tests and isolation evidence
 all stand; only the credential assumptions are wrong. Each is marked **DONE-EXCEPT** below with the
 one site at fault, so nothing already proven is re-litigated and nothing wrong reads as settled:
 
-| task | the site D13/D14 reject |
-|---|---|
-| **T3.1** | `tenant-middleware.js:139-143` — `tenantClaim` verifies with one install-wide key |
-| **T3.2** | `lib/admin/platform.sql` — no per-tenant configuration, secret or signing key; `tenant_members.subject_id` is a `uuid` referencing nothing |
-| **T3.3** | `lib/server/tenant-context.js:137` — shares `env.enclave`, reasoning "exactly one deployment secret" |
+**Every citation in the table below was re-resolved on `crm-seam` `81a1f6ce` on 2026-09-15, and
+two of the three named a line that cannot be changed.** A spec that names the wrong line produces a
+patch to a comment.
+
+| task | the site D13/D14 reject | what actually has to change |
+|---|---|---|
+| **T3.1** | `tenant-middleware.js:139-143` — `tenantClaim` verifies with one install-wide key. **The citation resolves** (`tenantClaim` opens at 139, `verifyJWT` at 143 — not 144) … | … but it names the **reader**. The sites that must change are the **call at `:346`** (`enclave: env.enclave`, resolved once at middleware construction) and **`enclave.js:30`**, where the key is read from a file. Because the key is file-sourced, **two Nightscout deployments sharing an install directory already share a signing key today** |
+| **T3.2** | `lib/admin/platform.sql` — no per-tenant configuration, secret or signing key; `tenant_members.subject_id` is a `uuid` referencing nothing. **Confirmed by reading all 78 lines** | Two additions. (a) `subject_id`'s **type is wrong**, not merely its missing `REFERENCES`: `specs/nsschema/auth_subjects.model.json` records `auth_subjects._id` as `types:["string"]`, and a 24-character hex ObjectId does not fit a `uuid` column — so the fix is an **`ALTER` on a shipped table**. (b) The amendment must also touch `lib/admin/platform-store.js:45` (`PLATFORM_TABLES`, which drives `ensureSchema`'s completeness check) and `:51` (`NOT_TENANT_DATA`, or `exportTenant` streams every tenant's wrapped credentials) |
+| **T3.3** | ~~`lib/server/tenant-context.js:137`~~ — **that line is a COMMENT**, the prose inside the doc block stating the rejected reasoning | The mechanism is the frozen list **`PER_TENANT_ENV_KEYS` at `:143`** and the copy loop's guard at **`:278`** (`if (PER_TENANT_ENV_KEYS.includes(key)) continue;`), plus the explicit assignments in `deriveEnv` at `:265-300`. Naming only `:137` changes a comment and nothing else |
 
 Plus one site older than this programme: `lib/authorization/index.js:169-173` grants shiro `['*']`
-on a matching deployment `api_secret`, with no tenant dimension on that path at all.
+on a matching deployment `api_secret`, with no tenant dimension on that path at all. **That
+citation is exactly right** — re-checked line by line, `if (data.api_secret && authorizeAdminSecret(...))`
+through `const result = { shiros: [admin] };`.
 
 *Blocked by*: nothing. *Amends*: T3.1, T3.2, T3.3.
+*Specification*: [tenant-owner configuration surface](tenant-owner-config-surface-2026-09-15.md).
+*Register entries this task owns*: **BF-46**, **BF-48**, **BF-49**, **BF-50**, **BF-66**, and
+BF-25's subject-store half.
 
 
 ### 2.9 What "declared safe" means, and what suspension means
@@ -348,7 +508,7 @@ is outstanding** rather than saying "not safe" generically.
 
 **The checklist is deferred on purpose.** {M} §5.2's eight cross-cutting requirements are the
 natural basis, extended by four found since (process-wide `authorization.storage.subjects`; the
-per-tenant credential root, D13/D14; process-wide `language`/`levels`, BF-22; per-tenant `ddata`).
+per-tenant credential root, D13/D14; process-wide `language`/`levels`, **BF-31** — this plan said BF-22, which today means the dotted-field `updateOne` divergence; the id was renumbered and one document was using one id for two defects; per-tenant `ddata`).
 Scored today that is roughly 4 of 12. But items 4, 5 and 7 — per-tenant plugin instances,
 fairness/backpressure, quotas — have not started, and acceptance criteria written for unstarted
 work get rewritten when the work starts. **Write the gate when 4/5/7 have owners.**
@@ -520,13 +680,31 @@ Ordered by dependency. Each is sized to be picked up independently. **Every task
 "done" means as a command that passes**, because "done" that cannot be checked is how a plan
 rots.
 
-Conventions for all tasks: branch from `origin/chore/nightscout-modernization`; `NODE_ENV=test`;
-the suite is `npm run test:unit` (149 files, no database) and `npm run test:integration`
-(10 files, needs a database at `mongodb://127.0.0.1:27017/testdb`, see `tests/ci.test.env`).
+Conventions for all tasks: branch from `origin/chore/nightscout-modernization`; `NODE_ENV=test`.
+
+> **The suite conventions this plan used to state were wrong in three ways, and one of them
+> invalidates evidence — corrected 2026-09-15, measured on `origin/dev` `a8888f0d`.** See **BF-53**.
+>
+> - `npm run test:unit` is a brace list resolving to **44** files, not 149. `npm run test:integration`
+>   resolves to **89**, not 10. There are **159** `tests/*.test.js`; the union of the two scripts is
+>   **107**, leaving **52 run by neither**.
+> - `npm run test:unit` is **not** database-free: with no `mongod` reachable it fails 6 tests
+>   (`verifyauth` ×4, `API_SECRET` ×2) on pristine `dev`.
+> - **A green `test:unit` is not evidence for a fix whose test is among the 52.** That set includes
+>   `tests/boluscalc.quickpick.test.js` (BF-35, **high**), `tests/receiveddata.merge.test.js`
+>   (BF-36), `tests/browser-utils.queryparms.test.js` (BF-37) and `tests/dataloader.test.js`.
+>   **Use `npm test`** — the whole tree — which is what CI runs (`main.yml` → `test-ci` →
+>   `./tests/*.test.js`). And note that `npm test -- tests/one.test.js` does **not** run one file:
+>   npm appends the argument to the script's own glob.
+> - Integration needs a database; each worktree names its own port in `my.test.env` (27030-27034,
+>   27018, 27117), so concurrent runs do not collide — that isolation is already engineered.
 
 ### Phase 0 — ships to every existing operator, no tenancy decision required
 
-**T0.1 · Land PR #8733.** In flight. The two quadratic scans. Everything downstream assumes it.
+**T0.1 · Land PR #8733. — IN FLIGHT UPSTREAM, not ours to land.** The two quadratic scans.
+Everything downstream assumes it. `fix/quadratic-treatment-processing` `dfe2753d` is the one branch
+in this programme that **is** on a remote, as `bewest/wip/optimize-treatment-processing` — expected,
+and the single exception to "nothing has been pushed".
 
 **T0.2 · Fix `/api/v1/entries` untyped read. — DONE 2026-09-15**, `bf/cache` `ddcdb1a8`. Measured **0.837 ms → 0.025 ms**, from 42.0× the typed read to 0.7×. Gate passed.
 `lib/api/entries/index.js:459-500`. `?count=10` costs **0.83 ms** without `find[type]` and
@@ -538,18 +716,32 @@ are still clones, so the defensive property is preserved.
 the typed one at `count=10`; `npm run test:unit` and `test:integration` pass.
 *Evidence*: {R} §12.2.
 
-**T0.3 · Audit `cache.getData`'s five call sites. — GATE NOT MET 2026-09-15**, `bf/cache` `4f86bab1`. The three cache calls went **3.747 ms → 2.657 ms**; the gate asked for under 1 ms. **98 % of the remainder is `devicestatus`**, whose caller rewrites fields in place and whose result lives in `ddata` for the life of the process — taking it needs proof that nothing in the plugin tier writes to a device-status document, and a grep is not that proof when the failure mode is a field silently vanishing from every API read served out of the cache. `dataloader.js:203`'s `mills` write was found to be **dead** (all three branches below it read `element.date`) and removed, with a test that goes red if it returns.
+**T0.3 · Audit `cache.getData`'s five call sites. — GATE NOT MET 2026-09-15**, `bf/cache` `4f86bab1`. The three cache calls went **3.747 ms → 2.657 ms**; the gate asked for under 1 ms. **98 % of the remainder is `devicestatus`**, whose caller rewrites fields in place and whose result lives in `ddata` for the life of the process — taking it needs proof that nothing in the plugin tier writes to a device-status document, and a grep is not that proof when the failure mode is a field silently vanishing from every API read served out of the cache. `dataloader.js:204`'s `mills` write (this plan said `:203`; measured on `origin/dev` it is **:204**) was found to be **dead** (all three branches below it read `element.date`) and removed, with a test that goes red if it returns.
 `lib/server/cache.js:81`, `lib/data/dataloader.js:195/332/489`, `lib/api/entries/index.js:490`.
 `insertData` returns `getData()` — a JSON round-trip over the **whole** retained array, per
 datatype, per cycle: **4.08 ms**, which is 65 % of the post-#8733 load cycle.
-**Resolve `dataloader.js:203` first** — `if (!element.mills) element.mills = element.date`
+**Resolve `dataloader.js:204` first** — `if (!element.mills) element.mills = element.date`
 writes to the element, so a shallow copy changes behaviour there. The measurement sizes the
 prize; it does not license the patch.
 *Done*: `node --expose-gc tools/mt-bench/apitier.js cycle` shows clone cost < 1 ms; full suite
 passes; a test pins the mutation semantics either way.
+
+> **The gate cannot currently be re-run, and that is its own defect — flagged 2026-09-15.** The
+> 3.747 → 2.657 ms figures were produced by a workload recorded **in no file in this repository**.
+> `tools/mt-bench/cycle-fix.js` measures `ddata`/`calcdelta`, which is a different thing; the three
+> cache tests on `bf/cache` are correctness tests with no timing. So nobody — including whoever
+> wrote the numbers — can re-derive the `GATE NOT MET` status, and nobody can tell whether a later
+> change moved it. This is exactly what rule 9 exists to prevent, occurring in the programme's own
+> evidence rather than in shipping code.
+>
+> **It was deliberately not papered over**: the queue records `P0-B` with an explicit *no-gate*
+> marker rather than a reconstructed benchmark, because a reconstructed workload would emit a
+> number that resembles the 1 ms threshold without being comparable to it. **The work owed is to
+> write the harness and re-measure**, not to write a harness that passes.
+
 *Evidence*: {R} §12.3.
 
-**T0.5 · Schema-driven query type coercion. — DONE 2026-09-15**, `bf/coercion` `88d1f8a4`. **158 coercions over 5 collections replace 13 hand-written entries.** Closes BF-02 and BF-11; BF-03 for `devicestatus` and `profile` only (`food` reaches `query.js` at no point; `activity`'s model has no numeric field). **BF-12 is invalid** — `entries.js` coerces `rssi`, not `rawbg`, and no commit on any branch ever had `rawbg` there. Found and fixed **BF-32** on the way: the walker coerced *every* leaf including operator operands, so `find[sgv][$exists]=true` became `{$exists: NaN}` and returned the documents that **lack** the field — generalising from 10 fields to 158 would have generalised the bug.
+**T0.5 · Schema-driven query type coercion. — DONE 2026-09-15**, `bf/coercion` `88d1f8a4`. **158 coercions over 5 collections replace 13 hand-written entries.** Closes BF-02 and BF-11; BF-03 for `devicestatus` and `profile` only (`food` reaches `query.js` at no point; `activity`'s model has no numeric field). **BF-12 is invalid** — `entries.js` coerces `rssi`, not `rawbg`, and no commit on any branch ever had `rawbg` there. Found and fixed **BF-32** on the way: the walker coerced *every* leaf including operator operands, so `find[sgv][$exists]=true` became `{$exists: NaN}` and `find[sgv][$regex]=^1` became `{$regex: NaN}` — generalising from 10 fields to 158 would have generalised the bug. (**This line used to say the `$exists` case "returned the documents that lack the field". Refuted — see the follow-up below**: MongoDB reads `{$exists: NaN}` as `true`. The `$regex` case is the one that genuinely broke, as a server error.)
 Emit a coercion table from `specs/nsschema/*.model.json` (sixth emitter, beside
 `mongoose_emit.py` et al.) and drive `lib/server/query.js`'s walker from it instead of the
 hand-maintained per-collection lists. Fixes three measured bugs (§3.4): `insulin`/`carbs`
@@ -561,6 +753,46 @@ the model for every collection; the full suite passes. **Release-note the behavi
 queries that returned nothing will start returning rows.
 *Depends on*: nothing. *Blocks*: nothing, but makes T2.3/T2.4 much easier because the typed
 value is then backend-independent.
+
+> ### T0.5 follow-up, measured on the merged tree — one prediction closed, one claim refuted
+>
+> **`bf/reads` has been rebased onto `bf/coercion` locally** (nothing pushed). `bf/reads` is now
+> `0d19bb31`, eight commits, the first of which is coercion's `88d1f8a4`; the safety ref
+> `bf/reads-prerebase` = `824380a0` is kept until the PRs merge. **The Phase 0 set is therefore no
+> longer flat** — landing `bf/reads` lands `bf/coercion` with it, and any document describing the
+> nine branches as independently landable needs that row changed.
+>
+> **The predicted semantic gap is CLOSED, and the prediction was pessimistic about its own fix.**
+> The sequencing document predicted both branches could land clean and leave the count path
+> untyped, because `aggregate.js` calls `query.js` passing no options. On the merged tree that is
+> not what happens: BF-01's fix stopped building the filter from defaults and delegated to each
+> collection's `query_for`, and every one of those names its collection — so coercion's
+> `collection:` option reaches `query.js` on the count path for free. **The two fixes compose.**
+> Two control arms were run. What still does not exist is a **live-database** assertion that a
+> numeric filter on `count/devicestatus/where` returns rows; the honest status is "measured at the
+> level of the constructed filter", not "fully verified".
+>
+> **REFUTED, and it reaches operator-facing text.** This task's headline said
+> `find[sgv][$exists]=true` became `{$exists: NaN}` and "returned the documents that **lack** the
+> field". Measured 2026-09-15 against seven live `mongod` instances (3.6.8 and 7.0.43, identical on
+> all seven), **MongoDB reads `{$exists: NaN}` as `true`** — numeric truthiness is `value != 0` and
+> `NaN != 0` — so it returned the documents that **have** the field, which is the right answer, by
+> accident. The oracle that produced the wrong reading is `mingo` (decision D8), which applies
+> **JavaScript** truthiness; that is a limit on the oracle nothing had recorded.
+>
+> What the coercion genuinely broke is **`$regex`**: `{$regex: NaN}` is a server error. And
+> `find[...][$exists]=false` is wrong before *and* after this fix, on every field, because the
+> string `"false"` is truthy to MongoDB too — filed as **BF-40**.
+>
+> **`bf/coercion`'s `CHANGELOG.md` still carries the refuted sentence** and must be corrected before
+> the PR is opened. See [PR sequencing](phase0-pr-sequencing-2026-09-15.md) §3b and the register's
+> BF-32 and BF-40.
+>
+> **One more residual**, latent rather than live: `lib/authorization/storage.js`'s `queryOpts` is
+> now the last caller of `lib/server/query.js` that names no collection, so it permanently keeps the
+> legacy hand-written guess `{date: parseInt, sgv: parseInt}`. Measured inert — auth subject and
+> role documents carry neither field, and `noDateFilter:true` is honoured identically across twelve
+> probe runs — but it is the residue of the defect class this task closed everywhere else.
 
 **T0.4 · Start and interval jitter in `nightscout-connect`. — DONE 2026-09-15**
 `fix/connect-timer-jitter` `c1cce2a`, based on `b77e5bb` (the commit `chore/nightscout-modernization`
@@ -1040,9 +1272,40 @@ write-throughput or working-set measurement, all of which §7 lands here. `bulkU
 statement per operation — a performance gap, not a correctness one, and the whole batch is still
 one transaction, which is more than the MongoDB path promises.
 
+**T2.6 · The remaining nine collections on PostgreSQL. — DEFINED 2026-09-15, DELIBERATELY
+UNSCHEDULED.**
+
+> **This task is written down because five documents were already scheduling work against it while
+> no plan defined it.** `grep -oE 'T2\.[0-9a-z]+'` over this plan returned only T2.0-T2.5 and T2.1a,
+> yet the register's BF-19 and BF-21, three `docs/60-research/` reports and the post-Phase-0
+> roadmap all pin exposure to "T2.6" — the roadmap while correctly calling it unscheduled. A
+> deadline that points at nothing is not a deadline. Defining the id is not the same as scheduling
+> the work, and this is the first and not the second.
+
+Everything after `entries`: `treatments`, `devicestatus`, `profile`, `food`, `activity`,
+`settings` and the `auth_*` collections, and therefore full-server boot on PostgreSQL.
+
+**Three open register entries become live the day this starts**, and all three are known and
+unrepaired: **BF-19** (`ORDER BY` reads the generated column and orders differently from the
+document — client-reachable through v3 `?sort=`), **BF-21** (`bulkUpsert` silently ignores the
+caller's mode; dormant only because `entries` is the only collection with a schema and its single
+caller happens to want the mode PostgreSQL hardcodes) and **BF-22** (a dotted field stores two
+different documents). **BF-19's and BF-21's prescribed fixes have never been run**, and two
+prescribed fixes in this register have already turned out to be wrong when someone ran them. Doing
+them *before* a migration is much cheaper than after, and BF-21's is a parameter and a literal.
+
+**It also needs CAP-02**: there is no importer and no Mongo→PostgreSQL loader anywhere in the tree.
+The outbound half exists (`exportTenant`); nothing loads data in. The transform such a loader would
+use is itself unsettled — see the measured correction in
+[the hosted migration plan](../40-migration/mongodb-to-postgres-hosted-2026-09-15.md) §4.3.
+
+*Done*: not written, deliberately. Acceptance criteria for unstarted work get rewritten when the
+work starts — the same argument §2.9 makes for the declared-safe gate.
+*Blocked by*: T3.0 is independent; BF-19/BF-21/BF-22 should land first.
+
 ### Phase 3 — tenancy
 
-**T3.1 · Tenant resolution middleware. — DONE-EXCEPT 2026-09-15** (amended by T3.0: `tenantClaim` verifies with one install-wide key, which D14 replaces with a per-tenant signing key)
+**T3.1 · Tenant resolution middleware. — DONE-EXCEPT 2026-09-15** (amended by T3.0: `tenantClaim` verifies with one install-wide key, which D14 replaces with a per-tenant signing key. **The sites to change are `tenant-middleware.js:346` — `enclave: env.enclave`, resolved once at middleware construction — and `enclave.js:30`, where the key is read from a file rather than the environment**, not the `:139-143` reader this plan first named. Specification: [tenant-owner configuration surface](tenant-owner-config-surface-2026-09-15.md) §C; also owns **BF-66**, because that task chooses the JWT payload)
 Host → slug → tenant id, path prefix fallback, token claim verified against the resolved tenant
 (reject on mismatch). {M} §5.2 item 1.
 
@@ -1090,7 +1353,7 @@ table until T3.2's DDL runs. `fromEnv` warns loudly at boot, and the README says
 is **not safe yet** — settings, plugins, notification state and socket rooms are still
 process-wide. This is the **first** of §5.2's eight cross-cutting requirements, not tenancy.
 
-**T3.2 · `bin/admin.js` — DONE-EXCEPT 2026-09-15** (amended by T3.0: `platform.sql` carries no per-tenant configuration, secret or signing key, and `tenant_members.subject_id` references nothing), per §2, including the refuse-to-start guard on a
+**T3.2 · `bin/admin.js` — DONE-EXCEPT 2026-09-15** (amended by T3.0: `platform.sql` carries no per-tenant configuration, secret or signing key, and `tenant_members.subject_id` is a `uuid` whose **type is wrong** for the `string` `_id` the subjects model declares — an `ALTER` on a shipped table, not an added `REFERENCES`. The amendment must also touch `lib/admin/platform-store.js:45` `PLATFORM_TABLES` and `:51` `NOT_TENANT_DATA`. Specification: [tenant-owner configuration surface](tenant-owner-config-surface-2026-09-15.md) §A and §E, whose DDL **has never been parsed** and two of whose constraints are already known to be wrong on paper), per §2, including the refuse-to-start guard on a
 non-loopback bind.
 
 **The guard's proof is that it refuses for the *right* reason.** Refuse `0.0.0.0:P`, then bind
@@ -1155,7 +1418,7 @@ comment. The registry now turns `insufficient_privilege` and `undefined_table` i
 naming the `GRANT` and the admin plane respectively, and passes everything else through, because
 a connection failure is not a configuration mistake.
 
-**T3.3 · `ctxFor(tenantId)` — DONE-EXCEPT 2026-09-15** (amended by T3.0: shares `env.enclave` on reasoning D13/D14 reject) — the `Map<tenantId, ctx>` substrate, for the
+**T3.3 · `ctxFor(tenantId)` — DONE-EXCEPT 2026-09-15** (amended by T3.0: shares `env.enclave` on reasoning D13/D14 reject. **The mechanism is `PER_TENANT_ENV_KEYS` at `tenant-context.js:143` and the copy-loop guard at `:278`, not the comment at `:137`** this plan used to cite. Specification: [tenant-owner configuration surface](tenant-owner-config-surface-2026-09-15.md) §B, which supplies the overrides this task takes as a parameter and nothing currently provides) — the `Map<tenantId, ctx>` substrate, for the
 single-process path. {C}'s framing holds: this is a *cache* with a graceful fallback, not the
 source of truth, and an evicted context rebuilds to something **deep-equal** to what was dropped
 — which is the testable form of that sentence.
@@ -1186,8 +1449,16 @@ knob nobody set.
 
 *Not done, and named*: **`language` and `levels.translate` are per-tenant and are not** —
 `language.set('de')` on the one process-wide instance changes what every tenant reads, level
-names included, and that is how alarm text reaches a push notification. Filed as **BF-22**, since
-it is a live defect in single-tenant deployments too. Authorization subjects remain one
+names included. Filed as **BF-31** — this paragraph said BF-22, which today means a different
+defect entirely (the dotted-field `updateOne` divergence); the write-path trio kept its ids and the
+two later arrivals were renumbered. It is a live defect in single-tenant deployments too.
+
+> **And the clause "that is how alarm text reaches a push notification" is REFUTED** — measured
+> 2026-09-15. `language.set` only records a code; the catalogue is read **once at boot** and never
+> reloaded, so `levels.translate` does not move. What leaks is `moment`'s global locale, which in
+> this tree reaches the assistant's own answers and not alarm text. Real, and a cross-tenant leak
+> under `multi` — but a **shared-state** defect, not an alarm-text one, and §7a item 5 says the
+> same. Leaving the refuted clause here is how it kept being re-quoted. Authorization subjects remain one
 process-wide array. Tenant settings have no *source* — overrides are an input to the substrate,
 not something read from storage. `ddata`/`cache`/`plugins`/`dataloader` are deliberately absent,
 with the alarm-slice split named as the precondition.
@@ -1572,7 +1843,22 @@ staying closed indefinitely is not. What is actually left:
 | 4 | **A health signal for a silent per-tenant outage** — the per-plugin `try/catch` turns bad data into an alarm outage nobody is told about | not started |
 | 5 | **BF-31** (was BF-22) — one assistant request re-points the shared `language` instance and `moment`'s global locale for the whole process | **fixed 2026-09-15** (`bf/alarms` `5dcf783f`) — **and the claim in this row was wrong.** It does *not* reach alarm text: `language.set` only records a code, and the catalogue is read once at boot and never reloaded, so `levels.translate` does not move. What leaks is `moment`'s global locale, which in this tree reaches only the assistant's own answers. Real, and a cross-tenant leak under `multi`, but a shared-state item, not an alarm-text one |
 | 6 | **BF-29** — an unknown `ENABLE` entry silently disables an alarm plugin with no warning. An operator can believe an alarm is armed when it is not | **fixed 2026-09-15** (`bf/alarms` `99e46a52`) — the entry now says so and names the plugin it thinks was meant. Six file-name mismatches, not five. This does not make per-tenant arming trustworthy; it removes the silence that made an untrustworthy answer indistinguishable from a correct one |
-| 7 | **The clock question** — snooze is measured in data time, ack in wall time; `sbx.time` is hardcoded `Date.now()` and `lastEntry` drops entries ahead of it. A batching or replaying evaluator cannot own its clock today | open; T4.4a chose wall time for ack, the rest is unsettled |
+| 7 | **The clock question** — snooze is measured in data time, ack in wall time; `sbx.time` is hardcoded `Date.now()` and `lastEntry` drops entries ahead of it. A batching or replaying evaluator cannot own its clock today | open; T4.4a chose wall time for ack, the rest is unsettled. **And the same `mills` vs `sbx.time` comparison has a single-tenant safety consequence today**: a reading dated ahead of the clock silences both stale-data alarm paths — register **BF-41**, with **BF-44** as a shipping way to produce one. Whatever this item decides about the evaluator's clock has to answer that too |
+
+> ### The honest score is **1 of 7**, not 3 of 7 — corrected 2026-09-15
+>
+> This section's own rule is *"nothing here may be marked done by inference"*, and the scoreboard
+> was breaking it. Two rows read as discharged that are not:
+>
+> | # | reads as | is |
+> |---|---|---|
+> | 1 | DONE | **DONE** — genuinely. `lib/storage/ack-store.js` and `lib/storage/postgres/alarm-ack.sql` both exist on `crm-seam` `81a1f6ce`, and T4.4a's result table carries **two control arms** returning 1 where the real arms return 0 |
+> | 5 | fixed | **MISFILED, not discharged.** BF-31 was closed by discovering it is a *shared-state* item and not an alarm-text one — its own row says so. Nothing about alarms got safer. Leaving it in a safety checklist is precisely the inference this section forbids |
+> | 6 | fixed | **PARTIAL, and it says so itself**: "this does not make per-tenant arming trustworthy; it removes the silence" |
+> | 2, 3, 4, 7 | not started | not started. Confirmed structurally: `bin/` holds only `admin.js` and `feed.js` — there is **no `ns-evaluator` and no `ns-realtime` entrypoint**, so two of D5's four hosted entrypoints do not exist |
+>
+> So: **1 complete, 1 partial, 1 misfiled, 4 open.** Items 5 and 6 stay in the table because the
+> reading trail is worth more than a tidy score, but they are not credit toward turning alarms on.
 
 **Items 5 and 6 are backfix-register entries, not tenancy work** — they are wrong for
 single-tenant operators today, and they are also prerequisites for trusting alarm text and alarm
@@ -1581,10 +1867,51 @@ on `bf/alarms`, with tests and ablations**, along with BF-28 (`insulinage`'s urg
 never fire). Neither may be read as making alarms safe to turn on: the rule below still applies.
 See [BF-28/29/31 alarm delivery](../60-research/bf28-29-31-alarm-delivery-2026-09-15.md).
 
-**A hazard that work surfaced and this section should carry**: plugins capture `ctx.moment`,
-`ctx.language` and `ctx.levels` at plugin *init*, not per call. A per-tenant `ctx` therefore
-cannot re-point any of them for an already-initialised plugin — the closure holds the boot-time
-value. That needs settling before a per-tenant `ctx` is designed, not after.
+### The `ctx` hazard is **three** mechanisms, not one — and this section described the wrong one
+
+**This paragraph used to say**: plugins capture `ctx.moment`, `ctx.language` and `ctx.levels` at
+plugin *init*, so a per-tenant `ctx` cannot re-point them. **Measured 2026-09-15 on `crm-seam`
+`81a1f6ce`, that is true of exactly one of the three**, and as written it would have sent a designer
+to fix plugin capture across 21 of 22 plugins — work that would not fix `levels` or `moment` at all.
+
+| object | what it is | so the problem is… | and the fix is… |
+|---|---|---|---|
+| **`ctx.language`** | `lib/language.js` is `module.exports = init` — a **factory** | **genuinely capture.** A second call makes a second object; a plugin holding the first never sees it | the capture fix this paragraph described |
+| **`ctx.levels`** | `lib/levels.js:52` is `module.exports = levels`, where `levels` is an **object literal** — a require-cache **singleton** | **not capture.** There is no second object to point at. Capturing it or reading it through `ctx` gives the same object either way | make it stateless, or give it per-tenant state — a different change entirely |
+| **`ctx.moment`** | `moment-timezone`, no factory | **not capture**, same reason as `levels` | — |
+
+**The concrete reason `levels` is unshareable across tenants is a mutation, and it is one line**:
+`lib/server/bootevent.js:212` does `ctx.levels.translate = ctx.language.translate`, with a browser
+twin at `lib/client/index.js:241`. Running boot per tenant means **the last tenant to boot sets
+level names process-wide** — including for non-English operators, since `levels.translate` is only
+wired up by that mutation.
+
+**The fix is much smaller than "21 of 22 plugins" implies.** Only **two** files require `levels`
+directly (`bootevent.js:211`, `lib/client/index.js:12`); every other consumer already goes through
+`ctx.levels` / `sbx.levels`.
+
+**And the hazard is narrower again, because the sandbox already re-points per evaluation.**
+`lib/sandbox.js:55-57` reassigns `sbx.levels`, `sbx.language` and `sbx.translate` from `ctx` on
+**every** `serverInit`. A plugin reading `sbx.*` is already per-evaluation and unaffected by
+capture. Census over `lib/plugins/*.js`: 22 files touch these objects, 21 capture at init,
+`ar2.js` is mixed — and **`treatmentnotify.js` is 0-capture / 9-`sbx`**, i.e. the one plugin already
+doing the right thing. Worth recording because `treatmentnotify` is also one of the three §7b names
+as able to **withhold** an alarm.
+
+> **A safety caveat on the obvious fix, and it is not optional.** `lib/levels.js` and
+> `lib/client/index.js` are **single-tenant shipping code on `master` today** — every self-hoster
+> runs them, and they are the alarm-level rendering path. Under D1/D4 single-tenant is first-class
+> and permanent, so a multitenancy-motivated refactor that silently changes **what an alarm level
+> is called** on an existing deployment is a real risk, especially for non-English operators.
+> **Any such change needs a single-tenant non-regression arm with `TENANCY_MODE` unset, in at
+> least one non-English locale**, alongside whatever multi-tenant arms it carries.
+
+**Item 7's clock question is also smaller than it reads.** The plan frames it as needing an
+evaluator clock design. The mechanism already exists one function away: `lib/sandbox.js:45`
+`serverInit(env, ctx)` hardcodes `sbx.time = Date.now()` at `:50`, while `:85`
+`clientInit(ctx, time, data)` **takes `time` as a parameter** and assigns it at `:91`. The work is
+to give `serverInit` the parameter `clientInit` already has. What genuinely remains undecided is
+**data-time versus wall-time for snooze**, which is a policy question and not a plumbing one.
 
 **Nothing here may be marked done by inference.** Alarms go back on when a test shows tenant A's
 alarm reaching A and not B, through the real producer path, with a snooze that survives a restart
