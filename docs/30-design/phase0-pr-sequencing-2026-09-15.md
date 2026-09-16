@@ -255,7 +255,7 @@ the burst, and it does not repeat.**
 
 | branch | what it is |
 |---|---|
-| `bf/food` `73495331` | BF-16 and **BF-35**. **Before this lands, `tools/nsschema/code_model.py`'s `SOURCE_ASSERTIONS` must move in the same sitting** — they pin text this branch deletes, so `make schema-code-drift` fails the day it reaches a checked tree. See register BF-16 |
+| `bf/food` `73495331` | BF-16 and **BF-35**. **PR [#8735](https://github.com/nightscout/cgm-remote-monitor/pull/8735), opened 2026-09-16.** Its `SOURCE_ASSERTIONS` prerequisite is **discharged** (`f9046bab`) and no longer gates the merge — see the corrected item 2 below. See register BF-16 |
 
 **BF-35 — the bolus calculator's quick-pick chooser resolves the wrong record.** Verified
 independently against `origin/dev`:
@@ -304,13 +304,25 @@ rather than failing to read one.
    contents *and* what selecting an entry does, so anyone who had learned to work around the
    mislabelling will see different behaviour. Write it into
    `releases/cgm-remote-monitor-15.0.9/release-notes.md`. See §0b.
-2. **A drift tripwire fires when this lands, and it is not a breakage.**
-   `tools/nsschema/code_model.py`'s `SOURCE_ASSERTIONS` deliberately pins the quoted `'false'` in
-   `lib/server/food.js` and `record[key] === 'true'` in `lib/food/food.js`, so that fixing them
-   *forces* the food model to be revisited. Both are gone on `bf/food`, so `make schema-code-drift`
-   will fail the day this reaches `externals/work/crm-seam` or `externals/cgm-remote-monitor-official`.
-   The anchors were left alone because they are still true of both trees today; what to replace them
-   with is written into BF-16.
+2. **A drift tripwire fired when this branch was prepared, and it is DISCHARGED as of 2026-09-16
+   (`f9046bab`).** `tools/nsschema/code_model.py`'s `SOURCE_ASSERTIONS` deliberately pins the quoted
+   `'false'` in `lib/server/food.js` and `record[key] === 'true'` in `lib/food/food.js`, so that
+   fixing them *forces* the food model to be revisited. Both are gone on `bf/food`.
+
+   **The instruction this item used to carry — "the anchors must move in the same sitting" — is
+   withdrawn, and BF-16's prescription was not followed.** Flipping the anchors to the post-fix
+   spelling would have failed the check against *both* source roots, which still carry the pre-fix
+   text because `bf/food` has not merged; the check would have been off across exactly the window
+   it is least affordable to lose. Each anchor now accepts the pre-fix and post-fix spelling and
+   nothing else, and `lib/food/quickpick.js`'s `isTrue` sits in a separate
+   `SOURCE_ASSERTIONS_IF_PRESENT` tuple that arms when the file appears. **Measured:
+   `make schema-code-drift` exits 0 against `crm-seam`, `cgm-remote-monitor-official` and
+   `crm-bf-food`; the last failed on exactly these two anchors beforehand.** Ablated three ways,
+   each break confirmed to land first: `{ hidden: false }` fails, `Boolean()` fails, renaming
+   `quickpick.isTrue` fails.
+
+   **Owed at merge, not before:** delete the pre-fix arm of each anchor and promote the
+   `SOURCE_ASSERTIONS_IF_PRESENT` entry, or a revert passes the drift check silently.
 
 ### Then, because the user ends up with no page at all
 

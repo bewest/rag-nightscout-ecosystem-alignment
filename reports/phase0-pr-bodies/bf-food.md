@@ -4,8 +4,10 @@
 > Phase 0 branch is based on another, and this one merges cleanly against `origin/dev` and against
 > all eight of the others.**
 >
-> **One prerequisite, in the same sitting — see "The drift tripwire" below.** It is a
-> control-surface bookkeeping step, not a code change, and it is not optional.
+> **Its one prerequisite is discharged (2026-09-16); nothing is owed before this merges.** A drift
+> tripwire in the control-surface repo pinned text this branch deletes. It has been handled there,
+> and deliberately not in the way the register prescribed — see "The drift tripwire" below for what
+> was done, and for the one bookkeeping step that is owed *after* merge rather than before it.
 
 ## What changes for you
 
@@ -112,16 +114,38 @@ Four readers disagreed, and now share one predicate in the new `lib/food/quickpi
   name, and the only one of the four that lost a setting rather than failing to read one.**
 - the chooser did not consider `hidden` at all.
 
-### The drift tripwire — a prerequisite, not a breakage
+### The drift tripwire — fired as designed, discharged 2026-09-16
 
 `tools/nsschema/code_model.py`'s `SOURCE_ASSERTIONS` in the control-surface repo **deliberately
 pins** the quoted `'false'` in `lib/server/food.js` and `record[key] = record[key] === 'true';` in
 `lib/food/food.js`, so that fixing them *forces* the food model to be revisited. Both strings are
 gone on this branch. **Measured 2026-09-15** with the checker's own regex against the two git
-trees: present on `origin/dev` (1 match each), absent on `bf/food` (0 matches each). So
-`make schema-code-drift` will fail the day this lands in a tree the drift check reads. The anchors
-must move in the same sitting; what replaces them is written into register entry BF-16. This is the
-tripwire working, not a defect.
+trees: present on `origin/dev` (1 match each), absent on `bf/food` (0 matches each). The tripwire
+worked. It is not a defect in this branch, and it is no longer outstanding.
+
+**It is handled, and deliberately not the way register entry BF-16 prescribed.** BF-16 said to
+replace the anchors with the post-fix spelling when the branch lands. Replacing them today would
+have failed the drift check against every tree that exists — `bf/food` has not merged, and both
+source roots still carry the pre-fix text — so the check would have been switched off across
+exactly the window in which it is least affordable to lose. Instead each anchor now accepts
+**exactly two spellings, the pre-fix one and the post-fix one, and nothing else**, and
+`lib/food/quickpick.js`'s `isTrue` went into a separate `SOURCE_ASSERTIONS_IF_PRESENT` tuple that
+arms itself when the file appears in a source root. That tuple is kept separate rather than mixed
+in among the unconditional entries so a reader can see which claims are being checked now and which
+are only waiting.
+
+**Measured: `make schema-code-drift` exits 0 against `crm-seam`, `cgm-remote-monitor-official` and
+`crm-bf-food`. The last of those failed on exactly these two anchors beforehand**, which is what
+makes this a repair rather than a rewording. Widening an assertion is the move that usually hides a
+defect, so it was ablated three ways with each break confirmed to land before the check ran:
+narrowing the filter to `{ hidden: false }` — the precise danger BF-16 names — **fails**; rewriting
+`restoreBoolValue` to `Boolean()` **fails**; renaming `quickpick.isTrue` **fails**; restoring all
+three exits 0, so each failure belonged to its own break rather than to something already broken.
+
+**What is still owed belongs to the merge, not to this PR**, and it is in the control-surface repo
+rather than in this branch: delete the pre-fix arm of each anchor and promote the
+`SOURCE_ASSERTIONS_IF_PRESENT` entry. Until that is done, a revert of this branch passes the drift
+check silently.
 
 ## Evidence
 
@@ -130,7 +154,7 @@ tripwire working, not a defect.
   table, the provenance and the ablation list.
 - Semver classification `docs/60-research/gt4-semver-classification-2026-09-15.md`, row 19.
 - PR sequencing `docs/30-design/phase0-pr-sequencing-2026-09-15.md`, branch **G**, including the
-  drift-tripwire prerequisite.
+  drift tripwire and its discharge.
 
 ## Test evidence
 
