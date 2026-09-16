@@ -176,7 +176,7 @@ npm test                                         # the whole tree, the only loca
 All figures **measured 2026-09-15** in this worktree. `boluscalc.quickpick` needs no database;
 `api.food.quickpicks` is an integration test and ran against the mongod on this worktree's port.
 
-**Non-vacuity, reproduced here rather than quoted.** Reverting *only* the option loop to its
+**The tests were checked against unfixed code.** Reverting *only* the option loop to its
 `origin/dev` shape — rebuilding the `<option>` list from the unfiltered `records` array — takes
 `TEST=boluscalc.quickpick` from **11 passing / 0 failing** to **6 passing / 5 failing**, with the
 ordering assertion failing as `['(none)', 'Tenth (1 g)', 'Second (2 g)', 'First (3 g)']` against

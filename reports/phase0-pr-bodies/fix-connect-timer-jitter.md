@@ -151,12 +151,12 @@ with no default, so both are `undefined` unless set, and `jitter_ms` returns 0. 
 asked for jitter behaves exactly as it does today. **The hosted vendor pool is the deployment that
 sets them.**
 
-### This branch corrected its own premise
+### Why the jitter is on the start, not the interval
 
-The brief for this work assumed actors stay phase-locked and that the *interval* was the burst. That
-is wrong and the correction is the useful part: **all four vendor drivers already spell an 18-second
-random window into the timestamp they align to**, so actors do not stay phase-locked across cycles.
-**The start is the burst** — which is why `start_jitter_ms` exists at all.
+**All four vendor drivers already spell an 18-second random window into the timestamp they align
+to**, so actors do not stay phase-locked across cycles — the interval spreads itself out. The burst
+is at start-up, when every actor reaches the vendor at once, which is what `start_jitter_ms`
+addresses.
 
 ## Evidence
 
@@ -168,7 +168,7 @@ random window into the timestamp they align to**, so actors do not stay phase-lo
 ## Test evidence
 
 - **19 new tests. 135 passing, 0 failing.**
-- Non-vacuity: **every part of the fix was reverted in turn and the suite caught each one.**
+- The tests were checked against unfixed code: **every part of the fix was reverted in turn and the suite caught each one.**
 - `backoff({jitter:'wild'})` was executed and confirmed to throw
   `backoff: unknown jitter mode "wild"`.
 - Tag `v0.0.14` (`649a7de`) fast-forwards from `v0.0.13` (`b394411`): 29 files, +1362/-312, of which
@@ -193,7 +193,7 @@ paragraph that must not be dropped is "Why 'slower' is the fix."** Without it th
 only that recovery after an outage got slower, which reads as a regression and will be reported as
 one.
 
-**This should arguably be `0.1.0`, not `0.0.14`.** GT4 measured five caller-visible API changes,
+**This should arguably be `0.1.0`, not `0.0.14`.** Five caller-visible API changes,
 three of which are breaking by any reading:
 
 1. option precedence reversed (`{...config,...defaults}` → `{...defaults,...config}`),

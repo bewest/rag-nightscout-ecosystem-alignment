@@ -88,7 +88,7 @@ rather than quietly relaxed.
   `tests/dataloader.test.js` (+5, the dead-write regression test).
 - `npm run test:unit` in `crm-bf-cache`: **371 passing, 0 failing** — the only Phase 0 branch
   whose unit count rises, because `data.cache-clone.test.js` is inside the unit brace list.
-- Non-vacuity: `tests/data.cache-clone.test.js` copied onto pristine `origin/dev` code fails
+- The tests were checked against unfixed code: `tests/data.cache-clone.test.js` copied onto pristine `origin/dev` code fails
   with **8 failing**. `tests/dataloader.test.js` is outside both local test scripts, so it runs
   under CI's `test-ci` but not under `npm run test:unit` — **run the whole tree** to exercise
   the dead-write test.

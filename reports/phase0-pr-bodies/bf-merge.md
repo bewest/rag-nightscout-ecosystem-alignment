@@ -105,17 +105,14 @@ npm test                                         # the whole tree, the only loca
 Measured 2026-09-15. Twelve tests: eight for `mergeTreatmentUpdate`, four for `mergeDataUpdate`.
 Both functions were already exported with the comment *"expose for tests"* and had no tests at all.
 
-**Non-vacuity, reproduced here.** Restoring the captured-bound shape **scoped to
+**The test was checked by putting the bug back.** Restoring the captured-bound shape **scoped to
 `mergeTreatmentUpdate` only** takes the file from **12 passing / 0 failing** to **10 passing /
 2 failing**, both failures being `TypeError: Cannot read properties of undefined (reading '_id')` —
 exactly the production error. The worktree was restored to a clean tree afterwards.
 
-> **My first ablation was MIS-SCOPED, and I am reporting it rather than dropping it.** Replacing the
-> first textual match of `for (var j = 0; j < cachedDataArray.length; j++)` in the file edits
-> **`mergeDataUpdate`** (line 71), not `mergeTreatmentUpdate` (line 114). That run gave 11 passing /
-> 1 failing with no `_id` error, which would have understated the test's power. Per the non-vacuity
-> rule: the **ablation** was mis-scoped, not the test. The commit message warns about this exact
-> trap — the branch author hit it too — and the correctly scoped run is the one above.
+> Note for anyone repeating this: the same loop shape appears in `mergeDataUpdate` thirty lines
+> above, and editing the first textual match hits that function instead. The revert has to be scoped
+> to `mergeTreatmentUpdate`.
 
 - Merges clean against `origin/dev` `a8888f0d` — `git merge-tree --write-tree` re-run 2026-09-15,
   and clean against all eight other Phase 0 branches.

@@ -165,7 +165,7 @@ npm test                                            # the whole tree, the only l
 
 All figures **measured 2026-09-15** in this worktree. Neither needs a database.
 
-**Non-vacuity, reproduced here.**
+**The test was checked by putting the bug back.**
 
 | ablation | result |
 |---|---|

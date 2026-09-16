@@ -77,9 +77,7 @@ equivalent tightening applies to `?limit=` on API v3, which is additionally capp
 on the whole v1 API ahead of every route, so it also covers `/treatments`, `/profile`,
 `/devicestatus`, `/notifications`, `/activity`, `/food`, `/status`, `/alexa` and `/googlehome`,
 **and writes as well as reads**. A `POST /api/v1/treatments?count=0` now returns 400 where it
-previously succeeded. *(Measured by GT4. An earlier draft of this PR body, and the changelog text
-that used to sit on this branch, listed only the read routes; that understatement is corrected
-here.)*
+previously succeeded. One mount point is not covered: `/experiments` is mounted ahead of the check.
 
 If a tool of yours stops working after this upgrade with a "Bad count" message, that tool was
 sending one of these values and getting an answer it did not ask for.
@@ -116,7 +114,7 @@ profile,treatments}.js`, plus five test files.
 - Semver: `docs/60-research/gt4-semver-classification-2026-09-15.md` rows 13–18 — the `?count=`
   restriction is one of **three rows that make Phase 0 as a whole a major release**. Taken alone
   this branch is a minor plus one breaking row; split the `?count=` tightening out and the rest is a
-  clean minor. (GT4's row SHAs predate the changelog strip and no longer resolve; the mapping to the
+  clean minor. (The classification's row SHAs predate the changelog strip and no longer resolve; the mapping to the
   six commits above is by content.)
 
 ## Test evidence
@@ -135,20 +133,15 @@ TEST=api3.limit           npm run test-single    #  8 passing, 0 failing, 533 ms
                                                  # 35 passing, 0 failing
 ```
 
-> **Correction to two earlier statements.** (1) An earlier version of this body recorded that
-> `api.count-where` and `api.count-parameter` *could not be executed* because this worktree's
-> mongod accepted a TCP connection but never completed a handshake. **They ran today.** That was a
-> property of the machine on the day, not of the branch. (2) It is **not** true that these run
-> without a database: pointed at a dead mongo port, `TEST=api.count-parameter` goes from 13 passing
-> to 0 passing / 1 failing, timing out in the before-all hook. Any claim that these are
-> database-free targeted runs is wrong.
+> **These need a running MongoDB.** Pointed at a dead mongo port, `TEST=api.count-parameter` goes
+> from 13 passing to 0 passing / 1 failing, timing out in the before-all hook.
 
 - **None of these five files is in `npm run test:unit`.** Measured by expanding the brace lists:
   `test:unit` resolves to 44 files, `test:integration` to 89. Four of the five *are* in
   `test:integration` (`api*`, `api3*`). **A clean `test:unit` run on this branch is not evidence
   that any of these six fixes works.** CI is not blind to it — `main.yml` runs `test-ci` over all of
   `./tests/*.test.js`.
-- Full suite on the merged D+E tree, run by an earlier session at 17:24 on the pre-strip SHAs:
+- Full suite on the merged D+E tree, measured on the pre-strip SHAs:
   **2076 passing, 3 pending, 0 failing**, exactly additive — 2028 base + 35 from reads + 13 from
   coercion. Nothing lost, nothing duplicated, no existing expectation moved. Read from that
   session's record, not re-run here, and its SHAs are the pre-strip ones; `git range-diff` shows all

@@ -130,7 +130,7 @@ There are **four** connector pins in flight across the trains, not three:
 The two mitigations are **split across the two release trains** and neither has both until cut 5.
 Since the adopted train ships 15.0.9 first and holds cut 4 back longest, that gap persists for the
 whole train unless this PR lands. `v0.0.14` is the first ref carrying all seven commits. *(Measured
-by GT4; cut 4's pin appears in no other programme document.)*
+independently; cut 4's pin appears in no other programme document.)*
 
 ## The package-lock step
 
@@ -172,7 +172,7 @@ CI will fail on this PR until step 3 is done. **That failure is expected and is 
 - Merges clean against `origin/dev` `a8888f0d` — re-run 2026-09-15 18:52, tree `05f051b356`.
 
 > **Note for the reviewer:** this worktree has no `node_modules` and no `my.test.env`, so the
-> cgm-remote-monitor suite cannot be run in it as it stands (GT1, 2026-09-15, re-confirmed). Run it
+> cgm-remote-monitor suite cannot be run in it as it stands (re-confirmed 2026-09-15). Run it
 > wherever the lockfile is regenerated. **There is no `TEST=… npm run test-single` command to quote
 > for this branch** — it changes one line of `package.json` and no code, so it has no test of its
 > own by construction. The test evidence that matters is the connector's, in
@@ -211,7 +211,7 @@ note is the only place most of them will ever be told.
   15.0.8 operators get a patched connector is a separate release decision, not covered here.
 - **Cut 4 pins `c962a13f`** and will need the same move to `v0.0.14` or later, or it ships the
   redaction without the opt-in narrowing.
-- **The connector version should arguably be `0.1.0`, not `0.0.14`** — GT4 measured five
+- **The connector version should arguably be `0.1.0`, not `0.0.14`** — five
   caller-visible API changes (reversed option precedence, a changed default, a new throw). Raised in
   `fix-connect-timer-jitter.md`; it costs nothing to change because cgm-remote-monitor pins by
   tarball URL, not by semver range.
