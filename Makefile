@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json validate-telemetry workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
+.PHONY: queue queue-status queue-validate queue-check bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json validate-telemetry workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
 
 # Default target
 help:
@@ -72,6 +72,16 @@ help:
 	@echo "  make terrarium-tiny-smoke - Smoke test: load tiny + verify"
 	@echo "  make mlflow-ui      - Launch MLflow UI against externals/mlflow/mlflow.db"
 	@echo "  make mlflow-server  - Launch local MLflow tracking server on port 5000"
+	@echo ""
+	@echo "Work queue (one queue, all programmes — see queue/README.md):"
+	@echo "  make queue          - Regenerate queue/QUEUE.md from the manifest"
+	@echo "  make queue-validate - Schema-check queue/work-queue.yaml"
+	@echo "  make queue-status   - Run the gates; ID=/PARCEL=/STATE= select a subset,"
+	@echo "                        INTEGRATION=1 adds gates that need MongoDB"
+	@echo "  make queue-coverage - Prove the manifest covers every open register entry"
+	@echo "  make queue-check    - Prove QUEUE.md is not stale AND the register is covered (CI)"
+	@echo "  make queue-vacuity  - Run each gate's negative control; report gates that"
+	@echo "                        cannot fail. SLOW=1 adds the branch ablations"
 	@echo ""
 	@echo "  make help       - Show this help message"
 	@echo ""
@@ -835,3 +845,90 @@ schema-test:
 
 schema-clean:
 	@rm -rf specs/generated specs/jsonschema/generated reports/schema-census
+
+# ─── Work queue (tools/queue) ───────────────────────────────────────────
+# ONE executable queue across every programme — Phase 0, the modernization
+# release train, the open backfix-register entries and the multitenancy work.
+# The maintainer chose a manifest with a generated view over a hand-maintained
+# Markdown table for one reason: a hand-maintained `state` column is an
+# ASSERTION, and `make queue-status` is a MEASUREMENT. See queue/README.md.
+#
+# queue/work-queue.yaml  source of truth, hand-edited
+# queue/QUEUE.md         GENERATED — never hand-edit, `make queue` rewrites it
+# tools/queue/gates/     the gate scripts, one measurement each
+.PHONY: queue queue-status queue-validate queue-check queue-coverage queue-vacuity
+
+QUEUE = $(PY) tools/queue
+
+## queue: regenerate queue/QUEUE.md from queue/work-queue.yaml
+queue: queue-validate
+	@$(QUEUE)/emit.py
+
+## queue-validate: schema-check the manifest — unique ids, resolving blocks_on,
+## and the rule that every gate is a command or an explicit no-gate marker
+queue-validate:
+	@$(QUEUE)/validate.py
+
+## queue-status: run the gates and report per-item pass/fail. Selects a subset
+## with ID=, PARCEL= or STATE=; add INTEGRATION=1 for gates that need MongoDB
+## (off by default — worktrees share mongod and other sessions may be live).
+queue-status:
+	@$(QUEUE)/status.py \
+	  $(if $(ID),$(foreach i,$(ID),--id $(i))) \
+	  $(if $(PARCEL),$(foreach p,$(PARCEL),--parcel $(p))) \
+	  $(if $(STATE),$(foreach s,$(STATE),--state $(s))) \
+	  $(if $(INTEGRATION),--integration) \
+	  $(if $(NETWORK),--network) \
+	  $(if $(VERBOSE),--verbose)
+
+## queue-coverage: prove queue/work-queue.yaml covers every not-fixed entry in the
+## backfix register, and that §1 / §1b agrees with ships_to_operators_today.
+##
+## THIS IS THE EDGE THAT MATTERS AND IT HAD NO CHECK. `queue-check` proves the
+## GENERATED view is current with its source -- the edge where staleness is
+## harmless, because one command regenerates it. The manifest going stale against
+## the REGISTER is what actually costs: on 2026-09-15 the manifest was frozen at
+## 19:07, the register grew until 19:57, and 29 not-fixed ids ended up in no item,
+## 14 of them reaching an operator on today's release. Nothing in the loop noticed.
+queue-coverage:
+	@node tools/queue/gates/register-queue-coverage.js
+
+## queue-check: for CI. Proves the manifest has not fallen behind the register AND
+## that QUEUE.md is not stale. Both, because a current view of an incomplete
+## manifest is exactly the shape of a green check that means nothing.
+##
+## COVERAGE RUNS FIRST, DELIBERATELY. Make stops at the first failing recipe line,
+## and any manifest edit also makes QUEUE.md stale -- so with the staleness check
+## first, the harmless failure masks the one that matters and you are told to run
+## `make queue` when the real problem is that a defect reaching operators has no
+## queue item. Measured: that is exactly what happened the first time this target
+## was ablated.
+queue-check: queue-validate
+	@node tools/queue/gates/register-queue-coverage.js
+	@$(QUEUE)/emit.py --check
+
+## queue-vacuity: run every gate's NEGATIVE CONTROL and report the gates that
+## cannot fail. SLOW=1 adds the branch ablations (a throwaway worktree and a
+## test suite each); INTEGRATION=1 and NETWORK=1 as for queue-status.
+##
+## WHY THIS EXISTS AND WHY IT IS NOT PART OF queue-check. `queue-status` answers
+## "did the gates pass?" and cannot answer "would they have failed?". On
+## 2026-09-15 two gates were measured green on properties that are FALSE: P0-C
+## grepped for `console.log('Loading', opts)` against code that reads
+## `console.log('Loading',opts)`, and P0-E's only content gate asserted that the
+## branch had at least one commit -- it passed for origin/dev, origin/master and
+## bf/alarms too. Controls live in queue/gate-controls.yaml, keyed by the gate's
+## exact command, so editing a gate forces its control to be re-authored.
+##
+## It is a SEPARATE target because other sessions add gates to this manifest
+## hourly, and a new gate with no control yet should be reported UNCONTROLLED by
+## an instrument someone runs deliberately -- not break the CI target that a
+## different agent is depending on this minute.
+queue-vacuity:
+	@$(QUEUE)/vacuity.py \
+	  $(if $(ID),$(foreach i,$(ID),--id $(i))) \
+	  $(if $(PARCEL),$(foreach p,$(PARCEL),--parcel $(p))) \
+	  $(if $(SLOW),--slow) \
+	  $(if $(INTEGRATION),--integration) \
+	  $(if $(NETWORK),--network) \
+	  $(if $(VERBOSE),--verbose)
