@@ -1,0 +1,3742 @@
+{
+  "record_version": 1,
+  "kind": "verification-record",
+  "release": {
+    "name": "cgm-remote-monitor-15.0.9",
+    "captured_at": "2026-09-16T00:05:00-07:00",
+    "captured_at_source": "--captured-at argument (this tool never reads a clock)",
+    "generator": "tools/queue/verification-record.py",
+    "generator_sha256": "32a3de8f925db126ac967a9a1213d7ca319f3e76d54f696f383436defe33ae23",
+    "selection": {
+      "ids": [],
+      "parcels": [
+        "phase0"
+      ],
+      "states": []
+    },
+    "gate_kinds_enabled": [
+      "static",
+      "unit"
+    ],
+    "gate_kinds_disabled": [
+      "integration",
+      "network"
+    ],
+    "inputs": {
+      "manifest": "queue/work-queue.yaml",
+      "manifest_sha256": "e562fd529c2c59684ba2177b6c942bc1f4f587dbc50ebb67c6dc860d7ae47f9d",
+      "manifest_measured_at": "2026-09-15",
+      "register": "docs/30-design/nightscout-backfix-register.md",
+      "register_sha256": "614b3dee9c211dfe9a981412f7fc898484b0eeee17a2b15095b8c7431094b363",
+      "register_entries_parsed": 69
+    }
+  },
+  "control_surface": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment",
+    "head": "08753474c23ce22d52a824731bd6b4df86eed470",
+    "working_tree_clean": false,
+    "uncommitted_paths": 21
+  },
+  "repos": {
+    "cgm-remote-monitor": {
+      "path": "externals/cgm-remote-monitor-official",
+      "head": "a8888f0d9facb8a9bb54c2ab15333f3f241b45bf",
+      "head_ref": "HEAD",
+      "origin": "https://github.com/nightscout/cgm-remote-monitor.git",
+      "working_tree_clean": true
+    },
+    "nightscout-connect": {
+      "path": "externals/nightscout-connect",
+      "head": "649a7de27b9e869154e718b0ec1d1bfa0388d0d8",
+      "head_ref": "release/v0.0.14",
+      "origin": "https://github.com/nightscout/nightscout-connect.git",
+      "working_tree_clean": true
+    }
+  },
+  "items": [
+    {
+      "id": "P0-A",
+      "title": "bf/alarms - BF-28, BF-29, BF-31",
+      "parcel": "phase0",
+      "state_claimed": "gate-not-met",
+      "verdict_measured": "FAIL",
+      "gates_ran_pass": 4,
+      "gates_ran_total": 5,
+      "tallies": {
+        "PASS": 4,
+        "FAIL": 1,
+        "MISSING": 0,
+        "SKIP": 2,
+        "NO-GATE": 2
+      },
+      "claim_divergence": null,
+      "semver": "major",
+      "ships_to_operators_today": null,
+      "operator_visible": "Three alarm fixes. The \"insulin reservoir change overdue\" reminder could never appear at all and now can. If you list a plugin by its file name in ENABLE - for example \"cannulaage\" instead of \"cage\" - Nightscout used to switch it off without telling you, and now says so and names the plugin it thinks you meant. These do not change when any alarm fires, only whether it can. This is not medical advice; if an alarm you rely on has been silent, talk it through with your care team as well as checking your settings.",
+      "register": [
+        "BF-28",
+        "BF-29",
+        "BF-31"
+      ],
+      "blocks_on": [],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": "bf/alarms",
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "externals/work/crm-bf-alarms",
+        "branch_sha": "5dcf783fdbb20188c378d79121dcbe860425eede",
+        "base_sha": "a8888f0d9facb8a9bb54c2ab15333f3f241b45bf",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 3,
+        "package_version_at_branch": "15.0.9",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/bf/alarms",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/alarms",
+          "cwd": null,
+          "describe": "bf/alarms has not fallen behind origin/dev",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/alarms >/dev/null",
+          "cwd": null,
+          "describe": "trial-merge into origin/dev is conflict-free",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "unit",
+          "command": "TEST=insulinage npm run test-single",
+          "cwd": "externals/work/crm-bf-alarms",
+          "describe": "BF-28, measured. 5 passing, and E3 ABLATED it - with lib/plugins/insulinage.js put back to origin/dev the same file gives 3 passing / 2 failing. Database-free: re-run with the mongo URL pointed at a dead port, still 5 passing.",
+          "no_gate_reason": null,
+          "output_bytes": 826,
+          "output_sha256": "3b89ec326a1ef0626e731bc12ae781ea0976ea4f910784c6d471e970da02c74b",
+          "output_tail": [
+            "",
+            "> nightscout@15.0.9 test-single",
+            "> env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/$TEST.test.js",
+            "",
+            "API_SECRET has 67 bits of entropy",
+            "",
+            "",
+            "  insulinage",
+            "    ✔ set a pill to the current insulin age",
+            "    ✔ set a pill to the current insulin age",
+            "    ✔ trigger a warning when insulin is 48 hours old",
+            "    ✔ trigger an urgent alarm when insulin reservoir is 72 hours old",
+            "    ✔ stay at the urgent level past the urgent threshold",
+            "",
+            "",
+            "[TIMING STATS] Total: 5 tests, Avg: 4ms, Slow: 0",
+            "",
+            "  5 passing (20ms)",
+            "",
+            "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+            "Key file  /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/randomString not found"
+          ],
+          "output_summary": {
+            "passing": 5,
+            "failing": 0,
+            "pending": 0,
+            "last_line": "Key file /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/randomString not found",
+            "shape": "mocha"
+          }
+        },
+        {
+          "index": 3,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "unit",
+          "command": "TEST=plugins npm run test-single",
+          "cwd": "externals/work/crm-bf-alarms",
+          "describe": "BF-29, measured. 13 passing, and E3 ABLATED it - with lib/plugins/index.js put back to origin/dev the same file gives 5 passing / 8 failing. Database-free.",
+          "no_gate_reason": null,
+          "output_bytes": 1294,
+          "output_sha256": "cb808a061898a71716391118a790b8cfabf2d3cbdcbb3d9b9776eacb706bd6e5",
+          "output_tail": [
+            "",
+            "> nightscout@15.0.9 test-single",
+            "> env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/$TEST.test.js",
+            "",
+            "",
+            "",
+            "  Plugins",
+            "    ✔ should find client plugins, but not server only plugins",
+            "    ✔ should find sever plugins, but not client only plugins",
+            "    ENABLE entries that match no plugin",
+            "      ✔ warns that cannulaage is not a plugin name and names cage",
+            "      ✔ warns that insulinage is not a plugin name and names iage",
+            "      ✔ warns that sensorage is not a plugin name and names sage",
+            "      ✔ warns that batteryage is not a plugin name and names bage",
+            "      ✔ warns that boluswizardpreview is not a plugin name and names bwp",
+            "      ✔ warns that basalprofile is not a plugin name and names basal",
+            "      ✔ names the nearest plugin for a misspelt entry",
+            "      ✔ says nothing about an entry with no plausible plugin behind it",
+            "      ✔ stays quiet about every documented ENABLE feature on the client",
+            "      ✔ stays quiet about every documented ENABLE feature on the server",
+            "      ✔ has an alias for every plugin whose file name is not its plugin name",
+            "",
+            "",
+            "[TIMING STATS] Total: 13 tests, Avg: 3ms, Slow: 0",
+            "",
+            "  13 passing (37ms)",
+            "",
+            "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+          ],
+          "output_summary": {
+            "passing": 13,
+            "failing": 0,
+            "pending": 0,
+            "last_line": "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+            "shape": "mocha"
+          }
+        },
+        {
+          "index": 4,
+          "outcome": "SKIP",
+          "detail": "kind `integration` not enabled (use --integration)",
+          "kind": "integration",
+          "command": "TEST=api.alexa npm run test-single",
+          "cwd": "externals/work/crm-bf-alarms",
+          "describe": "BF-31, the branch's own test for the locale removal. CANNOT BE RUN IN THIS ENVIRONMENT TODAY and that is a fact about the machine, not the branch: crm-bf-alarms/my.test.env names mongod on port 27034 and nothing is listening there (E3 measured every worktree's port; crm-bf-coercion's 27030 is also dead, and crm-bf-food, crm-bf-merge and crm-bf-parms SHARE 27033). It times out in the before-all hook.",
+          "no_gate_reason": null
+        },
+        {
+          "index": 5,
+          "outcome": "SKIP",
+          "detail": "kind `integration` not enabled (use --integration)",
+          "kind": "integration",
+          "command": "TEST=api.googlehome npm run test-single",
+          "cwd": "externals/work/crm-bf-alarms",
+          "describe": "BF-31's sibling. Same environmental blocker as api.alexa - port 27034 has no mongod.",
+          "no_gate_reason": null
+        },
+        {
+          "index": 6,
+          "outcome": "NO-GATE",
+          "detail": "THE GATE THAT WAS HERE - `npm run test:unit` - ASSERTED LESS THAN IT LOOKED LIKE. It resolves to a 44-file brace list, it needs MongoDB (verifyauth x4 and API_SECRET x2 fail without it even on pristine dev), and tests/api.alexa.test.js and tests/api.googlehome.test.js - two of the four files this branch adds - are in NEITHER local script, so it never ran half the branch's own evidence. CI's `test-ci` runs all 159 files and does cover them; a gate that mirrors the local script is weaker than CI, not equal to it.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "THE GATE THAT WAS HERE - `npm run test:unit` - ASSERTED LESS THAN IT LOOKED LIKE. It resolves to a 44-file brace list, it needs MongoDB (verifyauth x4 and API_SECRET x2 fail without it even on pristine dev), and tests/api.alexa.test.js and tests/api.googlehome.test.js - two of the four files this branch adds - are in NEITHER local script, so it never ran half the branch's own evidence. CI's `test-ci` runs all 159 files and does cover them; a gate that mirrors the local script is weaker than CI, not equal to it."
+        },
+        {
+          "index": 7,
+          "outcome": "FAIL",
+          "detail": "exit 1",
+          "kind": "static",
+          "command": "test -f externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/public/js/bundle.app.js",
+          "cwd": null,
+          "describe": "GT1 found this worktree is the only one missing the client bundle, and that absence produced a seventh test failure that looked like a defect. `npm run bundle` in that worktree fixes it.",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 8,
+          "outcome": "NO-GATE",
+          "detail": "Nothing exercises the ENABLE warning through a booted plugin registry. GT4 had to hand-reconstruct the plugin-name list to test it, and a reconstructed registry is not the registry. Needs a boot-level test.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "Nothing exercises the ENABLE warning through a booted plugin registry. GT4 had to hand-reconstruct the plugin-name list to test it, and a reconstructed registry is not the registry. Needs a boot-level test."
+        }
+      ]
+    },
+    {
+      "id": "P0-B",
+      "title": "bf/cache - T0.2 and T0.3 read-path cost",
+      "parcel": "phase0",
+      "state_claimed": "gate-not-met",
+      "verdict_measured": "PASS",
+      "gates_ran_pass": 2,
+      "gates_ran_total": 2,
+      "tallies": {
+        "PASS": 2,
+        "FAIL": 0,
+        "MISSING": 0,
+        "SKIP": 0,
+        "NO-GATE": 2
+      },
+      "claim_divergence": "state says gate-not-met, but every RUNNABLE gate passed and the failing property sits behind 2 no-gate marker(s): the claim rests on a recorded measurement this run could not reproduce",
+      "semver": "patch",
+      "ships_to_operators_today": null,
+      "operator_visible": "Pages that read recent glucose values get faster. Nothing you see changes value or meaning.",
+      "register": [
+        "BF-06",
+        "BF-07"
+      ],
+      "blocks_on": [],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": "bf/cache",
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "externals/work/crm-bf-cache",
+        "branch_sha": "4f86bab1637e926502c9b02af008cbba4f424c28",
+        "base_sha": "a8888f0d9facb8a9bb54c2ab15333f3f241b45bf",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 2,
+        "package_version_at_branch": "15.0.9",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/bf/cache",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/cache",
+          "cwd": null,
+          "describe": "bf/cache has not fallen behind origin/dev",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/cache >/dev/null",
+          "cwd": null,
+          "describe": "trial-merge into origin/dev is conflict-free",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "NO-GATE",
+          "detail": "T0.3's stated gate is \"the three cache calls under 1 ms per cycle\", and it was MEASURED at 3.747 -> 2.657 ms, so the gate is not met. But that measurement is not currently RE-RUNNABLE: the workload that produced those two figures is not recorded anywhere in this repository, and a benchmark written from scratch here would emit a number that looks like the gate's number without being comparable to it. Rule 9 - quote the ordering, and say how it was measured and on what - forbids that, and a fabricated-workload benchmark is the exact laundering this queue exists to prevent. So `gate-not-met` here rests on a RECORDED measurement by a prior agent, not on a live one. Making it live means first writing down the workload; the house pattern to follow is tools/mt-bench/cycle-fix.js, which states its iteration count, its document counts and its comparison arms in the file.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "T0.3's stated gate is \"the three cache calls under 1 ms per cycle\", and it was MEASURED at 3.747 -> 2.657 ms, so the gate is not met. But that measurement is not currently RE-RUNNABLE: the workload that produced those two figures is not recorded anywhere in this repository, and a benchmark written from scratch here would emit a number that looks like the gate's number without being comparable to it. Rule 9 - quote the ordering, and say how it was measured and on what - forbids that, and a fabricated-workload benchmark is the exact laundering this queue exists to prevent. So `gate-not-met` here rests on a RECORDED measurement by a prior agent, not on a live one. Making it live means first writing down the workload; the house pattern to follow is tools/mt-bench/cycle-fix.js, which states its iteration count, its document counts and its comparison arms in the file."
+        },
+        {
+          "index": 3,
+          "outcome": "NO-GATE",
+          "detail": "The 98% of the remaining cost is devicestatus, whose caller rewrites fields in place. Taking it needs proof that nothing in the plugin tier writes to a device-status document. A grep is not that proof when the failure mode is a field silently vanishing from every API read served out of the cache. There is no test that would catch it.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "The 98% of the remaining cost is devicestatus, whose caller rewrites fields in place. Taking it needs proof that nothing in the plugin tier writes to a device-status document. A grep is not that proof when the failure mode is a field silently vanishing from every API read served out of the cache. There is no test that would catch it."
+        }
+      ]
+    },
+    {
+      "id": "P0-C",
+      "title": "bf/auth - BF-17 plaintext token, BF-30 throttle key",
+      "parcel": "phase0",
+      "state_claimed": "gate-not-met",
+      "verdict_measured": "FAIL",
+      "gates_ran_pass": 2,
+      "gates_ran_total": 3,
+      "tallies": {
+        "PASS": 2,
+        "FAIL": 1,
+        "MISSING": 0,
+        "SKIP": 2,
+        "NO-GATE": 2
+      },
+      "claim_divergence": null,
+      "semver": "major",
+      "ships_to_operators_today": null,
+      "operator_visible": "Two security fixes. Editing a subject through the admin page used to write that subject's API access token into the database in readable form, which turned read access to your database into API access; it no longer does. IMPORTANT: tokens already written that way are still in your database - fixing the code does not remove them. Brute-force slowdown on failed logins was keyed on a value the caller could choose, so it never engaged; it now is. Existing access tokens keep working - they are re-derived on every load and are not invalidated by this change.",
+      "register": [
+        "BF-17",
+        "BF-30"
+      ],
+      "blocks_on": [],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": "bf/auth",
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "externals/work/crm-bf-auth",
+        "branch_sha": "64db1f35ca3183fe34afe25d256794ab7701df48",
+        "base_sha": "a8888f0d9facb8a9bb54c2ab15333f3f241b45bf",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 2,
+        "package_version_at_branch": "15.0.9",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/bf/auth",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/auth",
+          "cwd": null,
+          "describe": "bf/auth has not fallen behind origin/dev",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth >/dev/null",
+          "cwd": null,
+          "describe": "trial-merge into origin/dev is conflict-free",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "FAIL",
+          "detail": "exit 1",
+          "kind": "static",
+          "command": "grep -nE \"console\\\\.log\\\\('Loading',[[:space:]]*opts\\\\)\" lib/authorization/storage.js && exit 1 || exit 0",
+          "cwd": "externals/work/crm-bf-auth",
+          "describe": "BF-05's unfixed sibling, a TRACKING gate: it is meant to FAIL while the residual is present, and the describe it replaces said so in as many words. IT DID NOT FAIL. The pattern was `console.log('Loading', opts)` with a space after the comma; the code at storage.js:113 has NO space, so the grep never matched, the `|| exit 0` arm fired, and P0-C reported 3/3 PASS on a property that is false. The pattern is now whitespace-tolerant and this gate is red, which is the honest reading - hence state gate-not-met, not ready-to-push. TWO WAYS TO GREEN, both a human's call: take the one-line removal onto bf/auth, or move the residual to its own queue item and drop the gate from here. DO NOT loosen the pattern again.",
+          "no_gate_reason": null,
+          "output_bytes": 39,
+          "output_sha256": "c69441d2227ab37462b102dbf16f0a1fee4f3ce157a82b492372f5285f146f76",
+          "output_tail": [
+            "113:      console.log('Loading',opts);"
+          ],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": "113: console.log('Loading',opts);",
+            "shape": "unrecognised"
+          }
+        },
+        {
+          "index": 3,
+          "outcome": "SKIP",
+          "detail": "kind `integration` not enabled (use --integration)",
+          "kind": "integration",
+          "command": "TEST=authdelay npm run test-single",
+          "cwd": "externals/work/crm-bf-auth",
+          "describe": "BF-30, the branch's OWN test, which `npm run test:unit` never ran - tests/authdelay.test.js matches neither local brace list and is one of the 52 files only CI's `test-ci` reaches. 11 passing with MongoDB up on 27031. E3 ABLATED it: with the seven changed lib files put back to origin/dev and lib/server/peer-address.js removed, 2 passing / 9 failing. Needs the database (6 passing / 1 failing against a dead port), so it is integration and honestly so.",
+          "no_gate_reason": null
+        },
+        {
+          "index": 4,
+          "outcome": "SKIP",
+          "detail": "kind `integration` not enabled (use --integration)",
+          "kind": "integration",
+          "command": "TEST=authsubjects npm run test-single",
+          "cwd": "externals/work/crm-bf-auth",
+          "describe": "BF-17, same story: not in either local script, 8 passing with MongoDB, and 1 passing / 7 failing under the same ablation.",
+          "no_gate_reason": null
+        },
+        {
+          "index": 5,
+          "outcome": "NO-GATE",
+          "detail": "`npm run test:unit` was here and was recorded as \"361 passing / 0 failing at GT1's measurement\". That number is not evidence for this branch: the 44-file brace list contains NEITHER of the two test files bf/auth adds, so the suite could pass in full with every one of these fixes reverted.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "`npm run test:unit` was here and was recorded as \"361 passing / 0 failing at GT1's measurement\". That number is not evidence for this branch: the 44-file brace list contains NEITHER of the two test files bf/auth adds, so the suite could pass in full with every one of these fixes reverted."
+        },
+        {
+          "index": 6,
+          "outcome": "NO-GATE",
+          "detail": "Nothing checks that the plaintext tokens ALREADY written into existing databases get cleaned up. The code fix does not remove them and there is no migration. This needs an operator-facing remediation note and a script, both of which are P0-C-REMEDIATE.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "Nothing checks that the plaintext tokens ALREADY written into existing databases get cleaned up. The code fix does not remove them and there is no migration. This needs an operator-facing remediation note and a script, both of which are P0-C-REMEDIATE."
+        }
+      ]
+    },
+    {
+      "id": "P0-C-REMEDIATE",
+      "title": "Operator remediation for tokens already stored in plaintext",
+      "parcel": "phase0",
+      "state_claimed": "not-started",
+      "verdict_measured": "UNMEASURED",
+      "gates_ran_pass": 0,
+      "gates_ran_total": 0,
+      "tallies": {
+        "PASS": 0,
+        "FAIL": 0,
+        "MISSING": 0,
+        "SKIP": 0,
+        "NO-GATE": 1
+      },
+      "claim_divergence": null,
+      "semver": "n/a",
+      "ships_to_operators_today": null,
+      "operator_visible": "If you have ever edited a subject through the admin page, a readable copy of that subject's API access token is sitting in your database. Upgrading does not remove it. You will be told how to check, and how to rotate the token if it is there. Anyone who has had read access to your database since then could have used that token.",
+      "register": [
+        "BF-17"
+      ],
+      "blocks_on": [
+        "P0-C"
+      ],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": null,
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "",
+        "branch_sha": null,
+        "base_sha": null,
+        "branch_contains_base": null,
+        "commits_ahead_of_base": null,
+        "package_version_at_branch": null,
+        "published": null,
+        "problems": [
+          "item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure."
+        ]
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "NO-GATE",
+          "detail": "Nothing written yet. The gate this item needs is a script that reports how many subject rows carry a non-derived accessToken, run against a database with one planted, and a control row that has none - so the script is shown to distinguish the two before anyone trusts a zero.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "Nothing written yet. The gate this item needs is a script that reports how many subject rows carry a non-derived accessToken, run against a database with one planted, and a control row that has none - so the script is shown to distinguish the two before anyone trusts a zero."
+        }
+      ]
+    },
+    {
+      "id": "P0-D",
+      "title": "bf/coercion - schema-driven query type coercion (T0.5)",
+      "parcel": "phase0",
+      "state_claimed": "ready-to-push",
+      "verdict_measured": "PASS",
+      "gates_ran_pass": 4,
+      "gates_ran_total": 4,
+      "tallies": {
+        "PASS": 4,
+        "FAIL": 0,
+        "MISSING": 0,
+        "SKIP": 0,
+        "NO-GATE": 0
+      },
+      "claim_divergence": null,
+      "semver": "minor",
+      "ships_to_operators_today": null,
+      "operator_visible": "Searches through the API that filter on a number used to compare that number against text, so many of them quietly matched nothing and still answered \"OK\". They now compare correctly. If you have a saved search, a script or a third-party app that was returning nothing, it may start returning results - that is the fix working, not a new problem.",
+      "register": [
+        "BF-02",
+        "BF-03",
+        "BF-11",
+        "BF-32"
+      ],
+      "blocks_on": [],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": "bf/coercion",
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "externals/work/crm-bf-coercion",
+        "branch_sha": "ab197bf868922071b28e693fee70708be1452cd4",
+        "base_sha": "a8888f0d9facb8a9bb54c2ab15333f3f241b45bf",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 1,
+        "package_version_at_branch": "15.0.9",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/bf/coercion",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/coercion",
+          "cwd": null,
+          "describe": "bf/coercion has not fallen behind origin/dev",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/coercion >/dev/null",
+          "cwd": null,
+          "describe": "trial-merge into origin/dev is conflict-free",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "unit",
+          "command": "TEST=query npm run test-single",
+          "cwd": "externals/work/crm-bf-coercion",
+          "describe": "28 passing, database-free (measured against a dead mongo port). E3 RE-ABLATED it properly: GT1's control was \"the file cannot even LOAD against pristine dev\", which is a module-resolution failure, not a behavioural one. Reverting ONLY lib/server/query.js and keeping the new table gives 24 passing / 4 failing on assertions (\"expected '1.5' to be 1.5\"), which is the control that means something.",
+          "no_gate_reason": null,
+          "output_bytes": 1948,
+          "output_sha256": "646860463737d3f82f43f210b59ee1c212cfa4861489a54eb243fc0f13a0ee2f",
+          "output_tail": [
+            "  query",
+            "    ✔ should provide default options",
+            "    ✔ should not override non default options",
+            "    ✔ should not enforce date filter if query includes id",
+            "    ✔ should keep non-ObjectId _id queries as strings",
+            "    ✔ should convert ObjectId-shaped _id queries",
+            "    date filter normalization",
+            "      ✔ normalizes 2026-09-05 00:00:00-04:00",
+            "      ✔ normalizes 2026-09-05 00Z",
+            "      ✔ normalizes 2026-09-05 00:00:00Z",
+            "      ✔ normalizes 2026-09-05 00:00:00+02:00",
+            "      ✔ normalizes 2026-09-05T00:00:00+02:00",
+            "      ✔ normalizes 2026-09-05T00:00:00 02:00",
+            "      ✔ normalizes 2026-09-05 00:00:00 02:00",
+            "      ✔ normalizes 2026-09-05T00:00:00 0230",
+            "      ✔ normalizes 2026-09-05 00:00:00.123 02",
+            "      ✔ still rejects invalid dates",
+            "    schema-driven type coercion",
+            "      ✔ keeps a fractional bound on a number field instead of truncating it",
+            "      ✔ converts a bound on an integer field without truncating it either",
+            "      ✔ converts numeric filters that used to stay strings",
+            "      ✔ converts booleans",
+            "      ✔ leaves a boolean spelled some other way alone",
+            "      ✔ converts every element of an $in list",
+            "      ✔ leaves operands that are not field values alone",
+            "      ✔ leaves fields the schema does not declare as strings",
+            "      ✔ lets an explicit walker entry win over the schema",
+            "      ✔ does not change behaviour when no collection is named",
+            "      the table and the code that uses it",
+            "        ✔ has an entry for every collection wired to it",
+            "        ✔ is still asked for by every wired storage module",
+            "        ✔ declares only types the query layer acts on",
+            "",
+            "",
+            "[TIMING STATS] Total: 28 tests, Avg: 0ms, Slow: 0",
+            "",
+            "  28 passing (14ms)",
+            "",
+            "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+            "API request using an invalid date: 2026-99-05T00:00:00Z"
+          ],
+          "output_summary": {
+            "passing": 28,
+            "failing": 0,
+            "pending": 0,
+            "last_line": "API request using an invalid date: 2026-99-05T00:00:00Z",
+            "shape": "mocha"
+          }
+        },
+        {
+          "index": 3,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && python3 -m tools.nsschema.emit.coercion_emit --bundle \"$T/emitted.json\" >/dev/null && diff -q \"$T/emitted.json\" externals/work/crm-bf-coercion/lib/server/query-coercion.json",
+          "cwd": null,
+          "describe": "House style is \"emit, then check the emission\", and THE GATE THAT WAS HERE DID NOT CHECK IT. `coercion_emit --drift` ends in `return 0` unconditionally: E3 ran it and it exited 0 while printing \"DRIFT vs the shipping walkers: 157 disagreements\". It also compares against a HARDCODED transcription of origin/dev's walkers, so it says nothing about bf/coercion at all and would have exited 0 with the branch deleted. What is gateable is the emission itself: the table vendored into the branch must be byte-identical to what the emitter produces today, or the branch is shipping a stale generated file.",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        }
+      ]
+    },
+    {
+      "id": "P0-E",
+      "title": "bf/reads - six read-path fixes, independent of bf/coercion",
+      "parcel": "phase0",
+      "state_claimed": "ready-to-push",
+      "verdict_measured": "PASS",
+      "gates_ran_pass": 3,
+      "gates_ran_total": 3,
+      "tallies": {
+        "PASS": 3,
+        "FAIL": 0,
+        "MISSING": 0,
+        "SKIP": 5,
+        "NO-GATE": 3
+      },
+      "claim_divergence": null,
+      "semver": "major",
+      "ships_to_operators_today": null,
+      "operator_visible": "Six fixes to how the API answers read requests. Counting entries that matched a filter returned nothing at all; paging through results could skip or repeat records; asking for a nested field returned an empty answer; and three different ways of asking for \"no limit\" returned the entire collection instead. CHANGE YOU MAY NOTICE: six spellings of ?count= that used to be accepted now return an error instead of a surprising answer - count=0, count=0x10, count=2.5, count=-3, count=1e2 and count=abc. If a script of yours uses one of those, it will now fail loudly instead of quietly returning the wrong number of records.",
+      "register": [
+        "BF-01",
+        "BF-05",
+        "BF-13",
+        "BF-14",
+        "BF-15",
+        "BF-33"
+      ],
+      "blocks_on": [],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": "bf/reads",
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "externals/work/crm-bf-reads",
+        "branch_sha": "2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa",
+        "base_sha": "a8888f0d9facb8a9bb54c2ab15333f3f241b45bf",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 6,
+        "package_version_at_branch": "15.0.9",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/bf/reads",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/reads",
+          "cwd": null,
+          "describe": "bf/reads has not fallen behind origin/dev. THIS REPLACES an is-ancestor check on bf/coercion. The two-deep stack existed only to resolve a CHANGELOG collision; the CHANGELOG edits were stripped by the maintainer's instruction and bf/reads was re-cut directly onto dev, so the old gate now measures a fact that is deliberately false.",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/reads >/dev/null",
+          "cwd": null,
+          "describe": "trial-merge into origin/dev is conflict-free",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "node tools/queue/gates/bf-reads-read-contract.js",
+          "cwd": null,
+          "describe": "THE GATE THAT WAS HERE was `git log --format=%H bf/reads | grep -q .`, which asserts the branch has at least one commit. The E3 audit ran it against origin/dev, origin/master and bf/alarms and it passed for all three. This replaces it with the database-free half of the branch's behaviour, driven through the four pure modules the six fixes live in: parseCount/hasCount/applyCount, the dotted-?fields= projector, the _id tiebreak in the v3 sort chain, and the count path's use of query_for with nothing printed. 8 assertions. Its own negative control is built in - `--rev origin/dev` runs the identical assertions against dev materialised from the object database and gives 4 failing.",
+          "no_gate_reason": null,
+          "output_bytes": 930,
+          "output_sha256": "58c412824315e47f50567a9c11b5bf288a9939b0ed92627a36c13db9d19237d5",
+          "output_tail": [
+            "gate: bf-reads-read-contract (P0-E)",
+            "  ok   BF-13: parseCount refuses every spelling that parseInt would guess at — 9 rejected",
+            "  ok   BF-13: parseCount accepts a whole number of documents — '100' -> 100",
+            "  ok   BF-13: hasCount separates \"no count given\" from \"a bad count given\" — absent/empty/null are not errors; \"0\" is",
+            "  ok   BF-13: applyCount bounds the cursor only when a count was given — count=0 never reaches .limit()",
+            "  ok   BF-15: a dotted ?fields= keeps the nested value instead of emptying the document — {\"srvModified\":1,\"app\":{\"version\":\"15.0.9\"}}",
+            "  ok   BF-15: naming a parent still keeps the whole subtree — {\"app\":{\"version\":\"1\",\"build\":\"2\"}}",
+            "  ok   BF-14: the v3 sort chain ends in _id, so the order is total — ascending, descending and default all carry _id last",
+            "  ok   BF-01/BF-05: counting uses the collection's own query_for and prints nothing — query_for called once, zero lines printed",
+            "  8 checked, 0 failing"
+          ],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": "8 checked, 0 failing",
+            "shape": "unrecognised"
+          }
+        },
+        {
+          "index": 3,
+          "outcome": "SKIP",
+          "detail": "kind `integration` not enabled (use --integration)",
+          "kind": "integration",
+          "command": "TEST=api.count-parameter npm run test-single",
+          "cwd": "externals/work/crm-bf-reads",
+          "describe": "BF-13/BF-33, 13 passing. CORRECTION TO THE E3 BRIEF, which said this runs \"in 2 seconds with no database\": it needs MongoDB. Pointed at a dead port it goes to 0 passing / 1 failing, timing out in the before-all hook. It is fast only because a mongod happens to be listening on crm-bf-reads' port 27032.",
+          "no_gate_reason": null
+        },
+        {
+          "index": 4,
+          "outcome": "SKIP",
+          "detail": "kind `integration` not enabled (use --integration)",
+          "kind": "integration",
+          "command": "TEST=api.count-where npm run test-single",
+          "cwd": "externals/work/crm-bf-reads",
+          "describe": "BF-01, 5 passing. Needs MongoDB.",
+          "no_gate_reason": null
+        },
+        {
+          "index": 5,
+          "outcome": "SKIP",
+          "detail": "kind `integration` not enabled (use --integration)",
+          "kind": "integration",
+          "command": "TEST=api3.fields npm run test-single",
+          "cwd": "externals/work/crm-bf-reads",
+          "describe": "BF-15, 6 passing. Needs MongoDB (5 of 6 survive without it).",
+          "no_gate_reason": null
+        },
+        {
+          "index": 6,
+          "outcome": "SKIP",
+          "detail": "kind `integration` not enabled (use --integration)",
+          "kind": "integration",
+          "command": "TEST=api3.limit npm run test-single",
+          "cwd": "externals/work/crm-bf-reads",
+          "describe": "BF-33, 8 passing. Needs MongoDB.",
+          "no_gate_reason": null
+        },
+        {
+          "index": 7,
+          "outcome": "SKIP",
+          "detail": "kind `integration` not enabled (use --integration)",
+          "kind": "integration",
+          "command": "TEST=api3.paging npm run test-single",
+          "cwd": "externals/work/crm-bf-reads",
+          "describe": "BF-14, 3 passing. Needs MongoDB.",
+          "no_gate_reason": null
+        },
+        {
+          "index": 8,
+          "outcome": "NO-GATE",
+          "detail": "THE `npm run test:unit` GATE WAS REMOVED, not downgraded. It was recorded as \"361 passing / 0 failing at GT1's measurement\", but not one of the five test files this branch adds is in the 44-file brace list - all five are api*/api3* and match test:integration's glob - so the suite could have passed in full with every fix reverted.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "THE `npm run test:unit` GATE WAS REMOVED, not downgraded. It was recorded as \"361 passing / 0 failing at GT1's measurement\", but not one of the five test files this branch adds is in the 44-file brace list - all five are api*/api3* and match test:integration's glob - so the suite could have passed in full with every fix reverted."
+        },
+        {
+          "index": 9,
+          "outcome": "NO-GATE",
+          "detail": "The ordering constraint inside the branch (BF-05's commit must follow BF-01's) is not machine-checked. After the CHANGELOG strip and the re-cut onto dev the two commits are 3b588098 and 4772b983, so any gate quoting an earlier SHA is stale by construction. A real gate would assert the relative order of the two by subject line, and nobody has written it.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "The ordering constraint inside the branch (BF-05's commit must follow BF-01's) is not machine-checked. After the CHANGELOG strip and the re-cut onto dev the two commits are 3b588098 and 4772b983, so any gate quoting an earlier SHA is stale by construction. A real gate would assert the relative order of the two by subject line, and nobody has written it."
+        },
+        {
+          "index": 10,
+          "outcome": "NO-GATE",
+          "detail": "The CHANGELOG on this branch lists read routes only, while the ?count= validator covers writes too. Nothing checks a release note against the code it describes.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "The CHANGELOG on this branch lists read routes only, while the ?count= validator covers writes too. Nothing checks a release note against the code it describes."
+        }
+      ]
+    },
+    {
+      "id": "P0-F",
+      "title": "fix/connect-timer-jitter - BF-34 backoff precedence and start jitter",
+      "parcel": "phase0",
+      "state_claimed": "ready-to-push",
+      "verdict_measured": "PASS",
+      "gates_ran_pass": 2,
+      "gates_ran_total": 2,
+      "tallies": {
+        "PASS": 2,
+        "FAIL": 0,
+        "MISSING": 0,
+        "SKIP": 0,
+        "NO-GATE": 1
+      },
+      "claim_divergence": null,
+      "semver": "minor",
+      "ships_to_operators_today": null,
+      "operator_visible": "When a CGM vendor's service is refusing requests, Nightscout's connector used to retry roughly 586 times faster than it was configured to, and every account retried at the same instant. It now waits the interval it was told to wait and spreads the retries out. COUNTER-INTUITIVE: after this fix a vendor outage will look like it recovers MORE SLOWLY, because the connector has stopped retrying in a burst that could not have worked. Your data is not arriving any later than it would have; the burst was never getting through. Also, on restart the connector no longer reaches the vendor all at once - both jitter windows default to 0, so nothing changes for anyone who does not set them.",
+      "register": [
+        "BF-08",
+        "BF-34"
+      ],
+      "blocks_on": [],
+      "resolved": {
+        "repo": "nightscout-connect",
+        "repo_path": "externals/nightscout-connect",
+        "branch": "fix/connect-timer-jitter",
+        "base_declared": "b77e5bb",
+        "worktree": "externals/work/nc-jitter",
+        "branch_sha": "c1cce2a2f9623e1164d85b1625a65d27e3116b51",
+        "base_sha": "b77e5bb7a08a677f008af93335c04aa726436245",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 1,
+        "package_version_at_branch": "0.0.13",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/fix/connect-timer-jitter",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "unit",
+          "command": "npm test",
+          "cwd": "externals/work/nc-jitter",
+          "describe": "135 passing / 0 failing; the connector suite needs no database",
+          "no_gate_reason": null,
+          "output_bytes": 14603,
+          "output_sha256": "1c36655c8ea9d070d0ad9e7a2f452747ae10aa515ebc9ae07062ab9ec1702498",
+          "output_tail": [
+            "SETTING UP nightscoutRestAPI { url: 'https://example.test', apiSecret: 'secret' }",
+            "RECORD BATCH with 1 entries, 1 treatments, 1 devicestatus, 1 profiles",
+            "RECORDED BATCH, total entries 0",
+            "RECORDED BATCH, total treatments 0",
+            "RECORDED BATCH, total devicestatus 0",
+            "RECORDED BATCH, total profiles 0",
+            "UPDATE BOOKMARK FROM I/O {} [] 4",
+            "(node:1717498) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.",
+            "(Use `node --trace-deprecation ...` to show where the warning was created)",
+            "✔ Nightscout output requires an endpoint (1.273729ms)",
+            "✔ Nightscout output requires an API secret (0.288568ms)",
+            "✔ Nightscout output tolerates batches with omitted collections (3.194959ms)",
+            "✔ Nightscout output records all supported collections (1.831646ms)",
+            "nightscout-connect: Nightscout read permission check failed",
+            "(node:1717523) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.",
+            "(Use `node --trace-deprecation ...` to show where the warning was created)",
+            "✔ Nightscout source session exchanges access token with headers object (2.658098ms)",
+            "✔ Nightscout source falls back to token creation after unreadable verifyauth failure (1.290748ms)",
+            "✔ Nightscout source transform ignores non-array payloads (0.211961ms)",
+            "✔ Nightscout source validation accepts token URLs without source API secret (0.14581ms)",
+            "✔ Nightscout source transforms all collection arrays (0.189679ms)",
+            "nightscout-connect: Internal persistence failed",
+            "nightscout-connect: Invalid configuration, disabling connector",
+            "✔ output close removes permanent/bookmark listeners and settles bookmark waits (1.494849ms)",
+            "✔ output close settles pending storage waits without accepting later data (0.586951ms)",
+            "✔ failed storage removes its data-processed waiter without needing another event (1.124752ms)",
+            "✔ successful output remains usable over two processing cycles (1.867163ms)",
+            "✔ null collection fields still represent an empty batch (0.228938ms)",
+            "✔ wrapper stop detaches all owned listeners over two cycles and prevents later starts (67.382906ms)",
+            "✔ wrapper responds to both teardown spellings exactly once (1.88353ms)",
+            "✔ invalid configuration allocates no output listeners (0.735838ms)",
+            "✔ driver setup failure closes the allocated output (0.943047ms)",
+            "ℹ tests 135",
+            "ℹ suites 0",
+            "ℹ pass 135",
+            "ℹ fail 0",
+            "ℹ cancelled 0",
+            "ℹ skipped 0",
+            "ℹ todo 0",
+            "ℹ duration_ms 277.22902"
+          ],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": "ℹ duration_ms 277.22902",
+            "shape": "unrecognised"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "unit",
+          "command": "node -e \"const b=require('./lib/backoff.js'); try { b({jitter:'wild'}); process.exit(1); } catch(e) { process.exit(/unknown jitter mode/.test(e.message)?0:1); }\"",
+          "cwd": "externals/work/nc-jitter",
+          "describe": "the new throw on an unknown jitter mode is the observable half of the precedence fix - if options were still being discarded, the bad mode would never be read and this would not throw",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "NO-GATE",
+          "detail": "Vendor rate limits are unmeasured (EXP-MT-051) and need real credentials, which rule 0 forbids here. T0.4 shipped CONNECT_START_JITTER_MS so the pool CAN be spread - but the window to set it is exactly the number that is unmeasured.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "Vendor rate limits are unmeasured (EXP-MT-051) and need real credentials, which rule 0 forbids here. T0.4 shipped CONNECT_START_JITTER_MS so the pool CAN be spread - but the window to set it is exactly the number that is unmeasured."
+        }
+      ]
+    },
+    {
+      "id": "P0-G",
+      "title": "bf/food - BF-16 quick-pick filter, BF-35 bolus calculator chooser",
+      "parcel": "phase0",
+      "state_claimed": "ready-to-push",
+      "verdict_measured": "PASS",
+      "gates_ran_pass": 3,
+      "gates_ran_total": 3,
+      "tallies": {
+        "PASS": 3,
+        "FAIL": 0,
+        "MISSING": 0,
+        "SKIP": 1,
+        "NO-GATE": 0
+      },
+      "claim_divergence": null,
+      "semver": "minor",
+      "ships_to_operators_today": null,
+      "operator_visible": "IMPORTANT. In the bolus calculator, choosing a quick pick could load a DIFFERENT record's food, so the carbohydrate number that went into the insulin calculation came from a record you did not choose, and nothing on screen said so. Picking the last entry in the list could throw an error, and plain foods that are not quick picks appeared in the chooser. This is fixed. Separately, quick picks saved by a JSON client, or saved before the \"hidden\" setting existed, were missing from the quick-pick list and now appear. If you have used the bolus calculator's quick picks, the amount it suggested may not have matched the food you selected. The calculator is a suggestion tool, not a dosing instruction - please raise this with your care team if you think a past suggestion was wrong. This is not medical advice.",
+      "register": [
+        "BF-16",
+        "BF-35"
+      ],
+      "blocks_on": [],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": "bf/food",
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "externals/work/crm-bf-food",
+        "branch_sha": "73495331e68c4cda3a63e8c047387bdf404b89b0",
+        "base_sha": "a8888f0d9facb8a9bb54c2ab15333f3f241b45bf",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 1,
+        "package_version_at_branch": "15.0.9",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/bf/food",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/food",
+          "cwd": null,
+          "describe": "bf/food has not fallen behind origin/dev",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/food >/dev/null",
+          "cwd": null,
+          "describe": "trial-merge into origin/dev is conflict-free",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "unit",
+          "command": "TEST=boluscalc.quickpick npm run test-single",
+          "cwd": "externals/work/crm-bf-food",
+          "describe": "BF-35's own test, 11 cases. THIS IS THE GATE GT1 WARNED ABOUT: the file is in NEITHER the test:unit nor the test:integration brace list, so a green `npm run test:unit` on this branch is not evidence that BF-35's fix works. Named explicitly here for that reason.",
+          "no_gate_reason": null,
+          "output_bytes": 1152,
+          "output_sha256": "c1b5a3cad8e0902fd301cb4ba466f5646086a50216dfeea916d1bcb2486867f8",
+          "output_tail": [
+            "",
+            "> nightscout@15.0.9 test-single",
+            "> env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/$TEST.test.js",
+            "",
+            "",
+            "",
+            "  boluscalc quick-pick chooser",
+            "    ✔ offers only quick picks, not every food in the database",
+            "    ✔ resolves the quick pick it names, with a plain food in the collection",
+            "    ✔ resolves the last quick pick rather than throwing",
+            "    ✔ leaves hidden quick picks out of the chooser, in either spelling",
+            "    ✔ orders the chooser by position numerically, whichever type it was stored as",
+            "    ✔ copes with an empty or absent food collection",
+            "",
+            "  lib/food/quickpick",
+            "    isTrue",
+            "      ✔ accepts both spellings of true and nothing else",
+            "    isHidden",
+            "      ✔ treats an absent flag as not hidden",
+            "    positionOf",
+            "      ✔ reads a position out of either type, and sorts an unusable one last",
+            "    selectable",
+            "      ✔ is empty for no input rather than throwing",
+            "      ✔ does not mutate the array it was given",
+            "",
+            "",
+            "[TIMING STATS] Total: 11 tests, Avg: 11ms, Slow: 0",
+            "",
+            "  11 passing (123ms)",
+            "",
+            "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+          ],
+          "output_summary": {
+            "passing": 11,
+            "failing": 0,
+            "pending": 0,
+            "last_line": "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+            "shape": "mocha"
+          }
+        },
+        {
+          "index": 3,
+          "outcome": "SKIP",
+          "detail": "kind `integration` not enabled (use --integration)",
+          "kind": "integration",
+          "command": "TEST=api.food.quickpicks npm run test-single",
+          "cwd": "externals/work/crm-bf-food",
+          "describe": "BF-16 over the real HTTP path; needs MongoDB",
+          "no_gate_reason": null
+        }
+      ]
+    },
+    {
+      "id": "P0-H",
+      "title": "bf/merge - BF-36 client delta merge reads past the end",
+      "parcel": "phase0",
+      "state_claimed": "ready-to-push",
+      "verdict_measured": "PASS",
+      "gates_ran_pass": 3,
+      "gates_ran_total": 3,
+      "tallies": {
+        "PASS": 3,
+        "FAIL": 0,
+        "MISSING": 0,
+        "SKIP": 0,
+        "NO-GATE": 1
+      },
+      "claim_divergence": null,
+      "semver": "patch",
+      "ships_to_operators_today": null,
+      "operator_visible": "A treatment being removed at the same time as another update arrived could make the page stop updating until you reloaded it. The clock that tells you how old the reading is runs on its own timer, so it would still have gone stale and warned you - the reading shown was never wrong, it just stopped advancing.",
+      "register": [
+        "BF-36"
+      ],
+      "blocks_on": [],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": "bf/merge",
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "externals/work/crm-bf-merge",
+        "branch_sha": "b06c6faf882ebd84d627468c75dade0fe1fd01a1",
+        "base_sha": "a8888f0d9facb8a9bb54c2ab15333f3f241b45bf",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 1,
+        "package_version_at_branch": "15.0.9",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/bf/merge",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/merge",
+          "cwd": null,
+          "describe": "bf/merge has not fallen behind origin/dev",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/merge >/dev/null",
+          "cwd": null,
+          "describe": "trial-merge into origin/dev is conflict-free",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "unit",
+          "command": "TEST=receiveddata.merge npm run test-single",
+          "cwd": "externals/work/crm-bf-merge",
+          "describe": "in NEITHER local brace list - GT1's finding. Named here so the gate actually runs the file that proves the fix.",
+          "no_gate_reason": null,
+          "output_bytes": 1065,
+          "output_sha256": "16852e9b4f337f45a24200a533aad7e0607af14ce65519aaabcb7beaeba99852",
+          "output_tail": [
+            "",
+            "> nightscout@15.0.9 test-single",
+            "> env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/$TEST.test.js",
+            "",
+            "",
+            "",
+            "  client delta merge",
+            "    mergeTreatmentUpdate",
+            "      ✔ survives a remove followed by an item that matches nothing",
+            "      ✔ survives several removes and a miss in any order",
+            "      ✔ removes a matching item",
+            "      ✔ updates in place and drops the action marker",
+            "      ✔ appends an item that carries no action",
+            "      ✔ returns the cache untouched when there is nothing received",
+            "      ✔ replaces everything when the update is not a delta",
+            "      ✔ sorts the result by mills",
+            "    mergeDataUpdate",
+            "      ✔ purges entries older than the age limit",
+            "      ✔ purges consecutive old entries without skipping one",
+            "      ✔ replaces an entry with the same mills rather than adding one",
+            "      ✔ adds an entry with new mills",
+            "",
+            "",
+            "[TIMING STATS] Total: 12 tests, Avg: 0ms, Slow: 0",
+            "",
+            "  12 passing (5ms)",
+            "",
+            "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+          ],
+          "output_summary": {
+            "passing": 12,
+            "failing": 0,
+            "pending": 0,
+            "last_line": "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+            "shape": "mocha"
+          }
+        },
+        {
+          "index": 3,
+          "outcome": "NO-GATE",
+          "detail": "`dataUpdate` still has no try/catch, so the NEXT throw from anywhere in the merge path has the same effect. This branch fixes one throw, not the missing boundary. No test asserts the boundary exists because it does not.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "`dataUpdate` still has no try/catch, so the NEXT throw from anywhere in the merge path has the same effect. This branch fixes one throw, not the missing boundary. No test asserts the boundary exists because it does not."
+        }
+      ]
+    },
+    {
+      "id": "P0-I",
+      "title": "bf/parms - BF-37, BF-38, BF-39",
+      "parcel": "phase0",
+      "state_claimed": "ready-to-push",
+      "verdict_measured": "PASS",
+      "gates_ran_pass": 4,
+      "gates_ran_total": 4,
+      "tallies": {
+        "PASS": 4,
+        "FAIL": 0,
+        "MISSING": 0,
+        "SKIP": 0,
+        "NO-GATE": 0
+      },
+      "claim_divergence": null,
+      "semver": "patch",
+      "ships_to_operators_today": null,
+      "operator_visible": "A web address with a bare option in it - anything ending in \"?\", or containing \"&&\", or a setting with no value such as \"?debug\" - stopped the page loading entirely, leaving only the loading message. That is fixed. Two smaller fixes go with it: a translation containing ten or more substitutions came out with a stray digit, and an access token belonging to a subject whose name contains an underscore was being corrupted in the address bar (the server was accepting it anyway, so nothing was broken for you).",
+      "register": [
+        "BF-37",
+        "BF-38",
+        "BF-39"
+      ],
+      "blocks_on": [],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": "bf/parms",
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "externals/work/crm-bf-parms",
+        "branch_sha": "eb0bc918036a7802a0b88156e9722f45fd9107f3",
+        "base_sha": "a8888f0d9facb8a9bb54c2ab15333f3f241b45bf",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 3,
+        "package_version_at_branch": "15.0.9",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/bf/parms",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/parms",
+          "cwd": null,
+          "describe": "bf/parms has not fallen behind origin/dev",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/parms >/dev/null",
+          "cwd": null,
+          "describe": "trial-merge into origin/dev is conflict-free",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "unit",
+          "command": "TEST=browser-utils.queryparms npm run test-single",
+          "cwd": "externals/work/crm-bf-parms",
+          "describe": "BF-37 and BF-39; in NEITHER local brace list (GT1)",
+          "no_gate_reason": null,
+          "output_bytes": 736,
+          "output_sha256": "e5c146bb426a9e7a9774a6acd0ea1114e2c995b88e56db10a30af4e7641e5678",
+          "output_tail": [
+            "",
+            "> nightscout@15.0.9 test-single",
+            "> env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/$TEST.test.js",
+            "",
+            "",
+            "",
+            "  browser-utils queryParms",
+            "    ✔ parses a well-formed query exactly as before",
+            "    ✔ leaves an underscore alone and still reads + as a space",
+            "    ✔ carries an access token through intact",
+            "    ✔ does not throw on a valueless parameter",
+            "    ✔ does not throw on a trailing, doubled or lone ampersand",
+            "    ✔ reads a valueless parameter the way its callers already treat absence",
+            "",
+            "",
+            "[TIMING STATS] Total: 6 tests, Avg: 0ms, Slow: 0",
+            "",
+            "  6 passing (4ms)",
+            "",
+            "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+          ],
+          "output_summary": {
+            "passing": 6,
+            "failing": 0,
+            "pending": 0,
+            "last_line": "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+            "shape": "mocha"
+          }
+        },
+        {
+          "index": 3,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "unit",
+          "command": "TEST=language npm run test-single",
+          "cwd": "externals/work/crm-bf-parms",
+          "describe": "BF-38. Non-vacuous by GT1's control - 1 failing when the fix is removed from pristine dev code.",
+          "no_gate_reason": null,
+          "output_bytes": 1301,
+          "output_sha256": "7c30de627dda49f9f23f0062adf8a89927affe17b7ac493d431148c8d933182d",
+          "output_tail": [
+            "",
+            "> nightscout@15.0.9 test-single",
+            "> env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/$TEST.test.js",
+            "",
+            "",
+            "",
+            "  language",
+            "    ✔ use English by default",
+            "    ✔ replace strings in translations",
+            "    ✔ substitutes a tenth parameter without the first one eating it",
+            "    ✔ translate to French",
+            "    ✔ translate to Czech",
+            "    ✔ translate to Czech uppercase",
+            "    ✔ translate to Taiwan Traditional Chinese",
+            "    ✔ labels zh_tw as Taiwan Traditional Chinese",
+            "    ✔ preserves Traditional Chinese volume units and uploader battery labels",
+            "    ✔ preserves Swedish report filters and record count placeholders",
+            "    ✔ loads Lithuanian through its registered language code",
+            "    ✔ uses Lithuanian labels for the missing-data time pill",
+            "    ✔ keeps Lithuanian keys and placeholders aligned with the English catalog",
+            "    ✔ loads the registered Slovenian catalog without a missing-file error",
+            "    ✔ substitutes the Russian status update time without losing values",
+            "    ✔ fallback to English filename for unsupported language codes",
+            "    ✔ parse every translation file as valid JSON",
+            "",
+            "",
+            "[TIMING STATS] Total: 17 tests, Avg: 2ms, Slow: 0",
+            "",
+            "  17 passing (38ms)",
+            "",
+            "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+          ],
+          "output_summary": {
+            "passing": 17,
+            "failing": 0,
+            "pending": 0,
+            "last_line": "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+            "shape": "mocha"
+          }
+        }
+      ]
+    },
+    {
+      "id": "P0-TAG",
+      "title": "nightscout-connect release/v0.0.14 and tag - prepared, needs a human push",
+      "parcel": "phase0",
+      "state_claimed": "ready-to-push",
+      "verdict_measured": "PASS",
+      "gates_ran_pass": 4,
+      "gates_ran_total": 4,
+      "tallies": {
+        "PASS": 4,
+        "FAIL": 0,
+        "MISSING": 0,
+        "SKIP": 1,
+        "NO-GATE": 1
+      },
+      "claim_divergence": null,
+      "semver": "minor",
+      "ships_to_operators_today": null,
+      "operator_visible": "A new version of the CGM connector. See P0-F for what changes in behaviour.",
+      "register": [
+        "BF-08",
+        "BF-34"
+      ],
+      "blocks_on": [
+        "P0-F"
+      ],
+      "resolved": {
+        "repo": "nightscout-connect",
+        "repo_path": "externals/nightscout-connect",
+        "branch": "release/v0.0.14",
+        "base_declared": "v0.0.13@b394411",
+        "worktree": "externals/nightscout-connect",
+        "branch_sha": "649a7de27b9e869154e718b0ec1d1bfa0388d0d8",
+        "base_sha": "b394411a39236b614beebffabf23ccc04f730a68",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 11,
+        "package_version_at_branch": "0.0.14",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/release/v0.0.14",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/nightscout-connect merge-base --is-ancestor v0.0.13 release/v0.0.14",
+          "cwd": null,
+          "describe": "v0.0.13 fast-forwards to the release - no divergence to reconcile",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "test \"$(git -C externals/nightscout-connect cat-file -t v0.0.14)\" = tag",
+          "cwd": null,
+          "describe": "v0.0.14 is an ANNOTATED tag, not a lightweight one",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "test \"$(git -C externals/nightscout-connect rev-parse v0.0.14^{commit})\" = \"$(git -C externals/nightscout-connect rev-parse release/v0.0.14)\"",
+          "cwd": null,
+          "describe": "the tag points at the release branch tip",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 3,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "test \"$(git -C externals/nightscout-connect show release/v0.0.14:package.json | python3 -c 'import json,sys; print(json.load(sys.stdin)[\"version\"])')\" = 0.0.14",
+          "cwd": null,
+          "describe": "package.json version matches the tag",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 4,
+          "outcome": "SKIP",
+          "detail": "kind `network` not enabled (use --network)",
+          "kind": "network",
+          "command": "git -C externals/nightscout-connect ls-remote --tags origin v0.0.14 | grep -q . && exit 1 || exit 0",
+          "cwd": null,
+          "describe": "RULE 0. This gate PASSES only while the tag is NOT on origin. It is the machine-checkable form of \"nothing has been pushed\". Read-only.",
+          "no_gate_reason": null
+        },
+        {
+          "index": 5,
+          "outcome": "NO-GATE",
+          "detail": "Whether all seven connector commits are the RIGHT content for a release is a release-content decision, not a mechanical bump, and it is the maintainer's. Nothing can gate it.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "Whether all seven connector commits are the RIGHT content for a release is a release-content decision, not a mechanical bump, and it is the maintainer's. Nothing can gate it."
+        }
+      ]
+    },
+    {
+      "id": "P0-PIN",
+      "title": "bf/connect-pin - move dev's connector pin to the v0.0.14 tarball",
+      "parcel": "phase0",
+      "state_claimed": "blocked",
+      "verdict_measured": "PASS",
+      "gates_ran_pass": 3,
+      "gates_ran_total": 3,
+      "tallies": {
+        "PASS": 3,
+        "FAIL": 0,
+        "MISSING": 0,
+        "SKIP": 0,
+        "NO-GATE": 1
+      },
+      "claim_divergence": null,
+      "semver": "patch",
+      "ships_to_operators_today": null,
+      "operator_visible": "Nightscout picks up the new connector. Three fixes that keep CGM vendor credentials and patient data out of the log file come with it. Those fixes matter most exactly when you turn debug logging on to diagnose a problem - today's release narrows WHEN the leak happens but does not stop it happening then.",
+      "register": [],
+      "blocks_on": [
+        "P0-TAG"
+      ],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": "bf/connect-pin",
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "externals/work/crm-bf-connect-pin",
+        "branch_sha": "0807eb1c184353792e95e56b0869e42a774732ff",
+        "base_sha": "a8888f0d9facb8a9bb54c2ab15333f3f241b45bf",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 1,
+        "package_version_at_branch": "15.0.9",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/bf/connect-pin",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "grep -q 'archive/refs/tags/v0.0.14.tar.gz' package.json",
+          "cwd": "externals/work/crm-bf-connect-pin",
+          "describe": "package.json points at the v0.0.14 tag tarball",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/connect-pin",
+          "cwd": null,
+          "describe": "bf/connect-pin has not fallen behind origin/dev",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' package-lock.json",
+          "cwd": "externals/work/crm-bf-connect-pin",
+          "describe": "DELIBERATELY INVERTED. This gate passes while the lockfile is STILL on the old SHA. The lock's integrity is a hash over a tarball GitHub does not generate until the tag is pushed; a hash invented locally would break `npm ci` for everyone. Leaving it stale makes `npm ci` fail LOUDLY as out-of-sync, which is the correct failure. When P0-LOCK is done this gate SHOULD go red - that is the handoff signal.",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 3,
+          "outcome": "NO-GATE",
+          "detail": "Nothing can verify the tarball's integrity hash before the tag exists on GitHub. That is the whole reason P0-LOCK is a separate item.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "Nothing can verify the tarball's integrity hash before the tag exists on GitHub. That is the whole reason P0-LOCK is a separate item."
+        }
+      ]
+    },
+    {
+      "id": "P0-LOCK",
+      "title": "Regenerate package-lock.json after the v0.0.14 tag is pushed",
+      "parcel": "phase0",
+      "state_claimed": "blocked",
+      "verdict_measured": "FAIL",
+      "gates_ran_pass": 0,
+      "gates_ran_total": 1,
+      "tallies": {
+        "PASS": 0,
+        "FAIL": 1,
+        "MISSING": 0,
+        "SKIP": 1,
+        "NO-GATE": 0
+      },
+      "claim_divergence": null,
+      "semver": "n/a",
+      "ships_to_operators_today": null,
+      "operator_visible": "Nothing you see. Until this is done, `npm ci` fails with an out-of-sync error - which is intentional and correct, not a bug.",
+      "register": [],
+      "blocks_on": [
+        "P0-PIN",
+        "P0-TAG"
+      ],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": "bf/connect-pin",
+        "base_declared": "bf/connect-pin@0807eb1c",
+        "worktree": "externals/work/crm-bf-connect-pin",
+        "branch_sha": "0807eb1c184353792e95e56b0869e42a774732ff",
+        "base_sha": "0807eb1c184353792e95e56b0869e42a774732ff",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 0,
+        "package_version_at_branch": "15.0.9",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/bf/connect-pin",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "FAIL",
+          "detail": "exit 1",
+          "kind": "static",
+          "command": "grep -q 'archive/refs/tags/v0.0.14.tar.gz' package-lock.json",
+          "cwd": "externals/work/crm-bf-connect-pin",
+          "describe": "the lockfile agrees with package.json. FAILS today, on purpose, and must not be made to pass locally - see P0-PIN's inverted gate.",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "SKIP",
+          "detail": "kind `network` not enabled (use --network)",
+          "kind": "network",
+          "command": "npm ci --dry-run",
+          "cwd": "externals/work/crm-bf-connect-pin",
+          "describe": "npm ci resolves; requires the pushed tag to exist on GitHub",
+          "no_gate_reason": null
+        }
+      ]
+    },
+    {
+      "id": "P0-T01",
+      "title": "T0.1 - PR",
+      "parcel": "phase0",
+      "state_claimed": "in-flight-upstream",
+      "verdict_measured": "UNMEASURED",
+      "gates_ran_pass": 0,
+      "gates_ran_total": 0,
+      "tallies": {
+        "PASS": 0,
+        "FAIL": 0,
+        "MISSING": 0,
+        "SKIP": 1,
+        "NO-GATE": 1
+      },
+      "claim_divergence": null,
+      "semver": "patch",
+      "ships_to_operators_today": null,
+      "operator_visible": "Sites with a lot of treatment records load faster. Nothing you see changes value or meaning.",
+      "register": [],
+      "blocks_on": [],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": "fix/quadratic-treatment-processing",
+        "base_declared": "origin/dev",
+        "worktree": "externals/work/crm-quadratics",
+        "branch_sha": "dfe2753dcc1cf39c3e3abfc7bf5c844131480acb",
+        "base_sha": "a8888f0d9facb8a9bb54c2ab15333f3f241b45bf",
+        "branch_contains_base": true,
+        "commits_ahead_of_base": 1,
+        "package_version_at_branch": "15.0.9",
+        "published": {
+          "method": "local remote-tracking refs (no network)",
+          "remote_tracking_ref": "refs/remotes/origin/fix/quadratic-treatment-processing",
+          "remote_tracking_present": false,
+          "remote_checked": false,
+          "present_on_remote": null
+        },
+        "problems": []
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "SKIP",
+          "detail": "kind `network` not enabled (use --network)",
+          "kind": "network",
+          "command": "git -C externals/cgm-remote-monitor-official ls-remote --heads origin bewest/wip/optimize-treatment-processing | grep -q dfe2753d",
+          "cwd": null,
+          "describe": "the one Phase 0 branch that IS legitimately pushed. GT1 verified this live. Read-only.",
+          "no_gate_reason": null
+        },
+        {
+          "index": 1,
+          "outcome": "NO-GATE",
+          "detail": "PR merge state is upstream's and cannot be gated from here without a GitHub API call. This item is tracked, not driven.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "PR merge state is upstream's and cannot be gated from here without a GitHub API call. This item is tracked, not driven."
+        }
+      ]
+    },
+    {
+      "id": "FU-LIMIT",
+      "title": "Follow-up 2 - the limit rule is written twice, and that is the root cause",
+      "parcel": "phase0",
+      "state_claimed": "blocked",
+      "verdict_measured": "FAIL",
+      "gates_ran_pass": 1,
+      "gates_ran_total": 2,
+      "tallies": {
+        "PASS": 1,
+        "FAIL": 1,
+        "MISSING": 0,
+        "SKIP": 0,
+        "NO-GATE": 1
+      },
+      "claim_divergence": null,
+      "semver": "patch",
+      "ships_to_operators_today": null,
+      "operator_visible": null,
+      "register": [],
+      "blocks_on": [
+        "P0-E"
+      ],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": null,
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "externals/work/crm-bf-reads",
+        "branch_sha": null,
+        "base_sha": null,
+        "branch_contains_base": null,
+        "commits_ahead_of_base": null,
+        "package_version_at_branch": null,
+        "published": null,
+        "problems": [
+          "item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure."
+        ]
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "PASS",
+          "detail": "exit 0",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show origin/dev:lib/api3/generic/collection.js | grep -q \"self.parseLimit\" && exit 1 || exit 0",
+          "cwd": null,
+          "describe": "CONTROL, and it PASSES - and it carries a correction. The sequencing document says the rule is written twice, in lib/server/count.js and v3's parseLimit. THAT FILE DOES NOT EXIST ON origin/dev; bf/reads creates it. So the duplication does not exist yet and this follow-up is created by P0-E landing.",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "FAIL",
+          "detail": "exit 1",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official cat-file -e bf/reads:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show bf/reads:lib/api3/generic/collection.js | grep -q \"self.parseLimit\" && exit 1 || exit 0",
+          "cwd": null,
+          "describe": "FAILS on bf/reads, where both readings of the rule are present. Paired with the control above, a red here is the duplication and not the command - the identical command run against origin/dev exits 0.",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "NO-GATE",
+          "detail": "Nothing asserts that the two implementations AGREE while they both exist. A differential test - the same limit value through both paths, including 0, a negative, a non-numeric and a value above the maximum - is what would make the duplication safe until it is removed, and it does not exist. Two readings of one rule is the root cause of this whole family, so leaving it duplicated is a debt with a name.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "Nothing asserts that the two implementations AGREE while they both exist. A differential test - the same limit value through both paths, including 0, a negative, a non-numeric and a value above the maximum - is what would make the duplication safe until it is removed, and it does not exist. Two readings of one rule is the root cause of this whole family, so leaving it duplicated is a debt with a name."
+        }
+      ]
+    },
+    {
+      "id": "FU-RESIDUALS",
+      "title": "Follow-ups 3, 4, 7 - three named residuals beside branches already prepared",
+      "parcel": "phase0",
+      "state_claimed": "gate-not-met",
+      "verdict_measured": "FAIL",
+      "gates_ran_pass": 0,
+      "gates_ran_total": 3,
+      "tallies": {
+        "PASS": 0,
+        "FAIL": 3,
+        "MISSING": 0,
+        "SKIP": 0,
+        "NO-GATE": 1
+      },
+      "claim_divergence": null,
+      "semver": "patch",
+      "ships_to_operators_today": null,
+      "operator_visible": "One of these three is visible to you. If an Amazon Alexa request arrives that Nightscout does not recognise, Nightscout answers nothing at all and the request hangs until Alexa gives up, rather than saying it did not understand. The other two are internal - a check that always answers \"yes\" but that nothing currently asks, and a leftover log line that prints request details to the server log.",
+      "register": [],
+      "blocks_on": [],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": null,
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "externals/cgm-remote-monitor-official",
+        "branch_sha": null,
+        "base_sha": null,
+        "branch_contains_base": null,
+        "commits_ahead_of_base": null,
+        "package_version_at_branch": null,
+        "published": null,
+        "problems": [
+          "item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure."
+        ]
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "FAIL",
+          "detail": "exit 1",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official show origin/dev:lib/plugins/index.js | grep -q \"return (p !== null)\" && exit 1 || exit 0",
+          "cwd": null,
+          "describe": "Follow-up 3. FAILS today - plugins.isPluginEnabled compares find()'s result with !== null, and find() returns UNDEFINED when it misses, so the function always returns true. No caller today, which is why it has no register id, but it is what the next instrument will reach for.",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 1,
+          "outcome": "FAIL",
+          "detail": "exit 1",
+          "kind": "static",
+          "command": "git -C externals/cgm-remote-monitor-official show origin/dev:lib/authorization/storage.js | grep -qE \"console\\\\.log\\\\('Loading',[[:space:]]*opts\\\\)\" && exit 1 || exit 0",
+          "cwd": null,
+          "describe": "Follow-up 4. FAILS today. BF-05's unfixed sibling - the same shape, a different file. THE PATTERN IS THE STORY OF THIS GATE. The shipping source is console.log('Loading',opts) with NO SPACE after the comma. The register (L1005), the sequencing document and P0-C's gate all quote it WITH a space, and the first draft of this gate copied that quotation - so it searched for a string that is not in the file, matched nothing, and PASSED while the defect was present. A vacuous green, caught by running it. The same defect was found concurrently in P0-C's copy of the gate by another session and fixed there; this is the same space-tolerant pattern, so the two cannot diverge again. :84 AND :113 ARE BOTH RIGHT - storage.js:84 on origin/dev, :113 on bf/auth. The sequencing document's \"measured, it is :113, not :84\" is true of bf/auth and false of dev; neither number names its ref. This gate measures origin/dev, which is where the fix has to land.",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 2,
+          "outcome": "FAIL",
+          "detail": "exit 1",
+          "kind": "static",
+          "command": "bash -c 's=$(git -C externals/cgm-remote-monitor-official show origin/dev:lib/api/alexa/index.js); echo \"$s\" | grep -q \"switch (req.body.request.type)\" || exit 1; echo \"$s\" | grep -q \"default:\"'",
+          "cwd": null,
+          "describe": "Follow-up 7. FAILS today. The switch on request.type has no default, so an unrecognised type calls neither res.json nor next() and the request hangs until the client times out. The first clause is the control - it asserts the switch is still there, so a red result cannot come from the file having been restructured. Measured: 0 occurrences of \"default:\" in the file. googlehome has no switch at all, so this is alexa-only.",
+          "no_gate_reason": null,
+          "output_bytes": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output_tail": [],
+          "output_summary": {
+            "passing": null,
+            "failing": null,
+            "pending": null,
+            "last_line": null,
+            "shape": "no output"
+          }
+        },
+        {
+          "index": 3,
+          "outcome": "NO-GATE",
+          "detail": "Reachability of follow-up 7 is not measured. It needs an Alexa request type outside SessionEndedRequest, LaunchRequest and IntentRequest, and nothing here enumerates what Amazon can send.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "Reachability of follow-up 7 is not measured. It needs an Alexa request type outside SessionEndedRequest, LaunchRequest and IntentRequest, and nothing here enumerates what Amazon can send."
+        }
+      ]
+    },
+    {
+      "id": "FU-HYGIENE",
+      "title": "Follow-ups 9, 10 - the two audits that have no instrument",
+      "parcel": "phase0",
+      "state_claimed": "not-started",
+      "verdict_measured": "UNMEASURED",
+      "gates_ran_pass": 0,
+      "gates_ran_total": 0,
+      "tallies": {
+        "PASS": 0,
+        "FAIL": 0,
+        "MISSING": 0,
+        "SKIP": 0,
+        "NO-GATE": 2
+      },
+      "claim_divergence": null,
+      "semver": "n/a",
+      "ships_to_operators_today": null,
+      "operator_visible": null,
+      "register": [],
+      "blocks_on": [],
+      "resolved": {
+        "repo": "cgm-remote-monitor",
+        "repo_path": "externals/cgm-remote-monitor-official",
+        "branch": null,
+        "base_declared": "origin/dev@a8888f0d",
+        "worktree": "externals/cgm-remote-monitor-official",
+        "branch_sha": null,
+        "base_sha": null,
+        "branch_contains_base": null,
+        "commits_ahead_of_base": null,
+        "package_version_at_branch": null,
+        "published": null,
+        "problems": [
+          "item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure."
+        ]
+      },
+      "gates": [
+        {
+          "index": 0,
+          "outcome": "NO-GATE",
+          "detail": "Follow-up 9 - audit the suppressions OUTSIDE lib/: detect-non-literal-fs-filename, detect-possible-timing-attacks, no-cond-assign. There is no instrument because the audit IS the work: object-injection's 34 suppressed lines yielded five real defects (BF-35, BF-36, BF-37, BF-38 and BF-39 - the register's own tally of four is stale), and the same reasoning applies to each remaining category. What could be gated afterwards is a rule that no NEW suppression is added without an entry, and that rule does not exist.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "Follow-up 9 - audit the suppressions OUTSIDE lib/: detect-non-literal-fs-filename, detect-possible-timing-attacks, no-cond-assign. There is no instrument because the audit IS the work: object-injection's 34 suppressed lines yielded five real defects (BF-35, BF-36, BF-37, BF-38 and BF-39 - the register's own tally of four is stale), and the same reasoning applies to each remaining category. What could be gated afterwards is a rule that no NEW suppression is added without an entry, and that rule does not exist."
+        },
+        {
+          "index": 1,
+          "outcome": "NO-GATE",
+          "detail": "Follow-up 10 - jsdom test hygiene has no enforcement. A suite that sets global.window or global.document must restore them in afterEach or it breaks browser-settings.test.js later in the same run. hashauth.modern.test.js does the restore; nothing requires it, and the failure lands in a DIFFERENT file from the one that caused it, which is the shape that costs the most review time. The instrument is a harness-level check, and cut 1 retires jsdom entirely, so it should be decided against the release train rather than built twice.",
+          "kind": null,
+          "command": null,
+          "cwd": null,
+          "describe": null,
+          "no_gate_reason": "Follow-up 10 - jsdom test hygiene has no enforcement. A suite that sets global.window or global.document must restore them in afterEach or it breaks browser-settings.test.js later in the same run. hashauth.modern.test.js does the restore; nothing requires it, and the failure lands in a DIFFERENT file from the one that caused it, which is the shape that costs the most review time. The instrument is a harness-level check, and cut 1 retires jsdom entirely, so it should be decided against the release train rather than built twice."
+        }
+      ]
+    }
+  ],
+  "register_closure": [
+    {
+      "id": "BF-01",
+      "carried_by": [
+        "P0-E"
+      ],
+      "carrier_verdicts": {
+        "P0-E": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "GET /api/v1/count/entries/where silently matches nothing",
+      "where": "lib/server/aggregate.js:21",
+      "severity": "high — wrong answer, HTTP 200",
+      "register_status_verbatim": "fixed 2026-09-15 (bf/reads 4a398d47); reproduced live; count/treatments/where was affected too",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    },
+    {
+      "id": "BF-02",
+      "carried_by": [
+        "P0-D"
+      ],
+      "carrier_verdicts": {
+        "P0-D": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "insulin/carbs query bounds truncated by parseInt",
+      "where": "lib/server/treatments.js:259-266",
+      "severity": "high — wrong answer, HTTP 200",
+      "register_status_verbatim": "fixed 2026-09-15 (T0.5, bf/coercion 88d1f8a4)",
+      "basis": "unstated",
+      "basis_matched_phrase": null
+    },
+    {
+      "id": "BF-03",
+      "carried_by": [
+        "P0-D"
+      ],
+      "carrier_verdicts": {
+        "P0-D": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "Numeric filters on devicestatus, activity, food, profile match nothing",
+      "where": "lib/server/query.js walker, per-collection",
+      "severity": "high — wrong answer, HTTP 200",
+      "register_status_verbatim": "fixed 2026-09-15 for devicestatus + profile (T0.5, bf/coercion 88d1f8a4); food and activity misfiled, see detail",
+      "basis": "unstated",
+      "basis_matched_phrase": null
+    },
+    {
+      "id": "BF-05",
+      "carried_by": [
+        "P0-E"
+      ],
+      "carrier_verdicts": {
+        "P0-E": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "Unguarded console.log of every count query on the request path",
+      "where": "lib/server/aggregate.js:30-31",
+      "severity": "medium — log noise, filter contents to stdout",
+      "register_status_verbatim": "fixed 2026-09-15 (bf/reads c8fb536b) — deleted, not gated; the module has no env handle",
+      "basis": "unstated",
+      "basis_matched_phrase": null
+    },
+    {
+      "id": "BF-06",
+      "carried_by": [
+        "P0-B"
+      ],
+      "carrier_verdicts": {
+        "P0-B": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "/api/v1/entries?count=10 costs 42× a typed read",
+      "where": "lib/server/cache.js:73-76",
+      "severity": "medium — CPU",
+      "register_status_verbatim": "fixed 2026-09-15 (T0.2, bf/cache ddcdb1a8); 0.837 → 0.025 ms, response asserted identical over HTTP",
+      "basis": "unstated",
+      "basis_matched_phrase": null
+    },
+    {
+      "id": "BF-07",
+      "carried_by": [
+        "P0-B"
+      ],
+      "carrier_verdicts": {
+        "P0-B": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "cache.insertData JSON round-trips the whole retained array",
+      "where": "lib/server/cache.js:81",
+      "severity": "medium — 65 % of the load cycle",
+      "register_status_verbatim": "partly fixed 2026-09-15 (T0.3, bf/cache 4f86bab1); 3.75 → 2.66 ms per cycle — devicestatus keeps its clone on purpose, see detail",
+      "basis": "unstated",
+      "basis_matched_phrase": null
+    },
+    {
+      "id": "BF-08",
+      "carried_by": [
+        "P0-F",
+        "P0-TAG"
+      ],
+      "carrier_verdicts": {
+        "P0-F": "PASS",
+        "P0-TAG": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "nightscout-connect actors have no start jitter — a pool reaches the vendor inside one second on every restart. The interval half of this entry was wrong: all four drivers already jitter the aligned path by 18 s",
+      "where": "nightscout-connect lib/machines/cycle.js Init, and run()",
+      "severity": "medium — thundering herd on restart",
+      "register_status_verbatim": "fixed 2026-09-15 (T0.4, fix/connect-timer-jitter c1cce2a); measured at 400 actors, busiest second 400 → 15",
+      "basis": "unstated",
+      "basis_matched_phrase": null
+    },
+    {
+      "id": "BF-11",
+      "carried_by": [
+        "P0-D"
+      ],
+      "carrier_verdicts": {
+        "P0-D": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "treatments.duration and rate have no walker entry — temp-basal filters match nothing",
+      "where": "lib/server/treatments.js:259-266",
+      "severity": "high — wrong answer, HTTP 200",
+      "register_status_verbatim": "fixed 2026-09-15 (T0.5, bf/coercion 88d1f8a4)",
+      "basis": "unstated",
+      "basis_matched_phrase": null
+    },
+    {
+      "id": "BF-13",
+      "carried_by": [
+        "P0-E"
+      ],
+      "carrier_verdicts": {
+        "P0-E": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "API v3 skip/limit paging silently loses and duplicates documents when the whole sort chain ties",
+      "where": "lib/api3/generic/search/input.js parseSort",
+      "severity": "high — silent data loss on a read",
+      "register_status_verbatim": "fixed 2026-09-15 (bf/reads 399dc283); reproduced through the v3 HTTP path",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    },
+    {
+      "id": "BF-14",
+      "carried_by": [
+        "P0-E"
+      ],
+      "carrier_verdicts": {
+        "P0-E": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "API v1 ?count=0 (and -3, 1e2) reaches the driver unvalidated — .limit(0) means *unbounded*",
+      "where": "lib/server/entries.js:56 + 4 siblings",
+      "severity": "high — on PostgreSQL an empty 200 on a glucose read; unbounded read on MongoDB",
+      "register_status_verbatim": "fixed 2026-09-15 (bf/reads 1640b64b); reproduced live; the v3 validation it says to copy is itself defective — see BF-33",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    },
+    {
+      "id": "BF-15",
+      "carried_by": [
+        "P0-E"
+      ],
+      "carrier_verdicts": {
+        "P0-E": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "API v3 ?fields=<dotted.path> returns an empty document with HTTP 200",
+      "where": "lib/api3/shared/fieldsProjector.js applyProjection",
+      "severity": "medium — silently empty response to a valid request",
+      "register_status_verbatim": "fixed 2026-09-15 (bf/reads ba70f1fc); reproduced live",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    },
+    {
+      "id": "BF-16",
+      "carried_by": [
+        "P0-G"
+      ],
+      "carrier_verdicts": {
+        "P0-G": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "Food quick-pick hidden filter compares to the string 'false'; the field has no declared type and its stored type depends on the request's content type. The \"wrong order in the built-in editor\" half of this entry was wrong — the editor re-sorts numerically itself and does not use the endpoint",
+      "where": "lib/server/food.js listquickpicks + lib/food/food.js:69 restoreBoolValue",
+      "severity": "medium — a JSON writer's quick picks vanish from /api/v1/food/quickpicks, which has no in-tree consumer; restoreBoolValue un-hides a boolean-hidden pick in the editor",
+      "register_status_verbatim": "fixed 2026-09-15 (bf/food 73495331); reproduced live, both spellings written over HTTP",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    },
+    {
+      "id": "BF-17",
+      "carried_by": [
+        "P0-C",
+        "P0-C-REMEDIATE"
+      ],
+      "carrier_verdicts": {
+        "P0-C": "FAIL",
+        "P0-C-REMEDIATE": "UNMEASURED"
+      },
+      "closure_state": "claimed-fixed-but-a-gate-failed",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "Editing a subject through the stock admin UI persists the API access token in plaintext, into a field the server otherwise only derives",
+      "where": "lib/authorization/endpoints.js:38-42 + lib/admin_plugins/subjects.js:43 + lib/authorization/storage.js save",
+      "severity": "high — turns read access to the database into API access; no key required",
+      "register_status_verbatim": "fixed 2026-09-15 — bf/auth 64db1f35; reproduced live; existing rows still hold tokens, see the report",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    },
+    {
+      "id": "BF-28",
+      "carried_by": [
+        "P0-A"
+      ],
+      "carrier_verdicts": {
+        "P0-A": "FAIL"
+      },
+      "closure_state": "claimed-fixed-but-a-gate-failed",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "insulinage's URGENT branch is unreachable — it compares against insulinInfo.urgent, which is never assigned, where all three sibling plugins use prefs.urgent. \"Insulin reservoir change overdue!\" can never fire, and the reported level stays WARN for as long as the reservoir is overdue",
+      "where": "lib/plugins/insulinage.js:92",
+      "severity": "medium — a site-change reminder that silently never arrives, and a severity that is wrong the whole time",
+      "register_status_verbatim": "fixed 2026-09-15 (bf/alarms 8714093b)",
+      "basis": "unstated",
+      "basis_matched_phrase": null
+    },
+    {
+      "id": "BF-29",
+      "carried_by": [
+        "P0-A"
+      ],
+      "carrier_verdicts": {
+        "P0-A": "FAIL"
+      },
+      "closure_state": "claimed-fixed-but-a-gate-failed",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "An unknown name in ENABLE is silently ignored — matching is against plugin.name (bwp, cage, iage, sage, bage, basal — six, not five), not the file name. An operator who writes ENABLE=cannulaage gets no plugin and no warning",
+      "where": "lib/plugins/index.js:140",
+      "severity": "medium — an operator believes an alarm plugin is on when it is off",
+      "register_status_verbatim": "fixed 2026-09-15 (bf/alarms 99e46a52)",
+      "basis": "unstated",
+      "basis_matched_phrase": null
+    },
+    {
+      "id": "BF-30",
+      "carried_by": [
+        "P0-C"
+      ],
+      "carrier_verdicts": {
+        "P0-C": "FAIL"
+      },
+      "closure_state": "claimed-fixed-but-a-gate-failed",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "The auth-failure delay is keyed on a client-controlled value, so brute-force throttling never engages",
+      "where": "lib/authorization/delaylist.js + the un-whitelisted forwarded-for call in lib/authorization/index.js:9-12 (not TRUST_PROXY, which does not exist on dev)",
+      "severity": "high — restores unthrottled guessing against API_SECRET and tokens",
+      "register_status_verbatim": "fixed 2026-09-15 — bf/auth a26ba416; reproduced live; the register's preferred fix was refuted by measurement",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    },
+    {
+      "id": "BF-31",
+      "carried_by": [
+        "P0-A"
+      ],
+      "carrier_verdicts": {
+        "P0-A": "FAIL"
+      },
+      "closure_state": "claimed-fixed-but-a-gate-failed",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "A Google Home or Alexa request re-points the shared language instance and moment's global locale for the whole process, until something changes it back. Measured 2026-09-15: it does *not* change alarm text — the catalogue is read once at boot and never reloaded",
+      "where": "lib/api/googlehome/index.js:27 and lib/api/alexa/index.js:28 + the one language instance at lib/server/server.js:34",
+      "severity": "low–medium — gated on the assistant plugin being enabled; reaches the assistant's own answers, not alarm text",
+      "register_status_verbatim": "fixed 2026-09-15 (bf/alarms 5dcf783f)",
+      "basis": "unstated",
+      "basis_matched_phrase": null
+    },
+    {
+      "id": "BF-32",
+      "carried_by": [
+        "P0-D"
+      ],
+      "carrier_verdicts": {
+        "P0-D": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "Query coercion was applied to operands that are not field values, so find[sgv][$exists]=true became {$exists: NaN} and find[notes][$regex]=ab became {$regex: NaN}. The consequence this entry claimed is refuted — {$exists: NaN} is read by MongoDB as true, not false, so $exists=true was already answering correctly by accident. What the coercion actually did on the ten walker fields is turn a $regex into a server error. The residual $exists=false defect that survives the fix is BF-40",
+      "where": "lib/server/query.js walk_prop",
+      "severity": "low — re-graded from medium: a 500 on $regex, not a wrong answer on $exists. The fix remains right; its stated reason was wrong",
+      "register_status_verbatim": "fixed 2026-09-15 (found during T0.5, bf/coercion 88d1f8a4); claim refuted 2026-09-15, see detail and BF-40",
+      "basis": "unstated",
+      "basis_matched_phrase": null
+    },
+    {
+      "id": "BF-33",
+      "carried_by": [
+        "P0-E"
+      ],
+      "carrier_verdicts": {
+        "P0-E": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "API v3 ?limit=0x10 passes the API3_MAX_LIMIT check as 16 and reaches the driver as .limit(0) — *no limit*; ?limit=1e2 returns one document",
+      "where": "lib/api3/generic/collection.js parseLimit",
+      "severity": "high — unbounded read, HTTP 200, and the ceiling that exists to prevent it is bypassed",
+      "register_status_verbatim": "fixed 2026-09-15 (bf/reads ea50cf52); found while fixing BF-14, reproduced live",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    },
+    {
+      "id": "BF-34",
+      "carried_by": [
+        "P0-F",
+        "P0-TAG"
+      ],
+      "carrier_verdicts": {
+        "P0-F": "PASS",
+        "P0-TAG": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "backoff() merges its options as { ...config, ...defaults }, so every value any caller passes is discarded. All five vendor sources configure a 2.5-minute retry interval and every one of them gets the 256 ms default — 586× faster — and use_random_slot is forced false, so a pool that fails together retries in exact lockstep",
+      "where": "nightscout-connect lib/backoff.js",
+      "severity": "high — a vendor that is refusing requests gets hammered by every account at once, which is when it can least afford it",
+      "register_status_verbatim": "fixed 2026-09-15 (found during T0.4, fix/connect-timer-jitter c1cce2a); 100 actors delivered the same 800 requests across 3 s before and 67 s after",
+      "basis": "unstated",
+      "basis_matched_phrase": null
+    },
+    {
+      "id": "BF-35",
+      "carried_by": [
+        "P0-G"
+      ],
+      "carrier_verdicts": {
+        "P0-G": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "The bolus calculator's quick-pick chooser builds its <option> list from the whole food collection but resolves the selection against the filtered quick-pick array. Picking one quick pick loads a different one's foods; the last entry throws; plain foods appear in the chooser",
+      "where": "lib/client/boluscalc.js loadFoodQuickpicks",
+      "severity": "high — the carbs that reach the insulin calculation come from a record the user did not choose, with no error shown. Regression from 3457de5b (2017)",
+      "register_status_verbatim": "fixed 2026-09-15 (found during BF-16, bf/food 73495331); reproduced in jsdom, ablated six ways",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    },
+    {
+      "id": "BF-36",
+      "carried_by": [
+        "P0-H"
+      ],
+      "carrier_verdicts": {
+        "P0-H": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "The client's delta merge captured the cached array's length once and then spliced that array, so a remove followed by an item matching nothing read past the end and threw. The throw escapes into dataUpdate, which has no try/catch — the page stops advancing until reloaded",
+      "where": "lib/client/receiveddata.js mergeTreatmentUpdate",
+      "severity": "medium — availability, not a wrong reading: the time-ago watchdog is on its own timer and still marks the page stale",
+      "register_status_verbatim": "fixed 2026-09-15 (found by auditing the suppressions BF-35 turned up under, bf/merge b06c6faf); reproduced directly, ablated against the shipped shape",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    },
+    {
+      "id": "BF-37",
+      "carried_by": [
+        "P0-I"
+      ],
+      "carrier_verdicts": {
+        "P0-I": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "queryParms() reads [1] of each key=value split without checking one exists, so a valueless parameter — ?debug, a trailing &, &&, a lone ? — throws. It is the first statement of client.init, so the page stops loading with nothing on screen but the loading message",
+      "where": "lib/client/browser-utils.js queryParms",
+      "severity": "medium–high — total, silent failure to load, on a URL shape anyone can produce",
+      "register_status_verbatim": "fixed 2026-09-15 (suppression audit, bf/parms 522c6ffb); reproduced directly",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    },
+    {
+      "id": "BF-38",
+      "carried_by": [
+        "P0-I"
+      ],
+      "carrier_verdicts": {
+        "P0-I": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "Translation substitution loops forwards over %1…%n; %1 is a prefix of %10, so the first pass rewrites the %1 inside %10 and leaves a stray 0. Same prefix-order trap as sorting a text position",
+      "where": "lib/language.js translate",
+      "severity": "low — latent: no shipped catalogue uses more than %3",
+      "register_status_verbatim": "fixed 2026-09-15 (suppression audit, bf/parms c9a7a21c); reproduced directly",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    },
+    {
+      "id": "BF-39",
+      "carried_by": [
+        "P0-I"
+      ],
+      "carrier_verdicts": {
+        "P0-I": "PASS"
+      },
+      "closure_state": "claimed-fixed-gates-pass",
+      "closed_for_operators": false,
+      "section": "1. Register",
+      "defect": "queryParms() replaced _ with a space, corrupting every access token whose subject name contains one. Measured to have no live effect: findSubject matches on the last --separated segment and ignores the abbreviated name the corruption lands in",
+      "where": "lib/client/browser-utils.js queryParms",
+      "severity": "low — a real corruption absorbed by a leniency nobody chose",
+      "register_status_verbatim": "fixed 2026-09-15 (bf/parms eb0bc918); reproduced against a live instance, both spellings authorise",
+      "basis": "reproduced",
+      "basis_matched_phrase": "reproduc"
+    }
+  ],
+  "test_evidence": [
+    {
+      "item": "P0-A",
+      "gate_index": 2,
+      "kind": "unit",
+      "command": "TEST=insulinage npm run test-single",
+      "cwd": "externals/work/crm-bf-alarms",
+      "outcome": "PASS",
+      "detail": "exit 0",
+      "summary": {
+        "passing": 5,
+        "failing": 0,
+        "pending": 0,
+        "last_line": "Key file /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/randomString not found",
+        "shape": "mocha"
+      },
+      "output_sha256": "3b89ec326a1ef0626e731bc12ae781ea0976ea4f910784c6d471e970da02c74b",
+      "output_tail": [
+        "",
+        "> nightscout@15.0.9 test-single",
+        "> env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/$TEST.test.js",
+        "",
+        "API_SECRET has 67 bits of entropy",
+        "",
+        "",
+        "  insulinage",
+        "    ✔ set a pill to the current insulin age",
+        "    ✔ set a pill to the current insulin age",
+        "    ✔ trigger a warning when insulin is 48 hours old",
+        "    ✔ trigger an urgent alarm when insulin reservoir is 72 hours old",
+        "    ✔ stay at the urgent level past the urgent threshold",
+        "",
+        "",
+        "[TIMING STATS] Total: 5 tests, Avg: 4ms, Slow: 0",
+        "",
+        "  5 passing (20ms)",
+        "",
+        "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+        "Key file  /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/randomString not found"
+      ]
+    },
+    {
+      "item": "P0-A",
+      "gate_index": 3,
+      "kind": "unit",
+      "command": "TEST=plugins npm run test-single",
+      "cwd": "externals/work/crm-bf-alarms",
+      "outcome": "PASS",
+      "detail": "exit 0",
+      "summary": {
+        "passing": 13,
+        "failing": 0,
+        "pending": 0,
+        "last_line": "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+        "shape": "mocha"
+      },
+      "output_sha256": "cb808a061898a71716391118a790b8cfabf2d3cbdcbb3d9b9776eacb706bd6e5",
+      "output_tail": [
+        "",
+        "> nightscout@15.0.9 test-single",
+        "> env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/$TEST.test.js",
+        "",
+        "",
+        "",
+        "  Plugins",
+        "    ✔ should find client plugins, but not server only plugins",
+        "    ✔ should find sever plugins, but not client only plugins",
+        "    ENABLE entries that match no plugin",
+        "      ✔ warns that cannulaage is not a plugin name and names cage",
+        "      ✔ warns that insulinage is not a plugin name and names iage",
+        "      ✔ warns that sensorage is not a plugin name and names sage",
+        "      ✔ warns that batteryage is not a plugin name and names bage",
+        "      ✔ warns that boluswizardpreview is not a plugin name and names bwp",
+        "      ✔ warns that basalprofile is not a plugin name and names basal",
+        "      ✔ names the nearest plugin for a misspelt entry",
+        "      ✔ says nothing about an entry with no plausible plugin behind it",
+        "      ✔ stays quiet about every documented ENABLE feature on the client",
+        "      ✔ stays quiet about every documented ENABLE feature on the server",
+        "      ✔ has an alias for every plugin whose file name is not its plugin name",
+        "",
+        "",
+        "[TIMING STATS] Total: 13 tests, Avg: 3ms, Slow: 0",
+        "",
+        "  13 passing (37ms)",
+        "",
+        "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+      ]
+    },
+    {
+      "item": "P0-A",
+      "gate_index": 4,
+      "kind": "integration",
+      "command": "TEST=api.alexa npm run test-single",
+      "cwd": "externals/work/crm-bf-alarms",
+      "outcome": "SKIP",
+      "detail": "kind `integration` not enabled (use --integration)",
+      "summary": null,
+      "output_sha256": null,
+      "output_tail": []
+    },
+    {
+      "item": "P0-A",
+      "gate_index": 5,
+      "kind": "integration",
+      "command": "TEST=api.googlehome npm run test-single",
+      "cwd": "externals/work/crm-bf-alarms",
+      "outcome": "SKIP",
+      "detail": "kind `integration` not enabled (use --integration)",
+      "summary": null,
+      "output_sha256": null,
+      "output_tail": []
+    },
+    {
+      "item": "P0-C",
+      "gate_index": 3,
+      "kind": "integration",
+      "command": "TEST=authdelay npm run test-single",
+      "cwd": "externals/work/crm-bf-auth",
+      "outcome": "SKIP",
+      "detail": "kind `integration` not enabled (use --integration)",
+      "summary": null,
+      "output_sha256": null,
+      "output_tail": []
+    },
+    {
+      "item": "P0-C",
+      "gate_index": 4,
+      "kind": "integration",
+      "command": "TEST=authsubjects npm run test-single",
+      "cwd": "externals/work/crm-bf-auth",
+      "outcome": "SKIP",
+      "detail": "kind `integration` not enabled (use --integration)",
+      "summary": null,
+      "output_sha256": null,
+      "output_tail": []
+    },
+    {
+      "item": "P0-D",
+      "gate_index": 2,
+      "kind": "unit",
+      "command": "TEST=query npm run test-single",
+      "cwd": "externals/work/crm-bf-coercion",
+      "outcome": "PASS",
+      "detail": "exit 0",
+      "summary": {
+        "passing": 28,
+        "failing": 0,
+        "pending": 0,
+        "last_line": "API request using an invalid date: 2026-99-05T00:00:00Z",
+        "shape": "mocha"
+      },
+      "output_sha256": "646860463737d3f82f43f210b59ee1c212cfa4861489a54eb243fc0f13a0ee2f",
+      "output_tail": [
+        "  query",
+        "    ✔ should provide default options",
+        "    ✔ should not override non default options",
+        "    ✔ should not enforce date filter if query includes id",
+        "    ✔ should keep non-ObjectId _id queries as strings",
+        "    ✔ should convert ObjectId-shaped _id queries",
+        "    date filter normalization",
+        "      ✔ normalizes 2026-09-05 00:00:00-04:00",
+        "      ✔ normalizes 2026-09-05 00Z",
+        "      ✔ normalizes 2026-09-05 00:00:00Z",
+        "      ✔ normalizes 2026-09-05 00:00:00+02:00",
+        "      ✔ normalizes 2026-09-05T00:00:00+02:00",
+        "      ✔ normalizes 2026-09-05T00:00:00 02:00",
+        "      ✔ normalizes 2026-09-05 00:00:00 02:00",
+        "      ✔ normalizes 2026-09-05T00:00:00 0230",
+        "      ✔ normalizes 2026-09-05 00:00:00.123 02",
+        "      ✔ still rejects invalid dates",
+        "    schema-driven type coercion",
+        "      ✔ keeps a fractional bound on a number field instead of truncating it",
+        "      ✔ converts a bound on an integer field without truncating it either",
+        "      ✔ converts numeric filters that used to stay strings",
+        "      ✔ converts booleans",
+        "      ✔ leaves a boolean spelled some other way alone",
+        "      ✔ converts every element of an $in list",
+        "      ✔ leaves operands that are not field values alone",
+        "      ✔ leaves fields the schema does not declare as strings",
+        "      ✔ lets an explicit walker entry win over the schema",
+        "      ✔ does not change behaviour when no collection is named",
+        "      the table and the code that uses it",
+        "        ✔ has an entry for every collection wired to it",
+        "        ✔ is still asked for by every wired storage module",
+        "        ✔ declares only types the query layer acts on",
+        "",
+        "",
+        "[TIMING STATS] Total: 28 tests, Avg: 0ms, Slow: 0",
+        "",
+        "  28 passing (14ms)",
+        "",
+        "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+        "API request using an invalid date: 2026-99-05T00:00:00Z"
+      ]
+    },
+    {
+      "item": "P0-E",
+      "gate_index": 3,
+      "kind": "integration",
+      "command": "TEST=api.count-parameter npm run test-single",
+      "cwd": "externals/work/crm-bf-reads",
+      "outcome": "SKIP",
+      "detail": "kind `integration` not enabled (use --integration)",
+      "summary": null,
+      "output_sha256": null,
+      "output_tail": []
+    },
+    {
+      "item": "P0-E",
+      "gate_index": 4,
+      "kind": "integration",
+      "command": "TEST=api.count-where npm run test-single",
+      "cwd": "externals/work/crm-bf-reads",
+      "outcome": "SKIP",
+      "detail": "kind `integration` not enabled (use --integration)",
+      "summary": null,
+      "output_sha256": null,
+      "output_tail": []
+    },
+    {
+      "item": "P0-E",
+      "gate_index": 5,
+      "kind": "integration",
+      "command": "TEST=api3.fields npm run test-single",
+      "cwd": "externals/work/crm-bf-reads",
+      "outcome": "SKIP",
+      "detail": "kind `integration` not enabled (use --integration)",
+      "summary": null,
+      "output_sha256": null,
+      "output_tail": []
+    },
+    {
+      "item": "P0-E",
+      "gate_index": 6,
+      "kind": "integration",
+      "command": "TEST=api3.limit npm run test-single",
+      "cwd": "externals/work/crm-bf-reads",
+      "outcome": "SKIP",
+      "detail": "kind `integration` not enabled (use --integration)",
+      "summary": null,
+      "output_sha256": null,
+      "output_tail": []
+    },
+    {
+      "item": "P0-E",
+      "gate_index": 7,
+      "kind": "integration",
+      "command": "TEST=api3.paging npm run test-single",
+      "cwd": "externals/work/crm-bf-reads",
+      "outcome": "SKIP",
+      "detail": "kind `integration` not enabled (use --integration)",
+      "summary": null,
+      "output_sha256": null,
+      "output_tail": []
+    },
+    {
+      "item": "P0-F",
+      "gate_index": 0,
+      "kind": "unit",
+      "command": "npm test",
+      "cwd": "externals/work/nc-jitter",
+      "outcome": "PASS",
+      "detail": "exit 0",
+      "summary": {
+        "passing": null,
+        "failing": null,
+        "pending": null,
+        "last_line": "ℹ duration_ms 277.22902",
+        "shape": "unrecognised"
+      },
+      "output_sha256": "1c36655c8ea9d070d0ad9e7a2f452747ae10aa515ebc9ae07062ab9ec1702498",
+      "output_tail": [
+        "SETTING UP nightscoutRestAPI { url: 'https://example.test', apiSecret: 'secret' }",
+        "RECORD BATCH with 1 entries, 1 treatments, 1 devicestatus, 1 profiles",
+        "RECORDED BATCH, total entries 0",
+        "RECORDED BATCH, total treatments 0",
+        "RECORDED BATCH, total devicestatus 0",
+        "RECORDED BATCH, total profiles 0",
+        "UPDATE BOOKMARK FROM I/O {} [] 4",
+        "(node:1717498) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.",
+        "(Use `node --trace-deprecation ...` to show where the warning was created)",
+        "✔ Nightscout output requires an endpoint (1.273729ms)",
+        "✔ Nightscout output requires an API secret (0.288568ms)",
+        "✔ Nightscout output tolerates batches with omitted collections (3.194959ms)",
+        "✔ Nightscout output records all supported collections (1.831646ms)",
+        "nightscout-connect: Nightscout read permission check failed",
+        "(node:1717523) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.",
+        "(Use `node --trace-deprecation ...` to show where the warning was created)",
+        "✔ Nightscout source session exchanges access token with headers object (2.658098ms)",
+        "✔ Nightscout source falls back to token creation after unreadable verifyauth failure (1.290748ms)",
+        "✔ Nightscout source transform ignores non-array payloads (0.211961ms)",
+        "✔ Nightscout source validation accepts token URLs without source API secret (0.14581ms)",
+        "✔ Nightscout source transforms all collection arrays (0.189679ms)",
+        "nightscout-connect: Internal persistence failed",
+        "nightscout-connect: Invalid configuration, disabling connector",
+        "✔ output close removes permanent/bookmark listeners and settles bookmark waits (1.494849ms)",
+        "✔ output close settles pending storage waits without accepting later data (0.586951ms)",
+        "✔ failed storage removes its data-processed waiter without needing another event (1.124752ms)",
+        "✔ successful output remains usable over two processing cycles (1.867163ms)",
+        "✔ null collection fields still represent an empty batch (0.228938ms)",
+        "✔ wrapper stop detaches all owned listeners over two cycles and prevents later starts (67.382906ms)",
+        "✔ wrapper responds to both teardown spellings exactly once (1.88353ms)",
+        "✔ invalid configuration allocates no output listeners (0.735838ms)",
+        "✔ driver setup failure closes the allocated output (0.943047ms)",
+        "ℹ tests 135",
+        "ℹ suites 0",
+        "ℹ pass 135",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 277.22902"
+      ]
+    },
+    {
+      "item": "P0-F",
+      "gate_index": 1,
+      "kind": "unit",
+      "command": "node -e \"const b=require('./lib/backoff.js'); try { b({jitter:'wild'}); process.exit(1); } catch(e) { process.exit(/unknown jitter mode/.test(e.message)?0:1); }\"",
+      "cwd": "externals/work/nc-jitter",
+      "outcome": "PASS",
+      "detail": "exit 0",
+      "summary": {
+        "passing": null,
+        "failing": null,
+        "pending": null,
+        "last_line": null,
+        "shape": "no output"
+      },
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": []
+    },
+    {
+      "item": "P0-G",
+      "gate_index": 2,
+      "kind": "unit",
+      "command": "TEST=boluscalc.quickpick npm run test-single",
+      "cwd": "externals/work/crm-bf-food",
+      "outcome": "PASS",
+      "detail": "exit 0",
+      "summary": {
+        "passing": 11,
+        "failing": 0,
+        "pending": 0,
+        "last_line": "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+        "shape": "mocha"
+      },
+      "output_sha256": "c1b5a3cad8e0902fd301cb4ba466f5646086a50216dfeea916d1bcb2486867f8",
+      "output_tail": [
+        "",
+        "> nightscout@15.0.9 test-single",
+        "> env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/$TEST.test.js",
+        "",
+        "",
+        "",
+        "  boluscalc quick-pick chooser",
+        "    ✔ offers only quick picks, not every food in the database",
+        "    ✔ resolves the quick pick it names, with a plain food in the collection",
+        "    ✔ resolves the last quick pick rather than throwing",
+        "    ✔ leaves hidden quick picks out of the chooser, in either spelling",
+        "    ✔ orders the chooser by position numerically, whichever type it was stored as",
+        "    ✔ copes with an empty or absent food collection",
+        "",
+        "  lib/food/quickpick",
+        "    isTrue",
+        "      ✔ accepts both spellings of true and nothing else",
+        "    isHidden",
+        "      ✔ treats an absent flag as not hidden",
+        "    positionOf",
+        "      ✔ reads a position out of either type, and sorts an unusable one last",
+        "    selectable",
+        "      ✔ is empty for no input rather than throwing",
+        "      ✔ does not mutate the array it was given",
+        "",
+        "",
+        "[TIMING STATS] Total: 11 tests, Avg: 11ms, Slow: 0",
+        "",
+        "  11 passing (123ms)",
+        "",
+        "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+      ]
+    },
+    {
+      "item": "P0-G",
+      "gate_index": 3,
+      "kind": "integration",
+      "command": "TEST=api.food.quickpicks npm run test-single",
+      "cwd": "externals/work/crm-bf-food",
+      "outcome": "SKIP",
+      "detail": "kind `integration` not enabled (use --integration)",
+      "summary": null,
+      "output_sha256": null,
+      "output_tail": []
+    },
+    {
+      "item": "P0-H",
+      "gate_index": 2,
+      "kind": "unit",
+      "command": "TEST=receiveddata.merge npm run test-single",
+      "cwd": "externals/work/crm-bf-merge",
+      "outcome": "PASS",
+      "detail": "exit 0",
+      "summary": {
+        "passing": 12,
+        "failing": 0,
+        "pending": 0,
+        "last_line": "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+        "shape": "mocha"
+      },
+      "output_sha256": "16852e9b4f337f45a24200a533aad7e0607af14ce65519aaabcb7beaeba99852",
+      "output_tail": [
+        "",
+        "> nightscout@15.0.9 test-single",
+        "> env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/$TEST.test.js",
+        "",
+        "",
+        "",
+        "  client delta merge",
+        "    mergeTreatmentUpdate",
+        "      ✔ survives a remove followed by an item that matches nothing",
+        "      ✔ survives several removes and a miss in any order",
+        "      ✔ removes a matching item",
+        "      ✔ updates in place and drops the action marker",
+        "      ✔ appends an item that carries no action",
+        "      ✔ returns the cache untouched when there is nothing received",
+        "      ✔ replaces everything when the update is not a delta",
+        "      ✔ sorts the result by mills",
+        "    mergeDataUpdate",
+        "      ✔ purges entries older than the age limit",
+        "      ✔ purges consecutive old entries without skipping one",
+        "      ✔ replaces an entry with the same mills rather than adding one",
+        "      ✔ adds an entry with new mills",
+        "",
+        "",
+        "[TIMING STATS] Total: 12 tests, Avg: 0ms, Slow: 0",
+        "",
+        "  12 passing (5ms)",
+        "",
+        "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+      ]
+    },
+    {
+      "item": "P0-I",
+      "gate_index": 2,
+      "kind": "unit",
+      "command": "TEST=browser-utils.queryparms npm run test-single",
+      "cwd": "externals/work/crm-bf-parms",
+      "outcome": "PASS",
+      "detail": "exit 0",
+      "summary": {
+        "passing": 6,
+        "failing": 0,
+        "pending": 0,
+        "last_line": "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+        "shape": "mocha"
+      },
+      "output_sha256": "e5c146bb426a9e7a9774a6acd0ea1114e2c995b88e56db10a30af4e7641e5678",
+      "output_tail": [
+        "",
+        "> nightscout@15.0.9 test-single",
+        "> env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/$TEST.test.js",
+        "",
+        "",
+        "",
+        "  browser-utils queryParms",
+        "    ✔ parses a well-formed query exactly as before",
+        "    ✔ leaves an underscore alone and still reads + as a space",
+        "    ✔ carries an access token through intact",
+        "    ✔ does not throw on a valueless parameter",
+        "    ✔ does not throw on a trailing, doubled or lone ampersand",
+        "    ✔ reads a valueless parameter the way its callers already treat absence",
+        "",
+        "",
+        "[TIMING STATS] Total: 6 tests, Avg: 0ms, Slow: 0",
+        "",
+        "  6 passing (4ms)",
+        "",
+        "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+      ]
+    },
+    {
+      "item": "P0-I",
+      "gate_index": 3,
+      "kind": "unit",
+      "command": "TEST=language npm run test-single",
+      "cwd": "externals/work/crm-bf-parms",
+      "outcome": "PASS",
+      "detail": "exit 0",
+      "summary": {
+        "passing": 17,
+        "failing": 0,
+        "pending": 0,
+        "last_line": "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.",
+        "shape": "mocha"
+      },
+      "output_sha256": "7c30de627dda49f9f23f0062adf8a89927affe17b7ac493d431148c8d933182d",
+      "output_tail": [
+        "",
+        "> nightscout@15.0.9 test-single",
+        "> env-cmd -f ./my.test.env mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/$TEST.test.js",
+        "",
+        "",
+        "",
+        "  language",
+        "    ✔ use English by default",
+        "    ✔ replace strings in translations",
+        "    ✔ substitutes a tenth parameter without the first one eating it",
+        "    ✔ translate to French",
+        "    ✔ translate to Czech",
+        "    ✔ translate to Czech uppercase",
+        "    ✔ translate to Taiwan Traditional Chinese",
+        "    ✔ labels zh_tw as Taiwan Traditional Chinese",
+        "    ✔ preserves Traditional Chinese volume units and uploader battery labels",
+        "    ✔ preserves Swedish report filters and record count placeholders",
+        "    ✔ loads Lithuanian through its registered language code",
+        "    ✔ uses Lithuanian labels for the missing-data time pill",
+        "    ✔ keeps Lithuanian keys and placeholders aligned with the English catalog",
+        "    ✔ loads the registered Slovenian catalog without a missing-file error",
+        "    ✔ substitutes the Russian status update time without losing values",
+        "    ✔ fallback to English filename for unsupported language codes",
+        "    ✔ parse every translation file as valid JSON",
+        "",
+        "",
+        "[TIMING STATS] Total: 17 tests, Avg: 2ms, Slow: 0",
+        "",
+        "  17 passing (38ms)",
+        "",
+        "npm warn Unknown project config \"allow-remote\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options."
+      ]
+    }
+  ],
+  "not_verified": [
+    {
+      "category": "gate-not-run",
+      "scope": "P0-A gates[4]",
+      "statement": "TEST=api.alexa npm run test-single -- NOT RUN in this capture.",
+      "why": "kind `integration` not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "gate-not-run",
+      "scope": "P0-A gates[5]",
+      "statement": "TEST=api.googlehome npm run test-single -- NOT RUN in this capture.",
+      "why": "kind `integration` not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-A gates[6]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "THE GATE THAT WAS HERE - `npm run test:unit` - ASSERTED LESS THAN IT LOOKED LIKE. It resolves to a 44-file brace list, it needs MongoDB (verifyauth x4 and API_SECRET x2 fail without it even on pristine dev), and tests/api.alexa.test.js and tests/api.googlehome.test.js - two of the four files this branch adds - are in NEITHER local script, so it never ran half the branch's own evidence. CI's `test-ci` runs all 159 files and does cover them; a gate that mirrors the local script is weaker than CI, not equal to it."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-A gates[8]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "Nothing exercises the ENABLE warning through a booted plugin registry. GT4 had to hand-reconstruct the plugin-name list to test it, and a reconstructed registry is not the registry. Needs a boot-level test."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-A",
+      "statement": "Whether bf/alarms exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-B gates[2]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "T0.3's stated gate is \"the three cache calls under 1 ms per cycle\", and it was MEASURED at 3.747 -> 2.657 ms, so the gate is not met. But that measurement is not currently RE-RUNNABLE: the workload that produced those two figures is not recorded anywhere in this repository, and a benchmark written from scratch here would emit a number that looks like the gate's number without being comparable to it. Rule 9 - quote the ordering, and say how it was measured and on what - forbids that, and a fabricated-workload benchmark is the exact laundering this queue exists to prevent. So `gate-not-met` here rests on a RECORDED measurement by a prior agent, not on a live one. Making it live means first writing down the workload; the house pattern to follow is tools/mt-bench/cycle-fix.js, which states its iteration count, its document counts and its comparison arms in the file."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-B gates[3]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "The 98% of the remaining cost is devicestatus, whose caller rewrites fields in place. Taking it needs proof that nothing in the plugin tier writes to a device-status document. A grep is not that proof when the failure mode is a field silently vanishing from every API read served out of the cache. There is no test that would catch it."
+    },
+    {
+      "category": "claim-diverges-from-measurement",
+      "scope": "P0-B",
+      "statement": "state says gate-not-met, but every RUNNABLE gate passed and the failing property sits behind 2 no-gate marker(s): the claim rests on a recorded measurement this run could not reproduce",
+      "why": "The manifest state is a claim; the gate result is the measurement. Where they disagree the record carries both."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-B",
+      "statement": "Whether bf/cache exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "gate-not-run",
+      "scope": "P0-C gates[3]",
+      "statement": "TEST=authdelay npm run test-single -- NOT RUN in this capture.",
+      "why": "kind `integration` not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "gate-not-run",
+      "scope": "P0-C gates[4]",
+      "statement": "TEST=authsubjects npm run test-single -- NOT RUN in this capture.",
+      "why": "kind `integration` not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-C gates[5]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "`npm run test:unit` was here and was recorded as \"361 passing / 0 failing at GT1's measurement\". That number is not evidence for this branch: the 44-file brace list contains NEITHER of the two test files bf/auth adds, so the suite could pass in full with every one of these fixes reverted."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-C gates[6]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "Nothing checks that the plaintext tokens ALREADY written into existing databases get cleaned up. The code fix does not remove them and there is no migration. This needs an operator-facing remediation note and a script, both of which are P0-C-REMEDIATE."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-C",
+      "statement": "Whether bf/auth exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-C-REMEDIATE gates[0]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "Nothing written yet. The gate this item needs is a script that reports how many subject rows carry a non-derived accessToken, run against a database with one planted, and a control row that has none - so the script is shown to distinguish the two before anyone trusts a zero."
+    },
+    {
+      "category": "item-unmeasured",
+      "scope": "P0-C-REMEDIATE",
+      "statement": "Nothing ran for this item at all; it appears in the record with no measurement behind it.",
+      "why": "Every gate it carries is a no-gate marker or was skipped. Never read UNMEASURED as green."
+    },
+    {
+      "category": "branch-unresolved",
+      "scope": "P0-C-REMEDIATE",
+      "statement": "Could not resolve the work to a commit: item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure.",
+      "why": "An item whose branch does not resolve has no SHA in this record, so nothing about its content was verified here."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-D",
+      "statement": "Whether bf/coercion exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "gate-not-run",
+      "scope": "P0-E gates[3]",
+      "statement": "TEST=api.count-parameter npm run test-single -- NOT RUN in this capture.",
+      "why": "kind `integration` not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "gate-not-run",
+      "scope": "P0-E gates[4]",
+      "statement": "TEST=api.count-where npm run test-single -- NOT RUN in this capture.",
+      "why": "kind `integration` not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "gate-not-run",
+      "scope": "P0-E gates[5]",
+      "statement": "TEST=api3.fields npm run test-single -- NOT RUN in this capture.",
+      "why": "kind `integration` not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "gate-not-run",
+      "scope": "P0-E gates[6]",
+      "statement": "TEST=api3.limit npm run test-single -- NOT RUN in this capture.",
+      "why": "kind `integration` not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "gate-not-run",
+      "scope": "P0-E gates[7]",
+      "statement": "TEST=api3.paging npm run test-single -- NOT RUN in this capture.",
+      "why": "kind `integration` not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-E gates[8]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "THE `npm run test:unit` GATE WAS REMOVED, not downgraded. It was recorded as \"361 passing / 0 failing at GT1's measurement\", but not one of the five test files this branch adds is in the 44-file brace list - all five are api*/api3* and match test:integration's glob - so the suite could have passed in full with every fix reverted."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-E gates[9]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "The ordering constraint inside the branch (BF-05's commit must follow BF-01's) is not machine-checked. After the CHANGELOG strip and the re-cut onto dev the two commits are 3b588098 and 4772b983, so any gate quoting an earlier SHA is stale by construction. A real gate would assert the relative order of the two by subject line, and nobody has written it."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-E gates[10]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "The CHANGELOG on this branch lists read routes only, while the ?count= validator covers writes too. Nothing checks a release note against the code it describes."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-E",
+      "statement": "Whether bf/reads exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-F gates[2]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "Vendor rate limits are unmeasured (EXP-MT-051) and need real credentials, which rule 0 forbids here. T0.4 shipped CONNECT_START_JITTER_MS so the pool CAN be spread - but the window to set it is exactly the number that is unmeasured."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-F",
+      "statement": "Whether fix/connect-timer-jitter exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "gate-not-run",
+      "scope": "P0-G gates[3]",
+      "statement": "TEST=api.food.quickpicks npm run test-single -- NOT RUN in this capture.",
+      "why": "kind `integration` not enabled (use --integration) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-G",
+      "statement": "Whether bf/food exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-H gates[3]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "`dataUpdate` still has no try/catch, so the NEXT throw from anywhere in the merge path has the same effect. This branch fixes one throw, not the missing boundary. No test asserts the boundary exists because it does not."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-H",
+      "statement": "Whether bf/merge exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-I",
+      "statement": "Whether bf/parms exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "gate-not-run",
+      "scope": "P0-TAG gates[4]",
+      "statement": "git -C externals/nightscout-connect ls-remote --tags origin v0.0.14 | grep -q . && exit 1 || exit 0 -- NOT RUN in this capture.",
+      "why": "kind `network` not enabled (use --network) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-TAG gates[5]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "Whether all seven connector commits are the RIGHT content for a release is a release-content decision, not a mechanical bump, and it is the maintainer's. Nothing can gate it."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-TAG",
+      "statement": "Whether release/v0.0.14 exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-PIN gates[3]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "Nothing can verify the tarball's integrity hash before the tag exists on GitHub. That is the whole reason P0-LOCK is a separate item."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-PIN",
+      "statement": "Whether bf/connect-pin exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "gate-not-run",
+      "scope": "P0-LOCK gates[1]",
+      "statement": "npm ci --dry-run -- NOT RUN in this capture.",
+      "why": "kind `network` not enabled (use --network) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-LOCK",
+      "statement": "Whether bf/connect-pin exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "gate-not-run",
+      "scope": "P0-T01 gates[0]",
+      "statement": "git -C externals/cgm-remote-monitor-official ls-remote --heads origin bewest/wip/optimize-treatment-processing | grep -q dfe2753d -- NOT RUN in this capture.",
+      "why": "kind `network` not enabled (use --network) This capture enabled kinds static,unit. A skipped gate is not a pass."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "P0-T01 gates[1]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "PR merge state is upstream's and cannot be gated from here without a GitHub API call. This item is tracked, not driven."
+    },
+    {
+      "category": "item-unmeasured",
+      "scope": "P0-T01",
+      "statement": "Nothing ran for this item at all; it appears in the record with no measurement behind it.",
+      "why": "Every gate it carries is a no-gate marker or was skipped. Never read UNMEASURED as green."
+    },
+    {
+      "category": "publication-unverified",
+      "scope": "P0-T01",
+      "statement": "Whether fix/quadratic-treatment-processing exists on the remote was NOT checked against the remote.",
+      "why": "Determined from local remote-tracking refs (no network). That is a statement about this checkout's last fetch, not about the remote. Re-run with --network for a read-only ls-remote."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "FU-LIMIT gates[2]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "Nothing asserts that the two implementations AGREE while they both exist. A differential test - the same limit value through both paths, including 0, a negative, a non-numeric and a value above the maximum - is what would make the duplication safe until it is removed, and it does not exist. Two readings of one rule is the root cause of this whole family, so leaving it duplicated is a debt with a name."
+    },
+    {
+      "category": "branch-unresolved",
+      "scope": "FU-LIMIT",
+      "statement": "Could not resolve the work to a commit: item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure.",
+      "why": "An item whose branch does not resolve has no SHA in this record, so nothing about its content was verified here."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "FU-RESIDUALS gates[3]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "Reachability of follow-up 7 is not measured. It needs an Alexa request type outside SessionEndedRequest, LaunchRequest and IntentRequest, and nothing here enumerates what Amazon can send."
+    },
+    {
+      "category": "branch-unresolved",
+      "scope": "FU-RESIDUALS",
+      "statement": "Could not resolve the work to a commit: item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure.",
+      "why": "An item whose branch does not resolve has no SHA in this record, so nothing about its content was verified here."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "FU-HYGIENE gates[0]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "Follow-up 9 - audit the suppressions OUTSIDE lib/: detect-non-literal-fs-filename, detect-possible-timing-attacks, no-cond-assign. There is no instrument because the audit IS the work: object-injection's 34 suppressed lines yielded five real defects (BF-35, BF-36, BF-37, BF-38 and BF-39 - the register's own tally of four is stale), and the same reasoning applies to each remaining category. What could be gated afterwards is a rule that no NEW suppression is added without an entry, and that rule does not exist."
+    },
+    {
+      "category": "no-instrument-declared",
+      "scope": "FU-HYGIENE gates[1]",
+      "statement": "No gate exists for this property; the manifest records why.",
+      "why": "Follow-up 10 - jsdom test hygiene has no enforcement. A suite that sets global.window or global.document must restore them in afterEach or it breaks browser-settings.test.js later in the same run. hashauth.modern.test.js does the restore; nothing requires it, and the failure lands in a DIFFERENT file from the one that caused it, which is the shape that costs the most review time. The instrument is a harness-level check, and cut 1 retires jsdom entirely, so it should be decided against the release train rather than built twice."
+    },
+    {
+      "category": "item-unmeasured",
+      "scope": "FU-HYGIENE",
+      "statement": "Nothing ran for this item at all; it appears in the record with no measurement behind it.",
+      "why": "Every gate it carries is a no-gate marker or was skipped. Never read UNMEASURED as green."
+    },
+    {
+      "category": "branch-unresolved",
+      "scope": "FU-HYGIENE",
+      "statement": "Could not resolve the work to a commit: item declares no branch; there is no commit to record. This is a real state (not-started work), not a tool failure.",
+      "why": "An item whose branch does not resolve has no SHA in this record, so nothing about its content was verified here."
+    },
+    {
+      "category": "register-basis-unstated",
+      "scope": "BF-02",
+      "statement": "Register entry BF-02 does not state whether it was read or run.",
+      "why": "No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (T0.5, bf/coercion 88d1f8a4)"
+    },
+    {
+      "category": "register-basis-unstated",
+      "scope": "BF-03",
+      "statement": "Register entry BF-03 does not state whether it was read or run.",
+      "why": "No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 for devicestatus + profile (T0.5, bf/coercion 88d1f8a4); food and activity misfiled, see detail"
+    },
+    {
+      "category": "register-basis-unstated",
+      "scope": "BF-05",
+      "statement": "Register entry BF-05 does not state whether it was read or run.",
+      "why": "No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (bf/reads c8fb536b) — deleted, not gated; the module has no env handle"
+    },
+    {
+      "category": "register-basis-unstated",
+      "scope": "BF-06",
+      "statement": "Register entry BF-06 does not state whether it was read or run.",
+      "why": "No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (T0.2, bf/cache ddcdb1a8); 0.837 → 0.025 ms, response asserted identical over HTTP"
+    },
+    {
+      "category": "register-basis-unstated",
+      "scope": "BF-07",
+      "statement": "Register entry BF-07 does not state whether it was read or run.",
+      "why": "No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: partly fixed 2026-09-15 (T0.3, bf/cache 4f86bab1); 3.75 → 2.66 ms per cycle — devicestatus keeps its clone on purpose, see detail"
+    },
+    {
+      "category": "register-basis-unstated",
+      "scope": "BF-08",
+      "statement": "Register entry BF-08 does not state whether it was read or run.",
+      "why": "No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (T0.4, fix/connect-timer-jitter c1cce2a); measured at 400 actors, busiest second 400 → 15"
+    },
+    {
+      "category": "register-basis-unstated",
+      "scope": "BF-11",
+      "statement": "Register entry BF-11 does not state whether it was read or run.",
+      "why": "No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (T0.5, bf/coercion 88d1f8a4)"
+    },
+    {
+      "category": "register-entry-not-demonstrated",
+      "scope": "BF-17",
+      "statement": "Closure state is claimed-fixed-but-a-gate-failed.",
+      "why": "This release does not demonstrate that BF-17 is repaired."
+    },
+    {
+      "category": "register-basis-unstated",
+      "scope": "BF-28",
+      "statement": "Register entry BF-28 does not state whether it was read or run.",
+      "why": "No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (bf/alarms 8714093b)"
+    },
+    {
+      "category": "register-entry-not-demonstrated",
+      "scope": "BF-28",
+      "statement": "Closure state is claimed-fixed-but-a-gate-failed.",
+      "why": "This release does not demonstrate that BF-28 is repaired."
+    },
+    {
+      "category": "register-basis-unstated",
+      "scope": "BF-29",
+      "statement": "Register entry BF-29 does not state whether it was read or run.",
+      "why": "No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (bf/alarms 99e46a52)"
+    },
+    {
+      "category": "register-entry-not-demonstrated",
+      "scope": "BF-29",
+      "statement": "Closure state is claimed-fixed-but-a-gate-failed.",
+      "why": "This release does not demonstrate that BF-29 is repaired."
+    },
+    {
+      "category": "register-entry-not-demonstrated",
+      "scope": "BF-30",
+      "statement": "Closure state is claimed-fixed-but-a-gate-failed.",
+      "why": "This release does not demonstrate that BF-30 is repaired."
+    },
+    {
+      "category": "register-basis-unstated",
+      "scope": "BF-31",
+      "statement": "Register entry BF-31 does not state whether it was read or run.",
+      "why": "No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (bf/alarms 5dcf783f)"
+    },
+    {
+      "category": "register-entry-not-demonstrated",
+      "scope": "BF-31",
+      "statement": "Closure state is claimed-fixed-but-a-gate-failed.",
+      "why": "This release does not demonstrate that BF-31 is repaired."
+    },
+    {
+      "category": "register-basis-unstated",
+      "scope": "BF-32",
+      "statement": "Register entry BF-32 does not state whether it was read or run.",
+      "why": "No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (found during T0.5, bf/coercion 88d1f8a4); claim refuted 2026-09-15, see detail and BF-40"
+    },
+    {
+      "category": "register-basis-unstated",
+      "scope": "BF-34",
+      "statement": "Register entry BF-34 does not state whether it was read or run.",
+      "why": "No phrase in its status cell says. The classifier will not infer one from measurement-shaped prose, because inferring a reproduction is exactly the laundering rule 3 exists to stop. Status cell verbatim: fixed 2026-09-15 (found during T0.4, fix/connect-timer-jitter c1cce2a); 100 actors delivered the same 800 requests across 3 s before and 67 s after"
+    },
+    {
+      "category": "out-of-scope",
+      "scope": "queue/work-queue.yaml",
+      "statement": "57 of the 74 items in the manifest are NOT in this record.",
+      "why": "Selection was ids=- parcels=['phase0'] states=-. Excluded: A7A-3, A7A-4, A7A-7, A7A-GATE, BFQ-04, BFQ-09, BFQ-10, BFQ-18, BFQ-19, BFQ-20, BFQ-21, BFQ-22, BFQ-23, BFQ-24, BFQ-25, BFQ-26, BFQ-27, BFQ-40, BFQ-41, BFQ-46, BFQ-47, BFQ-52, BFQ-66, BFQ-67, BFQ-CAP01, BFQ-CAP02, BFQ-CONNECTOR, BFQ-ENV, BFQ-MINIMED, DOC-EXPOSURE, DOC-LAYOUT, DOC-MEMORY, DOC-PLAN, DOC-REGISTER, DOC-SEQUENCING, DOC-TESTSCRIPTS, RT-0, RT-1, RT-2, RT-3, RT-4, RT-5, RT-BOOTERROR, RT-CONNECT-PIN-CUTS, RT-D3, RT-NODE-FLOOR-TESTED, RT-REBASE, RT-VERSION, SEAM-REFRESH, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T31-REM, T32-REM, T33-REM, T43, T44"
+    },
+    {
+      "category": "register-untouched",
+      "scope": "docs/30-design/nightscout-backfix-register.md",
+      "statement": "42 register entries are not fixed and are not carried by anything in this release.",
+      "why": "Not a defect in the release; a statement of what shipping it does not address. Ids: BF-09, BF-10, BF-18, BF-19, BF-20, BF-21, BF-22, BF-23, BF-24, BF-25, BF-26, BF-27, BF-40, BF-41, BF-42, BF-43, BF-44, BF-45, BF-46, BF-47, BF-48, BF-49, BF-50, BF-51, BF-52, BF-53, BF-54, BF-55, BF-56, BF-57, BF-58, BF-59, BF-60, BF-61, BF-62, BF-63, BF-64, BF-65, BF-66, BF-67, CAP-01, CAP-02"
+    },
+    {
+      "category": "record-method",
+      "scope": "basis classification",
+      "statement": "The basis of each register entry was read ONLY from its row in the register's summary tables (sections 1, 1b, 1c), not from its detail section in section 2 / 2b.",
+      "why": "The register's own header records that provenance marking is not yet consistent between the two - three entries carry a `reproduced` block prepended above a body that still reads `not reproduced against a live instance`. Where the table and the detail disagree, this record follows the table and does not reconcile them."
+    },
+    {
+      "category": "record-method",
+      "scope": "gate output",
+      "statement": "Only the last 40 lines of each gate's output are stored, beside a sha256 of the whole of it.",
+      "why": "The digest lets a reader prove a full log they hold is the one this record was taken from; it does not let them reconstruct it. Full logs were not retained by this capture."
+    },
+    {
+      "category": "record-method",
+      "scope": "reproducibility",
+      "statement": "This record is NOT byte-reproducible end to end, and the claim that it is has been narrowed to what was measured.",
+      "why": "Two captures of this release were diffed field by field. STABLE: resolved SHAs, commits-ahead counts, every gate outcome, every item verdict, every register closure state and basis, the COUNTED test summaries (passing/failing/pending) and every entry in this section. MOVES: the gate transcripts output_tail, output_bytes and output_sha256 - 25 of 164 transcript fields moved - because the commands are not deterministic (mocha prints its own millisecond timings, node prints its pid). ONE NON-TRANSCRIPT FIELD MOVES WITH THEM and an earlier draft of this record wrongly implied it did not: output_summary.last_line, where a benchmark ends its output with a duration - P0-D's coercion benchmark gave duration_ms 282.795205 on one capture and 278.901709 on the next, and that string reaches both the gate summary and the test evidence. So two captures may be diffed on outcomes, verdicts, bases and gaps, and must NOT be diffed on digests or on a last_line that quotes a duration."
+    },
+    {
+      "category": "capture-environment",
+      "scope": "control surface",
+      "statement": "The control-surface working tree was NOT clean at capture (21 uncommitted path(s)).",
+      "why": "The inputs are digested by content (manifest_sha256, register_sha256) so the record is still re-derivable, but the inputs were not committed when it was taken."
+    }
+  ],
+  "totals": {
+    "items": 17,
+    "item_verdicts": {
+      "FAIL": 5,
+      "PASS": 9,
+      "UNMEASURED": 3
+    },
+    "gate_outcomes": {
+      "FAIL": 7,
+      "NO-GATE": 19,
+      "PASS": 35,
+      "SKIP": 13
+    },
+    "register_entries": 25,
+    "register_basis": {
+      "reproduced": 13,
+      "unstated": 12
+    },
+    "test_commands": 19,
+    "not_verified": 76,
+    "not_verified_by_category": {
+      "branch-unresolved": 4,
+      "capture-environment": 1,
+      "claim-diverges-from-measurement": 1,
+      "gate-not-run": 13,
+      "item-unmeasured": 3,
+      "no-instrument-declared": 19,
+      "out-of-scope": 1,
+      "publication-unverified": 13,
+      "record-method": 3,
+      "register-basis-unstated": 12,
+      "register-entry-not-demonstrated": 5,
+      "register-untouched": 1
+    }
+  }
+}

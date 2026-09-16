@@ -1,0 +1,53 @@
+<product> <version>
+
+DRAFT tag body. Not applied. Delete this line when the number is settled
+and the maintainer has approved the text; if it is NOT settled, replace it
+with one sentence saying so and why, as the 15.0.9 draft does.
+
+<One paragraph: what kind of release this is - remedial, deprecation,
+runtime, dependency, retirement - and what is NOT in it. Say the base
+explicitly: "every branch is based directly on origin/dev <sha>" or
+"N commits since <previous tag>". A reader of `git show <tag>` should be
+able to tell in five seconds whether this release can have touched the
+thing they are debugging.>
+
+  <branch-or-area>   <sha>  <BF-ids>   <one-line summary>
+  <branch-or-area>   <sha>  <BF-ids>   <one-line summary>
+
+<Group the commits by WHY a reader would care, not by directory. The
+connector draft groups them "Security and privacy" then "Correctness",
+because that ordering is the argument for taking the release.>
+
+OPERATOR-VISIBLE BEHAVIOUR CHANGES
+List every change an operator will NOTICE, numbered, each with the
+mechanism in one or two sentences. This list is the contract with
+release-notes.md: the notes must carry every item on it. State that,
+in these words or better:
+
+  "These N things are not bug fixes from the operator's chair, and the
+   release notes carry all N. Do not cut this tag until they do."
+
+Anything here that could mislead if compressed must carry its own
+correction inline. The models to copy:
+  - "It fires in ONE evaluation window and does not repeat. Do not
+     describe it as repeating."
+  - "A vendor outage will LOOK slower to recover. It is not slower."
+
+REMEDIATION FACTS
+Anything a code fix does NOT accomplish, that an operator must therefore
+do by hand. Security fixes are where this bites: a fix that stops a
+secret being WRITTEN does not invalidate secrets already written. Name
+the operator's levers explicitly. BF-17 in the 15.0.9 draft is the model.
+
+THE NUMBER
+State whether the version number is settled. If the semver policy
+disagrees with the number in the directory name, say so here with the
+section reference, and say what the policy would call it instead.
+Do not quietly adopt either number.
+
+SEQUENCING
+Anything that must be tagged, merged or published BEFORE this tag is
+cut, and why. Name the blocking artefact, not just the order.
+
+Evidence, measurements and the backfix register are in the nightscout
+ecosystem alignment repository, not here.

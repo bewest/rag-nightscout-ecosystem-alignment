@@ -1,0 +1,36 @@
+nightscout-connect 0.0.14
+
+Seven commits since v0.0.13. Three of them keep credentials and patient
+data out of runtime logs, and those are the reason to take this release
+rather than the retry fix that prompted it.
+
+Security and privacy
+  9fa2c3c  Prevent Dexcom credentials and sessions from reaching runtime logs
+  5349d47  Keep MiniMed credentials and patient data out of runtime logs
+  77e2396  Keep internal output payloads out of runtime logs
+  234d47c  Make embedded connector debug logging opt-in
+
+Correctness
+  8406edf  Preserve MiniMed glucose and measurement-time status contracts
+  51b6e6e  Release connector listeners and settle output waits on stop
+  c1cce2a  Every retry interval was 256 ms, and the first cycle had no jitter
+
+The retry fix, in plain terms: backoff() merged its options with the
+defaults last, so every interval a caller configured was discarded. All
+five vendor sources ask for a 2.5-minute retry and every one of them ran
+on the 256 ms default - 586 times faster than configured - with random
+slotting forced off, so a pool of accounts that failed together retried
+in exact lockstep. Measured: 100 actors delivered the same 800 requests
+across 3 seconds before and 67 seconds after.
+
+Operators should expect a vendor outage to LOOK slower to recover after
+this release. It is not slower; the connector has stopped retrying in a
+burst that could not have worked and was hardest on the vendor precisely
+when it was already refusing requests.
+
+Start jitter is also available now via CONNECT_START_JITTER_MS. It
+defaults to 0, so nothing changes for anyone who does not set it.
+
+Evidence and measurements are recorded in the nightscout ecosystem
+alignment repository, not here.
+

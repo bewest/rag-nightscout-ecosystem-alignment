@@ -1,0 +1,90 @@
+cgm-remote-monitor 15.0.9
+
+DRAFT tag body. Not applied. The number is not settled - see below.
+
+A remedial release: nine branches of bug fixes onto dev, plus the
+connector pin move. No tenancy content, no modernization content. Every
+branch is based directly on origin/dev a8888f0d and all nine merge
+cleanly against it and against each other.
+
+  bf/alarms       5dcf783f  BF-28 BF-29 BF-31   alarm delivery
+  bf/auth         64db1f35  BF-17 BF-30        security
+  bf/cache        4f86bab1  BF-06 BF-07        cache clone cost
+  bf/coercion     ab197bf8  BF-02 BF-03 BF-11 BF-32
+  bf/reads        2ecfeb53  BF-01 BF-05 BF-13 BF-14 BF-15 BF-33
+  bf/food         73495331  BF-16 BF-35
+  bf/merge        b06c6faf  BF-36
+  bf/parms        eb0bc918  BF-37 BF-38 BF-39
+  bf/connect-pin  0807eb1c  BF-34 BF-08 BF-42 (delivery vehicle)
+
+Five things in here are not bug fixes from the operator's chair, and
+the release notes carry all five. Do not cut this tag until they do.
+
+  1. insulinage's URGENT branch compared reservoir age against a field
+     that was never filled in, so "Insulin reservoir change overdue!"
+     has never fired on any release. It now fires. The level also stops
+     being stuck at WARN. IAGE_ENABLE_ALERTS defaults false, so the
+     NOTIFICATION reaches only operators who turned alerts on - but the
+     LEVEL is assigned outside that guard, so the urgent-red IAGE pill
+     reaches everyone. The notification fires in ONE evaluation window
+     (age === urgent, minFractions <= 20) and does not repeat. Do not
+     describe it as repeating.
+
+  2. Query filters were compared as text against numeric fields, so
+     they matched nothing and answered 200 with an empty list. 158
+     schema-driven coercions across five collections. Reports that
+     plotted an empty chart now plot a full one. bf/coercion's own
+     wording must survive into the notes verbatim: earlier results may
+     have under- or over-reported delivered therapy.
+
+  3. Six previously-accepted spellings of ?count= now return 400: 0,
+     0x10, 2.5, -3, 1e2, abc, and integers above MAX_SAFE_INTEGER.
+     ?count=0 previously reached the driver as .limit(0), which on
+     MongoDB is UNBOUNDED - the whole collection. The validator is
+     app.use'd on the whole v1 app before every router, so it covers
+     WRITES too: POST /api/v1/treatments?count=0 now returns 400.
+     15 mount points covered, 1 not (/experiments, mounted earlier).
+     This is the only thing in the batch that can break a working
+     integration.
+
+  4. POST /api/v1/alexa and /api/v1/googlehome stop honouring a
+     per-request locale and answer in the server's language. Correct -
+     the old code set process-global state - but it is a capability
+     removal on an HTTP endpoint with no replacement.
+
+  5. bf/auth's subject and role storage becomes an allow-list written
+     with replaceOne, so a third-party tool can no longer keep its own
+     fields through /api/v2/authorization/. Most of this data loss is
+     already true on dev; what is new is that sending the fields back
+     no longer preserves them.
+
+BF-17 REMEDIATION - this belongs in the notes and in the PR body. The
+fix stops the admin UI writing an access token into the database in
+plaintext. It does NOT invalidate any token already written, and it
+cannot: reload() recomputes digest, accessToken and accessTokenDigest
+on every load from subject._id, subject.name and the enclave key.
+accessToken is abbrev(name) + '-' + getSubjectHash(_id)[0:16]. The
+token is a deterministic function of those three inputs, so a code
+change cannot move it. Rotation is the operator's action and there are
+exactly three levers: change the subject's name, delete and recreate
+the subject (new _id), or rotate API_SECRET, which invalidates every
+token on the site at once.
+
+THE NUMBER IS NOT SETTLED. dev's package.json already says 15.0.9 and
+every deployment on the dev channel already answers /api/v1/status with
+it, but no 15.0.9 tag or version-tagged image has ever been cut. The
+semver policy on file classifies this release as a MINOR at minimum
+(15.1.0) on two independent rows - two new environment variables with a
+changed logging default, and a connector pin move that changes retry
+behaviour - and as a MAJOR if items 3, 4 and 5 above ship as written.
+Its preferred option is to split: ship everything else as 15.1.0 and
+hold those three for a release that deprecates them first. See
+docs/30-design/semver-and-release-versioning-policy-2026-09-15.md
+sections 8.1 and 8.2. Reconcile the number before cutting.
+
+bf/connect-pin is gated on the nightscout-connect v0.0.14 tag being
+pushed first, because its package-lock.json cannot be regenerated until
+the tarball exists.
+
+Evidence, measurements and the backfix register are in the nightscout
+ecosystem alignment repository, not here.
