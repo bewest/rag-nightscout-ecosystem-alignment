@@ -86,18 +86,24 @@ items:
 # ---------------------------------------------------------------------------
 
   - id: P0-A
-    title: bf/alarms - BF-28, BF-29, BF-31
+    title: "bf/alarms - PR #8739, BF-28, BF-29, BF-31"
     parcel: phase0
     repo: cgm-remote-monitor
     branch: bf/alarms
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-alarms
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: 3 commits. lib/plugins/insulinage.js, lib/plugins/index.js,
       lib/api/googlehome/index.js, lib/api/alexa/index.js. Zero file overlap
       with any other Phase 0 branch.
-    review: maintainer, plus one reviewer who has never merged their own PR in
-      this stack (the governance finding - 100 self-merged PRs, zero human reviews)
+    review: >
+      maintainer, plus one reviewer who has never merged their own PR in this
+      stack (the governance finding - 100 self-merged PRs, zero human reviews).
+      OPENED 2026-09-16 as PR #8739, base dev. THIS ONE NEEDS AN EXPLICIT YES,
+      not only a review: it starts an alarm that has never fired in any
+      deployment, with no grace period, and it removes per-request locale from
+      two HTTP endpoints with no replacement. Dropping 5dcf783f leaves a clean
+      minor, which is the option to offer if Phase 0 should land as 15.1.0.
     operator_visible: >
       Three alarm fixes. The "insulin reservoir change overdue" reminder could
       never appear at all and now can. If you list a plugin by its file name in
@@ -174,6 +180,14 @@ items:
           Nothing exercises the ENABLE warning through a booted plugin registry.
           GT4 had to hand-reconstruct the plugin-name list to test it, and a
           reconstructed registry is not the registry. Needs a boot-level test.
+      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/alarms | grep -q 5dcf783fdbb20188c378d79121dcbe860425eede
+        kind: network
+        describe: >
+          the branch behind PR #8739 is on the remote at the exact tip this item
+          was measured against. Read-only. Verified 2026-09-16.
+      - no-gate: >
+          Review and merge state of PR #8739 is upstream's, and cannot be gated
+          from here without a GitHub API call. Tracked, not driven.
     blocks_on: []
     evidence:
       - docs/60-research/bf28-29-31-alarm-delivery-2026-09-15.md
@@ -700,6 +714,23 @@ items:
       - no-gate: >
           Review and merge state of PR #8738 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
+      - run: node tools/queue/gates/pr-body-carries-correction.js
+        kind: network
+        describe: >
+          A TRACKING GATE, and it is meant to be RED until somebody pushes the
+          edit. It is not a defect in the branch. After #8738 was posted, the
+          plainest question about its headline defect - does ?count=0 now return
+          zero documents - turned up that ?count=0 answers TWO ways on dev: 0 rows
+          from the runtime cache, which is correct, and the whole collection when
+          forced to the database. The posted body states only the second, so a
+          reviewer who tries the plain spelling sees [] and concludes the premise
+          is wrong. The local body file carries the correction and the live PR does
+          not. The previous record of that was one sentence in this item's notes,
+          which is the exact shape of thing that goes stale unread. NON-VACUITY,
+          reproduced 2026-09-16: --needle 'Bad count' (present in both) gives 0
+          failing, a needle in neither gives 2 failing, and the default gives 1.
+          It SKIPS with exit 0 when gh is unauthenticated, because a missing
+          credential is not evidence the text is right.
       - no-gate: >
           THE TWO-PATH BEHAVIOUR OF ?count=0 IS MEASURED BUT NOT ASSERTED.
           tools/probes/count0-two-paths.js reproduces it - 0 rows from the cache
@@ -714,6 +745,19 @@ items:
       - docs/60-research/gt4-semver-classification-2026-09-15.md
       - docs/60-research/e3-gate-vacuity-audit-2026-09-15.md
     notes: >
+      THIS ITEM NOW REPORTS FAIL AND THE STATE IS DELIBERATELY STILL
+      in-flight-upstream. The manifest's rule is that a failing declared gate
+      means gate-not-met, and P0-C was moved on exactly that ground when its
+      BF-05 tracking gate went red. This case is different and the difference is
+      worth writing down rather than quietly exempting: there, the red gate meant
+      a residual DEFECT was still in the code. Here the branch is unchanged and
+      fine - what is stale is the PROSE on a pull request that is genuinely in
+      flight. The two states answer different questions, which is a flaw in the
+      state model and not a licence to mislabel this item. So the state says where
+      the work is and the red gate says what is owed, and anyone reading a FAIL
+      here should read the gate's own output, which prints the one command that
+      clears it.
+      ---
       MEASURED 2026-09-16, AFTER THE PR WAS POSTED, and the PR body is wrong about
       it: `?count=0` answered TWO different ways on dev depending on the path. With
       no `find`, the runtime cache served it and returned 0 rows - which is what the

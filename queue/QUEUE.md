@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 74 |
-| runnable gates | 107 |
-| explicit `no-gate:` markers | 107 |
+| runnable gates | 109 |
+| explicit `no-gate:` markers | 108 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 107 of the 214 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 108 of the 217 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,9 +43,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 11 | P0-B, RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 4 | P0-A, P0-C, P0-C-REMEDIATE, P0-TAG |
+| `ready-to-push` | 3 | P0-C, P0-C-REMEDIATE, P0-TAG |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
-| `in-flight-upstream` | 7 | P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01 |
+| `in-flight-upstream` | 8 | P0-A, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01 |
 | `needs-decision` | 3 | RT-D3, RT-0, BFQ-47 |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
@@ -79,12 +79,12 @@ decision is required by any of them.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `P0-A` | bf/alarms - BF-28, BF-29, BF-31 | `ready-to-push` | `bf/alarms` | major | 7 run + 2 no-gate |
+| `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `in-flight-upstream` | `bf/alarms` | major | 8 run + 3 no-gate |
 | `P0-B` | bf/cache - T0.2 and T0.3 read-path cost | `gate-not-met` | `bf/cache` | patch | 2 run + 2 no-gate |
 | `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `ready-to-push` | `bf/auth` | major | 5 run + 2 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
 | `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `in-flight-upstream` | `bf/coercion` | minor | 6 run + 1 no-gate |
-| `P0-E` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion | `in-flight-upstream` | `bf/reads` | major | 9 run + 5 no-gate |
+| `P0-E` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion | `in-flight-upstream` | `bf/reads` | major | 10 run + 5 no-gate |
 | `P0-F` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | `in-flight-upstream` | `fix/connect-timer-jitter` | minor | 3 run + 2 no-gate |
 | `P0-G` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | `in-flight-upstream` | `bf/food` | minor | 5 run + 1 no-gate |
 | `P0-H` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | `in-flight-upstream` | `bf/merge` | patch | 4 run + 2 no-gate |
@@ -97,17 +97,17 @@ decision is required by any of them.
 | `FU-RESIDUALS` | Follow-ups 3, 4, 7 - three named residuals beside branches already prepared | `gate-not-met` | `-` | patch | 3 run + 1 no-gate |
 | `FU-HYGIENE` | Follow-ups 9, 10 - the two audits that have no instrument | `not-started` | `-` | n/a | 0 run + 2 no-gate |
 
-### `P0-A` &mdash; bf/alarms - BF-28, BF-29, BF-31
+### `P0-A` &mdash; bf/alarms - PR #8739, BF-28, BF-29, BF-31
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/alarms` |
 | base | `origin/dev@a8888f0d` |
 | worktree | `externals/work/crm-bf-alarms` |
 | semver | `major` |
-| review | maintainer, plus one reviewer who has never merged their own PR in this stack (the governance finding - 100 self-merged PRs, zero human reviews) |
+| review | maintainer, plus one reviewer who has never merged their own PR in this stack (the governance finding - 100 self-merged PRs, zero human reviews). OPENED 2026-09-16 as PR #8739, base dev. THIS ONE NEEDS AN EXPLICIT YES, not only a review: it starts an alarm that has never fired in any deployment, with no grace period, and it removes per-request locale from two HTTP endpoints with no replacement. Dropping 5dcf783f leaves a clean minor, which is the option to offer if Phase 0 should land as 15.1.0. |
 | register | `BF-28`, `BF-29`, `BF-31` |
 
 **Blast radius.** 3 commits. lib/plugins/insulinage.js, lib/plugins/index.js, lib/api/googlehome/index.js, lib/api/alexa/index.js. Zero file overlap with any other Phase 0 branch.
@@ -134,6 +134,9 @@ decision is required by any of them.
 - `[static]` `test -f externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/public/js/bundle.app.js`
   - GT1 found this worktree is the only one missing the client bundle, and that absence produced a seventh test failure that looked like a defect. `npm run bundle` in that worktree fixes it.
 - **NO GATE** &mdash; Nothing exercises the ENABLE warning through a booted plugin registry. GT4 had to hand-reconstruct the plugin-name list to test it, and a reconstructed registry is not the registry. Needs a boot-level test.
+- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/alarms | grep -q 5dcf783fdbb20188c378d79121dcbe860425eede`
+  - the branch behind PR #8739 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- **NO GATE** &mdash; Review and merge state of PR #8739 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
 
 **Evidence.**
 
@@ -338,6 +341,8 @@ decision is required by any of them.
 - `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/reads | grep -q 2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa`
   - the branch behind PR #8738 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
 - **NO GATE** &mdash; Review and merge state of PR #8738 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
+- `[network]` `node tools/queue/gates/pr-body-carries-correction.js`
+  - A TRACKING GATE, and it is meant to be RED until somebody pushes the edit. It is not a defect in the branch. After #8738 was posted, the plainest question about its headline defect - does ?count=0 now return zero documents - turned up that ?count=0 answers TWO ways on dev: 0 rows from the runtime cache, which is correct, and the whole collection when forced to the database. The posted body states only the second, so a reviewer who tries the plain spelling sees [] and concludes the premise is wrong. The local body file carries the correction and the live PR does not. The previous record of that was one sentence in this item's notes, which is the exact shape of thing that goes stale unread. NON-VACUITY, reproduced 2026-09-16: --needle 'Bad count' (present in both) gives 0 failing, a needle in neither gives 2 failing, and the default gives 1. It SKIPS with exit 0 when gh is unauthenticated, because a missing credential is not evidence the text is right.
 - **NO GATE** &mdash; THE TWO-PATH BEHAVIOUR OF ?count=0 IS MEASURED BUT NOT ASSERTED. tools/probes/count0-two-paths.js reproduces it - 0 rows from the cache and all 24 from the database on dev, 400 on both after this branch, with two controls that stay sane on each tree - but it PRINTS rather than exits non-zero, so it is a probe and not a gate. Making it one means deciding what the contract IS, and that is the reviewer's call on #8738, not this queue's. It also needs two worktrees and a mongod.
 
 **Evidence.**
@@ -346,7 +351,7 @@ decision is required by any of them.
 - `docs/60-research/gt4-semver-classification-2026-09-15.md`
 - `docs/60-research/e3-gate-vacuity-audit-2026-09-15.md`
 
-**Notes.** MEASURED 2026-09-16, AFTER THE PR WAS POSTED, and the PR body is wrong about it: `?count=0` answered TWO different ways on dev depending on the path. With no `find`, the runtime cache served it and returned 0 rows - which is what the client asked for and is CORRECT. With a `find` that forces the read past the cache to the database, `.limit(0)` means unbounded and it returned all 24 of 24. Both measured against dev a8888f0d with 24 stored entries, controls sane (count=5 -> 5 rows, no count -> 10, the default). The read-defects report has the 24-row half and says it forced past the cache; nobody wrote down the other half, so the PR body states the unbounded answer as if it were the only one. A reviewer who tests plain `?count=0` on their own instance sees `[]` and concludes the premise is wrong. Correction prepared in the body file, NOT yet pushed to #8738. --- Sequencing letter E. THE SHA HISTORY, because three documents quote different ones: GT1 measured 824380a0 (7 commits, on dev); this queue first recorded 0d19bb31 (8 commits, on bf/coercion, after a rebase); the CHANGELOG-only commit was then dropped and the branch re-cut directly onto origin/dev, and it is now 2ecfeb53, 6 commits. `git range-diff` showed all six content-identical to their pre-strip selves. THE STACK IS DISSOLVED, so blocks_on is empty. The §3b concern survives and is NOT a merge hazard: bf/coercion gives query.js a new `collection:` option and bf/reads fixes aggregate.js, which calls query.js through api.query_for and passes no options - so the count path still gets the legacy default walker after both land. Deliberately in neither PR.
+**Notes.** THIS ITEM NOW REPORTS FAIL AND THE STATE IS DELIBERATELY STILL in-flight- upstream. The manifest's rule is that a failing declared gate means gate-not- met, and P0-C was moved on exactly that ground when its BF-05 tracking gate went red. This case is different and the difference is worth writing down rather than quietly exempting: there, the red gate meant a residual DEFECT was still in the code. Here the branch is unchanged and fine - what is stale is the PROSE on a pull request that is genuinely in flight. The two states answer different questions, which is a flaw in the state model and not a licence to mislabel this item. So the state says where the work is and the red gate says what is owed, and anyone reading a FAIL here should read the gate's own output, which prints the one command that clears it. --- MEASURED 2026-09-16, AFTER THE PR WAS POSTED, and the PR body is wrong about it: `?count=0` answered TWO different ways on dev depending on the path. With no `find`, the runtime cache served it and returned 0 rows - which is what the client asked for and is CORRECT. With a `find` that forces the read past the cache to the database, `.limit(0)` means unbounded and it returned all 24 of 24. Both measured against dev a8888f0d with 24 stored entries, controls sane (count=5 -> 5 rows, no count -> 10, the default). The read-defects report has the 24-row half and says it forced past the cache; nobody wrote down the other half, so the PR body states the unbounded answer as if it were the only one. A reviewer who tests plain `?count=0` on their own instance sees `[]` and concludes the premise is wrong. Correction prepared in the body file, NOT yet pushed to #8738. --- Sequencing letter E. THE SHA HISTORY, because three documents quote different ones: GT1 measured 824380a0 (7 commits, on dev); this queue first recorded 0d19bb31 (8 commits, on bf/coercion, after a rebase); the CHANGELOG-only commit was then dropped and the branch re-cut directly onto origin/dev, and it is now 2ecfeb53, 6 commits. `git range-diff` showed all six content-identical to their pre-strip selves. THE STACK IS DISSOLVED, so blocks_on is empty. The §3b concern survives and is NOT a merge hazard: bf/coercion gives query.js a new `collection:` option and bf/reads fixes aggregate.js, which calls query.js through api.query_for and passes no options - so the count path still gets the legacy default walker after both land. Deliberately in neither PR.
 
 ### `P0-F` &mdash; fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter
 
