@@ -51,7 +51,7 @@ All measured today against `origin/dev` `a8888f0d`.
 | `bf/alarms` | `5dcf783f` | 3 | BF-28, BF-29, BF-31 | **major** (locale removal); minor for the URGENT fix, patch for the ENABLE warning |
 | `bf/auth` | `64db1f35` | 2 | BF-17, BF-30 | **major** (storage allow-list); throttle + `notes` each minor |
 | `bf/cache` | `4f86bab1` | 2 | BF-06, BF-07 (partly) | **patch** — identical bytes on the wire |
-| `bf/coercion` | **`f829ea11`** | 1 | BF-02, BF-03, BF-11, BF-32 | **minor** |
+| `bf/coercion` | **`b7234753`** | **2** | BF-02, BF-03, BF-11, BF-32, BF-40, BF-68 | **minor** |
 | `bf/reads` | **`2ecfeb53`** | **6** | BF-01, BF-05, BF-13, BF-14, BF-15, BF-33 | **major** as written, on one row (`?count=`) |
 | `bf/food` | `73495331` | 1 | BF-16, **BF-35** | **minor** — a v1 response changes contents |
 | `bf/merge` | `b06c6faf` | 1 | BF-36 | **patch** — client only |
@@ -63,7 +63,7 @@ All measured today against `origin/dev` `a8888f0d`.
 That document is another agent's and is not edited here. Its §5 is stale in three ways and
 a reviewer working from it will do the wrong thing:
 
-1. **`bf/coercion` is `f829ea11` (was `ab197bf8`, before that `88d1f8a4`); `bf/reads` is `2ecfeb53`, not `0d19bb31`.**
+1. **`bf/coercion` is `b7234753` and carries TWO commits (was `ab197bf8`, before that `88d1f8a4`); `bf/reads` is `2ecfeb53`, not `0d19bb31`.**
    Both were rewritten to strip hand-edited `CHANGELOG.md` content, by the maintainer's
    rule that the changelog is a generated release output. Backups exist as
    `bf/coercion.bak-changelog` and `bf/reads.bak-changelog`.

@@ -21,7 +21,7 @@ cgm-remote-monitor branches sit **directly on `origin/dev` at `a8888f0d`** in wo
 | `cgm-remote-monitor` | `bf/alarms` | `5dcf783f` | 3 | BF-28, BF-29, BF-31 — alarm delivery |
 | `cgm-remote-monitor` | `bf/auth` | **`56ed29d2`** | **3** | BF-17, BF-30 — **security**. Third commit added 2026-09-16, see below |
 | `cgm-remote-monitor` | `bf/cache` | `4f86bab1` | 2 | T0.2, T0.3 — cache clone cost |
-| `cgm-remote-monitor` | `bf/coercion` | **`f829ea11`** | 1 | T0.5 — schema-driven query coercion. Amended 2026-09-16, see below |
+| `cgm-remote-monitor` | `bf/coercion` | **`b7234753`** | **2** | T0.5 — query filter typing, plus BF-40's `$exists` inversion. Amended and combined 2026-09-16, see below |
 | `cgm-remote-monitor` | `bf/connect-pin` | `0807eb1c` | 1 | connector pin → the `v0.0.14` tarball (one file, +1/−1) |
 | `cgm-remote-monitor` | `bf/food` | `73495331` | 1 | BF-16, and **BF-35** surfaced while fixing it |
 | `cgm-remote-monitor` | `bf/merge` | `b06c6faf` | 1 | BF-36 |
@@ -395,7 +395,7 @@ was wrong rather than the substituter.**
 
 | branch | commits | what it is |
 |---|---|---|
-| `bf/coercion` `f829ea11` | 1 | T0.5 — schema-driven query coercion. The largest single change in the batch |
+| `bf/coercion` `b7234753` | 2 | T0.5 — query filter typing, and BF-40's `$exists=false` inversion. The largest change in the batch |
 | `bf/reads` `2ecfeb53` | 6 | BF-01, BF-05, BF-13, BF-14, BF-15, BF-33 |
 
 **These two used to be a stack and are not any more.** They merge clean with each other and with
@@ -683,10 +683,15 @@ servers. Comment-only.
 non-value operator from conversion is right for `$regex` and wrong for `$type`, whose operand is a
 BSON type code — `find[sgv][$type]=2` worked on `dev` and became *"Unknown type name alias: 2"*,
 an HTTP 500. `operandReaderFor` reads a digits-only `$type` operand as a number and passes aliases
-through. The same amend decouples the branch's "operands are left alone" test from **`bf/exists`**,
-which reads the `$exists` operand as a boolean: pinning the exact string made a clean textual merge
-produce a red suite, so it now asserts the operand was not turned into a *number*. 29 passing,
-gates 4/4, and the merged tree with `bf/exists` is 29 + 12 passing.
+through.
+
+**Then a second commit arrived rather than a second branch.** `BF-40`'s fix was written on its own
+branch and then folded in, because measurement said it does not stand alone: with only the
+`$exists` commit, the inversion persists on `sgv`, `filtered`, `unfiltered`, `rssi`, `noise`,
+`mbg`, `insulin`, `carbs` and `glucose` — every field a `walker` names, whose operand is already
+`NaN` before the new pass can read it. Those are the fields anyone filters on, so a standalone
+branch would have been a fix that reads as complete and is not. **`bf/coercion` is now two commits,
+tip `b7234753`**, and the pair reverts independently. 29 + 12 passing, gates 4/4.
 
 **Safety refs kept until the PRs merge**, then delete: `bf/coercion.bak-changelog` (`88d1f8a4`),
 `bf/reads.bak-changelog` (`0d19bb31`), `bf/reads-prerebase` (`824380a0`).

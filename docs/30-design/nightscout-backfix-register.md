@@ -2046,15 +2046,16 @@ So the live defect is the one nobody filed:
 - **After `bf/coercion`**, the operand is left as `"false"` → **still** the wrong answer.
 - `$exists=true` is answered correctly before *and* after, by two different accidents.
 
-**Fix — WRITTEN AND REPRODUCED 2026-09-16, on branch `bf/exists` (`b6dd1e7b`). The fix this entry
-originally prescribed was in the wrong place, and would have read as though it closed the entry.**
+**Fix — WRITTEN AND REPRODUCED 2026-09-16, and it ships in `bf/coercion` (commit `b7234753`),
+not on a branch of its own. The fix this entry originally prescribed was in the wrong place, and
+would have read as though it closed the entry.**
 
 The prescription was: route the operand through a boolean reader "at the point where `isValueLeaf`
 already special-cases the operator". **`isValueLeaf` is only reached from inside `walk_prop`, and
-`walk_prop` only runs for fields that have a typer.** Measured on `bf/coercion`: `madeUpField`,
-`notes`, and every field of `activity` never enter it at all, so a fix there closes this for the
-handful of typed fields and leaves it open on the rest — while this entry's own text says the
-defect is wrong on *every* field.
+`walk_prop` only runs for fields that have a typer.** Measured: `madeUpField`, `notes`, and every
+field of `activity` never enter it at all, so a fix there closes this for the handful of typed
+fields and leaves it open on the rest — while this entry's own text says the defect is wrong on
+*every* field.
 
 What was built instead: a pass over the **finished query**, keyed on the operator, so it is
 independent of whether the field has a declared type. That also handles `{$not: {$exists: "false"}}`
@@ -2071,29 +2072,19 @@ unrecognised passes through for the same reason.
 `find[insulin][$exists]=false` returned the document **with** `insulin` before and the one
 **without** after; `$exists=true` returns the same document either way.
 
-**One real dependency, not a caveat.** On `origin/dev` the walker converts the operand to `NaN`
-before any later pass can read it, for the thirteen fields a walker names. `NaN` is truthy too, so
-those fields stay wrong until **`bf/coercion`** lands and stops the walker touching operands. The
-untyped majority is fixed by `bf/exists` alone. Measured in the merged tree: both halves correct.
+**Why it is not a separate branch, measured rather than argued.** The fix needs the schema-coercion
+commit ahead of it: on `origin/dev` the walker converts the operand to `NaN` before any later pass
+can read it, and `NaN` is truthy too. With only the `$exists` commit, these stay inverted —
 
-**And the two branches collide on a test, not on the code.** `bf/coercion`'s "leaves operands that
-are not field values alone" pinned `$exists` as the *exact string* `'true'`; `bf/exists` makes it
-the boolean `true`, so a clean textual merge produced a red suite. Fixed in `bf/coercion` by
-asserting the operand was not turned into a *number*, which is what that test is actually about.
-Twelve tests in `tests/query.operands.test.js` — in neither local brace list, so `npm test`.
+| still inverted | fixed |
+|---|---|
+| `entries.sgv`, `.filtered`, `.unfiltered`, `.rssi`, `.noise`, `.mbg`; `treatments.insulin`, `.carbs`, `.glucose` | `treatments.notes`, `.eventType`, `.enteredBy`, `.duration`; all of `devicestatus` |
 
-**What this costs `bf/coercion` before it is proposed.** That branch's `CHANGELOG.md` — text an
-operator reads — currently says `find[sgv][$exists]=true` "became `$exists: NaN`, which MongoDB
-reads as *false*, so the query returned exactly the records you did not ask for." **That sentence
-is false.** It tells operators to distrust and re-run queries that were answering correctly. It
-must be corrected before the PR is opened; see the [PR sequencing](phase0-pr-sequencing-2026-09-15.md)
-branch D row.
-
-**What the coercion genuinely broke, and the fix genuinely repairs**: `$regex`. Measured on the
-same server — `{notes: {$regex: NaN}}` returns the server error `$regex has to be a string`, where
-`{$regex: 'ab'}` matches. On a coerced numeric field, `find[sgv][$regex]=ab` is therefore an HTTP
-500 today and an empty 200 after the fix. That is a real improvement with a much smaller blast
-radius than the one claimed.
+— which is every field a `walker` names, and they are the fields anyone actually filters on.
+(`notes` and its neighbours survive because `parseRegEx` returns non-regex input unchanged rather
+than producing `NaN`.) A standalone branch would have been a fix that reads as complete and is not,
+so the two were combined into one PR of two commits. `tests/query.operands.test.js` holds twelve
+tests; it is in neither local brace list, so `npm test`.
 
 ### BF-41 · a reading dated in the future silently switches off the stale-data alarm
 

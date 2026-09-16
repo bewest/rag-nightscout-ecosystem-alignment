@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 75 |
-| runnable gates | 108 |
-| explicit `no-gate:` markers | 106 |
+| items | 74 |
+| runnable gates | 105 |
+| explicit `no-gate:` markers | 104 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 106 of the 214 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 104 of the 209 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,7 +43,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 11 | P0-B, RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 7 | P0-A, P0-C, P0-C-REMEDIATE, P0-D, P0-E, P0-J, P0-TAG |
+| `ready-to-push` | 6 | P0-A, P0-C, P0-C-REMEDIATE, P0-D, P0-E, P0-TAG |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 5 | P0-F, P0-G, P0-H, P0-I, P0-T01 |
 | `needs-decision` | 3 | RT-D3, RT-0, BFQ-47 |
@@ -71,7 +71,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 
 ## Phase 0 backfixes - ships to every existing operator
 
-`parcel: phase0` &mdash; 18 items
+`parcel: phase0` &mdash; 17 items
 
 Ten branches prepared locally against origin/dev a8888f0d, plus the connector
 tag and the lockfile that deliberately was not regenerated. No tenancy
@@ -83,13 +83,12 @@ decision is required by any of them.
 | `P0-B` | bf/cache - T0.2 and T0.3 read-path cost | `gate-not-met` | `bf/cache` | patch | 2 run + 2 no-gate |
 | `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `ready-to-push` | `bf/auth` | major | 5 run + 2 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
-| `P0-D` | bf/coercion - schema-driven query type coercion (T0.5) | `ready-to-push` | `bf/coercion` | minor | 4 run |
+| `P0-D` | bf/coercion - query filter typing (T0.5) and the $exists inversion | `ready-to-push` | `bf/coercion` | minor | 5 run |
 | `P0-E` | bf/reads - six read-path fixes, independent of bf/coercion | `ready-to-push` | `bf/reads` | major | 8 run + 3 no-gate |
 | `P0-F` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | `in-flight-upstream` | `fix/connect-timer-jitter` | minor | 3 run + 2 no-gate |
 | `P0-G` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | `in-flight-upstream` | `bf/food` | minor | 5 run + 1 no-gate |
 | `P0-H` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | `in-flight-upstream` | `bf/merge` | patch | 4 run + 2 no-gate |
 | `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `in-flight-upstream` | `bf/parms` | patch | 5 run + 1 no-gate |
-| `P0-J` | bf/exists - BF-40, $exists=false returned the inverse of the request | `ready-to-push` | `bf/exists` | minor | 4 run + 2 no-gate |
 | `P0-TAG` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push | `ready-to-push` | `release/v0.0.14` | minor | 5 run + 1 no-gate |
 | `P0-PIN` | bf/connect-pin - move dev's connector pin to the v0.0.14 tarball | `blocked` | `bf/connect-pin` | patch | 3 run + 1 no-gate |
 | `P0-LOCK` | Regenerate package-lock.json after the v0.0.14 tag is pushed | `blocked` | `bf/connect-pin` | n/a | 2 run |
@@ -254,7 +253,7 @@ decision is required by any of them.
 
 **Notes.** SETTLED 2026-09-16. This item was not-started for as long as it existed, on the strength of one sentence in the register's BF-17 row - "existing rows still hold tokens, see the report" - which nothing acted on. It is now closed as TEXT rather than tooling: the maintainer decided against a detector script and against a migration, on the ground that the notes carry the operator's actual decision and a script does not. WHAT THE REVIEW TURNED UP WHILE CLOSING IT, and the reason the item was not simply deleted: the notes were WRONG. Two operator documents told people that renaming a subject retires its token. It does not - measured at lib/authorization/storage.js:326 on bf/auth and :288 on origin/dev, the matcher is name-independent - and a third document, the report those notes were written from, is where the error came from. A fourth claim, that the upgrade discards the stored copy on load, was also wrong: reload() deletes the derived fields from the IN-MEMORY record only, and the row clears when the subject is next saved through the admin path. All four are corrected and the gate above is the regression guard. THE LESSON IS THE ITEM'S REAL OUTPUT: "the deliverable is a note" is not a reason to leave it ungated. The note was the defect.
 
-### `P0-D` &mdash; bf/coercion - schema-driven query type coercion (T0.5)
+### `P0-D` &mdash; bf/coercion - query filter typing (T0.5) and the $exists inversion
 
 | | |
 |---|---|
@@ -265,11 +264,11 @@ decision is required by any of them.
 | worktree | `externals/work/crm-bf-coercion` |
 | semver | `minor` |
 | review | maintainer - lands first of the stack so the query path settles |
-| register | `BF-02`, `BF-03`, `BF-11`, `BF-32`, `BF-68` |
+| register | `BF-02`, `BF-03`, `BF-11`, `BF-32`, `BF-40`, `BF-68` |
 
-**Blast radius.** 1 commit, the largest change in the set. lib/server/query.js plus a generated coercion table over 5 collections; 158 coercions replace 13 hand-written entries.
+**Blast radius.** 2 commits at b7234753, the largest change in the set. lib/server/query.js plus a generated coercion table over 5 collections; 158 coercions replace 13 hand- written entries.
 
-**What an operator sees.** Searches through the API that filter on a number used to compare that number against text, so many of them quietly matched nothing and still answered "OK". They now compare correctly. If you have a saved search, a script or a third-party app that was returning nothing, it may start returning results - that is the fix working, not a new problem.
+**What an operator sees.** Searches through the API that filter on a number used to compare that number against text, so many of them quietly matched nothing and still answered "OK". They now compare correctly. If you have a saved search, a script or a third-party app that was returning nothing, it may start returning results - that is the fix working, not a new problem. SEPARATELY, and this is the one most likely to have been acted on: asking the API for records that do NOT have a field - $exists=false - returned exactly the records that DO have it, with a success code and nothing to say the answer was inverted. Any report, dashboard or script filtering on $exists=false was answering the opposite question, and a count from one was counting the wrong group. Re-run anything built on one; the set it returns now is the complement of what it returned before. $exists=true was correct before and is correct after.
 
 **Why `minor`.** GT4 measured the change in answers: find[duration][$gte]=30 goes from {"$gte":"30"} (matched nothing) to {"$gte":30}; find[insulin][$gte]=1.5 from {"$gte":1} to {"$gte":1.5}; find[sgv][$exists]=true from {"$exists":NaN} (which returned the documents that LACK the field) to {"$exists":"true"}. No request that worked stops working.
 
@@ -279,6 +278,8 @@ decision is required by any of them.
   - bf/coercion has not fallen behind origin/dev
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/coercion >/dev/null`
   - trial-merge into origin/dev is conflict-free
+- `[unit]` _(cwd: `externals/work/crm-bf-coercion`)_ `TEST=query.operands npm run test-single`
+  - BF-40's own test, 12 cases, on the second commit. In NEITHER local brace list (GT1), so a green `npm run test:unit` is not evidence for it. Ablated three ways with each break confirmed to land: removing the call fails 6, mapping "" to false fails exactly the test pinning that decision, adding $regex to the reader map fails exactly the $regex test.
 - `[unit]` _(cwd: `externals/work/crm-bf-coercion`)_ `TEST=query npm run test-single`
   - 28 passing, database-free (measured against a dead mongo port). E3 RE-ABLATED it properly: GT1's control was "the file cannot even LOAD against pristine dev", which is a module-resolution failure, not a behavioural one. Reverting ONLY lib/server/query.js and keeping the new table gives 24 passing / 4 failing on assertions ("expected '1.5' to be 1.5"), which is the control that means something.
 - `[static]` `T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && python3 -m tools.nsschema.emit.coercion_emit --bundle "$T/emitted.json" >/dev/null && diff -q "$T/emitted.json" externals/work/crm-bf-coercion/lib/server/query-coercion.json`
@@ -491,44 +492,6 @@ decision is required by any of them.
 - `docs/30-design/nightscout-backfix-register.md`
 
 **Notes.** Sequencing letter I. CORRECTION: the sequencing document at line 165 lists the commits as 522c6ffb, eb0bc918, c9a7a21c mapped to BF-37, BF-39, BF-38. Re- measured, the branch order is 522c6ffb (BF-37), c9a7a21c (BF-38), eb0bc918 (BF-39). GT3 found the same.
-
-### `P0-J` &mdash; bf/exists - BF-40, $exists=false returned the inverse of the request
-
-| | |
-|---|---|
-| state (claimed) | `ready-to-push` |
-| repo | `cgm-remote-monitor` |
-| branch | `bf/exists` |
-| base | `origin/dev@a8888f0d` |
-| worktree | `externals/work/crm-bf-exists` |
-| semver | `minor` |
-| review | maintainer. Two things a reviewer cannot get from the diff. It is a SEMANTIC INVERSION, not a missing result - a $exists=false filter was answered with the complement of what it asked for, so any count drawn from one was counting the wrong group. And the empty-string operand is deliberately NOT read; that is a decision, pinned by a test, not an oversight. |
-| register | `BF-40` |
-
-**Blast radius.** 1 commit b6dd1e7b. lib/server/query.js, one new test file.
-
-**What an operator sees.** Asking the API for records that do NOT have a field returned exactly the records that DO have it, with a success code and nothing to say the answer was inverted. Reports, dashboards and scripts that filter on $exists=false were answering the opposite question. Re-run anything built on one - the set it returns now is the complement of what it returned before, so a count usually changes a lot rather than a little. $exists=true was correct before and is correct after.
-
-**Why `minor`.** changes which records a filter returns; adds no required input, removes no route, breaks no documented contract, touches no stored data.
-
-**Gates.**
-
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/exists`
-  - bf/exists has not fallen behind origin/dev
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/exists >/dev/null`
-  - trial-merge into origin/dev is conflict-free
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/coercion bf/exists >/dev/null`
-  - trial-merge with bf/coercion is conflict-free. Called out because the two interact: this branch needs bf/coercion to close its typed half, and bf/coercion carries the test change that stops them colliding on an expectation.
-- `[unit]` _(cwd: `externals/work/crm-bf-exists`)_ `TEST=query.operands npm run test-single`
-  - BF-40's own test, 12 cases. In NEITHER local brace list (GT1), so a green `npm run test:unit` is not evidence for this branch. Ablated three ways with each break confirmed to land: 6 failing, 1 failing, 1 failing.
-- **NO GATE** &mdash; The composed behaviour - $exists=false correct on a TYPED field after both branches land - was measured in a merged tree by hand (29 + 12 passing) and is not reproduced by any gate here. A gate would have to build the merged tree and run both suites in it.
-- **NO GATE** &mdash; No end-to-end gate against a live server. The before/after over two treatments was run by hand against mongod 7.0.43; nothing replays it.
-
-**Evidence.**
-
-- `docs/30-design/nightscout-backfix-register.md`
-
-**Notes.** NOT in bf/coercion on purpose: that branch is already the largest behavioural change in Phase 0, and this fix stands alone against dev. BF-40's PRESCRIBED FIX WAS IN THE WRONG PLACE and would have read as though it closed the entry. It said to put the reader where isValueLeaf special-cases the operator; isValueLeaf is only reached from walk_prop, which only runs for fields that have a typer. Measured on bf/coercion: madeUpField, notes and every activity field never enter it. The fix is a pass over the finished query instead, keyed on the operator, which also catches {$not: {$exists: ...}} and operands inside $or. THE DEPENDENCY, stated because it is real: on dev alone this fixes the untyped majority and not the thirteen fields a walker names, whose operand is destroyed to NaN before this pass sees it. NaN is truthy too. Those close when bf/coercion lands.
 
 ### `P0-TAG` &mdash; nightscout-connect release/v0.0.14 and tag - prepared, needs a human push
 
