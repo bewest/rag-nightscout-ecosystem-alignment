@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 74 |
-| runnable gates | 106 |
-| explicit `no-gate:` markers | 105 |
+| runnable gates | 107 |
+| explicit `no-gate:` markers | 107 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 105 of the 211 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 107 of the 214 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,9 +43,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 11 | P0-B, RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 5 | P0-A, P0-C, P0-C-REMEDIATE, P0-E, P0-TAG |
+| `ready-to-push` | 4 | P0-A, P0-C, P0-C-REMEDIATE, P0-TAG |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
-| `in-flight-upstream` | 6 | P0-D, P0-F, P0-G, P0-H, P0-I, P0-T01 |
+| `in-flight-upstream` | 7 | P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01 |
 | `needs-decision` | 3 | RT-D3, RT-0, BFQ-47 |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
@@ -84,7 +84,7 @@ decision is required by any of them.
 | `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `ready-to-push` | `bf/auth` | major | 5 run + 2 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
 | `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `in-flight-upstream` | `bf/coercion` | minor | 6 run + 1 no-gate |
-| `P0-E` | bf/reads - six read-path fixes, independent of bf/coercion | `ready-to-push` | `bf/reads` | major | 8 run + 3 no-gate |
+| `P0-E` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion | `in-flight-upstream` | `bf/reads` | major | 9 run + 5 no-gate |
 | `P0-F` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | `in-flight-upstream` | `fix/connect-timer-jitter` | minor | 3 run + 2 no-gate |
 | `P0-G` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | `in-flight-upstream` | `bf/food` | minor | 5 run + 1 no-gate |
 | `P0-H` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | `in-flight-upstream` | `bf/merge` | patch | 4 run + 2 no-gate |
@@ -295,17 +295,17 @@ decision is required by any of them.
 
 **Notes.** Sequencing letter D. BF-03 is closed for devicestatus and profile only - `food` reaches query.js at no point and `activity`'s model has no numeric field, so those two halves were misfiled rather than fixed.
 
-### `P0-E` &mdash; bf/reads - six read-path fixes, independent of bf/coercion
+### `P0-E` &mdash; bf/reads - PR #8738, six read-path fixes, independent of bf/coercion
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/reads` |
 | base | `origin/dev@a8888f0d` |
 | worktree | `externals/work/crm-bf-reads` |
 | semver | `major` |
-| review | maintainer. NOT after P0-D - the stack is dissolved and the two branches merge cleanly with each other. |
+| review | maintainer. OPENED 2026-09-16 as PR #8738, base dev. NOT after P0-D - the stack is dissolved and the two branches merge cleanly with each other. Three things a reviewer cannot get from the diff: it is graded major on one commit only (06b133a7, the ?count= tightening, which is app.use'd ahead of every v1 router and so covers writes); none of the five test files is in `npm run test:unit`, so a green run there is evidence for none of the six fixes; and ?count=0 answered TWO different ways on dev depending on whether the runtime cache could serve the request - see notes. maintainer. NOT after P0-D - the stack is dissolved and the two branches merge cleanly with each other. |
 | register | `BF-01`, `BF-05`, `BF-13`, `BF-14`, `BF-15`, `BF-33` |
 
 **Blast radius.** 6 commits at 2ecfeb53, all its own, based directly on origin/dev. lib/server/aggregate.js, entries.js and four siblings, lib/api3/generic/search/input.js, lib/api3/shared/fieldsProjector.js, lib/api3/generic/collection.js, lib/server/count.js, lib/api/index.js.
@@ -335,6 +335,10 @@ decision is required by any of them.
 - **NO GATE** &mdash; THE `npm run test:unit` GATE WAS REMOVED, not downgraded. It was recorded as "361 passing / 0 failing at GT1's measurement", but not one of the five test files this branch adds is in the 44-file brace list - all five are api*/api3* and match test:integration's glob - so the suite could have passed in full with every fix reverted.
 - **NO GATE** &mdash; The ordering constraint inside the branch (BF-05's commit must follow BF-01's) is not machine-checked. After the CHANGELOG strip and the re-cut onto dev the two commits are 3b588098 and 4772b983, so any gate quoting an earlier SHA is stale by construction. A real gate would assert the relative order of the two by subject line, and nobody has written it.
 - **NO GATE** &mdash; The CHANGELOG on this branch lists read routes only, while the ?count= validator covers writes too. Nothing checks a release note against the code it describes.
+- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/reads | grep -q 2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa`
+  - the branch behind PR #8738 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- **NO GATE** &mdash; Review and merge state of PR #8738 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
+- **NO GATE** &mdash; THE TWO-PATH BEHAVIOUR OF ?count=0 IS MEASURED BUT NOT ASSERTED. tools/probes/count0-two-paths.js reproduces it - 0 rows from the cache and all 24 from the database on dev, 400 on both after this branch, with two controls that stay sane on each tree - but it PRINTS rather than exits non-zero, so it is a probe and not a gate. Making it one means deciding what the contract IS, and that is the reviewer's call on #8738, not this queue's. It also needs two worktrees and a mongod.
 
 **Evidence.**
 
@@ -342,7 +346,7 @@ decision is required by any of them.
 - `docs/60-research/gt4-semver-classification-2026-09-15.md`
 - `docs/60-research/e3-gate-vacuity-audit-2026-09-15.md`
 
-**Notes.** Sequencing letter E. THE SHA HISTORY, because three documents quote different ones: GT1 measured 824380a0 (7 commits, on dev); this queue first recorded 0d19bb31 (8 commits, on bf/coercion, after a rebase); the CHANGELOG-only commit was then dropped and the branch re-cut directly onto origin/dev, and it is now 2ecfeb53, 6 commits. `git range-diff` showed all six content-identical to their pre-strip selves. THE STACK IS DISSOLVED, so blocks_on is empty. The §3b concern survives and is NOT a merge hazard: bf/coercion gives query.js a new `collection:` option and bf/reads fixes aggregate.js, which calls query.js through api.query_for and passes no options - so the count path still gets the legacy default walker after both land. Deliberately in neither PR.
+**Notes.** MEASURED 2026-09-16, AFTER THE PR WAS POSTED, and the PR body is wrong about it: `?count=0` answered TWO different ways on dev depending on the path. With no `find`, the runtime cache served it and returned 0 rows - which is what the client asked for and is CORRECT. With a `find` that forces the read past the cache to the database, `.limit(0)` means unbounded and it returned all 24 of 24. Both measured against dev a8888f0d with 24 stored entries, controls sane (count=5 -> 5 rows, no count -> 10, the default). The read-defects report has the 24-row half and says it forced past the cache; nobody wrote down the other half, so the PR body states the unbounded answer as if it were the only one. A reviewer who tests plain `?count=0` on their own instance sees `[]` and concludes the premise is wrong. Correction prepared in the body file, NOT yet pushed to #8738. --- Sequencing letter E. THE SHA HISTORY, because three documents quote different ones: GT1 measured 824380a0 (7 commits, on dev); this queue first recorded 0d19bb31 (8 commits, on bf/coercion, after a rebase); the CHANGELOG-only commit was then dropped and the branch re-cut directly onto origin/dev, and it is now 2ecfeb53, 6 commits. `git range-diff` showed all six content-identical to their pre-strip selves. THE STACK IS DISSOLVED, so blocks_on is empty. The §3b concern survives and is NOT a merge hazard: bf/coercion gives query.js a new `collection:` option and bf/reads fixes aggregate.js, which calls query.js through api.query_for and passes no options - so the count path still gets the legacy default walker after both land. Deliberately in neither PR.
 
 ### `P0-F` &mdash; fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter
 

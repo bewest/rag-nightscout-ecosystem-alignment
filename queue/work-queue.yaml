@@ -570,19 +570,27 @@ items:
       field, so those two halves were misfiled rather than fixed.
 
   - id: P0-E
-    title: bf/reads - six read-path fixes, independent of bf/coercion
+    title: "bf/reads - PR #8738, six read-path fixes, independent of bf/coercion"
     parcel: phase0
     repo: cgm-remote-monitor
     branch: bf/reads
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-reads
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       6 commits at 2ecfeb53, all its own, based directly on origin/dev.
       lib/server/aggregate.js, entries.js and four siblings,
       lib/api3/generic/search/input.js, lib/api3/shared/fieldsProjector.js,
       lib/api3/generic/collection.js, lib/server/count.js, lib/api/index.js.
     review: >
+      maintainer. OPENED 2026-09-16 as PR #8738, base dev. NOT after P0-D - the
+      stack is dissolved and the two branches merge cleanly with each other.
+      Three things a reviewer cannot get from the diff: it is graded major on one
+      commit only (06b133a7, the ?count= tightening, which is app.use'd ahead of
+      every v1 router and so covers writes); none of the five test files is in
+      `npm run test:unit`, so a green run there is evidence for none of the six
+      fixes; and ?count=0 answered TWO different ways on dev depending on whether
+      the runtime cache could serve the request - see notes.
       maintainer. NOT after P0-D - the stack is dissolved and the two branches
       merge cleanly with each other.
     operator_visible: >
@@ -671,12 +679,41 @@ items:
           The CHANGELOG on this branch lists read routes only, while the ?count=
           validator covers writes too. Nothing checks a release note against the
           code it describes.
+      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/reads | grep -q 2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa
+        kind: network
+        describe: >
+          the branch behind PR #8738 is on the remote at the exact tip this item
+          was measured against. Read-only. Verified 2026-09-16.
+      - no-gate: >
+          Review and merge state of PR #8738 is upstream's, and cannot be gated
+          from here without a GitHub API call. Tracked, not driven.
+      - no-gate: >
+          THE TWO-PATH BEHAVIOUR OF ?count=0 IS MEASURED BUT NOT ASSERTED.
+          tools/probes/count0-two-paths.js reproduces it - 0 rows from the cache
+          and all 24 from the database on dev, 400 on both after this branch,
+          with two controls that stay sane on each tree - but it PRINTS rather
+          than exits non-zero, so it is a probe and not a gate. Making it one
+          means deciding what the contract IS, and that is the reviewer's call
+          on #8738, not this queue's. It also needs two worktrees and a mongod.
     blocks_on: []
     evidence:
       - docs/30-design/phase0-pr-sequencing-2026-09-15.md
       - docs/60-research/gt4-semver-classification-2026-09-15.md
       - docs/60-research/e3-gate-vacuity-audit-2026-09-15.md
     notes: >
+      MEASURED 2026-09-16, AFTER THE PR WAS POSTED, and the PR body is wrong about
+      it: `?count=0` answered TWO different ways on dev depending on the path. With
+      no `find`, the runtime cache served it and returned 0 rows - which is what the
+      client asked for and is CORRECT. With a `find` that forces the read past the
+      cache to the database, `.limit(0)` means unbounded and it returned all 24 of
+      24. Both measured against dev a8888f0d with 24 stored entries, controls sane
+      (count=5 -> 5 rows, no count -> 10, the default). The read-defects report has
+      the 24-row half and says it forced past the cache; nobody wrote down the other
+      half, so the PR body states the unbounded answer as if it were the only one. A
+      reviewer who tests plain `?count=0` on their own instance sees `[]` and
+      concludes the premise is wrong. Correction prepared in the body file, NOT yet
+      pushed to #8738.
+      ---
       Sequencing letter E. THE SHA HISTORY, because three documents quote
       different ones: GT1 measured 824380a0 (7 commits, on dev); this queue
       first recorded 0d19bb31 (8 commits, on bf/coercion, after a rebase);

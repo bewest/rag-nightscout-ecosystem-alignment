@@ -15,16 +15,32 @@ error. No stored data is touched.**
 
 ### The one most likely to have bitten you
 
-**`?count=0` asked for no records and was answered with your entire collection.**
+**`?count=0` asked for no records and was sometimes answered with your entire collection.**
 
 `count` is how you say how many records you want. Zero means "no limit" to the database, so a
-request for zero records downloaded **everything** — potentially years of CGM readings. Any client
-that calculates its own `count` and can arrive at zero (a paging loop that has run out, a
-subtraction that reaches the end of a list) was silently pulling the whole database on every such
-request. On a large site that is a slow page, a spike in hosting cost, and on a metered connection
-a real one. `?count=abc` did the same thing.
+request for zero records could download **everything** — potentially years of CGM readings. Any
+client that calculates its own `count` and can arrive at zero (a paging loop that has run out, a
+subtraction that reaches the end of a list) could silently pull the whole database. On a large site
+that is a slow page, a spike in hosting cost, and on a metered connection a real one. `?count=abc`
+does the same.
 
-This now returns a clear error instead of an unbounded download.
+**It depends which path served the request, and that is worth knowing before you review this.**
+Measured on `dev` `a8888f0d` with 24 entries stored:
+
+| request | today | after this branch |
+|---|---|---|
+| `?count=0` (no `find`) | 200, **0 rows** — served from the runtime cache, and correct | **400** |
+| `?count=0&find[sgv][$gte]=1` | 200, **all 24 rows** — forced past the cache to the database | **400** |
+
+So Nightscout answers the same question two different ways today depending on whether the in-memory
+cache can serve it, and only one of those answers is the dangerous one. **A reviewer testing plain
+`?count=0` on their own instance will see an empty list and should not conclude the defect is not
+there** — add a `find` and it becomes an unbounded read.
+
+It also means this branch is not purely a repair for `?count=0`: on the cache path it replaces a
+correct empty list with a `400`. That is deliberate — a client that arrives at zero has almost
+certainly computed it by accident, and one endpoint returning `[]` while another returns the whole
+database is not a contract worth keeping — but it is a behaviour change and not only a bug fix.
 
 ### The rest
 
@@ -59,7 +75,7 @@ Measured through the shipping v1 router against a collection of 24 entries:
 
 | you send | before | after |
 |---|---|---|
-| `?count=0` | **all 24 — the whole collection** | 400 |
+| `?count=0` | **all 24 — the whole collection** (0 rows on the cache path — see above) | 400 |
 | `?count=abc` | **all 24 — the whole collection** | 400 |
 | `?count=1e2` | 1 record — a hundred were asked for | 400 |
 | `?count=-3` | 3 records | 400 |
