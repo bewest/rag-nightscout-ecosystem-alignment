@@ -98,6 +98,7 @@ raised again).
 | **BF-36** | The client's delta merge captured the cached array's length once and then spliced that array, so a `remove` followed by an item matching nothing read past the end and threw. The throw escapes into `dataUpdate`, which has no `try`/`catch` — the page stops advancing until reloaded | `lib/client/receiveddata.js` `mergeTreatmentUpdate` | **medium** — availability, not a wrong reading: the time-ago watchdog is on its own timer and still marks the page stale | yes | **fixed 2026-09-15** (found by auditing the suppressions BF-35 turned up under, `bf/merge` `b06c6faf`); reproduced directly, ablated against the shipped shape |
 | **BF-37** | `queryParms()` reads `[1]` of each `key=value` split without checking one exists, so a valueless parameter — `?debug`, a trailing `&`, `&&`, a lone `?` — throws. It is the **first statement of `client.init`**, so the page stops loading with nothing on screen but the loading message | `lib/client/browser-utils.js` `queryParms` | **medium–high** — total, silent failure to load, on a URL shape anyone can produce | yes | **fixed 2026-09-15** (suppression audit, `bf/parms` `522c6ffb`); reproduced directly |
 | **BF-38** | Translation substitution loops forwards over `%1`…`%n`; `%1` is a prefix of `%10`, so the first pass rewrites the `%1` inside `%10` and leaves a stray `0`. Same prefix-order trap as sorting a text `position` | `lib/language.js` `translate` | low — **latent**: no shipped catalogue uses more than `%3` | yes | **fixed 2026-09-15** (suppression audit, `bf/parms` `c9a7a21c`); reproduced directly |
+| **BF-39** | `queryParms()` replaced `_` with a space, corrupting every access token whose subject name contains one. **Measured to have no live effect**: `findSubject` matches on the last `-`-separated segment and ignores the abbreviated name the corruption lands in | `lib/client/browser-utils.js` `queryParms` | low — a real corruption absorbed by a leniency nobody chose | yes | **fixed 2026-09-15** (`bf/parms` `eb0bc918`); **reproduced against a live instance**, both spellings authorise |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | **fixed 2026-09-15** (`bf/reads` `c8fb536b`) — deleted, not gated; the module has no `env` handle |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | **fixed 2026-09-15** (T0.2, `bf/cache` `ddcdb1a8`); 0.837 → 0.025 ms, response asserted identical over HTTP |
@@ -1289,6 +1290,48 @@ substituter — which is the expensive part.
 *Fix*: substitute backwards, so `%11` and `%10` are consumed before `%1` can reach them.
 
 *Evidence*: `tests/language.test.js`.
+
+### BF-39 · `queryParms` turned an underscore into a space — **FIXED 2026-09-15**, no live effect
+
+Follow-up to BF-37, which deliberately left the *value handling* alone. It deserved an answer
+rather than a note.
+
+The replacement was `/[_\+]/g → ' '`. **The `+` half is correct** — `+` means space in a query
+string. **The `_` half is not correct in any encoding**, and it corrupts access tokens.
+
+A token is `<subject name, \w only>-<16 hex>`, and `\W` stripping *keeps* underscores
+(`lib/authorization/storage.js:190-191`), so a subject named `mom_phone` gets:
+
+```
+issued            mom_phone-89e148acdbbb4709
+after queryParms  mom phone-89e148acdbbb4709
+```
+
+**Measured, not reasoned about.** Created that subject through
+`/api/v2/authorization/subjects` against a live instance, read its token back, and authorised
+with both spellings: **both return 200**. `findSubject` (`storage.js:279-289`) splits on `-`,
+takes the **last** segment as the prefix, and matches `subject.digest.indexOf(prefix) === 0` —
+so the corruption lands entirely in the part nothing reads.
+
+**So this is not a live defect, and the row says so.** It is a corruption that happens to be
+absorbed — the same shape as BF-16's quick-pick filter working only by an accident of transport.
+Two ends disagree and a third thing hides it. The corruption is real, the leniency is real, and
+nobody chose the pairing.
+
+*Fix*: drop `_` from the class. It can only make values more faithful; the two parameters this
+function is ever asked for are an access token and `mute`.
+
+**Deliberately not fixed, and stated rather than implied:**
+
+* **No `decodeURIComponent`.** It throws on a malformed percent sequence, and this function is
+  called from the first line of `client.init` — which is exactly the throw **BF-37** exists to
+  fix. Neither caller needs percent decoding. A correct-looking decoder here would reinstate
+  BF-37 in a new costume.
+* **The second-`=` truncation stays.** `item.split('=')[1]` still drops anything after a second
+  `=`. A token cannot contain one — the name is `\w`, the digest is hex — so there is nothing to
+  fix and something to record.
+
+*Evidence*: `tests/browser-utils.queryparms.test.js`.
 
 
 ### BF-17 · A subject edit writes the access token into the database in plaintext
