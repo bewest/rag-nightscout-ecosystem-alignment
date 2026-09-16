@@ -3,6 +3,18 @@
 **Status**: ready to push. **Nothing has been pushed.** Five branches sit on `origin/dev` at
 `a8888f0d` in worktrees under `externals/work/`; a sixth is in the `nightscout-connect` repository.
 
+> **`origin/dev` has not moved.** Fetched live 2026-09-15: `origin/dev` is `a8888f0d`, dated
+> **2026-09-09**, and `git rev-list --count a8888f0d..origin/dev` is **0**. Every branch here shares
+> that base and **none of them is drifting from anything.** Recorded because the opposite was
+> asserted in passing and turned out to be false — the cached `FETCH_HEAD` was a day old, which is
+> the same stale-ref trap the handoff rules already warn about, and it caught the person who wrote
+> the rule.
+>
+> **So the argument for landing these is not a clock.** It is that nine branches deep is a
+> review-queue problem on its own terms, that the marginal find is now worth less than the marginal
+> landing, and that **nine of the defects in this batch were ones no register entry predicted** —
+> which says the register has stopped being the bottleneck.
+
 ## 0. Publishing is manual, deliberately
 
 **Nothing in this document pushes, tags remotely, merges or publishes. A human does each of those
