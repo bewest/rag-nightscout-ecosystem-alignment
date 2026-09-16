@@ -328,7 +328,7 @@ rather than failing to read one.
 
 | branch | commits | what it is |
 |---|---|---|
-| `bf/parms` `eb0bc918` | 3 (`522c6ffb`, `c9a7a21c`, `eb0bc918`) | **BF-37**, **BF-38**, **BF-39** — **corrected 2026-09-15**: this row had the last two commits and their entries transposed. Measured `git log origin/dev..bf/parms`. BF-37's test is among the 52 neither local script runs — use `npm test` |
+| `bf/parms` `eb0bc918` | 3 (`522c6ffb`, `c9a7a21c`, `eb0bc918`) | **BF-37**, **BF-38**, **BF-39**. **PR [#8736](https://github.com/nightscout/cgm-remote-monitor/pull/8736), opened 2026-09-16.** **Corrected 2026-09-15**: this row had the last two commits and their entries transposed. Measured `git log origin/dev..bf/parms`. BF-37's test is among the **52** neither local script runs on `origin/dev` (**53** in the branch worktree, which adds one) — use `npm test` |
 
 **BF-37 — a bare flag in the URL stops the page loading.** Verified against `origin/dev`:
 
