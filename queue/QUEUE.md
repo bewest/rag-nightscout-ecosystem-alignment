@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 74 |
-| runnable gates | 103 |
-| explicit `no-gate:` markers | 103 |
+| runnable gates | 104 |
+| explicit `no-gate:` markers | 104 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 103 of the 206 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 104 of the 208 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,9 +43,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 11 | P0-B, RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 7 | P0-A, P0-C, P0-C-REMEDIATE, P0-D, P0-E, P0-I, P0-TAG |
+| `ready-to-push` | 6 | P0-A, P0-C, P0-C-REMEDIATE, P0-D, P0-E, P0-TAG |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
-| `in-flight-upstream` | 4 | P0-F, P0-G, P0-H, P0-T01 |
+| `in-flight-upstream` | 5 | P0-F, P0-G, P0-H, P0-I, P0-T01 |
 | `needs-decision` | 3 | RT-D3, RT-0, BFQ-47 |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
@@ -88,7 +88,7 @@ decision is required by any of them.
 | `P0-F` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | `in-flight-upstream` | `fix/connect-timer-jitter` | minor | 3 run + 2 no-gate |
 | `P0-G` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | `in-flight-upstream` | `bf/food` | minor | 5 run + 1 no-gate |
 | `P0-H` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | `in-flight-upstream` | `bf/merge` | patch | 4 run + 2 no-gate |
-| `P0-I` | bf/parms - BF-37, BF-38, BF-39 | `ready-to-push` | `bf/parms` | patch | 4 run |
+| `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `in-flight-upstream` | `bf/parms` | patch | 5 run + 1 no-gate |
 | `P0-TAG` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push | `ready-to-push` | `release/v0.0.14` | minor | 5 run + 1 no-gate |
 | `P0-PIN` | bf/connect-pin - move dev's connector pin to the v0.0.14 tarball | `blocked` | `bf/connect-pin` | patch | 3 run + 1 no-gate |
 | `P0-LOCK` | Regenerate package-lock.json after the v0.0.14 tag is pushed | `blocked` | `bf/connect-pin` | n/a | 2 run |
@@ -452,17 +452,17 @@ decision is required by any of them.
 
 **Notes.** Sequencing letter H.
 
-### `P0-I` &mdash; bf/parms - BF-37, BF-38, BF-39
+### `P0-I` &mdash; bf/parms - PR #8736, BF-37, BF-38, BF-39
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/parms` |
 | base | `origin/dev@a8888f0d` |
 | worktree | `externals/work/crm-bf-parms` |
 | semver | `patch` |
-| review | maintainer |
+| review | maintainer. OPENED 2026-09-16 as PR #8736, base dev. Worth stating in the review request: classification is patch with one judgement call (the underscore decoding, see semver_reason); the BF-37 test is invisible to `npm run test:unit`, so a green run there is evidence for BF-38 and none for BF-37; and BF-39 breaks nothing live today - both token spellings return 200 - which the body says outright rather than implying a break. |
 | register | `BF-37`, `BF-38`, `BF-39` |
 
 **Blast radius.** 3 commits at eb0bc918. lib/client/browser-utils.js, lib/language.js.
@@ -481,6 +481,9 @@ decision is required by any of them.
   - BF-37 and BF-39; in NEITHER local brace list (GT1)
 - `[unit]` _(cwd: `externals/work/crm-bf-parms`)_ `TEST=language npm run test-single`
   - BF-38. Non-vacuous by GT1's control - 1 failing when the fix is removed from pristine dev code.
+- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/parms | grep -q eb0bc918036a7802a0b88156e9722f45fd9107f3`
+  - the branch behind PR #8736 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- **NO GATE** &mdash; Review and merge state of PR #8736 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
 
 **Evidence.**
 

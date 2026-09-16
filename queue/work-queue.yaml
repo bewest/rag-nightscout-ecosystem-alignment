@@ -907,16 +907,22 @@ items:
     notes: Sequencing letter H.
 
   - id: P0-I
-    title: bf/parms - BF-37, BF-38, BF-39
+    title: "bf/parms - PR #8736, BF-37, BF-38, BF-39"
     parcel: phase0
     repo: cgm-remote-monitor
     branch: bf/parms
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-parms
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: 3 commits at eb0bc918. lib/client/browser-utils.js,
       lib/language.js.
-    review: maintainer
+    review: >
+      maintainer. OPENED 2026-09-16 as PR #8736, base dev. Worth stating in the
+      review request: classification is patch with one judgement call (the
+      underscore decoding, see semver_reason); the BF-37 test is invisible to
+      `npm run test:unit`, so a green run there is evidence for BF-38 and none
+      for BF-37; and BF-39 breaks nothing live today - both token spellings
+      return 200 - which the body says outright rather than implying a break.
     operator_visible: >
       A web address with a bare option in it - anything ending in "?", or
       containing "&&", or a setting with no value such as "?debug" - stopped the
@@ -947,6 +953,14 @@ items:
         describe: >
           BF-38. Non-vacuous by GT1's control - 1 failing when the fix is
           removed from pristine dev code.
+      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/parms | grep -q eb0bc918036a7802a0b88156e9722f45fd9107f3
+        kind: network
+        describe: >
+          the branch behind PR #8736 is on the remote at the exact tip this item
+          was measured against. Read-only. Verified 2026-09-16.
+      - no-gate: >
+          Review and merge state of PR #8736 is upstream's, and cannot be gated
+          from here without a GitHub API call. Tracked, not driven.
     blocks_on: []
     evidence:
       - docs/30-design/nightscout-backfix-register.md
