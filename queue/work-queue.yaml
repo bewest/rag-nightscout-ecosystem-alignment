@@ -314,6 +314,16 @@ items:
       - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
       - tools/mt-bench/apitier.js
     notes: >
+      READ THE CLAIM UNBACKED WARNING ON THIS ITEM CAREFULLY - IT MEANS SOMETHING
+      DIFFERENT NOW. Both performance targets are gated as of 2026-09-16, but both
+      gates run a benchmark, so they are kind: integration and `make queue-status`
+      SKIPS them unless you pass INTEGRATION=1. In a default run every gate that
+      executes passes and the runner therefore still prints CLAIM UNBACKED. With
+      INTEGRATION=1 the item is 3/4 and the red gate is the T0.3 budget, which is
+      the honest picture: T0.2 met, T0.3 not. Run
+      `make queue-status ID=P0-B INTEGRATION=1` before drawing any conclusion from
+      this row.
+      ---
       Sequencing letter B. T0.2 passed its gate (0.837 -> 0.025 ms, asserted
       identical over HTTP). T0.3 did not. A dead `mills` write at
       dataloader.js:203 was found and removed with a test that goes red if it
