@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 74 |
-| runnable gates | 109 |
+| runnable gates | 114 |
 | explicit `no-gate:` markers | 108 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 108 of the 217 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 108 of the 222 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -79,16 +79,16 @@ decision is required by any of them.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `in-flight-upstream` | `bf/alarms` | major | 8 run + 3 no-gate |
+| `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `in-flight-upstream` | `bf/alarms` | major | 9 run + 3 no-gate |
 | `P0-B` | bf/cache - T0.2 and T0.3 read-path cost | `gate-not-met` | `bf/cache` | patch | 2 run + 2 no-gate |
 | `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `ready-to-push` | `bf/auth` | major | 5 run + 2 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
-| `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `in-flight-upstream` | `bf/coercion` | minor | 6 run + 1 no-gate |
+| `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `in-flight-upstream` | `bf/coercion` | minor | 7 run + 1 no-gate |
 | `P0-E` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion | `in-flight-upstream` | `bf/reads` | major | 10 run + 5 no-gate |
 | `P0-F` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | `in-flight-upstream` | `fix/connect-timer-jitter` | minor | 3 run + 2 no-gate |
-| `P0-G` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | `in-flight-upstream` | `bf/food` | minor | 5 run + 1 no-gate |
-| `P0-H` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | `in-flight-upstream` | `bf/merge` | patch | 4 run + 2 no-gate |
-| `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `in-flight-upstream` | `bf/parms` | patch | 5 run + 1 no-gate |
+| `P0-G` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | `in-flight-upstream` | `bf/food` | minor | 6 run + 1 no-gate |
+| `P0-H` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | `in-flight-upstream` | `bf/merge` | patch | 5 run + 2 no-gate |
+| `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `in-flight-upstream` | `bf/parms` | patch | 6 run + 1 no-gate |
 | `P0-TAG` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push | `ready-to-push` | `release/v0.0.14` | minor | 5 run + 1 no-gate |
 | `P0-PIN` | bf/connect-pin - move dev's connector pin to the v0.0.14 tarball | `blocked` | `bf/connect-pin` | patch | 3 run + 1 no-gate |
 | `P0-LOCK` | Regenerate package-lock.json after the v0.0.14 tag is pushed | `blocked` | `bf/connect-pin` | n/a | 2 run |
@@ -137,6 +137,8 @@ decision is required by any of them.
 - `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/alarms | grep -q 5dcf783fdbb20188c378d79121dcbe860425eede`
   - the branch behind PR #8739 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
 - **NO GATE** &mdash; Review and merge state of PR #8739 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
+- `[network]` `node tools/queue/gates/pr-body-parity.js --only 8739`
+  - the live body of PR #8739 still matches the file it was posted from. Bodies drift in one direction - a correction gets written into the file first - and the only previous record that one was owed was a sentence in a notes: field, which is what let #8738 stay wrong in public for a day. It does NOT measure whether the body is TRUE: parity with a wrong file is still parity, and every figure in these bodies has been wrong at least once. NON-VACUITY, reproduced 2026-09-16: one altered file gives 1 failing, an empty body dir gives 6 failing. SKIPS with exit 0 when gh is unauthenticated.
 
 **Evidence.**
 
@@ -290,6 +292,8 @@ decision is required by any of them.
 - `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/coercion | grep -q b72347538ba29f965c531bdd47f81dc52d895a13`
   - the branch behind PR #8737 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
 - **NO GATE** &mdash; Review and merge state of PR #8737 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
+- `[network]` `node tools/queue/gates/pr-body-parity.js --only 8737`
+  - the live body of PR #8737 still matches the file it was posted from. Bodies drift in one direction - a correction gets written into the file first - and the only previous record that one was owed was a sentence in a notes: field, which is what let #8738 stay wrong in public for a day. It does NOT measure whether the body is TRUE: parity with a wrong file is still parity, and every figure in these bodies has been wrong at least once. NON-VACUITY, reproduced 2026-09-16: one altered file gives 1 failing, an empty body dir gives 6 failing. SKIPS with exit 0 when gh is unauthenticated.
 
 **Evidence.**
 
@@ -341,9 +345,9 @@ decision is required by any of them.
 - `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/reads | grep -q 2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa`
   - the branch behind PR #8738 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
 - **NO GATE** &mdash; Review and merge state of PR #8738 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
-- `[network]` `node tools/queue/gates/pr-body-carries-correction.js`
-  - A TRACKING GATE, and it is meant to be RED until somebody pushes the edit. It is not a defect in the branch. After #8738 was posted, the plainest question about its headline defect - does ?count=0 now return zero documents - turned up that ?count=0 answers TWO ways on dev: 0 rows from the runtime cache, which is correct, and the whole collection when forced to the database. The posted body states only the second, so a reviewer who tries the plain spelling sees [] and concludes the premise is wrong. The local body file carries the correction and the live PR does not. The previous record of that was one sentence in this item's notes, which is the exact shape of thing that goes stale unread. NON-VACUITY, reproduced 2026-09-16: --needle 'Bad count' (present in both) gives 0 failing, a needle in neither gives 2 failing, and the default gives 1. It SKIPS with exit 0 when gh is unauthenticated, because a missing credential is not evidence the text is right.
 - **NO GATE** &mdash; THE TWO-PATH BEHAVIOUR OF ?count=0 IS MEASURED BUT NOT ASSERTED. tools/probes/count0-two-paths.js reproduces it - 0 rows from the cache and all 24 from the database on dev, 400 on both after this branch, with two controls that stay sane on each tree - but it PRINTS rather than exits non-zero, so it is a probe and not a gate. Making it one means deciding what the contract IS, and that is the reviewer's call on #8738, not this queue's. It also needs two worktrees and a mongod.
+- `[network]` `node tools/queue/gates/pr-body-parity.js --only 8738`
+  - the live body of PR #8738 still matches the file it was posted from. Bodies drift in one direction - a correction gets written into the file first - and the only previous record that one was owed was a sentence in a notes: field, which is what let #8738 stay wrong in public for a day. It does NOT measure whether the body is TRUE: parity with a wrong file is still parity, and every figure in these bodies has been wrong at least once. NON-VACUITY, reproduced 2026-09-16: one altered file gives 1 failing, an empty body dir gives 6 failing. SKIPS with exit 0 when gh is unauthenticated.
 
 **Evidence.**
 
@@ -351,7 +355,7 @@ decision is required by any of them.
 - `docs/60-research/gt4-semver-classification-2026-09-15.md`
 - `docs/60-research/e3-gate-vacuity-audit-2026-09-15.md`
 
-**Notes.** THIS ITEM NOW REPORTS FAIL AND THE STATE IS DELIBERATELY STILL in-flight- upstream. The manifest's rule is that a failing declared gate means gate-not- met, and P0-C was moved on exactly that ground when its BF-05 tracking gate went red. This case is different and the difference is worth writing down rather than quietly exempting: there, the red gate meant a residual DEFECT was still in the code. Here the branch is unchanged and fine - what is stale is the PROSE on a pull request that is genuinely in flight. The two states answer different questions, which is a flaw in the state model and not a licence to mislabel this item. So the state says where the work is and the red gate says what is owed, and anyone reading a FAIL here should read the gate's own output, which prints the one command that clears it. --- MEASURED 2026-09-16, AFTER THE PR WAS POSTED, and the PR body is wrong about it: `?count=0` answered TWO different ways on dev depending on the path. With no `find`, the runtime cache served it and returned 0 rows - which is what the client asked for and is CORRECT. With a `find` that forces the read past the cache to the database, `.limit(0)` means unbounded and it returned all 24 of 24. Both measured against dev a8888f0d with 24 stored entries, controls sane (count=5 -> 5 rows, no count -> 10, the default). The read-defects report has the 24-row half and says it forced past the cache; nobody wrote down the other half, so the PR body states the unbounded answer as if it were the only one. A reviewer who tests plain `?count=0` on their own instance sees `[]` and concludes the premise is wrong. Correction prepared in the body file, NOT yet pushed to #8738. --- Sequencing letter E. THE SHA HISTORY, because three documents quote different ones: GT1 measured 824380a0 (7 commits, on dev); this queue first recorded 0d19bb31 (8 commits, on bf/coercion, after a rebase); the CHANGELOG-only commit was then dropped and the branch re-cut directly onto origin/dev, and it is now 2ecfeb53, 6 commits. `git range-diff` showed all six content-identical to their pre-strip selves. THE STACK IS DISSOLVED, so blocks_on is empty. The §3b concern survives and is NOT a merge hazard: bf/coercion gives query.js a new `collection:` option and bf/reads fixes aggregate.js, which calls query.js through api.query_for and passes no options - so the count path still gets the legacy default walker after both land. Deliberately in neither PR.
+**Notes.** THE CORRECTION IS PUSHED. #8738's body carried the wrong account of ?count=0 for a day - it said the whole collection, which is true only past the runtime cache; the plain spelling returns 0 rows and is correct. Edited 2026-09-16 and the parity gate above is green. The state question this raised is settled and worth keeping: while the gate was red this item reported FAIL and the state stayed in-flight-upstream, because the manifest's gate-not-met rule was written for a red gate meaning a DEFECT IN THE CODE, and here the branch was fine and the PROSE was stale. Those are different questions and the state model does not separate them. --- MEASURED 2026-09-16, AFTER THE PR WAS POSTED, and the PR body is wrong about it: `?count=0` answered TWO different ways on dev depending on the path. With no `find`, the runtime cache served it and returned 0 rows - which is what the client asked for and is CORRECT. With a `find` that forces the read past the cache to the database, `.limit(0)` means unbounded and it returned all 24 of 24. Both measured against dev a8888f0d with 24 stored entries, controls sane (count=5 -> 5 rows, no count -> 10, the default). The read-defects report has the 24-row half and says it forced past the cache; nobody wrote down the other half, so the PR body states the unbounded answer as if it were the only one. A reviewer who tests plain `?count=0` on their own instance sees `[]` and concludes the premise is wrong. Correction prepared in the body file, NOT yet pushed to #8738. --- Sequencing letter E. THE SHA HISTORY, because three documents quote different ones: GT1 measured 824380a0 (7 commits, on dev); this queue first recorded 0d19bb31 (8 commits, on bf/coercion, after a rebase); the CHANGELOG-only commit was then dropped and the branch re-cut directly onto origin/dev, and it is now 2ecfeb53, 6 commits. `git range-diff` showed all six content-identical to their pre-strip selves. THE STACK IS DISSOLVED, so blocks_on is empty. The §3b concern survives and is NOT a merge hazard: bf/coercion gives query.js a new `collection:` option and bf/reads fixes aggregate.js, which calls query.js through api.query_for and passes no options - so the count path still gets the legacy default walker after both land. Deliberately in neither PR.
 
 ### `P0-F` &mdash; fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter
 
@@ -421,6 +425,8 @@ decision is required by any of them.
 - `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/food | grep -q 73495331e68c4cda3a63e8c047387bdf404b89b0`
   - the branch behind PR #8735 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
 - **NO GATE** &mdash; Review and merge state of PR #8735 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
+- `[network]` `node tools/queue/gates/pr-body-parity.js --only 8735`
+  - the live body of PR #8735 still matches the file it was posted from. Bodies drift in one direction - a correction gets written into the file first - and the only previous record that one was owed was a sentence in a notes: field, which is what let #8738 stay wrong in public for a day. It does NOT measure whether the body is TRUE: parity with a wrong file is still parity, and every figure in these bodies has been wrong at least once. NON-VACUITY, reproduced 2026-09-16: one altered file gives 1 failing, an empty body dir gives 6 failing. SKIPS with exit 0 when gh is unauthenticated.
 
 **Evidence.**
 
@@ -459,6 +465,8 @@ decision is required by any of them.
 - `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/merge | grep -q b06c6faf882ebd84d627468c75dade0fe1fd01a1`
   - the branch behind PR #8734 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
 - **NO GATE** &mdash; Review and merge state of PR #8734 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
+- `[network]` `node tools/queue/gates/pr-body-parity.js --only 8734`
+  - the live body of PR #8734 still matches the file it was posted from. Bodies drift in one direction - a correction gets written into the file first - and the only previous record that one was owed was a sentence in a notes: field, which is what let #8738 stay wrong in public for a day. It does NOT measure whether the body is TRUE: parity with a wrong file is still parity, and every figure in these bodies has been wrong at least once. NON-VACUITY, reproduced 2026-09-16: one altered file gives 1 failing, an empty body dir gives 6 failing. SKIPS with exit 0 when gh is unauthenticated.
 
 **Evidence.**
 
@@ -498,6 +506,8 @@ decision is required by any of them.
 - `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/parms | grep -q eb0bc918036a7802a0b88156e9722f45fd9107f3`
   - the branch behind PR #8736 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
 - **NO GATE** &mdash; Review and merge state of PR #8736 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
+- `[network]` `node tools/queue/gates/pr-body-parity.js --only 8736`
+  - the live body of PR #8736 still matches the file it was posted from. Bodies drift in one direction - a correction gets written into the file first - and the only previous record that one was owed was a sentence in a notes: field, which is what let #8738 stay wrong in public for a day. It does NOT measure whether the body is TRUE: parity with a wrong file is still parity, and every figure in these bodies has been wrong at least once. NON-VACUITY, reproduced 2026-09-16: one altered file gives 1 failing, an empty body dir gives 6 failing. SKIPS with exit 0 when gh is unauthenticated.
 
 **Evidence.**
 

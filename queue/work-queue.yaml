@@ -188,6 +188,18 @@ items:
       - no-gate: >
           Review and merge state of PR #8739 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
+      - run: node tools/queue/gates/pr-body-parity.js --only 8739
+        kind: network
+        describe: >
+          the live body of PR #8739 still matches the file it was posted
+          from. Bodies drift in one direction - a correction gets written into
+          the file first - and the only previous record that one was owed was a
+          sentence in a notes: field, which is what let #8738 stay wrong in
+          public for a day. It does NOT measure whether the body is TRUE:
+          parity with a wrong file is still parity, and every figure in these
+          bodies has been wrong at least once. NON-VACUITY, reproduced
+          2026-09-16: one altered file gives 1 failing, an empty body dir gives
+          6 failing. SKIPS with exit 0 when gh is unauthenticated.
     blocks_on: []
     evidence:
       - docs/60-research/bf28-29-31-alarm-delivery-2026-09-15.md
@@ -587,6 +599,18 @@ items:
       - no-gate: >
           Review and merge state of PR #8737 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
+      - run: node tools/queue/gates/pr-body-parity.js --only 8737
+        kind: network
+        describe: >
+          the live body of PR #8737 still matches the file it was posted
+          from. Bodies drift in one direction - a correction gets written into
+          the file first - and the only previous record that one was owed was a
+          sentence in a notes: field, which is what let #8738 stay wrong in
+          public for a day. It does NOT measure whether the body is TRUE:
+          parity with a wrong file is still parity, and every figure in these
+          bodies has been wrong at least once. NON-VACUITY, reproduced
+          2026-09-16: one altered file gives 1 failing, an empty body dir gives
+          6 failing. SKIPS with exit 0 when gh is unauthenticated.
     blocks_on: []
     evidence:
       - tools/nsschema/emit/coercion_emit.py
@@ -714,23 +738,6 @@ items:
       - no-gate: >
           Review and merge state of PR #8738 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
-      - run: node tools/queue/gates/pr-body-carries-correction.js
-        kind: network
-        describe: >
-          A TRACKING GATE, and it is meant to be RED until somebody pushes the
-          edit. It is not a defect in the branch. After #8738 was posted, the
-          plainest question about its headline defect - does ?count=0 now return
-          zero documents - turned up that ?count=0 answers TWO ways on dev: 0 rows
-          from the runtime cache, which is correct, and the whole collection when
-          forced to the database. The posted body states only the second, so a
-          reviewer who tries the plain spelling sees [] and concludes the premise
-          is wrong. The local body file carries the correction and the live PR does
-          not. The previous record of that was one sentence in this item's notes,
-          which is the exact shape of thing that goes stale unread. NON-VACUITY,
-          reproduced 2026-09-16: --needle 'Bad count' (present in both) gives 0
-          failing, a needle in neither gives 2 failing, and the default gives 1.
-          It SKIPS with exit 0 when gh is unauthenticated, because a missing
-          credential is not evidence the text is right.
       - no-gate: >
           THE TWO-PATH BEHAVIOUR OF ?count=0 IS MEASURED BUT NOT ASSERTED.
           tools/probes/count0-two-paths.js reproduces it - 0 rows from the cache
@@ -739,24 +746,33 @@ items:
           than exits non-zero, so it is a probe and not a gate. Making it one
           means deciding what the contract IS, and that is the reviewer's call
           on #8738, not this queue's. It also needs two worktrees and a mongod.
+      - run: node tools/queue/gates/pr-body-parity.js --only 8738
+        kind: network
+        describe: >
+          the live body of PR #8738 still matches the file it was posted
+          from. Bodies drift in one direction - a correction gets written into
+          the file first - and the only previous record that one was owed was a
+          sentence in a notes: field, which is what let #8738 stay wrong in
+          public for a day. It does NOT measure whether the body is TRUE:
+          parity with a wrong file is still parity, and every figure in these
+          bodies has been wrong at least once. NON-VACUITY, reproduced
+          2026-09-16: one altered file gives 1 failing, an empty body dir gives
+          6 failing. SKIPS with exit 0 when gh is unauthenticated.
     blocks_on: []
     evidence:
       - docs/30-design/phase0-pr-sequencing-2026-09-15.md
       - docs/60-research/gt4-semver-classification-2026-09-15.md
       - docs/60-research/e3-gate-vacuity-audit-2026-09-15.md
     notes: >
-      THIS ITEM NOW REPORTS FAIL AND THE STATE IS DELIBERATELY STILL
-      in-flight-upstream. The manifest's rule is that a failing declared gate
-      means gate-not-met, and P0-C was moved on exactly that ground when its
-      BF-05 tracking gate went red. This case is different and the difference is
-      worth writing down rather than quietly exempting: there, the red gate meant
-      a residual DEFECT was still in the code. Here the branch is unchanged and
-      fine - what is stale is the PROSE on a pull request that is genuinely in
-      flight. The two states answer different questions, which is a flaw in the
-      state model and not a licence to mislabel this item. So the state says where
-      the work is and the red gate says what is owed, and anyone reading a FAIL
-      here should read the gate's own output, which prints the one command that
-      clears it.
+      THE CORRECTION IS PUSHED. #8738's body carried the wrong account of ?count=0
+      for a day - it said the whole collection, which is true only past the runtime
+      cache; the plain spelling returns 0 rows and is correct. Edited 2026-09-16 and
+      the parity gate above is green. The state question this raised is settled and
+      worth keeping: while the gate was red this item reported FAIL and the state
+      stayed in-flight-upstream, because the manifest's gate-not-met rule was
+      written for a red gate meaning a DEFECT IN THE CODE, and here the branch was
+      fine and the PROSE was stale. Those are different questions and the state
+      model does not separate them.
       ---
       MEASURED 2026-09-16, AFTER THE PR WAS POSTED, and the PR body is wrong about
       it: `?count=0` answered TWO different ways on dev depending on the path. With
@@ -955,6 +971,18 @@ items:
       - no-gate: >
           Review and merge state of PR #8735 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
+      - run: node tools/queue/gates/pr-body-parity.js --only 8735
+        kind: network
+        describe: >
+          the live body of PR #8735 still matches the file it was posted
+          from. Bodies drift in one direction - a correction gets written into
+          the file first - and the only previous record that one was owed was a
+          sentence in a notes: field, which is what let #8738 stay wrong in
+          public for a day. It does NOT measure whether the body is TRUE:
+          parity with a wrong file is still parity, and every figure in these
+          bodies has been wrong at least once. NON-VACUITY, reproduced
+          2026-09-16: one altered file gives 1 failing, an empty body dir gives
+          6 failing. SKIPS with exit 0 when gh is unauthenticated.
     blocks_on: []
     evidence:
       - docs/30-design/phase0-pr-sequencing-2026-09-15.md
@@ -1029,6 +1057,18 @@ items:
       - no-gate: >
           Review and merge state of PR #8734 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
+      - run: node tools/queue/gates/pr-body-parity.js --only 8734
+        kind: network
+        describe: >
+          the live body of PR #8734 still matches the file it was posted
+          from. Bodies drift in one direction - a correction gets written into
+          the file first - and the only previous record that one was owed was a
+          sentence in a notes: field, which is what let #8738 stay wrong in
+          public for a day. It does NOT measure whether the body is TRUE:
+          parity with a wrong file is still parity, and every figure in these
+          bodies has been wrong at least once. NON-VACUITY, reproduced
+          2026-09-16: one altered file gives 1 failing, an empty body dir gives
+          6 failing. SKIPS with exit 0 when gh is unauthenticated.
     blocks_on: []
     evidence:
       - docs/30-design/nightscout-backfix-register.md
@@ -1089,6 +1129,18 @@ items:
       - no-gate: >
           Review and merge state of PR #8736 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
+      - run: node tools/queue/gates/pr-body-parity.js --only 8736
+        kind: network
+        describe: >
+          the live body of PR #8736 still matches the file it was posted
+          from. Bodies drift in one direction - a correction gets written into
+          the file first - and the only previous record that one was owed was a
+          sentence in a notes: field, which is what let #8738 stay wrong in
+          public for a day. It does NOT measure whether the body is TRUE:
+          parity with a wrong file is still parity, and every figure in these
+          bodies has been wrong at least once. NON-VACUITY, reproduced
+          2026-09-16: one altered file gives 1 failing, an empty body dir gives
+          6 failing. SKIPS with exit 0 when gh is unauthenticated.
     blocks_on: []
     evidence:
       - docs/30-design/nightscout-backfix-register.md
