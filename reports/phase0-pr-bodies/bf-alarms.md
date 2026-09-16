@@ -1,14 +1,13 @@
-# A — `bf/alarms`: an urgent insulin-age alarm that could never fire, and two delivery defects
+# `bf/alarms` — an urgent insulin-age alarm that could never fire, and two delivery defects
 
-> **Base: `origin/dev` `a8888f0d`. This is one of NINE INDEPENDENT PRs. There is no stack — no
-> Phase 0 branch is based on another, and this one merges cleanly against `origin/dev` and against
-> all eight of the others.**
->
-> **Needs a maintainer's explicit yes before merge — one of two branches in the set that does
-> (the other is `bf/auth`, C).** This branch makes an alarm start firing that has never fired in
-> any deployment, **and it removes a capability with no replacement** (per-request locale on the
-> Alexa and Google Home endpoints). Both are the intended end state, but they are decisions, not
-> typo fixes, and neither can be undone by an operator's configuration.
+Three commits on `origin/dev` `a8888f0d`, tip `5dcf783f`. 8 files, +400/−22, of which four are
+test files. No `CHANGELOG.md` edit. Merges clean against `dev` and against every other open Phase 0
+branch.
+
+> **This one needs an explicit yes, not just a review.** It makes an alarm start firing that has
+> never fired in any deployment, **and it removes a capability with no replacement** (per-request
+> locale on the Alexa and Google Home endpoints). Both are the intended end state, but they are
+> decisions rather than typo fixes, and an operator cannot undo either through configuration.
 
 ## What changes for you
 
@@ -23,7 +22,7 @@ and never seen it honoured. After this change it works as documented.
 Two things follow from that, and both are worth knowing before you upgrade:
 
 - **There is no grace period.** If your reservoir is already past the threshold when you
-  upgrade, the urgent alarm fires. That is deliberate. It is explained under
+  upgrade, the urgent alarm fires. That is deliberate, and the reasoning is under
   "Why no grace period" below.
 - **The severity of what you already saw was also wrong.** Past the threshold the plugin was
   reporting the lower "warning" level for as long as the reservoir stayed overdue — not only
@@ -42,8 +41,7 @@ This alarm only reaches you if you have already turned Insulin Age alerts on
   you** — this only adds a message.
 - **Voice assistant replies (Alexa, Google Home) are now always in your Nightscout's
   configured language.** Previously a request could be answered in the language that request
-  asked for. That sounds like a feature, and it was removed on purpose: see the plain warning
-  below, because this one is a capability removal.
+  asked for. That sounds like a feature, and it was removed on purpose — see below.
 
 > **Read this if you use Alexa or Google Home with Nightscout.** Before this change, a single
 > voice request that named a language **re-pointed the language for the whole Nightscout
@@ -58,9 +56,19 @@ Nightscout is not a medical device and none of this is medical advice. If a chan
 are alerted about insulin or site age affects how you manage your therapy, talk it through with
 your care team.
 
-## Technical detail
+---
 
-**BF-28 — `insulinage`'s urgent branch is unreachable.**
+## The commits
+
+| commit | what |
+|---|---|
+| `8714093b` | `insulinage`'s urgent branch tested a field that is never set (**BF-28**) |
+| `99e46a52` | an `ENABLE` entry naming the plugin's file instead of the plugin is silently ignored (**BF-29**) |
+| `5dcf783f` | one assistant request re-languages the whole process (**BF-31**) |
+
+Each lands alone; there is no ordering constraint inside the branch.
+
+### BF-28 — the urgent branch is unreachable
 
 ```
 lib/plugins/insulinage.js:92    if (insulinInfo.age >= insulinInfo.urgent) {
@@ -72,10 +80,10 @@ lib/plugins/insulinage.js:93      sendNotification = insulinInfo.age === prefs.u
 below, reads `prefs.urgent` correctly. All three sibling age plugins — `cannulaage`,
 `sensorage`, `batteryage` — use `prefs.urgent` on both lines. The fix is that one identifier.
 
-*Measured through the real sandbox at four ages*: at 72 h the plugin requested nothing before
-and the URGENT overdue notification after. At 80 h, and at every age past the threshold, it
-reported level **WARN** rather than URGENT — so the register entry understated the defect. The
-severity was wrong for the whole time the reservoir stayed overdue, not only at the boundary.
+Measured through the real sandbox at four ages: at 72 h the plugin requested nothing before, and
+the URGENT overdue notification after. At 80 h, and at every age past the threshold, it reported
+level **WARN** rather than URGENT — so the severity was wrong for the whole time the reservoir
+stayed overdue, not only at the boundary.
 
 **Why no grace period**, argued from evidence rather than taste:
 
@@ -86,78 +94,78 @@ severity was wrong for the whole time the reservoir stayed overdue, not only at 
 - a grace keyed on "the threshold was set explicitly" would leave the most exposed operators —
   the ones who enabled alerts and trusted the default — exactly where the bug left them.
 
-**BF-29 — an unrecognised `ENABLE` entry is silently ignored.** Matching is against
-`plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`, `basal` — six aliases, not five), not
-against the file name. `ENABLE=insulinage` loads nothing and says nothing. The branch adds a
-suggestion based on edit distance. *Known limitation, measured*: the suggester is silent on a
-stock settings string — `food`, `bridge`, `delta`, `devicestatus` and `cors` produce no
-suggestion — while all six file-name aliases and near-misses such as `pushove` do. It helps the
-case it was built for and does not chatter on correct configuration.
+### BF-29 — an unrecognised `ENABLE` entry is silently ignored
 
-**BF-31 — a voice request re-languages the whole process.** `ctx.language.set(locale)` and
-`moment.locale()` are process-global. `POST /api/v1/alexa` and `POST /api/v1/googlehome`
-called them per request. **Measured**, and this corrected the register entry: the original
-claim that "this is how alarm text reaches a push notification" does **not** hold — the alarm
-catalogue is loaded once at boot. The leak is real but it is a shared-state defect, not an
-alarm-text one, and the entry has been refiled accordingly.
+Matching is against `plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`, `basal` — six aliases),
+not against the file name. `ENABLE=insulinage` loads nothing and says nothing. The branch adds a
+suggestion based on edit distance.
 
-## Evidence
+**Known limitation, measured.** The suggester is silent on a stock settings string — `food`,
+`bridge`, `delta`, `devicestatus` and `cors` produce no suggestion — while all six file-name
+aliases and near-misses such as `pushove` do. It helps the case it was built for and does not
+chatter on correct configuration.
 
-- `docs/60-research/bf28-29-31-alarm-delivery-2026-09-15.md`
-- Register entries **BF-28**, **BF-29**, **BF-31** in
-  `docs/30-design/nightscout-backfix-register.md`
+### BF-31 — a voice request re-languages the whole process
 
-## Test evidence
+`ctx.language.set(locale)` and `moment.locale()` are process-global, and `POST /api/v1/alexa` and
+`POST /api/v1/googlehome` called them per request.
 
-- 3 commits: `8714093b` (BF-28), `99e46a52` (BF-29), `5dcf783f` (BF-31).
-- 8 files, +400/-22, including `tests/insulinage.test.js` (+35) and `tests/plugins.test.js`
-  (+119).
-- `git merge-tree --write-tree --messages origin/dev bf/alarms` — **clean** against
-  `origin/dev` `a8888f0d`, re-confirmed 2026-09-15.
-- Trial-merges clean against all eight other Phase 0 branches (full 36-pair matrix, re-run
-  2026-09-15; the matrix tool was positive-controlled against a known-conflicting pair, so the
-  clean result is not vacuous).
-- **Run the whole tree, not `npm run test:unit`.** `test:unit` is a brace list covering 44 of
-  the 159 files in `tests/`; CI runs `npm run test-ci`, which is `./tests/*.test.js`. Several
-  Phase 0 evidence files are outside the local unit list.
-- *Known environmental note*: `crm-bf-alarms`' `node_modules` is missing
-  `.cache/_ns_cache/public/js/bundle.app.js`, which fails `careportal`'s before-all hook
-  locally. `npm run bundle` fixes it. It is not a defect in this branch.
+Worth stating because it narrows the claim: this is a **shared-state** defect, not an alarm-text
+one. The alarm catalogue is loaded once at boot, so the leak does not reach alarm text through the
+catalogue. It reaches every later render and reply that resolves a string at request time.
 
-## Semver
+## Verifying it
 
-**Major**, and this branch is one of the three rows that makes Phase 0 as a whole a major
-rather than a minor. The driver is not the alarm — it is the **removal of per-request locale
-handling from two HTTP endpoints** with no replacement in the same changeset. Classification
-from `docs/60-research/gt4-semver-classification-2026-09-15.md`.
+```
+TEST=insulinage       npm run test-single    #  5 passing   (no database)
+TEST=plugins          npm run test-single    # 13 passing   (no database)
+TEST=api.alexa        npm run test-single    #  4 passing   (needs MongoDB)
+TEST=api.googlehome   npm run test-single    #  2 passing   (needs MongoDB)
+```
 
-If the maintainer wants Phase 0 to land as `15.1.0`, the Alexa/Google Home locale removal is
-one of exactly three changes that would have to be split out.
+Re-measured 2026-09-16 on `5dcf783f`, all four green.
 
-**The operator-visible text above belongs in the release notes.** It is *not* a `CHANGELOG.md`
-entry and this branch adds none: under the maintainer's rule, `CHANGELOG.md` is a **release
-output** generated by GitHub tooling between releases, and branches never hand-edit it. Release
-notes are prepared as release assets in the control-surface repo, and the "What changes for you"
-section above is written to be usable verbatim as that source text. **Three paragraphs must not be
-dropped:** the no-grace-period warning, the note that the severity you already saw was understated,
-and the Alexa/Google Home block — that last one is a capability removal with no replacement, and it
-is the only part of this branch that takes something away from an operator who was relying on it.
+Each is ablated, restoring the file it covers to `dev` and re-running:
 
----
+| restore to `dev` | result |
+|---|---|
+| `lib/plugins/insulinage.js` | `TEST=insulinage` → 3 passing / **2 failing** |
+| `lib/plugins/index.js` | `TEST=plugins` → 5 passing / **8 failing** |
+| `lib/api/alexa/index.js` | `TEST=api.alexa` → 3 passing / **1 failing** |
+| `lib/api/googlehome/index.js` | `TEST=api.googlehome` → 1 passing / **1 failing** |
 
-## Follow-ups deliberately **not** in this PR
+The first two are database-free and give the same counts against a dead mongo port.
+
+**`tests/api.alexa.test.js` and `tests/api.googlehome.test.js` are in neither `npm run test:unit`
+nor `npm run test:integration`** — they are among the files only `npm run test-ci` reaches, which
+is what `main.yml` runs. So a green `test:unit` is not evidence for BF-31, which is the commit that
+makes this branch a major.
+
+## Semver: major
+
+The driver is not the alarm. It is the **removal of per-request locale handling from two HTTP
+endpoints** with no replacement in the same changeset: a request carrying `request.locale` used to
+be answered in that language and is now answered in the server's configured language. The removal
+is correct — the mechanism was process-global — but it is a capability removal on a declared HTTP
+surface, and that is what grades it.
+
+**If Phase 0 should land as a minor, this is one of exactly three changes that would have to be
+split out.** Dropping `5dcf783f` leaves BF-28 and BF-29, which are a clean minor.
+
+The "What changes for you" text above is the release-note source; this branch adds no
+`CHANGELOG.md` entry. **Three paragraphs must not be dropped from it:** the no-grace-period
+warning, the note that the severity you already saw was understated, and the Alexa/Google Home
+block — that last is the only part of this branch that takes something away from an operator who
+was relying on it.
+
+## Follow-ups deliberately not in this PR
 
 - **The alexa `switch` has no `default`.** An unrecognised `request.type` calls neither
-  `res.json()` nor `next()`, so the request hangs until the client times out. Low
-  reachability. It sits beside the `ctx.language.set(locale)` line this branch already
-  changes, so **it should land with this branch** rather than on its own — flagged here so the
-  reviewer can ask for it now if they want it.
+  `res.json()` nor `next()`, so the request hangs until the client times out. Low reachability,
+  but it sits beside the `ctx.language.set(locale)` line this branch already changes, so **it
+  would be cheaper to take it here than on its own** — flagged so the reviewer can ask for it now.
 - **`plugins.isPluginEnabled` always returns `true`** — `find` returns `undefined`, compared
-  against `!== null`. No caller today, so no register id was allocated, but it is what the next
-  instrument will reach for.
-- **`lib/authorization/storage.js` has a second unguarded `console.log` on a request path**,
-  same shape as BF-05, different file. Line `:84` on `origin/dev` (it is `:82` on `bf/reads`
-  and `:113` on `bf/auth` — the line number moves with the branch, so grep for
-  `console.log('Loading'` rather than trusting the number).
-- **Audit suppressions outside `lib/`.** `lib/` is now fully audited;
-  the client bundle and `tests/` are not.
+  against `!== null`. No caller today, so nothing observable.
+- **`lib/authorization/storage.js:84` has an unguarded `console.log` on a request path**, printing
+  request-derived values. Not introduced by this branch and not in a file it touches. It is
+  repaired on the `bf/auth` branch, which is not yet open as a PR, so it is still live on `dev`.

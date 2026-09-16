@@ -142,18 +142,19 @@ items:
         cwd: externals/work/crm-bf-alarms
         kind: integration
         describe: >
-          BF-31, the branch's own test for the locale removal. CANNOT BE RUN IN
-          THIS ENVIRONMENT TODAY and that is a fact about the machine, not the
-          branch: crm-bf-alarms/my.test.env names mongod on port 27034 and
-          nothing is listening there (E3 measured every worktree's port;
-          crm-bf-coercion's 27030 is also dead, and crm-bf-food, crm-bf-merge
-          and crm-bf-parms SHARE 27033). It times out in the before-all hook.
+          BF-31, the branch's own test for the locale removal. 4 passing,
+          MEASURED 2026-09-16 - the previous text here said it CANNOT BE RUN IN
+          THIS ENVIRONMENT because nothing listened on port 27034. That was a
+          fact about the machine and it was fixed by starting a mongod on 27034,
+          not by changing the branch. ABLATED: lib/api/alexa/index.js restored to
+          origin/dev gives 3 passing / 1 failing.
       - run: TEST=api.googlehome npm run test-single
         cwd: externals/work/crm-bf-alarms
         kind: integration
         describe: >
-          BF-31's sibling. Same environmental blocker as api.alexa - port 27034
-          has no mongod.
+          BF-31's sibling. 2 passing, MEASURED 2026-09-16 on the same mongod.
+          ABLATED: lib/api/googlehome/index.js restored to origin/dev gives
+          1 passing / 1 failing.
       - no-gate: >
           THE GATE THAT WAS HERE - `npm run test:unit` - ASSERTED LESS THAN IT
           LOOKED LIKE. It resolves to a 44-file brace list, it needs MongoDB
@@ -179,6 +180,18 @@ items:
       - docs/30-design/phase0-pr-sequencing-2026-09-15.md
       - docs/30-design/nightscout-backfix-register.md
     notes: >
+      THE TWO INTEGRATION GATES ARE NOW MEASURED, 2026-09-16, AND THE CAVEAT IS
+      THE SAME SHAPE AS THE BUNDLE GATE'S. api.alexa and api.googlehome had never
+      been run anywhere in this programme - the branch's own evidence for BF-31,
+      the commit that grades it major, was unexecuted. Nothing was listening on
+      port 27034, which crm-bf-alarms' my.test.env names. A mongod was started on
+      27034 with a scratch dbpath and both gates went green (4 and 2 passing),
+      each ablated against origin/dev (3/1 and 1/1 failing). THAT MONGOD IS NOT
+      PERSISTENT: its dbpath is under this session's scratchpad and it dies with
+      the machine. Anyone who sees these two gates red should check for a listener
+      on 27034 before reading it as a regression - green here is a property of the
+      branch AND of a running database, and only the first half travels.
+      ---
       Sequencing letter A. §7a items 5 and 6 are these commits; neither may be
       read as making alarms safe to turn on under TENANCY_MODE=multi.
       STATE CORRECTED 2026-09-15 from ready-to-push to gate-not-met, by the
