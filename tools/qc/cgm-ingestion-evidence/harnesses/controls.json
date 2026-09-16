@@ -1,0 +1,695 @@
+[
+ {
+  "gate": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && python3 -m tools.nsschema.emit.coercion_emit --bundle \"$T/emitted.json\" >/dev/null && diff -q \"$T/emitted.json\" externals/work/crm-bf-coercion/lib/server/query-coercion.json",
+  "cwd": ".",
+  "control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && python3 -m tools.nsschema.emit.coercion_emit --bundle \"$T/emitted.json\" >/dev/null && python3 -c \"import json,sys; d=json.load(open(sys.argv[1])); c=d['collections']['entries']; c[sorted(c)[0]]='string'; json.dump(d,open(sys.argv[2],'w'),indent=1,sort_keys=True)\" \"$T/emitted.json\" \"$T/corrupt.json\" && diff -q \"$T/emitted.json\" \"$T/corrupt.json\"",
+  "control-kind": "static",
+  "positive-control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && python3 -m tools.nsschema.emit.coercion_emit --bundle \"$T/emitted.json\" >/dev/null && cp \"$T/emitted.json\" \"$T/same.json\" && diff -q \"$T/emitted.json\" \"$T/same.json\"",
+  "proves": "one field's declared type is flipped to `string` in a copy of the freshly emitted bundle and the comparison notices. The gate this replaced, `coercion_emit --drift`, ends in `return 0` unconditionally and exited 0 while printing 157 disagreements."
+ },
+ {
+  "gate": "TEST=api.alexa npm run test-single",
+  "cwd": "externals/work/crm-bf-alarms",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/alarms origin/dev externals/work/crm-bf-alarms api.alexa",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/alarms with the shipping code put back to origin/dev \u2014 NOT YET RUN: crm-bf-alarms names mongod on port 27034 and nothing listens there. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-alarms, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=api.count-parameter npm run test-single",
+  "cwd": "externals/work/crm-bf-reads",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/reads origin/dev externals/work/crm-bf-reads api.count-parameter",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/reads with the shipping code put back to origin/dev \u2014 measured non-zero. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-reads, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=api.count-where npm run test-single",
+  "cwd": "externals/work/crm-bf-reads",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/reads origin/dev externals/work/crm-bf-reads api.count-where",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/reads with the shipping code put back to origin/dev \u2014 measured non-zero. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-reads, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=api.food.quickpicks npm run test-single",
+  "cwd": "externals/work/crm-bf-food",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/food origin/dev externals/work/crm-bf-food api.food.quickpicks",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/food with the shipping code put back to origin/dev \u2014 measured 2026-09-15: 1 passing / 2 failing. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-food, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=api.googlehome npm run test-single",
+  "cwd": "externals/work/crm-bf-alarms",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/alarms origin/dev externals/work/crm-bf-alarms api.googlehome",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/alarms with the shipping code put back to origin/dev \u2014 NOT YET RUN: same missing mongod on port 27034. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-alarms, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=api3.fields npm run test-single",
+  "cwd": "externals/work/crm-bf-reads",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/reads origin/dev externals/work/crm-bf-reads api3.fields",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/reads with the shipping code put back to origin/dev \u2014 measured non-zero. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-reads, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=api3.limit npm run test-single",
+  "cwd": "externals/work/crm-bf-reads",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/reads origin/dev externals/work/crm-bf-reads api3.limit",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/reads with the shipping code put back to origin/dev \u2014 measured non-zero. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-reads, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=api3.paging npm run test-single",
+  "cwd": "externals/work/crm-bf-reads",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/reads origin/dev externals/work/crm-bf-reads api3.paging",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/reads with the shipping code put back to origin/dev \u2014 measured non-zero. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-reads, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=authdelay npm run test-single",
+  "cwd": "externals/work/crm-bf-auth",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/auth origin/dev externals/work/crm-bf-auth authdelay",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/auth with the shipping code put back to origin/dev \u2014 measured 2026-09-15: 2 passing / 9 failing. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-auth, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=authsubjects npm run test-single",
+  "cwd": "externals/work/crm-bf-auth",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/auth origin/dev externals/work/crm-bf-auth authsubjects",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/auth with the shipping code put back to origin/dev \u2014 measured 2026-09-15: 1 passing / 7 failing. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-auth, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=boluscalc.quickpick npm run test-single",
+  "cwd": "externals/work/crm-bf-food",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/food origin/dev externals/work/crm-bf-food --files=lib/client/boluscalc.js boluscalc.quickpick",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/food with the shipping code put back to origin/dev \u2014 measured 2026-09-15 with --files=lib/client/boluscalc.js: 6 passing / 5 failing. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-food, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=browser-utils.queryparms npm run test-single",
+  "cwd": "externals/work/crm-bf-parms",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/parms origin/dev externals/work/crm-bf-parms browser-utils.queryparms",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/parms with the shipping code put back to origin/dev \u2014 measured 2026-09-15: 1 passing / 5 failing. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-parms, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=dependency-d3 npm run test-single",
+  "cwd": "externals/cgm-remote-monitor-official",
+  "control-exempt": "This gate's cwd is the SHIPPING CHECKOUT, which 19 worktrees hang off. Ablating it means editing that tree, and rule 6 forbids it. The gate is currently FAILING against the live tree, so it is not silently green, and RT-D3's companion instrument (d3-drag-clamp-covered.js) carries its own internal CONTROL finding and is the non-vacuous measurement for this item."
+ },
+ {
+  "gate": "TEST=insulinage npm run test-single",
+  "cwd": "externals/work/crm-bf-alarms",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/alarms origin/dev externals/work/crm-bf-alarms insulinage",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/alarms with the shipping code put back to origin/dev \u2014 measured 2026-09-15: 3 passing / 2 failing. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-alarms, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=language npm run test-single",
+  "cwd": "externals/work/crm-bf-parms",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/parms origin/dev externals/work/crm-bf-parms language",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/parms with the shipping code put back to origin/dev \u2014 measured 2026-09-15: 16 passing / 1 failing. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-parms, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=plugins npm run test-single",
+  "cwd": "externals/work/crm-bf-alarms",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/alarms origin/dev externals/work/crm-bf-alarms plugins",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/alarms with the shipping code put back to origin/dev \u2014 measured 2026-09-15: 5 passing / 8 failing. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-alarms, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=query npm run test-single",
+  "cwd": "externals/work/crm-bf-coercion",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/coercion origin/dev externals/work/crm-bf-coercion --files=lib/server/query.js query",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/coercion with the shipping code put back to origin/dev \u2014 measured 2026-09-15 with --files=lib/server/query.js: 24 passing / 4 failing on assertions. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-coercion, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "TEST=receiveddata.merge npm run test-single",
+  "cwd": "externals/work/crm-bf-merge",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official bf/merge origin/dev externals/work/crm-bf-merge receiveddata.merge",
+  "control-kind": "slow",
+  "proves": "the same test file against a throwaway worktree of bf/merge with the shipping code put back to origin/dev \u2014 measured 2026-09-15: 10 passing / 2 failing. Rule 6: the control creates and removes its own worktree under $TMPDIR and never writes into externals/work/crm-bf-merge, which it reads node_modules and my.test.env from."
+ },
+ {
+  "gate": "bash -c 's=$(git -C externals/cgm-remote-monitor-official show origin/dev:lib/api/alexa/index.js); echo \"$s\" | grep -q \"switch (req.body.request.type)\" || exit 1; echo \"$s\" | grep -q \"default:\"'",
+  "cwd": ".",
+  "control": "bash -c 's=$(git -C externals/cgm-remote-monitor-official show origin/dev:lib/api/index.js); echo \"$s\" | grep -q \"switch (req.body.request.type)\" || exit 1; echo \"$s\" | grep -q \"default:\"'",
+  "control-kind": "static",
+  "proves": "the identical pair of greps against a file that contains neither (lib/api/index.js) exits 1. It shows the greps read the file they are given rather than matching anything."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official cat-file -e bf/reads:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show bf/reads:lib/api3/generic/collection.js | grep -q \"self.parseLimit\" && exit 1 || exit 0",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official cat-file -e bf/reads:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show bf/reads:lib/api3/generic/collection.js | grep -q \"maxLimit\" && exit 1 || exit 0",
+  "control-kind": "static",
+  "proves": "the same conjunction with a pattern that IS present in collection.js (`maxLimit`) on a ref where count.js DOES exist (bf/reads) exits 1. The state this gate is meant to go red in - count.js present AND collection.js delegating to it - does not exist on any ref yet, which is precisely the follow-up it tracks, so the instrument is exercised with a stand-in pattern instead."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show origin/dev:lib/api3/generic/collection.js | grep -q \"self.parseLimit\" && exit 1 || exit 0",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official cat-file -e bf/reads:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show bf/reads:lib/api3/generic/collection.js | grep -q \"maxLimit\" && exit 1 || exit 0",
+  "control-kind": "static",
+  "proves": "the same conjunction with a pattern that IS present in collection.js (`maxLimit`) on a ref where count.js DOES exist (bf/reads) exits 1. The state this gate is meant to go red in - count.js present AND collection.js delegating to it - does not exist on any ref yet, which is precisely the follow-up it tracks, so the instrument is exercised with a stand-in pattern instead."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official ls-remote --heads origin bewest/wip/optimize-treatment-processing | grep -q dfe2753d",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official ls-remote --heads origin bewest/wip/optimize-treatment-processing | grep -q 0000000000000000000000000000000000000000",
+  "control-kind": "network",
+  "proves": "the same read-only ls-remote piped into a grep for a SHA that is not there exits 1. Rule 0: ls-remote READS and never pushes."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization seam/t1-2-storage-interface",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor seam/t1-2-storage-interface origin/chore/nightscout-modernization",
+  "control-kind": "static",
+  "proves": "origin/chore/nightscout-modernization is a strict ancestor of seam/t1-2-storage-interface, so the reversed question must be answered no (exit 1, measured). A command that said yes both ways would not be reading ancestry at all."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/alarms",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/alarms",
+  "control-kind": "static",
+  "proves": "origin/chore/nightscout-modernization is a base bf/alarms has NOT taken, and the same command reports it not-an-ancestor (exit 1, measured). That is exactly the shape this gate goes red in when dev moves ahead of the branch."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/auth",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/auth",
+  "control-kind": "static",
+  "proves": "origin/chore/nightscout-modernization is a base bf/auth has NOT taken, and the same command reports it not-an-ancestor (exit 1, measured). That is exactly the shape this gate goes red in when dev moves ahead of the branch."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/cache",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/cache",
+  "control-kind": "static",
+  "proves": "origin/chore/nightscout-modernization is a base bf/cache has NOT taken, and the same command reports it not-an-ancestor (exit 1, measured). That is exactly the shape this gate goes red in when dev moves ahead of the branch."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/coercion",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/coercion",
+  "control-kind": "static",
+  "proves": "origin/chore/nightscout-modernization is a base bf/coercion has NOT taken, and the same command reports it not-an-ancestor (exit 1, measured). That is exactly the shape this gate goes red in when dev moves ahead of the branch."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/connect-pin",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/connect-pin",
+  "control-kind": "static",
+  "proves": "origin/chore/nightscout-modernization is a base bf/connect-pin has NOT taken, and the same command reports it not-an-ancestor (exit 1, measured). That is exactly the shape this gate goes red in when dev moves ahead of the branch."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/food",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/food",
+  "control-kind": "static",
+  "proves": "origin/chore/nightscout-modernization is a base bf/food has NOT taken, and the same command reports it not-an-ancestor (exit 1, measured). That is exactly the shape this gate goes red in when dev moves ahead of the branch."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/merge",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/merge",
+  "control-kind": "static",
+  "proves": "origin/chore/nightscout-modernization is a base bf/merge has NOT taken, and the same command reports it not-an-ancestor (exit 1, measured). That is exactly the shape this gate goes red in when dev moves ahead of the branch."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/parms",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/parms",
+  "control-kind": "static",
+  "proves": "origin/chore/nightscout-modernization is a base bf/parms has NOT taken, and the same command reports it not-an-ancestor (exit 1, measured). That is exactly the shape this gate goes red in when dev moves ahead of the branch."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/reads",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/reads",
+  "control-kind": "static",
+  "proves": "origin/chore/nightscout-modernization is a base bf/reads has NOT taken, and the same command reports it not-an-ancestor (exit 1, measured). That is exactly the shape this gate goes red in when dev moves ahead of the branch."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/master origin/dev",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev origin/master",
+  "control-kind": "static",
+  "proves": "origin/master is a strict ancestor of origin/dev, so the reversed question must be answered no (exit 1, measured). A command that said yes both ways would not be reading ancestry at all."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/nightscout-modernization seam/t1-2-storage-interface >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree seam/t1-2-storage-interface bf/coercion >/dev/null",
+  "control-kind": "static",
+  "proves": "seam/t1-2-storage-interface and bf/coercion were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/alarms >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/alarms origin/chore/retire-jsdom >/dev/null",
+  "control-kind": "static",
+  "proves": "bf/alarms and origin/chore/retire-jsdom were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/auth origin/chore/retire-jsdom >/dev/null",
+  "control-kind": "static",
+  "proves": "bf/auth and origin/chore/retire-jsdom were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/cache >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/cache origin/chore/retire-jsdom >/dev/null",
+  "control-kind": "static",
+  "proves": "bf/cache and origin/chore/retire-jsdom were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/coercion >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/coercion origin/chore/retire-jsdom >/dev/null",
+  "control-kind": "static",
+  "proves": "bf/coercion and origin/chore/retire-jsdom were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/food >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/food origin/chore/retire-jsdom >/dev/null",
+  "control-kind": "static",
+  "proves": "bf/food and origin/chore/retire-jsdom were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/merge >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/merge origin/chore/retire-jsdom >/dev/null",
+  "control-kind": "static",
+  "proves": "bf/merge and origin/chore/retire-jsdom were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/parms >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/parms origin/chore/retire-jsdom >/dev/null",
+  "control-kind": "static",
+  "proves": "bf/parms and origin/chore/retire-jsdom were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/reads >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/reads origin/chore/retire-jsdom >/dev/null",
+  "control-kind": "static",
+  "proves": "bf/reads and origin/chore/retire-jsdom were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/build-runtime-separation >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/build-runtime-separation bf/reads >/dev/null",
+  "control-kind": "static",
+  "proves": "origin/chore/build-runtime-separation and bf/reads were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/compose-mongodb6 >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/compose-mongodb6 bf/reads >/dev/null",
+  "control-kind": "static",
+  "proves": "origin/chore/compose-mongodb6 and bf/reads were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/mime-exposure-review >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/mime-exposure-review bf/reads >/dev/null",
+  "control-kind": "static",
+  "proves": "origin/chore/mime-exposure-review and bf/reads were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/nightscout-modernization >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/nightscout-modernization bf/reads >/dev/null",
+  "control-kind": "static",
+  "proves": "origin/chore/nightscout-modernization and bf/reads were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/retire-jsdom >/dev/null",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/retire-jsdom bf/reads >/dev/null",
+  "control-kind": "static",
+  "proves": "origin/chore/retire-jsdom and bf/reads were measured to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge that returned 0 for a conflicting pair would make every \"merges cleanly\" row in this queue meaningless."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official show origin/chore/compose-mongodb6:.github/workflows/main.yml | grep -q \"'22.23.2'\" && git -C externals/cgm-remote-monitor-official show origin/chore/compose-mongodb6:.github/workflows/main.yml | grep -q \"'24.20.0'\"",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official show origin/dev:.github/workflows/main.yml | grep -q \"'22.23.2'\" && git -C externals/cgm-remote-monitor-official show origin/dev:.github/workflows/main.yml | grep -q \"'24.20.0'\"",
+  "control-kind": "static",
+  "proves": "the identical pair of greps against origin/dev's workflow exits 1 - measured 0 matches for each version string. The cuts pin the floor in CI and dev does not."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official show origin/chore/retire-jsdom:.github/workflows/main.yml | grep -q \"'22.23.2'\" && git -C externals/cgm-remote-monitor-official show origin/chore/retire-jsdom:.github/workflows/main.yml | grep -q \"'24.20.0'\"",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official show origin/dev:.github/workflows/main.yml | grep -q \"'22.23.2'\" && git -C externals/cgm-remote-monitor-official show origin/dev:.github/workflows/main.yml | grep -q \"'24.20.0'\"",
+  "control-kind": "static",
+  "proves": "the identical pair of greps against origin/dev's workflow exits 1 - measured 0 matches for each version string. The cuts pin the floor in CI and dev does not."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official show origin/dev:lib/authorization/storage.js | grep -qE \"console\\\\.log\\\\('Loading',[[:space:]]*opts\\\\)\" && exit 1 || exit 0",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official show bf/auth:lib/authorization/storage.js | grep -qE \"console\\\\.log\\\\('Loading',[[:space:]]*opts\\\\)\" && exit 1 || exit 0",
+  "control-kind": "static",
+  "positive-control": "git -C externals/cgm-remote-monitor-official show bf/reads:lib/server/aggregate.js | grep -qE \"console\\\\.log\\\\('Loading',[[:space:]]*opts\\\\)\" && exit 1 || exit 0",
+  "proves": "the same absence gate exits 1 against a ref that DOES carry the line (bf/auth, at :113) and exits 0 against a file that does not (bf/reads' aggregate.js, where BF-05's own console.log was deleted). Both directions measured."
+ },
+ {
+  "gate": "git -C externals/cgm-remote-monitor-official show origin/dev:lib/plugins/index.js | grep -q \"return (p !== null)\" && exit 1 || exit 0",
+  "cwd": ".",
+  "control": "git -C externals/cgm-remote-monitor-official show bf/alarms:lib/plugins/index.js | grep -q \"return (p !== null)\" && exit 1 || exit 0",
+  "control-kind": "static",
+  "positive-control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && printf '%s\\n' 'return p;' > \"$T/f.js\" && grep -q \"return (p !== null)\" \"$T/f.js\" && exit 1 || exit 0",
+  "proves": "exits 1 against a ref that carries the expression (bf/alarms still does - measured 1 match) and 0 against a fixture that does not."
+ },
+ {
+  "gate": "git -C externals/nightscout-connect ls-remote --tags origin v0.0.14 | grep -q . && exit 1 || exit 0",
+  "cwd": ".",
+  "control": "git -C externals/nightscout-connect ls-remote --tags origin v0.0.14 | grep -q . || git -C externals/nightscout-connect ls-remote --tags origin v0.0.13 | grep -q . && exit 1 || exit 0",
+  "control-kind": "network",
+  "proves": "the same shape asked about v0.0.13, which IS on the remote, exits 1. That is the state this gate must reach the moment someone pushes v0.0.14 - rule 0 says a human does that, not this queue."
+ },
+ {
+  "gate": "git -C externals/nightscout-connect merge-base --is-ancestor v0.0.13 release/v0.0.14",
+  "cwd": ".",
+  "control": "git -C externals/nightscout-connect merge-base --is-ancestor release/v0.0.14 v0.0.13",
+  "control-kind": "static",
+  "proves": "v0.0.13 is a strict ancestor of release/v0.0.14, so the reversed question must be answered no (exit 1, measured). A command that said yes both ways would not be reading ancestry at all."
+ },
+ {
+  "gate": "grep -nE \"console\\\\.log\\\\('Loading',[[:space:]]*opts\\\\)\" lib/authorization/storage.js && exit 1 || exit 0",
+  "cwd": "externals/work/crm-bf-auth",
+  "control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && printf '%s\\n' \" console.log('Loading',opts);\" > \"$T/f.js\" && grep -nE \"console\\.log\\('Loading',[[:space:]]*opts\\)\" \"$T/f.js\" && exit 1 || exit 0",
+  "control-kind": "static",
+  "positive-control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && printf '%s\\n' \" console.log('Reloading auth data');\" > \"$T/f.js\" && grep -nE \"console\\.log\\('Loading',[[:space:]]*opts\\)\" \"$T/f.js\" && exit 1 || exit 0",
+  "proves": "THE FIXTURE IS THE NO-SPACE SPELLING, which is what the code actually contains and what the old pattern could never match. The negative fixture makes the gate red and the positive fixture makes it green, so this gate now discriminates the two states it is supposed to distinguish."
+ },
+ {
+  "gate": "grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' package-lock.json",
+  "cwd": "externals/work/crm-bf-connect-pin",
+  "control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && git -C ../../../externals/cgm-remote-monitor-official show origin/dev:package-lock.json | sed 's#234d47c85510a77f07b3be0d2c026dd0272715d6#archive/refs/tags/v0.0.14.tar.gz#g' > \"$T/lock.json\" && grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' \"$T/lock.json\"",
+  "control-kind": "static",
+  "positive-control": "grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' package-lock.json",
+  "proves": "THIS GATE IS DELIBERATELY INVERTED and its control has to be too. It passes while the lockfile is STILL on the old connector SHA, and must go red the moment P0-LOCK regenerates it - so the known-negative is a lockfile with the SHA replaced by the v0.0.14 tarball, and against that the grep exits 1. NOTE FOR THE AUDIT: the gate also passes against origin/dev's own lockfile, because the old SHA is what dev pins. It is a HANDOFF TRIPWIRE, not a gate on the branch, and no derived control could have known that - which is why controls are authored per gate and never generated."
+ },
+ {
+  "gate": "grep -q '^queue-status:' Makefile",
+  "cwd": ".",
+  "control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && printf '%s\\n' 'queue-status :' > \"$T/Makefile\" && grep -q '^queue-status:' \"$T/Makefile\"",
+  "control-kind": "static",
+  "positive-control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && printf '%s\\n' 'queue-status:' > \"$T/Makefile\" && grep -q '^queue-status:' \"$T/Makefile\"",
+  "proves": "a near-miss fixture (`queue-status :`, with a space) is rejected and the exact target is accepted. A grep that matched the near miss would not be reading a Make target."
+ },
+ {
+  "gate": "grep -q 'archive/refs/tags/v0.0.14.tar.gz' package-lock.json",
+  "cwd": "externals/work/crm-bf-connect-pin",
+  "control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && printf '%s\\n' '\"resolved\": \"https://github.com/nightscout/nightscout-connect/archive/234d47c.tar.gz\"' > \"$T/lock.json\" && grep -q 'archive/refs/tags/v0.0.14.tar.gz' \"$T/lock.json\"",
+  "control-kind": "static",
+  "positive-control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && printf '%s\\n' '\"resolved\": \"https://github.com/nightscout/nightscout-connect/archive/refs/tags/v0.0.14.tar.gz\"' > \"$T/lock.json\" && grep -q 'archive/refs/tags/v0.0.14.tar.gz' \"$T/lock.json\"",
+  "proves": "the gate is red today ON PURPOSE - P0-LOCK is deliberately undone until the tag is pushed - so both directions are shown on fixtures rather than on the file. It rejects a lock pinned by SHA and accepts one pinned to the tag tarball."
+ },
+ {
+  "gate": "grep -q 'archive/refs/tags/v0.0.14.tar.gz' package.json",
+  "cwd": "externals/work/crm-bf-connect-pin",
+  "control": "git -C ../../../externals/cgm-remote-monitor-official show origin/dev:package.json | grep -q 'archive/refs/tags/v0.0.14.tar.gz'",
+  "control-kind": "static",
+  "positive-control": "grep -q 'archive/refs/tags/v0.0.14.tar.gz' package.json",
+  "proves": "the same grep against origin/dev's package.json - the base this branch's one-line change is made against - exits 1. This is the one connect-pin gate that really does measure the branch."
+ },
+ {
+  "gate": "grep -q 'ulimits' docker-compose.yml",
+  "cwd": "externals/cgm-remote-monitor-official",
+  "control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && printf '%s\\n' 'services:' > \"$T/dc.yml\" && grep -q 'ulimits' \"$T/dc.yml\"",
+  "control-kind": "static",
+  "positive-control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && printf '%s\\n' ' ulimits:' > \"$T/dc.yml\" && grep -q 'ulimits' \"$T/dc.yml\"",
+  "proves": "fixtures both ways. The gate is red against the real file because dev's compose file sets no nofile limit, which is the defect BFQ-10 records."
+ },
+ {
+  "gate": "node -e \"const b=require('./lib/backoff.js'); try { b({jitter:'wild'}); process.exit(1); } catch(e) { process.exit(/unknown jitter mode/.test(e.message)?0:1); }\"",
+  "cwd": "externals/work/nc-jitter",
+  "control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && git -C ../../../externals/nightscout-connect show c1cce2a^:lib/backoff.js > \"$T/backoff.js\" && node -e 'const b=require(process.argv[1]); try { b({jitter:\"wild\"}); process.exit(1); } catch(e) { process.exit(/unknown jitter mode/.test(e.message)?0:1); }' \"$T/backoff.js\"",
+  "control-kind": "static",
+  "proves": "the identical expression against the PRE-FIX lib/backoff.js (c1cce2a^) exits 1: that version merged options as {...config, ...defaults} with defaults last, so it never saw the caller's jitter mode and had nothing to reject."
+ },
+ {
+  "gate": "node tools/queue/gates/bf-reads-read-contract.js",
+  "cwd": ".",
+  "control": "node tools/queue/gates/bf-reads-read-contract.js --rev origin/dev",
+  "control-kind": "static",
+  "proves": "the identical 8 assertions against origin/dev, materialised from the object database into a temporary tree: 4 failing, one of them \"lib/server/count.js: not present at this rev\". Measured failing at bf/alarms too, which is one of the three refs the gate this replaced passed against."
+ },
+ {
+  "gate": "node tools/queue/gates/bf09-corpus-divergence.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/bf09-corpus-divergence.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/booterror-shape-coverage.js --ref origin/chore/mime-exposure-review",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/booterror-shape-coverage.js --ref origin/chore/mime-exposure-review",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/booterror-shape-coverage.js --ref origin/dev",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/booterror-shape-coverage.js --ref origin/dev",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/config-surface-census.js --arm api3",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/config-surface-census.js --arm api3",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/config-surface-census.js --arm azure",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/config-surface-census.js --arm azure",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/config-surface-census.js --arm hsts",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/config-surface-census.js --arm hsts",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/config-surface-census.js --arm readme",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/config-surface-census.js --arm readme",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/config-surface-census.js --arm webhook",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/config-surface-census.js --arm webhook",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/connector-pin-exposure.js --refs origin/chore/retire-jsdom,origin/chore/build-runtime-separation,origin/chore/compose-mongodb6,origin/dev",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/connector-pin-exposure.js --refs origin/chore/retire-jsdom,origin/chore/build-runtime-separation,origin/chore/compose-mongodb6,origin/dev",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/connector-pin-exposure.js --refs origin/master,origin/dev",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/connector-pin-exposure.js --refs origin/master,origin/dev",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/cut4-total-outage.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/cut4-total-outage.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/d3-drag-clamp-covered.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/d3-drag-clamp-covered.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/doc-branch-count.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/doc-branch-count.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/minimed-deprecation-path.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/minimed-deprecation-path.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/node-floor-consistency.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/node-floor-consistency.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/platform-sql-surface.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/platform-sql-surface.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/register-exposure-legend.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/register-exposure-legend.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/register-rows-vs-details.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/register-rows-vs-details.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/shipping-checkout-identity.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/shipping-checkout-identity.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/test-script-coverage.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/test-script-coverage.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/threshold-silent-rewrite.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/threshold-silent-rewrite.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/timeago-future-reading.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/timeago-future-reading.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "node tools/queue/gates/version-collision.js",
+  "cwd": ".",
+  "control": "tools/queue/gates/empty-root-control.sh tools/queue/gates/version-collision.js",
+  "control-kind": "static",
+  "proves": "run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of the files it reads exist, the gate does not exit 0. THIS IS THE WEAK FORM: it proves the gate is coupled to its inputs, not that it is coupled to the right property of them. Where a sharper control was run by hand the audit says so."
+ },
+ {
+  "gate": "npm ci --dry-run",
+  "cwd": "externals/work/crm-bf-connect-pin",
+  "control-exempt": "Rule 0. It resolves against the npm registry and a GitHub tarball for a tag that does not exist yet, and it CANNOT pass until a human pushes v0.0.14 - which is the point of P0-LOCK. Running a control for it here would mean either contacting those endpoints or faking the answer."
+ },
+ {
+  "gate": "npm test",
+  "cwd": "externals/work/nc-jitter",
+  "control-cwd": ".",
+  "control": "tools/queue/gates/ablate.sh externals/nightscout-connect fix/connect-timer-jitter c1cce2a^ externals/work/nc-jitter backoff cycle-jitter",
+  "control-kind": "slow",
+  "proves": "the branch's two new test files run against a throwaway worktree with index.js, lib/backoff.js, lib/builder.js and lib/machines/cycle.js put back to c1cce2a^: measured failing 2026-09-15. Base is c1cce2a^ and NOT the merge-base with main - the branch's parent is a merge commit and everything T0.4/BF-34 changed is in the single commit c1cce2a."
+ },
+ {
+  "gate": "python3 tools/queue/emit.py --check",
+  "cwd": ".",
+  "control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && printf 'not the generated view\\n' > \"$T/QUEUE.md\" && python3 tools/queue/emit.py --check --out \"$T/QUEUE.md\"",
+  "control-kind": "static",
+  "positive-control": "T=$(mktemp -d) && trap 'rm -rf \"$T\"' EXIT && python3 tools/queue/emit.py --out \"$T/QUEUE.md\" >/dev/null && python3 tools/queue/emit.py --check --out \"$T/QUEUE.md\"",
+  "proves": "--check exits 1 against a file that is not the rendering and 0 against one that is. Both measured."
+ },
+ {
+  "gate": "test \"$(git -C externals/nightscout-connect cat-file -t v0.0.14)\" = tag",
+  "cwd": ".",
+  "control": "test \"$(git -C externals/nightscout-connect cat-file -t v0.0.13)\" = tag",
+  "control-kind": "static",
+  "proves": "v0.0.13 is a LIGHTWEIGHT tag - cat-file -t says `commit` - so the same test against it exits 1. The gate really is reading the object type and not merely that the name resolves."
+ },
+ {
+  "gate": "test \"$(git -C externals/nightscout-connect rev-parse v0.0.14^{commit})\" = \"$(git -C externals/nightscout-connect rev-parse release/v0.0.14)\"",
+  "cwd": ".",
+  "control": "test \"$(git -C externals/nightscout-connect rev-parse v0.0.13^{commit})\" = \"$(git -C externals/nightscout-connect rev-parse release/v0.0.14)\"",
+  "control-kind": "static",
+  "proves": "the same comparison against v0.0.13 (b394411a) versus release/v0.0.14 (649a7de2) exits 1."
+ },
+ {
+  "gate": "test \"$(git -C externals/nightscout-connect show release/v0.0.14:package.json | python3 -c 'import json,sys; print(json.load(sys.stdin)[\"version\"])')\" = 0.0.14",
+  "cwd": ".",
+  "control": "test \"$(git -C externals/nightscout-connect show v0.0.13:package.json | python3 -c 'import json,sys; print(json.load(sys.stdin)[\"version\"])')\" = 0.0.14",
+  "control-kind": "static",
+  "proves": "the same extraction at v0.0.13 yields 0.0.13 and the test exits 1."
+ },
+ {
+  "gate": "test -f docs/60-research/tenant-config-surface-2026-09-15.md",
+  "cwd": ".",
+  "control": "test -f docs/60-research/tenant-config-surface-2026-09-15.md.this-name-does-not-exist",
+  "control-kind": "static",
+  "positive-control": "test -f docs/60-research/e3-gate-vacuity-audit-2026-09-15.md",
+  "proves": "`test -f` is shown to distinguish an absent path from a present one. THIS IS A WEAK CONTROL and the audit says so: it proves the instrument works, not that the file it names is the right file. An existence gate can never be stronger than that."
+ },
+ {
+  "gate": "test -f externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/public/js/bundle.app.js",
+  "cwd": ".",
+  "control": "test -f externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/public/js/bundle.app.js.absent",
+  "control-kind": "static",
+  "positive-control": "test -f externals/work/crm-bf-reads/node_modules/.cache/_ns_cache/public/js/bundle.app.js",
+  "proves": "the positive control is the SAME path under crm-bf-reads, where the bundle is present - so the gate is shown to go green on a real bundle at a real path, not merely on a file that happens to exist. crm-bf-alarms and crm-bf-connect-pin are the only two worktrees missing it (E3 checked all 15)."
+ },
+ {
+  "gate": "test -f externals/work/crm-seam/bin/evaluator.js",
+  "cwd": ".",
+  "control": "test -f externals/work/crm-seam/bin/evaluator.js.absent",
+  "control-kind": "static",
+  "positive-control": "test -f externals/work/crm-seam/package.json",
+  "proves": "weak by nature - see the audit's note on existence gates. The work is not started, so the gate is red and there is nothing yet to assert a property OF."
+ },
+ {
+  "gate": "test -f externals/work/crm-seam/bin/realtime.js",
+  "cwd": ".",
+  "control": "test -f externals/work/crm-seam/bin/realtime.js.absent",
+  "control-kind": "static",
+  "positive-control": "test -f externals/work/crm-seam/package.json",
+  "proves": "weak by nature - see the audit's note on existence gates. The work is not started, so the gate is red and there is nothing yet to assert a property OF."
+ }
+]

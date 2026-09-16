@@ -1,0 +1,16 @@
+const fs = require('fs'), path = require('path');
+const ROOT = process.argv[2];
+const R = p => fs.readFileSync(path.join(ROOT, p), 'utf8');
+const settings = require(path.resolve(ROOT, 'lib/settings.js'))();
+const s1 = new Set(); settings.eachSettingAsEnv(n => { s1.add(n); return undefined; });
+const envSrc = R('lib/server/env.js'); const s2 = new Set();
+for (const m of envSrc.matchAll(/readENV(?:Truthy|Raw)?\s*\(\s*['"]([A-Z0-9_]+)['"]/g)) s2.add(m[1]);
+for (const m of envSrc.matchAll(/readEnvFile\s*\(\s*['"]([A-Z0-9_]+)['"]/g)) s2.add(m[1]);
+for (const m of envSrc.matchAll(/(?:shadowEnv|process\.env)\s*\[\s*['"]([A-Z0-9_]+)['"]\s*\]/g)) s2.add(m[1]);
+for (const m of envSrc.matchAll(/process\.env\.([A-Z][A-Z0-9_]+)/g)) s2.add(m[1]);
+const s4 = new Set();
+for (const m of R('README.md').matchAll(/\b([A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)\b/g)) s4.add(m[1]);
+const union = new Set([...s1,...s2,...s4]);
+console.log(JSON.stringify({s1:s1.size,s2:s2.size,s4:s4.size,union:union.size}));
+fs.writeFileSync('union2.txt',[...union].sort().join('\n')+'\n');
+fs.writeFileSync('s2b.txt',[...s2].sort().join('\n')+'\n');
