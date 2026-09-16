@@ -1646,6 +1646,22 @@ function is ever asked for are an access token and `mute`.
 > Remediation is rotation, and it is the operator's decision. No migration was written. See
 > [the report](../60-research/bf17-bf30-auth-defects-2026-09-15.md) §2.3.
 >
+> **A rename is not a rotation — added 2026-09-16, and it corrects three documents.** Only the
+> `abbrev` prefix of a token comes from `name`. `checkToken` splits on `-`, keeps the **last**
+> segment, and matches it against `subject.digest`, which is `getSubjectHash(subject._id)` — a
+> function of `_id` and the enclave key alone. **The name is never checked**, so an exposed token
+> keeps authenticating after a rename. Measured at `lib/authorization/storage.js:326` on `bf/auth`
+> and `:288` on `origin/dev`: not a branch artifact. Rotation means **delete-and-recreate** (new
+> `_id`) or **`API_SECRET`**, and those are the only two. The report §2.3 and the 15.0.9 release
+> notes both listed rename as a third option and are corrected;
+> `tools/queue/gates/bf17-remediation-note.js` is the regression guard.
+>
+> **The stored row is not rewritten by the upgrade.** `reload()` drops the derived fields from the
+> in-memory record only. The row clears when that subject is next saved through the admin path,
+> because `save` writes an allow-list through `replaceOne` — a self-healing path that is
+> **operator-driven, not automatic**. Recorded here because the first drafts of both operator
+> documents overclaimed it as automatic.
+>
 > **One thing this entry missed**: `created_at` is not served by `GET /subjects` either, so an
 > edit also gives the document a brand-new `created_at`. Data loss, not a security problem, and
 > not fixed — one more field in the `pick` would round-trip it.

@@ -882,6 +882,29 @@ controls:
       control was run by hand the audit says so.
 
   - gate: |-
+      node tools/queue/gates/bf17-remediation-note.js
+    cwd: .
+    control: |-
+      tools/queue/gates/bf17-rename-row-control.sh
+    positive-control: |-
+      node tools/queue/gates/bf17-remediation-note.js
+    control-kind: static
+    proves: >
+      NOT the weak empty-root form. The control restores the two mistakes that
+      were actually in these documents on 2026-09-16 - the "Rename the user"
+      row in the 15.0.9 rotation table, and the PR body's "discarded when
+      Nightscout next loads it" - into a throwaway copy, and the gate goes to
+      3 failing / 17. Run 2026-09-16. Three further ablations were run by hand
+      the same day and are recorded on the item: restoring the rename option to
+      report 2.3 alone -> 1 failing; QUEUE_GATE_ROOT at an empty directory ->
+      17 failing, which is the weak form included for free; the pristine tree
+      -> 0 failing, which is the positive-control above and catches the
+      opposite error of a gate that can never go green. THE POINT OF A SHARP
+      CONTROL HERE: this gate asserts things about PROSE, and prose can be
+      edited into something that satisfies a grep while saying the wrong thing.
+      Reintroducing the real sentence is the only control that speaks to that.
+
+  - gate: |-
       node tools/queue/gates/booterror-shape-coverage.js --ref origin/chore/mime-exposure-review
     cwd: .
     control: |-

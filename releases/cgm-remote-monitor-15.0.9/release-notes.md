@@ -183,25 +183,49 @@ underscore.
 >
 > **If a token of yours was written into your database in plain text, this release stops it
 > happening again but does not make that token invalid.** This is not an oversight. Your
-> access tokens are **worked out** from three things: the user's internal id, the user's
-> **name**, and your site's key (`API_SECRET`). The same three inputs always produce the
-> same token. So there is no code change that could make an existing token stop working —
-> **changing the token means changing one of those three inputs, and that is your action,
-> not the software's.**
+> access tokens are **worked out** rather than stored, from the user's internal id and your
+> site's key (`API_SECRET`). The same inputs always produce the same working token. So there
+> is no code change that could make an existing token stop working — **retiring a token means
+> changing one of those two inputs, and that is your action, not the software's.**
 >
-> **If you think a token may have been exposed, you have exactly three ways to change it:**
+> **If you think a token may have been exposed, there are exactly two ways to retire it:**
 >
-> | What you change | What happens |
+> | What you do | What happens |
 > |---|---|
-> | **Rename the user** (in the admin screen) | That one user's token changes. Everything using the old token stops working until you give it the new one. |
-> | **Delete the user and create a new one** with the same roles | That user's token changes. Same consequence. |
-> | **Change your site's `API_SECRET`** | **Every token on your site changes at once.** Everything that talks to your site — uploaders, watches, phone apps — stops working until you update them all. |
+> | **Delete the user and create a new one** with the same roles | That one user's old token stops working, because the new entry gets a new internal id. You must give that person or device the new token. |
+> | **Change your site's `API_SECRET`** | **Every token on your site stops working at once.** Everything that talks to your site — uploaders, watches, phone apps — stops until you update them all. |
 >
-> **The third option is the big hammer.** Use it if you believe your database contents were
-> exposed to someone. Use one of the first two if you are only worried about one user.
+> **The second option is the big hammer.** Use it if you believe your database contents were
+> exposed to someone. Use the first if you are only worried about one user.
 > **Plan it for a time when you can update everything that connects to your site**, because
 > until you do, your data will stop flowing. If your glucose data stops arriving while you
-> do this, use your meter and your usual routine.
+> do this, use your meter and your usual routine, and talk to your care team about what you
+> rely on Nightscout for. This is not medical advice.
+>
+> ### ⚠ Renaming the user is **not** a third way, even though it looks like one
+>
+> **Renaming a user changes what the token looks like, but the old token still works.** Only
+> the short word at the front of a token comes from the name; the long part after the dash is
+> worked out from the user's internal id and your `API_SECRET`, and that is the part Nightscout
+> actually checks when something connects. Renaming changes neither of those, so an exposed
+> token keeps working afterwards. **If you rename a user and stop there, you have not retired
+> anything.** Delete and re-create instead — that is what gives the entry a new internal id.
+>
+> *(An earlier draft of these notes listed renaming as a way to change a token. That was wrong
+> and is corrected here. Checked against the shipping code, on this release and the current
+> one.)*
+>
+> ### The plain-text copy sitting in your database
+>
+> **Upgrading does not delete it.** The copy is removed for a given user the next time that
+> user is saved through the admin screen — so if you want it gone now, open each user you have
+> previously edited and save it once. **That removes the copy, not the risk.** Anyone who
+> already read your database, or who holds a backup, replica or hosting snapshot taken while
+> the token was in there, still holds a working token. Only the two actions in the table above
+> change that. Treat any such backup or export as containing live credentials.
+>
+> **Do not paste a token or your `API_SECRET` into an issue, a forum post, a screenshot or a
+> chat message when asking for help** — those values are the credential itself.
 >
 > **Who this applies to:** anyone who has edited a user through the Nightscout admin screen.
 > If you have only ever used your `API_SECRET` and never created separate users, there is
@@ -248,8 +272,9 @@ changing your CGM account password.**
 4. **Open any saved report or filter you rely on** and expect the numbers to change. They
    were wrong before.
 5. **Check your bookmarked report addresses** if any contain an underscore.
-6. **Decide whether to rotate an API token**, if you have ever edited a user in the admin
-   screen. See the table above.
+6. **Decide whether to retire an API token**, if you have ever edited a user in the admin
+   screen. See the table above — and note that **renaming the user does not retire its
+   token**, even though the token's appearance changes.
 7. **If you have pasted a Nightscout log in public**, change your CGM account password.
 
 ---

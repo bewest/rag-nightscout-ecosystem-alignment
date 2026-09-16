@@ -35,8 +35,12 @@ Why that matters: anyone who can read your database can use that token to reach 
 database backup, a screenshot of a database browser, a hosting provider's snapshot, or a support
 person you shared a copy with would all contain a working credential.
 
-**After this change**, a subject's token is never written, on create or on edit, and any copy that
-a previous edit left behind is discarded when Nightscout next loads it.
+**After this change**, a subject's token is never written, on create or on edit, and a copy that a
+previous edit left behind is dropped from the in-memory record on every load, so it can never be
+served or matched against. **The stored row itself is not rewritten by the upgrade.** It is cleaned
+up for a given subject the next time that subject is saved through the admin screen, because `save`
+now writes only owned fields — so an operator who wants the copies gone can open and re-save each
+previously-edited subject. That clears the copy; it does not retire the credential.
 
 ### 2. Anyone could bypass the delay on wrong-password attempts
 
@@ -72,8 +76,9 @@ It is not random and it is not stored as the source of truth. So **fixing the co
 anybody's token.** A token that was written into your database by an old edit is still the same
 token the fixed code will hand out tomorrow. If that value leaked, upgrading does not retire it.
 
-The fix removes the *stored copy* and stops new ones being made. **Retiring an exposed token is a
-separate action, and only you can decide to take it.**
+The fix stops new copies being made, and clears an existing one the next time you save that
+subject. **Neither of those retires the credential. Retiring an exposed token is a separate action,
+and only you can decide to take it.**
 
 ### Your options, from least to most disruptive
 

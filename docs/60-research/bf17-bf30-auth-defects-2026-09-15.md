@@ -261,14 +261,40 @@ operator data would require, in order:
    the enclave key. Anyone who already read the collection, or a backup or snapshot taken while
    the token was in it, still holds a working credential after the field is cleared. Clearing the
    field closes future disclosure, not past.
-3. Actual remediation is therefore **rotation**: change the subject's name (which changes the
-   derived token), or delete and recreate the subject, or rotate `API_SECRET` (which invalidates
-   every subject's token at once, and requires reconfiguring every device). Which of these is
+3. Actual remediation is therefore **rotation**, and there are exactly **two** ways to do it:
+   delete and recreate the subject (which mints a new `_id`), or rotate `API_SECRET` (which
+   invalidates every subject's token at once, and requires reconfiguring every device). Which is
    appropriate depends on what the operator's exposure was, and it is their decision.
+
+   > **CORRECTED 2026-09-16.** This list previously opened with a third option, "change the
+   > subject's name (which changes the derived token)". **That is wrong, and it was wrong in the
+   > direction that matters** — it tells an operator an exposed credential has been retired when
+   > it has not. `storage.findSubject` → `checkToken` splits the presented token on `-`, takes
+   > the **last** segment as `prefix`, and matches
+   > `subject.accessTokenDigest.indexOf(accessToken) === 0 || subject.digest.indexOf(prefix) === 0`.
+   > The second arm is the one that carries: `subject.digest` is
+   > `enclave.getSubjectHash(subject._id)`, a function of `_id` and the enclave key **only**. The
+   > name contributes nothing but the `abbrev` prefix at the front, which `checkToken` never
+   > reads. So a rename changes what the token *looks like* and leaves the old token
+   > **authenticating**. Measured on `bf/auth` `lib/authorization/storage.js:326` and identically
+   > on `origin/dev` `:288` — this is not a branch artifact, it is how the shipping matcher works.
+   > The error propagated from here into `releases/cgm-remote-monitor-15.0.9/release-notes.md`,
+   > where it had become an operator instruction; both are corrected, and
+   > `tools/queue/gates/bf17-remediation-note.js` now guards against it returning.
 4. Backups, replicas and support exports taken since the first subject edit should be treated as
    containing live credentials.
+5. **What the code fix does to rows already written, precisely.** `reload()` deletes the derived
+   fields from the **in-memory** subject before re-deriving them, so a stored copy can never be
+   served or matched against — but it does **not** write, and the row on disk is unchanged. The
+   stored copy is removed only when that subject is next saved through the admin path, because
+   `save` now writes `ownedFields(obj, SUBJECT_FIELDS)` through `replaceOne`. So there is a
+   self-healing path and it is **operator-driven, not automatic on upgrade**: re-saving each
+   previously-edited subject clears the copies. That closes future disclosure and retires nothing.
 
-This belongs in a release note, not in a migration script.
+This belongs in a release note, not in a migration script. **Decision, 2026-09-16 (maintainer):**
+no detector script and no migration will be written. The remediation ships as operator-facing text
+in the release notes and the `bf/auth` PR body, plus the manual `auth_subjects` check already in
+the PR body. Recorded on queue item `P0-C-REMEDIATE`.
 
 ### 2.4 Non-vacuity
 

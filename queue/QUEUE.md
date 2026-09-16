@@ -32,18 +32,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 74 |
-| runnable gates | 99 |
-| explicit `no-gate:` markers | 99 |
+| runnable gates | 100 |
+| explicit `no-gate:` markers | 100 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 99 of the 198 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 100 of the 200 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 35 | P0-C-REMEDIATE, RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 11 | P0-B, RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 9 | P0-A, P0-C, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-TAG |
+| `ready-to-push` | 10 | P0-A, P0-C, P0-C-REMEDIATE, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-TAG |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 1 | P0-T01 |
 | `needs-decision` | 3 | RT-D3, RT-0, BFQ-47 |
@@ -82,7 +82,7 @@ decision is required by any of them.
 | `P0-A` | bf/alarms - BF-28, BF-29, BF-31 | `ready-to-push` | `bf/alarms` | major | 7 run + 2 no-gate |
 | `P0-B` | bf/cache - T0.2 and T0.3 read-path cost | `gate-not-met` | `bf/cache` | patch | 2 run + 2 no-gate |
 | `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `ready-to-push` | `bf/auth` | major | 5 run + 2 no-gate |
-| `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
 | `P0-D` | bf/coercion - schema-driven query type coercion (T0.5) | `ready-to-push` | `bf/coercion` | minor | 4 run |
 | `P0-E` | bf/reads - six read-path fixes, independent of bf/coercion | `ready-to-push` | `bf/reads` | major | 8 run + 3 no-gate |
 | `P0-F` | fix/connect-timer-jitter - BF-34 backoff precedence and start jitter | `ready-to-push` | `fix/connect-timer-jitter` | minor | 2 run + 1 no-gate |
@@ -209,19 +209,19 @@ decision is required by any of them.
 - `[integration]` _(cwd: `externals/work/crm-bf-auth`)_ `TEST=authsubjects npm run test-single`
   - BF-17, same story: not in either local script, 8 passing with MongoDB, and 1 passing / 7 failing under the same ablation.
 - **NO GATE** &mdash; `npm run test:unit` was here and was recorded as "361 passing / 0 failing at GT1's measurement". That number is not evidence for this branch: the 44-file brace list contains NEITHER of the two test files bf/auth adds, so the suite could pass in full with every one of these fixes reverted.
-- **NO GATE** &mdash; Nothing checks that the plaintext tokens ALREADY written into existing databases get cleaned up. The code fix does not remove them and there is no migration. This needs an operator-facing remediation note and a script, both of which are P0-C-REMEDIATE.
+- **NO GATE** &mdash; Nothing here checks that the plaintext tokens ALREADY written into existing databases get cleaned up, and nothing will: the code fix does not remove them, there is no migration, and as of 2026-09-16 there deliberately is no detector script either. What DOES exist is measured next door - P0-C-REMEDIATE's gate checks that this branch's PR body and the release notes tell an operator the truth about it, including that a rename is not a rotation. Read that item before signing this one off; this marker is the honest half of the pair.
 
 **Evidence.**
 
 - `docs/30-design/nightscout-backfix-register.md`
 
-**Notes.** Sequencing letter C. GT3 also found BF-17's created_at residual: the pick() at endpoints.js:44 is ['_id','name','accessToken','roles','notes'] - notes was added by the fix, created_at was not. RESOLVED 2026-09-16: commit 56ed29d2 removes the leftover console.log('Loading',opts), the last failing gate, and all 3 runnable gates now pass. That line was NOT introduced by this branch - it is on origin/dev at storage.js:84 - and it was taken here rather than left to FU-RESIDUALS because it sits in a file this branch already rewrites and is the same defect class as the count-path filter leak fixed on bf/reads: a per- request debug print of request-derived values. FU-RESIDUALS follow-up 4 is carried BY THIS BRANCH and should not be fixed there a second time - but it is NOT yet closed on dev, and FU-RESIDUALS' gate correctly still fails, because that gate reads origin/dev and the repair only exists on bf/auth until this merges. Same convention as the register's `fixed`: repaired on a branch, not merged. UNCHANGED AND STILL THE REAL RISK ON THIS ITEM: both no-gate markers stand, and P0-C-REMEDIATE - the tokens already sitting in operators' databases in plaintext - is still not-started. Green gates here do not mean an operator is safe.
+**Notes.** Sequencing letter C. GT3 also found BF-17's created_at residual: the pick() at endpoints.js:44 is ['_id','name','accessToken','roles','notes'] - notes was added by the fix, created_at was not. RESOLVED 2026-09-16: commit 56ed29d2 removes the leftover console.log('Loading',opts), the last failing gate, and all 3 runnable gates now pass. That line was NOT introduced by this branch - it is on origin/dev at storage.js:84 - and it was taken here rather than left to FU-RESIDUALS because it sits in a file this branch already rewrites and is the same defect class as the count-path filter leak fixed on bf/reads: a per- request debug print of request-derived values. FU-RESIDUALS follow-up 4 is carried BY THIS BRANCH and should not be fixed there a second time - but it is NOT yet closed on dev, and FU-RESIDUALS' gate correctly still fails, because that gate reads origin/dev and the repair only exists on bf/auth until this merges. Same convention as the register's `fixed`: repaired on a branch, not merged. THE REAL RISK ON THIS ITEM, RESTATED 2026-09-16: both no-gate markers still stand and green gates here still do not mean an operator is safe - tokens written in plaintext before the upgrade are untouched by it. What changed is that the remediation is no longer unwritten. P0-C-REMEDIATE is settled as TEXT, not tooling: no detector and no migration, the rotation instructions carried by this branch's PR body and the 15.0.9 release notes, and a gate guarding what they say. That review found the instructions were WRONG - they listed renaming a subject as a rotation, which it is not, because the matcher is name-independent. Corrected. So the sentence a reviewer needs when this PR goes up is not "remediation is missing" but "remediation is a note, the note was wrong once, and here is the gate that says it is right now".
 
-### `P0-C-REMEDIATE` &mdash; Operator remediation for tokens already stored in plaintext
+### `P0-C-REMEDIATE` &mdash; Operator remediation for tokens already stored in plaintext - text, not tooling
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@a8888f0d` |
@@ -231,21 +231,27 @@ decision is required by any of them.
 | register | `BF-17` |
 | blocks on | `P0-C` |
 
-**Blast radius.** A script plus an operator-facing note. No shipping code path.
+**Blast radius.** Operator-facing text only, in three documents this repo owns - releases/cgm- remote-monitor-15.0.9/release-notes.md, reports/phase0-pr-bodies/bf-auth.md and the report they are written from. No shipping code path, no script, no migration.
 
-**What an operator sees.** If you have ever edited a subject through the admin page, a readable copy of that subject's API access token is sitting in your database. Upgrading does not remove it. You will be told how to check, and how to rotate the token if it is there. Anyone who has had read access to your database since then could have used that token.
+**What an operator sees.** If you have ever edited a subject through the admin page, a readable copy of that subject's API access token is sitting in your database. Upgrading does not remove it - it clears for a subject only when you next save that subject through the admin page, and clearing the copy does not retire the token. There are exactly TWO ways to retire an exposed token: delete and recreate the subject, or change API_SECRET. RENAMING THE SUBJECT IS NOT ONE OF THEM, even though the token's appearance changes. Anyone who has had read access to your database since the first edit could have used that token.
 
 **Why `n/a`.** not a code change to the shipped surface
 
 **Gates.**
 
-- **NO GATE** &mdash; Nothing written yet. The gate this item needs is a script that reports how many subject rows carry a non-derived accessToken, run against a database with one planted, and a control row that has none - so the script is shown to distinguish the two before anyone trusts a zero.
+- `[static]` `node tools/queue/gates/bf17-remediation-note.js`
+  - 17 checks. The deliverable here is PROSE, and prose was exactly what went wrong: the 15.0.9 release notes listed "rename the user" as one of three ways to change an exposed token, and so did report 2.3, which they were written from. A rename is cosmetic - checkToken keeps the LAST dash-segment of the presented token and matches it against subject.digest, which is getSubjectHash(subject._id); the name reaches only the abbrev at the front, which is never read back. An operator who renamed and stopped would believe a leaked credential was retired while it still authenticated. The gate pins the CODE property on origin/dev AND the bf/auth worktree, so the prose cannot drift from it in either direction, then checks each of the four documents for what must be said and for the retracted sentences. NON-VACUITY, reproduced 2026-09-16 before the gate was committed: restoring the rename row to the release notes -> 1 failing; restoring the PR body's "discarded when Nightscout next loads it" -> 2 failing; restoring the rename option to report 2.3 -> 1 failing; empty QUEUE_GATE_ROOT -> 17 failing.
+- **NO GATE** &mdash; NO DETECTOR SCRIPT, BY DECISION (maintainer, 2026-09-16). The earlier marker here asked for a script reporting how many subject rows carry a non-derived accessToken. It was not written and will not be. The reasoning, recorded so it is not rediscovered as a gap: a count is not remediation - remediation is rotation, and rotation is an operator decision no script can take. The per-operator form of the same question is one query, and it is already written out in the PR body ("look in your auth_subjects collection for any document with an accessToken, accessTokenDigest or digest field"). A fleet-wide count has no consumer. THE RESIDUAL THIS LEAVES, STATED PLAINLY: an operator who never re-saves a previously-edited subject keeps a plaintext row indefinitely and nothing prompts them. The release notes now say so in as many words.
+- **NO GATE** &mdash; NOTHING MEASURES WHETHER AN OPERATOR ACTS. This item ships words. No gate in this repository can show that a single exposed token was rotated, and none should claim to.
 
 **Evidence.**
 
 - `docs/30-design/nightscout-backfix-register.md`
+- `docs/60-research/bf17-bf30-auth-defects-2026-09-15.md`
+- `releases/cgm-remote-monitor-15.0.9/release-notes.md`
+- `reports/phase0-pr-bodies/bf-auth.md`
 
-**Notes.** The register's BF-17 row says "existing rows still hold tokens, see the report". Nothing acts on that sentence today.
+**Notes.** SETTLED 2026-09-16. This item was not-started for as long as it existed, on the strength of one sentence in the register's BF-17 row - "existing rows still hold tokens, see the report" - which nothing acted on. It is now closed as TEXT rather than tooling: the maintainer decided against a detector script and against a migration, on the ground that the notes carry the operator's actual decision and a script does not. WHAT THE REVIEW TURNED UP WHILE CLOSING IT, and the reason the item was not simply deleted: the notes were WRONG. Two operator documents told people that renaming a subject retires its token. It does not - measured at lib/authorization/storage.js:326 on bf/auth and :288 on origin/dev, the matcher is name-independent - and a third document, the report those notes were written from, is where the error came from. A fourth claim, that the upgrade discards the stored copy on load, was also wrong: reload() deletes the derived fields from the IN-MEMORY record only, and the row clears when the subject is next saved through the admin path. All four are corrected and the gate above is the regression guard. THE LESSON IS THE ITEM'S REAL OUTPUT: "the deliverable is a note" is not a reason to leave it ungated. The note was the defect.
 
 ### `P0-D` &mdash; bf/coercion - schema-driven query type coercion (T0.5)
 
