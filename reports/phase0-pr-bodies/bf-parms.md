@@ -94,12 +94,15 @@ things the audit around it turned up.
 
 **BF-37 (medium–high).** `lib/client/browser-utils.js` `queryParms()` split the query string on
 `&` and then read `[1]` of each segment's split on `=` without checking one existed, so any
-segment with no value produced `undefined.replace(...)`. It is called from the **first statement**
-of `lib/client/index.js` `client.init` —
-`var token = client.browserUtils.queryParms().token;` — so the throw happens before anything is
-wired up. It is also called from `playAlarm`, which is the worse place to throw, though `init` gets
-there first. A valueless parameter now reads as `''`, which is what both existing callers already
-treat as absence (`queryParms().token || clientToken`, `queryParms().mute !== 'true'`).
+segment with no value produced `undefined.replace(...)`. It is called from `client.init`'s **second
+statement** — `lib/client/index.js:52`, four lines in, the first statement being the `require` on
+`:50` — `var token = client.browserUtils.queryParms().token;`, so the throw happens before anything
+is wired up. (Commit `522c6ffb`'s subject says "on the first line of init". That is the loose
+reading; the measured one is four lines in. The subject is left alone rather than rewritten,
+because three documents and two queue gates quote these SHAs.) It is also called from `playAlarm`,
+which is the worse place to throw, though `init` gets there first. A valueless parameter now reads
+as `''`, which is what both existing callers already treat as absence
+(`queryParms().token || clientToken`, `queryParms().mute !== 'true'`).
 
 **BF-38 (latent).** `translate()` looped forwards over `%1 … %n` replacing each globally, so the
 `%1` pass rewrote the `%1` inside `%10`. Same class as sorting a `position` stored as text, where
@@ -116,7 +119,7 @@ ever asked for are an access token and `mute`.
 ### Two things deliberately **not** changed, stated rather than implied
 
 - **No `decodeURIComponent`.** It throws on a malformed percent sequence, and this function is
-  called from the first line of `client.init` — which is exactly the throw BF-37 exists to fix.
+  called from the opening lines of `client.init` — which is exactly the throw BF-37 exists to fix.
   Neither caller needs percent decoding. A correct-looking decoder here would reinstate BF-37 in a
   new costume.
 - **The second-`=` truncation stays.** `item.split('=')[1]` still drops anything after a second
@@ -142,13 +145,15 @@ defects found in this audit sat under a suppression that was itself correct.**
 
 ## Test evidence
 
-**`tests/browser-utils.queryparms.test.js` — the test for BF-37, the crash — is one of the 52 files
-that match NEITHER local npm script.** Measured 2026-09-15 by expanding both brace lists with
-`shopt -s nullglob` in this worktree: `test:unit` resolves to 44 files, `test:integration` to 89,
-and this file is in neither. **A clean `npm run test:unit` on this branch is not evidence that
-BF-37's fix works** — though it *is* evidence for BF-38, because `tests/language.test.js` is inside
-the unit brace list. CI is not blind to either: `main.yml` runs `test-ci` over all of
-`./tests/*.test.js`.
+**`tests/browser-utils.queryparms.test.js` — the test for BF-37, the crash — matches NEITHER local
+npm script.** Re-measured 2026-09-16 by expanding both brace lists with `shopt -s nullglob`:
+`test:unit` resolves to **44** files and `test:integration` to **89** in both trees, leaving **52**
+uncovered on `origin/dev` and **53** in this worktree — the extra one being this branch's own new
+test file. The earlier figure of 52 was the `origin/dev` baseline attributed to this worktree.
+
+**A clean `npm run test:unit` on this branch is not evidence that BF-37's fix works** — though it
+*is* evidence for BF-38, because `tests/language.test.js` is inside the unit brace list. CI is not
+blind to either: `main.yml` runs `test-ci` over all of `./tests/*.test.js`.
 
 Run these, from `externals/work/crm-bf-parms`:
 
