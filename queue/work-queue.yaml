@@ -266,6 +266,19 @@ items:
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/cache >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
+      - run: node tools/queue/gates/t02-read-ratio.js
+        kind: integration
+        describe: >
+          T0.2's stated gate, RUN LIVE, AND IT IS MET - an untyped
+          /api/v1/entries read must come within 2x of a typed one at count=10,
+          and it is 0.7x. It is carried beside the T0.3 gate on purpose: that one
+          is red and this one is green, and an item showing only the failure would
+          misrepresent this branch as much as one showing only the win.
+          NON-VACUITY IS STRUCTURAL: the harness reads lib/api/entries/index.js
+          out of the worktree and names the shape it found - clone-then-slice on
+          dev, slice-then-clone on the branch. Measured 2026-09-16: dev FAILS at
+          42.3x, the branch PASSES at 0.7x, so it distinguishes them. SKIPS when
+          the worktree has no node_modules.
       - run: node tools/queue/gates/t03-cycle-clone-budget.js
         kind: integration
         describe: >

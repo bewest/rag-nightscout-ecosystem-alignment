@@ -1,11 +1,12 @@
-# B — `bf/cache`: a plain read of ten entries was copying 48 hours of CGM data
+# `bf/cache` — a plain read of ten entries was copying 48 hours of CGM data
 
-> **Base: `origin/dev` `a8888f0d`. This is one of NINE INDEPENDENT PRs. There is no stack — no
-> Phase 0 branch is based on another, and this one merges cleanly against `origin/dev` and against
-> all eight of the others.**
->
-> **No maintainer decision is required for this one.** It is the lowest-risk branch in the set:
-> patch-grade, no declared surface moves, and nothing an operator configured behaves differently.
+Two commits on `origin/dev` `a8888f0d`, tip `4f86bab1`. 6 files, +385/−8, of which three are test
+files. No `CHANGELOG.md` edit. Merges clean against `dev` and against every other open Phase 0
+branch.
+
+**No maintainer decision is required for this one.** It is the lowest-risk branch in the set:
+patch-grade, no declared surface moves, and nothing an operator configured behaves differently.
+It is also the one that ships with a target it did not hit, stated plainly below.
 
 ## What changes for you
 
@@ -18,118 +19,125 @@ it quickly. Two things were wrong with how that window was handled:
 - **A request for ten recent entries was copying the entire retained window first.** Asking
   Nightscout for `/api/v1/entries?count=10` — which uploaders, phone apps and scripts do
   constantly — made the server duplicate roughly two days of CGM readings in memory in order
-  to hand back ten of them. That read is now **about 33 times faster** (0.837 ms to 0.025 ms,
-  measured).
+  to hand back ten of them. It now copies only the ten.
 - **Two of the three reads in each load cycle were copying the whole window and then never
   writing to it.** The copy existed to stop one caller modifying shared data. Two of the three
   callers do not modify anything, so for them the copy was pure cost.
 
-**Honest about what was not finished:** this branch was given a target of getting the whole
-load cycle under 1 millisecond. **That target was not met.** The cycle went from 3.747 ms to
-2.657 ms. See "The gate was not met" below for why the rest was left alone — the short version
-is that taking it safely needs a proof nobody has produced yet, and guessing would risk
-corrupting device status data.
+**Honest about what was not finished.** This branch was given a target of getting the whole
+load cycle under 1 millisecond. **That target was not met** — the cycle went from roughly 3.9 ms
+to roughly 2.7 ms. "The target that was not met" below says why the rest was left alone; the
+short version is that taking it safely needs a proof nobody has produced yet, and guessing would
+risk corrupting device status data.
 
 There is no change to what Nightscout displays, what it stores, or what any API returns.
 
+---
+
 ## Technical detail
 
-**T0.2 / BF-06 — `ddcdb1a8`.** An untyped `/api/v1/entries` read cloned the whole retained
-window to return ten documents.
+| commit | what |
+|---|---|
+| `ddcdb1a8` | an untyped `/api/v1/entries` read cloned the whole retained window to return ten documents (**BF-06**, T0.2) |
+| `4f86bab1` | two of the three load-cycle reads copy the whole retained window and never write to it (**BF-07**, T0.3) |
 
-| | before | after |
+### T0.2 — slice first, then clone the slice. Target met.
+
+The read path had two branches that differ by a full deep clone of the cache array. `dev` clones
+then slices; this branch slices then clones.
+
+| at `count=10` | `dev` | this branch |
 |---|---:|---:|
-| `/api/v1/entries?count=10` (untyped read) | 0.837 ms | **0.025 ms** |
-| cost relative to a typed read | 42.0x | **0.7x** |
+| untyped read | 0.830 ms | **0.013 ms** |
+| typed read | 0.021 ms | 0.018 ms |
+| untyped cost relative to typed | **42x** | **0.7x** |
 
-Measured on this machine; **the ordering is the durable claim, the absolute figures are not.**
-Across four measurement passes in this programme the ordering of options has been stable while
-absolute numbers moved.
+**T0.2's gate is "untyped within 2x of typed at `count=10`". `dev` fails it at 42x; this branch
+passes at 0.7x.** That ratio is the durable claim. The absolute figures move between runs — an
+earlier pass recorded 0.837 → 0.025 ms — because these are sub-millisecond p50s on a shared
+machine. The ordering has been stable across every pass.
 
-**T0.3 / BF-07 — `4f86bab1`.** `cache.insertData` JSON round-tripped the whole retained array.
-Two of the three load-cycle reads copy that array and never write to it; those two now take a
-reference.
+### T0.3 — by-reference for the two callers that only read. Target NOT met.
 
-| | before | after | gate |
+`cache.insertData` JSON round-tripped the whole retained array. Two of the three load-cycle
+callers never write to what they get, so they now take a reference; `devicestatus`, which does
+write, keeps its copy.
+
+| three cache calls, one load cycle | `dev` | this branch | target |
 |---|---:|---:|---:|
-| three cache calls, one load cycle | 3.747 ms | **2.657 ms** | **< 1 ms — NOT MET** |
+| measured 2026-09-15 | 3.747 ms | 2.657 ms | **< 1 ms — NOT MET** |
+| re-measured 2026-09-16 | 3.929 ms | 2.656 ms | **< 1 ms — NOT MET** |
+
+Both passes agree on the saving (~1.1–1.3 ms) and on the verdict.
 
 **A dead write was removed.** `lib/data/dataloader.js:203` wrote a `mills` field that nothing
 subsequently read. Removed, with a test that fails if it comes back.
 
-### The gate was not met, and why the remainder was left
+### The target that was not met, and why the remainder was left
 
-**98% of the remaining 2.657 ms is `devicestatus`.** The `devicestatus` caller **rewrites
-fields in place** on the documents it is handed. Handing it a reference instead of a copy is
-therefore only safe if no plugin also writes to a device-status document.
+**98% of the remaining ~2.7 ms is `devicestatus`.** That caller **rewrites fields in place** on
+the documents it is handed, so handing it a reference instead of a copy is only safe if no plugin
+also writes to a device-status document.
 
-**A grep is not that proof, and this branch does not pretend otherwise.** Device status is
-where loop and pump state lives — reservoir, battery, last loop result, the openaps/pump
-fields plugins read to decide what to display. Sharing a mutable reference there, wrongly,
-would let one consumer's edit appear in another's view of the same document, and the symptom
-would be wrong pump or loop information shown to someone managing diabetes. That is not worth
-1.6 ms.
+**A grep is not that proof, and this branch does not pretend otherwise.** Device status is where
+loop and pump state lives — reservoir, battery, last loop result, the openaps and pump fields
+plugins read to decide what to display. Sharing a mutable reference there, wrongly, would let one
+consumer's edit appear in another's view of the same document, and the symptom would be wrong pump
+or loop information shown to someone managing diabetes. That is not worth 1.6 ms.
 
-**What would close it**: an enumeration of every plugin write path that reaches a
-device-status document, or a defensive freeze under test that fails loudly on any write. Both
-are real work and neither belongs in a performance PR. The gate is recorded as **not met**
-rather than quietly relaxed.
+**What would close it:** an enumeration of every plugin write path reaching a device-status
+document, or a defensive freeze under test that fails loudly on any write. Both are real work and
+neither belongs in a performance PR. The target is recorded as not met rather than quietly
+relaxed.
 
-## Evidence
+Two cheaper observations for whoever picks up the rest:
 
-- `docs/60-research/t02-t03-cache-clone-2026-09-15.md`
-- Register entries **BF-06** (fixed) and **BF-07** (**partly** fixed) in
-  `docs/30-design/nightscout-backfix-register.md`
+- **Retention halves it for the default operator.** The ~2.6 ms figure is at `DEVICESTATUS_DAYS=2`
+  (579 documents). The default is one day; at ~288 documents the same clone is ~1.25 ms. The bench
+  pins `days: 2` deliberately as the worse case, but most sites run the cheaper one.
+- **The prize is shaped by the prediction arrays.** Each device status in the fixture carries a
+  72-point `predicted.values` array, which is what makes `devicestatus` three times the cost of
+  `entries` at the same document count. Dropping prediction arrays from the *cached* copy would
+  take most of it — but the cache is also what serves API v3 reads, so a lossy cache is a larger
+  decision than this task.
 
-## Test evidence
+## Verifying it
 
-- 2 commits: `ddcdb1a8` (T0.2 / BF-06), `4f86bab1` (T0.3 / BF-07).
-- 6 files, +385/-8, including `tests/data.cache-clone.test.js` (+260, new) and
-  `tests/dataloader.test.js` (+5, the dead-write regression test).
-- `npm run test:unit` in `crm-bf-cache`: **371 passing, 0 failing** — the only Phase 0 branch
-  whose unit count rises, because `data.cache-clone.test.js` is inside the unit brace list.
-- The tests were checked against unfixed code: `tests/data.cache-clone.test.js` copied onto pristine `origin/dev` code fails
-  with **8 failing**. `tests/dataloader.test.js` is outside both local test scripts, so it runs
-  under CI's `test-ci` but not under `npm run test:unit` — **run the whole tree** to exercise
-  the dead-write test.
-- `git merge-tree --write-tree --messages origin/dev bf/cache` — **clean**, re-confirmed
-  2026-09-15. Clean against all eight other Phase 0 branches.
+```
+npm run test:unit                          # 371 passing, 0 failing
 
-## Semver
+# the two performance targets, re-runnable:
+NS_ROOT=$PWD node --expose-gc tools/mt-bench/apitier.js read    # T0.2 gate -> PASS (0.7x)
+NS_ROOT=$PWD node --expose-gc tools/mt-bench/apitier.js cycle   # 2.66 ms, target < 1 ms -> NOT MET
+```
 
-**Patch.** No declared surface moves: no API response changes shape, no environment variable is
-added or removed, no default flips. This is the least risky branch in the Phase 0 set and a
-reasonable one to land first to exercise the process. Classification from
-`docs/60-research/gt4-semver-classification-2026-09-15.md`.
+The bench reads the live call sites out of the tree and names the shape it found
+(`clone-then-slice` on `dev`, `slice-then-clone` here), and throws on a tree it cannot recognise,
+so it cannot report this branch's number for `dev`'s code. Fixture: 576 entries (183 KB JSON), 600
+treatments of which 361 survive the retention filter, 576 device statuses, `DEVICESTATUS_DAYS=2`.
 
-**The operator-visible text above belongs in the release notes.** It is *not* a `CHANGELOG.md`
-entry and this branch adds none: under the maintainer's rule, `CHANGELOG.md` is a **release
-output** generated by GitHub tooling between releases, and branches never hand-edit it. The "What
-changes for you" section is written to be usable verbatim as that source text. **The paragraph that
-must not be dropped is the honest one** — that the sub-1 ms gate was *not* met and why the
-`devicestatus` remainder was deliberately left alone. A performance note that quotes only the 33x
-figure would misrepresent what shipped.
+`tests/data.cache-clone.test.js` is new and inside the unit brace list — this is the only Phase 0
+branch whose unit count rises. Copied onto pristine `dev` code it gives **8 failing**.
+`tests/dataloader.test.js`, which carries the dead-write regression, is in neither local script and
+runs only under `npm test`.
 
----
+## Semver: patch
 
-## Follow-ups deliberately **not** in this PR
+No declared surface moves: no API response changes shape, no environment variable is added or
+removed, no default flips. The "What changes for you" text above is the release-note source; this
+branch adds no `CHANGELOG.md` entry.
+
+**The paragraph that must not be dropped is the honest one** — that the sub-1 ms target was *not*
+met and why the `devicestatus` remainder was deliberately left. A performance note quoting only
+the read-path win would misrepresent what shipped.
+
+## Follow-ups deliberately not in this PR
 
 - **The `devicestatus` clone, which is 98% of the remaining cost.** Blocked on proof that no
-  plugin writes to a device-status document. This is the named, deliberate remainder of T0.3,
-  not an oversight.
-- **The limit rule will be written twice** — `lib/server/count.js` and API v3's `parseLimit` —
-  on purpose, so each commit lands alone. Unify afterwards. *Two readings of one rule is the
-  root cause of this whole family of defects*, so leaving it duplicated is a debt with a name.
-  **Correction, measured 2026-09-15: `lib/server/count.js` does not exist on `origin/dev`** —
-  `git cat-file -e origin/dev:lib/server/count.js` fails, and it is present only on `bf/reads`,
-  which creates it. So the duplication **does not exist today and is created by landing E
-  (`bf/reads`)**, not by this branch. The earlier text here claimed the two copies "currently
-  agree", which measured a file on `bf/reads` and described it as the state of `dev`. What is
-  true: they agree *on `bf/reads`* — same `/^\s*\d+\s*$/` test, same `Number.isSafeInteger && > 0`
-  rule, with v3 additionally capping at `API3_MAX_LIMIT` — and they agree from the moment the
-  duplication is born, which is exactly why it is easy to forget about. This branch touches
-  neither copy.
+  plugin writes to a device-status document. This is the named, deliberate remainder of T0.3, not
+  an oversight.
 - **`plugins.isPluginEnabled` always returns `true`** — `find` returns `undefined`, compared
-  against `!== null`. No caller, so no register id.
-- **`lib/authorization/storage.js` has a second unguarded `console.log` on a request path**,
-  same shape as BF-05, different file (`:84` on `origin/dev`; the line moves per branch).
+  against `!== null`. No caller today, so nothing observable.
+- **`lib/authorization/storage.js:84` has an unguarded `console.log` on a request path**, printing
+  request-derived values. Not introduced by this branch and not in a file it touches. It is
+  repaired on the `bf/auth` branch, which is not yet open as a PR, so it is still live on `dev`.

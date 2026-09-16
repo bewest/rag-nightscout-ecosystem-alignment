@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 74 |
-| runnable gates | 115 |
+| runnable gates | 116 |
 | explicit `no-gate:` markers | 107 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 107 of the 222 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 107 of the 223 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -80,7 +80,7 @@ decision is required by any of them.
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
 | `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `in-flight-upstream` | `bf/alarms` | major | 9 run + 3 no-gate |
-| `P0-B` | bf/cache - T0.2 and T0.3 read-path cost | `gate-not-met` | `bf/cache` | patch | 3 run + 1 no-gate |
+| `P0-B` | bf/cache - T0.2 and T0.3 read-path cost | `gate-not-met` | `bf/cache` | patch | 4 run + 1 no-gate |
 | `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `ready-to-push` | `bf/auth` | major | 5 run + 2 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
 | `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `in-flight-upstream` | `bf/coercion` | minor | 7 run + 1 no-gate |
@@ -173,6 +173,8 @@ decision is required by any of them.
   - bf/cache has not fallen behind origin/dev
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/cache >/dev/null`
   - trial-merge into origin/dev is conflict-free
+- `[integration]` `node tools/queue/gates/t02-read-ratio.js`
+  - T0.2's stated gate, RUN LIVE, AND IT IS MET - an untyped /api/v1/entries read must come within 2x of a typed one at count=10, and it is 0.7x. It is carried beside the T0.3 gate on purpose: that one is red and this one is green, and an item showing only the failure would misrepresent this branch as much as one showing only the win. NON-VACUITY IS STRUCTURAL: the harness reads lib/api/entries/index.js out of the worktree and names the shape it found - clone-then-slice on dev, slice-then-clone on the branch. Measured 2026-09-16: dev FAILS at 42.3x, the branch PASSES at 0.7x, so it distinguishes them. SKIPS when the worktree has no node_modules.
 - `[integration]` `node tools/queue/gates/t03-cycle-clone-budget.js`
   - T0.3's stated gate, RUN LIVE, AND IT IS RED ON PURPOSE - the budget is under 1 ms and the three cycle calls are 2.66. THE MARKER THAT WAS HERE SAID THIS COULD NOT BE RE-RUN, because "the workload that produced those two figures is not recorded anywhere in this repository". That was FALSE when it was written: docs/60-research/t02-t03-cache-clone-2026-09-15.md §2 names the harness (tools/mt-bench/apitier.js, arm `cycle`) and the fixture - 576 entries, 600 treatments of which 361 survive retention, 576 device statuses with 72-point prediction arrays, DEVICESTATUS_DAYS=2 - and §10 gives the command. The cost of the wrong marker was that queue-status printed CLAIM UNBACKED on this item: the state said gate-not-met while every runnable gate passed and the failing property hid behind a marker nobody could run. RE-MEASURED 2026-09-16 on Node v24.15.0: branch 2.656 ms against a recorded 2.657, origin/dev 3.929 against a recorded 3.747 - ordinary variance on a timing bench, same direction and magnitude. NON-VACUITY IS STRUCTURAL: the harness reads the live call sites out of the worktree and prints them (dev entries=insertData, branch entries=insertDataRef) and throws on a tree it cannot recognise, so it cannot report the branch's number for dev's code. Reproduced anyway - --budget 5 passes, proving it can go green. SKIPS when the worktree has no node_modules.
 - **NO GATE** &mdash; The 98% of the remaining cost is devicestatus, whose caller rewrites fields in place. Taking it needs proof that nothing in the plugin tier writes to a device-status document. A grep is not that proof when the failure mode is a field silently vanishing from every API read served out of the cache. There is no test that would catch it.
