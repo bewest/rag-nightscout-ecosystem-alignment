@@ -248,8 +248,10 @@ items:
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-cache
     state: gate-not-met
-    blast_radius: 2 commits. lib/server/cache.js, lib/server/dataloader.js,
-      lib/api/entries.
+    blast_radius: 2 commits at 4f86bab1, 6 files, +385/-8. lib/server/cache.js,
+      lib/data/dataloader.js, lib/api/entries/index.js, plus three test files.
+      NOTE the dataloader path - this entry said lib/server/dataloader.js, which
+      does not exist; the file is lib/data/dataloader.js.
     review: maintainer
     operator_visible: >
       Pages that read recent glucose values get faster. Nothing you see changes
@@ -264,20 +266,29 @@ items:
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/cache >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
-      - no-gate: >
-          T0.3's stated gate is "the three cache calls under 1 ms per cycle", and
-          it was MEASURED at 3.747 -> 2.657 ms, so the gate is not met. But that
-          measurement is not currently RE-RUNNABLE: the workload that produced
-          those two figures is not recorded anywhere in this repository, and a
-          benchmark written from scratch here would emit a number that looks
-          like the gate's number without being comparable to it. Rule 9 - quote
-          the ordering, and say how it was measured and on what - forbids that,
-          and a fabricated-workload benchmark is the exact laundering this queue
-          exists to prevent. So `gate-not-met` here rests on a RECORDED
-          measurement by a prior agent, not on a live one. Making it live means
-          first writing down the workload; the house pattern to follow is
-          tools/mt-bench/cycle-fix.js, which states its iteration count, its
-          document counts and its comparison arms in the file.
+      - run: node tools/queue/gates/t03-cycle-clone-budget.js
+        kind: integration
+        describe: >
+          T0.3's stated gate, RUN LIVE, AND IT IS RED ON PURPOSE - the budget is
+          under 1 ms and the three cycle calls are 2.66. THE MARKER THAT WAS HERE
+          SAID THIS COULD NOT BE RE-RUN, because "the workload that produced those
+          two figures is not recorded anywhere in this repository". That was FALSE
+          when it was written: docs/60-research/t02-t03-cache-clone-2026-09-15.md
+          §2 names the harness (tools/mt-bench/apitier.js, arm `cycle`) and the
+          fixture - 576 entries, 600 treatments of which 361 survive retention, 576
+          device statuses with 72-point prediction arrays, DEVICESTATUS_DAYS=2 -
+          and §10 gives the command. The cost of the wrong marker was that
+          queue-status printed CLAIM UNBACKED on this item: the state said
+          gate-not-met while every runnable gate passed and the failing property
+          hid behind a marker nobody could run. RE-MEASURED 2026-09-16 on Node
+          v24.15.0: branch 2.656 ms against a recorded 2.657, origin/dev 3.929
+          against a recorded 3.747 - ordinary variance on a timing bench, same
+          direction and magnitude. NON-VACUITY IS STRUCTURAL: the harness reads
+          the live call sites out of the worktree and prints them (dev
+          entries=insertData, branch entries=insertDataRef) and throws on a tree
+          it cannot recognise, so it cannot report the branch's number for dev's
+          code. Reproduced anyway - --budget 5 passes, proving it can go green.
+          SKIPS when the worktree has no node_modules.
       - no-gate: >
           The 98% of the remaining cost is devicestatus, whose caller rewrites
           fields in place. Taking it needs proof that nothing in the plugin tier
@@ -286,7 +297,9 @@ items:
           out of the cache. There is no test that would catch it.
     blocks_on: []
     evidence:
+      - docs/60-research/t02-t03-cache-clone-2026-09-15.md
       - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - tools/mt-bench/apitier.js
     notes: >
       Sequencing letter B. T0.2 passed its gate (0.837 -> 0.025 ms, asserted
       identical over HTTP). T0.3 did not. A dead `mills` write at
