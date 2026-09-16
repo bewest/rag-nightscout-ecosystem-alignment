@@ -58,7 +58,14 @@ const SCOPE = [
   'reports',
   'tools/queue',
 ];
-const SCOPE_FILES = ['README.md', 'Makefile'];
+// Individual files, where a whole directory would drag the legacy tree in.
+// `docs/README.md` is here because on 2026-09-16 it became the primary
+// navigation into the programme material, and it was NOT covered by any SCOPE
+// prefix - `docs/00-overview` and `docs/30-design` are, but `docs/` itself is
+// not, and adding `docs/` would pull in the Jan-Apr campaign this gate
+// deliberately leaves alone. An ablation on its onboarding link came back
+// green, which is how the gap was found.
+const SCOPE_FILES = ['README.md', 'Makefile', 'docs/README.md'];
 
 // Frozen records. Each one is evidence OF a past action, so editing it to keep
 // its paths current would destroy the thing it is evidence of. Excluding them
@@ -182,6 +189,13 @@ function skipTarget(t) {
   // or the same with a typographic ellipsis - is an abbreviation, not a
   // citation.
   if (t.includes('...') || t.includes('\u2026')) return true;
+  // A printf/format placeholder: `[`%s`](../../%s)` is a Python f-string
+  // building a link, not a link.
+  if (t.includes('%')) return true;
+  // A bare word with neither a slash nor an extension is not a path. This is
+  // Python and JavaScript source read as Markdown: `BLOCKS[name](doc)` matches
+  // the link pattern exactly, and `](doc)` is a function call.
+  if (!t.includes('/') && !path.extname(t)) return true;
   // A reference into the git-ignored externals tree, in any spelling. The
   // prefix test below cannot see this one, because `../../externals/x` inside
   // `docs/60-research/tenancy/` normalises to `docs/externals/x`.

@@ -2,6 +2,21 @@
 
 A multi-repository workspace for working across Nightscout, AAPS, Loop, and Trio projects without merging them into a single giant repo.
 
+## Current work — cgm-remote-monitor
+
+Three parallel horizons: **remedial** (defects that already ship), **modernization**
+(the release train) and **multitenant** (bulk hosting). One queue spans all three.
+
+- **[docs/00-overview/PROGRAMME-STATUS.md](docs/00-overview/PROGRAMME-STATUS.md)** — where the work is and what it is waiting for
+- **[docs/00-overview/NEEDS-A-HUMAN.md](docs/00-overview/NEEDS-A-HUMAN.md)** — the items where no further engineering advances anything
+- **[docs/00-overview/REVIEWER-ONBOARDING.md](docs/00-overview/REVIEWER-ONBOARDING.md)** — read this first if you are considering reviewing
+- **[reports/reviewer-packets/](reports/reviewer-packets/)** — one bounded packet per open pull request
+
+```bash
+make queue-status     # run the gates. THE measurement; `state` in the manifest is a claim
+make queue-check      # what CI runs: coverage, staleness of every generated view, link integrity
+```
+
 ## Overview
 
 This workspace uses a "bootstrap + lockfile" approach where:

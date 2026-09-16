@@ -2,6 +2,43 @@
 
 This directory contains analysis, research, and decisions extracted from the Nightscout ecosystem source code.
 
+## Start here
+
+| if you are | read |
+|---|---|
+| new, and considering reviewing | [`00-overview/REVIEWER-ONBOARDING.md`](00-overview/REVIEWER-ONBOARDING.md) |
+| asking "where is the work" | [`00-overview/PROGRAMME-STATUS.md`](00-overview/PROGRAMME-STATUS.md) |
+| asking "what is blocked on me" | [`00-overview/NEEDS-A-HUMAN.md`](00-overview/NEEDS-A-HUMAN.md) |
+| picking up one pull request | [`../reports/reviewer-packets/`](../reports/reviewer-packets/) |
+| looking for item state | [`../queue/QUEUE.md`](../queue/QUEUE.md) (generated; the source is `queue/work-queue.yaml`) |
+
+## The programme axis, added 2026-09-16
+
+The numbered directories below are a **document-type** taxonomy — overview,
+domain, design, migration, research, decisions. From 2026-09-16 the September
+cgm-remote-monitor material also carries a **programme** axis as subdirectories,
+because the type alone does not tell you which of three parallel horizons a
+document belongs to:
+
+```
+docs/30-design/{remedial,modernization,tenancy,platform}/
+docs/60-research/{remedial,modernization,tenancy,programme}/
+```
+
+- **remedial** — defects that already ship: the backfix register, Phase 0, the
+  evidence behind each fix
+- **modernization** — the release train, semver policy, the five cuts
+- **tenancy** — multitenancy: decisions, the storage seam, the evidence for each
+- **platform** — cross-cutting design that serves all three horizons
+- **programme** *(research only)* — process and completeness critiques
+
+Files left **loose** at the top of `30-design` and `60-research` are either
+cross-programme entry points (the post-Phase-0 roadmap, the adoption roadmap) or
+older material. **The Jan–Apr 2026 research campaign was deliberately left where
+it is** and is not filed by programme.
+
+`make docs-links` proves every path the groomed material cites still resolves.
+
 ## Philosophy
 
 Documentation follows source code analysis → research synthesis → domain understanding → design proposals → architectural decisions. The structure supports iterative quality system development by organizing artifacts by their maturity and purpose.
@@ -292,7 +329,7 @@ Use revision history tables for significant updates:
 ### Cross-Linking
 Build a web of knowledge with references:
 ```markdown
-See also: [Treatments Deep Dive](treatments-deep-dive.md), [ADR-001](../90-decisions/adr-001-override-supersession.md)
+See also: [Treatments Deep Dive](10-domain/treatments-deep-dive.md), [ADR-001](90-decisions/adr-001-override-supersession.md)
 ```
 
 ---
