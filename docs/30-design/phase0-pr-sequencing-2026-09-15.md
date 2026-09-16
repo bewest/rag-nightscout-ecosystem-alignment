@@ -150,7 +150,7 @@ rather than failing to read one.
 
 | # | branch | commits | what it is |
 |---|---|---|---|
-| **I** | `bf/parms` | 2 (`522c6ffb`, `c9a7a21c`) | **BF-37** and **BF-38**. Independent of each other; split if preferred. Clean against all seven |
+| **I** | `bf/parms` | 3 (`522c6ffb`, `eb0bc918`, `c9a7a21c`) | **BF-37**, **BF-39**, **BF-38** — in that order if split. Clean against all seven |
 
 **BF-37 — a bare flag in the URL stops the page loading.** Verified against `origin/dev`:
 
@@ -180,6 +180,27 @@ The fix reads a valueless parameter as the empty string, which is what both exis
 treat as absence (`|| clientToken`, `!== 'true'`). **The split itself is untouched** — including
 truncation at a second `=`, a latent issue for a token containing `=`, deliberately left alone with
 a test asserting well-formed queries parse byte-identically.
+
+**BF-39 — the `_`→space replacement corrupts access tokens, and nothing notices.** Third commit
+(`eb0bc918`). The `+`→space half of `/[_\+]/` is correct; `+` means space in a query string. The
+`_` half is not correct in any encoding. `storage.js:190` strips with `\W`, which **keeps**
+underscores, so a subject named `mom_phone` gets the token `mom_phone-89e148ac…` and `queryParms`
+hands the client `mom phone-89e148ac…`.
+
+**Measured, not reasoned about: both spellings authorise, 200.** `checkToken`
+(`storage.js:279-289`) splits on `-`, takes the **last** segment as the prefix, and matches
+`subject.digest.indexOf(prefix) === 0` — so the corruption lands entirely in the part nothing reads.
+
+**A real corruption absorbed by a leniency nobody chose — BF-16's shape again**, where two ends
+disagree and a third thing hides it. Filed low and fixed as one character, because the point is
+**removing the accidental coupling, not the symptom**: this is the kind that breaks when either end
+changes for an unrelated reason, and it is worth being written down before somebody tightens
+`checkToken`.
+
+*Two things deliberately not done, recorded in the entry rather than left implicit:* **no
+`decodeURIComponent`** — it throws on a malformed percent sequence, at the exact call site BF-37
+exists to stop throwing at, so a correct-looking decoder there would reinstate BF-37 in a new
+costume; and **the second-`=` truncation stays**, because a token cannot contain one.
 
 **BF-38 — `%1` ate `%10`.** Substitution loops forwards and `%1` is a prefix of `%10`, so the first
 pass rewrites the `%1` *inside* `%10` and leaves a stray `0`: `'%1|%9|%10|%11'` →
@@ -530,10 +551,12 @@ things worse.
    `res.json` nor `next()`, so the request hangs until the client times out. Low reachability, and
    it sits beside the `ctx.language.set(locale)` line `bf/alarms` already changes, so **it should
    land with that branch** rather than on its own.
-8. **Audit suppressions outside `lib/`** — `detect-non-literal-fs-filename`,
+8. ~~**The second-`=` truncation in `queryParms`**~~ **ANSWERED, not a defect.** A token cannot
+   contain `=`: the name is `\w`-stripped and the digest is hex. Recorded rather than fixed.
+9. **Audit suppressions outside `lib/`** — `detect-non-literal-fs-filename`,
    `detect-possible-timing-attacks`, `no-cond-assign`. Object-injection's 34 lines yielded two real
    defects; the same reasoning applies to each remaining category.
-9. **jsdom test hygiene has no enforcement.** A suite that sets `global.window`/`global.document`
+10. **jsdom test hygiene has no enforcement.** A suite that sets `global.window`/`global.document`
    must restore them in `afterEach` or it breaks `browser-settings.test.js` later in the same run.
    `hashauth.modern.test.js` does the restore; nothing requires it, and the failure lands in a
    different file than the one that caused it.
