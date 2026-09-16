@@ -514,8 +514,8 @@ final stats = await api.getStats(from, to);  // Pre-computed
 
 ## References
 
-- [cgm-remote-monitor lib/report_plugins/](../../externals/cgm-remote-monitor-official/lib/report_plugins/)
-- [nightscout-reporter](../../externals/nightscout-reporter/)
+- [cgm-remote-monitor lib/report_plugins/](../../externals/cgm-remote-monitor-official/lib/report_plugins)
+- [nightscout-reporter](../../externals/nightscout-reporter)
 - [PR#8366 - 2025 Reports](https://github.com/nightscout/cgm-remote-monitor/pull/8366)
 - [Model Context Protocol Spec](https://modelcontextprotocol.io/)
 - [ADA Time-in-Range Recommendations](https://diabetesjournals.org/care/article/42/8/1593/36211/)

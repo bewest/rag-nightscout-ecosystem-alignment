@@ -214,4 +214,4 @@ See [SignalR Bridge Analysis](../../docs/10-domain/nocturne-signalr-bridge-analy
 
 - [cgm-remote-monitor API Versions](../cgm-remote-monitor/api-versions.md)
 - [Nightscout API Requirements](../../traceability/nightscout-api-requirements.md)
-- [OpenAPI Specs](../../specs/openapi/)
+- [OpenAPI Specs](../../specs/openapi)

@@ -506,8 +506,8 @@ Duplicates trigger UPDATE instead of INSERT, returning 200 with `isDeduplication
 - [Source Code Synthesis](../60-research/cgm-remote-monitor-source-synthesis.md)
 - [API v3 Summary](../../specs/openapi/nightscout-api3-summary.md)
 - [Glossary](./glossary.md)
-- [mapping/nightscout/](../../mapping/nightscout/) - Core NS collection mappings
-- [mapping/nightscout-reporter/](../../mapping/nightscout-reporter/) - Consumer perspective from Reporter
+- [mapping/nightscout/](../../mapping/nightscout) - Core NS collection mappings
+- [mapping/nightscout-reporter/](../../mapping/nightscout-reporter) - Consumer perspective from Reporter
 
 ---
 

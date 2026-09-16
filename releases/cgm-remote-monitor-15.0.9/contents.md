@@ -16,7 +16,7 @@ Nothing merged, pushed, tagged or published.
 | Tag in the repository | **none.** `git tag -l` stops at `v15.0.8` |
 | What the policy says | **`15.1.0` at minimum; `16.0.0` if three rows ship as written; preferred outcome is to split** |
 
-`docs/30-design/semver-and-release-versioning-policy-2026-09-15.md` §8.1 and §8.2:
+`docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md` §8.1 and §8.2:
 
 - **§8.1 — the `dev` candidate is already a MINOR** on two rows that have nothing to do with
   Phase 0: two new environment variables with a changed logging default (`DEBUG_LOGGING`,
@@ -152,7 +152,7 @@ the old `if (opts && opts.count) return this.limit(parseInt(opts.count))`:
 line 38, *before* the validator.
 
 **The exposure is latent, not observed, and the census is the evidence.**
-`docs/60-research/seam-limit-and-projection-2026-09-14.md` §2 (from
+`docs/60-research/tenancy/seam-limit-and-projection-2026-09-14.md` §2 (from
 `tools/qc/v1_count_census.py`): **274 `count=` occurrences across 10 client projects — 236
 literal, 25 computed at request time, 11 prose, 2 other. No client sends a literal
 `count=0`.** The observed literals are `1, 2, 3, 5, 10, 20, 24, 50, 100, 288, 500, 1000,
@@ -276,7 +276,7 @@ exposure is closed will not rotate, and the exposure is not closed.
 
 ## Test evidence, per branch, with the suite that was actually run
 
-**Read `docs/60-research/e3-gate-vacuity-audit-2026-09-15.md` before treating any green tick
+**Read `docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md` before treating any green tick
 as complete.**
 
 | Branch | Suite | Result |
@@ -327,7 +327,7 @@ invocation only.
   in `lib/server/food.js` so that fixing it *forces* the food model to be revisited.
   `make schema-code-drift` will fail the day this reaches the tooling repo's checkouts. What
   to replace the anchors with is written into BF-16.
-- The queue's gate controls are audited in `docs/60-research/e3-gate-vacuity-audit-2026-09-15.md`:
+- The queue's gate controls are audited in `docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md`:
   95 gate commands, all with declared negative controls; full run **91 non-vacuous, 4 exempt,
   0 vacuous, 0 uncontrolled**.
 

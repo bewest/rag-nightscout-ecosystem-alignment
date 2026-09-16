@@ -1,6 +1,6 @@
 """bf13_corpus_sizing.py -- how much real data holds BF-13's triggering shape.
 
-BF-13 (docs/60-research/seam-ordering-and-pagination-2026-09-14.md) is API v3's
+BF-13 (docs/60-research/tenancy/seam-ordering-and-pagination-2026-09-14.md) is API v3's
 skip/limit paging silently losing and duplicating documents when every key in
 parseSort's tiebreak chain ties. The finding was reproduced synthetically, and
 the document lists "the corpus was not queried for how many deployments hold the

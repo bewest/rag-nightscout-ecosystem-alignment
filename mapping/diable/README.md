@@ -190,4 +190,4 @@ DiaBLE (Diabetes Bluetooth Low Energy) provides:
 ## Related Documentation
 
 - [xDrip4iOS Documentation](../xdrip4ios/README.md) - Alternative iOS CGM app with similar sensor support
-- [Nightscout cgm-remote-monitor](../cgm-remote-monitor/) - Server-side Nightscout documentation
+- [Nightscout cgm-remote-monitor](../cgm-remote-monitor) - Server-side Nightscout documentation

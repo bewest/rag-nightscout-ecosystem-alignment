@@ -678,8 +678,8 @@ async function detectStateSpanSupport(): Promise<boolean> {
 
 ## References
 
-- [StateSpan Standardization Proposal](../../docs/sdqctl-proposals/statespan-standardization-proposal.md)
+- [StateSpan Standardization Proposal](../sdqctl-proposals/statespan-standardization-proposal.md)
 - [StateSpan Gap Remediation Mapping](./statespan-gap-remediation-mapping.md)
 - [Nocturne V4 StateSpan Implementation](../../externals/nocturne/src/Core/Nocturne.Core.Models/StateSpan.cs)
 - [NightscoutKit (Loop)](../../externals/LoopWorkspace/NightscoutKit/)
-- [AAPS NSClient](../../externals/AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclient/)
+- [AAPS NSClient](../../externals/AndroidAPS/plugins/sync/src/main/kotlin/app/aaps/plugins/sync/nsclient)

@@ -176,7 +176,7 @@ This maps to files in `externals/nightscout-reporter/`.
 ## Cross-References
 
 - [Nightscout Data Model](../../docs/10-domain/nightscout-data-model.md) - Authoritative NS schema
-- [mapping/nightscout/](../nightscout/) - Core NS collection mappings
+- [mapping/nightscout/](../nightscout) - Core NS collection mappings
 - [mapping/loop/nightscout-sync.md](../loop/nightscout-sync.md) - Loop's NS upload patterns
 
 ---

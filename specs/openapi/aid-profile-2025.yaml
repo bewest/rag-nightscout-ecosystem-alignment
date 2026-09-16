@@ -24,7 +24,7 @@ info:
 
     Reconciled against 202 real profile documents from 11 Nightscout sites
     (`reports/schema-census/profile.census.json`). Evidence and method:
-    `docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md`.
+    `docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md`.
 
     - `mills`, `carbs_hr`, `delay`: now accept `string`; that is how 99% of
       live documents write them

@@ -25,7 +25,7 @@ info:
     Reconciled against 702,254 real device-status documents from 11
     Nightscout sites (`reports/schema-census/devicestatus.census.json`).
     Evidence and method:
-    `docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md`.
+    `docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md`.
 
     - `PumpStatus`: the **flat** status shape (`pump.bolusing`,
       `pump.suspended`, `pump.pumpID`, `pump.secondsFromGMT`,
@@ -477,7 +477,7 @@ components:
 
         The flat shape is the majority in practice and was entirely absent
         from the spec. See
-        `docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md` §4.3.
+        `docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md` §4.3.
       properties:
         clock:
           type: string

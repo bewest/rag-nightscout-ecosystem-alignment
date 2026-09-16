@@ -1978,7 +1978,7 @@ rather than argue about them.
 
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
-| Multitenancy discussion doc | `docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md` | Single-tenant assumption map, 5 candidate architectures, storage/keyv/WASM/eBPF assessment, EXP-MT benchmark matrix and decision rule |
+| Multitenancy discussion doc | `docs/30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md` | Single-tenant assumption map, 5 candidate architectures, storage/keyv/WASM/eBPF assessment, EXP-MT benchmark matrix and decision rule |
 
 **Key Findings**:
 - The plugin sandbox is already tenant-shaped (`lib/sandbox.js:45-84` takes settings+data),

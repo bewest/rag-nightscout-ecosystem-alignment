@@ -264,7 +264,7 @@ identifier:
 
 ## References
 
-- [OpenAPI Specs](../../specs/openapi/)
+- [OpenAPI Specs](../../specs/openapi)
 - [Nightscout API Requirements](../../traceability/nightscout-api-requirements.md)
 - [GAP-API Freshness Verification](./gap-api-freshness-verification.md)
 - [API v3 Deep Dive](./nightscout-apiv3-deep-dive.md)

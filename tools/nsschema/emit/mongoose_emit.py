@@ -123,7 +123,7 @@ def emit(model, profile="write", strict=False):
 //
 // Scope: this schema belongs to the MongoDB storage adapter only. It is not
 // imported by engine-agnostic core code, and the Postgres adapter does not
-// load it. See docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md
+// load it. See docs/30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md
 // §6.4 for why that boundary matters.
 
 'use strict';

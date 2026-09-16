@@ -15,7 +15,7 @@ existing prior art from genuinely new proposals still needing scoping.
   — later, more detailed connector-by-connector triage (referenced directly
   in the 2026-09-09 modernization discussion doc, §10–11).
 - **Directly relevant scheduling fact**: the modernization discussion doc
-  (`../../60-research/nightscout-modernization-next-steps-2026-09-09.md` §3)
+  (`../../60-research/modernization/nightscout-modernization-next-steps-2026-09-09.md` §3)
   proposes bringing `nightscout-connect` **in-tree** into `cgm-remote-monitor`
   after the #8605 baseline is accepted — i.e., vendor-connectivity work is
   already sequenced as **dependent on** modernization-baseline acceptance,

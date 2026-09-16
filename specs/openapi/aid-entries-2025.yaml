@@ -20,7 +20,7 @@ info:
 
     Reconciled against 896,589 real entry documents from 11 Nightscout sites
     (`reports/schema-census/entries.census.json`). Evidence and method:
-    `docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md`.
+    `docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md`.
 
     - `date`: `integer` -> `number` (61.5% of live values are fractional)
     - `direction`: enum extended with `NONE`
@@ -220,7 +220,7 @@ components:
             sites: 11
             note: >-
               Same defect class as Trio PR #1476; not confined to one client.
-              See docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md §4.1
+              See docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md §4.1
           x-aid-controllers:
             Loop: startDate (converted)
             AAPS: timestamp
@@ -307,7 +307,7 @@ components:
 
         # Fields in universal use that the 2025 spec omitted. Each was
         # measured on 10 of 11 sites in the 2026-04 corpus; see
-        # docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md §4.1.
+        # docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md §4.1.
         trend:
           type: integer
           description: |

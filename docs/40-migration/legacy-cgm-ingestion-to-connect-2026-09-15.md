@@ -6,8 +6,8 @@ check. §3 and §4 are written for people running Nightscout for themselves or a
 are **not medical advice**.
 
 **Rewritten 2026-09-16** against the evidence in
-`docs/60-research/e1-dexcom-path-comparison-2026-09-15.md` (Dexcom) and
-`docs/60-research/e2-medtronic-path-comparison-2026-09-15.md` (MiniMed). Those two studies tested
+`docs/60-research/modernization/e1-dexcom-path-comparison-2026-09-15.md` (Dexcom) and
+`docs/60-research/modernization/e2-medtronic-path-comparison-2026-09-15.md` (MiniMed). Those two studies tested
 the premises of the previous revision of this file from source. **Several of them did not survive.**
 §0 says what changed and §9 says what this document now retracts.
 
@@ -884,8 +884,8 @@ would have told an operator to look for the wrong thing.
 
 - **~~E1 and E2 both refer to the connector's CareLink source as `lib/sources/minimedcarelink.js`.~~
   RETRACTED 2026-09-16 during adversarial review — this correction was itself wrong.** Neither
-  `docs/60-research/e1-dexcom-path-comparison-2026-09-15.md` nor
-  `docs/60-research/e2-medtronic-path-comparison-2026-09-15.md` contains the string
+  `docs/60-research/modernization/e1-dexcom-path-comparison-2026-09-15.md` nor
+  `docs/60-research/modernization/e2-medtronic-path-comparison-2026-09-15.md` contains the string
   `lib/sources/minimedcarelink.js`; grepped, both return zero, and E1 does not name a
   `lib/sources/` path for the CareLink source at all. There was no error in E1 or E2 to correct.
   **What survives, and is worth keeping as a navigation note:** the connector's CareLink source is a

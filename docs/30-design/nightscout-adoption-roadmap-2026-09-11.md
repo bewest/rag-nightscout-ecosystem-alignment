@@ -2,8 +2,8 @@
 
 Date: 2026-09-11. Status: draft for maintainer discussion. Sixth in a series;
 sequencing companion to
-[the hub-and-spoke sync design](./nightscout-hub-sync-architecture-2026-09-11.md)
-and [effects and versioning](./nightscout-effects-and-versioning-2026-09-11.md).
+[the hub-and-spoke sync design](./platform/nightscout-hub-sync-architecture-2026-09-11.md)
+and [effects and versioning](./platform/nightscout-effects-and-versioning-2026-09-11.md).
 
 Based on the state of each project's **development branch on 2026-09-11**.
 The workspace pins have since been advanced (`workspace.lock.json`) and every
@@ -244,7 +244,7 @@ phase is useful if the next never happens.
 
 Define what goes in the existing `settings` collection: an effective-dated,
 build-versioned `ControllerSettings` document, with the fields the
-[fidelity report](./nightscout-devicestatus-profile-fidelity-2026-09-10.md)
+[fidelity report](./platform/nightscout-devicestatus-profile-fidelity-2026-09-10.md)
 measured as absent — Loop's eight behaviour switches, `maxIob` and `maxBasal`
 for the oref0 family.
 
@@ -274,7 +274,7 @@ records today; both are single-symbol fixes in one project each.
 The hub ships registrations for known controllers, generated from measured
 evidence (`specs/sync/registrations/`), **serves them at a well-known path**
 so any reader can fetch the same description
-([proposal](./PROPOSAL-controller-descriptions-2026-09-11.md) §2.1), and
+([proposal](./platform/PROPOSAL-controller-descriptions-2026-09-11.md) §2.1), and
 resolves which one applies from three sources in precedence order: a controller-uploaded registration, then
 the operator's declared expectation (§2.2), then a **structural
 discriminator** — a devicestatus carrying `loop` versus `openaps`. Never by
@@ -322,17 +322,17 @@ batched idempotent writes, then decomposition behind the contract.
 ### What is deliberately not on the roadmap
 
 * **A v5.** Two of three controllers have not adopted v3. See
-  [versioning](./nightscout-effects-and-versioning-2026-09-11.md) §5.
+  [versioning](./platform/nightscout-effects-and-versioning-2026-09-11.md) §5.
 * **Tenant-registered CRDs**, on current evidence. Note the scope: this
   excludes *tenant*-scoped schema registration, not the per-controller-product
   descriptions Phase 3 ships — see
-  [extensibility models](./nightscout-extensibility-models-2026-09-10.md) §3.4.
+  [extensibility models](./platform/nightscout-extensibility-models-2026-09-10.md) §3.4.
 * **A liveness or channel-ownership model.** cgm-remote-monitor's
   `docs/proposals/` already drafts one (`ControllerInstanceRegistration`,
   `CapabilitySnapshot`), this series has measured nothing about it, and
   writing a competing design before reading theirs is the duplication this
   work exists to prevent. See
-  [hub-and-spoke sync](./nightscout-hub-sync-architecture-2026-09-11.md) §5.2.
+  [hub-and-spoke sync](./platform/nightscout-hub-sync-architecture-2026-09-11.md) §5.2.
 * **Anything requiring a Loop change**, until something else has proved the
   value and Loop has capacity.
 
@@ -341,7 +341,7 @@ batched idempotent writes, then decomposition behind the contract.
 The three technical motivations — unify typed representations, provide
 extensibility, offer full replay and observability — are stated with their
 evidence in
-[the controller-descriptions proposal](./PROPOSAL-controller-descriptions-2026-09-11.md)
+[the controller-descriptions proposal](./platform/PROPOSAL-controller-descriptions-2026-09-11.md)
 §0. This section is about the *process* goal that sits above them.
 
 **The purpose of the discovery and evidentiary work in this repository is to
@@ -377,7 +377,7 @@ requiring ecosystem negotiation. Today, adding a temporary-effect type means
 inventing an `eventType`, hoping readers tolerate it, and discovering months
 later that a typed consumer dropped it. With a registration and a declared
 effect vector, a new feature is a registration bump — and the
-[quirks registry](../../specs/quirks/) exists precisely because the current
+[quirks registry](../../specs/quirks) exists precisely because the current
 answer was "everyone improvises and the divergence is found by census".
 
 **For a new controller** the benefit is that there is something to conform
@@ -425,7 +425,7 @@ Those are the two complaints this series started from.
   land mostly on the hub side.
 * **How much of `docs/proposals/` is live.** *Partly answered since this was
   written.* The reconciliation is done —
-  [Reconciling the agentic control plane RFC](./nightscout-control-plane-reconciliation-2026-09-11.md)
+  [Reconciling the agentic control plane RFC](./tenancy/nightscout-control-plane-reconciliation-2026-09-11.md)
   — and the overlap is as expected: registration versus the control-plane
   RFC, the sync contract versus bridge rules, decomposition versus
   multi-writer conflict resolution. What the tree can say about *live* is

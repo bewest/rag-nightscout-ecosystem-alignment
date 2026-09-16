@@ -23,7 +23,7 @@
 // One kind of nastiness is deliberately NOT here: a field whose documents hold
 // mixed types, and a bound of the wrong type for its field. Those four
 // divergence classes are already measured and written down in
-// docs/60-research/seam-filter-ast-three-arm-validation-2026-09-14.md §3, and
+// docs/60-research/tenancy/seam-filter-ast-three-arm-validation-2026-09-14.md §3, and
 // reproducing them here would bury this tool's per-operator signal under a
 // known result. This corpus is type-homogeneous per field, which is the domain
 // that document calls "well-typed" and reports 3000/3000 for.

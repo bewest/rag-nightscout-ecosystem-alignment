@@ -6,13 +6,13 @@ This directory contains detailed behavior documentation and Nightscout API mappi
 
 | Project | Directory | Description |
 |---------|-----------|-------------|
-| **Nightscout** | [nightscout/](nightscout/) | Core Nightscout CGM Remote Monitor |
-| **Loop** | [loop/](loop/) | iOS closed-loop system (LoopKit) |
-| **AAPS** | [aaps/](aaps/) | Android closed-loop system |
-| **Trio** | [trio/](trio/) | iOS closed-loop (formerly FreeAPS X) |
-| **oref0** | [oref0/](oref0/) | OpenAPS reference algorithm |
-| **xDrip4iOS** | [xdrip4ios/](xdrip4ios/) | iOS CGM data management app |
-| **xDrip+ (Android)** | [xdrip-android/](xdrip-android/) | Android CGM data hub (comprehensive) |
+| **Nightscout** | [nightscout/](nightscout) | Core Nightscout CGM Remote Monitor |
+| **Loop** | [loop/](loop) | iOS closed-loop system (LoopKit) |
+| **AAPS** | [aaps/](aaps) | Android closed-loop system |
+| **Trio** | [trio/](trio) | iOS closed-loop (formerly FreeAPS X) |
+| **oref0** | [oref0/](oref0) | OpenAPS reference algorithm |
+| **xDrip4iOS** | [xdrip4ios/](xdrip4ios) | iOS CGM data management app |
+| **xDrip+ (Android)** | [xdrip-android/](xdrip-android) | Android CGM data hub (comprehensive) |
 
 ## Cross-Project Analysis
 

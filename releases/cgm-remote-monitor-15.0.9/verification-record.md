@@ -45,7 +45,7 @@ Nothing in this record is closed for an operator. Every branch below is local an
 | gate kinds RUN | `static,unit` |
 | gate kinds NOT run | `integration,network` |
 | manifest | `queue/work-queue.yaml` sha256 `e562fd529c2c5968` |
-| register | `docs/30-design/nightscout-backfix-register.md` sha256 `614b3dee9c211dfe` (69 entries parsed) |
+| register | `docs/30-design/remedial/nightscout-backfix-register.md` sha256 `614b3dee9c211dfe` (69 entries parsed) |
 | control surface HEAD | `08753474c23c` (working tree NOT clean: 21 uncommitted path(s)) |
 
 - **cgm-remote-monitor** &mdash; `externals/cgm-remote-monitor-official` at `a8888f0d9fac` (`HEAD`), origin `https://github.com/nightscout/cgm-remote-monitor.git`
@@ -1136,7 +1136,7 @@ only what somebody remembered was missing.
 
 ### `register-untouched`
 
-- **docs/30-design/nightscout-backfix-register.md** &mdash; 42 register entries are not fixed and are not carried by anything in this release.
+- **docs/30-design/remedial/nightscout-backfix-register.md** &mdash; 42 register entries are not fixed and are not carried by anything in this release.
   - Not a defect in the release; a statement of what shipping it does not address. Ids: BF-09, BF-10, BF-18, BF-19, BF-20, BF-21, BF-22, BF-23, BF-24, BF-25, BF-26, BF-27, BF-40, BF-41, BF-42, BF-43, BF-44, BF-45, BF-46, BF-47, BF-48, BF-49, BF-50, BF-51, BF-52, BF-53, BF-54, BF-55, BF-56, BF-57, BF-58, BF-59, BF-60, BF-61, BF-62, BF-63, BF-64, BF-65, BF-66, BF-67, CAP-01, CAP-02
 
 ---

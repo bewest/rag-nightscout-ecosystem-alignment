@@ -246,7 +246,7 @@ wercker.yml  # Defunct service
 **Status**: Informational (DiaBLE design choice)
 
 **Related**:
-- [DiaBLE Documentation](../mapping/diable/)
+- [DiaBLE Documentation](../mapping/diable)
 - [CGM Apps Comparison](../mapping/cross-project/cgm-apps-comparison.md)
 
 ---
@@ -259,7 +259,7 @@ wercker.yml  # Defunct service
 
 **Description**: xdrip-js only supports Dexcom G5 and G6 transmitters. It cannot read from Dexcom G7, Libre sensors, or bridge devices. Users with newer sensors cannot use xdrip-js-based solutions.
 
-**Source**: [xdrip-js Documentation](../mapping/xdrip-js/)
+**Source**: [xdrip-js Documentation](../mapping/xdrip-js)
 
 **Impact**:
 - OpenAPS rigs using Lookout/Logger limited to G5/G6

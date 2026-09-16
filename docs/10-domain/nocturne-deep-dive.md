@@ -275,8 +275,8 @@ See also:
 
 - [AAPS NSClient Schema](../../mapping/aaps/nsclient-schema.md) - Field comparison
 - [Terminology Matrix](../../mapping/cross-project/terminology-matrix.md) - Term mappings
-- [Nightscout API Spec](../../specs/openapi/) - OpenAPI schemas
-- [cgm-remote-monitor](../../mapping/nightscout/) - Original NS server
+- [Nightscout API Spec](../../specs/openapi) - OpenAPI schemas
+- [cgm-remote-monitor](../../mapping/nightscout) - Original NS server
 
 ---
 

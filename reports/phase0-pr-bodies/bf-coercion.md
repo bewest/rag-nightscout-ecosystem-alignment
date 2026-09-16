@@ -157,7 +157,7 @@ those failures are environmental and the dev baseline fails the same six.
 It changes which records a filter returns, but adds no required input, removes no route and breaks no
 documented contract. No operator action, no configuration break, stored data untouched. A report
 built on a broken filter needs re-running, which is a release note rather than a migration.
-Classification in `docs/60-research/gt4-semver-classification-2026-09-15.md` row 12.
+Classification in `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md` row 12.
 
 **The "What changes for you" text above is the release-note source.** It is not a `CHANGELOG.md`
 entry and this branch adds none. Two things must reach the release notes: that earlier results may
@@ -166,9 +166,9 @@ spellings that are still not read.
 
 ## Evidence
 
-- Backfix register `docs/30-design/nightscout-backfix-register.md` — BF-02, BF-03, BF-11, BF-32,
+- Backfix register `docs/30-design/remedial/nightscout-backfix-register.md` — BF-02, BF-03, BF-11, BF-32,
   BF-40, BF-68, including the measurements behind each claim here.
-- T0.5 evidence `docs/60-research/t05-schema-driven-coercion-2026-09-15.md`.
+- T0.5 evidence `docs/60-research/remedial/t05-schema-driven-coercion-2026-09-15.md`.
 
 ## Follow-ups deliberately not in this PR
 

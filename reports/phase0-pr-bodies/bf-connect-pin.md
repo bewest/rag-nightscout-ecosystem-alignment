@@ -1,6 +1,6 @@
 # `bf/connect-pin`: move the connector pin to v0.0.14 — a security fix first
 
-*(Deliberately unlettered, matching `docs/30-design/phase0-pr-sequencing-2026-09-15.md`, which
+*(Deliberately unlettered, matching `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`, which
 letters the set **A–I** — where **F** is the `nightscout-connect` branch — and leaves this one
 unlettered. It is still one of the nine `cgm-remote-monitor` PRs.)*
 
@@ -158,8 +158,8 @@ CI will fail on this PR until step 3 is done. **That failure is expected and is 
 
 - Backfix register: **BF-34** (backoff option precedence) — explicitly the *smaller* half of this
   change. The log-redaction commits are the reason to merge it.
-- `docs/30-design/cgm-remote-monitor-release-readiness-2026-09-14.md` §5 for the pinning objection.
-- `docs/60-research/gt4-semver-classification-2026-09-15.md` for the four-pin measurement.
+- `docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md` §5 for the pinning objection.
+- `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md` for the four-pin measurement.
 - Verified 2026-09-15: `release/v0.0.14` is `649a7de`, the annotated tag `v0.0.14` points at it,
   `v0.0.13` (`b394411`, `origin/main`) **fast-forwards** to it — no divergence to reconcile — and
   nothing is pushed. `origin`'s connector tags stop at `v0.0.13`.

@@ -10,7 +10,7 @@
   safety-relevant caveat preserved VERBATIM from the contributor-facing text.
   Never simplify algorithm or alarm behaviour in a way that could mislead
   someone relying on it. No individualised insulin dosing advice.
-  The rules are docs/30-design/semver-and-release-versioning-policy-2026-09-15.md
+  The rules are docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
   section 5.6; section 3.3 is the worked example of failing them.
 -->
 
@@ -133,7 +133,7 @@ for you, that is a question for your care team.**
 ## About the version number
 
 <!-- If the number is settled, say what it is and why it is not higher or lower,
-     citing docs/30-design/semver-and-release-versioning-policy-2026-09-15.md.
+     citing docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md.
 
      If it is NOT settled, say so plainly, say what the disagreement is, and say
      whether it changes anything the operator receives — usually it does not,

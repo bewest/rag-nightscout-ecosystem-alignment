@@ -214,8 +214,8 @@ func transformToCurrentDay(yesterdaysValues: [BloodSugar]) -> [BloodSugar] {
 ## Cross-References
 
 - [Nightscout Data Model](../../docs/10-domain/nightscout-data-model.md) - Authoritative NS schema
-- [mapping/xdrip4ios/](../xdrip4ios/) - iOS producer perspective
-- [mapping/xdrip-android/](../xdrip-android/) - Android producer perspective
+- [mapping/xdrip4ios/](../xdrip4ios) - iOS producer perspective
+- [mapping/xdrip-android/](../xdrip-android) - Android producer perspective
 - [cross-project/cgm-apps-comparison.md](../cross-project/cgm-apps-comparison.md) - CGM app comparison
 
 ---

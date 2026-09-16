@@ -202,9 +202,9 @@ items:
           6 failing. SKIPS with exit 0 when gh is unauthenticated.
     blocks_on: []
     evidence:
-      - docs/60-research/bf28-29-31-alarm-delivery-2026-09-15.md
-      - docs/30-design/phase0-pr-sequencing-2026-09-15.md
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/60-research/remedial/bf28-29-31-alarm-delivery-2026-09-15.md
+      - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       THE TWO INTEGRATION GATES ARE NOW MEASURED, 2026-09-16, AND THE CAVEAT IS
       THE SAME SHAPE AS THE BUNDLE GATE'S. api.alexa and api.googlehome had never
@@ -293,7 +293,7 @@ items:
           under 1 ms and the three cycle calls are 2.66. THE MARKER THAT WAS HERE
           SAID THIS COULD NOT BE RE-RUN, because "the workload that produced those
           two figures is not recorded anywhere in this repository". That was FALSE
-          when it was written: docs/60-research/t02-t03-cache-clone-2026-09-15.md
+          when it was written: docs/60-research/remedial/t02-t03-cache-clone-2026-09-15.md
           §2 names the harness (tools/mt-bench/apitier.js, arm `cycle`) and the
           fixture - 576 entries, 600 treatments of which 361 survive retention, 576
           device statuses with 72-point prediction arrays, DEVICESTATUS_DAYS=2 -
@@ -332,8 +332,8 @@ items:
           from here without a GitHub API call. Tracked, not driven.
     blocks_on: []
     evidence:
-      - docs/60-research/t02-t03-cache-clone-2026-09-15.md
-      - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/60-research/remedial/t02-t03-cache-clone-2026-09-15.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - tools/mt-bench/apitier.js
     notes: >
       THIS ITEM WILL REPORT FAIL FOREVER UNDER INTEGRATION=1, AND THAT IS THE
@@ -448,7 +448,7 @@ items:
           signing this one off; this marker is the honest half of the pair.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       Sequencing letter C. GT3 also found BF-17's created_at residual: the pick()
       at endpoints.js:44 is ['_id','name','accessToken','roles','notes'] - notes
@@ -547,8 +547,8 @@ items:
           rotated, and none should claim to.
     blocks_on: [P0-C]
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
-      - docs/60-research/bf17-bf30-auth-defects-2026-09-15.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/60-research/remedial/bf17-bf30-auth-defects-2026-09-15.md
       - releases/cgm-remote-monitor-15.0.9/release-notes.md
       - reports/phase0-pr-bodies/bf-auth.md
     notes: >
@@ -680,7 +680,7 @@ items:
     blocks_on: []
     evidence:
       - tools/nsschema/emit/coercion_emit.py
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       Sequencing letter D. BF-03 is closed for devicestatus and profile only -
       `food` reaches query.js at no point and `activity`'s model has no numeric
@@ -826,9 +826,9 @@ items:
           6 failing. SKIPS with exit 0 when gh is unauthenticated.
     blocks_on: []
     evidence:
-      - docs/30-design/phase0-pr-sequencing-2026-09-15.md
-      - docs/60-research/gt4-semver-classification-2026-09-15.md
-      - docs/60-research/e3-gate-vacuity-audit-2026-09-15.md
+      - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
+      - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
+      - docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md
     notes: >
       THE CORRECTION IS PUSHED. #8738's body carried the wrong account of ?count=0
       for a day - it said the whole collection, which is true only past the runtime
@@ -928,7 +928,7 @@ items:
           marker P0-T01 carries.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
       Sequencing letter F. Merging this in the connector repository ships it to
       NOBODY - cgm-remote-monitor pins by tarball. P0-TAG and P0-PIN are what
@@ -1051,7 +1051,7 @@ items:
           6 failing. SKIPS with exit 0 when gh is unauthenticated.
     blocks_on: []
     evidence:
-      - docs/30-design/phase0-pr-sequencing-2026-09-15.md
+      - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
       Sequencing letter G. BF-35 is a regression from 3457de5b (2017) and was
       found while fixing BF-16 - which is the argument for landing BF-16 even
@@ -1137,7 +1137,7 @@ items:
           6 failing. SKIPS with exit 0 when gh is unauthenticated.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: Sequencing letter H.
 
   - id: P0-I
@@ -1209,7 +1209,7 @@ items:
           6 failing. SKIPS with exit 0 when gh is unauthenticated.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       Sequencing letter I. CORRECTION: the sequencing document at line 165 lists
       the commits as 522c6ffb, eb0bc918, c9a7a21c mapped to BF-37, BF-39, BF-38.
@@ -1261,7 +1261,7 @@ items:
           maintainer's. Nothing can gate it.
     blocks_on: [P0-F]
     evidence:
-      - docs/30-design/phase0-pr-sequencing-2026-09-15.md
+      - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
       v0.0.14 is the FIRST ref carrying all seven connector commits - both the
       debug-logging narrowing that dev's pin has and the three log-redaction
@@ -1311,7 +1311,7 @@ items:
           on GitHub. That is the whole reason P0-LOCK is a separate item.
     blocks_on: [P0-TAG]
     evidence:
-      - docs/30-design/phase0-pr-sequencing-2026-09-15.md
+      - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
       This is the branch that closes the split GT4 found: neither dev's pin nor
       cut 4's pin carries both the logging narrowing and the redaction commits.
@@ -1345,7 +1345,7 @@ items:
         describe: npm ci resolves; requires the pushed tag to exist on GitHub
     blocks_on: [P0-PIN, P0-TAG]
     evidence:
-      - docs/30-design/phase0-pr-sequencing-2026-09-15.md
+      - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
       DELIBERATELY UNDONE and it must not be papered over. Regenerate with
       `npm install` once the tag is pushed, in the same PR.
@@ -1378,7 +1378,7 @@ items:
           GitHub API call. This item is tracked, not driven.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
       The plan says "everything downstream assumes it". It is the only Phase 0
       item not prepared locally, and the only one already on a remote.
@@ -1441,8 +1441,8 @@ items:
           has decided what it is.
     blocks_on: []
     evidence:
-      - docs/60-research/gt2-cut-remeasure-2026-09-15.md
-      - docs/30-design/cgm-remote-monitor-release-readiness-2026-09-14.md
+      - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
+      - docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md
     notes: >
       The clamps bound a user-initiated rewrite of a treatment's created_at
       emitted over the socket, and a treatment's timestamp is what IOB/COB key
@@ -1481,7 +1481,7 @@ items:
           release they name.
     blocks_on: []
     evidence:
-      - docs/60-research/gt4-semver-classification-2026-09-15.md
+      - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
       Given the governance gap - 100 self-merged PRs, zero human reviews - the
       version number is the only warning an operator gets, and right now it is
@@ -1534,7 +1534,7 @@ items:
           loses its only test, on a screen people read at a glance.
     blocks_on: []
     evidence:
-      - docs/60-research/gt2-cut-remeasure-2026-09-15.md
+      - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
     notes: >
       CORRECTS release-readiness §5's "each costs zero rebase work today", which
       was false WHEN WRITTEN - the cut tips date to 2026-09-05/06 and dev's tip
@@ -1581,8 +1581,8 @@ items:
           as a no-gate keeps it from reading as covered.
     blocks_on: [RT-D3, RT-VERSION]
     evidence:
-      - docs/30-design/cgm-remote-monitor-release-readiness-2026-09-14.md
-      - docs/60-research/gt4-semver-classification-2026-09-15.md
+      - docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md
+      - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
       First on the adopted train. Phase 0's branches target dev, so landing them
       changes what 15.0.9 contains - that collision is why there is one queue.
@@ -1644,8 +1644,8 @@ items:
           that dev does not have.
     blocks_on: [RT-0, RT-REBASE]
     evidence:
-      - docs/60-research/gt2-cut-remeasure-2026-09-15.md
-      - docs/60-research/gt4-semver-classification-2026-09-15.md
+      - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
+      - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
       From cut 1 onward docker-build and docker-build-pr carry
       needs: [test, browser-test], so a browser-test failure blocks image
@@ -1683,7 +1683,7 @@ items:
           measurement.
     blocks_on: [RT-1]
     evidence:
-      - docs/60-research/gt2-cut-remeasure-2026-09-15.md
+      - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
     notes: Third on the adopted train, as a separate low-blast-radius release.
 
   - id: RT-3
@@ -1732,8 +1732,8 @@ items:
           this step. Nobody has measured what that costs.
     blocks_on: [RT-2]
     evidence:
-      - docs/60-research/gt2-cut-remeasure-2026-09-15.md
-      - docs/60-research/gt4-semver-classification-2026-09-15.md
+      - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
+      - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
       GT2's arithmetic correction: §5's commits column sums to 554 against a
       495-commit stack. Stated as modernization work cut 5 is 95, and
@@ -1780,7 +1780,7 @@ items:
           can be measured from here.
     blocks_on: [RT-3]
     evidence:
-      - docs/60-research/gt4-semver-classification-2026-09-15.md
+      - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
       The adopted train puts this BEFORE cut 4 deliberately. GT4 found the real
       code work: the MiniMed shim has to be written, not just a warning added.
@@ -1848,8 +1848,8 @@ items:
           settings.
     blocks_on: [RT-4]
     evidence:
-      - docs/60-research/gt4-semver-classification-2026-09-15.md
-      - docs/60-research/gt2-cut-remeasure-2026-09-15.md
+      - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
+      - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
     notes: >
       HELD BACK on the adopted train, behind a deprecation release. If the
       Connect migration misbehaves the symptom is a user's glucose data stops
@@ -1905,8 +1905,8 @@ items:
           values in tests/websocket.*.test.js are insulin: 1 and carbs: 9/10/15/18.
     blocks_on: []
     evidence:
-      - docs/60-research/gt3-register-truth-2026-09-15.md
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       CORRECTS THE REGISTER ENTRY. BF-09 names the wrong fields. Measured over
       277,690 treatments: ZERO zero-valued `insulin` (0 of 107,732) and ZERO
@@ -1950,7 +1950,7 @@ items:
           evidence the setting does anything.
     blocks_on: []
     evidence:
-      - docs/60-research/gt3-register-truth-2026-09-15.md
+      - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
     notes: >
       CORRECTS THE REGISTER ENTRY. BF-10 says "Not a code defect; it belongs in
       the operator documentation." Wrong. There is a one-block code landing site
@@ -1992,7 +1992,7 @@ items:
           given allowlist would break.
     blocks_on: []
     evidence:
-      - docs/60-research/gt3-register-truth-2026-09-15.md
+      - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
     notes: >
       GT3'S THIRD OPERATOR-FACING ENTRY, and the one nobody counts. BF-04 is HIGH
       severity, ships to every current operator, and appears in no open list
@@ -2022,7 +2022,7 @@ items:
           MongoDB, so it will be an integration gate when it exists.
     blocks_on: []
     evidence:
-      - docs/60-research/seam-write-path-2026-09-15.md
+      - docs/60-research/tenancy/seam-write-path-2026-09-15.md
     notes: >
       HIGHEST of the §1b entries. bulkUpsert takes no options argument, so the
       {mode:'replace'} every shipping caller sends is silently ignored and the
@@ -2054,7 +2054,7 @@ items:
           exactly how BF-13 hid.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       High severity and CLIENT-REACHABLE via v3 ?sort=. It breaks the DDL's own
       stated invariant, which means the DDL documents a property nothing enforces.
@@ -2082,7 +2082,7 @@ items:
           write succeeds and the value can never be read back.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       NOTE ON THE ID. The execution plan at L351 and L1189 uses "BF-22" for the
       process-wide language/levels leak, which was RENUMBERED to BF-31. BF-22
@@ -2111,7 +2111,7 @@ items:
           two error classes.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: ""
 
   - id: BFQ-25
@@ -2140,7 +2140,7 @@ items:
           distinguishable before a pass means anything.
     blocks_on: [T30-WIRING]
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       D14 KILLS THIS BUG CLASS STRUCTURALLY. Per-tenant JWT signing keys mean
       tenant resolution runs BEFORE any credential is examined, so cross-tenant
@@ -2170,7 +2170,7 @@ items:
           true/non-host pairing that still refuses.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       T3.1 already chose req.headers.host over req.hostname for this reason -
       compileTrust(''), Nightscout's DEFAULT, returns a function that always says
@@ -2198,7 +2198,7 @@ items:
           once written.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       This is the ONE part of CAP-01 that is a defect rather than an absence, so
       the register says it can land first and on its own.
@@ -2227,7 +2227,7 @@ items:
           without anyone touching production code.
     blocks_on: []
     evidence:
-      - docs/60-research/gt3-register-truth-2026-09-15.md
+      - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
     notes: >
       BF-27 is the ONLY id in the register with a table row (L124) and NO detail
       section. That is a documentation defect in itself and is tracked at
@@ -2256,7 +2256,7 @@ items:
           on driver 7, so it will be an integration gate.
     blocks_on: [RT-3]
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       Blocks on RT-3 because driver 7 arrives with cut 3. The constant
       Object.freeze({batchSize: 1000}) is load-bearing, not cargo.
@@ -2283,7 +2283,7 @@ items:
           is the worst shape of divergence: both answer 200.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: ""
 
   - id: BFQ-CAP01
@@ -2313,7 +2313,7 @@ items:
           distinguish the two.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       The only capability entry in the register. BFQ-26 (BF-26) is the one part
       of it that is a defect rather than an absence.
@@ -2340,7 +2340,7 @@ items:
     semver_reason: research deliverable
     register: []
     gates:
-      - run: test -f docs/60-research/tenant-config-surface-2026-09-15.md
+      - run: test -f docs/60-research/tenancy/tenant-config-surface-2026-09-15.md
         kind: static
         describe: >
           the deliverable exists. FAILS today. A file-existence gate is weak on
@@ -2353,7 +2353,7 @@ items:
           a planted extra variable as the control. That harness does not exist.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
       T3.0 is the largest correction owed in the programme. It does NOT block
       T3.3 - T3.3 landed first. It AMENDS T3.1, T3.2 and T3.3, which are all
@@ -2393,7 +2393,7 @@ items:
           in substance as well as in order.
     blocks_on: [T30-RESEARCH]
     evidence:
-      - docs/60-research/gt3-register-truth-2026-09-15.md
+      - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
     notes: ""
 
   - id: T30-WIRING
@@ -2422,7 +2422,7 @@ items:
           everything failing.
     blocks_on: [T30-SCHEMA]
     evidence:
-      - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
       CORRECTS THE PLAN'S AMENDMENT TABLE. It cites tenant-context.js:137 as
       T3.3's site. GT3 measured L137 as the COMMENT stating the rejected
@@ -2454,7 +2454,7 @@ items:
           not read as DONE to an agent that only loads that section.
     blocks_on: [T30-WIRING]
     evidence:
-      - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
       Everything else in T3.1 stands: 18 guards broken one at a time, three
       changed nothing and all three were the tests' fault. Only the credential
@@ -2482,7 +2482,7 @@ items:
           parenthesis in the plan.
     blocks_on: [T30-SCHEMA]
     evidence:
-      - docs/60-research/gt3-register-truth-2026-09-15.md
+      - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
     notes: >
       Also still open from T3.2's own "not done" list: two-role deployments are
       untested; logical-slot lag arithmetic has no producer until Phase 4; the
@@ -2521,7 +2521,7 @@ items:
           deliverable and until it exists there is nothing to gate.
     blocks_on: [T30-WIRING]
     evidence:
-      - docs/60-research/tenant-shared-state-audit-2026-09-15.md
+      - docs/60-research/tenancy/tenant-shared-state-audit-2026-09-15.md
     notes: >
       CORRECTS THE PLAN. T3.3's "not done" paragraph at L1189 still carries the
       claim BF-31's measurement REFUTED - "that is how alarm text reaches a push
@@ -2567,7 +2567,7 @@ items:
           and are not covered anywhere (plan §7).
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: ""
 
   - id: T44
@@ -2607,8 +2607,8 @@ items:
           doing that; it is a design note with no gate.
     blocks_on: [T30-WIRING]
     evidence:
-      - docs/60-research/ns-evaluator-spike-2026-09-15.md
-      - docs/60-research/alarm-critical-slice-2026-09-15.md
+      - docs/60-research/tenancy/ns-evaluator-spike-2026-09-15.md
+      - docs/60-research/tenancy/alarm-critical-slice-2026-09-15.md
     notes: >
       Ack state is already durable (T4.4a). What remains is the loop itself.
       This is §7a item 2.
@@ -2638,7 +2638,7 @@ items:
           badly written assertion.
     blocks_on: [T44]
     evidence:
-      - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: Named by the T4.4 spike.
 
   - id: A7A-4
@@ -2665,7 +2665,7 @@ items:
           check cannot see.
     blocks_on: [T44]
     evidence:
-      - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: ""
 
   - id: A7A-7
@@ -2692,7 +2692,7 @@ items:
           building against an undecided semantics.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: ""
 
   - id: A7A-GATE
@@ -2733,8 +2733,8 @@ items:
           So: 1 complete, 1 partial, 1 misfiled, 4 open.
     blocks_on: [T44, A7A-3, A7A-4, A7A-7]
     evidence:
-      - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
-      - docs/60-research/gt3-register-truth-2026-09-15.md
+      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+      - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
     notes: ""
 
   - id: SEAM-REFRESH
@@ -2770,7 +2770,7 @@ items:
           today" claims.
     blocks_on: []
     evidence:
-      - docs/60-research/gt1-branch-inventory-2026-09-15.md
+      - docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md
     notes: >
       GT1 also found that crm-pool, crm-tenant and crm-write are three separate
       worktrees all detached at the SAME commit 239f8c25, a mid-chain commit of
@@ -2792,7 +2792,7 @@ items:
     base: main@75c38a17
     worktree: .
     state: not-started
-    blast_radius: docs/30-design/phase0-pr-sequencing-2026-09-15.md.
+    blast_radius: docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md.
     review: whoever edits it next - and it is HOT, edited by other sessions
       within the hour. Re-read immediately before editing.
     operator_visible: ""
@@ -2816,8 +2816,8 @@ items:
           support those claims. Extending it is work, not a sweep.
     blocks_on: []
     evidence:
-      - docs/60-research/gt1-branch-inventory-2026-09-15.md
-      - docs/60-research/gt3-register-truth-2026-09-15.md
+      - docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md
+      - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
     notes: >
       Also at L388: it says master pins nightscout-connect as "^0.0.12", a semver
       range from npm. GT4 measured master as pinning the v0.0.13 TAG TARBALL.
@@ -2834,7 +2834,7 @@ items:
     worktree: .
     state: not-started
     blast_radius: >
-      docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md at L7,
+      docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md at L7,
       L8, L351, L1189, and the T3.0 amendment table.
     review: whoever edits it next
     operator_visible: ""
@@ -2849,7 +2849,7 @@ items:
           counts. Until it does, no gate.
     blocks_on: []
     evidence:
-      - docs/60-research/gt3-register-truth-2026-09-15.md
+      - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
     notes: >
       GT3's list. L7 says "Phase 0 is done and is not the blocker any more",
       contradicted by its own L529 (T0.1 "In flight") and L541 (T0.3 "GATE NOT
@@ -2868,7 +2868,7 @@ items:
     base: main@75c38a17
     worktree: .
     state: not-started
-    blast_radius: docs/30-design/nightscout-backfix-register.md at L26 and
+    blast_radius: docs/30-design/remedial/nightscout-backfix-register.md at L26 and
       L41-53.
     review: whoever edits it next - HOT, edited within the hour
     operator_visible: ""
@@ -2912,7 +2912,7 @@ items:
           interface document carries the same stale range).
     blocks_on: []
     evidence:
-      - docs/60-research/gt3-register-truth-2026-09-15.md
+      - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
     notes: >
       BF-14's detail section contradicts ITSELF, which is what made a naive grep
       read it as open: L587 re-grades it to high and retracts "it returns no
@@ -2961,7 +2961,7 @@ items:
           self-hoster.
     blocks_on: []
     evidence:
-      - docs/60-research/gt3-register-truth-2026-09-15.md
+      - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
     notes: >
       GT3 calls this its biggest correction and it is the reason this queue
       carries `ships_to_operators_today` as a field rather than inferring
@@ -3009,7 +3009,7 @@ items:
           make; no command can decide which is right.
     blocks_on: []
     evidence:
-      - docs/60-research/gt3-register-truth-2026-09-15.md
+      - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
     notes: >
       memory/release-train-and-work-queue.md also declares queue/QUEUE.md
       generated, which this queue now makes true.
@@ -3046,7 +3046,7 @@ items:
           generated from, which is not a file in this tree.
     blocks_on: []
     evidence:
-      - docs/60-research/gt1-branch-inventory-2026-09-15.md
+      - docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md
     notes: >
       The crm-* worktrees belong to externals/cgm-remote-monitor-official.
       `git -C externals/cgm-remote-monitor worktree list` returns exactly one
@@ -3086,7 +3086,7 @@ items:
           "a human believed the wrong thing".
     blocks_on: []
     evidence:
-      - docs/60-research/gt1-branch-inventory-2026-09-15.md
+      - docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md
     notes: >
       Also: test:unit is NOT database-free. Without MongoDB it fails 6 tests
       (verifyauth x4, API_SECRET x2) on pristine dev. Every gate in this manifest
@@ -3110,12 +3110,79 @@ items:
 #   multitenant      -> on a stabilised, current base     = tenancy
 #
 # Reconciliation and the full set-difference table:
-#   docs/60-research/e4-queue-register-reconciliation-2026-09-15.md
+#   docs/60-research/remedial/e4-queue-register-reconciliation-2026-09-15.md
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
 # PARCEL: register-open -- §1, ships to every operator on today's release
 # ---------------------------------------------------------------------------
+
+  - id: DOC-LINKS
+    title: "Every path the programme's documents and tooling cite must resolve"
+    parcel: docs-truth
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@6574b28d
+    worktree: .
+    state: ready-to-push
+    blast_radius: >
+      tools/queue/gates/doc-links.js (new), and the 55 September documents moved
+      into programme subdirectories on 2026-09-16 with 280 links and 212
+      repo-root paths rewritten.
+    review: >
+      maintainer. The gate carries four exemption classes - FROZEN, NOT_REAL,
+      PLANNED and QUOTED - and every one of them is a place where a future
+      defect could be parked with a plausible reason. The register's own
+      suppression audit found 5 real defects hiding behind 45 suppressions, so
+      READ THE EXEMPTION LIST, not just the exit code.
+    operator_visible: ''
+    semver: n/a
+    semver_reason: documentation and repository tooling
+    register: []
+    gates:
+      - run: node tools/queue/gates/doc-links.js
+        kind: static
+        describe: >
+          FAILS when any path cited by the groomed programme material or the
+          live queue tooling does not resolve. 852 references across 116 files.
+          Three detection passes, one per class that survived the 2026-09-16
+          rewrite: markdown links (in every scoped text file, not only .md,
+          because one was embedded in a Python edit script), repo-root-absolute
+          paths (which catches a backticked citation the link regex could not
+          see), and piecewise path.join(REPO_ROOT, 'docs', ...) in gate sources
+          - the class that broke FOUR gates, three of which were already
+          expected to fail, so the ENOENT was invisible inside an intended red.
+      - no-gate: >
+          The legacy tree is out of scope on purpose. The Jan-Apr research
+          campaign, docs/backlogs/archive/ and specs/ carry 109 dead links that
+          predate this work, and the maintainer's instruction on 2026-09-16 was
+          to groom the recent material and leave the older material alone.
+          Gating them would make this gate permanently red for reasons nobody
+          intends to fix, which is how a gate stops being read. Bringing them
+          into scope is work, not a sweep.
+      - no-gate: >
+          25 root-path references name a subtree this repository does not have.
+          They are cgm-remote-monitor's own docs/ - docs/meta/,
+          docs/INDEX.md, docs/proposals/ measured present on origin/dev and
+          origin/master; docs/runtime-upgrade.md present only on cut 1's
+          branch. The first version of this gate called all four dead and was
+          wrong about all four. Telling the two repositories' docs/ trees
+          apart properly needs a per-reference repository marker, which the
+          documents do not carry.
+    blocks_on: []
+    evidence:
+      - docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md
+    notes: >
+      Non-vacuity, run 2026-09-16: three ablations, one per detection pass, each
+      confirmed to LAND before its result was read. A markdown link repointed to
+      a NOPE name - caught. A repo-root path in this manifest reverted to its
+      pre-move spelling - caught. doc-branch-count.js's path.join reverted to
+      the pre-move segments - caught, and that is the exact break that hid on
+      2026-09-16. Empty-root negative control via QUEUE_GATE_ROOT exits 1
+      rather than passing on a tree with nothing in it. Two earlier ablation
+      attempts DID NOT LAND (0 and 31 occurrences against a required 1) and
+      were re-authored rather than read as green - rule from
+      memory/milestone-agents-and-non-vacuity.md.
 
   - id: BFQ-40
     title: BF-40 - $exists is not read as a boolean, before OR after bf/coercion
@@ -3163,7 +3230,7 @@ items:
           ran them, so it is recorded as unrun rather than gated as if settled.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       COSTS P0-D SOMETHING BEFORE IT IS PROPOSED. bf/coercion's operator-facing
       text says find[sgv][$exists]=true "became $exists: NaN, which MongoDB
@@ -3230,7 +3297,7 @@ items:
           push alarm; the gate measures the one that is on by default.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       BF-44 is a concrete, shipping way to produce a future-dated reading, which
       is why BFQ-MINIMED carries the same severity argument from the other end.
@@ -3295,7 +3362,7 @@ items:
           "a constraint was overridden into violation" in general.
     blocks_on: [P0-TAG]
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/40-migration/connector-pin-consolidation-2026-09-15.md
     notes: >
       The fix is the same one-line pin move as P0-PIN, applied to master rather
@@ -3372,7 +3439,7 @@ items:
           one item.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/40-migration/legacy-cgm-ingestion-to-connect-2026-09-15.md
     notes: >
       Also recorded on BF-44 and not separately filed - pump.clock is not parsed
@@ -3433,7 +3500,7 @@ items:
           a gate.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       Kept OUT of BFQ-ENV deliberately, although the critic proposed batching
       the env-var family. The other three are a documentation and plumbing
@@ -3490,7 +3557,7 @@ items:
           is required or merely tidier.
     blocks_on: [P0-C]
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       This entry exists because a verifier REFUTED the framing of a finding
       about bf/auth, and the refutation moved the defect from an unmerged branch
@@ -3574,7 +3641,7 @@ items:
           dictionary.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       BATCHED because it is one piece of work with one runnable gate in four
       arms - make the configuration surface tell the truth - and because a
@@ -3626,7 +3693,7 @@ items:
           the two.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       BF-28 MASKED this on insulinage for years - the level line was broken, so
       nobody reached the notification line. The three sibling plugins have
@@ -3689,8 +3756,8 @@ items:
           rewrite, and building one is the fix, not the measurement.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
-      - docs/60-research/e4-queue-register-reconciliation-2026-09-15.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/60-research/remedial/e4-queue-register-reconciliation-2026-09-15.md
     notes: >
       CORRECTS BF-67, measured while building the gate. The entry says "The same
       applies at the bottom - a BG_LOW of 3.9 becomes bgTargetBottom - 1 = 79".
@@ -3748,7 +3815,7 @@ items:
           one-line change as dev's, with no incomparability to reason about.
     blocks_on: [P0-TAG]
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       Filed separately from BFQ-CONNECTOR, not batched with it, because the
       §1/§1b line runs between them - master ships to operators today, cut tips
@@ -3811,7 +3878,7 @@ items:
           re-resolves node:22-alpine at publish time without re-validating.
     blocks_on: [RT-1]
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       BATCHED because both are one question - is the floor the software enforces
       the floor anything actually runs? - and because fixing one without the
@@ -3876,7 +3943,7 @@ items:
           caller to rediscover it.
     blocks_on: []
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       A gate-construction error is recorded here because it is the failure this
       queue exists to catch. The first draft of the caller-count arm tested only
@@ -3926,7 +3993,7 @@ items:
           unsafe one is how a real refusal gets downgraded.
     blocks_on: [T30-WIRING, T31-REM, SEAM-REFRESH]
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       THE FIX BELONGS TO T3.0 AND SHOULD NOT BE TAKEN SEPARATELY. The task that
       introduces the per-tenant signing key (D14) is the task that chooses the
@@ -3969,7 +4036,7 @@ items:
           calls it yet.
     blocks_on: [T30-SCHEMA]
     evidence:
-      - docs/30-design/nightscout-backfix-register.md
+      - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/40-migration/mongodb-to-postgres-hosted-2026-09-15.md
     notes: >
       §1c, so it is neither §1 nor §1b. ships_to_operators_today is false
@@ -4031,7 +4098,7 @@ items:
           whole family, so leaving it duplicated is a debt with a name.
     blocks_on: [P0-E]
     evidence:
-      - docs/30-design/phase0-pr-sequencing-2026-09-15.md
+      - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
       Follow-up #1 in the same list is struck through as RESOLVED by the
       combination - BF-01 delegates to each collection's query_for, which
@@ -4107,7 +4174,7 @@ items:
           nothing here enumerates what Amazon can send.
     blocks_on: []
     evidence:
-      - docs/30-design/phase0-pr-sequencing-2026-09-15.md
+      - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
       BATCHED as three small residuals the sequencing document named together,
       each one file and each measurable. UPDATE 2026-09-16: follow-up 4
@@ -4158,7 +4225,7 @@ items:
           decided against the release train rather than built twice.
     blocks_on: []
     evidence:
-      - docs/30-design/phase0-pr-sequencing-2026-09-15.md
+      - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
       Both are honestly UNMEASURED and say so. They are in the queue because the
       sequencing document listed them and no queue had them, and because the

@@ -53,7 +53,7 @@ tag). The **tag** in each repository keeps whatever prefix that repository alrea
 | `release-notes.md` | **people managing their own or a family member's diabetes** | plain language; define every term; preserve every safety caveat verbatim; never simplify algorithm or alarm behaviour in a way that could mislead someone relying on it; no individualised insulin dosing advice; say that Nightscout is not a medical device and this is not medical advice; point at the care team where a change could touch therapy decisions |
 
 The rules in the right-hand cell of the last row are not style preferences. They are
-[`docs/30-design/semver-and-release-versioning-policy-2026-09-15.md`](../docs/30-design/semver-and-release-versioning-policy-2026-09-15.md)
+[`docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`](../docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md)
 §5.6, and §3.3 of the same document gives the worked example of what failing them looks
 like: *"Your reservoir alarm now works"* is not an adequate release note, because it does
 not tell anyone that a new alert is coming at 72 hours.
@@ -61,9 +61,9 @@ not tell anyone that a new alert is coming at 72 hours.
 ## Version numbers here are proposals, not decisions
 
 Every number in this directory is a **proposal**. The analysis behind them is
-[`docs/60-research/gt4-semver-classification-2026-09-15.md`](../docs/60-research/gt4-semver-classification-2026-09-15.md)
+[`docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`](../docs/60-research/modernization/gt4-semver-classification-2026-09-15.md)
 (classification) and
-[`docs/30-design/semver-and-release-versioning-policy-2026-09-15.md`](../docs/30-design/semver-and-release-versioning-policy-2026-09-15.md)
+[`docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`](../docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md)
 (policy, and where it overrules the classification). **Both are themselves drafts awaiting
 maintainer adoption**, and both disagree with the numbers the directories here are named
 after. Each `contents.md` states that disagreement at the top rather than hiding it. The
@@ -108,7 +108,7 @@ Before a release is published, someone does this and records that they did:
    generated list needs a line in the notes or a written reason it does not.
 4. Check every version number against the number actually being cut.
 5. Check the register
-   ([`docs/30-design/nightscout-backfix-register.md`](../docs/30-design/nightscout-backfix-register.md))
+   ([`docs/30-design/remedial/nightscout-backfix-register.md`](../docs/30-design/remedial/nightscout-backfix-register.md))
    for entries that moved to *fixed* since the draft was written, and for entries the
    release leaves open that the notes should name under "Known issues".
 6. Re-cut the annotated tag from `tag-message.txt` if the text changed. **A tag other
@@ -126,7 +126,7 @@ this directory participates in none of them:
 | 3 | Publish the package — `npm publish` | **no** |
 
 They are set out in
-[`docs/30-design/maintainer-release-brief-2026-09-15.md`](../docs/30-design/maintainer-release-brief-2026-09-15.md)
+[`docs/30-design/remedial/maintainer-release-brief-2026-09-15.md`](../docs/30-design/remedial/maintainer-release-brief-2026-09-15.md)
 §2, with the commands a human runs. Note in particular that for `nightscout-connect`
 **decision 2, not decision 3, is what delivers the fix**, because every
 `cgm-remote-monitor` pin is a GitHub tarball URL and none of them resolves from npm.

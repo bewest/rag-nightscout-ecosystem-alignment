@@ -63,8 +63,8 @@ function read (rel) {
 const DOCS = {
   notes: 'releases/cgm-remote-monitor-15.0.9/release-notes.md',
   prbody: 'reports/phase0-pr-bodies/bf-auth.md',
-  report: 'docs/60-research/bf17-bf30-auth-defects-2026-09-15.md',
-  register: 'docs/30-design/nightscout-backfix-register.md',
+  report: 'docs/60-research/remedial/bf17-bf30-auth-defects-2026-09-15.md',
+  register: 'docs/30-design/remedial/nightscout-backfix-register.md',
 };
 
 const findings = [];

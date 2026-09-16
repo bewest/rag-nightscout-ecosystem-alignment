@@ -182,7 +182,7 @@ Representative allowlisted counters:
 - `plugins.connect.active`
 - `connect.source.dexcomshare.active`
 
-The schema has `additionalProperties: false` and explicit counter/source allowlists. Fixtures under [`specs/fixtures/telemetry/`](../../specs/fixtures/telemetry/) prove accepted and rejected examples.
+The schema has `additionalProperties: false` and explicit counter/source allowlists. Fixtures under [`specs/fixtures/telemetry/`](../../specs/fixtures/telemetry) prove accepted and rejected examples.
 
 ## What is not collected
 

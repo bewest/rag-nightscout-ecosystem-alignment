@@ -51,7 +51,7 @@ In multi-user AID systems, conflicts arise when different actors (humans, caregi
 > one model is the failure this alignment work exists to prevent, so one of
 > them should become the source and the other a pointer. Which one is a
 > maintainer's call, not this repository's. See
-> [Reconciling the agentic control plane RFC](../30-design/nightscout-control-plane-reconciliation-2026-09-11.md)
+> [Reconciling the agentic control plane RFC](../30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md)
 > §6, edit 10.
 >
 > What is *not* duplicated, and is this document's own contribution, is the

@@ -321,6 +321,6 @@ Systematic review of cgm-remote-monitor PRs for alignment with proposals and bac
 
 ## References
 
-- [docs/10-domain/cgm-remote-monitor-*-deep-dive.md](../../10-domain/) (6 audit files)
+- [docs/10-domain/cgm-remote-monitor-*-deep-dive.md](../../10-domain) (6 audit files)
 - [specs/interoperability-spec-v1.md](../../../specs/interoperability-spec-v1.md)
-- [specs/openapi/aid-*.yaml](../../../specs/openapi/) (entries, treatments, devicestatus, profile)
+- [specs/openapi/aid-*.yaml](../../../specs/openapi) (entries, treatments, devicestatus, profile)

@@ -151,7 +151,7 @@ builder caps the cycle at 30 minutes and the frame at 5 minutes, which closes bo
 
 The dark-window half is the one that stops a person's data, and it is the stronger argument
 for moving the pin than the storm is. It is **not** in the register entry as written; it is
-raised in `docs/60-research/e1-dexcom-path-comparison-2026-09-15.md` and is listed in this
+raised in `docs/60-research/modernization/e1-dexcom-path-comparison-2026-09-15.md` and is listed in this
 document's return value as a correction rather than edited into another agent's file.
 
 ### BF-08 needs no operator note
@@ -178,7 +178,7 @@ method-specific.
 
 ## The version number is not settled
 
-`docs/30-design/semver-and-release-versioning-policy-2026-09-15.md` §4.3 argues this should
+`docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md` §4.3 argues this should
 be **`0.1.0`, not `0.0.14`**, on the rule that below 1.0.0, `y` is read as the major. Five
 caller-visible changes, each independently breaking, measured by executing `lib/backoff.js`
 at both revisions:
@@ -202,7 +202,7 @@ be made before the tag is pushed, not after** — a pushed tag is superseded, ne
 
 ## Sequencing — what must happen in what order
 
-From `docs/30-design/maintainer-release-brief-2026-09-15.md` §2 and §3. Each step is run by
+From `docs/30-design/remedial/maintainer-release-brief-2026-09-15.md` §2 and §3. Each step is run by
 a **human**; none has been run.
 
 1. Decide the number (`0.0.14` or `0.1.0`). Re-cut the local tag if it changes.

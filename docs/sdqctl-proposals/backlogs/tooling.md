@@ -300,6 +300,6 @@ From [ecosystem-pr-analysis-2026-01-29.md](../../analysis/ecosystem-pr-analysis-
 ## References
 
 - [.sdqctl/directives.yaml](../../../.sdqctl/directives.yaml) - Plugin manifest
-- [workflows/orchestration/](../../../workflows/orchestration/) - Backlog workflows
+- [workflows/orchestration/](../../../workflows/orchestration) - Backlog workflows
 - [lsp-integration-proposal.md](../lsp-integration-proposal.md) - Full LSP proposal
 - [ecosystem-pr-analysis-2026-01-29.md](../../analysis/ecosystem-pr-analysis-2026-01-29.md) - PR inventory

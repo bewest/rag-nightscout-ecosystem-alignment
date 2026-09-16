@@ -149,11 +149,11 @@ check silently.
 
 ## Evidence
 
-- Backfix register `docs/30-design/nightscout-backfix-register.md` — **BF-35** (high, fixed) and
+- Backfix register `docs/30-design/remedial/nightscout-backfix-register.md` — **BF-35** (high, fixed) and
   **BF-16** (medium, fixed, claim corrected). BF-35's detail section carries the reproduction
   table, the provenance and the ablation list.
-- Semver classification `docs/60-research/gt4-semver-classification-2026-09-15.md`, row 19.
-- PR sequencing `docs/30-design/phase0-pr-sequencing-2026-09-15.md`, branch **G**, including the
+- Semver classification `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`, row 19.
+- PR sequencing `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`, branch **G**, including the
   drift tripwire and its discharge.
 
 ## Test evidence
@@ -198,7 +198,7 @@ it left `global.window` pointing at its own DOM and broke `browser-settings` lat
 and in a different order, and the stored-document contract (S4) is now read leniently on both
 spellings. Nothing an operator configured stops working and no action is required, so it is not
 major; answers on a declared surface changed, so it is not a patch. Classification from
-`docs/60-research/gt4-semver-classification-2026-09-15.md` row 19.
+`docs/60-research/modernization/gt4-semver-classification-2026-09-15.md` row 19.
 
 **The operator-visible text above belongs in the release notes.** It is *not* a `CHANGELOG.md`
 entry and this branch adds none: under the maintainer's rule, `CHANGELOG.md` is a **release

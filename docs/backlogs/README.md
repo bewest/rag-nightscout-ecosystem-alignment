@@ -2,7 +2,7 @@
 
 Active work streams for the Nightscout ecosystem alignment project.
 
-**Archived completed work**: [archive/](archive/)
+**Archived completed work**: [archive/](archive)
 
 ---
 
@@ -231,7 +231,7 @@ grep -E "📋 Ready" docs/backlogs/mongodb-upgrade-report.md
 
 ### Archived Work
 
-Completed analysis and testing work: [archive/](archive/)
+Completed analysis and testing work: [archive/](archive)
 
 ---
 

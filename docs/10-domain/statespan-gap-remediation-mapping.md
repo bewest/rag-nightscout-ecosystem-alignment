@@ -245,7 +245,7 @@ The highest-value StateSpan implementation targets:
 ## References
 
 - [StateSpan Client SDK Patterns](./statespan-client-sdk-patterns.md) - Query patterns, caching, platform SDKs
-- [StateSpan Standardization Proposal](../../docs/sdqctl-proposals/statespan-standardization-proposal.md)
+- [StateSpan Standardization Proposal](../sdqctl-proposals/statespan-standardization-proposal.md)
 - [Sync Identity Gaps](../../traceability/sync-identity-gaps.md)
 - [Connectors Gaps](../../traceability/connectors-gaps.md)
-- [ADR-004: Profile Override Mapping](../../docs/90-decisions/adr-004-profile-override-mapping.md)
+- [ADR-004: Profile Override Mapping](../90-decisions/adr-004-profile-override-mapping.md)

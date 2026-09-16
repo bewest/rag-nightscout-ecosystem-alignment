@@ -1,7 +1,7 @@
 # RLS PoC — Postgres row-level security, measured against a live container
 
 Backs §6.1 and §10.2 of
-[`nightscout-multitenancy-discussion-2026-09-09.md`](../../../docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md):
+[`nightscout-multitenancy-discussion-2026-09-09.md`](../../../docs/30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md):
 does Postgres RLS actually do what Nocturne's code claims, at what cost, and how does it
 compare to the isolation Nightscout gets today from MongoDB with an application-only
 filter? Reimplements Nocturne's verified pattern

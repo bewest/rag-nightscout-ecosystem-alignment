@@ -176,7 +176,7 @@ lib/api/   - No openapi.yaml or swagger.json
 
 **Related**:
 - [API Deep Dive](../docs/10-domain/cgm-remote-monitor-api-deep-dive.md)
-- [specs/openapi/](../specs/openapi/) - Alignment workspace specs
+- [specs/openapi/](../specs/openapi) - Alignment workspace specs
 
 ---
 

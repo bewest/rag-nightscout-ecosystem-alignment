@@ -66,5 +66,5 @@ Dexcom Share API ──► share2nightscout-bridge ──► Nightscout (API v1)
 ## Cross-References
 
 - [Nocturne Dexcom Connector](../nocturne/connectors.md)
-- [Nightscout Entries Schema](../nightscout/)
+- [Nightscout Entries Schema](../nightscout)
 - [Cross-Project Terminology](../cross-project/terminology-matrix.md)

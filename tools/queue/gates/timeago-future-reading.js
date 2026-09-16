@@ -26,7 +26,7 @@
  * the other way: a fresh reading is `'current'`, a 20-minute-old reading is
  * `'warn'`, a 40-minute-old reading is `'urgent'`. If the harness could not
  * tell those apart, the future arm's `'current'` would mean nothing. Ablation
- * recorded in docs/60-research/e4-queue-register-reconciliation-2026-09-15.md
+ * recorded in docs/60-research/remedial/e4-queue-register-reconciliation-2026-09-15.md
  * §6: with a one-line future guard patched into an isolated copy of
  * timeago.js, this gate goes green and the three controls stay green.
  *

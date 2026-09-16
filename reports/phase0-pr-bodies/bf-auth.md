@@ -149,9 +149,9 @@ print put request-derived values into the log. One line, removed.
 
 ## Evidence
 
-- Backfix register: `docs/30-design/nightscout-backfix-register.md` — **BF-17** (persisted derived
+- Backfix register: `docs/30-design/remedial/nightscout-backfix-register.md` — **BF-17** (persisted derived
   credential) and **BF-18** (spoofable throttle key).
-- Semver classification: `docs/60-research/gt4-semver-classification-2026-09-15.md`, which classifies
+- Semver classification: `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`, which classifies
   the throttle change as **minor** (the delay moved to the failure path, so no successful request is
   newly delayed) and the subject allow-list as the **major-forcing** row in this branch, because it
   removes a field-passthrough capability with no replacement.
@@ -196,7 +196,7 @@ delay moved onto the failure path and no successful request is newly delayed. Th
 **subject allow-list**: `save` now writes only owned fields, so a field some third-party admin tool
 stored on a subject or role document is dropped on the next edit, silently and with no error. That
 is a capability removal with no replacement in the same changeset. Classification from
-`docs/60-research/gt4-semver-classification-2026-09-15.md`.
+`docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`.
 
 If the maintainer wants Phase 0 to land as `15.1.0`, the subject allow-list is one of exactly three
 changes that would have to be split out.

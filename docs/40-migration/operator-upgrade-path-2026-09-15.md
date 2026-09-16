@@ -220,7 +220,7 @@ gives `MIN_SUPPORTED_SERVER_VERSION = "3.6"`.)*
 **Your connector.** 15.0.8 pins nightscout-connect to the `v0.0.13` release.
 
 *(Measured: `git show origin/master:package.json`. Note this corrects a statement in
-`docs/30-design/phase0-pr-sequencing-2026-09-15.md:388` and in the programme preamble, both of
+`docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md:388` and in the programme preamble, both of
 which say master pins `"^0.0.12"`. It does not; it pins the v0.0.13 tarball. First found by the GT4
 pass; re-confirmed here.)*
 
@@ -1484,7 +1484,7 @@ exits 0; cut 5 is 154 commits past cut 4; `git cat-file -e` confirms `lib/plugin
 `lib/plugins/mmconnect.js` are present on `dev` and on cuts 1, 2 and 3 and absent on cuts 4 and 5,
 while `lib/server/mmconnect-connect-compat.js` is absent everywhere before cut 4 and present on
 cuts 4 and 5. The plan text section 0 contradicts was read at its source
-(`docs/30-design/cgm-remote-monitor-release-readiness-2026-09-14.md:416`) and is quoted correctly.
+(`docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md:416`) and is quoted correctly.
 
 **Reproduced exactly, to the digit:** all seven `package.json` version/engines/driver/connector
 values in the section 6.3 matrix; both cut 1 diffstats (11 files +68/−54 incremental, 21 files

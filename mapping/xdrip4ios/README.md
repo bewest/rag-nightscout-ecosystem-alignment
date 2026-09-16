@@ -221,7 +221,7 @@ URLQueryItem(name: "token", value: token)
 ## Cross-References
 
 - [Nightscout Data Model](../../docs/10-domain/nightscout-data-model.md) - Authoritative NS schema
-- [mapping/nightscout-reporter/](../nightscout-reporter/) - Consumer perspective (Dart web app)
+- [mapping/nightscout-reporter/](../nightscout-reporter) - Consumer perspective (Dart web app)
 - [mapping/aaps/nightscout-sync.md](../aaps/nightscout-sync.md) - AAPS NS sync patterns
 - [mapping/loop/nightscout-sync.md](../loop/nightscout-sync.md) - Loop NS upload patterns
 

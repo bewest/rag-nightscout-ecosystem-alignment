@@ -41,7 +41,7 @@ validation found that comparisons against ``null`` are exactly where the two
 backends diverge, so a query layer needs to know that ``null`` is a legitimate
 value for a field rather than a failed coercion.
 
-  docs/60-research/seam-filter-ast-three-arm-validation-2026-09-14.md
+  docs/60-research/tenancy/seam-filter-ast-three-arm-validation-2026-09-14.md
 
 USAGE
 
@@ -133,7 +133,7 @@ def build(model):
 # string "rawbg" has never appeared in `lib/server/entries.js` in any commit on
 # any branch; the entry that is actually there is `rssi`, and `rssi` IS in the
 # model as an integer, so it is a correct entry and not a stale one. BF-12 does
-# not reproduce. See docs/60-research/t05-schema-driven-coercion-2026-09-15.md.
+# not reproduce. See docs/60-research/remedial/t05-schema-driven-coercion-2026-09-15.md.
 #
 # THIS TABLE DESCRIBES THE SHIPPING BASELINE, NOT THE FIX. T0.5's fix lives on
 # cgm-remote-monitor's `bf/coercion` (88d1f8a4) and is not merged, so `--drift`

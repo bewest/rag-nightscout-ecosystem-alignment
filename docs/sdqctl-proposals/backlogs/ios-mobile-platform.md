@@ -408,7 +408,7 @@ Apps:
 
 - [spm-cross-platform-proposal.md](../spm-cross-platform-proposal.md) - SPM conversion lessons
 - [cross-platform-testing-research.md](../../10-domain/cross-platform-testing-research.md) - Testing infrastructure
-- [stakeholder-priority-analysis.md](../../60-research/stakeholder-priority-analysis.md) - Stakeholder needs
+- [stakeholder-priority-analysis.md](../../60-research/programme/stakeholder-priority-analysis.md) - Stakeholder needs
 - [ECOSYSTEM-BACKLOG.md](../ECOSYSTEM-BACKLOG.md) - Parent backlog
 
 ---

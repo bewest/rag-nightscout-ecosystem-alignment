@@ -34,8 +34,8 @@ ln -s "$ROOT/externals" "$WORK/externals" || {
 NOTES="releases/cgm-remote-monitor-15.0.9/release-notes.md"
 PRBODY="reports/phase0-pr-bodies/bf-auth.md"
 for f in "$NOTES" "$PRBODY" \
-         "docs/60-research/bf17-bf30-auth-defects-2026-09-15.md" \
-         "docs/30-design/nightscout-backfix-register.md"; do
+         "docs/60-research/remedial/bf17-bf30-auth-defects-2026-09-15.md" \
+         "docs/30-design/remedial/nightscout-backfix-register.md"; do
   [ -f "$ROOT/$f" ] || { echo "CONTROL-INVALID: missing input $f"; exit 90; }
   mkdir -p "$WORK/$(dirname "$f")"
   cp "$ROOT/$f" "$WORK/$f" || { echo "CONTROL-INVALID: copy failed: $f"; exit 90; }

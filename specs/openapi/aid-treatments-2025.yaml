@@ -25,7 +25,7 @@ info:
 
     Reconciled against 369,419 real treatment documents from 11 Nightscout
     sites (`reports/schema-census/treatments.census.json`). Evidence and
-    method: `docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md`.
+    method: `docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md`.
 
     - `carbs`, `insulin`: now nullable; null is the majority case (95.8% and
       60.7% of documents)
@@ -431,7 +431,7 @@ components:
 
         # Fields in cross-client use that the 2025 spec omitted. Measured in
         # the 2026-04 corpus; see
-        # docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md §4.2.
+        # docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md §4.2.
         amount:
           type: number
           description: |

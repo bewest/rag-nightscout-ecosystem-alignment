@@ -136,12 +136,12 @@ defects found in this audit sat under a suppression that was itself correct.**
 
 ## Evidence
 
-- Backfix register `docs/30-design/nightscout-backfix-register.md` — **BF-37** (medium–high,
+- Backfix register `docs/30-design/remedial/nightscout-backfix-register.md` — **BF-37** (medium–high,
   fixed), **BF-38** (fixed, latent), **BF-39** (fixed, no live effect). BF-39's section carries the
   live-instance probe: subject created through `/api/v2/authorization/subjects`, token read back,
   both spellings authorised, both 200.
-- Semver classification `docs/60-research/gt4-semver-classification-2026-09-15.md`, row 5.
-- PR sequencing `docs/30-design/phase0-pr-sequencing-2026-09-15.md`, branch **I**.
+- Semver classification `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`, row 5.
+- PR sequencing `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`, branch **I**.
 
 ## Test evidence
 
@@ -187,7 +187,7 @@ and an unambiguous mis-substitution. The ⚖ is §3: `queryParms` no longer turn
 a bookmarked link relying on that decoding renders differently. The old decoding was applied
 inconsistently and the server never agreed with it, which is why this stays a patch — but it
 **belongs in the release notes**. Classification from
-`docs/60-research/gt4-semver-classification-2026-09-15.md` rows 5 and §3.3, with the open question
+`docs/60-research/modernization/gt4-semver-classification-2026-09-15.md` rows 5 and §3.3, with the open question
 recorded there as "if bookmarked report URLs count as a surface, minor".
 
 **The operator-visible text above belongs in the release notes.** It is *not* a `CHANGELOG.md`

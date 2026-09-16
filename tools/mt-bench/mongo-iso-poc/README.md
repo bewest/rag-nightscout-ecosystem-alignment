@@ -1,7 +1,7 @@
 # Mongo isolation PoC — enforced-filter seam vs. bypass, and aggregation-as-view
 
 Backs the maintainer's specific pushback on §6.1/§6.2 of
-[`nightscout-multitenancy-discussion-2026-09-09.md`](../../../docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md):
+[`nightscout-multitenancy-discussion-2026-09-09.md`](../../../docs/30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md):
 "most of the change is a tenant discriminator, and Mongo's projections/aggregation can
 cover what Postgres joins/views do — does multitenancy really require leaving Mongo?"
 

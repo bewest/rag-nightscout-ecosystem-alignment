@@ -3868,7 +3868,7 @@
     "sensitivity_why": "structural",
     "tier": "core",
     "tier_reason": "10/11 sites, 95.6% of documents",
-    "description": "Pump status (may be absent if communication failed).\n\n**Two incompatible shapes exist in production** and both must be\nread. The 2025 spec described only the nested one:\n\n- *Nested* (`pump.status.{bolusing,suspended,status,timestamp}`) \u2014\n  the shape this spec declared. Observed on 1 of 11 sites in the\n  2026-04 corpus, in 10.5% of device statuses.\n- *Flat* (`pump.{bolusing,suspended,secondsFromGMT,pumpID}`) \u2014\n  undeclared until now. Observed on **10 of 11 sites**, in 85.1% of\n  device statuses.\n\nThe flat shape is the majority in practice and was entirely absent\nfrom the spec. See\n`docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md` \u00a74.3.",
+    "description": "Pump status (may be absent if communication failed).\n\n**Two incompatible shapes exist in production** and both must be\nread. The 2025 spec described only the nested one:\n\n- *Nested* (`pump.status.{bolusing,suspended,status,timestamp}`) \u2014\n  the shape this spec declared. Observed on 1 of 11 sites in the\n  2026-04 corpus, in 10.5% of device statuses.\n- *Flat* (`pump.{bolusing,suspended,secondsFromGMT,pumpID}`) \u2014\n  undeclared until now. Observed on **10 of 11 sites**, in 85.1% of\n  device statuses.\n\nThe flat shape is the majority in practice and was entirely absent\nfrom the spec. See\n`docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md` \u00a74.3.",
     "evidence": {
      "docs_present": 671232,
      "doc_frequency": 0.955825,

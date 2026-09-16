@@ -2,7 +2,7 @@
 
 > **Last Updated**: 2026-01-31  
 > **Purpose**: Track active work items across all domains  
-> **Archive**: Completed work → [`archive/`](archive/)
+> **Archive**: Completed work → [`archive/`](archive)
 
 ## Domain Backlogs
 

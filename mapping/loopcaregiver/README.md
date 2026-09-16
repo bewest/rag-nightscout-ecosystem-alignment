@@ -168,9 +168,9 @@ LoopCaregiver uses Nightscout's Remote 2.0 API for commands:
 
 ## Cross-References
 
-- [mapping/loopfollow/](../loopfollow/) - Monitoring app with limited remote
-- [mapping/nightguard/](../nightguard/) - Consumer-only iOS app
-- [mapping/loop/](../loop/) - Loop AID system documentation
+- [mapping/loopfollow/](../loopfollow) - Monitoring app with limited remote
+- [mapping/nightguard/](../nightguard) - Consumer-only iOS app
+- [mapping/loop/](../loop) - Loop AID system documentation
 - [Nightscout Data Model](../../docs/10-domain/nightscout-data-model.md) - Authoritative NS schema
 - [Controller Registration Protocol](../../docs/60-research/controller-registration-protocol-proposal.md) - Remote command protocol proposal
 

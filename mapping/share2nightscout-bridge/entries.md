@@ -173,4 +173,4 @@ No gap detection. If bridge is offline, missed readings are not backfilled.
 
 - [Nightscout Entries Schema](../../specs/openapi/aid-entries-2025.yaml)
 - [Duration/utcOffset Analysis](../../docs/10-domain/duration-utcoffset-unit-analysis.md)
-- [nightscout-librelink-up Mapping](../nightscout-librelink-up/) (if exists)
+- [nightscout-librelink-up Mapping](../nightscout-librelink-up) (if exists)

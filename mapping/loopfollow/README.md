@@ -147,9 +147,9 @@ LoopFollow is a **follower/caregiver monitoring app** that consolidates T1D mana
 
 ## Cross-References
 
-- [mapping/nightguard/](../nightguard/) - Consumer-only iOS app for comparison
-- [mapping/loopcaregiver/](../loopcaregiver/) - Full remote control companion app
-- [mapping/loop/](../loop/) - Loop AID system documentation
+- [mapping/nightguard/](../nightguard) - Consumer-only iOS app for comparison
+- [mapping/loopcaregiver/](../loopcaregiver) - Full remote control companion app
+- [mapping/loop/](../loop) - Loop AID system documentation
 - [Nightscout Data Model](../../docs/10-domain/nightscout-data-model.md) - Authoritative NS schema
 - [Controller Registration Protocol](../../docs/60-research/controller-registration-protocol-proposal.md) - Remote command protocol proposal
 

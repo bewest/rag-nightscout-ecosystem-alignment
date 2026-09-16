@@ -181,7 +181,7 @@ Nocturne uses the same field-based detection as cgm-remote-monitor:
 
 ## Cross-References
 
-- [cgm-remote-monitor Models](../cgm-remote-monitor/)
+- [cgm-remote-monitor Models](../cgm-remote-monitor)
 - [AAPS NSClient Schema](../aaps/nsclient-schema.md)
 - [Duration/utcOffset Analysis](../../docs/10-domain/duration-utcoffset-unit-analysis.md)
-- [OpenAPI Specs](../../specs/openapi/)
+- [OpenAPI Specs](../../specs/openapi)

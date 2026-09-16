@@ -6,7 +6,7 @@
  *
  * Decide whether a changeset's version bump is large enough for the public
  * surfaces it touches, per
- *   docs/30-design/semver-and-release-versioning-policy-2026-09-15.md
+ *   docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
  *
  * Read-only. Takes two git refs in a cgm-remote-monitor checkout and emits a
  * verdict. Never writes to the repository it inspects.

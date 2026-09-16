@@ -34,7 +34,7 @@ const fs = require('fs');
 const path = require('path');
 const { REPO_ROOT, report } = require('./_gate');
 
-const REGISTER = path.join(REPO_ROOT, 'docs', '30-design', 'nightscout-backfix-register.md');
+const REGISTER = path.join(REPO_ROOT, 'docs', '30-design', 'remedial', 'nightscout-backfix-register.md');
 const text = fs.readFileSync(REGISTER, 'utf8');
 const lines = text.split('\n');
 const findings = [];

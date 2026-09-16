@@ -79,7 +79,7 @@ changed logging default, and a connector pin move that changes retry
 behaviour - and as a MAJOR if items 3, 4 and 5 above ship as written.
 Its preferred option is to split: ship everything else as 15.1.0 and
 hold those three for a release that deprecates them first. See
-docs/30-design/semver-and-release-versioning-policy-2026-09-15.md
+docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
 sections 8.1 and 8.2. Reconcile the number before cutting.
 
 bf/connect-pin is gated on the nightscout-connect v0.0.14 tag being

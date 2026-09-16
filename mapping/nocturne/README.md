@@ -87,7 +87,7 @@ Nocturne (.NET 10)
 
 ## Cross-References
 
-- [cgm-remote-monitor mapping](../cgm-remote-monitor/)
+- [cgm-remote-monitor mapping](../cgm-remote-monitor)
 - [AAPS NSClient Schema](../aaps/nsclient-schema.md)
 - [Cross-Project Terminology](../cross-project/terminology-matrix.md)
-- [OpenAPI Specs](../../specs/openapi/)
+- [OpenAPI Specs](../../specs/openapi)

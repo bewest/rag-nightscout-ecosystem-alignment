@@ -96,7 +96,7 @@ claimed. An omission here reads as a claim.
 ## Semver impact
 
 <!-- Paste the reviewer checklist from
-     docs/30-design/semver-and-release-versioning-policy-2026-09-15.md section 6.2
+     docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md section 6.2
      and ANSWER IT. Every "no" needs evidence; every "yes" needs a line in
      release-notes.md. Note the known weakness recorded in section 6.1: the gate
      accepts any string not beginning "yes", so `unknown` passes. The gate does

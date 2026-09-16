@@ -591,9 +591,9 @@ class NightscoutClientTests: XCTestCase {
 ## References
 
 - [Nightscout API v3 Summary](../../specs/openapi/nightscout-api3-summary.md)
-- [OpenAPI Specs](../../specs/openapi/)
+- [OpenAPI Specs](../../specs/openapi)
 - [gestrich/NightscoutKit](https://github.com/gestrich/NightscoutKit)
-- [LoopCaregiver Implementation](../../externals/LoopCaregiver/LoopCaregiverKit/Sources/LoopCaregiverKit/Nightscout/)
+- [LoopCaregiver Implementation](../../externals/LoopCaregiver/LoopCaregiverKit/Sources/LoopCaregiverKit/Nightscout)
 - [iOS Mobile Platform Backlog](backlogs/ios-mobile-platform.md)
 
 ---

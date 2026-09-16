@@ -82,6 +82,6 @@ Just mark as superseded without bidirectional references.
 
 ## Related
 
-- [Scenario: Override Supersede](../../conformance/scenarios/override-supersede/)
+- [Scenario: Override Supersede](../../conformance/scenarios/override-supersede)
 - [REQ-002: Override Supersession Tracking](../../traceability/requirements.md#req-002-override-supersession-tracking)
 - [GAP-001: Nightscout lacks override supersession tracking](../../traceability/gaps.md#gap-001-nightscout-lacks-override-supersession-tracking)

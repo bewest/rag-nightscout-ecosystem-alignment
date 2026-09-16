@@ -26,7 +26,7 @@
       "manifest": "queue/work-queue.yaml",
       "manifest_sha256": "e562fd529c2c59684ba2177b6c942bc1f4f587dbc50ebb67c6dc860d7ae47f9d",
       "manifest_measured_at": "2026-09-15",
-      "register": "docs/30-design/nightscout-backfix-register.md",
+      "register": "docs/30-design/remedial/nightscout-backfix-register.md",
       "register_sha256": "614b3dee9c211dfe9a981412f7fc898484b0eeee17a2b15095b8c7431094b363",
       "register_entries_parsed": 69
     }
@@ -3675,7 +3675,7 @@
     },
     {
       "category": "register-untouched",
-      "scope": "docs/30-design/nightscout-backfix-register.md",
+      "scope": "docs/30-design/remedial/nightscout-backfix-register.md",
       "statement": "42 register entries are not fixed and are not carried by anything in this release.",
       "why": "Not a defect in the release; a statement of what shipping it does not address. Ids: BF-09, BF-10, BF-18, BF-19, BF-20, BF-21, BF-22, BF-23, BF-24, BF-25, BF-26, BF-27, BF-40, BF-41, BF-42, BF-43, BF-44, BF-45, BF-46, BF-47, BF-48, BF-49, BF-50, BF-51, BF-52, BF-53, BF-54, BF-55, BF-56, BF-57, BF-58, BF-59, BF-60, BF-61, BF-62, BF-63, BF-64, BF-65, BF-66, BF-67, CAP-01, CAP-02"
     },

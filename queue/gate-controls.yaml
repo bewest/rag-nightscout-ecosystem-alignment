@@ -1258,12 +1258,36 @@ controls:
       the same extraction at v0.0.13 yields 0.0.13 and the test exits 1.
 
   - gate: |-
-      test -f docs/60-research/tenant-config-surface-2026-09-15.md
+      node tools/queue/gates/doc-links.js
     cwd: .
     control: |-
-      test -f docs/60-research/tenant-config-surface-2026-09-15.md.this-name-does-not-exist
+      QUEUE_GATE_ROOT=/tmp/claude-1000/-home-bewest-src-rag-nightscout-ecosystem-alignment/7811e957-8fb7-4237-ad5c-246e1258de2b/scratchpad/emptyroot node tools/queue/gates/doc-links.js
+    control-kind: static
+    proves: >
+      RUN 2026-09-16. Pointed at an empty git tree the gate exits 1 rather
+      than reporting that every one of zero references resolved - the two
+      findings that assert a non-empty scope and a non-zero reference count
+      both go BAD. That is the vacuity trap this whole file exists for: a
+      file-reading gate whose inputs vanish must not render as a pass.
+
+      THREE STRONGER ABLATIONS were also run, on the real tree, one per
+      detection pass, each verified to LAND before its result was read.
+      (1) a markdown link in phase0-pr-sequencing repointed to a name ending
+      -NOPE.md - caught as md-link. (2) the backfix register's path in
+      work-queue.yaml reverted to its pre-move spelling - caught as root-path.
+      (3) doc-branch-count.js's path.join segments reverted to the pre-move
+      form - caught as path.join, which is the exact break that hid inside an
+      expected red on 2026-09-16. They are not the standing control only
+      because each mutates a tracked file, and _gate.js forbids a gate that
+      dirties the working tree.
+
+  - gate: |-
+      test -f docs/60-research/tenancy/tenant-config-surface-2026-09-15.md
+    cwd: .
+    control: |-
+      test -f docs/60-research/tenancy/tenant-config-surface-2026-09-15.md.this-name-does-not-exist
     positive-control: |-
-      test -f docs/60-research/e3-gate-vacuity-audit-2026-09-15.md
+      test -f docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md
     control-kind: static
     proves: >
       `test -f` is shown to distinguish an absent path from a present

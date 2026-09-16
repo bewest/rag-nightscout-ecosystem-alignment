@@ -6,7 +6,7 @@ the typed artifacts the modernization work needs from a single source.
 
 ## Why
 
-`docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md` §6.4
+`docs/30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md` §6.4
 identifies the problem this package exists to solve: a field's type is
 currently declared, or implied, in four places that drift — the OpenAPI
 spec, any boundary validator, a mongoose `Schema`, and the Postgres column

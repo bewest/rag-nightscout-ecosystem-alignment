@@ -1,6 +1,6 @@
 # Glossary
 
-This glossary defines terms as used within this alignment workspace. Projects may use different terminology internally; see the [mapping notes](../../mapping/) for project-specific translations.
+This glossary defines terms as used within this alignment workspace. Projects may use different terminology internally; see the [mapping notes](../../mapping) for project-specific translations.
 
 ---
 

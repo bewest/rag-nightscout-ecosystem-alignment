@@ -290,9 +290,9 @@ This maps to files in `externals/xDrip/app/src/main/java/`.
 ## Cross-References
 
 - [Nightscout Data Model](../../docs/10-domain/nightscout-data-model.md) - Authoritative NS schema
-- [mapping/xdrip4ios/](../xdrip4ios/) - iOS counterpart
-- [mapping/aaps/](../aaps/) - AAPS integration patterns
-- [mapping/loop/](../loop/) - Loop comparison
+- [mapping/xdrip4ios/](../xdrip4ios) - iOS counterpart
+- [mapping/aaps/](../aaps) - AAPS integration patterns
+- [mapping/loop/](../loop) - Loop comparison
 
 ---
 

@@ -135,7 +135,7 @@ reference-implementation oref0/oref1 core be extracted to Rust+WASM,
 runnable identically in Node (via `@node-rs`-style native bindings or WASM)
 and in-browser (e.g., for a future `cgm-remote-monitor` reports/simulation
 UI, or the Svelte-based reports UI already discussed in
-`docs/60-research/nightscout-modernization-next-steps-2026-09-09.md`)?*
+`docs/60-research/modernization/nightscout-modernization-next-steps-2026-09-09.md`)?*
 This would let `cgm-remote-monitor` and Nocturne's web frontend share one
 oref implementation instead of maintaining parallel JS and Rust ports, and
 could *feed into* the ADR-005 cross-validation harness as a fourth adapter

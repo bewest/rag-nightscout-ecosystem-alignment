@@ -21,7 +21,7 @@ const fs = require('fs');
 const path = require('path');
 const { REPO_ROOT, report } = require('./_gate');
 
-const DOC = path.join(REPO_ROOT, 'docs', '30-design', 'phase0-pr-sequencing-2026-09-15.md');
+const DOC = path.join(REPO_ROOT, 'docs', '30-design', 'remedial', 'phase0-pr-sequencing-2026-09-15.md');
 const WORDS = {
   four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11,
 };

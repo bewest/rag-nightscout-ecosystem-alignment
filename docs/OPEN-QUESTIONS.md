@@ -422,6 +422,6 @@ Questions explicitly listed in existing ADRs.
 ## Related Documents
 
 - [traceability/gaps.md](../traceability/gaps.md) - Technical gaps
-- [docs/90-decisions/](90-decisions/) - ADRs
+- [docs/90-decisions/](90-decisions) - ADRs
 - [docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md](sdqctl-proposals/ECOSYSTEM-BACKLOG.md) - Work queue
 - [LIVE-BACKLOG.md](../LIVE-BACKLOG.md) - Human requests

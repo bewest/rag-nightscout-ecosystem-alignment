@@ -82,10 +82,10 @@ array, so its index stays valid.
 
 ## Evidence
 
-- Backfix register `docs/30-design/nightscout-backfix-register.md` — **BF-36** (medium, fixed),
+- Backfix register `docs/30-design/remedial/nightscout-backfix-register.md` — **BF-36** (medium, fixed),
   and the suppression-audit corollary that groups BF-35, BF-36, BF-37, BF-38 and BF-39.
-- Semver classification `docs/60-research/gt4-semver-classification-2026-09-15.md`, row 4.
-- PR sequencing `docs/30-design/phase0-pr-sequencing-2026-09-15.md`, branch **H**.
+- Semver classification `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`, row 4.
+- PR sequencing `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`, branch **H**.
 
 ## Test evidence
 
@@ -124,7 +124,7 @@ exactly the production error. The worktree was restored to a clean tree afterwar
 **Patch.** No declared surface moves: nothing on the wire changes, no API response changes shape,
 no environment variable is added or removed, no default flips. This is a client-side array-bounds
 fix with no contract. Classification from
-`docs/60-research/gt4-semver-classification-2026-09-15.md` row 4.
+`docs/60-research/modernization/gt4-semver-classification-2026-09-15.md` row 4.
 
 **The operator-visible text above belongs in the release notes.** It is *not* a `CHANGELOG.md`
 entry and this branch adds none: under the maintainer's rule, `CHANGELOG.md` is a **release

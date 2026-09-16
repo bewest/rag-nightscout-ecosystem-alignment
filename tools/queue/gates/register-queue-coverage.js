@@ -52,7 +52,7 @@ function argValue(flag, fallback) {
 }
 
 const REGISTER = argValue('--register',
-  path.join(REPO_ROOT, 'docs', '30-design', 'nightscout-backfix-register.md'));
+  path.join(REPO_ROOT, 'docs', '30-design', 'remedial', 'nightscout-backfix-register.md'));
 const MANIFEST = argValue('--manifest',
   path.join(REPO_ROOT, 'queue', 'work-queue.yaml'));
 

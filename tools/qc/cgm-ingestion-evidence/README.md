@@ -26,8 +26,8 @@ read-derived — which is the evidential class that keeps being wrong.
 ## What these back
 
 Findings reproduced with these harnesses, from
-[e1-dexcom-path-comparison](../../../docs/60-research/e1-dexcom-path-comparison-2026-09-15.md) and
-[e2-medtronic-path-comparison](../../../docs/60-research/e2-medtronic-path-comparison-2026-09-15.md):
+[e1-dexcom-path-comparison](../../../docs/60-research/modernization/e1-dexcom-path-comparison-2026-09-15.md) and
+[e2-medtronic-path-comparison](../../../docs/60-research/modernization/e2-medtronic-path-comparison-2026-09-15.md):
 
 | area | finding |
 |---|---|

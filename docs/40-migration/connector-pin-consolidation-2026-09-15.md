@@ -46,7 +46,7 @@ that reviewers will rely on.
 
 ### 0.1 master does not depend on a semver range. There is no npm range anywhere.
 
-The brief, and `docs/30-design/phase0-pr-sequencing-2026-09-15.md:388`, say master pins
+The brief, and `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md:388`, say master pins
 `"^0.0.12"` — an npm range. It does not.
 
 ```

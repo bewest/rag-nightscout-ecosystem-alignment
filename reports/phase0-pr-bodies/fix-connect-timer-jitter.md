@@ -128,7 +128,7 @@ ceiling; with the new `'equal'` jitter default the delay at the ceiling spreads 
 > at attempt ≥ 20 it yields `256 × (2²⁰ − 1)` = **74.6 hours**. So one option-merge defect produces
 > **a retry storm first and a three-day dark window second**, and both ship on `cgm-remote-monitor`'s
 > `dev` today. Reproduced in
-> `docs/60-research/e1-dexcom-path-comparison-2026-09-15.md`. **BF-34 as originally recorded
+> `docs/60-research/modernization/e1-dexcom-path-comparison-2026-09-15.md`. **BF-34 as originally recorded
 > describes only the 586x-too-fast half**; the register entry should carry both, and in an
 > operator-facing note the dark window is the more important one, because a site that is retrying
 > too fast is at least still trying.
@@ -162,7 +162,7 @@ addresses.
 
 - Backfix register: **BF-34** (option precedence), **BF-08** (interval/start jitter — the interval
   half of that entry was wrong and is recorded as such).
-- `docs/60-research/gt4-semver-classification-2026-09-15.md` for the measured ratio, the ceiling and
+- `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md` for the measured ratio, the ceiling and
   the five API changes.
 
 ## Test evidence
@@ -225,7 +225,7 @@ anything is pushed.
   ends — the rejection reaches only the fetch machine as a `FRAME_ERROR`; nothing is sent to the
   session machine, which stays `Active` holding a dead token until `EXPIRE_SESSION_DELAY`, which
   `lib/sources/dexcomshare.js` sets to **24 hours** (read-derived here; the end-to-end behaviour is
-  reproduced in `docs/60-research/e1-dexcom-path-comparison-2026-09-15.md`, where 25 simulated hours
+  reproduced in `docs/60-research/modernization/e1-dexcom-path-comparison-2026-09-15.md`, where 25 simulated hours
   of permanent 401 give one authentication and one login). **This is the one axis on which the
   connector is worse than the legacy Dexcom bridge it is replacing**, because the legacy bridge
   reuses no session and so recovers on the very next poll. It matters for the parcel 4/5 retirement

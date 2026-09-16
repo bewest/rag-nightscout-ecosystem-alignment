@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Figures for docs/60-research/multitenancy-k-and-residency-2026-09-14.md.
+"""Figures for docs/60-research/tenancy/multitenancy-k-and-residency-2026-09-14.md.
 
 All values come from tools/mt-bench/results/*.json (see the report for method).
 Palette: dataviz reference categorical slots 1-4, light mode, validated

@@ -36,7 +36,7 @@ quirks:
       - https://github.com/nightscout/Trio/pull/1476
       - specs/openapi/aid-entries-2025.yaml#/components/schemas/Entry/properties/date
       - externals/nocturne/src/Core/Nocturne.Core.Models/Serializers/FlexibleNumberConverters.cs
-      - docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md#41-entries--the-timestamp-is-not-an-integer
+      - docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md#41-entries--the-timestamp-is-not-an-integer
 
   - id: QUIRK-ENTRIES-002
     title: direction carries NONE, which no declared enum listed

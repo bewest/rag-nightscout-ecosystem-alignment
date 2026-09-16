@@ -112,7 +112,7 @@ DEFAULT_REPO_PATHS = {
 
 # The register tables. Parsed, not summarised: the record quotes the status
 # cell verbatim so a reader can disagree with the classifier.
-DEFAULT_REGISTER = "docs/30-design/nightscout-backfix-register.md"
+DEFAULT_REGISTER = "docs/30-design/remedial/nightscout-backfix-register.md"
 
 ISO8601 = re.compile(
     r"^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:?\d{2})?$")

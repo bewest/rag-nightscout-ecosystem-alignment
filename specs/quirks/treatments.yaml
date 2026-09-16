@@ -27,7 +27,7 @@ quirks:
       Omit the key rather than writing null, on collections where that is
       safe. Existing readers tolerate absence.
     references:
-      - docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md#42-treatments--null-is-the-common-case
+      - docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md#42-treatments--null-is-the-common-case
 
   - id: QUIRK-TREATMENTS-002
     title: insulin is present-but-null on most treatments
@@ -44,7 +44,7 @@ quirks:
     reader_guidance: See QUIRK-TREATMENTS-001.
     writer_guidance: See QUIRK-TREATMENTS-001.
     references:
-      - docs/30-design/nightscout-typed-schema-evidence-2026-09-10.md#42-treatments--null-is-the-common-case
+      - docs/30-design/platform/nightscout-typed-schema-evidence-2026-09-10.md#42-treatments--null-is-the-common-case
 
   - id: QUIRK-TREATMENTS-003
     title: timestamp is an ISO 8601 string, not the declared epoch integer

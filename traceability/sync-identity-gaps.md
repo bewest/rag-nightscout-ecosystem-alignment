@@ -378,7 +378,7 @@ Only `predicted.values[]` (the combined prediction) is uploaded to `devicestatus
 
 **Ontology**: Desired (user intent (overrides))
 
-**Scenario**: [Override Supersede](../conformance/scenarios/override-supersede/), [Sync Deduplication](../conformance/assertions/sync-deduplication.yaml)
+**Scenario**: [Override Supersede](../conformance/scenarios/override-supersede), [Sync Deduplication](../conformance/assertions/sync-deduplication.yaml)
 
 **Description**: When an override is superseded by a new override, the lifecycle change is not synced to Nightscout. Loop and Trio only upload the initial override creation, not subsequent status changes.
 

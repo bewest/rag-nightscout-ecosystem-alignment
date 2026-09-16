@@ -9,7 +9,7 @@ branch and maintainer attention:
    [PR #8605](https://github.com/nightscout/cgm-remote-monitor/pull/8605)
    (`chore/nightscout-modernization` → `dev`).
 2. **Bug fixes / security hotfixes** — see the sibling
-   [`security-hotfix-eval-2026`](../security-hotfix-eval-2026/) doc set.
+   [`security-hotfix-eval-2026`](../security-hotfix-eval-2026) doc set.
 3. **New features** — vendor connectivity expansion, MCP/agentic-AI
    connectivity, AID custom-controller registration for agentic delivery
    systems, schema vocabulary/typed-support improvements, and the general

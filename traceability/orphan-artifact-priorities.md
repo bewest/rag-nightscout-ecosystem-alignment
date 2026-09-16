@@ -175,5 +175,5 @@ None recommended - all requirements have value for future reference.
 ## Cross-References
 
 - [coverage-analysis.md](coverage-analysis.md) - Full coverage report
-- [conformance/assertions/](../conformance/assertions/) - Existing assertion files
+- [conformance/assertions/](../conformance/assertions) - Existing assertion files
 - [requirements.md](requirements.md) - Requirements index

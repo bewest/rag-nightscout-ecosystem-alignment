@@ -214,7 +214,7 @@ Cross-project comparison of authentication mechanisms. See [`authentication-flow
 | Scheduled | Time-based access windows (school hours) |
 | HIPAA audit | Consent logging for compliance |
 
-See: [`mapping/nightscout-roles-gateway/`](../nightscout-roles-gateway/)
+See: [`mapping/nightscout-roles-gateway/`](../nightscout-roles-gateway)
 
 **Deep Dive**: [`docs/10-domain/authentication-flows-deep-dive.md`](../../docs/10-domain/authentication-flows-deep-dive.md)
 
@@ -950,7 +950,7 @@ Nocturne's PostgreSQL schema uses a hybrid approach: typed columns for known fie
 
 **Gap Reference**: GAP-MIGRATION-001-003
 
-**Source**: [Migration Field Fidelity Analysis](../../mapping/nocturne/migration-field-fidelity.md)
+**Source**: [Migration Field Fidelity Analysis](../nocturne/migration-field-fidelity.md)
 
 ---
 

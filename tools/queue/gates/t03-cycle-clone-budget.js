@@ -9,7 +9,7 @@
  * WHY IT EXISTS. P0-B carried a no-gate marker saying the 3.747 -> 2.657 ms
  * measurement "is not currently RE-RUNNABLE: the workload that produced those two
  * figures is not recorded anywhere in this repository". That was false when it was
- * written. docs/60-research/t02-t03-cache-clone-2026-09-15.md §2 names the
+ * written. docs/60-research/remedial/t02-t03-cache-clone-2026-09-15.md §2 names the
  * harness (tools/mt-bench/apitier.js, arm `cycle`), the fixture (576 entries,
  * 600 treatments of which 361 survive retention, 576 device statuses carrying
  * 72-point prediction arrays, DEVICESTATUS_DAYS=2) and §10 gives the command. The

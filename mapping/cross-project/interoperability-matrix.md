@@ -120,6 +120,6 @@ When multiple AID controllers write to same Nightscout:
 
 ## Related Documents
 
-- [mapping/cross-project/aid-controller-sync-patterns.md](../cross-project/aid-controller-sync-patterns.md)
-- [mapping/cross-project/terminology-matrix.md](../cross-project/terminology-matrix.md)
+- [mapping/cross-project/aid-controller-sync-patterns.md](aid-controller-sync-patterns.md)
+- [mapping/cross-project/terminology-matrix.md](terminology-matrix.md)
 - [docs/10-domain/nightscout-api-comparison.md](../../docs/10-domain/nightscout-api-comparison.md)

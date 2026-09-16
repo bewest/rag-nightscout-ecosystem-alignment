@@ -1,7 +1,7 @@
 # PostgREST PoC — a headless multitenant REST backend directly on Postgres RLS
 
 Backs the maintainer's question on §5.3/§6.1 of
-[`nightscout-multitenancy-discussion-2026-09-09.md`](../../../docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md):
+[`nightscout-multitenancy-discussion-2026-09-09.md`](../../../docs/30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md):
 "would it be feasible to implement a compatible headless, multitenant Nightscout backend
 using PostgREST?" Reuses the exact RLS primitive from `../rls-poc` (same
 `NULLIF(current_setting(...), '')` policy shape) but puts PostgREST, not a Node API

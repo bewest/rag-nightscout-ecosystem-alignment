@@ -1,7 +1,7 @@
 # mt-bench — Nightscout multitenancy micro-benchmarks
 
 Seed harness for the experiments in
-[`docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md`](../../docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md).
+[`docs/30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md`](../../docs/30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md).
 
 These are **micro-benchmarks used to rank hypotheses**, not the full multi-tenant load
 harness described in §8 of that document. They answer narrow questions: how expensive is a

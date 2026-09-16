@@ -1,7 +1,7 @@
 # NRG resolution PoC — cost of a sidecar host→tenant resolution hop
 
 Backs §9.4 of
-[`nightscout-multitenancy-discussion-2026-09-09.md`](../../../docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md):
+[`nightscout-multitenancy-discussion-2026-09-09.md`](../../../docs/30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md):
 `~/src/nightscout-roles-gateway` (NRG) is a real, already-built external gateway that
 resolves an `expected_name` (hostname) to a tenant/upstream via a two-table SQL join,
 then enforces RBAC/group-policy/schedule rules, and hands NGINX an `x-upstream-origin`

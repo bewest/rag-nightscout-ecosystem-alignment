@@ -235,7 +235,7 @@ The foundation is built. The path is clear.
 - [Progressive Enhancement Framework](10-domain/progressive-enhancement-framework.md) — Full 10-layer specification
 - [Data Rights Primer](10-domain/data-rights-primer.md) — Plain-language guide to the Five Fundamental Rights
 - [Digital Rights and Legal Protections](DIGITAL-RIGHTS.md) — Legal frameworks (GPL, DMCA, interoperability)
-- [Stakeholder Priority Analysis](60-research/stakeholder-priority-analysis.md) — Gap impact and coordination strategy
+- [Stakeholder Priority Analysis](60-research/programme/stakeholder-priority-analysis.md) — Gap impact and coordination strategy
 - [Capability Layer Matrix](../mapping/cross-project/capability-layer-matrix.md) — System-by-system comparison
 - [Remote Commands Comparison](10-domain/remote-commands-comparison.md) — L8 security analysis across systems
 

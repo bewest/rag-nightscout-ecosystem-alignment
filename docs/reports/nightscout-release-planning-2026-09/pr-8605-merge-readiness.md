@@ -5,7 +5,7 @@
 **Reviewed:** 2026-09-09, checked live against GitHub + a locally refreshed
 clone of `externals/cgm-remote-monitor-official` (advanced to `dev@a8888f0d`
 for this review — see `workspace.lock.json`).
-**Related:** [Andy Low / Ben West discussion doc](../../60-research/nightscout-modernization-next-steps-2026-09-09.md)
+**Related:** [Andy Low / Ben West discussion doc](../../60-research/modernization/nightscout-modernization-next-steps-2026-09-09.md)
 (2026-09-09) — this doc independently re-verifies and updates that
 discussion's status-check section, which was already one day stale by the
 time it was checked.

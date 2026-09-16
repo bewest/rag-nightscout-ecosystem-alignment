@@ -1,7 +1,7 @@
 # Mongo views PoC — is there a server-enforced RLS equivalent after all?
 
 Backs a maintainer's pushback on
-[`nightscout-multitenancy-discussion-2026-09-09.md`](../../../docs/30-design/nightscout-multitenancy-discussion-2026-09-09.md)
+[`nightscout-multitenancy-discussion-2026-09-09.md`](../../../docs/30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md)
 §6.1: *"Mongo's projections and tooling should be equally feasible; people
 just find tables more familiar."*
 
