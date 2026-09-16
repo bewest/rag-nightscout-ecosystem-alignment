@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 74 |
-| runnable gates | 100 |
-| explicit `no-gate:` markers | 100 |
+| runnable gates | 103 |
+| explicit `no-gate:` markers | 103 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 100 of the 200 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 103 of the 206 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,9 +43,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 11 | P0-B, RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 10 | P0-A, P0-C, P0-C-REMEDIATE, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-TAG |
+| `ready-to-push` | 7 | P0-A, P0-C, P0-C-REMEDIATE, P0-D, P0-E, P0-I, P0-TAG |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
-| `in-flight-upstream` | 1 | P0-T01 |
+| `in-flight-upstream` | 4 | P0-F, P0-G, P0-H, P0-T01 |
 | `needs-decision` | 3 | RT-D3, RT-0, BFQ-47 |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
@@ -85,14 +85,14 @@ decision is required by any of them.
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
 | `P0-D` | bf/coercion - schema-driven query type coercion (T0.5) | `ready-to-push` | `bf/coercion` | minor | 4 run |
 | `P0-E` | bf/reads - six read-path fixes, independent of bf/coercion | `ready-to-push` | `bf/reads` | major | 8 run + 3 no-gate |
-| `P0-F` | fix/connect-timer-jitter - BF-34 backoff precedence and start jitter | `ready-to-push` | `fix/connect-timer-jitter` | minor | 2 run + 1 no-gate |
-| `P0-G` | bf/food - BF-16 quick-pick filter, BF-35 bolus calculator chooser | `ready-to-push` | `bf/food` | minor | 4 run |
-| `P0-H` | bf/merge - BF-36 client delta merge reads past the end | `ready-to-push` | `bf/merge` | patch | 3 run + 1 no-gate |
+| `P0-F` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | `in-flight-upstream` | `fix/connect-timer-jitter` | minor | 3 run + 2 no-gate |
+| `P0-G` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | `in-flight-upstream` | `bf/food` | minor | 5 run + 1 no-gate |
+| `P0-H` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | `in-flight-upstream` | `bf/merge` | patch | 4 run + 2 no-gate |
 | `P0-I` | bf/parms - BF-37, BF-38, BF-39 | `ready-to-push` | `bf/parms` | patch | 4 run |
 | `P0-TAG` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push | `ready-to-push` | `release/v0.0.14` | minor | 5 run + 1 no-gate |
 | `P0-PIN` | bf/connect-pin - move dev's connector pin to the v0.0.14 tarball | `blocked` | `bf/connect-pin` | patch | 3 run + 1 no-gate |
 | `P0-LOCK` | Regenerate package-lock.json after the v0.0.14 tag is pushed | `blocked` | `bf/connect-pin` | n/a | 2 run |
-| `P0-T01` | T0.1 - PR | `in-flight-upstream` | `fix/quadratic-treatment-processing` | patch | 1 run + 1 no-gate |
+| `P0-T01` | T0.1 - PR #8733, the two quadratic treatment scans | `in-flight-upstream` | `fix/quadratic-treatment-processing` | patch | 1 run + 1 no-gate |
 | `FU-LIMIT` | Follow-up 2 - the limit rule is written twice, and that is the root cause | `blocked` | `-` | patch | 2 run + 1 no-gate |
 | `FU-RESIDUALS` | Follow-ups 3, 4, 7 - three named residuals beside branches already prepared | `gate-not-met` | `-` | patch | 3 run + 1 no-gate |
 | `FU-HYGIENE` | Follow-ups 9, 10 - the two audits that have no instrument | `not-started` | `-` | n/a | 0 run + 2 no-gate |
@@ -339,17 +339,17 @@ decision is required by any of them.
 
 **Notes.** Sequencing letter E. THE SHA HISTORY, because three documents quote different ones: GT1 measured 824380a0 (7 commits, on dev); this queue first recorded 0d19bb31 (8 commits, on bf/coercion, after a rebase); the CHANGELOG-only commit was then dropped and the branch re-cut directly onto origin/dev, and it is now 2ecfeb53, 6 commits. `git range-diff` showed all six content-identical to their pre-strip selves. THE STACK IS DISSOLVED, so blocks_on is empty. The §3b concern survives and is NOT a merge hazard: bf/coercion gives query.js a new `collection:` option and bf/reads fixes aggregate.js, which calls query.js through api.query_for and passes no options - so the count path still gets the legacy default walker after both land. Deliberately in neither PR.
 
-### `P0-F` &mdash; fix/connect-timer-jitter - BF-34 backoff precedence and start jitter
+### `P0-F` &mdash; fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `nightscout-connect` |
 | branch | `fix/connect-timer-jitter` |
 | base | `b77e5bb` |
 | worktree | `externals/work/nc-jitter` |
 | semver | `minor` |
-| review | maintainer - the sequencing document says land this one first if anything is landed first |
+| review | maintainer - the sequencing document says land this one first if anything is landed first. OPENED 2026-09-16 as nightscout-connect PR #68, base dev. One approval there covers four PRs' worth of change; see notes. |
 | register | `BF-08`, `BF-34` |
 
 **Blast radius.** lib/backoff.js, lib/machines/cycle.js. 19 new tests, 135 pass / 0 fail, every part reverted in turn and caught.
@@ -365,6 +365,9 @@ decision is required by any of them.
 - `[unit]` _(cwd: `externals/work/nc-jitter`)_ `node -e "const b=require('./lib/backoff.js'); try { b({jitter:'wild'}); process.exit(1); } catch(e) { process.exit(/unknown jitter mode/.test(e.message)?0:1); }"`
   - the new throw on an unknown jitter mode is the observable half of the precedence fix - if options were still being discarded, the bad mode would never be read and this would not throw
 - **NO GATE** &mdash; Vendor rate limits are unmeasured (EXP-MT-051) and need real credentials, which rule 0 forbids here. T0.4 shipped CONNECT_START_JITTER_MS so the pool CAN be spread - but the window to set it is exactly the number that is unmeasured.
+- `[network]` `git -C externals/nightscout-connect ls-remote --heads origin fix/connect-timer-jitter | grep -q c1cce2a2f9623e1164d85b1625a65d27e3116b51`
+  - the branch behind nightscout-connect PR #68 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- **NO GATE** &mdash; Review and merge state of PR #68 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven - the same marker P0-T01 carries.
 
 **Evidence.**
 
@@ -372,17 +375,17 @@ decision is required by any of them.
 
 **Notes.** Sequencing letter F. Merging this in the connector repository ships it to NOBODY - cgm-remote-monitor pins by tarball. P0-TAG and P0-PIN are what deliver it. PR TARGET SETTLED 2026-09-16 (maintainer): base `dev`, head `fix/connect-timer-jitter`, ONE PR carrying 11 commits. The earlier sequencing text said base `origin/main`; that was a merge-base measurement mistaken for a PR target. Measured: `origin/dev` 6dfc4f0 is TREE-IDENTICAL to `origin/main` b394411 (`git diff origin/dev origin/main` empty - main is only the merge commit of PR #26), and #64 and #67 both target `dev`, so `dev` is the release line for this batch. `git rev-list --count origin/dev..fix/connect-timer- jitter` = 11; 27 files, +1359/-309; trial merge into `dev` CLEAN. WHAT THAT ONE PR APPROVES, STATED SO IT IS NOT DISCOVERED LATER: only c1cce2a is this branch's work. Nine of the other ten commits belong to four other pull requests - #64 (OPEN, -> dev), #65 (merged into `fix/dexcom-safe-logging`, NOT into dev or main), #66 (OPEN, -> `fix/dexcom-safe-logging`), #67 (OPEN, -> dev) - plus the integration merge b77e5bb (`origin/fix/modernization-debug- logging`, no PR). So one approval covers four PRs' worth of change. The maintainer chose this over stacking on `fix/modernization-debug-logging` (which would reduce the PR to the single commit c1cce2a) with the tradeoff on the table. It is written into the PR body rather than left implicit. WHY NOT REBASE c1cce2a ALONE ONTO dev - measured, not assumed: `git cherry-pick c1cce2a` onto origin/dev CONFLICTS in three files, one hunk each (README.md, index.js, lib/builder.js); lib/backoff.js and lib/machines/cycle.js auto-merge clean. The builder.js resolution would have to DELETE `logger: config.logger`, which comes from 234d47c - i.e. the commit genuinely assumes #67 is in place, exactly as its own message says ("The precedence fix cannot ship alone"). The 135-test and per-part-ablation evidence was taken on the stacked base and would need re-taking. PR BODY CORRECTED 2026-09-16 before publication: reports/phase0-pr-bodies/fix-connect-timer-jitter.md called those nine commits "already-merged". They are not. Third draft of that block; the first two both understated what the branch carries.
 
-### `P0-G` &mdash; bf/food - BF-16 quick-pick filter, BF-35 bolus calculator chooser
+### `P0-G` &mdash; bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/food` |
 | base | `origin/dev@a8888f0d` |
 | worktree | `externals/work/crm-bf-food` |
 | semver | `minor` |
-| review | maintainer - the sequencing document calls this the one to read first, and BF-35 is why |
+| review | maintainer - the sequencing document calls this the one to read first, and BF-35 is why. OPENED 2026-09-16 as PR #8735, base dev. Still wants a reviewer who has not self-merged in this stack (the governance finding), and an explicit yes on the /api/v1/food/quickpicks filter change. |
 | register | `BF-16`, `BF-35` |
 
 **Blast radius.** 1 commit. lib/client/boluscalc.js, lib/food/food.js, lib/food/quickpick.js (new), lib/server/food.js, 2 new test files.
@@ -401,6 +404,9 @@ decision is required by any of them.
   - BF-35's own test, 11 cases. THIS IS THE GATE GT1 WARNED ABOUT: the file is in NEITHER the test:unit nor the test:integration brace list, so a green `npm run test:unit` on this branch is not evidence that BF-35's fix works. Named explicitly here for that reason.
 - `[integration]` _(cwd: `externals/work/crm-bf-food`)_ `TEST=api.food.quickpicks npm run test-single`
   - BF-16 over the real HTTP path; needs MongoDB
+- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/food | grep -q 73495331e68c4cda3a63e8c047387bdf404b89b0`
+  - the branch behind PR #8735 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- **NO GATE** &mdash; Review and merge state of PR #8735 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
 
 **Evidence.**
 
@@ -408,17 +414,17 @@ decision is required by any of them.
 
 **Notes.** Sequencing letter G. BF-35 is a regression from 3457de5b (2017) and was found while fixing BF-16 - which is the argument for landing BF-16 even though BF-16 itself has no in-tree consumer. PREREQUISITE DISCHARGED 2026-09-16. This item carried a blocker - the SOURCE_ASSERTIONS in tools/nsschema/code_model.py pin text bf/food deletes, so `make schema-code-drift` would fail the day the branch reached a checked tree. It is handled, and NOT the way BF-16 prescribed. The register said "replace the anchors when the branch lands"; replacing them now would fail the check against both SOURCE_ROOTS, which still carry the pre-fix text because bf/food has not merged. Instead each anchor now accepts EXACTLY the pre-fix and post-fix spelling and nothing else, and lib/food/quickpick.js isTrue went into a new SOURCE_ASSERTIONS_IF_PRESENT tuple that arms when the file appears. Measured: schema-code-drift exits 0 against crm-seam, cgm-remote-monitor-official AND crm-bf-food; crm-bf-food failed on exactly these two anchors beforehand. Ablated three ways with each break confirmed to land first - filter narrowed to `{ hidden: false }` FAILS, restoreBoolValue rewritten to Boolean() FAILS, quickpick.isTrue renamed FAILS, all three restored exits 0. STILL OWED AT MERGE, not now: delete the pre-fix arm of each anchor and promote the quickpick.js entry, or a revert passes silently.
 
-### `P0-H` &mdash; bf/merge - BF-36 client delta merge reads past the end
+### `P0-H` &mdash; bf/merge - PR #8734, BF-36 client delta merge reads past the end
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/merge` |
 | base | `origin/dev@a8888f0d` |
 | worktree | `externals/work/crm-bf-merge` |
 | semver | `patch` |
-| review | maintainer |
+| review | maintainer. OPENED 2026-09-16 as PR #8734, base dev. |
 | register | `BF-36` |
 
 **Blast radius.** 1 commit. lib/client/receiveddata.js, one new test file.
@@ -436,6 +442,9 @@ decision is required by any of them.
 - `[unit]` _(cwd: `externals/work/crm-bf-merge`)_ `TEST=receiveddata.merge npm run test-single`
   - in NEITHER local brace list - GT1's finding. Named here so the gate actually runs the file that proves the fix.
 - **NO GATE** &mdash; `dataUpdate` still has no try/catch, so the NEXT throw from anywhere in the merge path has the same effect. This branch fixes one throw, not the missing boundary. No test asserts the boundary exists because it does not.
+- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/merge | grep -q b06c6faf882ebd84d627468c75dade0fe1fd01a1`
+  - the branch behind PR #8734 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- **NO GATE** &mdash; Review and merge state of PR #8734 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
 
 **Evidence.**
 
@@ -586,7 +595,7 @@ decision is required by any of them.
 
 **Notes.** DELIBERATELY UNDONE and it must not be papered over. Regenerate with `npm install` once the tag is pushed, in the same PR.
 
-### `P0-T01` &mdash; T0.1 - PR
+### `P0-T01` &mdash; T0.1 - PR #8733, the two quadratic treatment scans
 
 | | |
 |---|---|
@@ -596,7 +605,7 @@ decision is required by any of them.
 | base | `origin/dev` |
 | worktree | `externals/work/crm-quadratics` |
 | semver | `patch` |
-| review | upstream reviewers on PR |
+| review | upstream reviewers on PR #8733 - not ours to land |
 
 **Blast radius.** dfe2753d. Pushed as bewest/wip/optimize-treatment-processing.
 
@@ -852,7 +861,7 @@ costs.
 | base | `origin/master` |
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `minor` |
-| review | maintainer, and at least one human reviewer who is not the author - release PR |
+| review | maintainer, and at least one human reviewer who is not the author - release PR #8598 and integration PR #8605 each carry ZERO human reviews |
 | blocks on | `RT-D3`, `RT-VERSION` |
 
 **Blast radius.** dev vs master. Includes four user-visible bug fixes plus i18n.

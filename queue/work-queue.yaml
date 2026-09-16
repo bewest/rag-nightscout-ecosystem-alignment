@@ -656,17 +656,19 @@ items:
       legacy default walker after both land. Deliberately in neither PR.
 
   - id: P0-F
-    title: fix/connect-timer-jitter - BF-34 backoff precedence and start jitter
+    title: "fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter"
     parcel: phase0
     repo: nightscout-connect
     branch: fix/connect-timer-jitter
     base: b77e5bb
     worktree: externals/work/nc-jitter
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: lib/backoff.js, lib/machines/cycle.js. 19 new tests, 135
       pass / 0 fail, every part reverted in turn and caught.
-    review: maintainer - the sequencing document says land this one first if
-      anything is landed first
+    review: >
+      maintainer - the sequencing document says land this one first if anything
+      is landed first. OPENED 2026-09-16 as nightscout-connect PR #68, base dev.
+      One approval there covers four PRs' worth of change; see notes.
     operator_visible: >
       When a CGM vendor's service is refusing requests, Nightscout's connector
       used to retry roughly 586 times faster than it was configured to, and every
@@ -704,6 +706,16 @@ items:
           credentials, which rule 0 forbids here. T0.4 shipped
           CONNECT_START_JITTER_MS so the pool CAN be spread - but the window to
           set it is exactly the number that is unmeasured.
+      - run: git -C externals/nightscout-connect ls-remote --heads origin fix/connect-timer-jitter | grep -q c1cce2a2f9623e1164d85b1625a65d27e3116b51
+        kind: network
+        describe: >
+          the branch behind nightscout-connect PR #68 is on the remote at the
+          exact tip this item was measured against. Read-only. Verified
+          2026-09-16.
+      - no-gate: >
+          Review and merge state of PR #68 is upstream's, and cannot be gated
+          from here without a GitHub API call. Tracked, not driven - the same
+          marker P0-T01 carries.
     blocks_on: []
     evidence:
       - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
@@ -753,17 +765,20 @@ items:
       first two both understated what the branch carries.
 
   - id: P0-G
-    title: bf/food - BF-16 quick-pick filter, BF-35 bolus calculator chooser
+    title: "bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser"
     parcel: phase0
     repo: cgm-remote-monitor
     branch: bf/food
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-food
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: 1 commit. lib/client/boluscalc.js, lib/food/food.js,
       lib/food/quickpick.js (new), lib/server/food.js, 2 new test files.
-    review: maintainer - the sequencing document calls this the one to read
-      first, and BF-35 is why
+    review: >
+      maintainer - the sequencing document calls this the one to read first, and
+      BF-35 is why. OPENED 2026-09-16 as PR #8735, base dev. Still wants a
+      reviewer who has not self-merged in this stack (the governance finding),
+      and an explicit yes on the /api/v1/food/quickpicks filter change.
     operator_visible: >
       IMPORTANT. In the bolus calculator, choosing a quick pick could load a
       DIFFERENT record's food, so the carbohydrate number that went into the
@@ -804,6 +819,14 @@ items:
         cwd: externals/work/crm-bf-food
         kind: integration
         describe: BF-16 over the real HTTP path; needs MongoDB
+      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/food | grep -q 73495331e68c4cda3a63e8c047387bdf404b89b0
+        kind: network
+        describe: >
+          the branch behind PR #8735 is on the remote at the exact tip this item
+          was measured against. Read-only. Verified 2026-09-16.
+      - no-gate: >
+          Review and merge state of PR #8735 is upstream's, and cannot be gated
+          from here without a GitHub API call. Tracked, not driven.
     blocks_on: []
     evidence:
       - docs/30-design/phase0-pr-sequencing-2026-09-15.md
@@ -833,15 +856,16 @@ items:
       revert passes silently.
 
   - id: P0-H
-    title: bf/merge - BF-36 client delta merge reads past the end
+    title: "bf/merge - PR #8734, BF-36 client delta merge reads past the end"
     parcel: phase0
     repo: cgm-remote-monitor
     branch: bf/merge
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-merge
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: 1 commit. lib/client/receiveddata.js, one new test file.
-    review: maintainer
+    review: >
+      maintainer. OPENED 2026-09-16 as PR #8734, base dev.
     operator_visible: >
       A treatment being removed at the same time as another update arrived could
       make the page stop updating until you reloaded it. The clock that tells you
@@ -869,6 +893,14 @@ items:
           the merge path has the same effect. This branch fixes one throw, not
           the missing boundary. No test asserts the boundary exists because it
           does not.
+      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/merge | grep -q b06c6faf882ebd84d627468c75dade0fe1fd01a1
+        kind: network
+        describe: >
+          the branch behind PR #8734 is on the remote at the exact tip this item
+          was measured against. Read-only. Verified 2026-09-16.
+      - no-gate: >
+          Review and merge state of PR #8734 is upstream's, and cannot be gated
+          from here without a GitHub API call. Tracked, not driven.
     blocks_on: []
     evidence:
       - docs/30-design/nightscout-backfix-register.md
@@ -1059,7 +1091,7 @@ items:
       `npm install` once the tag is pushed, in the same PR.
 
   - id: P0-T01
-    title: T0.1 - PR #8733, the two quadratic treatment scans
+    title: "T0.1 - PR #8733, the two quadratic treatment scans"
     parcel: phase0
     repo: cgm-remote-monitor
     branch: fix/quadratic-treatment-processing
@@ -1067,7 +1099,8 @@ items:
     worktree: externals/work/crm-quadratics
     state: in-flight-upstream
     blast_radius: dfe2753d. Pushed as bewest/wip/optimize-treatment-processing.
-    review: upstream reviewers on PR #8733 - not ours to land
+    review: >
+      upstream reviewers on PR #8733 - not ours to land
     operator_visible: >
       Sites with a lot of treatment records load faster. Nothing you see changes
       value or meaning.
@@ -1257,7 +1290,8 @@ items:
     worktree: externals/cgm-remote-monitor-official
     state: needs-decision
     blast_radius: dev vs master. Includes four user-visible bug fixes plus i18n.
-    review: maintainer, and at least one human reviewer who is not the author -
+    review: >
+      maintainer, and at least one human reviewer who is not the author -
       release PR #8598 and integration PR #8605 each carry ZERO human reviews
     operator_visible: >
       A bug-fix release. Fixes for unnamed profiles, embedded profile switch
