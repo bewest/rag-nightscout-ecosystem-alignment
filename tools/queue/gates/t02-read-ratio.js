@@ -29,6 +29,30 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { REPO_ROOT, report } = require('./_gate');
 
+/* The bench writes tools/mt-bench/results/exp-mt-apitier.json, and that file is
+ * TRACKED. A gate that leaves the working tree dirty has broken the contract in
+ * _gate.js - "NOTHING IN HERE MAY WRITE TO A SHIPPING CHECKOUT OR A WORKTREE.
+ * Gates read." - so the artifact is snapshotted before the run and put back
+ * afterwards, byte for byte, whatever the bench did to it. The measurements this
+ * gate makes are reported here and recorded in the queue; they do not belong in a
+ * shared single-slot results file that every arm overwrites.
+ */
+function withArtifactRestored(fn) {
+  const artifact = path.join(REPO_ROOT, 'tools', 'mt-bench', 'results',
+                             'exp-mt-apitier.json');
+  const had = fs.existsSync(artifact);
+  const before = had ? fs.readFileSync(artifact) : null;
+  try {
+    return fn();
+  } finally {
+    try {
+      if (had) fs.writeFileSync(artifact, before);
+      else if (fs.existsSync(artifact)) fs.unlinkSync(artifact);
+    } catch (e) { /* restoring is best-effort; never mask the measurement */ }
+  }
+}
+
+
 function argValue(flag, fallback) {
   const at = process.argv.indexOf(flag);
   return at > -1 && process.argv[at + 1] ? process.argv[at + 1] : fallback;
@@ -46,11 +70,11 @@ if (!fs.existsSync(path.join(WORKTREE, 'node_modules'))) {
 
 let out;
 try {
-  out = execFileSync(process.execPath, ['--expose-gc', BENCH, 'read'], {
+  out = withArtifactRestored(() => execFileSync(process.execPath, ['--expose-gc', BENCH, 'read'], {
     cwd: WORKTREE,
     env: Object.assign({}, process.env, { NS_ROOT: WORKTREE }),
     encoding: 'utf8', timeout: 600000, maxBuffer: 16 * 1024 * 1024
-  });
+  }));
 } catch (err) {
   report('t02-read-ratio (P0-B)',
     [{ ok: false, text: 'the bench did not run: ' + String(err.message).split('\n')[0] }]);
