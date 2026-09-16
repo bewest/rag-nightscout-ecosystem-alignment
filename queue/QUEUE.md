@@ -42,8 +42,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | state | n | ids |
 |---|---|---|
 | `not-started` | 35 | P0-C-REMEDIATE, RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
-| `gate-not-met` | 13 | P0-A, P0-B, P0-C, RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 7 | P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-TAG |
+| `gate-not-met` | 11 | P0-B, RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
+| `ready-to-push` | 9 | P0-A, P0-C, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-TAG |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 1 | P0-T01 |
 | `needs-decision` | 3 | RT-D3, RT-0, BFQ-47 |
@@ -79,9 +79,9 @@ decision is required by any of them.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `P0-A` | bf/alarms - BF-28, BF-29, BF-31 | `gate-not-met` | `bf/alarms` | major | 7 run + 2 no-gate |
+| `P0-A` | bf/alarms - BF-28, BF-29, BF-31 | `ready-to-push` | `bf/alarms` | major | 7 run + 2 no-gate |
 | `P0-B` | bf/cache - T0.2 and T0.3 read-path cost | `gate-not-met` | `bf/cache` | patch | 2 run + 2 no-gate |
-| `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `gate-not-met` | `bf/auth` | major | 5 run + 2 no-gate |
+| `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `ready-to-push` | `bf/auth` | major | 5 run + 2 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `P0-D` | bf/coercion - schema-driven query type coercion (T0.5) | `ready-to-push` | `bf/coercion` | minor | 4 run |
 | `P0-E` | bf/reads - six read-path fixes, independent of bf/coercion | `ready-to-push` | `bf/reads` | major | 8 run + 3 no-gate |
@@ -101,7 +101,7 @@ decision is required by any of them.
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/alarms` |
 | base | `origin/dev@a8888f0d` |
@@ -141,7 +141,7 @@ decision is required by any of them.
 - `docs/30-design/phase0-pr-sequencing-2026-09-15.md`
 - `docs/30-design/nightscout-backfix-register.md`
 
-**Notes.** Sequencing letter A. §7a items 5 and 6 are these commits; neither may be read as making alarms safe to turn on under TENANCY_MODE=multi. STATE CORRECTED 2026-09-15 from ready-to-push to gate-not-met, by the manifest's own definition: a declared gate fails. The failing gate is the client-bundle check, and what it catches is a LOCAL worktree artifact, not a defect in the branch - crm-bf-alarms is the only worktree missing node_modules/.cache/_ns_cache/public/js/bundle.app.js, and that absence is what produced the seventh test failure GT1 had to rule out by hand. `npm run bundle` in that worktree clears it. The branch CONTENT is ready; this entry is not a doubt about the three commits. It was not fixed here because crm-bf- alarms belongs to another session and rule 5 forbids writing into a worktree this session did not create.
+**Notes.** Sequencing letter A. §7a items 5 and 6 are these commits; neither may be read as making alarms safe to turn on under TENANCY_MODE=multi. STATE CORRECTED 2026-09-15 from ready-to-push to gate-not-met, by the manifest's own definition: a declared gate fails. The failing gate is the client-bundle check, and what it catches is a LOCAL worktree artifact, not a defect in the branch - crm-bf-alarms is the only worktree missing node_modules/.cache/_ns_cache/public/js/bundle.app.js, and that absence is what produced the seventh test failure GT1 had to rule out by hand. `npm run bundle` in that worktree clears it. The branch CONTENT is ready; this entry is not a doubt about the three commits. It was not fixed here because crm-bf- alarms belongs to another session and rule 5 forbids writing into a worktree this session did not create. RESOLVED 2026-09-16 on the maintainer's instruction: `npm run bundle` was run in crm-bf-alarms (webpack exit 0, 1.76 MB artifact), the gate passes, and the state is back to ready-to-push with all 5 runnable gates green. No commit was needed and the worktree is still clean - the artifact is build output under node_modules, not tracked content. CAVEAT ON WHAT THIS GATE MEASURES: it tests for a LOCAL build product, so it goes red again in any fresh worktree or after `npm ci`, and green here is NOT a property of the branch. Anyone who sees it red elsewhere should run `npm run bundle` before reading it as a regression.
 
 ### `P0-B` &mdash; bf/cache - T0.2 and T0.3 read-path cost
 
@@ -181,7 +181,7 @@ decision is required by any of them.
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/auth` |
 | base | `origin/dev@a8888f0d` |
@@ -203,7 +203,7 @@ decision is required by any of them.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth >/dev/null`
   - trial-merge into origin/dev is conflict-free
 - `[static]` _(cwd: `externals/work/crm-bf-auth`)_ `grep -nE "console\\.log\\('Loading',[[:space:]]*opts\\)" lib/authorization/storage.js && exit 1 || exit 0`
-  - BF-05's unfixed sibling, a TRACKING gate: it is meant to FAIL while the residual is present, and the describe it replaces said so in as many words. IT DID NOT FAIL. The pattern was `console.log('Loading', opts)` with a space after the comma; the code at storage.js:113 has NO space, so the grep never matched, the `|| exit 0` arm fired, and P0-C reported 3/3 PASS on a property that is false. The pattern is now whitespace-tolerant and this gate is red, which is the honest reading - hence state gate-not-met, not ready-to-push. TWO WAYS TO GREEN, both a human's call: take the one-line removal onto bf/auth, or move the residual to its own queue item and drop the gate from here. DO NOT loosen the pattern again.
+  - BF-05's unfixed sibling, a TRACKING gate: it is meant to FAIL while the residual is present, and the describe it replaces said so in as many words. IT DID NOT FAIL. The pattern was `console.log('Loading', opts)` with a space after the comma; the code at storage.js:113 has NO space, so the grep never matched, the `|| exit 0` arm fired, and P0-C reported 3/3 PASS on a property that is false. The pattern is now whitespace-tolerant and this gate is red, which is the honest reading. DO NOT loosen the pattern again. SETTLED 2026-09-16: of the two ways to green this gate offered, the maintainer chose the first - the one-line removal was taken onto bf/auth as commit 56ed29d2, and the gate is green because the residual is gone, not because the pattern was weakened. The gate stays as a regression guard.
 - `[integration]` _(cwd: `externals/work/crm-bf-auth`)_ `TEST=authdelay npm run test-single`
   - BF-30, the branch's OWN test, which `npm run test:unit` never ran - tests/authdelay.test.js matches neither local brace list and is one of the 52 files only CI's `test-ci` reaches. 11 passing with MongoDB up on 27031. E3 ABLATED it: with the seven changed lib files put back to origin/dev and lib/server/peer-address.js removed, 2 passing / 9 failing. Needs the database (6 passing / 1 failing against a dead port), so it is integration and honestly so.
 - `[integration]` _(cwd: `externals/work/crm-bf-auth`)_ `TEST=authsubjects npm run test-single`
@@ -215,7 +215,7 @@ decision is required by any of them.
 
 - `docs/30-design/nightscout-backfix-register.md`
 
-**Notes.** Sequencing letter C. GT3 also found BF-17's created_at residual: the pick() at endpoints.js:44 is ['_id','name','accessToken','roles','notes'] - notes was added by the fix, created_at was not.
+**Notes.** Sequencing letter C. GT3 also found BF-17's created_at residual: the pick() at endpoints.js:44 is ['_id','name','accessToken','roles','notes'] - notes was added by the fix, created_at was not. RESOLVED 2026-09-16: commit 56ed29d2 removes the leftover console.log('Loading',opts), the last failing gate, and all 3 runnable gates now pass. That line was NOT introduced by this branch - it is on origin/dev at storage.js:84 - and it was taken here rather than left to FU-RESIDUALS because it sits in a file this branch already rewrites and is the same defect class as the count-path filter leak fixed on bf/reads: a per- request debug print of request-derived values. FU-RESIDUALS follow-up 4 is carried BY THIS BRANCH and should not be fixed there a second time - but it is NOT yet closed on dev, and FU-RESIDUALS' gate correctly still fails, because that gate reads origin/dev and the repair only exists on bf/auth until this merges. Same convention as the register's `fixed`: repaired on a branch, not merged. UNCHANGED AND STILL THE REAL RISK ON THIS ITEM: both no-gate markers stand, and P0-C-REMEDIATE - the tokens already sitting in operators' databases in plaintext - is still not-started. Green gates here do not mean an operator is safe.
 
 ### `P0-C-REMEDIATE` &mdash; Operator remediation for tokens already stored in plaintext
 
@@ -675,7 +675,7 @@ decision is required by any of them.
 
 - `docs/30-design/phase0-pr-sequencing-2026-09-15.md`
 
-**Notes.** BATCHED as three small residuals the sequencing document named together, each one file and each measurable. SEPARABLE, and the destinations differ - follow- up 7 sits beside the ctx.language.set(locale) line bf/alarms already changes and should land with P0-A; follow-up 4 sits in the file P0-C already touches. Split them back if either branch is reopened.
+**Notes.** BATCHED as three small residuals the sequencing document named together, each one file and each measurable. UPDATE 2026-09-16: follow-up 4 (the console.log at lib/authorization/storage.js) is now REPAIRED ON bf/auth as commit 56ed29d2 and must not be fixed here as well - this is a cross-reference, not a second item. Its gate below still fails, correctly, because the gate reads origin/dev and P0-C has not merged. When P0-C merges, that gate goes green on its own and only follow-ups 3 and 7 remain. SEPARABLE, and the destinations differ - follow-up 7 sits beside the ctx.language.set(locale) line bf/alarms already changes and should land with P0-A; follow-up 4 sits in the file P0-C already touches. Split them back if either branch is reopened.
 
 ### `FU-HYGIENE` &mdash; Follow-ups 9, 10 - the two audits that have no instrument
 

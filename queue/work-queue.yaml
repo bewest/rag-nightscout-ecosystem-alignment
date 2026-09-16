@@ -92,7 +92,7 @@ items:
     branch: bf/alarms
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-alarms
-    state: gate-not-met
+    state: ready-to-push
     blast_radius: 3 commits. lib/plugins/insulinage.js, lib/plugins/index.js,
       lib/api/googlehome/index.js, lib/api/alexa/index.js. Zero file overlap
       with any other Phase 0 branch.
@@ -191,6 +191,15 @@ items:
       this entry is not a doubt about the three commits. It was not fixed here
       because crm-bf-alarms belongs to another session and rule 5 forbids
       writing into a worktree this session did not create.
+      RESOLVED 2026-09-16 on the maintainer's instruction: `npm run bundle` was
+      run in crm-bf-alarms (webpack exit 0, 1.76 MB artifact), the gate passes,
+      and the state is back to ready-to-push with all 5 runnable gates green.
+      No commit was needed and the worktree is still clean - the artifact is
+      build output under node_modules, not tracked content.
+      CAVEAT ON WHAT THIS GATE MEASURES: it tests for a LOCAL build product, so
+      it goes red again in any fresh worktree or after `npm ci`, and green here
+      is NOT a property of the branch. Anyone who sees it red elsewhere should
+      run `npm run bundle` before reading it as a regression.
 
   - id: P0-B
     title: bf/cache - T0.2 and T0.3 read-path cost
@@ -252,7 +261,7 @@ items:
     branch: bf/auth
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-auth
-    state: gate-not-met
+    state: ready-to-push
     blast_radius: 2 commits. lib/authorization/endpoints.js, storage.js,
       delaylist.js, index.js, lib/admin_plugins/subjects.js.
     review: SECURITY - a human security reviewer first, before any other Phase 0
@@ -294,10 +303,12 @@ items:
           at storage.js:113 has NO space, so the grep never matched, the
           `|| exit 0` arm fired, and P0-C reported 3/3 PASS on a property that
           is false. The pattern is now whitespace-tolerant and this gate is red,
-          which is the honest reading - hence state gate-not-met, not
-          ready-to-push. TWO WAYS TO GREEN, both a human's call: take the
-          one-line removal onto bf/auth, or move the residual to its own queue
-          item and drop the gate from here. DO NOT loosen the pattern again.
+          which is the honest reading. DO NOT loosen the pattern again.
+          SETTLED 2026-09-16: of the two ways to green this gate offered, the
+          maintainer chose the first - the one-line removal was taken onto
+          bf/auth as commit 56ed29d2, and the gate is green because the residual
+          is gone, not because the pattern was weakened. The gate stays as a
+          regression guard.
       - run: TEST=authdelay npm run test-single
         cwd: externals/work/crm-bf-auth
         kind: integration
@@ -333,6 +344,22 @@ items:
       Sequencing letter C. GT3 also found BF-17's created_at residual: the pick()
       at endpoints.js:44 is ['_id','name','accessToken','roles','notes'] - notes
       was added by the fix, created_at was not.
+      RESOLVED 2026-09-16: commit 56ed29d2 removes the leftover
+      console.log('Loading',opts), the last failing gate, and all 3 runnable
+      gates now pass. That line was NOT introduced by this branch - it is on
+      origin/dev at storage.js:84 - and it was taken here rather than left to
+      FU-RESIDUALS because it sits in a file this branch already rewrites and is
+      the same defect class as the count-path filter leak fixed on bf/reads: a
+      per-request debug print of request-derived values. FU-RESIDUALS follow-up
+      4 is carried BY THIS BRANCH and should not be fixed there a second time -
+      but it is NOT yet closed on dev, and FU-RESIDUALS' gate correctly still
+      fails, because that gate reads origin/dev and the repair only exists on
+      bf/auth until this merges. Same convention as the register's `fixed`:
+      repaired on a branch, not merged.
+      UNCHANGED AND STILL THE REAL RISK ON THIS ITEM: both no-gate markers
+      stand, and P0-C-REMEDIATE - the tokens already sitting in operators'
+      databases in plaintext - is still not-started. Green gates here do not
+      mean an operator is safe.
 
   - id: P0-C-REMEDIATE
     title: Operator remediation for tokens already stored in plaintext
@@ -3651,7 +3678,13 @@ items:
       - docs/30-design/phase0-pr-sequencing-2026-09-15.md
     notes: >
       BATCHED as three small residuals the sequencing document named together,
-      each one file and each measurable. SEPARABLE, and the destinations differ -
+      each one file and each measurable. UPDATE 2026-09-16: follow-up 4
+      (the console.log at lib/authorization/storage.js) is now REPAIRED ON
+      bf/auth as commit 56ed29d2 and must not be fixed here as well - this is a
+      cross-reference, not a second item. Its gate below still fails, correctly,
+      because the gate reads origin/dev and P0-C has not merged. When P0-C
+      merges, that gate goes green on its own and only follow-ups 3 and 7
+      remain. SEPARABLE, and the destinations differ -
       follow-up 7 sits beside the ctx.language.set(locale) line bf/alarms
       already changes and should land with P0-A; follow-up 4 sits in the file
       P0-C already touches. Split them back if either branch is reopened.
