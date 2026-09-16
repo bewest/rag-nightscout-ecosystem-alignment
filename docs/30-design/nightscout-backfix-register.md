@@ -38,13 +38,31 @@ is a defect that
 > inferred. New entries should carry *reproduced* or *derived from source* explicitly, and an
 > entry that says *derived* is a request to go and run it, not a finished finding.
 >
-> **And a corollary, from BF-35 and BF-36.** Both were found under an eslint suppression
-> annotated *"verified false positive"* — somebody examined that exact line, correctly cleared it
-> of the thing the linter flagged, and did not see the defect beside it. A suppression is a
-> record that **one** question was asked and answered, and it reads like a record that the line
-> is fine. Those 34 lines in `lib/` are the cheapest audit surface in the tree: they are
-> pre-selected as places a human already found confusing, and they come with a note saying which
-> question was *not* the interesting one.
+> **And a corollary, from BF-35, BF-36, BF-37 and BF-38.** All four were found under an eslint
+> suppression — somebody examined that exact line, correctly cleared it of the thing the linter
+> flagged, and did not see the defect beside it. A suppression is a record that **one** question
+> was asked and answered, and it reads like a record that the line is fine. Those lines are the
+> cheapest audit surface in the tree: pre-selected as places a human already found confusing,
+> and annotated with which question was *not* the interesting one.
+>
+> **The audit is now complete for `lib/`, and the negative result is part of it.** 45 suppressions,
+> four defects, and the yield was not where the severity labels suggested: the two
+> `detect-object-injection` findings (BF-35, BF-36) came from a category with 34 sites, and the
+> two from the remaining 11 (BF-37, BF-38) included the one that stops the page loading
+> altogether. 41 of the 45 were exactly what they said they were.
+>
+> | rule suppressed | sites | defects found |
+> |---|---:|---:|
+> | `security/detect-object-injection` | 34 | 2 — BF-35, BF-36 |
+> | `no-cond-assign` | 3 | 0 — `ss.quantile` sorts internally and returns `null` on empty; the truthiness guard is cosmetic |
+> | `security/detect-non-literal-fs-filename` | 3 | 0 — two are `Dropdown.open()`, not `fs.open`; the third resolves through a closed language list |
+> | `no-useless-escape` | 2 | **2 — BF-37, BF-38**, both on the line the escape was on |
+> | `no-fallthrough`, `no-unused-vars`, `detect-possible-timing-attacks`, `detect-non-literal-regexp` | 3 | 0 |
+>
+> **The `no-useless-escape` row is the finding.** Both sites were suppressed for a cosmetic
+> escape — `/[_\+]/`, `'\%'` — and both lines had a real defect a centimetre away. A suppression
+> for a *trivial* rule is the strongest signal of all: it marks a line someone looked at and
+> dismissed quickly, because the thing the linter said was obviously unimportant.
 
 **Status values**: `open` · `fixed <date>` (repaired on a backfix branch with tests and a
 release note, not yet merged — the row names the branch and commit) · `fixed-in-seam`
@@ -78,6 +96,8 @@ raised again).
 | **BF-33** | API v3 `?limit=0x10` passes the `API3_MAX_LIMIT` check as 16 and reaches the driver as `.limit(0)` — *no limit*; `?limit=1e2` returns one document | `lib/api3/generic/collection.js` `parseLimit` | **high** — unbounded read, HTTP 200, and the ceiling that exists to prevent it is bypassed | yes | **fixed 2026-09-15** (`bf/reads` `ea50cf52`); found while fixing BF-14, reproduced live |
 | **BF-34** | `backoff()` merges its options as `{ ...config, ...defaults }`, so **every value any caller passes is discarded**. All five vendor sources configure a 2.5-minute retry interval and every one of them gets the 256 ms default — 586× faster — and `use_random_slot` is forced `false`, so a pool that fails together retries in exact lockstep | `nightscout-connect` `lib/backoff.js` | **high** — a vendor that is refusing requests gets hammered by every account at once, which is when it can least afford it | yes | **fixed 2026-09-15** (found during T0.4, `fix/connect-timer-jitter` `c1cce2a`); 100 actors delivered the same 800 requests across 3 s before and 67 s after |
 | **BF-36** | The client's delta merge captured the cached array's length once and then spliced that array, so a `remove` followed by an item matching nothing read past the end and threw. The throw escapes into `dataUpdate`, which has no `try`/`catch` — the page stops advancing until reloaded | `lib/client/receiveddata.js` `mergeTreatmentUpdate` | **medium** — availability, not a wrong reading: the time-ago watchdog is on its own timer and still marks the page stale | yes | **fixed 2026-09-15** (found by auditing the suppressions BF-35 turned up under, `bf/merge` `b06c6faf`); reproduced directly, ablated against the shipped shape |
+| **BF-37** | `queryParms()` reads `[1]` of each `key=value` split without checking one exists, so a valueless parameter — `?debug`, a trailing `&`, `&&`, a lone `?` — throws. It is the **first statement of `client.init`**, so the page stops loading with nothing on screen but the loading message | `lib/client/browser-utils.js` `queryParms` | **medium–high** — total, silent failure to load, on a URL shape anyone can produce | yes | **fixed 2026-09-15** (suppression audit, `bf/parms` `522c6ffb`); reproduced directly |
+| **BF-38** | Translation substitution loops forwards over `%1`…`%n`; `%1` is a prefix of `%10`, so the first pass rewrites the `%1` inside `%10` and leaves a stray `0`. Same prefix-order trap as sorting a text `position` | `lib/language.js` `translate` | low — **latent**: no shipped catalogue uses more than `%3` | yes | **fixed 2026-09-15** (suppression audit, `bf/parms` `c9a7a21c`); reproduced directly |
 | **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | fixed-in-seam |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | **fixed 2026-09-15** (`bf/reads` `c8fb536b`) — deleted, not gated; the module has no `env` handle |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | **fixed 2026-09-15** (T0.2, `bf/cache` `ddcdb1a8`); 0.837 → 0.025 ms, response asserted identical over HTTP |
@@ -1207,6 +1227,68 @@ chooser filtered into a second array and did not. Same file, same author, same p
 outcome.
 
 *Evidence*: `tests/receiveddata.merge.test.js`.
+
+### BF-37 · A bare flag in the URL stops the page loading — **FIXED 2026-09-15**
+
+The third finding from the suppression audit, and the one that reaches the most people.
+
+```js
+location.search.substr(1).split('&').forEach(function(item) {
+  // eslint-disable-next-line no-useless-escape
+  params[item.split('=')[0]] = item.split('=')[1].replace(/[_\+]/g, ' ');
+});
+```
+
+There is no check that `[1]` exists. Every one of these throws
+`TypeError: Cannot read properties of undefined (reading 'replace')`:
+
+| URL | why |
+|---|---|
+| `?debug` | a bare flag has no `=` |
+| `?token=abc&` | the trailing `&` leaves an empty final segment |
+| `?a=1&&b=2` | a doubled `&` leaves an empty middle segment |
+| `?` | one empty segment |
+
+**Where it is called is what makes it serious.** The first statement of
+`lib/client/index.js` `client.init` is
+`var token = client.browserUtils.queryParms().token;` — so the throw lands before anything is
+wired up. No chart, no socket, no data; the page sits on its loading message with a `TypeError`
+in a console the user is not looking at. It is also called from `playAlarm`, which is the worse
+place to throw, but `init` gets there first.
+
+*Fix*: a valueless parameter reads as the empty string — which is exactly what both existing
+callers already treat as absence (`queryParms().token || clientToken`,
+`queryParms().mute !== 'true'`) — and an empty segment is skipped rather than becoming an
+empty-named key. **The split itself is untouched**, second-`=` truncation included, so a
+well-formed URL parses byte-identically; a test asserts that specifically. That truncation is a
+separate latent issue for any token containing `=`, and is deliberately left alone.
+
+*Ablation*: removing the guard fails three of the five tests with the production error.
+
+*Evidence*: `tests/browser-utils.queryparms.test.js`.
+
+### BF-38 · `%1` ate `%10` — **FIXED 2026-09-15**, latent
+
+`lib/language.js` `translate` substitutes `%1 … %n` by looping forwards and replacing each
+globally. `%1` is a prefix of `%10`:
+
+```
+translate('%1|%9|%10|%11', {params: [...]})
+  actual    one|nine|one0|one1
+  expected  one|nine|TEN|ELEVEN
+```
+
+**Same class as BF-16's `position` sort** — a prefix relationship that behaves until you reach
+ten, and then quietly produces a plausible-looking wrong answer.
+
+**Latent, not live.** No shipped catalogue uses more than `%3`, so nothing is wrong in any
+translation today. It would bite the first translator to write a tenth substitution, it would
+bite silently, and it would look like the *translation file* was at fault rather than the
+substituter — which is the expensive part.
+
+*Fix*: substitute backwards, so `%11` and `%10` are consumed before `%1` can reach them.
+
+*Evidence*: `tests/language.test.js`.
 
 
 ### BF-17 · A subject edit writes the access token into the database in plaintext
