@@ -32,20 +32,20 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 74 |
-| runnable gates | 116 |
-| explicit `no-gate:` markers | 107 |
+| runnable gates | 118 |
+| explicit `no-gate:` markers | 108 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 107 of the 223 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 108 of the 226 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
-| `gate-not-met` | 11 | P0-B, RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
+| `gate-not-met` | 10 | RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 3 | P0-C, P0-C-REMEDIATE, P0-TAG |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
-| `in-flight-upstream` | 8 | P0-A, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01 |
+| `in-flight-upstream` | 9 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01 |
 | `needs-decision` | 3 | RT-D3, RT-0, BFQ-47 |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
@@ -80,7 +80,7 @@ decision is required by any of them.
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
 | `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `in-flight-upstream` | `bf/alarms` | major | 9 run + 3 no-gate |
-| `P0-B` | bf/cache - T0.2 and T0.3 read-path cost | `gate-not-met` | `bf/cache` | patch | 4 run + 1 no-gate |
+| `P0-B` | bf/cache - PR #8740, T0.2 and T0.3 read-path cost | `in-flight-upstream` | `bf/cache` | patch | 6 run + 2 no-gate |
 | `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `ready-to-push` | `bf/auth` | major | 5 run + 2 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
 | `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `in-flight-upstream` | `bf/coercion` | minor | 7 run + 1 no-gate |
@@ -148,17 +148,17 @@ decision is required by any of them.
 
 **Notes.** THE TWO INTEGRATION GATES ARE NOW MEASURED, 2026-09-16, AND THE CAVEAT IS THE SAME SHAPE AS THE BUNDLE GATE'S. api.alexa and api.googlehome had never been run anywhere in this programme - the branch's own evidence for BF-31, the commit that grades it major, was unexecuted. Nothing was listening on port 27034, which crm-bf-alarms' my.test.env names. A mongod was started on 27034 with a scratch dbpath and both gates went green (4 and 2 passing), each ablated against origin/dev (3/1 and 1/1 failing). THAT MONGOD IS NOT PERSISTENT: its dbpath is under this session's scratchpad and it dies with the machine. Anyone who sees these two gates red should check for a listener on 27034 before reading it as a regression - green here is a property of the branch AND of a running database, and only the first half travels. --- Sequencing letter A. §7a items 5 and 6 are these commits; neither may be read as making alarms safe to turn on under TENANCY_MODE=multi. STATE CORRECTED 2026-09-15 from ready-to-push to gate-not-met, by the manifest's own definition: a declared gate fails. The failing gate is the client-bundle check, and what it catches is a LOCAL worktree artifact, not a defect in the branch - crm-bf-alarms is the only worktree missing node_modules/.cache/_ns_cache/public/js/bundle.app.js, and that absence is what produced the seventh test failure GT1 had to rule out by hand. `npm run bundle` in that worktree clears it. The branch CONTENT is ready; this entry is not a doubt about the three commits. It was not fixed here because crm-bf- alarms belongs to another session and rule 5 forbids writing into a worktree this session did not create. RESOLVED 2026-09-16 on the maintainer's instruction: `npm run bundle` was run in crm-bf-alarms (webpack exit 0, 1.76 MB artifact), the gate passes, and the state is back to ready-to-push with all 5 runnable gates green. No commit was needed and the worktree is still clean - the artifact is build output under node_modules, not tracked content. CAVEAT ON WHAT THIS GATE MEASURES: it tests for a LOCAL build product, so it goes red again in any fresh worktree or after `npm ci`, and green here is NOT a property of the branch. Anyone who sees it red elsewhere should run `npm run bundle` before reading it as a regression.
 
-### `P0-B` &mdash; bf/cache - T0.2 and T0.3 read-path cost
+### `P0-B` &mdash; bf/cache - PR #8740, T0.2 and T0.3 read-path cost
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/cache` |
 | base | `origin/dev@a8888f0d` |
 | worktree | `externals/work/crm-bf-cache` |
 | semver | `patch` |
-| review | maintainer |
+| review | maintainer. OPENED 2026-09-16 as PR #8740, base dev. No decision is asked of the reviewer, which makes it the odd one out in this set - but it is the branch that ships with a target it did not hit, and the body says so in the operator-facing text rather than only in the technical detail. What cannot be read off the diff: T0.2's gate is MET (0.7x against a 2x budget, dev fails at 42x) and T0.3's is NOT (2.66 ms against 1 ms), and both are now re-runnable from this repository with one command each. |
 | register | `BF-06`, `BF-07` |
 
 **Blast radius.** 2 commits at 4f86bab1, 6 files, +385/-8. lib/server/cache.js, lib/data/dataloader.js, lib/api/entries/index.js, plus three test files. NOTE the dataloader path - this entry said lib/server/dataloader.js, which does not exist; the file is lib/data/dataloader.js.
@@ -178,6 +178,11 @@ decision is required by any of them.
 - `[integration]` `node tools/queue/gates/t03-cycle-clone-budget.js`
   - T0.3's stated gate, RUN LIVE, AND IT IS RED ON PURPOSE - the budget is under 1 ms and the three cycle calls are 2.66. THE MARKER THAT WAS HERE SAID THIS COULD NOT BE RE-RUN, because "the workload that produced those two figures is not recorded anywhere in this repository". That was FALSE when it was written: docs/60-research/t02-t03-cache-clone-2026-09-15.md §2 names the harness (tools/mt-bench/apitier.js, arm `cycle`) and the fixture - 576 entries, 600 treatments of which 361 survive retention, 576 device statuses with 72-point prediction arrays, DEVICESTATUS_DAYS=2 - and §10 gives the command. The cost of the wrong marker was that queue-status printed CLAIM UNBACKED on this item: the state said gate-not-met while every runnable gate passed and the failing property hid behind a marker nobody could run. RE-MEASURED 2026-09-16 on Node v24.15.0: branch 2.656 ms against a recorded 2.657, origin/dev 3.929 against a recorded 3.747 - ordinary variance on a timing bench, same direction and magnitude. NON-VACUITY IS STRUCTURAL: the harness reads the live call sites out of the worktree and prints them (dev entries=insertData, branch entries=insertDataRef) and throws on a tree it cannot recognise, so it cannot report the branch's number for dev's code. Reproduced anyway - --budget 5 passes, proving it can go green. SKIPS when the worktree has no node_modules.
 - **NO GATE** &mdash; The 98% of the remaining cost is devicestatus, whose caller rewrites fields in place. Taking it needs proof that nothing in the plugin tier writes to a device-status document. A grep is not that proof when the failure mode is a field silently vanishing from every API read served out of the cache. There is no test that would catch it.
+- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/cache | grep -q 4f86bab1637e926502c9b02af008cbba4f424c28`
+  - the branch behind PR #8740 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- `[network]` `node tools/queue/gates/pr-body-parity.js --only 8740`
+  - the live body of PR #8740 still matches the file it was posted from. It does NOT measure whether the body is true - and this body's headline figure WAS wrong once, in the branch's own favour: it claimed 33x where the measurement is 64x, which is the direction nobody checks.
+- **NO GATE** &mdash; Review and merge state of PR #8740 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
 
 **Evidence.**
 
@@ -185,7 +190,7 @@ decision is required by any of them.
 - `docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `tools/mt-bench/apitier.js`
 
-**Notes.** READ THE CLAIM UNBACKED WARNING ON THIS ITEM CAREFULLY - IT MEANS SOMETHING DIFFERENT NOW. Both performance targets are gated as of 2026-09-16, but both gates run a benchmark, so they are kind: integration and `make queue-status` SKIPS them unless you pass INTEGRATION=1. In a default run every gate that executes passes and the runner therefore still prints CLAIM UNBACKED. With INTEGRATION=1 the item is 3/4 and the red gate is the T0.3 budget, which is the honest picture: T0.2 met, T0.3 not. Run `make queue-status ID=P0-B INTEGRATION=1` before drawing any conclusion from this row. --- Sequencing letter B. T0.2 passed its gate (0.837 -> 0.025 ms, asserted identical over HTTP). T0.3 did not. A dead `mills` write at dataloader.js:203 was found and removed with a test that goes red if it returns.
+**Notes.** THIS ITEM WILL REPORT FAIL FOREVER UNDER INTEGRATION=1, AND THAT IS THE DESIGN. The T0.3 gate asserts a budget of under 1 ms and the branch ships at 2.66 ms. The target was deliberately not met - 98% of the remainder is devicestatus and taking it needs a proof nobody has produced - and the branch was opened saying so in its operator-facing text. So the red is the record of a decision, not a regression, and anyone who sees it should read the gate's own output, which says as much in its first line. The risk this creates is that a permanently-red gate becomes background noise and stops being read at all; the counterweight is that T0.2's gate sits beside it and is GREEN, so the pair moves if either target does. THE EARLIER NOTE ABOUT CLAIM UNBACKED IS NOW OBSOLETE and is removed rather than left to confuse: that warning fires when a state of gate-not-met is contradicted by passing gates, and this item is no longer gate-not-met. What remains true from it is the operational bit - both performance gates are kind: integration because they run a benchmark, so a default queue-status skips them. Use `make queue-status ID=P0-B INTEGRATION=1` before drawing any conclusion from this row. --- Sequencing letter B. T0.2 passed its gate (0.837 -> 0.025 ms, asserted identical over HTTP). T0.3 did not. A dead `mills` write at dataloader.js:203 was found and removed with a test that goes red if it returns.
 
 ### `P0-C` &mdash; bf/auth - BF-17 plaintext token, BF-30 throttle key
 

@@ -53,7 +53,8 @@ const PAIRS = [
   ['8736', 'bf-parms.md'],
   ['8737', 'bf-coercion.md'],
   ['8738', 'bf-reads.md'],
-  ['8739', 'bf-alarms.md']
+  ['8739', 'bf-alarms.md'],
+  ['8740', 'bf-cache.md']
 ].filter(([pr]) => !ONLY || pr === ONLY);
 
 const norm = (s) => s.replace(/\r\n/g, '\n')

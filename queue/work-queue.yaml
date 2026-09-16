@@ -241,18 +241,25 @@ items:
       run `npm run bundle` before reading it as a regression.
 
   - id: P0-B
-    title: bf/cache - T0.2 and T0.3 read-path cost
+    title: "bf/cache - PR #8740, T0.2 and T0.3 read-path cost"
     parcel: phase0
     repo: cgm-remote-monitor
     branch: bf/cache
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-cache
-    state: gate-not-met
+    state: in-flight-upstream
     blast_radius: 2 commits at 4f86bab1, 6 files, +385/-8. lib/server/cache.js,
       lib/data/dataloader.js, lib/api/entries/index.js, plus three test files.
       NOTE the dataloader path - this entry said lib/server/dataloader.js, which
       does not exist; the file is lib/data/dataloader.js.
-    review: maintainer
+    review: >
+      maintainer. OPENED 2026-09-16 as PR #8740, base dev. No decision is asked of
+      the reviewer, which makes it the odd one out in this set - but it is the
+      branch that ships with a target it did not hit, and the body says so in the
+      operator-facing text rather than only in the technical detail. What cannot be
+      read off the diff: T0.2's gate is MET (0.7x against a 2x budget, dev fails at
+      42x) and T0.3's is NOT (2.66 ms against 1 ms), and both are now re-runnable
+      from this repository with one command each.
     operator_visible: >
       Pages that read recent glucose values get faster. Nothing you see changes
       value or meaning.
@@ -308,21 +315,44 @@ items:
           writes to a device-status document. A grep is not that proof when the
           failure mode is a field silently vanishing from every API read served
           out of the cache. There is no test that would catch it.
+      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/cache | grep -q 4f86bab1637e926502c9b02af008cbba4f424c28
+        kind: network
+        describe: >
+          the branch behind PR #8740 is on the remote at the exact tip this item
+          was measured against. Read-only. Verified 2026-09-16.
+      - run: node tools/queue/gates/pr-body-parity.js --only 8740
+        kind: network
+        describe: >
+          the live body of PR #8740 still matches the file it was posted from.
+          It does NOT measure whether the body is true - and this body's headline
+          figure WAS wrong once, in the branch's own favour: it claimed 33x where
+          the measurement is 64x, which is the direction nobody checks.
+      - no-gate: >
+          Review and merge state of PR #8740 is upstream's, and cannot be gated
+          from here without a GitHub API call. Tracked, not driven.
     blocks_on: []
     evidence:
       - docs/60-research/t02-t03-cache-clone-2026-09-15.md
       - docs/30-design/nightscout-multitenancy-execution-plan-2026-09-14.md
       - tools/mt-bench/apitier.js
     notes: >
-      READ THE CLAIM UNBACKED WARNING ON THIS ITEM CAREFULLY - IT MEANS SOMETHING
-      DIFFERENT NOW. Both performance targets are gated as of 2026-09-16, but both
-      gates run a benchmark, so they are kind: integration and `make queue-status`
-      SKIPS them unless you pass INTEGRATION=1. In a default run every gate that
-      executes passes and the runner therefore still prints CLAIM UNBACKED. With
-      INTEGRATION=1 the item is 3/4 and the red gate is the T0.3 budget, which is
-      the honest picture: T0.2 met, T0.3 not. Run
-      `make queue-status ID=P0-B INTEGRATION=1` before drawing any conclusion from
-      this row.
+      THIS ITEM WILL REPORT FAIL FOREVER UNDER INTEGRATION=1, AND THAT IS THE
+      DESIGN. The T0.3 gate asserts a budget of under 1 ms and the branch ships at
+      2.66 ms. The target was deliberately not met - 98% of the remainder is
+      devicestatus and taking it needs a proof nobody has produced - and the branch
+      was opened saying so in its operator-facing text. So the red is the record of
+      a decision, not a regression, and anyone who sees it should read the gate's
+      own output, which says as much in its first line. The risk this creates is
+      that a permanently-red gate becomes background noise and stops being read at
+      all; the counterweight is that T0.2's gate sits beside it and is GREEN, so
+      the pair moves if either target does.
+      THE EARLIER NOTE ABOUT CLAIM UNBACKED IS NOW OBSOLETE and is removed rather
+      than left to confuse: that warning fires when a state of gate-not-met is
+      contradicted by passing gates, and this item is no longer gate-not-met. What
+      remains true from it is the operational bit - both performance gates are
+      kind: integration because they run a benchmark, so a default queue-status
+      skips them. Use `make queue-status ID=P0-B INTEGRATION=1` before drawing any
+      conclusion from this row.
       ---
       Sequencing letter B. T0.2 passed its gate (0.837 -> 0.025 ms, asserted
       identical over HTTP). T0.3 did not. A dead `mills` write at
