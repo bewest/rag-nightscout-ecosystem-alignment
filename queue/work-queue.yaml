@@ -467,17 +467,25 @@ items:
       a reason to leave it ungated. The note was the defect.
 
   - id: P0-D
-    title: bf/coercion - query filter typing (T0.5) and the $exists inversion
+    title: "bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion"
     parcel: phase0
     repo: cgm-remote-monitor
     branch: bf/coercion
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-coercion
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: 2 commits at b7234753, the largest change in the set. lib/server/query.js
       plus a generated coercion table over 5 collections; 158 coercions replace
       13 hand-written entries.
-    review: maintainer - lands first of the stack so the query path settles
+    review: >
+      maintainer. OPENED 2026-09-16 as PR #8737, base dev. The old text here said
+      "lands first of the stack so the query path settles"; there is no stack, and
+      the branch merges clean against dev and against all eight others. Three things
+      a reviewer cannot get from the diff: the classification is minor and rests on
+      no request that worked ceasing to work; `tests/query.operands.test.js` matches
+      neither local brace list, so a green `npm run test:unit` is evidence for the
+      typing fix and none for BF-40; and the composition with bf/reads is a property
+      of the PAIR, not of either diff, and is deliberately in neither PR.
     operator_visible: >
       Searches through the API that filter on a number used to compare that
       number against text, so many of them quietly matched nothing and still
@@ -521,7 +529,7 @@ items:
         cwd: externals/work/crm-bf-coercion
         kind: unit
         describe: >
-          28 passing, database-free (measured against a dead mongo port). E3
+          29 passing, database-free (measured against a dead mongo port). E3
           RE-ABLATED it properly: GT1's control was "the file cannot even LOAD
           against pristine dev", which is a module-resolution failure, not a
           behavioural one. Reverting ONLY lib/server/query.js and keeping the
@@ -544,6 +552,14 @@ items:
           deleted. What is gateable is the emission itself: the table vendored
           into the branch must be byte-identical to what the emitter produces
           today, or the branch is shipping a stale generated file.
+      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/coercion | grep -q b72347538ba29f965c531bdd47f81dc52d895a13
+        kind: network
+        describe: >
+          the branch behind PR #8737 is on the remote at the exact tip this item
+          was measured against. Read-only. Verified 2026-09-16.
+      - no-gate: >
+          Review and merge state of PR #8737 is upstream's, and cannot be gated
+          from here without a GitHub API call. Tracked, not driven.
     blocks_on: []
     evidence:
       - tools/nsschema/emit/coercion_emit.py

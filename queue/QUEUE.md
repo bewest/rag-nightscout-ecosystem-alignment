@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 74 |
-| runnable gates | 105 |
-| explicit `no-gate:` markers | 104 |
+| runnable gates | 106 |
+| explicit `no-gate:` markers | 105 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 104 of the 209 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 105 of the 211 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,9 +43,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 11 | P0-B, RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 6 | P0-A, P0-C, P0-C-REMEDIATE, P0-D, P0-E, P0-TAG |
+| `ready-to-push` | 5 | P0-A, P0-C, P0-C-REMEDIATE, P0-E, P0-TAG |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
-| `in-flight-upstream` | 5 | P0-F, P0-G, P0-H, P0-I, P0-T01 |
+| `in-flight-upstream` | 6 | P0-D, P0-F, P0-G, P0-H, P0-I, P0-T01 |
 | `needs-decision` | 3 | RT-D3, RT-0, BFQ-47 |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
@@ -83,7 +83,7 @@ decision is required by any of them.
 | `P0-B` | bf/cache - T0.2 and T0.3 read-path cost | `gate-not-met` | `bf/cache` | patch | 2 run + 2 no-gate |
 | `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `ready-to-push` | `bf/auth` | major | 5 run + 2 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
-| `P0-D` | bf/coercion - query filter typing (T0.5) and the $exists inversion | `ready-to-push` | `bf/coercion` | minor | 5 run |
+| `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `in-flight-upstream` | `bf/coercion` | minor | 6 run + 1 no-gate |
 | `P0-E` | bf/reads - six read-path fixes, independent of bf/coercion | `ready-to-push` | `bf/reads` | major | 8 run + 3 no-gate |
 | `P0-F` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | `in-flight-upstream` | `fix/connect-timer-jitter` | minor | 3 run + 2 no-gate |
 | `P0-G` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | `in-flight-upstream` | `bf/food` | minor | 5 run + 1 no-gate |
@@ -253,17 +253,17 @@ decision is required by any of them.
 
 **Notes.** SETTLED 2026-09-16. This item was not-started for as long as it existed, on the strength of one sentence in the register's BF-17 row - "existing rows still hold tokens, see the report" - which nothing acted on. It is now closed as TEXT rather than tooling: the maintainer decided against a detector script and against a migration, on the ground that the notes carry the operator's actual decision and a script does not. WHAT THE REVIEW TURNED UP WHILE CLOSING IT, and the reason the item was not simply deleted: the notes were WRONG. Two operator documents told people that renaming a subject retires its token. It does not - measured at lib/authorization/storage.js:326 on bf/auth and :288 on origin/dev, the matcher is name-independent - and a third document, the report those notes were written from, is where the error came from. A fourth claim, that the upgrade discards the stored copy on load, was also wrong: reload() deletes the derived fields from the IN-MEMORY record only, and the row clears when the subject is next saved through the admin path. All four are corrected and the gate above is the regression guard. THE LESSON IS THE ITEM'S REAL OUTPUT: "the deliverable is a note" is not a reason to leave it ungated. The note was the defect.
 
-### `P0-D` &mdash; bf/coercion - query filter typing (T0.5) and the $exists inversion
+### `P0-D` &mdash; bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/coercion` |
 | base | `origin/dev@a8888f0d` |
 | worktree | `externals/work/crm-bf-coercion` |
 | semver | `minor` |
-| review | maintainer - lands first of the stack so the query path settles |
+| review | maintainer. OPENED 2026-09-16 as PR #8737, base dev. The old text here said "lands first of the stack so the query path settles"; there is no stack, and the branch merges clean against dev and against all eight others. Three things a reviewer cannot get from the diff: the classification is minor and rests on no request that worked ceasing to work; `tests/query.operands.test.js` matches neither local brace list, so a green `npm run test:unit` is evidence for the typing fix and none for BF-40; and the composition with bf/reads is a property of the PAIR, not of either diff, and is deliberately in neither PR. |
 | register | `BF-02`, `BF-03`, `BF-11`, `BF-32`, `BF-40`, `BF-68` |
 
 **Blast radius.** 2 commits at b7234753, the largest change in the set. lib/server/query.js plus a generated coercion table over 5 collections; 158 coercions replace 13 hand- written entries.
@@ -281,9 +281,12 @@ decision is required by any of them.
 - `[unit]` _(cwd: `externals/work/crm-bf-coercion`)_ `TEST=query.operands npm run test-single`
   - BF-40's own test, 12 cases, on the second commit. In NEITHER local brace list (GT1), so a green `npm run test:unit` is not evidence for it. Ablated three ways with each break confirmed to land: removing the call fails 6, mapping "" to false fails exactly the test pinning that decision, adding $regex to the reader map fails exactly the $regex test.
 - `[unit]` _(cwd: `externals/work/crm-bf-coercion`)_ `TEST=query npm run test-single`
-  - 28 passing, database-free (measured against a dead mongo port). E3 RE-ABLATED it properly: GT1's control was "the file cannot even LOAD against pristine dev", which is a module-resolution failure, not a behavioural one. Reverting ONLY lib/server/query.js and keeping the new table gives 24 passing / 4 failing on assertions ("expected '1.5' to be 1.5"), which is the control that means something.
+  - 29 passing, database-free (measured against a dead mongo port). E3 RE-ABLATED it properly: GT1's control was "the file cannot even LOAD against pristine dev", which is a module-resolution failure, not a behavioural one. Reverting ONLY lib/server/query.js and keeping the new table gives 24 passing / 4 failing on assertions ("expected '1.5' to be 1.5"), which is the control that means something.
 - `[static]` `T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && python3 -m tools.nsschema.emit.coercion_emit --bundle "$T/emitted.json" >/dev/null && diff -q "$T/emitted.json" externals/work/crm-bf-coercion/lib/server/query-coercion.json`
   - House style is "emit, then check the emission", and THE GATE THAT WAS HERE DID NOT CHECK IT. `coercion_emit --drift` ends in `return 0` unconditionally: E3 ran it and it exited 0 while printing "DRIFT vs the shipping walkers: 157 disagreements". It also compares against a HARDCODED transcription of origin/dev's walkers, so it says nothing about bf/coercion at all and would have exited 0 with the branch deleted. What is gateable is the emission itself: the table vendored into the branch must be byte-identical to what the emitter produces today, or the branch is shipping a stale generated file.
+- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/coercion | grep -q b72347538ba29f965c531bdd47f81dc52d895a13`
+  - the branch behind PR #8737 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- **NO GATE** &mdash; Review and merge state of PR #8737 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
 
 **Evidence.**
 
