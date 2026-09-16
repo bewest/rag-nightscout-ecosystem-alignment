@@ -406,7 +406,7 @@ decision is required by any of them.
 
 - `docs/30-design/phase0-pr-sequencing-2026-09-15.md`
 
-**Notes.** Sequencing letter G. BF-35 is a regression from 3457de5b (2017) and was found while fixing BF-16 - which is the argument for landing BF-16 even though BF-16 itself has no in-tree consumer.
+**Notes.** Sequencing letter G. BF-35 is a regression from 3457de5b (2017) and was found while fixing BF-16 - which is the argument for landing BF-16 even though BF-16 itself has no in-tree consumer. PREREQUISITE DISCHARGED 2026-09-16. This item carried a blocker - the SOURCE_ASSERTIONS in tools/nsschema/code_model.py pin text bf/food deletes, so `make schema-code-drift` would fail the day the branch reached a checked tree. It is handled, and NOT the way BF-16 prescribed. The register said "replace the anchors when the branch lands"; replacing them now would fail the check against both SOURCE_ROOTS, which still carry the pre-fix text because bf/food has not merged. Instead each anchor now accepts EXACTLY the pre-fix and post-fix spelling and nothing else, and lib/food/quickpick.js isTrue went into a new SOURCE_ASSERTIONS_IF_PRESENT tuple that arms when the file appears. Measured: schema-code-drift exits 0 against crm-seam, cgm-remote-monitor-official AND crm-bf-food; crm-bf-food failed on exactly these two anchors beforehand. Ablated three ways with each break confirmed to land first - filter narrowed to `{ hidden: false }` FAILS, restoreBoolValue rewritten to Boolean() FAILS, quickpick.isTrue renamed FAILS, all three restored exits 0. STILL OWED AT MERGE, not now: delete the pre-fix arm of each anchor and promote the quickpick.js entry, or a revert passes silently.
 
 ### `P0-H` &mdash; bf/merge - BF-36 client delta merge reads past the end
 

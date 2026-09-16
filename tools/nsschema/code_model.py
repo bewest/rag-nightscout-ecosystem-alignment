@@ -125,21 +125,64 @@ SOURCE_ASSERTIONS = (
     ("lib/server/env.js", "env.settings_collection"),
     ("lib/server/env.js", "env.authentication_collections_prefix"),
     ("lib/api3/generic/search/operation.js", "col.colName === 'settings'"),
-    # The food quick-pick list compares `hidden` to the STRING 'false'. This
-    # is the anchor for BF-16; if it changes, the food model's
-    # type_undetermined note must be revisited. A regex because the storage
-    # seam rewrote the filter's form without changing its meaning: released
-    # upstream spells it `{ 'hidden' : 'false' }` and the seam branch
-    # `cmp('eq', 'hidden', 'false')`. What must hold in both is the quoted
-    # 'false'.
-    ("lib/server/food.js", re.compile(r"""['"]hidden['"]\s*[,:]\s*['"]false['"]""")),
-    ("lib/food/food.js", "record[key] = record[key] === 'true';"),
+    # BF-16's anchors, MID-TRANSITION as of 2026-09-16. Each accepts exactly
+    # two spellings -- the one before the fix and the one after -- and nothing
+    # else.
+    #
+    # WHY A DISJUNCTION RATHER THAN A FLIP. `bf/food` replaces both statements,
+    # but it has not merged: `externals/work/crm-seam` and
+    # `externals/cgm-remote-monitor-official` both still carry the pre-fix
+    # text, so flipping these to the new spelling alone would fail the drift
+    # check against every tree that exists today. Accepting both lets the check
+    # keep running on either side of the merge instead of being disabled across
+    # it, which is when a drift check is least affordable to lose.
+    #
+    # WHAT IT STILL CATCHES, which is the whole point -- the danger BF-16 names
+    # is a THIRD state: "fixing" the client to send real JSON booleans while
+    # leaving the filter matching a string, or narrowing the filter to
+    # `{hidden: false}`. Neither arm matches that, so it still fails. The
+    # disjunction widens the anchor by exactly one known-good spelling, not
+    # into "anything mentioning hidden".
+    #
+    # WHEN TO DELETE THE PRE-FIX ARM: once `bf/food` is in both SOURCE_ROOTS.
+    # Until then removing it breaks the check, and after then keeping it would
+    # let a revert pass silently. See the register's BF-16, which schedules
+    # this and says it belongs to whoever lands the branch.
+    #
+    # The server-side arms are both regexes because the storage seam rewrote
+    # the filter's form without changing its meaning: released upstream spells
+    # it `{ 'hidden' : 'false' }` and the seam branch
+    # `cmp('eq', 'hidden', 'false')`.
+    ("lib/server/food.js", re.compile(
+        r"""['"]hidden['"]\s*[,:]\s*['"]false['"]"""                      # pre-BF-16
+        r"""|['"]hidden['"]\s*:\s*\{\s*\$nin\s*:\s*"""
+        r"""\[\s*true\s*,\s*['"]true['"]\s*\]"""                        # post-BF-16
+    )),
+    ("lib/food/food.js", re.compile(
+        r"""record\[key\]\s*=\s*record\[key\]\s*===\s*['"]true['"];"""  # pre-BF-16
+        r"""|record\[key\]\s*=\s*quickpick\.isTrue\(record\[key\]\);"""  # post-BF-16
+    )),
     # The admin UI round-trips a subject, access token included, straight
     # back into storage. This is why accessToken is modelled as a field of
     # the stored document and not only as a derived one.
     ("lib/authorization/endpoints.js", "pick(subject, ['_id', 'name', 'accessToken', 'roles'])"),
     ("lib/admin_plugins/subjects.js", "data: subject"),
     ("lib/admin_plugins/roles.js", "data: role"),
+)
+
+# Assertions that apply only where the file exists. An entry here is VACUOUS on
+# a tree without that file, and that is the whole reason it is in a separate
+# tuple rather than hidden among the unconditional ones -- a reader can see at
+# a glance which claims are currently arming and which are being checked.
+#
+# `lib/food/quickpick.js` is created by `bf/food`; it is the single predicate
+# BF-16's fix routes every reader through, so "all readers agree what
+# not-hidden means" is only true while `isTrue` is that predicate. The moment
+# the file lands in a SOURCE_ROOT this arms itself. Move it up into
+# SOURCE_ASSERTIONS when `bf/food` is in both roots, in the same sitting as
+# deleting the pre-fix arms above.
+SOURCE_ASSERTIONS_IF_PRESENT = (
+    ("lib/food/quickpick.js", "function isTrue (value) {"),
 )
 
 # Where each collection's index list is declared. Extracted rather than
@@ -892,11 +935,15 @@ def _relative(path: Path, repo_root: Path) -> str:
 def check_assertions(src: Source):
     """Statements this module's hand-declared claims depend on."""
     missing = []
-    for rel, needle in SOURCE_ASSERTIONS:
+    optional = {rel for rel, _ in SOURCE_ASSERTIONS_IF_PRESENT}
+    for rel, needle in SOURCE_ASSERTIONS + SOURCE_ASSERTIONS_IF_PRESENT:
         try:
             text = src.text(rel)
         except FileNotFoundError:
-            missing.append((rel, "<file missing>"))
+            # A file listed in SOURCE_ASSERTIONS_IF_PRESENT is allowed to be
+            # absent; one listed unconditionally is not.
+            if rel not in optional:
+                missing.append((rel, "<file missing>"))
             continue
         if hasattr(needle, "search"):
             if not needle.search(text):

@@ -19,7 +19,7 @@ cgm-remote-monitor branches sit **directly on `origin/dev` at `a8888f0d`** in wo
 | repo | branch | tip | commits | what it is |
 |---|---|---|---:|---|
 | `cgm-remote-monitor` | `bf/alarms` | `5dcf783f` | 3 | BF-28, BF-29, BF-31 — alarm delivery |
-| `cgm-remote-monitor` | `bf/auth` | `64db1f35` | 2 | BF-17, BF-30 — **security** |
+| `cgm-remote-monitor` | `bf/auth` | **`56ed29d2`** | **3** | BF-17, BF-30 — **security**. Third commit added 2026-09-16, see below |
 | `cgm-remote-monitor` | `bf/cache` | `4f86bab1` | 2 | T0.2, T0.3 — cache clone cost |
 | `cgm-remote-monitor` | `bf/coercion` | **`ab197bf8`** | 1 | T0.5 — schema-driven query coercion |
 | `cgm-remote-monitor` | `bf/connect-pin` | `0807eb1c` | 1 | connector pin → the `v0.0.14` tarball (one file, +1/−1) |
@@ -42,6 +42,17 @@ Plus, prepared locally in `nightscout-connect`: branch `release/v0.0.14` and an 
 > `bf/coercion` differs from its backup by exactly the 40 changelog lines and no code; messages,
 > authorship and dates preserved.
 
+> **A third SHA moved, 2026-09-16, after this document was written.** `bf/auth` `64db1f35`
+> → **`56ed29d2`**, and the branch now carries **3** commits rather than 2. The new commit removes
+> a `console.log('Loading', opts)` from `lib/authorization/storage.js` — a per-request debug print
+> of request-derived values, the same defect class as the count-path filter leak fixed on
+> `bf/reads`. The line is **not** introduced by the branch; it is on `origin/dev` at
+> `storage.js:84`, and it was taken here because it sits in a file this branch already rewrites.
+> It was the last failing gate on queue item P0-C, which now reports 3/3 runnable gates passing.
+> `64db1f35` still exists on the branch and is still the BF-17 commit, so references to it *as
+> the BF-17 commit* elsewhere remain correct; only the tip and the commit count moved. The diff
+> is still ten files.
+>
 > **`origin/dev` has not moved.** Re-fetched live during this rewrite: `origin/dev` is `a8888f0d`,
 > dated **2026-09-09**, and `git rev-list --count a8888f0d..origin/dev` is **0**. Every branch here
 > shares that base and **none of them is drifting from anything.** Recorded because the opposite was
@@ -438,7 +449,7 @@ backwards. `mergeTreatmentUpdate` does neither. Both are exported with `//expose
 |---|---|
 | `bf/alarms` `5dcf783f` | BF-28, BF-29, BF-31. Zero file overlap with anything else. Smallest and most reviewable |
 | `bf/cache` `4f86bab1` | T0.2 and T0.3. Self-contained in `cache.js`/`dataloader.js`/`api/entries` |
-| `bf/auth` `64db1f35` | BF-17 and BF-30. **Security — get a human on this one first** |
+| `bf/auth` **`56ed29d2`** | BF-17 and BF-30, plus a third commit. **Security — get a human on this one first** |
 
 ## 2b. The connector release, in detail
 

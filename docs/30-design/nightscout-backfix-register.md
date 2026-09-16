@@ -1386,10 +1386,37 @@ so that person does not meet it as a surprise. `tools/nsschema/code_model.py`
 `SOURCE_ASSERTIONS` pins `lib/server/food.js`'s quoted `'false'` and `lib/food/food.js`'s
 `record[key] === 'true';`. Both are gone on `bf/food`, so `make schema-code-drift` will fail the
 day that branch reaches a tree the checker reads (`externals/work/crm-seam`, then
-`externals/cgm-remote-monitor-official`). **They are deliberately left alone until then**, because
+`externals/cgm-remote-monitor-official`). ~~**They are deliberately left alone until then**, because
 they are still true of both of those trees today. When the branch lands, replace them with the
 two that carry the new invariant — `$nin: [ true, 'true' ]` and `quickpick.isTrue` — and add one
-for `lib/food/quickpick.js` `isTrue`.
+for `lib/food/quickpick.js` `isTrue`.~~
+
+**DONE 2026-09-16, and done differently from what this paragraph prescribed — read why.** The
+instruction above was to *replace* the two anchors when the branch lands. Replacing them is wrong
+at this moment and would have broken the check it exists to protect: `bf/food` has **not** merged,
+so both `SOURCE_ROOTS` still carry the pre-fix text, and a flip would fail
+`make schema-code-drift` against every tree that exists today. The scheduled breakage is real but
+it arrives on **merge**, not on branch-preparation, and nothing should be left un-checked across
+that window.
+
+What was done instead: each of the two anchors now accepts **exactly two spellings, the pre-fix
+one and the post-fix one, and nothing else**, and `lib/food/quickpick.js` `isTrue` was added to a
+new `SOURCE_ASSERTIONS_IF_PRESENT` tuple that arms itself the moment the file appears in a source
+root. **Measured:** `make schema-code-drift` now exits 0 against `externals/work/crm-seam`,
+`externals/cgm-remote-monitor-official` **and** `externals/work/crm-bf-food` — the last of which
+failed on exactly these two anchors before the change.
+
+**The widening is one known-good spelling, not a loosening — ablated three ways, each break
+confirmed to land before the check was run:** narrowing the filter to `{ hidden: false }`, which is
+the precise danger this entry names — **fails**; rewriting `restoreBoolValue` to `Boolean(...)`, a
+third spelling — **fails**; renaming `quickpick.isTrue` — **fails**. Restoring all three returns
+exit 0, so each failure was caused by its own break.
+
+**What is still owed, and it is now the merge's job rather than the branch's:** once `bf/food` is
+in both `SOURCE_ROOTS`, delete the pre-fix arm of each anchor and move the `quickpick.js` entry up
+into `SOURCE_ASSERTIONS`. Keeping the pre-fix arm after that point would let a revert pass
+silently, which is the mirror image of the problem solved here. The comment in
+`tools/nsschema/code_model.py` says so at the site.
 
 *Evidence*: `specs/nsschema/food.model.json` (`type_undetermined_why`);
 `tests/api.food.quickpicks.test.js` (live), `tests/boluscalc.quickpick.test.js` (jsdom).

@@ -111,7 +111,7 @@ team if they are involved in your setup.
 
 ## Technical detail
 
-Two commits, both on `lib/authorization/`:
+Three commits, all on `lib/authorization/`:
 
 **`a26ba416` — failed-auth throttle keyed to a spoofable header.** `lib/authorization/delaylist.js`
 bucketed failures by the caller-supplied `X-Forwarded-For` value. Replaced with a new
@@ -127,6 +127,14 @@ a save writes only owned fields. `DERIVED_SUBJECT_FIELDS = ['accessToken','acces
 'digest']` are deleted from each document in `reload()` *before* being re-derived, so a row written
 by an older version cannot supply one. `lib/authorization/endpoints.js` adds `notes` to the
 `GET /api/v1/subjects` projection.
+
+**`56ed29d2` — a per-request debug print of request-derived values, removed.** Added 2026-09-16.
+`lib/authorization/storage.js` printed `console.log('Loading', opts)` on every read of the auth
+collections, putting the query options of each subject-list call on stdout. **This line is not
+introduced by this branch** — it is on `origin/dev` at `storage.js:84` — and it was taken here
+rather than left as a follow-up for two reasons: it sits in a file this branch already rewrites,
+and it is the same defect class as the count-path filter leak fixed on `bf/reads`, where a debug
+print put request-derived values into the log. One line, removed.
 
 ### Two consequences worth stating plainly
 
@@ -216,10 +224,14 @@ screenshot or chat when asking for help.
 
 ## Follow-ups deliberately **not** in this PR
 
-- **`lib/authorization/storage.js` has a second unguarded `console.log` on a request path**, same
-  shape as BF-05, different file. It prints `'Loading', opts` on every subject-list call. Line
-  number moves per branch — `:84` on `origin/dev`, `:113` on `bf/auth`, `:82` on `bf/reads`. No
-  register id allocated.
+- ~~**`lib/authorization/storage.js` has a second unguarded `console.log` on a request path**,
+  same shape as BF-05, different file.~~ **CLOSED 2026-09-16 — it is fixed by this PR**, in commit
+  `56ed29d2`, described above. This entry is struck rather than deleted because it stood here while
+  the branch was under review and a reader who saw the earlier text should be able to tell that it
+  moved into the diff rather than being dropped. It is still present on `origin/dev`
+  (`storage.js:84`) and on `bf/reads` (`:82`) until this merges, so the control-surface follow-up
+  item FU-RESIDUALS correctly still reports it: that gate reads `origin/dev`, and the repair exists
+  only on this branch. **Do not fix it a second time on another branch.**
 - **BF-17's `created_at` residual.** `lib/authorization/endpoints.js:44` picks
   `['_id','name','accessToken','roles','notes']`; `notes` was added by this fix, `created_at` was
   not, so the field the allow-list now preserves on write is still not returned on read.
