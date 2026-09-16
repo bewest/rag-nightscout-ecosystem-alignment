@@ -16,11 +16,13 @@ train is visible in one place instead of in neither.
 | `tools/queue/emit.py` | generates `QUEUE.md` |
 | `tools/queue/status.py` | runs the gates |
 | `tools/queue/validate.py` | schema-checks the manifest |
+| `tools/queue/fidelity.py` | proves every character written into the YAML reaches the data |
 | `tools/queue/gates/*.js` | one measurement each |
 
 ```
 make queue                  # regenerate QUEUE.md
-make queue-validate         # schema-check the manifest
+make queue-validate         # schema-check the manifest (fidelity included)
+make queue-fidelity         # only the fidelity check, or against another file
 make queue-status           # run every static + unit gate (~7s)
 make queue-coverage         # prove the manifest covers every open register entry
 make queue-check            # CI: register coverage FIRST, then QUEUE.md staleness
@@ -122,6 +124,46 @@ nothing, a `blocks_on` cycle, an unknown `parcel`, an unknown `state`, a `semver
 outside the four values, a gate with neither `run` nor `no-gate`, a gate with
 both, an empty `run`, a `no-gate` with no reason, a gate with no `describe`, and
 an item whose `gates` list is missing or empty.
+
+### Write prose so the parser cannot eat it
+
+Those checks all take the parsed document as given and ask whether it is
+well-formed. One class of defect is invisible to every one of them, because the
+result is well-formed: a value that arrives **shorter than it was written**.
+
+In a YAML *plain* (unquoted) scalar, a space followed by `#` starts a comment.
+So this, which is the natural way to write a title:
+
+```yaml
+    title: T0.1 - PR #8733, the two quadratic treatment scans
+```
+
+parses as `T0.1 - PR`. Three values in this manifest were doing that on
+2026-09-16, one of them since the day it was written — including the sentence in
+`RT-0` recording that two release PRs carry **zero** human reviews, which is the
+entire reason that item demands a reviewer who is not the author. It was being
+deleted from `QUEUE.md` on every regeneration, and `queue-validate` passed
+throughout, because a truncated string is a perfectly valid string.
+
+`make queue-fidelity` now measures this, and `queue-validate` runs it. The rules:
+
+* **Never leave an inline comment after an unquoted value.** Quote the value, or
+  put the comment on its own line. After a quoted or block scalar a comment is
+  harmless and allowed, because such a scalar ends at its delimiter rather than
+  at whitespace-then-`#`. The rule is absolute on purpose: no heuristic for
+  "that one looked deliberate" survives contact with the defect it was built for.
+* **Quote anything YAML would retype.** `no` is the boolean `False`, not the word;
+  `1.20` is `1.2`; `007` is `7`; `12:30` is `750`.
+* **Never repeat a key in one mapping.** PyYAML keeps the last and discards the
+  other in silence.
+
+Full-line comments are unaffected and always were. The safe spellings for prose:
+
+```yaml
+    title: "T0.1 - PR #8733, the two quadratic treatment scans"
+    review: >
+      Any long prose, folded. A # in here is text.
+```
 
 ## How to define a gate
 

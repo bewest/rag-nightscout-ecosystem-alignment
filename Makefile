@@ -1,7 +1,7 @@
 # Nightscout Alignment Workspace Makefile
 # Convenience wrapper for common operations
 
-.PHONY: queue queue-status queue-validate queue-check bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json validate-telemetry workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
+.PHONY: queue queue-status queue-validate queue-fidelity queue-check bootstrap refresh status freeze clean help validate conformance conformance-algorithms conformance-ci coverage inventory ci check submodules verify verify-refs verify-coverage verify-terminology verify-assertions verify-images sdqctl-verify-refs sdqctl-verify-all query trace traceability validate-json validate-telemetry workflow cli venv sdqctl-verify sdqctl-verify-parallel sdqctl-gen sdqctl-analysis sdqctl-cycle sdqctl-cycle-multi conversions hygiene-tests hygiene-unit hygiene-all verify-unit unit-tests mock-nightscout extract-vectors conformance-oref0 cgmencode-tests ns2parquet-tests terrarium terrarium-info terrarium-tiny terrarium-tiny-smoke mlflow-ui mlflow-server
 
 # Default target
 help:
@@ -76,6 +76,7 @@ help:
 	@echo "Work queue (one queue, all programmes — see queue/README.md):"
 	@echo "  make queue          - Regenerate queue/QUEUE.md from the manifest"
 	@echo "  make queue-validate - Schema-check queue/work-queue.yaml"
+	@echo "  make queue-fidelity - Prove no YAML value was silently truncated or retyped"
 	@echo "  make queue-status   - Run the gates; ID=/PARCEL=/STATE= select a subset,"
 	@echo "                        INTEGRATION=1 adds gates that need MongoDB"
 	@echo "  make queue-coverage - Prove the manifest covers every open register entry"
@@ -856,7 +857,7 @@ schema-clean:
 # queue/work-queue.yaml  source of truth, hand-edited
 # queue/QUEUE.md         GENERATED — never hand-edit, `make queue` rewrites it
 # tools/queue/gates/     the gate scripts, one measurement each
-.PHONY: queue queue-status queue-validate queue-check queue-coverage queue-vacuity
+.PHONY: queue queue-status queue-validate queue-fidelity queue-check queue-coverage queue-vacuity
 
 QUEUE = $(PY) tools/queue
 
@@ -868,6 +869,20 @@ queue: queue-validate
 ## and the rule that every gate is a command or an explicit no-gate marker
 queue-validate:
 	@$(QUEUE)/validate.py
+
+## queue-fidelity: prove every character written into the queue YAMLs reaches
+## the data. Also runs inside queue-validate, so this target is for running it
+## alone or against a file that is not one of the two queue YAMLs.
+##
+## SEPARATE QUESTION FROM queue-validate, AND THAT IS WHY IT EXISTS. The schema
+## check takes the parsed document as given and asks whether it is well-formed.
+## A value that lost the end of its line to an unquoted `#` is well-formed --
+## a truncated string is a perfectly valid string -- so queue-validate passed
+## over three of them, one since the day it was written, including the sentence
+## in RT-0 recording that two release PRs carry ZERO human reviews. That
+## sentence was being deleted from QUEUE.md on every regeneration.
+queue-fidelity:
+	@$(QUEUE)/fidelity.py
 
 ## queue-status: run the gates and report per-item pass/fail. Selects a subset
 ## with ID=, PARCEL= or STATE=; add INTEGRATION=1 for gates that need MongoDB

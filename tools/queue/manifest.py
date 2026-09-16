@@ -41,6 +41,7 @@ except ImportError:  # pragma: no cover - environment problem, not a data proble
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MANIFEST_PATH = os.path.join(REPO_ROOT, "queue", "work-queue.yaml")
 GENERATED_VIEW = os.path.join(REPO_ROOT, "queue", "QUEUE.md")
+GATE_CONTROLS = os.path.join(REPO_ROOT, "queue", "gate-controls.yaml")
 
 # Every field the maintainer asked to be representable. `ships_to_operators_today`
 # is required only for register-open items, where the §1 / §1b distinction is

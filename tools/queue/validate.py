@@ -10,7 +10,14 @@ Checks, in the order the maintainer asked for them:
     dependency graph has no cycle;
   * every gate is EITHER a runnable command OR an explicit `no-gate:` marker
     carrying a reason -- an item with no gates at all is a hard error;
-  * plus the field, enum, parcel and state checks in manifest.py.
+  * plus the field, enum, parcel and state checks in manifest.py;
+  * and, from fidelity.py, that every character written into the YAML actually
+    reaches the data. That last one is a DIFFERENT QUESTION from the rest of
+    this file and is here because nobody was asking it: the checks above take
+    the parsed document as given and ask whether it is well-formed, which a
+    silently truncated value always is. Three values had been losing the end of
+    their line to an unquoted `#` -- one of them since the day it was written --
+    and this check passed over all of them. See fidelity.py for the mechanism.
 
 It also reports ADVISORIES: a gate whose command invokes a script under
 tools/queue/gates/ that does not exist. That is not a schema error -- the
@@ -28,6 +35,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import fidelity  # noqa: E402
 import manifest  # noqa: E402
 
 GATE_SCRIPT = re.compile(r"tools/queue/gates/[\w.-]+")
@@ -66,6 +74,13 @@ def main(argv=None):
         return 1
 
     problems = manifest.validate(doc)
+    problems.extend(fidelity.check(args.manifest))
+    if os.path.exists(manifest.GATE_CONTROLS):
+        # The controls file is hand-edited YAML full of shell commands and
+        # prose, so it can lose a line to a `#` exactly as the manifest did --
+        # and a truncated gate command is worse than a truncated title, because
+        # it still runs.
+        problems.extend(fidelity.check(manifest.GATE_CONTROLS))
     notes = advisories(doc)
 
     if not args.quiet:
@@ -80,7 +95,7 @@ def main(argv=None):
         for problem in problems:
             print("FAIL  %s" % problem)
         if not problems:
-            print("OK    schema, ids, blocks_on and the gate rule all hold")
+            print("OK    schema, ids, blocks_on, the gate rule and YAML fidelity all hold")
 
     return 1 if problems else 0
 

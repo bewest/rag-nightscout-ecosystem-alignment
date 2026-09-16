@@ -25,7 +25,7 @@ meta:
   repo_root: /home/bewest/src/rag-nightscout-ecosystem-alignment
   measured_at: "2026-09-15"
   measured_against:
-    cgm-remote-monitor-official: a8888f0d          # origin/dev, dated 2026-09-09
+    cgm-remote-monitor-official: "a8888f0d"        # origin/dev, dated 2026-09-09
     main_repo_head: 75c38a17
   # Gate kinds. `static` and `unit` run by default. The other two never run
   # unless asked for, and the runner says so rather than silently passing them.
