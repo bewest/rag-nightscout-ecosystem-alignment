@@ -5,17 +5,41 @@
 > stack** — and this one is their upstream. It is the change that `bf/connect-pin` brings into
 > Nightscout. It ships as tag **`v0.0.14`**.
 >
-> **Base: `origin/main` `b394411`, which is the `v0.0.13` tag.** This branch's tip is `c1cce2a`,
-> and it is **10 commits ahead of `origin/main`** — this fix plus the nine already-merged
-> redaction, data-contract, shutdown and opt-in-logging commits that `origin/main` has not yet
-> taken. The release commit `649a7de` (`release/v0.0.14`, the annotated tag `v0.0.14`) sits
-> **directly on `c1cce2a`** — `git log --format=%p -1 649a7de` = `c1cce2a` — so **the tag and this
-> fix are the same thing**, `v0.0.14` is 11 commits ahead of `origin/main`, and `v0.0.13`
-> fast-forwards to it with no divergence to reconcile. Re-measured 2026-09-15.
+> **This PR targets `dev`, and it carries more than its own commit. Read the next paragraph
+> before reviewing the diff.** Measured 2026-09-16: `origin/dev` is `6dfc4f0`, its tree is
+> **byte-identical to `origin/main`** `b394411` (the `v0.0.13` tag) — `git diff origin/dev
+> origin/main` is empty, because `main` is just the merge commit of PR #26 and `dev` has not been
+> refreshed since the 0.0.13 release. `git rev-list --count origin/dev..fix/connect-timer-jitter`
+> is **11**; the diff is **27 files, +1359/−309**; the trial merge into `dev` is **clean**.
 >
-> *A draft of this line said "one commit ahead of it". That was wrong — it read the branch's own
-> single new commit as the whole delta against `origin/main`. Measured, `git rev-list --count
-> origin/main..c1cce2a` = **10**.*
+> **Only one of those 11 commits is this branch's own work.** The other ten are `b394411` (`main`'s
+> merge commit, which `dev` lacks) and nine commits belonging to four other pull requests:
+>
+> | commits | work | upstream status, measured 2026-09-16 |
+> |---|---|---|
+> | `9fa2c3c` `5349d47` `77e2396` | Dexcom/MiniMed credential and payload redaction | **PR #64 → `dev`, OPEN** |
+> | `8406edf`, merges `c962a13` `a519633` | MiniMed glucose/measurement-time data contract | PR #65 — merged, but **into `fix/dexcom-safe-logging`**, not into `dev` or `main` |
+> | `51b6e6e` | release listeners, settle output waits on stop | **PR #66 → `fix/dexcom-safe-logging`, OPEN** |
+> | `234d47c` | opt-in embedded debug logging (#8714) | **PR #67 → `dev`, OPEN** |
+> | `b77e5bb` | the integration merge of the four above (`origin/fix/modernization-debug-logging`) | no PR |
+> | `c1cce2a` | **BF-34 and T0.4 — the only new work here** | this PR |
+>
+> **So approving this PR approves four PRs' worth of change in one review.** That is a deliberate
+> maintainer decision taken 2026-09-16, not an oversight, and it is recorded here rather than left
+> for a reviewer to discover from the commit list. A reviewer who wants the redaction, data-contract
+> and opt-in-logging work reviewed on its own should say so and this PR should be re-based onto
+> `fix/modernization-debug-logging` instead, which reduces it to the single commit `c1cce2a`.
+>
+> *Two corrections to earlier drafts of this block, kept because both were wrong in the same
+> direction — understating what the branch carries.* A first draft said "one commit ahead", reading
+> the branch's own new commit as the whole delta. A second said the nine were **"already-merged
+> … commits that `origin/main` has not yet taken"**; they are **not merged** — three of the four PRs
+> are open, and the fourth merged only into a feature branch. The count against `origin/main` is 10;
+> against `dev`, which is what this PR is measured on, it is 11.
+>
+> The release commit `649a7de` (`release/v0.0.14`, annotated tag `v0.0.14`) sits **directly on
+> `c1cce2a`** — `git log --format=%p -1 649a7de` = `c1cce2a` — so **the tag and this fix are the
+> same thing**, and `v0.0.13` fast-forwards to it with no divergence to reconcile.
 >
 > **Note for anyone reading the pin from `cgm-remote-monitor`:** `dev` does **not** pin `v0.0.13`.
 > It pins `234d47c8`, which `git describe --tags` calls `v0.0.12-28-g234d47c` and which is neither
