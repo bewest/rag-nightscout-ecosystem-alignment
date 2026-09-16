@@ -21,7 +21,7 @@ cgm-remote-monitor branches sit **directly on `origin/dev` at `a8888f0d`** in wo
 | `cgm-remote-monitor` | `bf/alarms` | `5dcf783f` | 3 | BF-28, BF-29, BF-31 — alarm delivery |
 | `cgm-remote-monitor` | `bf/auth` | **`56ed29d2`** | **3** | BF-17, BF-30 — **security**. Third commit added 2026-09-16, see below |
 | `cgm-remote-monitor` | `bf/cache` | `4f86bab1` | 2 | T0.2, T0.3 — cache clone cost |
-| `cgm-remote-monitor` | `bf/coercion` | **`ab197bf8`** | 1 | T0.5 — schema-driven query coercion |
+| `cgm-remote-monitor` | `bf/coercion` | **`b7519fc7`** | 1 | T0.5 — schema-driven query coercion. Amended 2026-09-16, see below |
 | `cgm-remote-monitor` | `bf/connect-pin` | `0807eb1c` | 1 | connector pin → the `v0.0.14` tarball (one file, +1/−1) |
 | `cgm-remote-monitor` | `bf/food` | `73495331` | 1 | BF-16, and **BF-35** surfaced while fixing it |
 | `cgm-remote-monitor` | `bf/merge` | `b06c6faf` | 1 | BF-36 |
@@ -32,8 +32,10 @@ cgm-remote-monitor branches sit **directly on `origin/dev` at `a8888f0d`** in wo
 Plus, prepared locally in `nightscout-connect`: branch `release/v0.0.14` and an annotated tag
 `v0.0.14`, both at `649a7de2`.
 
-> **The two SHAs that moved, and why.** `bf/coercion` `88d1f8a4` → **`ab197bf8`** (9 files, code
-> only; 40 CHANGELOG lines removed). `bf/reads` `0d19bb31` → **`2ecfeb53`** (the changelog-only
+> **The SHAs that moved, and why.** `bf/coercion` `88d1f8a4` → `ab197bf8` (9 files, code
+> only; 40 CHANGELOG lines removed) → **`b7519fc7`** (2026-09-16: two code comments and one
+> paragraph of the commit message stated BF-32's refuted mechanism as fact; no behaviour change,
+> 28 passing before and after). `bf/reads` `0d19bb31` → **`2ecfeb53`** (the changelog-only
 > commit dropped, **and the branch un-stacked from `bf/coercion` and rebased directly onto
 > `origin/dev`**, which is why it now carries 6 commits rather than 8). Safety refs
 > **`bf/coercion.bak-changelog`** (`88d1f8a4`) and **`bf/reads.bak-changelog`** (`0d19bb31`) are
@@ -392,7 +394,7 @@ was wrong rather than the substituter.**
 
 | branch | commits | what it is |
 |---|---|---|
-| `bf/coercion` `ab197bf8` | 1 | T0.5 — schema-driven query coercion. The largest single change in the batch |
+| `bf/coercion` `b7519fc7` | 1 | T0.5 — schema-driven query coercion. The largest single change in the batch |
 | `bf/reads` `2ecfeb53` | 6 | BF-01, BF-05, BF-13, BF-14, BF-15, BF-33 |
 
 **These two used to be a stack and are not any more.** They merge clean with each other and with
@@ -666,8 +668,14 @@ and no branch in this set is the base of another.
 
 | branch | before | after | what happened |
 |---|---|---|---|
-| `bf/coercion` | `88d1f8a4` | **`ab197bf8`** | 40 CHANGELOG lines removed; 9 files, code only |
+| `bf/coercion` | `88d1f8a4` | `ab197bf8` | 40 CHANGELOG lines removed; 9 files, code only |
 | `bf/reads` | `0d19bb31` | **`2ecfeb53`** | changelog-only commit dropped, **and un-stacked from `bf/coercion`, rebased directly onto `origin/dev`** |
+
+**A second, separate amend on 2026-09-16**, not part of the strip: `bf/coercion` `ab197bf8` →
+**`b7519fc7`**. `lib/server/query-coercion.js`'s header comment, a `tests/query.test.js` comment and
+one paragraph of the commit message all asserted that `{$exists: NaN}` is falsy and inverts the
+query — the mechanism the branch's own evidence refutes, measured against seven live servers. No
+behaviour change, 28 passing before and after, gates 4/4 after.
 
 **Safety refs kept until the PRs merge**, then delete: `bf/coercion.bak-changelog` (`88d1f8a4`),
 `bf/reads.bak-changelog` (`0d19bb31`), `bf/reads-prerebase` (`824380a0`).

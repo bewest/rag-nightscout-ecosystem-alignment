@@ -154,7 +154,7 @@ TEST=api3.limit           npm run test-single    #  8 passing, 0 failing, 533 ms
   session's record, not re-run here, and its SHAs are the pre-strip ones; `git range-diff` shows all
   six commits content-identical across the strip, so the figure carries.
 - Merges clean against `origin/dev` `a8888f0d` — `git merge-tree --write-tree` re-run 2026-09-15 —
-  and clean against all eight other Phase 0 branches, including `bf/coercion` at `ab197bf8`.
+  and clean against all eight other Phase 0 branches, including `bf/coercion` at `b7519fc7`.
 
 ---
 

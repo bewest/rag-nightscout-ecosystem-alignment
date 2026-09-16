@@ -63,7 +63,7 @@ Nothing in this record is closed for an operator. Every branch below is local an
 | `P0-B` | cgm-remote-monitor | `bf/cache` | `4f86bab1637e` | 2 | `gate-not-met` | **PASS** | 2/2 (2 no-gate) |
 | `P0-C` | cgm-remote-monitor | `bf/auth` | `64db1f35ca31` | 2 | `gate-not-met` | **FAIL** | 2/3 (2 skip, 2 no-gate) |
 | `P0-C-REMEDIATE` | cgm-remote-monitor | `-` | `unresolved` | - | `not-started` | **UNMEASURED** | 0/0 (1 no-gate) |
-| `P0-D` | cgm-remote-monitor | `bf/coercion` | `ab197bf86892` | 1 | `ready-to-push` | **PASS** | 4/4 |
+| `P0-D` | cgm-remote-monitor | `bf/coercion` | `b7519fc76f47` † | 1 | `ready-to-push` | **PASS** | 4/4 |
 | `P0-E` | cgm-remote-monitor | `bf/reads` | `2ecfeb53ff1e` | 6 | `ready-to-push` | **PASS** | 3/3 (5 skip, 3 no-gate) |
 | `P0-F` | nightscout-connect | `fix/connect-timer-jitter` | `c1cce2a2f962` | 1 | `ready-to-push` | **PASS** | 2/2 (1 no-gate) |
 | `P0-G` | cgm-remote-monitor | `bf/food` | `73495331e68c` | 1 | `ready-to-push` | **PASS** | 3/3 (1 skip) |
@@ -76,6 +76,11 @@ Nothing in this record is closed for an operator. Every branch below is local an
 | `FU-LIMIT` | cgm-remote-monitor | `-` | `unresolved` | - | `blocked` | **FAIL** | 1/2 (1 no-gate) |
 | `FU-RESIDUALS` | cgm-remote-monitor | `-` | `unresolved` | - | `gate-not-met` | **FAIL** | 0/3 (1 no-gate) |
 | `FU-HYGIENE` | cgm-remote-monitor | `-` | `unresolved` | - | `not-started` | **UNMEASURED** | 0/0 (2 no-gate) |
+
+† `bf/coercion` was `ab197bf86892` when this table was first measured. It was amended to
+`b7519fc76f47` on 2026-09-16 — two code comments and one paragraph of the commit message asserted
+BF-32's refuted mechanism as fact. Comment-only: the tree is otherwise identical, 28 passing before
+and after, and the gates were re-run at the new SHA with the same 4/4 result recorded above.
 
 ### `P0-A` &mdash; bf/alarms - BF-28, BF-29, BF-31
 
@@ -234,7 +239,7 @@ Nothing in this record is closed for an operator. Every branch below is local an
 |---|---|
 | repo | `cgm-remote-monitor` (`externals/cgm-remote-monitor-official`) |
 | branch | `bf/coercion` |
-| commit | `ab197bf868922071b28e693fee70708be1452cd4` |
+| commit | `b7519fc76f47b2c3b9570ced8b00c58412aa9a22` † |
 | base declared | `origin/dev@a8888f0d` |
 | base resolved | `a8888f0d9facb8a9bb54c2ab15333f3f241b45bf` |
 | branch contains base | yes |
