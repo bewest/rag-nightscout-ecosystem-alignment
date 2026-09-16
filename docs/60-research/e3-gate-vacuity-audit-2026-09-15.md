@@ -346,7 +346,7 @@ no options — so the count path still gets the legacy default walker after both
 land. Deliberately in neither PR.
 
 `bf/coercion` was re-checked at `ab197bf8`: all gates green, and `TEST=query`
-now has a real ablation behind it. Re-checked again at **`b7519fc7`** on
+now has a real ablation behind it. Re-checked again at **`f829ea11`** on
 2026-09-16 after a comment-only amend: still 4/4, still 28 passing.
 
 ---

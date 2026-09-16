@@ -491,7 +491,7 @@ items:
       from {"$gte":1} to {"$gte":1.5}; find[sgv][$exists]=true from {"$exists":NaN}
       (which returned the documents that LACK the field) to {"$exists":"true"}.
       No request that worked stops working.
-    register: [BF-02, BF-03, BF-11, BF-32]
+    register: [BF-02, BF-03, BF-11, BF-32, BF-68]
     gates:
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/coercion
         kind: static
@@ -969,6 +969,87 @@ items:
       the commits as 522c6ffb, eb0bc918, c9a7a21c mapped to BF-37, BF-39, BF-38.
       Re-measured, the branch order is 522c6ffb (BF-37), c9a7a21c (BF-38),
       eb0bc918 (BF-39). GT3 found the same.
+
+  - id: P0-J
+    title: bf/exists - BF-40, $exists=false returned the inverse of the request
+    parcel: phase0
+    repo: cgm-remote-monitor
+    branch: bf/exists
+    base: origin/dev@a8888f0d
+    worktree: externals/work/crm-bf-exists
+    state: ready-to-push
+    blast_radius: 1 commit b6dd1e7b. lib/server/query.js, one new test file.
+    review: >
+      maintainer. Two things a reviewer cannot get from the diff. It is a
+      SEMANTIC INVERSION, not a missing result - a $exists=false filter was
+      answered with the complement of what it asked for, so any count drawn
+      from one was counting the wrong group. And the empty-string operand is
+      deliberately NOT read; that is a decision, pinned by a test, not an
+      oversight.
+    operator_visible: >
+      Asking the API for records that do NOT have a field returned exactly the
+      records that DO have it, with a success code and nothing to say the answer
+      was inverted. Reports, dashboards and scripts that filter on
+      $exists=false were answering the opposite question. Re-run anything built
+      on one - the set it returns now is the complement of what it returned
+      before, so a count usually changes a lot rather than a little.
+      $exists=true was correct before and is correct after.
+    semver: minor
+    semver_reason: >
+      changes which records a filter returns; adds no required input, removes no
+      route, breaks no documented contract, touches no stored data.
+    register: [BF-40]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/exists
+        kind: static
+        describe: bf/exists has not fallen behind origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/exists >/dev/null
+        kind: static
+        describe: trial-merge into origin/dev is conflict-free
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/coercion bf/exists >/dev/null
+        kind: static
+        describe: >
+          trial-merge with bf/coercion is conflict-free. Called out because the
+          two interact: this branch needs bf/coercion to close its typed half,
+          and bf/coercion carries the test change that stops them colliding on
+          an expectation.
+      - run: TEST=query.operands npm run test-single
+        cwd: externals/work/crm-bf-exists
+        kind: unit
+        describe: >
+          BF-40's own test, 12 cases. In NEITHER local brace list (GT1), so a
+          green `npm run test:unit` is not evidence for this branch. Ablated
+          three ways with each break confirmed to land: 6 failing, 1 failing,
+          1 failing.
+      - no-gate: >
+          The composed behaviour - $exists=false correct on a TYPED field after
+          both branches land - was measured in a merged tree by hand (29 + 12
+          passing) and is not reproduced by any gate here. A gate would have to
+          build the merged tree and run both suites in it.
+      - no-gate: >
+          No end-to-end gate against a live server. The before/after over two
+          treatments was run by hand against mongod 7.0.43; nothing replays it.
+    blocks_on: []
+    evidence:
+      - docs/30-design/nightscout-backfix-register.md
+    notes: >
+      NOT in bf/coercion on purpose: that branch is already the largest
+      behavioural change in Phase 0, and this fix stands alone against dev.
+
+
+      BF-40's PRESCRIBED FIX WAS IN THE WRONG PLACE and would have read as
+      though it closed the entry. It said to put the reader where isValueLeaf
+      special-cases the operator; isValueLeaf is only reached from walk_prop,
+      which only runs for fields that have a typer. Measured on bf/coercion:
+      madeUpField, notes and every activity field never enter it. The fix is a
+      pass over the finished query instead, keyed on the operator, which also
+      catches {$not: {$exists: ...}} and operands inside $or.
+
+
+      THE DEPENDENCY, stated because it is real: on dev alone this fixes the
+      untyped majority and not the thirteen fields a walker names, whose
+      operand is destroyed to NaN before this pass sees it. NaN is truthy too.
+      Those close when bf/coercion lands.
 
   - id: P0-TAG
     title: nightscout-connect release/v0.0.14 and tag - prepared, needs a human push

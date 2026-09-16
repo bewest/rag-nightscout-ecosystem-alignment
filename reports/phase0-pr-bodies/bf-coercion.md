@@ -1,7 +1,7 @@
 # `bf/coercion` — filters that quietly returned nothing now return your records
 
-One commit `b7519fc7`, 9 files, +483/−22. Base `origin/dev` `a8888f0d`. Independent of every
-other Phase 0 branch; merges clean against `dev` and against all eight of them.
+One commit `f829ea11`, 9 files, +560/−23. Base `origin/dev` `a8888f0d`. Independent of every
+other Phase 0 branch; merges clean against `dev` and against all nine of them.
 
 ## What changes for you
 
@@ -76,6 +76,15 @@ storage.queryOpts = { collection: 'devicestatus', dateField: 'created_at' };
 `enteredBy`. Callers naming no collection are unchanged — they keep the legacy
 `{date: parseInt, sgv: parseInt}` guess.
 
+**One non-value operand still needs reading, and finding that out is why this is not just an
+exclusion list.** `$type` takes a BSON type code or a string alias, so `find[sgv][$type]=2` has to
+reach the server as the number `2`; as the string `"2"` it is rejected with *"Unknown type name
+alias: 2"*. `origin/dev` coerced it along with everything else and it worked — so excluding it
+without reading it would have turned a working request into an HTTP 500. `operandReaderFor` reads a
+digits-only `$type` operand as a number and passes aliases through. Every other non-value operator
+has no reader, which is the right answer for `$regex` and `$options`: they want the string they
+already have. Filed as **BF-68**, found by measurement and fixed here before the PR was opened.
+
 Closes **BF-02**, **BF-11** and **BF-03** (devicestatus and profile). **BF-32** was found while
 writing it: the walker coerced operator *operands* too, so `find[sgv][$exists]=true` became
 `{$exists: NaN}` and `find[notes][$regex]=ab` became `{$regex: NaN}`.
@@ -135,9 +144,14 @@ and the `$exists=false` warning, which is about a defect that is still open.
 
 ## Follow-ups deliberately not in this PR
 
-- **BF-40** — route the `$exists` operand through a boolean reader that understands `"false"`,
-  `"0"` and `""`, where `isValueLeaf` already special-cases the operator
-  (`lib/server/query-coercion.js:91`). Designed, **nobody has run it.**
+- **BF-40 is written, on its own branch `bf/exists`** — not here, because this is already the
+  largest behavioural change in Phase 0 and that fix stands alone against `dev`. **The two
+  compose, and the composition was measured rather than assumed**: `bf/exists` reads the `$exists`
+  operand in a pass over the finished query, which reaches every field; on today's `dev` the walker
+  destroys that operand first for the thirteen fields it names, so **`bf/exists` needs this branch
+  to close its typed half**. Merged tree: 29 + 12 passing, `$exists=false` correct on typed and
+  untyped fields alike. This branch's "operands are left alone" test asserts the operand was not
+  turned into a *number* rather than pinning the exact string, so the two do not collide.
 - **Interaction with `bf/reads` — real, and not a merge hazard.** This branch gives `query.js` a
   `collection:` option; `bf/reads` fixes `aggregate.js`, which calls it. Measured: the count path is
   typed correctly after both land, because BF-01's fix makes `aggregate` delegate to each

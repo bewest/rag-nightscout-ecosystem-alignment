@@ -204,6 +204,7 @@ out, because the absence of the check is how a future change becomes wrong silen
 | **BF-64** | **The adopted release train specifies a combination of releases that cannot be built.** It ships cut 5 as a "dependency release" while holding cut 4 back behind a deprecation release — but cut 4 is an **ancestor** of cut 5, so that release would ship the CGM ingestion retirement one release early and *before* the deprecation release that exists to warn operators about it | [release readiness](cgm-remote-monitor-release-readiness-2026-09-14.md) §5 and every document repeating it. **No branch is wrong** — the description of how to combine them is | **high** — it silently ships the highest-blast-radius change in the programme ahead of its own warning | open — **reproduced**: `merge-base --is-ancestor` exits 0 (cut 5 is 154 commits past cut 4), and `lib/plugins/bridge.js`/`mmconnect.js` are present on `dev` and cut 3 and **absent** on cuts 4 and 5. Must be resolved before Release 4's contents can be written down |
 | **BF-65** | The adopted train **ships the leaking connector to upgraders first**: cuts 1, 2 and 3 all pin `nightscout-connect` v0.0.13 — the tree **BF-42** describes — and are scheduled first as low-blast-radius releases, while cut 4, which carries most of the redaction, is held back longest | `package.json` on the three lower cut tips, against the adopted train | medium — an operator upgrading to cut 1 or 2 moves from a leaking connector to the same leaking connector | open — the pins are measured; the ordering is **quoted** from the adopted train and was not re-derived. Cheap to remove: all three pin the v0.0.13 **tag**, so moving them to v0.0.14 is the same one-line change as `dev`'s |
 | **BF-66** | The deployment **mints JWTs with no tenant claim**, so under `TENANCY_MODE=multi` with the default `requireTokenClaim` the tenant check refuses every token the deployment itself issues | `lib/authorization/index.js:289` (the only minting path besides `enclave.js:58`); `lib/server/tenant-middleware.js:139-151`, `:181-192`, `:208` | **medium** — **fails safe**, refusing rather than admitting, which is why it has gone unnoticed | open — **reproduced** by executing both modules with the exact payload line 289 mints: `credentialRefusal` returns "This credential does not name a Nightscout site."; the control with a `tenant` field proceeds. Must be fixed by the task that introduces the per-tenant signing key (T3.0), because that task chooses the payload |
+| **BF-68** | `bf/coercion` excludes every non-value operator from type conversion, but **`$type`'s operand has a type of its own**: it takes a BSON type code or a string alias, so `find[sgv][$type]=2` must reach the server as the number `2`. Left as the string `"2"` it is rejected outright. `origin/dev` coerced it along with everything else and it worked, so excluding it turned a working request into an **HTTP 500** — a regression introduced by the fix | `lib/server/query-coercion.js` `NON_VALUE_OPERATORS`, on `bf/coercion` only | **low** — numeric BSON type codes in a v1 filter are rare, and `$type=number` (the alias spelling) was correct throughout | **reproduced** against live mongod 3.6.8 and 7.0.43, identical on both: `{$type: "2"}` → *"Unknown type name alias: 2"*, `{$type: 2}` → valid. **Fixed in the same branch** by `operandReaderFor`, before the PR was opened; the reader takes a digits-only operand to a number and passes aliases through. Never shipped |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
 
@@ -2045,10 +2046,41 @@ So the live defect is the one nobody filed:
 - **After `bf/coercion`**, the operand is left as `"false"` → **still** the wrong answer.
 - `$exists=true` is answered correctly before *and* after, by two different accidents.
 
-**Fix — UNVERIFIED, nobody has run it.** Route the `$exists` operand through a boolean reader that
-understands `"false"`, `"0"` and `""`, at the point where `isValueLeaf` already special-cases the
-operator (`lib/server/query-coercion.js:90` on `bf/coercion`; `walk_prop` on `dev`). `tests/query.test.js:138`
-covers `$exists=true` only, so the regression test has to be written alongside.
+**Fix — WRITTEN AND REPRODUCED 2026-09-16, on branch `bf/exists` (`b6dd1e7b`). The fix this entry
+originally prescribed was in the wrong place, and would have read as though it closed the entry.**
+
+The prescription was: route the operand through a boolean reader "at the point where `isValueLeaf`
+already special-cases the operator". **`isValueLeaf` is only reached from inside `walk_prop`, and
+`walk_prop` only runs for fields that have a typer.** Measured on `bf/coercion`: `madeUpField`,
+`notes`, and every field of `activity` never enter it at all, so a fix there closes this for the
+handful of typed fields and leaves it open on the rest — while this entry's own text says the
+defect is wrong on *every* field.
+
+What was built instead: a pass over the **finished query**, keyed on the operator, so it is
+independent of whether the field has a declared type. That also handles `{$not: {$exists: "false"}}`
+and an operand inside `$or`, both of which the per-field walker would have missed.
+
+**The `""` question is decided, and not the way this entry assumed.** Four spellings are read —
+`"true"`/`"1"` and `"false"`/`"0"`, case-insensitively. **The empty string is deliberately left
+alone.** `?find[x][$exists]` with no value parses to `''`, and after **BF-37** that is reachable;
+it is as easily "yes, I want this flag" as "no, I do not", and reading it either way would silently
+invert somebody's query — which is this defect, committed in the other direction. Anything else
+unrecognised passes through for the same reason.
+
+**End-to-end, live, over two treatments (one with `insulin`, one without):**
+`find[insulin][$exists]=false` returned the document **with** `insulin` before and the one
+**without** after; `$exists=true` returns the same document either way.
+
+**One real dependency, not a caveat.** On `origin/dev` the walker converts the operand to `NaN`
+before any later pass can read it, for the thirteen fields a walker names. `NaN` is truthy too, so
+those fields stay wrong until **`bf/coercion`** lands and stops the walker touching operands. The
+untyped majority is fixed by `bf/exists` alone. Measured in the merged tree: both halves correct.
+
+**And the two branches collide on a test, not on the code.** `bf/coercion`'s "leaves operands that
+are not field values alone" pinned `$exists` as the *exact string* `'true'`; `bf/exists` makes it
+the boolean `true`, so a clean textual merge produced a red suite. Fixed in `bf/coercion` by
+asserting the operand was not turned into a *number*, which is what that test is actually about.
+Twelve tests in `tests/query.operands.test.js` — in neither local brace list, so `npm test`.
 
 **What this costs `bf/coercion` before it is proposed.** That branch's `CHANGELOG.md` — text an
 operator reads — currently says `find[sgv][$exists]=true` "became `$exists: NaN`, which MongoDB

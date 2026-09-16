@@ -63,7 +63,7 @@ Nothing in this record is closed for an operator. Every branch below is local an
 | `P0-B` | cgm-remote-monitor | `bf/cache` | `4f86bab1637e` | 2 | `gate-not-met` | **PASS** | 2/2 (2 no-gate) |
 | `P0-C` | cgm-remote-monitor | `bf/auth` | `64db1f35ca31` | 2 | `gate-not-met` | **FAIL** | 2/3 (2 skip, 2 no-gate) |
 | `P0-C-REMEDIATE` | cgm-remote-monitor | `-` | `unresolved` | - | `not-started` | **UNMEASURED** | 0/0 (1 no-gate) |
-| `P0-D` | cgm-remote-monitor | `bf/coercion` | `b7519fc76f47` † | 1 | `ready-to-push` | **PASS** | 4/4 |
+| `P0-D` | cgm-remote-monitor | `bf/coercion` | `f829ea115661` † | 1 | `ready-to-push` | **PASS** | 4/4 |
 | `P0-E` | cgm-remote-monitor | `bf/reads` | `2ecfeb53ff1e` | 6 | `ready-to-push` | **PASS** | 3/3 (5 skip, 3 no-gate) |
 | `P0-F` | nightscout-connect | `fix/connect-timer-jitter` | `c1cce2a2f962` | 1 | `ready-to-push` | **PASS** | 2/2 (1 no-gate) |
 | `P0-G` | cgm-remote-monitor | `bf/food` | `73495331e68c` | 1 | `ready-to-push` | **PASS** | 3/3 (1 skip) |
@@ -77,10 +77,19 @@ Nothing in this record is closed for an operator. Every branch below is local an
 | `FU-RESIDUALS` | cgm-remote-monitor | `-` | `unresolved` | - | `gate-not-met` | **FAIL** | 0/3 (1 no-gate) |
 | `FU-HYGIENE` | cgm-remote-monitor | `-` | `unresolved` | - | `not-started` | **UNMEASURED** | 0/0 (2 no-gate) |
 
-† `bf/coercion` was `ab197bf86892` when this table was first measured. It was amended to
-`b7519fc76f47` on 2026-09-16 — two code comments and one paragraph of the commit message asserted
-BF-32's refuted mechanism as fact. Comment-only: the tree is otherwise identical, 28 passing before
-and after, and the gates were re-run at the new SHA with the same 4/4 result recorded above.
+† `bf/coercion` was `ab197bf86892` when this table was first measured, and is now
+`f829ea115661` after two amends on 2026-09-16, both before any push.
+
+The first was comment-only: two code comments and one paragraph of the commit message asserted
+BF-32's refuted mechanism as fact. The second carries code — **BF-68**, a regression the branch
+itself introduced. Excluding every non-value operator from conversion is right for `$regex` and
+wrong for `$type`, whose operand is a BSON type code: `find[sgv][$type]=2` worked on `origin/dev`
+and became an HTTP 500. `operandReaderFor` reads a digits-only `$type` operand as a number and
+passes aliases through. One further test change decouples the branch from `bf/exists`, which reads
+the `$exists` operand as a boolean.
+
+The gates were re-run at each SHA with the same 4/4 result recorded above; `TEST=query` goes from
+28 to 29 passing with the new case.
 
 ### `P0-A` &mdash; bf/alarms - BF-28, BF-29, BF-31
 
@@ -239,7 +248,7 @@ and after, and the gates were re-run at the new SHA with the same 4/4 result rec
 |---|---|
 | repo | `cgm-remote-monitor` (`externals/cgm-remote-monitor-official`) |
 | branch | `bf/coercion` |
-| commit | `b7519fc76f47b2c3b9570ced8b00c58412aa9a22` † |
+| commit | `f829ea1156612daa819e803e416a18c17b462ccd` † |
 | base declared | `origin/dev@a8888f0d` |
 | base resolved | `a8888f0d9facb8a9bb54c2ab15333f3f241b45bf` |
 | branch contains base | yes |

@@ -21,7 +21,7 @@ cgm-remote-monitor branches sit **directly on `origin/dev` at `a8888f0d`** in wo
 | `cgm-remote-monitor` | `bf/alarms` | `5dcf783f` | 3 | BF-28, BF-29, BF-31 — alarm delivery |
 | `cgm-remote-monitor` | `bf/auth` | **`56ed29d2`** | **3** | BF-17, BF-30 — **security**. Third commit added 2026-09-16, see below |
 | `cgm-remote-monitor` | `bf/cache` | `4f86bab1` | 2 | T0.2, T0.3 — cache clone cost |
-| `cgm-remote-monitor` | `bf/coercion` | **`b7519fc7`** | 1 | T0.5 — schema-driven query coercion. Amended 2026-09-16, see below |
+| `cgm-remote-monitor` | `bf/coercion` | **`f829ea11`** | 1 | T0.5 — schema-driven query coercion. Amended 2026-09-16, see below |
 | `cgm-remote-monitor` | `bf/connect-pin` | `0807eb1c` | 1 | connector pin → the `v0.0.14` tarball (one file, +1/−1) |
 | `cgm-remote-monitor` | `bf/food` | `73495331` | 1 | BF-16, and **BF-35** surfaced while fixing it |
 | `cgm-remote-monitor` | `bf/merge` | `b06c6faf` | 1 | BF-36 |
@@ -33,9 +33,10 @@ Plus, prepared locally in `nightscout-connect`: branch `release/v0.0.14` and an 
 `v0.0.14`, both at `649a7de2`.
 
 > **The SHAs that moved, and why.** `bf/coercion` `88d1f8a4` → `ab197bf8` (9 files, code
-> only; 40 CHANGELOG lines removed) → **`b7519fc7`** (2026-09-16: two code comments and one
-> paragraph of the commit message stated BF-32's refuted mechanism as fact; no behaviour change,
-> 28 passing before and after). `bf/reads` `0d19bb31` → **`2ecfeb53`** (the changelog-only
+> only; 40 CHANGELOG lines removed) → `b7519fc7` (2026-09-16: two code comments and one paragraph
+> of the commit message stated BF-32's refuted mechanism as fact) → **`f829ea11`** (same day:
+> **BF-68**, a regression the branch introduced — `$type`'s operand is a BSON type code and
+> excluding it from conversion turned a working `find[sgv][$type]=2` into an HTTP 500). 29 passing. `bf/reads` `0d19bb31` → **`2ecfeb53`** (the changelog-only
 > commit dropped, **and the branch un-stacked from `bf/coercion` and rebased directly onto
 > `origin/dev`**, which is why it now carries 6 commits rather than 8). Safety refs
 > **`bf/coercion.bak-changelog`** (`88d1f8a4`) and **`bf/reads.bak-changelog`** (`0d19bb31`) are
@@ -394,7 +395,7 @@ was wrong rather than the substituter.**
 
 | branch | commits | what it is |
 |---|---|---|
-| `bf/coercion` `b7519fc7` | 1 | T0.5 — schema-driven query coercion. The largest single change in the batch |
+| `bf/coercion` `f829ea11` | 1 | T0.5 — schema-driven query coercion. The largest single change in the batch |
 | `bf/reads` `2ecfeb53` | 6 | BF-01, BF-05, BF-13, BF-14, BF-15, BF-33 |
 
 **These two used to be a stack and are not any more.** They merge clean with each other and with
@@ -671,11 +672,21 @@ and no branch in this set is the base of another.
 | `bf/coercion` | `88d1f8a4` | `ab197bf8` | 40 CHANGELOG lines removed; 9 files, code only |
 | `bf/reads` | `0d19bb31` | **`2ecfeb53`** | changelog-only commit dropped, **and un-stacked from `bf/coercion`, rebased directly onto `origin/dev`** |
 
-**A second, separate amend on 2026-09-16**, not part of the strip: `bf/coercion` `ab197bf8` →
-**`b7519fc7`**. `lib/server/query-coercion.js`'s header comment, a `tests/query.test.js` comment and
-one paragraph of the commit message all asserted that `{$exists: NaN}` is falsy and inverts the
-query — the mechanism the branch's own evidence refutes, measured against seven live servers. No
-behaviour change, 28 passing before and after, gates 4/4 after.
+**Two further amends on 2026-09-16**, neither part of the strip, both before any push.
+
+`ab197bf8` → `b7519fc7`: `lib/server/query-coercion.js`'s header comment, a `tests/query.test.js`
+comment and one paragraph of the commit message all asserted that `{$exists: NaN}` is falsy and
+inverts the query — the mechanism the branch's own evidence refutes, measured against seven live
+servers. Comment-only.
+
+`b7519fc7` → **`f829ea11`**: **BF-68**, a regression this branch introduced. Excluding every
+non-value operator from conversion is right for `$regex` and wrong for `$type`, whose operand is a
+BSON type code — `find[sgv][$type]=2` worked on `dev` and became *"Unknown type name alias: 2"*,
+an HTTP 500. `operandReaderFor` reads a digits-only `$type` operand as a number and passes aliases
+through. The same amend decouples the branch's "operands are left alone" test from **`bf/exists`**,
+which reads the `$exists` operand as a boolean: pinning the exact string made a clean textual merge
+produce a red suite, so it now asserts the operand was not turned into a *number*. 29 passing,
+gates 4/4, and the merged tree with `bf/exists` is 29 + 12 passing.
 
 **Safety refs kept until the PRs merge**, then delete: `bf/coercion.bak-changelog` (`88d1f8a4`),
 `bf/reads.bak-changelog` (`0d19bb31`), `bf/reads-prerebase` (`824380a0`).
