@@ -488,6 +488,46 @@ Then push each branch and open:
 - **E** → base **`bf/coercion`**, and retarget it to `dev` once D merges. Most review UIs do that
   automatically; GitHub does.
 
+## 3a. DONE — the rebase is applied and the merged tree is verified
+
+**`bf/reads` is now based on `bf/coercion`.** Done locally, nothing pushed. Safety ref
+`bf/reads-prerebase` = `824380a0` is kept until the PRs are merged; delete it after.
+
+| check | result |
+|---|---|
+| commits preserved | **7 of 7**, `af717c8f … 0d19bb31`, order unchanged |
+| conflicts | **one**, `CHANGELOG.md`, exactly as predicted — resolved by keeping **both** blocks under `### Fixed` |
+| branch's own contribution | `diff origin/dev..bf/reads-prerebase` vs `diff bf/coercion..bf/reads`, excluding `CHANGELOG.md`: **byte-identical** |
+| full suite on the merged tree | **2076 passing, 3 pending, 0 failing** |
+
+**The suite count is exactly additive**: base **2028** + `bf/reads` **35** + `bf/coercion` **13** =
+**2076**. No test lost, none duplicated, no existing expectation moved.
+
+### The predicted semantic gap is CLOSED by the combination
+
+§3b predicted that both branches could land clean and leave the count path untyped, because
+`aggregate.js` calls `query.js` passing no options. **On the merged tree that is not what happens**,
+and the reason is that BF-01's fix is better than the prediction assumed:
+
+```
+lib/server/aggregate.js:20    var query = api.query_for(opts);     // the COLLECTION's own builder
+lib/server/entries.js:181-188 function query_for (opts) {
+                                var queryOpts = { collection: 'entries', useEpoch: true, … };
+                                return find_options(opts, queryOpts);
+                              }
+```
+
+BF-01 stopped building the filter from the defaults and delegated to each collection's `query_for`,
+and every one of those already names its collection (`entries`, `treatments`, `devicestatus`,
+`profile`, `activity`). So coercion's `collection:` option is carried through to `query.js` on the
+count path for free. **The two fixes compose correctly.** Follow-up 1 below is therefore
+**resolved**, not pending.
+
+> **Marked read-derived, per this document's own rule (§4b).** The chain above was verified by
+> reading it and the suites pass; what does *not* yet exist is an end-to-end assertion that a
+> numeric filter on `count/devicestatus/where` returns rows on the merged tree. That is the one
+> test worth adding, and until it exists this paragraph is reasoning, not measurement.
+
 ## 3b. A clean textual merge is not a correct merge
 
 `bf/coercion` and `bf/reads` are **both rewriting query construction**. `merge-tree` says their
@@ -547,9 +587,10 @@ things worse.
 
 ## 5. Follow-ups, deliberately not in these PRs
 
-1. **`aggregate.js` does not pass a collection to `query.js`.** After D and E both land, the count
-   path still gets the legacy default walker, so `count/.../where` on `devicestatus` and friends
-   stays untyped. One-line follow-up, but it needs both merged first.
+1. ~~**`aggregate.js` does not pass a collection to `query.js`.**~~ **RESOLVED by the
+   combination** — see §3a. BF-01 delegates to each collection's `query_for`, which already names
+   its collection, so coercion's option reaches `query.js` on the count path. What remains is an
+   end-to-end test asserting it, which does not exist.
 2. **The limit rule is written twice** — `lib/server/count.js` and v3's `parseLimit` — on purpose,
    so each commit lands alone. Unify afterwards. *Two readings of one rule is the root cause of
    this whole family*, so leaving it duplicated is a debt with a name.
