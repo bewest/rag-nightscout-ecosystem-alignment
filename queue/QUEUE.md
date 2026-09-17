@@ -33,9 +33,9 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 |---|---|
 | items | 76 |
 | runnable gates | 121 |
-| explicit `no-gate:` markers | 113 |
+| explicit `no-gate:` markers | 114 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 113 of the 234 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 114 of the 235 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -81,7 +81,7 @@ decision is required by any of them.
 |---|---|---|---|---|---|
 | `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `in-flight-upstream` | `bf/alarms` | major | 9 run + 3 no-gate |
 | `P0-B` | bf/cache - PR #8740, T0.2 and T0.3 read-path cost | `in-flight-upstream` | `bf/cache` | patch | 6 run + 2 no-gate |
-| `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `ready-to-push` | `bf/auth` | major | 5 run + 2 no-gate |
+| `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `ready-to-push` | `bf/auth` | major | 5 run + 3 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
 | `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `in-flight-upstream` | `bf/coercion` | minor | 7 run + 1 no-gate |
 | `P0-E` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion | `in-flight-upstream` | `bf/reads` | major | 10 run + 5 no-gate |
@@ -225,6 +225,7 @@ decision is required by any of them.
   - BF-17, same story: not in either local script, 8 passing with MongoDB, and 1 passing / 7 failing under the same ablation.
 - **NO GATE** &mdash; `npm run test:unit` was here and was recorded as "361 passing / 0 failing at GT1's measurement". That number is not evidence for this branch: the 44-file brace list contains NEITHER of the two test files bf/auth adds, so the suite could pass in full with every one of these fixes reverted.
 - **NO GATE** &mdash; Nothing here checks that the plaintext tokens ALREADY written into existing databases get cleaned up, and nothing will: the code fix does not remove them, there is no migration, and as of 2026-09-16 there deliberately is no detector script either. What DOES exist is measured next door - P0-C-REMEDIATE's gate checks that this branch's PR body and the release notes tell an operator the truth about it, including that a rename is not a rotation. Read that item before signing this one off; this marker is the honest half of the pair.
+- **NO GATE** &mdash; BF-30 COLLIDES WITH PR #8605 (chore/nightscout-modernization), MEASURED 2026-09-16, and nothing in this queue was tracking it. Trial-merge of bf/auth against origin/chore/nightscout-modernization CONFLICTS in FIVE files: lib/authorization/index.js, lib/authorization/storage.js, lib/api3/alarmSocket.js, lib/api3/security.js, lib/server/websocket.js. Andy does NOT touch lib/authorization/delaylist.js - that file is byte-identical to dev on his branch - but he REPLACES the IP derivation that feeds it, swapping the `forwarded-for` package for lib/server/client-ip.js driven by a new TRUST_PROXY setting, in exactly the four call sites bf/auth also edits. So both branches independently fix the same root cause - a throttle keyed on a value the caller chooses - with two different modules, peer-address.js and client-ip.js, and one of them has to lose. The conflicts are textual and the intents are complementary, so this is a merge problem rather than a design disagreement, but it is not automatic and it is not small. NOT GATED because the resolution is a design decision nobody has taken yet.
 
 **Evidence.**
 
