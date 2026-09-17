@@ -163,6 +163,7 @@ raised again).
 | **BF-51** | `azuredeploy.json`'s `WEBSITE_NODE_DEFAULT_VERSION` **parameter is referenced nowhere in the template**, while the `appSettings` block hard-codes the literal `8.11.1`. No Azure operator's Node version is controlled by the field that appears to control it — and cut 1's change of that parameter's default therefore has no effect on a deployed site | `azuredeploy.json`, on `origin/master`, `origin/dev` and `origin/chore/retire-jsdom` alike | medium — a one-click deployment path whose runtime knob is inert | yes | open — measured by parsing the template and counting `parameters('WEBSITE_NODE_DEFAULT_VERSION')`: **0** on both refs. **Not** reproduced against a live Azure deployment, so *why deployments work today* is an open question, not a finding |
 | **BF-52** | The four age plugins **grade the level on a threshold but request the URGENT notification on exact equality** (`age === prefs.urgent`), so the notification can only be asked for in the single evaluation window where the age equals the threshold exactly. Skip that window — a restart, a missed cycle — and the reminder never arrives, while the pill stays urgent | `lib/plugins/insulinage.js:92` and the same shape in `cannulaage`, `sensorage`, `batteryage` | **unsettled** — it may be intentional one-shot behaviour; it is family-wide and predates BF-28 | yes | open — read, not reproduced: no run across a sequence of evaluations was made. **BF-28 masked this on `insulinage` only** by making the URGENT branch unreachable at all; the other three have shipped with it for years |
 | **BF-67** | An out-of-order alarm threshold is **silently rewritten to a neighbour ±1** and the only trace is a `console.warn` on the server. An operator who enters an mmol/L number into a mg/dL field — `BG_HIGH=14` — gets it stored as **181 mg/dL**: the alarm then fires at a number the person never chose, and nothing they can see says so | `lib/settings.js:302-324` `verifyThresholds`, called from `:298`; present on `origin/master` and `origin/dev` alike | **medium** — the guard itself is right and the silence is the defect. It is an alarm threshold for a person managing diabetes, so quietly correcting it is the wrong behaviour even when the correction is sensible | yes | open — read on both refs; **not** reproduced against a running deployment, and no client-side or on-screen surface for the rewrite exists (grep over `lib/client/` and `views/` finds none) |
+| **BF-69** | The Bolus Wizard's quick-pick chooser is **built exactly once, at client construction, from an empty sandbox, and is never rebuilt**. `lib/client/index.js:239` creates `client.sbx` with no data, `:323` constructs `boluscalc`, whose own init calls `loadFoodQuickpicks()` against `client.sbx.data.food` = `[]`; `:596` then REPLACES `client.sbx` on every data update and `:637` calls `boluscalc.updateVisualisations`, which does not rebuild the chooser. `loadFoodQuickpicks` has exactly ONE call site. The chooser therefore offers only "(none)" forever, for every operator, while *Add food from database* works because it reads `sbx.data.food` at click time | `lib/client/boluscalc.js` (single call site at init) + `lib/client/index.js:239,323,596,637` | **medium** — a documented feature is inert for everyone; no wrong number is shown, and the defect it masks (BF-35) is worse than itself | yes | **open, found 2026-09-17** by a maintainer in a browser against the review harness; reproduced on `a8888f0d` AND on `rc/2026-09-dev-cycle`, 8 food records present and the chooser empty on both. A one-line candidate fix — call `loadFoodQuickpicks()` from `boluscalc.prepare()`, which runs on every drawer toggle — was applied to a scratch worktree and **verified**: the chooser then offers the two correct quick picks. **MUST NOT SHIP WITHOUT `bf/food` (#8735)** — see detail |
 
 ## 1b. Pre-release findings
 
@@ -633,6 +634,55 @@ would use is itself unsettled: see the measured correction in
 
 
 ## 2. Detail
+
+### BF-69 · the quick-pick chooser is built once, from nothing, and never rebuilt — **OPEN**
+
+**Found the way this register keeps saying defects should be found: somebody opened a browser.**
+
+The Bolus Wizard's quick-pick dropdown offers only `(none)`. The food records are present —
+`client.sbx.data.food` holds them, and *Add food from database* lists them correctly, because
+`fillForm` reads the sandbox at click time. The chooser does not, because it is populated once and
+never again.
+
+Measured 2026-09-17, dev-mode instances, identical 8-record seed, driven through Chrome:
+
+| build | `sbx.data.food` | chooser after clicking the Bolus Wizard |
+|---|---:|---|
+| `a8888f0d` (dev) | 8 | `["(none)"]` |
+| `rc/2026-09-dev-cycle` (8 units incl. `bf/food`) | 8 | `["(none)"]` |
+
+**Mechanism.** `lib/client/index.js`:
+
+```
+:239  client.sbx = sandbox.clientInit(client.ctx, client.now);   // EMPTY
+:323  client.boluscalc = require('./boluscalc')(client, $);      // -> loadFoodQuickpicks(), reads []
+:596  client.sbx = sandbox.clientInit(...);                      // replaced, WITH data
+:637  client.boluscalc.updateVisualisations(client.sbx);         // does NOT rebuild the chooser
+```
+
+`git grep loadFoodQuickpicks` finds the definition and **one** call site, at construction. So the
+chooser is built from zero records before any data has arrived, and nothing rebuilds it.
+
+**Candidate fix, verified rather than prescribed.** Calling `loadFoodQuickpicks()` from
+`boluscalc.prepare()` — which `toggleDrawer` already runs on every open — was applied to a scratch
+worktree off the RC. The chooser then offered `review-qp-visible (30 g)` and
+`review-qp-strfalse (40 g)`: the two quick picks `bf/food` intends, and no page errors.
+
+> **SEQUENCING CONSTRAINT — this fix must not ship before `bf/food` (#8735).**
+>
+> The same one-line change was applied to `a8888f0d` **without** `bf/food` and measured: the
+> chooser then offered **eight** entries — every plain food plus the quick pick the user
+> deliberately hid — and selecting them produced **five** `Cannot read properties of undefined
+> (reading 'foods')` page errors.
+>
+> BF-35's dose consequence is latent today *only because this defect hides it*. Repairing the
+> chooser alone converts a high-severity latent defect into a live one, in a bolus calculator.
+> Ship BF-69 with BF-35, or after it — never before.
+
+**What an operator sees.** The Bolus Wizard's quick pick list is empty, so saved quick picks cannot
+be used at all; foods have to be added one at a time from the database instead. Nothing displays a
+wrong number — the feature simply does not work. None of this is medical advice; if you rely on
+quick picks for meal dosing, raise it with your care team as well as your settings.
 
 ### BF-01 · `count/entries/where` silently matches nothing — **FIXED 2026-09-15**
 

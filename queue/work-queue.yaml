@@ -3681,6 +3681,72 @@ items:
       were re-authored rather than read as green - rule from
       memory/milestone-agents-and-non-vacuity.md.
 
+  - id: BFQ-69
+    title: BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@a8888f0d
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/client/boluscalc.js - loadFoodQuickpicks has exactly ONE call site, at
+      module construction. lib/client/index.js:239 creates an empty client.sbx,
+      :323 constructs boluscalc against it, :596 replaces client.sbx once data
+      arrives and :637 calls updateVisualisations, which does not rebuild the
+      chooser. Client-side, so it needs a rebundle, not a restart.
+    review: >
+      maintainer, and whoever reviews P0-G. This item CANNOT be reviewed on its
+      own - see blocks_on and the sequencing note.
+    operator_visible: >
+      The Bolus Wizard's quick pick list is empty, so saved quick picks cannot be
+      used at all and foods have to be added one at a time from the database
+      instead. Nothing shows a wrong number; the feature simply does not work.
+      This is not medical advice - if you rely on quick picks for meal dosing,
+      raise it with your care team as well as checking your settings.
+    semver: patch
+    semver_reason: >
+      Restores a documented feature that is inert. No API or configuration
+      surface changes.
+    register: [BF-69]
+    gates:
+      - run: >
+          NSREVIEW_ROOT=${NSREVIEW_ROOT:?} node tools/review/probes/quickpick-chooser-browser.js
+          --base "$NSREVIEW_BASE_URL" --candidate "$NSREVIEW_CANDIDATE_URL"
+          --secret "$NS_HARNESS_SECRET"
+        kind: integration
+        describe: >
+          Clicks the Bolus Wizard exactly as a user does and reads the chooser -
+          it does NOT call loadFoodQuickpicks itself, which is what
+          probes/food-boluscalc-browser.js does deliberately to reach BF-35 at
+          all. The difference between the two probes IS this defect. Green only
+          when the chooser is BOTH populated AND correct, because a build that
+          repairs it without bf/food offers 8 entries and throws 5 times.
+      - no-gate: >
+          Nothing can gate the sequencing constraint itself. A reviewer who
+          merges this without P0-G gets a green chooser arm and a bolus
+          calculator that loads the wrong food's carbs. blocks_on carries it;
+          judgement enforces it.
+    blocks_on: [P0-G]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/30-design/remedial/dev-cycle-review-harness-plan-2026-09-17.md
+    notes: >
+      FOUND 2026-09-17 by the maintainer, in a browser, against the review
+      harness - not by reading. Reproduced on a8888f0d AND on
+      rc/2026-09-dev-cycle: 8 food records present, chooser empty on both. The
+      one-line candidate fix (call loadFoodQuickpicks from boluscalc.prepare,
+      which toggleDrawer already runs on every open) was applied to a scratch
+      worktree and VERIFIED, rather than prescribed.
+
+      SEQUENCING, MEASURED: the same one-line change applied to a8888f0d
+      WITHOUT bf/food makes the chooser offer eight entries - every plain food
+      plus the quick pick the user hid - and selecting them throws five times.
+      BF-35's dose consequence is latent today ONLY because BF-69 hides it.
+      Repairing the chooser first converts a latent high-severity defect into a
+      live one in a bolus calculator. Ship with P0-G or after it, never before.
+
   - id: BFQ-40
     title: BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
     parcel: register-open

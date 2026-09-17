@@ -23,10 +23,10 @@ this page's job is to say which of those to open.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 50 | 22 | 19 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 51 | 23 | 19 |
 | **Modernization** | `release-train` | 12 | 2 | 2 |
 | **Multitenant** | `tenancy` | 18 | 10 | 3 |
-| | **total** | **80** | **34** | **24** |
+| | **total** | **81** | **35** | **24** |
 
 <!-- END GENERATED: horizons -->
 
@@ -88,6 +88,7 @@ several cover more than one `BF-`:
 | `BFQ-47` | `needs-decision` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | `BFQ-52` | `unsettled` | BF-52 - the age plugins can only ask for their urgent alarm in one window |
 | `BFQ-67` | `gate-not-met` | BF-67 - an alarm threshold is quietly changed and only the server log says so |
+| `BFQ-69` | `not-started` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `gate-not-met` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
@@ -107,7 +108,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|
 | `phase0` | 1 | 1 | 4 | 3 | 9 |  |  | **18** |
 | `release-train` | 2 | 4 |  | 4 |  | 2 |  | **12** |
-| `register-open` | 14 | 5 |  |  | 1 | 1 | 2 | **23** |
+| `register-open` | 15 | 5 |  |  | 1 | 1 | 2 | **24** |
 | `tenancy` | 10 |  | 1 | 5 |  | 1 | 1 | **18** |
 | `docs-truth` | 7 |  | 2 |  |  |  |  | **9** |
 
@@ -149,13 +150,13 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 55 | 69% |
+| Maintainer | 56 | 69% |
 | SECURITY reviewer | 10 | 12% |
-| Maintainer + a second human | 6 | 8% |
+| Maintainer + a second human | 6 | 7% |
 | SAFETY reviewer | 5 | 6% |
 | Whoever edits it next | 3 | 4% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **80** | |
+| **total** | **81** | |
 
 <!-- END GENERATED: reviewer-load -->
 

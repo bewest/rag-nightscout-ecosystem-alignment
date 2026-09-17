@@ -578,10 +578,24 @@ a meta-gate.
   arithmetic — `foods` is module-private, `#bc_carbs` is written only on the "(none)" branch, and
   `#bc_food` renders empty in the synthetic state. An earlier revision asserted on `#bc_carbs` and
   read 0 on **both** builds: a criterion that would have passed anything.
-- **`loadFoodQuickpicks` is called once, at client init**, before the socket delivers any food, so
-  the shipping chooser is empty until something rebuilds it. The probe calls it directly. Whether a
-  real user ever reaches the populated-and-broken state is a question for the maintainer, and it
-  bears on how urgent BF-35 actually is.
+- **BF-35's urgency question is ANSWERED, and the answer is a new defect — BF-69.** The
+  maintainer opened the Bolus Wizard in a browser on 2026-09-17: the chooser offers only
+  `(none)`, on dev *and* on the RC, with 8 food records loaded. `loadFoodQuickpicks` has exactly
+  one call site, at client construction, running against the empty initial sandbox; nothing
+  rebuilds it. **The quick-pick feature is inert for every operator**, which is why BF-35's dose
+  consequence is latent.
+
+  A one-line candidate fix (call it from `boluscalc.prepare()`) was applied to a scratch worktree
+  and **verified** — the chooser then offers the two correct quick picks.
+
+  > **Sequencing, measured: BF-69 must not ship before `bf/food` (#8735).** The same change on
+  > `a8888f0d` without `bf/food` makes the chooser offer **eight** entries, including the quick
+  > pick the user hid, and selecting them throws **five** times. Repairing the chooser first
+  > converts a latent high-severity defect into a live one, in a bolus calculator.
+
+  Filed as BF-69 in the register and `BFQ-69` in the queue (`blocks_on: [P0-G]`), with
+  `probes/quickpick-chooser-browser.js` gating it — green only when the chooser is **both**
+  populated **and** correct, so the trap build fails rather than passing its first arm.
 - **`#8741`'s actual credential path** is never exercised — the discriminator is a boot
   crash. Testing the real Dexcom coercion needs live credentials.
 - **`bf/alarms`' locale removal** on `/api/v1/alexa` and `/api/v1/googlehome` has no named

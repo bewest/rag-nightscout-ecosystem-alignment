@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 80 |
-| runnable gates | 129 |
-| explicit `no-gate:` markers | 126 |
+| items | 81 |
+| runnable gates | 130 |
+| explicit `no-gate:` markers | 127 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 126 of the 255 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 127 of the 257 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 35 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 10 | RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 7 | P0-C, P0-J, P0-C-REMEDIATE, P0-TAG, T30-AUTH, DOC-VIEWS, DOC-LINKS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
@@ -57,6 +57,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-10** BF-10 - mongod fatal-asserts at Docker's default nofile=1024
 - **BFQ-04** BF-04 - extract the v1 operator allowlist out of the seam
 - **BFQ-CAP01** CAP-01 - Nightscout cannot be served from a sub-path
+- **BFQ-69** BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing
 - **BFQ-40** BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
 - **BFQ-41** BF-41 - a reading dated ahead of the clock silences the stale-data alarm
 - **BFQ-CONNECTOR** BF-42, BF-43 - master pins the leaking connector, with a violated axios override
@@ -1236,7 +1237,7 @@ costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 23 items
+`parcel: register-open` &mdash; 24 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1258,6 +1259,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-18` | BF-18 - driver 7 doubles the getMore batch size on .limit(0) | `not-started` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `BFQ-20` | BF-20 - scalarize() converts a Date bound to an ISO string | `not-started` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `BFQ-CAP01` | CAP-01 - Nightscout cannot be served from a sub-path | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `BFQ-69` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-40` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion | `in-flight-upstream` | `-` | minor | 1 run |
 | `BFQ-41` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
 | `BFQ-CONNECTOR` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override | `gate-not-met` | `-` | patch | 1 run + 2 no-gate |
@@ -1692,6 +1694,40 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** The only capability entry in the register. BFQ-26 (BF-26) is the one part of it that is a defect rather than an absence.
+
+### `BFQ-69` &mdash; BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@a8888f0d` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `patch` |
+| review | maintainer, and whoever reviews P0-G. This item CANNOT be reviewed on its own - see blocks_on and the sequencing note. |
+| ships to operators today | **yes** |
+| register | `BF-69` |
+| blocks on | `P0-G` |
+
+**Blast radius.** lib/client/boluscalc.js - loadFoodQuickpicks has exactly ONE call site, at module construction. lib/client/index.js:239 creates an empty client.sbx, :323 constructs boluscalc against it, :596 replaces client.sbx once data arrives and :637 calls updateVisualisations, which does not rebuild the chooser. Client-side, so it needs a rebundle, not a restart.
+
+**What an operator sees.** The Bolus Wizard's quick pick list is empty, so saved quick picks cannot be used at all and foods have to be added one at a time from the database instead. Nothing shows a wrong number; the feature simply does not work. This is not medical advice - if you rely on quick picks for meal dosing, raise it with your care team as well as checking your settings.
+
+**Why `patch`.** Restores a documented feature that is inert. No API or configuration surface changes.
+
+**Gates.**
+
+- `[integration]` `NSREVIEW_ROOT=${NSREVIEW_ROOT:?} node tools/review/probes/quickpick-chooser-browser.js --base "$NSREVIEW_BASE_URL" --candidate "$NSREVIEW_CANDIDATE_URL" --secret "$NS_HARNESS_SECRET"`
+  - Clicks the Bolus Wizard exactly as a user does and reads the chooser - it does NOT call loadFoodQuickpicks itself, which is what probes/food-boluscalc-browser.js does deliberately to reach BF-35 at all. The difference between the two probes IS this defect. Green only when the chooser is BOTH populated AND correct, because a build that repairs it without bf/food offers 8 entries and throws 5 times.
+- **NO GATE** &mdash; Nothing can gate the sequencing constraint itself. A reviewer who merges this without P0-G gets a green chooser arm and a bolus calculator that loads the wrong food's carbs. blocks_on carries it; judgement enforces it.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/remedial/dev-cycle-review-harness-plan-2026-09-17.md`
+
+**Notes.** FOUND 2026-09-17 by the maintainer, in a browser, against the review harness - not by reading. Reproduced on a8888f0d AND on rc/2026-09-dev-cycle: 8 food records present, chooser empty on both. The one-line candidate fix (call loadFoodQuickpicks from boluscalc.prepare, which toggleDrawer already runs on every open) was applied to a scratch worktree and VERIFIED, rather than prescribed. SEQUENCING, MEASURED: the same one-line change applied to a8888f0d WITHOUT bf/food makes the chooser offer eight entries - every plain food plus the quick pick the user hid - and selecting them throws five times. BF-35's dose consequence is latent today ONLY because BF-69 hides it. Repairing the chooser first converts a latent high-severity defect into a live one in a bolus calculator. Ship with P0-G or after it, never before.
 
 ### `BFQ-40` &mdash; BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
 
