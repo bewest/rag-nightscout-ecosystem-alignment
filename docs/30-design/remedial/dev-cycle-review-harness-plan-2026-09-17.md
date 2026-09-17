@@ -56,16 +56,15 @@ is.**
 They merge clean in both orders. But the defect is *the absence of a partner branch*, which
 is not a prefix of any merge sequence — so no bisect over merge prefixes can name it.
 
-An earlier draft called `bf/reads`-without-`bf/coercion` "strictly worse than dev" on the
-strength of an inverted `$exists` result set. That was tested: on dev, `/api/v1/count/…/where`
-returns `[]` for *every* filter, including a plain device filter where the list endpoint
-returns 581 documents. The endpoint is uniformly dead on dev. `bf/reads` repairs it and then
-reports what that build's list endpoint already returns. `[refuted]` — the "strictly worse"
-framing does not survive.
+This claim went wrong twice before it went right, which is worth recording. An early draft
+called `bf/reads`-without-`bf/coercion` "strictly worse than dev" on the strength of an
+inverted `$exists` result set; a refuter knocked that down by showing the count endpoint is
+uniformly dead on dev, so `bf/reads` could only be an improvement. **Both were reasoning about
+the wrong surface.** Measured on a live seed, the half-merged state returns a confident
+`count=5` where the true answer is `577` — see §1a, *RESTORED, on better evidence*.
 
-**It remains a real risk, and the containment is unchanged**, but it is now justified as risk
-containment rather than as measured necessity. That distinction matters because the atomic
-merge is the thing a reviewer is being asked to accept.
+**So the atomic merge is justified by measurement, not only by risk containment**, and the
+`PAIR-WHOLE` arm detects a half-merge directly rather than relying on merge discipline.
 
 ---
 
@@ -92,19 +91,47 @@ release.
 **If the cycle has to be cut short, tiers 1–2 are the release.** They carry every `high` in the
 set and all four silent-wrong-answer classes.
 
-### ⚠ #8737's title claims a fix the branch does not deliver
+### ✅ RETRACTED: #8737 does fix BF-40 — measured 2026-09-17
 
-The PR title reads *"…and `$exists=false` returned the opposite (BF-02, BF-03, BF-11, BF-32,
-**BF-40**, BF-68)"*. **BF-40 is not fixed by `bf/coercion`.** Verified directly: the branch
-puts `$exists` in `NON_VALUE_OPERATORS` on purpose, so the operand reaches MongoDB as the
-string `'false'`, which is truthy — `find[<field>][$exists]=false` still returns the documents
-that **have** the field. The branch's own test asserts only that `$exists=true` was not turned
-into a number. `[measured]`
+**An earlier revision of this document claimed #8737's title overstated its fix. That claim
+was wrong and is withdrawn.** It was read-derived: `bf/coercion` puts `$exists` in
+`NON_VALUE_OPERATORS` in `query-coercion.js`, which I read as "the operand stays the string
+`'false'`". That exclusion is a *different* mechanism — it stops the field-domain coercer
+mangling the operand. The actual fix is `BOOLEAN_OPERANDS` / `readBooleanOperand` in
+`lib/server/query.js`, applied over the **built query** precisely so it also covers fields the
+type table does not name.
 
-The queue says the same (`BFQ-40`, `not-started`, *"stays wrong after the query type-conversion
-fix unless this is fixed too"*), so this is a PR-title defect, not a code defect — but it will
-mislead a reviewer and any release note derived from it. **Fix the title and body before
-merge.** The exclusion itself is correct and well-reasoned; only the claim is wrong.
+Measured on a live 582-document seed (577 sgv, 5 mbg), `find[mbg][$exists]=false`:
+
+| surface | BASE | COERCION | READS | PAIR |
+|---|---|---|---|---|
+| `GET /api/v1/entries.json` (list) | **5 ✗** inverted | **577 ✓** | **5 ✗** inverted | **577 ✓** |
+| `GET /api/v1/count/entries/where` | `[]` dead | `[]` dead | **5 ✗** inverted | **577 ✓** |
+| `count/where find[type]=sgv` | `[]` dead | `[]` dead | 577 ✓ | 577 ✓ |
+
+**`BFQ-40` in the queue is therefore wrong**, not merely stale: its `blast_radius` locates the
+fix at `query-coercion.js:90`, which is the wrong file, and its `operator_visible` text says the
+defect "stays wrong after the query type-conversion fix". Measurement refutes both. The row
+should move off `not-started`. *(This is the register's own read-or-run rule catching the
+register — and then catching this document.)*
+
+### ⚠ RESTORED, on better evidence: `bf/reads` alone IS strictly worse than dev
+
+§1 withdrew the "strictly worse" claim because it rested on the list endpoint, where dev is
+merely inverted rather than dead. On the **count** surface the claim holds, and now with a
+measurement:
+
+- **dev**: `/api/v1/count/entries/where` returns `[]` for *every* filter. Uniformly dead, and
+  obviously so — nothing downstream can mistake it for an answer.
+- **`bf/reads` alone**: returns a confident `count=5` for a filter whose true answer is **577**.
+
+A plausible wrong number is worse than a visible failure. This is the strongest argument in the
+cycle for the atomic merge, and it is the one thing no amount of reading produced — both earlier
+attempts at this claim, in both directions, were wrong.
+
+The `PAIR-WHOLE` arm in `tools/review/probes/pair-reads-coercion.js` is the detector: green only
+on the pair, red on BASE (dead), red on `READS`-only (inverted), red on `COERCION`-only (dead).
+
 
 ---
 
