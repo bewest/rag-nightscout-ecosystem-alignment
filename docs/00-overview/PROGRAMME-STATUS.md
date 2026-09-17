@@ -25,8 +25,8 @@ this page's job is to say which of those to open.
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 50 | 23 | 18 |
 | **Modernization** | `release-train` | 12 | 2 | 2 |
-| **Multitenant** | `tenancy` | 15 | 8 | 2 |
-| | **total** | **77** | **33** | **22** |
+| **Multitenant** | `tenancy` | 16 | 8 | 3 |
+| | **total** | **78** | **33** | **23** |
 
 <!-- END GENERATED: horizons -->
 
@@ -108,7 +108,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | `phase0` | 1 | 1 | 4 | 3 | 9 |  |  | **18** |
 | `release-train` | 2 | 4 |  | 4 |  | 2 |  | **12** |
 | `register-open` | 15 | 5 |  |  |  | 1 | 2 | **23** |
-| `tenancy` | 8 |  |  | 5 |  | 1 | 1 | **15** |
+| `tenancy` | 8 |  |  | 5 |  | 2 | 1 | **16** |
 | `docs-truth` | 7 |  | 2 |  |  |  |  | **9** |
 
 <!-- END GENERATED: state-matrix -->
@@ -149,13 +149,13 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 54 | 70% |
+| Maintainer | 55 | 71% |
 | SECURITY reviewer | 8 | 10% |
 | Maintainer + a second human | 6 | 8% |
 | SAFETY reviewer | 5 | 6% |
 | Whoever edits it next | 3 | 4% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **77** | |
+| **total** | **78** | |
 
 <!-- END GENERATED: reviewer-load -->
 

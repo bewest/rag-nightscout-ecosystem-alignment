@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 77 |
-| runnable gates | 125 |
-| explicit `no-gate:` markers | 118 |
+| items | 78 |
+| runnable gates | 126 |
+| explicit `no-gate:` markers | 122 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 118 of the 243 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 122 of the 248 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -46,7 +46,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `ready-to-push` | 6 | P0-C, P0-J, P0-C-REMEDIATE, P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 9 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01 |
-| `needs-decision` | 4 | RT-D3, RT-0, T30-RESEARCH, BFQ-47 |
+| `needs-decision` | 5 | RT-D3, RT-0, T30-RESEARCH, T30-AUTH, BFQ-47 |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
 ### Reaches an operator on today's release
@@ -1995,7 +1995,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 15 items
+`parcel: tenancy` &mdash; 16 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -2003,6 +2003,7 @@ alarm-readiness items, and the seam branch refresh.
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | `-` | n/a | 1 run + 3 no-gate |
+| `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split | `needs-decision` | `-` | n/a | 1 run + 4 no-gate |
 | `T30-SCHEMA` | T3.0 part 2 - configuration and credential storage in platform.sql | `not-started` | `-` | n/a | 1 run + 1 no-gate |
 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
@@ -2051,6 +2052,40 @@ alarm-readiness items, and the seam branch refresh.
 
 **Notes.** T3.0 is the largest correction owed in the programme. It does NOT block T3.3 - T3.3 landed first. It AMENDS T3.1, T3.2 and T3.3, which are all marked DONE- EXCEPT. RE-STATED 2026-09-16 - the enumeration this item asks for was written on 2026-09-15 and adversarially reviewed the same day, which corrected twelve claims including the surface total (277, not 258). What remains is not enumeration: it is the maintainer decisions the document defers, and the harnesses that would turn its numbers into measurements. The three decisions with the longest reach are where the tenant-owner API lives, what issues and verifies a tenant-owner credential, and whether D7's credential-free platform plane survives contact with Nocturne, which puts platform admin on the consumer API behind a platform_admin role instead.
 
+### `T30-AUTH` &mdash; The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `seam/t1-2-storage-interface@81a1f6ce` |
+| worktree | `externals/work/crm-seam` |
+| semver | `n/a` |
+| review | maintainer, and SECURITY for D17. The decision determines whether human identity leaves the codebase, and under the one-deployment shape the authentication plane is cohort-wide by construction - so tenant isolation rests entirely on the authorization layer and RLS. |
+
+**Blast radius.** No code. Two proposed decisions - D16 three listeners, D17 the auth plane splits by audience - plus the finding that nightscout-roles-gateway already integrated Kratos and Hydra with Nightscout in 2022 and that the half it left unfinished, the nsjwt token exchange, is the half no vendor writes for us.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** research and decision, no shipped surface
+
+**Gates.**
+
+- `[static]` `test -f docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
+  - the deliverable exists. A presence check and nothing more - it cannot say whether the recommendation is right, only that it was written.
+- **NO GATE** &mdash; EVERY ORY CLAIM IN IT IS READ, NOT RUN. No Kratos and no Hydra instance was started. This programme has measured five register entries whose read-derived claims did not survive contact with running code, and twice a prescribed fix measured as a regression. The discharge is specific: stand up Kratos 1.x and Hydra 2.x, register two tenants against one pool, and confirm a session for tenant A cannot be exchanged for a Nightscout token on tenant B.
+- **NO GATE** &mdash; nightscout-roles-gateway was READ, not executed. Its dependencies are 2022-era - @ory/kratos-client 0.9.0-alpha.3 and @ory/hydra-client 1.11.8 - and V0alpha2Api, which lib/privy/index.js:20 constructs, no longer exists under that name in Kratos 1.x. Whether its decision pipeline still works is unknown, and it is the first thing a port would measure.
+- **NO GATE** &mdash; Nothing measures what a cohort-wide identity pool costs in isolation risk. Section 3.1 names the hazard - one identity, one session, one login spanning every tenant - and bounds nothing. A gate would need a cross-tenant session test, which needs the running stack the first no-gate asks for.
+- **NO GATE** &mdash; No cost model. Ory Network pricing is not analysed and does not need to be under the one-deployment shape, which needs no Enterprise License - but the compliance question of any third-party processor adjacent to health data is not analysed either, and that one does not go away by self-hosting.
+
+**Evidence.**
+
+- `docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
+- `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
+
+**Notes.** Commissioned 2026-09-16 by the maintainer, who is leaning toward Ory so that sensitive OAuth and IAM controllers do not have to be built here, and who settled the deployment shape mid-research - ONE Kratos and ONE Hydra for the whole cohort, unified auth FOR Nightscout tenants, not a Kratos tenant PER Nightscout tenant. That settles the largest open question against Ory OSS, because OSS multi-tenancy is exactly what we are not asking for. The three findings a reader should not have to dig for - Nocturne uses no Ory at all and built identity in-house; Ory OSS is single-tenant and its multi-tenancy is the paid boundary, which does not bind us; and we already shipped this integration once and stopped one component short of finishing it.
+
 ### `T30-SCHEMA` &mdash; T3.0 part 2 - configuration and credential storage in platform.sql
 
 | | |
@@ -2062,7 +2097,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-seam` |
 | semver | `n/a` |
 | review | SECURITY - this is where D13's per-tenant credential root and D14's per-tenant signing key live |
-| blocks on | `T30-RESEARCH` |
+| blocks on | `T30-RESEARCH`, `T30-AUTH` |
 
 **Blast radius.** lib/admin/platform.sql. GT3 measured it as holding exactly two tables - tenants (L23) and tenant_members (L49) - with subject_id uuid NOT NULL at L52 and NO foreign key, no settings table, no secrets table and no signing-key column.
 
@@ -2079,6 +2114,8 @@ alarm-readiness items, and the seam branch refresh.
 **Evidence.**
 
 - `docs/60-research/remedial/gt3-register-truth-2026-09-15.md`
+
+**Notes.** THE DEPENDENCY ON T30-AUTH IS PARTIAL AND THE SCOPE IS STATED SO NOBODY OVER- BLOCKS ON IT. The device and data-path credential tables are settled regardless of how the auth decision goes - D17's first row makes the native per-tenant credential permanent, because an uploader cannot run an OAuth flow and D1 keeps the self-hosted path first-class. What T30-AUTH decides is whether HUMAN identity lives in these tables at all or in a cohort-wide Kratos pool, and writing DDL for a table that may hold nothing is the thing this edge exists to prevent. If the schema work is split, the device half can start now.
 
 ### `T30-WIRING` &mdash; T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT
 

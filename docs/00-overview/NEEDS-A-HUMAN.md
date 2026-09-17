@@ -29,7 +29,7 @@ Four states qualify:
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 16 items
+### Maintainer &mdash; 17 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -41,6 +41,7 @@ Four states qualify:
 | `P0-H` | `in-flight-upstream` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | #8734 |
 | `P0-I` | `in-flight-upstream` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | #8736 |
 | `RT-D3` | `needs-decision` | Answer the D3 question before 15.0.9 ships | &mdash; |
+| `T30-AUTH` | `needs-decision` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `DOC-LINKS` | `ready-to-push` | Every path the programme's documents and tooling cite must resolve | &mdash; |
 | `DOC-VIEWS` | `ready-to-push` | A reviewer-facing surface over the queue: three overview pages and a packet per  | &mdash; |

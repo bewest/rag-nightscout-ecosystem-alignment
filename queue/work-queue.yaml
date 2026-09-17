@@ -2529,6 +2529,76 @@ items:
       contact with Nocturne, which puts platform admin on the consumer API
       behind a platform_admin role instead.
 
+  - id: T30-AUTH
+    title: "The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: seam/t1-2-storage-interface@81a1f6ce
+    worktree: externals/work/crm-seam
+    state: needs-decision
+    blast_radius: >
+      No code. Two proposed decisions - D16 three listeners, D17 the auth plane
+      splits by audience - plus the finding that nightscout-roles-gateway already
+      integrated Kratos and Hydra with Nightscout in 2022 and that the half it left
+      unfinished, the nsjwt token exchange, is the half no vendor writes for us.
+    review: >
+      maintainer, and SECURITY for D17. The decision determines whether human
+      identity leaves the codebase, and under the one-deployment shape the
+      authentication plane is cohort-wide by construction - so tenant isolation
+      rests entirely on the authorization layer and RLS.
+    operator_visible: ""
+    semver: n/a
+    semver_reason: research and decision, no shipped surface
+    register: []
+    gates:
+      - run: test -f docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md
+        kind: static
+        describe: >
+          the deliverable exists. A presence check and nothing more - it cannot
+          say whether the recommendation is right, only that it was written.
+      - no-gate: >
+          EVERY ORY CLAIM IN IT IS READ, NOT RUN. No Kratos and no Hydra instance
+          was started. This programme has measured five register entries whose
+          read-derived claims did not survive contact with running code, and twice
+          a prescribed fix measured as a regression. The discharge is specific:
+          stand up Kratos 1.x and Hydra 2.x, register two tenants against one
+          pool, and confirm a session for tenant A cannot be exchanged for a
+          Nightscout token on tenant B.
+      - no-gate: >
+          nightscout-roles-gateway was READ, not executed. Its dependencies are
+          2022-era - @ory/kratos-client 0.9.0-alpha.3 and @ory/hydra-client 1.11.8
+          - and V0alpha2Api, which lib/privy/index.js:20 constructs, no longer
+          exists under that name in Kratos 1.x. Whether its decision pipeline
+          still works is unknown, and it is the first thing a port would measure.
+      - no-gate: >
+          Nothing measures what a cohort-wide identity pool costs in isolation
+          risk. Section 3.1 names the hazard - one identity, one session, one
+          login spanning every tenant - and bounds nothing. A gate would need a
+          cross-tenant session test, which needs the running stack the first
+          no-gate asks for.
+      - no-gate: >
+          No cost model. Ory Network pricing is not analysed and does not need to
+          be under the one-deployment shape, which needs no Enterprise License -
+          but the compliance question of any third-party processor adjacent to
+          health data is not analysed either, and that one does not go away by
+          self-hosting.
+    blocks_on: []
+    evidence:
+      - docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md
+      - docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md
+    notes: >
+      Commissioned 2026-09-16 by the maintainer, who is leaning toward Ory so that
+      sensitive OAuth and IAM controllers do not have to be built here, and who
+      settled the deployment shape mid-research - ONE Kratos and ONE Hydra for the
+      whole cohort, unified auth FOR Nightscout tenants, not a Kratos tenant PER
+      Nightscout tenant. That settles the largest open question against Ory OSS,
+      because OSS multi-tenancy is exactly what we are not asking for. The three
+      findings a reader should not have to dig for - Nocturne uses no Ory at all
+      and built identity in-house; Ory OSS is single-tenant and its multi-tenancy
+      is the paid boundary, which does not bind us; and we already shipped this
+      integration once and stopped one component short of finishing it.
+
   - id: T30-SCHEMA
     title: T3.0 part 2 - configuration and credential storage in platform.sql
     parcel: tenancy
@@ -2561,10 +2631,19 @@ items:
           place a secret can enter and assert none is deployment-wide under
           multi - which is the T30-RESEARCH deliverable, so this is blocked on it
           in substance as well as in order.
-    blocks_on: [T30-RESEARCH]
+    blocks_on: [T30-RESEARCH, T30-AUTH]
     evidence:
       - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
-    notes: ""
+    notes: >
+      THE DEPENDENCY ON T30-AUTH IS PARTIAL AND THE SCOPE IS STATED SO NOBODY
+      OVER-BLOCKS ON IT. The device and data-path credential tables are settled
+      regardless of how the auth decision goes - D17's first row makes the native
+      per-tenant credential permanent, because an uploader cannot run an OAuth
+      flow and D1 keeps the self-hosted path first-class. What T30-AUTH decides is
+      whether HUMAN identity lives in these tables at all or in a cohort-wide
+      Kratos pool, and writing DDL for a table that may hold nothing is the thing
+      this edge exists to prevent. If the schema work is split, the device half
+      can start now.
 
   - id: T30-WIRING
     title: T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT

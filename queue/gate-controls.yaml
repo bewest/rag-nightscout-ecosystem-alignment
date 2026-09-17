@@ -1319,6 +1319,20 @@ controls:
       dirties the working tree.
 
   - gate: |-
+      test -f docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md
+    cwd: .
+    control: |-
+      test -f docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md.this-name-does-not-exist
+    positive-control: |-
+      test -f docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md
+    control-kind: static
+    proves: >
+      `test -f` is shown to distinguish an absent path from a present one. WEAK
+      BY CONSTRUCTION, and the item says so: it proves the instrument works, not
+      that the document it names is right. The real controls this item needs are
+      the two in its no-gate markers and both need a running Kratos and Hydra.
+
+  - gate: |-
       test -f docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md
     cwd: .
     control: |-
