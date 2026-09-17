@@ -23,10 +23,10 @@ this page's job is to say which of those to open.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 49 | 23 | 17 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 50 | 23 | 18 |
 | **Modernization** | `release-train` | 12 | 2 | 2 |
 | **Multitenant** | `tenancy` | 15 | 9 | 1 |
-| | **total** | **76** | **34** | **20** |
+| | **total** | **77** | **34** | **21** |
 
 <!-- END GENERATED: horizons -->
 
@@ -105,7 +105,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 | parcel | `not-started` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `needs-decision` | `unsettled` | total |
 |---|---|---|---|---|---|---|---|---|
-| `phase0` | 1 | 1 | 3 | 3 | 9 |  |  | **17** |
+| `phase0` | 1 | 1 | 4 | 3 | 9 |  |  | **18** |
 | `release-train` | 2 | 4 |  | 4 |  | 2 |  | **12** |
 | `register-open` | 15 | 5 |  |  |  | 1 | 2 | **23** |
 | `tenancy` | 9 |  |  | 5 |  |  | 1 | **15** |
@@ -149,13 +149,13 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 53 | 70% |
-| SECURITY reviewer | 8 | 11% |
+| Maintainer | 54 | 70% |
+| SECURITY reviewer | 8 | 10% |
 | Maintainer + a second human | 6 | 8% |
-| SAFETY reviewer | 5 | 7% |
+| SAFETY reviewer | 5 | 6% |
 | Whoever edits it next | 3 | 4% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **76** | |
+| **total** | **77** | |
 
 <!-- END GENERATED: reviewer-load -->
 

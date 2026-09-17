@@ -29,7 +29,7 @@ Four states qualify:
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 14 items
+### Maintainer &mdash; 15 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -44,6 +44,7 @@ Four states qualify:
 | `DOC-LINKS` | `ready-to-push` | Every path the programme's documents and tooling cite must resolve | &mdash; |
 | `DOC-VIEWS` | `ready-to-push` | A reviewer-facing surface over the queue: three overview pages and a packet per  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
+| `P0-J` | `ready-to-push` | bf/throttle - BF-30, failed-auth throttling, compatibility default | #8605 |
 | `P0-TAG` | `ready-to-push` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
 | `BFQ-52` | `unsettled` | BF-52 - the age plugins can only ask for their urgent alarm in one window | &mdash; |
@@ -60,7 +61,7 @@ Four states qualify:
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `P0-C` | `ready-to-push` | bf/auth - BF-17 plaintext token, BF-30 throttle key | &mdash; |
+| `P0-C` | `ready-to-push` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | &mdash; |
 
 ### Upstream reviewers &mdash; 1 item
 

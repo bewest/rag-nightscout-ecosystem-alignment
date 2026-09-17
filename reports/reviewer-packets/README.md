@@ -23,6 +23,7 @@ repository.
 |---|---|---|---|
 | [`P0-F`](p0-f-fix-connect-timer-jitter.md) | #68 | `in-flight-upstream` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter |
 | [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
+| [`P0-J`](p0-j-bf-throttle.md) | #8605 | `ready-to-push` | bf/throttle - BF-30, failed-auth throttling, compatibility default |
 | [`P0-T01`](p0-t01-fix-quadratic-treatment-processing.md) | #8733 | `in-flight-upstream` | T0.1 - PR #8733, the two quadratic treatment scans |
 | [`P0-H`](p0-h-bf-merge.md) | #8734 | `in-flight-upstream` | bf/merge - PR #8734, BF-36 client delta merge reads past the end |
 | [`P0-G`](p0-g-bf-food.md) | #8735 | `in-flight-upstream` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser |
@@ -34,7 +35,7 @@ repository.
 | [`BFQ-47`](bfq-47.md) | &mdash; | `needs-decision` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | [`DOC-LINKS`](doc-links-main.md) | &mdash; | `ready-to-push` | Every path the programme's documents and tooling cite must resolve |
 | [`DOC-VIEWS`](doc-views-main.md) | &mdash; | `ready-to-push` | A reviewer-facing surface over the queue: three overview pages and a packet per PR |
-| [`P0-C`](p0-c-bf-auth.md) | &mdash; | `ready-to-push` | bf/auth - BF-17 plaintext token, BF-30 throttle key |
+| [`P0-C`](p0-c-bf-auth.md) | &mdash; | `ready-to-push` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
 | [`P0-TAG`](p0-tag-release-v0-0-14.md) | &mdash; | `ready-to-push` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push |
 | [`RT-D3`](rt-d3-origin-dev.md) | &mdash; | `needs-decision` | Answer the D3 question before 15.0.9 ships |

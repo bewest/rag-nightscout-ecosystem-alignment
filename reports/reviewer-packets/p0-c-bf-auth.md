@@ -13,7 +13,7 @@
 
 # Review packet — P0-C
 
-**bf/auth - BF-17 plaintext token, BF-30 throttle key**
+**bf/auth - BF-17 plaintext token (BF-30 split out to P0-J)**
 
 | | |
 |---|---|
@@ -22,12 +22,14 @@
 | base | `origin/dev@a8888f0d` |
 | claimed state | `ready-to-push` — a claim; `make queue-status ID=P0-C` is the measurement |
 | semver | `major` |
-| register entries | `BF-17`, `BF-30` |
+| register entries | `BF-17` |
 
 ## What this changes
 
-2 commits. lib/authorization/endpoints.js, storage.js, delaylist.js, index.js,
-lib/admin_plugins/subjects.js.
+2 commits at ce82f0cd, 3 files, +310/-18. lib/authorization/endpoints.js,
+lib/authorization/storage.js, tests/authsubjects.test.js. SPLIT 2026-09-16 -
+the BF-30 throttle commit that used to sit underneath this one is now P0-J on
+bf/throttle, and the old tip 56ed29d2 no longer exists.
 
 ## Why that semver
 
@@ -79,16 +81,6 @@ the first - the one-line removal was taken onto bf/auth as commit 56ed29d2,
 and the gate is green because the residual is gone, not because the pattern
 was weakened. The gate stays as a regression guard.
 
-**`TEST=authdelay npm run test-single`** &nbsp;·&nbsp; kind: `integration` &nbsp;·&nbsp; cwd: `externals/work/crm-bf-auth`
-
-BF-30, the branch's OWN test, which `npm run test:unit` never ran -
-tests/authdelay.test.js matches neither local brace list and is one of the 52
-files only CI's `test-ci` reaches. 11 passing with MongoDB up on 27031. E3
-ABLATED it: with the seven changed lib files put back to origin/dev and
-lib/server/peer-address.js removed, 2 passing / 9 failing. Needs the database
-(6 passing / 1 failing against a dead port), so it is integration and honestly
-so.
-
 **`TEST=authsubjects npm run test-single`** &nbsp;·&nbsp; kind: `integration` &nbsp;·&nbsp; cwd: `externals/work/crm-bf-auth`
 
 BF-17, same story: not in either local script, 8 passing with MongoDB, and 1
@@ -110,6 +102,15 @@ passing / 7 failing under the same ablation.
   the release notes tell an operator the truth about it, including that a
   rename is not a rotation. Read that item before signing this one off; this
   marker is the honest half of the pair.
+- ONE CONFLICT WITH PR #8605 REMAINS AND IT IS THIS BRANCH'S OWN -
+  lib/authorization/storage.js, which Andy's branch also narrows, for
+  different reasons. Measured 2026-09-16 after the split: bf/auth against
+  origin/chore/nightscout-modernization conflicts in that one file and
+  nothing else. BEFORE THE SPLIT IT WAS FIVE, and the other four were the
+  BF-30 peer plumbing alone, which is why that half was re-cut without it -
+  see P0-J. Not gated, because resolving it is a merge somebody has to sit
+  down and do and which side wins depends on whether the allow-list lands at
+  all.
 
 ## Evidence
 
