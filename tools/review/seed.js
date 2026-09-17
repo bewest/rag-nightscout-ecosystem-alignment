@@ -57,6 +57,10 @@ const flag = k => argv.includes(k);
 const URL_BASE = arg('--url');
 const SECRET = arg('--secret');
 const HOURS = parseInt(arg('--hours', '48'), 10);
+// Cadence matters for the cache probes: lib/server/cache.js retains 48h, so
+// more HOURS does not grow the cache — only a denser sample does. 30s over 48h
+// gives ~5760 entries against 576 at the 5-minute default.
+const CADENCE_SEC = parseInt(arg('--cadence-sec', '300'), 10);
 const ADVERSARIAL = !flag('--no-adversarial');
 const OUT = arg('--out');
 const MONGO_DB = arg('--mongo-db');            // authoritative count source
@@ -105,7 +109,7 @@ async function postChunked(path, docs, label) {
 // but not in the future (a future-dated reading silences the stale alarm —
 // BF-41, which is NOT in this cycle and must not be simulated by accident).
 const NOW = Date.now();
-const CADENCE = 5 * MIN;
+const CADENCE = CADENCE_SEC * 1000;
 const SERIES_END = Math.floor(NOW / CADENCE) * CADENCE - CADENCE;
 const SERIES_START = SERIES_END - HOURS * HOUR;
 
@@ -199,6 +203,7 @@ function buildProfile() {
     });
     prev = sgv;
   }
+  manifest.cadenceSec = CADENCE_SEC;
   manifest.counts.entries = await postChunked('/api/v1/entries', entries, 'entries');
 
   // ---- 3. TREATMENTS — 60h, each on its own created_at

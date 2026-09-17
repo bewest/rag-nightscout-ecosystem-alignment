@@ -25,6 +25,9 @@ STATES=(
   "ALARMS:bf/alarms"
   "PARMS:bf/parms"
   "MERGE:bf/merge"
+  "CACHE:bf/cache"
+  "QUAD:fix/quadratic-treatment-processing"
+  "PERFBASE:a8888f0d"
   "RC:rc/2026-09-dev-cycle"
 )
 
@@ -79,6 +82,16 @@ probe "alarms" "#8739" node "$HERE/probes/alarms.js" \
 probe "merge" "#8734" node "$HERE/probes/merge.js" \
   --base-worktree "$NSREVIEW_ROOT/states/BASE" \
   --candidate-worktree "$NSREVIEW_ROOT/states/MERGE"
+probe "quadratics" "#8733" node "$HERE/probes/quadratics-shape.js" \
+  --base-worktree "$NSREVIEW_ROOT/states/BASE" \
+  --candidate-worktree "$NSREVIEW_ROOT/states/QUAD"
+# cache-shape RESEEDS AND RESTARTS both states it is given, in production mode.
+# It therefore runs against PERFBASE, never BASE: pointing it at the shared
+# control silently strips BASE of its adversarial fixtures and drops it out of
+# development mode, and the next run then fails for reasons unrelated to any
+# branch. That is not hypothetical — it happened on 2026-09-17.
+probe "cache" "#8740" node "$HERE/probes/cache-shape.js" \
+  --base-state PERFBASE --candidate-state CACHE --secret "$SEC"
 
 # The integration branch carries every qualified unit. Running the SAME probes
 # against it is what catches a later merge breaking an earlier fix - the whole
@@ -95,6 +108,8 @@ probe "rc:credentials" "RC" node "$HERE/probes/credentials.js" \
 probe "rc:alarms"      "RC" node "$HERE/probes/alarms.js" \
   --base-worktree "$NSREVIEW_ROOT/states/BASE" --candidate-worktree "$NSREVIEW_ROOT/states/RC"
 probe "rc:merge"       "RC" node "$HERE/probes/merge.js" \
+  --base-worktree "$NSREVIEW_ROOT/states/BASE" --candidate-worktree "$NSREVIEW_ROOT/states/RC"
+probe "rc:quadratics"  "RC" node "$HERE/probes/quadratics-shape.js" \
   --base-worktree "$NSREVIEW_ROOT/states/BASE" --candidate-worktree "$NSREVIEW_ROOT/states/RC"
 
 # Every probe must also be RED when its candidate is BASE. A probe that passes
@@ -164,6 +179,8 @@ red_control merge node "$HERE/probes/merge.js" \
   --base-worktree "$NSREVIEW_ROOT/states/BASE" --candidate-worktree "$NSREVIEW_ROOT/states/BASE"
 red_control parms node "$HERE/probes/parms-browser.js" \
   --base "$BASE_DEV" --candidate "$BASE_DEV" --secret "$SEC"
+red_control quadratics node "$HERE/probes/quadratics-shape.js" \
+  --base-worktree "$NSREVIEW_ROOT/states/BASE" --candidate-worktree "$NSREVIEW_ROOT/states/BASE"
 
 echo
 printf '%-26s %-18s %-6s %s\n' PROBE UNIT VERDICT SUMMARY

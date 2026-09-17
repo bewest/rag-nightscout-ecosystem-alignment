@@ -456,20 +456,55 @@ controls — **31.9 s**, browser work included.
 | `alarms` | #8739 BF-28 | **PASS** 7/0 | 72 h and 96 h reservoir both report **WARN**; URGENT unreachable |
 | `parms` | #8736 BF-37 | **PASS** 10/0 | `?debug`, `&`, `&&` → **no chart rendered** + throw |
 | `merge` | #8734 BF-36 | **PASS** 5/0 | stale inner bound throws on `undefined._id` |
+| `quadratics-shape` | #8733 | **PASS** 6/0 | `processDurations` **62.8×** and `calcDelta` **88.9×** for a 10× input — the quadratic signature |
+| `cache-shape` | #8740 BF-06/07 | **PASS** 3/0 | cost tracks the window: 1.123 ms sparse → **6.658 ms** dense (5.93×) |
 
-**Six of nine units qualified.** The integration branch `rc/2026-09-dev-cycle` carries all six as
+**Eight of nine units qualified.** The integration branch `rc/2026-09-dev-cycle` carries all six as
 six first-parent merge commits, and every probe is re-run against it — that re-run is what catches
 a later merge breaking an earlier fix, and is the whole reason this cycle evaluates between merges
 rather than bisecting at the end.
 
-Remaining: `bf/cache`, quadratics (both performance — shape assertions, not fixed multiples) and
-`#8729` (no falsifiable criterion, §7).
+Remaining: **`#8729` only**, which still has no falsifiable criterion (§7).
+
+For cache the fix does not merely go faster — it *decouples*: 0.518 ms sparse → 0.472 ms dense
+(0.91×), i.e. per-request cost stops tracking the retained window at all, which is precisely the
+claim BF-07 makes about `cache.insertData` round-tripping the whole array.
+
+### The performance units: shape, not multiples
+
+Both fixed-multiple thresholds from the first draft measured **stuck red on the correct build** —
+`≥100×` for cache (real request-level ratios 1.66–2.49×) and `≥20×` at every *n* for quadratics
+(1.7× and 12× at *n*=500 and 2000). Both are replaced by scale-free shape assertions:
+
+> BASE cost must **grow** with input size; the candidate's must stay **flat or near-linear**.
+
+Measured for quadratics: BASE 62.8× / 88.9× for a 10× input increase (linear would be 10×) against
+the fix at 6.6× / 8.2×. The separation is an order of magnitude, and neither bound depends on this
+machine's speed.
+
+**I repeated the very mistake this section documents.** The first version of `quadratics-shape.js`
+set the near-linear bound to `≤6` — below the 10× that *perfect linearity* costs — and the correct
+fix failed at 7.6×. Writing the warning into the file header did not prevent it; **running the
+probe did.** The bound is now 13. That is the third distinct stuck-red threshold in this cycle, and
+the argument for the meta-gate no longer rests on the refuters' findings alone.
 
 **BF-35 is verified.** On dev the quick-pick chooser offers all five plain foods *and* the quick
 pick the user deliberately hid — 8 entries — while the option value indexes a 3-element array.
 Options 0–2 resolve silently to the wrong quick pick under a plain food's label; options 3–7
 throw `Cannot read properties of undefined (reading 'foods')` (`boluscalc.js:579-580`). Measured:
 **5 page errors on BASE, 0 on the fix.**
+
+### A fourth harness defect: a probe that reseeded the shared control
+
+The cache probe reseeds its states to compare two window sizes. Its first version defaulted to
+`--base-state BASE` — **the control every other probe compares against** — and reseeded it with
+`--no-adversarial` dense data, removing the mbg entries and the food documents. `pair` and `food`
+against the RC then reported failures.
+
+They reported them **as `UNATTRIBUTABLE` on BASE**, not as regressions in the branch, which is the
+invariant-arm design working exactly as intended: a probe that had only discriminating arms would
+have blamed the merge. The default is now a dedicated `PERFBASE`, and the episode is the argument
+for invariant arms carrying their own failure mode rather than being informational.
 
 ### Three readouts that looked right and were not
 
