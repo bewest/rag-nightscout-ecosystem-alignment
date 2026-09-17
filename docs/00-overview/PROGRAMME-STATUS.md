@@ -25,8 +25,8 @@ this page's job is to say which of those to open.
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 50 | 23 | 18 |
 | **Modernization** | `release-train` | 12 | 2 | 2 |
-| **Multitenant** | `tenancy` | 15 | 9 | 1 |
-| | **total** | **77** | **34** | **21** |
+| **Multitenant** | `tenancy` | 15 | 8 | 2 |
+| | **total** | **77** | **33** | **22** |
 
 <!-- END GENERATED: horizons -->
 
@@ -108,7 +108,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | `phase0` | 1 | 1 | 4 | 3 | 9 |  |  | **18** |
 | `release-train` | 2 | 4 |  | 4 |  | 2 |  | **12** |
 | `register-open` | 15 | 5 |  |  |  | 1 | 2 | **23** |
-| `tenancy` | 9 |  |  | 5 |  |  | 1 | **15** |
+| `tenancy` | 8 |  |  | 5 |  | 1 | 1 | **15** |
 | `docs-truth` | 7 |  | 2 |  |  |  |  | **9** |
 
 <!-- END GENERATED: state-matrix -->

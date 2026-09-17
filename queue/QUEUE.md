@@ -33,20 +33,20 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 |---|---|
 | items | 77 |
 | runnable gates | 125 |
-| explicit `no-gate:` markers | 116 |
+| explicit `no-gate:` markers | 118 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 116 of the 241 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 118 of the 243 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 33 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 10 | RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 6 | P0-C, P0-J, P0-C-REMEDIATE, P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 9 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01 |
-| `needs-decision` | 3 | RT-D3, RT-0, BFQ-47 |
+| `needs-decision` | 4 | RT-D3, RT-0, T30-RESEARCH, BFQ-47 |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
 ### Reaches an operator on today's release
@@ -2002,7 +2002,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `not-started` | `-` | n/a | 1 run + 1 no-gate |
+| `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | `-` | n/a | 1 run + 3 no-gate |
 | `T30-SCHEMA` | T3.0 part 2 - configuration and credential storage in platform.sql | `not-started` | `-` | n/a | 1 run + 1 no-gate |
 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
@@ -2022,15 +2022,15 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `needs-decision` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `seam/t1-2-storage-interface@81a1f6ce` |
 | worktree | `externals/work/crm-seam` |
 | semver | `n/a` |
-| review | maintainer |
+| review | maintainer. The document is a DRAFT carrying sections marked DECISION that need a yes before T30-SCHEMA can start - so this item is a decision surface now, not an unstarted research task. |
 
-**Blast radius.** A docs/60-research/ report. Every SETTINGS_* variable, every plugin credential, which are secrets and which are not, what a tenant may override versus what the hoster pins.
+**Blast radius.** A design report. Every SETTINGS_* variable, every plugin credential, which are secrets and which are not, what a tenant may override versus what the hoster pins. DELIVERED as section B of the tenant-owner config-surface document: 277 distinct names, classified T / TS / D / B / X, measured against crm-seam at 81a1f6ce.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -2038,15 +2038,18 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- `[static]` `test -f docs/60-research/tenancy/tenant-config-surface-2026-09-15.md`
-  - the deliverable exists. FAILS today. A file-existence gate is weak on purpose - it is honest about being a presence check, where a "state: done" field would have been an assertion.
-- **NO GATE** &mdash; Nothing checks that the enumeration is COMPLETE. The only non-vacuous form is a differential: enumerate from the report, enumerate from lib/server/env.js by parsing, and require the two sets to agree - with a planted extra variable as the control. That harness does not exist.
+- `[static]` `test -f docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
+  - the deliverable exists. CORRECTED 2026-09-16 - this gate named docs/60-research/tenancy/tenant-config-surface-2026-09-15.md, which has never existed under that name or in that directory, so the item measured FAIL and read not-started while section B was written. A file-existence gate is weak on purpose; it is honest about being a presence check, where a "state: done" field would have been an assertion.
+- **NO GATE** &mdash; Nothing checks that the enumeration is COMPLETE. The only non-vacuous form is a differential: enumerate from the report, enumerate from lib/server/env.js by parsing, and require the two sets to agree - with a planted extra variable as the control. The census script EXISTS, at section G.3 of the deliverable, and reproduces {"s1":70,"s2":51, "s3prefixes":37,"s4":208,"union":247} against crm-seam at 81a1f6ce. It is not checked in anywhere and nothing re-runs it, so the 247 is a transcript rather than a measurement. Lifting G.3 into tools/queue/gates/ is the cheapest real gate this item can have.
+- **NO GATE** &mdash; The document names five gaps in its own coverage and none is closed. (1) the grep cannot see process.env['X'], which is how it missed the API v3 family that includes the one that irreversibly deletes data; (2) three AWS names are read directly and appear in no source; (3) twelve ADMIN_* / FEED_* names read by the hosted entrypoints appear in no source, no gap and no total; (4) webhook's four reads are inside the plugin factory, not at module scope, as first published; (5) the per-group counts inside each class are hand-expansions, not script output, and the document says so. Completeness is therefore bounded by a method the document argues against itself.
+- **NO GATE** &mdash; Section A's DDL has never been executed against a PostgreSQL server, and two findings against it - the ?| operator being top-level only, and a CHECK passing when its expression is NULL, which lets a PARTIAL mmol threshold override through - are read off PostgreSQL's documented semantics rather than off a server. Those two are the first thing the section A harness must test, and the second is about alarm thresholds.
 
 **Evidence.**
 
+- `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** T3.0 is the largest correction owed in the programme. It does NOT block T3.3 - T3.3 landed first. It AMENDS T3.1, T3.2 and T3.3, which are all marked DONE- EXCEPT.
+**Notes.** T3.0 is the largest correction owed in the programme. It does NOT block T3.3 - T3.3 landed first. It AMENDS T3.1, T3.2 and T3.3, which are all marked DONE- EXCEPT. RE-STATED 2026-09-16 - the enumeration this item asks for was written on 2026-09-15 and adversarially reviewed the same day, which corrected twelve claims including the surface total (277, not 258). What remains is not enumeration: it is the maintainer decisions the document defers, and the harnesses that would turn its numbers into measurements. The three decisions with the longest reach are where the tenant-owner API lives, what issues and verifies a tenant-owner credential, and whether D7's credential-free platform plane survives contact with Nocturne, which puts platform admin on the consumer API behind a platform_admin role instead.
 
 ### `T30-SCHEMA` &mdash; T3.0 part 2 - configuration and credential storage in platform.sql
 

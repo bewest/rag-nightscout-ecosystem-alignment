@@ -1319,10 +1319,10 @@ controls:
       dirties the working tree.
 
   - gate: |-
-      test -f docs/60-research/tenancy/tenant-config-surface-2026-09-15.md
+      test -f docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md
     cwd: .
     control: |-
-      test -f docs/60-research/tenancy/tenant-config-surface-2026-09-15.md.this-name-does-not-exist
+      test -f docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md.this-name-does-not-exist
     positive-control: |-
       test -f docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md
     control-kind: static

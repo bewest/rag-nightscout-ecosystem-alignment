@@ -2456,35 +2456,78 @@ items:
     branch: ""
     base: seam/t1-2-storage-interface@81a1f6ce
     worktree: externals/work/crm-seam
-    state: not-started
+    state: needs-decision
     blast_radius: >
-      A docs/60-research/ report. Every SETTINGS_* variable, every plugin
-      credential, which are secrets and which are not, what a tenant may override
-      versus what the hoster pins.
-    review: maintainer
+      A design report. Every SETTINGS_* variable, every plugin credential, which
+      are secrets and which are not, what a tenant may override versus what the
+      hoster pins. DELIVERED as section B of the tenant-owner config-surface
+      document: 277 distinct names, classified T / TS / D / B / X, measured
+      against crm-seam at 81a1f6ce.
+    review: >
+      maintainer. The document is a DRAFT carrying sections marked DECISION that
+      need a yes before T30-SCHEMA can start - so this item is a decision
+      surface now, not an unstarted research task.
     operator_visible: ""
     semver: n/a
     semver_reason: research deliverable
     register: []
     gates:
-      - run: test -f docs/60-research/tenancy/tenant-config-surface-2026-09-15.md
+      - run: test -f docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md
         kind: static
         describe: >
-          the deliverable exists. FAILS today. A file-existence gate is weak on
-          purpose - it is honest about being a presence check, where a "state:
-          done" field would have been an assertion.
+          the deliverable exists. CORRECTED 2026-09-16 - this gate named
+          docs/60-research/tenancy/tenant-config-surface-2026-09-15.md, which
+          has never existed under that name or in that directory, so the item
+          measured FAIL and read not-started while section B was written. A
+          file-existence gate is weak on purpose; it is honest about being a
+          presence check, where a "state: done" field would have been an
+          assertion.
       - no-gate: >
           Nothing checks that the enumeration is COMPLETE. The only non-vacuous
           form is a differential: enumerate from the report, enumerate from
           lib/server/env.js by parsing, and require the two sets to agree - with
-          a planted extra variable as the control. That harness does not exist.
+          a planted extra variable as the control. The census script EXISTS, at
+          section G.3 of the deliverable, and reproduces {"s1":70,"s2":51,
+          "s3prefixes":37,"s4":208,"union":247} against crm-seam at 81a1f6ce.
+          It is not checked in anywhere and nothing re-runs it, so the 247 is a
+          transcript rather than a measurement. Lifting G.3 into
+          tools/queue/gates/ is the cheapest real gate this item can have.
+      - no-gate: >
+          The document names five gaps in its own coverage and none is closed.
+          (1) the grep cannot see process.env['X'], which is how it missed the
+          API v3 family that includes the one that irreversibly deletes data;
+          (2) three AWS names are read directly and appear in no source;
+          (3) twelve ADMIN_* / FEED_* names read by the hosted entrypoints
+          appear in no source, no gap and no total; (4) webhook's four reads are
+          inside the plugin factory, not at module scope, as first published;
+          (5) the per-group counts inside each class are hand-expansions, not
+          script output, and the document says so. Completeness is therefore
+          bounded by a method the document argues against itself.
+      - no-gate: >
+          Section A's DDL has never been executed against a PostgreSQL server,
+          and two findings against it - the ?| operator being top-level only,
+          and a CHECK passing when its expression is NULL, which lets a PARTIAL
+          mmol threshold override through - are read off PostgreSQL's
+          documented semantics rather than off a server. Those two are the first
+          thing the section A harness must test, and the second is about alarm
+          thresholds.
     blocks_on: []
     evidence:
+      - docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
       T3.0 is the largest correction owed in the programme. It does NOT block
       T3.3 - T3.3 landed first. It AMENDS T3.1, T3.2 and T3.3, which are all
-      marked DONE-EXCEPT.
+      marked DONE-EXCEPT. RE-STATED 2026-09-16 - the enumeration this item asks
+      for was written on 2026-09-15 and adversarially reviewed the same day,
+      which corrected twelve claims including the surface total (277, not 258).
+      What remains is not enumeration: it is the maintainer decisions the
+      document defers, and the harnesses that would turn its numbers into
+      measurements. The three decisions with the longest reach are where the
+      tenant-owner API lives, what issues and verifies a tenant-owner
+      credential, and whether D7's credential-free platform plane survives
+      contact with Nocturne, which puts platform admin on the consumer API
+      behind a platform_admin role instead.
 
   - id: T30-SCHEMA
     title: T3.0 part 2 - configuration and credential storage in platform.sql
