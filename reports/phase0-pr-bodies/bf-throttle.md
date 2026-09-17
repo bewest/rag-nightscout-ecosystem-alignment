@@ -122,7 +122,7 @@ this.
 Ablated: with `lib/authorization/delaylist.js` and `lib/authorization/index.js` restored to `dev`,
 the same file gives **3 passing / 8 failing**.
 
-Merge-checked 2026-09-16: clean against `origin/dev`, clean against all eight other Phase 0
+Merge-checked 2026-09-16: clean against `origin/dev`, clean against all **nine** other Phase 0
 branches, and clean against `chore/nightscout-modernization` (#8605).
 
 ## Semver: patch
