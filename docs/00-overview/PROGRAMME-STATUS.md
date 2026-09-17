@@ -23,10 +23,10 @@ this page's job is to say which of those to open.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 50 | 23 | 18 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 50 | 22 | 19 |
 | **Modernization** | `release-train` | 12 | 2 | 2 |
 | **Multitenant** | `tenancy` | 18 | 10 | 3 |
-| | **total** | **80** | **35** | **23** |
+| | **total** | **80** | **34** | **24** |
 
 <!-- END GENERATED: horizons -->
 
@@ -82,7 +82,7 @@ several cover more than one `BF-`:
 | `BFQ-04` | `not-started` | BF-04 - extract the v1 operator allowlist out of the seam |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value |
 | `BFQ-10` | `not-started` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
-| `BFQ-40` | `not-started` | BF-40 - $exists is not read as a boolean, before OR after bf/coercion |
+| `BFQ-40` | `in-flight-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-41` | `gate-not-met` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `needs-decision` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -107,7 +107,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|
 | `phase0` | 1 | 1 | 4 | 3 | 9 |  |  | **18** |
 | `release-train` | 2 | 4 |  | 4 |  | 2 |  | **12** |
-| `register-open` | 15 | 5 |  |  |  | 1 | 2 | **23** |
+| `register-open` | 14 | 5 |  |  | 1 | 1 | 2 | **23** |
 | `tenancy` | 10 |  | 1 | 5 |  | 1 | 1 | **18** |
 | `docs-truth` | 7 |  | 2 |  |  |  |  | **9** |
 

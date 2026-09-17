@@ -22,6 +22,10 @@ STATES=(
   "READS:bf/reads"
   "FOOD:bf/food"
   "P8741:pr8741"
+  "ALARMS:bf/alarms"
+  "PARMS:bf/parms"
+  "MERGE:bf/merge"
+  "RC:rc/2026-09-dev-cycle"
 )
 
 secret() { "$NSCTL" secret; }
@@ -69,6 +73,29 @@ probe "food"        "#8735" node "$HERE/probes/food.js" \
 probe "credentials" "#8741" node "$HERE/probes/credentials.js" \
   --base-worktree "$NSREVIEW_ROOT/states/BASE" \
   --candidate-worktree "$NSREVIEW_ROOT/states/P8741"
+probe "alarms" "#8739" node "$HERE/probes/alarms.js" \
+  --base-worktree "$NSREVIEW_ROOT/states/BASE" \
+  --candidate-worktree "$NSREVIEW_ROOT/states/ALARMS"
+probe "merge" "#8734" node "$HERE/probes/merge.js" \
+  --base-worktree "$NSREVIEW_ROOT/states/BASE" \
+  --candidate-worktree "$NSREVIEW_ROOT/states/MERGE"
+
+# The integration branch carries every qualified unit. Running the SAME probes
+# against it is what catches a later merge breaking an earlier fix - the whole
+# point of evaluating between each merge rather than bisecting at the end.
+echo
+echo "== the integration branch (rc/2026-09-dev-cycle) =="
+RC_URL="http://127.0.0.1:$(port RC)"
+probe "rc:pair"        "RC" node "$HERE/probes/pair-reads-coercion.js" \
+  --base "$BASE_URL" --candidate "$RC_URL" --secret "$SEC" --manifest "$RUN/RC.manifest.json"
+probe "rc:food"        "RC" node "$HERE/probes/food.js" \
+  --base "$BASE_URL" --candidate "$RC_URL" --secret "$SEC"
+probe "rc:credentials" "RC" node "$HERE/probes/credentials.js" \
+  --base-worktree "$NSREVIEW_ROOT/states/BASE" --candidate-worktree "$NSREVIEW_ROOT/states/RC"
+probe "rc:alarms"      "RC" node "$HERE/probes/alarms.js" \
+  --base-worktree "$NSREVIEW_ROOT/states/BASE" --candidate-worktree "$NSREVIEW_ROOT/states/RC"
+probe "rc:merge"       "RC" node "$HERE/probes/merge.js" \
+  --base-worktree "$NSREVIEW_ROOT/states/BASE" --candidate-worktree "$NSREVIEW_ROOT/states/RC"
 
 # Every probe must also be RED when its candidate is BASE. A probe that passes
 # both ways measured nothing, and this loop is the only thing that notices.
@@ -81,7 +108,7 @@ probe "credentials" "#8741" node "$HERE/probes/credentials.js" \
 echo
 echo "== client-side (dev mode; bundles compile on first fetch) =="
 export NSREVIEW_ENABLE='careportal basal iob cob bwp cage sage iage rawbg food boluscalc'
-for s in BASE FOOD; do
+for s in BASE FOOD PARMS RC; do
   "$NSCTL" stop "$s" >/dev/null 2>&1
   "$NSCTL" start "$s" development >/dev/null 2>&1
   curl -s -o /dev/null -m 300 "http://127.0.0.1:$(port "$s")/devbundle/js/bundle.app.js" \
@@ -89,12 +116,20 @@ for s in BASE FOOD; do
 done
 BASE_DEV="http://127.0.0.1:$(port BASE)"
 FOOD_DEV="http://127.0.0.1:$(port FOOD)"
+PARMS_DEV="http://127.0.0.1:$(port PARMS)"
+RC_DEV="http://127.0.0.1:$(port RC)"
 
 if node "$HERE/probes/provenance.js" --base "$BASE_DEV" --candidate "$FOOD_DEV" \
      --unit bf/food >/dev/null 2>&1; then
   echo "  provenance: PASS — each instance serves its own client"
   probe "food-boluscalc" "#8735 BF-35" node "$HERE/probes/food-boluscalc-browser.js" \
     --base "$BASE_DEV" --candidate "$FOOD_DEV" --secret "$SEC"
+  probe "parms" "#8736 BF-37" node "$HERE/probes/parms-browser.js" \
+    --base "$BASE_DEV" --candidate "$PARMS_DEV" --secret "$SEC"
+  probe "rc:boluscalc" "RC" node "$HERE/probes/food-boluscalc-browser.js" \
+    --base "$BASE_DEV" --candidate "$RC_DEV" --secret "$SEC"
+  probe "rc:parms" "RC" node "$HERE/probes/parms-browser.js" \
+    --base "$BASE_DEV" --candidate "$RC_DEV" --secret "$SEC"
 else
   echo "  provenance: FAIL — skipping browser probes, they would compare a build to itself"
   ROWS+=("$(printf '%-26s|%-18s|%-6s|%s' food-boluscalc '#8735 BF-35' SKIP 'provenance pre-gate failed')")
@@ -123,6 +158,12 @@ red_control food-boluscalc node "$HERE/probes/food-boluscalc-browser.js" \
   --base "$BASE_DEV" --candidate "$BASE_DEV" --secret "$SEC"
 red_control provenance node "$HERE/probes/provenance.js" \
   --base "$BASE_DEV" --candidate "$BASE_DEV" --unit bf/food
+red_control alarms node "$HERE/probes/alarms.js" \
+  --base-worktree "$NSREVIEW_ROOT/states/BASE" --candidate-worktree "$NSREVIEW_ROOT/states/BASE"
+red_control merge node "$HERE/probes/merge.js" \
+  --base-worktree "$NSREVIEW_ROOT/states/BASE" --candidate-worktree "$NSREVIEW_ROOT/states/BASE"
+red_control parms node "$HERE/probes/parms-browser.js" \
+  --base "$BASE_DEV" --candidate "$BASE_DEV" --secret "$SEC"
 
 echo
 printf '%-26s %-18s %-6s %s\n' PROBE UNIT VERDICT SUMMARY

@@ -21,7 +21,7 @@
 | branch | `bf/alarms` |
 | base | `origin/dev@a8888f0d` |
 | claimed state | `in-flight-upstream` — a claim; `make queue-status ID=P0-A` is the measurement |
-| semver | `major` |
+| semver | `minor` |
 | register entries | `BF-28`, `BF-29`, `BF-31` |
 
 ## What this changes
@@ -32,13 +32,14 @@ any other Phase 0 branch.
 
 ## Why that semver
 
-GT4: the third commit REMOVES per-request locale handling from POST
-/api/v1/alexa and POST /api/v1/googlehome. A request carrying request.locale
-used to be answered in that language and now is answered in the server's
-configured language. The removal is correct - ctx.language.set and
-moment.locale are process-global, so one request re-languaged every later
-request - but it is a capability removal on an HTTP endpoint with no
-replacement in the same changeset.
+MAINTAINER RULING 2026-09-17: the per-request locale handling on POST
+/api/v1/alexa and POST /api/v1/googlehome is a DEFECT, not a capability.
+ctx.language.set and moment.locale are process-global, so a request carrying
+request.locale re-languaged every later request for every other user - which
+was never the intent. Removing it is a correction. This entry previously
+graded the branch `major` on a capability-removal reading and asked for an
+explicit yes before merge; that reading is withdrawn and the branch needs an
+ordinary review.
 
 ## What an operator would notice
 

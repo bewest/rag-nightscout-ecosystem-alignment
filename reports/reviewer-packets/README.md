@@ -32,6 +32,7 @@ repository.
 | [`P0-E`](p0-e-bf-reads.md) | #8738 | `in-flight-upstream` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion |
 | [`P0-A`](p0-a-bf-alarms.md) | #8739 | `in-flight-upstream` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 |
 | [`P0-B`](p0-b-bf-cache.md) | #8740 | `in-flight-upstream` | bf/cache - PR #8740, T0.2 and T0.3 read-path cost |
+| [`BFQ-40`](bfq-40.md) | &mdash; | `in-flight-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | [`BFQ-47`](bfq-47.md) | &mdash; | `needs-decision` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | [`DOC-LINKS`](doc-links-main.md) | &mdash; | `ready-to-push` | Every path the programme's documents and tooling cite must resolve |
 | [`DOC-VIEWS`](doc-views-main.md) | &mdash; | `ready-to-push` | A reviewer-facing surface over the queue: three overview pages and a packet per PR |

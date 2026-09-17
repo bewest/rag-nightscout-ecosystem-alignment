@@ -29,10 +29,11 @@ Four states qualify:
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 17 items
+### Maintainer &mdash; 18 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
+| `BFQ-40` | `in-flight-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion | &mdash; |
 | `P0-B` | `in-flight-upstream` | bf/cache - PR #8740, T0.2 and T0.3 read-path cost | #8740 |
 | `P0-D` | `in-flight-upstream` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | #8737 |
 | `P0-E` | `in-flight-upstream` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion | #8738 |

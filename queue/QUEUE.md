@@ -32,20 +32,20 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 80 |
-| runnable gates | 128 |
-| explicit `no-gate:` markers | 128 |
+| runnable gates | 129 |
+| explicit `no-gate:` markers | 126 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 128 of the 256 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 126 of the 255 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 35 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 10 | RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 7 | P0-C, P0-J, P0-C-REMEDIATE, P0-TAG, T30-AUTH, DOC-VIEWS, DOC-LINKS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
-| `in-flight-upstream` | 9 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01 |
+| `in-flight-upstream` | 10 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01, BFQ-40 |
 | `needs-decision` | 4 | RT-D3, RT-0, T30-RESEARCH, BFQ-47 |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
@@ -57,7 +57,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-10** BF-10 - mongod fatal-asserts at Docker's default nofile=1024
 - **BFQ-04** BF-04 - extract the v1 operator allowlist out of the seam
 - **BFQ-CAP01** CAP-01 - Nightscout cannot be served from a sub-path
-- **BFQ-40** BF-40 - $exists is not read as a boolean, before OR after bf/coercion
+- **BFQ-40** BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
 - **BFQ-41** BF-41 - a reading dated ahead of the clock silences the stale-data alarm
 - **BFQ-CONNECTOR** BF-42, BF-43 - master pins the leaking connector, with a violated axios override
 - **BFQ-MINIMED** BF-44, BF-45 - the two MiniMed ingestion divergences
@@ -79,7 +79,7 @@ decision is required by any of them.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `in-flight-upstream` | `bf/alarms` | major | 9 run + 3 no-gate |
+| `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `in-flight-upstream` | `bf/alarms` | minor | 9 run + 3 no-gate |
 | `P0-B` | bf/cache - PR #8740, T0.2 and T0.3 read-path cost | `in-flight-upstream` | `bf/cache` | patch | 6 run + 2 no-gate |
 | `P0-C` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | `ready-to-push` | `bf/auth` | major | 4 run + 3 no-gate |
 | `P0-J` | bf/throttle - BF-30, failed-auth throttling, compatibility default | `ready-to-push` | `bf/throttle` | patch | 5 run + 2 no-gate |
@@ -107,7 +107,7 @@ decision is required by any of them.
 | branch | `bf/alarms` |
 | base | `origin/dev@a8888f0d` |
 | worktree | `externals/work/crm-bf-alarms` |
-| semver | `major` |
+| semver | `minor` |
 | review | maintainer, plus one reviewer who has never merged their own PR in this stack (the governance finding - 100 self-merged PRs, zero human reviews). OPENED 2026-09-16 as PR #8739, base dev. THIS ONE NEEDS AN EXPLICIT YES, not only a review: it starts an alarm that has never fired in any deployment, with no grace period, and it removes per-request locale from two HTTP endpoints with no replacement. Dropping 5dcf783f leaves a clean minor, which is the option to offer if Phase 0 should land as 15.1.0. |
 | register | `BF-28`, `BF-29`, `BF-31` |
 
@@ -115,7 +115,7 @@ decision is required by any of them.
 
 **What an operator sees.** Three alarm fixes. The "insulin reservoir change overdue" reminder could never appear at all and now can. If you list a plugin by its file name in ENABLE - for example "cannulaage" instead of "cage" - Nightscout used to switch it off without telling you, and now says so and names the plugin it thinks you meant. These do not change when any alarm fires, only whether it can. This is not medical advice; if an alarm you rely on has been silent, talk it through with your care team as well as checking your settings.
 
-**Why `major`.** GT4: the third commit REMOVES per-request locale handling from POST /api/v1/alexa and POST /api/v1/googlehome. A request carrying request.locale used to be answered in that language and now is answered in the server's configured language. The removal is correct - ctx.language.set and moment.locale are process-global, so one request re-languaged every later request - but it is a capability removal on an HTTP endpoint with no replacement in the same changeset.
+**Why `minor`.** MAINTAINER RULING 2026-09-17: the per-request locale handling on POST /api/v1/alexa and POST /api/v1/googlehome is a DEFECT, not a capability. ctx.language.set and moment.locale are process-global, so a request carrying request.locale re-languaged every later request for every other user - which was never the intent. Removing it is a correction. This entry previously graded the branch `major` on a capability-removal reading and asked for an explicit yes before merge; that reading is withdrawn and the branch needs an ordinary review.
 
 **Gates.**
 
@@ -1258,7 +1258,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-18` | BF-18 - driver 7 doubles the getMore batch size on .limit(0) | `not-started` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `BFQ-20` | BF-20 - scalarize() converts a Date bound to an ISO string | `not-started` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `BFQ-CAP01` | CAP-01 - Nightscout cannot be served from a sub-path | `not-started` | `-` | minor | 0 run + 1 no-gate |
-| `BFQ-40` | BF-40 - $exists is not read as a boolean, before OR after bf/coercion | `not-started` | `-` | minor | 0 run + 2 no-gate |
+| `BFQ-40` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion | `in-flight-upstream` | `-` | minor | 1 run |
 | `BFQ-41` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
 | `BFQ-CONNECTOR` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override | `gate-not-met` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-MINIMED` | BF-44, BF-45 - the two MiniMed ingestion divergences | `not-started` | `-` | minor | 0 run + 3 no-gate |
@@ -1693,30 +1693,30 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Notes.** The only capability entry in the register. BFQ-26 (BF-26) is the one part of it that is a defect rather than an absence.
 
-### `BFQ-40` &mdash; BF-40 - $exists is not read as a boolean, before OR after bf/coercion
+### `BFQ-40` &mdash; BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@a8888f0d` |
 | worktree | `externals/work/crm-bf-coercion` |
 | semver | `minor` |
-| review | maintainer, and whoever reviews P0-D, because this decides a sentence in that branch's operator-facing text |
+| review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-40` |
 
-**Blast radius.** The $exists special case in the query walker - lib/server/query.js walk_prop on dev, lib/server/query-coercion.js:90 on bf/coercion - plus a regression test, which does not exist: tests/query.test.js:138 covers $exists=true only.
+**Blast radius.** BOOLEAN_OPERANDS / readBooleanOperand in lib/server/query.js, applied over the built query so it also covers fields the type table does not name. CORRECTED 2026-09-17: this entry previously located the fix at lib/server/query- coercion.js:90 and asserted the defect survives bf/coercion. Both were read- derived and both are wrong. The NON_VALUE_OPERATORS exclusion in query- coercion.js is a different mechanism - it stops the field-domain coercer mangling the operand - and excluding the operand from THAT is what lets the boolean reader own it.
 
-**What an operator sees.** If you or a tool you use asks Nightscout for records that do NOT have a particular field - for example entries with no "sgv" value - you get back exactly the records that DO have it. The opposite of what was asked, with no error. This is wrong today on every field, and it stays wrong after the query type-conversion fix unless this is fixed too. Asking for records that DO have a field works correctly.
+**What an operator sees.** If you or a tool you use asks Nightscout for records that do NOT have a particular field - for example entries with no "sgv" value - today's release gives you back exactly the records that DO have it. The opposite of what was asked, with no error. Asking for records that DO have a field works correctly. This is repaired on bf/coercion (PR #8737), which has not been released.
 
 **Why `minor`.** It changes what a documented v1 endpoint returns for a documented query parameter, in the direction of correctness, which is the same class as BF-02 and BF-03 and needs the same release note.
 
 **Gates.**
 
-- **NO GATE** &mdash; The measurement is a live one and it needs MongoDB. The register's claim was established against SEVEN mongod instances (3.6.8 and 7.0.43) with identical results, precisely because a JavaScript-side oracle gets it wrong: mingo applies JavaScript truthiness, MongoDB applies `value != 0`, and that difference is the whole entry. A gate that reproduced it against mingo would agree with BF-32 and be wrong. The instrument this needs is an integration gate with a real server, and none of the existing harnesses provides one.
-- **NO GATE** &mdash; The prescribed fix - route the operand through a boolean reader that understands "false", "0" and "" - is UNVERIFIED. Nobody has run it. Two fixes this register prescribed were wrong when somebody finally ran them, so it is recorded as unrun rather than gated as if settled.
+- `[integration]` `NSREVIEW_ROOT=${NSREVIEW_ROOT:?} node tools/review/probes/pair-reads-coercion.js --base "$NSREVIEW_BASE_URL" --candidate "$NSREVIEW_CANDIDATE_URL" --secret "$NS_HARNESS_SECRET"`
+  - The instrument this entry said did not exist. Measured 2026-09-17 on a 582-document seed (577 sgv, 5 mbg): find[mbg][$exists]=false returns 577 on bf/coercion and 5 on dev. The arm asserts against the seeded expectation, never against the same build's list endpoint - on bf/reads alone those two agree at 5 and both are wrong.
 
 **Evidence.**
 

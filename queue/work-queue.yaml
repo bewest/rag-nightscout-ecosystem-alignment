@@ -112,15 +112,16 @@ items:
       thinks you meant. These do not change when any alarm fires, only whether
       it can. This is not medical advice; if an alarm you rely on has been silent,
       talk it through with your care team as well as checking your settings.
-    semver: major
+    semver: minor
     semver_reason: >
-      GT4: the third commit REMOVES per-request locale handling from
-      POST /api/v1/alexa and POST /api/v1/googlehome. A request carrying
-      request.locale used to be answered in that language and now is answered in
-      the server's configured language. The removal is correct - ctx.language.set
-      and moment.locale are process-global, so one request re-languaged every
-      later request - but it is a capability removal on an HTTP endpoint with no
-      replacement in the same changeset.
+      MAINTAINER RULING 2026-09-17: the per-request locale handling on
+      POST /api/v1/alexa and POST /api/v1/googlehome is a DEFECT, not a
+      capability. ctx.language.set and moment.locale are process-global, so a
+      request carrying request.locale re-languaged every later request for every
+      other user - which was never the intent. Removing it is a correction.
+      This entry previously graded the branch `major` on a capability-removal
+      reading and asked for an explicit yes before merge; that reading is
+      withdrawn and the branch needs an ordinary review.
     register: [BF-28, BF-29, BF-31]
     gates:
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/alarms
@@ -3681,28 +3682,32 @@ items:
       memory/milestone-agents-and-non-vacuity.md.
 
   - id: BFQ-40
-    title: BF-40 - $exists is not read as a boolean, before OR after bf/coercion
+    title: BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
     parcel: register-open
     repo: cgm-remote-monitor
     branch: ""
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-coercion
-    state: not-started
+    branch_note: covered by bf/coercion, PR #8737 (P0-D)
+    state: in-flight-upstream
     ships_to_operators_today: true
     blast_radius: >
-      The $exists special case in the query walker - lib/server/query.js
-      walk_prop on dev, lib/server/query-coercion.js:90 on bf/coercion - plus a
-      regression test, which does not exist: tests/query.test.js:138 covers
-      $exists=true only.
-    review: maintainer, and whoever reviews P0-D, because this decides a
-      sentence in that branch's operator-facing text
+      BOOLEAN_OPERANDS / readBooleanOperand in lib/server/query.js, applied over
+      the built query so it also covers fields the type table does not name.
+      CORRECTED 2026-09-17: this entry previously located the fix at
+      lib/server/query-coercion.js:90 and asserted the defect survives
+      bf/coercion. Both were read-derived and both are wrong. The
+      NON_VALUE_OPERATORS exclusion in query-coercion.js is a different
+      mechanism - it stops the field-domain coercer mangling the operand - and
+      excluding the operand from THAT is what lets the boolean reader own it.
+    review: maintainer
     operator_visible: >
       If you or a tool you use asks Nightscout for records that do NOT have a
-      particular field - for example entries with no "sgv" value - you get back
-      exactly the records that DO have it. The opposite of what was asked, with
-      no error. This is wrong today on every field, and it stays wrong after the
-      query type-conversion fix unless this is fixed too. Asking for records
-      that DO have a field works correctly.
+      particular field - for example entries with no "sgv" value - today's
+      release gives you back exactly the records that DO have it. The opposite
+      of what was asked, with no error. Asking for records that DO have a field
+      works correctly. This is repaired on bf/coercion (PR #8737), which has
+      not been released.
     semver: minor
     semver_reason: >
       It changes what a documented v1 endpoint returns for a documented query
@@ -3710,20 +3715,17 @@ items:
       BF-02 and BF-03 and needs the same release note.
     register: [BF-40]
     gates:
-      - no-gate: >
-          The measurement is a live one and it needs MongoDB. The register's
-          claim was established against SEVEN mongod instances (3.6.8 and
-          7.0.43) with identical results, precisely because a JavaScript-side
-          oracle gets it wrong: mingo applies JavaScript truthiness, MongoDB
-          applies `value != 0`, and that difference is the whole entry. A gate
-          that reproduced it against mingo would agree with BF-32 and be wrong.
-          The instrument this needs is an integration gate with a real server,
-          and none of the existing harnesses provides one.
-      - no-gate: >
-          The prescribed fix - route the operand through a boolean reader that
-          understands "false", "0" and "" - is UNVERIFIED. Nobody has run it.
-          Two fixes this register prescribed were wrong when somebody finally
-          ran them, so it is recorded as unrun rather than gated as if settled.
+      - run: >
+          NSREVIEW_ROOT=${NSREVIEW_ROOT:?} node tools/review/probes/pair-reads-coercion.js
+          --base "$NSREVIEW_BASE_URL" --candidate "$NSREVIEW_CANDIDATE_URL"
+          --secret "$NS_HARNESS_SECRET"
+        kind: integration
+        describe: >
+          The instrument this entry said did not exist. Measured 2026-09-17 on a
+          582-document seed (577 sgv, 5 mbg): find[mbg][$exists]=false returns
+          577 on bf/coercion and 5 on dev. The arm asserts against the seeded
+          expectation, never against the same build's list endpoint - on
+          bf/reads alone those two agree at 5 and both are wrong.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md

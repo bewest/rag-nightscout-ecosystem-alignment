@@ -80,11 +80,11 @@ release.
 
 | Tier | Unit | Register weight | Why here |
 |---|---|---|---|
-| **1 — clinical** | `bf/food` #8735 | BF-35 **high**, BF-16 medium | The only unit in the set adjacent to a dose. The bolus calculator's quick-pick chooser builds its option list from the whole food collection but resolves the selection against the *filtered* array, so **picking one quick pick loads a different one's carbs**. Highest consequence per unit of code in the cycle. |
+| **1 — clinical** | `bf/food` #8735 | BF-35 **high**, BF-16 medium | The only unit in the set adjacent to a dose. **Urgency unsettled** — see §7: `loadFoodQuickpicks` runs once at client init, before food arrives, so whether a user reaches the populated-and-broken chooser is an open question the browser session is meant to answer. The bolus calculator's quick-pick chooser builds its option list from the whole food collection but resolves the selection against the *filtered* array, so **picking one quick pick loads a different one's carbs**. Highest consequence per unit of code in the cycle. |
 | **1 — correctness** | `bf/reads` + `bf/coercion` #8738 + #8737 | 7 **high** between them: BF-01, BF-13, BF-14, BF-33, BF-02, BF-03, BF-11 | Wrong answers under HTTP 200, silent data loss in v3 paging, and three unbounded-read paths. The largest concentration of high-severity register weight in the set, and already one atomic unit for the reason in §1. |
 | **2 — availability** | `bf/parms` #8736 | BF-37 **medium–high**, BF-38/39 low | A valueless URL parameter throws in the *first statement of `client.init`* — total silent page failure, nothing on screen but the loading message. |
 | | `bf/merge` #8734 | BF-36 medium | The throw escapes into `dataUpdate`, which has no `try`/`catch`; the page stops advancing until reloaded. |
-| **3 — alarms** | `bf/alarms` #8739 | BF-28/29 medium, BF-31 low–medium | Real, but graded **`major`** on a capability removal (per-request locale on two HTTP endpoints, no replacement). **Needs an explicit yes, not just a review.** Dropping the third commit leaves a clean minor — the option to offer if this should land as 15.1.0. |
+| **3 — alarms** | `bf/alarms` #8739 | BF-28/29 medium, BF-31 low–medium | **`minor`.** Maintainer ruling 2026-09-17: the per-request locale handling on `/api/v1/alexa` and `/api/v1/googlehome` is a **defect, not a capability**. `ctx.language.set` and `moment.locale` are process-global, so a request carrying `request.locale` re-languaged every later request for every other user — never the intent. Removing it is a correction, and the branch needs an ordinary review. The earlier `major` capability-removal grading is withdrawn. |
 | **4 — performance** | `bf/cache` #8740, quadratics #8733 | BF-06/07 medium (CPU); quadratics carries no register entry | No wrong answers. Correctness checks pass on both the broken and fixed builds, which is why their acceptance is a *shape* assertion in §5. |
 | **5 — no register weight** | `#8741`, `#8729` | none | Neither carries a register entry. `#8741`'s real credential path cannot be exercised without live Dexcom credentials; `#8729` has no falsifiable criterion at all (§7). Land them on maintainer judgement or defer. |
 
@@ -453,12 +453,36 @@ controls — **31.9 s**, browser work included.
 | `food` | #8735 BF-16 | **PASS** 8/0 | 1 quick pick, and the **wrong one** |
 | `food-boluscalc` | #8735 **BF-35** | **PASS** 5/0 | 8 chooser entries; **5 page-error crashes** |
 | `credentials` | #8741 | **PASS** 5/0 | password `007700` → number `7700` |
+| `alarms` | #8739 BF-28 | **PASS** 7/0 | 72 h and 96 h reservoir both report **WARN**; URGENT unreachable |
+| `parms` | #8736 BF-37 | **PASS** 10/0 | `?debug`, `&`, `&&` → **no chart rendered** + throw |
+| `merge` | #8734 BF-36 | **PASS** 5/0 | stale inner bound throws on `undefined._id` |
+
+**Six of nine units qualified.** The integration branch `rc/2026-09-dev-cycle` carries all six as
+six first-parent merge commits, and every probe is re-run against it — that re-run is what catches
+a later merge breaking an earlier fix, and is the whole reason this cycle evaluates between merges
+rather than bisecting at the end.
+
+Remaining: `bf/cache`, quadratics (both performance — shape assertions, not fixed multiples) and
+`#8729` (no falsifiable criterion, §7).
 
 **BF-35 is verified.** On dev the quick-pick chooser offers all five plain foods *and* the quick
 pick the user deliberately hid — 8 entries — while the option value indexes a 3-element array.
 Options 0–2 resolve silently to the wrong quick pick under a plain food's label; options 3–7
 throw `Cannot read properties of undefined (reading 'foods')` (`boluscalc.js:579-580`). Measured:
 **5 page errors on BASE, 0 on the fix.**
+
+### Three readouts that looked right and were not
+
+Beyond the two harness defects below, three *criteria* had to be discarded after measurement:
+
+- **`#bc_carbs`** for BF-35 — written only on the "(none)" branch, so it read 0 on **both** builds.
+- **`#loadingMessageText` visibility** for BF-37 — true in every cell, including ones that render
+  a chart perfectly well. The chart SVG is the readout; the loading message is not.
+- **Unauthenticated URLs** for BF-37 — without a token the page stops at the loading message on
+  *both* builds for an auth reason unrelated to the defect. The token is now held constant so the
+  parameter is the only variable.
+
+All three would have passed anything. This is what §5's meta-gate is for.
 
 ### Two harness defects that would have faked results
 
