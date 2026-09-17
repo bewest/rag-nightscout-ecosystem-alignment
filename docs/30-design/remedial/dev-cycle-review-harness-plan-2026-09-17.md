@@ -556,8 +556,18 @@ a meta-gate.
 
 ## 7. What this plan does not cover
 
-- **`#8729`** has no falsifiable automated criterion at all. Its only check is a human
-  looking at a chart. Shipping it is a judgement call, not a measurement.
+- **`#8729` has no falsifiable automated criterion at all**, and the arm the plan originally
+  proposed ("nothing downstream divides by `focusHeight`/`contextHeight`") has **no reachable red**:
+  there is no division by either quantity anywhere in the client, only `focusHeight / 4`, which is
+  division *of*. What was measured instead is strictly weaker and is labelled as such:
+
+  > Merged on top of the eight-unit RC, `#8729` regresses **none** of the seven probes —
+  > `pair` 12/0, `food` 8/0, `alarms` 7/0, `merge` 5/0, `quadratics` 6/0, and both browser probes
+  > (`parms` 10/0, `food-boluscalc` 5/0). *(measured 2026-09-17)*
+
+  That is **evidence of absence of harm, not evidence the fix works**. Both client-side probes
+  passing carries the most weight here, since the change is client-side. It remains a maintainer
+  judgement, and it is deliberately NOT merged into `rc/2026-09-dev-cycle`.
 - **quadratics' output-equality property** has no demonstrated reachable red. Two injected
   defects left the hash unchanged because `cutIfInInterval` re-validates the interval and
   absorbs both extra and missing boundary candidates.
