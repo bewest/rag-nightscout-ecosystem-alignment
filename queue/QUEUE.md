@@ -31,22 +31,22 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 78 |
-| runnable gates | 126 |
-| explicit `no-gate:` markers | 122 |
+| items | 80 |
+| runnable gates | 128 |
+| explicit `no-gate:` markers | 128 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 122 of the 248 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 128 of the 256 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 33 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 35 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 10 | RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 6 | P0-C, P0-J, P0-C-REMEDIATE, P0-TAG, DOC-VIEWS, DOC-LINKS |
+| `ready-to-push` | 7 | P0-C, P0-J, P0-C-REMEDIATE, P0-TAG, T30-AUTH, DOC-VIEWS, DOC-LINKS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 9 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01 |
-| `needs-decision` | 5 | RT-D3, RT-0, T30-RESEARCH, T30-AUTH, BFQ-47 |
+| `needs-decision` | 4 | RT-D3, RT-0, T30-RESEARCH, BFQ-47 |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
 ### Reaches an operator on today's release
@@ -1995,7 +1995,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 16 items
+`parcel: tenancy` &mdash; 18 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -2003,8 +2003,10 @@ alarm-readiness items, and the seam branch refresh.
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | `-` | n/a | 1 run + 3 no-gate |
-| `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split | `needs-decision` | `-` | n/a | 1 run + 4 no-gate |
-| `T30-SCHEMA` | T3.0 part 2 - configuration and credential storage in platform.sql | `not-started` | `-` | n/a | 1 run + 1 no-gate |
+| `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split | `ready-to-push` | `main` | n/a | 2 run + 4 no-gate |
+| `T30-SCHEMA-CRED` | T3.0 part 2a - device and data-path credential storage in platform.sql | `not-started` | `-` | n/a | 1 run + 2 no-gate |
+| `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `not-started` | `-` | n/a | 1 run + 2 no-gate |
+| `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `not-started` | `-` | n/a | 0 run + 3 no-gate |
 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
@@ -2029,7 +2031,7 @@ alarm-readiness items, and the seam branch refresh.
 | base | `seam/t1-2-storage-interface@81a1f6ce` |
 | worktree | `externals/work/crm-seam` |
 | semver | `n/a` |
-| review | maintainer. The document is a DRAFT carrying sections marked DECISION that need a yes before T30-SCHEMA can start - so this item is a decision surface now, not an unstarted research task. |
+| review | maintainer. The document is a DRAFT carrying sections marked DECISION that need a yes before T30-SCHEMA-CONFIG can start - so this item is a decision surface now, not an unstarted research task. |
 
 **Blast radius.** A design report. Every SETTINGS_* variable, every plugin credential, which are secrets and which are not, what a tenant may override versus what the hoster pins. DELIVERED as section B of the tenant-owner config-surface document: 277 distinct names, classified T / TS / D / B / X, measured against crm-seam at 81a1f6ce.
 
@@ -2056,15 +2058,15 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
-| repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `seam/t1-2-storage-interface@81a1f6ce` |
-| worktree | `externals/work/crm-seam` |
+| state (claimed) | `ready-to-push` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@671bc88d` |
+| worktree | `.` |
 | semver | `n/a` |
-| review | maintainer, and SECURITY for D17. The decision determines whether human identity leaves the codebase, and under the one-deployment shape the authentication plane is cohort-wide by construction - so tenant isolation rests entirely on the authorization layer and RLS. |
+| review | maintainer DONE 2026-09-16; SECURITY still owes D17 row 2 a look, and that row is the one deliberately left provisional. Under the one-deployment shape the authentication plane is cohort-wide by construction, so tenant isolation rests entirely on the authorization layer and RLS - which is now written down as the D13 amendment rather than left to be discovered. |
 
-**Blast radius.** No code. Two proposed decisions - D16 three listeners, D17 the auth plane splits by audience - plus the finding that nightscout-roles-gateway already integrated Kratos and Hydra with Nightscout in 2022 and that the half it left unfinished, the nsjwt token exchange, is the half no vendor writes for us.
+**Blast radius.** No code. DECIDED 2026-09-16 - D16 adopted whole, D17 adopted in three rows of four. Recorded in the execution plan section 1 and section 2.9. The repo/branch fields were corrected at the same time: this item never touched cgm-remote-monitor, its deliverable is a document here, and claiming a seam worktree it does not write to made the item unpushable by description.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -2074,6 +2076,8 @@ alarm-readiness items, and the seam branch refresh.
 
 - `[static]` `test -f docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
   - the deliverable exists. A presence check and nothing more - it cannot say whether the recommendation is right, only that it was written.
+- `[static]` `grep -q '\*\*D16\*\*' docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md && grep -q '\*\*D17\*\*' docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+  - the decision reached the DECISIONS TABLE, not just a research document. T30-RESEARCH's gate failed for three weeks because it named a file that never existed, so a written deliverable read as not-started; this gate is deliberately pointed at the place a later reader will look first. It cannot tell whether the rows say the right thing.
 - **NO GATE** &mdash; EVERY ORY CLAIM IN IT IS READ, NOT RUN. No Kratos and no Hydra instance was started. This programme has measured five register entries whose read-derived claims did not survive contact with running code, and twice a prescribed fix measured as a regression. The discharge is specific: stand up Kratos 1.x and Hydra 2.x, register two tenants against one pool, and confirm a session for tenant A cannot be exchanged for a Nightscout token on tenant B.
 - **NO GATE** &mdash; nightscout-roles-gateway was READ, not executed. Its dependencies are 2022-era - @ory/kratos-client 0.9.0-alpha.3 and @ory/hydra-client 1.11.8 - and V0alpha2Api, which lib/privy/index.js:20 constructs, no longer exists under that name in Kratos 1.x. Whether its decision pipeline still works is unknown, and it is the first thing a port would measure.
 - **NO GATE** &mdash; Nothing measures what a cohort-wide identity pool costs in isolation risk. Section 3.1 names the hazard - one identity, one session, one login spanning every tenant - and bounds nothing. A gate would need a cross-tenant session test, which needs the running stack the first no-gate asks for.
@@ -2084,9 +2088,9 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
 - `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
 
-**Notes.** Commissioned 2026-09-16 by the maintainer, who is leaning toward Ory so that sensitive OAuth and IAM controllers do not have to be built here, and who settled the deployment shape mid-research - ONE Kratos and ONE Hydra for the whole cohort, unified auth FOR Nightscout tenants, not a Kratos tenant PER Nightscout tenant. That settles the largest open question against Ory OSS, because OSS multi-tenancy is exactly what we are not asking for. The three findings a reader should not have to dig for - Nocturne uses no Ory at all and built identity in-house; Ory OSS is single-tenant and its multi-tenancy is the paid boundary, which does not bind us; and we already shipped this integration once and stopped one component short of finishing it.
+**Notes.** DECIDED 2026-09-16 (maintainer). D16 ADOPTED WHOLE, including the prerequisite - tenant resolution and credential verification extract to one module BEFORE the third listener exists, which lands on T30-WIRING. D17 ADOPTED IN THREE ROWS OF FOUR: devices and the data path keep a native per-tenant credential permanently (forced by D1, an uploader cannot run an OAuth flow); Hydra deferred; D7 unchanged. ROW 2 - Ory Kratos as one cohort-wide pool for human identity - is recorded as DIRECTION OF TRAVEL, NOT ADOPTED, because every Ory claim behind it is read and not run and because a shared identity pool is irreversible once identities exist. It is gated on T30-ORY-PROOF. Commissioned the same day by the maintainer, who settled the deployment shape mid-research - ONE Kratos and ONE Hydra for the whole cohort, unified auth FOR Nightscout tenants, not a Kratos tenant PER Nightscout tenant - which settles the largest open question against Ory OSS, because OSS multi-tenancy is exactly what we are not asking for. The three findings a reader should not have to dig for - Nocturne uses no Ory at all and built identity in-house; Ory OSS is single- tenant and its multi-tenancy is the paid boundary, which does not bind us; and we already shipped this integration once and stopped one component short of finishing it. A fourth was MEASURED after the decision and is in the research document at section 3.5: Nocturne's identity plane is deployment-scoped too, arrived at independently and with no Ory in the tree, which is the nearest thing to corroboration this decision has.
 
-### `T30-SCHEMA` &mdash; T3.0 part 2 - configuration and credential storage in platform.sql
+### `T30-SCHEMA-CRED` &mdash; T3.0 part 2a - device and data-path credential storage in platform.sql
 
 | | |
 |---|---|
@@ -2097,9 +2101,8 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-seam` |
 | semver | `n/a` |
 | review | SECURITY - this is where D13's per-tenant credential root and D14's per-tenant signing key live |
-| blocks on | `T30-RESEARCH`, `T30-AUTH` |
 
-**Blast radius.** lib/admin/platform.sql. GT3 measured it as holding exactly two tables - tenants (L23) and tenant_members (L49) - with subject_id uuid NOT NULL at L52 and NO foreign key, no settings table, no secrets table and no signing-key column.
+**Blast radius.** lib/admin/platform.sql. GT3 measured it as holding exactly two tables - tenants (L23) and tenant_members (L49) - with subject_id uuid NOT NULL at L52 and NO foreign key and no signing-key column. This half adds D13's per-tenant root credential, D14's per-tenant signing key, the device and uploader credential tables, and a referent for tenant_members.subject_id.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -2107,15 +2110,80 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- `[static]` `node tools/queue/gates/platform-sql-surface.js`
-  - FAILS while platform.sql carries no signing-key column, no configuration table and no referent for tenant_members.subject_id. Re-runs GT3's grep as a machine check rather than a claim.
-- **NO GATE** &mdash; D13 forbids any deployment-wide secret under TENANCY_MODE=multi on any interface. Nothing checks for one. A gate would have to enumerate every place a secret can enter and assert none is deployment-wide under multi - which is the T30-RESEARCH deliverable, so this is blocked on it in substance as well as in order.
+- `[static]` `node tools/queue/gates/platform-sql-surface.js --subset=cred`
+  - FAILS while platform.sql carries no signing-key column, no per-tenant root credential and no referent for tenant_members.subject_id. Re-runs GT3's grep as a machine check rather than a claim. It measures that a COLUMN EXISTS and nothing about whether anything reads it - T30-WIRING owns that, and its D14 gate is the non-vacuous one.
+- **NO GATE** &mdash; D13 forbids any deployment-wide secret under TENANCY_MODE=multi on any interface. Nothing checks for one. A gate would have to enumerate every place a secret can enter and assert none is deployment-wide under multi - which is the T30-RESEARCH deliverable. This item is NO LONGER BLOCKED on that, because a credential column can be added before the enumeration is complete, but the enumeration is still what would turn this no-gate into a gate.
+- **NO GATE** &mdash; Nothing here is executed against a PostgreSQL server. Section A of the config-surface document already carries two findings read off PostgreSQL's documented semantics rather than off a server - the ?| operator being top-level only, and a CHECK passing when its expression is NULL - and the same hazard applies to any DDL this item writes.
 
 **Evidence.**
 
 - `docs/60-research/remedial/gt3-register-truth-2026-09-15.md`
+- `docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
 
-**Notes.** THE DEPENDENCY ON T30-AUTH IS PARTIAL AND THE SCOPE IS STATED SO NOBODY OVER- BLOCKS ON IT. The device and data-path credential tables are settled regardless of how the auth decision goes - D17's first row makes the native per-tenant credential permanent, because an uploader cannot run an OAuth flow and D1 keeps the self-hosted path first-class. What T30-AUTH decides is whether HUMAN identity lives in these tables at all or in a cohort-wide Kratos pool, and writing DDL for a table that may hold nothing is the thing this edge exists to prevent. If the schema work is split, the device half can start now.
+**Notes.** SPLIT OUT OF T30-SCHEMA 2026-09-16, WHICH IS WHAT THE DECISION BOUGHT. The old item's own note said the device half could start as soon as the schema work was split, and D17 row 1 - native per-tenant credentials for devices and the data path, permanently - is now adopted, so it is split and it is unblocked. It takes NOTHING from the Ory question: row 1 holds however row 2 lands, because an uploader cannot run an OAuth flow and D1 keeps the self-hosted path first-class forever. THE HUMAN-IDENTITY COLUMNS ARE NOT IN THIS ITEM - they are in T30-SCHEMA-CONFIG, gated on T30-ORY-PROOF, because writing DDL for a table that may hold nothing is exactly what the old blocking edge existed to prevent.
+
+### `T30-SCHEMA-CONFIG` &mdash; T3.0 part 2b - per-tenant configuration table, and where human identity lives
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `seam/t1-2-storage-interface@81a1f6ce` |
+| worktree | `externals/work/crm-seam` |
+| semver | `n/a` |
+| review | SECURITY - a settings table holds plugin credentials, so the secret/non-secret split in T30-RESEARCH's classification is load-bearing here |
+| blocks on | `T30-RESEARCH`, `T30-ORY-PROOF` |
+
+**Blast radius.** lib/admin/platform.sql. D15's per-tenant configuration table, which hosted entrypoints read instead of the process environment, over the 277-name surface T30-RESEARCH enumerated - plus the human-identity columns, which exist only if D17 row 2 does not land.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** pre-release schema
+
+**Gates.**
+
+- `[static]` `node tools/queue/gates/platform-sql-surface.js --subset=config`
+  - FAILS while platform.sql carries no configuration table. A presence check on a table name - it cannot see whether the 277 names reach it, which is what the T30-RESEARCH census script would measure if anyone lifted it out of section G.3 into tools/queue/gates/.
+- **NO GATE** &mdash; NOTHING MEASURES THAT THE SETTINGS TABLE COVERS THE SURFACE. The census in T30-RESEARCH section G.3 reproduces a 247-name union against crm-seam at 81a1f6ce and is checked in nowhere, so it is a transcript rather than a measurement. Until it is a gate, "the configuration table is complete" is an assertion.
+- **NO GATE** &mdash; Nocturne's shape is the one to copy and nothing checks that we did - a settings table keyed tenant_id + key with a JSON value, plus typed side-tables where constraints matter (TenantAlertSettingsEntity, TenantDataRetentionConfigEntity). The alarm-threshold side-table is the one that matters, because a NULL-passing CHECK on an mmol threshold is already a known hazard in section A's DDL.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
+- `docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
+
+**Notes.** THIS HALF KEEPS BOTH BLOCKERS AND THEY ARE DIFFERENT BLOCKERS. T30-RESEARCH blocks the CONFIGURATION table, because the settings surface is what that item enumerates and what a tenant may override versus what the hoster pins is a decision it still defers. T30-ORY-PROOF blocks the HUMAN-IDENTITY columns, because D17 row 2 is direction-of-travel and not adopted: if one cohort-wide Kratos pool lands, human identity lives in Kratos with only a subject reference here, and if it does not, these tables carry credentials, recovery and MFA. Those are different schemas and the difference is not cosmetic. If this item is ever claimed before T30-ORY-PROOF resolves, do the configuration table and stop at the identity columns.
+
+### `T30-ORY-PROOF` &mdash; Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `-` |
+| base | `main@671bc88d` |
+| worktree | `.` |
+| semver | `n/a` |
+| review | SECURITY. The property under test IS the isolation property the whole cohort-wide design rests on. |
+
+**Blast radius.** A harness under tools/, no shipping code. It discharges the largest no-gate on T30-AUTH: every Ory claim behind D17 row 2 is read, not run.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** harness only, nothing ships
+
+**Gates.**
+
+- **NO GATE** &mdash; NOT STARTED, so there is nothing to run, and the gate it will need is stated here so it cannot be softened later. Register two tenants against ONE Kratos pool and confirm a session for tenant A cannot be exchanged for a Nightscout token on tenant B. WITH A CONTROL - the same session against tenant A's own host must succeed, or the failure is known only to be a failure and not known to come from the tenancy boundary. Two gates in this project have been green for the wrong reason and a red control is just as cheap to get wrong.
+- **NO GATE** &mdash; nightscout-roles-gateway was READ, not executed. Its dependencies are 2022-era - @ory/kratos-client 0.9.0-alpha.3 and @ory/hydra-client 1.11.8 - and V0alpha2Api, which lib/privy/index.js:20 constructs, no longer exists under that name in Kratos 1.x. Whether its decision pipeline still works is the second thing this item should measure, and it is the whole cost estimate for a port.
+- **NO GATE** &mdash; No cost model, and self-hosting does not dispose of it. Ory Network pricing does not apply under the one-deployment shape, which needs no Enterprise License - but the compliance question of any third-party processor adjacent to health data is unanalysed, and THAT one survives self-hosting because it is about who can reach the data, not who is billed for it.
+
+**Evidence.**
+
+- `docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
+
+**Notes.** CREATED 2026-09-16 AS THE CONDITION ON D17 ROW 2. The maintainer adopted three of D17's four rows and held row 2 - Ory Kratos as one cohort-wide identity pool for human identity, hosted-only - as direction of travel pending this measurement. The reason is this programme's own history: read-derived claims have failed five register entries on contact with running code and twice a prescribed fix measured as a regression, and a shared identity pool is effectively irreversible once identities exist. So the one decision that cannot be walked back is the one that should not rest on documentation. It is roughly a day of work and it unblocks the identity half of T30-SCHEMA-CONFIG.
 
 ### `T30-WIRING` &mdash; T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT
 
@@ -2129,7 +2197,7 @@ alarm-readiness items, and the seam branch refresh.
 | semver | `n/a` |
 | review | SECURITY |
 | register | `BF-25` |
-| blocks on | `T30-SCHEMA` |
+| blocks on | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG` |
 
 **Blast radius.** lib/server/tenant-context.js, lib/server/tenant-middleware.js, lib/authorization/index.js.
 
@@ -2169,7 +2237,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Blocked on T30-SCHEMA - there is no per-tenant key to verify against until the column exists. Recorded now so that T3.1's DONE-EXCEPT does not read as DONE to an agent that only loads that section.
+- **NO GATE** &mdash; Blocked on T30-SCHEMA-CRED - there is no per-tenant key to verify against until the column exists. That is the half of the old T30-SCHEMA that the 2026-09-16 decision unblocked, so this is now waiting on work that can start rather than on a decision nobody made. Recorded now so that T3.1's DONE-EXCEPT does not read as DONE to an agent that only loads that section.
 
 **Evidence.**
 
@@ -2188,7 +2256,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-seam` |
 | semver | `n/a` |
 | review | maintainer |
-| blocks on | `T30-SCHEMA` |
+| blocks on | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG` |
 
 **Blast radius.** lib/admin/platform.sql; tenant_members.subject_id references nothing.
 
@@ -2198,7 +2266,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Same as T30-SCHEMA, which is the work. This row exists so T3.2's DONE-EXCEPT has a visible remainder rather than living only in a parenthesis in the plan.
+- **NO GATE** &mdash; Same as T30-SCHEMA-CRED and T30-SCHEMA-CONFIG, which are the work - this item spans both halves of the split because platform.sql is missing a secret AND a signing key AND a config table. This row exists so T3.2's DONE-EXCEPT has a visible remainder rather than living only in a parenthesis in the plan.
 
 **Evidence.**
 
@@ -2487,7 +2555,7 @@ alarm-readiness items, and the seam branch refresh.
 | review | maintainer |
 | ships to operators today | no (pre-release) |
 | register | `CAP-02` |
-| blocks on | `T30-SCHEMA` |
+| blocks on | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG` |
 
 **Blast radius.** One loader, plus whatever decides the BSON to jsonb transform. The outbound half already exists - exportTenant is a streaming server-side cursor in one repeatable-read transaction that declares its covered-table list before any row.
 

@@ -167,6 +167,8 @@ a preference.
 | **D13** | **In `TENANCY_MODE=multi` there is no deployment-wide secret on any interface.** `API_SECRET` is a *single-tenant* bootstrapping mechanism and stops existing in multi mode; each tenant holds its own root credential, stored with its configuration. The platform-admin plane remains credential-free, secured by unreachability (D7) | **maintainer, 2026-09-15** — §2.8 |
 | **D14** | **Per-tenant JWT signing key**, stored with tenant configuration. Tenant resolution runs before any credential is examined, so the correct key is known at verify time; cross-tenant token reuse becomes a *signature* failure rather than a claim-check failure | **maintainer, 2026-09-15** — §2.8 |
 | **D15** | **Configuration source diverges by entrypoint.** `single` reads the process environment because there is one tenant to read for; hosted entrypoints read per-tenant configuration from the database. Env-sourced configuration must not reach the multi path | **maintainer, 2026-09-15** — §2.8 |
+| **D16** | **Three listeners, three audiences** — consumer/data (`ns-api`, plus `single`), tenant-owner configuration (`ns-tenant-admin`), platform operator (`ns-admin`). Adopted *because* the auth story is unsettled: the boundary is what keeps it changeable. **Prerequisite: tenant resolution and credential verification extract into one module before the third listener exists**, or they get implemented twice | **maintainer, 2026-09-16** — §2.9 |
+| **D17** | **The auth plane splits by audience, not by build-versus-buy.** Devices and the data path keep a **native per-tenant credential permanently**; Hydra is **deferred**; D7 is **unchanged**. Human identity via one cohort-wide Ory Kratos pool, hosted-only, is **direction of travel and NOT adopted** — it is conditional on `T30-ORY-PROOF`. D14 is preserved either way by minting the Nightscout token ourselves after authentication | **maintainer, 2026-09-16** — §2.9. **Three rows of four adopted; row 2 held** |
 
 ## 2. D7 — the admin plane
 
@@ -545,6 +547,140 @@ silently looks current is the failure to design against. Nightscout already has 
 vocabulary (the clock and time-ago going red) and this should use it rather than invent one.
 A silent disconnect leaves exactly the same frozen chart, so the disconnect alone does not close
 this.
+
+
+### 2.9 D16, D17 — the auth plane, and the amendment D13 needed
+
+**Decided 2026-09-16.** The research is
+[the auth plane: Ory Kratos/Hydra against building it ourselves](../../60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md),
+commissioned the same day and adopted the same day, **in part**. What follows is what was
+adopted, what was held, and the one sentence this programme had never written down.
+
+#### D16 — three listeners
+
+Adopted whole, including the prerequisite. The argument is not architectural taste, it is
+asymmetry of regret: merging two listeners later is a routing change, and splitting one later
+means re-deriving which routes were ever safe to expose against a codebase that by then has
+something depending on them sharing a process. Separation also decouples the auth question from
+the data path — a separate listener can be fronted by Ory, by a native credential, or by nothing
+but unreachability, without touching the consumer API.
+
+**Three listeners for the whole deployment, not three per tenant.** The count is fixed and does
+not move with tenant count; tenancy is multiplexed *inside* each listener by Host → slug → id
+(D10) and bound by RLS. This axis is **audience**, and it is orthogonal to D5, which splits by
+**workload**. Nothing in either decision splits per tenant — D2 rejected database-per-tenant on
+47 WiredTiger files and 3.7 MB of RSS per empty tenant, §2.2 rejects Kratos-per-tenant on the same
+grounds, and this table does not reintroduce it.
+
+| listener | audience | authn | authz | tenancy |
+|---|---|---|---|---|
+| `ns-api` + `ns-realtime` (and `single`) | devices, clients, viewers | native per-tenant credential, tokens | shiro | Host → slug → id, RLS |
+| `ns-tenant-admin` | the tenant owner | native today; **D17 row 2 if it lands** | owner role | Host → slug → id, RLS |
+| `ns-admin` | the hoster | none, by D7 | none — reachability | cross-tenant by construction |
+
+`ns-evaluator` and `ns-vcpool` appear in no row because they accept no inbound connections —
+neither carries express (§2 of the components document). They are D5 entrypoints, not D16
+listeners, which is the clearest statement of how the two axes differ.
+
+**UNRESOLVED, and it is a cost question, not a boundary question: is `ns-tenant-admin` its own
+process, or a second bound socket inside `ns-api`?** D16 decides the *boundary* — that the
+tenant-owner surface does not share a listening socket with the data path — and is silent on
+process topology. A second `listen()` in one process gets the routing separation and the
+extraction prerequisite at no extra process; a separate process additionally gets its own
+failure domain, its own bind address and its own resource ceiling, which is what makes `ns-admin`
+worth a process under D7. D7's argument does **not** transfer automatically, because
+`ns-tenant-admin` is credentialed and RLS-scoped where `ns-admin` is neither. Decide it before
+the third listener is built, not after.
+
+**The prerequisite is the content of D16, not a footnote to it.** `lib/server/tenant-resolver.js`
+and `tenant-middleware.js` already are the one module for the consumer path; the admin plane
+deliberately does not use them because it is cross-tenant. The tenant-owner plane is the first
+surface that is **per-tenant and not the data path**, so it is the first real consumer of that
+extraction, and it must exist before the third listener does. It lands on **T30-WIRING**.
+
+#### D17 — adopted in three rows of four
+
+| audience | decision | status |
+|---|---|---|
+| devices and uploaders | native per-tenant credential, **never Ory** | **ADOPTED.** Forced by D1 — an uploader cannot run an OAuth flow, and NRG needed its mode C for exactly this |
+| tenant owners and caregivers | Ory Kratos, one cohort-wide pool, hosted-only | **HELD — direction of travel, not adopted.** Conditional on `T30-ORY-PROOF` |
+| third-party apps | Hydra **deferred** | **ADOPTED.** Nothing today needs delegated access; deferring costs nothing |
+| platform operator | D7 unchanged | **ADOPTED** |
+
+**Why row 2 is held and the others are not.** Every Ory claim behind it is read and not run — no
+Kratos and no Hydra instance was started — and this programme has measured five register entries
+whose read-derived claims did not survive contact with running code, twice with a prescribed fix
+measuring as a regression. That alone would be a reason to be careful; what makes it a reason to
+*wait* is that **a shared identity pool is effectively irreversible once identities exist**. The
+one decision that cannot be walked back is the one that should not rest on documentation.
+`T30-ORY-PROOF` is roughly a day: stand up Kratos 1.x and Hydra 2.x, register two tenants against
+one pool, and confirm a session for tenant A cannot be exchanged for a Nightscout token on tenant
+B — **with a control**, because the same session against A's own host must still succeed or the
+test only proves that everything fails.
+
+**The bridge is `nsjwt` and it is ours under every outcome.** Kratos says who the person is; a
+policy says what they may do on this site; Nightscout mints a **per-tenant** token (D14) that the
+data path already understands. That is exactly `nightscout-roles-gateway`'s design, and its
+unfinished half. Hydra signs with Hydra's keys and OSS Hydra has one issuer, so the alternative —
+letting Hydra issue the token — would abandon D14 for the human path. Minting our own keeps it.
+
+**What "lean on Ory" buys, stated so it can be argued with:** we do not write password hashing,
+credential recovery, MFA enrolment, session invalidation, or the OIDC federation handshake.
+**What it does not buy:** multi-tenancy, the authorization model, the token exchange, the device
+path, or freedom from maintaining the native path anyway. **Adopting Ory means the auth seam
+carries two backends forever**, the same standing cost D4 already imposed on storage. That is not
+a migration cost; it is maintenance, and it should be counted against the "so we don't build
+sensitive IAM controllers" argument, because we will still be maintaining the native one.
+
+#### The amendment D13 needed, which is the part to take seriously
+
+One cohort-wide Kratos makes the **authentication plane shared infrastructure by construction**:
+one identity, one session, one login, spanning every tenant. That is not an implementation
+accident, it is what "unified auth *for* Nightscout tenants" means — and it is also the feature,
+because a mobile app can then log in once and *select* which Nightscout it may reach.
+
+D13 says there is no deployment-wide **secret** under `TENANCY_MODE=multi`, and that stays true:
+each tenant still holds its own root credential. But D13 says nothing about identity, and reading
+it as "nothing is cohort-wide" would rule out the only workable topology. So, recorded explicitly:
+
+> **Credentials are per-tenant. Identity is per-cohort. Authorization is per-tenant.**
+
+**Isolation therefore rests entirely on the authorization layer and on RLS, not on the authn
+layer.** This is written here rather than discovered later because the failure mode is a
+cross-tenant identity bug, and "we assumed the authn plane was isolated" is how that ships. It
+holds whether or not row 2 lands — it is a statement about the topology, not about the vendor.
+
+#### Nocturne reached the same shape independently, and with no Ory at all
+
+Measured 2026-09-16 against `externals/nocturne@d9e14309`, after the decision rather than before
+it, so it is corroboration and not the basis:
+
+| | measurement |
+|---|---|
+| `SubjectEntity` | `: IEntityTimestamped` — **not `ITenantScoped`**, so no RLS policy and no tenant query filter. `NocturneDbContext.cs:137` |
+| the same for | `PasskeyCredentialEntity`, `TotpCredentialEntity`, `SubjectOidcIdentityEntity`, `SubjectRoleEntity`, `RecoveryCodeEntity`, `RefreshTokenEntity`, `OidcProviderEntity` — **zero of them tenant-scoped**, against **57 entities that are** |
+| `ix_subjects_access_token_hash` | **UNIQUE, with no tenant column** — a subject's access token is unique across the whole deployment |
+| `TenantMemberEntity` | carries `TenantId` **and** `SubjectId`; unique on `(TenantId, SubjectId)` and on `(TenantId, Username)`. **This is the seam** — the same role NRG's `joined_groups.subject` plays |
+| per-tenant authorization | `TenantRoleEntity`, `TenantMemberRoleEntity` — unique on `(TenantId, Slug)`. Roles are per-tenant; the person is not |
+
+So Nocturne's identity plane is **deployment-scoped**, its authorization plane is **tenant-scoped**,
+and the join between them is a membership table. That is the credentials/identity/authorization
+split above, reached by a sibling project that uses no Kratos and no Hydra anywhere in its tree.
+**It goes further than we propose**: its *access token* is deployment-global too, where D13 keeps
+credentials per-tenant.
+
+**One correction to the research document, which §3.4 got wrong and §3.5 now records.** It
+described `OidcProviderAdminController` as per-tenant federation. It is not:
+`Controllers/V4/TenantAdmin/OidcProviderAdminController.cs:25,27` is `[Route("api/v4/admin/oidc-providers")]`
+with `[Authorize(Roles = "platform_admin")]`, and `OidcProviderEntity` is not tenant-scoped — so
+federation is configured **once for the deployment by the platform operator**, not per tenant.
+That strengthens rather than weakens the reading: Nocturne treats the identity provider as
+platform infrastructure, which is the position D17 row 2 takes.
+
+**What this does not settle.** Nocturne is read, not run, exactly like everything else here, and
+agreement between two designs is not evidence that either is safe. Nocturne also has no D7 — it
+puts platform admin on the consumer API behind a `platform_admin` role — so on the *admin plane*
+it is the thing D7 departs from, and the same file proves both points.
 
 
 ## 3. D8 — the query surface

@@ -38,8 +38,8 @@ research deliverable
 ## Who should review this, and why
 
 maintainer. The document is a DRAFT carrying sections marked DECISION that
-need a yes before T30-SCHEMA can start - so this item is a decision surface
-now, not an unstarted research task.
+need a yes before T30-SCHEMA-CONFIG can start - so this item is a decision
+surface now, not an unstarted research task.
 
 ## What was measured
 

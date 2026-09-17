@@ -1,7 +1,15 @@
 # The auth plane: Ory Kratos/Hydra against building it ourselves
 
-**Status: RESEARCH, for maintainer decision.** Nothing here is landed work and nothing here
-proposes code yet. It exists to answer two questions asked on 2026-09-16 — whether planning on
+**Status: DECIDED 2026-09-16, IN PART.** This began as research for a maintainer decision and got
+one the same day. **D16 was adopted whole. D17 was adopted in three rows of four** — devices keep a
+native per-tenant credential permanently, Hydra is deferred, D7 is unchanged. **Row 2, Ory Kratos
+as one cohort-wide pool for human identity, is direction of travel and NOT adopted**, conditional
+on `T30-ORY-PROOF`: stand the stack up and measure the isolation property, because §8's first
+bullet is the reason and a shared identity pool is irreversible once identities exist. The
+decisions as adopted live in the
+[execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) §1
+and §2.9, which is authoritative; this document is the reasoning behind them. Nothing here is
+landed work and nothing here proposes code yet. It exists to answer two questions asked on 2026-09-16 — whether planning on
 three separate interfaces is the reversible choice, and whether to lean on Ory rather than build
 OAuth2 and IAM controllers ourselves.
 
@@ -13,7 +21,8 @@ what a tenant owner is asked to do to log in, what a self-hoster must be told ch
 |---|---|
 | Measured against | `externals/nightscout-roles-gateway` @ `90840ac`, `externals/nocturne` @ `d9e143097`, `externals/work/crm-seam` @ `81a1f6ce` |
 | Decisions it touches | D1, D4, D5, D7, **D13, D14, D15** |
-| Decisions it proposes | D16 (three interfaces), D17 (auth split by audience) |
+| Decisions it proposes | D16 (three interfaces) — **adopted**; D17 (auth split by audience) — **rows 1, 3, 4 adopted, row 2 held** |
+| Decision record | execution plan §1 and §2.9 (authoritative); queue items `T30-AUTH`, `T30-ORY-PROOF` |
 | Web claims | dated 2026-09-16, **not reproduced locally**; see §2 and §8 |
 
 ---
@@ -188,9 +197,17 @@ Nocturne puts platform admin on the consumer API behind a role:
 `[Authorize]`, plus a `HasScope(Scope.TenantSettings)` check, tenant from the Host header.
 
 **Nocturne uses no Ory at all** — no Kratos, no Hydra anywhere in the tree. It built identity
-in-house: `PasskeyCredentialEntity`, `TotpCredentialEntity`, `SubjectOidcIdentityEntity`, and a
-per-tenant `OidcProviderAdminController` for federation. So "ORY-style" in D7 describes a
-philosophy we adopted, not a dependency either sibling project carries.
+in-house: `PasskeyCredentialEntity`, `TotpCredentialEntity`, `SubjectOidcIdentityEntity`, and an
+`OidcProviderAdminController` for federation. So "ORY-style" in D7 describes a philosophy we
+adopted, not a dependency either sibling project carries.
+
+**CORRECTED 2026-09-16:** this section first called that controller *per-tenant*. It is not —
+`Controllers/V4/TenantAdmin/OidcProviderAdminController.cs:25,27` is
+`[Route("api/v4/admin/oidc-providers")]` under `[Authorize(Roles = "platform_admin")]`, and
+`OidcProviderEntity` is not tenant-scoped. Federation is configured **once for the deployment**.
+§3.5 is the measurement that caught it, and the error ran the wrong way: the corrected reading
+supports D17 row 2 more strongly than the mistaken one did, which is why it was worth re-measuring
+rather than leaving.
 
 Nocturne's settings storage is worth copying regardless of the auth outcome: a `settings` table
 keyed `tenant_id` + `key` with a JSON `value`, plus typed side-tables where constraints matter
@@ -198,6 +215,47 @@ keyed `tenant_id` + `key` with a JSON `value`, plus typed side-tables where cons
 data/schema mirrors the flags typically set via environment variables".
 
 ---
+
+### 3.5 Nocturne's identity plane is deployment-scoped too — measured
+
+Asked after the decision was taken: *is Nocturne scoped the same way — identity covering the
+deployment rather than the tenant?* **Yes, and more completely than we propose.** Measured against
+`externals/nocturne@d9e14309`.
+
+Nocturne marks a tenant-scoped entity with `ITenantScoped`, described in its own words as the
+marker that earns "automatic global query filters and PostgreSQL RLS policies"
+(`Entities/ITenantScoped.cs`). So the question has a mechanical answer — which identity tables
+carry the marker?
+
+| entity | `ITenantScoped`? |
+|---|---|
+| `SubjectEntity` (the person) | **no** — `: IEntityTimestamped` only |
+| `PasskeyCredentialEntity`, `TotpCredentialEntity`, `RecoveryCodeEntity` | **no** — keyed by `SubjectId` |
+| `SubjectOidcIdentityEntity`, `RefreshTokenEntity`, `SubjectRoleEntity` | **no** |
+| `OidcProviderEntity` (federation config) | **no** |
+| every data entity | **yes — 57 of them** |
+
+`ix_subjects_access_token_hash` is **UNIQUE with no tenant column**: a subject's access token is
+unique across the entire deployment. `SubjectRoleEntity`'s key is `(SubjectId, RoleId)` — no
+tenant. Meanwhile `TenantRoleEntity` and `TenantMemberRoleEntity` are unique on `(TenantId, …)`.
+
+**The seam is `TenantMemberEntity`** — it carries both `TenantId` and `SubjectId`, unique on
+`(TenantId, SubjectId)` filtered to `revoked_at IS NULL`, and separately unique on
+`(TenantId, Username)`. That last index is the tell: **the display name is per-tenant, the person
+is not.** It is the same single column that carries NRG's whole design, where
+`joined_groups.subject` holds the Kratos identity id (§1.1).
+
+So three independent designs — NRG with Ory, Nocturne without it, and D17 — land on the same
+split: **identity is deployment-wide, authorization is tenant-scoped, a membership table joins
+them.** Nocturne goes one step further than D13 would let us, since its subject access token is
+deployment-global where ours stays per-tenant.
+
+**What this is worth, and what it is not.** It is corroboration for §3.1's amendment — the
+cohort-wide identity plane is not an artefact of choosing Ory, because the project that refused
+Ory built the same shape. It is **not** evidence that the shape is safe: Nocturne was read and not
+run, like everything else here, and two designs agreeing is not a measurement of either.
+`T30-ORY-PROOF` is still the thing that would measure it.
+
 
 ## 4. Three interfaces: yes, and one thing has to happen first
 
@@ -258,7 +316,10 @@ exchange, the device path, or freedom from maintaining the native path anyway (�
   cohort-wide pool with tenancy in our tables. Hydra deferred. D7 unchanged. D14 preserved by
   minting the Nightscout token ourselves after Kratos authenticates.
 
-Neither is adopted. Both need the maintainer's yes.
+**OUTCOME 2026-09-16: D16 adopted whole. D17 adopted in rows 1, 3 and 4; row 2 held as direction
+of travel, conditional on `T30-ORY-PROOF`.** See the header. The reason for the split verdict is
+§8's first bullet — the Ory claims are read, not run — combined with the fact that a cohort-wide
+identity pool cannot be undone once identities exist.
 
 ---
 
