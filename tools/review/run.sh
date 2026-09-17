@@ -72,6 +72,34 @@ probe "credentials" "#8741" node "$HERE/probes/credentials.js" \
 
 # Every probe must also be RED when its candidate is BASE. A probe that passes
 # both ways measured nothing, and this loop is the only thing that notices.
+# ---------------------------------------------------------------- client side
+#
+# Client probes require NODE_ENV=development. In production every state serves
+# ONE shared bundle out of the common node_modules cache, so a branch's own
+# instance serves dev's client code and a browser probe compares dev to dev.
+# provenance.js is the BLOCKING pre-gate for exactly that, and it is run first.
+echo
+echo "== client-side (dev mode; bundles compile on first fetch) =="
+export NSREVIEW_ENABLE='careportal basal iob cob bwp cage sage iage rawbg food boluscalc'
+for s in BASE FOOD; do
+  "$NSCTL" stop "$s" >/dev/null 2>&1
+  "$NSCTL" start "$s" development >/dev/null 2>&1
+  curl -s -o /dev/null -m 300 "http://127.0.0.1:$(port "$s")/devbundle/js/bundle.app.js" \
+    && printf '  %-6s dev bundle ready\n' "$s"
+done
+BASE_DEV="http://127.0.0.1:$(port BASE)"
+FOOD_DEV="http://127.0.0.1:$(port FOOD)"
+
+if node "$HERE/probes/provenance.js" --base "$BASE_DEV" --candidate "$FOOD_DEV" \
+     --unit bf/food >/dev/null 2>&1; then
+  echo "  provenance: PASS — each instance serves its own client"
+  probe "food-boluscalc" "#8735 BF-35" node "$HERE/probes/food-boluscalc-browser.js" \
+    --base "$BASE_DEV" --candidate "$FOOD_DEV" --secret "$SEC"
+else
+  echo "  provenance: FAIL — skipping browser probes, they would compare a build to itself"
+  ROWS+=("$(printf '%-26s|%-18s|%-6s|%s' food-boluscalc '#8735 BF-35' SKIP 'provenance pre-gate failed')")
+fi
+
 echo
 echo "== red controls (candidate = BASE; every one MUST fail) =="
 rc_bad=0
@@ -91,6 +119,10 @@ red_control food node "$HERE/probes/food.js" \
 red_control credentials node "$HERE/probes/credentials.js" \
   --base-worktree "$NSREVIEW_ROOT/states/BASE" \
   --candidate-worktree "$NSREVIEW_ROOT/states/BASE"
+red_control food-boluscalc node "$HERE/probes/food-boluscalc-browser.js" \
+  --base "$BASE_DEV" --candidate "$BASE_DEV" --secret "$SEC"
+red_control provenance node "$HERE/probes/provenance.js" \
+  --base "$BASE_DEV" --candidate "$BASE_DEV" --unit bf/food
 
 echo
 printf '%-26s %-18s %-6s %s\n' PROBE UNIT VERDICT SUMMARY

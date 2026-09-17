@@ -440,6 +440,44 @@ Rows marked **⚠ REWRITTEN** are ones whose earlier criterion was tested and fo
 
 ---
 
+## 5a. MEASURED RESULTS — 2026-09-17
+
+Harness built at `tools/review/`. Full cycle — six states booted, seeded, six probes, five red
+controls — **31.9 s**, browser work included.
+
+| probe | unit | verdict | what the control measured on BASE |
+|---|---|---|---|
+| `pair` | #8737+#8738 | **PASS** 12/0 | count endpoint dead; `$exists=false` inverted |
+| `pair-half-reads` | #8738 *alone* | FAIL 2 | *expected* — the half-merge detector firing |
+| `pair-half-coercion` | #8737 *alone* | FAIL 3 | *expected* — same |
+| `food` | #8735 BF-16 | **PASS** 8/0 | 1 quick pick, and the **wrong one** |
+| `food-boluscalc` | #8735 **BF-35** | **PASS** 5/0 | 8 chooser entries; **5 page-error crashes** |
+| `credentials` | #8741 | **PASS** 5/0 | password `007700` → number `7700` |
+
+**BF-35 is verified.** On dev the quick-pick chooser offers all five plain foods *and* the quick
+pick the user deliberately hid — 8 entries — while the option value indexes a 3-element array.
+Options 0–2 resolve silently to the wrong quick pick under a plain food's label; options 3–7
+throw `Cannot read properties of undefined (reading 'foods')` (`boluscalc.js:579-580`). Measured:
+**5 page errors on BASE, 0 on the fix.**
+
+### Two harness defects that would have faked results
+
+1. **Dropping a database under a live server leaves the cache populated.** BASE served 1145
+   distinct sgv documents from a 582-document database — the previous seed merged with the
+   current one. Every read measurement in that state was invalid and nothing said so. Fixed:
+   `nsctl.sh reset` stops before dropping.
+2. **All states shared one production bundle.** Webpack's output path is inside `node_modules`,
+   which every state symlinks, so all three served byte-identical `d765fe44…` containing **none**
+   of `bf/food`'s client code. The branch's own instance was serving dev's client. Every
+   client-side probe would have compared dev to dev and passed. Fixed: client probes require
+   `NODE_ENV=development`, and `probes/provenance.js` is a **blocking pre-gate** that refuses to
+   vouch when it cannot find a token that measures 0 on BASE and ≥1 on the candidate.
+
+Both produced *plausible* wrong numbers rather than errors — which is the whole reason §5 carries
+a meta-gate.
+
+---
+
 ## 6. Sequence of work
 
 1. **Now.** Open the `#8605` conversation with its owner. Capture the per-file baseline with
@@ -466,6 +504,15 @@ Rows marked **⚠ REWRITTEN** are ones whose earlier criterion was tested and fo
   absorbs both extra and missing boundary candidates.
 - **`bf/merge`'s browser-level failure mode** is unreachable by any server-driven route found
   so far.
+- **BF-35's dose consequence is inferred, not read.** The probe measures the chooser's membership
+  and the crash. "Picking one quick pick loads a *different* one's carbs" follows from the index
+  arithmetic — `foods` is module-private, `#bc_carbs` is written only on the "(none)" branch, and
+  `#bc_food` renders empty in the synthetic state. An earlier revision asserted on `#bc_carbs` and
+  read 0 on **both** builds: a criterion that would have passed anything.
+- **`loadFoodQuickpicks` is called once, at client init**, before the socket delivers any food, so
+  the shipping chooser is empty until something rebuilds it. The probe calls it directly. Whether a
+  real user ever reaches the populated-and-broken state is a question for the maintainer, and it
+  bears on how urgent BF-35 actually is.
 - **`#8741`'s actual credential path** is never exercised — the discriminator is a boot
   crash. Testing the real Dexcom coercion needs live credentials.
 - **`bf/alarms`' locale removal** on `/api/v1/alexa` and `/api/v1/googlehome` has no named

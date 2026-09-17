@@ -171,6 +171,7 @@ NODE_ENV='$mode'
 DISPLAY_UNITS='mg/dl'
 AUTH_DEFAULT_ROLES='denied'
 ENABLE='${NSREVIEW_ENABLE:-careportal basal iob cob bwp cage sage iage rawbg}'
+SHOW_PLUGINS='${NSREVIEW_SHOW_PLUGINS:-careportal basal iob cob bwp cage sage iage boluscalc}'
 TIME_FORMAT='24'
 EOF
 }
