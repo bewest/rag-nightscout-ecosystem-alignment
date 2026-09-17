@@ -360,15 +360,18 @@ items:
       returns.
 
   - id: P0-C
-    title: bf/auth - BF-17 plaintext token, BF-30 throttle key
+    title: bf/auth - BF-17 plaintext token (BF-30 split out to P0-J)
     parcel: phase0
     repo: cgm-remote-monitor
     branch: bf/auth
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-auth
     state: ready-to-push
-    blast_radius: 2 commits. lib/authorization/endpoints.js, storage.js,
-      delaylist.js, index.js, lib/admin_plugins/subjects.js.
+    blast_radius: >
+      2 commits at ce82f0cd, 3 files, +310/-18. lib/authorization/endpoints.js,
+      lib/authorization/storage.js, tests/authsubjects.test.js. SPLIT 2026-09-16
+      - the BF-30 throttle commit that used to sit underneath this one is now
+      P0-J on bf/throttle, and the old tip 56ed29d2 no longer exists.
     review: SECURITY - a human security reviewer first, before any other Phase 0
       branch. This is the one the sequencing document singles out.
     operator_visible: >
@@ -389,7 +392,7 @@ items:
       The throttle change alone would be minor - the sleep moved to the failure
       path, so no request that authenticates is delayed by another client's
       failures behind a shared proxy.
-    register: [BF-17, BF-30]
+    register: [BF-17]
     gates:
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/auth
         kind: static
@@ -414,17 +417,6 @@ items:
           bf/auth as commit 56ed29d2, and the gate is green because the residual
           is gone, not because the pattern was weakened. The gate stays as a
           regression guard.
-      - run: TEST=authdelay npm run test-single
-        cwd: externals/work/crm-bf-auth
-        kind: integration
-        describe: >
-          BF-30, the branch's OWN test, which `npm run test:unit` never ran -
-          tests/authdelay.test.js matches neither local brace list and is one of
-          the 52 files only CI's `test-ci` reaches. 11 passing with MongoDB up on
-          27031. E3 ABLATED it: with the seven changed lib files put back to
-          origin/dev and lib/server/peer-address.js removed, 2 passing /
-          9 failing. Needs the database (6 passing / 1 failing against a dead
-          port), so it is integration and honestly so.
       - run: TEST=authsubjects npm run test-single
         cwd: externals/work/crm-bf-auth
         kind: integration
@@ -447,22 +439,15 @@ items:
           including that a rename is not a rotation. Read that item before
           signing this one off; this marker is the honest half of the pair.
       - no-gate: >
-          BF-30 COLLIDES WITH PR #8605 (chore/nightscout-modernization), MEASURED
-          2026-09-16, and nothing in this queue was tracking it. Trial-merge of
-          bf/auth against origin/chore/nightscout-modernization CONFLICTS in FIVE
-          files: lib/authorization/index.js, lib/authorization/storage.js,
-          lib/api3/alarmSocket.js, lib/api3/security.js, lib/server/websocket.js.
-          Andy does NOT touch lib/authorization/delaylist.js - that file is
-          byte-identical to dev on his branch - but he REPLACES the IP derivation
-          that feeds it, swapping the `forwarded-for` package for
-          lib/server/client-ip.js driven by a new TRUST_PROXY setting, in exactly
-          the four call sites bf/auth also edits. So both branches independently
-          fix the same root cause - a throttle keyed on a value the caller
-          chooses - with two different modules, peer-address.js and client-ip.js,
-          and one of them has to lose. The conflicts are textual and the intents
-          are complementary, so this is a merge problem rather than a design
-          disagreement, but it is not automatic and it is not small. NOT GATED
-          because the resolution is a design decision nobody has taken yet.
+          ONE CONFLICT WITH PR #8605 REMAINS AND IT IS THIS BRANCH'S OWN -
+          lib/authorization/storage.js, which Andy's branch also narrows, for
+          different reasons. Measured 2026-09-16 after the split: bf/auth against
+          origin/chore/nightscout-modernization conflicts in that one file and
+          nothing else. BEFORE THE SPLIT IT WAS FIVE, and the other four were the
+          BF-30 peer plumbing alone, which is why that half was re-cut without it
+          - see P0-J. Not gated, because resolving it is a merge somebody has to
+          sit down and do and which side wins depends on whether the allow-list
+          lands at all.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -494,6 +479,131 @@ items:
       the sentence a reviewer needs when this PR goes up is not "remediation is
       missing" but "remediation is a note, the note was wrong once, and here is
       the gate that says it is right now".
+
+  - id: P0-J
+    title: bf/throttle - BF-30, failed-auth throttling, compatibility default
+    parcel: phase0
+    repo: cgm-remote-monitor
+    branch: bf/throttle
+    base: origin/dev@a8888f0d
+    worktree: externals/work/crm-bf-throttle
+    state: ready-to-push
+    blast_radius: >
+      1 commit at 435419ce, 3 files, +388/-45. lib/authorization/delaylist.js,
+      lib/authorization/index.js, tests/authdelay.test.js.
+    review: >
+      maintainer. SPLIT OUT OF bf/auth 2026-09-16 on the maintainer's
+      instruction, and the split is the point. The earlier draft added
+      lib/server/peer-address.js and threaded a second address through
+      alarmSocket, security, websocket and index, which CONFLICTED WITH PR #8605
+      IN FIVE FILES - that PR replaces the client-address derivation wholesale
+      with a TRUST_PROXY-driven module. Re-cut without the peer plumbing this
+      branch merges CLEAN against #8605, measured, and the throttle keys on
+      data.ip, which #8605 then makes trustworthy with no further change here.
+      What a reviewer needs and cannot read off the diff: THE DEFAULT IS TODAY'S
+      BEHAVIOUR BY DESIGN, an attacker varying both credential and header is
+      still not throttled, and that gap is asserted by a test rather than left
+      implied.
+    operator_visible: >
+      Two fixes to the delay Nightscout applies after a failed login, and one
+      thing it now tells you. Until now that delay was applied on the way IN to
+      every request, so a device presenting the CORRECT password could be made to
+      wait for somebody else's failed attempts - and if your Nightscout sits
+      behind a proxy or a CDN, where many devices can look like they share one
+      address, a single misconfigured uploader could slow everything down. The
+      delay now applies only to the request that actually failed. Separately, the
+      list of recent failures was not being cleared properly and grew for as long
+      as Nightscout kept running. THERE IS ALSO A NEW MESSAGE IN YOUR LOG, and it
+      is telling you something true - the protection against password guessing is
+      weaker than it looks, because the address it counts against can be set by
+      whoever is connecting. Nothing you configured has changed and nothing you
+      rely on stops working. Restricting access at your proxy or hosting provider
+      is the thing that actually helps today. None of this is medical advice.
+    semver: patch
+    semver_reason: >
+      no declared surface moves and no default changes. For any given request the
+      delay only ever SHRINKS - a successful authentication is no longer delayed
+      at all - so nothing that worked stops working. An added log line is not a
+      surface. The secure default is a later and deliberate bump.
+    register: [BF-30]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/throttle
+        kind: static
+        describe: bf/throttle has not fallen behind origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/throttle >/dev/null
+        kind: static
+        describe: trial-merge into origin/dev is conflict-free
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/throttle origin/chore/nightscout-modernization >/dev/null
+        kind: static
+        describe: >
+          THE GATE THIS BRANCH EXISTS FOR - it merges clean with PR #8605. The
+          pre-split draft conflicted in five files (index.js, storage.js,
+          alarmSocket.js, security.js, websocket.js) and four of those were the
+          peer plumbing alone. NON-VACUITY, reproduced 2026-09-16: the identical
+          command against bf/auth, which still narrows storage.js, CONFLICTS. So
+          this is not passing because merge-tree always passes.
+      - run: sh -c 'git -C externals/cgm-remote-monitor-official grep -qI peer-address bf/throttle && exit 1 || exit 0'
+        kind: static
+        describe: >
+          lib/server/peer-address.js is NOT on this branch and nothing references
+          it. A TRACKING GATE against the obvious regression - re-adding that
+          module is exactly what re-creates the four-file conflict with #8605, and
+          it would look like a harmless improvement to anyone who had not measured
+          it.
+      - run: TEST=authdelay npm run test-single
+        cwd: externals/work/crm-bf-throttle
+        kind: integration
+        describe: >
+          THE BRANCH'S OWN TEST, 11 passing, measured 2026-09-16. Needs MongoDB -
+          this worktree names 27031. It is in NEITHER local brace list, so a green
+          `npm run test:unit` is no evidence for any of this. ABLATED:
+          lib/authorization/delaylist.js and lib/authorization/index.js restored
+          to origin/dev give 3 passing / 8 failing. It includes the test that PINS
+          THE REMAINING WEAKNESS - `does NOT yet throttle a guess that varies both
+          the secret and the address` - which asserts the gap rather than
+          pretending it is closed, and which should be INVERTED into a positive
+          assertion when the TRUST_PROXY boundary lands.
+      - no-gate: >
+          NOTHING MEASURES THE BOOT WARNING'S WORDS. init() logs that the throttle
+          is keyed on an address the caller may control, and that restricting
+          access at the proxy is what helps today. That text IS the notification
+          half of the maintainer's compatibility decision, and it is prose - the
+          same shape as P0-C-REMEDIATE, whose prose turned out to be wrong twice
+          before a gate caught it. A real gate would check that the message names
+          no setting that does not exist on this branch, and that it never claims
+          the throttle protects against credential guessing.
+      - no-gate: >
+          THE ADDRESS KEY IS STILL CALLER-CONTROLLED, DELIBERATELY. This branch
+          does not close BF-30. It makes the control cheap for legitimate clients,
+          bounds the list, stops retaining the credentials people tried, adds a
+          second key, and says so out loud. An attacker who varies both the
+          credential and the forwarded header is throttled by neither key.
+          Closing it needs the TRUST_PROXY boundary from PR #8605, after which
+          data.ip is an address the caller cannot choose and this file needs no
+          edit. BF-30 MUST NOT BE READ AS FIXED on the strength of this item.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      THE SPLIT, AND WHY IT WAS NOT TIDINESS. bf/auth carried BF-17 and BF-30
+      together. Asked whether the delaylist was already handled in the
+      modernization work, the measurement said something more useful than yes or
+      no: Andy does not touch lib/authorization/delaylist.js at all - it is
+      byte-identical to dev on his branch - but he REPLACES THE IP DERIVATION
+      THAT FEEDS IT, swapping the forwarded-for package for
+      lib/server/client-ip.js driven by TRUST_PROXY, in exactly the call sites the
+      BF-30 draft also edited. Both branches were independently fixing one root
+      cause with two different modules. Dropping peer-address.js took the conflict
+      from five files to one, and the one that remains belongs to BF-17.
+      WHAT THE COMPATIBILITY DEFAULT COSTS, recorded because it was argued and
+      decided rather than assumed: another release in which an attacker rotating
+      X-Forwarded-For is not throttled. The usual price of turning it on - one
+      failing client behind a shared proxy slowing others - is ALREADY PAID FOR by
+      the sleep-timing change in this same commit, because only failing requests
+      wait. So the compatibility case is weaker here than for the allow-list on
+      P0-C, and that was said at the time. The maintainer's instruction was
+      compatibility defaults plus notification across this area, and that is what
+      shipped.
 
   - id: P0-C-REMEDIATE
     title: Operator remediation for tokens already stored in plaintext - text,

@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 76 |
-| runnable gates | 121 |
-| explicit `no-gate:` markers | 114 |
+| items | 77 |
+| runnable gates | 125 |
+| explicit `no-gate:` markers | 116 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 114 of the 235 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 116 of the 241 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,7 +43,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-RESEARCH, T30-SCHEMA, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-40, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 10 | RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 5 | P0-C, P0-C-REMEDIATE, P0-TAG, DOC-VIEWS, DOC-LINKS |
+| `ready-to-push` | 6 | P0-C, P0-J, P0-C-REMEDIATE, P0-TAG, DOC-VIEWS, DOC-LINKS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 9 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01 |
 | `needs-decision` | 3 | RT-D3, RT-0, BFQ-47 |
@@ -71,7 +71,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 
 ## Phase 0 backfixes - ships to every existing operator
 
-`parcel: phase0` &mdash; 17 items
+`parcel: phase0` &mdash; 18 items
 
 Ten branches prepared locally against origin/dev a8888f0d, plus the connector
 tag and the lockfile that deliberately was not regenerated. No tenancy
@@ -81,7 +81,8 @@ decision is required by any of them.
 |---|---|---|---|---|---|
 | `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `in-flight-upstream` | `bf/alarms` | major | 9 run + 3 no-gate |
 | `P0-B` | bf/cache - PR #8740, T0.2 and T0.3 read-path cost | `in-flight-upstream` | `bf/cache` | patch | 6 run + 2 no-gate |
-| `P0-C` | bf/auth - BF-17 plaintext token, BF-30 throttle key | `ready-to-push` | `bf/auth` | major | 5 run + 3 no-gate |
+| `P0-C` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | `ready-to-push` | `bf/auth` | major | 4 run + 3 no-gate |
+| `P0-J` | bf/throttle - BF-30, failed-auth throttling, compatibility default | `ready-to-push` | `bf/throttle` | patch | 5 run + 2 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
 | `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `in-flight-upstream` | `bf/coercion` | minor | 7 run + 1 no-gate |
 | `P0-E` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion | `in-flight-upstream` | `bf/reads` | major | 10 run + 5 no-gate |
@@ -192,7 +193,7 @@ decision is required by any of them.
 
 **Notes.** THIS ITEM WILL REPORT FAIL FOREVER UNDER INTEGRATION=1, AND THAT IS THE DESIGN. The T0.3 gate asserts a budget of under 1 ms and the branch ships at 2.66 ms. The target was deliberately not met - 98% of the remainder is devicestatus and taking it needs a proof nobody has produced - and the branch was opened saying so in its operator-facing text. So the red is the record of a decision, not a regression, and anyone who sees it should read the gate's own output, which says as much in its first line. The risk this creates is that a permanently-red gate becomes background noise and stops being read at all; the counterweight is that T0.2's gate sits beside it and is GREEN, so the pair moves if either target does. THE EARLIER NOTE ABOUT CLAIM UNBACKED IS NOW OBSOLETE and is removed rather than left to confuse: that warning fires when a state of gate-not-met is contradicted by passing gates, and this item is no longer gate-not-met. What remains true from it is the operational bit - both performance gates are kind: integration because they run a benchmark, so a default queue-status skips them. Use `make queue-status ID=P0-B INTEGRATION=1` before drawing any conclusion from this row. --- Sequencing letter B. T0.2 passed its gate (0.837 -> 0.025 ms, asserted identical over HTTP). T0.3 did not. A dead `mills` write at dataloader.js:203 was found and removed with a test that goes red if it returns.
 
-### `P0-C` &mdash; bf/auth - BF-17 plaintext token, BF-30 throttle key
+### `P0-C` &mdash; bf/auth - BF-17 plaintext token (BF-30 split out to P0-J)
 
 | | |
 |---|---|
@@ -203,9 +204,9 @@ decision is required by any of them.
 | worktree | `externals/work/crm-bf-auth` |
 | semver | `major` |
 | review | SECURITY - a human security reviewer first, before any other Phase 0 branch. This is the one the sequencing document singles out. |
-| register | `BF-17`, `BF-30` |
+| register | `BF-17` |
 
-**Blast radius.** 2 commits. lib/authorization/endpoints.js, storage.js, delaylist.js, index.js, lib/admin_plugins/subjects.js.
+**Blast radius.** 2 commits at ce82f0cd, 3 files, +310/-18. lib/authorization/endpoints.js, lib/authorization/storage.js, tests/authsubjects.test.js. SPLIT 2026-09-16 - the BF-30 throttle commit that used to sit underneath this one is now P0-J on bf/throttle, and the old tip 56ed29d2 no longer exists.
 
 **What an operator sees.** Two security fixes. Editing a subject through the admin page used to write that subject's API access token into the database in readable form, which turned read access to your database into API access; it no longer does. IMPORTANT: tokens already written that way are still in your database - fixing the code does not remove them. Brute-force slowdown on failed logins was keyed on a value the caller could choose, so it never engaged; it now is. Existing access tokens keep working - they are re-derived on every load and are not invalidated by this change.
 
@@ -219,19 +220,57 @@ decision is required by any of them.
   - trial-merge into origin/dev is conflict-free
 - `[static]` _(cwd: `externals/work/crm-bf-auth`)_ `grep -nE "console\\.log\\('Loading',[[:space:]]*opts\\)" lib/authorization/storage.js && exit 1 || exit 0`
   - BF-05's unfixed sibling, a TRACKING gate: it is meant to FAIL while the residual is present, and the describe it replaces said so in as many words. IT DID NOT FAIL. The pattern was `console.log('Loading', opts)` with a space after the comma; the code at storage.js:113 has NO space, so the grep never matched, the `|| exit 0` arm fired, and P0-C reported 3/3 PASS on a property that is false. The pattern is now whitespace-tolerant and this gate is red, which is the honest reading. DO NOT loosen the pattern again. SETTLED 2026-09-16: of the two ways to green this gate offered, the maintainer chose the first - the one-line removal was taken onto bf/auth as commit 56ed29d2, and the gate is green because the residual is gone, not because the pattern was weakened. The gate stays as a regression guard.
-- `[integration]` _(cwd: `externals/work/crm-bf-auth`)_ `TEST=authdelay npm run test-single`
-  - BF-30, the branch's OWN test, which `npm run test:unit` never ran - tests/authdelay.test.js matches neither local brace list and is one of the 52 files only CI's `test-ci` reaches. 11 passing with MongoDB up on 27031. E3 ABLATED it: with the seven changed lib files put back to origin/dev and lib/server/peer-address.js removed, 2 passing / 9 failing. Needs the database (6 passing / 1 failing against a dead port), so it is integration and honestly so.
 - `[integration]` _(cwd: `externals/work/crm-bf-auth`)_ `TEST=authsubjects npm run test-single`
   - BF-17, same story: not in either local script, 8 passing with MongoDB, and 1 passing / 7 failing under the same ablation.
 - **NO GATE** &mdash; `npm run test:unit` was here and was recorded as "361 passing / 0 failing at GT1's measurement". That number is not evidence for this branch: the 44-file brace list contains NEITHER of the two test files bf/auth adds, so the suite could pass in full with every one of these fixes reverted.
 - **NO GATE** &mdash; Nothing here checks that the plaintext tokens ALREADY written into existing databases get cleaned up, and nothing will: the code fix does not remove them, there is no migration, and as of 2026-09-16 there deliberately is no detector script either. What DOES exist is measured next door - P0-C-REMEDIATE's gate checks that this branch's PR body and the release notes tell an operator the truth about it, including that a rename is not a rotation. Read that item before signing this one off; this marker is the honest half of the pair.
-- **NO GATE** &mdash; BF-30 COLLIDES WITH PR #8605 (chore/nightscout-modernization), MEASURED 2026-09-16, and nothing in this queue was tracking it. Trial-merge of bf/auth against origin/chore/nightscout-modernization CONFLICTS in FIVE files: lib/authorization/index.js, lib/authorization/storage.js, lib/api3/alarmSocket.js, lib/api3/security.js, lib/server/websocket.js. Andy does NOT touch lib/authorization/delaylist.js - that file is byte-identical to dev on his branch - but he REPLACES the IP derivation that feeds it, swapping the `forwarded-for` package for lib/server/client-ip.js driven by a new TRUST_PROXY setting, in exactly the four call sites bf/auth also edits. So both branches independently fix the same root cause - a throttle keyed on a value the caller chooses - with two different modules, peer-address.js and client-ip.js, and one of them has to lose. The conflicts are textual and the intents are complementary, so this is a merge problem rather than a design disagreement, but it is not automatic and it is not small. NOT GATED because the resolution is a design decision nobody has taken yet.
+- **NO GATE** &mdash; ONE CONFLICT WITH PR #8605 REMAINS AND IT IS THIS BRANCH'S OWN - lib/authorization/storage.js, which Andy's branch also narrows, for different reasons. Measured 2026-09-16 after the split: bf/auth against origin/chore/nightscout-modernization conflicts in that one file and nothing else. BEFORE THE SPLIT IT WAS FIVE, and the other four were the BF-30 peer plumbing alone, which is why that half was re-cut without it - see P0-J. Not gated, because resolving it is a merge somebody has to sit down and do and which side wins depends on whether the allow-list lands at all.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Sequencing letter C. GT3 also found BF-17's created_at residual: the pick() at endpoints.js:44 is ['_id','name','accessToken','roles','notes'] - notes was added by the fix, created_at was not. RESOLVED 2026-09-16: commit 56ed29d2 removes the leftover console.log('Loading',opts), the last failing gate, and all 3 runnable gates now pass. That line was NOT introduced by this branch - it is on origin/dev at storage.js:84 - and it was taken here rather than left to FU-RESIDUALS because it sits in a file this branch already rewrites and is the same defect class as the count-path filter leak fixed on bf/reads: a per- request debug print of request-derived values. FU-RESIDUALS follow-up 4 is carried BY THIS BRANCH and should not be fixed there a second time - but it is NOT yet closed on dev, and FU-RESIDUALS' gate correctly still fails, because that gate reads origin/dev and the repair only exists on bf/auth until this merges. Same convention as the register's `fixed`: repaired on a branch, not merged. THE REAL RISK ON THIS ITEM, RESTATED 2026-09-16: both no-gate markers still stand and green gates here still do not mean an operator is safe - tokens written in plaintext before the upgrade are untouched by it. What changed is that the remediation is no longer unwritten. P0-C-REMEDIATE is settled as TEXT, not tooling: no detector and no migration, the rotation instructions carried by this branch's PR body and the 15.0.9 release notes, and a gate guarding what they say. That review found the instructions were WRONG - they listed renaming a subject as a rotation, which it is not, because the matcher is name-independent. Corrected. So the sentence a reviewer needs when this PR goes up is not "remediation is missing" but "remediation is a note, the note was wrong once, and here is the gate that says it is right now".
+
+### `P0-J` &mdash; bf/throttle - BF-30, failed-auth throttling, compatibility default
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/throttle` |
+| base | `origin/dev@a8888f0d` |
+| worktree | `externals/work/crm-bf-throttle` |
+| semver | `patch` |
+| review | maintainer. SPLIT OUT OF bf/auth 2026-09-16 on the maintainer's instruction, and the split is the point. The earlier draft added lib/server/peer-address.js and threaded a second address through alarmSocket, security, websocket and index, which CONFLICTED WITH PR #8605 IN FIVE FILES - that PR replaces the client-address derivation wholesale with a TRUST_PROXY-driven module. Re-cut without the peer plumbing this branch merges CLEAN against #8605, measured, and the throttle keys on data.ip, which #8605 then makes trustworthy with no further change here. What a reviewer needs and cannot read off the diff: THE DEFAULT IS TODAY'S BEHAVIOUR BY DESIGN, an attacker varying both credential and header is still not throttled, and that gap is asserted by a test rather than left implied. |
+| register | `BF-30` |
+
+**Blast radius.** 1 commit at 435419ce, 3 files, +388/-45. lib/authorization/delaylist.js, lib/authorization/index.js, tests/authdelay.test.js.
+
+**What an operator sees.** Two fixes to the delay Nightscout applies after a failed login, and one thing it now tells you. Until now that delay was applied on the way IN to every request, so a device presenting the CORRECT password could be made to wait for somebody else's failed attempts - and if your Nightscout sits behind a proxy or a CDN, where many devices can look like they share one address, a single misconfigured uploader could slow everything down. The delay now applies only to the request that actually failed. Separately, the list of recent failures was not being cleared properly and grew for as long as Nightscout kept running. THERE IS ALSO A NEW MESSAGE IN YOUR LOG, and it is telling you something true - the protection against password guessing is weaker than it looks, because the address it counts against can be set by whoever is connecting. Nothing you configured has changed and nothing you rely on stops working. Restricting access at your proxy or hosting provider is the thing that actually helps today. None of this is medical advice.
+
+**Why `patch`.** no declared surface moves and no default changes. For any given request the delay only ever SHRINKS - a successful authentication is no longer delayed at all - so nothing that worked stops working. An added log line is not a surface. The secure default is a later and deliberate bump.
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/throttle`
+  - bf/throttle has not fallen behind origin/dev
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/throttle >/dev/null`
+  - trial-merge into origin/dev is conflict-free
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/throttle origin/chore/nightscout-modernization >/dev/null`
+  - THE GATE THIS BRANCH EXISTS FOR - it merges clean with PR #8605. The pre-split draft conflicted in five files (index.js, storage.js, alarmSocket.js, security.js, websocket.js) and four of those were the peer plumbing alone. NON-VACUITY, reproduced 2026-09-16: the identical command against bf/auth, which still narrows storage.js, CONFLICTS. So this is not passing because merge-tree always passes.
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official grep -qI peer-address bf/throttle && exit 1 || exit 0'`
+  - lib/server/peer-address.js is NOT on this branch and nothing references it. A TRACKING GATE against the obvious regression - re-adding that module is exactly what re-creates the four-file conflict with #8605, and it would look like a harmless improvement to anyone who had not measured it.
+- `[integration]` _(cwd: `externals/work/crm-bf-throttle`)_ `TEST=authdelay npm run test-single`
+  - THE BRANCH'S OWN TEST, 11 passing, measured 2026-09-16. Needs MongoDB - this worktree names 27031. It is in NEITHER local brace list, so a green `npm run test:unit` is no evidence for any of this. ABLATED: lib/authorization/delaylist.js and lib/authorization/index.js restored to origin/dev give 3 passing / 8 failing. It includes the test that PINS THE REMAINING WEAKNESS - `does NOT yet throttle a guess that varies both the secret and the address` - which asserts the gap rather than pretending it is closed, and which should be INVERTED into a positive assertion when the TRUST_PROXY boundary lands.
+- **NO GATE** &mdash; NOTHING MEASURES THE BOOT WARNING'S WORDS. init() logs that the throttle is keyed on an address the caller may control, and that restricting access at the proxy is what helps today. That text IS the notification half of the maintainer's compatibility decision, and it is prose - the same shape as P0-C-REMEDIATE, whose prose turned out to be wrong twice before a gate caught it. A real gate would check that the message names no setting that does not exist on this branch, and that it never claims the throttle protects against credential guessing.
+- **NO GATE** &mdash; THE ADDRESS KEY IS STILL CALLER-CONTROLLED, DELIBERATELY. This branch does not close BF-30. It makes the control cheap for legitimate clients, bounds the list, stops retaining the credentials people tried, adds a second key, and says so out loud. An attacker who varies both the credential and the forwarded header is throttled by neither key. Closing it needs the TRUST_PROXY boundary from PR #8605, after which data.ip is an address the caller cannot choose and this file needs no edit. BF-30 MUST NOT BE READ AS FIXED on the strength of this item.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** THE SPLIT, AND WHY IT WAS NOT TIDINESS. bf/auth carried BF-17 and BF-30 together. Asked whether the delaylist was already handled in the modernization work, the measurement said something more useful than yes or no: Andy does not touch lib/authorization/delaylist.js at all - it is byte-identical to dev on his branch - but he REPLACES THE IP DERIVATION THAT FEEDS IT, swapping the forwarded-for package for lib/server/client-ip.js driven by TRUST_PROXY, in exactly the call sites the BF-30 draft also edited. Both branches were independently fixing one root cause with two different modules. Dropping peer- address.js took the conflict from five files to one, and the one that remains belongs to BF-17. WHAT THE COMPATIBILITY DEFAULT COSTS, recorded because it was argued and decided rather than assumed: another release in which an attacker rotating X-Forwarded-For is not throttled. The usual price of turning it on - one failing client behind a shared proxy slowing others - is ALREADY PAID FOR by the sleep-timing change in this same commit, because only failing requests wait. So the compatibility case is weaker here than for the allow- list on P0-C, and that was said at the time. The maintainer's instruction was compatibility defaults plus notification across this area, and that is what shipped.
 
 ### `P0-C-REMEDIATE` &mdash; Operator remediation for tokens already stored in plaintext - text, not tooling
 

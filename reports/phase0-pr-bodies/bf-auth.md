@@ -1,24 +1,26 @@
-# C — `bf/auth`: two security fixes in how access tokens are stored and how failed logins are slowed
+# `bf/auth` — editing a subject wrote its access token into the database in readable form
 
-> **Base: `origin/dev` `a8888f0d`. This is one of NINE INDEPENDENT PRs. There is no stack — no
-> Phase 0 branch is based on another, and this one merges cleanly against `origin/dev` and against
-> all eight of the others.**
->
-> **Needs a maintainer's explicit yes before merge — one of two branches in the set that does
-> (the other is `bf/alarms`, A).** Two reasons, and neither is a code-quality question:
-> the subject allow-list **removes a field-passthrough capability with no replacement**, which is
-> the major-forcing row in this branch; and the credential-exposure fix **cannot undo what already
-> happened**, so some sites will need to rotate a token by hand afterwards. That is an operator
-> action the code cannot take for them.
+Two commits on `origin/dev` `a8888f0d`, tip `ce82f0cd`. 3 files, +310/−18, of which one is a new
+test file. No `CHANGELOG.md` edit. Merges clean against `dev` and against every other open Phase 0
+branch.
+
+> **Needs an explicit yes, not just a review.** Two reasons, and neither is a code-quality
+> question: the subject allow-list **removes a field-passthrough capability with no replacement**,
+> which is the major-forcing change here; and the credential-exposure fix **cannot undo what
+> already happened**, so some sites will need to rotate a token by hand afterwards. That is an
+> operator action the code cannot take for them.
 >
 > **Read the "If you have ever edited a subject" section before merging.**
+>
+> **The failed-login throttle that used to travel with this branch is now `bf/throttle`**, split
+> out so it can merge with the modernization work. Nothing here depends on it.
 
 ## What changes for you
 
-**Two security problems are fixed. Nothing about how you log in, and nothing you see on screen,
-changes. No stored readings or treatments are touched.**
+**One security problem is fixed, and a second smaller one goes with it. Nothing about how you log
+in, and nothing you see on screen, changes. No stored readings or treatments are touched.**
 
-### 1. Editing an access-token holder wrote their token into the database in readable form
+### Editing an access-token holder wrote their token into the database in readable form
 
 Nightscout lets you create *subjects* — named people or devices (a parent's phone, an uploader,
 a follower) that each get their own access token, so you can give someone access without giving
@@ -41,22 +43,6 @@ served or matched against. **The stored row itself is not rewritten by the upgra
 up for a given subject the next time that subject is saved through the admin screen, because `save`
 now writes only owned fields — so an operator who wants the copies gone can open and re-save each
 previously-edited subject. That clears the copy; it does not retire the credential.
-
-### 2. Anyone could bypass the delay on wrong-password attempts
-
-Nightscout slows down repeated failed access attempts, so that someone cannot guess a token or
-API secret by trying millions of values. It decided *who* to slow down using a piece of
-information the person connecting can simply make up (the `X-Forwarded-For` header). Changing it
-on every attempt reset the delay every time, so the protection could be skipped entirely.
-
-**After this change** the delay is keyed to the actual network connection plus a scrambled,
-non-reversible fingerprint of the credential that was tried, so it cannot be sidestepped by
-changing a header.
-
-**This will not slow down your normal use**, and that is deliberate: the wait now happens only
-*after* an attempt has already failed. Requests that succeed are never delayed, and requests
-carrying no credential at all are never delayed. If your site is behind a shared proxy or a CGNAT
-address, another person's failed attempts will not make your working app wait.
 
 ---
 
@@ -113,12 +99,6 @@ team if they are involved in your setup.
 
 Three commits, all on `lib/authorization/`:
 
-**`a26ba416` — failed-auth throttle keyed to a spoofable header.** `lib/authorization/delaylist.js`
-bucketed failures by the caller-supplied `X-Forwarded-For` value. Replaced with a new
-`lib/server/peer-address.js` that reads the socket peer address, combined with a salted digest of
-the presented credential. The `sleep` was also moved out of the request path and below both the
-`authAttempted` early return and both success paths, so only an attempt that has already failed
-waits.
 
 **`64db1f35` — derived credentials persisted on update.** `lib/authorization/storage.js` now
 carries explicit allow-lists — `SUBJECT_FIELDS = ['name','roles','notes','created_at']` and
@@ -149,54 +129,43 @@ print put request-derived values into the log. One line, removed.
 
 ## Evidence
 
-- Backfix register: `docs/30-design/remedial/nightscout-backfix-register.md` — **BF-17** (persisted derived
-  credential) and **BF-18** (spoofable throttle key).
-- Semver classification: `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`, which classifies
-  the throttle change as **minor** (the delay moved to the failure path, so no successful request is
-  newly delayed) and the subject allow-list as the **major-forcing** row in this branch, because it
-  removes a field-passthrough capability with no replacement.
+Detailed defect analysis is kept outside this repository and can be shared on request. The one
+correction worth recording here: earlier drafts of this note cited **BF-18** for the throttle. That
+is an unrelated defect about a driver batch size; the throttle is **BF-30**, and it now travels on
+`bf/throttle` rather than here.
 
 ## Test evidence
 
-**`npm run test:unit` does not run either of this branch's tests, so a green run is not evidence
-the fixes work.** `test:unit` names 44 files and neither `authsubjects` nor `authdelay` is among
-them; both match neither local npm script. Use `npm test`, which is what CI runs
-(`main.yml` runs `test-ci` over all of `./tests/*.test.js`).
-
-Run these, from `externals/work/crm-bf-auth`:
-
 ```
-TEST=authdelay    npm run test-single    # 11 passing, 0 failing, 2 s      (BF-18)
-TEST=authsubjects npm run test-single    #  8 passing, 0 failing, 385 ms   (BF-17)
-npm test                                 # the whole tree, the only local script that covers both
+TEST=authsubjects npm run test-single    # 8 passing
 ```
 
-**Reproduced 2026-09-15 in this worktree**, not read from another session's record: 11 passing and
-8 passing respectively, both exit 0.
+Re-measured 2026-09-16 on `ce82f0cd`.
 
-**Both need MongoDB.** Reproduced by repointing `CUSTOMCONNSTR_mongo` at a dead port (`29999`) in a
-copy of `my.test.env` — both files then fail with `Timeout of 30000ms exceeded` in the before-all
-hook, 0 passing. They are fast only because a mongod is listening on this worktree's port
-(`27031`). A reviewer without one will see a timeout, not a failure of the fix. *(The worktree was
-not modified; the altered env file was written to a scratch directory.)*
+**`tests/authsubjects.test.js` is in neither `npm run test:unit` nor `npm run test:integration`** —
+`test:unit` names 44 files and this is not one of them — so **a green `test:unit` run is not
+evidence that this fix works.** Use `npm test`, which is what `main.yml` runs over all of
+`./tests/*.test.js`.
 
-- `tests/authsubjects.test.js` (252 new lines) and `tests/authdelay.test.js` (197 new lines) —
-  8 and 11 tests respectively.
-- The tests were checked against unfixed code: this branch's changed test files were copied onto pristine `origin/dev` code and
-  confirmed they fail there, so the suite distinguishes fixed from unfixed. **Read from the verification
-  record, not re-run here** — the two runs above are reproductions of the green state only.
-- Merges clean against `origin/dev` `a8888f0d` — `git merge-tree --write-tree` re-run 2026-09-15
-  18:52, tree `3f4fe6ac6a`.
+**It needs MongoDB.** Pointed at a dead port it fails with `Timeout of 30000ms exceeded` in the
+before-all hook, 0 passing. A reviewer without a mongod will see a timeout, not a failing fix.
+
+Checked against unfixed code: the test file copied onto pristine `dev` fails there, so the suite
+distinguishes fixed from unfixed.
 
 ## Semver
 
-**Major**, and this branch is one of the three rows that makes Phase 0 as a whole a major rather
-than a minor. The driver is **not** the throttle change, which is graded **minor** because the
-delay moved onto the failure path and no successful request is newly delayed. The driver is the
-**subject allow-list**: `save` now writes only owned fields, so a field some third-party admin tool
-stored on a subject or role document is dropped on the next edit, silently and with no error. That
-is a capability removal with no replacement in the same changeset. Classification from
-`docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`.
+**Major.** The driver is the **subject allow-list**: `save` now writes only owned fields, so a
+field some third-party admin tool stored on a subject or role document is dropped on the next edit,
+silently and with no error. That is a capability removal with no replacement in the same changeset,
+and it is what makes this branch a major rather than a minor.
+
+**Worth weighing against how much it actually narrows.** `dev`'s `save()` is already a `replaceOne`
+of a `pick()`ed object, and `GET /subjects` does not serve `notes` — so an admin-UI edit already
+destroys `notes` and `created_at` on every save today. This branch's allow-list is
+`['name','roles','notes','created_at']`, which is **wider** than what survives now. The genuine
+loss is narrower than "fields are dropped" suggests: it is a third-party caller that POSTs a full
+document carrying its own custom fields.
 
 If the maintainer wants Phase 0 to land as `15.1.0`, the subject allow-list is one of exactly three
 changes that would have to be split out.
@@ -228,13 +197,14 @@ screenshot or chat when asking for help.
 - **BF-17's `created_at` residual.** `lib/authorization/endpoints.js:44` picks
   `['_id','name','accessToken','roles','notes']`; `notes` was added by this fix, `created_at` was
   not, so the field the allow-list now preserves on write is still not returned on read.
-- **`aggregate.js` still passes no collection to `query.js`** — needs D (`bf/coercion`) and E
-  (`bf/reads`) both merged. *Measured 2026-09-15: on the merged tree this gap is already closed —
+- **`aggregate.js` still passes no collection to `query.js`** — needs `bf/coercion` (#8737) and `bf/reads` (#8738)
+  both merged. *Measured 2026-09-15: on the merged tree this gap is already closed —
   see `bf-reads.md`.*
 - **The limit rule will be written twice** — `lib/server/count.js` and API v3's `parseLimit` — on
   purpose, so each commit lands alone. *Two readings of one rule is the root cause of this whole
   family of defects*, so leaving it duplicated is a debt with a name. **Correction, measured
   2026-09-15: `lib/server/count.js` does not exist on `origin/dev`** — it is created by `bf/reads`
-  (E). The duplication does not exist today and is created by landing E, not by this branch.
+  (#8738). The duplication does not exist today and is created by merging that PR, not by
+  this branch.
 - **`plugins.isPluginEnabled` always returns `true`** — `find` returns `undefined`, compared against
   `!== null`. No caller, so no register id.
