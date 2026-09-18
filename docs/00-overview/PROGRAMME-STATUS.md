@@ -23,10 +23,10 @@ this page's job is to say which of those to open.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 51 | 23 | 19 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 52 | 22 | 20 |
 | **Modernization** | `release-train` | 12 | 2 | 2 |
 | **Multitenant** | `tenancy` | 18 | 10 | 3 |
-| | **total** | **81** | **35** | **24** |
+| | **total** | **82** | **34** | **25** |
 
 <!-- END GENERATED: horizons -->
 
@@ -79,7 +79,7 @@ several cover more than one `BF-`:
 
 | id | claimed state | defect |
 |---|---|---|
-| `BFQ-04` | `not-started` | BF-04 - extract the v1 operator allowlist out of the seam |
+| `BFQ-04` | `in-progress` | BF-04 - the v1 operator allowlist, EXTRACTED 2026-09-18 - superseded by P0-K |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value |
 | `BFQ-10` | `not-started` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
 | `BFQ-40` | `in-flight-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
@@ -104,13 +104,13 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `needs-decision` | `unsettled` | total |
-|---|---|---|---|---|---|---|---|---|
-| `phase0` | 1 | 1 | 4 | 3 | 9 |  |  | **18** |
-| `release-train` | 2 | 4 |  | 4 |  | 2 |  | **12** |
-| `register-open` | 15 | 5 |  |  | 1 | 1 | 2 | **24** |
-| `tenancy` | 10 |  | 1 | 5 |  | 1 | 1 | **18** |
-| `docs-truth` | 7 |  | 2 |  |  |  |  | **9** |
+| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `needs-decision` | `unsettled` | total |
+|---|---|---|---|---|---|---|---|---|---|
+| `phase0` | 1 |  | 1 | 4 | 3 | 9 | 1 |  | **19** |
+| `release-train` | 2 |  | 4 |  | 4 |  | 2 |  | **12** |
+| `register-open` | 14 | 1 | 5 |  |  | 1 | 1 | 2 | **24** |
+| `tenancy` | 10 |  |  | 1 | 5 |  | 1 | 1 | **18** |
+| `docs-truth` | 7 |  |  | 2 |  |  |  |  | **9** |
 
 <!-- END GENERATED: state-matrix -->
 
@@ -150,13 +150,13 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 56 | 69% |
+| Maintainer | 57 | 70% |
 | SECURITY reviewer | 10 | 12% |
 | Maintainer + a second human | 6 | 7% |
 | SAFETY reviewer | 5 | 6% |
 | Whoever edits it next | 3 | 4% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **81** | |
+| **total** | **82** | |
 
 <!-- END GENERATED: reviewer-load -->
 

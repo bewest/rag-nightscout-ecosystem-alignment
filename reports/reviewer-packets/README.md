@@ -38,6 +38,7 @@ repository.
 | [`DOC-VIEWS`](doc-views-main.md) | &mdash; | `ready-to-push` | A reviewer-facing surface over the queue: three overview pages and a packet per PR |
 | [`P0-C`](p0-c-bf-auth.md) | &mdash; | `ready-to-push` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
+| [`P0-K`](p0-k-bf-operators.md) | &mdash; | `needs-decision` | bf/operators - BF-04 extracted, BF-70 found - NOT YET A PR, needs a disclosure decision first |
 | [`P0-TAG`](p0-tag-release-v0-0-14.md) | &mdash; | `ready-to-push` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push |
 | [`RT-D3`](rt-d3-origin-dev.md) | &mdash; | `needs-decision` | Answer the D3 question before 15.0.9 ships |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |

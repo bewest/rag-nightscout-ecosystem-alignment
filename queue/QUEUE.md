@@ -31,22 +31,23 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 81 |
-| runnable gates | 130 |
-| explicit `no-gate:` markers | 127 |
+| items | 82 |
+| runnable gates | 135 |
+| explicit `no-gate:` markers | 129 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 127 of the 257 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 129 of the 264 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 35 | RT-VERSION, RT-4, BFQ-10, BFQ-04, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 34 | RT-VERSION, RT-4, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, SEAM-REFRESH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-EXPOSURE, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
+| `in-progress` | 1 | BFQ-04 |
 | `gate-not-met` | 10 | RT-REBASE, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 7 | P0-C, P0-J, P0-C-REMEDIATE, P0-TAG, T30-AUTH, DOC-VIEWS, DOC-LINKS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 10 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-T01, BFQ-40 |
-| `needs-decision` | 4 | RT-D3, RT-0, T30-RESEARCH, BFQ-47 |
+| `needs-decision` | 5 | P0-K, RT-D3, RT-0, T30-RESEARCH, BFQ-47 |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
 ### Reaches an operator on today's release
@@ -55,7 +56,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 
 - **BFQ-09** BF-09 - socket dedup truthiness skips a falsy value
 - **BFQ-10** BF-10 - mongod fatal-asserts at Docker's default nofile=1024
-- **BFQ-04** BF-04 - extract the v1 operator allowlist out of the seam
+- **BFQ-04** BF-04 - the v1 operator allowlist, EXTRACTED 2026-09-18 - superseded by P0-K
 - **BFQ-CAP01** CAP-01 - Nightscout cannot be served from a sub-path
 - **BFQ-69** BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing
 - **BFQ-40** BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
@@ -72,7 +73,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 
 ## Phase 0 backfixes - ships to every existing operator
 
-`parcel: phase0` &mdash; 18 items
+`parcel: phase0` &mdash; 19 items
 
 Ten branches prepared locally against origin/dev a8888f0d, plus the connector
 tag and the lockfile that deliberately was not regenerated. No tenancy
@@ -91,6 +92,7 @@ decision is required by any of them.
 | `P0-G` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | `in-flight-upstream` | `bf/food` | minor | 6 run + 1 no-gate |
 | `P0-H` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | `in-flight-upstream` | `bf/merge` | patch | 5 run + 2 no-gate |
 | `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `in-flight-upstream` | `bf/parms` | patch | 6 run + 1 no-gate |
+| `P0-K` | bf/operators - BF-04 extracted, BF-70 found - NOT YET A PR, needs a disclosure decision first | `needs-decision` | `bf/operators` | minor | 5 run + 3 no-gate |
 | `P0-TAG` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push | `ready-to-push` | `release/v0.0.14` | minor | 5 run + 1 no-gate |
 | `P0-PIN` | bf/connect-pin - move dev's connector pin to the v0.0.14 tarball | `blocked` | `bf/connect-pin` | patch | 3 run + 1 no-gate |
 | `P0-LOCK` | Regenerate package-lock.json after the v0.0.14 tag is pushed | `blocked` | `bf/connect-pin` | n/a | 2 run |
@@ -565,6 +567,49 @@ decision is required by any of them.
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** Sequencing letter I. CORRECTION: the sequencing document at line 165 lists the commits as 522c6ffb, eb0bc918, c9a7a21c mapped to BF-37, BF-39, BF-38. Re- measured, the branch order is 522c6ffb (BF-37), c9a7a21c (BF-38), eb0bc918 (BF-39). GT3 found the same.
+
+### `P0-K` &mdash; bf/operators - BF-04 extracted, BF-70 found - NOT YET A PR, needs a disclosure decision first
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/operators` |
+| base | `origin/dev@a8888f0d` |
+| worktree | `externals/work/crm-bf-operators` |
+| semver | `minor` |
+| review | MAINTAINER, AND THIS ONE DOES NOT GO STRAIGHT TO A PUBLIC PR. BF-70 is an unauthenticated read oracle over arbitrary collections, live on the shipping release, and the commit message describing it is precise enough to be a recipe. The ordinary path for this stack - open a PR, paste the full body - publishes a working attack against every current deployment before any of them can take the fix. Someone has to decide sequencing (fix first, publish after) and whether Nightscout's security contact process is invoked. Until that decision exists this item is BLOCKED ON A PERSON, not on engineering. BF-04's two commits carry no such problem and could be split out and opened normally if the decision takes time. Second thing the reviewer must rule on: the $type collision with PR #8737 - see semver_reason and the report §2.2. |
+| register | `BF-04`, `BF-70` |
+
+**Blast radius.** 3 commits at 52b7b640. New: lib/storage/assert-no-query-javascript.js, lib/server/query-operator-allowlist.js, lib/api/shared/query-error.js and three test files. Modified: lib/server/query.js, lib/server/aggregate.js, the five v1 API modules, both swagger files. OVERLAPS bf/reads on lib/server/aggregate.js - the only Phase 0 branch it conflicts with; resolution written out in the report §4.2 and measured.
+
+**What an operator sees.** Nightscout's older API let a web address ask the database to run JavaScript, and let one particular address ask questions about parts of the database it had no business reading - including, on a default setup, without any password or token. Both are closed. What you may notice: a filter using an unusual option now answers with a clear error instead of appearing to work, and the "count" address no longer accepts a `pipeline` setting, which was never documented and which no known app uses. Ordinary filters - date ranges, event types, glucose thresholds - are unchanged. Your stored data is not touched. Nightscout is not a medical device and this is not medical advice; if a report or app you rely on starts showing an error after this lands, it is telling you the request was malformed, not that your data is gone.
+
+**Why `minor`.** It removes reachable behaviour - $expr on /profiles/, $type on any typed field, and the undocumented pipeline parameter - so it is not a patch by the project's own reading. It is not major either: no route is removed, no required input is added, no documented contract breaks, and the census of 14 client projects found zero senders of anything now refused. THE ONE OPEN QUESTION IS $type. PR #8737 added readTypeOperand() specifically so find[sgv][$type]=2 keeps working; this allowlist runs first and makes that reader unreachable over HTTP. Trial-merged and MEASURED - 3 of #8737's tests fail, all three the allowlist refusing $type, $not or $text. Two one-line resolutions are set out in the report §2.2 and NEITHER IS TAKEN HERE. That is the maintainer's call and it changes #8737, not this branch.
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a8888f0d bf/operators`
+  - bf/operators has not fallen behind the dev tip it was cut from
+- `[unit]` _(cwd: `externals/work/crm-bf-operators`)_ `TEST=mongo-query-javascript npm run test-single`
+  - BF-04, the JavaScript half. 23 passing, 49 ms, no database. ABLATED 2026-09-18 - commenting out the create() call gives 14 failing, and the ablation was confirmed applied by grep before the run, because a green ablation that never landed has happened twice in this programme.
+- `[unit]` _(cwd: `externals/work/crm-bf-operators`)_ `TEST=api-v1-operator-allowlist npm run test-single`
+  - BF-04, the allowlist. 62 passing + 16 pending without a database; the 16 are the end-to-end section, which is the only place the ALLOWED operators are proved to still SELECT rather than merely to pass the guard. ABLATED two ways, both confirmed applied by grep - removing the create() call gives 14 failing, making refuse() return instead of throwing gives 36.
+- `[unit]` _(cwd: `externals/work/crm-bf-operators`)_ `TEST=api-v1-count-pipeline npm run test-single`
+  - BF-70. 8 passing, 30 ms, no database. ABLATED - restoring the two lines the commit changes gives 3 failing.
+- `[integration]` _(cwd: `externals/work/crm-bf-operators`)_ `TEST=api-v1-operator-allowlist npm run test-single`
+  - the same file with CUSTOMCONNSTR_mongo set - 78 passing, mongod 7.0 on port 27018, measured 2026-09-18. This is the run that matters: without a database the end-to-end section skips and the suite proves only that refusals refuse.
+- **NO GATE** &mdash; THE STRONGEST CONTROL THIS BRANCH HAS IS NOT RUNNABLE FROM HERE, and saying so is the point. The BF-70 reproduction extracts a seeded value over unauthenticated HTTP on a8888f0d and extracts nothing on 52b7b640 - same machine, same database, same session, same unmodified probe. It is deliberately NOT committed: this repository is public and the defect is live on the shipping release. A gate that ran it would have to carry it. Held outside version control; see the register's BF-70 detail before reconstructing it.
+- **NO GATE** &mdash; `npm test` over the whole suite is 2137 passing / 3 pending / 0 failing on this branch with a live mongod, measured 2026-09-18. Not a gate because it needs a database on a port other sessions share, and because a whole-suite number says nothing about WHICH assertion covers this branch - the three TEST= gates above do.
+- **NO GATE** &mdash; No PR exists, so there is no pr-body-parity gate and no ls-remote gate. Both appear when the disclosure decision in `review` is made and the branch is opened. A missing gate that renders blank looks exactly like a passing one, which is why this marker is here rather than the rows simply being absent.
+
+**Evidence.**
+
+- `docs/60-research/remedial/bf04-bf70-operator-allowlist-2026-09-18.md`
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/60-research/tenancy/v1-operator-census-2026-09-14.md`
+
+**Notes.** Sequencing letter K. This item exists because a reader asked whether PR #8737 disallows $where and other dangerous operators. It does not and was never meant to - $where is in that branch's NON_VALUE_OPERATORS table as an exemption from type conversion, not a refusal - and answering the question required measuring what API v1 actually carries, which is BF-04. Worth keeping: BF-04 sat at `fixed-in-seam` from 2026-09-14, high severity, live for every operator, in no open-work list, and it took an unrelated question about a different branch to get it scheduled. The register flagged that failure mode on 2026-09-15 and the flag did not cause the work; the question did. The allowlist and the JavaScript guard are extracted from the seam branch (seam/t2-4-allowlist 987e9657) rather than written fresh, with the framing inverted: on the seam that module is a better error message in front of a structural guard, and on dev there is no AST behind it, so there it IS the guard. lib/storage/assert-no-query-javascript.js is carried across byte- identical at the same path so the seam merge is free.
 
 ### `P0-TAG` &mdash; nightscout-connect release/v0.0.14 and tag - prepared, needs a human push
 
@@ -1247,7 +1292,7 @@ distinction is the only thing that makes the register mean anything - widening
 |---|---|---|---|---|---|
 | `BFQ-09` | BF-09 - socket dedup truthiness skips a falsy value | `unsettled` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-10` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 | `not-started` | `-` | patch | 1 run + 1 no-gate |
-| `BFQ-04` | BF-04 - extract the v1 operator allowlist out of the seam | `not-started` | `-` | minor | 0 run + 2 no-gate |
+| `BFQ-04` | BF-04 - the v1 operator allowlist, EXTRACTED 2026-09-18 - superseded by P0-K | `in-progress` | `bf/operators` | minor | 0 run + 1 no-gate |
 | `BFQ-21` | BF-21 - pg bulkUpsert ignores {mode:'replace'} | `not-started` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `BFQ-19` | BF-19 - pg ORDER BY reads the generated column | `not-started` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `BFQ-22` | BF-22 - dotted field stores nested on Mongo, literal dotted key on PG | `not-started` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
@@ -1336,36 +1381,37 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Notes.** CORRECTS THE REGISTER ENTRY. BF-10 says "Not a code defect; it belongs in the operator documentation." Wrong. There is a one-block code landing site in the file most self-hosters actually use. The fix is that file first, docs second.
 
-### `BFQ-04` &mdash; BF-04 - extract the v1 operator allowlist out of the seam
+### `BFQ-04` &mdash; BF-04 - the v1 operator allowlist, EXTRACTED 2026-09-18 - superseded by P0-K
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/operators` |
 | base | `origin/dev@a8888f0d` |
-| worktree | `externals/work/crm-seam` |
+| worktree | `externals/work/crm-bf-operators` |
 | semver | `minor` |
-| review | SECURITY - ReDoS / full-scan exposure |
+| review | SECURITY. RE-GRADED 2026-09-18 - this row said "ReDoS / full-scan exposure", which understated it. Measured against mongod 7.0 on origin/dev a8888f0d: find[$where]=... builds {$where: "..."} and the driver EXECUTES it. That is code execution against the database, reachable without a token on the shipped AUTH_DEFAULT_ROLES=readable default, not a performance problem. Both halves of the old grading were also true. |
 | ships to operators today | **yes** |
 | register | `BF-04` |
+| blocks on | `P0-K` |
 
-**Blast radius.** lib/server/query.js:157 - API v1 filter pass-through reaches the driver with no operator allowlist.
+**Blast radius.** lib/server/query.js:157 - API v1 filter pass-through reached the driver with no operator allowlist. Extracted onto bf/operators; this item is now a pointer and P0-K carries the gates.
 
-**What an operator sees.** The version 1 API passes search operators straight through to the database with no list of which ones are allowed. A request can be crafted that makes the database scan everything, or that takes a very long time to evaluate. Requires API access.
+**What an operator sees.** The version 1 API passed search operators straight through to the database with no list of which ones are allowed - including the ones that ask the database to run a program. Closed on bf/operators. See P0-K for what a person still has to decide before this can be published.
 
-**Why `minor`.** an allowlist narrows an open pass-through, so some requests that worked will start being refused. Which ones is exactly what the corpus census (T2.4) exists to bound.
+**Why `minor`.** an allowlist narrows an open pass-through, so some requests that worked will start being refused. The corpus census (T2.4) bounded which: of 157 literal find[field][$op] uses across 14 client projects, ZERO send anything the allowlist refuses. Read with its limit - it measured client source, not deployment traffic.
 
 **Gates.**
 
-- **NO GATE** &mdash; Nothing exists to gate. The fix lives inside the seam branch as a side effect and has never been extracted. Its OWN register entry says the extraction "should not have to wait for the seam to land", and that extraction has never been done.
-- **NO GATE** &mdash; T2.4's v1 operator census is DONE but the allowlist derived from it has no test against the corpus, so nobody can say which shipping clients a given allowlist would break.
+- **NO GATE** &mdash; SUPERSEDED BY P0-K, which carries the branch, the three test gates and the integration run. Duplicating them here would mean two places to keep true, and this row's whole history is about a status that read as done when nothing had been done. It stays as a pointer rather than being deleted, because GT3's finding - that this entry was invisible to every open-work list - is worth keeping visible.
 
 **Evidence.**
 
 - `docs/60-research/remedial/gt3-register-truth-2026-09-15.md`
+- `docs/60-research/remedial/bf04-bf70-operator-allowlist-2026-09-18.md`
 
-**Notes.** GT3'S THIRD OPERATOR-FACING ENTRY, and the one nobody counts. BF-04 is HIGH severity, ships to every current operator, and appears in no open list because its status is `fixed-in-seam`. It is invisible in exactly the way the register exists to prevent.
+**Notes.** GT3'S THIRD OPERATOR-FACING ENTRY, and the one nobody counted. BF-04 was HIGH severity, shipped to every current operator, and appeared in no open list because its status was `fixed-in-seam`. It was invisible in exactly the way the register exists to prevent - and it stayed invisible for four days AFTER GT3 said so, on 2026-09-15. What finally moved it was a reader asking, on 2026-09-18, whether a DIFFERENT branch (PR #8737) disallowed $where. The flag did not cause the work; the question did. That is the part worth remembering about this row.
 
 ### `BFQ-21` &mdash; BF-21 - pg bulkUpsert ignores {mode:'replace'}
 

@@ -103,7 +103,7 @@ raised again).
 >
 > | question | answer, measured 2026-09-15 |
 > |---|---|
-> | How much work is outstanding? | **40 open `BF-` entries** — 16 in §1 (BF-09, BF-10, BF-40…BF-52, BF-67) and 24 in §1b (BF-18…BF-27, BF-53…BF-66) — **plus CAP-01 and CAP-02**, plus BF-04 at `fixed-in-seam` with its extraction never done. *(Snapshot, not a live count. **BF-40 moved to `fixed` on 2026-09-16** and is now PR #8737, so the live figures are 39 and 15 — see its row. Its §1 exposure is unchanged: `fixed` here means repaired on a branch, not merged.)* |
+> | How much work is outstanding? | **40 open `BF-` entries** — 16 in §1 (BF-09, BF-10, BF-41…BF-52, BF-67, BF-69) and 24 in §1b (BF-18…BF-27, BF-53…BF-66) — **plus CAP-01 and CAP-02**. **`fixed-in-seam` is now empty**: BF-04 was extracted 2026-09-18 onto `bf/operators` and is `fixed`. *(Recomputed 2026-09-18 by parsing the status column, as this table says to do, not copied. It lands on 40 again by coincidence: BF-40 left the open set on 2026-09-16 and BF-69 joined it on 2026-09-17, and the previous enumeration had listed neither correctly. **BF-70 was filed and fixed on the same day** and so never appears here — which is the count's blind spot, not a clean sheet.)* |
 > | How many §1 defects reach an operator on today's release? | **all of them**, open and `fixed` alike. Nothing here has landed anywhere |
 >
 > **That 40 is a jump from 12 and it is not drift.** 28 entries were filed in one sitting on
@@ -142,7 +142,7 @@ raised again).
 | **BF-37** | `queryParms()` reads `[1]` of each `key=value` split without checking one exists, so a valueless parameter — `?debug`, a trailing `&`, `&&`, a lone `?` — throws. It is the **first statement of `client.init`**, so the page stops loading with nothing on screen but the loading message | `lib/client/browser-utils.js` `queryParms` | **medium–high** — total, silent failure to load, on a URL shape anyone can produce | yes | **fixed 2026-09-15** (suppression audit, `bf/parms` `522c6ffb`); reproduced directly |
 | **BF-38** | Translation substitution loops forwards over `%1`…`%n`; `%1` is a prefix of `%10`, so the first pass rewrites the `%1` inside `%10` and leaves a stray `0`. Same prefix-order trap as sorting a text `position` | `lib/language.js` `translate` | low — **latent**: no shipped catalogue uses more than `%3` | yes | **fixed 2026-09-15** (suppression audit, `bf/parms` `c9a7a21c`); reproduced directly |
 | **BF-39** | `queryParms()` replaced `_` with a space, corrupting every access token whose subject name contains one. **Measured to have no live effect**: `findSubject` matches on the last `-`-separated segment and ignores the abbreviated name the corruption lands in | `lib/client/browser-utils.js` `queryParms` | low — a real corruption absorbed by a leniency nobody chose | yes | **fixed 2026-09-15** (`bf/parms` `eb0bc918`); **reproduced against a live instance**, both spellings authorise |
-| **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver | `lib/server/query.js:157` | **high** — ReDoS / full-scan exposure | yes | **fixed-in-seam — and therefore fixed for nobody.** The repair exists only inside an unmerged seam branch; the extraction this entry's own detail section asks for **has never been done**, so this high-severity defect is live for every operator and appears in no open-work list. See detail |
+| **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver. **`$where` executes on the driver**: measured, `find[$where]=…` builds `{$where: "…"}` on `origin/dev` and `mongod` runs it, on a route `AUTH_DEFAULT_ROLES=readable` opens without a token | `lib/server/query.js:157` | **high** — server-side JavaScript execution, plus ReDoS / full-scan exposure | yes | **fixed 2026-09-18** (`bf/operators` `3e8ce695` + `71506cf8`) — **the extraction this entry asked for since 2026-09-14, done on a `dev`-based branch rather than inside the seam.** Reproduced against `mongod 7.0` before and after. Repaired on a branch, NOT merged, so it still reaches every operator on today's release. See detail |
 | **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | **fixed 2026-09-15** (`bf/reads` `3b588098`, PR #8738) — deleted, not gated; the module has no `env` handle |
 | **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | **fixed 2026-09-15** (T0.2, `bf/cache` `ddcdb1a8`); 0.837 → 0.025 ms, response asserted identical over HTTP |
 | **BF-07** | `cache.insertData` JSON round-trips the whole retained array | `lib/server/cache.js:81` | medium — 65 % of the load cycle | yes | **partly fixed 2026-09-15** (T0.3, `bf/cache` `4f86bab1`); 3.75 → 2.66 ms per cycle — **devicestatus keeps its clone on purpose, see detail** |
@@ -164,6 +164,7 @@ raised again).
 | **BF-52** | The four age plugins **grade the level on a threshold but request the URGENT notification on exact equality** (`age === prefs.urgent`), so the notification can only be asked for in the single evaluation window where the age equals the threshold exactly. Skip that window — a restart, a missed cycle — and the reminder never arrives, while the pill stays urgent | `lib/plugins/insulinage.js:92` and the same shape in `cannulaage`, `sensorage`, `batteryage` | **unsettled** — it may be intentional one-shot behaviour; it is family-wide and predates BF-28 | yes | open — read, not reproduced: no run across a sequence of evaluations was made. **BF-28 masked this on `insulinage` only** by making the URGENT branch unreachable at all; the other three have shipped with it for years |
 | **BF-67** | An out-of-order alarm threshold is **silently rewritten to a neighbour ±1** and the only trace is a `console.warn` on the server. An operator who enters an mmol/L number into a mg/dL field — `BG_HIGH=14` — gets it stored as **181 mg/dL**: the alarm then fires at a number the person never chose, and nothing they can see says so | `lib/settings.js:302-324` `verifyThresholds`, called from `:298`; present on `origin/master` and `origin/dev` alike | **medium** — the guard itself is right and the silence is the defect. It is an alarm threshold for a person managing diabetes, so quietly correcting it is the wrong behaviour even when the correction is sensible | yes | open — read on both refs; **not** reproduced against a running deployment, and no client-side or on-screen surface for the rewrite exists (grep over `lib/client/` and `views/` finds none) |
 | **BF-69** | The Bolus Wizard's quick-pick chooser is **built exactly once, at client construction, from an empty sandbox, and is never rebuilt**. `lib/client/index.js:239` creates `client.sbx` with no data, `:323` constructs `boluscalc`, whose own init calls `loadFoodQuickpicks()` against `client.sbx.data.food` = `[]`; `:596` then REPLACES `client.sbx` on every data update and `:637` calls `boluscalc.updateVisualisations`, which does not rebuild the chooser. `loadFoodQuickpicks` has exactly ONE call site. The chooser therefore offers only "(none)" forever, for every operator, while *Add food from database* works because it reads `sbx.data.food` at click time | `lib/client/boluscalc.js` (single call site at init) + `lib/client/index.js:239,323,596,637` | **medium** — a documented feature is inert for everyone; no wrong number is shown, and the defect it masks (BF-35) is worse than itself | yes | **open, found 2026-09-17** by a maintainer in a browser against the review harness; reproduced on `a8888f0d` AND on `rc/2026-09-dev-cycle`, 8 food records present and the chooser empty on both. A one-line candidate fix — call `loadFoodQuickpicks()` from `boluscalc.prepare()`, which runs on every drawer toggle — was applied to a scratch worktree and **verified**: the chooser then offers the two correct quick picks. **MUST NOT SHIP WITHOUT `bf/food` (#8735)** — see detail |
+| **BF-70** | `GET /api/v1/count/:storage/where` **took its aggregation pipeline from the URL**. `lib/server/aggregate.js` concatenated `opts.pipeline` — and `opts` is `req.query` — into the pipeline it ran, so a caller could splice arbitrary **aggregation stages**, not merely filter operators, into a read. `$lookup` reads a collection the endpoint is not about, and the `{$group: {count: {$sum: 1}}}` the module appends turns the joined result into a number the caller reads back | `lib/server/aggregate.js:21` (`opts.pipeline`), reached from `lib/api/entries/index.js:519` `count_records` | **high** — an oracle over any collection in the database, answered under HTTP 200, on the shipped default `AUTH_DEFAULT_ROLES=readable` which needs **no token**. `$out`/`$merge` are blocked only by the accident that the appended `$group` is last, which nothing asserts | yes | **fixed 2026-09-18** (`bf/operators` `52b7b640`); **reproduced 2026-09-18** through the booted v1 app against `mongod 7.0`, unauthenticated, and the same probe returns 400 after the fix. **DISCLOSURE: see detail before writing this into anything public** |
 
 ## 1b. Pre-release findings
 
@@ -1032,7 +1033,49 @@ security fix that ships to every current operator.
 > illustration of why the status column is not operator exposure (see the legend above). The
 > extraction needs an owner and a queue item; `fixed-in-seam` is not a resting state.
 
-*Evidence*: {M} §6.5; seam interface §8.2.
+> ### Extracted 2026-09-18 — `bf/operators`, queue item P0-K
+>
+> Three days later, and it took a reader asking an unrelated question about PR #8737 to get it
+> done. **The prompt is worth recording**: *"does #8737 disallow `$where`, `$projection` and other
+> operators that could introduce security issues?"* — it does not and was never meant to, but
+> answering it required measuring what v1 actually carries, which is this entry. A `fixed-in-seam`
+> row was not enough to get the work scheduled; a question about a different branch was.
+>
+> **The severity above was understated and is corrected.** This entry said "ReDoS / full-scan
+> exposure". Measured on `origin/dev` `a8888f0d` against `mongod 7.0`:
+> `?find[$where]=this.sgv%20%3D%3D%20100` builds `{$where: "this.sgv == 100"}` and the driver
+> **executes it**. Server-side JavaScript is enabled by default in `mongod`, the top level of
+> `find` is never walked by the type coercer, and the route is gated only on `api:entries:read` —
+> which `AUTH_DEFAULT_ROLES=readable`, the shipped default, grants without a token. This is code
+> execution against the database, not a performance problem. **Both halves of the original grading
+> were also true**, and remain so.
+>
+> **PR #8737 changes none of this**, which is the direct answer to the question that started it.
+> `$where` appears in that branch's `NON_VALUE_OPERATORS` table because the coercer must keep its
+> hands *off* that operand — an exemption from conversion, not a refusal. Top-level `$where` and
+> `$or`-wrapped `$where` build byte-identically on `dev` and on `bf/coercion`. The only rows that
+> differ are `$where` and `$regex` *nested under a field*, and `mongod` rejects every such operator
+> as "cannot be applied to a field" / "unknown operator", so the delta is inert.
+>
+> Two commits, split at the revert boundary: `3e8ce695` refuses `$where`/`$function`/`$accumulator`
+> with their own message and adds the shared 400 responder; `71506cf8` is the allowlist proper.
+>
+> **The accept set is the seam's, exactly** — `$eq $ne $gt $gte $lt $lte $in $nin $exists $regex`
+> (`$options`) on a field, `$and`/`$or` at the top including the indexed form Trio sends. Not
+> trimmed to the census's measured seven, because the census measured client *source*. Matching the
+> seam makes this **one narrowing instead of the first of two**.
+>
+> **It refuses two operators that work today.** `$expr`, reachable through `/api/v1/profiles/`; and
+> `$type`, which **collides with PR #8737** — that branch added `readTypeOperand()` precisely to
+> keep `find[sgv][$type]=2` working. Trial-merged and measured: 3 of #8737's tests fail, all three
+> the allowlist refusing `$type`, `$not` or `$text`. **That decision is the maintainer's** and both
+> one-line resolutions are set out in the report §2.2. Nothing here presumes it.
+>
+> `lib/storage/assert-no-query-javascript.js` is carried across byte-identical at the same path, so
+> landing this ahead of the seam costs the seam branch nothing.
+
+*Evidence*: {M} §6.5; seam interface §8.2;
+[BF-04/BF-70 report](../../60-research/remedial/bf04-bf70-operator-allowlist-2026-09-18.md).
 
 ### BF-05 · Debug logging on the count request path — **FIXED 2026-09-15**
 
@@ -2909,6 +2952,67 @@ is a live trap for T3.0's wiring step, not for an operator.
 
 **No fix is prescribed** and none should be until T3.0 decides where configuration comes from, since
 the obvious local fix — return a fresh object per call — changes what 62 test files share.
+
+
+### BF-70 · the count endpoint took its aggregation pipeline from the URL — **FIXED 2026-09-18**
+
+> **DISCLOSURE FIRST. Read this paragraph before quoting the rest anywhere public.** This is an
+> **unauthenticated read oracle over arbitrary collections**, live on the shipping release, and
+> **this repository is public**. The working reproduction is deliberately **not committed** — not
+> here, not in the branch, not in the report. It is ~40 lines, held outside version control, and
+> reconstructable from the mechanism below by anyone who needs it; what is withheld is a
+> copy-paste recipe against other people's deployments. **The ordinary path for this stack — a
+> public PR carrying a full commit message — is the wrong path for this commit.** Someone has to
+> decide sequencing (fix first, publish after) and whether Nightscout's security contact process
+> is invoked. That decision is P0-K's blocking item and it is not an engineering question.
+
+**Found 2026-09-18 while tracing BF-04's blast radius, and it is worse than BF-04.**
+
+`lib/server/aggregate.js` built its aggregation as
+
+```js
+[{$match: <find>}].concat(conf.pipeline || []).concat(opts.pipeline || [])
+```
+
+and `opts` is the caller's parsed query string — `count_records` at `lib/api/entries/index.js:519`
+passes `req.query` straight to `storage.aggregate()`. So `GET /api/v1/count/:storage/where`
+accepted arbitrary **aggregation stages** from the URL, not merely filter operators.
+
+**Why that is a different class of problem from BF-04.** A `find` filter selects within the
+collection the endpoint is about. An aggregation pipeline does not: `$lookup` reads a *different*
+collection, and the `{$group: {_id: null, count: {$sum: 1}}}` this module appends turns whatever
+the join produced into a single number the caller reads back under HTTP 200. Join, filter the
+joined field, read the count — that is a boolean oracle over any collection in the database,
+including the auth collections, one bit at a time.
+
+- **Unauthenticated.** The route needs `api:entries:read`, which `AUTH_DEFAULT_ROLES=readable` —
+  the shipped default — grants with no token.
+- **Undocumented.** `pipeline` is in neither `swagger.yaml` nor `swagger.json` nor the README, and
+  appears in no client in the [14-project census](../../60-research/tenancy/v1-operator-census-2026-09-14.md).
+- **Unused in-tree.** `conf.pipeline` is `{}` at all three construction sites — `entries.js:216`,
+  `treatments.js:437`, `devicestatus.js:160` — so nothing in this tree supplies one either.
+- **Writes are blocked by accident, not design.** `$out` and `$merge` must be the last stage, and
+  the module appends its `$group` after the caller's stages. Nothing asserts that ordering, and
+  nothing would notice if the template moved.
+
+**Reproduced 2026-09-18**, `reproduced` not `derived`: through the booted v1 app against
+`mongod 7.0`, with no `api-secret` header, a value seeded into the auth collection was recovered
+character by character from the count alone. The same probe against `bf/operators` `52b7b640`
+returns HTTP 400 and recovers nothing — same machine, same database, same session. That
+before/after pair is the branch's strongest control, stronger than any unit ablation on it.
+
+**Fix**: the parameter is **refused with 400, not dropped**. Dropping it silently would answer a
+different question under HTTP 200, which is the failure mode the whole `bf/operators` branch exists
+to remove. `conf.pipeline` is kept, still works, and now gets a backstop pass through the
+JavaScript guard, because it is the only remaining way a stage reaches the pipeline.
+
+**Interaction with `bf/reads`**: that branch (BF-01, BF-05) edits the same function, so the two
+conflict on this file. The conflict is mechanical, both edits compose, and the resolution is
+written out in the report §4.2 rather than left to be rediscovered. Merged and measured: 2172
+passing, 3 pending, 0 failing.
+
+*Evidence*:
+[BF-04/BF-70 report](../../60-research/remedial/bf04-bf70-operator-allowlist-2026-09-18.md) §3.
 
 
 ## 3. How to use this register
