@@ -71,6 +71,19 @@ def flow(text, width=78):
 
 
 def pr_number(item):
+    """See emit_views.pr_numbers for why this is a fallback and not the rule.
+
+    A declared `pr:` wins; an empty list means "this item is not a PR" and is
+    NOT the same as saying nothing, which is what lets a packet stop guessing.
+    """
+    if "pr" in item:
+        declared = item["pr"]
+        if declared is None:
+            declared = []
+        if not isinstance(declared, (list, tuple)):
+            declared = [declared]
+        found = sorted({str(p).lstrip("#") for p in declared}, key=int)
+        return found[0] if found else None
     blob = " ".join(str(item.get(k, "")) for k in ("title", "review"))
     found = sorted(set(re.findall(r"\bPR #(\d{2,5})\b", blob)), key=int)
     return found[0] if found else None

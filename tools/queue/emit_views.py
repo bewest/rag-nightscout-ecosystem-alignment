@@ -120,7 +120,25 @@ def pr_numbers(item):
     `review` are searched. `notes` is where an item discusses OTHER people's
     pull requests, and reading those as its own is how a table ends up
     pointing a reviewer at somebody else's work.
+
+    A THIRD WRONG ANSWER, measured 2026-09-18. `review` is not safe either.
+    P0-K has no PR at all, and its `review` field says a reviewer must also
+    rule on "the $type collision with PR #8737" -- another item's pull request,
+    named in the one place this function trusted. The view rendered P0-K as
+    `#8737`, pointing a reviewer at somebody else's work, which is the exact
+    failure the paragraph above says it had fixed.
+
+    So the inference is now a FALLBACK. An item may declare `pr:` -- a list, or
+    a scalar, or an empty list meaning "this item is not a PR" -- and that wins.
+    Guessing from prose is what is left when nothing was declared.
     """
+    if "pr" in item:
+        declared = item["pr"]
+        if declared is None:
+            declared = []
+        if not isinstance(declared, (list, tuple)):
+            declared = [declared]
+        return sorted({str(p).lstrip("#") for p in declared}, key=int)
     blob = " ".join(str(item.get(k, "")) for k in ("title", "review"))
     return sorted(set(re.findall(r"\bPR #(\d{2,5})\b", blob)), key=int)
 
