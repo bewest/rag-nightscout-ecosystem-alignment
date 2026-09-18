@@ -41,7 +41,7 @@ Four states qualify:
 | `P0-G` | `in-flight-upstream` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | #8735 |
 | `P0-H` | `in-flight-upstream` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | #8734 |
 | `P0-I` | `in-flight-upstream` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | #8736 |
-| `P0-K` | `needs-decision` | bf/operators - BF-04 extracted, BF-70 found - NOT YET A PR, needs a disclosure d | &mdash; |
+| `P0-K` | `in-flight-upstream` | bf/operators - PR #8743, BF-04 extracted, BF-70 found | #8743 |
 | `RT-D3` | `needs-decision` | Answer the D3 question before 15.0.9 ships | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `DOC-LINKS` | `ready-to-push` | Every path the programme's documents and tooling cite must resolve | &mdash; |
@@ -100,6 +100,7 @@ One bounded review packet per row lives in `reports/reviewer-packets/`.
 | **#8738** | `P0-E` | `bf/reads` | bf/reads - PR #8738, six read-path fixes, independent of bf/ | Maintainer |
 | **#8739** | `P0-A` | `bf/alarms` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | Maintainer + a second human |
 | **#8740** | `P0-B` | `bf/cache` | bf/cache - PR #8740, T0.2 and T0.3 read-path cost | Maintainer |
+| **#8743** | `P0-K` | `bf/operators` | bf/operators - PR #8743, BF-04 extracted, BF-70 found | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

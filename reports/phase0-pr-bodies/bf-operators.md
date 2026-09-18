@@ -1,8 +1,8 @@
 # `bf/operators` — API v1 accepted any MongoDB operator a caller named, including the ones that run JavaScript
 
-Three commits on `origin/dev` `a8888f0d`, tip `52b7b640`. 15 files, +1032/−3. Merges clean against
-`dev` and against every Phase 0 branch except `bf/reads`, which touches the same function — see
-[Landing order](#landing-order).
+Three commits plus a merge of `dev`, tip `9745cae2`. 15 files, +1032/−3 against the merge base.
+**Updated 2026-09-18**: `dev` moved `a8888f0d..fdd08706` while this was open, taking #8733, #8737,
+#8738 and #8734. Merged in; see [Landing order](#landing-order) for what that cost.
 
 > **READ THIS BEFORE THE REST.** This branch closes **one of the three** proof-of-concepts in the
 > reported NoSQL-injection advisory, plus a second defect the advisory does not mention.
@@ -99,7 +99,7 @@ Against the advisory's five remediation items: **1 and 2 are done here. 3, 4 and
 ## The accept set
 
 ```
-on a field   $eq $ne $gt $gte $lt $lte $in $nin $exists $regex (with $options)
+on a field   $eq $ne $gt $gte $lt $lte $in $nin $exists $type $regex (with $options)
 at the top   $and $or, and their branches, including the indexed form
              find[$and][0][field][$op]=value
 ```
@@ -116,28 +116,33 @@ So the set is **not trimmed to the measured set**. It is the set the in-progress
 already express — a superset of everything measured — so that whatever this refuses today, the seam
 would have refused later anyway. That makes this one narrowing instead of the first of two.
 
-**Two operators that work today are refused:**
+**One operator that works today is refused:** **`$expr`**, reachable through
+`/api/v1/profiles/`. It embeds the aggregation expression language in a find filter, with
+`$function` and `$accumulator` held out of it only by a denylist that enumerates them by name
+against a language that grows each release; it cannot use an index; and every future storage backend
+would owe it an expression evaluator.
 
-- **`$expr`**, reachable through `/api/v1/profiles/`. It embeds the aggregation expression language
-  in a find filter, with `$function` and `$accumulator` held out of it only by a denylist that
-  enumerates them by name against a language that grows each release; it cannot use an index; and
-  every future storage backend would owe it an expression evaluator.
-- **`$type`**, which is harmless element matching, but is outside the seam's set and is sent by no
-  surveyed client. **This collides with #8737** — see below.
+### `$type`, and how #8737 merging settled it
 
-### `$type` and #8737
+An earlier revision of this branch **refused `$type`**, on the ground that the storage seam's AST
+cannot express it and no surveyed client sends it, and left the collision with #8737 as an open
+question for the maintainer. #8737 has since merged, which settles it the other way.
 
-PR #8737 added `readTypeOperand()` specifically so `find[sgv][$type]=2` keeps reaching MongoDB as
-the number `2` rather than becoming a 500. This guard runs first, so once both land that reader is
-unreachable over HTTP — not wrong, moot.
+`readTypeOperand()` exists on `dev` because `find[sgv][$type]=2` must reach MongoDB as the **number**
+`2` — as the string `"2"` the server answers *"Unknown type name alias: 2"* and a working request
+becomes a 500. That is code, a test and a measurement against mongod 3.6.8 and 7.0.43, shipped in
+this same release train. Refusing `$type` would regress a fix that landed a week earlier, to gain
+nothing: it executes nothing, evaluates nothing and reads nothing outside the document.
 
-**Measured, not predicted**: trial-merging this branch into `bf/coercion` and running the suite
-gives **2160 passing, 3 failing**, and all three failures are this allowlist refusing an operator
-whose *operand handling* #8737 wrote a test around — `$type`, `$not`, `$text`.
+**`$type` is therefore allowed, and it is the one place this set departs from the seam's.** Priced
+here rather than discovered later: **when the storage seam lands, its AST needs a `$type` node, or
+v1 narrows by one operator at that point.**
 
-Two resolutions, and **neither is taken here** because it is a decision about #8737, not about this
-branch: add `'$type'` to `FIELD_OPERATORS` (one line, keeps the reader, makes v1 differ from the
-seam by one operator), or update those three assertions to expect the 400.
+`$not` and `$text` stay refused. Both appeared in #8737's tests as *fixtures* rather than subjects,
+and neither has a measured caller; `$text` could never have worked on a field anyway. Those two
+assertions are rewritten rather than deleted — the depth property they pinned is now asserted
+through `$and`, and each file gains an explicit assertion that the operator is now refused, so that
+a removed capability does not look like a removed test.
 
 ## How it works
 
@@ -178,10 +183,10 @@ byte-identical at the same path, so landing this ahead of the seam costs that br
 
 ```
 TEST=mongo-query-javascript npm run test-single      # 23 passing,  49 ms, no database
-TEST=api-v1-operator-allowlist npm run test-single   # 62 passing + 16 pending, no database
+TEST=api-v1-operator-allowlist npm run test-single   # 63 passing + 16 pending, no database
 TEST=api-v1-count-pipeline npm run test-single       #  8 passing,  30 ms, no database
-CUSTOMCONNSTR_mongo=… TEST=api-v1-operator-allowlist npm run test-single   # 78 passing
-npm test                                             # 2137 passing, 3 pending, 0 failing
+CUSTOMCONNSTR_mongo=… TEST=api-v1-operator-allowlist npm run test-single   # 79 passing
+npm test                                             # 2223 passing, 3 pending, 0 failing
 ```
 
 The 16 pending are the end-to-end section — the only place the **allowed** operators are proved to
@@ -193,10 +198,17 @@ evidence for this branch; `npm test` is what CI runs.
 
 | ablation | result |
 |---|---|
-| comment out the JavaScript guard in `create()` | 14 of 23 fail |
+| comment out the JavaScript guard in `create()` | 7 of 23 fail |
 | comment out the allowlist in `create()` | 14 fail |
-| make `refuse()` return instead of throwing | 36 fail |
+| make `refuse()` return instead of throwing | 35 fail |
 | restore the two lines commit 3 changes | 3 of 8 fail |
+
+**The first row was 14 before the `dev` merge and is 7 now, and the drop is informative rather than
+a weakening.** The two guards overlap: with the JavaScript guard removed, the allowlist still
+refuses `$where` — as an unlisted operator, with the generic message. The 7 are the cases asserting
+the *specific* "server-side JavaScript is not allowed" wording. So that guard is now mostly about
+the message rather than about the refusal, which is worth knowing before anyone considers dropping
+it.
 
 The strongest control is not a unit test: the unmodified reproduction for commit 3 recovers a
 seeded value over unauthenticated HTTP on `a8888f0d` and recovers nothing on `52b7b640` — same
@@ -208,16 +220,20 @@ machine, same database, same session.
 Merges clean against `dev`, `bf/alarms`, `bf/auth`, `bf/cache`, `bf/coercion`, `bf/connect-pin`,
 `bf/food`, `bf/merge`, `bf/parms` and `bf/throttle`.
 
-**Conflicts with `bf/reads` (#8738)** on `lib/server/aggregate.js`: that branch makes the function
-build its `$match` through the collection's own `query_for` and deletes two `console.log`s. The
-edits compose and the resolution is mechanical — keep both. Resolved and measured: **2172 passing,
-3 pending, 0 failing.** One test fixture here already carries a `query_for` so the file works on
-either side of that merge.
+**`dev` moved while this was open** (`a8888f0d..fdd08706`: #8733, #8737, #8738, #8734) and is
+merged in at `9745cae2`. Two conflicts:
+
+- **`lib/server/aggregate.js`, textual.** #8738 makes the function build its `$match` through the
+  collection's own `query_for` and deletes two `console.log`s; this branch refuses `opts.pipeline`
+  and adds the JavaScript backstop. The edits compose — keep both. `lib/server/query.js`
+  auto-merged, and the result is correct by inspection: guards on the caller's literal input, then
+  the schema walker, then `normalizeOperands`.
+- **`$type`, semantic** — see above. This is the one that mattered.
 
 ## Semver: minor
 
-It removes reachable behaviour — `$expr` on `/profiles/`, `$type` on any typed field, and the
-undocumented `pipeline` parameter — so it is not a patch. It is not major either: no route removed,
+It removes reachable behaviour — `$expr` on `/profiles/` and the undocumented `pipeline`
+parameter — so it is not a patch. It is not major either: no route removed,
 no required input added, no documented contract broken, and no surveyed client sends anything now
 refused. No operator action, no configuration break, stored data untouched.
 

@@ -89,41 +89,43 @@ at the top   $and $or, and their branches, including the indexed form
 Matching the seam is the point: whatever this refuses today, the seam would have refused later
 anyway, so landing it now is **one narrowing rather than the first of two**.
 
-### 2.2 Two operators that work today and are now refused
+### 2.2 `$expr` is refused; `$type` was, and #8737 merging settled it the other way
 
-| operator | reachable today via | why refused |
+| operator | reachable today via | outcome |
 |---|---|---|
-| `$expr` | `/api/v1/profiles/` — `profile.list_query` reaches the raw collection | embeds the aggregation expression language in a find filter, with `$function`/`$accumulator` held out only by a denylist enumerating names against a language that grows each release; cannot use an index; every future backend would owe it an expression evaluator |
-| `$type` | any typed field, e.g. `find[sgv][$type]=2` | pure element matching and harmless in itself, but outside the seam's set and sent by no surveyed client |
+| `$expr` | `/api/v1/profiles/` — `profile.list_query` reaches the raw collection | **refused** — embeds the aggregation expression language in a find filter, with `$function`/`$accumulator` held out only by a denylist enumerating names against a language that grows each release; cannot use an index; every future backend would owe it an expression evaluator |
+| `$type` | any typed field, e.g. `find[sgv][$type]=2` | **allowed** — see below |
 
-**`$type` is the one place this collides with PR #8737, and the collision is measured, not
-predicted.** #8737 added `readTypeOperand()` specifically so that `find[sgv][$type]=2` keeps
-reaching MongoDB as the number `2` rather than becoming an HTTP 500 — its commit message argues
-that excluding it *"would have turned a working request into an HTTP 500."* This allowlist runs
-first, so that reader becomes unreachable through the HTTP path.
+**This is the one conclusion in this document that was reversed, and the reversal is the useful
+part.** The first revision refused `$type` on the ground that the seam's AST cannot express it and
+the census found no sender, and recorded the collision with PR #8737 as a decision for the
+maintainer — *"Nothing here presumes it."* Deferring was right at the time and the deferral is what
+made the reversal cheap.
 
-Trial-merging `bf/operators` into `bf/coercion` and running the full suite: **2160 passing, 3
-pending, 3 failing.** The three are all #8737's own, and all three are the allowlist refusing an
-operator whose *operand handling* #8737 wrote a test around:
+`dev` then moved `a8888f0d..fdd08706` and #8737 merged. That changed the facts, not the argument:
 
-```
-tests/query.operands.test.js  $exists  reads the operand at any depth, including under $not   -> $not refused
-tests/query.operands.test.js  leaves $options, $type and $text alone                          -> $type refused
-tests/query.test.js           reads a $type operand as a BSON code, and leaves aliases alone  -> $type refused
-```
+- `readTypeOperand()` is no longer a proposal. It is on `dev` because `find[sgv][$type]=2` must
+  arrive as the **number** `2` — as `"2"` the server answers *"Unknown type name alias: 2"* and a
+  working request becomes an HTTP 500. Code, test, and a measurement against mongod 3.6.8 and
+  7.0.43.
+- Refusing `$type` would regress a fix that landed a week earlier in the same release train, to
+  gain nothing. It executes nothing, evaluates nothing, reads nothing outside the document.
+- *"Matches the seam exactly"* is a good tie-breaker while nothing is at stake. It is not a reason
+  to undo a measured decision.
 
-**This is a maintainer's decision and is recorded rather than made.** Two resolutions, neither of
-which is obviously right:
+**So `$type` is allowed, and it is the one departure from the seam's set. Priced here rather than
+discovered later: when the seam lands, its AST needs a `$type` node, or v1 narrows by one operator
+at that point.**
 
-1. Add `'$type'` to `FIELD_OPERATORS` in `lib/server/query-operator-allowlist.js`. One line. Keeps
-   #8737's reader live, and makes v1 differ from the seam by one operator — a second narrowing
-   later. Does **not** fix the `$not` and `$text` rows, which are about operators #8737 never meant
-   to endorse either.
-2. Update those three assertions on `bf/coercion` to expect the 400, and note `readTypeOperand()`
-   as unreachable-but-harmless. Fixture-only edits; the coercion module's behaviour is unchanged.
-
-The evidence leans to (2) — the census found zero demand for `$type`, and a set that matches the
-seam is worth more than one operator — but that is an argument, not a mandate.
+`$not` and `$text` stay refused. Both were *fixtures* in #8737's tests, not subjects — chosen to
+express "the operand is reached by operator, not by position" and "this reader does not
+generalise" — and neither has a measured caller. `$text` could never have worked on a field anyway:
+MongoDB answers "unknown operator: $text" outside the top level, and Nightscout creates no text
+index for the top-level form. Both assertions are **rewritten, not deleted**: the depth property is
+asserted through `$and`, which is allowed and is the same claim, and each file gains an explicit
+assertion that the operator is refused, because a deleted assertion and a deleted capability look
+identical six months later. `tests/query.test.js` is untouched — its `$type` test passes as written
+once `$type` is allowed, which is the point.
 
 ### 2.3 What is deliberately NOT refused
 
@@ -185,10 +187,12 @@ Every figure below was run in this session, in `externals/work/crm-bf-operators`
 | suite | result |
 |---|---|
 | `tests/mongo-query-javascript.test.js` | 23 passing, 49 ms, no database |
-| `tests/api-v1-operator-allowlist.test.js` | 62 passing + 16 pending, 62 ms, no database |
-| the same, with `CUSTOMCONNSTR_mongo` set | **78 passing**, 130 ms |
+| `tests/api-v1-operator-allowlist.test.js` | 63 passing + 16 pending, 60 ms, no database |
+| the same, with `CUSTOMCONNSTR_mongo` set | **79 passing**, 129 ms |
 | `tests/api-v1-count-pipeline.test.js` | 8 passing, 30 ms, no database |
-| `npm test` (whole suite, live mongod) | **2137 passing, 3 pending, 0 failing** |
+| `npm test` (whole suite, live mongod) | **2223 passing, 3 pending, 0 failing** |
+
+*(Figures re-measured on the `dev` merge `9745cae2`, not carried over from the pre-merge run.)*
 
 The 16 pending are the end-to-end section — the only place the allowed operators are proved to
 still **select** correctly rather than merely to pass the guard. It skips without a database; CI
@@ -199,33 +203,36 @@ landed is the failure mode this programme has hit twice:
 
 | ablation | result |
 |---|---|
-| comment out `assertNoQueryJavascript()` in `create()` | 14 of 23 fail |
+| comment out `assertNoQueryJavascript()` in `create()` | 7 of 23 fail |
 | comment out `assertAllowedQueryOperators()` in `create()` | 14 fail |
-| make `refuse()` return instead of throwing | 36 fail |
+| make `refuse()` return instead of throwing | 35 fail |
 | restore the two lines commit 3 changes in `aggregate.js` | 3 of 8 fail |
+
+**The first row was 14 before the merge and is 7 after, and the drop is a finding rather than a
+weakening.** The guards overlap: with the JavaScript guard removed the allowlist still refuses
+`$where`, as an unlisted operator with the generic message. The 7 are the cases asserting the
+*specific* "server-side JavaScript is not allowed" wording. That guard is now mostly about the
+message, not the refusal — worth knowing before anyone proposes dropping it as redundant.
 
 **The strongest control is the live one**: the unchanged BF-70 probe extracts a token on
 `a8888f0d` and extracts nothing on `52b7b640`, same machine, same database, same session.
 
-### 4.1 Merge behaviour against the rest of Phase 0
+### 4.1 `dev` moved, and the branch is merged up
 
-Trial-merged against every Phase 0 branch:
+`dev` went `a8888f0d..fdd08706` while #8743 was open, taking #8733, **#8737 (`bf/coercion`)**,
+**#8738 (`bf/reads`)** and #8734 (`bf/merge`). Merged in at `9745cae2`. Two conflicts:
 
-| branch | result |
-|---|---|
-| `bf/alarms` `bf/auth` `bf/cache` `bf/coercion`\* `bf/connect-pin` `bf/food` `bf/merge` `bf/parms` `bf/throttle` | clean |
-| `bf/reads` | **conflicts on `lib/server/aggregate.js`** |
+- **`lib/server/aggregate.js`, textual** — resolved exactly as §4.2 predicted on 2026-09-18 against
+  the then-unmerged `bf/reads`. The prediction held. `lib/server/query.js` auto-merged and the
+  result is correct by inspection: both guards on the caller's literal input, then the schema
+  walker, then `normalizeOperands`.
+- **`$type`, semantic** — §2.2. This is the one that mattered, and it was invisible to
+  `git merge-tree`: the trial merge reported *clean* against `bf/coercion` and the branch's own
+  test suite is what caught it, three failures, all fixtures.
 
-\* `bf/coercion` merges cleanly but fails 3 of its own tests afterwards — §2.2.
-
-The `bf/reads` conflict is mechanical and both edits compose: that branch makes `aggregate.js`
-build its `$match` through the collection's own `query_for` (BF-01) and deletes two `console.log`s
-(BF-05); this branch refuses `opts.pipeline` and adds the JavaScript backstop. Resolved and
-measured: **2172 passing, 3 pending, 0 failing.** The resolution is recorded in §4.2 so it does not
-have to be rediscovered.
-
-One fixture in `tests/api-v1-count-pipeline.test.js` was written to survive both shapes — the stub
-collection carries a `query_for` — so the file does not have to know which branch it is on.
+**That is the reusable lesson: a clean textual merge against a branch is not evidence of
+compatibility with it.** The pre-merge check recorded `bf/coercion` as "clean" with an asterisk
+only because the suite was also run. Without that run the collision would have landed silently.
 
 ### 4.2 The `bf/reads` resolution
 

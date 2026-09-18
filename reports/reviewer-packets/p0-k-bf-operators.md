@@ -11,17 +11,16 @@
   ============================================================================
 -->
 
-# Review packet — P0-K
+# Review packet — P0-K (PR #8743)
 
-**bf/operators - BF-04 extracted, BF-70 found - NOT YET A PR, needs a disclosure
-decision first**
+**bf/operators - PR #8743, BF-04 extracted, BF-70 found**
 
 | | |
 |---|---|
 | repository | `cgm-remote-monitor` |
 | branch | `bf/operators` |
-| base | `origin/dev@a8888f0d` |
-| claimed state | `needs-decision` — a claim; `make queue-status ID=P0-K` is the measurement |
+| base | `origin/dev@fdd08706` |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=P0-K` is the measurement |
 | semver | `minor` |
 | register entries | `BF-04`, `BF-70` |
 
@@ -36,17 +35,22 @@ resolution written out in the report §4.2 and measured.
 
 ## Why that semver
 
-It removes reachable behaviour - $expr on /profiles/, $type on any typed
-field, and the undocumented pipeline parameter - so it is not a patch by the
-project's own reading. It is not major either: no route is removed, no
-required input is added, no documented contract breaks, and the census of 14
-client projects found zero senders of anything now refused. THE ONE OPEN
-QUESTION IS $type. PR #8737 added readTypeOperand() specifically so
-find[sgv][$type]=2 keeps working; this allowlist runs first and makes that
-reader unreachable over HTTP. Trial-merged and MEASURED - 3 of #8737's tests
-fail, all three the allowlist refusing $type, $not or $text. Two one-line
-resolutions are set out in the report §2.2 and NEITHER IS TAKEN HERE. That is
-the maintainer's call and it changes #8737, not this branch.
+It removes reachable behaviour - $expr on /profiles/ and the undocumented
+pipeline parameter - so it is not a patch by the project's own reading. It is
+not major either: no route is removed, no required input is added, no
+documented contract breaks, and the census of 14 client projects found zero
+senders of anything now refused. $type RESOLVED 2026-09-18, and the resolution
+reversed this item's earlier position. The allowlist refused $type, and this
+field recorded the collision with PR #8737 as the maintainer's call, taken by
+nobody. #8737 then MERGED, which settled it: readTypeOperand() is on dev
+because find[sgv][$type]=2 must arrive as the number 2 or the request becomes
+an HTTP 500, measured against mongod 3.6.8 and 7.0.43. Refusing $type would
+regress a fix that landed a week earlier to gain nothing - it executes nothing
+and reads nothing outside the document. $type is now ALLOWED and is the one
+departure from the storage seam's set; the cost is priced, not discovered:
+when the seam lands its AST needs a $type node or v1 narrows by one operator
+then. $not and $text stay refused - both were FIXTURES in #8737's tests rather
+than subjects, and their assertions are rewritten, not deleted.
 
 ## What an operator would notice
 
@@ -65,17 +69,20 @@ the maintainer's call and it changes #8737, not this branch.
 
 ## Who should review this, and why
 
-MAINTAINER, AND THIS ONE DOES NOT GO STRAIGHT TO A PUBLIC PR. BF-70 is an
-unauthenticated read oracle over arbitrary collections, live on the shipping
-release, and the commit message describing it is precise enough to be a
-recipe. The ordinary path for this stack - open a PR, paste the full body -
-publishes a working attack against every current deployment before any of them
-can take the fix. Someone has to decide sequencing (fix first, publish after)
-and whether Nightscout's security contact process is invoked. Until that
-decision exists this item is BLOCKED ON A PERSON, not on engineering. BF-04's
-two commits carry no such problem and could be split out and opened normally
-if the decision takes time. Second thing the reviewer must rule on: the $type
-collision with PR #8737 - see semver_reason and the report §2.2.
+MAINTAINER. OPENED 2026-09-18 as PR #8743, base dev, and MERGED UP to dev
+fdd08706 the same day. Three things the reviewer should be told rather than
+left to find: (1) THIS DOES NOT CLOSE THE REPORTED NoSQL-INJECTION ADVISORY.
+Of its three PoCs only $where is refused; the date-window bypass
+find[dateString][$ne]=x - the full-history PHI dump, the advisory's own
+primary evidence - and the $regex extraction both still work, MEASURED on the
+merged tip. An allowlist structurally cannot close the first: $ne is an
+ordinary comparison every client sends, and the defect is in where
+enforceDateFilter() applies its bound. Against the advisory's five remediation
+items this does 1 and 2, not 3, 4 or 5. The PR body says so above the
+mechanism, not in a footnote. (2) BF-70 has NO advisory of its own. It is a
+second unauthenticated read path with the same reachability, and the advisory
+covers find[...] only. (3) The $type question this item used to hold open is
+CLOSED - see semver_reason.
 
 ## What was measured
 
@@ -85,18 +92,20 @@ bf/operators has not fallen behind the dev tip it was cut from
 
 **`TEST=mongo-query-javascript npm run test-single`** &nbsp;·&nbsp; kind: `unit` &nbsp;·&nbsp; cwd: `externals/work/crm-bf-operators`
 
-BF-04, the JavaScript half. 23 passing, 49 ms, no database. ABLATED 2026-09-18
-- commenting out the create() call gives 14 failing, and the ablation was
-confirmed applied by grep before the run, because a green ablation that never
-landed has happened twice in this programme.
+BF-04, the JavaScript half. 23 passing, 49 ms, no database. ABLATED on the dev
+merge - commenting out the create() call gives 7 failing, confirmed applied by
+grep before the run. IT WAS 14 BEFORE THE MERGE AND THE DROP IS A FINDING: the
+allowlist also refuses $where, as an unlisted operator with the generic
+message, so the 7 are the cases asserting the SPECIFIC JavaScript wording.
+This guard is now mostly about the message, not the refusal.
 
 **`TEST=api-v1-operator-allowlist npm run test-single`** &nbsp;·&nbsp; kind: `unit` &nbsp;·&nbsp; cwd: `externals/work/crm-bf-operators`
 
-BF-04, the allowlist. 62 passing + 16 pending without a database; the 16 are
+BF-04, the allowlist. 63 passing + 16 pending without a database; the 16 are
 the end-to-end section, which is the only place the ALLOWED operators are
 proved to still SELECT rather than merely to pass the guard. ABLATED two ways,
 both confirmed applied by grep - removing the create() call gives 14 failing,
-making refuse() return instead of throwing gives 36.
+making refuse() return instead of throwing gives 35.
 
 **`TEST=api-v1-count-pipeline npm run test-single`** &nbsp;·&nbsp; kind: `unit` &nbsp;·&nbsp; cwd: `externals/work/crm-bf-operators`
 
@@ -105,9 +114,25 @@ commit changes gives 3 failing.
 
 **`TEST=api-v1-operator-allowlist npm run test-single`** &nbsp;·&nbsp; kind: `integration` &nbsp;·&nbsp; cwd: `externals/work/crm-bf-operators`
 
-the same file with CUSTOMCONNSTR_mongo set - 78 passing, mongod 7.0 on port
-27018, measured 2026-09-18. This is the run that matters: without a database
-the end-to-end section skips and the suite proves only that refusals refuse.
+the same file with CUSTOMCONNSTR_mongo set - 79 passing, mongod 7.0 on port
+27018, re-measured on the dev merge 9745cae2. This is the run that matters:
+without a database the end-to-end section skips and the suite proves only that
+refusals refuse.
+
+**`git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/operators | grep -q .`** &nbsp;·&nbsp; kind: `network` &nbsp;·&nbsp; cwd: `.`
+
+the branch behind PR #8743 is on the remote. Read-only. The tip is
+deliberately NOT pinned to a sha here: this branch merges dev forward while it
+is open, so a pinned tip would go red on every merge-up and say nothing about
+correctness.
+
+**`node tools/queue/gates/pr-body-parity.js --only 8743`** &nbsp;·&nbsp; kind: `network` &nbsp;·&nbsp; cwd: `.`
+
+the live body of PR #8743 still matches the file it was posted from. Bodies
+drift in one direction - a correction gets written into the file first. It
+does NOT measure whether the body is TRUE. This body has already been
+corrected once, when #8737 merging reversed the $type decision. SKIPS with
+exit 0 when gh is unauthenticated.
 
 ## What these gates do NOT prove
 
@@ -121,19 +146,15 @@ the end-to-end section skips and the suite proves only that refusals refuse.
   live on the shipping release. A gate that ran it would have to carry it.
   Held outside version control; see the register's BF-70 detail before
   reconstructing it.
-- `npm test` over the whole suite is 2137 passing / 3 pending / 0 failing on
-  this branch with a live mongod, measured 2026-09-18. Not a gate because it
-  needs a database on a port other sessions share, and because a whole-suite
-  number says nothing about WHICH assertion covers this branch - the three
-  TEST= gates above do.
-- No PR exists, so there is no pr-body-parity gate and no ls-remote gate.
-  Both appear when the disclosure decision in `review` is made and the
-  branch is opened. A missing gate that renders blank looks exactly like a
-  passing one, which is why this marker is here rather than the rows simply
-  being absent.
+- `npm test` over the whole suite is 2223 passing / 3 pending / 0 failing on
+  the dev merge 9745cae2 with a live mongod. Not a gate because it needs a
+  database on a port other sessions share, and because a whole-suite number
+  says nothing about WHICH assertion covers this branch - the three TEST=
+  gates above do.
 
 ## Evidence
 
+- Drafted PR body: [`reports/phase0-pr-bodies/bf-operators.md`](../../reports/phase0-pr-bodies/bf-operators.md)
 - [`docs/60-research/remedial/bf04-bf70-operator-allowlist-2026-09-18.md`](../../docs/60-research/remedial/bf04-bf70-operator-allowlist-2026-09-18.md)
 - [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md)
 - [`docs/60-research/tenancy/v1-operator-census-2026-09-14.md`](../../docs/60-research/tenancy/v1-operator-census-2026-09-14.md)

@@ -1059,17 +1059,37 @@ security fix that ships to every current operator.
 >
 > Two commits, split at the revert boundary: `3e8ce695` refuses `$where`/`$function`/`$accumulator`
 > with their own message and adds the shared 400 responder; `71506cf8` is the allowlist proper.
+> Opened 2026-09-18 as **PR #8743**, merged up to `dev` `fdd08706` the same day (`9745cae2`).
+>
+> **It does NOT close the reported NoSQL-injection advisory, and the row above should not be read as
+> saying it does.** Of that advisory's three proof-of-concepts, only `$where` is refused. The
+> date-window bypass `find[dateString][$ne]=x` — its headline full-history PHI dump — and the
+> `$regex` extraction both still work on the merged tip, measured. `$ne` is an ordinary comparison
+> every client sends; the defect is in where `enforceDateFilter()` applies its bound, and an
+> allowlist structurally cannot reach it. **That needs its own entry and its own change**, and it is
+> the larger of the two remaining.
 >
 > **The accept set is the seam's, exactly** — `$eq $ne $gt $gte $lt $lte $in $nin $exists $regex`
 > (`$options`) on a field, `$and`/`$or` at the top including the indexed form Trio sends. Not
 > trimmed to the census's measured seven, because the census measured client *source*. Matching the
 > seam makes this **one narrowing instead of the first of two**.
 >
-> **It refuses two operators that work today.** `$expr`, reachable through `/api/v1/profiles/`; and
-> `$type`, which **collides with PR #8737** — that branch added `readTypeOperand()` precisely to
-> keep `find[sgv][$type]=2` working. Trial-merged and measured: 3 of #8737's tests fail, all three
-> the allowlist refusing `$type`, `$not` or `$text`. **That decision is the maintainer's** and both
-> one-line resolutions are set out in the report §2.2. Nothing here presumes it.
+> **It refuses one operator that works today** — `$expr`, reachable through `/api/v1/profiles/`.
+>
+> **It refused a second, `$type`, and that was reversed on 2026-09-18 when #8737 merged.** This
+> entry recorded the collision and left the call to the maintainer, taken by nobody; `dev` then
+> moved `a8888f0d..fdd08706` and settled it. `readTypeOperand()` is on `dev` because
+> `find[sgv][$type]=2` must arrive as the **number** `2` or the request becomes an HTTP 500 —
+> measured against mongod 3.6.8 and 7.0.43. Refusing it would regress a fix that landed a week
+> earlier, to gain nothing: `$type` executes nothing and reads nothing outside the document.
+> **`$type` is allowed, and is the one departure from the seam's set — when the seam lands its AST
+> needs a `$type` node, or v1 narrows by one operator then.** `$not` and `$text` stay refused: both
+> were *fixtures* in #8737's tests rather than subjects, and their assertions are rewritten rather
+> than deleted. Report §2.2.
+>
+> **The reusable part: `git merge-tree` called this merge CLEAN.** The collision was semantic, and
+> only running #8737's own suite against the merge found it — three failures, all fixtures. A clean
+> textual merge against a branch is not evidence of compatibility with it.
 >
 > `lib/storage/assert-no-query-javascript.js` is carried across byte-identical at the same path, so
 > landing this ahead of the seam costs the seam branch nothing.
@@ -3013,6 +3033,8 @@ passing, 3 pending, 0 failing.
 
 *Evidence*:
 [BF-04/BF-70 report](../../60-research/remedial/bf04-bf70-operator-allowlist-2026-09-18.md) §3.
+Shipped in PR **#8743**; re-verified on the `dev` merge `9745cae2` — the probe still returns 400 and
+recovers nothing.
 
 
 ## 3. How to use this register

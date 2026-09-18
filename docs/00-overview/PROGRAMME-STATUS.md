@@ -106,7 +106,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `needs-decision` | `unsettled` | total |
 |---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 1 |  | 1 | 4 | 3 | 9 | 1 |  | **19** |
+| `phase0` | 1 |  | 1 | 4 | 3 | 10 |  |  | **19** |
 | `release-train` | 2 |  | 4 |  | 4 |  | 2 |  | **12** |
 | `register-open` | 14 | 1 | 5 |  |  | 1 | 1 | 2 | **24** |
 | `tenancy` | 10 |  |  | 1 | 5 |  | 1 | 1 | **18** |
