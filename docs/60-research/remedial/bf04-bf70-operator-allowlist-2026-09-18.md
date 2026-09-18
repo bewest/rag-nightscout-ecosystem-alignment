@@ -274,11 +274,34 @@ both guards still run.
 - **User-controlled `sort`.** `lib/server/entries.js:44` passes `opts.sort` — `req.query.sort` —
   straight to `.sort()`. Not an injection in the `$where` sense, but a caller can force an
   unindexed sort over a large collection. No register id; not measured.
-- **API v3's storage helpers take no JavaScript guard here.** The seam wires
-  `assertNoQueryJavascript` into `lib/api3/storage/mongoCollection/{find,modify}.js` as well. v3's
-  own operator allowlist means nothing caller-controlled should reach them, so this was left out
-  rather than carried across on the same reasoning that scopes the rest of the branch. Worth a
-  separate look, not a separate claim.
+- **API v3 needs no equivalent — resolved 2026-09-18, by measurement, after the question was asked
+  in review.** The earlier text here said v3's allowlist means "nothing caller-controlled *should*
+  reach" its storage helpers, and marked it "worth a separate look, not a separate claim". The look
+  has now happened and the claim is safe to make.
+
+  v3 is structurally non-injectable. `lib/api3/storage/mongoCollection/utils.js` `parseFilter()`
+  assigns `filter[field]['$eq'] = value`, so a client value is only ever the **operand** of one of
+  nine hard-coded operators; `lib/api3/generic/search/input.js:71` refuses any other operator with a
+  400. A value can never become a key, which is the position an operator must occupy.
+
+  The one client-controlled key is the field *name* (`filterRegex` is `/(.*)\$([a-zA-Z]+)/` and the
+  `(.*)` is unvalidated). Every dangerous operator placed there errors on mongod 7.0, because none
+  accepts an operand of the shape those nine produce — `$where` "got bad type", `$or`/`$nor` "must
+  be an array", `$expr` arity, `$text` missing `$search`, `$jsonSchema` unknown keyword. `$comment`
+  is accepted and inert.
+
+  Write paths were already closed on purpose: `identifyingFilter()` wraps client values in `$eq`
+  with a comment saying it is there to stop `{$ne: null}` in a posted document becoming an operator.
+  `deleteManyOr()` is reachable only from `autoPrune()` with a server-built filter. Projections are
+  `0`/`1` only.
+
+  **What v3 does share with v1 is `re` → `$regex` over a client-supplied string** — the same
+  exposure as advisory PoC C, reached through a documented operator rather than by injection. The
+  `parseRegEx` decision on v1 and the `re` decision on v3 should be taken together.
+
+  **The field-name position is worth remembering even though it is inert.** It is inert because of
+  what MongoDB rejects, not because Nightscout validates it, so it would become live if anyone ever
+  changed `parseFilter` to pass a value through unwrapped.
 - **The numeric-comparison-in-`$and`/`$or` gap.** The v1 type walker only visits top-level
   `find[field]` keys, so a numeric bound nested in a logical group reaches MongoDB as a string and
   matches nothing under BSON type ordering. Older than any of this; noted at the fixture that would

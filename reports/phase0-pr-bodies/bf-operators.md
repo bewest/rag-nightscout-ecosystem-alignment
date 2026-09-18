@@ -249,9 +249,32 @@ that the `pipeline` parameter on the count endpoint is gone.
   `enteredBy` (advisory remediation item 3, and PoC C).
 - **The `AUTH_DEFAULT_ROLES=readable` default** (remediation item 5) is a project policy decision,
   not a code fix.
-- **API v3's storage helpers take no JavaScript guard here.** v3 has had its own nine-operator
-  allowlist with a 400 since before this work, so nothing caller-controlled should reach them.
-  Worth a separate look, not a separate claim.
+- **API v3 needs no equivalent, and that is measured rather than assumed.** Asked during review, so
+  the answer is recorded here. v3 is not injectable, and the reason is structural:
+  `lib/api3/storage/mongoCollection/utils.js` `parseFilter()` assigns
+  `filter[field]['$eq'] = value` — a client value only ever becomes the **operand** of one of nine
+  hard-coded operators (`eq ne gt gte lt lte in nin re`), and anything else is refused with a 400 at
+  `lib/api3/generic/search/input.js:71`. A value can therefore never become a key, which is the
+  position an operator has to occupy. The only client-controlled key is the field *name*, and every
+  dangerous operator in that position errors on mongod 7.0, because none accepts an operand of the
+  shape those nine produce:
+
+  ```
+  {$where:{$eq:…}}       -> $where got bad type        {$or:{$eq:…}}   -> $or must be an array
+  {$expr:{$eq:…}}        -> takes exactly 2 arguments  {$nor:{$eq:…}}  -> $nor must be an array
+  {$text:{$eq:…}}        -> missing "$search"          {$jsonSchema:…} -> unknown keyword
+  {$comment:{$eq:…}}     -> accepted, and inert
+  ```
+
+  The write paths already wrap client values in `$eq` deliberately — `identifyingFilter()` carries a
+  comment saying it is there to stop `{$ne: null}` in a posted document becoming a query operator —
+  and `deleteManyOr()` is reached only from `autoPrune()` with a server-built filter. Projections are
+  `0`/`1` only.
+
+  **The real v3 caveat is not injection: it is `re`.** That operator hands a client-supplied string
+  to `$regex`, which is the same exposure as PoC C above, reached by a documented and supported
+  operator rather than by injection. Whatever is decided about `parseRegEx` on v1 should be decided
+  for v3's `re` at the same time.
 - **User-controlled `sort`.** `opts.sort` reaches `.sort()` unvalidated; a caller can force an
   unindexed sort over a large collection. Not measured.
 - **A numeric comparison nested in `$and`/`$or`** is never type-converted — the walker visits only
