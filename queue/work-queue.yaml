@@ -5119,6 +5119,59 @@ items:
       floor those cuts stopped testing, and 310 on 24.20.0. Cut 1, whose matrix still
       carries both floors, gives the same count on each. Lost coverage, not a live defect.
 
+      RESOLVED 2026-09-21 ON THE MAINTAINER'S DECISION: engines.node is now
+      `^22.12 || >=24`, committed as ed21961f on rt/cut1 and merged up the stack to
+      rt/cut2 b5bf7d77, rt/cut3 c313f5b1, rt/cut4 95bb6295. NOT PUSHED.
+
+      Node 20 was left out deliberately and in that order - it WORKS (310/0) and is not
+      supported, because it reached end of life 2026-04-30 and gets no security updates.
+      `>= 24` admits odd and future majors (25.x, 26.x) which the old policy excluded by
+      name; that is deliberate and tests/runtime-policy.test.js says so, so a reader who
+      expects them refused finds out why they are not. Prereleases stay out via semver's
+      default.
+
+      VERIFIED, not asserted: the image that could not boot now boots - `runtime ACCEPTED
+      inside node:22-alpine (v22.22.0)`, run in the image. Boundary re-measured: 18.20.8 and
+      20.20.0 refused, 22.12.0 / 22.22.0 / 24.15.0 / 24.20.0 accepted. Cut 4's suite
+      including tests/runtime-policy.test.js is 332 passing / 0 failing at BOTH 22.12.0 and
+      24.20.0. The boundary test is non-vacuous: widening engines to >=18 as an ablation
+      takes it from 22 passing to 11 passing / 11 failing.
+
+      THE DOCKERFILE WAS NOT TOUCHED, which was the point. Under a minor floor the floating
+      major tag is correct and is the strategy docs/runtime-upgrade.md always described.
+
+      TWO INSTRUMENTS WERE WRONG AND ARE FIXED. node-floor-consistency.js scraped
+      /(\d+)\.\d+\.\d+/ out of the range, which only works at patch precision - given
+      "^22.12 || >=24" it found no majors and called all six downstream files strays, 6
+      failures on a correct manifest. It now asks semver whether a major is permitted. It
+      also asserted the Dockerfile must be pinned to a patch, which encoded the old policy;
+      it now gates the actual incompatibility - a floating major tag plus a patch floor
+      inside that major. NODE_FLOOR_REF lets it measure a prepared branch; it defaults to
+      the published ref so CI keeps measuring what operators would get.
+
+      REFRAMED after the maintainer challenged the premise, and the reframing moved the
+      defect from the image to the FLOOR. Measured with runtime-policy.js stubbed to a no-op,
+      so actual compatibility is visible instead of policy: cut 4's unit suite is 310 passing
+      / 0 failing on 20.20.0, 22.12.0, 22.22.0, 22.23.2, 24.15.0 and 24.20.0 - IDENTICAL on
+      every version the floor rejects - and cut 1's Playwright suite is 21/0 on Node 20.20.0.
+      The only real break is 18.20.8, and it is not Nightscout's code: all 15 failures are
+      ERR_REQUIRE_ESM from sanitize-html requiring the ESM-only htmlparser2. require(esm) is
+      unflagged in 22.12 and backported to 20.19, which is exactly where the results flip.
+      So the dependency-derived floor is ^20.19 || ^22.12 || >=24.
+
+      THE FLOOR IS SELF-IMPOSED AND ITS RATIONALE SAYS SO. docs/runtime-upgrade.md, added by
+      the same commit a95c2ce5 (Andy Low, 2026-09-05), states "These minimum patches reflect
+      the supported release baseline at the time of this change" - latest LTS patch at time of
+      writing. 22.23.2 was 8 days old and 24.20.0 was 10 days old that day. The same document
+      says the image should track "the official major tag", which a patch-level floor makes
+      impossible. The floor and the documented image strategy are mutually incompatible.
+
+      SO FIXING THE DOCKERFILE TAG ALONE WOULD HIDE THIS, not resolve it. Under a justified
+      floor node:22-alpine at v22.22.0 passes 310/310. The required change is the range;
+      the tag is downstream of it. Decision is the maintainer's - the position on record is
+      that Node compatibility has historically been good and over-restricting has harmed this
+      project, and nothing measured here contradicts that.
+
       BF-58 RE-GRADED low -> high, and the entry's own caveat is why it was wrong. It read
       "not reproducible against a current image, which satisfies the floor" and "No image
       was built". An image was built: `node:22-alpine` resolves to v22.22.0, which violates

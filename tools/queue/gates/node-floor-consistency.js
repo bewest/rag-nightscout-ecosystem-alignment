@@ -20,18 +20,34 @@
 
 const { show, report } = require('./_gate');
 
-const CUT1 = 'origin/chore/retire-jsdom';
+// Overridable so the gate can measure a PREPARED branch before a human pushes it.
+// Defaults to the published ref, so CI keeps measuring what operators would get.
+const CUT1 = process.env.NODE_FLOOR_REF || 'origin/chore/retire-jsdom';
 const findings = [];
 
+const semver = require('semver');
 const pkg = JSON.parse(show(CUT1, 'package.json'));
 const engines = (pkg.engines || {}).node || '';
-// e.g. "^22.23.2 || ^24.20.0" -> major versions [22, 24]
-const majors = [...engines.matchAll(/(\d+)\.\d+\.\d+/g)].map((m) => Number(m[1]));
-const uniqueMajors = [...new Set(majors)].sort((a, b) => a - b);
+
+// ASK SEMVER, DO NOT PATTERN-MATCH THE RANGE. This used to scrape
+// /(\d+)\.\d+\.\d+/ out of the string, which worked only for the
+// patch-precision range it was written against: given "^22.12 || >=24" it found
+// NO majors, called every downstream file a stray, and reported 6 failures on a
+// correct manifest. A range is a predicate; the only reliable way to ask which
+// majors it permits is to test versions against it.
+function majorPermitted (major) {
+  return semver.satisfies(`${major}.0.0`, engines) ||
+         semver.satisfies(`${major}.99.99`, engines);
+}
+const uniqueMajors = [];
+for (let major = 8; major <= 40; major += 1) if (majorPermitted(major)) uniqueMajors.push(major);
+const openEnded = majorPermitted(40);
 
 findings.push({
   ok: uniqueMajors.length > 0,
-  text: `cut 1 engines.node = "${engines}" -> permitted majors ${uniqueMajors.join(', ')}`,
+  text: `cut 1 engines.node = "${engines}" -> permitted majors `
+      + (openEnded ? `${uniqueMajors[0]}+ (open-ended: ${uniqueMajors.slice(0, 4).join(', ')}, ...)`
+                   : uniqueMajors.join(', ')),
 });
 
 // 1. The enforcement path must not hard-code a version of its own. This is the
@@ -73,7 +89,7 @@ for (const stater of STATERS) {
     findings.push({ ok: true, text: `${stater.file}: states no Node major` });
     continue;
   }
-  const strays = stated.filter((v) => !uniqueMajors.includes(v));
+  const strays = stated.filter((v) => !majorPermitted(v));
   findings.push({
     ok: strays.length === 0,
     text: `${stater.file}: states Node major(s) ${stated.join(', ')}`
@@ -81,23 +97,40 @@ for (const stater of STATERS) {
   });
 }
 
-// GT2 separately flagged the Dockerfile as "a floating major tag against a
-// patch floor": FROM node:22-alpine satisfies the MAJOR but says nothing about
-// 22.23.2, so the published image can drift below the floor its own package.json
-// enforces and exit(1) on boot. Checked apart from the major-level agreement
-// above, because it fails for a different reason and has a different fix.
+// THE DOCKERFILE / FLOOR COMPATIBILITY CHECK, REWRITTEN 2026-09-21.
+//
+// This used to assert the Dockerfile was pinned to an exact PATCH, which encoded the old
+// `^22.23.2 || ^24.20.0` floor instead of testing it. That floor was measured to be
+// unjustified and was loosened to `^22.12 || >=24` on the maintainer's decision, and
+// docs/runtime-upgrade.md has always said the image should track "the official major tag".
+// A floating major tag and a MINOR floor are compatible -- node:22-alpine only ever moves
+// forward within 22.x, so it cannot fall below 22.12. A floating major tag and a PATCH
+// floor are not: node:22-alpine is v22.22.0 and a container built from it exited 1 at boot
+// against ^22.23.2, reproduced inside the image on 2026-09-21.
+//
+// So the property worth gating is the incompatibility itself, and it is checkable without
+// a network call or a docker daemon: if the image tracks a major by floating tag, engines
+// must not demand a patch level inside that major.
 const dockerfile = show(CUT1, 'Dockerfile') || '';
 const fromTag = (dockerfile.match(/^FROM\s+node:([\w.-]+)/m) || [])[1];
-const floorFor = (major) => (engines.match(new RegExp(`\\^${major}\\.(\\d+)\\.(\\d+)`)) || []);
 if (fromTag) {
   const major = Number(fromTag.split(/[.-]/)[0]);
-  const pinnedToPatch = /^\d+\.\d+\.\d+/.test(fromTag);
-  const floor = floorFor(major);
+  const floating = !/^\d+\.\d+/.test(fromTag);            // node:22-alpine, not node:22.12.0-alpine
+  const patchFloor = new RegExp(`\\^${major}\\.\\d+\\.\\d+`).test(engines);
   findings.push({
-    ok: pinnedToPatch,
-    text: `Dockerfile FROM node:${fromTag} is a floating tag; engines requires `
-        + `>=${major}.${floor[1] || '?'}.${floor[2] || '?'} within that major, so the `
-        + `image can drift below the floor its own package.json enforces and exit(1) on boot`,
+    ok: !(floating && patchFloor),
+    text: floating && patchFloor
+      ? `Dockerfile FROM node:${fromTag} tracks major ${major} by FLOATING tag while engines `
+        + `"${engines}" demands a patch level inside that major. Those cannot both hold: the `
+        + `tag resolves to whatever the latest ${major}.x is, and if the floor is ahead of it `
+        + `the image exits 1 at boot. Measured 2026-09-21 against the previous floor -- `
+        + `node:22-alpine is v22.22.0 and refused ^22.23.2 inside the image. Either pin the `
+        + `tag to a patch or state the floor at minor precision`
+      : floating
+        ? `Dockerfile FROM node:${fromTag} floats within major ${major} and engines `
+          + `"${engines}" states no patch floor inside it -- compatible, and it is the `
+          + `strategy docs/runtime-upgrade.md describes`
+        : `Dockerfile FROM node:${fromTag} is pinned to a patch, so no drift is possible`,
   });
 }
 

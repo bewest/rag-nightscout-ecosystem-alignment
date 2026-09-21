@@ -96,7 +96,7 @@ several cover more than one `BF-`:
 | id | claimed state | defect |
 |---|---|---|
 | `ADV-ALARM` | `ready-to-push` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) |
-| `ADV-CONFIG` | `needs-decision` | The readable-by-world warning and the careportal role (BF-77, BF-78) |
+| `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-7 |
 | `ADV-RETRO` | `ready-to-push` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | `BFQ-04` | `merged-upstream` | BF-04 - the v1 operator allowlist, EXTRACTED 2026-09-18 - superseded by P0-K |

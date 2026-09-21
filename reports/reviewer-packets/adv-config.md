@@ -13,7 +13,8 @@
 
 # Review packet — ADV-CONFIG
 
-**The readable-by-world warning and the careportal role (BF-77, BF-78)**
+**The readable-by-world warning, the careportal role, and the two settings
+behind both (BF-77, BF-78, BF-81)**
 
 | | |
 |---|---|
@@ -22,7 +23,7 @@
 | base | `origin/master@92d08342` |
 | claimed state | `needs-decision` — a claim; `make queue-status ID=ADV-CONFIG` is the measurement |
 | semver | `patch` |
-| register entries | `BF-77`, `BF-78` |
+| register entries | `BF-77`, `BF-78`, `BF-81` |
 | operator exposure | **reaches an operator on today's release** |
 
 ## What this changes
@@ -117,7 +118,20 @@ stored; AUTH_DEFAULT_ROLES=denied -> notifyCount 0, correctly (NEGATIVE
 CONTROL, so absence in the middle row is attributable to the string compare
 and not to the notice being broken generally). BF-78, anonymous POST
 /api/v1/treatments: `readable careportal` 200 stored, `careportal` 401,
-`denied careportal` 401, `denied` 401.
+`denied careportal` 401, `denied` 401. BF-77 IS FIXED AND OPEN AS A PR:
+bf/readable-warning 74731433, PR #8746 against dev, 2311 -> 2331 passing / 0
+failing, ablation red on exactly the three careportal cases with thirteen
+still passing. It adds a second notice wording for the readable+careportal
+configuration; the maintainer approved that wording on 2026-09-21. BF-78 is
+untouched by it and still needs its decision between three shapes. BF-81 WAS
+FILED ON THE MAINTAINER'S INSTRUCTION, 2026-09-21, as the shared root of the
+other two: the configuration surface carries two authorization-shaped settings
+with adjacent names - AUTH_DEFAULT_ROLES, which is the boundary, and
+AUTHENTICATION_PROMPT_ON_LOAD, which is a client prompt that grants nothing -
+and nothing documents the difference. Its strongest evidence is that the
+external reviewer who reported GHSA-8849 keyed their own security patch to the
+wrong one. It is prose in README.md and the swagger documents, there is no
+branch, and the wording is a maintainer's to write.
 
 ---
 

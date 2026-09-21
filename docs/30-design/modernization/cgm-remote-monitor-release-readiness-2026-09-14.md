@@ -1,15 +1,16 @@
 # cgm-remote-monitor: release readiness and modernization sequencing
 
-Date: 2026-09-14. Status: draft evidence for maintainer discussion.
-Companion to [the adoption roadmap](../nightscout-adoption-roadmap-2026-09-11.md),
-which sequences ecosystem work; this document sequences *release* work in the
-hub itself.
+Written 2026-09-14, re-measured 2026-09-21. Status: evidence for
+maintainer discussion. Companion to
+[the adoption roadmap](../nightscout-adoption-roadmap-2026-09-11.md), which sequences
+ecosystem work; this document sequences *release* work in the hub itself.
 
-All measurements are against `nightscout/cgm-remote-monitor` fetched
-2026-09-14. Refs measured: `origin/dev` at `a8888f0d` (2026-09-09),
-`origin/master` at `92d08342` = tag `15.0.8` (2026-09-04),
-`origin/chore/nightscout-modernization` at the tip of PR #8605.
-Commands are reproducible from `externals/cgm-remote-monitor-official`.
+Refs measured: `origin/dev` at `59430336` (2026-09-21), `origin/master` at `92d08342` =
+tag `15.0.8` (2026-09-04), and the five `chore/*` cut tips, of which cuts 1–4 are unmoved
+since 2026-09-05/06 and cut 5 is `b1bdaca0`. Commands are reproducible from
+`externals/cgm-remote-monitor-official`. Where this document and the
+[backfix register](../remedial/nightscout-backfix-register.md) disagree, the register is
+authoritative — it carries the per-entry history this document deliberately does not.
 
 ---
 
@@ -18,9 +19,10 @@ Commands are reproducible from `externals/cgm-remote-monitor-official`.
 **The release candidate and the modernization stack are two different kinds of
 risk, and the evidence says to stop treating them as one decision.**
 
-1. **`dev` is a clean, shippable bug-fix release — with one exception.** 234
-   commits, 121 files, **+8,285/−1,057**, and most of that is *new tests*. The
-   exception is **D3 5.16 → 7.9**, a two-major charting upgrade that reaches
+1. **`dev` is a clean, shippable bug-fix release — with one exception.** 299
+   commits, 191 files, **+13,405/−1,232**, and most of that is *new tests*. It now
+   also carries the ten Phase 0 backfixes merged 2026-09-17 to 09-20. The exception is
+   **D3 5.16 → 7.9**, a two-major charting upgrade that reaches
    `lib/client/renderer.js`, `lib/plugins/cob.js` and `lib/client/chart.js`, shipping under
    a patch version number with **no real-browser coverage on `dev`**.
 2. **The modernization "mega-PR" is not 573 files of risk.** Categorised,
@@ -30,7 +32,7 @@ risk, and the evidence says to stop treating them as one decision.**
 3. **It is also already parcelled.** 66 of the 67 `chore/*` branches form a
    single linear stack of 100 individually-CI'd child PRs (#8606–#8723). The
    question is not *whether* to decompose it — that was done — but **where to
-   cut it for release**. §5 names four cut points that already exist as branch
+   cut it for release**. §5 names five cut points that already exist as branch
    tips.
 4. **The governance gap is the real finding.** All 495 stack commits have one
    author; all 100 child PRs were self-merged with **zero human reviews**; and
@@ -38,17 +40,18 @@ risk, and the evidence says to stop treating them as one decision.**
    reviews** (the only entries are `github-advanced-security` bot comments).
    Confidence currently rests entirely on automated gates and the author's own
    evidence documents. Parcelling is the cheapest way to make review tractable.
-5. **Freezing is cheap right now and gets more expensive every day.** The stack
-   is currently **0 commits behind `dev`**. Every further merge into `dev`
-   forces a refresh of a 495-commit stack plus its 21-check CI and its recorded
-   measurements.
+5. **Holding the train gets more expensive every day, and the price is now known.**
+   Cuts 1–4 went from 59 commits behind `dev` to **124** in six days, and their
+   conflicting paths from 4–5 each to **7 / 14 / 16 / 18** (§5). Cut 5 is 0 behind only
+   because it was re-merged on 2026-09-21. Every further merge into `dev` forces a refresh
+   of a 495-commit stack plus its 21-check CI and its recorded measurements.
 
 | Decision | What the evidence supports |
 |---|---|
 | Ship 15.0.9 soon? | **Yes** — after answering the D3 question (§2) |
 | Freeze the window? | **Yes, with a named closing date**, not indefinitely (§4) |
 | Land more small fixes first? | **Four of them**, all cheap; the rest wait (§4) |
-| One modernization release or several? | **Several.** Four cut points exist today at zero rebase cost (§5) |
+| One modernization release or several? | **Several.** Five cut points exist as branch tips; the rebase onto current `dev` is prepared (§5) |
 | Does any of this block the ecosystem roadmap? | **No.** The `settings` channel is untouched (§6) |
 
 ---
@@ -56,21 +59,22 @@ risk, and the evidence says to stop treating them as one decision.**
 ## 1. What is actually on `dev`
 
 ```
-git log --oneline origin/master..origin/dev | wc -l     # 234
-git diff --shortstat origin/master origin/dev           # 121 files, +8285 -1057
+git log --oneline origin/master..origin/dev | wc -l     # 299
+git diff --shortstat origin/master origin/dev           # 191 files, +13405 -1232
 ```
 
-234 commits, 66 of them merge commits. The distribution is lumpy and worth
-knowing: **170 of the 234 landed on a single day**, 2026-09-05, when a backlog
-of Dependabot proposals was resolved against `dev` in one sitting.
+299 commits, 93 of them merge commits. The distribution is lumpy and worth
+knowing: **170 of the 299 landed on a single day**, 2026-09-05, when a backlog
+of Dependabot proposals was resolved against `dev` in one sitting. The second
+cluster is Phase 0 — ten backfix PRs merged between 2026-09-17 and 2026-09-20.
 
 | Date | Commits |
 |---|---:|
-| 2026-05-10 → 2026-08-31 | 25 |
-| 2026-09-04 | 15 |
+| 2026-05-10 → 2026-09-04 | 40 |
 | **2026-09-05** | **170** |
 | 2026-09-06 | 20 |
-| 2026-09-09 | 2 |
+| 2026-09-09 → 2026-09-16 | 30 |
+| **2026-09-17 → 2026-09-21 (Phase 0)** | **37** |
 
 ### Content
 
@@ -212,10 +216,10 @@ of files and a few dozen lines.
 
 | Change | Branch | Production diff |
 |---|---|---|
-| Node floor `>=20.x` → `^22.23.2 \|\| ^24.20.0` | `chore/node-lts-policy` | 16 files, +49/−113 |
+| Node floor `>=20.x` → `^22.12 \|\| >=24` (§5) | `chore/node-lts-policy` | 16 files, +49/−113 |
 | MongoDB 4.4 out of support/CI; 5/6 retained, 7/8 added | `chore/retire-mongodb-44`, `chore/mongodb-driver7` | 14 files |
 | **Legacy Dexcom bridge retired** in favour of Connect | `chore/retire-legacy-dexcom-bridge` | 5 files, +38/−183 (`lib/plugins/bridge.js` deleted) |
-| **MiniMed Connect retired** in favour of Connect | `chore/retire-mmconnect` | 4 files, +39/−152 (`lib/plugins/mmconnect.js` deleted) |
+| **MiniMed Connect retired** in favour of Connect — a path already broken in practice (§5) | `chore/retire-mmconnect` | 4 files, +39/−152 (`lib/plugins/mmconnect.js` deleted) |
 | Proxy trust defaults reworked | `chore/explicit-trusted-proxies` | 12 files, +51/−41 |
 | Express 5 | `chore/modernization-express5` | 11 files, +55/−24, 47 test files |
 
@@ -284,14 +288,14 @@ documents assert. That is the price of an open window.
 
 ### The four fixes worth landing before the window closes
 
-All are `MERGEABLE`, small, and self-contained:
+All were `MERGEABLE`, small, and self-contained. Two have since landed:
 
-| PR | Why now |
-|---|---|
-| **#8730** Crowdin updates | 1 file, zero overlap, translations are release-shaped |
-| **#8729** guard `chart.update()` against 0-height container | 2 files, +74/−1. Directly in the D3-migration blast radius (§2) |
-| **#8732** pill and profile-editor behaviour on incomplete data | 14 files, +326/−9. Fixes a class of failure on sites with sparse data |
-| **#8522** mg/dL vs mmol/L in Bolus Wizard Preview and profile | 2 files, +18/−16. A units bug in a dosing-adjacent display |
+| PR | State | Why now |
+|---|---|---|
+| **#8729** guard `chart.update()` against 0-height container | **merged 2026-09-20** | 2 files, +74/−1. Directly in the D3-migration blast radius (§2) |
+| **#8732** pill and profile-editor behaviour on incomplete data | **merged 2026-09-20** | 14 files, +326/−9. Fixes a class of failure on sites with sparse data |
+| **#8730** Crowdin updates | open | 1 file, zero overlap, translations are release-shaped |
+| **#8522** mg/dL vs mmol/L in Bolus Wizard Preview and profile | open | 2 files, +18/−16. A units bug in a dosing-adjacent display |
 
 > **#8729 and #8732 have never run CI.** The only workflow that executed on
 > either is `auto-close`. Both are from first-time contributors, so Actions is
@@ -348,70 +352,121 @@ before the modernization lands and makes the PR unmergeable by attrition.
 
 ---
 
-## 5. Parcelling the modernization: four cuts that already exist
+## 5. Parcelling the modernization: five cuts that already exist
 
-The stack is linear, so a "parcel" is a **prefix** — cut at a branch tip and
-everything before it ships. The four cuts below are existing branch tips, so
-**each costs zero rebase work today**.
+The stack is linear, so a "parcel" is a **prefix** — cut at a branch tip and everything
+before it ships. The five cuts below are existing branch tips.
 
 | # | Cut at | Commits | Production diff | Tests | What ships |
 |---|---|---:|---|---|---|
-| **1** | `chore/retire-jsdom` | 99 | **21 files, +91/−123** | 68 files, +5,138/−5,582 | Node floor 22.23.2/24.20.0; Mongo 4.4 out of CI; espree lint parser; **jsdom → Playwright browser suite** |
+| **1** | `chore/retire-jsdom` | 99 | **21 files, +91/−123** | 68 files, +5,138/−5,582 | Mongo 4.4 out of CI; espree lint parser; **jsdom → Playwright browser suite**; Node floor `^22.12 \|\| >=24` |
 | **2** | `chore/build-runtime-separation` | 159 | 60 files, +923/−465 | 68 files, +10,754/−120 | Page bundles, narrowed D3, native asset modules, event bus, browser storage, boot sequence, callback tasks, Babel 8, build/runtime separation |
 | **3** | `chore/compose-mongodb6` | 63 | 23 files, +294/−54 | 21 files, +1,530/−9 | MongoDB driver 7, maintained jQuery UI, native help tooltips, CI streamlining |
 | **4** | `chore/mime-exposure-review` | 79 | 66 files, +324/−511 | 46 files, +1,752/−327 | **Legacy Dexcom and MiniMed retirement**, explicit trusted proxies, maintained csv/semver/webpack/eslint, lint cleanup, DOMPurify and Moment/tz refresh |
 | **5** | `chore/nightscout-modernization` | 154 | 36 files, +397/−131 | 90 files, +16,932/−145 | Express 5, Helmet, EJS, Axios, entities, mime-types, APN, Pushover, Mocha 12, Swagger; notification cache; widget decision; final validation |
 
+### The rebase cost, and why it argues for shipping sooner
+
+Cuts 1–4 have not moved since 2026-09-05/06. `dev` has, and the gap is the main cost of
+holding the train:
+
+| | 2026-09-15 | 2026-09-21 |
+|---|---|---|
+| cuts 1–4 behind `dev` | 59 commits | **124** |
+| conflicting paths, cut 1 / 2 / 3 / 4 | 4–5 each | **7 / 14 / 16 / 18** |
+
+**The increase is the project's own doing.** Every one of the seven files newly conflicting
+on cuts 2–4 — `lib/server/query.js`, `aggregate.js`, `lib/api/entries/index.js`,
+`lib/authorization/storage.js`, `lib/server/food.js`, `lib/client/boluscalc.js`,
+`tests/mongo-query-javascript.test.js` — was touched by the ten Phase 0 PRs that landed on
+`dev` between 2026-09-17 and 2026-09-20. Fixing shipping defects is what made the
+modernization harder to land. That is a reason to land the cuts sooner, not a reason to have
+delayed the fixes.
+
+Nine of the 25 conflicts are Phase 0 fixes the cuts predate — BF-01, BF-04, BF-07, BF-16,
+BF-35, BF-36, BF-70 — where resolving toward the cut silently reintroduces a defect already
+fixed on `dev`. Parcelling does not create that hazard, but it does multiply the number of
+times someone has to notice it. The rebase is prepared locally as `rt/cut1`…`rt/cut4`
+(queue item RT-REBASE), done by propagating up the stack so the prefix property holds.
+
+Cut 5 is the exception: Andy Low merged `dev` into it on 2026-09-21 (`e3b22034`), so it is
+0 behind and its tip is `b1bdaca0`.
+
 ### Why cut 1 should ship first and alone
 
-It is the smallest production change in the stack — **21 files, +91/−123** —
-and it delivers the **browser test suite**. Everything after it, and
-retroactively the D3 migration already in 15.0.9, becomes verifiable in a real
-browser. It also front-loads the one change every operator must make anyway
-(the Node floor), while it is still trivially revertible: the engines field
-plus a boot check.
+It is the smallest production change in the stack — **21 files, +91/−123** — and it delivers
+the **browser test suite**. Everything after it, and retroactively the D3 migration already
+in 15.0.9, becomes verifiable in a real browser. That is the case for shipping it first, and
+it is sufficient on its own.
 
-The cost is real and should be named: **dropping Node 20 is a breaking change
-for operators**, and it lands before any of the benefits do. That is the right
-order anyway — an operator would rather do the runtime move once, early, than
-have it bundled with a feature retirement.
+**It costs operators almost nothing.** Cut 1 sets a Node floor of `^22.12 || >=24`, and the
+compatibility behind that number is measured rather than assumed — with the runtime policy
+stubbed out so actual behaviour was visible:
+
+| Node | unit suite | Playwright suite |
+|---|---|---|
+| 24.20.0 / 24.15.0 | 310 passing / 0 failing | — |
+| 22.23.2 / 22.22.0 / 22.12.0 | 310 / 0 | 21 / 0 |
+| 20.20.0 | 310 / 0 | 21 / 0 |
+| 18.20.8 | 295 / **15 failing** | — |
+
+22.12 is the real lower bound and it is a dependency constraint, not an application one: the
+15 failures at Node 18 are all `ERR_REQUIRE_ESM` from `sanitize-html` requiring the ESM-only
+`htmlparser2`, and `require(esm)` is unflagged in 22.12. Node 20 works and is deliberately
+out of range — it reached end of life on 2026-04-30 and receives no security updates, so the
+project cannot support it, but nothing is broken for it. Node 22.12+ and 24+ both qualify and
+the project's Docker image already satisfies the range, so **most operators need no runtime
+change to take cut 1**.
 
 ### Why cut 4 is the one to slow down on
 
-`chore/retire-legacy-dexcom-bridge` and `chore/retire-mmconnect` **delete two
-CGM ingestion paths**. If the Connect migration misbehaves for a given user,
-the symptom is *their glucose data stops arriving in Nightscout* — a
-data-availability failure for someone managing diabetes, not a UI defect.
+`chore/retire-legacy-dexcom-bridge` and `chore/retire-mmconnect` delete two CGM ingestion
+paths. They are not equally risky, and the difference decides the schedule.
 
-The branch's own evidence document is appropriately candid:
+**MiniMed/mmconnect is already broken** and has been for some time — maintainer knowledge,
+not measured here, since it fails at the CareLink vendor API that no local test reaches. If
+that holds, deleting it removes nothing an operator has. Cut 4 also carries a migration:
+`setupConnect` calls `mmconnectCompat.applyMmconnectToConnectCompatibility(env)` and logs
+that MMCONNECT credentials are served by Nightscout Connect.
 
-> "Required before integration: actual Connect Dexcom transport and ingestion
-> comparisons, duplicate/backfill/cutover behavior... **No real Dexcom account
-> or live database has been used and no live migration is claimed.**"
+**The legacy Dexcom bridge is the live path and carries the risk on its own.** It is expected
+to map through to compatible `nightscout-connect` options, but that mapping has not been
+exercised against a real account, and the branch's own evidence document says so:
 
-The compatibility shims (`lib/server/bridge-connect-compat.js`,
-`lib/server/mmconnect-connect-compat.js`) and `migrateBridgeToConnect()` are in
-place and unit-tested. What is missing is live vendor validation, which the
-plan correctly assigns to the maintainer. **This parcel should not travel with
-a dependency release.** It wants its own release, its own notice period, and a
-documented rollback — and plausibly a release where the legacy path is
-deprecated-but-present before the one where it is deleted.
+> "Required before integration: actual Connect Dexcom transport and ingestion comparisons,
+> duplicate/backfill/cutover behavior... **No real Dexcom account or live database has been
+> used and no live migration is claimed.**"
+
+If the migration misbehaves for a user, the symptom is that their glucose data stops arriving
+— a data-availability failure for someone managing diabetes, not a UI defect. Nightscout is
+not a medical device and none of this is medical advice; an operator should have a second way
+to see readings regardless.
+
+**Two register entries need re-grading before this parcel is scheduled.** BF-44 (MiniMed
+absolute-time divergence across a cutover) and BF-45 (`setupMMConnect` starting the legacy
+plugin with no check for `nightscout-connect`, so both paths can run at once) were both
+written treating mmconnect as live.
+
+So cut 4 should not travel with a dependency release. It wants its own release, its own
+notice period and a documented rollback. Whether it also needs a deprecation release ahead of
+it turns on the Dexcom path alone.
 
 ### Why "one big modernization release" is the weaker option
 
 - It asks a reviewer to approve 573 files, having never reviewed the 100 PRs
   underneath. In practice that means it merges unreviewed.
-- It couples a reversible change (Node floor) to an irreversible one (deleting
-  an ingestion path) in a single rollback unit. An operator who hits a Connect
-  problem must roll back Express 5, the driver, the bundles and the runtime too.
-- It converts every dev merge into a stack refresh for as long as it is open.
+- It couples reversible changes to an irreversible one — deleting an ingestion path — in a
+  single rollback unit. An operator who hits a Connect problem must roll back Express 5, the
+  driver and the bundles too.
+- It converts every `dev` merge into a stack refresh for as long as it is open, which the
+  59 → 124 measurement above prices.
 - It makes bisecting a field report nearly impossible: 495 commits, one author,
   five days, one release boundary.
 
 The counter-argument is real and should be stated: **five releases cost five
 release cycles** — five sets of notes, five operator upgrades, five support
 waves on the Facebook groups and Discord. For a volunteer project that is not
-free. The honest middle is **cuts 1 and 2 as separate releases** (they buy the
+free. The adopted middle is **cuts 1 and 2 as separate releases** (they buy the
 test bed and the browser-cost win, and both are low-blast-radius), then
 **3 + 5 combined** as a dependency release, with **4 held back** and released
 on its own schedule with a deprecation notice ahead of it.
@@ -456,10 +511,11 @@ Express 5 parcel landing before any Phase 3 hub work starts, not after.
 - **No review of the 1,909 changed production lines.** This document sizes the
   review; it does not perform it. "1.8% of the diff" is an argument about
   tractability, not a statement that the code is correct.
-- **No user-impact data.** How many sites run Node 20, MongoDB 4.4, the legacy
-  Dexcom bridge or MiniMed Connect is unknown here, and it is the number that
-  should actually drive the cut-4 schedule. If any telemetry or survey data
-  exists, it outranks everything in §5.
+- **No user-impact data.** How many sites run MongoDB 4.4 or the legacy Dexcom bridge is
+  unknown here, and the Dexcom number is what should actually drive the cut-4 schedule. If
+  any telemetry or survey data exists, it outranks everything in §5. The equivalent question
+  for MiniMed is settled without telemetry — the path is already broken (§5) — and the Node
+  question is moot, since the floor now costs most operators nothing.
 - **No assessment of maintainer capacity**, which is the binding constraint on
   whether five releases is better than one.
 - Nothing here is clinical or regulatory advice, and the safety observations

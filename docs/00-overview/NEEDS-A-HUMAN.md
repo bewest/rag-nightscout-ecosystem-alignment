@@ -42,7 +42,7 @@ Four states qualify:
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `P0-F` | `in-flight-upstream` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | #68 |
-| `ADV-CONFIG` | `needs-decision` | The readable-by-world warning and the careportal role (BF-77, BF-78) | &mdash; |
+| `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | &mdash; |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `RT-D3` | `needs-decision` | Answer the D3 question before 15.0.9 ships | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |

@@ -25,7 +25,7 @@ repository.
 | [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
 | [`P0-J`](p0-j-bf-throttle.md) | #8605 | `ready-to-push` | bf/throttle - BF-30, failed-auth throttling, compatibility default |
 | [`ADV-ALARM`](adv-alarm-bf-alarm-socket-scope.md) | &mdash; | `ready-to-push` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) |
-| [`ADV-CONFIG`](adv-config.md) | &mdash; | `needs-decision` | The readable-by-world warning and the careportal role (BF-77, BF-78) |
+| [`ADV-CONFIG`](adv-config.md) | &mdash; | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`ADV-RETRO`](adv-retro-bf-ws-loadretro-auth.md) | &mdash; | `ready-to-push` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-47`](bfq-47.md) | &mdash; | `needs-decision` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
