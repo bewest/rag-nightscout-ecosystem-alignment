@@ -1,7 +1,26 @@
-# The world-readable warning never fires on the one configuration that is also world-writable
+# PR 3 — the world-readable warning
 
-**Base:** `dev` &nbsp;·&nbsp; **Head:** `bf/readable-warning` &nbsp;·&nbsp; **Commit:** `74731433`
+    repo   nightscout/cgm-remote-monitor
+    base   dev
+    head   bf/readable-warning           (worktree externals/work/crm-adv-config)
+    commit 74731433                      4 files, +253/-8
+    closes register BF-77                (BF-78 is related and deliberately untouched)
 
+    gh pr create --repo nightscout/cgm-remote-monitor --base dev \
+      --head bf/readable-warning \
+      --title "The world-readable warning never fires on the one configuration that is also world-writable" \
+      --body-file pr-3-readable-warning.body.md
+
+NEEDS A HUMAN DECISION FIRST: this adds a second notice wording for the
+`readable careportal` configuration. Plain `readable` is unchanged byte for
+byte. The wording is in "The second notice" below; the PR offers to drop it
+and ship only the condition fix.
+
+---
+## TITLE
+The world-readable warning never fires on the one configuration that is also world-writable
+
+## BODY
 ## What is wrong
 
 `lib/server/bootevent.js` raises a persistent admin notice when a site is readable by

@@ -120,7 +120,7 @@ deleted gets raised again).
 >
 > | question | answer, measured 2026-09-21 |
 > |---|---|
-> | How much work is outstanding? | **50 open `BF-` entries** — **26 in §1** (BF-09, BF-10, BF-41…BF-52, BF-67, BF-69, BF-71…BF-80) and **24 in §1b** (BF-18…BF-27, BF-53…BF-66) — **plus CAP-01 and CAP-02**. **`fixed-in-seam` is empty**: BF-04 was extracted 2026-09-18 onto `bf/operators`, which merged as PR #8743 the same day, so it is `merged` rather than `fixed`. *(Recomputed 2026-09-21, late, by parsing the status column — and it moved by **nine** in one day, which is the largest single-day move this cell has made. **BF-73…BF-80 were all filed on 2026-09-21** by three concurrent sessions evaluating the five open GitHub security advisories; BF-66 is also open and the previous count had dropped it. None of the eight is `fixed`: BF-75/76 and BF-79 have fixes on unpushed local branches, and the rest are decisions rather than patches.* *Two parsing traps, recorded because this cell is supposed to be **recomputed** and both would silently undercount: a status cell beginning `**open, found …**` does not match a naive `startswith('open')` — strip the emphasis first — and **BF-55 contains a literal `|` inside a code span**, so splitting the row on `|` puts the wrong text in the last column. Anything that recomputes this number has to handle both.)* |
+> | How much work is outstanding? | **51 open `BF-` entries** — **27 in §1** (BF-09, BF-10, BF-41…BF-52, BF-67, BF-69, BF-71…BF-81) and **24 in §1b** (BF-18…BF-27, BF-53…BF-66) — **plus CAP-01 and CAP-02**. **`fixed-in-seam` is empty**: BF-04 was extracted 2026-09-18 onto `bf/operators`, which merged as PR #8743 the same day, so it is `merged` rather than `fixed`. *(Recomputed 2026-09-21, late, by parsing the status column — and it moved by **ten** in one day, which is the largest single-day move this cell has made. **BF-73…BF-81 were all filed on 2026-09-21** by three concurrent sessions evaluating the five open GitHub security advisories; BF-66 is also open and the previous count had dropped it. None of the nine is `fixed`: BF-75/76 and BF-79 have fixes on unpushed local branches, and the rest are decisions rather than patches.* *Two parsing traps, recorded because this cell is supposed to be **recomputed** and both would silently undercount: a status cell beginning `**open, found …**` does not match a naive `startswith('open')` — strip the emphasis first — and **BF-55 contains a literal `|` inside a code span**, so splitting the row on `|` puts the wrong text in the last column. Anything that recomputes this number has to handle both.)* |
 > | How many §1 defects reach an operator on today's release? | **all of them**, open and `fixed` alike. **UPDATED 2026-09-21**: ten Phase 0 PRs merged to `dev` between 09-17 and 09-20 (#8733…#8743), so `fixed` no longer means "on a branch nobody has merged" for those. It still means **not released** — `origin/master` is 299 commits behind `dev` and the shipping tag is 15.0.8 — so this answer does not change. Only a release changes it |
 >
 > **The jump from 12 to the forties was not drift.** 28 entries were filed in one sitting on
@@ -192,6 +192,7 @@ deleted gets raised again).
 | **BF-78** | The `careportal` default role is **inert unless reads are also open**, and fails silently. `lib/api/treatments/index.js:26` applies a router-wide `api.use(ctx.authorization.isPermitted('api:treatments:read'))` *before* the per-route create check at `:146`, while the `careportal` role grants exactly one permission, `api:treatments:create`. So the role can never reach the POST handler on its own. `README.md:243` says `AUTH_DEFAULT_ROLES` takes "any valid role name"; `careportal` is one of the five the product ships | `lib/api/treatments/index.js:26` vs `:146`; role table at `lib/authorization/storage.js:143`; documented at `README.md:243` | **low** — it fails **closed**, so nothing is exposed. The defect is that a documented setting does nothing and says nothing: the operator intent it most obviously expresses — close reads, let the household enter carbs without a token — is unreachable, with no error and no log line | yes | **open, found 2026-09-21.** **Reproduced** on **v15.0.8** and `dev` `59430336`, anonymous `POST /api/v1/treatments`: `readable careportal` → **200, stored** (the only working combination, and see BF-77); `careportal` alone → **401**; `denied careportal` → **401**; `denied` → 401. **Pairs with BF-77** — the only configuration in which `careportal` works is the only configuration whose warning is suppressed, so an operator chasing the second behaviour lands on the first by construction |
 | **BF-79** | `socket.on('loadRetro')` emits the retained `devicestatus` window to whoever asks. It consults **nothing** — not `socketAuthorization`, not `socketAuthorization.read`, not `DataReceivers` membership — while every sibling handler in the same closure routes through `checkConditions`, which refuses on `!socketAuthorization`. The correct decision exists 460 lines below in the `authorize` handler and is never asked for. The attacker's move is **not to call `authorize` at all**: a wrong secret ends in `socket.disconnect()`, so `authorize` is a gate to walk around, not through | `lib/server/websocket.js:315` on `v15.0.7`, `v15.0.8` and `dev` `59430336` — byte-identical on all three; contrast `:269` (`checkConditions`) and `:775-802` (`authorize`) | **high on a hardened install, zero marginal disclosure on the shipped default** — and both halves were measured. On `AUTH_DEFAULT_ROLES=denied`, where all four v1 reads are **401**, an unauthenticated socket receives **24 h** of `openaps`/`loop`, `pump` (battery, reservoir, bolusing, suspended, **manufacturer, model, pumpID**) and `uploader` (battery, isCharging, **name**) — 48 h with `DEVICESTATUS_DAYS=2`, the one setting that touches this path and which **doubles** it. On the `readable` default the payload is a **strict subset** of what anonymous `GET /api/v1/devicestatus.json?count=N` already returns on the same instance: 574 records against 1 730, **0** record ids absent from the REST answer and **0** field paths present only on the socket. Proposed `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N` = **7.5** for the hardened case (8.2 counting the unthrottled amplification), **0.0** marginal for the default | yes | **open, found 2026-09-21** (GHSA-gjhc-pc29-r3m6, external report). **Reproduced** on **`v15.0.7`, `v15.0.8` (= `origin/master`, what operators run) and `dev` `59430336`**, `mongod 7.0.43`, **both `AUTH_DEFAULT_ROLES=readable` and `AUTH_DEFAULT_ROLES=denied`**, with the 401 REST control and the never-emits-`loadRetro` socket control in the same run. **No shipped setting stops it** — `denied`, `status-only`, `AUTHENTICATION_PROMPT_ON_LOAD=true` and `TREATMENTS_AUTH=off` were each measured. **The advisory's range `>0.8.1` is wrong**: `loadRetro` is absent from every `0.8.x` tag and first ships in **0.9.0**, alongside the authorization it bypasses. Fix prepared locally on `bf/ws-loadretro-auth`, **not pushed**. **DISCLOSURE: see detail before writing this into anything public** |
 | **BF-80** | **Scoping alarm delivery to a room couples it to the failed-login delay list, and a household shares one public IP.** `authorization.resolve()` consults `shouldDelayRequest(ip)` and `await`s the accumulated penalty before returning any permissions. Once `/alarm` delivery depends on a resolved entitlement — which it must, to close BF-75 — a socket from an address that recently failed an authentication is **outside the delivery room for the length of that penalty**, and any alarm emitted in the window does not reach it. The penalty is **cumulative, 5 s per failure** (`authFailDelay`), so a misconfigured uploader retrying with a wrong API secret keeps extending it for every other device behind the same NAT address | `lib/authorization/delaylist.js` (`DELAY_ON_FAIL`, cumulative; `FAIL_AGE` 60 s) reached from `lib/authorization/index.js:155`, via `applyReadEntitlement` on `bf/alarm-socket-scope` | **medium** — an alarm a caregiver is entitled to is not delivered, silently, for tens of seconds, and the trigger is a *neighbouring device's* misconfiguration rather than anything the viewer did. Not a new exposure and not exploitable; it is the cost of the BF-75 fix | yes (once BF-75 lands) | **open, found 2026-09-21** while reviewing the BF-75 fix. **Reproduced** on the fixed build, `readable`, mongod 7.0, alarm fired 2 s after connect, **window scales with the poison**: 0 failures → received at **2.0 s** (clean control), 1 → **4.9 s**, 3 → **10.0 s**, 6 → **15.0 s**. A *shape* assertion, not a threshold. **No shape of the BF-75 fix avoids this** — any room-scoped delivery inherits it, and the pre-fix code avoided it only by not checking anything. Deliberately NOT fixed on `bf/alarm-socket-scope`: what a failed-login control should do to an unrelated read is its own decision and must not ride along on an authorization fix |
+| **BF-81** | **The configuration surface has two authorization-shaped settings with adjacent names, and only one is the access-control boundary. Nothing says which.** `AUTH_DEFAULT_ROLES` is the boundary; `AUTHENTICATION_PROMPT_ON_LOAD` decides whether the web client is *asked* to log in and grants nothing. The README documents them 30 lines apart with no statement of the difference. Three consequences measured in one week: an external security reviewer competent enough to find a real authorization defect wrote a remedy keyed to the wrong one (GHSA-8849); the `/alarm` namespace they were fixing appears in **no swagger file and nothing under `docs/`**, so its protocol is defined only by observed behaviour; and `README.md:243`'s "or any valid role name" is false for the role most operators would reach for (BF-78) | `README.md:243` (`AUTH_DEFAULT_ROLES`), `README.md` (`AUTHENTICATION_PROMPT_ON_LOAD`), `README.md:247` (`TREATMENTS_AUTH`); `swagger.yaml` / `swagger.json` (no `/alarm`); `lib/settings.js:39,74` | **medium** — no code defect and nothing exposed, but it is the shared cause of BF-77, BF-78 and of a third party's non-working security patch, and it costs a reviewer's time every time somebody audits this area | yes — operators and reviewers both | **open, found 2026-09-21.** Documentation, not code. Evidence is the three consequences above, each measured elsewhere in this register rather than asserted here. **Cheaper than any of the fixes it would have prevented** |
 
 ## 1b. Pre-release findings
 
@@ -3653,6 +3654,64 @@ previous value persists and the append runs again. Production boots `config()` o
 ships broken. It is recorded here because it dictated how the new test resets state, and because
 the fix on `bf/readable-warning` deliberately tolerates the repeated append — there is a test
 case pinning that. Anyone refactoring `config()` toward reusability should know it first.
+
+### BF-81 · two authorization-shaped settings, one boundary, and nothing that says which
+
+Filed at the maintainer's request on 2026-09-21, after the week's work kept arriving back at the
+same root.
+
+**The two settings.**
+
+| setting | default | what it actually does |
+|---|---|---|
+| `AUTH_DEFAULT_ROLES` | `readable` | **the access-control boundary.** Decides what an unauthenticated caller may do, on every API surface |
+| `AUTHENTICATION_PROMPT_ON_LOAD` | false | decides whether the **web client is asked to log in**. Grants and denies nothing |
+
+They sit thirty lines apart in the README, both sound like authentication, and nothing in the
+documentation says that one is a boundary and the other is a prompt.
+
+**Three consequences, each measured elsewhere in this register rather than asserted here.**
+
+1. **An external reviewer's security patch keyed on the wrong one.** The reporter of GHSA-8849
+   found a real unauthenticated-disclosure defect that nobody inside the project had, reported it
+   responsibly, and wrote a fix. That fix gates on `AUTHENTICATION_PROMPT_ON_LOAD`, so on a
+   hardened instance with that flag at its default it closes nothing — measured on their branch,
+   a never-subscribing socket still received alarms while REST answered 401 in the same run. This
+   is the single strongest piece of evidence in the register that the naming is the problem: the
+   person who made the mistake had just demonstrated they understood the subsystem better than we
+   did.
+2. **The `/alarm` protocol is not specified anywhere.** Not in `swagger.yaml`, not in
+   `swagger.json`, nothing under `docs/`. Anyone who built a client against it read the wire. That
+   is what made the BF-75 fix a judgement call rather than a lookup — the maintainer had to choose
+   a shape without being able to enumerate who would break — and it is why the conservative shape
+   was taken.
+3. **`README.md:243` is false for the role an operator would most likely try.** It says
+   `AUTH_DEFAULT_ROLES` accepts "`readable`, `denied`, or any valid role name". `careportal` is a
+   valid role name and setting it alone does nothing at all (BF-78), silently.
+
+**And a fourth, smaller one:** `TREATMENTS_AUTH=off` is documented (`README.md:247`) as adding the
+`careportal` role, which is true, but not that it does so by *appending to `AUTH_DEFAULT_ROLES`* —
+which is the mechanism behind BF-77 and is invisible to a reader of either entry alone.
+
+**What would fix it** is documentation, and it is cheaper than any of the code it would have
+prevented:
+
+- state, next to both settings, that `AUTH_DEFAULT_ROLES` is the boundary and
+  `AUTHENTICATION_PROMPT_ON_LOAD` is a client prompt that grants nothing;
+- enumerate the shipped roles and their actual permissions — `denied` (none), `readable`
+  (`*:*:read`), `careportal` (`api:treatments:create`), and the rest — rather than "any valid role
+  name", and say which combinations are functional (see BF-78);
+- say that `TREATMENTS_AUTH=off` appends to the role list rather than setting a separate flag;
+- specify `/alarm` in the swagger documents, or state that it is internal and unsupported. Either
+  is better than the current position, where third-party behaviour is defined by what the server
+  happened to do.
+
+**No branch.** This is prose in `README.md` and the swagger documents, and the wording is a
+maintainer's to write.
+
+*Related*: [BF-75](#), [BF-77](#), [BF-78](#), and
+[the reporter PR evaluation](../../60-research/remedial/ghsa-8849-reporter-pr-evaluation-2026-09-21.md),
+whose closing section is the long-form version of this entry.
 
 ### BF-78 · `careportal` as a default role does nothing, and says nothing
 
