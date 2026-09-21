@@ -23,9 +23,9 @@ meta:
   schema_version: 1
   generated_view: queue/QUEUE.md
   repo_root: /home/bewest/src/rag-nightscout-ecosystem-alignment
-  measured_at: "2026-09-15"
+  measured_at: "2026-09-21"
   measured_against:
-    cgm-remote-monitor-official: "a8888f0d"        # origin/dev, dated 2026-09-09
+    cgm-remote-monitor-official: "59430336"        # origin/dev, dated 2026-09-21
     main_repo_head: 75c38a17
   # Gate kinds. `static` and `unit` run by default. The other two never run
   # unless asked for, and the runner says so rather than silently passing them.
@@ -44,6 +44,12 @@ meta:
     ready-to-push: every runnable gate passes and the next step is a HUMAN push
     blocked: waiting on an item in blocks_on
     in-flight-upstream: handed to upstream, not ours to land
+    merged-upstream: >
+      merged into origin/dev and NOT released. Added 2026-09-21, when ten Phase 0
+      PRs landed and `in-flight-upstream` stopped being able to say what had
+      happened to them. It is deliberately not called `done`: origin/master is
+      299 commits behind dev and the shipping tag is 15.0.8, so an operator is
+      not carrying any of this yet. Only a release moves an item out of here.
     needs-decision: waiting on a maintainer decision, not on work
     unsettled: it is not yet established that this is a defect at all
 
@@ -51,9 +57,16 @@ parcels:
   phase0:
     title: Phase 0 backfixes - ships to every existing operator
     summary: >
-      Ten branches prepared locally against origin/dev a8888f0d, plus the
-      connector tag and the lockfile that deliberately was not regenerated.
-      No tenancy decision is required by any of them.
+      LARGELY LANDED, 2026-09-21. Eight of the ten cgm-remote-monitor branches
+      merged into origin/dev between 2026-09-17 and 2026-09-20 as PRs #8733 to
+      #8743, and their items are `merged-upstream` - which means in dev and NOT
+      released. origin/master is 299 commits behind dev and the shipping tag is
+      15.0.8, so no operator carries any of this yet, and RT-0 is the item that
+      changes that. WHAT IS LEFT: bf/auth (P0-C) and bf/throttle (P0-J), both
+      now behind dev, both trial-merging clean; and the entire connector half,
+      where PR #68 is still open, the v0.0.14 tag is still unpushed, and P0-PIN
+      and P0-LOCK are blocked behind it. The connector half has not moved at all
+      since 2026-09-15. No tenancy decision is required by any of them.
   release-train:
     title: Modernization release train
     summary: >
@@ -92,7 +105,7 @@ items:
     branch: bf/alarms
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-alarms
-    state: in-flight-upstream
+    state: merged-upstream
     blast_radius: 3 commits. lib/plugins/insulinage.js, lib/plugins/index.js,
       lib/api/googlehome/index.js, lib/api/alexa/index.js. Zero file overlap
       with any other Phase 0 branch.
@@ -124,9 +137,16 @@ items:
       withdrawn and the branch needs an ordinary review.
     register: [BF-28, BF-29, BF-31]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/alarms
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarms origin/dev
         kind: static
-        describe: bf/alarms has not fallen behind origin/dev
+        describe: >
+          REPLACED 2026-09-21, and the reversed direction IS the change. This gate used to read
+          `--is-ancestor origin/dev bf/alarms`, "the branch has not fallen behind dev" - the right
+          question for a branch waiting to be pushed and the wrong one for a branch already
+          merged. PR #8739 merged on 2026-09-20, dev moved on, and the old gate went permanently red for
+          the best possible reason. It now asserts CONTAINMENT: this tip is an ancestor of
+          origin/dev, so the fix is in dev and cannot silently leave it. An upstream revert or
+          force-push turns it red again, which is precisely when someone should be told.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/alarms >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
@@ -248,7 +268,7 @@ items:
     branch: bf/cache
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-cache
-    state: in-flight-upstream
+    state: merged-upstream
     blast_radius: 2 commits at 4f86bab1, 6 files, +385/-8. lib/server/cache.js,
       lib/data/dataloader.js, lib/api/entries/index.js, plus three test files.
       NOTE the dataloader path - this entry said lib/server/dataloader.js, which
@@ -268,9 +288,16 @@ items:
     semver_reason: performance only; no declared surface moves.
     register: [BF-06, BF-07]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/cache
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/cache origin/dev
         kind: static
-        describe: bf/cache has not fallen behind origin/dev
+        describe: >
+          REPLACED 2026-09-21, and the reversed direction IS the change. This gate used to read
+          `--is-ancestor origin/dev bf/cache`, "the branch has not fallen behind dev" - the right
+          question for a branch waiting to be pushed and the wrong one for a branch already
+          merged. PR #8740 merged on 2026-09-20, dev moved on, and the old gate went permanently red for
+          the best possible reason. It now asserts CONTAINMENT: this tip is an ancestor of
+          origin/dev, so the fix is in dev and cannot silently leave it. An upstream revert or
+          force-push turns it red again, which is precisely when someone should be told.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/cache >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
@@ -367,7 +394,7 @@ items:
     branch: bf/auth
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-auth
-    state: ready-to-push
+    state: gate-not-met
     blast_radius: >
       2 commits at ce82f0cd, 3 files, +310/-18. lib/authorization/endpoints.js,
       lib/authorization/storage.js, tests/authsubjects.test.js. SPLIT 2026-09-16
@@ -397,7 +424,13 @@ items:
     gates:
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/auth
         kind: static
-        describe: bf/auth has not fallen behind origin/dev
+        describe: >
+          bf/auth has not fallen behind origin/dev. RED SINCE 2026-09-21, and correctly: dev moved 45
+          commits (fdd08706..59430336) taking the eight sibling Phase 0 branches with it, and
+          this one did not follow. Unlike those siblings the question is still the right one -
+          this branch is waiting to be pushed, so being behind dev is a real defect in it. The
+          remedy is a `git merge dev` and it is cheap: the trial-merge gate below PASSES,
+          measured 2026-09-21.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
@@ -481,6 +514,24 @@ items:
       missing" but "remediation is a note, the note was wrong once, and here is
       the gate that says it is right now".
 
+      STATE CHANGED 2026-09-21 from ready-to-push to gate-not-met, and it cost this
+      item its reviewer packet. dev moved 45 commits on 2026-09-20 and this branch did
+      not follow, so the freshness gate is correctly red and "every runnable gate
+      passes" is no longer true. emit_packets builds packets only for
+      in-flight-upstream, ready-to-push and needs-decision, so this item's packet under
+      reports/reviewer-packets/ was removed on regeneration. THAT IS A REGRESSION IN THE REVIEWER
+      SURFACE, not an improvement: this is the SECURITY item the sequencing document
+      singles out, it still waits on a security reviewer who does not exist, and it is
+      now less visible than it was.
+
+      THE UNBLOCKING STEP IS ONE COMMAND AND AN AGENT DELIBERATELY DID NOT RUN IT.
+      `git merge dev` in externals/work/crm-bf-auth makes the gate green and the packet
+      come back; the trial-merge gate PASSES, measured 2026-09-21, so it is mechanical.
+      It was left undone for two reasons, both judgement rather than rule: the worktree
+      belongs to an earlier session (rule 5), and a security branch's content changing
+      between preparation and review is the kind of change a reviewer should be told
+      about rather than find. Somebody should decide whether to merge or to widen
+      PACKET_STATES; either is defensible and doing neither leaves the item hidden.
   - id: P0-J
     title: bf/throttle - BF-30, failed-auth throttling, compatibility default
     parcel: phase0
@@ -488,7 +539,7 @@ items:
     branch: bf/throttle
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-throttle
-    state: ready-to-push
+    state: gate-not-met
     blast_radius: >
       1 commit at 435419ce, 3 files, +388/-45. lib/authorization/delaylist.js,
       lib/authorization/index.js, tests/authdelay.test.js.
@@ -530,7 +581,13 @@ items:
     gates:
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/throttle
         kind: static
-        describe: bf/throttle has not fallen behind origin/dev
+        describe: >
+          bf/throttle has not fallen behind origin/dev. RED SINCE 2026-09-21, and correctly: dev moved 45
+          commits (fdd08706..59430336) taking the eight sibling Phase 0 branches with it, and
+          this one did not follow. Unlike those siblings the question is still the right one -
+          this branch is waiting to be pushed, so being behind dev is a real defect in it. The
+          remedy is a `git merge dev` and it is cheap: the trial-merge gate below PASSES,
+          measured 2026-09-21.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/throttle >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
@@ -606,6 +663,12 @@ items:
       compatibility defaults plus notification across this area, and that is what
       shipped.
 
+      STATE CHANGED 2026-09-21 from ready-to-push to gate-not-met for the same reason as
+      P0-C, and with the same consequence - this item's packet under
+      reports/reviewer-packets/ was removed on regeneration, so its path is deliberately
+      not cited here; it does not resolve and the link gate is right to say so. dev moved 45 commits on 2026-09-20; this branch did
+      not follow; the trial-merge gate still PASSES, so `git merge dev` in
+      externals/work/crm-bf-throttle is the whole remedy. Not run, see P0-C's note.
   - id: P0-C-REMEDIATE
     title: Operator remediation for tokens already stored in plaintext - text,
       not tooling
@@ -706,7 +769,7 @@ items:
     branch: bf/coercion
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-coercion
-    state: in-flight-upstream
+    state: merged-upstream
     blast_radius: 2 commits at b7234753, the largest change in the set. lib/server/query.js
       plus a generated coercion table over 5 collections; 158 coercions replace
       13 hand-written entries.
@@ -742,9 +805,16 @@ items:
       No request that worked stops working.
     register: [BF-02, BF-03, BF-11, BF-32, BF-40, BF-68]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/coercion
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/coercion origin/dev
         kind: static
-        describe: bf/coercion has not fallen behind origin/dev
+        describe: >
+          REPLACED 2026-09-21, and the reversed direction IS the change. This gate used to read
+          `--is-ancestor origin/dev bf/coercion`, "the branch has not fallen behind dev" - the right
+          question for a branch waiting to be pushed and the wrong one for a branch already
+          merged. PR #8737 merged on 2026-09-18, dev moved on, and the old gate went permanently red for
+          the best possible reason. It now asserts CONTAINMENT: this tip is an ancestor of
+          origin/dev, so the fix is in dev and cannot silently leave it. An upstream revert or
+          force-push turns it red again, which is precisely when someone should be told.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/coercion >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
@@ -821,7 +891,7 @@ items:
     branch: bf/reads
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-reads
-    state: in-flight-upstream
+    state: merged-upstream
     blast_radius: >
       6 commits at 2ecfeb53, all its own, based directly on origin/dev.
       lib/server/aggregate.js, entries.js and four siblings,
@@ -858,14 +928,16 @@ items:
       succeeded. The branch CHANGELOG lists read routes only.
     register: [BF-01, BF-05, BF-13, BF-14, BF-15, BF-33]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/reads
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/reads origin/dev
         kind: static
         describe: >
-          bf/reads has not fallen behind origin/dev. THIS REPLACES an
-          is-ancestor check on bf/coercion. The two-deep stack existed only to
-          resolve a CHANGELOG collision; the CHANGELOG edits were stripped by
-          the maintainer's instruction and bf/reads was re-cut directly onto
-          dev, so the old gate now measures a fact that is deliberately false.
+          REPLACED 2026-09-21, and the reversed direction IS the change. This gate used to read
+          `--is-ancestor origin/dev bf/reads`, "the branch has not fallen behind dev" - the right
+          question for a branch waiting to be pushed and the wrong one for a branch already
+          merged. PR #8738 merged on 2026-09-18, dev moved on, and the old gate went permanently red for
+          the best possible reason. It now asserts CONTAINMENT: this tip is an ancestor of
+          origin/dev, so the fix is in dev and cannot silently leave it. An upstream revert or
+          force-push turns it red again, which is precisely when someone should be told.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/reads >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
@@ -1109,7 +1181,7 @@ items:
     branch: bf/food
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-food
-    state: in-flight-upstream
+    state: merged-upstream
     blast_radius: 1 commit. lib/client/boluscalc.js, lib/food/food.js,
       lib/food/quickpick.js (new), lib/server/food.js, 2 new test files.
     review: >
@@ -1139,9 +1211,16 @@ items:
       disappears.
     register: [BF-16, BF-35]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/food
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/food origin/dev
         kind: static
-        describe: bf/food has not fallen behind origin/dev
+        describe: >
+          REPLACED 2026-09-21, and the reversed direction IS the change. This gate used to read
+          `--is-ancestor origin/dev bf/food`, "the branch has not fallen behind dev" - the right
+          question for a branch waiting to be pushed and the wrong one for a branch already
+          merged. PR #8735 merged on 2026-09-20, dev moved on, and the old gate went permanently red for
+          the best possible reason. It now asserts CONTAINMENT: this tip is an ancestor of
+          origin/dev, so the fix is in dev and cannot silently leave it. An upstream revert or
+          force-push turns it red again, which is precisely when someone should be told.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/food >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
@@ -1212,7 +1291,7 @@ items:
     branch: bf/merge
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-merge
-    state: in-flight-upstream
+    state: merged-upstream
     blast_radius: 1 commit. lib/client/receiveddata.js, one new test file.
     review: >
       maintainer. OPENED 2026-09-16 as PR #8734, base dev.
@@ -1226,9 +1305,16 @@ items:
     semver_reason: availability fix in client code; no declared surface moves
     register: [BF-36]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/merge
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/merge origin/dev
         kind: static
-        describe: bf/merge has not fallen behind origin/dev
+        describe: >
+          REPLACED 2026-09-21, and the reversed direction IS the change. This gate used to read
+          `--is-ancestor origin/dev bf/merge`, "the branch has not fallen behind dev" - the right
+          question for a branch waiting to be pushed and the wrong one for a branch already
+          merged. PR #8734 merged on 2026-09-18, dev moved on, and the old gate went permanently red for
+          the best possible reason. It now asserts CONTAINMENT: this tip is an ancestor of
+          origin/dev, so the fix is in dev and cannot silently leave it. An upstream revert or
+          force-push turns it red again, which is precisely when someone should be told.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/merge >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
@@ -1275,7 +1361,7 @@ items:
     branch: bf/parms
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-parms
-    state: in-flight-upstream
+    state: merged-upstream
     blast_radius: 3 commits at eb0bc918. lib/client/browser-utils.js,
       lib/language.js.
     review: >
@@ -1299,9 +1385,16 @@ items:
       no shipped catalogue uses more than %3.
     register: [BF-37, BF-38, BF-39]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/parms
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/parms origin/dev
         kind: static
-        describe: bf/parms has not fallen behind origin/dev
+        describe: >
+          REPLACED 2026-09-21, and the reversed direction IS the change. This gate used to read
+          `--is-ancestor origin/dev bf/parms`, "the branch has not fallen behind dev" - the right
+          question for a branch waiting to be pushed and the wrong one for a branch already
+          merged. PR #8736 merged on 2026-09-20, dev moved on, and the old gate went permanently red for
+          the best possible reason. It now asserts CONTAINMENT: this tip is an ancestor of
+          origin/dev, so the fix is in dev and cannot silently leave it. An upstream revert or
+          force-push turns it red again, which is precisely when someone should be told.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/parms >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
@@ -1352,7 +1445,7 @@ items:
     base: origin/dev@fdd08706
     worktree: externals/work/crm-bf-operators
     pr: [8743]
-    state: in-flight-upstream
+    state: merged-upstream
     blast_radius: >
       3 commits at 52b7b640. New: lib/storage/assert-no-query-javascript.js,
       lib/server/query-operator-allowlist.js, lib/api/shared/query-error.js and
@@ -1365,14 +1458,22 @@ items:
       dev fdd08706 the same day. Three things the reviewer should be told
       rather than left to find:
       (1) THIS DOES NOT CLOSE THE REPORTED NoSQL-INJECTION ADVISORY. Of its
-      three PoCs only $where is refused; the date-window bypass
-      find[dateString][$ne]=x - the full-history PHI dump, the advisory's own
-      primary evidence - and the $regex extraction both still work, MEASURED on
-      the merged tip. An allowlist structurally cannot close the first: $ne is
-      an ordinary comparison every client sends, and the defect is in where
-      enforceDateFilter() applies its bound. Against the advisory's five
-      remediation items this does 1 and 2, not 3, 4 or 5. The PR body says so
-      above the mechanism, not in a footnote.
+      three PoCs only $where is refused. REVISED 2026-09-21: the other two are
+      now filed as BFQ-71 and BFQ-72 and re-measured, and the revision REVERSES
+      what this field used to say. It called the date-window path the
+      advisory's primary evidence and a full-history PHI dump. Reproduced with
+      a control in the same run, it is not a privilege boundary at all - the
+      allowlisted, documented find[date][$gte]=0 returns the identical records
+      on the identical authorisation, and every form is 401 under
+      AUTH_DEFAULT_ROLES=denied. The unauthenticated full-history read is what
+      the shipped `readable` default means, not something that code path
+      grants; BF-71 is low. BF-72 is the one that survives, and it is an
+      AVAILABILITY defect rather than the extraction the advisory describes:
+      60-71 s of database CPU from one unauthenticated request against a 22 ms
+      control. Against the advisory's five remediation items this does 1 and 2,
+      not 3, 4 or 5, and item 3 as the advisory frames it is now disputed on
+      measurement rather than outstanding. The PR body as merged still carries
+      the old framing - see BFQ-71's notes for what that costs.
       (2) BF-70 has NO advisory of its own. It is a second unauthenticated read
       path with the same reachability, and the advisory covers find[...] only.
       (3) The $type question this item used to hold open is CLOSED - see
@@ -1412,9 +1513,16 @@ items:
       rewritten, not deleted.
     register: [BF-04, BF-70]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a8888f0d bf/operators
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators origin/dev
         kind: static
-        describe: bf/operators has not fallen behind the dev tip it was cut from
+        describe: >
+          REPLACED 2026-09-21. This gate used to assert `--is-ancestor a8888f0d bf/operators`,
+          that the branch descended from the dev tip it was cut from - which was true the moment
+          it was cut and stays true forever, so it could never go red and told a reader nothing.
+          It now asserts CONTAINMENT in dev. PR #8743 merged 2026-09-18; this goes red if an
+          upstream revert or force-push takes the fix back out, which is the only event here
+          worth an alarm. Sibling of the other seven Phase 0 containment gates, and worth
+          noticing that this one was vacuous in a way the others were merely stale.
       - run: TEST=mongo-query-javascript npm run test-single
         cwd: externals/work/crm-bf-operators
         kind: unit
@@ -1584,7 +1692,13 @@ items:
         describe: package.json points at the v0.0.14 tag tarball
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/connect-pin
         kind: static
-        describe: bf/connect-pin has not fallen behind origin/dev
+        describe: >
+          bf/connect-pin has not fallen behind origin/dev. RED SINCE 2026-09-21, and correctly: dev moved 45
+          commits (fdd08706..59430336) taking the eight sibling Phase 0 branches with it, and
+          this one did not follow. Unlike those siblings the question is still the right one -
+          this branch is waiting to be pushed, so being behind dev is a real defect in it. The
+          remedy is a `git merge dev` and it is cheap: the trial-merge gate below PASSES,
+          measured 2026-09-21.
       - run: grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' package-lock.json
         cwd: externals/work/crm-bf-connect-pin
         kind: static
@@ -1646,7 +1760,7 @@ items:
     branch: fix/quadratic-treatment-processing
     base: origin/dev
     worktree: externals/work/crm-quadratics
-    state: in-flight-upstream
+    state: merged-upstream
     blast_radius: dfe2753d. Pushed as bewest/wip/optimize-treatment-processing.
     review: >
       upstream reviewers on PR #8733 - not ours to land
@@ -1777,18 +1891,31 @@ items:
       missing.
 
   - id: RT-REBASE
-    title: Cuts 1-4 are 59 commits behind dev and each conflicts
+    title: Cuts 1-4 are 124 commits behind dev and each conflicts
     parcel: release-train
     repo: cgm-remote-monitor
     branch: chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review
-    base: origin/dev@a8888f0d
+    base: origin/dev@59430336
     worktree: externals/cgm-remote-monitor-official
     state: gate-not-met
     blast_radius: >
-      Each cut conflicts with dev in 4-5 files under merge-tree:
-      lib/server/bootevent.js, package.json, package-lock.json,
-      tests/clock-client.test.js (modify/delete) for cut 1; cuts 2-4 add
-      README.md. The 59 missing commits total 63 files, +2011/-95.
+      RE-MEASURED 2026-09-21 against dev 59430336. The cost has roughly TRIPLED since the
+      2026-09-15 figure this field used to carry (59 behind, 4-5 conflicting files each).
+      Now 124 commits behind, and under merge-tree: cut 1 SEVEN conflicts
+      (lib/plugins/pluginbase.js, lib/server/bootevent.js, package.json,
+      package-lock.json, plus THREE modify/delete - tests/clock-client.test.js,
+      tests/pluginbase.modern.test.js, tests/profile-sinks.test.js); cut 2 FOURTEEN;
+      cut 3 SIXTEEN; cut 4 EIGHTEEN. The 124 missing commits are 139 files, +7135/-274.
+
+      WHERE THE INCREASE CAME FROM, measured rather than assumed: every one of the seven
+      files newly conflicting on cuts 2-4 - lib/server/query.js, lib/server/aggregate.js,
+      lib/api/entries/index.js, lib/authorization/storage.js, lib/server/food.js,
+      lib/client/boluscalc.js and tests/mongo-query-javascript.test.js - was touched by dev
+      since a8888f0d, that is, by the ten Phase 0 PRs landing. Phase 0 landing is what took
+      cuts 2-4 from 4-5 conflicts to 14-18. That is a real cost of the adopted sequencing,
+      it was not priced when the sequence was chosen, and it is NOT an argument against the
+      sequence - those PRs fixed defects on the shipping path. It is an argument against
+      leaving the cuts unrebased for another week.
     review: maintainer - this changes the cost of the adopted train
     operator_visible: ""
     semver: n/a
@@ -1814,13 +1941,21 @@ items:
           The control arm: this gate proves the four failures above are not the
           command being wrong.
       - no-gate: >
-          The sharpest cost is one NON-mechanical conflict and no command can
+          The sharpest cost is a NON-mechanical conflict and no command can
           resolve it. dev's 06372e1d adds 56 lines to tests/clock-client.test.js
           covering the low-and-falling clock concern; cut 1 DELETES that file as
-          part of jsdom retirement, and cut 1's Playwright replacement has ZERO
-          references to concern or falling (positive control: 3 hits on dev).
-          Resolving the conflict the obvious way keeps the production fix and
-          loses its only test, on a screen people read at a glance.
+          part of jsdom retirement (b95ee628), and cut 1's Playwright
+          replacement has ZERO references to concern or falling (positive
+          control: 3 hits on dev). Resolving the conflict the obvious way keeps
+          the production fix and loses its only test, on a screen people read at
+          a glance.
+
+          GENERALISED 2026-09-21, and it is THREE files rather than one. The
+          same modify/delete shape now also covers
+          tests/pluginbase.modern.test.js and tests/profile-sinks.test.js, on
+          all four cuts. Nobody has looked at what those two cover or whether
+          cut 1's replacements reach it. This field said "one" and understated
+          the review by two files.
     blocks_on: []
     evidence:
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
@@ -1988,6 +2123,16 @@ items:
       Cut 5: 154 commits as §5 states, but GT2 measured that 95 are modernization
       work and 59 are dev's, pulled in by the tip merge 0a4109f6. Prod 36 files
       +397/-131 (Express 5, Helmet, EJS, Axios, Mocha 12, Swagger).
+
+      UPDATED 2026-09-21. Cut 5's tip is no longer 0a4109f6: Andy Low merged dev
+      into it as e3b22034 ("Merge dev into modernization and reconcile regression
+      coverage") and added two fixture commits, taking it to b1bdaca0 - 68
+      commits, and it now carries all ten merged Phase 0 PRs. Cut 5 is 0 behind
+      dev and 498 ahead. So this cut has been kept current from outside the
+      programme while cuts 1-4 drifted to 124 behind, and cut 5 is the only one
+      whose trial-merge into dev is still clean. Whoever reconciles cuts 1-4
+      should read e3b22034 first: it is the same reconciliation, already done
+      once, against the same 68 commits.
     review: maintainer plus a human reviewer
     operator_visible: >
       A dependency upgrade release. The database driver, the web framework and
@@ -2007,9 +2152,11 @@ items:
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/nightscout-modernization >/dev/null
         kind: static
         describe: >
-          cut 5 trial-merges into dev cleanly. PASSES today - it is the only cut
-          that does, because its tip 0a4109f6 is the one commit in the whole
-          495-commit stack that contains origin/dev.
+          cut 5 trial-merges into dev cleanly. PASSES today - still the only cut
+          that does. The reason has changed and the change is worth recording:
+          it used to pass because the tip 0a4109f6 was the one commit in the
+          495-commit stack that contained origin/dev. It now passes because Andy
+          Low merged dev in again on 2026-09-21 (e3b22034).
       - no-gate: >
           Express 4->5 and Helmet 4->8 are classified major on dependency version
           numbers and diff size, not on any measured contract break. Nobody has
@@ -2253,7 +2400,7 @@ items:
     branch: bf/operators
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-operators
-    state: in-progress
+    state: merged-upstream
     ships_to_operators_today: true
     blast_radius: lib/server/query.js:157 - API v1 filter pass-through reached
       the driver with no operator allowlist. Extracted onto bf/operators; this
@@ -3319,13 +3466,34 @@ items:
     parcel: tenancy
     repo: cgm-remote-monitor
     branch: seam/t1-2-storage-interface
-    base: origin/chore/nightscout-modernization@0a4109f6
+    base: origin/chore/nightscout-modernization@b1bdaca0
     worktree: externals/work/crm-seam
-    state: not-started
+    state: gate-not-met
     blast_radius: >
       16 seam branches. GT1 measured the chain as LINEAR - all 15 others are
-      ancestors of seam/t1-2-storage-interface (81a1f6ce), which is 50 commits
-      ahead of 0a4109f6 and 0 behind.
+      ancestors of seam/t1-2-storage-interface (81a1f6ce), and that still holds.
+
+      THE PREDICTED EVENT HAPPENED, ON 2026-09-21. This item's first gate was
+      written to go red "the moment the modernization branch moves", and it has:
+      Andy Low merged dev into chore/nightscout-modernization as e3b22034
+      ("Merge dev into modernization and reconcile regression coverage"),
+      0a4109f6..b1bdaca0, 68 commits, and cut 5 is now 0 behind dev. So this
+      item moves from not-started to gate-not-met on a MEASUREMENT rather than
+      a schedule, which is what the gate was for.
+
+      RE-MEASURED 2026-09-21: the seam is 68 behind its base and 50 ahead, and
+      the trial-merge is NOT clean - 19 conflicting paths. Three are add/add and
+      are supersessions rather than real conflicts, and they name the cause:
+      lib/server/query-operator-allowlist.js, lib/api/shared/query-error.js and
+      tests/api-v1-operator-allowlist.test.js exist on BOTH sides because BF-04
+      was extracted out of the seam onto bf/operators and merged upstream via
+      #8743, while the seam kept its own copy. Upstream's version wins on all
+      three; the register already priced that, in BF-04's detail, as the seam
+      owing a $type node to its AST. The other sixteen are content conflicts
+      across the v1 API and server storage modules - lib/api/{activity,entries,
+      profile}/index.js, lib/server/{activity,aggregate,devicestatus,entries,
+      food,profile,query,treatments}.js, lib/authorization/storage.js, both
+      swagger files, and two test files - and those are the actual cost.
     review: maintainer
     operator_visible: ""
     semver: n/a
@@ -3335,16 +3503,35 @@ items:
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization seam/t1-2-storage-interface
         kind: static
         describe: >
-          the seam tip has not fallen behind its base. PASSES today. It goes red
-          the moment the modernization branch moves - which is what RT-3 does.
+          the seam tip has not fallen behind its base. RED SINCE 2026-09-21. This
+          describe used to read "PASSES today. It goes red the moment the
+          modernization branch moves - which is what RT-3 does." It went red, and
+          not because of RT-3: Andy Low merged dev into the modernization branch
+          directly (e3b22034) ahead of any release-train step, so the base moved
+          from outside the programme.
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/nightscout-modernization seam/t1-2-storage-interface >/dev/null
         kind: static
-        describe: the seam trial-merges into its base cleanly
+        describe: >
+          the seam trial-merges into its base cleanly. RED SINCE 2026-09-21 - 19
+          conflicting paths, enumerated in blast_radius. It passed until Andy
+          Low's e3b22034 moved the base.
       - no-gate: >
-          The release train moves the modernization branch under the seam. Nobody
-          has measured what the seam's 50 commits cost to rebase after RT-3, and
-          RT-REBASE shows the programme's track record on "costs zero rebase work
-          today" claims.
+          WHAT THE 19 CONFLICTS COST TO RESOLVE IS STILL UNMEASURED, and that is
+          the honest state - the conflict COUNT is measured, the resolution is
+          not. RT-REBASE is the reason not to guess: its "each costs zero rebase
+          work today" premise was false, and the count there tripled in six days
+          while nobody re-ran it. Three of the nineteen are known supersessions
+          (upstream's BF-04 extraction wins); the remaining sixteen touch the v1
+          API and storage modules the seam exists to replace, so some of them may
+          be "delete ours, take theirs" and some may be genuine re-work. Nobody
+          has opened one.
+
+          A SECOND THING NOTHING HERE GATES: whether the seam should rebase onto
+          the modernization branch at all now, rather than onto dev. The seam was
+          cut against modernization because that was where the work was; dev has
+          since taken ten Phase 0 PRs including the allowlist the seam duplicates,
+          and cut 5 is 0 behind dev and 498 ahead. That is a re-basing decision,
+          not a merge-conflict question.
     blocks_on: []
     evidence:
       - docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md
@@ -3501,13 +3688,22 @@ items:
     parcel: docs-truth
     repo: rag-nightscout-ecosystem-alignment
     branch: main
-    base: main@75c38a17
+    base: main@9ddad0cc
     worktree: .
-    state: not-started
+    state: gate-not-met
     blast_radius: >
       The register's status legend and every document that quotes "only three
       open entries affect an operator on today's release" - the plan, the
       sequencing document and memory/multitenancy-target-decision.md.
+
+      WRITTEN 2026-09-21, and the state moved from not-started to gate-not-met
+      rather than to done, deliberately - see the second no-gate. The legend now
+      defines three distinct values (`fixed` on an unmerged branch, `merged` in
+      dev and unreleased, `landed` in a release), says in words that neither of
+      the first two means an operator is safe, and carries the re-measured
+      figures: 46 defects reach every self-hoster, 19 open / 23 merged / 4
+      fixed. PROGRAMME-STATUS.md and REVIEWER-ONBOARDING.md carry the same
+      correction.
     review: maintainer - this is the correction that changes how the whole
       register reads
     operator_visible: >
@@ -3531,11 +3727,22 @@ items:
           to stop that. Now FAILS, correctly, on both counts.
       - no-gate: >
           THE CORRECTION ITSELF cannot be gated: no entry anywhere has status
-          `landed`, so the open/fixed column tracks WORK DONE, not operator
-          exposure - and no document says so. A reader taking "3 open" as
-          "3 defects still shipping" mis-sizes the release train by an order of
-          magnitude. On today's release all 26 §1 defects are present for every
-          self-hoster.
+          `landed`, so the status column tracks WORK DONE, not operator exposure.
+          A reader taking the open count as "the defects still shipping"
+          mis-sizes the release train. On today's release 46 of the §1 defects
+          are present for every self-hoster.
+      - no-gate: >
+          THE GATE ABOVE MEASURES TWO DIFFERENT THINGS AND ONLY ONE OF THEM IS
+          THIS ITEM'S, which is why the item is gate-not-met and not done. Its
+          prose finding - does the legend SAY that a repaired entry is still
+          present on today's release - is GREEN since 2026-09-21. Its counting
+          finding is RED because nothing has status `landed`, and that is a fact
+          about the world, not about this document: it goes green when 15.0.9
+          ships, which is RT-0's item and not this one. Do not read the red as
+          the documentation being unwritten, and do not split the gate to make
+          this item green - the conflation is worth keeping, because the whole
+          point of the correction is that the document and the exposure are
+          different claims.
     blocks_on: []
     evidence:
       - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
@@ -3920,6 +4127,207 @@ items:
       Repairing the chooser first converts a latent high-severity defect into a
       live one in a bolus calculator. Ship with P0-G or after it, never before.
 
+  - id: BFQ-71
+    title: BF-71 - any dateString key drops the default date window, and the window is not a control
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ''
+    base: origin/dev@59430336
+    worktree: externals/work/crm-advisory
+    state: gate-not-met
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/query.js - the guard at :98, `!dateValue && !query.dateString`, and the
+      default set at :47-48 (TWO_DAYS * 2). One function. Server-side, so a restart
+      carries it; no rebundle.
+    review: >
+      maintainer, and READ THE SEVERITY BEFORE THE MECHANISM. This item exists partly to
+      correct the programme's own record: until 2026-09-21 the only description of this
+      behaviour was P0-K's review note, which called it the advisory's primary evidence and
+      a full-history PHI dump and treated it as the larger of the two PoCs still open. That
+      was read off the code. Reproduced with its control in the same run it is NOT a
+      privilege boundary, and a reviewer who arrives expecting an unauthenticated hole will
+      mis-size it in the other direction. What is left is a real but ordinary correctness
+      defect.
+    operator_visible: >
+      Nothing changes for you, and nothing you are running is less safe than you thought.
+      Nightscout's older API returns about four days of data when a request does not say
+      what period it wants. A request that mentions the date field in a particular way gets
+      the whole history instead - but so does a request that simply asks for the whole
+      history, which the API has always allowed and documents. Both need whatever password
+      or token your site requires; on a site that allows anonymous reading, which is
+      Nightscout's default setting, both work without one. If it matters to you that
+      strangers cannot read your glucose history, the setting to look at is
+      AUTH_DEFAULT_ROLES, not this fix. Nightscout is not a medical device and this is not
+      medical advice.
+    semver: patch
+    semver_reason: >
+      No declared surface moves. A request that used to receive the full history because it
+      named dateString would receive the default window instead, which is the documented
+      behaviour for a request that expresses no date constraint; the full history stays
+      available through find[date][$gte]=0. GT-style caveat: if any client in the wild
+      relies on the current accident, this is a behaviour change for that client, and the
+      client census measured source rather than runtime, so it cannot rule that out.
+    register: [BF-71]
+    gates:
+      - run: node tools/queue/gates/bf71-date-window-presence-check.js
+        kind: static
+        describe: >
+          Reads the shipping lib/server/query.js out of the object database and asserts the
+          dateString arm is not a bare presence check. FAILS TODAY, by design. Non-vacuity
+          proven BOTH directions on 2026-09-21: against the scratch ref
+          tmp/bf71-vacuity-probe (a date-constraint test spliced into an isolated copy) the
+          gate goes GREEN with its control still green, and against an empty
+          QUEUE_GATE_ROOT it FAILS rather than passing by absence. The middle finding is
+          the in-file control - the configured date field IS tested by value - so "the
+          matcher sees nothing" is distinguishable from "the defect is present".
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators origin/dev
+        kind: static
+        describe: >
+          A DEPENDENCY CHECK, not a claim about BF-71. The measurement that establishes
+          this entry's severity was taken on a dev tip that already contained #8743, so if
+          the allowlist ever left dev the reproduction would need retaking before the
+          `low` severity could be quoted. Green today.
+      - no-gate: >
+          THE MEASUREMENT THAT MATTERS HERE IS NOT IN THIS REPOSITORY AND SHOULD NOT BE
+          READ OFF THE STATIC GATE. What downgraded this entry from the advisory's headline
+          to `low` was a booted v1 app against mongod 7.0.43 running the allowlisted
+          control and both role settings in one process - five requests, two configurations.
+          A static gate over one function cannot express that, and the honest thing is to
+          say so rather than let a red line imply the severity was gated. The probe is
+          externals/work/crm-advisory/tmp/bf71-date-window-default.js, gitignored in both
+          repositories, and it carries its own control deliberately.
+      - no-gate: >
+          Nothing here gates the FIX SHAPE, and one was verified rather than prescribed:
+          testing dateString for a date constraint instead of for existence restored the
+          4-day window (3 records instead of 10) while the allowlisted wide bound still
+          reached 10. That is a measurement on a scratch ref, not a proposal - the register
+          deliberately does not prescribe between "test it like the other field" and "bound
+          on whichever date field the query names".
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      FILED 2026-09-21, and filed BEFORE any fix was attempted, deliberately. The register's
+      own header records that its count has a blind spot for an entry filed and fixed inside
+      one day - BF-70 never appeared in it - so BF-71 and BF-72 were both written down while
+      still open.
+
+      WHAT THIS CORRECTS, stated plainly because the queue is where the wrong claim lived:
+      P0-K's review note and the register's BF-04 detail block both described this as a
+      bypass of a boundary. There is no boundary. `opts.deltaAgo` is a paging default whose
+      own source comment is `// TODO: discuss/consensus on right value/ENV?`, and the
+      allowlisted find[date][$gte]=0 reaches the same records on the same authorisation.
+      Both documents were corrected the same day; the merged PR #8743 body was not, and
+      cannot be.
+
+      WHY IT IS STILL WORTH FIXING. Two spellings of one intent are not equivalent when one
+      silently removes the bound, and BFQ-72 is the case where the size of the scan a single
+      anonymous request can cause is the entire finding.
+  - id: BFQ-72
+    title: BF-72 - an unauthenticated $regex can spend minutes of database CPU
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ''
+    base: origin/dev@59430336
+    worktree: externals/work/crm-advisory
+    state: needs-decision
+    ships_to_operators_today: true
+    blast_radius: >
+      No line is wrong, which is why this is needs-decision and not not-started. $regex and
+      $options are in lib/server/query-operator-allowlist.js FIELD_OPERATORS by design, and
+      lib/server/query.js promotes treatments.notes to a regex as a documented search
+      affordance. A fix changes what the search affordance accepts, so its blast radius is
+      every client that sends a pattern - which the 14-project census counted as source, not
+      runtime.
+    review: >
+      SECURITY, and the same person who has to answer P0-K's sequencing question, because it
+      is the same question about the same advisory. DISCLOSURE-SENSITIVE: this is a
+      one-request unauthenticated denial of service against a default install, live on the
+      shipping release and on dev. The mechanism is in the register; the three patterns are
+      deliberately not, and the probe is outside version control twice over. The ordinary
+      path for this stack - a public issue or PR carrying the reproduction - publishes a
+      working attack against every unpatched Nightscout, and there is no patch to move to.
+    operator_visible: >
+      DO NOT PUBLISH THIS PARAGRAPH AHEAD OF A DECISION. Nightscout's older API lets a
+      request search text fields using a pattern. There is no limit on how complicated that
+      pattern may be, and a complicated one can make the database work for minutes on a
+      single request - long enough that the site stops answering for everyone using it. On a
+      site that allows anonymous reading, which is Nightscout's default, no password or
+      token is needed to send one. Your data is not exposed or altered by this; what is at
+      risk is the site being there when you look at it. If you watch Nightscout to make
+      decisions, this is a reason to have a second way to see your readings - which is good
+      practice regardless. Restricting access at your proxy or hosting provider is what
+      helps today. Nightscout is not a medical device and this is not medical advice;
+      discuss what you rely on Nightscout for with your care team.
+    semver: minor
+    semver_reason: >
+      Every candidate fix removes reachable behaviour from a documented search affordance -
+      a pattern that works today stops working - so it is not a patch by the project's own
+      reading of its surface. Not major: no route is removed, no required input is added,
+      and ordinary patterns are unaffected. If the chosen fix turns out to reject a pattern
+      shape a real client sends, that reclassifies it, which is an argument for measuring
+      runtime traffic before choosing.
+    register: [BF-72]
+    gates:
+      - run: node tools/queue/gates/bf72-regex-operand-bounded.js
+        kind: static
+        describe: >
+          Asserts that SOME bound on the $regex operand exists on the v1 read path - a
+          length cap, a required literal prefix, a nested-quantifier rejection or a
+          linear-time engine - without prescribing which. FAILS TODAY, by design. Its first
+          finding is the control: $regex must be REACHABLE for the finding to exist, so a
+          future change that refused the operator outright flips the control rather than
+          passing silently. Non-vacuity proven both directions on 2026-09-21 against the
+          scratch ref tmp/bf72-vacuity-probe. WORTH KNOWING: the first draft of this gate
+          looked for a bound within 400 characters of a $regex occurrence and did NOT flip
+          under that same ablation, because the natural site for a fix is over a thousand
+          characters from the accept-set literal. A gate that only recognises a fix written
+          in one place reads a real fix as absent; the detector is line-scoped and
+          name-based instead.
+      - no-gate: >
+          THE TIMING MEASUREMENT IS DELIBERATELY NOT IN THIS REPOSITORY, and the static gate
+          above is the cheaper half of the evidence rather than the finding. Writing the
+          timing measurement in means writing the patterns in, and this repository is public
+          while the defect is live on the shipping release - the BF-70 constraint, same
+          reasoning. Held at externals/work/crm-advisory/tmp/bf72-regex-cpu.js with its
+          README: 20 000 seeded entries, mongod 7.0.43, control 22 ms, benign anchored
+          prefix 29 ms, three nested-quantifier patterns 60 s / 65 s / 71 s, stable across
+          two runs.
+      - no-gate: >
+          NO FIX IS GATED BECAUSE NO FIX HAS BEEN MEASURED. Four candidates are named in the
+          register - pattern length cap, required literal prefix, nested-quantifier
+          rejection, linear-time engine - and each trades capability for cost. Choosing is a
+          decision about the search affordance's contract, and the programme's record on
+          "the obvious fix costs nothing" claims (RT-REBASE) is the reason this is not
+          written as an engineering task with a prescribed answer.
+      - no-gate: >
+          THE AMPLIFICATION FIGURE IS A FLOOR, NOT A MEASUREMENT OF A REAL SITE. 20 000
+          documents is small; a real entries collection is far larger and the cost is
+          superlinear per document. Nothing here measures a real deployment, and nothing
+          should claim to - rule 0 forbids pointing this at anyone's instance.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      FOUND 2026-09-21 while re-measuring the advisory's third PoC, and it is not the defect
+      the advisory describes there. The advisory frames PoC C as $regex data extraction. On
+      the shipped `readable` default that is close to vacuous - entries, treatments and
+      devicestatus are the three collections prep_storage admits, all three are already
+      readable, and the API returns whole documents, so a regex oracle reveals nothing a
+      plain read does not. What the same operator does do is cost, and that was not in the
+      advisory.
+
+      SEQUENCING WITH P0-K. #8743 merged on 2026-09-18 and did not narrow $regex, because
+      narrowing it was never the intent - the census found real clients sending it. So this
+      entry is not a regression from that branch and is not fixed by it; it is the residual
+      the branch's own PR body pointed at without naming.
+
+      STATE IS needs-decision AND NOT gate-not-met ON PURPOSE. A gate does fail, but the
+      blocking thing is not work: it is whether Nightscout's security contact process is
+      invoked and in what order, which is the identical question P0-K left open and which
+      nobody has answered. Filing it as engineering-ready would misrepresent what it is
+      waiting for.
   - id: BFQ-40
     title: BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
     parcel: register-open
@@ -3928,7 +4336,7 @@ items:
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-coercion
     branch_note: "covered by bf/coercion, PR #8737 (P0-D)"
-    state: in-flight-upstream
+    state: merged-upstream
     ships_to_operators_today: true
     blast_radius: >
       BOOLEAN_OPERANDS / readBooleanOperand in lib/server/query.js, applied over

@@ -1,7 +1,7 @@
 # Programme status — cgm-remote-monitor
 
 *Maintained by the Nightscout Foundation. Contributor-facing; technical throughout.
-Last narrative revision 2026-09-16. The tables are generated — see [How to check any
+Last narrative revision 2026-09-21. The tables are generated — see [How to check any
 of this yourself](#how-to-check-any-of-this-yourself).*
 
 This is the one-page answer to "where is the work, and what is it waiting for". It
@@ -23,22 +23,33 @@ this page's job is to say which of those to open.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 52 | 22 | 20 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 54 | 21 | 9 |
 | **Modernization** | `release-train` | 12 | 2 | 2 |
-| **Multitenant** | `tenancy` | 18 | 10 | 3 |
-| | **total** | **82** | **34** | **25** |
+| **Multitenant** | `tenancy` | 18 | 9 | 3 |
+| | **total** | **84** | **32** | **14** |
 
 <!-- END GENERATED: horizons -->
 
 **Remedial** — finding and fixing defects that already ship. This is the largest
-horizon and the most advanced. Nine pull requests are open upstream. The backfix
-register holds 70 entries; the queue names every not-fixed one.
+horizon and by far the most advanced. **Ten pull requests MERGED upstream between
+2026-09-17 and 2026-09-20** (#8733–#8743); one remains open, and it is in the
+connector repository rather than here (`nightscout-connect` PR #68). The backfix
+register holds 74 entries; the queue names every not-fixed one. Merged is not
+released — see [the sentence that changes how everything else
+reads](#the-sentence-that-changes-how-everything-else-reads).
 
 **Modernization** — bringing dependencies and code up to date. A release train is
 adopted and ordered: 15.0.9, then cut 1 (`chore/retire-jsdom`) alone, then cut 2,
 then cuts 3+5 combined, with **cut 4 held back behind its own deprecation
 release** because it deletes two CGM ingestion paths and its failure mode is a
-user's glucose readings silently stop arriving. Nothing on this train has shipped.
+user's glucose readings silently stop arriving. Nothing on this train has shipped,
+and **the cost of not shipping it is measurable and rising**: re-measured
+2026-09-21, cuts 1–4 are **124 commits behind `dev`** (was 59 on 2026-09-15) with
+7, 14, 16 and 18 conflicting paths respectively (was 4–5 each). Every one of the
+seven files newly conflicting on cuts 2–4 was touched by the ten Phase 0 PRs
+landing — so the remedial horizon's success is what raised this bill. Cut 5 is the
+exception and is 0 behind `dev`, because Andy Low merged `dev` into it on
+2026-09-21 (`e3b22034`).
 
 **Multitenant** — making bulk hosting feasible. Decisions D1–D15 are settled and
 recorded; most implementation is not started, and five items are blocked behind
@@ -49,9 +60,12 @@ remedial and release work. Self-hosted single-tenant stays first-class permanent
 
 ## The sentence that changes how everything else reads
 
-**In the backfix register, `fixed` means "repaired on a branch that has not been
-released."** It does not mean an operator is safe. No entry anywhere carries a
-status of `landed`, because nothing has landed.
+**In the backfix register, neither `fixed` nor `merged` means an operator is
+safe.** `fixed` means repaired on a branch that has not been merged. `merged`
+(added 2026-09-21) means merged into `origin/dev` and **still not released**. No
+entry anywhere carries a status of `landed`, because nothing has landed:
+`origin/master` is **299 commits behind `dev`** and the shipping tag is **15.0.8**.
+Merging to `dev` publishes a Docker Hub image, which is not a release.
 
 For somebody running Nightscout today, the practical version is plainer:
 
@@ -60,17 +74,19 @@ For somebody running Nightscout today, the practical version is plainer:
 > None of this is medical advice; if a defect affects alarms or displayed numbers
 > and you are unsure what it means for you, raise it with your care team.
 
-**The size of that, measured 2026-09-16.** The register's §1 — the section whose
-defects reach existing operators — holds **43 rows**, of which one (BF-12) is
-retracted as not reproducing. So **42 defects are present for every self-hoster
-running today's release**. Twenty-seven of them are marked `fixed`, meaning
-repaired on a branch nobody has merged. Fifteen are open.
+**The size of that, re-measured 2026-09-21 by parsing the status column.** The
+register's §1 — the section whose defects reach existing operators — holds **47
+rows**, of which one (BF-12) is retracted as not reproducing. So **46 defects are
+present for every self-hoster running today's release**. Of those: **19 open**,
+**23 `merged`** (in `dev`, not released), **4 `fixed`** (on a branch not merged).
 
 Reading the register's open count as "the number of defects still shipping"
-therefore understates it by roughly a factor of three, because it silently drops
-the 27 repaired-but-unreleased ones. The distinction the register's status column
-actually tracks is **work done**, not operator exposure, and that is why the queue
-carries `ships_to_operators_today` as a separate field rather than inferring it.
+therefore understates it by roughly a factor of two and a half, because it silently
+drops the 27 repaired-but-unreleased ones. Reading `merged` as done would drop 23 of
+them — a newer way to get the same number wrong, which is why the status values were
+split rather than collapsed. The distinction the status column actually tracks is
+**work done**, not operator exposure, and that is why the queue carries
+`ships_to_operators_today` as a separate field rather than inferring it.
 
 These are the queue items covering that exposure — items, not defect ids, so
 several cover more than one `BF-`:
@@ -79,16 +95,18 @@ several cover more than one `BF-`:
 
 | id | claimed state | defect |
 |---|---|---|
-| `BFQ-04` | `in-progress` | BF-04 - the v1 operator allowlist, EXTRACTED 2026-09-18 - superseded by P0-K |
+| `BFQ-04` | `merged-upstream` | BF-04 - the v1 operator allowlist, EXTRACTED 2026-09-18 - superseded by P0-K |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value |
 | `BFQ-10` | `not-started` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
-| `BFQ-40` | `in-flight-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
+| `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-41` | `gate-not-met` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `needs-decision` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | `BFQ-52` | `unsettled` | BF-52 - the age plugins can only ask for their urgent alarm in one window |
 | `BFQ-67` | `gate-not-met` | BF-67 - an alarm threshold is quietly changed and only the server log says so |
 | `BFQ-69` | `not-started` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
+| `BFQ-71` | `gate-not-met` | BF-71 - any dateString key drops the default date window, and the window is not a control |
+| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `gate-not-met` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
@@ -104,13 +122,13 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `needs-decision` | `unsettled` | total |
+| parcel | `not-started` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `unsettled` | total |
 |---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 1 |  | 1 | 4 | 3 | 10 |  |  | **19** |
-| `release-train` | 2 |  | 4 |  | 4 |  | 2 |  | **12** |
-| `register-open` | 14 | 1 | 5 |  |  | 1 | 1 | 2 | **24** |
-| `tenancy` | 10 |  |  | 1 | 5 |  | 1 | 1 | **18** |
-| `docs-truth` | 7 |  |  | 2 |  |  |  |  | **9** |
+| `phase0` | 1 | 3 | 2 | 3 | 1 | 9 |  |  | **19** |
+| `release-train` | 2 | 4 |  | 4 |  |  | 2 |  | **12** |
+| `register-open` | 14 | 6 |  |  |  | 2 | 2 | 2 | **26** |
+| `tenancy` | 9 | 1 | 1 | 5 |  |  | 1 | 1 | **18** |
+| `docs-truth` | 6 | 1 | 2 |  |  |  |  |  | **9** |
 
 <!-- END GENERATED: state-matrix -->
 
@@ -118,8 +136,12 @@ Two states here are not what a casual reader expects:
 
 - **`gate-not-met`** is a *measured* state, not an opinion. Work exists and a
   declared gate fails.
-- **`in-flight-upstream`** means handed to upstream reviewers. It is not ours to
-  land, and it is where most of Phase 0 currently sits.
+- **`in-flight-upstream`** means handed to upstream reviewers and not ours to
+  land. Until 2026-09-20 most of Phase 0 sat here; **one item does now** (`P0-F`,
+  `nightscout-connect` PR #68).
+- **`merged-upstream`** was added 2026-09-21 for the nine items whose PRs merged
+  into `dev`. It is deliberately not called `done`, for the reason the section
+  above gives: nothing merged has reached an operator.
 
 The queue also carries **explicit `no-gate:` markers** — a record that nobody has
 built a way to measure a property yet, with the reason. Those are bookkeeping, not
@@ -150,20 +172,25 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 57 | 70% |
-| SECURITY reviewer | 10 | 12% |
+| Maintainer | 58 | 69% |
+| SECURITY reviewer | 11 | 13% |
 | Maintainer + a second human | 6 | 7% |
 | SAFETY reviewer | 5 | 6% |
 | Whoever edits it next | 3 | 4% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **82** | |
+| **total** | **84** | |
 
 <!-- END GENERATED: reviewer-load -->
 
 Read that table as a recruiting brief. The SECURITY and SAFETY rows name a *kind*
-of reviewer, not a person — **no individual is assigned to any of them**. The
-nearest-term consequence is concrete: `P0-C` (`bf/auth`) is gate-passing and
-waiting on a security reviewer who does not yet exist.
+of reviewer, not a person — **no individual is assigned to any of them**. Two
+near-term consequences are concrete. `P0-C` (`bf/auth`) waits on a security
+reviewer who does not yet exist; it was gate-passing until `dev` moved on
+2026-09-20 and now needs a `git merge dev` first, measured conflict-free. And
+`BFQ-72`, filed 2026-09-21, is a one-request unauthenticated denial of service
+against a default install, live on the shipping release, whose blocking question is
+whether Nightscout's security contact process is invoked — the same unanswered
+question `P0-K` raised on 2026-09-18.
 
 If you are considering reviewing, [REVIEWER-ONBOARDING.md](REVIEWER-ONBOARDING.md)
 is the read-this-first path, and `reports/reviewer-packets/` has one bounded packet
@@ -213,6 +240,6 @@ measurement.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-15**, against cgm-remote-monitor-official `a8888f0d` and this repository at `75c38a17`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-21**, against cgm-remote-monitor-official `59430336` and this repository at `75c38a17`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

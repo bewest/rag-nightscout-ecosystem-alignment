@@ -1387,3 +1387,157 @@ controls:
       is not started, so the gate is red and there is nothing yet to
       assert a property OF.
 
+  # ------------------------------------------------------------------------
+  # CONTROLS ADDED 2026-09-21, for the eight Phase 0 containment gates.
+  #
+  # The gates these replace asked `--is-ancestor origin/dev <branch>` -- has
+  # the branch fallen behind dev -- and each had a control here that reversed
+  # the question against a base the branch had not taken. Those gates and their
+  # controls are both gone: the eight branches MERGED into dev as PRs
+  # #8733-#8743, dev moved on, and "has not fallen behind" went permanently red
+  # for the best possible reason. The gates now assert CONTAINMENT.
+  #
+  # The control is the reverse of the new question and is stronger than the one
+  # it replaces, because it needs no third branch: dev is strictly AHEAD of
+  # every merged branch, so `--is-ancestor origin/dev <branch>` must answer no.
+  # Measured 2026-09-21: exit 1 for all eight. A command that answered yes both
+  # ways would not be reading ancestry at all.
+  # ------------------------------------------------------------------------
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarms origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/alarms
+    control-kind: static
+    proves: >
+      origin/dev is strictly ahead of bf/alarms (it took the branch through a
+      merge and then moved on), so the reversed question must be answered
+      no. Exit 1, measured 2026-09-21.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/cache origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/cache
+    control-kind: static
+    proves: >
+      origin/dev is strictly ahead of bf/cache (it took the branch through a
+      merge and then moved on), so the reversed question must be answered
+      no. Exit 1, measured 2026-09-21.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/coercion origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/coercion
+    control-kind: static
+    proves: >
+      origin/dev is strictly ahead of bf/coercion (it took the branch through a
+      merge and then moved on), so the reversed question must be answered
+      no. Exit 1, measured 2026-09-21.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/food origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/food
+    control-kind: static
+    proves: >
+      origin/dev is strictly ahead of bf/food (it took the branch through a
+      merge and then moved on), so the reversed question must be answered
+      no. Exit 1, measured 2026-09-21.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/merge origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/merge
+    control-kind: static
+    proves: >
+      origin/dev is strictly ahead of bf/merge (it took the branch through a
+      merge and then moved on), so the reversed question must be answered
+      no. Exit 1, measured 2026-09-21.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/operators
+    control-kind: static
+    proves: >
+      origin/dev is strictly ahead of bf/operators (it took the branch through a
+      merge and then moved on), so the reversed question must be answered
+      no. Exit 1, measured 2026-09-21.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/parms origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/parms
+    control-kind: static
+    proves: >
+      origin/dev is strictly ahead of bf/parms (it took the branch through a
+      merge and then moved on), so the reversed question must be answered
+      no. Exit 1, measured 2026-09-21.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/reads origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/reads
+    control-kind: static
+    proves: >
+      origin/dev is strictly ahead of bf/reads (it took the branch through a
+      merge and then moved on), so the reversed question must be answered
+      no. Exit 1, measured 2026-09-21.
+
+  # ------------------------------------------------------------------------
+  # CONTROLS FOR THE TWO GATES ADDED 2026-09-21 (BF-71, BF-72).
+  #
+  # Both are FAILS-TODAY tracking gates, so the empty-root weak form is the
+  # declared control, as it is for d3-drag-clamp-covered.js and
+  # timeago-future-reading.js. Unlike those, a SHARPER control was also run by
+  # hand on the day the gates were written, and this file's preamble says to
+  # record that when it happens -- so the `proves` text names the scratch refs
+  # and what each showed. The scratch refs are kept in
+  # externals/cgm-remote-monitor-official for exactly this reason.
+  # ------------------------------------------------------------------------
+
+  - gate: |-
+      node tools/queue/gates/bf71-date-window-presence-check.js
+    cwd: .
+    control: |-
+      tools/queue/gates/empty-root-control.sh tools/queue/gates/bf71-date-window-presence-check.js
+    control-kind: static
+    proves: >
+      run with QUEUE_GATE_ROOT pointed at an EMPTY directory the gate does not
+      exit 0 - it reports that it could not read lib/server/query.js and fails,
+      rather than passing by absence. THE SHARPER CONTROL WAS ALSO RUN, by
+      hand, 2026-09-21: against the scratch ref tmp/bf71-vacuity-probe, which
+      splices a date-constraint test into an isolated copy of the guard, the
+      gate goes GREEN (BF71_REF=tmp/bf71-vacuity-probe) with its in-file
+      control still green. So the gate is coupled to the specific property and
+      not merely to the file existing. The same ablation was carried further
+      than the gate needed: the booted probe against mongod 7.0.43 then
+      returned the 4-day window (3 records instead of 10) while the allowlisted
+      wide bound still reached 10.
+
+  - gate: |-
+      node tools/queue/gates/bf72-regex-operand-bounded.js
+    cwd: .
+    control: |-
+      tools/queue/gates/empty-root-control.sh tools/queue/gates/bf72-regex-operand-bounded.js
+    control-kind: static
+    proves: >
+      run with QUEUE_GATE_ROOT pointed at an EMPTY directory the gate does not
+      exit 0 - neither source file is readable and it says so. THE SHARPER
+      CONTROL WAS ALSO RUN, by hand, 2026-09-21: against the scratch ref
+      tmp/bf72-vacuity-probe, which splices a length bound into an isolated
+      copy of the allowlist module, the gate goes GREEN
+      (BF72_REF=tmp/bf72-vacuity-probe) with its reachability control still
+      green. WORTH RECORDING: the FIRST draft of that detector did NOT flip
+      under this same ablation, because it required the bound within 400
+      characters of a $regex occurrence and the natural site for one is over a
+      thousand characters away. The ablation is what found that, which is the
+      argument for authoring controls rather than deriving them.

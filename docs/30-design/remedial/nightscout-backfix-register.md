@@ -77,21 +77,38 @@ is a defect that
 > dismissed quickly, because the thing the linter said was obviously unimportant.
 
 **Status values**: `open` · `fixed <date>` (repaired on a backfix branch with tests and a
-release note, not yet merged — the row names the branch and commit) · `fixed-in-seam`
-(repaired inside the seam branch as a side effect, needs extraction to land independently) ·
-`landed` · `wontfix` · `invalid` (investigated and does not reproduce; the row is struck
-through and the detail section says why, because a wrong entry that is merely deleted gets
-raised again).
+release note, **not yet merged** — the row names the branch and commit) · `merged <date>`
+(**added 2026-09-21**: merged into `origin/dev` upstream, and **still not released** — the row
+names the PR) · `fixed-in-seam` (repaired inside the seam branch as a side effect, needs
+extraction to land independently) · `landed` (**in a release an operator can install** — no
+entry has reached this yet) · `wontfix` · `invalid` (investigated and does not reproduce; the
+row is struck through and the detail section says why, because a wrong entry that is merely
+deleted gets raised again).
+
+> **Why `merged` had to be split out of `fixed`.** Until 2026-09-20 the two were the same
+> thing, because nothing had been merged. Ten Phase 0 PRs then landed on `dev` and the single
+> word `fixed` was being asked to cover both "sits on a branch nobody has looked at" and "is in
+> the release candidate", which are different facts for a reader deciding what a release
+> contains. **Neither means an operator is safe**, and that is the distinction the next section
+> is about — `merged` and `fixed` are both exposure, `landed` is not.
 
 > ### The status column tracks WORK DONE, not operator exposure. Read this before quoting a count.
 >
 > **No entry in this file has status `landed`** — zero, verified by parsing the status column
 > rather than by grepping for the word, which matches this legend and two unrelated prose uses.
-> Every `fixed` entry sits on a **local, unpushed** branch. Measured 2026-09-15 with
-> `git ls-remote` against both remotes: none of the nine `bf/*` branches, and neither
-> `nightscout-connect` branch or tag, exists on any remote.
 >
-> **So every §1 defect marked `fixed` is still present for every operator on today's release.**
+> **UPDATED 2026-09-21, and the update does not change the conclusion.** The sentence here used
+> to read "every `fixed` entry sits on a local, unpushed branch", measured 2026-09-15 with
+> `git ls-remote`. That is no longer true: eight `bf/*` branches were pushed and merged into
+> `dev` between 2026-09-17 and 2026-09-20 as PRs #8733–#8743, and their 25 entries now carry
+> `merged <date>` rather than `fixed <date>`. What has **not** changed is the only thing this
+> section is about. `origin/master` is **299 commits behind `dev`** and the shipping tag is
+> **15.0.8**, so nothing merged has reached anybody. Three branches remain genuinely local and
+> unpushed — `bf/auth`, `bf/throttle`, `bf/connect-pin` — as do `nightscout-connect`'s
+> `release/v0.0.14` branch and its `v0.0.14` tag.
+>
+> **So every §1 defect marked `fixed` OR `merged` is still present for every operator on
+> today's release.**
 > The sentence "only three open entries affect an operator on today's release" has been repeated
 > across this programme's documents and is **false in the sense every reader takes it**: it counts
 > *unrepaired* entries, not *shipping* ones. On 15.0.8, which is what operators actually run, all
@@ -101,18 +118,18 @@ raised again).
 >
 > Two counts, and they are different numbers:
 >
-> | question | answer, measured 2026-09-15 |
+> | question | answer, measured 2026-09-21 |
 > |---|---|
-> | How much work is outstanding? | **40 open `BF-` entries** — 16 in §1 (BF-09, BF-10, BF-41…BF-52, BF-67, BF-69) and 24 in §1b (BF-18…BF-27, BF-53…BF-66) — **plus CAP-01 and CAP-02**. **`fixed-in-seam` is now empty**: BF-04 was extracted 2026-09-18 onto `bf/operators` and is `fixed`. *(Recomputed 2026-09-18 by parsing the status column, as this table says to do, not copied. It lands on 40 again by coincidence: BF-40 left the open set on 2026-09-16 and BF-69 joined it on 2026-09-17, and the previous enumeration had listed neither correctly. **BF-70 was filed and fixed on the same day** and so never appears here — which is the count's blind spot, not a clean sheet.)* |
-> | How many §1 defects reach an operator on today's release? | **all of them**, open and `fixed` alike. Nothing here has landed anywhere |
+> | How much work is outstanding? | **41 open `BF-` entries** — 18 in §1 (BF-09, BF-10, BF-41…BF-52, BF-67, BF-69, **BF-71, BF-72**) and 23 in §1b (BF-18…BF-27, BF-53…BF-65) — **plus CAP-01 and CAP-02**. **`fixed-in-seam` is empty**: BF-04 was extracted 2026-09-18 onto `bf/operators`, which merged as PR #8743 the same day, so it is `merged` rather than `fixed`. *(Recomputed 2026-09-21 by parsing the status column, as this table says to do, not copied. Moves since 2026-09-18: BF-71 and BF-72 filed into §1 on 2026-09-21, and BF-66 left §1b as `fixed`. BF-71 and BF-72 were filed before any fix was attempted, so that neither repeats BF-70's pattern of never appearing in this count.)* |
+> | How many §1 defects reach an operator on today's release? | **all of them**, open and `fixed` alike. **UPDATED 2026-09-21**: ten Phase 0 PRs merged to `dev` between 09-17 and 09-20 (#8733…#8743), so `fixed` no longer means "on a branch nobody has merged" for those. It still means **not released** — `origin/master` is 299 commits behind `dev` and the shipping tag is 15.0.8 — so this answer does not change. Only a release changes it |
 >
-> **That 40 is a jump from 12 and it is not drift.** 28 entries were filed in one sitting on
+> **The jump from 12 to the forties was not drift.** 28 entries were filed in one sitting on
 > 2026-09-15 from the ground-truth and verification passes, which is why the numbers in any
-> document written earlier that day are low. **Recompute this cell by parsing the status column;
+> document written earlier than that are low. **Recompute this cell by parsing the status column;
 > do not copy it.** The count has been wrong in four documents at once before.
 >
-> The second number only changes when a human pushes and a maintainer merges. That is D12 and
-> the handoff rule, working as intended — not a gap in this file.
+> The second number only changes when a release ships. Merging to `dev` is not that: `dev` is a
+> Docker Hub publication event, not a release, and `origin/master` carries what operators install.
 
 ---
 
@@ -120,36 +137,36 @@ raised again).
 
 | id | defect | where | severity | tenancy-independent | status |
 |---|---|---|---|---|---|
-| **BF-01** | `GET /api/v1/count/entries/where` silently matches nothing | `lib/server/aggregate.js:21` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (`bf/reads` `4772b983`, PR #8738); reproduced live; `count/treatments/where` was affected too |
-| **BF-02** | `insulin`/`carbs` query bounds truncated by `parseInt` | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (T0.5, `bf/coercion` `f829ea11`, PR #8737) |
-| **BF-03** | Numeric filters on `devicestatus`, `activity`, `food`, `profile` match nothing | `lib/server/query.js` walker, per-collection | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15 for `devicestatus` + `profile`** (T0.5, `bf/coercion` `f829ea11`, PR #8737); `food` and `activity` misfiled, see detail |
-| **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **fixed 2026-09-15** (T0.5, `bf/coercion` `f829ea11`, PR #8737) |
+| **BF-01** | `GET /api/v1/count/entries/where` silently matches nothing | `lib/server/aggregate.js:21` | **high** — wrong answer, HTTP 200 | yes | **merged 2026-09-18** (`bf/reads` `4772b983`, PR #8738); reproduced live; `count/treatments/where` was affected too — **merged to `dev` via PR #8738 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-02** | `insulin`/`carbs` query bounds truncated by `parseInt` | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **merged 2026-09-18** (T0.5, `bf/coercion` `f829ea11`, PR #8737) — **merged to `dev` via PR #8737 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-03** | Numeric filters on `devicestatus`, `activity`, `food`, `profile` match nothing | `lib/server/query.js` walker, per-collection | **high** — wrong answer, HTTP 200 | yes | **merged 2026-09-18** for `devicestatus` + `profile`** (T0.5, `bf/coercion` `f829ea11`, PR #8737); `food` and `activity` misfiled, see detail — **merged to `dev` via PR #8737 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-11** | `treatments.duration` and `rate` have no walker entry — temp-basal filters match nothing | `lib/server/treatments.js:259-266` | **high** — wrong answer, HTTP 200 | yes | **merged 2026-09-18** (T0.5, `bf/coercion` `f829ea11`, PR #8737) — **merged to `dev` via PR #8737 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
 | **BF-12** | ~~`entries.rawbg` is coerced but is not in the model~~ — **does not reproduce**; the walker entry is `rssi`, which *is* in the model | `lib/server/entries.js:186` | none — not a defect | n/a | **closed 2026-09-15, invalid** |
-| **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | **fixed 2026-09-15** (`bf/reads` `5a5269a3`, PR #8738); reproduced through the v3 HTTP path |
-| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — on PostgreSQL an empty `200` on a glucose read; unbounded read on MongoDB | yes | **fixed 2026-09-15** (`bf/reads` `06b133a7`, PR #8738); reproduced live; **the v3 validation it says to copy is itself defective — see BF-33** |
-| **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | **fixed 2026-09-15** (`bf/reads` `12207df3`, PR #8738); reproduced live |
-| **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type. **The "wrong order in the built-in editor" half of this entry was wrong** — the editor re-sorts numerically itself and does not use the endpoint | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks vanish from `/api/v1/food/quickpicks`, which has no in-tree consumer; `restoreBoolValue` un-hides a boolean-hidden pick in the editor | yes | **fixed 2026-09-15** (`bf/food` `73495331`); reproduced live, both spellings written over HTTP |
-| **BF-35** | The bolus calculator's quick-pick chooser builds its `<option>` list from the **whole food collection** but resolves the selection against the **filtered** quick-pick array. Picking one quick pick loads a different one's foods; the last entry throws; plain foods appear in the chooser | `lib/client/boluscalc.js` `loadFoodQuickpicks` | **high** — the carbs that reach the insulin calculation come from a record the user did not choose, with no error shown. Regression from `3457de5b` (2017) | yes | **fixed 2026-09-15** (found during BF-16, `bf/food` `73495331`); reproduced in jsdom, ablated six ways |
+| **BF-13** | API v3 `skip`/`limit` paging silently loses and duplicates documents when the whole sort chain ties | `lib/api3/generic/search/input.js` `parseSort` | **high** — silent data loss on a read | yes | **merged 2026-09-18** (`bf/reads` `5a5269a3`, PR #8738); reproduced through the v3 HTTP path — **merged to `dev` via PR #8738 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-14** | API v1 `?count=0` (and `-3`, `1e2`) reaches the driver unvalidated — `.limit(0)` means *unbounded* | `lib/server/entries.js:56` + 4 siblings | **high** — on PostgreSQL an empty `200` on a glucose read; unbounded read on MongoDB | yes | **merged 2026-09-18** (`bf/reads` `06b133a7`, PR #8738); reproduced live; **the v3 validation it says to copy is itself defective — see BF-33** — **merged to `dev` via PR #8738 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-15** | API v3 `?fields=<dotted.path>` returns an empty document with HTTP 200 | `lib/api3/shared/fieldsProjector.js` `applyProjection` | **medium** — silently empty response to a valid request | yes | **merged 2026-09-18** (`bf/reads` `12207df3`, PR #8738); reproduced live — **merged to `dev` via PR #8738 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-16** | Food quick-pick `hidden` filter compares to the **string** `'false'`; the field has no declared type and its stored type depends on the request's content type. **The "wrong order in the built-in editor" half of this entry was wrong** — the editor re-sorts numerically itself and does not use the endpoint | `lib/server/food.js` `listquickpicks` + `lib/food/food.js:69` `restoreBoolValue` | **medium** — a JSON writer's quick picks vanish from `/api/v1/food/quickpicks`, which has no in-tree consumer; `restoreBoolValue` un-hides a boolean-hidden pick in the editor | yes | **merged 2026-09-20** (`bf/food` `73495331`); reproduced live, both spellings written over HTTP — **merged to `dev` via PR #8735 on 2026-09-20; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-35** | The bolus calculator's quick-pick chooser builds its `<option>` list from the **whole food collection** but resolves the selection against the **filtered** quick-pick array. Picking one quick pick loads a different one's foods; the last entry throws; plain foods appear in the chooser | `lib/client/boluscalc.js` `loadFoodQuickpicks` | **high** — the carbs that reach the insulin calculation come from a record the user did not choose, with no error shown. Regression from `3457de5b` (2017) | yes | **merged 2026-09-20** (found during BF-16, `bf/food` `73495331`); reproduced in jsdom, ablated six ways — **merged to `dev` via PR #8735 on 2026-09-20; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
 | **BF-17** | Editing a subject through the stock admin UI **persists the API access token in plaintext**, into a field the server otherwise only derives | `lib/authorization/endpoints.js:38-42` + `lib/admin_plugins/subjects.js:43` + `lib/authorization/storage.js` `save` | **high** — turns read access to the database into API access; no key required | yes | fixed 2026-09-15 — `bf/auth` `64db1f35`; reproduced live; **existing rows still hold tokens, see the report** |
-| **BF-28** | `insulinage`'s URGENT branch is unreachable — it compares against `insulinInfo.urgent`, which is never assigned, where all three sibling plugins use `prefs.urgent`. "Insulin reservoir change overdue!" can never fire, **and the reported level stays WARN for as long as the reservoir is overdue** | `lib/plugins/insulinage.js:92` | **medium** — a site-change reminder that silently never arrives, and a severity that is wrong the whole time | yes | fixed 2026-09-15 (`bf/alarms` `8714093b`) |
-| **BF-29** | An unknown name in `ENABLE` is **silently ignored** — matching is against `plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`, **`basal`** — six, not five), not the file name. An operator who writes `ENABLE=cannulaage` gets no plugin and no warning | `lib/plugins/index.js:140` | **medium** — an operator believes an alarm plugin is on when it is off | yes | fixed 2026-09-15 (`bf/alarms` `99e46a52`) |
+| **BF-28** | `insulinage`'s URGENT branch is unreachable — it compares against `insulinInfo.urgent`, which is never assigned, where all three sibling plugins use `prefs.urgent`. "Insulin reservoir change overdue!" can never fire, **and the reported level stays WARN for as long as the reservoir is overdue** | `lib/plugins/insulinage.js:92` | **medium** — a site-change reminder that silently never arrives, and a severity that is wrong the whole time | yes | **merged 2026-09-20** (`bf/alarms` `8714093b`) — **merged to `dev` via PR #8739 on 2026-09-20; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-29** | An unknown name in `ENABLE` is **silently ignored** — matching is against `plugin.name` (`bwp`, `cage`, `iage`, `sage`, `bage`, **`basal`** — six, not five), not the file name. An operator who writes `ENABLE=cannulaage` gets no plugin and no warning | `lib/plugins/index.js:140` | **medium** — an operator believes an alarm plugin is on when it is off | yes | **merged 2026-09-20** (`bf/alarms` `99e46a52`) — **merged to `dev` via PR #8739 on 2026-09-20; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
 | **BF-30** | The auth-failure delay is keyed on a client-controlled value, so brute-force throttling never engages | `lib/authorization/delaylist.js` + the un-whitelisted `forwarded-for` call in `lib/authorization/index.js:9-12` (**not** `TRUST_PROXY`, which does not exist on `dev`) | **high** — restores unthrottled guessing against `API_SECRET` and tokens | yes | fixed 2026-09-15 — `bf/auth` `a26ba416`; reproduced live; **the register's preferred fix was refuted by measurement** |
-| **BF-31** | A Google Home **or Alexa** request re-points the shared `language` instance and `moment`'s global locale **for the whole process**, until something changes it back. **Measured 2026-09-15: it does *not* change alarm text** — the catalogue is read once at boot and never reloaded | `lib/api/googlehome/index.js:27` **and `lib/api/alexa/index.js:28`** + the one `language` instance at `lib/server/server.js:34` | **low–medium** — gated on the assistant plugin being enabled; reaches the assistant's own answers, not alarm text | yes | fixed 2026-09-15 (`bf/alarms` `5dcf783f`) |
-| **BF-32** | Query coercion was applied to operands that are not field values, so `find[sgv][$exists]=true` became `{$exists: NaN}` and `find[notes][$regex]=ab` became `{$regex: NaN}`. **The consequence this entry claimed is refuted** — `{$exists: NaN}` is read by MongoDB as **true**, not false, so `$exists=true` was already answering correctly by accident. What the coercion actually did on the ten walker fields is turn a `$regex` into a **server error**. The residual `$exists=false` defect that survives the fix is **BF-40** | `lib/server/query.js` `walk_prop` | low — **re-graded from medium**: a 500 on `$regex`, not a wrong answer on `$exists`. The fix remains right; its stated reason was wrong | yes | **fixed 2026-09-15** (found during T0.5, `bf/coercion` `f829ea11`, PR #8737); **claim refuted 2026-09-15**, see detail and BF-40 |
-| **BF-33** | API v3 `?limit=0x10` passes the `API3_MAX_LIMIT` check as 16 and reaches the driver as `.limit(0)` — *no limit*; `?limit=1e2` returns one document | `lib/api3/generic/collection.js` `parseLimit` | **high** — unbounded read, HTTP 200, and the ceiling that exists to prevent it is bypassed | yes | **fixed 2026-09-15** (`bf/reads` `2ecfeb53`, PR #8738); found while fixing BF-14, reproduced live |
+| **BF-31** | A Google Home **or Alexa** request re-points the shared `language` instance and `moment`'s global locale **for the whole process**, until something changes it back. **Measured 2026-09-15: it does *not* change alarm text** — the catalogue is read once at boot and never reloaded | `lib/api/googlehome/index.js:27` **and `lib/api/alexa/index.js:28`** + the one `language` instance at `lib/server/server.js:34` | **low–medium** — gated on the assistant plugin being enabled; reaches the assistant's own answers, not alarm text | yes | **merged 2026-09-20** (`bf/alarms` `5dcf783f`) — **merged to `dev` via PR #8739 on 2026-09-20; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-32** | Query coercion was applied to operands that are not field values, so `find[sgv][$exists]=true` became `{$exists: NaN}` and `find[notes][$regex]=ab` became `{$regex: NaN}`. **The consequence this entry claimed is refuted** — `{$exists: NaN}` is read by MongoDB as **true**, not false, so `$exists=true` was already answering correctly by accident. What the coercion actually did on the ten walker fields is turn a `$regex` into a **server error**. The residual `$exists=false` defect that survives the fix is **BF-40** | `lib/server/query.js` `walk_prop` | low — **re-graded from medium**: a 500 on `$regex`, not a wrong answer on `$exists`. The fix remains right; its stated reason was wrong | yes | **merged 2026-09-18** (found during T0.5, `bf/coercion` `f829ea11`, PR #8737); **claim refuted 2026-09-15**, see detail and BF-40 — **merged to `dev` via PR #8737 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-33** | API v3 `?limit=0x10` passes the `API3_MAX_LIMIT` check as 16 and reaches the driver as `.limit(0)` — *no limit*; `?limit=1e2` returns one document | `lib/api3/generic/collection.js` `parseLimit` | **high** — unbounded read, HTTP 200, and the ceiling that exists to prevent it is bypassed | yes | **merged 2026-09-18** (`bf/reads` `2ecfeb53`, PR #8738); found while fixing BF-14, reproduced live — **merged to `dev` via PR #8738 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
 | **BF-34** | `backoff()` merges its options as `{ ...config, ...defaults }`, so **every value any caller passes is discarded**. All five vendor sources configure a 2.5-minute retry interval and every one of them gets the 256 ms default — 586× faster — and `use_random_slot` is forced `false`, so a pool that fails together retries in exact lockstep | `nightscout-connect` `lib/backoff.js` | **high** — a vendor that is refusing requests gets hammered by every account at once, which is when it can least afford it | yes | **fixed 2026-09-15** (found during T0.4, `fix/connect-timer-jitter` `c1cce2a`); 100 actors delivered the same 800 requests across 3 s before and 67 s after |
-| **BF-36** | The client's delta merge captured the cached array's length once and then spliced that array, so a `remove` followed by an item matching nothing read past the end and threw. The throw escapes into `dataUpdate`, which has no `try`/`catch` — the page stops advancing until reloaded | `lib/client/receiveddata.js` `mergeTreatmentUpdate` | **medium** — availability, not a wrong reading: the time-ago watchdog is on its own timer and still marks the page stale | yes | **fixed 2026-09-15** (found by auditing the suppressions BF-35 turned up under, `bf/merge` `b06c6faf`); reproduced directly, ablated against the shipped shape |
-| **BF-37** | `queryParms()` reads `[1]` of each `key=value` split without checking one exists, so a valueless parameter — `?debug`, a trailing `&`, `&&`, a lone `?` — throws. It is the **first statement of `client.init`**, so the page stops loading with nothing on screen but the loading message | `lib/client/browser-utils.js` `queryParms` | **medium–high** — total, silent failure to load, on a URL shape anyone can produce | yes | **fixed 2026-09-15** (suppression audit, `bf/parms` `522c6ffb`); reproduced directly |
-| **BF-38** | Translation substitution loops forwards over `%1`…`%n`; `%1` is a prefix of `%10`, so the first pass rewrites the `%1` inside `%10` and leaves a stray `0`. Same prefix-order trap as sorting a text `position` | `lib/language.js` `translate` | low — **latent**: no shipped catalogue uses more than `%3` | yes | **fixed 2026-09-15** (suppression audit, `bf/parms` `c9a7a21c`); reproduced directly |
-| **BF-39** | `queryParms()` replaced `_` with a space, corrupting every access token whose subject name contains one. **Measured to have no live effect**: `findSubject` matches on the last `-`-separated segment and ignores the abbreviated name the corruption lands in | `lib/client/browser-utils.js` `queryParms` | low — a real corruption absorbed by a leniency nobody chose | yes | **fixed 2026-09-15** (`bf/parms` `eb0bc918`); **reproduced against a live instance**, both spellings authorise |
-| **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver. **`$where` executes on the driver**: measured, `find[$where]=…` builds `{$where: "…"}` on `origin/dev` and `mongod` runs it, on a route `AUTH_DEFAULT_ROLES=readable` opens without a token | `lib/server/query.js:157` | **high** — server-side JavaScript execution, plus ReDoS / full-scan exposure | yes | **fixed 2026-09-18** (`bf/operators` `3e8ce695` + `71506cf8`) — **the extraction this entry asked for since 2026-09-14, done on a `dev`-based branch rather than inside the seam.** Reproduced against `mongod 7.0` before and after. Repaired on a branch, NOT merged, so it still reaches every operator on today's release. See detail |
-| **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | **fixed 2026-09-15** (`bf/reads` `3b588098`, PR #8738) — deleted, not gated; the module has no `env` handle |
-| **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | **fixed 2026-09-15** (T0.2, `bf/cache` `ddcdb1a8`); 0.837 → 0.025 ms, response asserted identical over HTTP |
-| **BF-07** | `cache.insertData` JSON round-trips the whole retained array | `lib/server/cache.js:81` | medium — 65 % of the load cycle | yes | **partly fixed 2026-09-15** (T0.3, `bf/cache` `4f86bab1`); 3.75 → 2.66 ms per cycle — **devicestatus keeps its clone on purpose, see detail** |
+| **BF-36** | The client's delta merge captured the cached array's length once and then spliced that array, so a `remove` followed by an item matching nothing read past the end and threw. The throw escapes into `dataUpdate`, which has no `try`/`catch` — the page stops advancing until reloaded | `lib/client/receiveddata.js` `mergeTreatmentUpdate` | **medium** — availability, not a wrong reading: the time-ago watchdog is on its own timer and still marks the page stale | yes | **merged 2026-09-18** (found by auditing the suppressions BF-35 turned up under, `bf/merge` `b06c6faf`); reproduced directly, ablated against the shipped shape — **merged to `dev` via PR #8734 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-37** | `queryParms()` reads `[1]` of each `key=value` split without checking one exists, so a valueless parameter — `?debug`, a trailing `&`, `&&`, a lone `?` — throws. It is the **first statement of `client.init`**, so the page stops loading with nothing on screen but the loading message | `lib/client/browser-utils.js` `queryParms` | **medium–high** — total, silent failure to load, on a URL shape anyone can produce | yes | **merged 2026-09-20** (suppression audit, `bf/parms` `522c6ffb`); reproduced directly — **merged to `dev` via PR #8736 on 2026-09-20; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-38** | Translation substitution loops forwards over `%1`…`%n`; `%1` is a prefix of `%10`, so the first pass rewrites the `%1` inside `%10` and leaves a stray `0`. Same prefix-order trap as sorting a text `position` | `lib/language.js` `translate` | low — **latent**: no shipped catalogue uses more than `%3` | yes | **merged 2026-09-20** (suppression audit, `bf/parms` `c9a7a21c`); reproduced directly — **merged to `dev` via PR #8736 on 2026-09-20; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-39** | `queryParms()` replaced `_` with a space, corrupting every access token whose subject name contains one. **Measured to have no live effect**: `findSubject` matches on the last `-`-separated segment and ignores the abbreviated name the corruption lands in | `lib/client/browser-utils.js` `queryParms` | low — a real corruption absorbed by a leniency nobody chose | yes | **merged 2026-09-20** (`bf/parms` `eb0bc918`); **reproduced against a live instance**, both spellings authorise — **merged to `dev` via PR #8736 on 2026-09-20; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-04** | API v1 has no operator allowlist — filter pass-through reaches the driver. **`$where` executes on the driver**: measured, `find[$where]=…` builds `{$where: "…"}` on `origin/dev` and `mongod` runs it, on a route `AUTH_DEFAULT_ROLES=readable` opens without a token | `lib/server/query.js:157` | **high** — server-side JavaScript execution, plus ReDoS / full-scan exposure | yes | **merged 2026-09-18** (`bf/operators` `3e8ce695` + `71506cf8`) — **the extraction this entry asked for since 2026-09-14, done on a `dev`-based branch rather than inside the seam.** Reproduced against `mongod 7.0` before and after. Repaired on a branch, NOT merged, so it still reaches every operator on today's release. See detail — **merged to `dev` via PR #8743 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-05** | Unguarded `console.log` of every count query on the request path | `lib/server/aggregate.js:30-31` | **medium** — log noise, filter contents to stdout | yes | **merged 2026-09-18** (`bf/reads` `3b588098`, PR #8738) — deleted, not gated; the module has no `env` handle — **merged to `dev` via PR #8738 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-06** | `/api/v1/entries?count=10` costs 42× a typed read | `lib/server/cache.js:73-76` | medium — CPU | yes | **merged 2026-09-20** (T0.2, `bf/cache` `ddcdb1a8`); 0.837 → 0.025 ms, response asserted identical over HTTP — **merged to `dev` via PR #8740 on 2026-09-20; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-07** | `cache.insertData` JSON round-trips the whole retained array | `lib/server/cache.js:81` | medium — 65 % of the load cycle | yes | **partly **merged 2026-09-20** (T0.3, `bf/cache` `4f86bab1`); 3.75 → 2.66 ms per cycle — **devicestatus keeps its clone on purpose, see detail** — **merged to `dev` via PR #8740 on 2026-09-20; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
 | **BF-08** | `nightscout-connect` actors have no start jitter — a pool reaches the vendor inside one second on every restart. **The interval half of this entry was wrong**: all four drivers already jitter the aligned path by 18 s | `nightscout-connect` `lib/machines/cycle.js` `Init`, and `run()` | medium — thundering herd on restart | yes | **fixed 2026-09-15** (T0.4, `fix/connect-timer-jitter` `c1cce2a`); measured at 400 actors, busiest second 400 → 15 |
 | **BF-09** | Socket dedup uses truthiness, so a falsy value is skipped as a match key. **The fields this entry named were wrong**: in 277,690 corpus treatments `insulin` is never `0` (0 of 107,732) and `carbs` never (0 of 12,394). The field that actually carries the value is **`absolute`** — zero in 67,521 of 153,315, 44 % — which is the **zero temp basal**, the canonical AID suspend | `lib/server/websocket.js:538-566` (the range this entry used to cite, 535-568, does not resolve; the same stale range is copied into the [storage seam interface](../tenancy/nightscout-storage-seam-interface-2026-09-14.md) §4.4) | **medium** — re-graded from `unsettled`: naming `insulin`/`carbs` made it read as an edge case, and a zero temp basal is not one | yes | open |
 | **BF-10** | `mongod` fatal-asserts at Docker's default `nofile=1024`. **Not documentation-only**: `docker-compose.yml` ships at the repository root with a `mongo:` service and **no `ulimits:` block**, on `master` (`mongo:5.0.32`) and on `dev` (`mongo:4.4`) alike | `docker-compose.yml` `mongo` service — a one-block code landing site in the file most self-hosters actually use; operator documentation second | medium — self-hosters in containers | yes | open |
-| **BF-40** | `find[<field>][$exists]=false` returns the documents that **have** the field, on every field, on today's release; repaired on `bf/coercion`. MongoDB reads a non-numeric operand as **true**, so the string `"false"` and the `NaN` the old walker produced both mean *exists* | `lib/server/query.js` `walk_prop` / `lib/server/query-coercion.js` `isValueLeaf` (on `bf/coercion`) + `lib/server/query.js:288` | **medium** — inverted answer, HTTP 200, on a filter any client can send; **and it refutes BF-32's stated mechanism** | yes | **fixed 2026-09-16** on `bf/coercion` (`b7234753`), open as PR **#8737** — repaired on a branch, NOT merged, so it still reaches every operator on today's release. Reproduced 2026-09-15 against seven live `mongod` instances (3.6.8 and 7.0.43), identical on all seven |
+| **BF-40** | `find[<field>][$exists]=false` returns the documents that **have** the field, on every field, on today's release; repaired on `bf/coercion`. MongoDB reads a non-numeric operand as **true**, so the string `"false"` and the `NaN` the old walker produced both mean *exists* | `lib/server/query.js` `walk_prop` / `lib/server/query-coercion.js` `isValueLeaf` (on `bf/coercion`) + `lib/server/query.js:288` | **medium** — inverted answer, HTTP 200, on a filter any client can send; **and it refutes BF-32's stated mechanism** | yes | **merged 2026-09-18** on `bf/coercion` (`b7234753`), open as PR **#8737** — repaired on a branch, NOT merged, so it still reaches every operator on today's release. Reproduced 2026-09-15 against seven live `mongod` instances (3.6.8 and 7.0.43), identical on all seven — **merged to `dev` via PR #8737 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
 | **BF-41** | A reading timestamped **ahead of the server clock** silently disables *both* stale-data alarm paths: the browser alarm (default **on**) never reaches `warn`/`urgent` because `isStale()` compares a negative age against a positive threshold, and the server push alarm returns before it can fire | `lib/plugins/timeago.js:26` (`lastSGVEntry.mills >= sbx.time` early return) and `:97-98` (`isStale`), with `lib/client/index.js:918-919` | **high** — the one continuous detector a self-hoster has for "my CGM data stopped" is switched off by the very condition most likely to have broken the feed: a clock or timezone error at the uploader | yes | open — derived from source on `origin/dev`, not executed end to end |
 | **BF-42** | `nightscout-connect` **v0.0.13** — the version `origin/master` pins, i.e. the one every current operator runs — writes vendor credentials, session tokens and patient glucose data to the runtime log **unconditionally**, with no setting that turns it off | `nightscout-connect` v0.0.13 (`b394411`): `index.js:54` (`console.log("INPUT PARAMS", spec, validated.config)` — every source, every boot, before any network call), `lib/outputs/internal.js:88`, `lib/sources/minimedcarelink/`, `dexcomshare.js`, `librelinkup.js`, `glooko`; reached via `origin/master:package.json` | **high** — credential disclosure to anywhere the log goes | yes | open — source census of a `git archive` extraction (112 live `console.*` sites, 101 passing a non-literal argument); **not** run against a live vendor. Fix exists upstream but is unreleased — see detail for the per-pin table |
 | **BF-43** | `origin/master` forces `nightscout-connect` onto `axios` **1.16.0**, below the connector's own declared `^1.18.1`. `overrides` suppresses the `ERESOLVE` that would normally reject it, so the violation is silent | `origin/master:package.json` `overrides['nightscout-connect']`; the branches disagree four ways (`1.16.0` on master, `1.20.0` on dev and cuts 1-4, absent on cut 5) | **medium** — a silent constraint violation on the released artefact; no specific broken API identified | yes | open — measured (`semver.satisfies('1.16.0','^1.18.1')` is `false`; master's lockfile confirms the override takes effect). Found by `tools/qc/connector-pin-agreement-gate.js` rule R5 |
@@ -164,7 +181,9 @@ raised again).
 | **BF-52** | The four age plugins **grade the level on a threshold but request the URGENT notification on exact equality** (`age === prefs.urgent`), so the notification can only be asked for in the single evaluation window where the age equals the threshold exactly. Skip that window — a restart, a missed cycle — and the reminder never arrives, while the pill stays urgent | `lib/plugins/insulinage.js:92` and the same shape in `cannulaage`, `sensorage`, `batteryage` | **unsettled** — it may be intentional one-shot behaviour; it is family-wide and predates BF-28 | yes | open — read, not reproduced: no run across a sequence of evaluations was made. **BF-28 masked this on `insulinage` only** by making the URGENT branch unreachable at all; the other three have shipped with it for years |
 | **BF-67** | An out-of-order alarm threshold is **silently rewritten to a neighbour ±1** and the only trace is a `console.warn` on the server. An operator who enters an mmol/L number into a mg/dL field — `BG_HIGH=14` — gets it stored as **181 mg/dL**: the alarm then fires at a number the person never chose, and nothing they can see says so | `lib/settings.js:302-324` `verifyThresholds`, called from `:298`; present on `origin/master` and `origin/dev` alike | **medium** — the guard itself is right and the silence is the defect. It is an alarm threshold for a person managing diabetes, so quietly correcting it is the wrong behaviour even when the correction is sensible | yes | open — read on both refs; **not** reproduced against a running deployment, and no client-side or on-screen surface for the rewrite exists (grep over `lib/client/` and `views/` finds none) |
 | **BF-69** | The Bolus Wizard's quick-pick chooser is **built exactly once, at client construction, from an empty sandbox, and is never rebuilt**. `lib/client/index.js:239` creates `client.sbx` with no data, `:323` constructs `boluscalc`, whose own init calls `loadFoodQuickpicks()` against `client.sbx.data.food` = `[]`; `:596` then REPLACES `client.sbx` on every data update and `:637` calls `boluscalc.updateVisualisations`, which does not rebuild the chooser. `loadFoodQuickpicks` has exactly ONE call site. The chooser therefore offers only "(none)" forever, for every operator, while *Add food from database* works because it reads `sbx.data.food` at click time | `lib/client/boluscalc.js` (single call site at init) + `lib/client/index.js:239,323,596,637` | **medium** — a documented feature is inert for everyone; no wrong number is shown, and the defect it masks (BF-35) is worse than itself | yes | **open, found 2026-09-17** by a maintainer in a browser against the review harness; reproduced on `a8888f0d` AND on `rc/2026-09-dev-cycle`, 8 food records present and the chooser empty on both. A one-line candidate fix — call `loadFoodQuickpicks()` from `boluscalc.prepare()`, which runs on every drawer toggle — was applied to a scratch worktree and **verified**: the chooser then offers the two correct quick picks. **MUST NOT SHIP WITHOUT `bf/food` (#8735)** — see detail |
-| **BF-70** | `GET /api/v1/count/:storage/where` **took its aggregation pipeline from the URL**. `lib/server/aggregate.js` concatenated `opts.pipeline` — and `opts` is `req.query` — into the pipeline it ran, so a caller could splice arbitrary **aggregation stages**, not merely filter operators, into a read. `$lookup` reads a collection the endpoint is not about, and the `{$group: {count: {$sum: 1}}}` the module appends turns the joined result into a number the caller reads back | `lib/server/aggregate.js:21` (`opts.pipeline`), reached from `lib/api/entries/index.js:519` `count_records` | **high** — an oracle over any collection in the database, answered under HTTP 200, on the shipped default `AUTH_DEFAULT_ROLES=readable` which needs **no token**. `$out`/`$merge` are blocked only by the accident that the appended `$group` is last, which nothing asserts | yes | **fixed 2026-09-18** (`bf/operators` `52b7b640`); **reproduced 2026-09-18** through the booted v1 app against `mongod 7.0`, unauthenticated, and the same probe returns 400 after the fix. **DISCLOSURE: see detail before writing this into anything public** |
+| **BF-70** | `GET /api/v1/count/:storage/where` **took its aggregation pipeline from the URL**. `lib/server/aggregate.js` concatenated `opts.pipeline` — and `opts` is `req.query` — into the pipeline it ran, so a caller could splice arbitrary **aggregation stages**, not merely filter operators, into a read. `$lookup` reads a collection the endpoint is not about, and the `{$group: {count: {$sum: 1}}}` the module appends turns the joined result into a number the caller reads back | `lib/server/aggregate.js:21` (`opts.pipeline`), reached from `lib/api/entries/index.js:519` `count_records` | **high** — an oracle over any collection in the database, answered under HTTP 200, on the shipped default `AUTH_DEFAULT_ROLES=readable` which needs **no token**. `$out`/`$merge` are blocked only by the accident that the appended `$group` is last, which nothing asserts | yes | **merged 2026-09-18** (`bf/operators` `52b7b640`); **reproduced 2026-09-18** through the booted v1 app against `mongod 7.0`, unauthenticated, and the same probe returns 400 after the fix. **DISCLOSURE: see detail before writing this into anything public** — **merged to `dev` via PR #8743 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
+| **BF-71** | `enforceDateFilter()` applies the default date window only when **neither** `query[dateField]` **nor** `query.dateString` is present, and the test on the second is a bare **presence check**. So any `dateString` key at all drops the 4-day default: `$ne`, `$exists`, `$gte`, `$regex` were each measured doing it. The window is a paging convenience — its own source comment is `// TODO: discuss/consensus on right value/ENV?` — and **not an access control** | `lib/server/query.js:98` (`!dateValue && !query.dateString`), default set at `:47-48` (`TWO_DAYS * 2`) | **low** — a correctness and consistency defect, **not a privilege boundary**. Measured: the allowlisted, documented `find[date][$gte]=0` returns the identical record set on the identical auth, and every form is **401 under `AUTH_DEFAULT_ROLES=denied`**. It grants a caller nothing they cannot already ask for | yes | **open, found 2026-09-21.** **Reproduced** on `dev` `59430336` through the booted v1 app against `mongod 7.0.43`, unauthenticated, *with its control in the same run*. **This entry exists to correct the record**: the advisory calls this PoC its primary evidence and a full-history PHI dump, and the outcome is real but the mechanism is not a bypass — see detail |
+| **BF-72** | `$regex` on a field is in API v1's accept set **by design**, and reaches `mongod` as a caller-supplied pattern with **no anchoring, length or complexity bound**. `mongod`'s `$regex` backtracks, so a pattern with nested quantifiers evaluated against a repetitive string field turns a collection scan into minutes of database CPU for a single short request | `lib/server/query.js` operator allowlist (`$regex`/`$options` accepted on a field); any v1 read or `/api/v1/count/:storage/where`. `lib/server/query.js` also promotes `treatments.notes` to a regex via the walker as a documented search affordance | **high (availability)** — **unauthenticated on the shipped default `AUTH_DEFAULT_ROLES=readable`**, one request, no token, and Nightscout is a screen someone watches to decide about insulin. Not a data-exposure finding: the collections the scan reaches are already readable on that default | yes | **open, found 2026-09-21.** **Reproduced** on `dev` `59430336`, 20 000 seeded entries, `mongod 7.0.43`: control **22 ms**, three nested-quantifier patterns **60 s / 65 s / 71 s**, stable across two runs. Unchanged by #8743 — the allowlist admits `$regex` deliberately. **DISCLOSURE: see detail before writing this into anything public** |
 
 ## 1b. Pre-release findings
 
@@ -206,7 +225,7 @@ out, because the absence of the check is how a future change becomes wrong silen
 | **BF-64** | **The adopted release train specifies a combination of releases that cannot be built.** It ships cut 5 as a "dependency release" while holding cut 4 back behind a deprecation release — but cut 4 is an **ancestor** of cut 5, so that release would ship the CGM ingestion retirement one release early and *before* the deprecation release that exists to warn operators about it | [release readiness](../modernization/cgm-remote-monitor-release-readiness-2026-09-14.md) §5 and every document repeating it. **No branch is wrong** — the description of how to combine them is | **high** — it silently ships the highest-blast-radius change in the programme ahead of its own warning | open — **reproduced**: `merge-base --is-ancestor` exits 0 (cut 5 is 154 commits past cut 4), and `lib/plugins/bridge.js`/`mmconnect.js` are present on `dev` and cut 3 and **absent** on cuts 4 and 5. Must be resolved before Release 4's contents can be written down |
 | **BF-65** | The adopted train **ships the leaking connector to upgraders first**: cuts 1, 2 and 3 all pin `nightscout-connect` v0.0.13 — the tree **BF-42** describes — and are scheduled first as low-blast-radius releases, while cut 4, which carries most of the redaction, is held back longest | `package.json` on the three lower cut tips, against the adopted train | medium — an operator upgrading to cut 1 or 2 moves from a leaking connector to the same leaking connector | open — the pins are measured; the ordering is **quoted** from the adopted train and was not re-derived. Cheap to remove: all three pin the v0.0.13 **tag**, so moving them to v0.0.14 is the same one-line change as `dev`'s |
 | **BF-66** | The deployment **mints JWTs with no tenant claim**, so under `TENANCY_MODE=multi` with the default `requireTokenClaim` the tenant check refuses every token the deployment itself issues | `lib/authorization/index.js:289` (the only minting path besides `enclave.js:58`); `lib/server/tenant-middleware.js:139-151`, `:181-192`, `:208` | **medium** — **fails safe**, refusing rather than admitting, which is why it has gone unnoticed | open — **reproduced** by executing both modules with the exact payload line 289 mints: `credentialRefusal` returns "This credential does not name a Nightscout site."; the control with a `tenant` field proceeds. Must be fixed by the task that introduces the per-tenant signing key (T3.0), because that task chooses the payload |
-| **BF-68** | `bf/coercion` excludes every non-value operator from type conversion, but **`$type`'s operand has a type of its own**: it takes a BSON type code or a string alias, so `find[sgv][$type]=2` must reach the server as the number `2`. Left as the string `"2"` it is rejected outright. `origin/dev` coerced it along with everything else and it worked, so excluding it turned a working request into an **HTTP 500** — a regression introduced by the fix | `lib/server/query-coercion.js` `NON_VALUE_OPERATORS`, on `bf/coercion` only | **low** — numeric BSON type codes in a v1 filter are rare, and `$type=number` (the alias spelling) was correct throughout | **fixed 2026-09-16** on `bf/coercion` (`f829ea11`), open as PR **#8737** — repaired on a branch, NOT merged. **Reproduced** against live mongod 3.6.8 and 7.0.43, identical on both: `{$type: "2"}` → *"Unknown type name alias: 2"*, `{$type: 2}` → valid. **Fixed in the same branch** by `operandReaderFor`, before the PR was opened; the reader takes a digits-only operand to a number and passes aliases through. Never shipped |
+| **BF-68** | `bf/coercion` excludes every non-value operator from type conversion, but **`$type`'s operand has a type of its own**: it takes a BSON type code or a string alias, so `find[sgv][$type]=2` must reach the server as the number `2`. Left as the string `"2"` it is rejected outright. `origin/dev` coerced it along with everything else and it worked, so excluding it turned a working request into an **HTTP 500** — a regression introduced by the fix | `lib/server/query-coercion.js` `NON_VALUE_OPERATORS`, on `bf/coercion` only | **low** — numeric BSON type codes in a v1 filter are rare, and `$type=number` (the alias spelling) was correct throughout | **merged 2026-09-18** on `bf/coercion` (`f829ea11`), open as PR **#8737** — repaired on a branch, NOT merged. **Reproduced** against live mongod 3.6.8 and 7.0.43, identical on both: `{$type: "2"}` → *"Unknown type name alias: 2"*, `{$type: 2}` → valid. **Fixed in the same branch** by `operandReaderFor`, before the PR was opened; the reader takes a digits-only operand to a number and passes aliases through. Never shipped — **merged to `dev` via PR #8737 on 2026-09-18; NOT RELEASED** (`origin/master` is 299 commits behind `dev`; shipping tag 15.0.8) |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
 
@@ -1062,12 +1081,17 @@ security fix that ships to every current operator.
 > Opened 2026-09-18 as **PR #8743**, merged up to `dev` `fdd08706` the same day (`9745cae2`).
 >
 > **It does NOT close the reported NoSQL-injection advisory, and the row above should not be read as
-> saying it does.** Of that advisory's three proof-of-concepts, only `$where` is refused. The
-> date-window bypass `find[dateString][$ne]=x` — its headline full-history PHI dump — and the
-> `$regex` extraction both still work on the merged tip, measured. `$ne` is an ordinary comparison
-> every client sends; the defect is in where `enforceDateFilter()` applies its bound, and an
-> allowlist structurally cannot reach it. **That needs its own entry and its own change**, and it is
-> the larger of the two remaining.
+> saying it does.** Of that advisory's three proof-of-concepts only `$where` is refused, and the
+> other two are now filed and re-measured: **BF-71** (the date window) and **BF-72** (`$regex`).
+> **REVISED 2026-09-21, and the revision reverses what this paragraph used to say.** It described
+> the date-window path as the advisory's "headline full-history PHI dump" and the larger of the two
+> remaining. Reproduced with a control in the same run, it is **not a privilege boundary at all**:
+> the allowlisted, documented `find[date][$gte]=0` returns the identical records on the identical
+> authorisation, and every form is 401 under `AUTH_DEFAULT_ROLES=denied`. The full-history read is
+> what the shipped `readable` default means, not something this code path grants. BF-71 is `low`.
+> **BF-72 is the one that survives**, and it is an availability defect rather than the extraction
+> the advisory describes: an unauthenticated `$regex` measured at 60–71 s of database CPU against a
+> 22 ms control. Both gradings here had been read off the code rather than run.
 >
 > **The accept set is the seam's, exactly** — `$eq $ne $gt $gte $lt $lte $in $nin $exists $regex`
 > (`$options`) on a field, `$and`/`$or` at the top including the indexed form Trio sends. Not
@@ -3036,6 +3060,150 @@ passing, 3 pending, 0 failing.
 Shipped in PR **#8743**; re-verified on the `dev` merge `9745cae2` — the probe still returns 400 and
 recovers nothing.
 
+
+### BF-71 · the date window is dropped by any `dateString` key — and is not a control
+
+**This entry exists as much to correct the register as to record a defect.** Until now the only
+description of this behaviour in the programme was the note under BF-04, which called it "the
+date-window bypass `find[dateString][$ne]=x` — its headline full-history PHI dump, the advisory's
+own primary evidence", and left it as the larger of the two PoCs still open. That sentence was
+written from reading the code. Running it says something different, and the difference changes what
+should be done about it.
+
+**The mechanism.** `enforceDateFilter()` applies its default bound only when nothing else has
+constrained the date:
+
+```js
+if (!dateValue && !query.dateString && true !== opts.noDateFilter) {
+  var minDate = Date.now( ) - opts.deltaAgo;
+  query[opts.dateField] = { $gte: ... };
+}
+```
+
+`dateValue` is `query[opts.dateField]`. The second test is a bare **presence check** on a different
+field, so the operator involved is irrelevant — the default is dropped by `$ne`, by `$exists`, by
+`$gte`, by `$regex`, by anything that puts a `dateString` key in the query. Refusing `$ne` would
+not touch it, and no operator allowlist can: the key, not the operand, is what disables the bound.
+
+**What it is not, measured.** `opts.deltaAgo` defaults to `TWO_DAYS * 2` at `lib/server/query.js:47`
+under the comment `// TODO: discuss/consensus on right value/ENV?`. It is a paging default. The
+control ran in the same process, on the same seed, against the same `mongod`:
+
+| unauthenticated request | `readable` (shipped default) | `denied` |
+|---|---|---|
+| plain read, no filter | 200, **3 of 10** — window applies | 401 |
+| **control** `find[date][$gte]=0` — allowlisted, documented | 200, **10 of 10** | 401 |
+| `find[dateString][$ne]=x` | 200, **10 of 10** | 401 |
+| `find[dateString][$exists]=true` | 200, **10 of 10** | 401 |
+| `find[dateString][$regex]=.` | 200, **10 of 10** | 401 |
+
+Three entries were seeded inside the window and seven outside it, the furthest 700 days back. The
+control line is the finding: **an ordinary documented filter reaches the identical record set on the
+identical authorisation.** And every form, the control included, is 401 once
+`AUTH_DEFAULT_ROLES=denied` — authorisation runs before the query is built, so nothing here touches
+it.
+
+So the outcome the advisory describes is real — an unauthenticated caller can read the full history
+of a default install — but the cause is not this code path. **The cause is that
+`AUTH_DEFAULT_ROLES=readable` is the shipped default** (`lib/settings.js:39`, documented at
+`README.md:243`), which means exactly that. Calling the `dateString` path a bypass implies a
+boundary it is standing on, and there is no boundary: closing it would change nothing an operator
+is exposed to.
+
+**What is still worth fixing, and why it is `low` and not `none`.** Two ways of expressing the same
+intent are not equivalent — one constrains the window and the other silently removes it — and the
+asymmetry is invisible at the call site. A tenancy or quota layer that assumed `deltaAgo` bounded
+the work a single anonymous request could cause would be wrong, and BF-72 is the case where the
+size of that scan is what matters. Fix it as correctness: test `dateString` the way `dateValue` is
+tested, or bound on whichever date field the query actually names.
+
+*Reproduced* 2026-09-21 on `dev` `59430336`, booted v1 app, `mongod 7.0.43`, no `api-secret`
+header, both role settings in one run. Probe held outside version control with BF-72's — see the
+disclosure note there, which does **not** apply to this entry: nothing about BF-71 is
+exploit-grade, which is the point of it.
+
+**Independently corroborated the same day, by a different session and a wider instrument.**
+`docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md` (untracked as this
+is written — do not link it until it is committed) booted one instance per configuration and
+tabulated fourteen anonymous requests across five `AUTH_DEFAULT_ROLES` settings. Its result for
+this entry matches: `GET /api/v1/count/entries/where` answers 200 under `readable` and **401
+under `denied`**, as does every other v1 and v2 data route including `status.json`. Two probes
+built for different purposes agreeing on the control is better evidence than either alone, and
+that document reaches the conclusion this entry does — the REST surface locks down, so the
+full-history read is the default's meaning and not a bypass. **It also grades this against the
+advisory it came from, `GHSA-r3gv-x7fw-j2v5`**, and finds the `$where` half is what survives.
+
+### BF-72 · an unauthenticated `$regex` can spend minutes of database CPU
+
+> **DISCLOSURE FIRST. Read this paragraph before quoting the rest anywhere public.** This is a
+> **one-request unauthenticated denial of service against a default install**, live on the
+> shipping release and on `dev`, and **this repository is public**. The mechanism is below; the
+> three patterns that produce it are **deliberately not written down here**, and the probe is held
+> outside version control twice over, as BF-70's is. The same sequencing question BF-70 raised
+> applies and has the same answer: it is not an engineering question.
+
+**Found 2026-09-21 while re-measuring the advisory's third PoC.** It is not the defect the advisory
+describes there, and it is worse than the one it does.
+
+`$regex` (with `$options`) is in API v1's accept set **on purpose** — the 14-project client census
+found real clients sending it, and `lib/server/query.js` additionally promotes `treatments.notes`
+to a regular expression through the walker as a documented search affordance. So this is not an
+injection and #8743 did not narrow it: the operator is meant to be there. What is missing is any
+bound on the *pattern*. A caller-supplied string becomes a `mongod` regular expression with no
+anchoring requirement, no length cap and no complexity limit, and `mongod`'s `$regex` implementation
+backtracks. Evaluated across a collection scan, a short pattern with nested quantifiers against a
+repetitive string field costs superlinear time per document.
+
+**Measured**, 20 000 seeded entries, `mongod 7.0.43`, one unauthenticated `GET` each, on
+`/api/v1/count/entries/where`:
+
+| request | wall time |
+|---|---|
+| control — same scan, no `$regex` | **22 ms** |
+| benign anchored prefix `^a` | **29 ms** |
+| nested-quantifier pattern A | **71 s** |
+| nested-quantifier pattern B | **60 s** |
+| nested-quantifier pattern C | **65 s** |
+
+Stable across two independent runs. That is a **2 700×** amplification from a single short request
+with no token, and it needs no unusual configuration: `AUTH_DEFAULT_ROLES=readable` is the shipped
+default, the route needs only `api:entries:read`, and any v1 read path accepts the operator — the
+count endpoint is convenient for measuring, not required. A real site's `entries` collection is far
+larger than 20 000 documents.
+
+**Why this is filed as availability and not exposure.** The collections a scan can reach —
+`entries`, `treatments`, `devicestatus`, the three `prep_storage` admits — are already fully
+readable on that default, and the API returns whole documents, so `$regex` reveals nothing a plain
+read does not. Treating it as a data-extraction oracle, which is how the advisory frames PoC C,
+overstates one half and misses the other. What it costs is the site's availability: Nightscout is
+the screen someone looks at to decide about insulin, and a site that stops answering is the
+failure that matters.
+
+**Of the advisory's three PoCs this is the one that survives.** PoC A (`$where`) is closed by
+#8743; PoC B is BF-71 and is not a boundary.
+
+**On a fix, and what makes it hard.** The operator cannot simply be refused — clients use it, and
+`treatments.notes` search depends on it. The candidates are a pattern length cap, requiring a
+literal prefix, rejecting nested quantifiers, or moving to a linear-time engine; each trades
+capability for cost and **none of them has been measured**, so no fix is claimed here. The honest
+state is: reproduced, unfixed, and the remedy is a decision about the search affordance's contract.
+
+*Reproduced* 2026-09-21 on `dev` `59430336`; unchanged on `origin/master` by inspection — the
+allowlist admits `$regex` on both refs and the route exists on both — **not** separately timed
+there, and that gap is stated rather than papered over.
+
+**Context this entry does not own, and a reader grading severity should have it.**
+`docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md` (untracked as this
+is written) measured five draft GitHub advisories against every documented
+`AUTH_DEFAULT_ROLES` setting, and found **two socket-surface disclosures that no configuration
+stops** — `loadRetro` returning a full device-status document, and an `/alarm` notification
+carrying a treatment's dose and notes, both delivered to an unauthenticated client on an
+instance whose equivalent REST routes answer 401. Those are authorization defects and they are
+**not in this register yet**; they were measured by a different session and are not reproduced
+here, so no entry is filed for them on this pass rather than filing one from someone else's
+numbers. If they are graded, they outrank BF-72: BF-72 costs availability, those disclose
+patient data. Recorded here so the gap is visible from inside the register rather than only
+from that document.
 
 ## 3. How to use this register
 

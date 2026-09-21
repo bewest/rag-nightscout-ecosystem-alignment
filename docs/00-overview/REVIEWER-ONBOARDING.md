@@ -1,7 +1,7 @@
 # Reviewer onboarding — read this first
 
 *Contributor-facing. Written for somebody who has never seen this repository and
-is considering reviewing work in it. Narrative revised 2026-09-16.*
+is considering reviewing work in it. Narrative revised 2026-09-21.*
 
 Thank you for looking. The honest pitch, stated up front so you can decide quickly
 whether to spend the time:
@@ -87,9 +87,14 @@ Twice, a *prescribed fix* would have made things worse. So treat any "the fix is
 as a hypothesis until somebody runs it — and if you are reviewing a fix, that is
 precisely the thing to be suspicious of.
 
-**5. `fixed` does not mean released.** In the register, `fixed` means repaired on a
-branch that has not been merged. Nothing has landed. Reading "13 open" as "13
-defects still shipping" understates operator exposure by an order of magnitude.
+**5. Neither `fixed` nor `merged` means released.** In the register, `fixed` means
+repaired on a branch that has not been merged; `merged` (added 2026-09-21) means
+merged into `origin/dev` and still not released. **Nothing has landed** —
+`origin/master` is 299 commits behind `dev` and the shipping tag is 15.0.8. Reading
+the open count as "the defects still shipping" understates operator exposure by
+about two and a half times; reading `merged` as done drops 23 more. Measured
+2026-09-21: 46 defects reach every self-hoster, of which 19 are open, 23 merged and
+4 fixed.
 
 ---
 
@@ -97,14 +102,22 @@ defects still shipping" understates operator exposure by an order of magnitude.
 
 Three entry points, easiest first:
 
-1. **An open pull request.** [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md) lists all nine
-   with a one-line description, and `reports/reviewer-packets/` has a bounded
-   packet for each. Best first pick: a low-blast-radius one — the packets state
-   blast radius explicitly.
-2. **A security or safety item.** These are the rows with *nobody assigned*.
-   `P0-C` (`bf/auth`) is gate-passing and waiting on a security reviewer who does
-   not currently exist. If that is your area, it is the highest-value thing on the
-   board.
+1. **An open pull request.** [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md) lists them with a
+   one-line description, and `reports/reviewer-packets/` has a bounded packet for
+   each. **Revised 2026-09-21: there is one, and it is in the connector
+   repository** (`nightscout-connect` PR #68). The nine cgm-remote-monitor pull
+   requests this section used to point at all merged between 2026-09-17 and
+   2026-09-20 — which means the easiest entry point has largely closed, and the
+   remaining ones are harder. Say so rather than leave you looking for a list that
+   is no longer there.
+2. **A security or safety item.** These are the rows with *nobody assigned*, and
+   they are now the highest-value place to start. `P0-C` (`bf/auth`) waits on a
+   security reviewer who does not currently exist; it needs a `git merge dev` first
+   (measured conflict-free) because `dev` moved past it on 2026-09-20. `BFQ-72`,
+   filed 2026-09-21, is a one-request unauthenticated denial of service against a
+   default install, live on the shipping release, and what it is blocked on is
+   whether Nightscout's security contact process gets invoked — a decision, not
+   code.
 3. **An `unsettled` item.** `BFQ-09`, `BFQ-52`, `A7A-7` — it is not yet established
    that these are defects at all. Settling one either way is a complete,
    self-contained contribution.
@@ -167,6 +180,6 @@ reads becomes true for them. A contradiction you notice is a real finding.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-15**, against cgm-remote-monitor-official `a8888f0d` and this repository at `75c38a17`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-21**, against cgm-remote-monitor-official `59430336` and this repository at `75c38a17`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

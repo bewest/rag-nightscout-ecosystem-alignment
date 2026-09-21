@@ -112,11 +112,20 @@ function parseRegister(text) {
  * this gate's purposes, because the branch carrying the repair is a queue item
  * and that is what coverage means here. Operator exposure is a different
  * question and DOC-EXPOSURE owns it.
+ *
+ * `merged <date>` ADDED 2026-09-21, and it counts as covered for the same
+ * reason and no other. It means the repair is in `origin/dev` and still not in
+ * any release. Before this line existed, the register's new status read as "not
+ * fixed" here and the gate's own headline count jumped from 44 to 69 overnight
+ * — nothing had regressed, the vocabulary had moved underneath the classifier.
+ * Recorded here rather than left as a bare regex, so the next vocabulary change
+ * is recognised as one.
  */
 function isNotFixed(status) {
   const s = status.toLowerCase();
   if (/closed .*invalid|^\*\*closed/.test(s)) return false;
   if (/^\**fixed\b|^\**partly fixed\b|^\**fixed-in-seam\b/.test(s)) return false;
+  if (/^\**merged\b/.test(s)) return false;
   return true;
 }
 
