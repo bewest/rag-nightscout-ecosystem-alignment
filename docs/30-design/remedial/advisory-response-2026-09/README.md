@@ -26,6 +26,7 @@ public and currently holds the fullest description of both defects anywhere.
 |---|---|---|---|
 | [pr-1-loadretro.md](./pull-requests/pr-1-loadretro.md) | `bf/ws-loadretro-auth` | `dev` | `9765e8cd` |
 | [pr-2-alarm-socket.md](./pull-requests/pr-2-alarm-socket.md) | `bf/alarm-socket-scope` | `dev` | `012f1623` |
+| [pr-3-readable-warning.md](./pull-requests/pr-3-readable-warning.md) | `bf/readable-warning` | `dev` | `74731433` |
 | [reply-to-reporter-ghsa-8849.md](./pull-requests/reply-to-reporter-ghsa-8849.md) | — | — | a comment on PR #1 in the private fork |
 
 Each PR file carries the `gh pr create` invocation at the top and the body below a `## BODY`
@@ -33,8 +34,13 @@ marker. The branches are **local and unpushed**; a human pushes them. They are b
 `origin/dev` `59430336`, touch disjoint files, and `git merge-tree` reports them clean against
 each other, so they can be reviewed and merged in either order.
 
-A third PR — the `readable`-by-world boot warning, register BF-77 — is in preparation on
-`bf/readable-warning`; it is an ordinary defect fix with no disclosure dimension.
+**PR 3 needs one human decision before it goes up**: it adds a *second* notice wording for the
+`readable careportal` configuration, and that is user-facing text in a medical context. Plain
+`readable` is unchanged byte for byte. The proposed wording is in the PR body; the PR also offers
+to drop the second notice and ship only the condition fix if the smaller change is preferred.
+
+All three branches are clean against each other (`git merge-tree`) and all three are based on
+`origin/dev` `59430336`.
 
 ## Advisories
 

@@ -170,8 +170,17 @@ if (env.settings.authDefaultRoles == 'readable') { … "Nightscout readable by w
 
 Run on `dev` and then repeated on **v15.0.8** with the same three arms and the same result:
 `TREATMENTS_AUTH=off` → anonymous read 200, anonymous treatment write 200, `notifyCount` **0**;
-default → `notifyCount` 1, title *Nightscout readable by world*. The source is byte-identical on
-both refs (`lib/server/bootevent.js:149`, `lib/server/env.js:187-190`).
+default → `notifyCount` 1, title *Nightscout readable by world*.
+
+**Correction, 2026-09-21.** An earlier version of this paragraph said the two source files are
+byte-identical between `v15.0.8` and `dev`. **They are not** — `bootevent.js` differs by +5/-5
+(the debounce-logging change) and `env.js` by +34/-2 (the credential coercion, which also moved
+the `careportal` append from `:187-190` to `:195-198`). The two *defect fragments* are unchanged,
+verified fragment by fragment, so the conclusion that this reaches every operator on the shipping
+release stands — but the supporting claim as written would not have survived a maintainer
+checking it, and it was read off a memory of a different measurement rather than run. The
+byte-identity that **was** measured, and holds, is of the four files the socket fixes touch:
+`alarmSocket.js`, `websocket.js`, `hashauth.js`, `authorization/index.js`.
 
 The one configuration that is both world-readable *and* anonymously writable is the one
 configuration whose operator is never told the site is world-readable. The warning fails open
