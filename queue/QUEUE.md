@@ -31,23 +31,23 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 84 |
-| runnable gates | 140 |
-| explicit `no-gate:` markers | 134 |
+| items | 88 |
+| runnable gates | 148 |
+| explicit `no-gate:` markers | 139 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 134 of the 274 gate slots in this queue are in that state, which is the honest shape of the programme today.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 139 of the 287 gate slots in this queue are in that state, which is the honest shape of the programme today.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 32 | RT-VERSION, RT-4, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
-| `gate-not-met` | 15 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 5 | P0-C-REMEDIATE, P0-TAG, T30-AUTH, DOC-VIEWS, DOC-LINKS |
+| `gate-not-met` | 13 | RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
+| `ready-to-push` | 9 | P0-C, P0-J, P0-C-REMEDIATE, P0-TAG, T30-AUTH, DOC-VIEWS, DOC-LINKS, ADV-RETRO, ADV-ALARM |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 1 | P0-F |
 | `merged-upstream` | 11 | P0-A, P0-B, P0-D, P0-E, P0-G, P0-H, P0-I, P0-K, P0-T01, BFQ-04, BFQ-40 |
-| `needs-decision` | 5 | RT-D3, RT-0, T30-RESEARCH, BFQ-72, BFQ-47 |
+| `needs-decision` | 7 | RT-D3, RT-0, T30-RESEARCH, BFQ-72, BFQ-47, ADV-XSS-META, ADV-CONFIG |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
 ### Reaches an operator on today's release
@@ -70,6 +70,10 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-ENV** BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies
 - **BFQ-52** BF-52 - the age plugins can only ask for their urgent alarm in one window
 - **BFQ-67** BF-67 - an alarm threshold is quietly changed and only the server log says so
+- **ADV-RETRO** GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79)
+- **ADV-ALARM** GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76)
+- **ADV-XSS-META** GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74)
+- **ADV-CONFIG** The readable-by-world warning and the careportal role (BF-77, BF-78)
 
 ---
 
@@ -92,8 +96,8 @@ are blocked behind it. The connector half has not moved at all since
 |---|---|---|---|---|---|
 | `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `merged-upstream` | `bf/alarms` | minor | 9 run + 3 no-gate |
 | `P0-B` | bf/cache - PR #8740, T0.2 and T0.3 read-path cost | `merged-upstream` | `bf/cache` | patch | 6 run + 2 no-gate |
-| `P0-C` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | `gate-not-met` | `bf/auth` | major | 4 run + 3 no-gate |
-| `P0-J` | bf/throttle - BF-30, failed-auth throttling, compatibility default | `gate-not-met` | `bf/throttle` | patch | 5 run + 2 no-gate |
+| `P0-C` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | `ready-to-push` | `bf/auth` | major | 4 run + 3 no-gate |
+| `P0-J` | bf/throttle - BF-30, failed-auth throttling, compatibility default | `ready-to-push` | `bf/throttle` | patch | 5 run + 2 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
 | `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `merged-upstream` | `bf/coercion` | minor | 7 run + 1 no-gate |
 | `P0-E` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion | `merged-upstream` | `bf/reads` | major | 10 run + 5 no-gate |
@@ -209,7 +213,7 @@ are blocked behind it. The connector half has not moved at all since
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/auth` |
 | base | `origin/dev@a8888f0d` |
@@ -227,7 +231,7 @@ are blocked behind it. The connector half has not moved at all since
 **Gates.**
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/auth`
-  - bf/auth has not fallen behind origin/dev. RED SINCE 2026-09-21, and correctly: dev moved 45 commits (fdd08706..59430336) taking the eight sibling Phase 0 branches with it, and this one did not follow. Unlike those siblings the question is still the right one - this branch is waiting to be pushed, so being behind dev is a real defect in it. The remedy is a `git merge dev` and it is cheap: the trial-merge gate below PASSES, measured 2026-09-21.
+  - bf/auth has not fallen behind origin/dev. GREEN AGAIN 2026-09-21. It went red when dev moved 45 commits (fdd08706..59430336) taking the eight sibling Phase 0 branches with it while this one did not follow, and the remedy was the `git merge dev` recorded in notes. Unlike the eight merged siblings the question here is still the right one - this branch is waiting to be pushed, so falling behind dev is a real defect in it and this gate should go red again if it happens.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth >/dev/null`
   - trial-merge into origin/dev is conflict-free
 - `[static]` _(cwd: `externals/work/crm-bf-auth`)_ `grep -nE "console\\.log\\('Loading',[[:space:]]*opts\\)" lib/authorization/storage.js && exit 1 || exit 0`
@@ -242,13 +246,13 @@ are blocked behind it. The connector half has not moved at all since
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Sequencing letter C. GT3 also found BF-17's created_at residual: the pick() at endpoints.js:44 is ['_id','name','accessToken','roles','notes'] - notes was added by the fix, created_at was not. RESOLVED 2026-09-16: commit 56ed29d2 removes the leftover console.log('Loading',opts), the last failing gate, and all 3 runnable gates now pass. That line was NOT introduced by this branch - it is on origin/dev at storage.js:84 - and it was taken here rather than left to FU-RESIDUALS because it sits in a file this branch already rewrites and is the same defect class as the count-path filter leak fixed on bf/reads: a per- request debug print of request-derived values. FU-RESIDUALS follow-up 4 is carried BY THIS BRANCH and should not be fixed there a second time - but it is NOT yet closed on dev, and FU-RESIDUALS' gate correctly still fails, because that gate reads origin/dev and the repair only exists on bf/auth until this merges. Same convention as the register's `fixed`: repaired on a branch, not merged. THE REAL RISK ON THIS ITEM, RESTATED 2026-09-16: both no-gate markers still stand and green gates here still do not mean an operator is safe - tokens written in plaintext before the upgrade are untouched by it. What changed is that the remediation is no longer unwritten. P0-C-REMEDIATE is settled as TEXT, not tooling: no detector and no migration, the rotation instructions carried by this branch's PR body and the 15.0.9 release notes, and a gate guarding what they say. That review found the instructions were WRONG - they listed renaming a subject as a rotation, which it is not, because the matcher is name-independent. Corrected. So the sentence a reviewer needs when this PR goes up is not "remediation is missing" but "remediation is a note, the note was wrong once, and here is the gate that says it is right now". STATE CHANGED 2026-09-21 from ready-to-push to gate-not-met, and it cost this item its reviewer packet. dev moved 45 commits on 2026-09-20 and this branch did not follow, so the freshness gate is correctly red and "every runnable gate passes" is no longer true. emit_packets builds packets only for in-flight-upstream, ready-to-push and needs-decision, so this item's packet under reports/reviewer-packets/ was removed on regeneration. THAT IS A REGRESSION IN THE REVIEWER SURFACE, not an improvement: this is the SECURITY item the sequencing document singles out, it still waits on a security reviewer who does not exist, and it is now less visible than it was. THE UNBLOCKING STEP IS ONE COMMAND AND AN AGENT DELIBERATELY DID NOT RUN IT. `git merge dev` in externals/work/crm-bf-auth makes the gate green and the packet come back; the trial-merge gate PASSES, measured 2026-09-21, so it is mechanical. It was left undone for two reasons, both judgement rather than rule: the worktree belongs to an earlier session (rule 5), and a security branch's content changing between preparation and review is the kind of change a reviewer should be told about rather than find. Somebody should decide whether to merge or to widen PACKET_STATES; either is defensible and doing neither leaves the item hidden.
+**Notes.** Sequencing letter C. GT3 also found BF-17's created_at residual: the pick() at endpoints.js:44 is ['_id','name','accessToken','roles','notes'] - notes was added by the fix, created_at was not. RESOLVED 2026-09-16: commit 56ed29d2 removes the leftover console.log('Loading',opts), the last failing gate, and all 3 runnable gates now pass. That line was NOT introduced by this branch - it is on origin/dev at storage.js:84 - and it was taken here rather than left to FU-RESIDUALS because it sits in a file this branch already rewrites and is the same defect class as the count-path filter leak fixed on bf/reads: a per- request debug print of request-derived values. FU-RESIDUALS follow-up 4 is carried BY THIS BRANCH and should not be fixed there a second time - but it is NOT yet closed on dev, and FU-RESIDUALS' gate correctly still fails, because that gate reads origin/dev and the repair only exists on bf/auth until this merges. Same convention as the register's `fixed`: repaired on a branch, not merged. THE REAL RISK ON THIS ITEM, RESTATED 2026-09-16: both no-gate markers still stand and green gates here still do not mean an operator is safe - tokens written in plaintext before the upgrade are untouched by it. What changed is that the remediation is no longer unwritten. P0-C-REMEDIATE is settled as TEXT, not tooling: no detector and no migration, the rotation instructions carried by this branch's PR body and the 15.0.9 release notes, and a gate guarding what they say. That review found the instructions were WRONG - they listed renaming a subject as a rotation, which it is not, because the matcher is name-independent. Corrected. So the sentence a reviewer needs when this PR goes up is not "remediation is missing" but "remediation is a note, the note was wrong once, and here is the gate that says it is right now". MERGED UP 2026-09-21 ON THE MAINTAINER'S INSTRUCTION, and the branch tip is now 404e714c, a merge of origin/dev 59430336 into ce82f0cd. Why it was needed: dev moved 45 commits on 2026-09-20 taking the eight sibling Phase 0 branches with it, this branch did not follow, the freshness gate went red and the item dropped to gate-not-met - which also removed its reviewer packet, because emit_packets builds only for in-flight-upstream, ready-to-push and needs-decision. For the SECURITY item the sequencing document singles out, that was a regression in visibility. It is back to ready-to-push and the packet is regenerated. WHAT THE REVIEWER NEEDS TO KNOW ABOUT THE MERGE, because a reviewer who saw the branch before 2026-09-21 is looking at different content now. Exactly one file is touched by both sides, lib/authorization/storage.js, and they touch different functions: dev's 06b133a7 (BF-01, arriving via bf/reads) replaces the limit() helper on the READ path, while this branch narrows save() to a field allow-list and removes the console.log('Loading',opts) on that same read path. The merge changed 2 lines and removed 4 in lib/authorization/. NOT TRUSTED TO merge-tree, MEASURED. The register's own BF-04 detail records that merge-tree called the #8737 merge CLEAN and the collision was semantic, found only by running the branch's suite - so TEST=authsubjects was run before and after: 8 passing at ce82f0cd, 8 passing at 404e714c, and the console.log tracking gate is still green. THE FULL SUITE WAS ALSO RUN: 2319 passing, 3 pending, 0 failing, at 404e714c against mongod 7.0.43 started with --ulimit nofile=64000:64000. That qualifier is load-bearing - the first attempt at this run killed the server via BF-10 and every downstream timeout looked like a regression.
 
 ### `P0-J` &mdash; bf/throttle - BF-30, failed-auth throttling, compatibility default
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/throttle` |
 | base | `origin/dev@a8888f0d` |
@@ -266,7 +270,7 @@ are blocked behind it. The connector half has not moved at all since
 **Gates.**
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/throttle`
-  - bf/throttle has not fallen behind origin/dev. RED SINCE 2026-09-21, and correctly: dev moved 45 commits (fdd08706..59430336) taking the eight sibling Phase 0 branches with it, and this one did not follow. Unlike those siblings the question is still the right one - this branch is waiting to be pushed, so being behind dev is a real defect in it. The remedy is a `git merge dev` and it is cheap: the trial-merge gate below PASSES, measured 2026-09-21.
+  - bf/throttle has not fallen behind origin/dev. GREEN AGAIN 2026-09-21. It went red when dev moved 45 commits (fdd08706..59430336) taking the eight sibling Phase 0 branches with it while this one did not follow, and the remedy was the `git merge dev` recorded in notes. Unlike the eight merged siblings the question here is still the right one - this branch is waiting to be pushed, so falling behind dev is a real defect in it and this gate should go red again if it happens.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/throttle >/dev/null`
   - trial-merge into origin/dev is conflict-free
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/throttle origin/chore/nightscout-modernization >/dev/null`
@@ -282,7 +286,7 @@ are blocked behind it. The connector half has not moved at all since
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** THE SPLIT, AND WHY IT WAS NOT TIDINESS. bf/auth carried BF-17 and BF-30 together. Asked whether the delaylist was already handled in the modernization work, the measurement said something more useful than yes or no: Andy does not touch lib/authorization/delaylist.js at all - it is byte-identical to dev on his branch - but he REPLACES THE IP DERIVATION THAT FEEDS IT, swapping the forwarded-for package for lib/server/client-ip.js driven by TRUST_PROXY, in exactly the call sites the BF-30 draft also edited. Both branches were independently fixing one root cause with two different modules. Dropping peer- address.js took the conflict from five files to one, and the one that remains belongs to BF-17. WHAT THE COMPATIBILITY DEFAULT COSTS, recorded because it was argued and decided rather than assumed: another release in which an attacker rotating X-Forwarded-For is not throttled. The usual price of turning it on - one failing client behind a shared proxy slowing others - is ALREADY PAID FOR by the sleep-timing change in this same commit, because only failing requests wait. So the compatibility case is weaker here than for the allow- list on P0-C, and that was said at the time. The maintainer's instruction was compatibility defaults plus notification across this area, and that is what shipped. STATE CHANGED 2026-09-21 from ready-to-push to gate-not-met for the same reason as P0-C, and with the same consequence - this item's packet under reports/reviewer-packets/ was removed on regeneration, so its path is deliberately not cited here; it does not resolve and the link gate is right to say so. dev moved 45 commits on 2026-09-20; this branch did not follow; the trial-merge gate still PASSES, so `git merge dev` in externals/work/crm-bf- throttle is the whole remedy. Not run, see P0-C's note.
+**Notes.** THE SPLIT, AND WHY IT WAS NOT TIDINESS. bf/auth carried BF-17 and BF-30 together. Asked whether the delaylist was already handled in the modernization work, the measurement said something more useful than yes or no: Andy does not touch lib/authorization/delaylist.js at all - it is byte-identical to dev on his branch - but he REPLACES THE IP DERIVATION THAT FEEDS IT, swapping the forwarded-for package for lib/server/client-ip.js driven by TRUST_PROXY, in exactly the call sites the BF-30 draft also edited. Both branches were independently fixing one root cause with two different modules. Dropping peer- address.js took the conflict from five files to one, and the one that remains belongs to BF-17. WHAT THE COMPATIBILITY DEFAULT COSTS, recorded because it was argued and decided rather than assumed: another release in which an attacker rotating X-Forwarded-For is not throttled. The usual price of turning it on - one failing client behind a shared proxy slowing others - is ALREADY PAID FOR by the sleep-timing change in this same commit, because only failing requests wait. So the compatibility case is weaker here than for the allow- list on P0-C, and that was said at the time. The maintainer's instruction was compatibility defaults plus notification across this area, and that is what shipped. MERGED UP 2026-09-21 ON THE MAINTAINER'S INSTRUCTION, alongside P0-C and for the same reason. Tip is now a0823c4f, a merge of origin/dev 59430336 into 435419ce. Back to ready-to-push, packet regenerated. ZERO OVERLAP, MEASURED BEFORE MERGING: dev has no commit touching any of this branch's three files (lib/authorization/delaylist.js, lib/authorization/index.js, tests/authdelay.test.js), so unlike P0-C there was no same-file question to reason about. The two properties the 2026-09-16 re-cut exists to preserve were both re-checked after the merge and both hold - no conflict against chore/nightscout-modernization, which is where PR #8605 lives, and no peer- address plumbing on the branch. TEST=authdelay: 11 passing at 435419ce, 11 passing at a0823c4f. ONE THING WORTH RECORDING BECAUSE IT NEARLY BECAME A FALSE FINDING. The first post-merge run of this suite reported 6 passing / 1 failing, a "before all" hook timing out after 30 s. It was not a regression: mongod had fatal-asserted and exited during an unrelated full-suite run, so the boot had nothing to connect to. That is register entry BF-10, and reproducing it is what the red actually measured. A red control can be red for the wrong reason.
 
 ### `P0-C-REMEDIATE` &mdash; Operator remediation for tokens already stored in plaintext - text, not tooling
 
@@ -984,7 +988,7 @@ costs.
 
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 
-**Notes.** CORRECTS release-readiness §5's "each costs zero rebase work today", which was false WHEN WRITTEN - the cut tips date to 2026-09-05/06 and dev's tip to 2026-09-09. The stack's "0 commits behind dev" is true of the TIP only, and only because of one commit, 0a4109f6.
+**Notes.** REBASE PREPARED LOCALLY 2026-09-21, on the maintainer's instruction, in externals/work/crm-cuts. Branches rt/cut1 77d6ffaf, rt/cut2 6106332e, rt/cut3 5bff9225, rt/cut4 8a692d88. NOT PUSHED - rule 0. Done by propagating UP the stack (dev into cut 1, cut 1 into cut 2, and so on) rather than merging dev into each cut independently, so the prefix property is preserved and cut 1's resolutions are inherited. Measured: each cut is still an ancestor of the next, each now contains origin/dev, and all four trial-merge into dev CLEANLY. Propagation also cut the work roughly in half - 7 conflicts at cut 1, then 9 / 5 / 4 instead of the 14 / 16 / 18 each would have had against dev directly. WHY THIS WAS NOT MECHANICAL. Nine of the 25 conflicts were Phase 0 fixes that the cuts predate, and taking the cut's side would have reintroduced each: BF-01 (?count=0 answering with the whole collection), BF-07 (cloning the retained window), BF-16 and BF-35 (the bolus calculator quick-pick filter and chooser), BF-36 (delta merge past the end), plus the BF-04 allowlist and BF-70 pipeline refusal. All seven verified present on cut 4 after the merges. THE STACK TIP CARRIES ONLY TWO THIRDS OF BF-07 and these branches do not copy that. b1bdaca0 keeps getDataRef in lib/server/cache.js and both lib/data/dataloader.js callers but reverted lib/api/entries/index.js to getData: origin/dev has 7 occurrences under lib/, b1bdaca0 has 6, these branches have 7. Worth raising against e3b22034 upstream. THE CONNECTOR PIN AT CUT 4 WAS A REAL FORK, not a mechanical pick. dev's 234d47c8 and cut 4's c962a13f are neither one an ancestor of the other, so either side loses something; resolved to b77e5bb7, which has both, is pushed, and is what the tip pins. That makes P0-PIN/v0.0.14 MORE urgent, not less. TEST RESULTS, on Node 24.20.0 against mongod 7.0.43 - and the Node matters, see RT-NODE-FLOOR- TESTED: cut 1 348 passing, cut 2 357, cut 3 324, cut 4 310, zero failures. Counts differ because later cuts remove suites (cut 4 retires the bridge and mmconnect tests). Cut 1's ported browser coverage was additionally ablated: killing dev's 06372e1d takes it from 21 passing to 12 passing / 9 failing, so it measures the fix rather than decorating it. WHAT IS STILL NOT DONE: the coverage of tests/pluginbase.modern.test.js and tests/profile-sinks.test.js, both deleted by cut 1's jsdom retirement, has NOT been audited against cut 1's Playwright replacements. Only clock-client's was, because that one had a named production fix behind it. 12 it() cases in the first and 6 in the second are unaccounted for. CORRECTS release-readiness §5's "each costs zero rebase work today", which was false WHEN WRITTEN - the cut tips date to 2026-09-05/06 and dev's tip to 2026-09-09. The stack's "0 commits behind dev" is true of the TIP only, and only because of one commit, 0a4109f6.
 
 ### `RT-0` &mdash; Release 15.0.9
 
@@ -1254,7 +1258,7 @@ costs.
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** BATCHED because both are one question - is the floor the software enforces the floor anything actually runs? - and because fixing one without the other leaves the question open. RT-1 carries BF-58 as a no-gate already; this item is the work, that is the measurement.
+**Notes.** MEASURED 2026-09-21 WITH `n exec` AND `docker run`, and the two halves came out differently - one confirmed low, one re-graded to high. BF-59 CONFIRMED low. The concern is that a regression exactly at the floor would go uncaught from cut 3 onward, where the matrix drops to ['22','24']. There is no such regression today: cut 4's unit suite is 310 passing / 0 failing on 22.23.2, the exact floor those cuts stopped testing, and 310 on 24.20.0. Cut 1, whose matrix still carries both floors, gives the same count on each. Lost coverage, not a live defect. BF-58 RE-GRADED low -> high, and the entry's own caveat is why it was wrong. It read "not reproducible against a current image, which satisfies the floor" and "No image was built". An image was built: `node:22-alpine` resolves to v22.22.0, which violates ^22.23.2, and runtime- policy.js refused it INSIDE THAT IMAGE with exit 1. So a container built today from cut 1's own Dockerfile does not boot, and the same holds for all five cuts - every one pins node:22-alpine and every one enforces ^22.23.2 || ^24.20.0. origin/dev is unaffected at >=20.x. WHY IT IS WORSE THAN A BROKEN BUILD: pushing to dev or master fires main.yml's docker-build and publishes to Docker Hub, so merging any cut PUBLISHES the non-booting image rather than failing CI. It is the whole containerised install path on the first modernization release, and it is one line in a Dockerfile. FOUR CANDIDATE TAGS, all measured the same day: node:22.23.2-alpine -> v22.23.2, node:24.20.0-alpine -> v24.20.0, node:24-alpine -> v24.21.0, node:lts-alpine -> v24.21.0. All four satisfy the floor today. NO FIX IS CLAIMED - choosing between an exact pin and a floating major is the same trade this item is about, one level up, and it is the maintainer's. THE BOUNDARY ITSELF IS EXACT AND CORRECT, which is worth stating because it is the part that works: across six versions via `n exec`, 20.20.0 / 22.12.0 / 22.22.0 / 24.15.0 are refused and 22.23.2 / 24.20.0 boot, confirmed by running lib/server/server.js - the `npm start` entry - on each rather than only the module. WORTH KNOWING FOR ANY FUTURE RUN: `n` is installed (N_PREFIX=/home/bewest/n). Use `n exec <version> <cmd>`, NOT `n install`, which switches the machine default - it did, and had to be put back while another session was live. BATCHED because both are one question - is the floor the software enforces the floor anything actually runs? - and because fixing one without the other leaves the question open. RT-1 carries BF-58 as a no-gate already; this item is the work, that is the measurement.
 
 ### `RT-BOOTERROR` &mdash; BF-63 - the page that reports a boot error crashes on cut 4's boot errors
 
@@ -1294,7 +1298,7 @@ costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 26 items
+`parcel: register-open` &mdash; 30 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1328,6 +1332,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-ENV` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | `gate-not-met` | `-` | minor | 4 run + 2 no-gate |
 | `BFQ-52` | BF-52 - the age plugins can only ask for their urgent alarm in one window | `unsettled` | `-` | patch | 0 run + 2 no-gate |
 | `BFQ-67` | BF-67 - an alarm threshold is quietly changed and only the server log says so | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
+| `ADV-RETRO` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) | `ready-to-push` | `bf/ws-loadretro-auth` | patch | 2 run + 1 no-gate |
+| `ADV-ALARM` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) | `ready-to-push` | `bf/alarm-socket-scope` | minor | 2 run + 2 no-gate |
+| `ADV-XSS-META` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | `needs-decision` | `-` | n/a | 2 run + 1 no-gate |
+| `ADV-CONFIG` | The readable-by-world warning and the careportal role (BF-77, BF-78) | `needs-decision` | `-` | patch | 2 run + 1 no-gate |
 
 ### `BFQ-09` &mdash; BF-09 - socket dedup truthiness skips a falsy value
 
@@ -1387,7 +1395,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `[static]` _(cwd: `externals/cgm-remote-monitor-official`)_ `grep -q 'ulimits' docker-compose.yml`
   - FAILS today. GT3 verified the mongo service carries no ulimits block on EITHER master (mongo:5.0.32) or dev (mongo:4.4), and grep for ulimit/nofile over the whole released tree returns nothing.
-- **NO GATE** &mdash; Nothing reproduces the fatal assert. It needs a container started under nofile=1024 with enough load to reach the limit, and a control started with the ulimit raised - otherwise a green docker-compose is not evidence the setting does anything.
+- **NO GATE** &mdash; REPRODUCED 2026-09-21, unplanned, so this marker no longer says nothing reaches it - but it stays a no-gate because the reproduction is not something to run on demand. What happened: one branch's full suite (~2200 tests) against a plain `docker run -d mongo:7` with no ulimits killed the server. Startup warning `Soft rlimits for open file descriptors too low` (currentValue 1024, recommendedMinimum 64000), then during index creation `__posix_directory_sync` / `Too many open files` / error_code 24, then `Fatal assertion 23089 msgid 50853` at wiredtiger_util.cpp:772, then abort. Container exit 14. The control was run: the same image with `--ulimit nofile=64000:64000` logs that warning ZERO times against TWO on the default. WHY IT IS STILL NOT A GATE. Reaching it takes a full suite against a deliberately under-provisioned mongod, and the side effect is a DEAD server - two sibling worktrees sharing that mongod then failed their own suites with a `before all` timeout, which reads exactly like a code regression. A gate whose failure mode is breaking other items' gates does not belong in a runner other sessions share. Evidence recorded in the register's BF-10 detail instead. TWO THINGS THE REPRODUCTION ADDS. It is not specific to the 4.4/5.0 images the shipped compose files pin - 7.0.43 does it too. And it does not need tenant scale: EXP-MT-040b reached it at 50 tenant databases, one ordinary test run is enough.
 
 **Evidence.**
 
@@ -2155,6 +2163,154 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/e4-queue-register-reconciliation-2026-09-15.md`
 
 **Notes.** CORRECTS BF-67, measured while building the gate. The entry says "The same applies at the bottom - a BG_LOW of 3.9 becomes bgTargetBottom - 1 = 79". IT DOES NOT. The low check is `bgLow >= bgTargetBottom`, so a value far BELOW the band passes through untouched and BG_LOW=3.9 is stored as 3.9. The low-side rewrite is real from the other direction (BG_LOW=90 -> 79). The refuted half leaves a DIFFERENT and worse residue that no entry owns - a low alarm set to 3.9 mg/dL can never fire, and is stored with no warning of any kind. Also relevant to T3.0: the per-tenant configuration spec proposes a CHECK constraint as a backstop for this, and it is not one - a partial override leaves absent paths SQL NULL, the AND chain evaluates to NULL rather than FALSE, and PostgreSQL accepts the row.
+
+### `ADV-RETRO` &mdash; GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79)
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/ws-loadretro-auth` |
+| base | `origin/dev@59430336` |
+| worktree | `externals/work/crm-adv-retro` |
+| semver | `patch` |
+| review | SECURITY. The advisory is a GitHub draft with no CVSS vector and a bare `high`, and three of its statements need correcting before publication. (1) AFFECTED RANGE IS WRONG. It says >0.8.1; loadRetro is absent from tags 0.8.1 through 0.8.4 and first appears in 0.9.0 - which is also the first tag carrying DataReceivers and authDefaultRoles, so the handler and the authorization it skips shipped together. Should be >=0.9.0. (2) "This does not require any specific configuration on the system" is true of reachability and false as an impact claim. On the shipped readable default the payload is a STRICT SUBSET of what GET /api/v1/devicestatus.json already serves anonymously - measured field by field: 0 socket record _ids absent from the REST answer, 0 JSON field paths present only on the socket, and REST returned 1730 records to the socket's 574. Marginal disclosure on a default install is zero. (3) It understates the hardened case. Under AUTH_DEFAULT_ROLES=denied, with every REST read answering 401 in the same run, the handler returns 576 records - 28.8x MORE than an authorized reader gets on connect, because authorize() trims to 10 per device-and-type. No setting stops it: denied, status-only, AUTHENTICATION_PROMPT_ON_LOAD and TREATMENTS_AUTH=off were each measured. DEVICESTATUS_DAYS=2, the only knob touching the path, DOUBLES it to 1150. Recommended: score CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N = 7.5 and say it scores the hardened configuration; the default arm is 0.0 and publishing a high score against it would alarm the majority of self-hosters about their own public output. PATCHED-VERSION FIELD: LEAVE EMPTY until a tagged release carries this. origin/master is 299 commits behind dev and neither carries the fix. |
+| ships to operators today | **yes** |
+| register | `BF-79` |
+
+**Blast radius.** 1 commit at 9765e8cd. lib/server/websocket.js (+36/-4) and one new test file, tests/websocket.loadretro-authorization.test.js (210 lines, 4 cases). No other file. The change adds resolveReadAccess(), which calls the verifyAuthorization() already in that file with an empty message, so an anonymous socket resolves through the same AUTH_DEFAULT_ROLES shiros the REST surface uses. Verified NOT to interact with the failed-login throttle - an empty auth message takes authorization.resolve()'s !authAttempted branch and never records a failure.
+
+**What an operator sees.** Nightscout's live connection had one message that answered anybody. If you run the default setup, where your site is already readable by anyone with the address, this changes nothing you can see and leaked nothing you were not already publishing - it returned less than your own web address does. If you followed the documentation and turned off unauthorised access, it did matter: about a day of pump and loop information - insulin on board, reservoir and battery levels, whether the pump was delivering or stopped, your pump's serial number and your phone's name - could still be read by anyone who knew your address, even though every other way in was refused. After this change that message follows the same rule as everything else. Nightscout is not a medical device and this is not medical advice.
+
+**Why `patch`.** No route removed, no input added, no documented contract changed. The only behaviour that disappears is behaviour nobody was entitled to: on a `readable` instance an anonymous client still receives retroUpdate, which was confirmed as a live positive control on the fixed build.
+
+**Gates.**
+
+- `[static]` `git -C externals/work/crm-adv-retro merge-base --is-ancestor origin/dev bf/ws-loadretro-auth`
+  - The branch is still based on dev's tip. Goes red the moment dev moves under it, which is the signal to rebase before anyone reviews it.
+- `[static]` `test -f externals/work/crm-adv-retro/tests/websocket.loadretro-authorization.test.js`
+  - The regression test exists in the worktree. Deliberately a file- existence check rather than a suite run - see the unit gate below.
+- **NO GATE** &mdash; NO GATE RUNS THE SUITE HERE. `npm test` on this tree needs a my.test.env and a mongod of its own, and the two sessions that ran it on 2026-09-21 both had to raise the container's nofile limit first (the default 1024 exhausts mongod's descriptors part-way through, which is BF-10's failure mode arriving in the lab). Measured by hand on a healthy mongod 7.0.43: 2311 passing / 3 pending / 0 failing before, 2315 / 3 / 0 after, delta exactly the four new cases. Ablation - revert lib/server/websocket.js to origin/dev, keep the test - turns the two negative cases red printing the symptom itself, canaried devicestatus arriving at a socket the server had already resolved as unable to read, while the two positive cases stay green. Automating this needs a fixture that owns its own mongod.
+
+**Evidence.**
+
+- `docs/60-research/remedial/ghsa-gjhc-loadretro-2026-09-21.md`
+- `docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md`
+- `docs/30-design/remedial/security-advisory-disposition-2026-09-21.md`
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** REPRODUCED on v15.0.7, v15.0.8 and dev 59430336, both arms, mongod 7.0.43, with the isolating control in every run: the same unauthenticated socket that never emits loadRetro sees only the event `clients`. Six of the seven handlers on that namespace DO check - dbAdd, dbUpdate, dbUpdateUnset and dbRemove all answer "Not authorized" and write nothing, confirmed against the collection rather than the reply string. loadRetro is the single unguarded one, which is why it is cheap to fix and easy to have missed. The attacker never calls `authorize`: trying and failing disconnects the socket, so the gate is one to walk around rather than through.
+
+### `ADV-ALARM` &mdash; GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76)
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/alarm-socket-scope` |
+| base | `origin/dev@59430336` |
+| worktree | `externals/work/crm-adv-alarm` |
+| semver | `minor` |
+| review | SECURITY. THE SHAPE DECISION IS TAKEN - Ben West, 2026-09-21, SHAPE B: admit at connection time when the deployment's anonymous default role already permits reading, re-evaluate on subscribe, and gate delivery on api:*:read. He separately judged the shipped web client to be the only consumer of /alarm - the fact that would have argued for the strict shape - and chose B anyway, as insurance against that judgement being wrong. The paragraph below is kept as the record of what was weighed. THERE IS A SECOND PR IN PLAY: the advisory's reporter opened one in GitHub's private fork (nightscout/cgm-remote-monitor-ghsa-8849-qjp5-vrrj PR #1, based on v15.0.8) on 2026-09-18. Measured, it does NOT close the bypass: it gates on AUTHENTICATION_PROMPT_ON_LOAD rather than AUTH_DEFAULT_ROLES, so on a hardened instance with the prompt flag at its default a never-subscribing socket still receives everything; and even where it engages it never consults api:*:read, so a token granting only api:treatments:create hears every alarm while getting 401 on every REST read in the same run. Any reviewer of this branch should read ghsa-8849-reporter-pr-evaluation-2026-09-21.md and decide how the two PRs are reconciled and how the reporter is credited. THE SUPERSEDED SHAPE, FOR THE RECORD: shape A required SUBSCRIBED AND AUTHORIZED. On the shipped `readable` default, receiving without subscribing is behaviour third-party clients have observed for five releases: the /alarm protocol is in no swagger file and nothing under docs/, so implementers had only the observed behaviour to go on. Measured, the marginal CONTENT disclosure on that default is zero - every field in all five payloads is already in treatments.json, entries.json or status.json, and notifyhash/key are sha1 over already-readable fields. So the strict version breaks non-subscribing clients for no confidentiality gain on the majority configuration. A one-line variant - join at CONNECTION time when the anonymous default role already permits reading, re-evaluate on subscribe - closes the `denied` bypass identically and changes nothing on a default install. Too tight and a follower app silently stops delivering hypo alarms; too loose and the bypass stays open. THAT WAS THE DECISION, AND IT WENT TO B. Second thing the reviewer should be told: BF-76 is NOT part of the advisory. It was found while fixing BF-75 - the access-token branch of subscribe registered socket.on('ack') with no permission check, so any valid token of any role could silence every alarm on the instance, with a caller-supplied silenceTime that has no upper bound. Authorization is fixed; the unbounded silence is left open on purpose, because what a legitimately authorized client may ask for is a product decision. Third: no automated test drives hashauth against a live socket. A human must load a `denied` instance, authenticate at the prompt, force an alarm and confirm it arrives. That is the one path the 28 new cases do not cover. |
+| ships to operators today | **yes** |
+| register | `BF-75`, `BF-76`, `BF-80` |
+
+**Blast radius.** REBUILT 2026-09-21 on fix shape B after the maintainer decision; the old shape-A tip is preserved at refs/backup/alarm-shapeA = 842d81fb in that worktree and can be deleted once the rebuild is accepted. 2 commits at 012f1623. fd80e6a2 is the broadcast fix as ONE coherent shape-B change plus a 49-case regression test; 012f1623 is the ack-authorization fix plus 2 cases. There is deliberately no A-then-B pair in the history. lib/api3/alarmSocket.js (+74/-19), lib/client/hashauth.js (+8), two new test files. The client change is the part to look at hardest: it re-runs subscribeForAlarms from hashauth.updateSocketAuth, because client.subscribeForAlarms had exactly ONE call site - the socket's connect handler - and nothing re-subscribed when a viewer authenticated in the page. Without it, load -> refused -> prompt -> enter secret would leave that socket in no room, silently receiving no alarms, for the one user who had just proved entitlement. The source was already asking this at alarmSocket.js:150: "TODO: how will perms get updated after authorizing?".
+
+**What an operator sees.** Nightscout sends alarms and treatment notifications over a live connection. That connection was sending them to everyone attached to it, whether or not they had signed in. If you run the default setup your site already publishes this information to anyone with the address, so nothing new was exposed - what it added was that someone could watch it arrive in real time without ever making a request your logs would record. If you had turned off unauthorised access, it did matter: carb entries, insulin doses, loop activity, and your high and low alarms were still going out to anyone who connected. After this change, only viewers your site has authorised receive them. If you use a third-party follower app that shows Nightscout alarms and it stops showing them after this update, that is this change - please report it, because the connection it uses has never been documented. Nightscout is not a medical device and this is not medical advice; if you rely on these alarms, keep a second way of being alerted until you have confirmed yours still works.
+
+**Why `minor`.** It removes reachable behaviour that undocumented third-party clients may depend on - receiving alarms without subscribing - so it is not a patch by the project's own reading, whichever variant of the fix is chosen. Not major: no route removed, no required input added, and the shipped web client is unaffected because it subscribes.
+
+**Gates.**
+
+- `[static]` `git -C externals/work/crm-adv-alarm merge-base --is-ancestor origin/dev bf/alarm-socket-scope`
+  - The branch is still based on dev's tip; red means rebase before review.
+- `[static]` `test -f externals/work/crm-adv-alarm/tests/api3.alarm-socket.security.test.js -a -f externals/work/crm-adv-alarm/tests/api3.alarm-socket.ack.test.js`
+  - Both regression test files exist in the worktree.
+- **NO GATE** &mdash; NO GATE RUNS THE SUITE, for the same reason as ADV-RETRO: it needs a my.test.env and a dedicated mongod whose nofile limit has been raised. Measured by hand on mongod 7.0.43, SHAPE B: 2311 passing / 3 pending / 0 failing before, 2362 / 3 / 0 after, delta exactly the 51 alarm cases. The 2311 is derived twice over and agrees: 2339-28 from the superseded shape-A run and 2362-51 from this one. Run against UNFIXED dev code the new tests go 29 passing / 22 failing, and the 29 that pass are the positive-delivery and REST-control assertions - which is what makes the 22 attributable to the defect rather than to the harness. FIVE ablations, each breaking one thing, each red for its own reason: A1 reverts the five to(ROOM) emits -> 20 fail, symptom named on the never-subscribed socket, all 25 delivery assertions green; A2 forces the read check true -> 21; A3 forces entitlement true ONLY on the subscribe path -> exactly the 15 unauthorized-subscriber cases plus the ack report, never-subscribed rows green; A4 removes the connect-time admission, i.e. REVERTS TO SHAPE A -> exactly the five [SHAPE B] cases, which is the regression guard for the maintainer's decision; A5 removes the ack guard -> 2. A1 and A3 are the two independently load-bearing halves. A suite asserting only non-delivery would sail through a too-tight room, so the value is in the delivery rows. FIVE CASES CHANGED THEIR EXPECTATION FROM SHAPE A and only those five - a never-subscribed socket on a readable instance must now RECEIVE. They are tagged [SHAPE B] in their names so a reviewer sees them in the runner output, and A4 proves they are the ones that go red if anyone re-tightens the room. Two cases were DELETED: anonymous REST controls against /api/v3/entries, which were wrong - v3 demands a bearer token on every value of AUTH_DEFAULT_ROLES, so they measured nothing.
+- **NO GATE** &mdash; NO GATE COVERS THE CLIENT HALF. Nothing drives lib/client/hashauth.js against a live socket, and the client change is the part that could silently drop a real hypo alarm. Human verification required - see the review field.
+
+**Evidence.**
+
+- `docs/60-research/remedial/ghsa-8849-alarm-socket-2026-09-21.md`
+- `docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md`
+- `docs/30-design/remedial/security-advisory-disposition-2026-09-21.md`
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** REPRODUCED on v15.0.8 and dev 59430336, both arms, all FIVE event classes (notification, announcement, alarm, urgent_alarm, clear_alarm), each caused through the real server path - threshold crossings via POST /api/v1/entries into simplealarms, treatment writes into treatmentnotify. No ctx.bus.emit was used for any matrix cell. In every `denied` row the four v1 REST routes answered 401 in the same process at the same moment; that is the control that makes it a bypass rather than the documented default. Sharpest datum: under `denied` the server answers a subscribing anonymous socket {"success":true,...,"read":false,"ack":false} - it computes the correct authorization decision, sends it to the client, and delivers everything anyway. subscribe gates acknowledgement rights and nothing on the receive side. The advisory's authenticationPromptOnLoad claim is CONFIRMED exactly: the subscribe is refused, the socket is not disconnected, and it still receives all five. Range >=15.0.0 is correct; 89d7eb679 is first contained in tag 15.0.0. Turning careportal off via ENABLE= removes notification and announcement by removing the feature, and alarm/urgent_alarm/clear_alarm still arrive - so that is not a mitigation either. BF-80 IS THE COST OF THIS FIX AND IS FILED AGAINST IT DELIBERATELY. Once delivery depends on a resolved entitlement it inherits the failed-login delay list: a socket from an address that recently failed an authentication sits outside the delivery room for the accumulated penalty, 5 s per failure, and the list is keyed on the remote address so a household behind one NAT address is one key. Measured on the fixed build with the alarm fired 2 s after connect: 0 failures -> received at 2.0 s (clean control), 1 -> 4.9 s, 3 -> 10.0 s, 6 -> 15.0 s. A shape assertion, not a threshold. NO shape of this fix avoids it - the pre-fix code avoided it only by checking nothing - so it is not a reason to prefer a different shape. Deliberately NOT fixed here: narrowing a brute-force control needs its own change and its own review.
+
+### `ADV-XSS-META` &mdash; GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74)
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/master@92d08342` |
+| worktree | `externals/work/crm-adv-xss` |
+| semver | `n/a` |
+| review | MAINTAINER, plus whoever owns the GitHub advisory drafts. Four metadata corrections, all derived rather than estimated: GHSA-mjp4-84fw-gj4v - affected <= 15.0.7 confirmed; set patched_versions to 15.0.8, which currently sits BLANK against a closed vulnerable range, saying "fixed in something" and "fixed in nothing" at once. Severity high unchanged. Add CVSS 4.0 AV:N/AC:L/AT:N/PR:L/UI:A/VC:H/VI:H/VA:N/SC:N/SI:N/SA:N = 8.4 (its own proposed vector with UI:P corrected to UI:A) and CVSS 3.1 AV:N/AC:L/PR:L/UI:R/S:C/C:H/I:H/A:N = 8.7. GHSA-5mrq-gpqw-q5v5 - `critical` OVERSTATES IT; recommend `high` at the same 8.4. The arithmetic matters and the intuitive answer is wrong: correcting UI:P to UI:A moves 9.3 to 9.2, still Critical. What produces Critical is SC:H/SI:H, and that is a double count - the stolen API secret's entire blast radius IS the Nightscout instance, which is the vulnerable system and is already counted by VC:H/VI:H. There is no subsequent system. The escalation itself must NOT be softened: lib/client/hashauth.js stores sha1(API_SECRET) in localStorage and that hash IS the value the api-secret header accepts, so same-origin script gets admin. That belongs in VC:H/VI:H, where it now is. BOTH should state that no stored-data remediation is needed after upgrading from 15.0.7 - see notes. The current state, one `critical` with SC:H/SI:H and one `high` with SC:N/SI:N for the identical credential theft, is the thing most needing correction. Then two decisions that are contract questions, not bugs. BF-73: express's errorhandler is mounted with its NODE_ENV === 'development' guard COMMENTED OUT, identically at v15.0.7, v15.0.8 and dev, and git log -L carries those four lines back to 7947e300 in 2019 - so it was deliberate, and restoring the guard is a decision about what a production error page owes an operator debugging their own site. BF-74: API v3 `settings` writes skip the purifier every other v3 collection gets; purifying UI-configuration values could corrupt them, and no first-party sink consumes the field, so the right answer may be a comment rather than a fix. |
+| ships to operators today | **yes** |
+| register | `BF-73`, `BF-74` |
+
+**Blast radius.** NO CODE CHANGE PROPOSED for the two advisories - the fixes shipped in 15.0.8 (72a2257e, a6835ca3, da548d2a, all contained in tag v15.0.8). What is outstanding is advisory metadata plus two decisions, BF-73 and BF-74, that were found beside them and that neither advisory covers.
+
+**What an operator sees.** Two reported ways of storing malicious content in your Nightscout were fixed in release 15.0.8. If you are on 15.0.8 or later you need do nothing, including nothing about entries that were already saved: a payload stored by an older version does not run on a patched server. This was checked by putting one straight into the database and then opening the pages that display it. If you are still on 15.0.7 or earlier, upgrading is the fix. Nightscout is not a medical device and this is not medical advice.
+
+**Why `n/a`.** No code change is proposed by this item; the fixes already shipped.
+
+**Gates.**
+
+- `[static]` `git -C externals/work/crm-adv-shipping tag --contains a6835ca3 | grep -qx v15.0.8`
+  - The purification commit really is in the 15.0.8 tag. This is the claim the whole item rests on - that operators on the shipping release are already fixed - so it is the one thing gated rather than asserted.
+- `[static]` `git -C externals/work/crm-adv-shipping grep -q "purifyObject" v15.0.8 -- lib/server/websocket.js`
+  - The socket write path calls the purifier at v15.0.8; it does not at v15.0.7.
+- **NO GATE** &mdash; THE RENDER-SIDE AND STORED-PAYLOAD RESULTS ARE NOT GATED and cannot cheaply be. They needed a real headless Chromium against /report and a jsdom+d3 harness loading each ref's own renderer.js, with the payload inserted straight into mongo to bypass every write path. Recorded in the evidence document with their v15.0.7 positive controls; re-running them is a half-day, not a gate.
+
+**Evidence.**
+
+- `docs/60-research/remedial/ghsa-xss-pair-verification-2026-09-21.md`
+- `docs/reports/security-hotfix-eval-2026/report-01-stored-xss.md`
+- `docs/30-design/remedial/security-advisory-disposition-2026-09-21.md`
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** VERIFIED, NOT ASSUMED, and every "fixed" cell is paired with a positive v15.0.7 control from the same run - four write paths across three refs, end- to-end over real HTTP and socket, with the document read back out of mongo, and v3 driven with a real JWT on all three refs. The fix is BROADER than either advisory claims: PUT /api/v1/treatments/, POST /api/v1/food and POST /api/v1/activity also had no purification at 15.0.7 and now do. THE HEADLINE, and the one thing source-reading could not have answered: a payload a 15.0.7 server had ALREADY STORED does not fire on a patched server. At 15.0.7 the day-to-day report executed it in a real browser (document.title changed, three live img[onerror]); at 15.0.8 and dev it renders as visible text. That is true only because the output-escaping half of the fix (da548d2a) landed alongside the purification half - had only the purifier shipped, the answer would be the opposite. Both advisories should say so. Residual sinks: NONE. 32 `.html(` sites on dev classified; a mechanical scan for unescaped free-text interpolation found 25 hits across 10 files at v15.0.7 and ZERO at v15.0.8 and dev. The earlier internal report's sweep claim is understated - it names 4 files, the shipped sweep covers 10. Sanitizer bounds: a string over 64 KiB is NOT passed through unsanitized - it throws RangeError and the write is REFUSED on all four paths, fail-closed. The POSSIBLE_HTML_MARKUP pre-filter IS evadable, but none of the three evading forms executes at any sink on any ref, including v15.0.7 - which is the defence-in-depth argument the purifier's own header makes, now measured. BF-73 was filed BECAUSE the XSS fix created its trigger: the new RangeError escapes uncaught to the error page. Independently reproduced against v15.0.8 by the coordinating session - the 500 body named six absolute paths and the deployment's directory layout.
+
+### `ADV-CONFIG` &mdash; The readable-by-world warning and the careportal role (BF-77, BF-78)
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/master@92d08342` |
+| worktree | `externals/work/crm-advisory` |
+| semver | `patch` |
+| review | MAINTAINER - both are contract questions about the configuration surface, not bugs with an obvious patch. They are two halves of one trap and should be decided together. TREATMENTS_AUTH=off appends ' careportal' to authDefaultRoles; the boot warning compares that string for equality with 'readable'; so the notice is suppressed in exactly the configuration that is both world-readable AND anonymously writable. Meanwhile careportal alone grants only api:treatments:create and is refused by the router's api:treatments:read gate before reaching the create route - so the ONLY configuration in which careportal does anything is the one whose warning BF-77 suppresses. An operator who wants anonymous careportal entry is steered, by the only route that works, into the configuration that stops warning them. Note BF-78 fails CLOSED - nothing is exposed - which is why it is low; the defect is silence, not access. |
+| ships to operators today | **yes** |
+| register | `BF-77`, `BF-78` |
+
+**Blast radius.** No branch yet. BF-77 is a one-line change at lib/server/bootevent.js:149 - test for the `readable` role's presence in the resolved list rather than string equality with it. BF-78 has three possible shapes and none is obviously right, which is why this is needs-decision rather than not-started: give the careportal role the read permission its routes require; move the router-wide read gate at lib/api/treatments/index.js:26 below the create route at :146; or document that careportal only functions alongside `readable` and say so at boot when it does not.
+
+**What an operator sees.** Two things about the settings that control who can see your Nightscout. First, if you set TREATMENTS_AUTH=off, the warning that normally tells you "your Nightscout is readable by anyone who knows the address" stops appearing - even though that setting also lets anyone add treatments. The site is not more exposed than you asked for, but you stop being told. Second, setting AUTH_DEFAULT_ROLES=careportal on its own does nothing at all: the documentation says any valid role name works, and this one is silently ignored, with no error anywhere. If you wanted "nobody can read my site, but my family can enter carbs without a token", that combination does not currently exist. Nightscout is not a medical device and this is not medical advice.
+
+**Why `patch`.** BF-77 restores a notice that was intended; no interface changes. BF-78's semver depends on which of the three shapes is chosen - giving careportal a read permission would widen a documented role and is at least minor, so that half is deliberately left unscored until the decision is taken.
+
+**Gates.**
+
+- `[static]` `git -C externals/work/crm-adv-shipping grep -q "authDefaultRoles == 'readable'" v15.0.8 -- lib/server/bootevent.js`
+  - The exact-string compare is still present on the shipping release. Goes green->red when BF-77 is fixed, which is the point.
+- `[static]` `git -C externals/work/crm-adv-shipping grep -q "isPermitted('api:treatments:read')" v15.0.8 -- lib/api/treatments/index.js`
+  - The router-wide read gate BF-78 is about is still present on the shipping release.
+- **NO GATE** &mdash; THE BEHAVIOURAL HALF IS NOT GATED. Both findings were measured by booting the tree in three and four configurations respectively and reading GET /api/v2/adminnotifies and the result of an anonymous treatment POST. Automating that needs a fixture that boots the app per configuration, which does not exist in this repo. The measurements and their controls are in the evidence document; the two source gates above are the cheap proxy and they measure presence, not behaviour.
+
+**Evidence.**
+
+- `docs/60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md`
+- `docs/30-design/remedial/security-advisory-disposition-2026-09-21.md`
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** FOUND WHILE BUILDING THE CONTROL, not while looking for them - the configuration matrix exists to answer "were the right flags set when the five advisories were evaluated", and these two fell out of enumerating what AUTH_DEFAULT_ROLES actually gates. REPRODUCED on v15.0.8 AND dev 59430336, mongod 7.0, with both controls in the same run. BF-77: default -> notifyCount 1, title "Nightscout readable by world" (POSITIVE CONTROL, the notice does fire when it should); TREATMENTS_AUTH=off -> notifyCount 0 while anonymous read is 200 and anonymous POST /api/v1/treatments is 200 with the record stored; AUTH_DEFAULT_ROLES=denied -> notifyCount 0, correctly (NEGATIVE CONTROL, so absence in the middle row is attributable to the string compare and not to the notice being broken generally). BF-78, anonymous POST /api/v1/treatments: `readable careportal` 200 stored, `careportal` 401, `denied careportal` 401, `denied` 401.
 
 ---
 

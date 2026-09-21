@@ -23,10 +23,10 @@ this page's job is to say which of those to open.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 54 | 21 | 9 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 58 | 21 | 15 |
 | **Modernization** | `release-train` | 12 | 2 | 2 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **84** | **32** | **14** |
+| | **total** | **88** | **32** | **20** |
 
 <!-- END GENERATED: horizons -->
 
@@ -95,6 +95,10 @@ several cover more than one `BF-`:
 
 | id | claimed state | defect |
 |---|---|---|
+| `ADV-ALARM` | `ready-to-push` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) |
+| `ADV-CONFIG` | `needs-decision` | The readable-by-world warning and the careportal role (BF-77, BF-78) |
+| `ADV-RETRO` | `ready-to-push` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) |
+| `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | `BFQ-04` | `merged-upstream` | BF-04 - the v1 operator allowlist, EXTRACTED 2026-09-18 - superseded by P0-K |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value |
 | `BFQ-10` | `not-started` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
@@ -124,9 +128,9 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 | parcel | `not-started` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `unsettled` | total |
 |---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 1 | 3 | 2 | 3 | 1 | 9 |  |  | **19** |
+| `phase0` | 1 | 1 | 4 | 3 | 1 | 9 |  |  | **19** |
 | `release-train` | 2 | 4 |  | 4 |  |  | 2 |  | **12** |
-| `register-open` | 14 | 6 |  |  |  | 2 | 2 | 2 | **26** |
+| `register-open` | 14 | 6 | 2 |  |  | 2 | 4 | 2 | **30** |
 | `tenancy` | 9 | 1 | 1 | 5 |  |  | 1 | 1 | **18** |
 | `docs-truth` | 6 | 1 | 2 |  |  |  |  |  | **9** |
 
@@ -172,13 +176,13 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 58 | 69% |
-| SECURITY reviewer | 11 | 13% |
+| Maintainer | 60 | 68% |
+| SECURITY reviewer | 13 | 15% |
 | Maintainer + a second human | 6 | 7% |
 | SAFETY reviewer | 5 | 6% |
-| Whoever edits it next | 3 | 4% |
+| Whoever edits it next | 3 | 3% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **84** | |
+| **total** | **88** | |
 
 <!-- END GENERATED: reviewer-load -->
 

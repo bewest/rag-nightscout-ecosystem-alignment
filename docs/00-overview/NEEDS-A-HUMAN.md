@@ -37,20 +37,32 @@ Four states qualify:
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 10 items
+### Maintainer &mdash; 13 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `P0-F` | `in-flight-upstream` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | #68 |
+| `ADV-CONFIG` | `needs-decision` | The readable-by-world warning and the careportal role (BF-77, BF-78) | &mdash; |
+| `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `RT-D3` | `needs-decision` | Answer the D3 question before 15.0.9 ships | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `DOC-LINKS` | `ready-to-push` | Every path the programme's documents and tooling cite must resolve | &mdash; |
 | `DOC-VIEWS` | `ready-to-push` | A reviewer-facing surface over the queue: three overview pages and a packet per  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
+| `P0-J` | `ready-to-push` | bf/throttle - BF-30, failed-auth throttling, compatibility default | #8605 |
 | `P0-TAG` | `ready-to-push` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
 | `BFQ-52` | `unsettled` | BF-52 - the age plugins can only ask for their urgent alarm in one window | &mdash; |
+
+### SECURITY reviewer &mdash; 4 items
+
+| id | claimed state | what it is | PR |
+|---|---|---|---|
+| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
+| `ADV-ALARM` | `ready-to-push` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) | &mdash; |
+| `ADV-RETRO` | `ready-to-push` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) | &mdash; |
+| `P0-C` | `ready-to-push` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | &mdash; |
 
 ### Maintainer + a second human &mdash; 2 items
 
@@ -64,12 +76,6 @@ Four states qualify:
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
-
-### SECURITY reviewer &mdash; 1 item
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
 
 <!-- END GENERATED: needs-a-human -->
 
