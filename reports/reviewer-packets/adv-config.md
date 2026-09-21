@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — ADV-CONFIG
+# Review packet — ADV-CONFIG (PR #8746)
 
 **The readable-by-world warning, the careportal role, and the two settings
 behind both (BF-77, BF-78, BF-81)**
@@ -28,14 +28,22 @@ behind both (BF-77, BF-78, BF-81)**
 
 ## What this changes
 
-No branch yet. BF-77 is a one-line change at lib/server/bootevent.js:149 -
-test for the `readable` role's presence in the resolved list rather than
-string equality with it. BF-78 has three possible shapes and none is obviously
-right, which is why this is needs-decision rather than not-started: give the
-careportal role the read permission its routes require; move the router-wide
-read gate at lib/api/treatments/index.js:26 below the create route at :146; or
-document that careportal only functions alongside `readable` and say so at
-boot when it does not.
+ONE OF THE THREE IS DONE AND THE ITEM STAYS `needs-decision` FOR THE OTHER
+TWO. BF-77 merged 2026-09-21 as PR #8746 - bf/readable-warning, measured here
+at 74731433, merged as 74fc6619, with an integration merge of dev (91ed8d95)
+added to the branch on the way in. It was the one-line-shaped half: rather
+than string equality at lib/server/bootevent.js:149 it adds a second notice
+wording for the readable+careportal configuration, wording the maintainer
+approved the same day. 2311 -> 2331 passing / 0 failing; the ablation goes red
+on exactly the three careportal cases with thirteen still passing, so the new
+cases are not vacuous. BF-78 IS UNTOUCHED BY THAT MERGE and is still the
+reason this item is not closed. Three possible shapes and none obviously
+right: give the careportal role the read permission its routes require; move
+the router-wide read gate at lib/api/treatments/index.js:26 below the create
+route at :146; or document that careportal only functions alongside `readable`
+and say so at boot when it does not. BF-81 is prose - README.md and the
+swagger documents - with no branch, and the wording is a maintainer's to
+write.
 
 ## Why that semver
 
@@ -60,19 +68,23 @@ half is deliberately left unscored until the decision is taken.
 
 ## Who should review this, and why
 
-MAINTAINER - both are contract questions about the configuration surface, not
-bugs with an obvious patch. They are two halves of one trap and should be
-decided together. TREATMENTS_AUTH=off appends ' careportal' to
-authDefaultRoles; the boot warning compares that string for equality with
-'readable'; so the notice is suppressed in exactly the configuration that is
-both world-readable AND anonymously writable. Meanwhile careportal alone
-grants only api:treatments:create and is refused by the router's
-api:treatments:read gate before reaching the create route - so the ONLY
-configuration in which careportal does anything is the one whose warning BF-77
-suppresses. An operator who wants anonymous careportal entry is steered, by
-the only route that works, into the configuration that stops warning them.
-Note BF-78 fails CLOSED - nothing is exposed - which is why it is low; the
-defect is silence, not access.
+MAINTAINER - the two that remain are contract questions about the
+configuration surface, not bugs with an obvious patch. THE "DECIDE THEM
+TOGETHER" ARGUMENT WAS OVERTAKEN BY EVENTS on 2026-09-21: BF-77 was separated
+out and merged on its own, leaving BF-78 and BF-81 as the pair. That is worth
+stating rather than quietly editing, because the paragraph below is the
+argument for keeping them together and it still reads as though nothing has
+shipped. TREATMENTS_AUTH=off appends ' careportal' to authDefaultRoles; the
+boot warning compares that string for equality with 'readable'; so the notice
+is suppressed in exactly the configuration that is both world-readable AND
+anonymously writable. Meanwhile careportal alone grants only
+api:treatments:create and is refused by the router's api:treatments:read gate
+before reaching the create route - so the ONLY configuration in which
+careportal does anything is the one whose warning BF-77 suppresses. An
+operator who wants anonymous careportal entry is steered, by the only route
+that works, into the configuration that stops warning them. Note BF-78 fails
+CLOSED - nothing is exposed - which is why it is low; the defect is silence,
+not access.
 
 ## What was measured
 
@@ -142,4 +154,4 @@ branch, and the wording is a maintainer's to write.
 - [ ] `make queue-status ID=ADV-CONFIG` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-21, against cgm-remote-monitor-official `59430336`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-21, against cgm-remote-monitor-official `74fc6619`.*

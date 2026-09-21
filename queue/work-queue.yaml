@@ -25,8 +25,9 @@ meta:
   repo_root: /home/bewest/src/rag-nightscout-ecosystem-alignment
   measured_at: "2026-09-21"
   measured_against:
-    cgm-remote-monitor-official: "59430336"        # origin/dev, dated 2026-09-21
-    main_repo_head: 75c38a17
+    cgm-remote-monitor-official: "74fc6619"        # origin/dev, re-fetched 2026-09-21 evening
+    nightscout-connect: "fe51c6d"                  # official/dev, re-fetched the same run
+    main_repo_head: fd632602
   # Gate kinds. `static` and `unit` run by default. The other two never run
   # unless asked for, and the runner says so rather than silently passing them.
   gate_kinds:
@@ -48,8 +49,11 @@ meta:
       merged into origin/dev and NOT released. Added 2026-09-21, when ten Phase 0
       PRs landed and `in-flight-upstream` stopped being able to say what had
       happened to them. It is deliberately not called `done`: origin/master is
-      299 commits behind dev and the shipping tag is 15.0.8, so an operator is
-      not carrying any of this yet. Only a release moves an item out of here.
+      308 commits behind dev at 92d08342 and the shipping tag is 15.0.8, so an
+      operator is not carrying any of this yet. Only a release moves an item out
+      of here. The count was 299 when this state was written and 308 the same
+      evening, after three advisory PRs merged - it grows until RT-0 is answered,
+      and it is re-measured rather than carried forward.
     needs-decision: waiting on a maintainer decision, not on work
     unsettled: it is not yet established that this is a defect at all
 
@@ -60,13 +64,23 @@ parcels:
       LARGELY LANDED, 2026-09-21. Eight of the ten cgm-remote-monitor branches
       merged into origin/dev between 2026-09-17 and 2026-09-20 as PRs #8733 to
       #8743, and their items are `merged-upstream` - which means in dev and NOT
-      released. origin/master is 299 commits behind dev and the shipping tag is
+      released. origin/master is 308 commits behind dev and the shipping tag is
       15.0.8, so no operator carries any of this yet, and RT-0 is the item that
       changes that. WHAT IS LEFT: bf/auth (P0-C) and bf/throttle (P0-J), both
-      now behind dev, both trial-merging clean; and the entire connector half,
-      where PR #68 is still open, the v0.0.14 tag is still unpushed, and P0-PIN
-      and P0-LOCK are blocked behind it. The connector half has not moved at all
-      since 2026-09-15. No tenancy decision is required by any of them.
+      behind dev AGAIN as of the evening of 2026-09-21, both still trial-merging
+      clean; and the entire connector half.
+
+      THE CONNECTOR HALF STOPPED BEING STALLED AND STARTED BEING CONTESTED,
+      2026-09-21 evening, and that is a bigger change than it looks. The sentence
+      this paragraph replaces read "has not moved at all since 2026-09-15". It
+      moved: upstream dev took the Glooko work (PR #71), restored connector
+      regression CI (#72), and BUMPED ITS OWN package.json TO 0.0.14 - the same
+      version the programme has had a prepared, unpushed tag for since the 15th,
+      on a tree that conflicts with dev in six files. PR #68 is still open, so the
+      backoff-and-jitter fix is in neither. P0-TAG is therefore no longer
+      ready-to-push but needs-decision, and P0-PIN and P0-LOCK stay blocked behind
+      a question that is now about which 0.0.14 is the real one. Still no tenancy
+      decision required by any of them.
   release-train:
     title: Modernization release train
     summary: >
@@ -394,7 +408,8 @@ items:
     branch: bf/auth
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-auth
-    state: ready-to-push
+    state: gate-not-met
+    pr: []
     blast_radius: >
       2 commits at ce82f0cd, 3 files, +310/-18. lib/authorization/endpoints.js,
       lib/authorization/storage.js, tests/authsubjects.test.js. SPLIT 2026-09-16
@@ -539,6 +554,18 @@ items:
       404e714c against mongod 7.0.43 started with --ulimit nofile=64000:64000. That
       qualifier is load-bearing - the first attempt at this run killed the server via
       BF-10 and every downstream timeout looked like a regression.
+
+      AND IT HAPPENED AGAIN THE NEXT DAY. 2026-09-21: dev moved 59430336 -> 74fc6619,
+      nine commits, the three advisory PRs. bf/auth did not follow, the freshness gate
+      is red again and the state drops to gate-not-met again. THE PARAGRAPH ABOVE IS
+      NOW A PATTERN, NOT AN INCIDENT: this branch has lost its reviewer packet twice in
+      two days, both times for being behind rather than for being wrong, and the cause
+      is that it is ready and unpushed while dev is moving under it. The remedy is the
+      same `git merge dev` and the trial-merge gate says it is still clean; it is NOT
+      done here, because the honest cost of the last one was a full suite run against a
+      mongod with a raised descriptor limit, and doing the merge without re-running it
+      would trade a red gate for an unmeasured green one. THE REAL FIX IS UPSTREAM OF
+      THE GATE: push it, or accept that a security fix sitting at ready-to-push decays.
   - id: P0-J
     title: bf/throttle - BF-30, failed-auth throttling, compatibility default
     parcel: phase0
@@ -546,7 +573,8 @@ items:
     branch: bf/throttle
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-throttle
-    state: ready-to-push
+    state: gate-not-met
+    pr: []
     blast_radius: >
       1 commit at 435419ce, 3 files, +388/-45. lib/authorization/delaylist.js,
       lib/authorization/index.js, tests/authdelay.test.js.
@@ -689,6 +717,20 @@ items:
       exited during an unrelated full-suite run, so the boot had nothing to connect to.
       That is register entry BF-10, and reproducing it is what the red actually measured.
       A red control can be red for the wrong reason.
+
+      BEHIND DEV AGAIN 2026-09-21, same cause as P0-C and same day: dev took the three
+      advisory merges and this branch did not follow, so the freshness gate is red and
+      the state drops to gate-not-met. The other three gates still pass, including the
+      one that matters most here - no conflict against chore/nightscout-modernization.
+      Not merged, for the reason written under P0-C.
+
+      THE PR COLUMN ON THIS ITEM WAS WRONG UNTIL TODAY and it is worth saying where it
+      came from. This item declares no PR, so the packet generator fell back to scraping
+      `PR #NNNN` out of `title` and `review` - and the review text above discusses
+      merging cleanly WITH #8605, which is the modernization PR, not this one. A reviewer
+      opening the P0-J packet was pointed at somebody else's change. `pr: []` is now
+      declared, which the generator documents as meaning "this item is not a PR" and is
+      not the same as saying nothing. #8605 is declared on RT-3, where it belongs.
   - id: P0-C-REMEDIATE
     title: Operator remediation for tokens already stored in plaintext - text,
       not tooling
@@ -1640,10 +1682,36 @@ items:
     branch: release/v0.0.14
     base: v0.0.13@b394411
     worktree: externals/nightscout-connect
-    state: ready-to-push
+    state: needs-decision
+    pr: []
     blast_radius: >
-      11 commits, 29 files, +1362/-312, of which 887 lines are new test files.
-      b394411 FAST-FORWARDS to 649a7de.
+      RE-GRADED ready-to-push -> needs-decision 2026-09-21, AND THE GATES DID NOT
+      CATCH IT. All five still pass. What changed is outside every question they
+      ask: upstream `dev` has independently declared itself 0.0.14.
+
+      MEASURED. official/dev moved 6dfc4f0 -> fe51c6d today and carries e231600
+      "Bump version to 0.0.14" (Andy Low), so `git show official/dev:package.json`
+      and `git show release/v0.0.14:package.json` BOTH say 0.0.14 for two different
+      trees. release/v0.0.14 is 11 ahead of dev and 13 behind it; the 13 are the
+      Glooko work merged as PR #71, the CI restore as #72, and the main->dev merge
+      #69. A trial merge of dev into release/v0.0.14 CONFLICTS in six files:
+      .github/workflows/test.yml (added in both), README.md, index.js,
+      lib/machines/cycle.js, lib/outputs/internal.js, lib/sources/glooko/convert.js
+      and lib/sources/glooko/index.js.
+
+      SO PUSHING THE PREPARED TAG WOULD MINT A v0.0.14 THAT IS NOT DEV'S 0.0.14,
+      and the tarball P0-PIN pins would omit the Glooko fixes that upstream believes
+      are in this version. That is not a mechanical reconciliation and it is not the
+      programme's call to make alone, which is what moves this out of ready-to-push.
+      Three shapes, none obviously right: reconcile release/v0.0.14 onto dev and cut
+      the tag from there; abandon the prepared branch and let upstream tag dev; or
+      cut ours as 0.0.15 and leave 0.0.14 to dev.
+
+      RULE 0 IS INTACT - nothing was pushed, and the "tag is not on origin" gate
+      below still passes. The remote's newest tag is still v0.0.13.
+
+      PRIOR MEASUREMENT: 11 commits, 29 files, +1362/-312, of which 887 lines are
+      new test files. b394411 FAST-FORWARDS to 649a7de. Both still true.
     review: maintainer - pushing the tag is the deliberate human act; the
       connector repository has no release workflow, so the tag publishes nothing
       by itself
@@ -1672,6 +1740,15 @@ items:
         describe: >
           RULE 0. This gate PASSES only while the tag is NOT on origin. It is the
           machine-checkable form of "nothing has been pushed". Read-only.
+      - run: git -C externals/nightscout-connect merge-base --is-ancestor official/dev release/v0.0.14
+        kind: static
+        describe: >
+          ADDED 2026-09-21, AND IT IS RED, which is the point - five green gates
+          described a release that had been overtaken and none of them could say so.
+          The release branch must contain everything on upstream dev, or the tag
+          names a tree that is missing work upstream already considers released.
+          Red today by 13 commits. This is the gate that should have existed before
+          the divergence, not after it.
       - no-gate: >
           Whether all seven connector commits are the RIGHT content for a release
           is a release-content decision, not a mechanical bump, and it is the
@@ -1683,7 +1760,17 @@ items:
       v0.0.14 is the FIRST ref carrying all seven connector commits - both the
       debug-logging narrowing that dev's pin has and the three log-redaction
       fixes that cut 4's pin has. GT4 found the two mitigations split across the
-      two release trains.
+      two release trains. STILL TRUE, and it is why abandoning the branch outright
+      is not obviously the right shape either: dev at fe51c6d does NOT carry
+      c1cce2a, the backoff-and-jitter commit, because PR #68 is still open. Whatever
+      is decided has to keep all seven.
+
+      WHAT THIS COST, written down because the lesson is cheaper than the incident:
+      this item sat at ready-to-push for five days with a complete set of passing
+      gates, and every one of them measured the prepared artefact against itself -
+      tag type, tag target, version string, fast-forward from the previous tag. None
+      measured it against the world it was going to be pushed into. The gate added
+      above is the missing question and it was one line.
 
   - id: P0-PIN
     title: bf/connect-pin - move dev's connector pin to the v0.0.14 tarball
@@ -1911,15 +1998,36 @@ items:
       missing.
 
   - id: RT-REBASE
-    title: Cuts 1-4 are 124 commits behind dev and each conflicts
+    title: Cuts 1-4 are 133 commits behind dev and now all five conflict
     parcel: release-train
     repo: cgm-remote-monitor
     branch: chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review
-    base: origin/dev@59430336
+    base: origin/dev@74fc6619
     worktree: externals/cgm-remote-monitor-official
     state: gate-not-met
     blast_radius: >
-      RE-MEASURED 2026-09-21 against dev 59430336. The cost has roughly TRIPLED since the
+      RE-MEASURED 2026-09-21 AGAINST dev 74fc6619, AFTER THE THREE ADVISORY MERGES,
+      AND THE HEADLINE CHANGED. Cuts 1-4 are 133 behind, not 124, and the 148 missing
+      commits are 148 files, +8111/-304. Conflict counts under merge-tree are
+      unchanged at 7 / 14 / 16 / 18 for cuts 1-4 - the nine new commits added distance
+      without adding conflicting files to those four.
+
+      CUT 5 STOPPED BEING CLEAN, which is the part that matters, because it was this
+      item's only passing gate and therefore its only control. origin/chore/nightscout-
+      modernization is 9 behind dev and now has ONE conflict, lib/server/bootevent.js.
+      The cause is exact: 74731433, the BF-77 boot-notice fix merged as PR #8746, is the
+      only commit in 59430336..74fc6619 touching that file, and cut 5 edits it too. So
+      the programme's own advisory work is what took the last clean cut to dirty. That is
+      not an argument against having merged it - BF-77 reaches operators and a release
+      train does not - but it is the second time in a week that landing our own fixes
+      raised the rebase bill, and it should be priced that way rather than discovered
+      again.
+
+      A REAL CONTROL WAS ADDED BELOW rather than leaving five red gates with nothing
+      proving the command still works. See the gate list.
+
+      PRIOR MEASUREMENT, 2026-09-21 against dev 59430336, kept because the reasoning
+      is still the argument. The cost has roughly TRIPLED since the
       2026-09-15 figure this field used to carry (59 behind, 4-5 conflicting files each).
       Now 124 commits behind, and under merge-tree: cut 1 SEVEN conflicts
       (lib/plugins/pluginbase.js, lib/server/bootevent.js, package.json,
@@ -1957,9 +2065,19 @@ items:
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/nightscout-modernization >/dev/null
         kind: static
         describe: >
-          cut 5 trial-merges cleanly - PASSES, and it is the only one that does.
-          The control arm: this gate proves the four failures above are not the
-          command being wrong.
+          cut 5 trial-merges into dev cleanly - FAILED SINCE 2026-09-21, one
+          conflict in lib/server/bootevent.js, caused by our own PR #8746. It used
+          to be this item's control arm and it can no longer serve as one, because
+          a gate that is red cannot prove the command is capable of going green.
+          The gate below took that job.
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/dev >/dev/null
+        kind: static
+        describe: >
+          THE CONTROL ARM, and it exists because the old one stopped working. Merging
+          dev with itself must succeed. If this ever goes red then merge-tree, the
+          repository or the ref is broken and the five failures above say nothing
+          about the cuts. Deliberately trivial: a control's job is to fail only for
+          the reason it names.
       - no-gate: >
           The sharpest cost is a NON-mechanical conflict and no command can
           resolve it. dev's 06372e1d adds 56 lines to tests/clock-client.test.js
@@ -2183,6 +2301,7 @@ items:
     base: chore/build-runtime-separation
     worktree: externals/cgm-remote-monitor-official
     state: blocked
+    pr: [8605]
     blast_radius: >
       Cut 3: 63 commits, prod 23 files +294/-54 (MongoDB driver 7, jQuery UI).
       Cut 5: 154 commits as §5 states, but GT2 measured that 95 are modernization
@@ -2192,12 +2311,24 @@ items:
       UPDATED 2026-09-21. Cut 5's tip is no longer 0a4109f6: Andy Low merged dev
       into it as e3b22034 ("Merge dev into modernization and reconcile regression
       coverage") and added two fixture commits, taking it to b1bdaca0 - 68
-      commits, and it now carries all ten merged Phase 0 PRs. Cut 5 is 0 behind
-      dev and 498 ahead. So this cut has been kept current from outside the
-      programme while cuts 1-4 drifted to 124 behind, and cut 5 is the only one
-      whose trial-merge into dev is still clean. Whoever reconciles cuts 1-4
-      should read e3b22034 first: it is the same reconciliation, already done
-      once, against the same 68 commits.
+      commits, and it now carries all ten merged Phase 0 PRs. So this cut has been
+      kept current from outside the programme while cuts 1-4 drifted.
+
+      RE-MEASURED 2026-09-21 AFTER THE THREE ADVISORY MERGES, because the numbers
+      in the paragraph above have a shelf life of about a day and were already
+      wrong. dev moved 59430336 -> 74fc6619. origin/chore/nightscout-modernization
+      is now 9 behind dev and 498 ahead; the other four published cuts are 133
+      behind, not the 124 recorded before. Its trial-merge into dev still FAILS
+      along with the other four - RT-REBASE measures all five and all five are red
+      - so "the only one whose trial-merge is still clean" no longer holds either
+      and is corrected there.
+
+      THIS ITEM IS PR #8605, DECLARED RATHER THAN LEFT TO BE GUESSED. Until
+      2026-09-21 no item declared it and the packet generator's fallback, which
+      scrapes `PR #NNNN` out of `title` and `review`, attached #8605 to P0-J
+      instead - P0-J's review text discusses merging cleanly with #8605, which is
+      not the same as being it. A reviewer opening the P0-J packet was sent to the
+      modernization PR. Both are now declared.
     review: maintainer plus a human reviewer
     operator_visible: >
       A dependency upgrade release. The database driver, the web framework and
@@ -5507,6 +5638,82 @@ items:
       already changes and should land with P0-A; follow-up 4 sits in the file
       P0-C already touches. Split them back if either branch is reopened.
 
+  - id: FU-PRBODIES
+    title: Five merged PR bodies have drifted from the files they were posted from
+    parcel: phase0
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@74fc6619
+    worktree: externals/cgm-remote-monitor-official
+    state: needs-decision
+    pr: []
+    ships_to_operators_today: false
+    register: []
+    blast_radius: >
+      No code. Five pull request bodies and up to five files under
+      reports/phase0-pr-bodies/. MEASURED 2026-09-21 by
+      tools/queue/gates/pr-body-parity.js over all eight pairs: #8738, #8740 and
+      #8743 match; #8734, #8735, #8736, #8737 and #8739 differ.
+
+      THE DRIFT RUNS IN TWO DIRECTIONS AND THAT IS THE WHOLE POINT. #8734, #8735,
+      #8736 and #8737 differ only in documentation paths - the local files were
+      updated when the docs tree moved into programme subdirectories, so the LIVE
+      bodies still cite the pre-move spellings - the backfix register without its
+      `remedial/` segment, the semver classification without `modernization/` - and
+      those paths no longer resolve. The spellings are deliberately not written out
+      here: doc-links.js gates this file for exactly such paths, and a dead path
+      quoted in a note is indistinguishable to it from a dead path being relied on.
+      Word counts are identical each way, confirmed. #8739 is the
+      opposite: the live body is 1640 words to the file's 1537 and carries whole
+      paragraphs the file has never had - the urgent-severity versus
+      notification-delivery distinction, and a note about Alexa and Google Home
+      locale handling. Somebody improved that body upstream after it was posted.
+    review: >
+      MAINTAINER, and the decision is narrow: are merged pull request bodies worth
+      correcting at all? The argument for is that a merged PR body is the durable
+      public record of why a change was made and four of these now cite file paths
+      that 404 for anybody who follows them. The argument against is that nobody
+      reads a merged PR body and the edit costs a push.
+
+      IF THE ANSWER IS YES, #8739 MUST BE HANDLED DIFFERENTLY FROM THE OTHER FOUR.
+      Its live body is ahead; the upstream text has to be reconciled INTO
+      reports/phase0-pr-bodies/bf-alarms.md before anything is pushed, or that work
+      is destroyed. Until 2026-09-21 the gate printed a single one-way remedy -
+      `gh pr edit <pr> --body-file <local>` - for every failure, which on #8739
+      would have done exactly that and then gone green on the loss.
+    operator_visible: ""
+    semver: n/a
+    semver_reason: documentation of changes already merged; no shipped behaviour
+    gates:
+      - run: node tools/queue/gates/pr-body-parity.js
+        kind: network
+        describe: >
+          All eight bodies match their files. RED since 2026-09-21 with five
+          failing. Read-only - it fetches bodies and never edits one.
+      - no-gate: >
+          Whether a body is TRUE is not measured by anything here, and parity with
+          a wrong file is still parity. Every figure in these bodies has been wrong
+          at least once - bf/parms had two, bf/reads had four - and only re-running
+          the claim catches that.
+      - no-gate: >
+          Nothing gates the reconciliation of #8739. Merging upstream prose into a
+          local file is an editorial act; a gate can say the two differ and cannot
+          say the merge was faithful.
+    blocks_on: []
+    evidence:
+      - tools/queue/gates/pr-body-parity.js
+      - reports/phase0-pr-bodies/bf-alarms.md
+    notes: >
+      FOUND WHILE GROOMING, 2026-09-21, and it had been red for days without being
+      anybody's item - the gate belonged to eight Phase 0 items that had all moved to
+      merged-upstream, so its failure read as part of the expected post-merge noise
+      on rows nobody was looking at any more. That is the same shape as the gates
+      that go red because a branch landed: a red that stops being informative because
+      its context changed underneath it.
+
+      RULE 0 APPLIES AND NOTHING WAS EDITED. Five PR bodies were read; none was
+      written.
+
   - id: FU-HYGIENE
     title: Follow-ups 9, 10 - the two audits that have no instrument
     parcel: phase0
@@ -5572,7 +5779,8 @@ items:
     branch: bf/ws-loadretro-auth
     base: origin/dev@59430336
     worktree: externals/work/crm-adv-retro
-    state: ready-to-push
+    state: merged-upstream
+    pr: [8744]
     ships_to_operators_today: true
     register: [BF-79]
     blast_radius: >
@@ -5610,7 +5818,9 @@ items:
       publishing a high score against it would alarm the majority of
       self-hosters about their own public output.
       PATCHED-VERSION FIELD: LEAVE EMPTY until a tagged release carries this.
-      origin/master is 299 commits behind dev and neither carries the fix.
+      STILL TRUE AFTER THE MERGE, which is exactly why `merged-upstream` is not
+      called done: origin/master is 308 commits behind dev at 92d08342, the
+      shipping tag is 15.0.8, and no operator is carrying this fix.
     operator_visible: >
       Nightscout's live connection had one message that answered anybody. If you
       run the default setup, where your site is already readable by anyone with
@@ -5630,11 +5840,16 @@ items:
       `readable` instance an anonymous client still receives retroUpdate, which
       was confirmed as a live positive control on the fixed build.
     gates:
-      - run: git -C externals/work/crm-adv-retro merge-base --is-ancestor origin/dev bf/ws-loadretro-auth
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/ws-loadretro-auth origin/dev
         kind: static
         describe: >
-          The branch is still based on dev's tip. Goes red the moment dev moves
-          under it, which is the signal to rebase before anyone reviews it.
+          The branch's work is IN origin/dev. REPLACED 2026-09-21, and the
+          direction of the ancestry test is the whole change. Until the merge the
+          question was "is this branch still on dev's tip", which goes red when dev
+          moves and correctly says rebase-before-review. After the merge that gate
+          was red for the wrong reason - dev had moved BECAUSE this branch landed
+          in it - and a gate that cannot tell those two apart is worse than none.
+          This is the form P0-K has carried since it merged.
       - run: test -f externals/work/crm-adv-retro/tests/websocket.loadretro-authorization.test.js
         kind: static
         describe: >
@@ -5669,6 +5884,15 @@ items:
       The attacker never calls `authorize`: trying and failing disconnects the
       socket, so the gate is one to walk around rather than through.
 
+      MERGED 2026-09-21 as PR #8744 into dev, merge commit a9acd313, from
+      bf/ws-loadretro-auth at 9765e8cd - the exact tip this item was measured
+      against, with no integration merge added on the way in. dev moved
+      59430336 -> 74fc6619 carrying this and the two advisory PRs behind it.
+      The reply to the reporter, including the two corrections to the advisory
+      that are still ours to send, is
+      docs/30-design/remedial/advisory-response-2026-09/advisories/ghsa-gjhc-comment.md
+      and it is NOT yet posted.
+
   - id: ADV-ALARM
     title: "GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76)"
     parcel: register-open
@@ -5676,7 +5900,8 @@ items:
     branch: bf/alarm-socket-scope
     base: origin/dev@59430336
     worktree: externals/work/crm-adv-alarm
-    state: ready-to-push
+    state: merged-upstream
+    pr: [8745]
     ships_to_operators_today: true
     register: [BF-75, BF-76, BF-80]
     blast_radius: >
@@ -5763,9 +5988,13 @@ items:
       major: no route removed, no required input added, and the shipped web
       client is unaffected because it subscribes.
     gates:
-      - run: git -C externals/work/crm-adv-alarm merge-base --is-ancestor origin/dev bf/alarm-socket-scope
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarm-socket-scope origin/dev
         kind: static
-        describe: The branch is still based on dev's tip; red means rebase before review.
+        describe: >
+          The branch's work is IN origin/dev. REPLACED 2026-09-21 for the reason
+          written out under ADV-RETRO: the pre-merge form of this gate asks
+          whether the branch is still on dev's tip, and after the merge it goes
+          red BECAUSE the branch landed. Same question, opposite direction.
       - run: test -f externals/work/crm-adv-alarm/tests/api3.alarm-socket.security.test.js -a -f externals/work/crm-adv-alarm/tests/api3.alarm-socket.ack.test.js
         kind: static
         describe: Both regression test files exist in the worktree.
@@ -5839,6 +6068,21 @@ items:
       code avoided it only by checking nothing - so it is not a reason to
       prefer a different shape. Deliberately NOT fixed here: narrowing a
       brute-force control needs its own change and its own review.
+
+      MERGED 2026-09-21 as PR #8745 into dev, merge commit 2b22c0ce. Note the
+      difference from ADV-RETRO: origin's bf/alarm-socket-scope is at a198e308,
+      NOT at this item's measured tip 012f1623, because an integration merge of
+      dev was added to the branch before it went in. Nothing was re-measured on
+      a198e308. That is why the ancestry gate above tests containment in dev
+      rather than tip equality - tip equality would have been red here and green
+      on ADV-RETRO for a difference that is upstream's merge habit, not ours.
+
+      STILL NOT SHIPPED. dev is 308 ahead of master and the tag operators run is
+      15.0.8, so BF-75 and BF-76 remain open against every live instance, and
+      BF-80 - the failed-login delay this fix inherits - is not yet a cost anyone
+      is paying either. The reply to the GHSA-8849 reporter at
+      docs/30-design/remedial/advisory-response-2026-09/pull-requests/reply-to-reporter-ghsa-8849.md
+      is drafted and NOT sent.
 
   - id: ADV-XSS-META
     title: "GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74)"
@@ -5957,21 +6201,35 @@ items:
     base: origin/master@92d08342
     worktree: externals/work/crm-advisory
     state: needs-decision
+    pr: [8746]
     ships_to_operators_today: true
     register: [BF-77, BF-78, BF-81]
     blast_radius: >
-      No branch yet. BF-77 is a one-line change at lib/server/bootevent.js:149 -
-      test for the `readable` role's presence in the resolved list rather than
-      string equality with it. BF-78 has three possible shapes and none is
-      obviously right, which is why this is needs-decision rather than
-      not-started: give the careportal role the read permission its routes
-      require; move the router-wide read gate at lib/api/treatments/index.js:26
-      below the create route at :146; or document that careportal only functions
-      alongside `readable` and say so at boot when it does not.
+      ONE OF THE THREE IS DONE AND THE ITEM STAYS `needs-decision` FOR THE OTHER
+      TWO. BF-77 merged 2026-09-21 as PR #8746 - bf/readable-warning, measured here
+      at 74731433, merged as 74fc6619, with an integration merge of dev (91ed8d95)
+      added to the branch on the way in. It was the one-line-shaped half: rather than string equality
+      at lib/server/bootevent.js:149 it adds a second notice wording for the
+      readable+careportal configuration, wording the maintainer approved the same
+      day. 2311 -> 2331 passing / 0 failing; the ablation goes red on exactly the
+      three careportal cases with thirteen still passing, so the new cases are
+      not vacuous.
+
+      BF-78 IS UNTOUCHED BY THAT MERGE and is still the reason this item is not
+      closed. Three possible shapes and none obviously right: give the careportal
+      role the read permission its routes require; move the router-wide read gate
+      at lib/api/treatments/index.js:26 below the create route at :146; or
+      document that careportal only functions alongside `readable` and say so at
+      boot when it does not. BF-81 is prose - README.md and the swagger documents
+      - with no branch, and the wording is a maintainer's to write.
     review: >
-      MAINTAINER - both are contract questions about the configuration surface,
-      not bugs with an obvious patch. They are two halves of one trap and should
-      be decided together. TREATMENTS_AUTH=off appends ' careportal' to
+      MAINTAINER - the two that remain are contract questions about the
+      configuration surface, not bugs with an obvious patch. THE "DECIDE THEM
+      TOGETHER" ARGUMENT WAS OVERTAKEN BY EVENTS on 2026-09-21: BF-77 was
+      separated out and merged on its own, leaving BF-78 and BF-81 as the pair.
+      That is worth stating rather than quietly editing, because the paragraph
+      below is the argument for keeping them together and it still reads as
+      though nothing has shipped. TREATMENTS_AUTH=off appends ' careportal' to
       authDefaultRoles; the boot warning compares that string for equality with
       'readable'; so the notice is suppressed in exactly the configuration that is
       both world-readable AND anonymously writable. Meanwhile careportal alone

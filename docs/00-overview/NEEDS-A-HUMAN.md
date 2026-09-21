@@ -4,7 +4,7 @@
 advances anything — a person has to push, decide, or review. Narrative revised
 2026-09-21; tables generated.*
 
-The queue has 84 items. Most of them are work. This page is only the items whose
+The queue has 88 items. Most of them are work. This page is only the items whose
 claimed state means **the next move belongs to a person**, grouped by the kind of
 person, so that "what is blocked on me" is one page instead of a filter nobody
 runs.
@@ -20,7 +20,9 @@ Four states qualify:
 
 > **`in-flight-upstream` used to be the one that hid, and the shape of the problem
 > has changed rather than gone.** Revised 2026-09-21: nine pull requests sat here
-> unreviewed on 2026-09-16; **ten have since merged** and one remains, in the
+> unreviewed on 2026-09-16; **thirteen have since merged** — ten Phase 0 pull
+> requests between 2026-09-17 and 2026-09-20, then the three advisory pull requests
+> #8744, #8745 and #8746 on the evening of 2026-09-21 — and one remains, in the
 > connector repository. This project's last 100 child pull requests were merged
 > with zero human reviews, so a PR leaving this list is not by itself evidence it
 > was reviewed. The governance gap moved from "waiting" to "merged", which is
@@ -42,27 +44,18 @@ Four states qualify:
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `P0-F` | `in-flight-upstream` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | #68 |
-| `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | &mdash; |
+| `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
+| `FU-PRBODIES` | `needs-decision` | Five merged PR bodies have drifted from the files they were posted from | &mdash; |
+| `P0-TAG` | `needs-decision` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push | &mdash; |
 | `RT-D3` | `needs-decision` | Answer the D3 question before 15.0.9 ships | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `DOC-LINKS` | `ready-to-push` | Every path the programme's documents and tooling cite must resolve | &mdash; |
 | `DOC-VIEWS` | `ready-to-push` | A reviewer-facing surface over the queue: three overview pages and a packet per  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
-| `P0-J` | `ready-to-push` | bf/throttle - BF-30, failed-auth throttling, compatibility default | #8605 |
-| `P0-TAG` | `ready-to-push` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
 | `BFQ-52` | `unsettled` | BF-52 - the age plugins can only ask for their urgent alarm in one window | &mdash; |
-
-### SECURITY reviewer &mdash; 4 items
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
-| `ADV-ALARM` | `ready-to-push` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) | &mdash; |
-| `ADV-RETRO` | `ready-to-push` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) | &mdash; |
-| `P0-C` | `ready-to-push` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | &mdash; |
 
 ### Maintainer + a second human &mdash; 2 items
 
@@ -76,6 +69,12 @@ Four states qualify:
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
+
+### SECURITY reviewer &mdash; 1 item
+
+| id | claimed state | what it is | PR |
+|---|---|---|---|
+| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
 
 <!-- END GENERATED: needs-a-human -->
 
@@ -93,12 +92,22 @@ One bounded review packet per row lives in `reports/reviewer-packets/`.
 
 <!-- END GENERATED: open-prs -->
 
-**Revised 2026-09-21: this list is down to one, and the reason matters.** It held
-nine cgm-remote-monitor pull requests on 2026-09-16. All of them merged, along with
-#8733, between 2026-09-17 and 2026-09-20. What is left is the connector half, which
-has not moved at all: PR #68 is open, four sibling connector PRs (#61, #64, #66,
-#67) are open, `nightscout-connect`'s `main` carries none of them, and the prepared
-`v0.0.14` tag is still unpushed. `P0-PIN` and `P0-LOCK` are blocked behind that tag.
+**Revised twice on 2026-09-21: this list is down to one, and the reason matters.**
+It held nine cgm-remote-monitor pull requests on 2026-09-16. All of them merged,
+along with #8733, between 2026-09-17 and 2026-09-20; the three advisory pull
+requests raised that evening — #8744, #8745, #8746 — merged the same day they were
+opened. What is left is the connector half: PR #68 is open, four sibling connector
+PRs (#61, #64, #66, #67) are open, and the prepared `v0.0.14` tag is still unpushed.
+
+**The second revision is the one to read.** The earlier sentence here said the
+connector half "has not moved at all". It has. On the evening of 2026-09-21
+`nightscout-connect`'s `dev` took the Glooko work (#71) and restored connector
+regression CI (#72), and — the part that matters — **bumped its own `package.json`
+to 0.0.14**, the same version this programme has had a prepared, unpushed tag for
+since 2026-09-15, on a tree that conflicts with `dev` in six files. So there are now
+two candidate 0.0.14s. `P0-TAG` moved from `ready-to-push` to `needs-decision`
+because of it, and `P0-PIN` and `P0-LOCK` are blocked behind a question that is no
+longer "when does somebody push the tag" but "which 0.0.14 is the real one".
 
 One thing a reviewer should know before opening #68: **merging it in the connector
 repository ships it to nobody.** cgm-remote-monitor pins the connector by tarball,
@@ -130,10 +139,13 @@ absence first costs something real.
 Downstream of `RT-D3`. Also the first release that would exercise the three-decision
 publication rule end to end: merge the code, push the tag, publish the package.
 
-**Its weight changed on 2026-09-20 and this is now the most consequential row on the
-page.** `dev` carries ten merged Phase 0 fixes that `origin/master` does not —
-`master` is 299 commits behind — so until 15.0.9 ships, **every one of those fixes
-is code that exists and protects nobody**. One of them, BF-70, had its mechanism
+**Its weight changed on 2026-09-20, grew again on 2026-09-21, and this is now the
+most consequential row on the page.** `dev` carries ten merged Phase 0 fixes *and
+three merged security fixes* that `origin/master` does not — `master` is **308
+commits behind**, up from 299 the same evening — so until 15.0.9 ships, **every one
+of those fixes is code that exists and protects nobody**. The three that landed on
+2026-09-21 close two published-advisory defects (GHSA-gjhc, GHSA-8849) plus the
+world-readable boot notice, and every live instance is still exposed to all three. One of them, BF-70, had its mechanism
 described in a merged public pull request body on 2026-09-18 while the shipping
 release remains affected. That is not a reason to rush a release past `RT-D3`; it is
 a reason not to let `RT-D3` sit unanswered, and the two are different things.
@@ -179,6 +191,6 @@ it is worth running before acting on any row here.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-21**, against cgm-remote-monitor-official `59430336` and this repository at `75c38a17`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-21**, against cgm-remote-monitor-official `74fc6619` and this repository at `fd632602`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

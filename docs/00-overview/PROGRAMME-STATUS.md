@@ -23,10 +23,10 @@ this page's job is to say which of those to open.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 58 | 21 | 15 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 59 | 21 | 12 |
 | **Modernization** | `release-train` | 12 | 2 | 2 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **88** | **32** | **20** |
+| | **total** | **89** | **32** | **17** |
 
 <!-- END GENERATED: horizons -->
 
@@ -64,7 +64,7 @@ remedial and release work. Self-hosted single-tenant stays first-class permanent
 safe.** `fixed` means repaired on a branch that has not been merged. `merged`
 (added 2026-09-21) means merged into `origin/dev` and **still not released**. No
 entry anywhere carries a status of `landed`, because nothing has landed:
-`origin/master` is **299 commits behind `dev`** and the shipping tag is **15.0.8**.
+`origin/master` is **308 commits behind `dev`** and the shipping tag is **15.0.8**.
 Merging to `dev` publishes a Docker Hub image, which is not a release.
 
 For somebody running Nightscout today, the practical version is plainer:
@@ -74,15 +74,23 @@ For somebody running Nightscout today, the practical version is plainer:
 > None of this is medical advice; if a defect affects alarms or displayed numbers
 > and you are unsure what it means for you, raise it with your care team.
 
-**The size of that, re-measured 2026-09-21 by parsing the status column.** The
-register's §1 — the section whose defects reach existing operators — holds **47
-rows**, of which one (BF-12) is retracted as not reproducing. So **46 defects are
-present for every self-hoster running today's release**. Of those: **19 open**,
-**23 `merged`** (in `dev`, not released), **4 `fixed`** (on a branch not merged).
+**The size of that, re-measured 2026-09-21 late evening with the coverage gate's own
+parser rather than by hand.** The register's §1 — the section whose defects reach
+existing operators — holds **56 rows**, of which one (BF-12) is retracted as not
+reproducing. So **55 defects are present for every self-hoster running today's
+release**. Of those: **23 open**, **27 `merged`** (in `dev`, not released), **1
+`partly merged`** (BF-07), **4 `fixed`** (on a branch not merged).
+
+**That is up from 46 earlier the same day, and none of the increase is a regression.**
+Nine entries (BF-73…BF-81) were filed on 2026-09-21 while three sessions worked
+through the five open GitHub security advisories, and BF-07 had been dropped by every
+previous hand-count. Four of the nine — BF-75, BF-76, BF-77, BF-79 — were repaired and
+merged the same evening, which moves them from `open` to `merged` and moves them not
+at all with respect to an operator.
 
 Reading the register's open count as "the number of defects still shipping"
-therefore understates it by roughly a factor of two and a half, because it silently
-drops the 27 repaired-but-unreleased ones. Reading `merged` as done would drop 23 of
+therefore understates it by well over a factor of two, because it silently
+drops the 32 repaired-but-unreleased ones. Reading `merged` as done would drop 27 of
 them — a newer way to get the same number wrong, which is why the status values were
 split rather than collapsed. The distinction the status column actually tracks is
 **work done**, not operator exposure, and that is why the queue carries
@@ -95,9 +103,9 @@ several cover more than one `BF-`:
 
 | id | claimed state | defect |
 |---|---|---|
-| `ADV-ALARM` | `ready-to-push` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) |
+| `ADV-ALARM` | `merged-upstream` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-7 |
-| `ADV-RETRO` | `ready-to-push` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) |
+| `ADV-RETRO` | `merged-upstream` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | `BFQ-04` | `merged-upstream` | BF-04 - the v1 operator allowlist, EXTRACTED 2026-09-18 - superseded by P0-K |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value |
@@ -128,9 +136,9 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 | parcel | `not-started` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `unsettled` | total |
 |---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 1 | 1 | 4 | 3 | 1 | 9 |  |  | **19** |
+| `phase0` | 1 | 3 | 1 | 3 | 1 | 9 | 2 |  | **20** |
 | `release-train` | 2 | 4 |  | 4 |  |  | 2 |  | **12** |
-| `register-open` | 14 | 6 | 2 |  |  | 2 | 4 | 2 | **30** |
+| `register-open` | 14 | 6 |  |  |  | 4 | 4 | 2 | **30** |
 | `tenancy` | 9 | 1 | 1 | 5 |  |  | 1 | 1 | **18** |
 | `docs-truth` | 6 | 1 | 2 |  |  |  |  |  | **9** |
 
@@ -176,13 +184,13 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 60 | 68% |
+| Maintainer | 61 | 69% |
 | SECURITY reviewer | 13 | 15% |
 | Maintainer + a second human | 6 | 7% |
 | SAFETY reviewer | 5 | 6% |
 | Whoever edits it next | 3 | 3% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **88** | |
+| **total** | **89** | |
 
 <!-- END GENERATED: reviewer-load -->
 
@@ -244,6 +252,6 @@ measurement.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-21**, against cgm-remote-monitor-official `59430336` and this repository at `75c38a17`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-21**, against cgm-remote-monitor-official `74fc6619` and this repository at `fd632602`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

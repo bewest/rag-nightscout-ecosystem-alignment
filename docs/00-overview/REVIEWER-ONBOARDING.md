@@ -90,11 +90,11 @@ precisely the thing to be suspicious of.
 **5. Neither `fixed` nor `merged` means released.** In the register, `fixed` means
 repaired on a branch that has not been merged; `merged` (added 2026-09-21) means
 merged into `origin/dev` and still not released. **Nothing has landed** —
-`origin/master` is 299 commits behind `dev` and the shipping tag is 15.0.8. Reading
-the open count as "the defects still shipping" understates operator exposure by
-about two and a half times; reading `merged` as done drops 23 more. Measured
-2026-09-21: 46 defects reach every self-hoster, of which 19 are open, 23 merged and
-4 fixed.
+`origin/master` is 308 commits behind `dev` and the shipping tag is 15.0.8. Reading
+the open count as "the defects still shipping" understates operator exposure by more
+than two times; reading `merged` as done drops 27 more. Re-measured 2026-09-21 late
+evening: **55 defects reach every self-hoster**, of which 23 are open, 27 merged, 1
+partly merged and 4 fixed.
 
 ---
 
@@ -107,13 +107,17 @@ Three entry points, easiest first:
    each. **Revised 2026-09-21: there is one, and it is in the connector
    repository** (`nightscout-connect` PR #68). The nine cgm-remote-monitor pull
    requests this section used to point at all merged between 2026-09-17 and
-   2026-09-20 — which means the easiest entry point has largely closed, and the
-   remaining ones are harder. Say so rather than leave you looking for a list that
-   is no longer there.
+   2026-09-20, and the three advisory pull requests raised on 2026-09-21 (#8744,
+   #8745, #8746) merged the same day they were opened — which means the easiest
+   entry point has largely closed, and the remaining ones are harder. Say so rather
+   than leave you looking for a list that is no longer there.
 2. **A security or safety item.** These are the rows with *nobody assigned*, and
    they are now the highest-value place to start. `P0-C` (`bf/auth`) waits on a
    security reviewer who does not currently exist; it needs a `git merge dev` first
-   (measured conflict-free) because `dev` moved past it on 2026-09-20. `BFQ-72`,
+   (measured conflict-free) because `dev` moved past it on 2026-09-20 **and again on
+   2026-09-21**. Note that being behind drops it to `gate-not-met`, which removes its
+   reviewer packet — twice in two days now, both times for being stale rather than
+   for being wrong. `BFQ-72`,
    filed 2026-09-21, is a one-request unauthenticated denial of service against a
    default install, live on the shipping release, and what it is blocked on is
    whether Nightscout's security contact process gets invoked — a decision, not
@@ -180,6 +184,6 @@ reads becomes true for them. A contradiction you notice is a real finding.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-21**, against cgm-remote-monitor-official `59430336` and this repository at `75c38a17`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-21**, against cgm-remote-monitor-official `74fc6619` and this repository at `fd632602`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

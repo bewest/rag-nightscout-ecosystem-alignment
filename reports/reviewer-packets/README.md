@@ -23,18 +23,15 @@ repository.
 |---|---|---|---|
 | [`P0-F`](p0-f-fix-connect-timer-jitter.md) | #68 | `in-flight-upstream` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter |
 | [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
-| [`P0-J`](p0-j-bf-throttle.md) | #8605 | `ready-to-push` | bf/throttle - BF-30, failed-auth throttling, compatibility default |
-| [`ADV-ALARM`](adv-alarm-bf-alarm-socket-scope.md) | &mdash; | `ready-to-push` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) |
-| [`ADV-CONFIG`](adv-config.md) | &mdash; | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
-| [`ADV-RETRO`](adv-retro-bf-ws-loadretro-auth.md) | &mdash; | `ready-to-push` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) |
+| [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-47`](bfq-47.md) | &mdash; | `needs-decision` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`DOC-LINKS`](doc-links-main.md) | &mdash; | `ready-to-push` | Every path the programme's documents and tooling cite must resolve |
 | [`DOC-VIEWS`](doc-views-main.md) | &mdash; | `ready-to-push` | A reviewer-facing surface over the queue: three overview pages and a packet per PR |
-| [`P0-C`](p0-c-bf-auth.md) | &mdash; | `ready-to-push` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) |
+| [`FU-PRBODIES`](fu-prbodies.md) | &mdash; | `needs-decision` | Five merged PR bodies have drifted from the files they were posted from |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
-| [`P0-TAG`](p0-tag-release-v0-0-14.md) | &mdash; | `ready-to-push` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push |
+| [`P0-TAG`](p0-tag-release-v0-0-14.md) | &mdash; | `needs-decision` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push |
 | [`RT-D3`](rt-d3-origin-dev.md) | &mdash; | `needs-decision` | Answer the D3 question before 15.0.9 ships |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |
 | [`T30-RESEARCH`](t30-research.md) | &mdash; | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface |

@@ -666,13 +666,101 @@ controls:
       git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/nightscout-modernization >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/nightscout-modernization bf/reads >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/retire-jsdom >/dev/null
     control-kind: static
     proves: >
-      origin/chore/nightscout-modernization and bf/reads were measured
-      to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A
-      trial merge that returned 0 for a conflicting pair would make
-      every "merges cleanly" row in this queue meaningless.
+      origin/dev and origin/chore/retire-jsdom conflict in seven files,
+      re-measured 2026-09-21, and merge-tree exits 1 on the pair. A trial
+      merge that returned 0 for a conflicting pair would make every
+      "merges cleanly" row in this queue meaningless.
+
+      REPLACED 2026-09-21 BECAUSE THE OLD CONTROL STOPPED BEING NEGATIVE.
+      It paired origin/chore/nightscout-modernization with bf/reads,
+      measured to conflict on 2026-09-15 - but bf/reads merged into dev as
+      PR #8738 and cut 5 then merged dev, so the two no longer conflict and
+      the control now exits 0. queue-vacuity reported the gate VACUOUS,
+      which was true of the control and not of the gate. A known-negative
+      pair that gets reconciled quietly stops being a control, and nothing
+      announces it; this is the second instrument in a week whose subject
+      moved underneath it.
+
+  - gate: |-
+      node tools/queue/gates/pr-body-parity.js
+    cwd: .
+    control: |-
+      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && cp reports/phase0-pr-bodies/bf-operators.md "$T/" && echo 'CONTROL LINE NOT IN THE LIVE BODY' >> "$T/bf-operators.md" && node tools/queue/gates/pr-body-parity.js --only 8743 --body-dir "$T"
+    control-kind: network
+    proves: >
+      #8743 is one of the three pairs that MATCH today, so perturbing its body
+      file by one line and re-running against that copy must fail (exit 1,
+      measured 2026-09-21). It perturbs a PASSING pair on purpose: a control
+      built on one of the five already-failing pairs would exit 1 whether or not
+      the comparison worked.
+
+      IT ALSO EXERCISES THE DIRECTION LOGIC added the same day - the control's
+      output reads "live-only 0, file-only 1", the one case in which this gate is
+      still willing to suggest an overwrite. A weaker control was considered and
+      rejected: pointing --body-dir at an empty directory makes every pair report
+      "body file missing", which exits non-zero without ever comparing two bodies,
+      so it would pass this instrument while proving nothing about parity.
+
+      READS ONLY. The control writes to a temporary directory and never to
+      reports/phase0-pr-bodies/, and pr-body-parity.js has no code path that edits
+      a pull request.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/ws-loadretro-auth origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle origin/dev
+    control-kind: static
+    proves: >
+      bf/throttle is NOT contained in origin/dev - it is the Phase 0 branch
+      that has not been pushed - and the same command reports it so (exit 1,
+      measured 2026-09-21). That is the shape this gate must go red in: a
+      branch whose work has not landed. Without it the containment test could
+      be answering yes to everything.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarm-socket-scope origin/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth origin/dev
+    control-kind: static
+    proves: >
+      bf/auth is NOT contained in origin/dev, and the same command reports it
+      so (exit 1, measured 2026-09-21). Same argument as the gate above, with a
+      different unlanded branch so the two controls do not share a single point
+      of failure - if bf/throttle is pushed tomorrow, this one still holds.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/dev >/dev/null
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/mime-exposure-review >/dev/null
+    control-kind: static
+    proves: >
+      THIS IS A CONTROL FOR A CONTROL, and that is deliberate rather than
+      circular. The gate merges dev with itself and must always pass; its job is
+      to prove merge-tree still works when every other trial-merge in RT-REBASE
+      is red. So what has to be shown is that the command can still FAIL: dev
+      against cut 4 conflicts in eighteen files, measured 2026-09-21, exit 1. A
+      merge-tree that returned 0 for everything would make the self-merge pass
+      for the wrong reason and take the whole item's red with it.
+
+  - gate: |-
+      git -C externals/nightscout-connect merge-base --is-ancestor official/dev release/v0.0.14
+    cwd: .
+    control: |-
+      git -C externals/nightscout-connect merge-base --is-ancestor release/v0.0.14 v0.0.13
+    control-kind: static
+    proves: >
+      release/v0.0.14 is not contained in v0.0.13 - it is eleven commits past it
+      - and the same command reports it so (exit 1, measured 2026-09-21). The
+      gate asserts containment of upstream dev in the release branch; a command
+      that answered yes regardless would have hidden exactly the divergence this
+      gate was added to catch, which is that dev reached 0.0.14 on a different
+      tree.
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/retire-jsdom >/dev/null
