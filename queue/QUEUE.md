@@ -24,7 +24,7 @@ Generated from `queue/work-queue.yaml` by `tools/queue/emit.py`. **Do not hand-e
 - Measured at: 2026-09-21
 - Measured against cgm-remote-monitor-official: `74fc6619`
 - Measured against nightscout-connect: `fe51c6d`
-- Measured against main_repo_head: `fd632602`
+- Measured against main_repo_head: `be480650`
 
 One queue spans every programme on purpose, so that a tenancy task colliding with a release train is visible in one place. The `parcel` field does the separating.
 

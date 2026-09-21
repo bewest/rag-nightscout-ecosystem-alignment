@@ -27,7 +27,10 @@ meta:
   measured_against:
     cgm-remote-monitor-official: "74fc6619"        # origin/dev, re-fetched 2026-09-21 evening
     nightscout-connect: "fe51c6d"                  # official/dev, re-fetched the same run
-    main_repo_head: fd632602
+    # The alignment repo's own HEAD when this manifest was measured. It can never
+    # be the CURRENT head - recording it is itself a commit - so it names the tree
+    # the measurements were taken against, one commit back.
+    main_repo_head: be480650
   # Gate kinds. `static` and `unit` run by default. The other two never run
   # unless asked for, and the runner says so rather than silently passing them.
   gate_kinds:
