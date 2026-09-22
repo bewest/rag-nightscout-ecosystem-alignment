@@ -3,16 +3,10 @@
 *Contributor-facing; written for the maintainer deciding the release and for
 reviewers of PR #8598. Measured 2026-09-22 against `origin/dev` `74fc6619`,
 `origin/master` `92d08342` (tag `15.0.8`), nightscout-connect `official/dev`
-`8e26786`. Meets [DEFINITION-OF-DONE](../../00-overview/DEFINITION-OF-DONE.md).
+`1946beb` (= `v0.1.0-dev.1`). Meets [DEFINITION-OF-DONE](../../00-overview/DEFINITION-OF-DONE.md).
 Supersedes [the 2026-09-14 readiness snapshot](cgm-remote-monitor-release-readiness-2026-09-14.md)
 for 15.0.9 and [the 2026-09-15 roadmap](../post-phase0-roadmap-2026-09-15.md)
 for ordering.*
-
-> **Connector status, later on 2026-09-22:** every programme connector fix is merged into connector
-> `dev` (`1946beb`: #64 carrying #61, #66 and #67, and #68). The line is `0.1.0` (#76), not 0.0.14;
-> prerelease `0.1.0-dev.1` is on npm under `next`, and the full `0.1.0` is not yet released. §5.2's
-> sequence below is superseded by that. Current state: queue items `P0-TAG`, `P0-F` and `P0-PIN` in
-> [`queue/work-queue.yaml`](../../../queue/work-queue.yaml).
 
 ## 1. Verdict
 
@@ -81,14 +75,9 @@ under `reports/reviewer-packets/` are scoped for that.
    instance with `AUTH_DEFAULT_ROLES=denied`, log in at the prompt, trigger an
    alarm, and confirm it arrives. No automated test covers this client path.
 2. **The D3 drag check** above.
-3. **The connector pin stays installable.** `234d47c` is in connector `dev`
-   since `d208c7d` (#67 merged with a merge commit, 2026-09-22), so it stays
-   reachable; it is in no connector tag. The connector repository allows squash merges and has
-   used them (#72). If #67 is squash-merged and the branch deleted, the commit
-   15.0.9 pins could become unreachable, and installs from its archive URL could
-   start failing. Before tagging, either merge #67 with a merge commit or put a
-   tag on `234d47c`, or repin to an upstream `v0.0.14` that includes #64 and #67
-   (§5.2).
+3. **The connector pin.** `234d47c` has been in connector `dev` since `d208c7d` (#67 merged
+   with a merge commit, 2026-09-22), so the archive URL 15.0.9 pins stays installable. It is
+   in no connector tag. Pinning the published 0.1.0 instead is the recommendation in §5.2.
 
 ### 3.4 Housekeeping that can go either way
 
@@ -121,7 +110,7 @@ ones a reader should know by name:
 - **BF-85.** For CareLink via nightscout-connect, a "no reading" marker is stored
   as glucose 0. While it is the newest value, the high/low alarms aren't
   evaluated. Read-derived, not run. The connector fix (`8406edf`) is in upstream
-  PR #64, not in upstream `dev` or in the pin 15.0.9 ships (§5.2).
+  connector `dev` and 0.1.0-dev.1, not in the pin 15.0.9 ships today (§5.2).
 - **BF-41.** A reading dated in the future silences the stale-data alarm.
 - **BF-44, BF-45** (now low). MiniMed ingestion divergences that assumed a working
   mmconnect. The maintainer confirms it does not work, so neither causes a data
@@ -137,7 +126,7 @@ always have a second way to see readings.
 | order | release | content | state today |
 |---|---|---|---|
 | 1 | **15.0.9 / 15.1.0** | §2 | ready pending §3 |
-| 2 | **Backfix 2** (patch on top) | `bf/auth` (P0-C, BF-17 plaintext token), `bf/throttle` (P0-J, BF-30 failed-auth throttling), connector pin to the upstream `v0.0.14` tag (§5.2) if 15.0.9 did not take it, BF-72's fix once chosen, BF-41/46/67/ENV as gates go green | `bf/auth` and `bf/throttle` are 9 behind `dev` and merge with **0 conflicts**; `bf/auth` needs a security reviewer, and none is assigned |
+| 2 | **Backfix 2** (patch on top) | `bf/auth` (P0-C, BF-17 plaintext token), `bf/throttle` (P0-J, BF-30 failed-auth throttling), connector pin to 0.1.0 (§5.2) if 15.0.9 did not take it, BF-72's fix once chosen, BF-41/46/67/ENV as gates go green | `bf/auth` and `bf/throttle` are 9 behind `dev` and merge with **0 conflicts**; `bf/auth` needs a security reviewer, and none is assigned |
 | 3 | **Cut 1** `chore/retire-jsdom` alone | test-infrastructure removal | 133 behind, 7 conflicting paths |
 | 4 | **Cut 2** `chore/build-runtime-separation` | build/runtime split | 133 behind, 14 |
 | 5 | **Cuts 3+5** `chore/compose-mongodb6` + `chore/nightscout-modernization` | dependencies, Node floor `^22.23.2 \|\| ^24.20.0` | 133 behind / 16; the integration branch is 9 behind / 1 (`lib/server/bootevent.js`) |
@@ -152,45 +141,55 @@ backfix merges. The cheapest time to rebase cut 1 is immediately after 15.0.9
 is tagged, while `dev` is quiet. Holding backfix 2 until cut 1 is rebased makes
 that cost fall once instead of repeatedly.
 
-### 5.2 nightscout-connect 0.0.14: land the fixes upstream, then pin a real tag
+### 5.2 nightscout-connect 0.1.0: every programme fix is upstream; the pin is the remaining step
 
-Upstream is releasing 0.0.14 from its `dev` through PR #70 (`dev` → `main`, head `8e26786`,
-mergeable). Per the maintainer it brings substantial connectivity fixes, including confirmed
-Dexcom access; the tree carries Glooko (#71), connector CI (#72) and LibreLinkUp v4 with
-real-account validation (#73). **The programme's local `v0.0.14` tag should be retired, not
-pushed.** Everything it carries already exists as an upstream PR:
+Connector `dev` (`1946beb`, 2026-09-22) carries all seven programme connector commits, and the
+line is now **0.1.0** (#76). `v0.1.0-dev.1` points at `1946beb` and is published to npm under
+`next`, with provenance; `latest` is still 0.0.12. The programme's local `v0.0.14` tag is
+superseded: its only unique commit is its own release commit. PR #70 (`dev` → `main`) is open.
 
-| programme fix | upstream PR | state against `official/dev` `d208c7d`, 2026-09-22 |
+| programme fix | upstream PR | in `1946beb` |
 |---|---|---|
-| credential- and session-safe logging for Dexcom and MiniMed; internal payloads kept out of logs | **#64** | **merged** (`d208c7d`) |
-| CareLink zero-reading filter (**BF-85**) and measurement-time status (`8406edf`, from #65) | carried in **#64** | merged |
-| debug logging opt-in; the connector's own logger; reads `CONNECT_DEBUG` (`234d47c`) | **#67**, folded into #64 | merged |
-| retry interval, delay cap and pool jitter (BF-08, BF-34) | **#68** | merged (`3f73288`) |
-| release listeners and settle output waits on stop | **#66**, folded into #64 | merged |
+| credential- and session-safe logging for Dexcom and MiniMed; internal payloads kept out of logs | **#64** (folds in #61, #66, #67) | yes |
+| CareLink zero-reading filter (**BF-85**) and measurement-time status (`8406edf`) | #64 | yes |
+| debug logging opt-in; the logger that reads `CONNECT_DEBUG` (`234d47c`) | #67 via #64 | yes |
+| retry interval, delay cap and pool jitter (BF-08, BF-34) | **#68** | yes |
+| release listeners and settle output waits on stop | #66 via #64 | yes |
 
-*(Measured on `8e26786`, before #64 merged; `d208c7d` has `lib/logging.js`.)* **Upstream `dev` at
-`8e26786` would have regressed 15.0.9.** It has no `lib/logging.js`, and it logs
-CareLink login responses (headers and bodies) and Dexcom Share error bodies unconditionally.
-That is the BF-42/BF-43 behaviour that 15.0.9's pin `234d47c` removes. It also does not read
-`CONNECT_DEBUG`, which 15.0.9 adds and documents. Measured: 135 unguarded `console.*` sites in
-`lib/` on `8e26786`, 57 plus a fixed-message logger on `234d47c`, 144 on `v0.0.13`.
+**Measured 2026-09-22 against `1946beb`:**
 
-**Sequence:**
+- **Connector suite: 289/289 on Node 20.20.0, 22.23.2 and 24.20.0.** Connector CI tests only
+  22 and 24; 15.0.9 supports Node 20, and nothing in the connector declares `engines`.
+- **Logging surface: 35 `console.*` sites in `lib/`, all through `lib/logging.js`** (57 on
+  `234d47c`, 144 on `v0.0.13`). The two that pass a value are inert: one is inside a comment
+  block, and one runs only when `lib/trace-axios.js` is executed directly as a self-test.
+- **The logging guard is enforced by a test that fails.** Adding one value-logging call to
+  `lib/sources/dexcomshare.js` made `test/log-call-sites.test.js` fail, naming exactly that line;
+  reverting it restored 3/3.
+- **Nightscout `dev` `74fc6619` with 0.1.0 embedded: 2386 passing, 0 failing, 3 pending**,
+  identical to the same tree with the shipped `234d47c` pin (arms run back to back against a
+  private `mongo:7`). The embedding contract (`require('nightscout-connect')(env, ctx)`,
+  `connect.debug`) is unchanged. 0.1.0 adds clean shutdown on Nightscout's teardown events, and
+  two optional jitter settings (`CONNECT_START_JITTER_MS`, `CONNECT_INTERVAL_JITTER_MS`) that
+  default to 0.
+- **The comparison can tell connectors apart.** `tests/debug-logging.test.js` boots the
+  installed connector under five `DEBUG_LOGGING` × `CONNECT_DEBUG` combinations and asserts the
+  exact console output. With `v0.0.13` swapped in, exactly those five cases fail and the other
+  18 pass.
 
-1. Merge **#64** into connector `dev`. It is mergeable now and closes the credential logging and
-   BF-85.
-2. Rebase and merge **#67**, so `CONNECT_DEBUG` works and debug output stays opt-in. Without it,
-   repinning makes a documented 15.0.9 switch do nothing.
-3. Merge #70, and tag and publish 0.0.14 from `main`.
-4. Repin cgm-remote-monitor to the `v0.0.14` tag tarball. Gates: `BFQ-CONNECTOR` (credential
-   logging) must pass on the new pin, and CI must be re-run. A tag also removes the
-   reachability risk in §3.3.
-5. #68 and #66 follow in 0.0.15.
+**What remains** (queue `P0-TAG`, `P0-PIN`, `P0-LOCK`):
 
-**For 15.0.9 the choice is timing.** If steps 1–3 can happen promptly, repin 15.0.9 to the tag,
-so users get the connectivity fixes and BF-85 in the same release. Otherwise ship 15.0.9 on
-`234d47c` (tag that commit first) and repin in backfix 2. Either way, **do not repin to an
-upstream 0.0.14 that lacks #64 and #67.**
+1. Tag and publish **0.1.0** from connector `dev`. The publish workflow runs on a `v*` tag and
+   needs a `c-r-m-dev` reviewer.
+2. Pin cgm-remote-monitor to exact `0.1.0` and regenerate the lockfile from the registry. Re-run
+   CI and the `BFQ-CONNECTOR` gate on the new pin.
+3. Delete the stale local `v0.0.14` tag. P0-TAG's gate is red while it exists.
+
+**For 15.0.9 the choice is timing, and the measurement favours taking it.** Pinning 0.1.0 in
+15.0.9 ships the connectivity fixes, BF-85 and BF-08/BF-34 with no difference in Nightscout's
+suite, and it names a published version rather than a commit. Holding 15.0.9 for the connector tag
+costs one tag plus one pin commit. Shipping on `234d47c` instead means tagging that commit
+first, and backfix 2 repins.
 
 ### 5.3 Cut 4: mmconnect is dead, and Dexcom already moved in 15.0.8
 

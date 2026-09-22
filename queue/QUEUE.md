@@ -705,7 +705,7 @@ needs a tenancy decision.
 
 - `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`
 
-**Notes.** This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. Pin the exact version rather than a range, so package.json and not only the lockfile says which connector ships.
+**Notes.** This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. Pin the exact version rather than a range, so package.json and not only the lockfile says which connector ships. COMPATIBILITY MEASURED 2026-09-22 (connector 1946beb = v0.1.0-dev.1 source swapped into cgm-remote-monitor dev 74fc6619, no dependency change between the two): full suite 2386 passing / 0 failing / 3 pending, identical to the shipped 234d47c arm, against a private mongo:7. Red control: with v0.0.13 swapped in, tests/debug-logging.test.js fails exactly its five installed- connector cases (18 pass), so the suite distinguishes connectors. Connector's own suite 289/289 on Node 20.20.0, 22.23.2 and 24.20.0 (its CI covers only 22 and 24). Evidence: release-readiness-15.0.9 §5.2.
 
 ### `P0-LOCK` &mdash; Regenerate package-lock.json for the nightscout-connect 0.1.0 pin
 
