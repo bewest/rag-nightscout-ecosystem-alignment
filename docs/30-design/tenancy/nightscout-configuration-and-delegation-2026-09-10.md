@@ -1,6 +1,8 @@
 # Settings, extensibility, new data, and delegated access: four open questions
 
-Date: 2026-09-10. Status: draft for maintainer discussion. Fourth in a
+*Contributor-facing.* **Snapshot — describes 2026-09-10. Status: current as analysis; its auth-related framing predates D13–D17.** Current decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+
+Date: 2026-09-10. Fourth in a
 series with
 [Typed schemas](../platform/nightscout-typed-schema-evidence-2026-09-10.md),
 [Extending the document model](../platform/nightscout-extensibility-models-2026-09-10.md)
@@ -255,6 +257,11 @@ Nightscout does not implement credentials, on liability grounds, and treats
 access as consent-granted rather than credential-proven. So delegation has
 to ride on an external identity provider — which is what the roles gateway's
 Mode B does — and cannot become a bespoke auth system.
+
+[Decided since for the hosted target (D13, D17 — [plan §2.8–§2.9](nightscout-multitenancy-execution-plan-2026-09-14.md)):
+each tenant holds its own root credential and devices keep a native per-tenant credential
+permanently; an external identity provider for *human* identity (one cohort-wide Ory Kratos pool)
+is direction of travel, **held** pending `T30-ORY-PROOF`; Hydra is deferred.]
 
 ### 5.4 What a delegation design would have to provide
 

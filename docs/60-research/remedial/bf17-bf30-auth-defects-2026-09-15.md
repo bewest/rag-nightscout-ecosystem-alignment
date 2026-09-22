@@ -1,5 +1,7 @@
 # BF-17 and BF-30 — two authentication defects in shipping `cgm-remote-monitor`
 
+> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d` (branch `bf/auth`, commits `a26ba416`, `64db1f35`). Status: BF-17 and BF-30 fixed on branch `bf/auth`, not merged — both defects still open on dev and 15.0.8. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 **Date**: 2026-09-15
 **Branch**: `bf/auth` in `externals/work/crm-bf-auth`, based on `origin/dev` (`a8888f0d`)
 **Commits**: `a26ba416` (BF-30), `64db1f35` (BF-17) — disjoint file sets, each verified to
@@ -266,21 +268,16 @@ operator data would require, in order:
    invalidates every subject's token at once, and requires reconfiguring every device). Which is
    appropriate depends on what the operator's exposure was, and it is their decision.
 
-   > **CORRECTED 2026-09-16.** This list previously opened with a third option, "change the
-   > subject's name (which changes the derived token)". **That is wrong, and it was wrong in the
-   > direction that matters** — it tells an operator an exposed credential has been retired when
-   > it has not. `storage.findSubject` → `checkToken` splits the presented token on `-`, takes
-   > the **last** segment as `prefix`, and matches
+   > **Renaming a subject does not rotate its token.** `storage.findSubject` → `checkToken` splits
+   > the presented token on `-`, takes the **last** segment as `prefix`, and matches
    > `subject.accessTokenDigest.indexOf(accessToken) === 0 || subject.digest.indexOf(prefix) === 0`.
    > The second arm is the one that carries: `subject.digest` is
    > `enclave.getSubjectHash(subject._id)`, a function of `_id` and the enclave key **only**. The
    > name contributes nothing but the `abbrev` prefix at the front, which `checkToken` never
    > reads. So a rename changes what the token *looks like* and leaves the old token
-   > **authenticating**. Measured on `bf/auth` `lib/authorization/storage.js:326` and identically
-   > on `origin/dev` `:288` — this is not a branch artifact, it is how the shipping matcher works.
-   > The error propagated from here into `releases/cgm-remote-monitor-15.0.9/release-notes.md`,
-   > where it had become an operator instruction; both are corrected, and
-   > `tools/queue/gates/bf17-remediation-note.js` now guards against it returning.
+   > **authenticating**. Measured 2026-09-16 on `bf/auth` `lib/authorization/storage.js:326` and identically
+   > on `origin/dev` `:288` — this is how the shipping matcher works.
+   > `tools/queue/gates/bf17-remediation-note.js` guards the release notes against suggesting a rename.
 4. Backups, replicas and support exports taken since the first subject edit should be treated as
    containing live credentials.
 5. **What the code fix does to rows already written, precisely.** `reload()` deletes the derived

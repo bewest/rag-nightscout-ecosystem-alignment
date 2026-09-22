@@ -1,6 +1,8 @@
 # Reconciling the agentic control plane RFC with what the corpus measured
 
-Date: 2026-09-11. Status: draft for discussion. Tenth in the series, and the
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis of the RFC; no decision rests on it.** Current decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+
+Date: 2026-09-11. Tenth in the series, and the
 first one addressed **to cgm-remote-monitor's own `docs/proposals/` set**
 rather than to a controller.
 

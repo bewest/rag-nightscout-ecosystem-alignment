@@ -3,6 +3,22 @@
 **Status: DRAFT for maintainer review. Contributor-facing; full technical depth intended.**
 Nothing has been pushed, published or `npm publish`ed. The tag exists **locally only**.
 
+> **Status 2026-09-22: the `v0.0.14` tag is contested. Do not push it until the maintainer
+> decides.** Upstream `nightscout-connect` `official/dev` (`8e26786`) independently declares
+> `0.0.14` in its `package.json`, with different contents: Glooko work (PR #71), restored
+> connector CI (PR #72) and LibreLinkUp v4 (PR #73). The local annotated tag `v0.0.14`
+> (`649a7de`) is 11 commits ahead of and 24 behind `official/dev`
+> (`git rev-list --left-right --count v0.0.14...official/dev`), and a trial merge conflicts in
+> **11 files** (`git merge-tree --write-tree --name-only v0.0.14 official/dev`: the CI
+> workflow, `index.js`, `lib/builder.js`, four state machines, `lib/outputs/internal.js`, both
+> Glooko files and `lib/sources/librelinkup.js`). The backoff-and-jitter commit `c1cce2a` is in the
+> local tag but not on upstream `dev` (connector PR #68 is open). Queue item **P0-TAG** is
+> `needs-decision` between three shapes: reconcile `release/v0.0.14` onto upstream `dev` and tag
+> there; abandon the prepared branch and let upstream tag `dev`; or cut the prepared content as
+> `0.0.15`. Whatever is chosen has to keep all seven commits listed below. `cgm-remote-monitor`
+> dev meanwhile pins `234d47c`, not a tag (see
+> [`../cgm-remote-monitor-15.0.9/contents.md`](../cgm-remote-monitor-15.0.9/contents.md)).
+>
 > Complements the generated changelog. The changelog is authoritative for *what merged*;
 > this file is the record of *what the release is made of and what is unsettled about it*.
 

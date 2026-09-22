@@ -1,6 +1,8 @@
 # Three alarm-delivery defects, fixed: one alarm that could never fire, one that could be off
 # without anyone being told, and one request that re-languages the server
 
+> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d` (branch `bf/alarms`). Status: findings merged to dev in PR #8739 (BF-28, BF-29, BF-31), unreleased. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 **Date**: 2026-09-15
 **Under test**: `cgm-remote-monitor` @ `a8888f0d` (`origin/dev`), worktree
 `externals/work/crm-bf-alarms`, branch **`bf/alarms`**
@@ -176,8 +178,8 @@ This is the defect that makes alarm measurement lie, so the checks are ablated t
 3. **The corpus-vacuity trap itself.** The "stays quiet about every documented feature" tests
    assert that `cage`, `iage` and `bwp` are actually in the enabled list, because a run that armed
    nothing would also produce no warnings and would pass for the wrong reason. Re-arming that
-   fixture by **file** name instead of plugin name — the exact mistake two instruments made on
-   2026-09-15 — turns both tests red:
+   fixture by **file** name instead of plugin name — the exact mistake this guard exists to catch
+   — turns both tests red:
 
    ```
    AssertionError: expected Array [ ... ] to ...   (armed list no longer contains cage/iage/bwp)

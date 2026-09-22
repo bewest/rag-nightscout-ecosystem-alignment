@@ -1,5 +1,8 @@
 # E1 — The Dexcom path: legacy Share bridge vs. nightscout-connect
 
+> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d`. Status: current for the Dexcom path; nothing here is released (`origin/master` = 15.0.8). BF-34 is fixed on branch `fix/connect-timer-jitter`, not merged; `dev` still pins connector `234d47c` (checked 2026-09-22). BF-44/BF-45 open. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **[Correction 2026-09-22: the maintainer states (2026-09-21, operational knowledge, not measured here) that legacy Dexcom Share is intended to map to nightscout-connect, and that mmconnect has been broken for some time. The "cut 4 deletes two working ingestion paths" framing must carry that caveat; BF-44/BF-45 were graded assuming mmconnect is live and have not been re-graded.]**
+
 **DRAFT. Contributor-facing.** Prepared for maintainer review. Nothing in this document has been
 run against a real Dexcom account, real credentials, or any vendor endpoint. Every measurement
 below comes from the shipping source files driven against synthetic fixtures on this machine.
@@ -16,12 +19,12 @@ Every claim is labelled **[R]** reproduced (a harness was run and produced the n
 
 ---
 
-## 0. Three corrections to the brief, before anything else
+## 0. Three facts that frame the rest
 
 ### 0.1 The auto-adoption path is already on `dev`. It is not a parcel-4 change.
 
-The brief places `migrateBridgeToConnect()` and `lib/server/bridge-connect-compat.js` "on the
-parcel-4 branch (`chore/mime-exposure-review`) or its constituents". They are on `origin/dev`,
+`migrateBridgeToConnect()` and `lib/server/bridge-connect-compat.js` are not parcel-4
+(`chore/mime-exposure-review`) changes. They are on `origin/dev`,
 introduced by `a91e8ee4 feat(connect): use nightscout-connect 0.0.13 for bridge compat`. **[R]**
 `git ls-tree -r origin/dev` lists both the module and `tests/bridge-connect-compat.test.js`, and
 `lib/server/bootevent.js` on `dev` calls it at line 79 and gates the legacy bridge on it at
@@ -46,7 +49,7 @@ deprecation window that matters therefore began at `a91e8ee4`, not at the parcel
 
 The two have diverged: `v0.0.13` is a merge commit (`b394411`) whose parents are all contained in
 `234d47c8`'s history, and `234d47c8` carries one commit `v0.0.13` does not. The installed package
-reports `"version": "0.0.13"` in its own `package.json`, which is where the belief comes from.
+reports `"version": "0.0.13"` in its own `package.json`, which makes the pin look like v0.0.13.
 
 For the Dexcom path specifically this matters in a useful direction: **`lib/sources/dexcomshare.js`
 at the pin is byte-identical to `v0.0.14`** (`git diff 234d47c8 v0.0.14 -- lib/sources/dexcomshare.js`
@@ -54,7 +57,7 @@ is empty) **[R]**, and differs from the `v0.0.13` tag by 20 lines. So the G7-era
 normalisation, the `Array.isArray` guard on the glucose response, and the safe logger **are already
 shipping on `dev` today**. The tag `v0.0.13` does not contain them.
 
-### 0.3 "Legacy bridge vs. v0.0.13 vs. v0.0.14-with-the-fix" is the wrong three-way split.
+### 0.3 The three-way comparison is legacy vs. connect-as-pinned vs. v0.0.14.
 
 `v0.0.14` (`649a7de`) sits directly on top of `c1cce2a`, the BF-34 backoff/jitter fix. So
 `bf/connect-pin` — a one-line move of the pin to the `v0.0.14` tarball — *is* the BF-34 fix ship
@@ -214,9 +217,8 @@ suppressed for legibility **[R]**:
 | 12 | 17.5 min | 30.0 min | 5.0 min |
 | ≥20 | **74.6 h** | 30.0 min | 5.0 min |
 
-BF-34 confirmed as stated in the brief: pinned `backoff()` does `{...config, ...defaults}`, so the
-caller's 150 000 ms becomes 256 ms — 586x faster at attempt 1 **[R]**. What the brief does not say,
-and what the register should, is that the *same* merge order also makes the ceiling 74.6 h
+BF-34 reproduced: pinned `backoff()` does `{...config, ...defaults}`, so the
+caller's 150 000 ms becomes 256 ms — 586x faster at attempt 1 **[R]**. The *same* merge order also makes the ceiling 74.6 h
 (`256 × (2²⁰−1)`), so during a sustained vendor problem the pinned connector first hammers, then
 goes dark for three days. Both halves ship on `dev` today.
 
@@ -338,6 +340,9 @@ told about. "Nothing is lost" is true of *data* and not true of *settings*.
 8. **The current state of the legacy path against live Dexcom.** The maintainer's "the old medtronic
    does not work" is a statement about MiniMed. No equivalent statement about Dexcom is on the
    record, and nothing here can produce one.
+   [Correction 2026-09-22: the maintainer has since stated (2026-09-21, operational knowledge, not
+   measured here) that legacy Dexcom Share is intended to map to nightscout-connect. The live state
+   of the legacy Dexcom path is still unmeasured.]
 
 ---
 
@@ -356,6 +361,9 @@ comes back on, and CGM values stop appearing in logs.
 - The *code* improvement is not what the retirement decision turns on, because the code is already
   in use. What parcels 4/5 remove is the **fallback**, and the fallback is the only thing standing
   between the seven "worse" items above and an operator whose data stops.
+  [Correction 2026-09-22: per the maintainer (2026-09-21, not measured here) legacy Dexcom Share is
+  intended to map to nightscout-connect, so removing the fallback is the intended direction; the
+  "worse" items remain the residues a deprecation notice or fix must cover.]
 - Connect is **not** uniformly more consistent. On a server-invalidated session it is
   categorically worse than the thing it replaces, and on the currently pinned commit it can go dark
   for three days on any sustained vendor problem.

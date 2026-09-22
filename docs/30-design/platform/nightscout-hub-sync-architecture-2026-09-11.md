@@ -1,6 +1,8 @@
 # A hub-and-spoke sync model for AID controllers
 
-Date: 2026-09-11. Status: draft for maintainer discussion. Fifth in a series
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; the design it sketches is carried forward by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md) and [PROPOSAL-replay-fidelity-changes](PROPOSAL-replay-fidelity-changes-2026-09-11.md).** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+
+Date: 2026-09-11. Fifth in a series
 with
 [Typed schemas](./nightscout-typed-schema-evidence-2026-09-10.md),
 [Extending the document model](./nightscout-extensibility-models-2026-09-10.md),

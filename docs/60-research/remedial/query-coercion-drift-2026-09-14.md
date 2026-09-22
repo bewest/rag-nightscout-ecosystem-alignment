@@ -1,5 +1,7 @@
 # The query-coercion table, emitted — and the 158 places the shipping walkers disagree
 
+> **Snapshot — research as of 2026-09-14, walkers transcribed from `chore/nightscout-modernization 0a4109f6`. Status: the coercion fix (T0.5: BF-02, BF-03, BF-11, BF-32, BF-40) merged to dev in PR #8737, unreleased; the drift counts below are as of that date. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 Date: 2026-09-14. Status: findings + tooling. Task **T0.5** of the
 [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
 **No shipping code changed** — this builds the generator and measures the gap.

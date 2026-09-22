@@ -39,9 +39,8 @@ HEADER = """<!--
   Staleness check:  python3 tools/queue/emit.py --check
 
   Every edit to this file will be destroyed by the next `make queue`. Edit the
-  YAML instead. The reason this file is generated at all is that a
-  hand-maintained `state` column is an ASSERTION, and this programme has been
-  bitten repeatedly by assertions that read like measurements.
+  YAML instead. It is generated so that a status cannot be edited into the
+  human-readable view by hand.
 
   Even here, `state` is only a CLAIM about what the gates will say. The
   measurement is `make queue-status`, which runs them.
@@ -96,8 +95,7 @@ def render(doc):
     lines.append("A `no-gate:` marker is not a gap in the bookkeeping; it is the "
                  "bookkeeping. It records that nobody has yet built a way to measure "
                  "the property, and it carries the reason. %d of the %d gate slots in "
-                 "this queue are in that state, which is the honest shape of the "
-                 "programme today." % (absent, runnable + absent))
+                 "this queue are in that state." % (absent, runnable + absent))
     lines.append("")
 
     # --- state summary ------------------------------------------------------

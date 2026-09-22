@@ -1,8 +1,12 @@
 # T1.1 — the storage seam: interface definition and call-site classification
 
-Date: 2026-09-14. Status: draft for maintainer discussion. **Design only — no code changed.**
-Task T1.1 of the [execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md).
-Measured against `origin/chore/nightscout-modernization` @ `0a4109f6` (D9's base).
+*Contributor-facing.* **Living design — the only statement of the storage seam's interface.**
+Task T1.1 of the [execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md); decisions it rests on: D3, D4, D8, D9 — [plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+§1–§7 were measured 2026-09-14 against `origin/chore/nightscout-modernization` @ `0a4109f6`;
+§8–§10 describe what was built on the `seam/*` branch chain (tip `seam/t1-2-storage-interface`
+@ `81a1f6ce`, `externals/work/crm-seam`), which is **unpublished**. That base has since moved
+(to `b1bdaca0` on 2026-09-21, a merge of `dev`); the seam is 68 behind it and trial-merges with 19
+conflicting paths — queue item `SEAM-REFRESH`. Nothing here is in `dev` or any release.
 
 **Deliverables**: this document, plus
 `reports/storage-seam/t1-1-call-site-classification.tsv` (every site, classified) and the two
@@ -10,9 +14,11 @@ scripts that produce it, so the count can be re-derived rather than trusted.
 
 ---
 
-## 1. The count was wrong, twice
+## 1. The count: 85 call sites
 
-| count | method | why it was wrong |
+Method matters because two plausible greps undercount:
+
+| count | method | why it is wrong |
 |---|---:|---|
 | "~30 call sites" | {M} §2.5, by inspection | an estimate, never enumerated |
 | 68 | grep excluding `.find(` | dodging `Array.find` also dropped every `col.find(filter)` — the most common read in the codebase |
@@ -42,7 +48,7 @@ The sites are not 85 pieces of equivalent work. They stratify:
 
 **So T1.2 is not "design an abstraction and apply it to 85 sites". It is "finish the
 abstraction that api3 already has, then bring v1 to it".** That is a materially smaller and
-lower-risk task than the plan assumed, and it changes the sequencing recommendation in §7.
+lower-risk task, and it sets the sequencing in §7.
 
 ## 3. Classification
 
@@ -158,8 +164,6 @@ site.** It is the highest-leverage piece and everything else gets easier behind 
 
 ### 4.3 Aggregation — investigated, and it is one operation
 
-> **Resolved 2026-09-14.** §4.3 assumed this was the hard escape hatch. It is not.
-
 `lib/server/aggregate.js` builds `[{$match: query}].concat(conf.pipeline).concat(opts.pipeline).concat(template())`,
 and **every extension point is empty in production**:
 
@@ -184,7 +188,7 @@ and the exact 400 message; `tests/mongo-query-javascript.test.js:75-94` construc
 directly and passes `opts.pipeline`, so it depends on that parameter existing even though no
 production caller supplies it.
 
-#### 4.3.1 And a live bug found on the way
+#### 4.3.1 The count path's date bound (BF-01)
 
 `aggregate.js:21` calls `find_options(opts)` with **one argument**, so the collection's
 `queryOpts` never reach it and `lib/server/query.js` falls back to its defaults — `dateField:
@@ -201,22 +205,12 @@ BSON types before comparing values, so a numeric field never matches a string bo
 the injected two-day window excludes every document rather than bounding it.
 
 This is the same class as T0.5's under-coercion finding: a string where a number belongs,
-returning 200 and an empty result. It should ship with T0.5 rather than wait for the seam.
+returning 200 and an empty result. Filed as **BF-01** (reproduced); the fix routes count and list
+through the same `query_for` and is **merged** to `dev` via PR #8738 (2026-09-18), not released.
 
 ### 4.4 Dedup across the three write paths — investigated, and they are not equivalent
 
-Two sites — `lib/server/aggregate.js:26` and `lib/api/entries/index.js:520` — pass a pipeline
-through. A pipeline pass-through cannot be translated in general, for the same reason v1's
-operator pass-through cannot (§3.1 of the plan).
-
-**Do not put `aggregate(pipeline)` in the interface.** Establish what those two callers
-actually compute, express each as a named operation (`count`, `groupBy`, …), and implement
-those. If the answer turns out to be "arbitrary pipelines", that is a finding worth having
-early — it would mean reporting stays MongoDB-only for a while, which is survivable under D4
-and should be recorded rather than discovered during T2.5.
-
-The §5 recommendation — convert the socket path last, file unification separately — is
-confirmed and strengthened. The three paths disagree on **match key, match scope, post-match
+The §5 recommendation — convert the socket path last, file unification separately — holds. The three paths disagree on **match key, match scope, post-match
 write semantics, and which collections dedup at all**:
 
 | | socket `dbAdd` | API v3 | API v1 |
@@ -249,9 +243,10 @@ HTTP server and uses the same credential model as REST (`websocket.js:81-84`, `:
 writes are denied by default, but a deployment adding `careportal` to `AUTH_DEFAULT_ROLES`
 opens them — exactly as it would for REST.
 
-**One thing the investigation could not settle**, recorded rather than guessed: whether the
-socket similarity branch's use of truthiness (`if (data.data.insulin)`) rather than presence is
-intentional. A `0` insulin or carbs value is skipped as a match key, and no test covers it.
+**Unsettled:** whether the socket similarity branch's use of truthiness
+(`if (data.data.insulin)`) rather than presence is intentional. A falsy value is skipped as a
+match key, and no test covers it. Register **BF-09** (queue `BFQ-09`, unsettled) carries the
+corpus measurement of which fields this actually affects.
 
 ## 5. A third write path, not previously named
 
@@ -260,10 +255,9 @@ implements **a complete CRUD API over Socket.IO**: `dbAdd` (`:449`), `dbUpdate` 
 `dbUpdateUnset` (`:395`), `dbRemove` (`:734`). It carries **its own deduplication logic**
 (exact-match then similar-match, `:528`/`:572`) parallel to — not shared with — v1's and v3's.
 
-Consequences the plan did not account for:
+Consequences:
 
-- **The seam covers three API surfaces, not two.** Any statement of the form "v1 and v3" in
-  {M}, {C} or the plan is incomplete.
+- **The seam covers three API surfaces, not two** — v1, v3 and the socket path.
 - **Dedup semantics exist in three places** and are not obviously identical. Unifying them is a
   behaviour change and must not ride along inside a "no behaviour change" refactor.
 - **11 of its 15 sites classify as `fits`** — it is mostly `findOne`/`insertOne`/`replaceOne`,
@@ -282,10 +276,8 @@ with its own tests.
 - **`lib/storage/mongo-storage.js`'s connection/pool/index management** — one `createIndex`
   site is listed, but connection lifecycle, pool configuration and `ensureIndexes` are a
   separate concern from the per-collection interface and need their own design.
-- **Transactions.** Nothing in the current code uses them; RLS binding under D3 is
-  per-transaction ({DB} §8.2), so the interface will need a transaction scope before T2.5.
-  **This is a gap in the interface above and should be closed before T1.2 starts**, because
-  retrofitting a transaction scope through 85 call sites twice would be avoidable waste.
+- **Transactions.** Nothing in the shipping code uses them; RLS binding under D3 is
+  per-transaction ({DB} §8.2), so the interface needs a transaction scope. That scope is §9.
 
 ## 8. The filter AST — built and validated
 
@@ -329,28 +321,23 @@ nulls distinct from missing keys, empty strings, mixed types.
 
 | run | agreement |
 |---|---|
-| first | **1668/2000 (83.4 %)** |
-| after fixing `nin` | 1961/2000 (98.0 %) |
-| after fixing `exists` | **3000/3000 (100 %)** |
+| all operators except `re` | **3000/3000 (100 %)** |
 | with `re` on plain patterns | 1500/1500 (100 %) |
 
-**The two failures it found are exactly the bugs this method exists to catch**, and both would
-have shipped:
+**Non-vacuity:** the differential caught two adapter defects during construction — reverting
+either fix reproduces the disagreement (332 for `nin`, all one direction):
 
 1. **`nin` and missing fields.** MongoDB's `$nin` matches a document where the field is absent;
-   `NULL NOT IN (…)` is NULL in SQL and matches nothing. 332 disagreements, all one direction.
-   Fixed as `(x IS NULL OR x NOT IN (…))`, the same three-valued-logic gap `ne` needed.
+   `NULL NOT IN (…)` is NULL in SQL and matches nothing. Fixed as `(x IS NULL OR x NOT IN (…))`, the same three-valued-logic gap `ne` needed.
 2. **`exists` cannot read a generated column.** MongoDB's `$exists` is *key presence*, and a
    generated column is built with `->>`, which returns SQL NULL for **both** an absent key and
    an explicit JSON null — it cannot tell them apart. `doc #> '{path}'` can: jsonb `null` for
    the first, SQL NULL for the second. Verified directly, then fixed so `exists` **always**
    reads the document even when a column exists for that field.
 
-> The second is worth dwelling on, because it is a trap in the §6.3 storage shape rather than
-> in this AST: **generated columns are not a faithful projection of the document.** Anything
-> that needs to distinguish absent from null must read the jsonb. A hand-written translation
-> would very likely have used the column, and the resulting wrongness would have been invisible
-> until someone queried a field that is sometimes null.
+> The second is a trap in the §6.3 storage shape rather than in this AST: **generated columns
+> are not a faithful projection of the document.** Anything that needs to distinguish absent
+> from null must read the jsonb.
 
 ### 8.4 Coverage against real v1 output
 
@@ -368,18 +355,18 @@ dotted path · `$ne null` · `$in` · `$exists` · `$regex`.
 The two `_id` shapes are **not filters** — they are identifier lookups, resolved by §4.1
 rule 2's identifier opacity rather than by the AST.
 
-### 8.5 Honest limits
+### 8.5 Limits
 
-- ~~**mingo is a reimplementation of MongoDB's query language, not MongoDB.**~~ **CLOSED** —
-  re-run as a three-arm comparison (mingo / live `mongod` / live PostgreSQL) in
-  [{3A}](../../60-research/tenancy/seam-filter-ast-three-arm-validation-2026-09-14.md). All three arms
-  agree 3000/3000 on same-type values. Turning on **cross-type** values breaks that
-  (mongod-vs-postgres 96.15 %), in four nameable classes — which is a finding about type
-  coercion above the seam, not about the AST, and it is why T0.5 matters.
+- **mingo is a reimplementation of MongoDB's query language, not MongoDB.** A three-arm
+  comparison (mingo / live `mongod` / live PostgreSQL) in
+  [{3A}](../../60-research/tenancy/seam-filter-ast-three-arm-validation-2026-09-14.md) agrees
+  3000/3000 on same-type values. Cross-type values gave mongod-vs-postgres 96.15 % in four
+  nameable classes before the type guard of §8.6; with it, 100 % (§8.6.2).
 - **The regex result covers a deliberately plain subset** — literals, anchors, character
   classes. Mongo's `$regex` is PCRE-flavoured and Postgres `~` is POSIX; they diverge on lazy
   quantifiers, lookaround and `\d`-style shorthands. **The measured 100 % describes the subset
   we would allow, not the whole language**, and the allowed subset needs to be written down.
+  `RE_MAX_LEN` is a length bound, not a work bound (T2.3, plan Phase 2).
 - **300 documents, one collection shape.** Sort, limit, skip and projection are not covered —
   only the filter.
 - **No tenant predicate is in these filters.** Under D3 the tenant bound comes from RLS, not
@@ -387,10 +374,9 @@ rule 2's identifier opacity rather than by the AST.
 
 ### 8.6 The cross-type break is also *inside* the adapter — found by T2.1
 
-§8.5 files the cross-type disagreement as "a finding about type coercion above the seam, not
-about the AST." **T2.1 sharpened that, and the sharper version is worse.** Building the DDL
-forced a decision about generated columns, and measuring it produced this, verified
-independently on live PostgreSQL 16 over the same four rows (`sgv: 120`, `sgv: "120"`,
+The cross-type disagreement is not only a coercion problem above the seam. Building the T2.1 DDL
+forced a decision about generated columns, and measuring it produced this on live PostgreSQL 16
+over four rows (`sgv: 120`, `sgv: "120"`,
 `sgv: null`, key absent):
 
 | predicate | rows |
@@ -411,7 +397,7 @@ not. Two further consequences of the same mismatch: a dirty value makes the fall
 bound raises where MongoDB silently matches nothing — BF-01's live defect arriving as an error
 instead of an empty page. Louder, still a behaviour difference.
 
-**Fixed 2026-09-15** (`d75c1154`): the jsonb path now carries the same
+**Fixed on the seam branch 2026-09-15** (`d75c1154`, unpublished): the jsonb path carries the same
 `CASE WHEN jsonb_typeof(…) = '<type>' THEN … END` the emitted DDL builds its columns with, so
 the two agree by construction rather than by review. `CASE` and not
 `AND jsonb_typeof(…) = t`, because SQL does not promise to evaluate conjuncts in order — a
@@ -429,18 +415,13 @@ Three things came with it, each a defect in its own right:
 - **A null operand is its own type bracket.** Measured against mongod 7.0.43 over
   `{null, missing, 0, 'a', false}`: `$eq`, `$lte` and `$gte` against null all match null **and**
   missing, while `$lt` and `$gt` match **nothing** — there is no value above or below null inside
-  its own bracket. Before this, the ordering operators emitted the literal string `undefined`
-  into the SQL and killed 114 of 3000 three-arm fixtures.
+  its own bracket. Without this handling the ordering operators emit the literal string
+  `undefined` into the SQL (114 of 3000 three-arm fixtures fail).
 
-### 8.6.1 The differential was vacuous here, and finding that out is the result
+### 8.6.1 Non-vacuity of the cross-type differential
 
-Before claiming the fix: **removing the type guard entirely changed no result.** `validate.js`'s
-header had always said the corpus carried "mixed types, and a bound of the wrong type for its
-field"; it did not — `mkDocs` stored each field's own type and `randomValue` returned it. Every
-fixture was same-type, so the one property the guard exists to enforce was the one property
-nothing measured.
-
-With `--cross-type` (both halves: a document of the wrong type, and a *query* of the wrong type,
+Without cross-type fixtures the differential cannot see the guard: every fixture `mkDocs` builds
+stores each field's own type, so removing the guard changes no result. With `--cross-type` (both halves: a document of the wrong type, and a *query* of the wrong type,
 which are opposite sides of the bracket):
 
 | | mismatches over 5000 |
@@ -448,9 +429,8 @@ which are opposite sides of the bracket):
 | guard removed | **398 unclassified, plus hard cast errors** — readings like `mongo 0 / sql 140` |
 | guard in place | **0** |
 
-Turning the mode on failed in *setup* first, which is its own confirmation: the harness table
-declared its generated columns with bare casts, and one document holding `sgv` as the string
-`"120"` kills the `INSERT` with `22P02`. That is exactly the argument `postgres_emit.py` makes
+A generated column declared with a bare cast fails at *insert*: one document holding `sgv` as the
+string `"120"` kills the `INSERT` with `22P02`. That is exactly the argument `postgres_emit.py` makes
 for emitting a `CASE` guard — on a real deployment it is an ingest outage caused by a
 data-quality problem.
 
@@ -465,14 +445,13 @@ regex arm on:
 | mingo vs mongod | 2977/3000 — **23 disagreements** |
 | mingo vs postgres | 2977/3000 — 23 disagreements |
 
-{3A} measured mongod-vs-postgres at **96.15 %** on cross-type values. That gap is now closed: the
+(Without the §8.6 guard, {3A} measured mongod-vs-postgres at 96.15 % on cross-type values.) The
 seam's claim holds exactly against the database self-hosters actually run.
 
 **Every remaining disagreement is the oracle's**, and the defect is pinned to one construct:
 **mingo's `$lte`/`$gte` against a null operand does not match a missing field; mongod's does.**
-mingo agrees with mongod on `$eq`, `$ne`, `$lt` and `$gt` null. This is T2.3's epistemic finding
-arriving from the other direction — there the oracle *masked* a real divergence, here it
-*manufactures* one — and both say the same thing: **`mingo ≡ postgres` is a claim about the AST,
+mingo agrees with mongod on `$eq`, `$ne`, `$lt` and `$gt` null. With T2.3's `re` finding (where
+the oracle *masked* a real divergence; here it *manufactures* one) the conclusion is the same: **`mingo ≡ postgres` is a claim about the AST,
 never about MongoDB.** `validate.js` now declares these fixtures oracle-declined at the point of
 use, the way it already declares the `x` flag, rather than counting them against the adapter.
 
@@ -484,8 +463,8 @@ use, the way it already declares the `x` flag, rather than counting them against
   multikey semantics. T2.1 emitted **nothing** rather than an approximation that would have
   looked right and answered wrong. This is why the emitted index count is 30 secondary + 4
   primary = **34**, not {M} §6.7's 41: 6 of the difference is food and activity, which have no
-  model yet (T2.2), and the remaining 1 is this. Neither figure is wrong — §6.7 counts six
-  collections and T2.1 has four models — but the plan's T2.1 text conflated them.
+  model yet (T2.2), and the remaining 1 is this. §6.7 counts six collections; T2.1 had four
+  models.
 - **Seven indexed field paths no model declares**: `NSCLIENT_ID` (treatments, devicestatus,
   profile), `date` (treatments, devicestatus), `created_at` (entries), plus the multikey one.
   They get no column and appear in the index as a jsonb expression carrying an inline
@@ -508,7 +487,7 @@ Confirmed: `set_config('app.current_tenant_id', …, is_local => true)` is trans
 **every tenant-bound operation must run inside a transaction that has been bound.**
 
 ```js
-store.withTenant(tenantId, async (tx) => { … })   // NEW — required before T1.2
+store.withTenant(tenantId, async (tx) => { … })   // NEW
 ```
 
 **Three findings that make this more than a signature change:**
@@ -526,15 +505,10 @@ store.withTenant(tenantId, async (tx) => { … })   // NEW — required before T
    single-tenant mode rather than a fake tenant id, or {M} §11's "never a degraded mode" is
    violated on the first line of the adapter.
 
-**Implication for implementation order**: adding this after T1.2 means touching ~55 call sites
-twice. It belongs in the interface definition now.
-
 ### 9.1 As built — 2026-09-14
 
-It did **not** land before T1.2, so this is the retrofit the note above warned about. It was
-cheap anyway, and for a reason worth recording: T1.2 left **one choke point** — the
-`MongoCollection` delegations — where before there were 68 call sites. The warning was correct
-about the risk and wrong about the cost, because the seam itself removed the cost.
+Built after T1.2, which had left **one choke point** — the `MongoCollection` delegations — so
+the change touched three files.
 
 `lib/storage/tenant-scope.js`, with `withTenant` exposed on the store (`lib/storage/mongo-storage.js`)
 and `requireTenant` asserted in `lib/api3/storage/mongoCollection/index.js`. All three findings
@@ -559,28 +533,25 @@ which throws here and returns zero rows under RLS. A lost scope cannot silently 
 directions. Rebinding a different tenant inside an existing scope is refused outright: crossing
 a tenant boundary is an admin-plane operation and belongs on its own request.
 
-**What this is not yet.** Nothing calls `setTenancyMode('multi')` — tenant resolution is T3.1 —
-so the assertion is **inert in every deployment that exists today**, exercised only by tests
-that set the mode explicitly and restore it. It is the scope T2.5 needs, in place before T2.5
-needs it; it is not tenancy.
+**What this is not.** The only caller of `setTenancyMode('multi')` is T3.1's `fromEnv` under
+`TENANCY_MODE=multi`, on the same unpublished branch chain, so the assertion is **inert in every
+deployment that exists**. It is the scope T2.5 needed; it is not tenancy.
 
 14 tests; the suite is **2229 passing, 1 pending, 0 failing**, lint clean.
 
-## 7. Recommended sequencing, revised
+## 7. Sequencing
 
-The tiering in §2 changes the order the plan assumed:
+The tiering in §2 sets the order. Status as of the seam tip `81a1f6ce`; the queue is
+authoritative for item state.
 
-1. ~~**The filter AST**~~ — **built and validated, §8.** `tools/seam/filter-ast.js`, 3,000
-   randomised filters at 100 % agreement across mingo and real PostgreSQL, 10/10 v1 shapes
-   covered. Remaining: write down the allowed regex
-   subset.
-2. ~~**Add the transaction scope**~~ — **designed, §9**, including the finding that MongoDB
-   needs an explicit assertion to match RLS's fail-closed behaviour and cannot offer
-   transactions on a standalone server at all.
-3. **Close T1's two leaks** — `self.col`, `getLastModified`. Small, inside api3, low risk.
-4. **Convert T2's 40 v1 sites** behind the finished interface. The bulk of the work.
-5. **Decide aggregation** (§4.3) — may run in parallel; may produce a "MongoDB-only for now".
-6. **Convert T3's socket path** last, with the dedup question filed separately.
+1. **The filter AST** — built and validated (§8). Owed: write down the allowed regex subset.
+2. **The transaction scope** — built (§9.1).
+3. **Close T1's two leaks** — `getLastModified` now routes through `findMany` (§10.1); whether
+   `self.col` is private on the seam tip is not recorded here and should be checked there.
+4. **Convert T2's 40 v1 sites** behind the finished interface — done in T1.2 except
+   `profile.list_query` (§10.6).
+5. **Aggregation** (§4.3) — resolved as `count(ast)`.
+6. **Convert T3's socket path** — converted; dedup unification filed separately (§4.4).
 
 **T0's 15 sites need no work at all**, and T1's 14 are mostly already correct — which is the
 practical headline: **the conversion is ~55 sites, not 85.**
@@ -588,9 +559,8 @@ practical headline: **the conversion is ~55 sites, not 85.**
 
 ## 10. As built — what T1.2 actually delivered, and where it diverged from §4.1
 
-The proposal in §4.1 survived contact with the code, with three deviations. Each is recorded
-here rather than edited into §4.1, because the reason for a deviation is worth more than a
-tidy-looking proposal.
+The delivered interface differs from §4.1 in four places. §4.1 is kept as proposed so the reason
+for each deviation stays readable.
 
 ### 10.1 The delivered surface
 
@@ -648,15 +618,14 @@ the wire, because `normalizeDeleteStatus` copies the whole object into the respo
 Three modules independently re-synthesised `acknowledged: true` before this was centralised —
 which would misreport an unacknowledged write. The driver's value is passed through instead,
 and the internal `deleted` alias is stripped in `normalizeDeleteStatus`, the single choke point
-for all four v1 delete endpoints. **Three agents converging on the same workaround was the
-signal that the interface, not the callers, was wrong.**
+for all four v1 delete endpoints.
 
 ### 10.5 One change to the AST itself: `re` carries `options`
 
-`fromMongo` originally lost a native `RegExp` **silently** — `Object.keys(/x/i)` is `[]`, so the
-clause produced no nodes and vanished. `lib/server/query.js`'s `parseRegEx` returns a native
-RegExp for the treatments `notes`/`eventType`/`enteredBy` filters, so this was live: a request
-for boluses returned every treatment.
+A `fromMongo` that reads clauses with `Object.keys` loses a native `RegExp` **silently** —
+`Object.keys(/x/i)` is `[]`, so the clause produces no nodes and vanishes. `lib/server/query.js`'s
+`parseRegEx` returns a native RegExp for the treatments `notes`/`eventType`/`enteredBy` filters,
+so on the seam branch before this change a request for boluses returned every treatment.
 
 Flags now live on the node (`{op: 're', field, value, options: 'i'}`) rather than inline in the
 pattern. Two reasons, and the second is the one that matters for Phase 2:
@@ -677,7 +646,7 @@ natively.
 |---|---|
 | `profile.list_query` | accepts `$expr` today, with a test asserting it. A query-surface decision (D8/T2.4), not a conversion detail. The T2.4 census found **no client in the corpus sends `$expr`**, so rejecting it is a security fix rather than a compatibility break — but it is still a deliberate behaviour change and belongs with the allowlist. |
 | each module's `api()` / collection accessor | bootevent still needs raw collections for `ensureIndexes`. Removing these is the *last* step, once index creation moves behind `ensureSchema`. |
-| `lib/server/bootevent.js:145-146` | the interface has two callers' worth of implementations behind it and **no way to choose one**: a hardcoded `require('../storage/mongo-storage')` under a `//TODO assume mongo for now` comment. This is the difference between a seam that exists and a seam that is load-bearing — until it is a lookup, no test and no deployment can be handed a store that is not MongoDB, whatever the interface says. Tracked as T2.0 in {P}. |
+| `lib/server/bootevent.js:145-146` | a hardcoded `require('../storage/mongo-storage')` under a `//TODO assume mongo for now` comment — no way to choose a backend. Replaced on the seam branch by T2.0 (`lib/server/storage-backends.js`, selection by URI scheme); see the plan's Phase 1. |
 
 `websocket.js` **is** converted. Its dedup logic remains knowingly inconsistent with
 `lib/server/treatments.js` (§4.4) — the storage calls moved, the logic did not, and unifying it
@@ -693,9 +662,3 @@ message recreates it.
 
 It returns `matchedCount` so a caller can distinguish "replaced" from "was already gone". That
 distinction is the reason the method exists, so it is tested directly rather than inferred.
-
-**Process note worth keeping.** This gap was found because the converting agent *stopped and
-reported* rather than reaching for the nearest upsert. The same thing happened with
-`acknowledged` and with the dropped `RegExp`. Three of the four real defects in T1.2 surfaced
-because someone declined to paper over a mismatch — which is an argument about how to run the
-remaining phases, not just a note about this one.

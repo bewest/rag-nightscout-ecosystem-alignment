@@ -1,21 +1,22 @@
 # Proposal: let Nightscout describe the controllers it already recognises
 
-Date: 2026-09-11. Status: draft for discussion. **One page of proposal, then
-a worked example, then the evidence.**
+*Contributor-facing.* **Living design — the only statement of the controller-description
+proposal.** Written 2026-09-11; a proposal to the named projects, not adopted by any of them.
+Its §5 `decomposesTo` mechanism is the direction adopted for `devicestatus` storage by
+**D11** — [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26). **One page of
+proposal, then a worked example, then the evidence.**
 
 > **This is not Kubernetes.** There is no control plane, no admission
 > controller, no operator, no CRDs, and nothing a controller must call before
-> it is allowed to write. See [§4](#4-what-this-is-not), which exists because
-> the first version of this idea was described as "registration" and read as
-> all of that.
+> it is allowed to write. See [§4](#4-what-this-is-not).
 
 ---
 
 ## 0. What this series is for
 
-Nine documents precede this one and none of them said this plainly, which is
-a defect worth fixing before the tenth. The work has three motivations, and
-every measurement in the series serves one of them:
+The work has three motivations, and every measurement in the series serves one
+of them:
 
 | | Motivation | Why it is not optional | Where the evidence is |
 |---|---|---|---|
@@ -23,7 +24,7 @@ every measurement in the series serves one of them:
 | **b** | **Provide ways to extend it.** A controller can ship a feature nobody else has without negotiating with the ecosystem first | The current answer is "invent an `eventType` and hope". The [quirks registry](../../../specs/quirks) is the archaeology of that answer | [Extensibility models](./nightscout-extensibility-models-2026-09-10.md) §1, §5 |
 | **c** | **Offer full data fidelity — replay and observability.** What a controller decided, on what inputs, in what state, is recoverable afterwards | Replay completeness is **20% for Loop, 50% for the oref0 family**. A real consumer reads settings from screenshots because there is nowhere else | [devicestatus and profile fidelity](./nightscout-devicestatus-profile-fidelity-2026-09-10.md) §3, [Hub-and-spoke sync](./nightscout-hub-sync-architecture-2026-09-11.md) §4.2, `specs/conformance/observability-profile.yaml` |
 
-**Motivation (c) now has a change list rather than a measurement.**
+**Motivation (c) has a change list.**
 [Concrete changes for replay fidelity](./PROPOSAL-replay-fidelity-changes-2026-09-11.md)
 names them: eight more keys in a settings block Loop already writes takes it
 from 20% to 65% recorded and 100% recorded-or-derivable; one input-vector
@@ -164,7 +165,7 @@ corpus. A proposal Loop must act on is a proposal that does not happen.
 
 ## 4. What this is *not*
 
-The word "registration" did the damage. Concretely:
+"Registration" is easy to misread as a control plane. Concretely:
 
 | Not this | Actually this |
 |---|---|

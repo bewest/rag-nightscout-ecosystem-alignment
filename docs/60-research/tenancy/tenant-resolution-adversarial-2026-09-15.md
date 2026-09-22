@@ -1,5 +1,7 @@
 # Attacking tenant resolution — the half of isolation that runs before the database
 
+> **Snapshot — research as of 2026-09-15, measured against `crm-seam` `239f8c25`. Status: current — tenancy research, not on a shipping path; BF-24, BF-25 and BF-26 are registered and open (pre-release, register §1b; tenancy code is not in dev or 15.0.8). Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 **Commit under test:** `239f8c25` ("Close the seam between the tenant reader and its writer"),
 branch `main` of `externals/work/crm-seam`. Re-checked at the end of the run: head had not moved,
 and `git diff 239f8c25..HEAD` over every module measured here is empty.
@@ -611,6 +613,9 @@ worktree except its own temporary weakened copies, which it deletes.
 ---
 
 ## 14. Proposed backfix register entries
+
+[Note 2026-09-22: all three are now in the register's §1b, status open; the register is the
+current home for their severity and fix.]
 
 | id | what | severity | reachability |
 |---|---|---|---|

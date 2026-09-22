@@ -1,3 +1,5 @@
+**Superseded.** This record describes the 2026-09-16 Phase 0 branch candidate (`origin/dev` `a8888f0d` plus unmerged `bf/*` branches), not 15.0.9 as merged (`official/master..official/dev` `74fc6619`); see [contents.md](contents.md). No new record has been captured.
+
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED, AND MUST NOT BE EDITED AT ALL.

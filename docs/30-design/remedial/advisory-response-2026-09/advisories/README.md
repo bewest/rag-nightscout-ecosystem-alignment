@@ -1,33 +1,35 @@
-# Responding to the five security notices — materials, 2026-09-21
+# Responding to the five security advisories — materials
 
-All five are **drafts**. Nothing is published, nothing is in triage, no CVE is assigned.
+*Contributor-facing. Instructions for the person editing the advisories; the quoted blocks in each
+file are the text to paste.*
+
+**DRAFT — not sent.** As of 2026-09-22 all five advisories are drafts: nothing is published,
+nothing is in triage, no CVE is assigned, and none of the metadata changes below has been applied.
 `state` stays `draft` in every payload here; **publication is a separate, human action.**
 
-## The one sequencing point that matters
+## Timing
 
-The fixes are going out as **public PRs against `dev`**. A public PR that says
-"alarm delivery went to the whole namespace" *is* the disclosure — it tells a reader what the
-defect is and, from the diff, how to reach it. So the advisories should be **published at or
-close to the moment those PRs go up**, not weeks later.
-
-Publishing late is the worst of both: the defect is legible in a public diff while the advisory
-that would tell operators *whether they are affected and what to do* is still hidden. The two PR
-bodies are written to carry that information themselves — in particular that a default
-`AUTH_DEFAULT_ROLES=readable` install has **zero** marginal exposure from either defect — so that
-a reader who finds the PR before the advisory is not misled into panic or into a false sense of
-safety.
+The fixes for GHSA-gjhc and GHSA-8849 merged into `dev` as public PRs on 2026-09-21 (#8744,
+#8745) and are **not in a release**; v15.0.8 is still affected. A public PR is itself a
+disclosure — it says what the defect is and, from the diff, how to reach it — so the defects are
+now legible in public while the advisories that tell operators *whether they are affected and what
+to do* are unpublished. The PR bodies carry that information themselves — in particular that a
+default `AUTH_DEFAULT_ROLES=readable` install has **zero** marginal exposure from either defect —
+so a reader who finds a PR first is not misled. Publish the advisories at or near the release that
+carries the fixes, and leave `patched_versions` empty until then.
 
 ## Files
 
 | file | what |
 |---|---|
-| `ghsa-gjhc-loadretro.md` | metadata patch + revised text + the range correction |
-| `ghsa-8849-alarm.md` | metadata patch + revised text + reporter credit |
-| `ghsa-r3gv-injection.md` | metadata patch; the package name is wrong and one of three PoCs stands |
-| `ghsa-mjp4-v3-notes-xss.md` | patched_versions is blank against a closed range; fix it |
-| `ghsa-5mrq-websocket-xss.md` | severity `critical` overstates it; recommend `high` |
-| `apply.sh` | dry-run-able `gh api` calls for every metadata patch above |
-| `../prs/PR-3-reply-to-reporter.md` | the reply to the reporter's PR in the private fork |
+| [`ghsa-gjhc-loadretro.md`](./ghsa-gjhc-loadretro.md) | metadata patch + revised text + the range correction |
+| [`ghsa-gjhc-comment.md`](./ghsa-gjhc-comment.md) | the comment to the reporter on GHSA-gjhc (draft, not sent) |
+| [`ghsa-8849-alarm.md`](./ghsa-8849-alarm.md) | metadata patch + revised text + reporter credit |
+| [`ghsa-r3gv-injection.md`](./ghsa-r3gv-injection.md) | metadata patch; the package name is wrong and one of three PoCs stands |
+| [`ghsa-mjp4-v3-notes-xss.md`](./ghsa-mjp4-v3-notes-xss.md) | `patched_versions` is blank against a closed range; fix it |
+| [`ghsa-5mrq-websocket-xss.md`](./ghsa-5mrq-websocket-xss.md) | severity `critical` overstates it; recommend `high` |
+| [`apply-metadata.sh`](./apply-metadata.sh) | `gh api` calls for every metadata patch above — dry run unless `--apply`; never touches `state` |
+| [`../pull-requests/reply-to-reporter-ghsa-8849.md`](../pull-requests/reply-to-reporter-ghsa-8849.md) | the reply to the GHSA-8849 reporter's PR in the private fork (draft, not sent) |
 
 ## Two corrections that apply across the set
 

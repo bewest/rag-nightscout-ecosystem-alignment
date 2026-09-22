@@ -5,9 +5,9 @@ manifest is the part written for people managing diabetes, and it has different
 rules — see [Writing `operator_visible`](#writing-operator_visible).*
 
 One queue spans **every programme**: Phase 0 backfixes, the modernization release
-train, the open backfix-register entries and the multitenancy work. That was a
-deliberate choice over two queues, so that a tenancy task colliding with a release
-train is visible in one place instead of in neither.
+train, the open backfix-register entries and the multitenancy work, so that a
+tenancy task colliding with a release train is visible in one place. The `parcel`
+field separates them.
 
 | file | what it is |
 |---|---|
@@ -17,6 +17,8 @@ train is visible in one place instead of in neither.
 | `tools/queue/status.py` | runs the gates |
 | `tools/queue/validate.py` | schema-checks the manifest |
 | `tools/queue/fidelity.py` | proves every character written into the YAML reaches the data |
+| `tools/queue/vacuity.py` | runs every gate's negative control from `queue/gate-controls.yaml` |
+| `tools/queue/emit_views.py`, `emit_packets.py` | generate the overview blocks and the reviewer packets |
 | `tools/queue/gates/*.js` | one measurement each |
 
 ```
@@ -25,7 +27,8 @@ make queue-validate         # schema-check the manifest (fidelity included)
 make queue-fidelity         # only the fidelity check, or against another file
 make queue-status           # run every static + unit gate (~7s)
 make queue-coverage         # prove the manifest covers every open register entry
-make queue-check            # CI: register coverage FIRST, then QUEUE.md staleness
+make queue-check            # CI: register coverage FIRST, then staleness of every generated view, then links
+make queue-vacuity          # run every gate's negative control
 
 make queue-status PARCEL=phase0
 make queue-status ID="P0-A P0-B"        # note the quotes: Make keeps only the last ID=
@@ -40,8 +43,8 @@ stays true-looking forever regardless of what the code does.
 
 So `state` in the YAML is *only a claim about what the gates will say*, and
 `make queue-status` is the measurement. The runner prints `CLAIM DIVERGES` when
-an item says `ready-to-push` and a gate disagrees. That warning has already
-caught one wrong state in this manifest on its first run.
+an item says `ready-to-push` and a gate disagrees. Run it before acting on any
+claimed state.
 
 `QUEUE.md` is generated for the same reason: so that nobody can quietly edit a
 status into the human-readable view.
@@ -51,18 +54,15 @@ status into the human-readable view.
 It carries a header saying so. If you edit it, the next `make queue` destroys
 your edit. `make queue-check` fails when the checked-in `QUEUE.md` no longer
 matches the manifest, so a stale view cannot survive CI. It also fails when the
-manifest has fallen behind the register -- see the section above, which is the
+manifest has fallen behind the register — see the next section, which is the
 edge that actually costs something.
 
 ## The manifest owes the register a covering item
 
 The backfix register is authoritative for **defect facts and ids**. This manifest is authoritative
-for **item state**. Nothing connected the two until 2026-09-15, and the cost was measurable: the
-manifest was frozen at 19:07, the register kept growing until 19:57, and **29 not-fixed register
-ids ended up in no item — fourteen of them in §1, which means they reach an operator on today's
-release**. It took a programmatic set difference to notice. Nothing in the loop would have.
-
-So:
+for **item state**. The register grows independently of the manifest, and a register id that is in
+no item is a defect nobody is tracking — possibly one that reaches every operator on the shipping
+release. So:
 
 - **every not-fixed register entry must be named in some item's `register:` list**, and
 - **`ships_to_operators_today` must agree with the section it sits in** — §1 is `true`, §1b is
@@ -72,15 +72,14 @@ So:
 because any manifest edit also makes `QUEUE.md` stale and Make stops at the first failing line — so
 with the order reversed the harmless failure masks the one that matters.
 
-An id may be covered by **cross-reference rather than a new item**. Ten of those 29 were already
-tracked in substance by an existing item — `RT-D3` runs the gate that *is* BF-54, `RT-5` runs the
-gate that *is* BF-61 — and only needed the `register:` line. Adding a duplicate item would have made
-the queue less true, not more. Add the cross-reference; do not touch anything else on someone else's
-item.
+An id may be covered by **cross-reference rather than a new item** when an existing item already
+tracks it in substance — `RT-D3` runs the gate that *is* BF-54, `RT-5` runs the gate that *is*
+BF-61. Add the id to that item's `register:` line rather than creating a duplicate, and do not
+touch anything else on someone else's item.
 
-A `fixed` entry counts as covered, because the branch carrying the repair is itself an item. That is
-**not** a claim that an operator is safe: in this register `fixed` means "repaired on a branch, not
-merged", and `DOC-EXPOSURE` owns saying so.
+A `fixed` or `merged` entry counts as covered, because the branch carrying the repair is itself an
+item. That is **not** a claim that an operator is safe: `fixed` means repaired on a branch and not
+merged, `merged` means in `origin/dev` and not released, and `DOC-EXPOSURE` owns saying so.
 
 ## How to add an item
 
@@ -138,14 +137,9 @@ So this, which is the natural way to write a title:
     title: T0.1 - PR #8733, the two quadratic treatment scans
 ```
 
-parses as `T0.1 - PR`. Three values in this manifest were doing that on
-2026-09-16, one of them since the day it was written — including the sentence in
-`RT-0` recording that two release PRs carry **zero** human reviews, which is the
-entire reason that item demands a reviewer who is not the author. It was being
-deleted from `QUEUE.md` on every regeneration, and `queue-validate` passed
-throughout, because a truncated string is a perfectly valid string.
-
-`make queue-fidelity` now measures this, and `queue-validate` runs it. The rules:
+parses as `T0.1 - PR`. The schema check cannot catch it, because a truncated
+string is a perfectly valid string. `make queue-fidelity` measures it, and
+`queue-validate` runs it. The rules:
 
 * **Never leave an inline comment after an unquoted value.** Quote the value, or
   put the comment on its own line. After a quoted or block scalar a comment is
@@ -186,9 +180,9 @@ There are exactly two legal shapes, and the validator enforces it:
 
 **There is no third shape.** An item with no gates at all is a validation error,
 because a missing gate renders as blank and blank looks exactly like a passing
-gate. `no-gate:` is not an admission of failure -- it is the bookkeeping. **99 of the 198
-gate slots** in this queue are `no-gate:` markers, and that is the honest shape of
-the programme. *Recompute that pair from `make queue-validate`; do not copy it.*
+gate. `no-gate:` is not an admission of failure — it is the bookkeeping, and a
+large share of the queue's gate slots are in that state. `make queue-validate`
+prints the current count of runnable gates and `no-gate:` markers.
 
 ### Gate kinds
 
@@ -233,12 +227,11 @@ Two ways a gate goes vacuous, and only breaking it tells you which:
 - **the code never distinguishes the branches** — a `grep` that matches the same
   word in prose and in a status column.
 
-Both have already happened inside this queue. `DOC-EXPOSURE`'s first gate was
-`grep -q 'landed' <register>`; it passed on the legend line and two unrelated
-prose uses, and was replaced by a status-column parse. `cut4-total-outage`'s
-first draft passed flat env-var names to shims that read
-`env.extendedSettings.*`, got `{migrated:false}` from every shape, and reported
-four outages that were really four misreads.
+Examples of each from this queue: a `grep -q 'landed' <register>` gate passes on
+the legend line and unrelated prose, so `DOC-EXPOSURE` parses the status column
+instead; a harness that passes flat env-var names to shims reading
+`env.extendedSettings.*` gets `{migrated:false}` from every shape and reports
+misreads as outages, so `cut4-total-outage` passes the nested shape.
 
 Where a gate can be fooled in one direction, add a **control** — a case that must
 come out the other way. `minimed-deprecation-path` asserts the *Dexcom* path is
@@ -247,22 +240,19 @@ broke.
 
 ### Every gate declares its control, in `queue/gate-controls.yaml`
 
-The paragraph above was advice, and advice is not a rule. On 2026-09-15 a
-completeness critic checked whether it had been followed and found two gates
-that could not fail:
+Two gates in this queue were once green on properties that were false, which
+is why a control is a declared artefact rather than a habit:
 
 - **P0-C** grepped for `console.log('Loading', opts)` while the code at
   `lib/authorization/storage.js:113` reads `console.log('Loading',opts)` — no
   space after the comma. The pattern never matched, the `|| exit 0` arm always
-  fired, and the item reported **3/3 PASS on a property that is false**, which
-  two other documents record as false.
+  fired, and the item reported **3/3 PASS on a property that is false**.
 - **P0-E**'s only content gate was
   `git log --format=%H bf/reads | grep -q .` — an assertion that the branch has
   at least one commit. It passes for `origin/dev`, `origin/master` and
   `bf/alarms` too.
 
-So the control is now a **declared artefact**, not a habit. Every runnable gate
-has an entry in `queue/gate-controls.yaml` carrying either
+Every runnable gate has an entry in `queue/gate-controls.yaml` carrying either
 
 - `control:` — the same instrument applied to a state where the property is
   **false**, which must therefore exit **non-zero**; or
@@ -295,14 +285,12 @@ Three helpers exist so that a control can be a one-line command:
 | `tools/queue/gates/empty-root-control.sh` | runs a gate with `QUEUE_GATE_ROOT` pointed at an empty directory. The **weak** form: it proves a gate reads its inputs, not that it reads the right property of them. |
 | a gate's own `--rev` mode | `bf-reads-read-contract.js --rev origin/dev` runs the identical assertions against a rev materialised from the object database. The **strong** form. |
 
-`ablate.sh` was itself vacuous in its first version, and the bug is the reason
-it prints its scope: `git checkout <base> -- <path>` aborts the *whole* checkout
-when the branch **added** that path, so nothing was reverted and the ablation
-reported a comfortable green having broken nothing. It now deletes added files
-instead of restoring them, and refuses to run a test if the working tree came
-out unchanged. Rule 2's second half is the same point from the other side: a
-green ablation may mean the ablation was mis-scoped rather than that the gate is
-vacuous, and you have to say which.
+`ablate.sh` prints its scope and refuses to run a test if the working tree came
+out unchanged, because `git checkout <base> -- <path>` aborts the *whole*
+checkout when the branch **added** that path — an ablation that reverts nothing
+reports green having broken nothing. It deletes added files instead of restoring
+them. The general point: a green ablation may mean the ablation was mis-scoped
+rather than that the gate is vacuous, and you have to say which.
 
 Controls are **authored, never derived**. A rule like "a gate is vacuous if it
 passes on the base" would have been wrong twice here: `P0-PIN`'s lockfile gate
@@ -321,6 +309,9 @@ Different rules apply than to the rest of the manifest:
 - **never** give individualised insulin dosing advice;
 - where relevant, note that it is not medical advice and suggest talking to a
   care team;
+- status words mean one thing: merged into `dev` is not released, and nothing
+  is described as fixed for someone running Nightscout until it is in a
+  released version;
 - an **empty string** means "we checked, and an operator sees nothing". Leaving
   the field out entirely is a validation error, because "nobody thought about it"
   and "we checked and the answer is nothing" are different facts.

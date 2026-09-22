@@ -1,5 +1,7 @@
 # GHSA-5mrq-gpqw-q5v5 and GHSA-mjp4-84fw-gj4v — verification against v15.0.7, v15.0.8 and `dev`
 
+> **Snapshot — research as of 2026-09-21, measured against `v15.0.7`, `v15.0.8` (`92d08342`) and `origin/dev 59430336`. Status: both advisories (GHSA-5mrq, GHSA-mjp4) closed in the released v15.0.8; the two new findings are open — §6.1 = BF-73, §6.2 = BF-74. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 *2026-09-21. Both advisories are **closed in v15.0.8**, root cause and sink,
 measured with a positive control on v15.0.7 for every negative result. One
 question the advisories do not ask is answered here and it is the one that
@@ -274,13 +276,12 @@ No attribute-level escape hatch was found. `data:` and `javascript:` are
 rejected on both `src` and `srcset`. The widening is exactly what the header
 claims: the `<img>` shell survives, everything dangerous about it does not.
 
-### 5.2 The bounds — the brief's hypothesis is wrong here
+### 5.2 The bounds — fail-closed, not a bypass
 
-The brief states that a string over 64 KiB "is passed through **unsanitized**".
-It is not. `sanitizeStringWithBudget` **throws `RangeError`**, and the throw
-propagates out of every write path as a refusal:
+A string over the sanitizer's size budget is **not** passed through unsanitized. `sanitizeStringWithBudget` **throws `RangeError`**, and the throw
+propagates out of every write path as a refusal (the uncaught throw is what BF-73 concerns):
 
-| probe (payload = 64 KiB of `A` + `<img src=x onerror=…>`) | v15.0.7 | v15.0.8 | `dev` |
+| probe (oversize markup-containing string) | v15.0.7 | v15.0.8 | `dev` |
 |---|---|---|---|
 | `POST /api/v1/treatments` | 200, stored, but DOMPurify stripped `onerror` | **HTTP 500, not stored** | **HTTP 500, not stored** |
 | `POST /api/v3/treatments` | 201, **stored with `onerror`** | **HTTP 500, not stored** | **HTTP 500, not stored** |
@@ -380,7 +381,7 @@ patched blind, so no fix is proposed.
 Every score below was **computed**, not estimated: CVSS 3.1 by the published
 formula (reproduced by hand and cross-checked against the `cvss` library) and
 CVSS 4.0 by the `cvss` library's MacroVector lookup. The intermediate numbers
-are shown because one of them overturned my own first instinct.
+are shown so the argument can be checked.
 
 ### 7.1 The severity argument, once, for both
 
@@ -404,8 +405,8 @@ requirement and the same escalation**, differing only in sink:
 
 **Where `critical` comes from, and why it does not survive.** GHSA-5mrq's
 filed vector scores **9.3 Critical**, so the label is arithmetically
-consistent with the vector. My first instinct was that `UI:P` was the
-overstatement; **it is not** — correcting `UI:P` → `UI:A` moves the score only
+consistent with the vector. `UI:P` is not the overstatement —
+correcting `UI:P` → `UI:A` moves the score only
 9.3 → **9.2**, still Critical. What actually produces the Critical band is
 **`SC:H/SI:H`**, and that is the metric that is wrong: it double-counts. The
 stolen API secret's entire blast radius *is* the Nightscout instance, and that

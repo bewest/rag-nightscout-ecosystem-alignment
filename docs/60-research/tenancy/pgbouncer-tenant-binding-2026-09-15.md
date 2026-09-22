@@ -1,5 +1,9 @@
 # pgbouncer and the D3 tenant binding — isolation holds, and two of the three modes are usable
 
+> **Snapshot — research as of 2026-09-15, measured against `crm-seam` `239f8c25` (modules unchanged at `29749d92`). Status: current — tenancy research, not on a shipping path; the three pooler defects in §6/§9 are open on the seam branch and are not in the register (their proposed ids collide — see §9). Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) §7.**
+
+*Audience: contributors.*
+
 Date: 2026-09-15 · Harness: [`tools/qc/pgbouncer-tenant-binding.js`](../../../tools/qc/pgbouncer-tenant-binding.js)
 Under test: `crm-seam` at **`239f8c25`** ("Close the seam between the tenant reader and its
 writer"), read from an independent detached worktree. **No shipping code was changed by this work
@@ -10,8 +14,7 @@ and nothing was committed to the branch under test.**
 `git diff 239f8c25..29749d92` is **empty** for every module measured here —
 `lib/storage/postgres-storage.js`, `lib/storage/tenant-scope.js`, `lib/storage/postgres/`,
 `lib/api3/storage/pgCollection/`, `tests/support/postgres.js`,
-`tests/postgres-entries-rls.test.js` and `package.json`. Checked rather than assumed, because a
-verification of a commit nobody is on any more is worth nothing.
+`tests/postgres-entries-rls.test.js` and `package.json` (checked with `git diff`, not assumed).
 
 Arms: real PostgreSQL **16.14** and a real **pgbouncer 1.25.2** in front of it, in each of its
 three pooling modes, connected as a `NOSUPERUSER NOBYPASSRLS` role against the **emitted** schema
@@ -83,6 +86,7 @@ probe and 250 in the concurrent one** (§4). The property is measurable, and it 
 
 **Three defects were found on the way, none of them in the binding.** They are in §6 and proposed as
 BF-27, BF-28 and BF-29. BF-28 is the serious one.
+[Correction 2026-09-22: these three proposed ids were never filed under these numbers; register BF-27, BF-28 and BF-29 name unrelated defects (BF-28/29 merged to dev via PR #8739 — not these). The pooler defects here are open on the seam branch and unregistered. The ids are kept below as local labels only.]
 
 ---
 
@@ -484,8 +488,8 @@ for — many more clients than server connections — is not measured here at al
 
 ## 9. Proposed backfixes
 
-`BF-01`–`BF-26` are taken in {B} (the brief for this work said `BF-20` was the high-water mark; it
-has moved). These are the next three.
+`BF-01`–`BF-26` were taken in {B} on 2026-09-15; these were proposed as the next three.
+[Correction 2026-09-22: see §0 — these ids collide with different register entries; treat them as local labels. Status of all three: open, seam branch, not registered.]
 
 | id | defect | where | severity | status |
 |---|---|---|---|---|

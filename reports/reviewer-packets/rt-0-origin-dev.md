@@ -25,7 +25,17 @@
 
 ## What this changes
 
-dev vs master. Includes four user-visible bug fixes plus i18n.
+15.0.9 is everything in origin/master..origin/dev: master 92d08342 (tag
+15.0.8) to dev 74fc6619, measured 2026-09-22. 308 commits, 48 first-parent
+merges, 200 files, +14381/-1262. Among them the thirteen backfix PRs from this
+programme (#8733, #8734, #8735, #8736, #8737, #8738, #8739, #8740, #8743,
+#8744, #8745, #8746, and #8741 from an external contributor on the same work),
+the D3 5.16 -> 7.9 chart migration (RT-D3), the opt-in debug logging change
+(#8726), profile, treatment-query and clock fixes, report and chart fixes,
+dependency updates and translations. Reproduce with `git -C externals/cgm-
+remote-monitor-official log --first-parent --oneline
+origin/master..origin/dev` and `git diff --shortstat origin/master
+origin/dev`.
 
 ## Why that semver
 
@@ -36,15 +46,48 @@ lib/api2/loop-notification-errors.js appears.
 
 ## What an operator would notice
 
-> A bug-fix release. Fixes for unnamed profiles, embedded profile switch
-> schedules, treatments query failures, and a clock display that now shows
-> concern for a low and falling reading. Debug logging becomes opt-in, so
-> your logs get quieter unless you turn it on.
+> Version 15.0.9 is the next Nightscout release. Nothing below reaches your
+> site until 15.0.9 is released and your site is updated to it - if you run
+> 15.0.8 today, every problem listed here is still present for you. ALARMS:
+> the urgent "insulin reservoir change overdue" reminder could never appear
+> and now can. If a feature name in your ENABLE setting (the list that
+> switches features on) is misspelled or uses a file name instead of the
+> feature's short name, Nightscout now warns you instead of silently leaving
+> that feature off. The clock view now shows concern when a low reading is
+> falling. These change whether an alarm or warning can appear, not the
+> thresholds you set. BOLUS CALCULATOR QUICK PICKS: quick picks are saved
+> food shortcuts in the Bolus Wizard (the calculator that suggests insulin
+> for carbs). Picking one could load a different quick pick's foods or show
+> foods meant to be hidden; that is corrected. A separate problem - the
+> quick-pick list is built once when the page opens and not refreshed - is
+> NOT fixed in this release. DATA SHOWN AND SEARCHED: many searches and
+> counts that quietly returned nothing, or the wrong records, now return the
+> right ones - for example filtering treatments by insulin, carbs, temporary
+> basal rate or duration, and "records missing this field" searches.
+> Profiles without a name and profile switches carrying their own schedule
+> are handled correctly. Pages that read recent glucose values load faster.
+> The carbs-on-board (COB) figure now uses the value reported by the system
+> that uploads it (for example your phone app) when that system provides
+> one, so the COB you see may differ from before. The main charts are
+> rebuilt on a newer version of their drawing library, and several report
+> and display fixes are included. SECURITY OF THE LIVE-UPDATE CONNECTION:
+> the connection that pushes new readings and alarms to open pages had two
+> gaps - recent device status could be sent to a page that had not signed
+> in, and alarm messages went to every connected page. Both are closed,
+> including on sites set to require sign-in. The "readable by world" warning
+> also appears again in one setup where it had been hidden. DEBUG LOGGING
+> QUIETER: detailed debug logging is now off unless it is switched on (the
+> DEBUG_LOGGING setting), so server logs are shorter; if you or a helper
+> rely on those logs to diagnose problems, switch it on. This is not medical
+> advice. If a change to alarms or to a number such as carbs on board
+> affects how you manage diabetes, talk it through with your care team.
 
 ## Who should review this, and why
 
-maintainer, and at least one human reviewer who is not the author - release PR
-#8598 and integration PR #8605 each carry ZERO human reviews
+maintainer, and at least one human reviewer who is not the author. Release PR
+#8598 (dev -> master) was, on 2026-09-22, open, mergeable and green on every
+CI check, with reviewDecision REVIEW_REQUIRED and zero approving reviews.
+Integration PR #8605 carries the modernization cuts (RT-3), not this release.
 
 ## What was measured
 
@@ -56,11 +99,11 @@ dev descends from master with no divergence to reconcile
 
 *Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
 
-- CI state at dev's tip is not re-verified here. The only evidence is
-  release-readiness §3's record of 21 green checks on PR #8605 as of
-  2026-09-14, evaluated against the INTEGRATION branch as base, not against
-  dev. Re-running it needs the full matrix (three Mongo versions, replica
-  sets) and, for the browser half, three browser engines.
+- CI at dev's tip is not re-run here. Release PR #8598's checks (Node
+  20/22/24 x Mongo 4.4/5/6, CodeQL, Docker build and publish) were all green
+  on 2026-09-22, read from GitHub. Re-running them needs the full matrix
+  with replica sets, and dev has no real-browser test job, so the D3 chart
+  behaviour is not covered by that green.
 - RT-D3's drag-clamp gap is unresolved and this release ships the D3 7
   charts. The decision to ship anyway is the maintainer's; recording it as a
   no-gate keeps it from reading as covered.
@@ -73,11 +116,16 @@ dev descends from master with no divergence to reconcile
 
 - [`docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md`](../../docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md)
 - [`docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`](../../docs/60-research/modernization/gt4-semver-classification-2026-09-15.md)
+- [`docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md`](../../docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md)
 
 ## Notes carried on the item
 
-First on the adopted train. Phase 0's branches target dev, so landing them
-changes what 15.0.9 contains - that collision is why there is one queue.
+First on the adopted train. Every merged backfix in dev - the items in state
+merged-upstream - reaches operators only through this release; until it ships
+they are in code nobody runs. Merging dev publishes a Docker Hub image, which
+is not a release. dev pins nightscout-connect at 234d47c (unmerged connector
+branch fix/8714-opt-in-debug-logging, connector PR #67), where master pins tag
+v0.0.13 - see P0-PIN and P0-TAG.
 
 ---
 
@@ -88,4 +136,4 @@ changes what 15.0.9 contains - that collision is why there is one queue.
 - [ ] `make queue-status ID=RT-0` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-21, against cgm-remote-monitor-official `74fc6619`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-22, against cgm-remote-monitor-official `74fc6619`.*

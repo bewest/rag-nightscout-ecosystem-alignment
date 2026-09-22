@@ -1,5 +1,7 @@
 # Three-arm validation of the storage seam's filter AST: closing §8.5
 
+**Snapshot — research as of 2026-09-14, measured against the seam worktree's `lib/storage/filter.js` (the doc names no commit), mongod 7.0.43, PostgreSQL 16.14. Status: superseded in part — tenancy research, not on a shipping path; classes A–D are closed in the shipped seam adapter (block below). Current facts: [T2.5 backend verification](t25-postgres-backend-verification-2026-09-15.md), [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).**
+
 > ## Superseded in part, 2026-09-15 — read this first
 >
 > Two corrections, both from

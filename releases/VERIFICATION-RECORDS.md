@@ -1,7 +1,17 @@
 # Verification records
 
-**Status: DRAFT tooling and a DRAFT record. Nothing has been tagged, pushed, merged or
-published. Requires maintainer review before it is relied upon.**
+**Status: DRAFT tooling. Requires maintainer review before it is relied upon.**
+
+**Current record, 2026-09-22:** `cgm-remote-monitor-15.0.9/verification-record.{json,md}` was
+captured 2026-09-16 from the Phase 0 branch candidate (queue parcel `phase0`, then unmerged
+`bf/*` branches off `origin/dev` `a8888f0d`). It is **superseded**: 15.0.9 is now
+`official/master..official/dev` `74fc6619` (see
+[`cgm-remote-monitor-15.0.9/contents.md`](cgm-remote-monitor-15.0.9/contents.md)), and no
+record of that tree has been captured. `--check --from-json` on it reports **DRIFT** for the
+`.md`: the Markdown was edited by hand after capture (a `bf/coercion` SHA footnote), contrary
+to invariant 3, and now also carries a one-line superseded notice. The JSON still matches its
+own render. A new capture needs a selection that describes the merged release, which
+`--parcel phase0` no longer does, and runs `unit` gates in the external worktrees.
 
 Audience: contributors and maintainers. This file is fully technical. The operator-facing
 half of a release is `release-notes.md`, not this.
@@ -33,9 +43,8 @@ prints, not a second implementation free to drift from it.
 
 Three properties of this programme that prose cannot hold:
 
-1. **Rule 3 — read-derived versus reproduced.** Measured across this programme, every
-   register claim that had to be retracted was derived from *reading* source; not one that
-   began with a *reproduction* has been. So the record classifies every register entry it
+1. **Rule 3 — read-derived versus reproduced.** A read-derived claim is a hypothesis; a
+   reproduced one is evidence. So the record classifies every register entry it
    carries by basis, and where an entry's status cell does not say, the record prints
    `unstated` rather than guessing. It will not infer a reproduction from
    measurement-shaped prose: inferring one is exactly the laundering rule 3 exists to stop.
@@ -76,8 +85,8 @@ python3 tools/queue/verification-record.py \
 Selection is by `--id`, `--parcel` or `--state`. By default only `static` and `unit` gates
 are run; `--integration` and `--network` opt the other kinds in, and whichever kinds were
 **not** run are named in the record's own header and in its gaps section. The default is
-deliberately the honest one: on this machine most `integration` gates cannot run at all,
-because the worktree mongod ports are not what the briefing says they are.
+deliberately the conservative one: on the capture machine (2026-09-15) most `integration`
+gates could not run, because the worktree `mongod` ports did not match their configuration.
 
 Verify an existing record, and prove the Markdown really came from the JSON:
 
@@ -132,7 +141,7 @@ command's own stderr is quoted in the record, so the failure cannot be mistaken 
 different one. Invariant 1 was ablated separately: a record whose `not_verified` array was
 emptied by hand is refused with exit 2 and no file is written.
 
-## How far two captures can be diffed — measured, and narrowed once
+## How far two captures can be diffed
 
 Two captures of this release were diffed field by field. **Stable:** resolved SHAs,
 commits-ahead counts, every gate outcome, every item verdict, every register closure state
@@ -141,9 +150,8 @@ transcripts `output_tail`, `output_bytes` and `output_sha256` (25 of 164 transcr
 because the commands are not deterministic — mocha prints its own millisecond timings and
 node prints its pid.
 
-One field that is a *conclusion* rather than a transcript moves with them, and an earlier
-draft of the generator's own docstring implied it did not: `output_summary.last_line`, for
-a gate whose last line of output is a benchmark duration. So diff two captures on outcomes,
+One field that is a *conclusion* rather than a transcript moves with them:
+`output_summary.last_line`, for a gate whose last line of output is a benchmark duration. So diff two captures on outcomes,
 verdicts, bases and gaps. Do **not** diff them on digests, or on a `last_line` that quotes
 a duration. The digest is there to let a reader bind a full log they hold to *this* capture,
 not to let two captures be compared byte for byte.
@@ -151,15 +159,14 @@ not to let two captures be compared byte for byte.
 ## What a record does not do
 
 It does not ship anything, and it does not assert that a defect has reached an operator. A
-fix reaches operators when a human pushes and a maintainer merges, and both of those are
-outside the record. Every branch in the current record is local and unpushed; the record
-says so per item, and says plainly that the remote was never contacted.
+fix reaches operators when it is `released` in a tagged release, which is outside the record.
+The 2026-09-16 record was taken from local, unpushed branches and says so per item.
 
 It also does not replace the register, the queue or the release notes. It is the
 cross-section of all three at one instant, with the measurements attached.
 
 ---
 
-*Draft, 2026-09-15. Prepared locally; nothing was pushed, tagged, merged or published.
-Requires maintainer review before it is relied upon. Nightscout is not a medical device and
+*Draft tooling, 2026-09-15; status updated 2026-09-22. Requires maintainer review before it
+is relied upon. Nightscout is not a medical device and
 nothing here is medical advice.*

@@ -1,5 +1,7 @@
 # GT2: re-measuring the five modernization cuts against today's `dev`
 
+> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d`. Status: superseded for all ahead/behind counts — they are point-in-time (on 2026-09-22 `chore/retire-jsdom` is 133 behind `origin/dev 74fc6619`); the method and §7 findings stand. Nothing here is released. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) and `queue/work-queue.yaml` gates.**
+
 Date: 2026-09-15. Audience: contributors and the maintainer. Status: measurement report.
 Companion to and **partial correction of**
 [cgm-remote-monitor release readiness](../../30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md) §2 and §5.
@@ -21,12 +23,12 @@ No fetch was performed for this report and nothing was pushed, rebased or modifi
 | `origin/chore/nightscout-modernization` | `0a4109f6` | 2026-09-09 19:12 |
 
 Because the cut branch tips are all dated 2026-09-05/06 and `dev`'s tip is dated 2026-09-09,
-**every finding below was already true on 2026-09-14** when release-readiness was written.
-This is not drift that happened since; it is a measurement error in the original document.
+**every finding below was already true on 2026-09-14** when release-readiness was written;
+none of it is drift since then.
 
 ---
 
-## 1. The load-bearing premise is false, and was false when it was written
+## 1. Cuts 1–4 do not cost zero rebase work
 
 Release-readiness §5 states, of the four cut points:
 
@@ -479,6 +481,11 @@ resulting `newTime` stays inside the chart window. Both currently pass with the 
 - "Production code is a small fraction of the diff" holds at every cut point (§3c).
 - Cut 1 is the smallest production change in the stack — by more than the document claims.
 - Cut 4 remains the one to slow down on; nothing measured here touches that judgement.
+  [Correction 2026-09-22: the "cut 4 deletes two working ingestion paths" premise needs a caveat —
+  the maintainer states (2026-09-21, operational knowledge, not measured here) that mmconnect /
+  minimed-connect-to-nightscout has been broken for some time and that legacy Dexcom Share is
+  intended to map to nightscout-connect. BF-44/BF-45 were graded assuming mmconnect is live and have
+  not been re-graded.]
 - The governance finding (one author, zero human reviews) is untouched by this re-measurement.
 
 ## 10. Reproducing

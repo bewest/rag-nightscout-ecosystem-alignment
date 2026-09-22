@@ -1,12 +1,19 @@
 # Sequencing the five advisories and the two fixes — what can ship, in what order, through which channel
 
-Date: 2026-09-21. Companion to
-[the disposition](./security-advisory-disposition-2026-09-21.md), which says *what each
-advisory is*. This one says *how it ships*. Every constraint below was measured today, not
-assumed.
+*Contributor-facing.*
 
-**Nothing has been pushed, merged, tagged or published.** Publication is a human decision and
-this document exists to make it one decision rather than nine.
+> **Snapshot — describes 2026-09-21 (before the fixes merged), measured against cgm-remote-monitor
+> `origin/dev` `59430336` and `v15.0.8` = `origin/master` `92d08342`.** Status: **superseded.** The
+> vehicle was decided (§0) and all three fixes merged into `dev` on 2026-09-21 as public PRs —
+> #8744 (`loadRetro`, BF-79), #8745 (`/alarm`, BF-75/BF-76), #8746 (readable-world warning, BF-77) —
+> taking `origin/dev` to `74fc6619`. **None is released; 15.0.8 is still affected by GHSA-gjhc and
+> GHSA-8849.** No security release was cut and no advisory has been published. Current state and
+> what is still owed: [the disposition](./security-advisory-disposition-2026-09-21.md) §4;
+> [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) items `ADV-*` and `RT-0`.
+
+Companion to [the disposition](./security-advisory-disposition-2026-09-21.md), which says *what
+each advisory is*. This one says *how it ships*. Every constraint below was measured on
+2026-09-21.
 
 ---
 
@@ -43,10 +50,8 @@ full explanatory body — **publishes a working attack before any release carrie
 is the BF-70 problem again, and worse: BF-70 was found and merged inside one day, whereas these
 have no release vehicle yet.
 
-There is a second, newer constraint. **`github.com/bewest/rag-nightscout-ecosystem-alignment` is
-PUBLIC**, it was pushed to at 19:03 today by another session, and several sessions share the
-checkout. Everything this programme writes about these two defects is one `git add -A` away from
-being published. See §5.
+There is a second constraint. **`github.com/bewest/rag-nightscout-ecosystem-alignment` is
+PUBLIC**, so everything this programme commits about these two defects is published. See §5.
 
 ## 2. What exists right now
 
@@ -162,9 +167,13 @@ publishes that before any fix exists.
   control, in the session scratchpad — with a single tracked placeholder naming what is withheld
   and why, so the register does not silently appear to have a gap.
 
-**This is a decision, not a recommendation I should take unilaterally**, because it trades the
-programme's own convention — that everything is written down publicly and promptly — against a
-disclosure window. It is the same trade BF-70 recorded, at larger scale.
+**This is a human decision**, because it trades the programme's own convention — that
+everything is written down publicly and promptly — against a disclosure window. It is the same
+trade BF-70 recorded, at larger scale.
+
+*[Outcome: overtaken. The fixes merged publicly into `dev` on 2026-09-21, so the defects are
+legible in public diffs; the question that remains is advisory publication, not holding these
+documents.]*
 
 ## 6. The order
 
@@ -188,6 +197,14 @@ Numbered because each step's output is the next step's input.
    release question applies to it, and its advisory metadata names a package that does not exist.
 
 Steps 1 and 2 are measurements. Steps 3 and 4 are decisions. Nothing is engineering.
+
+*[Outcome as of 2026-09-22: step 1 done. Step 5 was replaced by §0 — public PRs against `dev`,
+merged 2026-09-21 as #8744/#8745/#8746. Steps 2, 4 and 6 are not done: the manual browser check
+has not been performed, no version was chosen, no security release was cut, and no advisory is
+published. The reporter reply (step 5) and the metadata corrections are drafted in
+[`advisory-response-2026-09/`](./advisory-response-2026-09/README.md) and unsent. Step 7: BF-77
+merged in #8746; BF-73/BF-74/BF-78 await decisions. Step 8: `$where` fix (#8743) merged, not
+released.]*
 
 *Evidence*: [disposition](./security-advisory-disposition-2026-09-21.md) ·
 [configuration matrix](../../60-research/remedial/advisory-auth-configuration-matrix-2026-09-21.md) ·

@@ -1,5 +1,7 @@
 # Verifying the T2.5 PostgreSQL backend — four predictions, two of them wrong
 
+> **Snapshot — research as of 2026-09-15, measured against `crm-seam` `7cc03cda` (modules unchanged at `903bcec9`). Status: current — tenancy research, not on a shipping path; BF-19 and BF-20 are open (pre-release, register §1b); the shipping-side defects it re-measures (BF-13, BF-14, BF-15) are merged to dev in PR #8738 (unreleased). Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 Date: 2026-09-15 · Harness: [`tools/qc/pg-backend-arm.js`](../../../tools/qc/pg-backend-arm.js)
 Under test: `crm-seam` at **`7cc03cda`** ("T2.5: entries runs on PostgreSQL with RLS"), read from
 an independent detached worktree. **No shipping code was changed by this work, and nothing was
@@ -14,8 +16,7 @@ Arms: real `mongod` 7.0.43 (driver 7.6.0) · real PostgreSQL 16.14, the **emitte
 measured here — `lib/storage/filter.js`, `lib/api3/storage/pgCollection/`,
 `lib/storage/postgres-storage.js`, `lib/storage/postgres/`,
 `lib/api3/generic/search/input.js`, `lib/api3/shared/fieldsProjector.js` and
-`lib/server/entries.js`. Checked rather than assumed, because a verification of a commit nobody is
-on any more is worth nothing.
+`lib/server/entries.js` (checked, not assumed).
 
 | ref | document |
 |---|---|
@@ -191,12 +192,14 @@ GET /api/v1/entries?count=abc   mongod 10 rows    postgres 0 rows
 GET /api/v1/entries?count=-3    mongod 3 rows     postgres ERR 2201W
 ```
 
-**Three things this changes about BF-14.**
+**Three things this changes about BF-14.** [Note 2026-09-22: BF-13, BF-14 and BF-15 are merged
+to dev in PR #8738, not released. Whether the seam branch's PostgreSQL `LIMIT`, `orderBy` and
+`project()` were brought into line with those fixes is not verified here; see the register.]
 
 1. **BF-14 was graded *medium* on the grounds that "it returns no wrong data"** ({L} §2.2, {B}).
    On PostgreSQL it returns wrong data. The same URL against the same collection returns the whole
-   thing on one backend and an empty `200` on the other. An empty `200` from a glucose read is the
-   failure mode this programme keeps naming as the worst kind.
+   thing on one backend and an empty `200` on the other — an empty `200` from a glucose read is
+   indistinguishable, to a client, from "no data".
 2. **`?count=abc` behaves identically to `?count=0`**, by a second route: `parseInt('abc')` is
    `NaN`, `NaN` is not `undefined` or `null` so the gate opens, and `toSafeInt(NaN, 0)` supplies
    the zero. {L} §2 marked the `abc` row `—` rather than `match`, because its strawman declined to
@@ -506,11 +509,6 @@ the same order the jsonb path would. Ordering on `doc #> '{path}'` unconditional
 loses the index; ordering on a type-bucketed expression mirroring BSON's order is what {O} §2
 proposed for the seam and would satisfy both. Either way the choice must not depend on whether a
 column happens to exist.
-
-*Register note (resolved)*: `BF-16` had been used twice — the other session landed
-`food.hidden` as BF-16 and a plaintext-token defect as BF-17 while this session was adding
-the driver-7 getMore entry under the same number. The pre-release entry was renumbered to
-**BF-18**; the findings below take **BF-19** and **BF-20**.
 
 **Non-vacuity.** The same comparison on a single-typed corpus:
 

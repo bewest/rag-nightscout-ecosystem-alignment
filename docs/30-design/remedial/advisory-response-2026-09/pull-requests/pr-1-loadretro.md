@@ -1,5 +1,11 @@
 # PR 1 — loadRetro
 
+> **Record of what was sent — do not re-send.** Opened and merged into `dev` as
+> nightscout/cgm-remote-monitor #8744 on 2026-09-21 (merged head `9765e8cd`: the measured commit, unchanged). Not released:
+> `v15.0.8` does not carry it. The `## BODY` below is byte-identical to the live PR body
+> (checked 2026-09-22). The invocation block is kept as the record of how it was opened; the
+> worktree paths and `--body-file` names in it are local to the author's machine.
+
     repo   nightscout/cgm-remote-monitor
     base   dev
     head   bf/ws-loadretro-auth          (worktree externals/work/crm-adv-retro)

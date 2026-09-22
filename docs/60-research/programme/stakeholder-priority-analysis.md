@@ -1,5 +1,7 @@
 # Stakeholder Priority Analysis
 
+> **Snapshot — research as of 2026-01-17, no commit anchor. Status: superseded by later programme material. Current facts: [programme status](../../00-overview/PROGRAMME-STATUS.md), [work queue](../../../queue/QUEUE.md), [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [gaps](../../../traceability/gaps.md) (the "91+ gaps" count below is point-in-time as of 2026-01-17).**
+
 **Created**: 2026-01-17  
 **Purpose**: Map different stakeholder priorities against documented gaps to identify high-leverage changes and sources of friction
 

@@ -1,6 +1,8 @@
 # E3 — gate vacuity audit of the work queue
 
-**Status: DRAFT for maintainer review.** It changes `queue/work-queue.yaml`,
+> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d` (repository head `08753474`). Status: point-in-time audit; gate and item counts below are as of that date and have since changed. Contributor-facing. Current facts: [work queue](../../../queue/work-queue.yaml) (`make queue-status`, `make queue-vacuity`).**
+
+**Scope (written for maintainer review).** It changes `queue/work-queue.yaml`,
 adds `queue/gate-controls.yaml` and three instruments under `tools/queue/`, and
 it moves one item from `ready-to-push` to `gate-not-met`. Nothing was pushed,
 merged, tagged or published. Rule 0 holds throughout: every measurement below
@@ -8,7 +10,7 @@ was taken locally, and the only network calls are two read-only `git ls-remote`
 invocations against repositories this programme already tracks.
 
 Measured 2026-09-15. Repository head `08753474`; `origin/dev` at `a8888f0d`.
-**The manifest moved under this audit.** It held 62 items and 73 runnable gates
+**Counts are point-in-time as of 2026-09-15.** The manifest held 62 items and 73 runnable gates
 when the audit began and 74 items and 99 runnable gates when it finished —
 another session was adding gates throughout. Every count below is against the
 later state, and the instrument added here reports any gate added after it as
@@ -20,7 +22,7 @@ read-derived are marked as such and are all about *intent*, not behaviour.
 
 ---
 
-## 1. What the critic found, and what was actually wrong
+## 1. Vacuous gates found
 
 The completeness critic proved the *validator* non-vacuous — eleven injected
 manifest defects caught, one control passed — and observed that the *gate
@@ -47,19 +49,11 @@ follow-up. **Tolerant pattern**, for three reasons:
    pattern was simply wrong. Changing the intent would be overriding a decision
    someone made, on no evidence. *(read-derived: the intent comes from the
    describe text, not from a run.)*
-2. **Corrected while this audit was being written.** It was the only
-   machine-checked record of the residual when the audit began; it is not any
-   more. A concurrent session added `FU-RESIDUALS`, whose second gate asserts
-   the same absence against `origin/dev` with a whitespace-tolerant pattern and
-   is `gate-not-met`. That session hit the identical bug from the other side —
-   its own `describe` records that its first draft copied the with-space
-   quotation, "searched for a string that is not in the file, matched nothing,
-   and PASSED while the defect was present". Two agents, two instruments, one
-   root cause: **the with-space spelling is what the documents say, and the
-   no-space spelling is what the code contains.** The register still quotes the
-   with-space form at
-   `docs/30-design/remedial/nightscout-backfix-register.md:1005`. That is a doc-truth
-   fix, not this audit's to make, and `FU-RESIDUALS` already carries it.
+2. `FU-RESIDUALS` (added during this audit) asserts the same absence against
+   `origin/dev` with a whitespace-tolerant pattern and is `gate-not-met`. The
+   root cause for both gates: **the with-space spelling is what the documents
+   say, and the no-space spelling is what the code contains.** The register
+   quoted the with-space form at the time; `FU-RESIDUALS` carries that doc-truth fix.
 3. The residual is real and still present: `lib/authorization/storage.js:113` on
    `bf/auth`, `:84` on `origin/dev`. It is BF-05's sibling — an unguarded
    `console.log` of a query's options, i.e. filter contents to stdout. Same
@@ -89,10 +83,9 @@ The placeholder is gone. In its place:
 
 ---
 
-## 2. CORRECTIONS TO THIS TASK'S BRIEF (rule 1)
+## 2. Three working assumptions that measurement did not support
 
-Three premises in the brief are wrong, and two of them would have produced a
-worse queue if followed.
+Each would have produced a worse queue if followed.
 
 **(a) `TEST=api.count-parameter npm run test-single` does NOT run without a
 database.** The brief says "13 passing in 2 seconds with no database" and
@@ -212,18 +205,14 @@ the ablation to the wiring, and the control then fails on assertions
 (`expected '1.5' to be 1.5`), which is the control that means something. Same
 for `bf/food`'s `boluscalc.quickpick`.
 
-**The ablation harness was itself vacuous in its first version**, and this is
-the clearest illustration in the audit of rule 2's second half. v1 reverted with
-`git checkout <base> -- <files>`. When a branch *adds* a file that path does not
-exist at the base, git aborts the **whole** checkout, and nothing at all is
-reverted — so the first `bf/coercion` ablation reported a comfortable
-`28 passing, 0 failing` having broken nothing, and for several minutes looked
-like proof that P0-D's test gate was vacuous. It was not. **The ablation was
-mis-scoped.** v2 deletes added files instead of restoring them, prints its
-scope, and refuses to run if the working tree came out unchanged. A second bug
-in the same script — `( cmd | tail )` hands back `tail`'s status, which is
-always 0 — would have made every ablation control report success. Both are
-commented in the script so the next reader does not reintroduce them.
+**Two ablation-harness pitfalls, both now guarded in the script.** Reverting
+with `git checkout <base> -- <files>` aborts the **whole** checkout when a
+branch *adds* a file that does not exist at the base, so nothing is reverted
+and the control reports a comfortable pass having broken nothing. The harness
+therefore deletes added files instead of restoring them, prints its scope, and
+refuses to run if the working tree came out unchanged. Separately,
+`( cmd | tail )` hands back `tail`'s status, which is always 0, and would make
+every ablation control report success.
 
 ### 3.4 Node gate scripts — 24 gates over 19 scripts
 
@@ -369,12 +358,9 @@ now has a real ablation behind it. Re-checked again at **`f829ea11`** on
 - `crm-bf-connect-pin` has no `my.test.env` and no client bundle, so no test
   gate is possible in it today. P0-PIN's gates are all `grep`, which is
   appropriate for a one-file, +1/−1 pin move.
-- **Two sessions found the same defect independently within an hour**, from
-  opposite directions: this audit from P0-C's gate, `FU-RESIDUALS` from the
-  register's prose. Neither had read the other. The shared cause is that a
-  string was quoted in prose, propagated into two gates by copy, and never
-  compared against the file — which is the argument for a control rather than
-  for more careful copying.
+- **The P0-C residual was quoted in prose with a space the code does not
+  contain**, and propagated by copy into two gates without being compared
+  against the file — the argument for a control rather than for more careful copying.
 
 ---
 

@@ -1,7 +1,9 @@
 # GHSA-8849-qjp5-vrrj — unauthenticated `/alarm` namespace
 
-Register **BF-75** (and **BF-76** found beside it; **BF-80** is the fix's cost). Fix:
-`bf/alarm-socket-scope` `012f1623`, PR against `dev`.
+**DRAFT — not applied.** Metadata and prose changes for the advisory UI; facts as of 2026-09-22.
+Internal cross-reference (not for pasting): register BF-75, BF-76 (found beside it), BF-80 (the
+fix's cost). Fix merged into `dev` as #8745 on 2026-09-21; **not in a release** — 15.0.8 is
+affected.
 
 ## Metadata changes
 
@@ -71,10 +73,13 @@ security disclosure."* Replace with a description of the fix that ships:
 > A second defect was found and fixed alongside: the access-token branch of `subscribe`
 > registered the `ack` handler with no permission check, so any valid token of any role could
 > silence every viewer's alarm.
+>
+> Fixed on the development branch in nightscout/cgm-remote-monitor#8745 (merged 2026-09-21). Not
+> yet in a release; 15.0.0 through 15.0.8 are affected.
 
 ## Credit — this one matters
 
 The reporter found a real defect that nobody inside the project had, reported it responsibly
 through this workflow, and wrote a patch. **Credit them on publication.** See
-`../prs/PR-3-reply-to-reporter.md` for the reply to their PR; it explains why a different remedy
-is being merged without diminishing the finding.
+[the reply to their PR](../pull-requests/reply-to-reporter-ghsa-8849.md) (draft, not sent); it
+explains why a different remedy was merged without diminishing the finding.

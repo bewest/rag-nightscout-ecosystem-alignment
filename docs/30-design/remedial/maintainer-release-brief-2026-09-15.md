@@ -2,8 +2,18 @@
 
 **Date:** 2026-09-15 · **Audience:** a Nightscout maintainer with merge rights on
 `nightscout/cgm-remote-monitor` and `nightscout/nightscout-connect`.
-**Status:** DRAFT for maintainer review. Nothing in this batch has been pushed, tagged, merged or
-published. Everything below was prepared locally and stopped there, deliberately.
+*Contributor-facing.*
+
+> **Snapshot — describes 2026-09-15, measured against cgm-remote-monitor `origin/dev` `a8888f0d`.**
+> Status: **superseded.** The branch shapes changed the same evening (the `bf/coercion`/`bf/reads`
+> stack was dissolved and both branches re-cut — see
+> [Phase 0 sequencing](./phase0-pr-sequencing-2026-09-15.md) §3a), and seven of the nine branches
+> have since merged into `dev` (#8734–#8740). **None is released**: as of 2026-09-22
+> `origin/master` `92d08342` = tag `15.0.8` is 308 commits behind `origin/dev` `74fc6619`, and the
+> release PR #8598 is open awaiting review. `bf/auth`, `bf/connect-pin` and the connector `v0.0.14`
+> tag did not land. Current state: [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) items
+> `P0-*` and `RT-0`; defect facts in the [backfix register](./nightscout-backfix-register.md).
+> SHAs, test counts and pins below are as of the snapshot date.
 
 This is the one document to read before you start typing. It is written so you can read it once and
 then act. Where a number appears, the sentence says how it was measured. Where the reasoning is
@@ -13,12 +23,7 @@ Read §1, §2, §3 and §4 before you touch anything. §5 is the per-branch deta
 while reviewing PRs. **§9 and §9a are the rollback and the "how would I even notice" list — read
 §9a before you merge, not after**, because most of what this batch touches fails silently.
 
-> **This document has been through an adversarial review pass (2026-09-15) and carries its
-> corrections inline.** Three claims in the first draft were refuted and are struck through rather
-> than deleted, so that a wrong claim cannot be quietly re-raised: the CodeQL trigger claim (§4,
-> §12.5), the `CHANGELOG.md` add/add claim (§5 branch G, §8.4), and the `$exists` inversion claim
-> (§5 branch D, §11). Two test-coverage gaps were closed (`bf/auth`, `bf/cache`) and one was not
-> (`bf/alarms`). Figures added or re-measured in that pass say so.
+Figures marked as re-measured were reproduced independently by a second reviewer on 2026-09-15.
 
 ---
 
@@ -225,8 +230,7 @@ is a clear, actionable, honest error. An invented hash is a confusing, dishonest
 
 ## 4. WHICH PUSHES PUBLISH — verified against the workflow files today
 
-I re-read every workflow file rather than trusting the summary I was handed. The summary held, with
-**one correction** (marked ✱).
+Every workflow file was re-read on 2026-09-15.
 
 ### `cgm-remote-monitor` — `.github/workflows/` on `origin/dev` (`a8888f0d`)
 
@@ -260,20 +264,12 @@ DOCKER_IMAGE: nightscout/cgm-remote-monitor
 `push: branches: [dev, master]`, `pull_request: branches: [dev, master]`, plus a weekly cron.
 **So a feature-branch push runs no workflow whatsoever** — not CI, not CodeQL, not Docker.
 
-✱ ~~**Correction.** The claim that "PRs targeting `chore/nightscout-modernization` run full CI" is
-true **only of the workflow file that lives on the modernization branch**, not of the one on `dev`…
-`codeql-analysis.yml` on the modernization branch still lists only `[dev, master]`.~~
+**On `chore/nightscout-modernization`, CodeQL does run on PRs targeting it.** Measured with
+`git show origin/chore/nightscout-modernization:.github/workflows/codeql-analysis.yml` at
+`0a4109f6`: line 17 `push: branches: [ dev, master ]`, line 19
+**`pull_request: branches: [ dev, master, chore/nightscout-modernization ]`**.
 
-> **THIS "CORRECTION" WAS ITSELF WRONG AND IS WITHDRAWN (adversarial review, 2026-09-15).**
-> Struck through rather than deleted, because a deleted wrong claim gets raised again.
-> Measured with `git show origin/chore/nightscout-modernization:.github/workflows/codeql-analysis.yml`
-> at `0a4109f6`: line 17 `push: branches: [ dev, master ]`, line 19
-> **`pull_request: branches: [ dev, master, chore/nightscout-modernization ]`**. CodeQL *does* list
-> the modernization branch under `pull_request`. The sequencing document's original sentence
-> (`phase0-pr-sequencing-2026-09-15.md:36`, "`main.yml` and CodeQL both list it under
-> `pull_request`") is **correct as written**. The error here was reading only the `push:` line.
-
-What *is* true, and is worth keeping: the split between the two workflow files is real. On `dev`,
+The split between the two workflow files is real. On `dev`,
 `main.yml`'s `pull_request` list is `[master, dev]` only; on `chore/nightscout-modernization` it is
 `[master, dev, chore/nightscout-modernization]`, and that branch's `main.yml` also carries a
 `concurrency` group and **three** extra jobs `dev` does not have (`maintained-mongo`,
@@ -318,12 +314,15 @@ Merge-tree state, **re-measured independently during adversarial review on 2026-
 branches merge cleanly against `origin/dev`, and **all 36 unordered pairs among the nine branches —
 `bf/connect-pin` included — merge cleanly against each other.** (`git merge-tree --write-tree
 --name-only` for every pair; a clean result is a single tree hash with no file list. 36 pairs, 0
-conflicts.) The `CHANGELOG.md` conflict recorded in the sequencing document is **gone**, though not
-for the reason first given here — see §5 branch G and §8.4: `CHANGELOG.md` already exists on
-`origin/dev`, so no add/add conflict was ever possible. `bf/reads` has since been rebased onto
+conflicts.) There is no `CHANGELOG.md` add/add conflict: `CHANGELOG.md` already exists on
+`origin/dev` (§5 branch G). `bf/reads` has since been rebased onto
 `bf/coercion` — see the ordering note below.
 
-### The one ordering constraint — and it changed since the sequencing document was written
+### The one ordering constraint
+
+*[Superseded the same evening: the stack was dissolved and `bf/reads` re-cut directly on
+`origin/dev` as `2ecfeb53` (6 commits), independent of `bf/coercion`; the two merged separately as
+#8738 and #8737. See [Phase 0 sequencing](./phase0-pr-sequencing-2026-09-15.md) §1 and §3a.]*
 
 **`bf/coercion` is now an ancestor of `bf/reads`.** Verified:
 `git merge-base --is-ancestor bf/coercion bf/reads` succeeds, and `bf/reads` is 8 commits ahead of
@@ -460,8 +459,7 @@ brute-force guessing against `API_SECRET` and tokens ran unthrottled.
    function save (collection, fields) { … var doc = ownedFields(obj, fields);
                                         await collection.replaceOne({_id: doc._id}, doc, {upsert: true}); }
    ```
-   **Scoped correctly — this was overstated in the first draft and is corrected here (adversarial
-   review, 2026-09-15).** The data loss is *mostly pre-existing, not introduced by this branch*, and
+   **Scope.** The data loss is *mostly pre-existing, not introduced by this branch*, and
    a reviewer needs the difference:
    - **Already true on `dev` today.** `origin/dev:lib/authorization/storage.js` `save()` is already
      `collection.replaceOne({_id: obj._id}, obj, {upsert: true})` on the caller's object, and
@@ -484,12 +482,11 @@ brute-force guessing against `API_SECRET` and tokens ran unthrottled.
 Also: `GET /api/v1/subjects` gains a `notes` field (additive; it stops the admin edit dialog
 blanking notes).
 
-**Test evidence — GAP NOW CLOSED (adversarial review, 2026-09-15).** `npm run test:unit` on this
+**Test evidence (2026-09-15).** `npm run test:unit` on this
 branch: **361 passing / 0 failing** (GT1, in the worktree with its own `my.test.env` on port 27031).
 And `npm test` — the full `./tests/*.test.js` tree, which is what CI runs via `test-ci`, and which
 on this branch is 161 files — **2047 passing, 3 pending, 0 failing, exit 0**, run today in
-`externals/work/crm-bf-auth` against its own `mongod` on 27031 (server 7.0.43, driver 5.9.2). The
-first draft of this document said no full-tree run existed for `bf/auth`; that is no longer true.
+`externals/work/crm-bf-auth` against its own `mongod` on 27031 (server 7.0.43, driver 5.9.2).
 See §11.
 
 ---
@@ -512,15 +509,12 @@ site — treat the *ordering* (much faster) as solid and the absolute numbers as
 
 Also removes a **dead write** at `lib/data/dataloader.js:204` on `origin/dev`
 (`if (!element.mills) element.mills = element.date` on an array that is discarded), pinned by a test
-that fails if the write returns. *(The line is **204**, not the 203 stated in the first draft;
-`git show origin/dev:lib/data/dataloader.js | grep -n` puts it at 204. Corrected during adversarial
-review.)*
+that fails if the write returns.
 
-**Test evidence — GAP NOW CLOSED (adversarial review, 2026-09-15).** `npm run test:unit`,
+**Test evidence (2026-09-15).** `npm run test:unit`,
 **371 passing / 0 failing** (GT1). And `npm test` (the full `./tests/*.test.js` tree, 160 files on
 this branch) in `externals/work/crm-bf-cache`: **2040 passing, 3 pending, 0 failing, exit 0**, run
-today against its own `mongod` on 27033. The first draft said no full-tree run existed for
-`bf/cache`; that is no longer true.
+today against its own `mongod` on 27033.
 
 ---
 
@@ -552,10 +546,7 @@ boolean `true` into `false`, silently un-hiding a hidden quick pick on every edi
 
 **Two things whoever lands this must know:**
 
-1. ~~**It deliberately does not create `CHANGELOG.md`.** That file does not exist on `a8888f0d`;
-   both `bf/reads` and `bf/coercion` add it, and a third add would be a third add/add conflict.~~
-
-   **REFUTED (adversarial review, 2026-09-15). Struck through, not deleted.** `CHANGELOG.md`
+1. **`CHANGELOG.md`.** It
    **already exists on `origin/dev` (`a8888f0d`)** — `git ls-tree --name-only origin/dev
    CHANGELOG.md` returns it, and its `## [Unreleased]` section already carries the 15.0.9 entries.
    Neither `bf/reads` nor `bf/coercion` *adds* the file; they **append** to it
@@ -565,7 +556,10 @@ boolean `true` into `false`, silently un-hiding a hidden quick pick on every edi
    do not touch the file at all. **There is no add/add conflict and there never was one**, and
    because `bf/reads` contains `bf/coercion` there is no conflict between those two either.
 
-   **What survives, and it still needs doing:** `bf/food` carries **no `CHANGELOG.md` entry of its
+   *[Superseded the same evening by the maintainer's rule that `CHANGELOG.md` is a release output
+   no branch edits; release-note text moved to `releases/` in this repository. See
+   [Phase 0 sequencing](./phase0-pr-sequencing-2026-09-15.md) §0b.]*
+   `bf/food` carries **no `CHANGELOG.md` entry of its
    own**, and BF-35 is the highest-severity defect in the batch. Its release-note text is in the
    register. Adding it is an ordinary edit to the existing `## [Unreleased]` section — the only
    hazard is the usual one of two branches appending to the same section, which `git` resolves as a
@@ -608,9 +602,7 @@ visibly.*
 
 **Test evidence — measured, and independently reproduced during adversarial review:** `npm test`
 (the full `./tests/*.test.js` tree, 160 files on this branch) in `externals/work/crm-bf-merge`:
-**2040 passing, 3 pending, 0 failing**, exit 0 — run twice, same figures. *(The first draft recorded
-this run as "2040 passing, 0 failing" and omitted the 3 pending that every other run in this
-document reports; corrected.)* `tests/receiveddata.merge.test.js` is also in neither local brace
+**2040 passing, 3 pending, 0 failing**, exit 0 — run twice, same figures. `tests/receiveddata.merge.test.js` is also in neither local brace
 list, so the same caveat as `bf/food` applies to any `test:unit` result on this branch.
 
 ---
@@ -676,9 +668,9 @@ review on 2026-09-15** by executing both versions of `lib/server/query.js` on th
 That third row is BF-32, found while fixing the others: the old walker coerced operator *operands*
 as if they were field values, so `find[sgv][$exists]=true` reached the driver as `{$exists: NaN}`.
 
-> ### ⚠ CORRECTION — BF-32's stated impact does not survive contact with a real MongoDB
+> ### BF-32's stated impact does not hold on a real MongoDB
 >
-> **Measured during adversarial review, 2026-09-15, against two live `mongod` servers** (3.6.8 on
+> **Measured 2026-09-15, against two live `mongod` servers** (3.6.8 on
 > port 27033 and 7.0.43 on ports 27019/27023/27031/27032, via driver 5.9.2), inserting
 > `[{_id:1, sgv:100}, {_id:2}]` and running each operand spelling:
 >
@@ -696,7 +688,7 @@ as if they were field values, so `find[sgv][$exists]=true` reached the driver as
 >
 > 1. **`find[sgv][$exists]=true` was *not* returning "the documents that lack the field" on `dev`.**
 >    `{$exists: NaN}` returned the documents that *have* it, which is the right answer, reached by
->    accident. The register's BF-32 wording, this document's earlier wording, and the
+>    accident. The register's BF-32 wording and the
 >    operator-facing sentence in `bf/reads`' own `CHANGELOG.md` ("which MongoDB reads as *false*, so
 >    the query returned exactly the records you did not ask for") **are all wrong on this point**,
 >    and the CHANGELOG one ships to operators. Raise it on the PR.
@@ -715,8 +707,11 @@ as if they were field values, so `find[sgv][$exists]=true` reached the driver as
 > 4. **A separate, pre-existing defect is exposed by this and is *not* fixed by the batch:**
 >    `find[<any field>][$exists]=false` has never meant "lacks the field" anywhere in API v1 — the
 >    string `"false"` is truthy to MongoDB, so it returns the documents that *have* it, on `master`,
->    on `dev`, and after this branch, on every field of every collection. It is described in the
->    notes handed up with this document as a proposed register entry with **no id allocated**.
+>    on `dev`, and after this branch, on every field of every collection. Filed as **BF-40**.
+>    *[Correction: the BF-40 fix was folded into `bf/coercion` as a second commit on 2026-09-16
+>    (tip `b7234753`) and #8737 does fix it — `lib/server/query.js` reads `$exists` operands as
+>    booleans (`BOOLEAN_OPERANDS` / `readBooleanOperand`); measured 2026-09-17. Merged to `dev`,
+>    not released.]*
 > 5. **`mingo` is not a faithful oracle for non-boolean `$exists` operands.** Under D8 that matters
 >    for the seam's differential tests, not for Phase 0, but it should be recorded.
 >
@@ -775,16 +770,14 @@ of the old code over 11 inputs. **Two details the branch's own CHANGELOG underst
   covered — `/entries*`, `/echo/*`, `/times/*`, `/slice/*`, `/count/*` (all five on the entries
   router), `/treatments*`, `/profile*`, `/devicestatus*`, `/notifications*`, `/activity*`,
   `/food*`, `/status*`, `/alexa*`, `/googlehome*`, plus the `verifyauth` and `adminnotifiesapi`
-  routers mounted at `/`. **One route is NOT covered**, and the first draft did not say so:
+  routers mounted at `/`. **One route is NOT covered**:
   `app.use('/experiments', …)` is mounted at line 38, *before* the validator, so
   `/api/v1/experiments?count=0` keeps the old behaviour. That is the whole list — 15 mount points
   covered, 1 not.
 
 **Ordering constraint inside the branch:** `1d0064bd` (BF-05, "Every count request printed its
 filter…") must follow `af717c8f` (BF-01, "count/:storage/where counted nothing…") — they share two
-files. The branch is already in that order. *(The first draft named `c8fb536b` and `4a398d47`; those
-are the **pre-rebase** SHAs and exist only on the safety ref `bf/reads-prerebase`. `git branch
---contains` confirms neither is on `bf/reads`. Corrected during adversarial review.)*
+files. The branch is already in that order.
 
 **The merge-correctness step this pair gets and neither PR gets alone.** `bf/coercion` and `bf/reads`
 both rewrite query construction and share six files under `lib/server/`. A clean textual merge is
@@ -905,7 +898,7 @@ has no in-tree consumer), and **BF-03** (`food` never reaches `query.js`; `activ
 field). Its own §1 table flags two more the header omits: **BF-08** ("the interval half of this
 entry was wrong") and **BF-30**. GT3 counted the same seven.
 
-**Make that eight.** This document's own adversarial review added one: **BF-32**'s stated impact —
+**An eighth: BF-32**'s stated impact —
 that `{$exists: NaN}` "returned exactly the documents that lack the field" — is false against a real
 MongoDB, where `NaN != 0` makes it read as `true` (§5, branch D). That one was caught only because
 someone ran it against a server instead of reasoning about JavaScript truthiness, and the wrong
@@ -948,12 +941,12 @@ either pushes a Docker image (§4). Treat a merge as shipping, because it is.
    debt with a name: *two readings of one rule is the root cause of this entire family of defects* —
    BF-14 and BF-33 are the same bug in two dialects. Leaving it duplicated through the merge is the
    right call; leaving it duplicated after is not.
-4. ~~**`CHANGELOG.md` is added by two branches and not by the third that needs it.**~~ **REFUTED —
-   see §5 branch G.** `CHANGELOG.md` **already exists on `origin/dev`**; `bf/coercion` and
+4. **`CHANGELOG.md` and `bf/food`** (§5 branch G). `CHANGELOG.md` **already exists on `origin/dev`**; `bf/coercion` and
    `bf/reads` append to it (+40 and +90 lines), the other six branches do not touch it, and there
    is no add/add conflict anywhere. **What still needs doing is unchanged and is the point:
    `bf/food` carries no `CHANGELOG.md` entry, and BF-35 is the highest-severity defect in the
    batch. Its release note has to be written into the existing `## [Unreleased]` section by hand.**
+   *[Superseded: release notes go in `releases/`, not `CHANGELOG.md` — Phase 0 sequencing §0b.]*
 5. **A schema-drift tripwire will fire when `bf/food` lands** (§5, branch G). It is a deliberate
    anchor, not a breakage.
 6. **Four other follow-ups are recorded and not in these PRs:** `plugins.isPluginEnabled` always
@@ -1108,9 +1101,8 @@ files are byte-identical to the `dev` baseline's mongo-down failures, and neithe
 touches those files or the code they exercise. **That is a strong attribution, not a measurement.**
 *CI will settle it.*
 
-**Revised from the first draft:** the branches with no full-tree run of their own are now **two**,
-not four — `bf/alarms` and `bf/connect-pin`. `bf/auth` and `bf/cache` were run to completion during
-adversarial review (2047/3/0 and 2040/3/0, both exit 0). **`bf/alarms` is still one of the two
+The branches with no full-tree run of their own are **two** — `bf/alarms` and `bf/connect-pin`.
+`bf/auth` and `bf/cache` were run to completion on 2026-09-15 (2047/3/0 and 2040/3/0, both exit 0). **`bf/alarms` is still one of the two
 branches needing an explicit human yes, and it is still the one with the weakest test evidence in
 the batch.** Starting its `mongod` on 27034 and running `npm run bundle` in that worktree would
 close it in about two minutes.
@@ -1148,11 +1140,12 @@ close it in about two minutes.
 
 See the open questions handed up with this document.
 
-**One of the three has since been settled and is struck out here rather than removed:**
-~~whether `$exists=false` is inverted by `bf/coercion`~~ — **settled: it is not.** Measured against
+**Settled:** `bf/coercion`'s first commit does not invert `$exists=false`. Measured against
 live `mongod` 3.6.8 and 7.0.43, `{$exists: NaN}` returns the documents that *have* the field, so
 neither `$exists=true` nor `$exists=false` changes observable behaviour across this branch, and the
 register's BF-32 wording is wrong in the other direction. Full working in §5, branch D.
+*[The residual `$exists=false` defect, BF-40, was later fixed by `bf/coercion`'s second commit and
+merged as #8737 — see the correction in §5 branch D.]*
 
 **The two that remain, and they do affect a merge decision:**
 
@@ -1192,13 +1185,8 @@ to long shared documents is a failure mode this programme has already hit.
 4. **Same document, §2, branch I**: the `bf/parms` commit order is given as
    `522c6ffb`, `eb0bc918`, `c9a7a21c` mapped to BF-37, BF-39, BF-38. The actual branch order is
    `522c6ffb` (BF-37), `c9a7a21c` (BF-38), `eb0bc918` (BF-39).
-5. ~~**Same document, §0 table**: "PRs *targeting* `chore/nightscout-modernization` run full CI
-   (`main.yml` and CodeQL both list it under `pull_request`)" — **CodeQL does not.**~~
-   **WITHDRAWN — this "correction" was wrong; the sequencing document is right.** Struck through
-   rather than deleted. `origin/chore/nightscout-modernization:.github/workflows/codeql-analysis.yml`
-   line 19 reads `pull_request: branches: [ dev, master, chore/nightscout-modernization ]`. Only its
-   `push:` list (line 17) is `[ dev, master ]`. **Nothing in `phase0-pr-sequencing-2026-09-15.md:36`
-   needs changing.** See §4.
+5. **Same document, §0 table** (CodeQL on PRs targeting `chore/nightscout-modernization`): no
+   change needed — `codeql-analysis.yml` line 19 on that branch lists it under `pull_request`. See §4.
 6. **`nightscout-backfix-register.md`, BF-05 detail**: the unfixed sibling `console.log('Loading', opts)`
    is at `lib/authorization/storage.js:113`, not `:84`. Confirmed present on `bf/auth` today.
 7. **`nightscout-backfix-register.md`, BF-32, and `bf/reads`' own `CHANGELOG.md`**: the claim that
@@ -1224,7 +1212,7 @@ to long shared documents is a failure mode this programme has already hit.
 
 ---
 
-**Draft status.** This document is a draft prepared for maintainer review. It is not a regulatory,
+**Snapshot status.** This document was prepared for maintainer review. It is not a regulatory,
 legal or clinical artefact, and the release notes derived from it are user-facing and must be written
 in plain language with every safety caveat preserved. Nothing in it is medical advice; operators with
 questions about their own therapy should consult their care team.

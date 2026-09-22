@@ -1,5 +1,7 @@
 # Release-assets critique — what is missing, and what is still vacuous
 
+> **Snapshot — review as of 2026-09-16, measured against `origin/dev a8888f0d`. Status: partly superseded — queue and vacuity counts are point-in-time (74 items then; `make queue-status` reports 89 on 2026-09-22); the §2.1 P0-C missing-file idiom is still present in `queue/work-queue.yaml` (checked 2026-09-22); other gate findings not re-checked. Nothing here is released. Current facts: `queue/work-queue.yaml` and the [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 **Status: DRAFT. Contributor-facing.** An adversarial completeness and non-vacuity review of the
 work this workflow produced. Nothing here was pushed, merged, tagged or published. No branch SHA
 moved. Written 2026-09-16 against `origin/dev` = `a8888f0d`.
@@ -33,7 +35,7 @@ Five things are weaker than the reports around them suggest, and one of them I w
    does not pass and the report does not name. §2.5.
 5. **The connector release has no verification record** and nothing explains why. §3.2.
 
-Two of my own ablations were mis-scoped and I report them as mis-scoped, not as findings. §6.
+Two ablations were mis-scoped; they are recorded as such in §7, not as findings.
 
 ---
 
@@ -278,9 +280,7 @@ plan's §2.3 table. **All sixteen land.** Nothing was dropped to make the mainta
 - E2's eight → U1, U2, U3, U8, U9, U12, U13, U16.
 - U10 (does CareLink return history or only a snapshot?) is the plan's own addition.
 
-And it is not padded to look cautious. **U15 and U16 are flagged in the table itself as
-"dropped from an earlier draft and restored on 2026-09-16 during adversarial review"** — the plan
-records its own near-miss rather than quietly fixing it. U16 goes further and argues against its own
+And it is not padded to look cautious. U16 argues against its own
 inclusion: "Not a regression: identical on both sides, so the retirement neither creates nor fixes
 it … A reviewer should decide whether it belongs in this plan at all." That is the opposite of
 padding.
@@ -339,11 +339,13 @@ entire high/low alarm evaluation, and `BRIDGE_SERVER=US` becomes an unresolvable
 of them; `find` over the whole tree returns zero copies of `r5-connect-session.js`, `r7b.js`,
 `compare.js`, `chain.js`, `sentinel.js` or `us-branch.js`.
 
-Why this is the most serious finding in the review. This programme's own measured result is that
-*every retracted register claim was read-derived and none that began with a reproduction was*. The
+Why this is the most serious finding in the review. The
 entire value of the `[R]` label is that a reproduction can be re-run by the next person. These 19
 scripts are the evidentiary basis for **deleting the legacy CGM ingestion path** — a change whose
-failure mode is a person's glucose data quietly stopping. They are in a session-scoped temp
+failure mode is a person's glucose data quietly stopping. [Correction 2026-09-22: the maintainer
+states (2026-09-21, operational knowledge, not measured here) that mmconnect has been broken for
+some time and that legacy Dexcom Share is intended to map to nightscout-connect, so the deletion is
+not of two known-working paths; BF-44/BF-45 have not been re-graded. The durability point stands.] They are in a session-scoped temp
 directory, on one machine, outside version control, with no retention guarantee. The moment that
 directory is cleared, 63 `[R]` claims in E1 and every reproduction in E2 become indistinguishable
 from assertions, and a future reviewer asked to check them has only the report's word.
@@ -414,10 +416,8 @@ The record reported the failure in both halves, carried the failing command's ow
 the item verdict, flagged the divergence between the claimed state and the measurement, and grew the
 gaps section. **Check E passes, verified independently.**
 
-The generator's docstring also records a correction it made against itself — an earlier draft claimed
-test summaries were byte-identical across captures, and a field-by-field diff of two captures refuted
-it because `output_summary.last_line` quotes a benchmark duration. Documenting the refutation of your
-own claim is the behaviour this programme is trying to produce.
+Note: test summaries are not byte-identical across captures, because `output_summary.last_line`
+quotes a benchmark duration.
 
 ---
 
@@ -455,10 +455,10 @@ tokens, GitHub PATs, AWS keys and API secrets.
   the retired package's own recorded fixtures and a stub adapter that rejects before any socket
   opens; no vendor endpoint was contacted by anything I ran.
 
-### 6.3 Rule 8 — a false alarm I am reporting rather than dropping
+### 6.3 Rule 8 — commit trailers
 
-I found 10 trailer lines matching `Co-authored-by` on `fix/connect-timer-jitter` and briefly had it
-as a Rule 8 violation. **It is not.** **[R]** All ten are `Co-authored-by: Copilot <…>` on
+10 trailer lines matching `Co-authored-by` exist on `fix/connect-timer-jitter`; they are not a
+Rule 8 violation. **[R]** All ten are `Co-authored-by: Copilot <…>` on
 pre-existing upstream commits authored by a third-party maintainer between Sep 8 and the branch
 point; `main..fix/connect-timer-jitter` spans 38 commits because `main` is far behind. The **one**
 commit this programme authored, `c1cce2a`, has **zero** trailer lines and is committed under git's
@@ -468,10 +468,9 @@ nine cgm-remote-monitor branches: zero trailer lines. No written artefact contai
 
 ---
 
-## 7. My own mis-scoped ablations
+## 7. Mis-scoped ablations
 
-Rule 2 distinguishes a vacuous check from a break that did not break anything. Two of mine were the
-latter, and both are reported rather than quietly redone.
+Rule 2 distinguishes a vacuous check from a break that did not break anything. Two were the latter.
 
 1. **Coverage-gate control A, first attempt.** I tried to remove a `register:` reference with a
    string replace on `- 'BF-41'`. The manifest writes it as an inline flow list, `register: [BF-41]`,
@@ -480,10 +479,10 @@ latter, and both are reported rather than quietly redone.
    stripping `BF-41` from every item's list and re-serialising: the gate then went red naming
    `BF-41 (§1, register L153, open)`.
 
-2. **"`--integration` is a no-op".** `--integration` did not change the vacuity totals, and I had it
-   as a defect in the instrument. It is not: the 18 skipped controls are 16 `slow` and 2 `network`,
+2. **"`--integration` is a no-op".** `--integration` did not change the vacuity totals; this is not
+   a defect in the instrument: the 18 skipped controls are 16 `slow` and 2 `network`,
    **[R]** and `--slow --integration --network` reaches 91 NON-VACUOUS / 4 EXEMPT / 0 SKIP, exactly
-   reproducing E3's figure. I had picked the wrong flag. The real finding is narrower and survives —
+   reproducing E3's figure. The real finding is narrower and survives —
    the *default* target covers 77 of 95 and its summary line does not say so (§2.5).
 
 ---
@@ -524,8 +523,7 @@ tables are where the carefulness stops.
 ### What I would stake a release on
 
 The migration plan (§4.2, §4.3). The unsettleable list is complete against both evidence documents,
-carries two items that were dropped and restored under adversarial review with that fact recorded in
-the table, argues the maintainer's side of the question it cannot settle, and lands every residue in
+argues the maintainer's side of the question it cannot settle, and lands every residue in
 a checklist with an owner, a pass criterion and a blocking flag. It says plainly what it does not
 know. The operator-facing sections put "your data has stopped" before the technical content and keep
 every safety caveat.

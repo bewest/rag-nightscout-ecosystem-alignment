@@ -26,10 +26,10 @@
 
 ## What this changes
 
-GT2 re-measured: commit 48075a18 touches THREE production files -
-lib/client/renderer.js +25/-25, lib/client/chart.js +2/-2,
-lib/report_plugins/daytoday.js +3/-3. 30 lines, not the five files the
-release-readiness document lists.
+Commit 48075a18 touches three production files - lib/client/renderer.js
++25/-25, lib/client/chart.js +2/-2, lib/report_plugins/daytoday.js +3/-3, 30
+lines in all (GT2, 2026-09-15). The 2026-09-14 release-readiness document
+lists five files; three is the measured figure.
 
 ## Why that semver
 
@@ -54,16 +54,16 @@ maintainer - this is the decision the adopted train puts first
 
 **`TEST=dependency-d3 npm run test-single`** &nbsp;·&nbsp; kind: `unit` &nbsp;·&nbsp; cwd: `externals/cgm-remote-monitor-official`
 
-GT2 ran this: 24 passing, driving the REAL renderer and chart against the D3 7
-browser bundle. Non-vacuous - it catches reverting mouseover handlers to the
-D3-5 signature and catches breaking d3.pointer.
+24 passing (GT2), driving the real renderer and chart against the D3 7 browser
+bundle. Non-vacuous: it catches reverting mouseover handlers to the D3-5
+signature and catches breaking d3.pointer.
 
 **`node tools/queue/gates/d3-drag-clamp-covered.js`** &nbsp;·&nbsp; kind: `static`
 
-THE GAP. GT2 deleted BOTH treatment-drag clamps at renderer.js:764 and 770-771
-and the suite stayed at 24/24 - the handler runs 25 times with only x in
-{20,400}, all strictly inside 0..900, so the boundary is never reached. This
-gate re-runs that ablation and FAILS while the clamps are uncovered.
+The coverage gap. With BOTH treatment-drag clamps deleted (renderer.js:764 and
+770-771) the suite stays at 24/24 - the handler runs 25 times with only x in
+{20,400}, all strictly inside 0..900, so the boundary is never reached (GT2).
+This gate re-runs that ablation and FAILS while the clamps are uncovered.
 
 ## What these gates do NOT prove
 
@@ -97,4 +97,4 @@ touched.
 - [ ] `make queue-status ID=RT-D3` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-21, against cgm-remote-monitor-official `74fc6619`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-22, against cgm-remote-monitor-official `74fc6619`.*

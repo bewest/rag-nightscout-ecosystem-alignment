@@ -1,5 +1,7 @@
 # BF-04 extracted, and BF-70 found underneath it — API v1's query and pipeline surface
 
+> **Snapshot — research as of 2026-09-18, measured against `origin/dev a8888f0d` (branch tip `52b7b640`, merged up at `9745cae2`). Status: findings merged to dev in PR #8743 (BF-04, BF-70), unreleased — both still live on 15.0.8. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 Date: 2026-09-18. Branch: `bf/operators`, three commits on `origin/dev` `a8888f0d`, tip
 `52b7b640`. Worktree `externals/work/crm-bf-operators`.
 
@@ -25,7 +27,7 @@ filter on both refs:
 
 | query string | `origin/dev` `a8888f0d` | `bf/coercion` (#8737) |
 |---|---|---|
-| `find[$where]=this.sgv==100` | `{"$where":"this.sgv==100", …}` | identical |
+| `find[$where]=<js-expression>` | `{"$where":"<js-expression>", …}` | identical |
 | `find[$or][0][$where]=…` | `{"$or":[{"$where":"…"}], …}` | identical |
 | `find[sgv][$where]=…` | `{"sgv":{"$where":NaN}, …}` | `{"sgv":{"$where":"…"}}` |
 | `find[sgv][$regex]=^1` | `{"sgv":{"$regex":NaN}, …}` | `{"sgv":{"$regex":"^1"}}` |
@@ -96,11 +98,8 @@ anyway, so landing it now is **one narrowing rather than the first of two**.
 | `$expr` | `/api/v1/profiles/` — `profile.list_query` reaches the raw collection | **refused** — embeds the aggregation expression language in a find filter, with `$function`/`$accumulator` held out only by a denylist enumerating names against a language that grows each release; cannot use an index; every future backend would owe it an expression evaluator |
 | `$type` | any typed field, e.g. `find[sgv][$type]=2` | **allowed** — see below |
 
-**This is the one conclusion in this document that was reversed, and the reversal is the useful
-part.** The first revision refused `$type` on the ground that the seam's AST cannot express it and
-the census found no sender, and recorded the collision with PR #8737 as a decision for the
-maintainer — *"Nothing here presumes it."* Deferring was right at the time and the deferral is what
-made the reversal cheap.
+The seam's AST cannot express `$type` and the census found no sender, which argued for refusing it;
+that was recorded as a decision for the maintainer while PR #8737 was unmerged.
 
 `dev` then moved `a8888f0d..fdd08706` and #8737 merged. That changed the facts, not the argument:
 
@@ -151,11 +150,10 @@ and `opts` is the caller's parsed query string — `count_records` in `lib/api/e
 passes `req.query` straight to `storage.aggregate()`. So `GET /api/v1/count/:storage/where`
 accepted arbitrary **aggregation stages** from the URL, not merely filter operators.
 
-That is a wider surface than `find` by a long way. Aggregation carries `$lookup`, which reads a
-collection the endpoint is not about, and the `{$group: {count: {$sum: 1}}}` the module appends
-turns the joined result into a number the caller can read back. A `$lookup` followed by a `$match`
-on the joined field is therefore **an oracle over any collection in the database**, answered under
-HTTP 200 to whatever role can read entries.
+That is a wider surface than `find` by a long way. Aggregation stages can read collections the
+endpoint is not about, and the count the module appends is returned to the caller, so the endpoint
+was **an oracle over any collection in the database**, answered under HTTP 200 to whatever role can
+read entries. (Mechanism only; the probe is held outside version control.)
 
 - **Reachable unauthenticated** on the shipped default `AUTH_DEFAULT_ROLES=readable`.
 - **Undocumented**: `pipeline` appears in neither swagger file, nor the README, nor any client in
@@ -198,8 +196,8 @@ The 16 pending are the end-to-end section — the only place the allowed operato
 still **select** correctly rather than merely to pass the guard. It skips without a database; CI
 has one.
 
-**Ablations, each confirmed applied by `grep` before the run**, because a green ablation that never
-landed is the failure mode this programme has hit twice:
+**Ablations, each confirmed applied by `grep` before the run** (a green ablation that never
+landed proves nothing):
 
 | ablation | result |
 |---|---|
@@ -274,10 +272,7 @@ both guards still run.
 - **User-controlled `sort`.** `lib/server/entries.js:44` passes `opts.sort` — `req.query.sort` —
   straight to `.sort()`. Not an injection in the `$where` sense, but a caller can force an
   unindexed sort over a large collection. No register id; not measured.
-- **API v3 needs no equivalent — resolved 2026-09-18, by measurement, after the question was asked
-  in review.** The earlier text here said v3's allowlist means "nothing caller-controlled *should*
-  reach" its storage helpers, and marked it "worth a separate look, not a separate claim". The look
-  has now happened and the claim is safe to make.
+- **API v3 needs no equivalent — measured 2026-09-18.**
 
   v3 is structurally non-injectable. `lib/api3/storage/mongoCollection/utils.js` `parseFilter()`
   assigns `filter[field]['$eq'] = value`, so a client value is only ever the **operand** of one of
@@ -298,6 +293,7 @@ both guards still run.
   **What v3 does share with v1 is `re` → `$regex` over a client-supplied string** — the same
   exposure as advisory PoC C, reached through a documented operator rather than by injection. The
   `parseRegEx` decision on v1 and the `re` decision on v3 should be taken together.
+  [Correction 2026-09-22: advisory PoC C is not data extraction; its effect is cost — BF-72, unauthenticated denial of service, live on 15.0.8 and `dev`, no fix yet. Mechanism only in this repository.]
 
   **The field-name position is worth remembering even though it is inert.** It is inert because of
   what MongoDB rejects, not because Nightscout validates it, so it would become live if anyone ever

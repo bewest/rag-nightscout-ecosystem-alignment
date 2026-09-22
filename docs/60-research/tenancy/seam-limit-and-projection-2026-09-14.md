@@ -1,5 +1,9 @@
 # `limit` and `projection` across the seam — and two live API defects
 
+> **Snapshot — research as of 2026-09-14, measured against `origin/dev` and the seam branch (the doc names no commit). Status: current — tenancy research, not on a shipping path; the two live API defects it found, BF-14 and BF-15, are merged to dev in PR #8738 (2026-09-18, unreleased; 15.0.8 still ships them). Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
+*Audience: contributors.*
+
 Date: 2026-09-14 · Harness: [`tools/qc/shape-arm.js`](../../../tools/qc/shape-arm.js)
 Arms: real `mongod` 7 · real PostgreSQL 16 · the shipping `fieldsProjector.js`
 
@@ -108,21 +112,19 @@ the same way:
    survives those survives `count=0`.
 
 So BF-14 is **medium**, not high: it returns no wrong data, and no shipping client triggers it.
+[Correction 2026-09-22: the register now grades BF-14 **high** (on PostgreSQL, an empty `200` on a glucose read); the register row is authoritative.]
 It stays in the register because a bounded request producing an unbounded read is a defect
 whoever typed the URL — and because the fix is to adopt code that already exists.
 
-The classifier earns a note. A first pass put 16 occurrences in an `empty` bucket; they were
-`'&count=' + n`, cut off at the quote — the most dynamic shape there is, counted as the least.
-A second pass then swept up prose like `// If "?count=" is present` as dynamic. Both were
-corrected before the number above was written; the literal share fell from a misleading 86 % of
-a mis-bucketed total to 86 % of a correct one, and the dynamic share moved 5.8 % -> 13.1 % ->
-9.1 %.
+Classifier method: `'&count=' + n` (a concatenation cut off at the quote) is classified as
+dynamic, and a `?count=` inside a comment or doc string as prose, not dynamic.
 
 ### 2.2 API v3 already contains the fix
 
 `lib/api3/generic/collection.js:76` validates properly — bounds-checked against
 `API3_MAX_LIMIT`, `HTTP 400` on `0`, `abc` or a negative, and a sane default when absent. v1 is
 the outlier. The backfix is to give v1 the validation v3 already has, not to invent one.
+[Correction 2026-09-22: the v3 validation is itself defective — see register BF-33 (fixed alongside BF-14 in PR #8738, merged to dev, unreleased).]
 
 Recorded as **BF-14**.
 
@@ -214,10 +216,9 @@ removes are **not** dead work — `col.resolveDates(doc)` consumes them between 
   path-existence guard reproduce Mongo's shape. The point is that nobody has written that yet,
   and the seam's interface does not ask anyone to.
 - ~~**`readOptions` is still untested.**~~ **Closed** by
-  [readOptions across the seam](seam-readoptions-2026-09-15.md). The guess in this bullet —
-  "nothing in it is likely to be a correctness defect" — was wrong: driver 7 abandons the bound
-  precisely on `.limit(0)`, which is BF-14's own path, so the two compound (BF-18).
-- **BF-14 is sized now** (§2.2), and the measurement **downgraded it**. See below.
+  [readOptions across the seam](seam-readoptions-2026-09-15.md). It contains a correctness defect: driver 7 abandons the bound
+  precisely on `.limit(0)`, which is BF-14's own path, so the two compound (BF-18, open).
+- **BF-14 is sized** in §2.2.
 - The `$slice`-on-a-non-array probe returned the whole document rather than an error, which is
   unexplained and not pursued — it is outside what any caller sends.
 

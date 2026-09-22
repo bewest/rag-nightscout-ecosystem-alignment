@@ -1,5 +1,8 @@
 # E2 — the MiniMed / CareLink path: does the old one really not work?
 
+> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d`. Status: current — BF-41, BF-44 and BF-45 are open; nothing here is released (`origin/master` = 15.0.8, still pinning connector v0.0.13). Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **[Correction 2026-09-22: the maintainer states (2026-09-21, operational knowledge, not measured here) that mmconnect / minimed-connect-to-nightscout has been broken for some time, and that legacy Dexcom Share is intended to map to nightscout-connect. The "cut 4 deletes two working ingestion paths" premise must carry that caveat; BF-44/BF-45 were graded assuming mmconnect is live and have not been re-graded.]**
+
 **Status: DRAFT. Contributor-facing.** Prepared for maintainer review; nothing here is a
 release decision. Every claim is labelled **reproduced** (executed on this machine) or
 **read-derived** (read from source). No CareLink account, no credential, no vendor endpoint was
@@ -18,10 +21,10 @@ the shipping modules by absolute path; nothing was modified in either product re
 
 ---
 
-## 0. The three corrections that should be read before anything else
+## 0. Three findings to read first
 
 **C1. There is no MiniMed auto-adoption path on any released or `dev` code.**
-The brief names `lib/server/mmconnect-connect-compat.js`. That file does **not** exist on
+`lib/server/mmconnect-connect-compat.js` does **not** exist on
 `origin/dev` or `origin/master`. It exists only on parcel 4 (`origin/chore/mime-exposure-review`)
 and therefore parcel 5. On `dev` the only compatibility shim is
 `lib/server/bridge-connect-compat.js`, which is **Dexcom-only**: it refuses to act unless
@@ -171,7 +174,11 @@ setting does nothing.
 ### Verdict on item 1
 
 **The maintainer's "the old medtronic does not work" is not provable from source as a single
-mechanism, and I will not manufacture one.** What is established:
+mechanism.** What is established:
+
+[Correction 2026-09-22: the maintainer's statement is operational knowledge (2026-09-21: broken for
+some time), not a source claim; this section tests only what source and stubs can show, and does
+not contradict it.]
 
 | candidate | verdict | basis |
 |---|---|---|
@@ -333,7 +340,7 @@ notice. The deprecation notice has to name them; it does not have to be long.
 
 ## 5. The timezone divergence — BF-44 into BF-41, end to end
 
-This is the answer to item 4 and it goes the other way from the brief's expectation.
+This is item 4. The result is that for zone-less payloads it is Connect, not legacy, that mis-files readings.
 
 ### 5a. The divergence, reproduced independently
 
@@ -347,7 +354,7 @@ This is the answer to item 4 and it goes the other way from the brief's expectat
 | UTC−7 | `09:09:59Z` | `02:09:59Z` | Connect −7 h |
 | UTC+5:30 | `08:39:59Z` | `14:39:59Z` | −6 h (legacy rounds its guess to whole hours) |
 
-This independently confirms BF-44 including its three published corrections. **It also settles the
+This independently confirms BF-44. **It also settles the
 direction, which matters more than the magnitude: it is *Connect* that files the reading in the
 future**, for any pump in a zone east of the server clock, because `reassign_zone` falls back to
 the identity function when `lastConduitDateTime` is absent and `sgs_to_sgv` then hands a zone-less
@@ -386,8 +393,7 @@ Controls and ablations, same harness:
   legacy path is right and **Connect is wrong**, and wrong in the direction that silences the stale
   alarm for every pump east of the server clock. Hosted Nightscout servers conventionally run UTC,
   which — **assumption, not measured here** — would put most of Europe, Africa, Asia and Oceania on
-  the future-dated side. A reviewer should confirm the server-clock convention rather than take it
-  from me.
+  the future-dated side. A reviewer should confirm the server-clock convention.
 - For **zone-bearing** payloads — the shape the connector's own tests use — Connect is right and
   legacy is wrong (and per BF-44, on the non-EU branch legacy throws `RangeError: Invalid time value`
   instead).
@@ -435,6 +441,10 @@ the two paths compute different `sysTime` values, so the `sysTime`+`type` upsert
 `lib/server/entries.js:130` does **not** absorb the duplicates. Two traces, offset by the pump's
 UTC offset.
 
+[Correction 2026-09-22: BF-45's severity assumes the legacy mmconnect path still ingests data. The
+maintainer states it has been broken for some time (operational knowledge, not measured here); if so,
+the double-trace case may not arise in practice. BF-45 has not been re-graded.]
+
 ### 6b. On parcel 4/5: the shim exists, and it is well behaved
 
 **Reproduced** (`item5.js` §§3–6) against the shipping
@@ -476,6 +486,8 @@ which is exactly the residue list in §4, arrived at independently.
 
 1. **Does a real CareLink login still succeed for the retired package?** The whole "short
    deprecation window" argument rests on it. Needs one live patient-role account, EU and US.
+   [Correction 2026-09-22: the maintainer reports it has been broken for some time — operational
+   knowledge, still not measured here.]
 2. **Do real CareLink payloads carry zone designators, and do they carry `lastConduitDateTime`?**
    This single property decides whether §5's future-dated readings are latent or active, and it is
    the difference between the retirement fixing the stale-alarm hazard and causing it.

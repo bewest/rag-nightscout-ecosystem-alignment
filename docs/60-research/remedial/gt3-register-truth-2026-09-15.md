@@ -1,14 +1,15 @@
 # GT3 — register truth and a contradiction sweep across the planning documents
 
+> **Snapshot — audit as of 2026-09-15, measured against register head `70baa879` (contradiction table at `75c38a17`) and `origin/dev a8888f0d`. Status: point-in-time — every count and line number below is as of that date and has since changed (e.g. BF-04 is now merged to dev in PR #8743, and `queue/` now exists). Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [work queue](../../../queue/work-queue.yaml).**
+
 Date: 2026-09-15. **Read-only audit. No document was edited by this task** — a later agent applies
 the fixes. Head at start `9fc55eaa`; the register was edited by another session **during** this
 audit (BF-39 arrived at `5b49caec`/`70baa879`), so every line number below was re-taken against
 head `70baa879` after that landing. Contributor-facing.
 
-> **The brief's own premise is wrong in three places**, and the corrections are the point of this
-> document. The register holds **39** BF entries, not 34. **BF-16 is fixed**, not open, so the
-> "three open operator-facing entries" is two. And the open/fixed split does not mean what both
-> the plan and the project memory use it to mean — see §0.
+> **Summary (as of 2026-09-15).** The register held **39** BF entries. **BF-16 was fixed** on a
+> branch, so the open operator-facing entries were two (BF-09, BF-10), plus BF-04 (§3d). The
+> open/fixed split tracked work done, not operator exposure — see §0.
 
 ---
 
@@ -145,7 +146,7 @@ Four claims, all wrong, and the first is contradicted by the same document 520 l
 
 ## 3. The genuinely-open operator-facing entries, verified against code
 
-### 3a. BF-16 — the brief's premise is wrong; the entry is FIXED
+### 3a. BF-16 — the entry is FIXED (on branch, as of 2026-09-15)
 
 BF-16 is **not open**. Register L88: `fixed 2026-09-15` (`bf/food` `73495331`), reproduced live with
 both spellings written over HTTP. It should be struck from every "open operator-facing" list.

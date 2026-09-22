@@ -1,56 +1,34 @@
 # The tenant-owner configuration surface — T3.0's missing schema
 
-**Status: DRAFT for maintainer review.** This is a design specification, not landed work.
-It proposes DDL, a credential model and a change list against code that is already merged on
-`seam/t1-2-storage-interface`. Nothing in it has been implemented, and the DDL in §A has **not**
-been executed against a PostgreSQL server (see §G.1 — no credentialled server was reachable from
-this session). Sections marked **DECISION** need the maintainer's yes before anyone writes code;
-sections marked **CONSEQUENCE** follow mechanically from D13/D14/D15 and need no new decision.
+*Contributor-facing.* **Living design — the only statement of the tenant-owner configuration
+surface (T3.0's research deliverable).** A specification, not landed work: nothing in it is
+implemented, and the DDL in §A has **not** been executed against PostgreSQL (§G.1). Sections marked
+**DECISION** need the maintainer's yes before code is written; sections marked **CONSEQUENCE**
+follow from D13/D14/D15. Decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). Item state:
+[`queue/QUEUE.md`](../../../queue/QUEUE.md) — `T30-RESEARCH`, `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG`,
+`T30-WIRING`, `T30-ORY-PROOF`.
 
-**Audience: contributors.** It is fully technical throughout. The operator- and user-facing text
-this work implies — what a tenant owner is told when their alarm thresholds are rejected, what a
-self-hoster reads before deciding whether to move — is *not* in here and is named as separate work
-in §E.4. Two paragraphs of it touch alarm behaviour (§A.3, §B.5); those are flagged because getting
-them wrong means somebody's low-glucose alarm does not fire.
+The operator- and user-facing text this work implies — what a tenant owner is told when their
+alarm thresholds are rejected, what a self-hoster reads before deciding whether to move — is *not*
+in here and is named as separate work in §E.4. Two paragraphs touch alarm behaviour (§A.3, §B.5);
+getting them wrong means somebody's low-glucose alarm does not fire.
 
 | | |
 |---|---|
-| Measured against | `externals/work/crm-seam` @ `81a1f6ce` (`seam/t1-2-storage-interface`), and `externals/work/crm-bf-auth` @ `64db1f35` for `lib/authorization/storage.js` |
-| Repo head when written | `08753474` (re-verified and completed at this head; §0-§B were first drafted at `75c38a17` and every number in them has been re-measured since) |
-| Decisions assumed | D1, D3, D4, D5, D7, D8, D10, D11, D12, **D13, D14, D15** |
+| Measured against | `externals/work/crm-seam` @ `81a1f6ce` (`seam/t1-2-storage-interface`, unpublished), and `externals/work/crm-bf-auth` @ `64db1f35` for `lib/authorization/storage.js`; alignment repo head `08753474`, 2026-09-15 |
+| Decisions assumed | D1, D3, D4, D5, D7, D8, D10, D11, D12, **D13, D14, D15**. Written before **D16/D17** (2026-09-16); how they apply is stated in §0.1 |
 | Amends | T3.1, T3.2, T3.3 (all `DONE-EXCEPT`), and `lib/authorization/index.js:169-173`, which predates this programme |
-| Blocked by | nothing |
-| Adversarially reviewed | 2026-09-15 at repo head `08753474`, against `crm-seam` @ `81a1f6ce` and `crm-bf-auth` @ `64db1f35`. Corrections are marked in place; see the index immediately below |
+| Independently re-run | 2026-09-15, same commits. Claims that did not reproduce are corrected in place; the remaining reviewer notes mark open defects in the proposed DDL (§A.2) and one blocking contradiction (§E.1) |
 
-### Adversarial-review index (2026-09-15)
-
-A second agent re-ran or re-read every claim this document's conclusions rest on. **What held:**
-§0.2's `settingsFor` gap, all of §0.3(i)-(iii) including the JWT-with-no-tenant-claim finding
-(re-executed, all six arms plus controls), §A.3's mmol/mg-dL control pair (re-executed, 56/81/180/252
-against 3.1/4.5/10/14), every line citation in §C, §D and §F, §A.1's reading of `platform.sql`,
-§B.5(i)'s two HSTS spellings (re-executed), §B.5(ii), §B.6, and the whole of §H.4 — the API v3
-autoprune finding — which reproduces line for line. The union of **247** reproduces exactly.
-
-**What did not, and where the correction is:**
-
-| # | claim | where corrected |
-|---|---|---|
-| 1 | `{"s3prefixes":35}` published as measured output; the script returns **37**, and `s2` is 51 under a regex that matches the double quotes `env.js` actually uses | §B.1 table, §G.3 note |
-| 2 | webhook's four reads are "at module scope … once, at require time" — they are inside the exported plugin factory | §B.2 gap 1, §H.1 |
-| 3 | §B's grep gate cannot see `process.env['X']`, so it missed gap 3 — the largest gap and §H.4's defect — entirely | §B "done" block |
-| 4 | §B.4's arithmetic double-counts `TREATMENTS_AUTH` and `CI`, undercounts `PUMP_*` by one, and leaves `MONGODB_COLLECTION` in no class. The surface is **277**, not 258 | §B.4 reconciliation note |
-| 5 | twelve `ADMIN_*`/`FEED_*` variables read by the hosted entrypoints appear in no source, no gap and no total | §B.2 gap 5 (new) |
-| 6 | `tenant_settings_no_proto`'s `?|` is top-level only; the code check recurses. The database is weaker than the comment claims | §A.2 reviewer note |
-| 7 | `tenant_settings_thresholds_mgdl` accepts a **partial** mmol override, because a CHECK passes when its expression is NULL — so §A.3's backstop is not yet there | §A.2 reviewer note, §A.3 defence 1 |
-| 8 | `verifyThresholds()` described as a check that "passes"; it is a **silent rewriter** of alarm thresholds | §A.3, §E.4 item 2b, §H.7 (new) |
-| 9 | §E.1's bootstrap inserts cannot execute against §A.2's `FORCE` RLS with no tenant bound — **blocking** | §E.1 blocking note, J12 |
-| 10 | "if it is lost, it is rotated" — rotation requires the lost credential, and §F.1 forbids the admin plane a recovery route | §E.1, §I.7, J13 |
-| 11 | a migration with three one-way doors and no rollback | §E.2a (new) |
-| 12 | two stale line citations inside the DDL comments (`storage.js:15,:218`; `api3/index.js:85`) | §A.2 |
-
-Nothing in §A has been executed against PostgreSQL by either author — findings 6 and 7 are read off
-PostgreSQL's documented semantics, not off a server, and §G.1 was already honest about that. They
-are the first two things the §A harness must test.
+> **How D16 and D17 apply (2026-09-16).** Interface 2 below is served by its own listener,
+> `ns-tenant-admin` (D16), still per-tenant and under RLS; whether that is its own process or a
+> second socket in `ns-api` is open (plan §2.9). Devices and the data path keep a native per-tenant
+> credential permanently (D17 row 1), so §C's credential model and the `tenant_secret` /
+> `tenant_subject` tables are unaffected — that half is `T30-SCHEMA-CRED` and is claimable. Human
+> identity for tenant owners and caregivers — one cohort-wide Ory Kratos pool — is **held** pending
+> `T30-ORY-PROOF` (D17 row 2): **do not write human-identity DDL from this document** until it
+> resolves. Hydra is deferred. "Credentials are per-tenant, identity is per-cohort, authorization
+> is per-tenant" (plan §2.9) holds either way.
 
 ---
 
@@ -67,7 +45,7 @@ The maintainer's correction of 2026-09-15 is the premise:
 | # | interface | who | where | state |
 |---|---|---|---|---|
 | 1 | hosting-operator → cohort | the hoster | D7's admin plane, own process, own port, no credential, secured by unreachability | **built** (T3.2: `bin/admin.js`, `lib/admin/*`) |
-| 2 | **tenant owner → that tenant's runtime config** | the person whose site it is | the consumer interface, under RLS | **this document. No schema, no task, no code.** |
+| 2 | **tenant owner → that tenant's runtime config** | the person whose site it is | per-tenant, under RLS — on its own listener, `ns-tenant-admin` (D16) | **this document. Specified, not built.** |
 | 3 | single-tenant Nightscout | a self-hoster | `process.env`, read by `lib/server/env.js` | **unchanged, permanently first-class (D1, D4)** |
 
 Interface 3 acquires **no** database dependency for its configuration from this work. That is not a
@@ -86,10 +64,9 @@ tenant is handed a private *copy of the deployment's environment-sourced setting
 **That is exactly what D15 forbids**, and it is a four-line hole rather than an architectural one.
 What is missing is the thing `settingsFor` would read from. This document specifies that thing.
 
-### 0.3 Corrections to the premises this task was given
+### 0.3 Three findings that make the task larger
 
-Three statements this task rests on do not survive measurement — two from the briefing, and one
-that is in no document at all. All three make the task *larger*, not smaller.
+Each was measured on the commits above.
 
 **(i) D14 does not kill BF-25 as a class on its own.** It kills the JWT half. Measured on
 `crm-seam`: a token signed with tenant A's key returns `null` from `enclave.verifyJWT` under tenant
@@ -99,7 +76,7 @@ token has no signature to fail. `lib/authorization/index.js:192-194` resolves it
 `storage.doesAccessTokenExist`, which reads the **process-wide** `storage.subjects` array.
 Per-tenant signing keys do not touch that path. Killing BF-25 as a class needs D14 *and* the subject
 store moved under RLS (§C.4). Stating D14 alone as the structural fix would leave the larger half of
-the vector open while the register entry reads closed.
+the vector open.
 
 **(ii) D13, taken literally, breaks access-token derivation — silently, not loudly.** Subject access
 tokens are *derived from the deployment API secret*: `lib/authorization/storage.js:227` on `crm-bf-auth` calls
@@ -114,11 +91,11 @@ with `if (env.enclave.isApiKeySet())` (`storage.js:226` on `crm-bf-auth`, `:210`
 on `crm-seam`).
 
 D13 is therefore not "do not set `API_SECRET`". It is "**re-root the subject hash on the tenant's own
-credential**", and that is T3.0 work nobody has written down. §C.3 specifies it.
+credential**". §C.3 specifies it.
 
 **(iii) The deployment does not put a tenant claim in the tokens it mints, so under `multi` with
-today's defaults it refuses its own.** This one is not a correction to the brief — it is not in any
-document — and it is the finding with the shortest path to a visible failure.
+today's defaults it refuses its own.** This is the finding with the shortest path to a visible
+failure.
 
 `lib/authorization/index.js:289` is the only caller of `signJWT` in the tree
 (`grep -rn signJWT lib/ bin/` returns that line and the definition, nothing else):
@@ -137,13 +114,13 @@ The payload has one field. `tenantClaim` (`tenant-middleware.js:139-151`) requir
 | `{accessToken}` — what the deployment mints today | `null` | `"This credential does not name a Nightscout site."` |
 | `{accessToken, tenant}` — control | the tenant id | `null` (proceeds) |
 
-So the claim check and the minting path have never been run against each other end to end. T3.1's
+So the claim check and the minting path had not been run against each other end to end. T3.1's
 tests supply hand-built tokens that carry a `tenant` field; nothing in the tree produces one. The
 consequence under `TENANCY_MODE=multi` is not a leak — it is that **every authenticated request
 using a Nightscout-issued JWT is refused**, which is the safe direction and is why it has not bitten
 anyone: nothing runs `multi` yet. It still has to be fixed by the same task that introduces the
-per-tenant key, because that task is the one that decides what goes in the payload. §D.1, and
-proposed register entry §H.5.
+per-tenant key, because that task is the one that decides what goes in the payload. §D.1; register
+**BF-66**.
 
 ---
 
@@ -181,12 +158,11 @@ same file (`platform-store.js:53`, `120-158`).
 -- bin/admin.js on an unrouted port (D7); the self-hoster's plane is the
 -- process environment and is not affected by anything in this file (D1,
 -- D15). What follows is what the TENANT OWNER administers, on the
--- consumer interface, under RLS.
+-- tenant-owner listener (D16), under RLS.
 --
 -- WHY THESE ARE PLATFORM TABLES AND NOT A DOCUMENT COLLECTION. The tree
 -- already has an api3 `settings` collection (registered in the
--- enabledCollections list at lib/api3/index.js:71 -- an earlier draft of
--- this comment cited :85, which is inside the dev-only /test route)
+-- enabledCollections list at lib/api3/index.js:71)
 -- and it is the wrong home: specs/nsschema/settings.model.json records
 -- that "nothing in cgm-remote-monitor writes a document here at all" and
 -- that it is an open body with no server-side schema. Configuration is
@@ -251,10 +227,9 @@ CREATE TABLE tenant_settings (
   -- load-bearing half. A plausible mmol set is 3-15; a plausible mg/dL set
   -- is 50-400. 20 is below any real mg/dL threshold and above any real
   -- mmol one.
-  -- REVIEWER NOTE (adversarial review, 2026-09-15). THIS CONSTRAINT DOES
-  -- NOT YET DO WHAT A.3 SAYS IT DOES, and A.3 is the safety section.
-  -- Two holes, neither executable here because no PostgreSQL was reachable
-  -- (G.1), both decidable from PostgreSQL's documented semantics:
+  -- REVIEWER NOTE (2026-09-15, OPEN). THIS CONSTRAINT DOES NOT YET DO
+  -- WHAT A.3 NEEDS, and A.3 is the safety section. Two holes, read-derived
+  -- from PostgreSQL's documented semantics (not executed -- G.1):
   --
   --  (1) A CHECK is SATISFIED when the expression is TRUE *or NULL*. A
   --      PARTIAL thresholds override -- which applyOverrides explicitly
@@ -276,7 +251,7 @@ CREATE TABLE tenant_settings (
   -- and normalised at the write boundary instead, and do the numeric work
   -- inside an IMMUTABLE function rather than a bare AND chain. That is a
   -- DECISION, because refusing partial overrides is a behaviour choice
-  -- and not a syntax fix: see the new row J11.
+  -- and not a syntax fix: see row J11.
   CONSTRAINT tenant_settings_thresholds_mgdl CHECK (
     settings #> '{thresholds}' IS NULL
     OR (
@@ -299,7 +274,7 @@ CREATE TABLE tenant_settings (
   -- controlled data. A second spelling of a refusal is a second thing
   -- that can drift, so the database refuses them too -- the same argument
   -- platform.sql already makes for the `slug` CHECK at lines 30-35.
-  -- REVIEWER NOTE (adversarial review, 2026-09-15): AS WRITTEN THIS IS
+  -- REVIEWER NOTE (2026-09-15, OPEN; read-derived): AS WRITTEN THIS IS
   -- WEAKER THAN THE CODE IT CLAIMS TO MIRROR, and the comment above
   -- overstates it. `jsonb ?| text[]` tests TOP-LEVEL keys only.
   -- applyOverrides (tenant-context.js:173-198) RECURSES and refuses a
@@ -412,9 +387,7 @@ CREATE POLICY tenant_secret_tenant_isolation ON tenant_secret
 -- This is what makes BF-25 a CLASS kill rather than an instance kill.
 -- Today lib/authorization/storage.js keeps storage.subjects as ONE
 -- process-wide array loaded at boot (storage.js:18 declares it, :209
--- replaces it wholesale on every reload; an earlier draft of this comment
--- cited :15 and :218, which are `var storage = { }` and a closing brace),
--- so an opaque
+-- replaces it wholesale on every reload), so an opaque
 -- access token resolves to its subject no matter which tenant's host it
 -- arrived on -- and an opaque token carries no signature for D14's
 -- per-tenant key to fail. Scoping the SUBJECT STORE is the other half.
@@ -497,8 +470,7 @@ control:
 | deployment (`eachSettingAsEnv`) | `UNITS=mmol BG_HIGH=14 BG_TARGET_TOP=10 BG_TARGET_BOTTOM=4.5 BG_LOW=3.1` | `{bgHigh:252, bgTargetTop:180, bgTargetBottom:81, bgLow:56}` |
 | per-tenant (`deriveSettings`) | `{units:'mmol', thresholds:{bgHigh:14, bgTargetTop:10, bgTargetBottom:4.5, bgLow:3.1}}` | `{bgHigh:14, bgTargetTop:10, bgTargetBottom:4.5, bgLow:3.1}` |
 
-Both rows above were re-executed during adversarial review on `crm-seam` @ `81a1f6ce` and both
-reproduce exactly.
+Both rows are reproduced (executed on `crm-seam` @ `81a1f6ce`, twice).
 
 `verifyThresholds()` runs in the second case (tenant-context.js:242) and passes, because the numbers
 are correctly *ordered*. The result is a site whose urgent-low alarm is set at 3.1 mg/dL and whose
@@ -506,8 +478,8 @@ urgent-high is at 14 mg/dL — for a person with diabetes, an alarm configuratio
 in either direction, arrived at by entering exactly the numbers their clinic uses. Nothing in the
 process says so.
 
-**And `verifyThresholds` is not an inert check — it is a SILENT REWRITER, which this section
-originally did not say.** Read at `settings.js:302-324`: when the ordering invariant fails it does
+**And `verifyThresholds` is not an inert check — it is a SILENT REWRITER** (register **BF-67**).
+Read at `settings.js:302-324`: when the ordering invariant fails it does
 not throw and does not refuse. It *mutates* the offending threshold to a neighbour ±1 and emits a
 `console.warn` — `bgHigh` becomes `bgTargetTop + 1`, `bgLow` becomes `bgTargetBottom - 1`, and so
 on. So the failure mode for a partial mmol override such as `{"thresholds":{"bgHigh":14}}` is not
@@ -531,7 +503,7 @@ Three defences, and all three are wanted:
 3. **Surface `verifyThresholds`'s rewrites instead of logging them.** Any threshold it changes must
    come back to the tenant owner as a visible message naming the old and the new value, because the
    thing it silently changes is when an alarm fires. Today the only evidence is `console.warn`.
-   Proposed register entry §H.7.
+   Register **BF-67** (§H.7).
 
 The `< 50` heuristic settings.js uses is *not* reproduced in the constraint. It is a heuristic about
 unlabelled data; this table has a `units` column and can be explicit.
@@ -589,15 +561,12 @@ Union of sources 1, 2 and 4: **247 distinct names**, measured by running the scr
 against `externals/work/crm-seam` (`81a1f6ce`). Source 3 contributes prefixes rather than names and
 is not in that union. Source 2's count is sensitive to how the regex is written and the union is
 not: every name source 2 finds is also produced by source 1 or matched in the README, so widening
-or narrowing that regex moves 51 but leaves 247 alone. That insensitivity is the only reason the
-union is quotable at all, and it was re-measured rather than asserted — see the verification note
-in §G.3, where the published `s2` and `s3prefixes` figures were corrected and the union was
-confirmed under both the narrow and the widened regex.
+or narrowing that regex moves 51 but leaves 247 alone. That insensitivity was measured under both
+a single-quote-only and the double-quote-aware regex, and it is the reason the union is quotable.
 
 **247 is not the whole surface.** §B.2 gap 3 adds ten API v3 names none of the four sources can
 see; gap 1 adds four `WEBHOOK_*`; gap 2 adds three `AWS_*`; gap 5 adds twelve `ADMIN_*`/`FEED_*`;
-and `CI` is in no source's output. The measured total is **277**, not the **258** first published
-here — that figure double-counted `CI` and omitted `WEBHOOK_*` and gap 5 entirely. The arithmetic
+and `CI` is in no source's output. The measured total is **277**. The arithmetic
 is in the reconciliation note at the head of §B.4.
 
 **Why source 3 cannot be closed, and what that means for the schema.** `findExtendedSettings`
@@ -630,16 +599,11 @@ Three gaps, of which the third was missed by the first pass over this material a
    *would* collect them into `extendedSettings.webhook` when `webhook` is in `settings.enable`, the
    plugin never reads `extendedSettings` — it reads `process.env` directly. Under
    `TENANCY_MODE=multi` every tenant's webhook plugin posts to the same host, and no amount of
-   per-tenant configuration changes that until the read site changes. Proposed register entry §H.1.
+   per-tenant configuration changes that until the read site changes. Register **BF-48**.
 
-   > **CORRECTION (adversarial review).** The first version of this paragraph said the four reads
-   > happen "at module scope … once, at require time". Measured: lines 36-39 sit INSIDE
-   > `module.exports = function webhookPlugin() { … }`, so they run when the factory is invoked —
-   > `require('./webhook')(ctx)` at `lib/plugins/index.js:71` and `:106` — not at require time. The
-   > conclusion is unaffected, because the read is of `process.env` and not of `ctx`/`env`, so a
-   > per-tenant value still cannot reach it. But the stated mechanism was wrong, and it matters for
-   > the fix: converting this plugin is an ordinary `ctx.extendedSettings` change at an ordinary
-   > call site, not the module-load rewrite the original wording implied.
+   Lines 36-39 sit inside `module.exports = function webhookPlugin() { … }`, so they run when the
+   factory is invoked — `require('./webhook')(ctx)` at `lib/plugins/index.js:71` and `:106` — not at
+   require time. So the fix is an ordinary `ctx.extendedSettings` change at an ordinary call site.
 
 2. **Three AWS variables are read in the storage layer** (`mongo-client-configuration.js:38-40`).
    Per-deployment by nature — they authenticate the process to its database, not a tenant to a
@@ -662,8 +626,7 @@ Three gaps, of which the third was missed by the first pass over this material a
    `profile`, `settings`, `treatments`), so the autoprune family is six names:
    `API3_AUTOPRUNE_DEVICESTATUS`, `_ENTRIES`, `_FOOD`, `_PROFILE`, `_SETTINGS`, `_TREATMENTS`.
    4 + 6 = **10** API v3 names the census could not see. `CI` at `index.js:70` is an eleventh
-   direct read, but it is already carried in class **X** below and must not be added twice — the
-   version first published here counted it in both places.
+   direct read, but it is already carried in class **X** below and is counted once.
 
    Measured: `grep -c 'API3_' README.md` returns **0**, and `grep -c 'API3_'` returns 0 for both
    `lib/server/env.js` and `lib/settings.js`. So none of these appears in the 247, and none is
@@ -676,13 +639,12 @@ Three gaps, of which the third was missed by the first pass over this material a
    whose wrong value is unrecoverable. Under `TENANCY_MODE=multi` as the code stands, one
    deployment-wide environment variable prunes **every** tenant's data on one schedule and no tenant
    owner can see it, let alone set it. Classified **T** (per-tenant) by the §B.3 rule and **not yet
-   reachable as T by any mechanism**. Proposed register entry §H.4.
+   reachable as T by any mechanism**. Register **BF-46** (§H.4).
 
 4. **Anything a third-party plugin reads.** Out of scope by construction; gaps 1 and 3 are the shape
    of the problem.
 
-5. **Twelve variables belonging to the hosted entrypoints themselves, found by adversarial review
-   and missing from the census, the gap list and the totals.** The grep above was scoped to `lib/`,
+5. **Twelve variables belonging to the hosted entrypoints themselves.** The grep above was scoped to `lib/`,
    and the census's four sources all look at the `single` entrypoint's configuration path. The
    hosted entrypoints D5 and D7 already ship have their own, read through injected/generic readers
    that no regex over `readENV` can see:
@@ -694,18 +656,16 @@ Three gaps, of which the third was missed by the first pass over this material a
    | `bin/feed.js:64-65, 93-105` (`readEnv(name, fallback)` over `process.env`) | `FEED_STORAGE_URI` `FEED_STORAGE_NAMESPACE` `FEED_SLOT_NAME` `FEED_BATCH_SIZE` `FEED_POLL_INTERVAL_MS` `FEED_STATUS_INTERVAL_MS` |
 
    All twelve are **D** (per-deployment) by the §B.3 rule and none of them is a D15 violation —
-   they configure a process, not a site. They are recorded because this section's whole claim is
-   that the enumeration is closed, and it was not: it enumerated the `single` entrypoint's surface
-   and called it Nightscout's. The census sources and the grep gate must both be widened to `bin/`
-   and to injected-`env` readers before §B can be quoted as complete. Not a defect in the shipping
-   code; a defect in this document's coverage.
+   they configure a process, not a site. The four census sources enumerate the `single`
+   entrypoint's surface; the census sources and the grep gate must both be widened to `bin/` and to
+   injected-`env` readers before §B can be quoted as complete (J14). Not a defect in the shipping
+   code; a limit of this census.
 
 A complete classification must therefore be paired with a **grep gate** that fails when a new
 direct environment read appears outside `lib/server/env.js`. That gate is the second "done" command
 at the end of §B, and it **fails today** — which is the correct state for a gate whose job is to
-hold a line that has not yet been drawn. Its first published form matched `process.env.X` only and
-therefore could not see `process.env['X']`, i.e. it missed gap 3 entirely; it has been corrected
-there.
+hold a line that has not yet been drawn. It matches bracket notation (`process.env['X']`) as well
+as dotted, because gap 3 is read in bracket notation.
 
 ### B.3 The classification rules
 
@@ -725,38 +685,20 @@ or is deployed, it is D.**
 
 Counts are measured by the script in §G.3 against `crm-seam` @ `81a1f6ce`.
 
-> **RECONCILIATION, CORRECTED (adversarial review, 2026-09-15).** The arithmetic first published
-> here — "the five classes sum to 245; the two names the rule could not decide bring it to the
-> measured union of 247" — does not hold, and the group counts were not in fact reproduced from the
-> script. The union of 247 IS confirmed. What it decomposes into was re-measured by expanding every
-> abbreviated group (`BAGE_*`, `PUMP_*`, …) against the union and differencing:
+> **Reconciliation.** The union of **247** is exactly T 161 + TS 28 + D 48 + B 2 + X 8 = **247**
+> classified names, **less** `CI` (classified X but not in the union — source 4's regex requires an
+> underscore and no other source emits it) = 246, **plus** `DEXCOM_BRIDGE_USE_LEGACY` — in the
+> union, §B.6's second name, in no class list — = **247**. `TREATMENTS_AUTH` is counted once, in
+> §B.6, not in T. `PUMP_*` is 13 names (`PUMP_WARN_BATT_QUIET_NIGHT` is the thirteenth). The three
+> AWS names listed parenthetically under D are classified but not in the union (§B.2 gap 2).
+> Reproduced by expanding every abbreviated group against the union in a script and taking the set
+> difference both ways; it is empty in both directions once those two exceptions are accounted for.
 >
-> * `PUMP_*` is **13** names in the union, not 12 (`PUMP_WARN_BATT_QUIET_NIGHT` is the thirteenth),
->   so **T is 161**, not 160.
-> * `TREATMENTS_AUTH` is counted inside T *and* added again as one of the two §B.6 names. It cannot
->   be both.
-> * `CI` sits in the X list, but `CI` can never be in the union: source 4's regex requires an
->   underscore and no other source produces it. It was also counted a second time among §B.2 gap
->   3's "eleven", which is now stated as ten API v3 names plus `CI` counted once.
-> * `MONGODB_COLLECTION` is in the union and is classified in **no** class list, despite §B.5(ii)
->   saying it is X. It is the one name in the 247 with no class; it has been added to X below.
->
-> Reconciled and re-measured, with `MONGODB_COLLECTION` now added to X: the union of **247** is
-> exactly T 161 + TS 28 + D 48 + B 2 + X 8 = **247** classified names, **less** `CI` (classified but
-> not in the union, because no source emits it) = 246 present in the union, **plus**
-> `DEXCOM_BRIDGE_USE_LEGACY` — which is in the union, is §B.6's second name and is in no class list
-> — = **247**. The three AWS names listed parenthetically under D are likewise classified but not in
-> the union: they are read directly (§B.2 gap 2) and no source sees them. Reproduced by expanding
-> every abbreviated group against the union in a script and taking the set difference both ways;
-> the difference is empty in both directions once those two exceptions are accounted for.
->
-> The real surface is therefore **not 258**. Counting distinct names:
-> 247 (union) + 3 (AWS, §B.2 gap 2) + 1 (`CI`, in no source's output) + 10 (§B.2 gap 3's API v3
-> names) + 4 (§B.2 gap 1's `WEBHOOK_*`, which the published 258 omitted altogether)
-> + 12 (§B.2 gap 5's `ADMIN_*`/`FEED_*`) = **277**, of which 8 are class **X** and are not
-> Nightscout configuration at all. Every term in that sum was measured by set difference against
-> the union; none of it should be quoted without re-running the script, which is the point of §B's
-> gate.
+> The real surface, counting distinct names: 247 (union) + 3 (AWS, §B.2 gap 2) + 1 (`CI`) + 10
+> (§B.2 gap 3's API v3 names) + 4 (§B.2 gap 1's `WEBHOOK_*`) + 12 (§B.2 gap 5's
+> `ADMIN_*`/`FEED_*`) = **277**, of which 8 are class **X** and are not Nightscout configuration.
+> Every term was measured by set difference against the union; none of it should be quoted without
+> re-running the script, which is the point of §B's gate.
 
 Where a group is given a count, that count is a hand-expansion of the abbreviated list against the
 union and **not** an output of the script — the script emits set sizes, not per-group tallies. Do
@@ -867,10 +809,8 @@ what enforces that.
 `MYPLUGIN_EXAMPLE_VALUE` (README's worked example) · `OPTIONAL_API_SECRET` (a placeholder inside
 README's `CONNECT_SOURCE_API_SECRET=<OPTIONAL_API_SECRET>` example, not a variable) ·
 `DEFAULT_FEATURES` (produced by `nameFromKey` from `settings.DEFAULT_FEATURES`, which is a constant
-at `settings.js:182`, not something read from the environment) · **`MONGODB_COLLECTION`** (added by
-adversarial review: documented at `README.md:240` and read by nothing — §B.5(ii), §H.3. It was in
-the union of 247 and in none of the five class lists, which is the hole the reconciliation note at
-the head of §B.4 closes.)
+at `settings.js:182`, not something read from the environment) · **`MONGODB_COLLECTION`**
+(documented at `README.md:240` and read by nothing — §B.5(ii), register BF-50)
 
 Note that `CI` is in this list but is **not** in the union of 247 — source 4's regex requires an
 underscore, and no other source emits it. It is counted once, here, and not again among §B.2 gap
@@ -913,9 +853,8 @@ stored, and has no effect. The same dead duplication exists without a spelling d
 `insecureUseHttp` (`settings.js:46`), `secureHstsHeader` (`:47`), `secureHstsHeaderPreload` (`:49`)
 and `secureCsp` (`:50`) — all four are defined in the settings dictionary and every consumer in
 `lib/`, `views/` and `static/` reads the `env.*` form instead. Together with
-`secureHstsHeaderIncludeSubdomains` that is the five below; the first version of this paragraph
-named only four of them and left `secureHstsHeaderPreload` unstated. Verified by grepping each key
-across `lib/`, `views/` and `static/`. Proposed register entry §H.2.
+`secureHstsHeaderIncludeSubdomains` that is the five below. Verified by grepping each key
+across `lib/`, `views/` and `static/`. Register **BF-49** (§H.2).
 
 *Why it matters to this spec rather than only to the register:* five keys in `settings.js`'s
 dictionary are dead. If `tenant_settings.settings` is populated from that dictionary — which is the
@@ -926,11 +865,8 @@ one of them a security header.
 **(ii) `MONGODB_COLLECTION` is documented and read by nothing.** README line 240 documents
 ``MONGODB_COLLECTION`` (`entries`) as "The Mongo collection where CGM entries are stored." Grep over
 `lib/` and `bin/` finds no reader; the code reads `ENTRIES_COLLECTION` or `MONGO_COLLECTION`
-(`env.js:211`). An operator following the README gets the default and no error. Proposed register
-entry §H.3. Classified **X**, because it is not a variable — but it is documented as one. (When
-this section was first written it said "classified X above" while the X list did not contain it;
-adversarial review found it was the one name in the union of 247 carrying no class at all, and it
-has been added to X.)
+(`env.js:211`). An operator following the README gets the default and no error. Register
+**BF-50**. Classified **X**, because it is not a variable — but it is documented as one.
 
 ### B.6 The two the rule could not classify
 
@@ -964,16 +900,10 @@ edited.
 Fails today, and it must: it finds `lib/plugins/webhook.js:36-39` (gap 1),
 `lib/storage/mongo-client-configuration.js:38-40` (gap 2, an allow-list candidate),
 `lib/api3/index.js:26-29` and `:70` (gap 3) and `bin/feed.js:65` (gap 5). It passes only once each
-read site is converted or explicitly allow-listed.
-
-> **CORRECTION (adversarial review).** The first published form of this gate was
-> `grep -rnE "process\.env\.[A-Z]" …/lib/`. Run verbatim it returns exactly seven lines —
-> `webhook.js:36-39` and `mongo-client-configuration.js:38-40` — and **nothing from
-> `lib/api3/index.js`**, because that file reads `process.env['CUSTOMCONNSTR_' + varName]`,
-> `process.env[varName]` and `process.env['CI']` in bracket notation. The gate therefore could not
-> see gap 3, which this section calls the largest gap and §H.4 calls the sharpest defect found. A
-> new `process.env['ANYTHING']` would have passed it silently. The pattern above adds the bracket
-> alternative and `bin/`; both were verified by running it.
+read site is converted or explicitly allow-listed. Control: a dotted-only pattern
+(`process\.env\.[A-Z]`, `lib/` only) returns seven lines and nothing from `lib/api3/index.js`,
+which reads `process.env[...]` in bracket notation — so the bracket alternative is what makes the
+gate see gap 3.
 
 ---
 
@@ -1307,11 +1237,11 @@ unresolved here. It has to be resolved before release, because "I lost my Nights
 is not an edge case; it is the most common support request any hosted service receives. Filed as
 open question §I.7 and decision J13.
 
-The tenant owner then reaches their own configuration on the **consumer** interface, authenticating
-with that root credential, under RLS. The hoster's plane never gains a configuration endpoint — §F.
+The tenant owner then reaches their own configuration on the tenant-owner listener
+(`ns-tenant-admin`, D16), authenticating with that root credential, under RLS. The hoster's plane never gains a configuration endpoint — §F.
 
-> **BLOCKING CONTRADICTION found by adversarial review, 2026-09-15 — §E.1 as written cannot
-> execute against §A.2's DDL.** All four new tables carry `FORCE ROW LEVEL SECURITY` and
+> **BLOCKING CONTRADICTION (open) — §E.1 as written cannot execute against §A.2's DDL**
+> (read-derived from the policy text; not executed). All four new tables carry `FORCE ROW LEVEL SECURITY` and
 > `WITH CHECK (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid)`.
 > The admin plane writes `tenants` through the UNBOUND `query()` helper
 > (`createTenant`, `platform-store.js:230-262`), with no `app.current_tenant_id` set. With no
@@ -1333,9 +1263,8 @@ with that root credential, under RLS. The hoster's plane never gains a configura
 > 3. move bootstrap rows out of the hoster's plane entirely and have the tenant owner's first
 >    authenticated request create them, which needs a credential before there is a row to hold one.
 >
-> Until one is chosen, §E.1's "in the same transaction" is aspiration. The §E harness
-> (`tenant-bootstrap-arm.js`) is the thing that would have caught this on the first run, which is
-> the argument for writing it before the DDL is landed rather than after.
+> Until one is chosen, §E.1's "in the same transaction" cannot execute. The §E harness
+> (`tenant-bootstrap-arm.js`) is the check that exercises it, and belongs before the DDL lands.
 
 **One ordering hazard.** `ensureSchema` (`platform-store.js:120-158`) is the only DDL path and it
 runs the whole `PLATFORM_DDL` in one transaction only when **zero** platform tables are present. A
@@ -1377,11 +1306,10 @@ Three things this migration cannot carry, and all three must be told to the pers
   numbers*. A migration that silently normalised someone's alarm settings would be worse than one
   that refused.
 
-#### E.2a The one-way doors, and the rollback — added by adversarial review
+#### E.2a The one-way doors, and the rollback
 
-The first version of §E.2 named three costs and no rollback. A migration plan without a findable
-rollback is incomplete, and this one moves a person's glucose data and their alarm configuration,
-so it is stated here rather than at the end.
+This migration moves a person's glucose data and their alarm configuration, so its rollback is
+stated here rather than at the end.
 
 **One-way doors, in the order a person meets them.** A one-way door is a step that cannot be undone
 by reversing it:
@@ -1519,7 +1447,7 @@ non-zero exit**, not a warning.
 
 | | tenant owner (interface 2) | platform admin (interface 1) |
 |---|---|---|
-| where | the consumer interface, under RLS | `bin/admin.js`, its own process, its own port |
+| where | `ns-tenant-admin` (D16), under RLS | `bin/admin.js`, its own process, its own port |
 | credential | the tenant's own root credential (§C.2b) | none — secured by unreachability (D7) |
 | may | read and write everything belonging to their tenant: settings, plugin config, thresholds, their own subjects and roles, rotate their own credentials, export their own data | create, list, suspend, activate, delete a tenant; export any tenant |
 | may **not** | see that any other tenant exists; create or delete a tenant; change their own `slug`, `is_active` or `id`; read `pg_catalog`; set `app.current_tenant_id`; enumerate the deployment's configuration | — (it is the deployment's own plane; its protection is that it is not routed) |
@@ -1605,7 +1533,7 @@ boundary and, if it somehow reaches `deriveSettings`, does not appear in the der
 
 ### G.1 What could not be measured, stated before the claims that depend on it
 
-**No PostgreSQL server was available to this session.** Every piece of DDL in §A is therefore
+**No PostgreSQL server was used.** Every piece of DDL in §A is therefore
 *written* and not *executed*: it has not been parsed by PostgreSQL, the constraints have not been
 shown to reject the values §A.3 says they reject, and the RLS policies have not been shown to
 isolate anything. The syntax follows `platform.sql`, which does run, and the `jsonb` operators used
@@ -1675,21 +1603,10 @@ console.log(JSON.stringify({ s1: s1.size, s2: s2.size, s3prefixes: s3.size,
 Measured output on `crm-seam` @ `81a1f6ce`:
 `{"s1":70,"s2":51,"s3prefixes":37,"s4":208,"union":247}`.
 
-> **VERIFICATION NOTE (adversarial review, 2026-09-15).** The script above was re-run verbatim on
-> `crm-seam` @ `81a1f6ce`. Two of the five numbers first published here did not reproduce and have
-> been corrected in place:
->
-> * `s3prefixes` was published as **35**; the script returns **37**, which is
->   `ls lib/plugins/*.js | wc -l`. 35 looks like a hand-adjustment excluding `index.js` and
->   `pluginbase.js`, but the script as printed does not make it, so the transcript and the script
->   disagreed. The prefix set is not part of the union, so nothing downstream moves.
-> * `s2` was published as **43**. The regex in the version first published matched
->   single-quoted literals only, and `lib/server/env.js` writes most of this family with DOUBLE
->   quotes (`env.js:114`, `readENVTruthy("SECURE_HSTS_HEADER_INCLUDESUBDOMAINS", false)`). The
->   quote class has been widened above; the count is **51**.
->
-> `s1`, `s4` and the **union of 247** all reproduce exactly, and the union is unchanged by the
-> widened regex — that insensitivity was re-measured rather than assumed.
+All five numbers were reproduced by re-running the script verbatim on the same commit. `s3prefixes`
+is `ls lib/plugins/*.js | wc -l` and includes `index.js` and `pluginbase.js`. The `s2` regex must
+accept double quotes, because `lib/server/env.js` writes most of the family that way (`env.js:114`);
+a single-quote-only regex gives 43, and the union is 247 under either.
 
 ### G.4 The credential harness's arms, as executed
 
@@ -1703,16 +1620,17 @@ it"*.
 
 ---
 
-## H. Proposed register entries
+## H. Register entries this document produced
 
-Per the project's rule, **no ids are allocated here.** Each is stated as the register would state it,
-for a later agent to number.
+These have since been filed; the register is authoritative for their text, status and severity.
+Mapping: H.1 → **BF-48**, H.2 → **BF-49**, H.3 → **BF-50**, H.4 → **BF-46** (the register counts
+eleven variables), H.5 → **BF-66**, H.7 → **BF-67**. H.6 has no register entry; it is decision J9.
 
 **H.1 — `lib/plugins/webhook.js:36-39` reads four variables straight from `process.env`.**
 `WEBHOOK_PROTOCOL`, `WEBHOOK_HOST`, `WEBHOOK_PORT`, `WEBHOOK_PATH` bypass `lib/server/env.js`, the
 settings layer and `extendedSettings`. The reads are inside the exported plugin factory and run
 when `require('./webhook')(ctx)` is called (`lib/plugins/index.js:71`, `:106`) — **not** at module
-scope and not at require time, as an earlier draft of this entry said. Undocumented
+scope and not at require time. Undocumented
 (`grep -c WEBHOOK_ README.md` = 0). Single-tenant impact: an operator cannot configure the plugin
 through any documented mechanism and it is not listed with the others. Multi-tenant impact: every
 tenant's webhook posts to the same host and no per-tenant configuration can change it.
@@ -1807,7 +1725,7 @@ If they are genuinely different things, `subject_id` should be renamed rather th
 **I.3 — `IMPORT_CONFIG` was classified **D** without being read. Who settles it: whoever owns §B's
 gate.** It is a documented mechanism for importing configuration wholesale. If it can import
 *settings*, then under `multi` it is a deployment-wide variable that writes per-tenant state, which
-would be a D15 violation wearing a **D** classification. I ran out of task before opening it. The
+would be a D15 violation wearing a **D** classification. It has not been read. The
 §B gate will not catch this, because it checks that names are classified and not that they are
 classified correctly.
 

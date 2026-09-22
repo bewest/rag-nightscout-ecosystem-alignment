@@ -1,5 +1,9 @@
 # `ns-evaluator`: what a per-tenant evaluation loop actually needs
 
+> **Snapshot — research as of 2026-09-15, measured against `crm-seam-n` `c8b456a7`. Status: current — tenancy research, not on a shipping path; the three shipping defects it touched (register BF-31 `levels`, BF-28 `insulinage`, BF-29 `ENABLE`) are merged to dev in PR #8739 (2026-09-20, unreleased). Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) T4.4, [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
+*Audience: contributors.*
+
 **Task** T4.4 (D5). **Date** 2026-09-15. **Harness** `tools/qc/ns-evaluator-arm.js`
 (46 checks, 0 failed). **Checkout** `externals/work/crm-seam-n` @ `c8b456a7`.
 **Status** spike — a requirements list backed by running code, not an implementation.
@@ -60,6 +64,7 @@ the process** — and that text reaches push notifications. `language` itself is
 per-instance. *Evidence*: `arm:substrate` (`ctx.levels === b.levels` while
 `ctx.language !== b.language`). This is **BF-22** seen from the evaluator; the spike
 reproduces the shipping assignment rather than papering over it.
+[Correction 2026-09-22: the register files this defect as **BF-31** (merged to dev via PR #8739, unreleased); register BF-22 is an unrelated seam defect.]
 
 **REQ-6 · The store stays shared, by reference, on purpose.** D3: isolation is a
 per-transaction `set_config` on a pooled connection. A per-tenant store would be a
@@ -109,9 +114,8 @@ Under single tenancy this is unreachable: `data-loaded` fires only after a load,
 `dataloader.js:68` has always set `lastUpdated = Date.now()`. **A change-feed-driven
 evaluator has no such guarantee**, which is exactly the cold-tenant case.
 
-> **My first draft of this predicted the wrong thing and the check caught it.** I expected
-> a merely *stale* `ddata` to suppress too. It does not — both operands are absolute
-> epoch ms, so staleness is harmless. Pinned as its own check.
+A merely *stale* `ddata` does **not** suppress — both operands are absolute epoch ms, so
+staleness is harmless. Pinned as its own check.
 
 **REQ-12 · Snooze is measured in *data* time; ack is written in *wall* time.**
 `ack` writes `Date.now()` (`notifications.js:198`); the silence window is compared
@@ -125,8 +129,8 @@ schema has to choose one clock and say which.
 `sandbox.js:51`, and `lastEntry` (`:141`) silently drops any entry newer than it.
 *Evidence*: `arm:cold` — an sgv 60 s in the future evaluates to **nothing at all, with no
 error and no log**. **An evaluator that batches, replays or catches up a tenant must own
-`sbx.time`, and `serverInit` does not let it.** Found the hard way: an earlier draft of
-this harness seeded 60 s ahead and two checks passed for no reason.
+`sbx.time`, and `serverInit` does not let it.** A harness that seeds entries 60 s ahead passes checks vacuously for
+this reason; `arm:cold` guards against it.
 
 ### Ack/snooze — the actual blocker
 
@@ -213,6 +217,7 @@ the warn age (48 h) it requests level 1.
 Pre-existing, single-tenant, unrelated to tenancy. **Not fixed** — D12 keeps
 cgm-remote-monitor pristine and it is outside T4.4. Recommend a **backfix-register
 entry**.
+[Status 2026-09-22: filed as register **BF-28**, merged to dev via PR #8739 (2026-09-20), not released — 15.0.8 still has it.]
 
 ## 3. Verdict — and the shortest path to multitenant alarms being ON
 
@@ -267,7 +272,8 @@ What this spike did **not** exercise. Read these before quoting anything above.
   earlier corpus because `ENABLE` listed file names (`cannulaage`) rather than registered
   names (`cage`), and **nothing warns about an unknown name in `ENABLE`**. That draft
   reported `treatments` as display-only. Any ablation on this codebase should assert its
-  producers armed before trusting its negatives — `arm:slice` now does.
+  producers armed before trusting its negatives — `arm:slice` now does. [Status 2026-09-22:
+  the silent `ENABLE` defect is register **BF-29**, merged to dev via PR #8739, unreleased.]
 - **Two tenants, not 1,580.** No scheduling, partitioning, fairness, backpressure or
   wake/clone behaviour. {R}'s O(n²) merge/delta up to 81.2 ms is untouched here, and the
   `0.046 ms` evaluation figure is on a 1-sgv `ddata` — it is a floor, not a forecast.
@@ -285,10 +291,7 @@ What this spike did **not** exercise. Read these before quoting anything above.
 - The brief gave the worktree head as `29749d92`; `crm-seam-n` is at **`c8b456a7`**
   (`29749d92` is its grandparent — T4.2 has since landed on `seam/t4-n`). The spike ran
   against `c8b456a7`. Nothing in T4.2 touches the evaluation path.
-- The session environment named `crm-seam-m` as the working directory while the brief said
-  `crm-seam-n`, and warned that a sibling agent is running in `crm-seam-m`. **The brief
-  was followed**: all work is in `crm-seam-n`, and nothing in `crm-seam-m` was read or
-  written.
+- All work is in `crm-seam-n`; the sibling worktree `crm-seam-m` was neither read nor written.
 
 ---
 

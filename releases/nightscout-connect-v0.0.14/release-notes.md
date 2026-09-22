@@ -3,6 +3,12 @@
 **Status: DRAFT for maintainer review. Not published. The tag has not been pushed.**
 **Nightscout is not a medical device and nothing here is medical advice.**
 
+> **Status 2026-09-22: this version is not settled.** The connector's own developers have
+> separately prepared a different "0.0.14" with other changes (Glooko, LibreLinkUp and test
+> updates). Which changes go into which version has not been decided, so the contents and the
+> number of the release these notes describe may change. Nightscout 15.0.9 does **not** include
+> this connector release.
+
 > **These notes complement the generated changelog; they do not replace it.** The
 > changelog lists what merged. These notes say what you will **notice**, what you must
 > **do**, what to **check afterwards**, and what is still **broken**. If the two disagree,

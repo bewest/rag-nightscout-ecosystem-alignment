@@ -27,7 +27,7 @@
 
 A design report. Every SETTINGS_* variable, every plugin credential, which are
 secrets and which are not, what a tenant may override versus what the hoster
-pins. DELIVERED as section B of the tenant-owner config-surface document: 277
+pins. Delivered as section B of the tenant-owner config-surface document: 277
 distinct names, classified T / TS / D / B / X, measured against crm-seam at
 81a1f6ce.
 
@@ -38,19 +38,15 @@ research deliverable
 ## Who should review this, and why
 
 maintainer. The document is a DRAFT carrying sections marked DECISION that
-need a yes before T30-SCHEMA-CONFIG can start - so this item is a decision
-surface now, not an unstarted research task.
+need a yes before T30-SCHEMA-CONFIG can start; the item is a decision surface,
+not an unstarted research task.
 
 ## What was measured
 
 **`test -f docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`** &nbsp;·&nbsp; kind: `static`
 
-the deliverable exists. CORRECTED 2026-09-16 - this gate named
-docs/60-research/tenancy/tenant-config-surface-2026-09-15.md, which has never
-existed under that name or in that directory, so the item measured FAIL and
-read not-started while section B was written. A file-existence gate is weak on
-purpose; it is honest about being a presence check, where a "state: done"
-field would have been an assertion.
+the deliverable exists. A presence check only; it says nothing about whether
+the enumeration is complete or correct.
 
 ## What these gates do NOT prove
 
@@ -59,7 +55,7 @@ field would have been an assertion.
 - Nothing checks that the enumeration is COMPLETE. The only non-vacuous form
   is a differential: enumerate from the report, enumerate from
   lib/server/env.js by parsing, and require the two sets to agree - with a
-  planted extra variable as the control. The census script EXISTS, at
+  planted extra variable as the control. The census script exists, at
   section G.3 of the deliverable, and reproduces {"s1":70,"s2":51,
   "s3prefixes":37,"s4":208,"union":247} against crm-seam at 81a1f6ce. It is
   not checked in anywhere and nothing re-runs it, so the 247 is a transcript
@@ -71,16 +67,15 @@ field would have been an assertion.
   names are read directly and appear in no source; (3) twelve ADMIN_* /
   FEED_* names read by the hosted entrypoints appear in no source, no gap
   and no total; (4) webhook's four reads are inside the plugin factory, not
-  at module scope, as first published; (5) the per-group counts inside each
-  class are hand-expansions, not script output, and the document says so.
-  Completeness is therefore bounded by a method the document argues against
-  itself.
+  at module scope; (5) the per-group counts inside each class are hand-
+  expansions, not script output, and the document says so. Completeness is
+  therefore bounded by a method the document itself argues against.
 - Section A's DDL has never been executed against a PostgreSQL server, and
   two findings against it - the ?| operator being top-level only, and a
   CHECK passing when its expression is NULL, which lets a PARTIAL mmol
-  threshold override through - are read off PostgreSQL's documented
-  semantics rather than off a server. Those two are the first thing the
-  section A harness must test, and the second is about alarm thresholds.
+  threshold override through - are read-derived from PostgreSQL's documented
+  semantics, not run on a server. Those two are the first thing the section
+  A harness must test, and the second is about alarm thresholds.
 
 ## Evidence
 
@@ -89,17 +84,16 @@ field would have been an assertion.
 
 ## Notes carried on the item
 
-T3.0 is the largest correction owed in the programme. It does NOT block T3.3 -
-T3.3 landed first. It AMENDS T3.1, T3.2 and T3.3, which are all marked DONE-
-EXCEPT. RE-STATED 2026-09-16 - the enumeration this item asks for was written
-on 2026-09-15 and adversarially reviewed the same day, which corrected twelve
-claims including the surface total (277, not 258). What remains is not
-enumeration: it is the maintainer decisions the document defers, and the
-harnesses that would turn its numbers into measurements. The three decisions
-with the longest reach are where the tenant-owner API lives, what issues and
-verifies a tenant-owner credential, and whether D7's credential-free platform
-plane survives contact with Nocturne, which puts platform admin on the
-consumer API behind a platform_admin role instead.
+T3.0 is the largest correction owed in the programme. It does not block T3.3,
+which landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The
+enumeration was written and adversarially reviewed on 2026-09-15; the surface
+total is 277. What remains is not enumeration: it is the maintainer decisions
+the document defers, and the harnesses that would turn its numbers into
+measurements. The three decisions with the longest reach are where the tenant-
+owner API lives, what issues and verifies a tenant-owner credential, and
+whether D7's credential-free platform plane holds against Nocturne's design,
+which puts platform admin on the consumer API behind a platform_admin role
+instead.
 
 ---
 
@@ -110,4 +104,4 @@ consumer API behind a platform_admin role instead.
 - [ ] `make queue-status ID=T30-RESEARCH` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-21, against cgm-remote-monitor-official `74fc6619`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-22, against cgm-remote-monitor-official `74fc6619`.*

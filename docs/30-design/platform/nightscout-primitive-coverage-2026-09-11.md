@@ -1,6 +1,8 @@
 # Is there enough evidence for a unified primitive catalogue? A coverage assessment
 
-Date: 2026-09-11. Status: draft for maintainer discussion.
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current — the catalogue it assesses is `specs/sync/primitives.yaml`.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+
+Date: 2026-09-11.
 
 **Short answer: no, we had not done it — five documents referenced a set of
 primitives and none defined them. It is now built, and the evidence supports

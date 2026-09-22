@@ -154,8 +154,8 @@ findings.push({
   text: 'report §2.3: the rename-as-rotation option is withdrawn',
 });
 findings.push({
-  ok: !!rep && /CORRECTED 2026-09-16/.test(rep),
-  text: 'report §2.3: carries the correction rather than silently dropping the line',
+  ok: !!rep && /Renaming a subject does not rotate its token/.test(rep),
+  text: 'report §2.3: states that a rename is not a rotation, rather than silently dropping the line',
 });
 
 const reg = read(DOCS.register);

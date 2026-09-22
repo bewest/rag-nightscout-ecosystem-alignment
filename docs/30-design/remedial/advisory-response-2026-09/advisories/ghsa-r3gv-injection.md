@@ -1,6 +1,8 @@
 # GHSA-r3gv-x7fw-j2v5 — NoSQL operator injection in `find[...]`
 
-Register **BF-04**, **BF-70** (both fixed and merged to `dev` as PR #8743), **BF-71**, **BF-72**.
+**DRAFT — not applied.** Metadata and prose changes for the advisory UI; facts as of 2026-09-22.
+Internal cross-reference (not for pasting): register BF-04 and BF-70 (merged to `dev` as #8743,
+not released), BF-71, BF-72 (open).
 
 **Of the three proof-of-concepts, one stands, one is fixed, and one is not a privilege boundary.**
 This advisory needs the most editing of the five.
@@ -19,8 +21,8 @@ This advisory needs the most editing of the five.
 | PoC | claim | measured |
 |---|---|---|
 | **(B) `$where`** | server-side JavaScript execution | **stands.** Executes anonymously on **v15.0.8**. Refused with HTTP 400 on `dev` since PR #8743 |
-| **(A) `find[dateString][$ne]=x`** — the advisory's "primary evidence", a full-history PHI dump | date-window bypass → full history | **not a privilege boundary.** The allowlisted, documented `find[date][$gte]=0` returns the *identical* records under the *identical* authorization, and every form is **401 under `AUTH_DEFAULT_ROLES=denied`**. The full-history read is what the shipped `readable` default *means*, not something this code path grants. The date window is a paging convenience whose own source comment reads `// TODO: discuss/consensus on right value/ENV?` — it was never an access control. Filed as **BF-71**, `low` |
-| **(C) `$regex`** | blind exfiltration of free-text PII | **real, but it is an availability defect, not the extraction described.** `$regex` on a field is in API v1's accept set *by design*; it reaches mongod with no anchoring, length or complexity bound. Measured against 20 000 seeded entries on mongod 7.0.43: control **22 ms**, three nested-quantifier patterns **60 s / 65 s / 71 s**, stable across two runs. One unauthenticated request, no token, on the shipped default. Filed as **BF-72** |
+| **(A) an operator on the date-string field** — the advisory's "primary evidence", a full-history PHI dump | date-window bypass → full history | **not a privilege boundary.** An ordinary, allowlisted, documented date-range query returns the *identical* records under the *identical* authorization, and every form is **401 under `AUTH_DEFAULT_ROLES=denied`**. The full-history read is what the shipped `readable` default *means*, not something this code path grants. The date window is a paging convenience whose own source comment reads `// TODO: discuss/consensus on right value/ENV?` — it was never an access control. Recorded internally as `low` |
+| **(C) `$regex`** | blind exfiltration of free-text PII | **real, but it is an availability defect, not the extraction described.** `$regex` on a field is in API v1's accept set *by design*; it reaches mongod with no anchoring, length or complexity bound. Measured against 20 000 seeded entries on mongod 7.0.43: control **22 ms**, three patterns of the catastrophic-backtracking class **60 s / 65 s / 71 s**, stable across two runs. One unauthenticated request, no token, on the shipped default. **Open, no fix** |
 
 ## Recommended severity
 

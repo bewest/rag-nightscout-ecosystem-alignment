@@ -1,4 +1,20 @@
-Thank you for this report — it is a real defect and we have merged a fix into review.
+# DRAFT — not sent
+
+*Contributor-facing wrapper; the text below the rule is the outgoing comment.*
+
+| | |
+|---|---|
+| post to | advisory GHSA-gjhc-pc29-r3m6 on nightscout/cgm-remote-monitor, as a comment to the reporter |
+| from | Nightscout Foundation |
+| facts as of | 2026-09-22: fix merged to `dev` as #8744 on 2026-09-21; not in any release; 15.0.8 affected; `master` 308 commits behind `dev` |
+
+Paste everything below the rule as-is. Re-measure the commit count on the day it is sent
+(`git rev-list --count master..dev` in a current clone) and update the one sentence that quotes it.
+
+---
+
+Thank you for this report — it is a real defect, and a fix has been merged into our development
+branch.
 
 We reproduced it on v15.0.7, v15.0.8 and `dev`, against mongod 7.0.43, in both authorization
 configurations. Everything below is measured rather than inferred, and two of the items are
@@ -51,7 +67,8 @@ instance — and that the hardening they applied does not help.
 We propose scoring it `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N` = **7.5**, stated as scoring
 the hardened configuration.
 
-**The fix** is open as a pull request against `dev`. It gates the handler on the authorization the
+**The fix** was merged into `dev` as nightscout/cgm-remote-monitor#8744 on 2026-09-21. It is
+**not yet in a release**, so 15.0.8 is still affected. It gates the handler on the authorization the
 file already computes: a socket that authorized keeps its resolved read permission, and one that
 never did is resolved through the same `AUTH_DEFAULT_ROLES` defaults the REST surface uses. A
 `readable` instance therefore keeps serving anonymous clients exactly as before, and a `denied`
@@ -60,7 +77,7 @@ change turns that test red with canaried device-status data arriving at a socket
 already resolved as unable to read.
 
 **On timing.** We will leave `patched_versions` empty until a release actually carries the fix.
-`dev` is unreleased and `master` is 299 commits behind it, so naming a commit or a pull request
+`dev` is unreleased and `master` is 308 commits behind it, so naming a commit or a pull request
 would tell operators on 15.0.8 that they have somewhere to upgrade to, and they do not yet.
 
 Please tell us if you disagree with the range correction or with separating reachability from

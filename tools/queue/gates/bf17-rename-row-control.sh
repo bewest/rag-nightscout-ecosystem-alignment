@@ -47,8 +47,8 @@ import io, sys
 notes_path, prbody_path = sys.argv[1], sys.argv[2]
 
 notes = io.open(notes_path, encoding='utf-8').read()
-anchor = "> | **Delete the user and create a new one**"
-row = ("> | **Rename the user** (in the admin screen) | That one user's token "
+anchor = "| **Delete the user and create a new one**"
+row = ("| **Rename the user** (in the admin screen) | That one user's token "
        "changes. Everything using the old token stops working until you give it "
        "the new one. |\n")
 if notes.count(anchor) != 1:

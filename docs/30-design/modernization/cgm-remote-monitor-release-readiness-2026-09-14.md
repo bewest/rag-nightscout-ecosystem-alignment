@@ -1,7 +1,15 @@
 # cgm-remote-monitor: release readiness and modernization sequencing
 
-Written 2026-09-14, re-measured 2026-09-21. Status: evidence for
-maintainer discussion. Companion to
+*Contributor- and maintainer-facing.*
+
+**Snapshot — describes 2026-09-21, `origin/dev` `59430336`.** Status: **superseded for 15.0.9**
+by [release readiness for 15.0.9](release-readiness-15.0.9-2026-09-22.md) (measured against
+`origin/dev` `74fc6619`); current decisions: the adopted release train in
+[the versioning policy §8.3](semver-and-release-versioning-policy-2026-09-15.md#83-the-release-train),
+item state in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) (`RT-*`), and the open
+train defect BF-64 in the [backfix register](../remedial/nightscout-backfix-register.md).
+
+Companion to
 [the adoption roadmap](../nightscout-adoption-roadmap-2026-09-11.md), which sequences
 ecosystem work; this document sequences *release* work in the hub itself.
 
@@ -422,6 +430,11 @@ change to take cut 1**.
 
 `chore/retire-legacy-dexcom-bridge` and `chore/retire-mmconnect` delete two CGM ingestion
 paths. They are not equally risky, and the difference decides the schedule.
+
+[Note 2026-09-22: the mmconnect caveat below is the maintainer's operational knowledge, not a
+measurement; BF-44/BF-45 are not yet re-graded on it; and whatever mmconnect's state, leftover
+`MMCONNECT_*` configuration without `CONNECT_COUNTRY_CODE` produces a whole-site boot error on
+cut 4 (BF-61). The current statement is the versioning policy §3.5.]
 
 **MiniMed/mmconnect is already broken** and has been for some time — maintainer knowledge,
 not measured here, since it fails at the CareLink vendor API that no local test reaches. If

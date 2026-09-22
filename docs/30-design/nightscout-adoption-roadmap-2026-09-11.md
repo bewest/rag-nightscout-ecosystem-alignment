@@ -1,5 +1,9 @@
 # Adoption roadmap: who builds what, in what order
 
+> **Snapshot — describes each project's development branch on 2026-09-11.** Status: current as
+> the cross-project (hub-and-spoke) adoption proposal; not the cgm-remote-monitor release order,
+> which is in [release-readiness-15.0.9-2026-09-22.md §5](modernization/release-readiness-15.0.9-2026-09-22.md#5-the-road-after-1509).
+
 Date: 2026-09-11. Status: draft for maintainer discussion. Sixth in a series;
 sequencing companion to
 [the hub-and-spoke sync design](./platform/nightscout-hub-sync-architecture-2026-09-11.md)

@@ -1,5 +1,7 @@
 # GT4: semver classification of every changeset in flight
 
+> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d` and `origin/master 92d08342` (15.0.8). Status: partly superseded — most Phase 0 branches classified here have since merged to dev (#8733–#8746, all unreleased; `bf/auth` and the connect pin are fixed on branch, not merged); the classification method, policy (§7) and cut analysis stand. Counts such as §4's are point-in-time. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), `queue/work-queue.yaml`.**
+
 Date: 2026-09-15. Status: **draft evidence for maintainer decision.** Contributor-facing.
 Companion to [release readiness](../../30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md)
 and [Phase 0 PR sequencing](../../30-design/remedial/phase0-pr-sequencing-2026-09-15.md).
@@ -26,9 +28,9 @@ than the absolute figures (house rule 9); the figures are as of the refs above.
 
 ---
 
-## 0. Corrections to the brief and to repository documents
+## 0. Findings that change a conclusion
 
-Lead with these. Four of them change a conclusion.
+Four of these change a conclusion.
 
 ### 0.1 `master` does **not** pin `nightscout-connect` with a semver range
 
@@ -46,7 +48,7 @@ Measured, `origin/master:package.json` reads:
 `^0.0.12` was master's pin, but two commits replaced it: `97a603fb` (`^0.0.12`) →
 `a91e8ee4` (`github:nightscout/nightscout-connect#v0.0.13`) → `561974de` (the v0.0.13 tag
 tarball). The `^0.2.12` that does appear on master and dev is **`share2nightscout-bridge`**,
-a different package; the two look alike and were probably conflated.
+a different package.
 
 Consequences:
 
@@ -254,7 +256,7 @@ application; each is restated in §8.
 | 9 | `bf/auth` `a26ba416` | S1, S3 | A caller rotating `X-Forwarded-For` is now throttled; behind a shared proxy, failing clients share one throttle bucket | **minor** | read | No successful request is ever delayed (the sleep moved to the failure path), so no working client is affected. Closes a bypass. ⚖ — see §3.4 |
 | 10 | `bf/auth` `64db1f35` (storage allow-list) | **S4** | Editing a subject or role **discards any field not in the allow-list**; existing stored `accessToken`/`digest` values are dropped on load | **major** | read | A document loses data on an operation that is not a delete. Intended and right for the token; unbounded for anything else a tool has stored. See §3.4 |
 | 11 | `bf/auth` `64db1f35` (`/subjects` gains `notes`) | S1 | `GET /api/v1/subjects` response gains a `notes` field; the admin edit dialog stops blanking notes | **minor** | read | Additive response field. |
-| 12 | `bf/coercion` `88d1f8a4` | **S1** | Filters that returned `[]` now return rows; decimal bounds stop rounding down; `find[sgv][$exists]=true` stops being inverted | **minor** | measured | Executed old vs new; see §3.2. 158 coercions over 5 collections. No operator action needed; every changed answer is more correct — **except** `$exists=false`, see §9.1 |
+| 12 | `bf/coercion` `88d1f8a4` | **S1** | Filters that returned `[]` now return rows; decimal bounds stop rounding down; `find[sgv][$exists]=true` stops being inverted | **minor** | measured | Executed old vs new; see §3.2. 158 coercions over 5 collections. No operator action needed; every changed answer is more correct — **except** `$exists=false`, see §9.1 [Correction 2026-09-22: the merged form, #8737, fixes `$exists=false` (BF-40); see §9.1] |
 | 13 | `bf/reads` `4a398d47` | S1 | `GET /api/v1/count/entries/where` goes from `[]` to `[{"_id":null,"count":288}]` | **minor** | read | An endpoint that returned nothing now returns numbers. |
 | 14 | `bf/reads` `c8fb536b` | none | Count requests stop printing the filter and its values to stdout | **patch** | read | Log removal. Also removes a data-exposure path. |
 | 15 | `bf/reads` `399dc283` | S1 | v3 paging adds `_id` as a final sort key; documents stop being skipped and repeated across page boundaries | **patch** | read | Only the order of *tied* documents changes, which was already non-deterministic. ⚖ — a client that depended on the accidental tie order is affected. |
@@ -594,8 +596,14 @@ cut 5 as the adopted plan proposes, the dependency release is minor overall.
 
 ### 5.4 Cut 4 `chore/mime-exposure-review` — **major**, and sharper than described
 
-The brief calls this the clearest major candidate. It is, and the measurement found three
+Cut 4 is the clearest major candidate, and the measurement found three
 things worse than "two ingestion paths are deleted".
+
+[Correction 2026-09-22: "deletes two *working* ingestion paths" needs a caveat. The maintainer
+states (2026-09-21, operational knowledge, not measured here) that mmconnect /
+minimed-connect-to-nightscout has been broken for some time, and that legacy Dexcom Share is
+intended to map to nightscout-connect. The boot-outage mechanisms in (a) and (b) below are measured
+and stand regardless; BF-44/BF-45 were graded assuming mmconnect is live and have not been re-graded.]
 
 **(a) Every MMCONNECT operator's entire site stops working, not just MiniMed ingestion.**
 I executed the shipping shim from the branch:
@@ -928,6 +936,12 @@ highest id at the moment it writes.
 
 ### 9.1 `find[field][$exists]=false` is inverted by `bf/coercion` on the five previously-walked fields
 
+[Correction 2026-09-22: this is BF-40. The merged form of the coercion work, #8737 (merged to dev
+2026-09-18, unreleased), **does fix it**: `$exists` operands go through `BOOLEAN_OPERANDS` /
+`readBooleanOperand` in `lib/server/query.js` (present on `official/dev`, checked 2026-09-22). The
+inversion below describes the `bf/coercion` branch as measured on 2026-09-15; the defect remains
+live on 15.0.8 in its broad form until released.]
+
 **Where:** `externals/work/crm-bf-coercion/lib/server/query-coercion.js:90` (`isValueLeaf`)
 with `lib/server/query.js:288`.
 
@@ -982,6 +996,8 @@ Executed: an operator with `MMCONNECT_USER_NAME`/`MMCONNECT_PASSWORD` and no
 `ctx.bootErrors`; `app.js` then serves the boot-error view for `*` and `server.js` skips
 websocket setup. The whole deployment is down, not just MiniMed ingestion. The same happens
 to any operator running `BRIDGE_*` and `MMCONNECT_*` together, which works today.
+[Correction 2026-09-22: "works today" assumes the legacy mmconnect path still ingests; the
+maintainer states it has been broken for some time (operational knowledge, not measured here).]
 
 The shim itself states the country cannot be inferred, so **no MMCONNECT operator can
 upgrade without manual reconfiguration**. There is no release in which they are warned
@@ -1038,6 +1054,5 @@ This is a draft for maintainer decision, not a decision.
 4. **§9.1 should be confirmed against a real MongoDB server**, not only against `mingo`.
    `mingo` is the project's differential oracle by D8, but `$exists` operand coercion is
    exactly the kind of thing a server and an oracle can differ on.
-5. **§0.1 needs a one-line fix** to `phase0-pr-sequencing-2026-09-15.md:388`. I have not
-   edited that document; it belongs to another session's work and house rule 6 means the
-   fix needs a contradiction sweep across every other statement of the pin.
+5. **§0.1** — `phase0-pr-sequencing-2026-09-15.md` now states the master pin correctly
+   (checked 2026-09-22).

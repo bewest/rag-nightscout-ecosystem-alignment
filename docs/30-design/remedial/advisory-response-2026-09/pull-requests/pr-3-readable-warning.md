@@ -1,5 +1,11 @@
 # PR 3 — the world-readable warning
 
+> **Record of what was sent — do not re-send.** Opened and merged into `dev` as
+> nightscout/cgm-remote-monitor #8746 on 2026-09-21 (merged head `91ed8d95`: `74731433` plus an integration merge of `dev`, not re-measured). Not released:
+> `v15.0.8` does not carry it. The `## BODY` below is byte-identical to the live PR body
+> (checked 2026-09-22). The invocation block is kept as the record of how it was opened; the
+> worktree paths and `--body-file` names in it are local to the author's machine.
+
     repo   nightscout/cgm-remote-monitor
     base   dev
     head   bf/readable-warning           (worktree externals/work/crm-adv-config)
@@ -11,10 +17,9 @@
       --title "The world-readable warning never fires on the one configuration that is also world-writable" \
       --body-file pr-3-readable-warning.body.md
 
-NEEDS A HUMAN DECISION FIRST: this adds a second notice wording for the
-`readable careportal` configuration. Plain `readable` is unchanged byte for
-byte. The wording is in "The second notice" below; the PR offers to drop it
-and ship only the condition fix.
+Decision taken before opening: the maintainer approved the second notice wording for the
+`readable careportal` configuration, and it merged with the PR. Plain `readable` is unchanged
+byte for byte.
 
 ---
 ## TITLE

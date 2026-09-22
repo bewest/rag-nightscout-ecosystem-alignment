@@ -1,5 +1,7 @@
 # T2.3 — the nine operators in SQL, and what turning `re` on found
 
+> **Snapshot — research as of 2026-09-14, measured against the `externals/work/crm-seam/` checkout (the doc names no commit), mongod 7.0.43, PostgreSQL 16.14. Status: current — tenancy research, not on a shipping path; §5's "mongod is flat" result is narrower than it reads (see the correction there). Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) T2.3; shipping `$regex` exposure: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) BF-72.**
+
 Date: 2026-09-14. Status: findings, for whoever lands the seam's PostgreSQL adapter.
 **Verification only — no shipping code was changed by this work.** `externals/work/crm-seam/`
 belongs to another branch and was read, never written.
@@ -229,6 +231,8 @@ Two things follow, and the second is a correction to a premise the plan carries:
    backtrack this way at all. {M} §6.5's ReDoS framing is the right worry pointed at the wrong
    tier — it is live for anything that evaluates a filter **in the Node process**, which is this
    harness and any future in-process filtering, and not for mongod as measured.
+
+[Correction 2026-09-22: the flat mongod columns hold only for the textbook family measured here, which PCRE2 optimises. They do not show that mongod's `$regex` is safe. Register **BF-72** (reproduced; open, live on 15.0.8 and on dev, no fix yet) is an unauthenticated denial of service on the shipping v1 API: a caller-supplied `$regex` with no anchoring, length or complexity bound can cost minutes of database CPU for one request. Mechanism only here; the working probe is held outside version control.]
 
 What remains a genuine database exposure is the other half of the same problem, which nothing
 here measures: **an unanchored regex is a full collection scan**, and that cost scales with the

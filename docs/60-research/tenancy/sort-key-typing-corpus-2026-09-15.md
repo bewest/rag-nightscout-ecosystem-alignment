@@ -1,5 +1,7 @@
 # Are sort keys really "one type in practice"? — measured against the corpus
 
+> **Snapshot — research as of 2026-09-15; no commit anchor named (verifies a comment in the T2.5 seam-branch `pgCollection/sql.js`; corpus snapshots 2026-04-01 and 2026-04-26). Status: current — tenancy research, not on a shipping path. Current facts: [ordering design](../../30-design/tenancy/nightscout-seam-ordering-translation.md), [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-19).**
+
 Date: 2026-09-15. Status: verification of a claim made in shipped T2.5 code. **Read-only — no
 shipping code changed.** Companion to
 [Ordering across the seam](seam-ordering-and-pagination-2026-09-14.md), which established *that*
@@ -322,6 +324,10 @@ The comment's parenthetical is the part that misleads. Something closer to the m
    table even builds its generated column *without* the guard
    (`date numeric GENERATED ALWAYS AS ((doc->>'date')::numeric) STORED`), so it is not the shipped
    shape. **The ordering that actually ships has never been run against mongod on mixed-type data.**
+   [Note 2026-09-22: a guarded-column arm was added the same day,
+   [`tools/qc/typeguard-arm.js`](../../../tools/qc/typeguard-arm.js); results are summarised in the
+   2026-09-15 update to [the ordering report](seam-ordering-and-pagination-2026-09-14.md) §2 and in
+   the ordering design §3.1b.]
    Adding a fifth arm that mirrors the emitted DDL, with a `null`+`number` fixture and a
    `string`+`number` fixture, would turn §5's derivation into a measurement. That is the single
    highest-value follow-up here, and it is small.

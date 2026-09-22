@@ -1,7 +1,11 @@
 # Deployable components: entrypoints, program structure, and what an operator actually runs
 
-Date: 2026-09-14. Status: draft for maintainer discussion.
-Companion to [Nightscout multitenancy: evidence and options](nightscout-multitenancy-discussion-2026-09-09.md)
+*Contributor-facing.* **Living design — the only statement of the deployable-component
+decomposition.** Written 2026-09-14; its recommendation was adopted as **D5** (four hosted
+entrypoints plus `single`) and **D6** (the change feed), and is extended by **D7** (`ns-admin`,
+the platform-admin plane) and **D16** (three listeners by audience) — [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+Task state lives in [`queue/QUEUE.md`](../../../queue/QUEUE.md). Measurements carry their own dates
+and are post-#8733. Companion to [Nightscout multitenancy: evidence and options](nightscout-multitenancy-discussion-2026-09-09.md)
 and [What sets K](../../60-research/tenancy/multitenancy-k-and-residency-2026-09-14.md).
 
 **Nothing here is a proposal to merge.** This answers a specific question: given everything
@@ -9,12 +13,10 @@ the experiments measured, *what are the deployable units*, what goes in each, ho
 talk to each other, and which arrangement is cheapest for an operator to run.
 
 **Baseline.** [PR #8733](https://github.com/nightscout/cgm-remote-monitor/pull/8733) — the
-two quadratic scans over the treatment window — is treated as **landed**, not as a branch of
-the decision tree. It is open against `dev` with differential tests over 636 randomised
-fixtures and a measured 6.3×–43× improvement. Every number below is post-#8733.
-
-> **The plan built on this now lives in [Multitenancy execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md)** — decisions D1–D9, phased tasks, and the
-> context each task needs. This document remains the *why*; that one is the *what next*.
+two quadratic scans over the treatment window, with differential tests over 636 randomised
+fixtures and a measured 6.3×–43× improvement — is the baseline. It is **merged** to `dev`
+(2026-09-17) and not released (`origin/master` = `15.0.8`). Every number below is post-#8733.
+This document is the *why*; the [execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md) is the decisions and the tasks.
 
 **Objective function, as stated by the maintainer: minimise operator cost first, then
 maximise performance.** So the units here are processes, gigabytes and database operations
@@ -24,9 +26,11 @@ per second — not milliseconds.
 
 ## TL;DR
 
-**Recommendation: three hosted entrypoints — `api` (stateless), `evaluator` (change-driven),
-`realtime` (socket fan-out) — plus `vcpool`, over one shared core, with the existing
-single-tenant server as a fourth entrypoint that changes nothing.** At 10,000 tenants that is
+**Recommendation (adopted as D5): four hosted entrypoints — `api` (stateless), `evaluator`
+(change-driven), `realtime` (socket fan-out) and `vcpool` — over one shared core, plus the
+existing single-tenant server as `single`, which changes nothing.** D7 adds `ns-admin` on its own
+unrouted interface and D16 a tenant-owner listener, `ns-tenant-admin`; neither changes the cost
+model below. At 10,000 tenants that is
 **5 processes, 0.5 GB and 633 database operations per second**, against **13–17 processes**,
 5–27 GB and 4,285–6,183 ops/s for the resident-shard options — process counts now measured
 with a real database in the loop (EXP-MT-026), not modelled.
@@ -44,7 +48,8 @@ latency, decide it:
 | 3 | **API v3 already holds no resident state.** Zero `ctx.ddata` references in `lib/api3/`; its "cached" collection wrapper is write-through only. The stateless tier does not have to be built — it has to be *given its own entrypoint* | {R} §12.1 |
 
 **The two things that made residency look necessary both dissolve on measurement.** Alarms
-for idle tenants need a **50.6 KB transient** working set, not a resident `ddata` — and its
+for idle tenants need a small **transient** working set — measured at **32.7 KB and 1.94 ms p50 per
+tenant per evaluation** (2026-09-15, [plan §7b](nightscout-multitenancy-execution-plan-2026-09-14.md)), not a resident `ddata` — and its
 only durable part is ack/snooze state, a few hundred bytes that belong in storage anyway. The
 socket delta needs a *change*, which both storage engines already produce.
 
@@ -67,15 +72,14 @@ data, fail-closed is the deciding property.
 never materially more expensive to start and is 2–3× cheaper by 10,000. There is no scale at
 which it is the wrong first move.
 
-> **EXP-MT-026 has now been run** with MongoDB 7.0 in the loop, including real RTT via
-> `tc netem` —
+> **EXP-MT-026** ran with MongoDB 7.0 in the loop, including real RTT via `tc netem` —
 > [the report](../../60-research/tenancy/exp-mt-026-database-in-the-loop-2026-09-14.md). **The
-> recommendation survives and its margin widens**: the measured database cost moves A from 13
-> to **17** processes and B from 10 to **13**, leaving C at **5**. The assumption the model
+> recommendation holds with a wider margin**: the measured database cost puts A at **17**
+> processes and B at **13**, leaving C at **5**. The assumption the model
 > rested on is confirmed — CPU per operation grows **2.5×** between loopback and 50 ms RTT
 > while wall time grows ~75×, and event-loop delay p50 stays flat at 1.1 ms — so **process
 > count is RTT-insensitive** and what RTT buys you is a pool-depth requirement (~100 in flight
-> at 50 ms), not more machines. Two things changed: a typed cache hit is **10×** cheaper than
+> at 50 ms), not more machines. Two further results: a typed cache hit is **10×** cheaper than
 > the equivalent query (0.02 vs 0.207 ms CPU), making §2.1's response cache load-bearing
 > rather than optional; and **§6.7's A′ storage rung does not scale** — `mongod` holds ~3.7 MB
 > of non-evictable RSS per tenant database containing zero documents, more than the app-side
@@ -83,7 +87,7 @@ which it is the wrong first move.
 > not of multitenancy**: one logical database with a tenant discriminator holds **104
 > WiredTiger files in total at 400 tenants**, flat, with the planner examining 10 keys per
 > 10-document read at every scale (EXP-MT-011b). The storage shape these components sit on
-> should be **shared-collection with a storage-enforced predicate**, not database-per-tenant.
+> is **shared-collection with a storage-enforced predicate**, not database-per-tenant (D2, D3).
 >
 > What remains unmeasured, and it is not small: **no TLS and no authentication** were in the
 > loop, and both land on exactly the CPU-per-operation term the recommendation depends on.
@@ -112,7 +116,7 @@ Counted against `dev` @ `a8888f0d`, every server-side reader of resident state
 | API v1 `Last-Modified` | latest SGV | request | — |
 | Loop remote API (`server/loop.js`) | profile only | request | — |
 | `/alarm` socket namespace | **none** — pure fan-out off the bus | change | sockets |
-| Alarm evaluation (18 plugins) | **50.6 KB transient** + durable ack/snooze | change | CPU |
+| Alarm evaluation (18 plugins) | **transient slice** (32.7 KB measured, plan §7b) + durable ack/snooze | change | CPU |
 | API v2 `summary` | full `ddata` | request | CPU |
 | `dataUpdate` socket delta | full `ddata` **+ prior snapshot** | change | CPU |
 | Vendor connectivity | 419 KB/actor session state | timer | **vendor rate limit** |
@@ -137,12 +141,12 @@ graph TB
     ROUTER["<b>router</b><br/>Host to tenant; token claim must match.<br/>Stateless. Grows with request rate,<br/>not with tenant count."]
 
     API["<b>ns-api</b> — stateless<br/>api3 (all), api1 CRUD + reads, api2 summary,<br/>auth, tenant resolution<br/><i>no tenant affinity · scale to zero · any replica</i>"]
-    EVAL["<b>ns-evaluator</b> — change-driven<br/>alarm evaluation, plugin tier, notification delivery<br/><i>materialise 50.6 KB, evaluate, discard</i><br/><i>durable state: ack/snooze only</i>"]
+    EVAL["<b>ns-evaluator</b> — change-driven<br/>alarm evaluation, plugin tier, notification delivery<br/><i>materialise ~33 KB, evaluate, discard</i><br/><i>durable state: ack/snooze only</i>"]
     RT["<b>ns-realtime</b> — fan-out<br/>socket.io, per-tenant rooms, /alarm namespace<br/><i>the delta IS the change event</i><br/><i>stateful only in connections</i>"]
     VC["<b>ns-vcpool</b><br/>nightscout-connect actors<br/><i>split for egress identity,<br/>not for K</i>"]
 
-    STORE[("<b>storage</b><br/>tenant-scoped, RLS or db-per-tenant")]
-    FEED{{"<b>change feed</b><br/>Mongo change stream (resume token)<br/>or Postgres replication slot"}}
+    STORE[("<b>storage</b><br/>PostgreSQL, shared tables,<br/>tenant_id + RLS (D2, D3)")]
+    FEED{{"<b>change feed</b><br/>replication slot + NOTIFY<br/>+ bounded poll (D6)"}}
 
     UP --> ROUTER --> API
     FOL --> ROUTER
@@ -187,11 +191,11 @@ database operation. Two honest consequences:
   language needed, exactly what {M} §7.6 already scoped keyv for — and it is a cache: a miss
   costs a query, not a correctness failure.
 
-**Fix `lib/api/entries/index.js:459-500` before anything else touches it.** `?count=10`
-costs 0.83 ms or 0.02 ms for a byte-identical response depending on whether the caller passed
-`find[type]=sgv`, because the untyped branch deep-clones the whole 48-hour array before
-slicing ({R} §12.2). A **42× overcharge on the ecosystem's busiest endpoint**, fixed by
-slicing before cloning, which preserves the defensive property exactly.
+**`lib/api/entries/index.js:459-500`.** `?count=10` cost 0.83 ms or 0.02 ms for a
+byte-identical response depending on whether the caller named the entry type, because the
+untyped branch deep-cloned the whole 48-hour array before slicing ({R} §12.2) — a **42×
+overcharge on the ecosystem's busiest endpoint**. The slice-before-clone fix (T0.2, measured
+0.837 → 0.025 ms) is **merged** to `dev` via PR #8740 and not released.
 
 **Storage shape.** These components assume one logical store with a tenant discriminator, not
 database-per-tenant. EXP-MT-011b measures the namespace cost of that choice as flat (104 files
@@ -205,8 +209,9 @@ that takes arbitrary client queries.
 
 ### 2.2 `ns-evaluator` — change-driven
 
-**Holds:** a 50.6 KB working set per evaluation, discarded immediately. **Woken by:** the
-change feed. **Binds on:** CPU, at 0.92 ms per evaluation.
+**Holds:** a transient working set per evaluation (32.7 KB, plan §7b), discarded immediately.
+**Woken by:** the change feed. **Binds on:** CPU — 0.92 ms per evaluation in EXP-MT-026's
+model; 1.94 ms p50 measured over the full alarm plugin set on a realistic fixture (plan §7b).
 
 This is the component that makes residency unnecessary, so it is worth being precise about
 what it needs. Surveying all 18 plugins implementing `checkNotifications` ({R} §12.5): the
@@ -217,11 +222,11 @@ devicestatus, the profile, and a DIA window of treatments for `boluswizardprevie
 At 10,000 tenants uploading every five minutes: **33 evaluations/s, 31 ms/s of CPU, one
 process.**
 
-**The one piece of durable state is ack/snooze**, and this is where {M} §3.1's blocker
-finally resolves properly rather than incidentally. `lib/notifications.js:15`'s module-scope
-`alarms` map has no tenant dimension; the modernization branch moved it inside `init()` for
-teardown reasons. In this design it does not live in process memory at all — it is a
-`(tenant, level, group)` row in storage, which is what lets **any** evaluator replica handle
+**The one piece of durable state is ack/snooze**, which is where {M} §3.1's blocker resolves.
+`lib/notifications.js:15`'s module-scope `alarms` map has no tenant dimension on `dev`; the
+modernization branch moved it inside `init()` for teardown reasons. In this design it does not
+live in process memory at all — it is a `(tenant, level, group)` row in storage (built as T4.4a,
+`lib/storage/ack-store.js`, on the unpublished seam branch; see plan Phase 4), which is what lets **any** evaluator replica handle
 **any** tenant's change. Alarm state surviving a process restart is a safety property that
 happens to be free here and is genuinely hard in a resident design.
 
@@ -237,9 +242,11 @@ and always warm; 266 ms of process start is paid once per replica, not once per 
 
 Socket.IO with per-tenant rooms and the `/alarm` namespace. `lib/api3/alarmSocket.js` is
 already independent of `calcdelta` — it is bound to `ctx.bus.on('notification')` — so alarm
-fan-out moves here unchanged except for tenant rooms. It currently emits to the whole
+fan-out moves here unchanged except for tenant rooms. On `dev` it emits to the whole
 namespace with no room at all, which is a worse leak than `DataReceivers` and must be fixed
-before any second tenant exists ({M} §3.4).
+before any second tenant exists ({M} §3.4). Tenant rooms are built as T3.5 on the seam branch; the
+single-tenant form of the leak is BF-75/BF-76 (GHSA-8849), **merged** to `dev` via #8745 and not
+released.
 
 **`calcdelta` does not move here; it goes away.** At 6,000 sockets and 33 changes/s the emit
 cost is 1.8 ms/s — three orders of magnitude below the 1.0 ms/tenant/cycle that `calcDelta`
@@ -259,10 +266,12 @@ which is a resource no other component budgets and which no harness here can mea
 (EXP-MT-051). Its failure modes — thundering herds, backoff storms, vendor outages — are also
 unrelated to anything else's.
 
-Two changes that need no vendor access and should land regardless: **start jitter** (800
-actors fire their first request inside one second, on every restart and deploy, because
-`run()` has no jitter) and **interval jitter** (they stay phase-locked on the same five-minute
-boundary afterwards).
+Two changes that need no vendor access: **start jitter** (800 actors fire their first request
+inside one second, on every restart and deploy, because `run()` has no jitter) and **interval
+jitter** on the unaligned branch. The later aligned cycles are already spread by an 18-second
+random window in each vendor driver (measured, plan T0.4). Both windows exist as
+`CONNECT_START_JITTER_MS` / `CONNECT_INTERVAL_JITTER_MS`, default `0`, on connector PR #68
+(open); the pool must set them.
 
 ### 2.5 `ns-single` — the existing server, unchanged
 
@@ -341,8 +350,10 @@ question that separates the candidates is *what happens while the consumer is no
    carries no correctness weight, so its lossiness is irrelevant.
 3. **A bounded aggregate poll is the non-optional backstop.** Not today's per-tenant poll —
    *one* query for "which tenants have a reading newer than their last evaluation", bounded by
-   a `date` index: **1.02 ms per sweep** whatever the tenant count, against 13.7 ms unbounded
-   and 20.9 ms at cold start. At one sweep per 30 s that is 0.03 ms/s. **Slots get dropped and
+   a `date` index: **1.02 ms per sweep** at 400 tenants, against 13.7 ms unbounded and 20.9 ms
+   at cold start. [Built as T4.2: as published the sweep is O(registered tenants) — 5.2 ms at
+   3,200 — and is flat only with a global, non-tenant-leading index the DDL emitter cannot yet
+   express (T2.1a); with it, cost is bounded by rows written since the last sweep. Plan Phase 4.] At one sweep per 30 s that is 0.03 ms/s. **Slots get dropped and
    consumers get partitioned; for an alarm path, "the feed broke and nobody noticed" is the
    failure that matters.** It also handles cold start, where every watermark is behind.
 
@@ -505,7 +516,8 @@ fine. **For alarm delivery it is not** — an evaluator that was restarting when
 must still fire. Use a replication slot (with slot monitoring) or a Mongo change stream, and
 treat `NOTIFY` as an optimisation layered on top.
 
-**One constraint on the A′ storage rung that {M} §6.7 does not note.** Change streams are
+**One constraint on the A′ storage rung that {M} §6.7 does not note** (A′ — database-per-tenant
+— was not adopted; D2). Change streams are
 scoped per database, so database-per-tenant means N cursors — reintroducing exactly the
 per-tenant resource multiplication A′ exists to delete. It is resolvable: `client.watch()`
 opens one deployment-level stream across all databases and each event carries `ns.db` for
@@ -587,12 +599,17 @@ much stronger argument than any latency margin.
 Each step is independently useful and independently reviewable. Nothing before step 4
 requires a tenancy decision.
 
-1. **Land #8733.** In flight.
+Status as of 2026-09-22 is in brackets; the queue is authoritative.
+
+1. **Land #8733.** [merged to `dev` 2026-09-17; not released]
 2. **Fix the `/api/v1/entries` untyped branch** ({R} §12.2). ~10 lines, 42× on the busiest
-   endpoint in the ecosystem, single-tenant benefit, no tenancy decision.
+   endpoint in the ecosystem, single-tenant benefit, no tenancy decision. [T0.2; merged via
+   #8740; not released]
 3. **Audit `cache.getData`'s five call sites** ({R} §12.3) and stop deep-cloning the whole
-   retained array per cycle — resolving `dataloader.js:203`'s in-place write first. Worth
-   4.08 ms per cycle to every site, single- and multi-tenant alike.
+   retained array per cycle — resolving `dataloader.js:204`'s in-place write first. Worth
+   4.08 ms per cycle to every site, single- and multi-tenant alike. [T0.3; merged via #8740 with
+   its 1 ms target not met — 3.747 → 2.657 ms, the remainder almost all `devicestatus`; the write
+   at `:204` was dead and removed]
 4. **The storage seam** ({M} §6.2). The one real prerequisite for everything else, and it is
    validated by the existing suites because it changes no behaviour.
 5. **Split `bin/`.** Carve `api`, `evaluator` and `realtime` entrypoints out of `bootevent`'s
@@ -602,24 +619,27 @@ requires a tenancy decision.
 6. **Ack/snooze state into storage**, replacing the module-scope map. The §3.1 blocker,
    resolved for tenancy reasons rather than teardown reasons, with a regression test.
 7. **Change feed + tenant rooms.** The genuinely new code.
-8. **Tenant resolution and storage-enforced isolation** ({M} §6.7's ladder).
+8. **Tenant resolution and storage-enforced isolation** (D2, D3, D10).
+
+Steps 4–8 are built, in part, on the unpublished `seam/*` branch chain (T1.x, T2.x, T3.x, T4.1,
+T4.2, T4.4a); see the plan's Phase 1–4 and the queue for what is done and what is owed.
 
 **Steps 1–3 ship to every existing single-tenant operator and are worth doing on their own
 merits.** Steps 4–5 are reorganisation with no behaviour change. Only 6–8 are multitenancy.
 
 ## 8. What would change this recommendation
 
-- ~~**EXP-MT-026 — a real database in the loop.**~~ **Run** — see
-  [the report](../../60-research/tenancy/exp-mt-026-database-in-the-loop-2026-09-14.md). It went C's way:
-  the ordering held at every RTT tested, and the measured numbers moved A and B further from
-  C, not closer. `dbQueryCpu_ms` measured at **0.207 ms** at 10 ms RTT against the 0.15 ms
-  guess.
+- **EXP-MT-026 — a real database in the loop** — see
+  [the report](../../60-research/tenancy/exp-mt-026-database-in-the-loop-2026-09-14.md). The
+  ordering held at every RTT tested, with A and B further from C. `dbQueryCpu_ms` measured
+  **0.207 ms** at 10 ms RTT (the model had assumed 0.15 ms).
 - **TLS and authentication were not in the loop, and they land on the term that matters.**
   Every EXP-MT-026 figure is an unencrypted, unauthenticated connection. A managed database is
   neither. This is the most likely direction for CPU-per-operation to be understated, and the
   api tier has the least headroom (110 ms/s of a 300 ms/s budget at 10,000 tenants). **This is
-  now the highest-value follow-up.**
-- **Writes were not measured.** Every EXP-MT-026 arm is a read; uploaders generate writes.
+  the highest-value follow-up.**
+- **Write cost is not measured.** Every EXP-MT-026 arm is a read; uploaders generate writes.
+  Write *correctness* across the two backends was measured on 2026-09-15 (plan §7).
 - **The 15 % active fraction is unvalidated** against a real hoster. It drives A and B much
   harder than C, so a higher real figure widens C's margin rather than narrowing it.
 - **If the change feed proves unreliable at tenant scale** — oplog rollover under load, slot

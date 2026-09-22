@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# apply.sh — patch the five DRAFT advisories' metadata. Dry run by default.
+# apply-metadata.sh — patch the five DRAFT advisories' metadata. Dry run by default.
 #
-#   ./apply.sh            show every request that would be sent, send nothing
-#   ./apply.sh --apply    actually send them
+#   ./apply-metadata.sh            show every request that would be sent, send nothing
+#   ./apply-metadata.sh --apply    actually send them
 #
 # This NEVER publishes. `state` is not touched by any call here; publishing a
 # draft advisory is a separate, deliberate action in the GitHub UI.

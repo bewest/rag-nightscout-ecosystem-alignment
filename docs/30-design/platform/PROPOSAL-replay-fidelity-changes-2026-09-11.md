@@ -1,7 +1,10 @@
 # Proposal: the concrete changes that make Nightscout high-fidelity for replay
 
-Date: 2026-09-11. Status: draft for maintainer discussion. Eleventh in the
-series, and the first one that is a **change list rather than an analysis.**
+*Contributor-facing.* **Living design — the only statement of the replay-fidelity change list.**
+Written 2026-09-11; a proposal to each named project, none of which has agreed to anything.
+Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26) and the source
+trees as of 2026-09-11. It is a **change list rather than an analysis.** Decisions it touches:
+[execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 
 > **Two things this document refuses to concede.** That sync has to be
 > inefficient, and that fidelity has to be traded against it. §1 shows the
@@ -29,7 +32,7 @@ profile documents across 10 sites**, carrying eight keys today. The ask is
 eight more keys in a dictionary it already serialises. Not a new resource,
 not a new endpoint, not a new API version.
 
-**And a finding that should embarrass the series a little:** the conformance
+**And a finding about this repository's own artifact:** the conformance
 profile this work published passes on **27 of 28 obligations at every
 in-scope site**, while replay completeness is 20%. A profile that passes
 everywhere while the thing it exists to protect is broken is not measuring
@@ -302,7 +305,7 @@ small.
 > (assumed none); insulin `activity` — the IOB curve's instantaneous activity
 > (assumed 0), which degrades bgi/eventualBG.
 
-**Both halves are now out of date, in different directions.**
+**Both halves are out of date (measured 2026-09-11), in different directions.**
 
 | | Docstring says | Actually |
 |---|---|---|
@@ -313,13 +316,10 @@ So the replay tool still substitutes `{"duration": 0, "rate": 0}` for a value
 that is sitting in the document it is already parsing. That is a few lines in
 one consumer, and it improves fidelity for every oref0 site immediately.
 
-**And a correction this forces on our own series.** The hub-sync document and
-the controller-descriptions proposal both cite this tool as evidence that two
-inputs are unrecoverable. One never was unrecoverable and the other has
-already been recovered. The *category* of finding stands — a serious replay
-tool works around gaps Nightscout leaves — but this particular pair is the
-wrong illustration of it. `max_iob`, which genuinely is recorded nowhere, is
-the right one.
+**This pair is therefore not evidence of unrecoverable inputs.** The
+*category* of finding stands — a serious replay tool works around gaps
+Nightscout leaves (it reads settings from screenshots) — and `max_iob`, which
+is recorded nowhere, is the correct illustration of an unrecoverable input.
 
 ---
 

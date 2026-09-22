@@ -27,8 +27,9 @@ per PR**
 ## What this changes
 
 docs/00-overview/{PROGRAMME-STATUS,NEEDS-A-HUMAN,REVIEWER-ONBOARDING}.md,
-reports/reviewer-packets/ (17 generated files), tools/queue/emit_views.py,
-tools/queue/emit_packets.py, and four Makefile targets. No shipping code.
+reports/reviewer-packets/ (one generated packet per item awaiting review, plus
+a README), tools/queue/emit_views.py, tools/queue/emit_packets.py, and four
+Makefile targets. No shipping code.
 
 ## Why that semver
 
@@ -41,51 +42,45 @@ documentation and repository tooling
 
 ## Who should review this, and why
 
-maintainer, and then ideally a person who has NEVER seen this repository -
-that is the only way to find out whether REVIEWER-ONBOARDING.md works, and
-this queue cannot gate it. The reading path claims about an hour.
+maintainer, and then ideally a person who has never seen this repository - the
+only way to find out whether REVIEWER-ONBOARDING.md works, and this queue
+cannot gate it. The reading path claims about an hour.
 
 ## What was measured
 
 **`python3 tools/queue/emit_views.py --check`** &nbsp;·&nbsp; kind: `static`
 
 FAILS when a generated block inside docs/00-overview is stale with respect to
-the manifest. The overview pages are HYBRID - prose a human writes, wrapped
-around blocks a program owns - because a fully generated page cannot carry an
-argument and a fully hand-written one becomes the thing the docs-truth parcel
-exists to repair. Ablated 2026-09-16: editing one row of the horizons table
+the manifest. The overview pages are hybrid: hand-written prose around
+generated blocks. Ablated 2026-09-16: editing one row of the horizons table
 inside the fence is reported stale and queue-check goes red.
 
 **`python3 tools/queue/emit_packets.py --check`** &nbsp;·&nbsp; kind: `static`
 
-FAILS when a reviewer packet is stale OR orphaned. Both ablated 2026-09-16 - a
+FAILS when a reviewer packet is stale or orphaned. Both ablated 2026-09-16 - a
 changed semver row in P0-A's packet, and a spare file added to the directory.
-ORPHANED IS THE ONE THAT MATTERS: a packet left behind for an item that no
-longer wants a reviewer points a volunteer at finished work, which spends the
-scarcest resource this programme has on nothing.
+Orphaned matters because a packet left behind for an item that no longer wants
+a reviewer points a volunteer at finished work.
 
 ## What these gates do NOT prove
 
 *Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
 
-- NOTHING HERE MEASURES WHETHER THE PROSE IS TRUE. The generated blocks are
-  checked against the manifest; the argument wrapped around them - which
+- Nothing here measures whether the prose is true. The generated blocks are
+  checked against the manifest; the hand-written text around them - which
   horizon matters, what a new reviewer should read first, that review
-  capacity rather than engineering is the binding constraint - is a human
-  claim carrying a date. That is the deliberate half of the hybrid, and it
-  is also exactly where DOC-PLAN and DOC-SEQUENCING's defects live. These
-  pages are new, so they have not drifted yet; treat that as a fact about
-  their age, not their construction.
-- The 42-defect operator-exposure figure in PROGRAMME-STATUS.md is counted
-  by hand from the register's section 1 (43 rows, less BF-12 which is
-  retracted as not reproducing). A gate would need the register to carry
-  machine-readable per-entry status, which it does not - the same missing
-  field DOC-REGISTER names. Until that exists the number is re-counted by
-  whoever edits, and it WILL go stale silently.
+  capacity rather than engineering is the binding constraint - is a dated
+  human claim, and it is where DOC-PLAN and DOC-SEQUENCING's class of defect
+  can recur.
+- The operator-exposure figure in PROGRAMME-STATUS.md (55 §1 defects as of
+  2026-09-21) is prose, not a generated block. It was computed by the
+  coverage gate's register parser, but nothing re-derives it on the page, so
+  it goes stale silently when register statuses change; whoever edits the
+  register's §1 statuses must re-derive it.
 - Whether REVIEWER-ONBOARDING.md actually onboards anybody is not measurable
   from inside the repository, and it is the only question about this item
   that matters. The evidence would be a first-time reviewer completing a
-  packet - which is also the outcome the whole item exists to produce.
+  packet.
 
 ## Evidence
 
@@ -96,15 +91,13 @@ scarcest resource this programme has on nothing.
 
 ## Notes carried on the item
 
-Built 2026-09-16 on the maintainer's instruction to produce a fresh
-perspective on progress and a place where reviewers and teammates can
-collaborate. The shape was chosen explicitly: hybrid generation for the
-overview pages, full generation for the packets, and an audience of the
-maintainer plus reviewers being recruited. The finding the pages are built
-around is the reviewer-load table - 52 of 75 items route to the maintainer,
-and the SECURITY and SAFETY rows name a KIND of reviewer with no individual
-attached to any of them. P0-C is the sharpest case: gate- passing, and waiting
-on a security reviewer who does not exist.
+Built 2026-09-16 on the maintainer's instruction: a view of progress and a
+place where reviewers and teammates can collaborate. Hybrid generation for the
+overview pages, full generation for the packets, audience the maintainer plus
+reviewers being recruited. The pages are built around the reviewer-load table
+(generated in PROGRAMME-STATUS.md): most items route to the maintainer, and
+the SECURITY and SAFETY rows name a kind of reviewer with no individual
+attached.
 
 ---
 
@@ -115,4 +108,4 @@ on a security reviewer who does not exist.
 - [ ] `make queue-status ID=DOC-VIEWS` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-21, against cgm-remote-monitor-official `74fc6619`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-22, against cgm-remote-monitor-official `74fc6619`.*

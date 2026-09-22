@@ -1,5 +1,7 @@
 # GHSA-8849 — the `/alarm` Socket.IO namespace broadcasts to everyone connected
 
+> **Snapshot — research as of 2026-09-21, measured against `dev 59430336` and `v15.0.8` (`92d08342`). Status: fix merged to dev in PR #8745 (BF-75, BF-76), unreleased — the defect is still live on 15.0.8. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 > **DISCLOSURE FIRST. Read this paragraph before quoting the rest anywhere public.** This is a
 > **live unauthenticated disclosure of medical data on the shipping release** (`v15.0.8` =
 > `origin/master`) and on `dev`, and **this repository is public**. The mechanism is stated below
@@ -20,7 +22,7 @@ so that only the variables named below reached the process.
 
 ## 1. The question this was run to answer
 
-Ben West's framing for this advisory round: *were the correct feature flags enabled when these
+The maintainer's framing for this advisory round: *were the correct feature flags enabled when these
 advisories were evaluated?* `AUTH_DEFAULT_ROLES` defaults to `readable` (`lib/settings.js:39`) and
 `README.md:243` documents that as "readable by anyone who knows the URL". On that default,
 anonymous reads are **documented, intended behaviour**. A proof that shows anonymous access on a
@@ -453,7 +455,7 @@ comparison is kept here as the record of what was weighed.
 | the shipped web client | unaffected — it subscribes on connect | unaffected |
 | lines of code | fewer | one `resolve` call and a guard |
 
-**The decision is shape B, taken 2026-09-21 by Ben West.** Two reasons, in order:
+**The decision is shape B, taken 2026-09-21 by the maintainer.** Two reasons, in order:
 
 - **On the shipped default, A buys nothing measurable and costs something unmeasurable.** §7
   measured the marginal content disclosure of the broadcast on `readable`, field by field, and it
@@ -470,9 +472,9 @@ comparison is kept here as the record of what was weighed.
 B closes the `AUTH_DEFAULT_ROLES=denied` bypass identically to A. Both were measured doing so, on
 live instances, for all five event classes — §11.
 
-**The fact that would have argued for A, recorded because it was set aside deliberately.** Ben
+**The fact that would have argued for A, recorded because it was set aside deliberately.** The maintainer
 separately judged that the first-party web client is in practice the only consumer of `/alarm` —
-and the web client subscribes on connect, so shape A would have broken nothing. **He chose B
+and the web client subscribes on connect, so shape A would have broken nothing. **B was chosen
 anyway, as insurance against that judgement being wrong.** The asymmetry is the argument: if the
 judgement is right, B costs a few lines and no security; if it is wrong, A costs somebody an
 alarm they needed, silently, and the person who finds out is the person who did not wake up. A

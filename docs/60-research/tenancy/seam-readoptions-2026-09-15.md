@@ -1,5 +1,7 @@
 # `readOptions` across the seam — a bound that stops holding exactly where it matters
 
+> **Snapshot — research as of 2026-09-15, measured against `origin/dev` of that date (driver 5.9.2) and `chore/nightscout-modernization` `b8fd24c6` (driver 7). Status: current — tenancy research, not on a shipping path; BF-18 is open (pre-release, §1b); BF-14, which reaches it, is merged to dev in PR #8738 (unreleased). Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 Date: 2026-09-15 · Harness: [`tools/qc/readoptions-arm.js`](../../../tools/qc/readoptions-arm.js)
 Arms: mongodb driver **5.9.2 / 6.21.0 / 7.6.0** against real `mongod` 7 · real PostgreSQL 16
 
@@ -60,7 +62,7 @@ limit: opts && opts.count ? parseInt(opts.count) : undefined
 
 So `.limit(0)` is reached by exactly two inputs: **`?count=0`**, and any unparseable `?count=`
 (`NaN` → `toSafeInt(NaN, 0)` → `0`). Those are
-[BF-14](../../30-design/remedial/nightscout-backfix-register.md). An absent `?count=` yields `undefined`,
+[BF-14](../../30-design/remedial/nightscout-backfix-register.md). [Note 2026-09-22: BF-14 is merged to dev in PR #8738, not released.] An absent `?count=` yields `undefined`,
 `.limit()` is never called, and the bound holds.
 
 The two defects therefore **compound on the same request**. `?count=0` does not merely remove the

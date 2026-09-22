@@ -1,6 +1,8 @@
 # Nightscout multitenancy: evidence and options
 
-Date: 2026-09-09. Status: draft for maintainer discussion. Companion to
+*Contributor-facing.* **Snapshot — describes 2026-09-09, revised through 2026-09-14. Status: superseded for decisions; retained as the evidence base.** Current decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). Where a recommendation below contradicts a decision, a bracketed note says so in place.
+
+Date: 2026-09-09. Companion to
 [Nightscout modernization review and proposed next steps](../../60-research/modernization/nightscout-modernization-next-steps-2026-09-09.md);
 deliberately *tangential* to that work and not dependent on its outcome.
 
@@ -19,9 +21,6 @@ by assuming every tenant's `ddata` stays resident; residency is a policy, and th
 correction moves the binding constraint from memory to load-cycle query rate — see the new
 §7.4.1. A storage recommendation answering "Postgres+RLS or Mongo?" with a migration path
 for an existing hoster is added as **§6.7**.
-
-> **Decisions and next steps now live in [Multitenancy execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md).** This document is the evidence base; that
-> one records what was settled and what happens next.
 
 > **Superseded in part, 2026-09-14 (third pass) — read this first.** The quadratics are now
 > [PR #8733](https://github.com/nightscout/cgm-remote-monitor/pull/8733), so the *fixed* cycle
@@ -54,7 +53,8 @@ and §7.5.
 
 **Recommendation: extend cgm-remote-monitor to hold many tenants in one process; adopt
 Postgres RLS (or an equivalent storage-enforced predicate) as the isolation primitive; stay
-on Node.** Confident on the architecture axis; "10 000 tenants" is a target to design
+on Node.** [Decided since: D2 shared storage with a tenant discriminator and D3 PostgreSQL + RLS
+for the multitenant service; D4 keeps MongoDB permanently for single-tenant — [plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).] Confident on the architecture axis; "10 000 tenants" is a target to design
 towards and then verify, not a number demonstrated (§10.1).
 
 **Five findings that should change the intuition** — all reproduced on a re-verification
@@ -1433,8 +1433,11 @@ hardening v1 lacks. But the same gap is relocated, not closed:
   (`lib/api3/storage/mongoCollection/utils.js:77-79`). No pattern length or complexity
   limit, no requirement that the field be indexed, and — **confirmed by grep across
   `lib/` — no `maxTimeMS`, no `.hint()`, and no regex-safety wrapper anywhere in the query
-  path.** A request such as `notes$re=(a+)+$` against an unindexed field is a genuine,
-  unmitigated ReDoS / full-collection-scan vector **today**.
+  path.** A suitably constructed caller-supplied pattern against an unindexed string field
+  is an unmitigated full-collection-scan cost vector **today**. [Reproduced since as register
+  **BF-72** (API v1 path): an unauthenticated availability defect on the default
+  `AUTH_DEFAULT_ROLES=readable`, open on 15.0.8 and `dev`; not a data-exposure finding. A
+  concrete request pattern that stood here was removed — mechanism only for live defects.]
 
 That last item is not multitenancy-specific, but multitenancy makes it far sharper: one
 client's unconstrained query steals CPU and IO from every co-resident tenant instead of
@@ -1766,6 +1769,10 @@ Two things follow that are worth more than the recommendation itself:
 > collapse and the `mongodump`-per-tenant export are unaffected — but it **does not scale to
 > 10,000 tenants**, and the flat index curve in stage 3 is now its main justification rather
 > than a refinement.
+
+> [Not adopted. D2 rejected database-per-tenant (stage 2 / A′) on the EXP-MT-040b measurement
+> above, and D3 made stage 3 — PostgreSQL + RLS — the multitenant target rather than an
+> optional end state. See [plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).]
 
 **Stage 2 is the recommendation for what to build next**, and stage 3 is the recommendation
 for where to end up. Splitting them is the point: stage 2 delivers the density result that
@@ -2620,6 +2627,12 @@ to justify. This is EXP-MT-050 (§8.3): validate NRG's `registered_sites` schema
 migration source for the in-core tenant-resolution map, and confirm no RBAC/schedule
 feature currently in production use gets silently dropped by that migration.
 
+[Decided since as D16/D17: devices and the data path keep a native per-tenant credential
+permanently; Hydra is deferred; one cohort-wide Ory Kratos pool for human identity is direction
+of travel, **held** pending `T30-ORY-PROOF`; NRG's unfinished `nsjwt` exchange — minting a
+per-tenant Nightscout token after authentication (D14) — is the bridge under any outcome.
+See [plan §2.9](nightscout-multitenancy-execution-plan-2026-09-14.md).]
+
 ---
 
 ## 10. At scale: the recommendation and what is still unmeasured
@@ -2723,6 +2736,10 @@ design forgoes a measured, working, lower-maintenance option (§5.5) for the one
 does not need to be stateful at all.**
 
 ### 10.3 Can it support both MongoDB and Postgres?
+
+[Decided since as D4: MongoDB is permanent for the single-tenant target, so the storage seam carries
+two mature backends permanently and both stay in CI — [plan §1, §4](nightscout-multitenancy-execution-plan-2026-09-14.md).
+The heading's "permanently no" applies only to MongoDB *inside the multitenant service*.]
 
 **Temporarily yes; permanently no — and this document is not recommending the latter.**
 
@@ -2949,13 +2966,15 @@ gates the most expensive work.
    (database-per-tenant in a shared process) offers a *narrower seam* rather than a database
    property, which is an honest resting place for non-hostile tenants and **cannot truthfully
    promise "the database refuses"**. The remaining question is therefore not *whether* but
-   *when* that promise is made, and to whom.
+   *when* that promise is made, and to whom. [Settled since: D2 rejected stage 2; D3 makes the
+   storage-enforced promise the multitenant design — [plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).]
 3. ~~**Host-based routing** or path prefix?~~ **ANSWERED: leaning host-based**, to avoid
    forcing configuration changes on edge devices and mobile uploaders — which is the same
    reasoning that makes it Nocturne-compatible. The cost to accept explicitly is wildcard
    TLS and per-tenant hostname provisioning. This should be treated as decided for design
    purposes, because every uploader configured in the field is a change that cannot be
-   recalled later.
+   recalled later. [Settled since as D10: the slug is a host label resolved by a configured rule
+   with one capture group — [plan §2.5](nightscout-multitenancy-execution-plan-2026-09-14.md).]
 4. Do we accept a **hard dependency on Nocturne**, or align on shared contracts and shared
    algorithm cores (§4.1)?
 5. Who owns per-tenant **safety**? Alarm delivery for idle tenants is the requirement most
@@ -2965,11 +2984,13 @@ gates the most expensive work.
    into a design constraint. Because idle tenants must still be alarmed, `ddata` has to split
    into an alarm-critical slice that survives eviction and a display slice that does not —
    and that split has to be decided at Layer 2 even if the eviction policy ships later. The
-   §3.1 fix (already on `chore/nightscout-modernization`) is its precondition.
+   §3.1 fix (already on `chore/nightscout-modernization`) is its precondition. [Measured since
+   (plan §7b): the split that holds is by *depth* — newest *n* of each type within a time bound —
+   not by field, and `ns-evaluator` needs no resident `ddata`.]
 6. ~~Is **data portability** (per-tenant export and delete as first-class operations) a
    requirement?~~ **ANSWERED: yes, required.** This is the reasoning that also keeps
    self-hosted single-tenant first-class, so the two are one commitment, not two. Two
-   consequences are recorded in §6.7: it is an argument for the ladder's stage 2, where
+   consequences are recorded in §6.7 [stage 2 was not adopted — D2]: it is an argument for the ladder's stage 2, where
    export and delete are a `mongodump` and a `dropDatabase` of one database; and the export
    path should be **built first and reused as the stage-3 backfill reader**, so the riskiest
    code in the migration is code already exercised in production for its own sake.

@@ -1,5 +1,7 @@
 # What `AUTH_DEFAULT_ROLES` actually gates — the control every advisory needs, measured
 
+> **Snapshot — research as of 2026-09-21, measured against `origin/dev 59430336` and `v15.0.8` (`92d08342`). Status: current — the socket defects (BF-79 via #8744, BF-75/76 via #8745) are merged to dev (unreleased) and still live on 15.0.8; BF-71 (low) and BF-72 (DoS) open. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 Date: 2026-09-21. Refs: `origin/dev` `59430336` (15.0.9) and `v15.0.8` = `origin/master`
 `92d08342`, the release operators run. Storage: `mongo:7` (mongod 7.0) in Docker, one
 container per arm. Worktrees `externals/work/crm-advisory` and
@@ -172,14 +174,11 @@ Run on `dev` and then repeated on **v15.0.8** with the same three arms and the s
 `TREATMENTS_AUTH=off` → anonymous read 200, anonymous treatment write 200, `notifyCount` **0**;
 default → `notifyCount` 1, title *Nightscout readable by world*.
 
-**Correction, 2026-09-21.** An earlier version of this paragraph said the two source files are
-byte-identical between `v15.0.8` and `dev`. **They are not** — `bootevent.js` differs by +5/-5
-(the debounce-logging change) and `env.js` by +34/-2 (the credential coercion, which also moved
+The two source files are **not** byte-identical between `v15.0.8` and `dev` — `bootevent.js`
+differs by +5/-5 (the debounce-logging change) and `env.js` by +34/-2 (the credential coercion, which also moved
 the `careportal` append from `:187-190` to `:195-198`). The two *defect fragments* are unchanged,
-verified fragment by fragment, so the conclusion that this reaches every operator on the shipping
-release stands — but the supporting claim as written would not have survived a maintainer
-checking it, and it was read off a memory of a different measurement rather than run. The
-byte-identity that **was** measured, and holds, is of the four files the socket fixes touch:
+verified fragment by fragment, so this reaches every operator on the shipping release. The
+byte-identity that was measured, and holds, is of the four files the socket fixes touch:
 `alarmSocket.js`, `websocket.js`, `hashauth.js`, `authorization/index.js`.
 
 The one configuration that is both world-readable *and* anonymously writable is the one
@@ -239,9 +238,9 @@ point of asking:
   under the identical authorization, and every form of it is 401 under `denied`. The
   full-history read is what `readable` *means*. That is register entry **BF-71**, filed at
   `low` to correct the record. What survives from that advisory is the `$where` half — server-
-  side JavaScript, refused since PR #8743 on `dev` and **still live on v15.0.8** — and an
-  availability defect, **BF-72**, where a single unauthenticated request costs the database
-  minutes of CPU on the shipped default.
+  side JavaScript, refused since PR #8743 (merged to `dev`, unreleased) and **still live on v15.0.8** — and a cost defect,
+  **BF-72**: unauthenticated denial of service, where a single request costs the database
+  minutes of CPU on the shipped default; live on 15.0.8 and `dev`, no fix yet. It is not data extraction. Mechanism only here.
 - The two **XSS** advisories never depended on the setting: both need a write-scoped token,
   which is a credential an operator hands to devices and apps. Both were then re-measured
   across v15.0.7 / v15.0.8 / `dev` on four write paths with a real v3 JWT, and **both are closed
@@ -262,10 +261,10 @@ site working*:
   reach for first, it is the one Nightscout's own security documentation points at, and both
   leaks survive it.
 - **A reverse proxy cannot separate the `/alarm` namespace from the main one.** Both multiplex
-  over the single `/socket.io/` endpoint; the namespace is a token *inside* the Engine.IO
-  payload, not part of the URL. Measured: a handshake taken on `/socket.io/` was joined to
-  `/alarm` by POSTing `40/alarm,` to that same URL, and the server acknowledged with an
-  `/alarm` session id. A proxy rule would have to parse Socket.IO frames.
+- **A reverse proxy cannot separate the `/alarm` namespace from the main one.** Both multiplex
+  over the single `/socket.io/` endpoint; the namespace is carried *inside* the Engine.IO
+  payload, not in the URL. Measured: a session opened on `/socket.io/` could be joined to
+  `/alarm` over that same URL (working probe held outside version control). A proxy rule would have to parse Socket.IO frames.
 - **Blocking `/socket.io/` outright does work and costs the product.** The dashboard's live
   updating, the alarm delivery a caregiver depends on, and the retro view all run over it.
   For a tool whose purpose is watching glucose in real time, that is not a workaround.

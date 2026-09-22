@@ -1,6 +1,9 @@
 # Design — how ordering crosses the storage seam
 
-Date: 2026-09-15 · Status: **proposal**, for whoever owns the adapter
+*Contributor-facing.* **Living design — the only statement of how ordering crosses the storage
+seam.** Proposal, for whoever owns the adapter. Written 2026-09-15 against `seam/t1-2-storage-interface`
+(`externals/work/crm-seam` @ `81a1f6ce`); not implemented beyond what §5 marks done. Decisions it
+assumes: D3, D4, D8 — [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 Evidence: [ordering and pagination](../../60-research/tenancy/seam-ordering-and-pagination-2026-09-14.md) ·
 [`tools/qc/order-arm.js`](../../../tools/qc/order-arm.js)
 
@@ -76,9 +79,9 @@ function reproduces 1 and 2 for scalars and **cannot** reproduce 3 for arrays wi
 | **O2** declare sortable fields single-typed | restrict `?sort=` to schema-declared single-typed fields; `HTTP 400` otherwise | a schema annotation and a validation branch | clients sorting on an undeclared field |
 | **O3** accept and document | what T2.5 did | none | silent divergence when a sort key is mixed-typed |
 
-### 3.1b The strategy T2.5 shipped is a fifth one, and it is the best of them — conditionally
+### 3.1b The strategy T2.5 built: a type-guarded generated column
 
-`order-arm.js` measured four translations and none matched. T2.5 shipped a **fifth** that was not
+`order-arm.js` measured four translations and none matched. T2.5 built a **fifth** that was not
 in that set. From the emitted DDL:
 
 ```sql
@@ -133,15 +136,18 @@ T2.5's `orderBy` comment asserts the favourable case:
 > Every sort this code path issues is on a field that is one type in practice (`date`,
 > `srvModified`, `identifier`, `created_at`), so it does not bite today.
 
-That is an empirical claim, and **it is being measured against the 11-site corpus** rather than
-taken on trust — see `docs/60-research/tenancy/sort-key-typing-corpus-2026-09-15.md` when it lands. Two
-things to hold in mind while reading it:
+That claim was measured against the 11-site corpus (1,968,464 documents, two snapshots) in
+[sort-key typing](../../60-research/tenancy/sort-key-typing-corpus-2026-09-15.md): **confirmed for the
+four named fields** (single-typed wherever present), and every `entries` path is single-typed. But
+on the client-reachable set it is false at 11 of 11 sites — `treatments.carbs` and
+`treatments.insulin` hold `null` and `number` everywhere; that pair does not reorder, which is a
+property of those two types, not of the field being one type. Two things follow:
 
 - The claim is about *the fields this code path issues*. API v3 lets the **client** choose the
   sort key via `?sort=`/`?sort$desc=`, so the enforceable set is not the same as the observed
   set. O2 is what closes that gap; without it the comment describes today's callers, not
   tomorrow's requests.
-- A clean corpus result supports O2. It does **not** support O3, because O3 leaves the client
+- The clean result supports O2. It does **not** support O3, because O3 leaves the client
   free to sort on a field nobody measured.
 
 ---
@@ -151,7 +157,8 @@ things to hold in mind while reading it:
 `ORDER BY` is not a total order unless the terms uniquely identify a row, and neither engine
 promises stability among equal keys. [BF-13](../remedial/nightscout-backfix-register.md) is this defect on
 MongoDB: when v3's whole tiebreak chain ties, `skip`/`limit` paging lost 7 of 12 documents and
-duplicated two, deterministically. Sized against the corpus it is concentrated in `devicestatus`
+duplicated two, deterministically (reproduced). Its MongoDB-path fix is **merged** to `dev` via
+PR #8738 (2026-09-18) and is not released. Sized against the corpus it is concentrated in `devicestatus`
 — median **23.46** expected straddles per paginated sweep, against 0.01 for `entries`.
 
 **The normaliser appends `_id` (ascending or matching the last term's direction) as a final
@@ -171,12 +178,12 @@ This is also the precondition for keyset pagination later: a total order is what
 | | status |
 |---|---|
 | null/missing placement | **done** in T2.5 |
-| `_id` tiebreak in a shared normaliser | **not done** — one line, closes BF-13 on both backends |
+| `_id` tiebreak in a shared normaliser | **not done** — one line; closes the BF-13 class on both backends at the seam |
 | `sort` as an AST rather than a driver object | **not done** |
 | typed generated column + guard | **done** in T2.5, and correct under single-typed data |
 | cross-type ordering | **decide O1/O2/O3** — see §3.1b and the corpus measurement |
 
-## 6. Honest limits
+## 6. Limits
 
 - **§3.1b tested one field, one numeric column, one sort term.** `sgv` with eight values. Text
   columns, compound sorts and descending-with-`NULLS LAST` on a text column were not measured,

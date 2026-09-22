@@ -1,7 +1,8 @@
 # Temporary effects, privacy-preserving projection, and which version this is
 
-Date: 2026-09-11. Status: draft for maintainer and controller-maintainer
-discussion. Companion to
+*Contributor-facing.* **Snapshot — describes 2026-09-11. Status: current as analysis; not adopted as a decision.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+
+Date: 2026-09-11. Companion to
 [the hub-and-spoke sync design](./nightscout-hub-sync-architecture-2026-09-11.md).
 
 **Nothing here is a proposal to merge. The privacy argument in §3 is a

@@ -36,26 +36,30 @@ precedence reversed, a changed default (use_random_slot:false ->
 jitter:'equal'), a new throw on an unknown jitter mode, and duration_for
 became non-deterministic. Each is breaking for a caller. It costs nothing
 because ^0.0.13 matches only 0.0.13 and cgm-remote-monitor pins by tarball
-anyway. RECORDED AS A DISAGREEMENT, not resolved - the tag as cut says 0.0.14.
+anyway. Unresolved disagreement: the prepared tag says 0.0.14.
 
 ## What an operator would notice
 
-> When a CGM vendor's service is refusing requests, Nightscout's connector
-> used to retry roughly 586 times faster than it was configured to, and
-> every account retried at the same instant. It now waits the interval it
-> was told to wait and spreads the retries out. COUNTER-INTUITIVE: after
-> this fix a vendor outage will look like it recovers MORE SLOWLY, because
-> the connector has stopped retrying in a burst that could not have worked.
-> Your data is not arriving any later than it would have; the burst was
-> never getting through. Also, on restart the connector no longer reaches
-> the vendor all at once - both jitter windows default to 0, so nothing
-> changes for anyone who does not set them.
+> This changes the connector, the part of Nightscout that fetches readings
+> from a CGM (continuous glucose monitor) vendor's online service. When that
+> service is refusing requests, the connector used to retry roughly 586
+> times faster than it was configured to, and every account retried at the
+> same instant. With this fix it waits the interval it was told to wait and
+> spreads the retries out. Something that may seem backwards: after this fix
+> a vendor outage can look like it recovers more slowly, because the
+> connector no longer retries in a burst that could not have worked. Your
+> data does not arrive any later than it would have; the burst was never
+> getting through. The connector can also spread out its first contact with
+> the vendor after a restart; both of these spreading settings default to 0,
+> so nothing changes for anyone who does not set them. This is merged
+> nowhere yet and reaches no one until a connector release is cut and
+> Nightscout is updated to use it (P0-TAG, P0-PIN).
 
 ## Who should review this, and why
 
 maintainer - the sequencing document says land this one first if anything is
-landed first. OPENED 2026-09-16 as nightscout-connect PR #68, base dev. One
-approval there covers four PRs' worth of change; see notes.
+landed first. Open as nightscout-connect PR #68, base dev. One approval there
+covers four PRs' worth of change; see notes.
 
 ## What was measured
 
@@ -94,35 +98,35 @@ this item was measured against. Read-only. Verified 2026-09-16.
 ## Notes carried on the item
 
 Sequencing letter F. Merging this in the connector repository ships it to
-NOBODY - cgm-remote-monitor pins by tarball. P0-TAG and P0-PIN are what
-deliver it. PR TARGET SETTLED 2026-09-16 (maintainer): base `dev`, head
-`fix/connect-timer-jitter`, ONE PR carrying 11 commits. The earlier sequencing
-text said base `origin/main`; that was a merge-base measurement mistaken for a
-PR target. Measured: `origin/dev` 6dfc4f0 is TREE-IDENTICAL to `origin/main`
-b394411 (`git diff origin/dev origin/main` empty - main is only the merge
-commit of PR #26), and #64 and #67 both target `dev`, so `dev` is the release
-line for this batch. `git rev-list --count origin/dev..fix/connect-timer-
-jitter` = 11; 27 files, +1359/-309; trial merge into `dev` CLEAN. WHAT THAT
-ONE PR APPROVES, STATED SO IT IS NOT DISCOVERED LATER: only c1cce2a is this
-branch's work. Nine of the other ten commits belong to four other pull
-requests - #64 (OPEN, -> dev), #65 (merged into `fix/dexcom-safe-logging`, NOT
-into dev or main), #66 (OPEN, -> `fix/dexcom-safe-logging`), #67 (OPEN, ->
-dev) - plus the integration merge b77e5bb (`origin/fix/modernization-debug-
-logging`, no PR). So one approval covers four PRs' worth of change. The
-maintainer chose this over stacking on `fix/modernization-debug-logging`
-(which would reduce the PR to the single commit c1cce2a) with the tradeoff on
-the table. It is written into the PR body rather than left implicit. WHY NOT
-REBASE c1cce2a ALONE ONTO dev - measured, not assumed: `git cherry-pick
-c1cce2a` onto origin/dev CONFLICTS in three files, one hunk each (README.md,
-index.js, lib/builder.js); lib/backoff.js and lib/machines/cycle.js auto-merge
-clean. The builder.js resolution would have to DELETE `logger: config.logger`,
-which comes from 234d47c - i.e. the commit genuinely assumes #67 is in place,
-exactly as its own message says ("The precedence fix cannot ship alone"). The
-135-test and per-part-ablation evidence was taken on the stacked base and
-would need re-taking. PR BODY CORRECTED 2026-09-16 before publication:
-reports/phase0-pr-bodies/fix-connect-timer-jitter.md called those nine commits
-"already-merged". They are not. Third draft of that block; the first two both
-understated what the branch carries.
+nobody - cgm-remote-monitor pins the connector by tarball. P0-TAG and P0-PIN
+are what deliver it. As of official/dev 8e26786 (2026-09-22) the backoff-and-
+jitter commit c1cce2a is NOT in connector dev (`git merge-base --is-ancestor
+c1cce2a official/dev` exits 1), so it is in neither candidate 0.0.14 that dev
+could release. PR target (maintainer, 2026-09-16): base `dev`, head
+`fix/connect-timer-jitter`, ONE PR carrying 11 commits. Measured at the time:
+`origin/dev` 6dfc4f0 was tree-identical to `origin/main` b394411 (main was
+only the merge commit of PR #26), and #64 and #67 both target `dev`, so `dev`
+is the release line for this batch. `git rev-list --count
+origin/dev..fix/connect-timer-jitter` = 11; 27 files, +1359/-309; trial merge
+into that `dev` clean. Connector dev has since moved to 8e26786 and this has
+not been re-trial-merged against it. What the one PR approves: only c1cce2a is
+this branch's work. Nine of the other ten commits belong to four other pull
+requests - #64 (open, -> dev), #65 (merged into `fix/dexcom-safe-logging`, NOT
+into dev or main), #66 (open, -> `fix/dexcom-safe-logging`), #67 (open, ->
+dev; its commit 234d47c is what cgm-remote-monitor dev pins today) - plus the
+integration merge b77e5bb (`origin/fix/modernization-debug-logging`, no PR).
+So one approval covers four PRs' worth of change. The maintainer chose this
+over stacking on `fix/modernization-debug-logging` (which would reduce the PR
+to the single commit c1cce2a) with the tradeoff on the table, and the PR body
+says so; its description of those nine commits is that they are not yet
+merged. Why c1cce2a is not rebased alone onto dev (measured 2026-09-16): `git
+cherry-pick c1cce2a` onto the then origin/dev conflicts in three files, one
+hunk each (README.md, index.js, lib/builder.js); lib/backoff.js and
+lib/machines/cycle.js auto-merge clean. The builder.js resolution would have
+to delete `logger: config.logger`, which comes from 234d47c - the commit
+genuinely assumes #67 is in place, as its own message says ("The precedence
+fix cannot ship alone"). The 135-test and per-part-ablation evidence was taken
+on the stacked base and would need re-taking.
 
 ---
 
@@ -133,4 +137,4 @@ understated what the branch carries.
 - [ ] `make queue-status ID=P0-F` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-21, against cgm-remote-monitor-official `74fc6619`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-22, against cgm-remote-monitor-official `74fc6619`.*

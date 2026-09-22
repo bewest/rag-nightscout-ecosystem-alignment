@@ -1,5 +1,7 @@
 # Completeness critique — what this workflow is missing
 
+> **Snapshot — research as of 2026-09-15, measured against main repo HEAD `08753474` (artefacts as of 20:00–21:00 that day). Status: superseded — a point-in-time audit of the programme's own queue and register; every count below (open BF entries, queue items, gate tallies) is point-in-time as of 2026-09-15. Current facts: [work queue](../../../queue/QUEUE.md), [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [programme status](../../00-overview/PROGRAMME-STATUS.md).**
+
 **Role.** Everybody else in this workflow was asked to produce something. I was asked what is
 absent. Written 2026-09-15, main repo HEAD `08753474`, against the artefacts as they stood at
 20:00–21:00. Every claim below was measured in this session unless it says otherwise; where I
@@ -222,6 +224,10 @@ The register held 39 BF entries + CAP-01 when GT3 audited it. It now holds **67 
 > **40 open `BF-` entries** — 16 in §1 (BF-09, BF-10, BF-40…BF-52, BF-67) and 24 in §1b
 > (BF-18…BF-27, BF-53…BF-66) — **plus CAP-01 and CAP-02**, plus BF-04 at `fixed-in-seam`
 
+[Note 2026-09-22: counts in this section are point-in-time as of 2026-09-15. Since then BF-40 was
+merged to dev in PR #8737 (unreleased), and the recommended `register-queue-coverage.js` gate now
+exists; re-derive open ids from the register, not from this section.]
+
 The queue's `register-open` parcel has 14 items, covering BF-09, BF-10, BF-04, CAP-01 and the ten
 §1b entries BF-18…BF-27. **Programmatic set difference — 29 not-fixed register ids appear nowhere in
 the manifest, not even in prose:**
@@ -239,6 +245,11 @@ BF-56 BF-57 BF-58 BF-59 BF-60 BF-61 BF-62 BF-63 BF-64 BF-65 BF-66 BF-67 CAP-02`
 | **BF-46** | **high** | Eleven API v3 environment variables bypass `lib/server/env.js`; "an undocumented variable that deletes a…" |
 | BF-40, BF-43, BF-45, BF-47, BF-48, BF-51, BF-67 | medium | inverted `$exists=false`; silent axios constraint violation; legacy MiniMed double-start; admin UI destroys stored subject fields; webhook config bypass; azuredeploy runtime; **alarm threshold silently rewritten ±1 — `BG_HIGH=14` stored as 181 mg/dL** |
 | BF-49, BF-50 | low | HSTS spelling; README variable |
+
+[Caveat 2026-09-22: BF-44 and BF-45 were graded assuming the mmconnect path is live. The maintainer
+states (2026-09-21, operational knowledge, not measured here) that mmconnect /
+`minimed-connect-to-nightscout` has been broken for some time, and legacy Dexcom Share is intended
+to map to nightscout-connect; BF-44/BF-45 have not been re-graded.]
 | BF-52 | unsettled | age plugins grade on one threshold, request another |
 
 BF-42 and BF-65 bear directly on the decision the queue exists to drive: BF-65 records that the
@@ -510,7 +521,10 @@ a fact that the register also states, and they disagree.**
 - **Cut 4, emphatically, and the adopted train's ordering.** GT4 executed the shims: a MiniMed
   operator without `CONNECT_COUNTRY_CODE` gets a boot error, and a boot error serves the error page
   for `*` — the whole deployment, not just ingestion. An operator running `BRIDGE_*` and `MMCONNECT_*`
-  together, which works today, gets the same total outage. Cut 4's own evidence document says *"No
+  together, which works today, gets the same total outage. [Caveat 2026-09-22: the maintainer states
+  (2026-09-21, operational knowledge, not measured here) that mmconnect has been broken for some
+  time and legacy Dexcom Share is intended to map to nightscout-connect, so "works today" is not
+  established for the MiniMed half; BF-44/BF-45 have not been re-graded.] Cut 4's own evidence document says *"No
   real Dexcom account or live database has been used and no live migration is claimed."* The
   migration plan for it is thorough and its §6 test plan is exactly right — **and unexecuted.** For a
   change whose failure mode is "a person's glucose data stops arriving", a thorough unexecuted plan

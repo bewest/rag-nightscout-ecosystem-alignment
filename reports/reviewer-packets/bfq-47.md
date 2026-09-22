@@ -35,17 +35,18 @@ files P0-C already touches.
 
 The repair on bf/auth narrows the loss rather than introducing it, but it also
 introduces an allow-list, so a third-party tool can no longer preserve its own
-fields by sending them in its own PUT - which it CAN do today, because save()
+fields by sending them in its own PUT - which it can do today, because save()
 writes the caller's object as given. That is a capability removal on an HTTP
 surface.
 
 ## What an operator would notice
 
-> Editing a person or device entry through Nightscout's admin page already
-> throws away fields that are not shown on that page - notes, the date it
-> was created, and anything a third-party tool has stored there. It happens
-> silently, there is no error, and it cannot be recovered by going back to
-> an older version of Nightscout. This is how today's release behaves.
+> Editing a person or device entry (a "subject") through Nightscout's admin
+> page already throws away fields that are not shown on that page - notes,
+> the date it was created, and anything a third-party tool has stored there.
+> It happens silently, there is no error, and it cannot be recovered by
+> going back to an older version of Nightscout. This is how today's release
+> (15.0.8) behaves.
 
 ## Who should review this, and why
 
@@ -61,16 +62,16 @@ answered BEFORE merge, not after
 
 *Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
 
-- DERIVED FROM SOURCE on origin/dev and on bf/auth. Not reproduced against a
-  deployment. A gate would need a database with a subject row carrying an
-  extra field planted on it, an edit through the admin path, and an
-  assertion that the field survived - with a control row that has no extra
-  field so a green result is known to distinguish the two. Nobody has built
-  it.
-- THE MISSING FACT IS NOT CODE, IT IS AN INVENTORY. No list exists of third-
+- Read-derived from source on origin/dev and on bf/auth; not reproduced
+  against a deployment. A gate would need a database with a subject row
+  carrying an extra field planted on it, an edit through the admin path, and
+  an assertion that the field survived - with a control row that has no
+  extra field so a green result is known to distinguish the two. Nobody has
+  built it.
+- The missing fact is not code, it is an inventory. No list exists of third-
   party tools that store extra fields on subjects or roles, and nothing in
-  this repository can produce one. That inventory is what decides whether
-  the narrower repair - delete only the derived
+  this repository can produce one. That inventory decides whether the
+  narrower repair - delete only the derived
   accessToken/accessTokenDigest/digest and pass unknown fields through - is
   required or merely tidier.
 
@@ -84,10 +85,10 @@ answered BEFORE merge, not after
 
 ## Notes carried on the item
 
-This entry exists because a verifier REFUTED the framing of a finding about
-bf/auth, and the refutation moved the defect from an unmerged branch onto the
-current release. Keeping the security goal of BF-17 - the derived token never
-reaches the database - does not require the allow-list.
+A verifier's review of bf/auth established that the field loss already happens
+on the current release, not only on the unmerged branch. Keeping the security
+goal of BF-17 - the derived token never reaches the database - does not
+require the allow-list.
 
 ---
 
@@ -98,4 +99,4 @@ reaches the database - does not require the allow-list.
 - [ ] `make queue-status ID=BFQ-47` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-21, against cgm-remote-monitor-official `74fc6619`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-22, against cgm-remote-monitor-official `74fc6619`.*

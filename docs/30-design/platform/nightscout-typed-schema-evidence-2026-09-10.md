@@ -1,6 +1,8 @@
 # Typed schemas for Nightscout: what the documents actually contain
 
-Date: 2026-09-10. Status: draft for maintainer discussion. Companion to
+*Contributor-facing.* **Snapshot — describes 2026-09-10. Status: current — the measurements stand.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+
+Date: 2026-09-10. Companion to
 [Nightscout multitenancy: evidence and options](../tenancy/nightscout-multitenancy-discussion-2026-09-09.md)
 (§6.4 in particular) and to the
 [`x-aid-extensions` convention proposal](../../sdqctl-proposals/x-aid-extensions-convention-proposal.md).

@@ -1,6 +1,8 @@
 # GHSA-gjhc-pc29-r3m6 — unauthenticated WebSocket `loadRetro`
 
-Register **BF-79**. Fix: `bf/ws-loadretro-auth` `9765e8cd`, PR against `dev`.
+**DRAFT — not applied.** Metadata and prose changes for the advisory UI; facts as of 2026-09-22.
+Internal cross-reference (not for pasting): register BF-79. Fix merged into `dev` as #8744 on
+2026-09-21; **not in a release** — 15.0.8 is affected.
 
 ## Metadata changes
 
@@ -62,7 +64,10 @@ to work. Suggested replacement:
 > outright disables live updating and alarm delivery. The fix is the patch.
 
 **Keep the Remediation section as written** — it describes what the fix does, and the fix follows
-it.
+it. Add one line of status:
+
+> Fixed on the development branch in nightscout/cgm-remote-monitor#8744 (merged 2026-09-21). Not
+> yet in a release; 0.9.0 through 15.0.8 are affected.
 
 ## Credit
 

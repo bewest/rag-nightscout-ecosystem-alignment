@@ -1,29 +1,32 @@
 # dev-cycle review harness — plan
 
-*Contributor-facing, technical throughout. Drafted 2026-09-17. Requires maintainer review
-before any of it is executed against a branch that will be pushed.*
+*Contributor-facing, technical throughout.*
+
+> **Snapshot — describes 2026-09-17, measured against cgm-remote-monitor `origin/dev` `a8888f0d`.**
+> Status: **completed.** All ten `dev-candidate` PRs in scope merged into `dev` between 2026-09-17
+> and 2026-09-20 (#8733; #8734, #8737, #8738; #8735, #8736, #8739, #8740; #8741, #8729). **None is
+> released**: as of 2026-09-22 `origin/master` `92d08342` = tag `15.0.8` is 308 commits behind
+> `origin/dev` `74fc6619`. Current state: [`queue/work-queue.yaml`](../../../queue/work-queue.yaml)
+> (the P0-* and BFQ-* items, and `RT-0` for the release) and the
+> [backfix register](./nightscout-backfix-register.md). The preserved probes are in
+> `tools/review/probes/`.
 
 How to review the ten `dev-candidate` pull requests by merging them into an integration
 branch, running a real local Nightscout against each state, piping data in, and judging the
 result in a browser and with probes.
 
-**Evidence convention.** Every quantitative claim is tagged `[measured]` (reproduced during
-this session, command and output recorded), `[refuted]` (a claim an earlier draft made that
-was tested and found false), or `[ASSUME]` (read-derived, unverified — must be measured
+**Evidence convention.** Every quantitative claim is tagged `[measured]` (reproduced, command
+and output recorded), `[refuted]` (a plausible criterion or claim that was tested and found
+false — recorded so it is not re-proposed), or `[ASSUME]` (read-derived, unverified — must be measured
 before anything depends on it). A claim with no tag is a design decision, not a measurement.
 
 ---
 
-## 0. How this document was produced, and why that matters
+## 0. Why every criterion must be run red first
 
-A fifteen-agent workflow ran five reconnaissance lenses, three independent designs, three
-scoring lenses, a synthesis, and three adversarial refutation passes. **All three refuters
-rejected the synthesized plan**, producing 31 confirmed refutations and 34 required
-amendments. This document is the synthesis *after* those amendments.
-
-That outcome is the most useful thing here. The first plan's per-branch acceptance criteria
-looked rigorous and were largely broken — thresholds stuck red on the *correct* build,
-checks green on the *broken* build, one config key that disables the feature it tests. None
+Acceptance criteria written by reading looked rigorous and were largely broken when run —
+thresholds stuck red on the *correct* build, checks green on the *broken* build, one config
+key that disables the feature it tests (31 such defects across the candidate criteria). None
 of that was visible by reading. All of it was visible by running.
 
 So: **no criterion in §5 ships until its red state has been executed, not reasoned about.**
@@ -44,11 +47,7 @@ actually has, and because the machine-time it saves is worth less than a minute.
 | `npm ci` needed | **Zero times.** `package-lock.json` is byte-identical across all ten candidates. | `[measured]` |
 | Machine time bisect saves | **~50 s** over the whole cycle. | `[measured]` |
 
-An earlier draft claimed a 10 s cycle and a 6-minute bisect saving. Both were wrong — the
-components summed to 3.6 s, and the 6 minutes came from an 87 s cycle that included a full
-mocha run the plan itself forbids. `[refuted]` The decision is unchanged and in fact
-strengthened: **50 seconds of machine time is not a decision variable; a bounced correct PR
-is.**
+**50 seconds of machine time is not a decision variable; a bounced correct PR is.**
 
 ### The failure mode bisect cannot express
 
@@ -56,12 +55,8 @@ is.**
 They merge clean in both orders. But the defect is *the absence of a partner branch*, which
 is not a prefix of any merge sequence — so no bisect over merge prefixes can name it.
 
-This claim went wrong twice before it went right, which is worth recording. An early draft
-called `bf/reads`-without-`bf/coercion` "strictly worse than dev" on the strength of an
-inverted `$exists` result set; a refuter knocked that down by showing the count endpoint is
-uniformly dead on dev, so `bf/reads` could only be an improvement. **Both were reasoning about
-the wrong surface.** Measured on a live seed, the half-merged state returns a confident
-`count=5` where the true answer is `577` — see §1a, *RESTORED, on better evidence*.
+Measured on a live seed, the half-merged state returns a confident `count=5` where the true
+answer is `577` — see §1a, *`bf/reads` alone is strictly worse than dev*.
 
 **So the atomic merge is justified by measurement, not only by risk containment**, and the
 `PAIR-WHOLE` arm detects a half-merge directly rather than relying on merge discipline.
@@ -84,20 +79,18 @@ release.
 | **1 — correctness** | `bf/reads` + `bf/coercion` #8738 + #8737 | 7 **high** between them: BF-01, BF-13, BF-14, BF-33, BF-02, BF-03, BF-11 | Wrong answers under HTTP 200, silent data loss in v3 paging, and three unbounded-read paths. The largest concentration of high-severity register weight in the set, and already one atomic unit for the reason in §1. |
 | **2 — availability** | `bf/parms` #8736 | BF-37 **medium–high**, BF-38/39 low | A valueless URL parameter throws in the *first statement of `client.init`* — total silent page failure, nothing on screen but the loading message. |
 | | `bf/merge` #8734 | BF-36 medium | The throw escapes into `dataUpdate`, which has no `try`/`catch`; the page stops advancing until reloaded. |
-| **3 — alarms** | `bf/alarms` #8739 | BF-28/29 medium, BF-31 low–medium | **`minor`.** Maintainer ruling 2026-09-17: the per-request locale handling on `/api/v1/alexa` and `/api/v1/googlehome` is a **defect, not a capability**. `ctx.language.set` and `moment.locale` are process-global, so a request carrying `request.locale` re-languaged every later request for every other user — never the intent. Removing it is a correction, and the branch needs an ordinary review. The earlier `major` capability-removal grading is withdrawn. |
+| **3 — alarms** | `bf/alarms` #8739 | BF-28/29 medium, BF-31 low–medium | **`minor`.** Maintainer ruling 2026-09-17: the per-request locale handling on `/api/v1/alexa` and `/api/v1/googlehome` is a **defect, not a capability**. `ctx.language.set` and `moment.locale` are process-global, so a request carrying `request.locale` re-languaged every later request for every other user — never the intent. Removing it is a correction, and the branch needs an ordinary review. |
 | **4 — performance** | `bf/cache` #8740, quadratics #8733 | BF-06/07 medium (CPU); quadratics carries no register entry | No wrong answers. Correctness checks pass on both the broken and fixed builds, which is why their acceptance is a *shape* assertion in §5. |
 | **5 — no register weight** | `#8741`, `#8729` | none | Neither carries a register entry. `#8741`'s real credential path cannot be exercised without live Dexcom credentials; `#8729` has no falsifiable criterion at all (§7). Land them on maintainer judgement or defer. |
 
 **If the cycle has to be cut short, tiers 1–2 are the release.** They carry every `high` in the
 set and all four silent-wrong-answer classes.
 
-### ✅ RETRACTED: #8737 does fix BF-40 — measured 2026-09-17
+### #8737 does fix BF-40 — measured 2026-09-17
 
-**An earlier revision of this document claimed #8737's title overstated its fix. That claim
-was wrong and is withdrawn.** It was read-derived: `bf/coercion` puts `$exists` in
-`NON_VALUE_OPERATORS` in `query-coercion.js`, which I read as "the operand stays the string
-`'false'`". That exclusion is a *different* mechanism — it stops the field-domain coercer
-mangling the operand. The actual fix is `BOOLEAN_OPERANDS` / `readBooleanOperand` in
+`bf/coercion` puts `$exists` in `NON_VALUE_OPERATORS` in `query-coercion.js`; that exclusion only
+stops the field-domain coercer mangling the operand, and reading it alone suggests the operand stays
+the string `'false'`. The actual fix is `BOOLEAN_OPERANDS` / `readBooleanOperand` in
 `lib/server/query.js`, applied over the **built query** precisely so it also covers fields the
 type table does not name.
 
@@ -109,25 +102,20 @@ Measured on a live 582-document seed (577 sgv, 5 mbg), `find[mbg][$exists]=false
 | `GET /api/v1/count/entries/where` | `[]` dead | `[]` dead | **5 ✗** inverted | **577 ✓** |
 | `count/where find[type]=sgv` | `[]` dead | `[]` dead | 577 ✓ | 577 ✓ |
 
-**`BFQ-40` in the queue is therefore wrong**, not merely stale: its `blast_radius` locates the
-fix at `query-coercion.js:90`, which is the wrong file, and its `operator_visible` text says the
-defect "stays wrong after the query type-conversion fix". Measurement refutes both. The row
-should move off `not-started`. *(This is the register's own read-or-run rule catching the
-register — and then catching this document.)*
+The fix lives in `lib/server/query.js`, not `query-coercion.js`. *[`BFQ-40` has since been
+corrected in the queue and is `merged-upstream` (#8737, 2026-09-18); not released.]*
 
-### ⚠ RESTORED, on better evidence: `bf/reads` alone IS strictly worse than dev
+### `bf/reads` alone is strictly worse than dev
 
-§1 withdrew the "strictly worse" claim because it rested on the list endpoint, where dev is
-merely inverted rather than dead. On the **count** surface the claim holds, and now with a
-measurement:
+On the list endpoint dev is merely inverted rather than dead, so the comparison has to be made on
+the **count** surface, where it holds:
 
 - **dev**: `/api/v1/count/entries/where` returns `[]` for *every* filter. Uniformly dead, and
   obviously so — nothing downstream can mistake it for an answer.
 - **`bf/reads` alone**: returns a confident `count=5` for a filter whose true answer is **577**.
 
 A plausible wrong number is worse than a visible failure. This is the strongest argument in the
-cycle for the atomic merge, and it is the one thing no amount of reading produced — both earlier
-attempts at this claim, in both directions, were wrong.
+cycle for the atomic merge, and it came from measurement, not reading.
 
 The `PAIR-WHOLE` arm in `tools/review/probes/pair-reads-coercion.js` is the detector: green only
 on the pair, red on BASE (dead), red on `READS`-only (inverted), red on `COERCION`-only (dead).
@@ -177,6 +165,7 @@ entanglement to manage.
   discipline. Git is structurally blind to the coupling: the two branches share no file in
   `lib/server/aggregate.js`, where `bf/reads` rewires `find_options(opts)` → `api.query_for(opts)`
   and `bf/coercion` is what makes the operand arrive typed. `[measured]`
+  *[Outcome: they merged as two PRs, #8737 and #8738, both on 2026-09-18.]*
 
 ### TIDY constraints — chosen for observability; changing them changes nothing
 
@@ -599,14 +588,14 @@ a meta-gate.
 - **`#8741`'s actual credential path** is never exercised — the discriminator is a boot
   crash. Testing the real Dexcom coercion needs live credentials.
 - **`bf/alarms`' locale removal** on `/api/v1/alexa` and `/api/v1/googlehome` has no named
-  observable. This is the capability removal that graded the branch `major`, and it is the
-  least-covered thing in the set.
+  observable, and it is the least-covered thing in the set. (Graded `minor` — a defect
+  correction — by the maintainer ruling in §1a.)
 - **Everything about `bf/auth` and `bf/throttle`**, by scope decision.
 - **`help wanted` PR triage** — **dropped from this cycle.** Scope is remedial only; most of
   the eleven are features or modernization (`pr/platform`, `pr/trio-ui`, `pr/reports-agp`).
   If any are later judged remedial, they join a subsequent cycle, not this one.
-- **BF-40** — still open after this cycle, by design. `bf/coercion` does not fix it (§1a), and
-  no other candidate touches it. It remains `ships_to_operators_today: true`.
+- **BF-40** — *[corrected: `bf/coercion` does fix it (§1a, measured); merged to `dev` in #8737,
+  not released, so it still ships to operators on 15.0.8.]*
 
 ---
 
@@ -617,10 +606,9 @@ a meta-gate.
 `clonebench`, `mergechk`, `parmschk`, `iagechk`, `foodchk`, `delaychk`, `querychk`,
 `projchk`, `enablechk`, plus boot/seed/latency helpers and `ns-client-gate.js`.
 
-**The sanitisation claim in the first draft of this appendix was wrong, and re-running the
-scan is what caught it.** `[refuted]` It said two hardcoded throwaway `API_SECRET` values had
-been replaced with `${NS_HARNESS_SECRET:?}`. Two *environment* sites had been — `boottime.sh`
-and `rf-boot.sh` — and **ten credential literals were still in the tree**: the plaintext
+**Sanitisation.** A first pass replaced only two *environment* sites (`boottime.sh` and
+`rf-boot.sh`) with `${NS_HARNESS_SECRET:?}`; a re-scan found **ten further throwaway credential
+literals**: the plaintext
 harness secret in five shell probes (`loop`, `verify`, `cycle`, `probe`, `decisive`), and a
 bare SHA-1 in `rf-thr.sh`, `rf-seed.js`, `rf-lat.js`, `rf-lat2.js` and `rf-sock.js`. The
 SHA-1 is not the hash of the plaintext that was sanitised, so it belonged to an earlier

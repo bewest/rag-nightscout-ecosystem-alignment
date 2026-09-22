@@ -1,13 +1,15 @@
 # E4 — closing the gap between the work queue and the backfix register
 
-**Status: DRAFT for maintainer review.** Contributor-facing and technical throughout, except the
+> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d` (control-surface HEAD `08753474`). Status: point-in-time reconciliation; register and manifest counts below are as of that date and have since changed. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [work queue](../../../queue/work-queue.yaml).**
+
+**Written for maintainer review.** Contributor-facing and technical throughout, except the
 `operator_visible` field of each queue item, which is written for people managing their own or a
 family member's diabetes and follows the rules in `queue/README.md`. Nothing here is medical
 advice. Nothing was pushed, merged, published or sent anywhere: this changes only the control
 surface (`queue/`, `tools/queue/`, `Makefile`, this document). No shipping repository was written
 to and no branch was created or moved.
 
-Written 2026-09-15 against:
+Written 2026-09-15 against (all counts point-in-time as of 2026-09-15):
 
 | thing | value at the time of measurement |
 |---|---|
@@ -19,16 +21,12 @@ Written 2026-09-15 against:
 
 ---
 
-## 1. What was asked, and what turned out to be true
+## 1. Register ids with no queue item
 
-The brief said a completeness critic had found **29 not-fixed register ids appearing nowhere in
-the manifest, 14 of them in §1**, and told me not to trust those numbers because the register had
-almost certainly moved again.
-
-**I re-derived the set difference and the numbers had not moved.** The register's last write was
-19:57; the critique was written at 20:14; nothing has touched the register since. My independent
-derivation — a different parser, run from the register's table headers rather than from a fixed
-column count — returns exactly the same 29 ids, exactly 14 of them in §1:
+A completeness critique reported **29 not-fixed register ids appearing nowhere in the manifest, 14
+of them in §1**. An independent derivation — a different parser, run from the register's table
+headers rather than a fixed column count — returned exactly the same 29 ids, 14 of them in §1
+(point-in-time as of 2026-09-15; the register has since changed):
 
 ```
 BF-40 BF-41 BF-42 BF-43 BF-44 BF-45 BF-46 BF-47 BF-48 BF-49 BF-50 BF-51 BF-52 BF-67   (§1,  14)
@@ -37,9 +35,9 @@ CAP-02                                                                          
 ```
 
 `BF-12` is the thirtieth id absent from the manifest and is correctly absent: it is **closed as
-invalid** and kept in the register only so that a deleted wrong entry does not get raised again.
+invalid** (does not reproduce).
 
-**One thing in the critique's framing needs correcting, and it changes what the right repair is.**
+**The right repair is not 29 new items.**
 "Appear nowhere in the manifest, not even in prose" is literally true — `grep -o 'BF-4[0-9]'` over
 the manifest returned nothing. But **ten of the 29 were already tracked in substance by an existing
 item**, several of them by a *gate script that reproduces the register entry's own ablation
@@ -212,11 +210,9 @@ matched nothing, the `|| exit 0` arm fired, and `P0-C` reported 3/3 PASS on a pr
 false. The space came from the register's own quotation at L1005, which every downstream document
 copied.
 
-*This was found and fixed concurrently by another session while this work was in flight* — its
-corrected pattern is now in the manifest and `P0-C` reports FAIL. The same defect was in the first
-draft of this session's `FU-RESIDUALS` gate, for the same reason: I copied the register's
-quotation. Both now use the same space-tolerant pattern so they cannot diverge again. **The
-register's L1005 quotation itself is still wrong and should be corrected at source.**
+`P0-C`'s corrected pattern is now in the manifest and `P0-C` reports FAIL; `FU-RESIDUALS` uses
+the same space-tolerant pattern so the two cannot diverge. The register's L1005 quotation should
+be corrected at source.
 
 ### 5.4 `storage.js:84` and `:113` are both right
 
@@ -235,14 +231,12 @@ does not exist yet — **it is created by landing `P0-E`**. `FU-LIMIT` is theref
 `bf/reads` arm fails (two), which is also what proves the gate is reading the tree and not the
 command.
 
-### 5.6 A gate-construction error in this session's own work — caught, recorded
+### 5.6 The ES6-shorthand pitfall in `booterror-shape-coverage.js`
 
-The first draft of `booterror-shape-coverage.js`'s caller-count arm matched `/\berr\s*:/` and
-reported `origin/dev` as having **1** `bootErrors.push` site with no `err` key — which would have
-"refuted" the register's *"7 such sites on master and dev, all passing `err`; 9 on cut 4"*. The site
-it named was `bootErrors.push({desc: synopsis.join(' '), err})` — **ES6 shorthand, no colon**. A red
-result for a reason with nothing to do with the property, exactly the failure mode
-`cut4-total-outage`'s first draft had. Caught by reading the site the gate named. With the
+A caller-count arm matching `/\berr\s*:/` reports `origin/dev` as having **1** `bootErrors.push`
+site with no `err` key, which would contradict the register's *"7 such sites on master and dev, all
+passing `err`; 9 on cut 4"*. The site is `bootErrors.push({desc: synopsis.join(' '), err})` — **ES6
+shorthand, no colon** — so that result is red for a reason unrelated to the property. With the
 shorthand matched, the gate reproduces the register exactly: **7 / 7 / 9 sites, 0 / 0 / 2 without
 `err`** on master / dev / cut 4.
 
@@ -330,6 +324,7 @@ module by path, no writes to any worktree (rules 0 and 5).
 - **BF-40** needs a **real MongoDB**. A JavaScript-side oracle gets it wrong: `mingo` applies
   JavaScript truthiness, MongoDB applies `value != 0`, and that difference *is* the entry. A gate
   reproducing it against `mingo` would agree with BF-32 and be wrong.
+  [Correction 2026-09-22: BF-40 (`$exists`) is fixed by PR #8737 via `BOOLEAN_OPERANDS`/`readBooleanOperand` in `lib/server/query.js`, merged to dev 2026-09-18, unreleased.]
 - **BF-44** is reproduced in the register but is **not** re-run as a gate, because the arm and
   control roles **invert with the server's own timezone** — the divergence is (pump offset − *server*
   offset) when the payload carries no zone designator. A gate that did not pin `TZ` would report
@@ -354,6 +349,7 @@ module by path, no writes to any worktree (rules 0 and 5).
 5. **The severity of `BFQ-41` + `BFQ-MINIMED` read together.** BF-44 is a concrete shipping way to
    produce the future timestamp that BF-41 says silences the one continuous "my CGM data stopped"
    detector a self-hoster has. Neither item is high on its own account alone.
+   [Caveat 2026-09-22: the maintainer states (2026-09-21, operational knowledge, not measured here) that mmconnect / minimed-connect-to-nightscout has been broken for some time, and legacy Dexcom Share is intended to map to nightscout-connect. BF-44/BF-45 were graded assuming mmconnect is live and have not been re-graded.]
 
 ## 9. Related documents
 

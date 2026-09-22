@@ -1,14 +1,23 @@
 # Phase 0: how to land ten branches as pull requests
 
-**Status**: ready to push. **Nothing has been pushed.**
+> **Snapshot — describes 2026-09-15/16, measured against cgm-remote-monitor `origin/dev`
+> `a8888f0d`.** Status: **largely completed.** Seven of the nine `cgm-remote-monitor` branches
+> merged into `dev`: `bf/merge` #8734, `bf/food` #8735, `bf/parms` #8736, `bf/coercion` #8737,
+> `bf/reads` #8738, `bf/alarms` #8739, `bf/cache` #8740. **None is released**: as of 2026-09-22
+> `origin/master` `92d08342` = tag `15.0.8` is 308 commits behind `origin/dev` `74fc6619`
+> (`git rev-list --count official/master..official/dev`). Not landed: `bf/auth` (queue P0-C) and
+> the BF-30 throttle split out of it (P0-J); `bf/connect-pin` (P0-PIN, blocked); connector
+> `fix/connect-timer-jitter` is open as nightscout-connect PR #68 (P0-F); the local `v0.0.14` tag
+> (P0-TAG) was never pushed and now conflicts with connector `official/dev` `8e26786`.
+> Current state: [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) items `P0-*`, and the
+> [backfix register](./nightscout-backfix-register.md). Branch SHAs, pins and counts below are as of
+> the snapshot date.
 
-> **REWRITTEN 2026-09-15 (evening): the stack is dissolved and the branch SHAs moved.**
-> The two-deep stack in earlier revisions of this document existed for exactly one reason — a
-> `CHANGELOG.md` collision — and that reason has been removed at the maintainer's instruction. See
-> §0b for the rule and §3a for what was done. **The plan is now nine independent PRs onto `dev`,
-> plus one independent PR in `nightscout-connect`.** Any document, manifest row or PR body still
-> describing a stack, a rebase of `bf/reads` onto `bf/coercion`, or the A–I lettering that encoded
-> the order is **stale**.
+*Contributor-facing.*
+
+The plan is nine independent PRs onto `dev`, plus one independent PR in `nightscout-connect`
+(the earlier two-deep stack existed only because of a `CHANGELOG.md` collision, removed at the
+maintainer's instruction — §0b, §3a).
 
 ## The set, measured
 
@@ -58,10 +67,8 @@ Plus, prepared locally in `nightscout-connect`: branch `release/v0.0.14` and an 
 >
 > **`origin/dev` has not moved.** Re-fetched live during this rewrite: `origin/dev` is `a8888f0d`,
 > dated **2026-09-09**, and `git rev-list --count a8888f0d..origin/dev` is **0**. Every branch here
-> shares that base and **none of them is drifting from anything.** Recorded because the opposite was
-> asserted in passing and turned out to be false — the cached `FETCH_HEAD` was a day old, which is
-> the same stale-ref trap the handoff rules already warn about, and it caught the person who wrote
-> the rule.
+> shares that base and **none of them is drifting from anything.** (A cached `FETCH_HEAD` a day
+> old is the stale-ref trap to avoid when re-checking this.)
 >
 > **So the argument for landing these is not a clock.** It is that nine branches deep is a
 > review-queue problem on its own terms, that the marginal find is now worth less than the marginal
@@ -94,14 +101,12 @@ because the code goes to people who dose insulin using it.
 against `dev`. Never push the branch *onto* `dev`.** The PR is what gets reviewed; the merge is what
 publishes.
 
-> **The CodeQL row above was challenged and is CORRECT — re-measured 2026-09-15.** A later document
-> "corrected" it to say CodeQL lists only `[dev, master]`. On
-> `origin/chore/nightscout-modernization`, `codeql-analysis.yml` line 17 is
-> `push: branches: [ dev, master ]` **and line 19 is
-> `pull_request: branches: [ dev, master, chore/nightscout-modernization ]`**. The "correction" was
-> produced by reading only the `push:` line. `main.yml` on that branch lists the third branch too,
-> and carries four jobs `dev` lacks (`maintained-mongo`, `replica-test`, `browser-test`, plus a
-> concurrency group). **The sentence here stands; the correction of it does not.**
+> **The CodeQL row, re-measured 2026-09-15.** On `origin/chore/nightscout-modernization`,
+> `codeql-analysis.yml` line 17 is `push: branches: [ dev, master ]` **and line 19 is
+> `pull_request: branches: [ dev, master, chore/nightscout-modernization ]`** — reading only the
+> `push:` line gives the wrong answer. `main.yml` on that branch lists the third branch too, and
+> carries four jobs `dev` lacks (`maintained-mongo`, `replica-test`, `browser-test`, plus a
+> concurrency group).
 
 *One trap worth knowing about the fork route.* `close-accidental-sync-prs.yml` auto-closes a PR
 when **all three** hold: it comes from a fork, **its title matches `sync|merge|update|pull|new`**,
@@ -154,23 +159,21 @@ branch.
 `bf/alarms`, `bf/auth`, `bf/cache`, `bf/coercion`, `bf/connect-pin`, `bf/food`, `bf/merge`,
 `bf/parms` and `bf/reads`. (Reproduced.)
 
-**Three consequences worth stating, because earlier revisions of this document instructed the
-opposite:**
+**Three consequences:**
 
 1. **`bf/food` no longer needs to avoid creating the file.** The old instruction — "it deliberately
    does not create `CHANGELOG.md` because `bf/reads` and `bf/coercion` both add it" — described a
    collision that no longer exists. Nothing adds it. BF-35's release note belongs in
    `releases/cgm-remote-monitor-15.0.9/`.
-2. **"`bf/auth` has no CHANGELOG entry — add one" is withdrawn.** It must not have one. The BF-17
+2. **`bf/auth` gets no CHANGELOG entry.** The BF-17
    rotation note and the `replaceOne` narrowing are operator-facing and belong in the release notes
    and in `reports/phase0-pr-bodies/bf-auth.md`.
-3. **"Correct the CHANGELOG before the PR" for `bf/reads` is withdrawn** and replaced by: correct
-   the *release note*, which is where the too-narrow scope statement now lives. See §4.
+3. **For `bf/reads`, correct the *release note***, which is where the too-narrow scope statement now lives. See §4.
 
 ## 1. There is no stack. All nine are independent.
 
 The instinct with ten related branches is a stack — each PR based on the last. **Measured, that
-would be wrong here, and the one exception that used to exist has been removed.**
+would be wrong here.**
 
 **All 36 unordered pairs among the nine `cgm-remote-monitor` branches merge clean, and all nine
 merge clean against `origin/dev`.** Reproduced during this rewrite with
@@ -293,7 +296,7 @@ one plain food, which is why it survived.
 Somebody examined that exact line, correctly cleared it of the thing the linter flagged, and did not
 see the indexing bug beside it.
 
-**BF-16 confirmed, and its reachability claim was wrong** — the fourth such entry. The lexicographic
+**BF-16 confirmed; its reachability claim did not hold.** The lexicographic
 `position` sort was real and **reached nobody**: `/api/v1/food/quickpicks` has no consumer in the
 tree. The order users actually see was broken by the chooser not sorting at all. The type ambiguity
 is real and is now reproduced over HTTP rather than read. A **fourth** site the entry did not name,
@@ -312,8 +315,7 @@ rather than failing to read one.
    `'false'` in `lib/server/food.js` and `record[key] === 'true'` in `lib/food/food.js`, so that
    fixing them *forces* the food model to be revisited. Both are gone on `bf/food`.
 
-   **The instruction this item used to carry — "the anchors must move in the same sitting" — is
-   withdrawn, and BF-16's prescription was not followed.** Flipping the anchors to the post-fix
+   **The anchors were not simply flipped, and BF-16's prescription was not followed.** Flipping the anchors to the post-fix
    spelling would have failed the check against *both* source roots, which still carry the pre-fix
    text because `bf/food` has not merged; the check would have been off across exactly the window
    it is least affordable to lose. Each anchor now accepts the pre-fix and post-fix spelling and
@@ -398,7 +400,7 @@ was wrong rather than the substituter.**
 | `bf/coercion` `b7234753` | 2 | T0.5 — query filter typing, and BF-40's `$exists=false` inversion. The largest change in the batch |
 | `bf/reads` `2ecfeb53` | 6 | BF-01, BF-05, BF-13, BF-14, BF-15, BF-33 |
 
-**These two used to be a stack and are not any more.** They merge clean with each other and with
+**These two are not a stack.** They merge clean with each other and with
 everything else, and **they compose correctly** — but that composition is a property of the *pair*,
 not of either PR, and it is the one thing in this batch a reviewer cannot see from a single diff.
 **§3b is the check that covers it, and it survives the dissolution of the stack.**
@@ -416,9 +418,7 @@ not of either PR, and it is the one thing in this batch a reviewer cannot see fr
 
 **Ordering constraint inside the branch: BF-05's commit must follow BF-01's.** They share two files
 — `lib/server/aggregate.js` and `tests/api.count-where.test.js` — and the branch is already in that
-order. (Reproduced with `git show --stat` on both commits. Earlier revisions named `4a398d47`/
-`c8fb536b` and then `af717c8f`/`1d0064bd`; **both pairs are pre-strip and no longer exist on the
-branch**. The live pair is `4772b983` then `3b588098`.)
+order. (Reproduced with `git show --stat` on both commits: `4772b983` then `3b588098`.)
 
 **Every other commit on every branch lands alone.**
 
@@ -470,9 +470,8 @@ backwards. `mergeTreatmentUpdate` does neither. Both are exported with `//expose
 
 #### DONE 2026-09-15 — tag cut and pin moved, locally, nothing pushed
 
-**The pin move was framed as a security fix. That framing is withdrawn below and the rationale that
-survives is nameability, reviewability and three behavioural fixes.** See the correction two
-sub-sections down, and the resolved contradiction immediately after the commit list.
+**The pin move is not primarily a security fix. Its rationale is nameability, reviewability and
+three behavioural fixes** — see immediately after the commit list and the corrections below.
 
 `dev` pinned `234d47c8` — an untagged commit on an **unmerged feature branch**. Measured against
 the `v0.0.13` tag, that pin contains **exactly one commit**. These six are *not* in it:
@@ -488,15 +487,9 @@ c1cce2a  BF-34 and start jitter
 
 So **15.0.9 as currently pinned ships without three log-redaction fixes.**
 
-> **CONTRADICTION FOUND AND RESOLVED HERE, 2026-09-16 (adversarial review).** This paragraph used to
-> continue: *"Making debug logging opt-in (`234d47c`, the one commit the pin does have) narrows when
-> those leaks can happen; it does not stop them happening when an operator turns logging on to
-> diagnose a problem."* That is **the same sentence this section later calls refuted** — see the
-> two-corrections block below — so the document was asserting in its own voice, three paragraphs
-> earlier, a claim it then withdrew. Reproduced with `git show --stat 234d47c8`: that commit is
-> **18 files, +379/−146**, and it *rewrites* the logging call sites rather than gating them, so
-> "it only narrows *when* the leak happens" is wrong about what the commit does.
-> **What survives:** `dev`'s pin genuinely lacks the three named redaction commits, which is a real
+> **What `234d47c8` does (reproduced 2026-09-16, `git show --stat 234d47c8`):** 18 files,
+> +379/−146; it *rewrites* the logging call sites rather than gating them, so it does not merely
+> narrow *when* a leak can happen. `dev`'s pin genuinely lacks the three named redaction commits, which is a real
 > coverage gap — but `dev`'s pin is among the *safest* in flight and `master`'s `v0.0.13` is the
 > leaking one. **The pin move is not primarily a security fix.** The rationale that stands is
 > nameability, reviewability, BF-34, the MiniMed contract fix, the listener-release fix, and
@@ -530,15 +523,15 @@ cd externals/work/crm-bf-connect-pin && npm install   # updates package-lock.jso
 git commit -am "Regenerate the lock against connect v0.0.14"
 ```
 
-**`master` is a separate problem, but not the one this paragraph used to describe.**
+**`master` is a separate problem.**
 
-> **CORRECTED 2026-09-15, measured three times independently.** `origin/master:package.json` pins
+> **Measured 2026-09-15, three times independently.** `origin/master:package.json` pins
 > `https://github.com/nightscout/nightscout-connect/archive/refs/tags/v0.0.13.tar.gz`. It does
 > **not** depend on `"^0.0.12"` from npm, and has not since commits `a91e8ee4` and `561974de`
 > replaced that pin on 2026-07-07. The `^0.2.12` that *does* appear on `master` is
-> **`share2nightscout-bridge`**, a different package; the two were conflated.
+> **`share2nightscout-bridge`**, a different package.
 >
-> Three consequences, and they strengthen rather than weaken the section's conclusion:
+> Three consequences:
 >
 > 1. **There is no npm semver range for the connector anywhere in the tree.** Every pin is a tarball
 >    URL, so the shapes are two (tag tarball, commit tarball), not three.
@@ -572,7 +565,7 @@ converging only at parcel 5. So "the line is linear and there is no divergence t
 of `dev` and parcel 5 and **false of the pair that matters**. **v0.0.14 is the first ref carrying
 all seven post-v0.0.13 commits**, and moving `dev` to it is what reconciles them.
 
-> **Two further corrections to widely-repeated statements.** (a) Moving `dev`'s pin forward pulls in
+> **Two further points.** (a) Moving `dev`'s pin forward pulls in
 > **11** commits (7 non-merge), not 9; nine is the count from v0.0.13 to parcel 5's pin, a different
 > span. (b) `master`'s pin is the **leaking** one and `dev`'s is among the safest — the opposite of
 > how the security rationale has been framed. **`bf/connect-pin`'s commit message `0807eb1c` carries
@@ -598,8 +591,7 @@ have `dev` pin **the tag** rather than a SHA. That ships the highest-value Phase
 Note that moving `dev`'s pin forward also pulls in the intervening commits (quiet logging, stop
 cleanup). That is a release-content decision, not a mechanical bump, and it is the maintainer's.
 
-> **`bf/connect-pin` is also load-bearing for the MiniMed retirement, which earlier revisions of
-> this document did not know.** The E2 comparison reproduced that the **pins operators can reach
+> **`bf/connect-pin` is also load-bearing for the MiniMed retirement.** The E2 comparison reproduced that the **pins operators can reach
 > today are the bad ones for CareLink**: neither `v0.0.13` (which `master` pins) nor `234d47c8`
 > (which `dev` pins) has the `sg !== 0 && kind === 'SG'` gap-sentinel filter, so a CareLink gap is
 > ingested as `sgv 0`; and while a `0` is the newest entry, `lib/plugins/simplealarms.js` skips the
@@ -610,7 +602,7 @@ cleanup). That is a release-content decision, not a mechanical bump, and it is t
 > [E2](../../60-research/modernization/e2-medtronic-path-comparison-2026-09-15.md).
 >
 > **But v0.0.14 is not a clean bill of health for MiniMed, and this document should not read as if
-> it were (added 2026-09-16, adversarial review).** E2 reproduced, driving the connector's own
+> it were.** E2 reproduced, driving the connector's own
 > `lib/builder.js` and `lib/machines/*` with only the network stubbed, that
 > `lib/sources/minimedcarelink/index.js` guards `data.medicalDeviceFamily` and then does
 > `data.markers.filter(...)` **unguarded**: a CareLink payload with no `markers` key throws a
@@ -763,12 +755,9 @@ themselves on the merged tree (`entries`, `treatments`, `devicestatus`, `profile
 
 > **Evidence grade, per this document's own rule (§4b).** The table above is **reproduced**: the
 > merge was executed and the file contents were read out of the resulting tree object. It is *not*
-> an end-to-end run. The earlier revision of this section asserted the same conclusion as
-> **read-derived**, from a quotation of `entries.js` on the then-stacked `bf/reads`; that quotation
-> was accurate but it described a branch shape that no longer exists, so the conclusion needed
-> re-establishing rather than re-copying.
+> an end-to-end run.
 
-### The `$exists` claim that used to block this branch — DISCHARGED, and why it must stay written down
+### The `$exists=true` claim — false, and must not reach the release note
 
 `bf/coercion`'s `CHANGELOG.md` used to tell operators something false. Lines 35-39:
 
@@ -781,12 +770,10 @@ seven): MongoDB reads `{$exists: NaN}` as TRUE.** Numeric truthiness is `value !
 `mingo`, the D8 oracle, which applies JavaScript truthiness — a limit on that oracle nothing had
 recorded.
 
-**The block is discharged twice over**: the CHANGELOG no longer exists on either branch (§0b), and
-the corrected version is already written into
+The CHANGELOG no longer exists on either branch (§0b), and the corrected version is written into
 `releases/cgm-remote-monitor-15.0.9/contents.md` and `release-notes.md`, and into
-`reports/phase0-pr-bodies/bf-coercion.md`. **It stays written down here because the release notes
-are still to be generated, and this is precisely the sentence that would be re-derived from the
-commit history by anyone who did not read this far.**
+`reports/phase0-pr-bodies/bf-coercion.md`. It is recorded here because this is the sentence a
+reader of the commit history would otherwise re-derive.
 
 **What the release note must say instead**, all of it measured:
 
@@ -795,9 +782,11 @@ commit history by anyone who did not read this far.**
 - What it genuinely broke is **`$regex`**: `{$regex: NaN}` is a **server error**
   (*"$regex has to be a string"*), so `find[sgv][$regex]=...` returned HTTP 500 and now returns an
   empty 200.
-- **`$exists=false` is wrong before *and* after this branch**, on every field, because the string
-  `"false"` is truthy to MongoDB too. It is filed as **BF-40** and is **not** fixed here. A release
-  note that implies `$exists` filtering is now correct would be its own defect.
+- **`$exists=false` is wrong on `dev` before this branch**, on every field, because the string
+  `"false"` is truthy to MongoDB too. It is filed as **BF-40**.
+  *[Correction: the BF-40 fix was folded into this branch as its second commit (tip `b7234753`,
+  §3a) and #8737 does fix it — `lib/server/query.js` reads `$exists` operands as booleans
+  (`BOOLEAN_OPERANDS` / `readBooleanOperand`); measured 2026-09-17. Merged to `dev`, not released.]*
 
 See the register's BF-32 (refutation) and BF-40 (the residual).
 
@@ -822,9 +811,8 @@ behaviour changes*. **The text goes in `reports/phase0-pr-bodies/<branch>.md` an
   `notes` and `created_at` today; see register **BF-47**. But it is still **the one irreversible
   change in this batch**, a code revert does not recover the data, and it is what makes `bf/auth` a
   major rather than a minor. It needs an explicit maintainer yes.
-  *(The old instruction here — "`bf/auth` has no `CHANGELOG.md` entry at all … Add one" — is
-  withdrawn. It must not have one. The rotation note and the `replaceOne` narrowing go in the
-  release notes and the PR body.)*
+  *(No `CHANGELOG.md` entry — the rotation note and the `replaceOne` narrowing go in the release
+  notes and the PR body.)*
 - **`bf/coercion`** — queries that returned nothing start returning rows; decimal bounds stop
   rounding down. **Do not restate the refuted `$exists` sentence** — see §3b.
 - **`bf/food`** — the quick-pick list changes contents *and* what selecting an entry does. Anyone
@@ -833,8 +821,7 @@ behaviour changes*. **The text goes in `reports/phase0-pr-bodies/<branch>.md` an
   beyond the defect, not two: `0`, `0x10`, `2.5`, `-3`, `1e2` and `abc` all now return `400`, plus
   integers above `MAX_SAFE_INTEGER`. (`1`, `10`, `" 5 "`, absent and empty are unchanged.) All six
   must be called out as restrictions.
-  **And the scope is wider than the branch's own note used to state.** The withdrawn CHANGELOG block
-  listed read routes only. The validator is `app.use`'d on the whole API v1 app **before every
+  **And the scope is wider than read routes.** The validator is `app.use`'d on the whole API v1 app **before every
   router**, so it also covers `/treatments`, `/profile`, `/devicestatus`, `/notifications`,
   `/activity`, `/food`, `/status`, `/alexa`, `/googlehome` — and **writes** as well as reads: a
   `POST /api/v1/treatments?count=0` that previously succeeded now returns `400`. **A breaking change
@@ -993,16 +980,15 @@ alexa fallthrough is deliberate and commented.
    must restore them in `afterEach` or it breaks `browser-settings.test.js` later in the same run.
    `hashauth.modern.test.js` does the restore; nothing requires it, and the failure lands in a
    different file than the one that caused it.
-10. **Worktree mongod isolation is not what the handoff notes claim.** Re-measured 2026-09-16:
+10. **Worktree mongod isolation is not what the handoff notes claim.** Measured 2026-09-16:
     **four** worktrees share port **27033** — `crm-bf-cache`, `crm-bf-food`, `crm-bf-merge` and
-    `crm-bf-parms` (`crm-bf-cache` was missing from the earlier list of three); `crm-bf-coercion`
+    `crm-bf-parms`; `crm-bf-coercion`
     names 27030 and `crm-bf-alarms` names 27034 **with nothing listening on either** (confirmed by
     connecting to each port); `crm-bf-auth` 27031 and `crm-bf-reads` 27032 are up;
     `crm-bf-connect-pin` has no `my.test.env` at all. The concrete consequence is that **`bf/alarms`' two API test files cannot
     be run on this machine as configured.** Fix before relying on per-branch targeted runs.
 
-> *T0.4 used to be listed here as a follow-up "in a different repository and not in this set". It
-> **is** in this set — it is `fix/connect-timer-jitter`, §2b. Removed from the follow-up list.*
+*T0.4 is in this set, as `fix/connect-timer-jitter` (§2b), not a follow-up.*
 
 ## 6. Where this batch sits: the maintainer's linear model
 
@@ -1103,8 +1089,7 @@ findings in the documents:
   that takes the whole site down (BF-61). One total break in legacy *is* proved: CareLink
   care-partner (follower) accounts cannot work through Nightscout at all, because
   `lib/plugins/mmconnect.js` `getOptions` never plumbs `patientId`.
-  **And the item E2 ranks above every other finding it made was missing from this section until the
-  2026-09-16 review put it back.** Reproduced end to end through both shipping transforms and the
+  **The item E2 ranks above every other finding it made:** reproduced end to end through both shipping transforms and the
   shipping `lib/plugins/timeago.js`: with a payload whose timestamps carry **no zone designator** —
   the shape the retired package's own recorded fixtures use — and a pump **east of the server
   clock**, *legacy* files the reading at the true instant and raises the urgent stale-data alarm,
@@ -1121,16 +1106,18 @@ findings in the documents:
   `connect.source === 'minimedcarelink'`, so both ingestion paths poll at once — and because the two
   paths compute different `sysTime` values the upsert does **not** absorb the duplicates. That
   advice is safe for Dexcom and unsafe for MiniMed.
+  *[Note 2026-09-22: the maintainer reports that legacy mmconnect has been broken for some time
+  (operational knowledge, not measured here) and that legacy Dexcom Share is intended to map to
+  nightscout-connect. BF-44 and BF-45 were graded assuming mmconnect is live and have not been
+  re-graded; read the MiniMed hazards above as conditional on anyone still running it.]*
 
-**Two things to carry into the deprecation notice, in this order. The ranking was wrong here until
-the 2026-09-16 review and the correction matters, because the two items have different failure
-modes.**
+**Two things to carry into the deprecation notice, in this order — the two items have different
+failure modes.**
 
 **First, the timestamp hazard above**, because E2 states plainly that *of everything it studied,
 only that section has a failure mode where a person's glucose data stops and the software does not
 say so.* It is the item that should decide whether the retirement ships behind a fix or behind a
-notice. This document previously gave that ranking to the settings item below, which is not what the
-evidence says.
+notice.
 
 **Second, "nothing is lost" is true of stored glucose history and false of settings.** Five
 `BRIDGE_*` and five `MMCONNECT_*` controls are silently dropped, the `device` label changes
@@ -1140,7 +1127,7 @@ configurations legacy tolerated stop working — notably `BRIDGE_SERVER=US`, whi
 unresolvable host `https://US` while `validate()` returns `ok: true`. That last one *is* a silent
 stop, and it is why the `BRIDGE_SERVER` census below sets the length of the notice.
 
-> **The "no duplicate readings" half is Dexcom-only and was stated too broadly here.** For **Dexcom**,
+> **The "no duplicate readings" half is Dexcom-only.** For **Dexcom**,
 > E1 reproduced that entry records are field-for-field and value-for-value identical except `device`,
 > and that `entries.create()` upserts on `{sysTime, type}` — which does not include `device` — so the
 > cutover cannot duplicate history. For **MiniMed** that does not follow: E2 reproduced that legacy
@@ -1149,9 +1136,7 @@ stop, and it is why the `BRIDGE_SERVER` census below sets the length of the noti
 > gets two traces offset by the pump's UTC offset. Do not carry the Dexcom sentence into a MiniMed
 > notice.
 
-**What has NOT been retired, and belongs in the notice as the case *for* the change.** The
-adversarial review found this section listing only corrections, which reads as a case against a
-decision the evidence partly supports. E1 and E2 also **confirm**, by reproduction: legacy Dexcom
+**What belongs in the notice as the case *for* the change.** E1 and E2 also **confirm**, by reproduction: legacy Dexcom
 dies with an uncaught `TypeError: glucose.map is not a function` on a non-array body with HTTP <400,
 and cgm-remote-monitor registers **no** `uncaughtException` handler, so that kills the Nightscout
 process, where Connect's `Array.isArray` guard continues; legacy authenticates ~550 times a day
@@ -1161,8 +1146,8 @@ its session-rejection path is an unbounded delay-free loop; and `BRIDGE_MAX_FAIL
 "how many failures before giving up", is **unreachable at its default**. On MiniMed, legacy's entire
 US login branch is dead code (`if (1 || CARELINK_EU)`), `MMCONNECT_MAX_RETRY_DURATION` does nothing
 (`let maxRetry = 1; // No retry`), and follower accounts cannot work at all. **Those are a sufficient
-case for retirement on their own and do not depend on the unproven claim that legacy MiniMed "does
-not work".**
+case for retirement on their own and do not depend on the claim that legacy MiniMed "does not
+work"** (maintainer's operational report, not measured here).
 
 **What cannot be settled on this machine, and should be said plainly rather than assumed away:**
 whether Dexcom Share throttles or locks accounts under legacy's ~550 authentications/day; how often
@@ -1205,7 +1190,7 @@ the release-readiness document's own objection applies to it.
 
 ---
 
-**Draft status.** This document is a working control-surface record, not a published plan. The
+**Snapshot.** This document is a working control-surface record, not a published plan. The
 branch set, SHAs, merge results, parcel containment and file overlaps in it were reproduced on
 2026-09-15/16 against `origin/dev` at `a8888f0d`; anything that moves invalidates the numbers, not
 the method. **Nothing here has been pushed, merged, tagged or published, and each of those remains a

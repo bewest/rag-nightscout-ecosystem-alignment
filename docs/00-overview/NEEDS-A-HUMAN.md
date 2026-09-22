@@ -1,13 +1,13 @@
 # Needs a human
 
 *Contributor-facing. The subset of the work queue where no further engineering
-advances anything — a person has to push, decide, or review. Narrative revised
-2026-09-21; tables generated.*
+advances anything — a person has to push, decide, or review. Prose revised
+2026-09-22 against cgm-remote-monitor `origin/dev` `74fc6619` and nightscout-connect
+`official/dev` `8e26786`; tables generated.*
 
-The queue has 88 items. Most of them are work. This page is only the items whose
-claimed state means **the next move belongs to a person**, grouped by the kind of
-person, so that "what is blocked on me" is one page instead of a filter nobody
-runs.
+This page lists only the items whose claimed state means **the next move belongs to
+a person**, grouped by the kind of person, so that "what is blocked on me" is one
+page.
 
 Four states qualify:
 
@@ -18,20 +18,11 @@ Four states qualify:
 | `in-flight-upstream` | handed to upstream; not ours to land |
 | `unsettled` | not yet established that this is a defect at all |
 
-> **`in-flight-upstream` used to be the one that hid, and the shape of the problem
-> has changed rather than gone.** Revised 2026-09-21: nine pull requests sat here
-> unreviewed on 2026-09-16; **thirteen have since merged** — ten Phase 0 pull
-> requests between 2026-09-17 and 2026-09-20, then the three advisory pull requests
-> #8744, #8745 and #8746 on the evening of 2026-09-21 — and one remains, in the
-> connector repository. This project's last 100 child pull requests were merged
-> with zero human reviews, so a PR leaving this list is not by itself evidence it
-> was reviewed. The governance gap moved from "waiting" to "merged", which is
-> harder to see, not better.
->
-> **A fifth state, `merged-upstream`, deliberately does NOT appear on this page.**
-> Those items need no person individually; what they need is a release, and that
-> is one item — `RT-0` — which is listed. Putting nine merged fixes here would pad
-> the page and bury the single decision that actually unblocks them.
+`merged-upstream` items do not appear here. They need no person individually; what
+they need is a release, and that is one item — `RT-0` — which is listed. This
+project's last 100 child pull requests were merged with zero human reviews, so an
+item leaving `in-flight-upstream` for `merged-upstream` is not by itself evidence
+that it was reviewed.
 
 ---
 
@@ -82,7 +73,7 @@ Four states qualify:
 
 ## The open pull requests
 
-One bounded review packet per row lives in `reports/reviewer-packets/`.
+One bounded review packet per item awaiting review lives in `reports/reviewer-packets/`.
 
 <!-- BEGIN GENERATED: open-prs -->
 
@@ -92,27 +83,21 @@ One bounded review packet per row lives in `reports/reviewer-packets/`.
 
 <!-- END GENERATED: open-prs -->
 
-**Revised twice on 2026-09-21: this list is down to one, and the reason matters.**
-It held nine cgm-remote-monitor pull requests on 2026-09-16. All of them merged,
-along with #8733, between 2026-09-17 and 2026-09-20; the three advisory pull
-requests raised that evening — #8744, #8745, #8746 — merged the same day they were
-opened. What is left is the connector half: PR #68 is open, four sibling connector
-PRs (#61, #64, #66, #67) are open, and the prepared `v0.0.14` tag is still unpushed.
+All thirteen cgm-remote-monitor backfix pull requests (twelve from this programme,
+plus #8741 from an external contributor) are merged into `dev`; none is released. What remains open is the connector half, in
+`nightscout-connect`: PR #68 (`P0-F`, backoff and jitter), sibling PRs #64, #66, #67
+and #70, and the question of which 0.0.14 is the release. Upstream `dev` (`8e26786`)
+has taken #71 (Glooko), #72 (connector CI) and #73 (LibreLinkUp v4) and its
+`package.json` says 0.0.14; the programme's local, unpushed tag `v0.0.14` (`649a7de`)
+is 11 commits ahead and 24 behind upstream `dev` and conflicts with it in 11 files.
+`P0-TAG` is `needs-decision` on that question, and `P0-PIN` and `P0-LOCK` are blocked
+behind it.
 
-**The second revision is the one to read.** The earlier sentence here said the
-connector half "has not moved at all". It has. On the evening of 2026-09-21
-`nightscout-connect`'s `dev` took the Glooko work (#71) and restored connector
-regression CI (#72), and — the part that matters — **bumped its own `package.json`
-to 0.0.14**, the same version this programme has had a prepared, unpushed tag for
-since 2026-09-15, on a tree that conflicts with `dev` in six files. So there are now
-two candidate 0.0.14s. `P0-TAG` moved from `ready-to-push` to `needs-decision`
-because of it, and `P0-PIN` and `P0-LOCK` are blocked behind a question that is no
-longer "when does somebody push the tag" but "which 0.0.14 is the real one".
-
-One thing a reviewer should know before opening #68: **merging it in the connector
-repository ships it to nobody.** cgm-remote-monitor pins the connector by tarball,
-so `P0-TAG` and `P0-PIN` are what deliver it — and `P0-PIN` is the security-relevant
-half, because `dev`'s current pin omits three log-redaction fixes.
+Before opening #68: **merging it in the connector repository ships it to nobody.**
+cgm-remote-monitor pins the connector by tarball — `dev` pins commit `234d47c` (on the
+unmerged connector branch behind PR #67) and `master` pins tag `v0.0.13` — so `P0-TAG`
+and `P0-PIN` are what deliver it. `P0-PIN` is the security-relevant half, because
+`dev`'s current pin omits three log-redaction fixes.
 
 ---
 
@@ -122,55 +107,68 @@ Engineering cannot advance these. Each needs somebody to choose.
 
 ### `RT-D3` — does a two-major charting upgrade ship under a patch number?
 
-15.0.9 carries D3 5.16 → 7.9. That is two major versions of a charting library
-arriving under a **patch** version, and `dev` has no real-browser coverage to catch
-what breaks. The adopted release train puts 15.0.9 first, so **every later cut waits
-behind this answer.**
+15.0.9 carries D3 5.16 → 7.9: two major versions of a charting library arriving under
+a **patch** version, and `dev` has no real-browser coverage to catch what breaks. The
+adopted release train puts 15.0.9 first, so every later cut waits behind this answer.
 
-The question is not "is D3 7.9 fine" — it is whether the project's version numbers
-are allowed to mean something. Semver for an application only means anything once
-the public surface is *declared*: the API v1/v3 contracts, the plugin interface, the
-env-var configuration surface, the database schema, the Node floor, and the
-ingestion paths. That declaration does not exist yet, and this decision is where its
-absence first costs something real.
+The question is not "is D3 7.9 fine" but whether the project's version numbers mean
+something. Semver for an application means something only once the public surface is
+*declared*: the API v1/v3 contracts, the plugin interface, the env-var configuration
+surface, the database schema, the Node floor, and the ingestion paths. That
+declaration does not exist yet, and this decision is where its absence first costs
+something.
 
 ### `RT-0` — release 15.0.9
 
-Downstream of `RT-D3`. Also the first release that would exercise the three-decision
-publication rule end to end: merge the code, push the tag, publish the package.
+Downstream of `RT-D3`, and the most consequential row on this page. 15.0.9
+(`origin/master..origin/dev`) is 48 first-parent merges (`git rev-list --first-parent --count origin/master..origin/dev`, 2026-09-22), including the thirteen backfix
+PRs; `master` is 308 commits behind `dev`. Until 15.0.9 ships, every one of those fixes
+exists in code and protects nobody. They include the fixes for two published-advisory
+defects that survive `AUTH_DEFAULT_ROLES=denied` — GHSA-gjhc (BF-79, #8744) and
+GHSA-8849 (BF-75/76, #8745) — plus the boot notice for world-readable sites (#8746);
+every instance on 15.0.8 is still exposed to all three. BF-70's mechanism is described
+in a merged public pull request body while 15.0.8 remains affected. Release PR #8598 is
+open, mergeable, green on every CI check, and has no approving review. It is also the
+first release that would exercise the three-decision publication rule end to end:
+merge the code, push the tag, publish the package. What 15.0.9 contains and whether it
+is ready: [`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md).
 
-**Its weight changed on 2026-09-20, grew again on 2026-09-21, and this is now the
-most consequential row on the page.** `dev` carries ten merged Phase 0 fixes *and
-three merged security fixes* that `origin/master` does not — `master` is **308
-commits behind**, up from 299 the same evening — so until 15.0.9 ships, **every one
-of those fixes is code that exists and protects nobody**. The three that landed on
-2026-09-21 close two published-advisory defects (GHSA-gjhc, GHSA-8849) plus the
-world-readable boot notice, and every live instance is still exposed to all three. One of them, BF-70, had its mechanism
-described in a merged public pull request body on 2026-09-18 while the shipping
-release remains affected. That is not a reason to rush a release past `RT-D3`; it is
-a reason not to let `RT-D3` sit unanswered, and the two are different things.
+The urgency is a reason not to let `RT-D3` sit unanswered, not a reason to release past
+it.
 
-### `BFQ-47` — BF-47, and it needs intent before it needs code
+### `P0-TAG` — which `nightscout-connect` 0.0.14 is the release
 
-An ordinary subject edit destroys stored fields **on today's release**. The fix
-depends on whether that behaviour was deliberate, and nobody has established which.
-Writing a fix first would be guessing at intent and calling it a repair.
+Described above under the open pull requests. The connector fixes reach operators only
+through a cgm-remote-monitor pin, and that pin waits on this answer.
+
+### `BFQ-47` — BF-47 needs intent before it needs code
+
+An ordinary subject edit destroys stored fields on 15.0.8. The fix depends on whether
+that behaviour was deliberate, and nobody has established which. A fix written first
+would be a guess at intent.
+
+### `BFQ-72` — whether the security contact process is invoked
+
+BF-72: an unauthenticated query can occupy the database for minutes. It is live on
+15.0.8 and on `dev`, and there is no fix. Mechanism only is recorded in this public
+repository. The blocking question is whether Nightscout's security contact process is
+invoked.
 
 ### `BFQ-09`, `BFQ-52`, `A7A-7` — `unsettled`, which is not the same as open
 
-These are not yet established as defects at all. `unsettled` exists as a state
-precisely so that "we looked and could not settle it" does not silently become
-either "fixed" or "open". `A7A-7` carries a safety dimension — it is the clock
-question inside the alarm path.
+These are not yet established as defects. `unsettled` exists so that "we looked and
+could not settle it" does not silently become either "fixed" or "open". `A7A-7` carries
+a safety dimension: it is the clock question inside the alarm path.
 
 ---
 
 ## What is deliberately *not* on this page
 
-- **Engineering work.** 34 items are `not-started` and need somebody to do them,
-  not to decide them. Those are in `queue/QUEUE.md`.
-- **`blocked` items.** They wait on another *item*, not on a person. Unblocking
-  them is a consequence of the rows above, not a separate decision.
+- **Engineering work.** `not-started` items need somebody to do them, not to decide
+  them. They are in `queue/QUEUE.md`; the count is in the horizons table on
+  [PROGRAMME-STATUS.md](PROGRAMME-STATUS.md).
+- **`blocked` items.** They wait on another *item*, not on a person. Unblocking them
+  follows from the rows above.
 - **`gate-not-met` items.** A gate is failing. That is work.
 
 ---
@@ -181,16 +179,15 @@ Everything above is a **claim** read from the manifest. The measurement is:
 
 ```bash
 make queue-status STATE=ready-to-push     # do the gates agree these are ready?
-make queue-status                          # all of it (~7s)
+make queue-status                          # all of it
 make views-check                           # are this page's tables current?
 ```
 
-`make queue-status` prints `CLAIM DIVERGES` when an item claims `ready-to-push`
-and a gate disagrees. That warning caught a wrong state on its first ever run, so
-it is worth running before acting on any row here.
+`make queue-status` prints `CLAIM DIVERGES` when an item claims `ready-to-push` and a
+gate disagrees. Run it before acting on any row here.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-21**, against cgm-remote-monitor-official `74fc6619` and this repository at `be480650`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-22**, against cgm-remote-monitor-official `74fc6619` and this repository at `1d97eda4`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

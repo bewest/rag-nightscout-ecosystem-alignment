@@ -26,11 +26,9 @@ three-interface split**
 
 ## What this changes
 
-No code. DECIDED 2026-09-16 - D16 adopted whole, D17 adopted in three rows of
-four. Recorded in the execution plan section 1 and section 2.9. The
-repo/branch fields were corrected at the same time: this item never touched
-cgm-remote-monitor, its deliverable is a document here, and claiming a seam
-worktree it does not write to made the item unpushable by description.
+No code; the deliverable is a document in this repository. Decided 2026-09-16:
+D16 adopted whole, D17 adopted in three rows of four. Recorded in the
+execution plan section 1 and section 2.9.
 
 ## Why that semver
 
@@ -38,11 +36,11 @@ research and decision, no shipped surface
 
 ## Who should review this, and why
 
-maintainer DONE 2026-09-16; SECURITY still owes D17 row 2 a look, and that row
-is the one deliberately left provisional. Under the one-deployment shape the
+maintainer decided 2026-09-16; SECURITY still owes D17 row 2 a look, and that
+row is deliberately left provisional. Under the one-deployment shape the
 authentication plane is cohort-wide by construction, so tenant isolation rests
-entirely on the authorization layer and RLS - which is now written down as the
-D13 amendment rather than left to be discovered.
+entirely on the authorization layer and RLS - written down as the D13
+amendment.
 
 ## What was measured
 
@@ -53,24 +51,21 @@ whether the recommendation is right, only that it was written.
 
 **`grep -q '\*\*D16\*\*' docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md && grep -q '`** &nbsp;·&nbsp; kind: `static`
 
-the decision reached the DECISIONS TABLE, not just a research document.
-T30-RESEARCH's gate failed for three weeks because it named a file that never
-existed, so a written deliverable read as not-started; this gate is
-deliberately pointed at the place a later reader will look first. It cannot
-tell whether the rows say the right thing.
+the decision reached the execution plan's decisions table, not just a research
+document - the place a later reader looks first. It cannot tell whether the
+rows say the right thing.
 
 ## What these gates do NOT prove
 
 *Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
 
-- EVERY ORY CLAIM IN IT IS READ, NOT RUN. No Kratos and no Hydra instance
-  was started. This programme has measured five register entries whose read-
-  derived claims did not survive contact with running code, and twice a
-  prescribed fix measured as a regression. The discharge is specific: stand
-  up Kratos 1.x and Hydra 2.x, register two tenants against one pool, and
-  confirm a session for tenant A cannot be exchanged for a Nightscout token
-  on tenant B.
-- nightscout-roles-gateway was READ, not executed. Its dependencies are
+- Every Ory claim in the deliverable is read-derived, not run. No Kratos and
+  no Hydra instance was started. Read-derived claims in this programme have
+  failed on contact with running code before, so this is a hypothesis. The
+  discharge is specific: stand up Kratos 1.x and Hydra 2.x, register two
+  tenants against one pool, and confirm a session for tenant A cannot be
+  exchanged for a Nightscout token on tenant B (T30-ORY-PROOF).
+- nightscout-roles-gateway was read, not executed. Its dependencies are
   2022-era - @ory/kratos-client 0.9.0-alpha.3 and @ory/hydra-client 1.11.8 -
   and V0alpha2Api, which lib/privy/index.js:20 constructs, no longer exists
   under that name in Kratos 1.x. Whether its decision pipeline still works
@@ -93,27 +88,23 @@ tell whether the rows say the right thing.
 
 ## Notes carried on the item
 
-DECIDED 2026-09-16 (maintainer). D16 ADOPTED WHOLE, including the prerequisite
-- tenant resolution and credential verification extract to one module BEFORE
-the third listener exists, which lands on T30-WIRING. D17 ADOPTED IN THREE
-ROWS OF FOUR: devices and the data path keep a native per-tenant credential
-permanently (forced by D1, an uploader cannot run an OAuth flow); Hydra
-deferred; D7 unchanged. ROW 2 - Ory Kratos as one cohort-wide pool for human
-identity - is recorded as DIRECTION OF TRAVEL, NOT ADOPTED, because every Ory
-claim behind it is read and not run and because a shared identity pool is
-irreversible once identities exist. It is gated on T30-ORY-PROOF. Commissioned
-the same day by the maintainer, who settled the deployment shape mid-research
-- ONE Kratos and ONE Hydra for the whole cohort, unified auth FOR Nightscout
-tenants, not a Kratos tenant PER Nightscout tenant - which settles the largest
-open question against Ory OSS, because OSS multi-tenancy is exactly what we
-are not asking for. The three findings a reader should not have to dig for -
-Nocturne uses no Ory at all and built identity in-house; Ory OSS is single-
-tenant and its multi-tenancy is the paid boundary, which does not bind us; and
-we already shipped this integration once and stopped one component short of
-finishing it. A fourth was MEASURED after the decision and is in the research
-document at section 3.5: Nocturne's identity plane is deployment-scoped too,
-arrived at independently and with no Ory in the tree, which is the nearest
-thing to corroboration this decision has.
+Decided 2026-09-16 (maintainer). D16 adopted whole, including the
+prerequisite: tenant resolution and credential verification extract to one
+module BEFORE the third listener exists, which lands on T30-WIRING. D17
+adopted in three rows of four: devices and the data path keep a native per-
+tenant credential permanently (forced by D1 - an uploader cannot run an OAuth
+flow); Hydra deferred; D7 unchanged. Row 2 - Ory Kratos as one cohort-wide
+pool for human identity - is direction of travel, NOT adopted, because every
+Ory claim behind it is read-derived and a shared identity pool is irreversible
+once identities exist. It is gated on T30-ORY-PROOF. The deployment shape is
+settled: ONE Kratos and ONE Hydra for the whole cohort, unified auth for
+Nightscout tenants, not a Kratos tenant per Nightscout tenant - so Ory OSS
+being single-tenant (its multi-tenancy is the paid boundary) does not bind us.
+Other findings: Nocturne uses no Ory and built identity in-house; this project
+shipped an Ory integration once and stopped one component short of finishing
+it; and, measured after the decision (research document section 3.5),
+Nocturne's identity plane is deployment-scoped too, arrived at independently -
+the nearest thing to corroboration this decision has.
 
 ---
 
@@ -124,4 +115,4 @@ thing to corroboration this decision has.
 - [ ] `make queue-status ID=T30-AUTH` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-21, against cgm-remote-monitor-official `74fc6619`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-22, against cgm-remote-monitor-official `74fc6619`.*

@@ -1,5 +1,9 @@
 # What sets K: residency, the load cycle, and two quadratics
 
+> **Snapshot — research as of 2026-09-14, measured against `cgm-remote-monitor` `origin/dev` `a8888f0d`. Status: superseded in part — tenancy research, not on a shipping path; §12 revises §2/§5/§7 (read it first), the alarm slice is re-measured at 32.7 KB in [the alarm-critical slice](alarm-critical-slice-2026-09-15.md), and the quadratic fixes are PR #8733 (merged to dev 2026-09-17, unreleased). Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md), [EXP-MT-026](exp-mt-026-database-in-the-loop-2026-09-14.md), [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-08, BF-34).**
+
+*Audience: contributors.*
+
 **Experiments**: EXP-MT-035 (resident cost against real `ddata`), EXP-MT-003 (residency
 tiering), EXP-MT-004 (stateless rebuild), EXP-MT-005 (tenants per process),
 EXP-MT-028 (adaptive merge/delta, extended), **EXP-MT-035b (plugin tier)**,
@@ -61,6 +65,8 @@ axis was framed.**
 8. **The plugin tier is small and flat** — 0.61 ms p50, and 0.64 → 0.93 ms from 300 to 2 400
    treatments. It does not have the quadratic problem. It adds ~6 % to a broken cycle and
    ~40 % to a fixed one.
+   [Correction 2026-09-22: with the full shipped alarm set, including `cob`, the plugin tier
+   measures 27.5 ms p50 — see [the alarm-critical slice](alarm-critical-slice-2026-09-15.md) §4.2.]
 9. **K measured per component spans two orders of magnitude**: ~150 tenants for an APP shard
    today, ~685 fixed, ~9 700 for the vendor pool's *machinery*, ~27 500 for realtime fan-out.
    **The vendor pool's real limit is a vendor rate limit, which this cannot measure** — the
@@ -304,9 +310,7 @@ capacity reasons before fixing the quadratics would be buying hardware to run an
 
 ## 6. K per component — now measured
 
-The first pass put speculative orders of magnitude in this table. Three of the five are now
-measured, and **one of the guesses was wrong by two orders of magnitude in the wrong
-direction.**
+Three of the five components are measured; two (router/auth, storage) are not.
 
 ![K by component: APP shard 147 current and 685 fixed, vendor pool machinery 9,700, realtime fan-out 27,500, on a log scale](../../visualizations/mt-k-by-component.svg)
 
@@ -361,7 +365,7 @@ Every shipped vendor source declares `expected_data_interval_ms = 5 * 60 * 1000`
 in a single-actor trace: after one `/api/v1/verifyauth`, the actor goes **silent** — no
 upstream request for the next 20 s. Starting all 800 took 166 ms.
 
-**The earlier guess of "plausibly 10¹–10² accounts" was wrong.** The machinery supports
+The machinery supports
 **~9 700 accounts per process at 4 GB**, and event-loop cost is negligible because an
 account does real work once per five minutes. What actually bounds a vendor pool is the
 **vendor's per-account and per-egress-IP rate limiting**, which no harness here can measure
@@ -374,10 +378,8 @@ Two structural observations that do not need vendor access:
    real vendor that is 800 requests from one IP in under a second, **on every pool restart
    and every deploy** — precisely the pattern a per-IP limiter penalises. Start jitter is a
    small, obviously correct change to make before any pool runs at density.
-2. ~~**Phase-locking persists.** Actors started together stay on the same 5-minute boundary, so
-   the burst repeats. The poll interval wants jitter too, not just the start.~~
-   **CORRECTED 2026-09-15, by T0.4.** The poll interval already has jitter, and this reading
-   could not see it because the 20-second trace above never reached a second cycle. All four
+2. **The aligned poll interval is already jittered; the start is the burst.** (The 20-second
+   trace above never reaches a second cycle, so this comes from T0.4, 2026-09-15.) All four
    vendor drivers independently spell `Math.floor(Math.random() * 18000)` into the timestamp
    they align to. Measured over **700 s at 400 actors** (EXP-MT-048b,
    `tools/mt-bench/vcherd.js`), the second and third cycles arrive as a band about **15 s wide
@@ -387,18 +389,17 @@ Two structural observations that do not need vendor access:
    to align, i.e. when the vendor has produced nothing new — and that is the case where the
    pool is already stepping together. Both are now configurable
    (`CONNECT_START_JITTER_MS`, `CONNECT_INTERVAL_JITTER_MS`, each defaulting to 0);
-   see the register's BF-08.
+   see the register's BF-08 (status 2026-09-22: fixed on branch `fix/connect-timer-jitter`,
+   not merged).
 
-3. ~~**Backoff works.**~~ With a deliberately broken auth mock, one actor made 4 `verifyauth`
-   attempts in 12 s rather than spinning — so `lib/backoff.js` is not spinning, which is what
-   this could see with one actor.
-   **CORRECTED 2026-09-15, by T0.4.** It was not doing its job. `backoff()` merged its options
-   as `{ ...config, ...defaults }`, so **every value every source passed it was discarded** and
-   every retry ran on the 256 ms default instead of the configured 2.5 minutes, which is why
-   the attempts came as fast as they did. `use_random_slot` was discarded the same
-   way, so the pool retried in lockstep. This is the register's **BF-34**, and it is the reason
-   "the failure mode is a herd, not a runaway" understated it: at 100 actors the shipped code
-   delivered **800 requests in 3 seconds** to an upstream that was refusing every one of them.
+3. **Backoff discards its configuration.** With a deliberately broken auth mock, one actor made
+   4 `verifyauth` attempts in 12 s. T0.4 (2026-09-15) found why: `backoff()` merges its options
+   as `{ ...config, ...defaults }`, so **every value every source passes it is discarded** and
+   every retry runs on the 256 ms default instead of the configured 2.5 minutes.
+   `use_random_slot` is discarded the same way, so the pool retries in lockstep. At 100 actors
+   the shipped code delivered **800 requests in 3 seconds** to an upstream that was refusing
+   every one of them. This is the register's **BF-34** (status 2026-09-22: fixed on branch
+   `fix/connect-timer-jitter`, not merged).
 
 ### 6.3 What this means for splitting
 
@@ -491,9 +492,8 @@ EXP-MT-040's neighbour rather than part of this report.
 
 ## 10. What is not measured, and matters
 
-1. ~~Plugin execution is absent from the cycle.~~ **Measured (§3.1)**: 0.61–0.93 ms, flat.
-   K falls ~4 % on current code and ~30 % after the fixes — real, and far short of the
-   order-of-magnitude risk this bullet warned about.
+1. **Plugin execution — measured (§3.1)**: 0.61–0.93 ms, flat. K falls ~4 % on current code
+   and ~30 % after the fixes. (Revised upward in [the alarm-critical slice](alarm-critical-slice-2026-09-15.md) §4.2: 27.5 ms p50 with `cob` enabled.)
 2. **No database in the loop.** Every figure is local CPU and heap. §2.3's ~14 DB operations
    per load are not included, and EXP-MT-026 should establish whether network RTT dominates
    before K is quoted as capacity.
@@ -639,10 +639,8 @@ are only five `getData` call sites. **But `dataloader.js:203` does `if (!element
 element.mills = element.date`, which writes to the element**, and any change here has to
 resolve that write first. The number sizes the prize; it does not license the patch.
 
-An earlier draft of this section asserted that `insertData` returns the live array and that
-`.reverse()` therefore flips the cache order, which would have made `/api/v1/entries` return
-the oldest rows. It does not — `insertData` returns `getData(...)`, a clone. Recorded because
-the claim was one read away from going into a document.
+Because `insertData` returns `getData(...)`, a clone, the caller's `.reverse()` does not flip
+the cache's own order.
 
 ### 12.4 EXP-MT-035c — the resident figure omits `ctx.cache`
 

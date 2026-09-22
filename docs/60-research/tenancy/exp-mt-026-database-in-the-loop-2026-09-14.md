@@ -1,5 +1,9 @@
 # EXP-MT-026: a real database in the loop
 
+> **Snapshot — research as of 2026-09-14, measured against MongoDB 7.0.43 with driver 5.9.2 and queries transcribed from `lib/data/dataloader.js` (the doc names no `cgm-remote-monitor` commit). Status: superseded in part — tenancy research, not on a shipping path; §8's feed-poll sweep bound was revised by T4.2 (2026-09-15, in place below) and pgbouncer is now measured in [pgbouncer and the D3 binding](pgbouncer-tenant-binding-2026-09-15.md). Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).**
+
+*Audience: contributors.*
+
 **Experiments**: EXP-MT-026 (query cost, load cycle, cold wake, event-loop behaviour under
 RTT), **EXP-MT-040b** (where database-per-tenant breaks), **EXP-MT-011b** (one logical
 database with a tenant discriminator), **EXP-MT-057** (RLS and the change feed, on Postgres),
@@ -176,8 +180,8 @@ per-operation average. That is why the sequential figure rises from 0.517 ms to 
 10 ms RTT while the concurrent figure rises only from 0.151 to 0.207 ms.
 
 **The concurrent figures are the ones that describe a loaded server, and they are the ones the
-cost model uses.** An earlier pass of this report nearly published the sequential number as
-evidence that RTT triples CPU cost. It does not; the measurement method did.
+cost model uses.** The sequential number is not evidence that RTT triples CPU cost; that rise
+is an artifact of the measurement method.
 
 ## 4. EXP-MT-040b — MongoDB fatal-asserts at 50 tenant databases
 
@@ -334,7 +338,7 @@ component design is **load-bearing, not optional**, for `/api/v1/entries` specif
 
 ## 7. EXP-MT-011b — one logical database with a tenant discriminator
 
-**§4 measured the wrong shape for the destination, and a maintainer said so.** A′
+**§4 measured a migration rung, not the destination shape.** A′
 (database-per-tenant) is §6.7's stage 2 — a migration rung chosen because it requires no
 schema change. The multitenant target is §6.6's B on Mongo or D on Postgres: **one logical
 database, every document carrying a tenant discriminator, the index set tenant-prefixed.**
@@ -529,14 +533,13 @@ reading is later than their last evaluation**:
 | steady state, watermarks current | 13.69 ms | 0 |
 | **bounded by the `date` index (last 10 minutes)** | **1.02 ms** | 0 |
 
-~~**Bounded by a date index, the entire "who needs evaluating" sweep costs ~1 ms** regardless of
-how many tenants are registered~~ — **the measurement is sound; the invariant hung on it is
-not. Corrected 2026-09-15 by T4.2, which built the component.** At one sweep every 30 seconds
-1.02 ms is 0.03 ms/s of database work, four orders of magnitude below the resident model's
-polling, and that part stands.
+**Bounded by a date index, the "who needs evaluating" sweep costs ~1 ms at 400 registered
+tenants.** At one sweep every 30 seconds 1.02 ms is 0.03 ms/s of database work, four orders of
+magnitude below the resident model's polling. (T4.2, 2026-09-15, which built the component,
+measured how it scales with registered tenants — below.)
 
-**What does not stand is "regardless of how many tenants are registered", because the run above
-varied neither axis.** Reproducing this run's own query *and* its own index configuration across
+**The cost is not independent of how many tenants are registered; the run above varied neither
+axis.** Reproducing this run's own query *and* its own index configuration across
 corpora it never built (`tools/measure-feed-poll-bound.js` in `cgm-remote-monitor`):
 
 | registered tenants | 100 | 400 | 1600 | 3200 |
@@ -908,13 +911,12 @@ them is a capacity result**, and several would move on real infrastructure.
 
 **What was not tested:**
 
-- ~~**PostgreSQL + RLS** is unmeasured with a database in the loop.~~ **Wrong when written,
-  and now doubly so.** `rls-poc/` already ran against a live `postgres:16-alpine` container —
-  that is where §6.1's figures come from — and §8 adds RLS and the change feed on Nightscout's
-  own query shapes. What remains unmeasured on Postgres is **writes at ingest rate**, the
-  **shared-collection working set past cache size**, and **`pgbouncer` in transaction mode**,
-  which §6.7 flags as possibly required and which interacts with `set_config(..., is_local)`
-  in ways nothing here tested.
+- **PostgreSQL + RLS** has been run with a database in the loop: `rls-poc/` ran against a live
+  `postgres:16-alpine` container (§6.1's figures), and §8 adds RLS and the change feed on
+  Nightscout's own query shapes. What remains unmeasured on Postgres here is **writes at ingest
+  rate** and the **shared-collection working set past cache size**. **`pgbouncer` in
+  transaction mode** was not tested here; it is measured in
+  [pgbouncer and the D3 binding](pgbouncer-tenant-binding-2026-09-15.md) (2026-09-15).
 - **§7 tops out at 400 tenants and 701,200 documents**, where working-set pressure against a
   1 GB cache is only beginning to show. The shape of the curve past the point where the
   working set exceeds cache is the open question for the shared model, and it is the normal

@@ -1,5 +1,7 @@
 # Module-level shared state: what T3.3 has to fix before it can exist
 
+> **Snapshot — research as of 2026-09-15, measured against `crm-seam` `7cc03cda` (Phase 2 complete). Status: current — tenancy research, not on a shipping path; §3 is latent (no shipping caller initialises storage twice). Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-27 records the `env` singleton), [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).**
+
 **2026-09-15.** Measured with `tools/qc/tenant-shared-state.js`, output in
 `reports/tenant-shared-state/crm-seam.json`, against
 `externals/work/crm-seam` at `7cc03cda` (Phase 2 complete).
@@ -111,10 +113,9 @@ is correct and it stays: the AsyncLocalStorage context it guards is process-wide
 that decides how to read it has to be too. It is listed here rather than suppressed, because a
 census with a quiet exception list is a census nobody can check.
 
-## 4a. Correction — the tool could not see the widest singleton in the tree
+## 4a. Factory bindings — the widest singleton in the tree
 
-**Found by T3.3, which is exactly what the "two holes" section below was for.** The first
-version of this tool classified `require('x')()` as a require and excluded it. That is wrong:
+Found during T3.3. The tool originally classified `require('x')()` as a require and excluded it;
 `require(x)` is a require, but **`require(x)()` is a factory invocation** — the module hands back
 a builder and the call site holds the one instance it built.
 
@@ -125,13 +126,12 @@ const language = require('../language')();      // one per process
 const translate = language.set(env.settings.language).translate;
 ```
 
-So the **single largest-blast-radius singleton in the server was the one the audit could not
-see**, and it was absent from the report entirely. `lib/server/server.js:33`'s `env` was hidden
-the same way. Both are now reported as a distinct `factory-binding` kind — kept separate from an
+So the **single largest-blast-radius singleton in the server** is a factory binding.
+`lib/server/server.js:33`'s `env` has the same shape. Both are reported as a distinct `factory-binding` kind — kept separate from an
 ordinary mutable binding because the tool genuinely cannot tell whether a call returns something
 frozen, so the reader should weigh it rather than be told.
 
-Revised counts:
+Counts including factory bindings (these supersede the §1 table):
 
 | residency | files | bindings | **factories** | writes |
 |---|---:|---:|---:|---:|

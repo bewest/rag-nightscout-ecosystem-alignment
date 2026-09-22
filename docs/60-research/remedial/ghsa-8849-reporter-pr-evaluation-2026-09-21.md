@@ -1,5 +1,7 @@
 # The reporter's proposed fix for GHSA-8849, evaluated by running it
 
+> **Snapshot — research as of 2026-09-21, measured against the reporter's PR commit `da531f14` (based on `v15.0.8`). Status: the Foundation's alternative fix merged to dev in PR #8745 (BF-75/76), unreleased; the defect is still live on 15.0.8; the reporter's PR is not merged. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 Date: 2026-09-21. Subject: `nightscout/cgm-remote-monitor-ghsa-8849-qjp5-vrrj` **PR #1**,
 `advisory-fix-1 → master`, one commit `da531f14`, 3 files, +111/−12, opened 2026-09-18 by the
 advisory's reporter. Base confirmed: **`v15.0.8` is an ancestor**, so it targets the shipping
@@ -11,13 +13,11 @@ describes the *mechanism* of the proposed remedy and where it falls short; it wi
 attack recipe, which is the same one the advisory already contains. Probes are outside version
 control.
 
-**Tone note, because this matters more than the finding.** The reporter found a real defect,
-reported it responsibly through GitHub's advisory workflow, and did the unusual and generous
-thing of writing a fix. Nothing below is a criticism of that. The two gaps are instances of
-exactly the confusion this programme has been chasing all week — Nightscout has two
-authorization-shaped settings and the intuitive one is the wrong one — and they are easy to
-make. They were found by running the branch, not by reading it, and the same discipline caught
-comparable mistakes in this project's own work eight times.
+**Tone note.** The reporter found a real defect, reported it responsibly through GitHub's
+advisory workflow, and did the unusual and generous thing of writing a fix. Nothing below is a
+criticism of that. The two gaps stem from Nightscout having two authorization-shaped settings,
+of which the intuitive one is the wrong one, and they are easy to make. They were found by
+running the branch, not by reading it.
 
 ---
 

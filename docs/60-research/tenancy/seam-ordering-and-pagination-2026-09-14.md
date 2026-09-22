@@ -1,5 +1,7 @@
 # Ordering across the seam — and a live pagination defect in API v3
 
+> **Snapshot — research as of 2026-09-14; no commit anchor named (source read from dev of that date, `mongod` 7.0.43 / PostgreSQL 16.14). Status: seam findings current — tenancy research, not on a shipping path; the API v3 defect (BF-13) and BF-14/BF-15 are merged to dev in PR #8738 (unreleased; still live on 15.0.8). Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [ordering design](../../30-design/tenancy/nightscout-seam-ordering-translation.md).**
+
 Date: 2026-09-14. Status: findings + tooling. **Read-only — no shipping code changed.**
 
 Closes the "sort, limit, skip and projection are not covered — only the filter" gap that both
@@ -22,7 +24,7 @@ if (o.sort) cursor = cursor.sort(o.sort);      // find.js:120
 
 So `sort` is **a MongoDB sort document crossing an interface whose stated first rule is that no
 member accepts or returns a driver object** ({S} §4.1 rule 1). It is invisible while MongoDB is
-the only backend, and it is the kind of defect this programme has repeatedly found late.
+the only backend, and it is the kind of defect that is only found once a second backend exists.
 
 ## 2. There is no obvious correct translation — all four naive ones are wrong
 
@@ -63,6 +65,7 @@ proposal, not a finding, and it belongs to whoever owns the adapter.
 ## 3. A live defect in API v3, found by the same harness
 
 > **This is not about the seam and does not need a tenancy decision.** Registered as **BF-13**.
+> [Note 2026-09-22: BF-13 is merged to dev in PR #8738, not released; live on 15.0.8.]
 
 API v3 exposes `skip` (`lib/api3/generic/search/input.js:191-206`; **v1 does not**), and
 `parseSort` builds the sort chain:
@@ -174,7 +177,7 @@ free to reorder ties.
 
 ## 4. Honest limits
 
-- ~~**`limit` and `projection` are still not differentially tested.**~~ **Closed** by
+- **`limit` and `projection`** are covered by
   [seam limit and projection](seam-limit-and-projection-2026-09-14.md), which found BF-14
   (`?count=0` means unbounded) and BF-15 (`?fields=` with a dotted path returns `{}`).
   `readOptions`, the third driver object in the options bag, remains uncovered.
@@ -185,8 +188,7 @@ free to reorder ties.
   `parseSort`, and the shapes are synthetic. **A maintainer should confirm against a real
   deployment before this is treated as settled** — the reproduction is a strong prediction about
   the endpoint, not an observation of it.
-- ~~**No claim is made about how many deployments hold the triggering shape.**~~ **Closed — see
-  §3.2.** 11 sites measured; the exposure is real and concentrated in `devicestatus`.
+- **Deployment exposure** is measured in §3.2: 11 sites; the exposure is real and concentrated in `devicestatus`.
   What is still *not* measured is how many clients actually page with `skip` rather than
   fetching whole collections, which is the other half of the impact.
 - **The §2 ordering strategies are the ones a person would plausibly write**, not an exhaustive

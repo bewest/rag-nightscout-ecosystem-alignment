@@ -1,5 +1,7 @@
 # GT1 — branch, worktree and commit inventory
 
+> **Snapshot — inventory as of 2026-09-15, measured against `origin/dev a8888f0d` (main repo HEAD `9fc55eaa`→`8c379476`). Status: point-in-time; branch, push and test states have since changed — most `bf/*` branches are now merged to dev (unreleased); `bf/auth` and `fix/connect-timer-jitter` remain fixed-on-branch. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [work queue](../../../queue/work-queue.yaml).**
+
 **Measured 2026-09-15, 17:05–17:55 local, by running git against the checkouts.** Nothing in this
 document was taken from another document without re-measuring it. Main repo HEAD when this started
 was `9fc55eaa`; it moved to `8c379476` during the run (another session committed). Every SHA below
@@ -9,9 +11,9 @@ Audience: contributor-facing. Nothing here is operator- or user-facing.
 
 ---
 
-## 0. Corrections to the brief, first
+## 0. Measured facts that differ from the working assumptions
 
-| # | the brief says | measured |
+| # | assumed | measured |
 |---|---|---|
 | **C1** | the `crm-*` worktrees belong to `externals/cgm-remote-monitor` | **They belong to `externals/cgm-remote-monitor-official`.** `git -C externals/cgm-remote-monitor worktree list` returns **one** entry — itself. Every `crm-*` worktree's `.git` file points at `externals/cgm-remote-monitor-official/.git/worktrees/…` |
 | **C2** | `externals/cgm-remote-monitor` is "shipping code … detached HEAD `6893781f`" | `6893781f` is a **2014** commit — *"Merge pull request #207 from nightscout/release/0.5.0"*. Its `origin` is `bewest/cgm-remote-monitor-1`, a different fork. It holds **none** of this programme's work. The shipping-code checkout is `externals/cgm-remote-monitor-official` (`origin` = `nightscout/cgm-remote-monitor`, `origin/dev` = `a8888f0d`) |
@@ -136,7 +138,7 @@ this machine.**
 | claim | measured |
 |---|---|
 | `release/v0.0.14` exists at `649a7de` | **yes** — and it is the checked-out branch of `externals/nightscout-connect` |
-| annotated tag `v0.0.14` exists locally | **yes** — `git cat-file -t v0.0.14` → `tag`; tagger *Ben West*; points at `649a7de` |
+| annotated tag `v0.0.14` exists locally | **yes** — `git cat-file -t v0.0.14` → `tag`; tagged by the maintainer; points at `649a7de` |
 | tag is pushed | **no** — `ls-remote --tags origin` has `v0.0.12` `1e63c53` and `v0.0.13` `b394411`, nothing beyond |
 | `v0.0.13` (`b394411`, `origin/main`) fast-forwards | **yes** — `merge-base --is-ancestor b394411 release/v0.0.14` succeeds. 11 commits, no merge to reconcile |
 | `package.json` says `0.0.14` | **yes** |
@@ -264,7 +266,7 @@ the branch count in four places (C4); a later agent should sweep it (rule 6).
 `crm-base-verify` appeared under `externals/work/` during this run, detached at `a8888f0d`. At
 least one session is active in the shipping checkout right now.
 
-### Worktree hygiene, for its owners — I removed nothing
+### Worktree hygiene, for its owners — nothing was removed
 
 - `crm-pool`, `crm-tenant`, `crm-write`: three worktrees, one commit (`239f8c25`), no branches.
 - `crm-seam`: admin directory is `ns-seam-t12`.

@@ -1,5 +1,7 @@
 # GHSA-gjhc — `loadRetro` serves the retained devicestatus window to any socket
 
+> **Snapshot — research as of 2026-09-21, measured against `dev 59430336` and `v15.0.8` (`92d08342`). Status: fix merged to dev in PR #8744 (BF-79), unreleased — the defect is still live on 15.0.8. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 > **DISCLOSURE FIRST. Read this paragraph before quoting the rest anywhere public.** This is a
 > **live unauthenticated disclosure of medical-device telemetry on the shipping release**
 > (`v15.0.8` = `origin/master`) and on `dev`, with no patched version, and **this repository is
@@ -23,7 +25,7 @@ docker, host port 27061, database `nightscout_advlab`. **Node:** v24.15.0. Every
 
 ## 1. The question this was run to answer
 
-Ben West's framing for this advisory round: *were the correct feature flags enabled when these
+The maintainer's framing for this advisory round: *were the correct feature flags enabled when these
 advisories were evaluated?* `AUTH_DEFAULT_ROLES` defaults to `readable` (`lib/settings.js:39`), and
 `README.md:243` documents that as *"anyone can view Nightscout without a token"*. On that default,
 anonymous reads of `devicestatus` are **documented, intended behaviour**: the same
@@ -341,8 +343,7 @@ So:
 - on `denied` that is `read:false` and the handler replies `{result: 'Not permitted'}` and emits
   nothing — the same refusal string `checkConditions` already returns for the write handlers.
 
-**Nothing was reached for.** The mismatch worth reporting would have been a codebase with no clean
-way to ask the question; there is one, in the same file, in the function the `authorize` handler on this same namespace already calls.
+The decision the fix needs is already computed in the same file, by the function the `authorize` handler on this namespace calls.
 
 `loadedMills` is **still ignored**. Honouring it is a behaviour change with its own client-side
 consequences and belongs in a separate commit; the advisory's remediation section asks for both and
@@ -381,7 +382,6 @@ anonymous one).
 | before (`origin/dev` `59430336`) | **2 311** | 3 | 0 |
 | after (`bf/ws-loadretro-auth` `9765e8cd`) | **2 315** | 3 | 0 |
 
-The delta is exactly the four new cases. The brief's expected baseline of "roughly 1360" is stale;
 2 311 matches what the BF-75 work recorded on the same ref the same day.
 
 **A lab note, not a product finding.** The first attempt at the baseline run died on

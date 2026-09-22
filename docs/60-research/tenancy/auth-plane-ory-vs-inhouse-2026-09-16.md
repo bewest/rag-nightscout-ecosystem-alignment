@@ -1,5 +1,7 @@
 # The auth plane: Ory Kratos/Hydra against building it ourselves
 
+> **Snapshot — research as of 2026-09-16, measured against `nightscout-roles-gateway` `90840ac`, `nocturne` `d9e143097`, `crm-seam` `81a1f6ce`. Status: current — decided in part (D16 adopted; D17 rows 1, 3, 4 adopted; row 2 still open, pending `T30-ORY-PROOF`), tenancy research, not on a shipping path. Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) §1 and §2.9 (D16, D17).**
+
 **Status: DECIDED 2026-09-16, IN PART.** This began as research for a maintainer decision and got
 one the same day. **D16 was adopted whole. D17 was adopted in three rows of four** — devices keep a
 native per-tenant credential permanently, Hydra is deferred, D7 is unchanged. **Row 2, Ory Kratos
@@ -201,13 +203,11 @@ in-house: `PasskeyCredentialEntity`, `TotpCredentialEntity`, `SubjectOidcIdentit
 `OidcProviderAdminController` for federation. So "ORY-style" in D7 describes a philosophy we
 adopted, not a dependency either sibling project carries.
 
-**CORRECTED 2026-09-16:** this section first called that controller *per-tenant*. It is not —
+That controller is **not** per-tenant:
 `Controllers/V4/TenantAdmin/OidcProviderAdminController.cs:25,27` is
 `[Route("api/v4/admin/oidc-providers")]` under `[Authorize(Roles = "platform_admin")]`, and
-`OidcProviderEntity` is not tenant-scoped. Federation is configured **once for the deployment**.
-§3.5 is the measurement that caught it, and the error ran the wrong way: the corrected reading
-supports D17 row 2 more strongly than the mistaken one did, which is why it was worth re-measuring
-rather than leaving.
+`OidcProviderEntity` is not tenant-scoped. Federation is configured **once for the deployment**
+(measured in §3.5), which supports D17 row 2.
 
 Nocturne's settings storage is worth copying regardless of the auth outcome: a `settings` table
 keyed `tenant_id` + `key` with a JSON `value`, plus typed side-tables where constraints matter
@@ -336,9 +336,8 @@ identity pool cannot be undone once identities exist.
 ## 8. What this document does not establish
 
 - **Every Ory claim in §2 is read, not run.** No Kratos or Hydra instance was started. The
-  programme's own rule — read-derived claims are a hypothesis until executed — applies in full,
-  and the register records five entries that did not survive contact with running code. The
-  cheapest way to discharge it: stand up Kratos 1.x + Hydra 2.x against two tenants and try to
+  programme's own rule — read-derived claims are a hypothesis until executed — applies in full.
+  The cheapest way to discharge it: stand up Kratos 1.x + Hydra 2.x against two tenants and try to
   make one pool serve both.
 - **No cost model.** Ory Network pricing, and the compliance question of a third-party data
   processor adjacent to health data, are not analysed here at all.

@@ -1,5 +1,9 @@
 # The alarm-critical slice, measured: 32.7 KB and 1.94 ms, not 852 KB and 27.5 ms
 
+> **Snapshot — research as of 2026-09-15, measured against `cgm-remote-monitor` `29749d92` (`seam/t3-k`). Status: current — tenancy research, not on a shipping path; the `insulinage` defect it found is register BF-28, merged to dev in PR #8739 (2026-09-20, unreleased — 15.0.8 still has it). Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) phase 4 / D5, [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
+*Audience: contributors.*
+
 **Experiment**: EXP-MT-060 (alarm-critical vs display slice of `ddata`, measured by
 knockout rather than by reading the source)
 **Date**: 2026-09-15
@@ -52,7 +56,7 @@ Two findings arrived that were not what was being measured, which plan §8 says 
    compare against `prefs.urgent`. `age >= undefined` is always false, so **the URGENT
    "Insulin reservoir change overdue!" alarm can never fire**; the plugin degrades silently
    to WARN at 48 h. This is an upstream safety defect, unrelated to multitenancy, and it is
-   **not fixed here** (D12). §5.1.
+   **not fixed here** (D12). §5.2. [Status 2026-09-22: register BF-28, merged to dev via PR #8739, not released.]
 2. **{R} §2's "the plugin tier is small and flat — 0.61 ms p50" does not survive** with the
    full alarm plugin set enabled and a realistic treatment history. Measured here at
    **27.5 ms p50**, of which **about three quarters is `cob.setProperties` alone** and a further 12 % is
@@ -323,11 +327,11 @@ deliberately for V1 and V6b, and both times the break was caught.
 | V6a | the depth probe bites | every slice field's tail is shorter than its array (`sgvs` 2/576, `devicestatus` 1/576) |
 | V6b | probe and knockout agree | no slice field has a minimal tail of 0 |
 | V6c | the probe terminated | every slice field found a sufficient tail within the candidate depths |
-| V7 | the `insulinage` defect (§5.1) | at each plugin's urgent hour: `bage`/`cage`/`sage` URGENT, **no `iage`**; at `iage`'s warn hour: `1\|IAGE\|iage\|` |
+| V7 | the `insulinage` defect (§5.2) | at each plugin's urgent hour: `bage`/`cage`/`sage` URGENT, **no `iage`**; at `iage`'s warn hour: `1\|IAGE\|iage\|` |
 
 ### 5.1 Two defects the checks found in the harness itself, before any number was believed
 
-Both would have kept the run green and produced a wrong answer, which is why they are
+[Correction 2026-09-22: three are listed, not two.] Each would have kept the run green and produced a wrong answer, which is why they are
 recorded rather than quietly fixed.
 
 1. **The fixture snoozed every alarm.** The first run emitted no threshold alarm in any
@@ -347,7 +351,8 @@ recorded rather than quietly fixed.
    An enable list written from file names silently ran 13 of 18 plugins — including omitting
    the only plugin that reads the profile to decide an alarm. Before the fix, `profiles` and
    all four derived change arrays measured as INERT. This is the *corpus* vacuity mode, and
-   nothing in the run looked wrong.
+   nothing in the run looked wrong. (The silent-ignore of an unknown `ENABLE` name is register
+   BF-29, merged to dev via PR #8739, unreleased.)
 
 ### 5.2 `lib/plugins/insulinage.js:92` — an upstream defect, reported not fixed
 
@@ -379,6 +384,8 @@ per D12. Carried by check V7 so it cannot decay into prose. A maintainer should 
 intended behaviour before any fix: changing `insulinInfo.urgent` to `prefs.urgent` would
 start emitting an URGENT alarm that no existing deployment has ever received, which is a
 behaviour change users will notice.
+
+[Status 2026-09-22: filed as register **BF-28** and merged to dev via PR #8739 (2026-09-20); not released, so 15.0.8 deployments still never receive this URGENT alarm. The register row carries the current fact.]
 
 ---
 

@@ -1,90 +1,80 @@
 cgm-remote-monitor 15.0.9
 
-DRAFT tag body. Not applied. The number is not settled - see below.
+DRAFT tag body, not applied. Delete these two lines and fix the subject's
+version number when the tag is cut; the number is not yet settled.
 
-A remedial release: nine branches of bug fixes onto dev, plus the
-connector pin move. No tenancy content, no modernization content. Every
-branch is based directly on origin/dev a8888f0d and all nine merge
-cleanly against it and against each other.
+15.0.8..dev at 74fc6619: 48 first-parent PR merges, 308 commits,
+200 files, +14381/-1262.
 
-  bf/alarms       5dcf783f  BF-28 BF-29 BF-31   alarm delivery
-  bf/auth         64db1f35  BF-17 BF-30        security
-  bf/cache        4f86bab1  BF-06 BF-07        cache clone cost
-  bf/coercion     ab197bf8  BF-02 BF-03 BF-11 BF-32
-  bf/reads        2ecfeb53  BF-01 BF-05 BF-13 BF-14 BF-15 BF-33
-  bf/food         73495331  BF-16 BF-35
-  bf/merge        b06c6faf  BF-36
-  bf/parms        eb0bc918  BF-37 BF-38 BF-39
-  bf/connect-pin  0807eb1c  BF-34 BF-08 BF-42 (delivery vehicle)
+Query and API correctness
+  #8737 025f1310  schema-driven query coercion; $exists operand;
+                  $type operand (BF-02 BF-03 BF-11 BF-32 BF-40 BF-68)
+  #8738 d3358e91  count endpoint filters; v1 ?count= and v3 ?limit=
+                  validation, 400 on 0/non-integer; v3 paging and
+                  dotted ?fields= (BF-01 BF-05 BF-13 BF-14 BF-15 BF-33)
+  #8743 1a36f023  v1 query-operator allowlist; URL pipeline refused;
+                  400 naming the operator (BF-04 BF-70)
+  #8697 0ab266a3  failed treatments queries no longer crash the server
 
-Five things in here are not bug fixes from the operator's chair, and
-the release notes carry all five. Do not cut this tag until they do.
+Security
+  #8744 a9acd313  loadRetro gated on read authorization (BF-79)
+  #8745 2b22c0ce  /alarm delivery scoped to read-entitled room;
+                  token ack requires ack permission (BF-75 BF-76)
+  #8746 74fc6619  readable-by-world notice on role membership (BF-77)
+  #8583 4f6151d7  Loop remote-command errors without diagnostics
 
-  1. insulinage's URGENT branch compared reservoir age against a field
-     that was never filled in, so "Insulin reservoir change overdue!"
-     has never fired on any release. It now fires. The level also stops
-     being stuck at WARN. IAGE_ENABLE_ALERTS defaults false, so the
-     NOTIFICATION reaches only operators who turned alerts on - but the
-     LEVEL is assigned outside that guard, so the urgent-red IAGE pill
-     reaches everyone. The notification fires in ONE evaluation window
-     (age === urgent, minFractions <= 20) and does not repeat. Do not
-     describe it as repeating.
+Alarms and client
+  #8739 7a5561f4  insulinage URGENT reachable; ENABLE suggestion;
+                  voice locale no longer process-global
+                  (BF-28 BF-29 BF-31)
+  #8735 ff0d506c  quick-pick chooser index; quickpicks API (BF-16 BF-35)
+  #8736 2e94de1b  bare URL parameter; %10 slots; no _ to space
+                  (BF-37 BF-38 BF-39)
+  #8734 fdd08706  merge delete + unmatched update (BF-36)
+  #8732 59430336  pills and profile editor on incomplete data
+  #8729 1abc1aad  chart.update() 0-height guard
+  #8587 48441640  COB from the uploading system
+  #8602 57f45284  Daily Stats A1c from mg/dL
+  #8588 c1943ced  report SGV de-duplication no longer cascades
+  #8589 2af0aed9  report page built once per load
+  #8590 101f51a0  treatments table event-type filter
+  #8699 6fbff0ec  clock view low-and-falling
+  #8701 5a09befd  profile-switch schedule preprocessing
+  #8702 ca35f2a3  unnamed profiles preserved
 
-  2. Query filters were compared as text against numeric fields, so
-     they matched nothing and answered 200 with an empty list. 158
-     schema-driven coercions across five collections. Reports that
-     plotted an empty chart now plot a full one. bf/coercion's own
-     wording must survive into the notes verbatim: earlier results may
-     have under- or over-reported delivered therapy.
+Performance and cache
+  #8733 77d153d2  remove quadratic treatment scans
+  #8740 49f562d8  cache clone cost (BF-06, BF-07 partly)
+  #8567 948aafac  deleted documents not resurrected in cache
 
-  3. Six previously-accepted spellings of ?count= now return 400: 0,
-     0x10, 2.5, -3, 1e2, abc, and integers above MAX_SAFE_INTEGER.
-     ?count=0 previously reached the driver as .limit(0), which on
-     MongoDB is UNBOUNDED - the whole collection. The validator is
-     app.use'd on the whole v1 app before every router, so it covers
-     WRITES too: POST /api/v1/treatments?count=0 now returns 400.
-     15 mount points covered, 1 not (/experiments, mounted earlier).
-     This is the only thing in the batch that can break a working
-     integration.
+Configuration and logging
+  #8726 a8888f0d  routine logs off by default; DEBUG_LOGGING,
+                  CONNECT_DEBUG; connector pinned to 234d47c
+  #8741 bcd171cb  credential settings kept as strings
+  #8601 56ebbf30  npm 12: allow-remote=root; Node 24/npm 12 CI
 
-  4. POST /api/v1/alexa and /api/v1/googlehome stop honouring a
-     per-request locale and answer in the server's language. Correct -
-     the old code set process-global state - but it is a capability
-     removal on an HTTP endpoint with no replacement.
+Dependencies
+  #8573 e7c0cd6f  D3 5.16 -> 7.9.0
+  #8529 #8544 #8550 #8565 #8566 #8571 #8575 #8576 #8577 #8578
+  #8579 #8581 #8582 #8586  (UUID, jsdom/ws, Babel, Axios, Socket.IO,
+  Express/body-parser, ip-address, fast-uri, socket.io-parser,
+  DOMPurify, js-yaml, Mocha, PostCSS, brace-expansion)
 
-  5. bf/auth's subject and role storage becomes an allow-list written
-     with replaceOne, so a third-party tool can no longer keep its own
-     fields through /api/v2/authorization/. Most of this data loss is
-     already true on dev; what is new is that sending the fields back
-     no longer preserves them.
+Translations, docs, version
+  #8599 #8603  Crowdin
+  #8516 85fed44b  README: MongoDB 4.4 not supported
+  #7338 57d1cac9  docs
+  #8597 5c26c9d2  version 15.0.9
 
-BF-17 REMEDIATION - this belongs in the notes and in the PR body. The
-fix stops the admin UI writing an access token into the database in
-plaintext. It does NOT invalidate any token already written, and it
-cannot: reload() recomputes digest, accessToken and accessTokenDigest
-on every load from subject._id, subject.name and the enclave key.
-accessToken is abbrev(name) + '-' + getSubjectHash(_id)[0:16]. The
-token is a deterministic function of those three inputs, so a code
-change cannot move it. Rotation is the operator's action and there are
-exactly three levers: change the subject's name, delete and recreate
-the subject (new _id), or rotate API_SECRET, which invalidates every
-token on the site at once.
+Behaviour changes operators will see: insulin-age URGENT level and a
+one-shot notification (IAGE_ENABLE_ALERTS, default off); ?count=0
+and non-integer counts return 400 on every v1 route after the
+validator, reads and writes; refused query operators return 400;
+filters return different (correct) rows; _ no longer becomes a
+space in query parameters; voice endpoints ignore request locale.
 
-THE NUMBER IS NOT SETTLED. dev's package.json already says 15.0.9 and
-every deployment on the dev channel already answers /api/v1/status with
-it, but no 15.0.9 tag or version-tagged image has ever been cut. The
-semver policy on file classifies this release as a MINOR at minimum
-(15.1.0) on two independent rows - two new environment variables with a
-changed logging default, and a connector pin move that changes retry
-behaviour - and as a MAJOR if items 3, 4 and 5 above ship as written.
-Its preferred option is to split: ship everything else as 15.1.0 and
-hold those three for a release that deprecates them first. See
-docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
-sections 8.1 and 8.2. Reconcile the number before cutting.
+Not in this release: bf/auth (BF-17), bf/throttle (BF-30), the
+connector v0.0.14 pin; BF-72 has no fix.
 
-bf/connect-pin is gated on the nightscout-connect v0.0.14 tag being
-pushed first, because its package-lock.json cannot be regenerated until
-the tarball exists.
-
-Evidence, measurements and the backfix register are in the nightscout
-ecosystem alignment repository, not here.
+BF- ids refer to the backfix register in the nightscout ecosystem
+alignment repository; each PR body carries its evidence.

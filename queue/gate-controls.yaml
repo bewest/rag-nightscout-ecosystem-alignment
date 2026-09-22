@@ -1,43 +1,49 @@
 # gate-controls.yaml — the NEGATIVE CONTROL for every runnable gate in
 # queue/work-queue.yaml.
 #
+# Contributor-facing.
+#
 # WHY THIS FILE EXISTS
 #
-# `queue/work-queue.yaml` enforces one rule: a gate is either a runnable
-# command or an explicit `no-gate:` with a reason. A completeness critic then
-# showed that the rule does not go far enough, because it says nothing about
-# whether a runnable gate can FAIL. Two could not:
+# `queue/work-queue.yaml` requires every gate to be a runnable command or an
+# explicit `no-gate:` with a reason. That rule says nothing about whether a
+# runnable gate can FAIL, and a gate that cannot fail is not a measurement.
+# Two such gates were in the manifest on 2026-09-15, both green:
 #
 #   P0-C  grepped for `console.log('Loading', opts)` while the code reads
-#         `console.log('Loading',opts)` — no space. The pattern never matched,
+#         `console.log('Loading',opts)` (no space). The pattern never matched,
 #         the `|| exit 0` arm always fired, and the item reported 3/3 PASS on a
-#         property that is false and that two other documents record as false.
-#   P0-E  `git log --format=%H bf/reads | grep -q .` — an assertion that the
-#         branch has at least one commit. It passes for origin/dev,
+#         false property.
+#   P0-E  `git log --format=%H bf/reads | grep -q .` asserted only that the
+#         branch has at least one commit; it passes for origin/dev,
 #         origin/master and bf/alarms too.
 #
-# Both were GREEN. Neither was a measurement. So every gate now carries, here,
-# either a CONTROL — the same instrument applied to a state where the property
-# is FALSE, which must therefore exit NON-ZERO — or a `control-exempt` with a
-# reason. `python3 tools/queue/vacuity.py` runs them and reports VACUOUS,
-# STUCK-RED, CONTROL-ERROR, EXEMPT or UNCONTROLLED. UNCONTROLLED is never
-# treated as a pass.
+# So every gate carries, here, either a CONTROL — the same instrument applied
+# to a state where the property is FALSE, which must therefore exit NON-ZERO —
+# or a `control-exempt` with a reason. `python3 tools/queue/vacuity.py` runs
+# them and reports VACUOUS, STUCK-RED, CONTROL-ERROR, EXEMPT or UNCONTROLLED.
+# UNCONTROLLED is never treated as a pass.
 #
 # CONTROLS ARE AUTHORED, NEVER DERIVED
 #
-# Most of the entries below follow a pattern — reverse an ancestry question,
-# merge against a branch measured to conflict, revert the fix and re-run the
-# test — but each one was RUN, and two of them show why a derived control would
-# have lied. P0-PIN's lockfile gate is DELIBERATELY INVERTED and passes against
-# origin/dev, which a mechanical "does it pass on the base?" rule would have
-# flagged as vacuous. RT-D3's suite runs inside the shipping checkout, which no
-# control may modify.
+# Most entries follow a pattern — reverse an ancestry question, merge against a
+# branch measured to conflict, revert the fix and re-run the test — but each
+# one is RUN, and a derived control would be wrong in at least two places.
+# P0-PIN's lockfile gate is DELIBERATELY INVERTED and passes against
+# origin/dev, which a mechanical "does it pass on the base?" rule would flag as
+# vacuous. RT-D3's suite runs inside the shipping checkout, which no control
+# may modify.
+#
+# A known-negative control can stop being negative when its subject moves (two
+# branches measured to conflict are later reconciled). Nothing announces that;
+# queue-vacuity then reports the GATE vacuous when it is the control that went
+# stale. Re-check the control before concluding anything about the gate.
 #
 # FIELDS
 #   gate               the gate's command, EXACTLY as work-queue.yaml spells it
-#                      (whitespace-normalised). Edit a gate and its control
-#                      stops matching, which is the point: the edit forces the
-#                      control to be re-authored rather than silently inherited.
+#                      (whitespace-normalised). Editing a gate makes its
+#                      control stop matching, which forces the control to be
+#                      re-authored rather than silently inherited.
 #   cwd                the GATE's cwd, and part of the lookup key: the same
 #                      command against two different trees is two different
 #                      measurements.
@@ -52,8 +58,11 @@
 #   proves             what breaking it looked like, and what was measured.
 #   control-exempt     a reason, where no control can honestly be written.
 #
-# Rule 3: every `proves` below describes something that was RUN on 2026-09-15,
-# not something read out of the source.
+# Rule 3: every `proves` below describes something that was RUN (on the date
+# given, 2026-09-15 unless stated), not something read out of the source.
+#
+# An entry whose `gate` no longer appears in work-queue.yaml is an orphan: it
+# is never run. `proves` says so where known.
 #
 #   Run them:  make queue-vacuity           (add SLOW=1 for the ablations)
 #   Coverage:  python3 tools/queue/vacuity.py --list-uncontrolled
@@ -78,15 +87,15 @@ controls:
       TEST=api.alexa npm run test-single
     cwd: externals/work/crm-bf-alarms
     control-exempt: >
-      NO HONEST CONTROL IS AVAILABLE ON THIS MACHINE. The ablation runs and
-      exits non-zero, so `vacuity.py` would report NON-VACUOUS - but it exits
-      non-zero because the test times out in its before-all hook reaching
-      MongoDB, not because the code was reverted. crm-bf-alarms/my.test.env
-      names mongod on port 27034 and nothing is listening there (E3 checked
-      every worktree: 27030 is dead too, and crm-bf-food, crm-bf-merge and
-      crm-bf-parms all share 27033). A control that is non-zero for the wrong
-      reason is worse than none, because it reads as proof. Start a mongod on
-      27034 and the control is:
+      No standing control: it depends on a MongoDB listener that is not
+      persistent on this machine. crm-bf-alarms/my.test.env names mongod on
+      port 27034 (crm-bf-food, crm-bf-merge and crm-bf-parms share 27033).
+      With nothing listening, the ablation still exits non-zero - because the
+      test times out in its before-all hook reaching MongoDB, not because the
+      code was reverted - so vacuity.py would report NON-VACUOUS for the wrong
+      reason, and a control that is non-zero for the wrong reason reads as
+      proof. With a mongod on 27034 (one was started 2026-09-16 with a scratch
+      dbpath; it does not survive a reboot) the control is:
       tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official
       bf/alarms origin/dev externals/work/crm-bf-alarms api.alexa
 
@@ -137,15 +146,15 @@ controls:
       TEST=api.googlehome npm run test-single
     cwd: externals/work/crm-bf-alarms
     control-exempt: >
-      NO HONEST CONTROL IS AVAILABLE ON THIS MACHINE. The ablation runs and
-      exits non-zero, so `vacuity.py` would report NON-VACUOUS - but it exits
-      non-zero because the test times out in its before-all hook reaching
-      MongoDB, not because the code was reverted. crm-bf-alarms/my.test.env
-      names mongod on port 27034 and nothing is listening there (E3 checked
-      every worktree: 27030 is dead too, and crm-bf-food, crm-bf-merge and
-      crm-bf-parms all share 27033). A control that is non-zero for the wrong
-      reason is worse than none, because it reads as proof. Start a mongod on
-      27034 and the control is:
+      No standing control: it depends on a MongoDB listener that is not
+      persistent on this machine. crm-bf-alarms/my.test.env names mongod on
+      port 27034 (crm-bf-food, crm-bf-merge and crm-bf-parms share 27033).
+      With nothing listening, the ablation still exits non-zero - because the
+      test times out in its before-all hook reaching MongoDB, not because the
+      code was reverted - so vacuity.py would report NON-VACUOUS for the wrong
+      reason, and a control that is non-zero for the wrong reason reads as
+      proof. With a mongod on 27034 (one was started 2026-09-16 with a scratch
+      dbpath; it does not survive a reboot) the control is:
       tools/queue/gates/ablate.sh externals/cgm-remote-monitor-official
       bf/alarms origin/dev externals/work/crm-bf-alarms api.googlehome
 
@@ -257,10 +266,10 @@ controls:
     control-exempt: >
       This gate's cwd is the SHIPPING CHECKOUT, which 19 worktrees hang
       off. Ablating it means editing that tree, and rule 6 forbids it.
-      The gate is currently FAILING against the live tree, so it is not
-      silently green, and RT-D3's companion instrument (d3-drag-clamp-
-      covered.js) carries its own internal CONTROL finding and is the
-      non-vacuous measurement for this item.
+      The gate fails against the live tree (RT-D3 0/2 in queue-status,
+      2026-09-22), so it is not silently green, and RT-D3's companion
+      instrument (d3-drag-clamp-covered.js) carries its own internal
+      CONTROL finding and is the non-vacuous measurement for this item.
 
   - gate: |-
       TEST=insulinage npm run test-single
@@ -406,7 +415,8 @@ controls:
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/alarms
     control-kind: static
     proves: >
-      origin/chore/nightscout-modernization is a base bf/alarms has NOT
+      ORPHAN: no queue gate uses this command since bf/alarms merged into
+      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/alarms has NOT
       taken, and the same command reports it not-an-ancestor (exit 1,
       measured). That is exactly the shape this gate goes red in when
       dev moves ahead of the branch.
@@ -430,7 +440,8 @@ controls:
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/cache
     control-kind: static
     proves: >
-      origin/chore/nightscout-modernization is a base bf/cache has NOT
+      ORPHAN: no queue gate uses this command since bf/cache merged into
+      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/cache has NOT
       taken, and the same command reports it not-an-ancestor (exit 1,
       measured). That is exactly the shape this gate goes red in when
       dev moves ahead of the branch.
@@ -442,7 +453,8 @@ controls:
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/coercion
     control-kind: static
     proves: >
-      origin/chore/nightscout-modernization is a base bf/coercion has
+      ORPHAN: no queue gate uses this command since bf/coercion merged into
+      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/coercion has
       NOT taken, and the same command reports it not-an-ancestor (exit
       1, measured). That is exactly the shape this gate goes red in when
       dev moves ahead of the branch.
@@ -466,7 +478,8 @@ controls:
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/food
     control-kind: static
     proves: >
-      origin/chore/nightscout-modernization is a base bf/food has NOT
+      ORPHAN: no queue gate uses this command since bf/food merged into
+      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/food has NOT
       taken, and the same command reports it not-an-ancestor (exit 1,
       measured). That is exactly the shape this gate goes red in when
       dev moves ahead of the branch.
@@ -478,7 +491,8 @@ controls:
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/merge
     control-kind: static
     proves: >
-      origin/chore/nightscout-modernization is a base bf/merge has NOT
+      ORPHAN: no queue gate uses this command since bf/merge merged into
+      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/merge has NOT
       taken, and the same command reports it not-an-ancestor (exit 1,
       measured). That is exactly the shape this gate goes red in when
       dev moves ahead of the branch.
@@ -490,7 +504,8 @@ controls:
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/parms
     control-kind: static
     proves: >
-      origin/chore/nightscout-modernization is a base bf/parms has NOT
+      ORPHAN: no queue gate uses this command since bf/parms merged into
+      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/parms has NOT
       taken, and the same command reports it not-an-ancestor (exit 1,
       measured). That is exactly the shape this gate goes red in when
       dev moves ahead of the branch.
@@ -502,7 +517,8 @@ controls:
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/reads
     control-kind: static
     proves: >
-      origin/chore/nightscout-modernization is a base bf/reads has NOT
+      ORPHAN: no queue gate uses this command since bf/reads merged into
+      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/reads has NOT
       taken, and the same command reports it not-an-ancestor (exit 1,
       measured). That is exactly the shape this gate goes red in when
       dev moves ahead of the branch.
@@ -670,19 +686,12 @@ controls:
     control-kind: static
     proves: >
       origin/dev and origin/chore/retire-jsdom conflict in seven files,
-      re-measured 2026-09-21, and merge-tree exits 1 on the pair. A trial
+      measured 2026-09-21, and merge-tree exits 1 on the pair. A trial
       merge that returned 0 for a conflicting pair would make every
-      "merges cleanly" row in this queue meaningless.
-
-      REPLACED 2026-09-21 BECAUSE THE OLD CONTROL STOPPED BEING NEGATIVE.
-      It paired origin/chore/nightscout-modernization with bf/reads,
-      measured to conflict on 2026-09-15 - but bf/reads merged into dev as
-      PR #8738 and cut 5 then merged dev, so the two no longer conflict and
-      the control now exits 0. queue-vacuity reported the gate VACUOUS,
-      which was true of the control and not of the gate. A known-negative
-      pair that gets reconciled quietly stops being a control, and nothing
-      announces it; this is the second instrument in a week whose subject
-      moved underneath it.
+      "merges cleanly" row in this queue meaningless. The pair is chosen
+      because it is still unreconciled: cut 5 against bf/reads no longer
+      conflicts (bf/reads merged into dev as PR #8738 and cut 5 then merged
+      dev), so it cannot serve as the known-negative.
 
   - gate: |-
       node tools/queue/gates/pr-body-parity.js
@@ -691,18 +700,17 @@ controls:
       T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && cp reports/phase0-pr-bodies/bf-operators.md "$T/" && echo 'CONTROL LINE NOT IN THE LIVE BODY' >> "$T/bf-operators.md" && node tools/queue/gates/pr-body-parity.js --only 8743 --body-dir "$T"
     control-kind: network
     proves: >
-      #8743 is one of the three pairs that MATCH today, so perturbing its body
-      file by one line and re-running against that copy must fail (exit 1,
-      measured 2026-09-21). It perturbs a PASSING pair on purpose: a control
-      built on one of the five already-failing pairs would exit 1 whether or not
-      the comparison worked.
+      #8743 was one of the three pairs that matched on 2026-09-21, so
+      perturbing its body file by one line and re-running against that copy
+      must fail (exit 1, measured 2026-09-21). It perturbs a PASSING pair on
+      purpose: a control built on one of the five already-failing pairs would
+      exit 1 whether or not the comparison worked.
 
-      IT ALSO EXERCISES THE DIRECTION LOGIC added the same day - the control's
-      output reads "live-only 0, file-only 1", the one case in which this gate is
-      still willing to suggest an overwrite. A weaker control was considered and
-      rejected: pointing --body-dir at an empty directory makes every pair report
-      "body file missing", which exits non-zero without ever comparing two bodies,
-      so it would pass this instrument while proving nothing about parity.
+      It also exercises the direction logic: the control's output reads
+      "live-only 0, file-only 1", the one case in which this gate suggests an
+      overwrite. Pointing --body-dir at an empty directory is NOT an adequate
+      control: every pair then reports "body file missing" and exits non-zero
+      without ever comparing two bodies.
 
       READS ONLY. The control writes to a temporary directory and never to
       reports/phase0-pr-bodies/, and pr-body-parity.js has no code path that edits
@@ -715,7 +723,7 @@ controls:
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle origin/dev
     control-kind: static
     proves: >
-      bf/throttle is NOT contained in origin/dev - it is the Phase 0 branch
+      bf/throttle is NOT contained in origin/dev - it is a Phase 0 branch
       that has not been pushed - and the same command reports it so (exit 1,
       measured 2026-09-21). That is the shape this gate must go red in: a
       branch whose work has not landed. Without it the containment test could
@@ -740,11 +748,11 @@ controls:
       git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/mime-exposure-review >/dev/null
     control-kind: static
     proves: >
-      THIS IS A CONTROL FOR A CONTROL, and that is deliberate rather than
-      circular. The gate merges dev with itself and must always pass; its job is
-      to prove merge-tree still works when every other trial-merge in RT-REBASE
-      is red. So what has to be shown is that the command can still FAIL: dev
-      against cut 4 conflicts in eighteen files, measured 2026-09-21, exit 1. A
+      A control for a control, deliberately. The gate merges dev with itself
+      and must always pass; its job is to prove merge-tree still works when
+      every other trial-merge in RT-REBASE is red. So what has to be shown is
+      that the command can still FAIL: dev against cut 4 conflicts in eighteen
+      files, measured 2026-09-21, exit 1. A
       merge-tree that returned 0 for everything would make the self-merge pass
       for the wrong reason and take the whole item's red with it.
 
@@ -853,11 +861,11 @@ controls:
       T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && printf '%s\n' " console.log('Reloading auth data');" > "$T/f.js" && grep -nE "console\.log\('Loading',[[:space:]]*opts\)" "$T/f.js" && exit 1 || exit 0
     control-kind: static
     proves: >
-      THE FIXTURE IS THE NO-SPACE SPELLING, which is what the code
-      actually contains and what the old pattern could never match. The
-      negative fixture makes the gate red and the positive fixture makes
-      it green, so this gate now discriminates the two states it is
-      supposed to distinguish.
+      The negative fixture is the no-space spelling, which is what the
+      code actually contains (the P0-C vacuity case in this file's
+      header). It makes the gate red, and the positive fixture makes it
+      green, so the gate discriminates the two states it is supposed to
+      distinguish.
 
   - gate: |-
       grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' package-lock.json
@@ -868,15 +876,15 @@ controls:
       grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' package-lock.json
     control-kind: static
     proves: >
-      THIS GATE IS DELIBERATELY INVERTED and its control has to be too.
-      It passes while the lockfile is STILL on the old connector SHA,
-      and must go red the moment P0-LOCK regenerates it - so the known-
-      negative is a lockfile with the SHA replaced by the v0.0.14
-      tarball, and against that the grep exits 1. NOTE FOR THE AUDIT:
-      the gate also passes against origin/dev's own lockfile, because
-      the old SHA is what dev pins. It is a HANDOFF TRIPWIRE, not a gate
-      on the branch, and no derived control could have known that -
-      which is why controls are authored per gate and never generated.
+      This gate is DELIBERATELY INVERTED and its control has to be too.
+      It passes while the lockfile is still on the old connector SHA
+      (234d47c, which is also what origin/dev pins), and must go red the
+      moment P0-LOCK regenerates it - so the known-negative is a lockfile
+      with the SHA replaced by the v0.0.14 tarball, and against that the
+      grep exits 1. The gate also passes against origin/dev's own
+      lockfile: it is a handoff tripwire, not a gate on the branch, and
+      no derived control could have known that - which is why controls
+      are authored per gate and never generated.
 
   - gate: |-
       grep -q '^queue-status:' Makefile
@@ -900,7 +908,7 @@ controls:
       T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && printf '%s\n' '"resolved": "https://github.com/nightscout/nightscout-connect/archive/refs/tags/v0.0.14.tar.gz"' > "$T/lock.json" && grep -q 'archive/refs/tags/v0.0.14.tar.gz' "$T/lock.json"
     control-kind: static
     proves: >
-      the gate is red today ON PURPOSE - P0-LOCK is deliberately undone
+      the gate is red ON PURPOSE - P0-LOCK is deliberately undone
       until the tag is pushed - so both directions are shown on fixtures
       rather than on the file. It rejects a lock pinned by SHA and
       accepts one pinned to the tag tarball.
@@ -978,19 +986,18 @@ controls:
       node tools/queue/gates/bf17-remediation-note.js
     control-kind: static
     proves: >
-      NOT the weak empty-root form. The control restores the two mistakes that
-      were actually in these documents on 2026-09-16 - the "Rename the user"
-      row in the 15.0.9 rotation table, and the PR body's "discarded when
-      Nightscout next loads it" - into a throwaway copy, and the gate goes to
-      3 failing / 17. Run 2026-09-16. Three further ablations were run by hand
-      the same day and are recorded on the item: restoring the rename option to
-      report 2.3 alone -> 1 failing; QUEUE_GATE_ROOT at an empty directory ->
-      17 failing, which is the weak form included for free; the pristine tree
-      -> 0 failing, which is the positive-control above and catches the
-      opposite error of a gate that can never go green. THE POINT OF A SHARP
-      CONTROL HERE: this gate asserts things about PROSE, and prose can be
-      edited into something that satisfies a grep while saying the wrong thing.
-      Reintroducing the real sentence is the only control that speaks to that.
+      NOT the weak empty-root form. The control restores two wrong sentences
+      that these documents carried on 2026-09-16 - the "Rename the user" row in
+      the 15.0.9 rotation table, and the PR body's "discarded when Nightscout
+      next loads it" - into a throwaway copy, and the gate goes to 3 failing /
+      17. Run 2026-09-16. Three further ablations, run by hand the same day and
+      recorded on the item: restoring the rename option to report 2.3 alone ->
+      1 failing; QUEUE_GATE_ROOT at an empty directory -> 17 failing (the weak
+      form); the pristine tree -> 0 failing (the positive-control above, which
+      catches a gate that can never go green). This gate asserts things about
+      prose, which can be edited to satisfy a grep while saying the wrong
+      thing; reintroducing the real wrong sentence is the control that speaks
+      to that.
 
   - gate: |-
       node tools/queue/gates/booterror-shape-coverage.js --ref origin/chore/mime-exposure-review
@@ -1354,9 +1361,9 @@ controls:
       T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && mkdir -p "$T/tools/queue" "$T/queue" "$T/docs/00-overview" && cp tools/queue/emit_views.py tools/queue/manifest.py "$T/tools/queue/" && cp queue/work-queue.yaml "$T/queue/" && cp docs/00-overview/*.md "$T/docs/00-overview/" && python3 "$T/tools/queue/emit_views.py" --check
     control-kind: static
     proves: >
-      RUN 2026-09-16. A THROWAWAY COPY of the tree is tampered rather than the
-      working tree, because _gate.js forbids a gate that dirties the checkout
-      and two bench gates were already caught doing exactly that. emit_views.py
+      RUN 2026-09-16. A throwaway copy of the tree is tampered rather than the
+      working tree, because _gate.js forbids a gate that dirties the checkout.
+      emit_views.py
       derives its root from its own __file__, so the copy relocates it cleanly.
       Editing one row INSIDE a generated fence is reported stale and exits 1;
       the identical copy without the edit exits 0, which is the half that
@@ -1372,15 +1379,15 @@ controls:
       T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && mkdir -p "$T/tools/queue" "$T/queue" "$T/reports/reviewer-packets" "$T/reports/phase0-pr-bodies" && cp tools/queue/emit_packets.py tools/queue/manifest.py "$T/tools/queue/" && cp queue/work-queue.yaml "$T/queue/" && cp reports/phase0-pr-bodies/*.md "$T/reports/phase0-pr-bodies/" && cp reports/reviewer-packets/*.md "$T/reports/reviewer-packets/" && python3 "$T/tools/queue/emit_packets.py" --check
     control-kind: static
     proves: >
-      RUN 2026-09-16, AND THE FIRST VERSION OF THIS CONTROL WAS RED FOR THE
-      WRONG REASON - which is the failure this whole file exists to catch, met
-      while writing an entry for it. The first copy omitted
-      reports/phase0-pr-bodies/, so pr_body_path() found nothing and ALL NINE
-      PR packets differed in their Evidence section. The control exited 1 and
-      would have read as proof, while proving only that an incomplete copy
-      produces different output. Corrected, it names exactly one file - the
-      deleted p0-a-bf-alarms.md - and the identical copy WITHOUT the deletion
-      exits 0.
+      RUN 2026-09-16. The throwaway copy deletes one packet
+      (p0-a-bf-alarms.md) and --check exits 1 naming exactly that file; the
+      identical copy WITHOUT the deletion exits 0. The copy MUST include
+      reports/phase0-pr-bodies/: without it pr_body_path() finds nothing,
+      every PR packet differs in its Evidence section, and the control is red
+      for the wrong reason (an incomplete copy) while reading as proof. The
+      positive control is what distinguishes the two. Note: p0-a-bf-alarms.md
+      exists only while P0-A has a packet; if it is no longer generated this
+      control must be re-authored against a packet that is.
 
   - gate: |-
       node tools/queue/gates/doc-links.js
@@ -1392,19 +1399,20 @@ controls:
       RUN 2026-09-16. Pointed at an empty git tree the gate exits 1 rather
       than reporting that every one of zero references resolved - the two
       findings that assert a non-empty scope and a non-zero reference count
-      both go BAD. That is the vacuity trap this whole file exists for: a
-      file-reading gate whose inputs vanish must not render as a pass.
+      both go BAD. A file-reading gate whose inputs vanish must not render
+      as a pass. CAVEAT: the control's QUEUE_GATE_ROOT is a path in one
+      session's scratchpad; where that directory does not exist the control
+      may error rather than measure, so check its output before reading it.
 
-      THREE STRONGER ABLATIONS were also run, on the real tree, one per
-      detection pass, each verified to LAND before its result was read.
+      Three stronger ablations were also run on the real tree, one per
+      detection pass, each verified to land before its result was read:
       (1) a markdown link in phase0-pr-sequencing repointed to a name ending
-      -NOPE.md - caught as md-link. (2) the backfix register's path in
-      work-queue.yaml reverted to its pre-move spelling - caught as root-path.
-      (3) doc-branch-count.js's path.join segments reverted to the pre-move
-      form - caught as path.join, which is the exact break that hid inside an
-      expected red on 2026-09-16. They are not the standing control only
-      because each mutates a tracked file, and _gate.js forbids a gate that
-      dirties the working tree.
+      -NOPE.md - caught as md-link; (2) the backfix register's path in
+      work-queue.yaml reverted to its pre-move spelling - caught as
+      root-path; (3) doc-branch-count.js's path.join segments reverted to
+      the pre-move form - caught as path.join. They are not the standing
+      control only because each mutates a tracked file, and _gate.js forbids
+      a gate that dirties the working tree.
 
   - gate: |-
       test -f docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md
@@ -1415,8 +1423,8 @@ controls:
       test -f docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md
     control-kind: static
     proves: >
-      `test -f` is shown to distinguish an absent path from a present one. WEAK
-      BY CONSTRUCTION, and the item says so: it proves the instrument works, not
+      `test -f` is shown to distinguish an absent path from a present one. Weak
+      by construction, and the item says so: it proves the instrument works, not
       that the document it names is right. The real controls this item needs are
       the two in its no-gate markers and both need a running Kratos and Hydra.
 
@@ -1430,7 +1438,7 @@ controls:
     control-kind: static
     proves: >
       `test -f` is shown to distinguish an absent path from a present
-      one. THIS IS A WEAK CONTROL and the audit says so: it proves the
+      one. This is a weak control and the audit says so: it proves the
       instrument works, not that the file it names is the right file. An
       existence gate can never be stronger than that.
 
@@ -1476,20 +1484,13 @@ controls:
       assert a property OF.
 
   # ------------------------------------------------------------------------
-  # CONTROLS ADDED 2026-09-21, for the eight Phase 0 containment gates.
+  # The eight Phase 0 CONTAINMENT gates (`--is-ancestor <branch> origin/dev`):
+  # the branch merged into dev and must stay in it.
   #
-  # The gates these replace asked `--is-ancestor origin/dev <branch>` -- has
-  # the branch fallen behind dev -- and each had a control here that reversed
-  # the question against a base the branch had not taken. Those gates and their
-  # controls are both gone: the eight branches MERGED into dev as PRs
-  # #8733-#8743, dev moved on, and "has not fallen behind" went permanently red
-  # for the best possible reason. The gates now assert CONTAINMENT.
-  #
-  # The control is the reverse of the new question and is stronger than the one
-  # it replaces, because it needs no third branch: dev is strictly AHEAD of
-  # every merged branch, so `--is-ancestor origin/dev <branch>` must answer no.
-  # Measured 2026-09-21: exit 1 for all eight. A command that answered yes both
-  # ways would not be reading ancestry at all.
+  # The control is the reverse question and needs no third branch: dev is
+  # strictly AHEAD of every merged branch, so `--is-ancestor origin/dev
+  # <branch>` must answer no. Measured 2026-09-21: exit 1 for all eight. A
+  # command that answered yes both ways would not be reading ancestry at all.
   # ------------------------------------------------------------------------
 
   - gate: |-
@@ -1581,15 +1582,14 @@ controls:
       no. Exit 1, measured 2026-09-21.
 
   # ------------------------------------------------------------------------
-  # CONTROLS FOR THE TWO GATES ADDED 2026-09-21 (BF-71, BF-72).
+  # BF-71 and BF-72 gates (2026-09-21).
   #
-  # Both are FAILS-TODAY tracking gates, so the empty-root weak form is the
-  # declared control, as it is for d3-drag-clamp-covered.js and
-  # timeago-future-reading.js. Unlike those, a SHARPER control was also run by
-  # hand on the day the gates were written, and this file's preamble says to
-  # record that when it happens -- so the `proves` text names the scratch refs
-  # and what each showed. The scratch refs are kept in
-  # externals/cgm-remote-monitor-official for exactly this reason.
+  # Both are fails-today tracking gates, so the empty-root weak form is the
+  # declared control, as for d3-drag-clamp-covered.js and
+  # timeago-future-reading.js. A sharper control was also run by hand for
+  # each; `proves` names the scratch ref and what it showed. The scratch refs
+  # are kept in externals/cgm-remote-monitor-official so it can be re-run.
+  # Both describe mechanism only; BF-72 is live on 15.0.8.
   # ------------------------------------------------------------------------
 
   - gate: |-
@@ -1601,13 +1601,13 @@ controls:
     proves: >
       run with QUEUE_GATE_ROOT pointed at an EMPTY directory the gate does not
       exit 0 - it reports that it could not read lib/server/query.js and fails,
-      rather than passing by absence. THE SHARPER CONTROL WAS ALSO RUN, by
+      rather than passing by absence. The sharper control was also run by
       hand, 2026-09-21: against the scratch ref tmp/bf71-vacuity-probe, which
       splices a date-constraint test into an isolated copy of the guard, the
       gate goes GREEN (BF71_REF=tmp/bf71-vacuity-probe) with its in-file
       control still green. So the gate is coupled to the specific property and
-      not merely to the file existing. The same ablation was carried further
-      than the gate needed: the booted probe against mongod 7.0.43 then
+      not merely to the file existing. Carried further than the gate needs,
+      the booted probe against mongod 7.0.43 then
       returned the 4-day window (3 records instead of 10) while the allowlisted
       wide bound still reached 10.
 
@@ -1619,20 +1619,19 @@ controls:
     control-kind: static
     proves: >
       run with QUEUE_GATE_ROOT pointed at an EMPTY directory the gate does not
-      exit 0 - neither source file is readable and it says so. THE SHARPER
-      CONTROL WAS ALSO RUN, by hand, 2026-09-21: against the scratch ref
+      exit 0 - neither source file is readable and it says so. The sharper
+      control was also run by hand, 2026-09-21: against the scratch ref
       tmp/bf72-vacuity-probe, which splices a length bound into an isolated
       copy of the allowlist module, the gate goes GREEN
       (BF72_REF=tmp/bf72-vacuity-probe) with its reachability control still
-      green. WORTH RECORDING: the FIRST draft of that detector did NOT flip
-      under this same ablation, because it required the bound within 400
-      characters of a $regex occurrence and the natural site for one is over a
-      thousand characters away. The ablation is what found that, which is the
-      argument for authoring controls rather than deriving them.
+      green. Design constraint the ablation established: the detector must
+      not require the bound to sit near a $regex occurrence (a 400-character
+      window did not flip under this ablation), because the natural site for
+      the bound is over a thousand characters away.
   # ─── ADV-* : the five security advisories, 2026-09-21 ───────────────────
-  # Every control below was RUN on 2026-09-21 and its exit code recorded, per
-  # rule 3 of this file's header. The two source-presence gates (G7/G8) are the
-  # interesting ones: both must go RED when their defect is FIXED, so their
+  # Every control below was RUN on 2026-09-21 and its exit code recorded. The
+  # two source-presence gates on v15.0.8 (BF-77, careportal read) are inverted:
+  # they are green because the shipping tag carries the defect, so their
   # controls apply the same grep to the post-fix shape rather than to a
   # different tree.
 
@@ -1643,9 +1642,12 @@ controls:
       git -C externals/work/crm-adv-retro merge-base --is-ancestor bf/ws-loadretro-auth origin/dev
     control-kind: static
     proves: >
-      the ancestry question reversed. RUN 2026-09-21: gate exit 0, control
-      exit 1, because bf/ws-loadretro-auth carries 9765e8cd and origin/dev does
-      not. A gate of this shape passes for any pair where the branch simply
+      ORPHAN: no queue gate uses this command; ADV-RETRO's branch merged into
+      dev (#8744) and its gate became a containment check. As measured
+      2026-09-22 in crm-adv-retro, this gate now exits 1 and its control 0.
+      Original record: the ancestry question reversed. RUN 2026-09-21: gate
+      exit 0, control exit 1, because bf/ws-loadretro-auth then carried
+      9765e8cd and origin/dev did not. A gate of this shape passes for any pair where the branch simply
       equals the base, so the control is what distinguishes "branch is current"
       from "branch is empty".
 
@@ -1669,6 +1671,8 @@ controls:
       git -C externals/work/crm-adv-alarm merge-base --is-ancestor bf/alarm-socket-scope origin/dev
     control-kind: static
     proves: >
+      ORPHAN: no queue gate uses this command; ADV-ALARM's branch merged into
+      dev (#8745) and its gate became a containment check. Original record:
       ancestry reversed. RUN 2026-09-21: gate exit 0, control exit 1.
 
   - gate: |-
@@ -1678,7 +1682,7 @@ controls:
       test -f externals/work/crm-adv-alarm/tests/api3.alarm-socket.security.test.js -a -f externals/work/crm-adv-alarm/tests/api3.alarm-socket.ack.ABSENT.test.js
     control-kind: static
     proves: >
-      THE CONJUNCTION, not just the first operand - the control keeps the real
+      The conjunction, not just the first operand - the control keeps the real
       first path and breaks only the second, so a gate that had silently
       degraded to testing one file would come back GREEN here and be caught.
       RUN 2026-09-21: gate exit 0, control exit 1.
@@ -1690,10 +1694,11 @@ controls:
       git -C externals/work/crm-adv-shipping tag --contains 9765e8cd | grep -qx v15.0.8
     control-kind: static
     proves: >
-      THE CLAIM THE WHOLE ITEM RESTS ON - that operators on the shipping release
+      The claim the whole item rests on - that operators on the shipping release
       already have the XSS fix. The control asks the identical question about
-      9765e8cd, the loadRetro fix, which exists only on an unpushed local branch
-      and is in no tag at all. RUN 2026-09-21: gate exit 0, control exit 1. The
+      9765e8cd, the loadRetro fix, which is merged into origin/dev (#8744) but
+      is in no tag, so v15.0.8 does not contain it. RUN 2026-09-21: gate exit 0,
+      control exit 1. The
       `grep -qx` matters: without -x, a tag named v15.0.8-rc1 would satisfy it.
 
   - gate: |-
@@ -1717,9 +1722,10 @@ controls:
       git -C externals/work/crm-adv-shipping show v15.0.8:lib/server/bootevent.js | sed "s/authDefaultRoles == 'readable'/authDefaultRoles.split(' ').includes('readable')/" | grep -q "authDefaultRoles == 'readable'"
     control-kind: static
     proves: >
-      THIS GATE IS DELIBERATELY INVERTED - it is green while BF-77 is UNFIXED and
-      must go red when someone fixes it, so the honest control is the same grep
-      applied to the POST-FIX shape rather than to another tree. The control pipes
+      This gate is DELIBERATELY INVERTED - it is green because v15.0.8 carries
+      BF-77 unfixed (the fix is merged in dev, #8746, not released), so the
+      honest control is the same grep applied to the POST-FIX shape rather than
+      to another tree. The control pipes
       v15.0.8's own file through the exact substitution BF-77 proposes and greps
       it. RUN 2026-09-21: gate exit 0, control exit 1. Written this way because a
       control that merely greps a string known to be absent would prove the grep

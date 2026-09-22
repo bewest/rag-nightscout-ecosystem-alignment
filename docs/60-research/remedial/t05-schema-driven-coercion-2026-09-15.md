@@ -1,5 +1,7 @@
 # T0.5 — schema-driven query type coercion
 
+> **Snapshot — research as of 2026-09-15, measured against `origin/dev a8888f0d` (branch `bf/coercion`, commit `88d1f8a4`). Status: findings merged to dev in PR #8737 (BF-02, BF-03 devicestatus+profile, BF-11, BF-32; also BF-40), unreleased. BF-12 closed as invalid. Contributor-facing; §7 quotes a user-facing release note. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 *2026-09-15. Closes BF-02 and BF-11, closes BF-03 in part, closes BF-12 as
 not-a-defect, and opens BF-32.*
 
@@ -77,10 +79,9 @@ Both are declared `number` and neither had a walker entry, so both filters
 returned nothing. `duration` is on **91 % of treatment documents across 10
 sites** and **88 % of its values are fractional**; `rate` is on 55 %. Now typed.
 
-### BF-12 · `entries.rawbg` is a stale walker entry — **does not reproduce**
+### BF-12 · `entries.rawbg` stale walker entry — **invalid, does not reproduce**
 
-**Stopped and did not fix this.** The register says `lib/server/entries.js`
-coerces `rawbg`, a field absent from the model. It does not. The walker on
+`lib/server/entries.js` does not coerce `rawbg`. The walker on
 `origin/dev` reads:
 
 ```js
@@ -93,15 +94,13 @@ never been in that file. `origin/chore/nightscout-modernization` has `rssi`
 too. And `rssi` *is* in the model, as `integer`, with 32,098 observed values on
 one site, so it is a **correct** entry and not a stale one.
 
-The transcription in `coercion_emit.py`'s `SHIPPING_WALKERS` carried the same
-error, which is where the register entry came from. Both are corrected. The
-drift report now finds **zero ORPHAN rows** across all collections: the
+`coercion_emit.py`'s `SHIPPING_WALKERS` transcription names `rssi`. The
+drift report finds **zero ORPHAN rows** across all collections: the
 hand-maintained list was missing entries, but it was not carrying dead ones.
 
-## 3. Two things the register got wrong about BF-03
+## 3. BF-03: two of its four collections are outside this change's reach
 
-BF-03 names four collections. Two of them cannot be fixed by this change, and
-neither for a reason the register anticipated.
+BF-03 names four collections. Two of them cannot be fixed by this change.
 
 **`food` reaches `lib/server/query.js` at no point.** `lib/server/food.js`
 exposes `list(fn)`, `listquickpicks(fn)` and `listregular(fn)` — none takes
@@ -120,7 +119,7 @@ them and the table will not guess. `activity` is wired to the table and its
 entry is legitimately empty, so it starts working the day the model gains a
 field.
 
-**A third, smaller correction.** §3.4's table and BF-03 both say `devicestatus`
+**Default walker.** §3.4's table and BF-03 both say `devicestatus`
 and `activity` have "none at all". They actually inherit `query.js`'s *default*
 walker, `{ date: parseInt, sgv: parseInt }`, because neither sets `walker` and
 `default_options` fills one in. It does not change the conclusion — the fields
@@ -157,10 +156,9 @@ Per the programme rule: each check was made to fail on purpose.
 | Re-declare `treatments.insulin` as `integer` in the **model** | `test_checked_in_bundle_matches_a_fresh_emit`, `test_vendored_copy_matches_the_emitted_bundle`, `test_known_over_coercions_are_detected` | 3 failed |
 
 The corpus arm matters as much as the code arm: the probe fixture was built so
-that every case *distinguishes* the two behaviours. The first version held
-`carbs: 7.5` alone, and `find[carbs][$gte]=7.5` returned 1 row before and after
-— `parseInt(7.5)` is 7, and 7.5 ≥ 7 — so the case proved nothing until
-`carbs: 7.0` was added to separate them. `duration`/`rate` are the strongest
+that every case *distinguishes* the two behaviours. `carbs: 7.5` alone would
+return 1 row for `find[carbs][$gte]=7.5` before and after — `parseInt(7.5)` is
+7, and 7.5 ≥ 7 — so `carbs: 7.0` is included to separate them. `duration`/`rate` are the strongest
 arm: 0 rows before, 2 after.
 
 The chain model → table → vendored copy → query behaviour is now covered at

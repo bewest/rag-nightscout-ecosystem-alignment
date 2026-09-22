@@ -1,5 +1,7 @@
 # The write path across the seam — three divergences, and a vacuity trap in my own harness
 
+> **Snapshot — research as of 2026-09-15, measured against seam worktree `239f8c25`. Status: current — tenancy research, not on a shipping path; BF-21, BF-22 and BF-23 are open (pre-release, register §1b) and none reaches 15.0.8 or dev. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-21 carries the corrected caller census).**
+
 Date: 2026-09-15 · Harness: [`tools/qc/write-arm.js`](../../../tools/qc/write-arm.js)
 Arms: real `mongod` 7 · real PostgreSQL 16, the emitted schema, both built by
 `store.storageCollection()` · worktree detached at `239f8c25`
@@ -17,9 +19,8 @@ state** read back afterwards.
 ## 1. Why the write path deserved this before the read path did
 
 A divergent read returns a wrong answer once. A divergent write leaves the store wrong, and every
-later read of it is correct about the wrong thing. This project's own history says the same: the
-defects recorded during Phase 1 include *a synthesised `acknowledged`* and *a missing
-non-upserting replace*, both on the write side.
+later read of it is correct about the wrong thing. The defects recorded during Phase 1 include
+*a synthesised `acknowledged`* and *a missing non-upserting replace*, both on the write side.
 
 ---
 
@@ -39,17 +40,21 @@ not carry it:
 | `bulkUpsert(ops, {mode:'merge'})` | `stale` survives | `stale` survives | agree |
 | `bulkUpsert(ops, {mode:'replace'})` | `stale` removed | `stale` **survives** | **differs** |
 
-The third row is the one that matters. **Every shipping caller passes `{ mode: 'replace' }`
-explicitly** — `lib/server/activity.js:61`, `lib/server/activity.js:102`,
+The third row is the one that matters. **Eight of the nine shipping callers pass
+`{ mode: 'replace' }` explicitly** — e.g. `lib/server/activity.js:61`, `lib/server/activity.js:102`,
 `lib/server/treatments.js:31`. They are asking for a replace, in writing, and on PostgreSQL the
-argument reaches nothing.
+argument reaches nothing. [Correction 2026-09-22: the ninth, `lib/server/entries.js:168`, passes
+`{ mode: 'merge' }` deliberately, so "always replace" is not a safe fix; full census in the
+register's BF-21 entry, read on `crm-seam` `81a1f6ce`.]
 
 The consequence is not a lost update but an **unremovable field**: any key a client deletes from a
 treatment or activity document stays in the PostgreSQL row for good, and the two backends drift
 further apart with every write. Nothing errors and nothing logs.
 
-*Not yet live*: `entries` is the only collection with a PostgreSQL schema, and it has no
-`bulkUpsert` caller. `activity` and `treatments` do. **The exposure arrives with T2.6** — the same
+*Not yet live*: `entries` is the only collection with a PostgreSQL schema. [Correction 2026-09-22:
+`entries` does have one `bulkUpsert` caller (`entries.js:168`), which requests merge — the one mode
+the PostgreSQL adapter hardcodes — so the backends agree there by coincidence.] `activity`,
+`treatments`, `food`, `profile` and `authorization/storage.js` request replace. **The exposure arrives with T2.6** — the same
 deadline as [BF-19](../../30-design/remedial/nightscout-backfix-register.md).
 
 ## 3. BF-22 — `updateOne` with a dotted field stores two different documents
@@ -125,9 +130,9 @@ The fix is `effect()`: every mutating probe records the state before and after a
 and a divergence appeared that the broken run had hidden — §3, `updateOne` with a dotted field,
 which cannot show up in a run where `updateOne` never matches anything.
 
-Two lessons, both already in this project's rules and both re-learned the hard way here: a
-non-vacuity check on the *instrument* is not one on the *experiment*, and an "agree" from an
-operation that did nothing is indistinguishable from an "agree" from an operation that worked.
+Two lessons: a non-vacuity check on the *instrument* is not one on the *experiment*, and an
+"agree" from an operation that did nothing is indistinguishable from an "agree" from an operation
+that worked.
 
 ---
 

@@ -1,5 +1,12 @@
 # Post-Phase-0 roadmap — ordering the four next priorities
 
+> **Snapshot — describes 2026-09-15, measured against `origin/dev` `a8888f0d`.** Status:
+> superseded for ordering. Wave 2's trigger ("Phase 0 on dev") happened between 2026-09-17 and
+> 2026-09-21, so R5 (seam rebase) is unblocked. Current ordering and measurements:
+> [release-readiness-15.0.9-2026-09-22.md §5](modernization/release-readiness-15.0.9-2026-09-22.md#5-the-road-after-1509).
+> The R-items' designs, the `ctx` analysis (§0.1–0.3), deployment metadata (§4) and the open
+> questions (§6) are still the only statement of those designs.
+
 **Status: draft for maintainer review, 2026-09-15.** Contributor-facing. Written against main-repo
 HEAD `75c38a17`, `origin/dev` `a8888f0d`, `seam/t1-2-storage-interface` `81a1f6ce`. Nothing in this
 document was pushed, merged or rebased; every git operation below is `merge-tree`, `rev-list` or
@@ -738,7 +745,7 @@ standard rather than by contributor-facing conventions.
 
 **Why it recurs despite blocking nothing.** It surfaces at three sites that each get designed
 independently: the boot-error page (`lib/server/app.js` installs `app.get('*', bootErrorView)`), the
-tenant-suspended response (plan §2.9), and push notification text. Each designer needs to know whose
+tenant-suspended response (plan §2.10), and push notification text. Each designer needs to know whose
 name goes on the message. Recording the answer once is cheaper than answering it three times
 inconsistently — which is the actual cost of leaving it parked, and the reason to close it with R6
 rather than park it again.

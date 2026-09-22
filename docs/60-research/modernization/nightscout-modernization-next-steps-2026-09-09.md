@@ -1,5 +1,7 @@
 **Nightscout: modernization review and proposed next steps**
 
+> **Snapshot — discussion synthesis as of 2026-09-09, measured against `origin/dev a8888f0d` and modernization PR #8605 at `ee2a0b9e`. Status: superseded as a status record (dev has moved to `74fc6619`, 308 commits over `origin/master` 15.0.8, nothing released); the framework and testing proposals remain open proposals. Current facts: [post-Phase-0 roadmap](../../30-design/post-phase0-roadmap-2026-09-15.md), [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+
 Date: 9 September 2026. Status: draft for maintainer discussion.
 
 This document consolidates Andy Low and Ben West's discussion about the next stage of Nightscout development, together with source checks and candidate approaches. Andy's immediate priority is a joint review of `chore/nightscout-modernization`. Once Andy and Ben are satisfied with that baseline, they can agree a firm, sequenced implementation plan. The framework and deployment recommendations below remain proposals.
