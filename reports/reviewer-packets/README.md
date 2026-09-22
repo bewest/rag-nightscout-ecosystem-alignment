@@ -32,6 +32,7 @@ repository.
 | [`FU-PRBODIES`](fu-prbodies.md) | &mdash; | `needs-decision` | Five merged PR bodies have drifted from the files they were posted from |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
 | [`P0-TAG`](p0-tag-release-v0-0-14.md) | &mdash; | `needs-decision` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push |
+| [`RT-4`](rt-4.md) | &mdash; | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes |
 | [`RT-D3`](rt-d3-origin-dev.md) | &mdash; | `needs-decision` | Answer the D3 question before 15.0.9 ships |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |
 | [`T30-RESEARCH`](t30-research.md) | &mdash; | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface |

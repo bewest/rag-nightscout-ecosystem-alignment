@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 13 items
+### Maintainer &mdash; 14 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -39,6 +39,7 @@ that it was reviewed.
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `FU-PRBODIES` | `needs-decision` | Five merged PR bodies have drifted from the files they were posted from | &mdash; |
 | `P0-TAG` | `needs-decision` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push | &mdash; |
+| `RT-4` | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes | &mdash; |
 | `RT-D3` | `needs-decision` | Answer the D3 question before 15.0.9 ships | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `DOC-LINKS` | `ready-to-push` | Every path the programme's documents and tooling cite must resolve | &mdash; |

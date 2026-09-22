@@ -41,13 +41,13 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 32 | RT-VERSION, RT-4, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 31 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 15 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, DOC-VIEWS, DOC-LINKS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 1 | P0-F |
 | `merged-upstream` | 13 | P0-A, P0-B, P0-D, P0-E, P0-G, P0-H, P0-I, P0-K, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
-| `needs-decision` | 9 | P0-TAG, RT-D3, RT-0, T30-RESEARCH, BFQ-72, BFQ-47, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
+| `needs-decision` | 10 | P0-TAG, RT-D3, RT-0, RT-4, T30-RESEARCH, BFQ-72, BFQ-47, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
 
 ### Reaches an operator on today's release
@@ -646,7 +646,7 @@ tenancy decision.
 | register | `BF-08`, `BF-34` |
 | blocks on | `P0-F` |
 
-**Blast radius.** Two candidate 0.0.14s exist. Measured 2026-09-22 against connector official/dev 8e26786: official/dev's package.json says 0.0.14 (bumped upstream in e231600), and the programme's local, unpushed annotated tag v0.0.14 points at release/v0.0.14 649a7de, whose package.json also says 0.0.14 - two different trees with one version. `git rev-list --left-right --count official/dev...release/v0.0.14` = 24 behind / 11 ahead. The 24 include LibreLinkUp v4 (PR #73), the Glooko work (#71), the connector regression-CI restore (#72) and the main->dev merge (#69). `git merge-tree --write-tree official/dev release/v0.0.14` conflicts in 11 files at 8e26786: .github/workflows/test.yml (added in both), index.js, lib/builder.js, lib/machines/{cycle,fetch,poller,session}.js, lib/outputs/internal.js, lib/sources/glooko/{convert,index}.js and lib/sources/librelinkup.js. Pushing the prepared tag would therefore mint a v0.0.14 that is not dev's 0.0.14, and the tarball P0-PIN pins would omit work upstream considers part of that version. That is a release-content decision, not a mechanical reconciliation. Three shapes, none obviously right: reconcile release/v0.0.14 onto dev and cut the tag from there; abandon the prepared branch and let upstream tag dev; or cut ours as 0.0.15 and leave 0.0.14 to dev. Nothing has been pushed; the remote's newest tag is v0.0.13. The prepared release itself: 11 commits, 29 files, +1362/-312, of which 887 lines are new test files; b394411 fast- forwards to 649a7de.
+**Blast radius.** Two candidate 0.0.14s exist. Measured 2026-09-22 against connector official/dev 8e26786: official/dev's package.json says 0.0.14 (bumped upstream in e231600), and the programme's local, unpushed annotated tag v0.0.14 points at release/v0.0.14 649a7de, whose package.json also says 0.0.14 - two different trees with one version. `git rev-list --left-right --count official/dev...release/v0.0.14` = 24 behind / 11 ahead. The 24 include LibreLinkUp v4 (PR #73), the Glooko work (#71), the connector regression-CI restore (#72) and the main->dev merge (#69). `git merge-tree --write-tree official/dev release/v0.0.14` conflicts in 11 files at 8e26786: .github/workflows/test.yml (added in both), index.js, lib/builder.js, lib/machines/{cycle,fetch,poller,session}.js, lib/outputs/internal.js, lib/sources/glooko/{convert,index}.js and lib/sources/librelinkup.js. Pushing the prepared tag would therefore mint a v0.0.14 that is not dev's 0.0.14, and the tarball P0-PIN pins would omit work upstream considers part of that version. That is a release-content decision, not a mechanical reconciliation. RECOMMENDED 2026-09-22, after upstream opened its own 0.0.14 release as connector PR #70 (dev -> main, head 8e26786, with connectivity fixes the maintainer reports include confirmed Dexcom access): retire the local tag and land its content upstream, where it already exists as PRs - #64 (credential- safe logging plus the BF-85 CareLink zero filter; rebased 2026-09-22, merges cleanly), #67 (debug opt-in and the logger that reads CONNECT_DEBUG; conflicts in 8 files), #68 (retry/jitter; conflicts in 11), #66. #64 and #67 must be in upstream 0.0.14 before cgm-remote-monitor pins it: 8e26786 alone logs CareLink login responses and Dexcom error bodies unconditionally (BF-42/43 again) and ignores CONNECT_DEBUG. See release-readiness-15.0.9 §5.2. Nothing has been pushed; the remote's newest tag is v0.0.13. The prepared release itself: 11 commits, 29 files, +1362/-312, of which 887 lines are new test files; b394411 fast-forwards to 649a7de.
 
 **What an operator sees.** A new version of the CGM connector, the part of Nightscout that fetches readings from a CGM vendor's online service. See P0-F for what changes in behaviour. Nothing reaches anyone until the connector version is decided, tagged, and a Nightscout release is updated to use it.
 
@@ -920,7 +920,7 @@ that costs.
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
 | `RT-2` | Cut 2 - chore/build-runtime-separation | `blocked` | `chore/build-runtime-separation` | minor | 1 run + 1 no-gate |
 | `RT-3` | Cuts 3+5 combined - dependency release | `blocked` | `chore/nightscout-modernization` | major | 1 run + 2 no-gate |
-| `RT-4` | Deprecation release - the MiniMed migration path that does not exist | `not-started` | `-` | minor | 1 run + 1 no-gate |
+| `RT-4` | Deprecation release - recommended folded into 15.0.9's release notes | `needs-decision` | `-` | minor | 1 run + 1 no-gate |
 | `RT-5` | Cut 4 - chore/mime-exposure-review, the one to slow down on | `blocked` | `chore/mime-exposure-review` | major | 2 run + 2 no-gate |
 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6` | patch | 1 run + 1 no-gate |
 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `chore/compose-mongodb6, chore/mime-exposure-review, chore/nightscout-modernization` | n/a | 2 run + 2 no-gate |
@@ -1167,11 +1167,11 @@ that costs.
 
 **Notes.** §5's commits column sums to 554 against a 495-commit stack (GT2). Counted as modernization work, cut 5 is 95, and 95 + 400 = 495.
 
-### `RT-4` &mdash; Deprecation release - the MiniMed migration path that does not exist
+### `RT-4` &mdash; Deprecation release - recommended folded into 15.0.9's release notes
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `needs-decision` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `chore/nightscout-modernization` |
@@ -1196,7 +1196,7 @@ that costs.
 
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 
-**Notes.** The adopted train puts this BEFORE cut 4 deliberately. GT4 found the real code work: the MiniMed shim has to be written, not just a warning added. Caveat on the population: the maintainer stated on 2026-09-21 that mmconnect (minimed- connect-to-nightscout) has been broken for some time (operational knowledge, not measured here) and that legacy Dexcom Share is intended to map to nightscout-connect. If mmconnect is not working today, the MiniMed half of this release warns about a path that is already failing; BF-44/BF-45 were graded assuming it is live and have not been re-graded.
+**Notes.** The maintainer confirms (2026-09-22, operational knowledge) that legacy mmconnect does not work, and Dexcom BRIDGE_* settings have been served by nightscout-connect by default since 15.0.8 (a91e8ee4, with a deprecation warning and the DEXCOM_BRIDGE_USE_LEGACY escape hatch). No working path is left for a separate release to protect. Recommended: put the notice in 15.0.9's release notes (MiniMed users: move to CONNECT_SOURCE with your CareLink country; Dexcom legacy-flag users: the escape hatch goes with cut 4) and drop this release. The MiniMed shim is still real code and ships with cut 4. BF-44/BF-45 re-graded low.
 
 ### `RT-5` &mdash; Cut 4 - chore/mime-exposure-review, the one to slow down on
 
@@ -2023,7 +2023,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Blast radius.** BF-44 - nightscout-connect's CareLink source reassign_zone, against the retired minimed-connect-to-nightscout transform.js:41-85. BF-45 - setupMMConnect in lib/server/bootevent.js, which references Connect nowhere while setupBridge stands down for it.
 
-**What an operator sees.** Two problems that affect people using a MiniMed pump with CareLink. First, the old built-in CareLink connection and the newer connector work out WHEN a reading happened in different ways, so the same reading can be filed at a different time by each. If it is filed in the future, the "no new data" warning stops working - see the separate item on that. Second, if you set up the new connector while the old CareLink connection is still switched on, BOTH run at once. For Dexcom the old one stands aside automatically; for MiniMed it does not. So any advice to "set up the new connection before removing the old one" is safe for Dexcom and NOT safe for MiniMed. The project maintainer reports that the old built-in CareLink connection has not been working for some time, which may mean fewer people are affected than this description suggests; that has not been measured. Third, when CareLink reports "no reading" for a moment, the connector saves it as a glucose value of 0, and while that is the newest value Nightscout's high and low alarms are not checked. Keep your pump's and CGM's own alarms switched on. Your glucose data continuing to arrive, at the right time, and your alarms being checked is what is at stake here. This is not medical advice; if you are changing how your data reaches Nightscout, plan it with your care team.
+**What an operator sees.** Two problems that affect people using a MiniMed pump with CareLink. First, the old built-in CareLink connection and the newer connector work out WHEN a reading happened in different ways, so the same reading can be filed at a different time by each. If it is filed in the future, the "no new data" warning stops working - see the separate item on that. Second, if you set up the new connector while the old CareLink connection is still switched on, BOTH run at once. For Dexcom the old one stands aside automatically; for MiniMed it does not. So any advice to "set up the new connection before removing the old one" is safe for Dexcom and NOT safe for MiniMed. The project maintainer confirms that the old built-in CareLink connection does not work, so in practice the first two problems do not corrupt data: the old connection fails to log in rather than filing readings. Third, when CareLink reports "no reading" for a moment, the connector saves it as a glucose value of 0, and while that is the newest value Nightscout's high and low alarms are not checked. Keep your pump's and CGM's own alarms switched on. Your glucose data continuing to arrive, at the right time, and your alarms being checked is what is at stake here. This is not medical advice; if you are changing how your data reaches Nightscout, plan it with your care team.
 
 **Why `minor`.** BF-45's repair adds a stand-down guard to a boot stage, which changes what a deployment with both configurations does. BF-44's repair changes the timestamp a reading is stored with, which is a data-affecting change and cannot be a silent patch.
 

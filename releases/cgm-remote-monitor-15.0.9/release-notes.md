@@ -222,7 +222,15 @@ many software library updates.
 4. **After upgrading, check that everything connected to your site still works**, and watch for
    a day.
 5. **If you use `TREATMENTS_AUTH=off`**, read the new admin warning and decide whether to keep it.
-6. **If you have saved users in the admin screen and think a token may have been exposed**,
+6. **If you get MiniMed CareLink data through the old built-in connection** (settings that
+   start with `MMCONNECT_`): that connection no longer works, and it will be removed in a
+   future release. Move to the built-in CGM connector by choosing CareLink as its source and
+   setting your CareLink country; see the connector's documentation for the exact settings.
+   **If you get Dexcom data** with `BRIDGE_` settings, the connector has already handled them
+   since 15.0.8. If you set `DEXCOM_BRIDGE_USE_LEGACY=true` to keep the old Dexcom bridge,
+   plan to remove it, because that option also goes in a future release. Check that your
+   readings are arriving after any change, and keep a second way to see them.
+7. **If you have saved users in the admin screen and think a token may have been exposed**,
    retire it by deleting and re-creating the user, or by changing `API_SECRET` — see
    [Access tokens stored in plain text](#access-tokens-stored-in-plain-text). Note that
    **renaming the user does not retire its token**, even though the token's appearance changes.

@@ -1507,11 +1507,18 @@ items:
       Pushing the prepared tag would therefore mint a v0.0.14 that is not
       dev's 0.0.14, and the tarball P0-PIN pins would omit work upstream
       considers part of that version. That is a release-content decision, not
-      a mechanical reconciliation. Three shapes, none obviously right:
-      reconcile release/v0.0.14 onto dev and cut the tag from there; abandon
-      the prepared branch and let upstream tag dev; or cut ours as 0.0.15 and
-      leave 0.0.14 to dev. Nothing has been pushed; the remote's newest tag is
-      v0.0.13.
+      a mechanical reconciliation. RECOMMENDED 2026-09-22, after upstream opened
+      its own 0.0.14 release as connector PR #70 (dev -> main, head 8e26786,
+      with connectivity fixes the maintainer reports include confirmed Dexcom
+      access): retire the local tag and land its content upstream, where it
+      already exists as PRs - #64 (credential-safe logging plus the BF-85
+      CareLink zero filter; rebased 2026-09-22, merges cleanly), #67 (debug
+      opt-in and the logger that reads CONNECT_DEBUG; conflicts in 8 files),
+      #68 (retry/jitter; conflicts in 11), #66. #64 and #67 must be in
+      upstream 0.0.14 before cgm-remote-monitor pins it: 8e26786 alone logs
+      CareLink login responses and Dexcom error bodies unconditionally (BF-42/43
+      again) and ignores CONNECT_DEBUG. See release-readiness-15.0.9 §5.2.
+      Nothing has been pushed; the remote's newest tag is v0.0.13.
 
       The prepared release itself: 11 commits, 29 files, +1362/-312, of which
       887 lines are new test files; b394411 fast-forwards to 649a7de.
@@ -2199,13 +2206,13 @@ items:
       as modernization work, cut 5 is 95, and 95 + 400 = 495.
 
   - id: RT-4
-    title: Deprecation release - the MiniMed migration path that does not exist
+    title: Deprecation release - recommended folded into 15.0.9's release notes
     parcel: release-train
     repo: cgm-remote-monitor
     branch: ""
     base: chore/nightscout-modernization
     worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    state: needs-decision
     blast_radius: >
       New code, not just a warning string. lib/server/mmconnect-connect-compat.js
       does NOT exist on dev or master - it is born in cut 4, the same branch that
@@ -2241,15 +2248,15 @@ items:
     evidence:
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
-      The adopted train puts this BEFORE cut 4 deliberately. GT4 found the real
-      code work: the MiniMed shim has to be written, not just a warning added.
-      Caveat on the population: the maintainer stated on 2026-09-21 that
-      mmconnect (minimed-connect-to-nightscout) has been broken for some time
-      (operational knowledge, not measured here) and that legacy Dexcom Share is
-      intended to map to nightscout-connect. If mmconnect is not working today,
-      the MiniMed half of this release warns about a path that is already
-      failing; BF-44/BF-45 were graded assuming it is live and have not been
-      re-graded.
+      The maintainer confirms (2026-09-22, operational knowledge) that legacy
+      mmconnect does not work, and Dexcom BRIDGE_* settings have been served by
+      nightscout-connect by default since 15.0.8 (a91e8ee4, with a deprecation
+      warning and the DEXCOM_BRIDGE_USE_LEGACY escape hatch). No working path is
+      left for a separate release to protect. Recommended: put the notice in
+      15.0.9's release notes (MiniMed users: move to CONNECT_SOURCE with your
+      CareLink country; Dexcom legacy-flag users: the escape hatch goes with cut
+      4) and drop this release. The MiniMed shim is still real code and ships
+      with cut 4. BF-44/BF-45 re-graded low.
 
   - id: RT-5
     title: Cut 4 - chore/mime-exposure-review, the one to slow down on
@@ -4509,10 +4516,10 @@ items:
       is still switched on, BOTH run at once. For Dexcom the old one stands
       aside automatically; for MiniMed it does not. So any advice to "set up the
       new connection before removing the old one" is safe for Dexcom and NOT
-      safe for MiniMed. The project maintainer reports that the old built-in
-      CareLink connection has not been working for some time, which may mean
-      fewer people are affected than this description suggests; that has not
-      been measured. Third, when CareLink reports "no reading" for a moment,
+      safe for MiniMed. The project maintainer confirms that the old built-in
+      CareLink connection does not work, so in practice the first two problems
+      do not corrupt data: the old connection fails to log in rather than
+      filing readings. Third, when CareLink reports "no reading" for a moment,
       the connector saves it as a glucose value of 0, and while that is the
       newest value Nightscout's high and low alarms are not checked. Keep your
       pump's and CGM's own alarms switched on. Your glucose data continuing to

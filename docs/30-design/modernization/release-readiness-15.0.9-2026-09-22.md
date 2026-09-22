@@ -81,7 +81,7 @@ under `reports/reviewer-packets/` are scoped for that.
    used them (#72). If #67 is squash-merged and the branch deleted, the commit
    15.0.9 pins could become unreachable, and installs from its archive URL could
    start failing. Before tagging, either merge #67 with a merge commit or put a
-   tag on `234d47c`. This is not the same decision as the v0.0.14 question
+   tag on `234d47c`, or repin to an upstream `v0.0.14` that includes #64 and #67
    (§5.2).
 
 ### 3.4 Housekeeping that can go either way
@@ -114,12 +114,12 @@ ones a reader should know by name:
   together.
 - **BF-85.** For CareLink via nightscout-connect, a "no reading" marker is stored
   as glucose 0. While it is the newest value, the high/low alarms aren't
-  evaluated. Read-derived, not run. The connector fix (`8406edf`) is only in the
-  programme's local `v0.0.14`, not in the pin 15.0.9 ships.
+  evaluated. Read-derived, not run. The connector fix (`8406edf`) is in upstream
+  PR #64, not in upstream `dev` or in the pin 15.0.9 ships (§5.2).
 - **BF-41.** A reading dated in the future silences the stale-data alarm.
-- **BF-44, BF-45.** MiniMed ingestion divergences. They were graded on the
-  assumption that mmconnect works. The maintainer reports it has been broken for
-  some time; neither has been re-graded.
+- **BF-44, BF-45** (now low). MiniMed ingestion divergences that assumed a working
+  mmconnect. The maintainer confirms it does not work, so neither causes a data
+  problem in practice; cut 4 removes the dead path.
 
 Nightscout isn't a medical device. An operator who relies on alarms should
 always have a second way to see readings.
@@ -131,12 +131,11 @@ always have a second way to see readings.
 | order | release | content | state today |
 |---|---|---|---|
 | 1 | **15.0.9 / 15.1.0** | §2 | ready pending §3 |
-| 2 | **Backfix 2** (patch on top) | `bf/auth` (P0-C, BF-17 plaintext token), `bf/throttle` (P0-J, BF-30 failed-auth throttling), connector pin to a real tag, BF-72's fix once chosen, BF-41/46/67/ENV as gates go green | `bf/auth` and `bf/throttle` are 9 behind `dev` and merge with **0 conflicts**; `bf/auth` needs a security reviewer, and none is assigned |
+| 2 | **Backfix 2** (patch on top) | `bf/auth` (P0-C, BF-17 plaintext token), `bf/throttle` (P0-J, BF-30 failed-auth throttling), connector pin to the upstream `v0.0.14` tag (§5.2) if 15.0.9 did not take it, BF-72's fix once chosen, BF-41/46/67/ENV as gates go green | `bf/auth` and `bf/throttle` are 9 behind `dev` and merge with **0 conflicts**; `bf/auth` needs a security reviewer, and none is assigned |
 | 3 | **Cut 1** `chore/retire-jsdom` alone | test-infrastructure removal | 133 behind, 7 conflicting paths |
 | 4 | **Cut 2** `chore/build-runtime-separation` | build/runtime split | 133 behind, 14 |
 | 5 | **Cuts 3+5** `chore/compose-mongodb6` + `chore/nightscout-modernization` | dependencies, Node floor `^22.23.2 \|\| ^24.20.0` | 133 behind / 16; the integration branch is 9 behind / 1 (`lib/server/bootevent.js`) |
-| 6 | **Deprecation release** (RT-4) | announces ingestion retirement | not started; scope depends on §5.3 |
-| 7 | **Cut 4** `chore/mime-exposure-review` | retires legacy MiniMed/Dexcom bridges in favour of nightscout-connect | 133 behind, 18 |
+| 6 | **Cut 4** `chore/mime-exposure-review` | retires the legacy MiniMed and Dexcom bridges; nightscout-connect is the only ingestion path | 133 behind, 18. The separate deprecation release is no longer needed (§5.3) |
 
 Conflict counts are `git merge-tree` of each tip against `dev` `74fc6619`. The
 queue's `RT-REBASE` gate re-measures them.
@@ -147,28 +146,67 @@ backfix merges. The cheapest time to rebase cut 1 is immediately after 15.0.9
 is tagged, while `dev` is quiet. Holding backfix 2 until cut 1 is rebased makes
 that cost fall once instead of repeatedly.
 
-### 5.2 nightscout-connect 0.0.14 (P0-TAG, needs a decision)
+### 5.2 nightscout-connect 0.0.14: land the fixes upstream, then pin a real tag
 
-Two different trees both call themselves 0.0.14. Upstream `dev` (`8e26786`,
-with Glooko #71, CI #72, LibreLinkUp v4 #73) and the programme's local, unpushed
-tag `v0.0.14` (`649a7de`: credential-safe logging, listener release on stop,
-retry jitter) are 11 / 24 commits apart and conflict in 11 files (`git merge-tree --write-tree official/dev v0.0.14`). The three
-options: reconcile ours onto upstream `dev` and tag there; drop ours and let
-upstream tag `dev`; or cut ours as 0.0.15. The first keeps both sets of fixes
-and is the one that lets backfix 2 pin a real tag. It is also the only option that ships
-the CareLink zero-reading fix (BF-85), which exists only on our side. PR #68 (backoff/jitter) is in
-neither tree.
+Upstream is releasing 0.0.14 from its `dev` through PR #70 (`dev` → `main`, head `8e26786`,
+mergeable). Per the maintainer it brings substantial connectivity fixes, including confirmed
+Dexcom access; the tree carries Glooko (#71), connector CI (#72) and LibreLinkUp v4 with
+real-account validation (#73). **The programme's local `v0.0.14` tag should be retired, not
+pushed.** Everything it carries already exists as an upstream PR:
 
-### 5.3 Cut 4 needs its risk re-graded
+| programme fix | upstream PR | state against `official/dev` `8e26786`, 2026-09-22 |
+|---|---|---|
+| credential- and session-safe logging for Dexcom and MiniMed; internal payloads kept out of logs | **#64** | rebased today, 0 behind, **merges cleanly** |
+| CareLink zero-reading filter (**BF-85**) and measurement-time status (`8406edf`, from #65) | carried in **#64** | as above |
+| debug logging opt-in; the connector's own logger; reads `CONNECT_DEBUG` (`234d47c`) | **#67** | 25 behind, **conflicts in 8 files** |
+| retry interval, delay cap and pool jitter (BF-08, BF-34) | **#68** | 24 behind, conflicts in 11 files |
+| release listeners and settle output waits on stop | **#66** | targets #64's branch; conflicting |
 
-The earlier argument for holding cut 4 behind its own deprecation release
-assumed it deletes two *working* ingestion paths. The maintainer reports that
-mmconnect has been broken for some time. That is operational knowledge, not
-measured here. Legacy Dexcom Share is meant to map onto nightscout-connect
-options, and cut 4 implements that mapping. If both are true, the deprecation
-release is protecting only the Dexcom path, and the thing to verify is **the
-Share → nightscout-connect option mapping against a real account**. None has
-been used so far. Re-grade BF-44/BF-45 at the same time.
+**Upstream `dev` as it stands would regress 15.0.9.** It has no `lib/logging.js`, and it logs
+CareLink login responses (headers and bodies) and Dexcom Share error bodies unconditionally.
+That is the BF-42/BF-43 behaviour that 15.0.9's pin `234d47c` removes. It also does not read
+`CONNECT_DEBUG`, which 15.0.9 adds and documents. Measured: 135 unguarded `console.*` sites in
+`lib/` on `8e26786`, 57 plus a fixed-message logger on `234d47c`, 144 on `v0.0.13`.
+
+**Sequence:**
+
+1. Merge **#64** into connector `dev`. It is mergeable now and closes the credential logging and
+   BF-85.
+2. Rebase and merge **#67**, so `CONNECT_DEBUG` works and debug output stays opt-in. Without it,
+   repinning makes a documented 15.0.9 switch do nothing.
+3. Merge #70, and tag and publish 0.0.14 from `main`.
+4. Repin cgm-remote-monitor to the `v0.0.14` tag tarball. Gates: `BFQ-CONNECTOR` (credential
+   logging) must pass on the new pin, and CI must be re-run. A tag also removes the
+   reachability risk in §3.3.
+5. #68 and #66 follow in 0.0.15.
+
+**For 15.0.9 the choice is timing.** If steps 1–3 can happen promptly, repin 15.0.9 to the tag,
+so users get the connectivity fixes and BF-85 in the same release. Otherwise ship 15.0.9 on
+`234d47c` (tag that commit first) and repin in backfix 2. Either way, **do not repin to an
+upstream 0.0.14 that lacks #64 and #67.**
+
+### 5.3 Cut 4: mmconnect is dead, and Dexcom already moved in 15.0.8
+
+The maintainer confirms that legacy mmconnect (`minimed-connect-to-nightscout`) does not work.
+That is operational knowledge; the vendor API is not reachable from a local test. Dexcom was
+already moved: since 15.0.8 (`a91e8ee4`, 2026-07-07), `BRIDGE_*` Dexcom settings are served by
+nightscout-connect by default, with a deprecation warning, and `DEXCOM_BRIDGE_USE_LEGACY=true`
+is the escape hatch. So:
+
+- **Cut 4 deletes nothing a user has working.** The legacy MiniMed path does not work, and the
+  legacy Dexcom path is already off by default.
+- **The separate deprecation release (RT-4) is no longer needed.** 15.0.8 already shipped the
+  Dexcom switch and its warning. The 15.0.9 release notes can announce the retirement of both
+  legacy paths, and cut 4 can join the train after cuts 3+5.
+- **What still gates cut 4:**
+  - `MMCONNECT_*` settings must map to nightscout-connect's CareLink source (cut 4 implements
+    `applyMmconnectToConnectCompatibility`);
+  - BF-61, the whole-site boot error for leftover `MMCONNECT_*` settings, must be resolved;
+  - BF-85 must be fixed in the connector, since CareLink through the connector becomes the only
+    MiniMed path;
+  - the `DEXCOM_BRIDGE_USE_LEGACY` users need a notice before the escape hatch disappears.
+- **BF-44 and BF-45 are re-graded to low** in the register. Both assumed two working ingestion
+  paths at once.
 
 ### 5.4 Multitenancy
 

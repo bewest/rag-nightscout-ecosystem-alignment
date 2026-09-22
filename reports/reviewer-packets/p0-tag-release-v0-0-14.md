@@ -41,12 +41,19 @@ lib/sources/glooko/{convert,index}.js and lib/sources/librelinkup.js. Pushing
 the prepared tag would therefore mint a v0.0.14 that is not dev's 0.0.14, and
 the tarball P0-PIN pins would omit work upstream considers part of that
 version. That is a release-content decision, not a mechanical reconciliation.
-Three shapes, none obviously right: reconcile release/v0.0.14 onto dev and cut
-the tag from there; abandon the prepared branch and let upstream tag dev; or
-cut ours as 0.0.15 and leave 0.0.14 to dev. Nothing has been pushed; the
-remote's newest tag is v0.0.13. The prepared release itself: 11 commits, 29
-files, +1362/-312, of which 887 lines are new test files; b394411 fast-
-forwards to 649a7de.
+RECOMMENDED 2026-09-22, after upstream opened its own 0.0.14 release as
+connector PR #70 (dev -> main, head 8e26786, with connectivity fixes the
+maintainer reports include confirmed Dexcom access): retire the local tag and
+land its content upstream, where it already exists as PRs - #64 (credential-
+safe logging plus the BF-85 CareLink zero filter; rebased 2026-09-22, merges
+cleanly), #67 (debug opt-in and the logger that reads CONNECT_DEBUG; conflicts
+in 8 files), #68 (retry/jitter; conflicts in 11), #66. #64 and #67 must be in
+upstream 0.0.14 before cgm-remote-monitor pins it: 8e26786 alone logs CareLink
+login responses and Dexcom error bodies unconditionally (BF-42/43 again) and
+ignores CONNECT_DEBUG. See release-readiness-15.0.9 §5.2. Nothing has been
+pushed; the remote's newest tag is v0.0.13. The prepared release itself: 11
+commits, 29 files, +1362/-312, of which 887 lines are new test files; b394411
+fast-forwards to 649a7de.
 
 ## Why that semver
 
