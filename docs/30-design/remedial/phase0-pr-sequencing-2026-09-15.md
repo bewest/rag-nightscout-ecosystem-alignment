@@ -7,9 +7,9 @@
 > `origin/master` `92d08342` = tag `15.0.8` is 308 commits behind `origin/dev` `74fc6619`
 > (`git rev-list --count official/master..official/dev`). Not landed: `bf/auth` (queue P0-C) and
 > the BF-30 throttle split out of it (P0-J); `bf/connect-pin` (P0-PIN, blocked); connector
-> `fix/connect-timer-jitter` is under review as nightscout-connect PR #68 (P0-F). The local
-> `v0.0.14` tag is retired: its content reached connector `dev` `d208c7d` through PR #64
-> (2026-09-22) or is in #68 (P0-TAG).
+> `fix/connect-timer-jitter` merged as nightscout-connect PR #68 (P0-F). The local `v0.0.14` tag is
+> retired: its content is in connector `dev` through PRs #64 and #68 (2026-09-22), and the
+> connector line is `0.1.0` (P0-TAG).
 > Current state: [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) items `P0-*`, and the
 > [backfix register](./nightscout-backfix-register.md). Branch SHAs, pins and counts below are as of
 > the snapshot date.

@@ -8,6 +8,11 @@ made; the two npm experiments in section C ran offline against locally built tar
 **Audience:** maintainer and contributors. Section D.5 is the only operator-facing part and
 is written in plain language; the rest is deliberately technical.
 
+> **Connector status, 2026-09-22:** no `v0.0.14` was published and none will be. The connector
+> line is `0.1.0`: connector `dev` `1946beb` carries every fix this document attributes to
+> `v0.0.14`, and prerelease `0.1.0-dev.1` is on npm. Where this document says `v0.0.14`, read the
+> full `0.1.0` release (queue `P0-TAG`); the pin move is `P0-PIN`.
+
 > **ADVERSARIAL VERIFICATION PASS, 2026-09-15, main repo HEAD `08753474`.** A second agent
 > re-measured this document's load-bearing claims from the repositories rather than from the
 > text. **Reproduced independently and confirmed:** the pin/override table for all seven refs;

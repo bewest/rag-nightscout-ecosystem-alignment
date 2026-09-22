@@ -30,30 +30,28 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 14 items
+### Maintainer &mdash; 13 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `FU-PRBODIES` | `needs-decision` | Five merged PR bodies have drifted from the files they were posted from | &mdash; |
-| `P0-TAG` | `needs-decision` | nightscout-connect 0.0.14 - tag connector dev | #70 |
+| `P0-TAG` | `needs-decision` | nightscout-connect 0.1.0 - the full release, from connector dev | #70 |
 | `RT-4` | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes | &mdash; |
 | `RT-D3` | `needs-decision` | Answer the D3 question before 15.0.9 ships | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `DOC-LINKS` | `ready-to-push` | Every path the programme's documents and tooling cite must resolve | &mdash; |
 | `DOC-VIEWS` | `ready-to-push` | A reviewer-facing surface over the queue: three overview pages and a packet per  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
-| `P0-PUBLISH` | `ready-to-push` | ci/npm-trusted-publish - publish nightscout-connect to npm from a version tag | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
 | `BFQ-52` | `unsettled` | BF-52 - the age plugins can only ask for their urgent alarm in one window | &mdash; |
 
-### Maintainer + a second human &mdash; 3 items
+### Maintainer + a second human &mdash; 2 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `P0-F` | `in-flight-upstream` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | #68 |
 | `BFQ-47` | `needs-decision` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | &mdash; |
 | `RT-0` | `needs-decision` | Release 15.0.9 | #8598, #8605 |
 
@@ -81,18 +79,16 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#68** | `P0-F` | `fix/connect-timer-jitter` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence  | Maintainer + a second human |
 
 <!-- END GENERATED: open-prs -->
 
 All thirteen cgm-remote-monitor backfix pull requests (twelve from this programme,
 plus #8741 from an external contributor) are merged into `dev`; none is released. The connector
-half, in `nightscout-connect`, measured 2026-09-22 against connector `dev` `d208c7d`: PR #64
-merged, carrying #61, #66 and #67; PR #68 (`P0-F`, backoff and jitter) is under review; PR #70
-(`dev` → `main`) is the release PR. `P0-TAG` needs the maintainer to choose the release: tag
-connector `dev` now as 0.0.14 with #68 following, or merge #68 first and tag that (0.1.0 under the
-versioning policy). `P0-PIN` and `P0-LOCK` are blocked behind the tag.
-`P0-PUBLISH` (publish to npm from the tag) is optional and ready to push.
+half, in `nightscout-connect`, measured 2026-09-22 against connector `dev` `1946beb`: every
+programme fix is merged there (PRs #64 with #61, #66 and #67; #68), `dev` declares `0.1.0`, and
+prerelease `0.1.0-dev.1` is published on npm under `next` through the tag workflow (`P0-PUBLISH`,
+#74 and #75). `P0-TAG` is the maintainer's call on when to cut the full `0.1.0`; PR #70 (`dev` →
+`main`) follows it. `P0-PIN` and `P0-LOCK` are blocked behind that release.
 
 **Merging in the connector repository ships to nobody.** cgm-remote-monitor pins the connector by
 tarball — `dev` pins commit `234d47c` and `master` pins tag `v0.0.13` — so `P0-TAG` and `P0-PIN`
@@ -188,6 +184,6 @@ gate disagrees. Run it before acting on any row here.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-22**, against cgm-remote-monitor-official `74fc6619` and this repository at `75d95921`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-22**, against cgm-remote-monitor-official `74fc6619` and this repository at `4c7f7cfa`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

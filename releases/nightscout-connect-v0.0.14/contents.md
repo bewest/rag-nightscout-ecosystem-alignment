@@ -5,9 +5,10 @@ Nothing has been pushed, published or `npm publish`ed. The tag exists **locally 
 
 > **Status 2026-09-22: superseded. The local `v0.0.14` tag and `release/v0.0.14` branch are
 > retired and must not be pushed** (delete the tag with `git tag -d v0.0.14` before tagging the
-> real release). Six of the seven commits below are in connector `official/dev` `d208c7d`, through
-> PR #64, which carried #61, #66 and #67; the seventh, `c1cce2a`, is PR #68, under review. The
-> release is connector `dev`, tagged; current state is queue item **P0-TAG** in
+> real release). All seven commits below are in connector `official/dev` (`1946beb`), through
+> PR #64 (which carried #61, #66 and #67) and PR #68. There will be no 0.0.14: the line is
+> `0.1.0` (connector PR #76), and prerelease `0.1.0-dev.1` is on npm. Current state is queue item
+> **P0-TAG** in
 > [`queue/work-queue.yaml`](../../queue/work-queue.yaml). This file describes the prepared tag
 > as it was; its figures are about `649a7de`. `cgm-remote-monitor` dev pins `234d47c` (see
 > [`../cgm-remote-monitor-15.0.9/contents.md`](../cgm-remote-monitor-15.0.9/contents.md)).

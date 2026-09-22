@@ -5,6 +5,11 @@ used to gate a release until a qualified reviewer has verified it. §10 lists wh
 check. §3 and §4 are written for people running Nightscout for themselves or a family member and
 are **not medical advice**.
 
+> **Connector status, 2026-09-22:** no `v0.0.14` was published and none will be. The connector
+> line is `0.1.0`: connector `dev` `1946beb` carries every fix this document attributes to
+> `v0.0.14`, and prerelease `0.1.0-dev.1` is on npm. Where this document says `v0.0.14`, read the
+> full `0.1.0` release (queue `P0-TAG`); the pin move is `P0-PIN`.
+
 **Rewritten 2026-09-16** against the evidence in
 `docs/60-research/modernization/e1-dexcom-path-comparison-2026-09-15.md` (Dexcom) and
 `docs/60-research/modernization/e2-medtronic-path-comparison-2026-09-15.md` (MiniMed). Those two studies tested

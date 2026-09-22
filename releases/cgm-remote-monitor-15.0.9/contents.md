@@ -149,9 +149,10 @@ does not copy them.
    release must either drop 4.4 from CI or correct the README; the notes cannot state a
    support policy until one of those happens.
 2. **Connector pin is not a tag.** Dev pins
-   `nightscout-connect/archive/234d47c8….tar.gz`, a commit in connector `dev` (since `d208c7d`,
-   2026-09-22) that no connector release names yet. master pins `v0.0.13`. Releasing 15.0.9
-   as-is ships that untagged commit; the connector release is queue item `P0-TAG`.
+   `nightscout-connect/archive/234d47c8….tar.gz`, a commit in connector `dev` (2026-09-22) that no
+   full connector release names; connector prerelease `0.1.0-dev.1` contains it. master pins
+   `v0.0.13`. Releasing 15.0.9 as-is ships that untagged commit; the full connector release is
+   queue item `P0-TAG`, and moving to it is `P0-PIN`.
 3. **D3 5.16 → 7.9 (#8573).** `TEST=dependency-d3` passes (24), but deleting both
    treatment-drag clamps in `lib/client/renderer.js` leaves it at 24/24: the boundary is never
    exercised. The clamps bound a user-initiated rewrite of a treatment's `created_at`, which

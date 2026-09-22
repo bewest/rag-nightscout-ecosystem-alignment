@@ -8,9 +8,10 @@ Supersedes [the 2026-09-14 readiness snapshot](cgm-remote-monitor-release-readin
 for 15.0.9 and [the 2026-09-15 roadmap](../post-phase0-roadmap-2026-09-15.md)
 for ordering.*
 
-> **Connector status, later on 2026-09-22:** connector PR #64 merged into connector `dev` as
-> `d208c7d`, carrying #61, #66 and #67 (steps 1 and 2 of §5.2, and #66). PR #68 is under review.
-> Current state: queue items `P0-TAG`, `P0-F` and `P0-PIN` in
+> **Connector status, later on 2026-09-22:** every programme connector fix is merged into connector
+> `dev` (`1946beb`: #64 carrying #61, #66 and #67, and #68). The line is `0.1.0` (#76), not 0.0.14;
+> prerelease `0.1.0-dev.1` is on npm under `next`, and the full `0.1.0` is not yet released. §5.2's
+> sequence below is superseded by that. Current state: queue items `P0-TAG`, `P0-F` and `P0-PIN` in
 > [`queue/work-queue.yaml`](../../../queue/work-queue.yaml).
 
 ## 1. Verdict
@@ -164,7 +165,7 @@ pushed.** Everything it carries already exists as an upstream PR:
 | credential- and session-safe logging for Dexcom and MiniMed; internal payloads kept out of logs | **#64** | **merged** (`d208c7d`) |
 | CareLink zero-reading filter (**BF-85**) and measurement-time status (`8406edf`, from #65) | carried in **#64** | merged |
 | debug logging opt-in; the connector's own logger; reads `CONNECT_DEBUG` (`234d47c`) | **#67**, folded into #64 | merged |
-| retry interval, delay cap and pool jitter (BF-08, BF-34) | **#68** | under review, head `635cc9f`, merges into `d208c7d` cleanly |
+| retry interval, delay cap and pool jitter (BF-08, BF-34) | **#68** | merged (`3f73288`) |
 | release listeners and settle output waits on stop | **#66**, folded into #64 | merged |
 
 *(Measured on `8e26786`, before #64 merged; `d208c7d` has `lib/logging.js`.)* **Upstream `dev` at

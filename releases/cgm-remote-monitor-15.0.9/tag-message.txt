@@ -73,8 +73,8 @@ validator, reads and writes; refused query operators return 400;
 filters return different (correct) rows; _ no longer becomes a
 space in query parameters; voice endpoints ignore request locale.
 
-Not in this release: bf/auth (BF-17), bf/throttle (BF-30), the
-connector v0.0.14 pin; BF-72 has no fix.
+Not in this release: bf/auth (BF-17), bf/throttle (BF-30), the move
+to nightscout-connect 0.1.0; BF-72 has no fix.
 
 BF- ids refer to the backfix register in the nightscout ecosystem
 alignment repository; each PR body carries its evidence.

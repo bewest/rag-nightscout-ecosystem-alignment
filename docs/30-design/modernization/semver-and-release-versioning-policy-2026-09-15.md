@@ -39,7 +39,7 @@ document. The one file it added is the gate script, which is tooling in this rep
 | What | Where |
 |---|---|
 | `cgm-remote-monitor` | `externals/cgm-remote-monitor-official` — `origin/master` `92d08342` (15.0.8), `origin/dev` `74fc6619` (15.0.9 candidate), the five published `chore/*` cut tips, the locally prepared rebases `rt/cut1`…`rt/cut4` (unpushed) |
-| `nightscout-connect` | `externals/nightscout-connect`, `externals/work/nc-jitter` — tag `v0.0.13` `b394411`; `official/dev` `8e26786` (package.json `0.0.14`); the programme's local, unpushed tag `v0.0.14` `649a7de` |
+| `nightscout-connect` | `externals/nightscout-connect`, `externals/work/nc-jitter` — tag `v0.0.13` `b394411`; `official/dev` `1946beb` (package.json `0.1.0`, 2026-09-22); tag `v0.1.0-dev.1` → `1946beb`, published on npm as `0.1.0-dev.1` (`next`) |
 | semver arithmetic | `semver` **6.3.1** under Node v24.15.0, resolved from the inspected repo (`package.json` declares `"semver": "^6.3.0"` on `dev` and on every cut) |
 | the gate | `tools/qc/semver-surface-gate.js`, exercised in §6.3 |
 
@@ -499,7 +499,7 @@ sources** (`dexcomshare`, `minimedcarelink`, `glooko`, `nightscout` each declare
 `opts.linkUpInterval * 60 * 1000` (`lib/sources/librelinkup.js:220`), so its ceiling is the
 operator's configured interval × 6. With `'equal'` jitter the delay at the ceiling spreads over
 [15 min, 30 min] (2,000 samples at attempt 10 fell in [900,351 ms, 1,799,757 ms]). The fix is
-connector PR #68 (queue `P0-F`), not yet in connector `dev` `d208c7d` (§4.3).*
+connector PR #68 (queue `P0-F`), merged into connector `dev` and in prerelease `0.1.0-dev.1` (§4.3).*
 
 **Answer: MINOR in `cgm-remote-monitor` (a default change, question 11). A `y` bump in
 `nightscout-connect` (§4). And the release note is the entire point**, because the change looks
@@ -659,12 +659,12 @@ Every pin is a **tarball URL**, not an npm range. Measured 2026-09-22 with
 | ref | pin |
 |---|---|
 | `origin/master` (15.0.8) | `refs/tags/v0.0.13.tar.gz` |
-| `origin/dev` (15.0.9 candidate) | commit `234d47c` — in connector `dev` since `d208c7d` (PR #64, 2026-09-22), in no connector release |
+| `origin/dev` (15.0.9 candidate) | commit `234d47c` — in connector `dev` (PR #64, 2026-09-22) and prerelease `0.1.0-dev.1`, in no full connector release |
 | cuts 1, 2, 3 (published tips) | `refs/tags/v0.0.13.tar.gz` |
 | cut 4 `chore/mime-exposure-review` | commit `c962a13f` |
 | cut 5 `chore/nightscout-modernization` (`b1bdaca0`) | commit `b77e5bb` |
 | `rt/cut1` (local rebase, unpushed) | commit `234d47c` |
-| `bf/connect-pin` (local, unpushed; queue `P0-PIN`) | `refs/tags/v0.0.14.tar.gz` — no such tag on the remote yet (P0-TAG) |
+| `bf/connect-pin` (local, unpushed; queue `P0-PIN`) | `refs/tags/v0.0.14.tar.gz` — a tag that will not exist; P0-PIN replaces it with the npm version `0.1.0` |
 
 The `^0.2.12` on master belongs to `share2nightscout-bridge`, a different package. There is no
 npm-range pin for `nightscout-connect` anywhere in the tree, so **the version-number choice
@@ -687,12 +687,12 @@ tests), by executing `lib/backoff.js` at both revisions — five caller-visible 
 
 (1) alone is question 3: a configured value went from ignored to honoured, moving timing 585.94×.
 
-**The release is connector `dev`, tagged (queue `P0-TAG`, needs-decision on content and
-number).** Connector `official/dev` `d208c7d` (2026-09-22) declares `0.0.14` in its package.json
-and carries six of the seven programme connector commits (the three log-redaction fixes, the
-CareLink zero filter, listener release on stop, and the opt-in logger `234d47c`); the seventh,
-the backoff change `c1cce2a`, is PR #68. Whichever release first carries the backoff change is,
-under this policy, `0.1.0`.
+**The connector line is `0.1.0` (maintainer, connector PR #76, 2026-09-22).** Connector
+`official/dev` `1946beb` declares `0.1.0` and carries all seven programme connector commits,
+including the backoff change `c1cce2a`, so this policy's reading holds: the first release carrying
+it is a `y` bump. Prerelease `0.1.0-dev.1` is on npm under `next`; the full `0.1.0` is queue
+`P0-TAG`. Tags are checked against `package.json` by `scripts/release-version.js` in the connector
+repository: `v0.1.0` must match it exactly, and a prerelease must be `v0.1.0-<id>`.
 
 **Two things that do not change with the number:**
 
@@ -1207,10 +1207,10 @@ debugging why their CGM data stopped; and cut 4 is last.
 
 ### 8.4 nightscout-connect
 
-Whichever connector release first carries the backoff change (PR #68) is **`0.1.0`** under §4.3.
-The immediate decision is which 0.0.14 exists (§4.3, queue `P0-TAG`); if the maintainer keeps
-`0.0.z`, a `BREAKING` section is mandatory and `cgm-remote-monitor`'s note must carry the 585.94×
-retry change in operator language (§3.6).
+The connector line carrying the backoff change (PR #68) is **`0.1.0`** (connector PR #76), as §4.3
+reads it. Prerelease `0.1.0-dev.1` is published; the full `0.1.0` is queue `P0-TAG`.
+`cgm-remote-monitor`'s release note for the pin move must still carry the 585.94× retry change in
+operator language (§3.6), because a pin diff shows no version semantics to a reader.
 
 ---
 

@@ -14,6 +14,10 @@ relies on the site knows it may be down; and if a gap in the record matters clin
 example because your care team reads your reports between visits — talk to your care team about the
 timing first.
 
+> **Update, 2026-09-22:** the connector update this document calls `v0.0.14` will be published
+> as version `0.1.0` instead. It carries the same fixes; a test version (`0.1.0-dev.1`) exists, and
+> no Nightscout release uses either yet. Current state: queue items `P0-TAG` and `P0-PIN`.
+
 ---
 
 ## 0. BLOCKING CORRECTION — the adopted train cannot be built as described

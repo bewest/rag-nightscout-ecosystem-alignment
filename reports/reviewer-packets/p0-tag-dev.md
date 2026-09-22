@@ -13,13 +13,13 @@
 
 # Review packet — P0-TAG (PR #70)
 
-**nightscout-connect 0.0.14 - tag connector dev**
+**nightscout-connect 0.1.0 - the full release, from connector dev**
 
 | | |
 |---|---|
 | repository | `nightscout-connect` |
 | branch | `dev` |
-| base | `official/dev@d208c7d` |
+| base | `official/dev@1946beb` |
 | claimed state | `needs-decision` — a claim; `make queue-status ID=P0-TAG` is the measurement |
 | semver | `minor` |
 | register entries | `BF-08`, `BF-34`, `BF-42`, `BF-85` |
@@ -27,17 +27,19 @@
 ## What this changes
 
 The release is connector dev; there is no release branch. Measured 2026-09-22
-at official/dev d208c7d: dev carries 9fa2c3c, 5349d47, 77e2396 (credential-
-safe logging, BF-42), 8406edf (the BF-85 CareLink zero filter), 51b6e6e
-(listener release on stop) and 234d47c (the opt-in logger, the commit cgm-
-remote-monitor dev pins), plus LibreLinkUp v4 (#73), Glooko (#71) and
-connector CI (#72). It does not yet carry c1cce2a (#68). Upstream PR #70 (dev
--> main) is the release PR. The remote's newest tag is v0.0.13.
+at official/dev 1946beb, which declares 0.1.0: it carries 9fa2c3c, 5349d47,
+77e2396 (credential-safe logging, BF-42), 8406edf (the BF-85 CareLink zero
+filter), 51b6e6e (listener release on stop), 234d47c (the opt-in logger, the
+commit cgm-remote-monitor dev pins), c1cce2a (the backoff and jitter fix,
+BF-08 and BF-34), LibreLinkUp v4 (#73), Glooko (#71), connector CI (#72) and
+the publish workflow (#74, #75). Prerelease 0.1.0-dev.1 (tag v0.1.0-dev.1 ->
+1946beb) is on npm under `next`; npm's `latest` is 0.0.12. Upstream PR #70
+(dev -> main) is open.
 
 ## Why that semver
 
-see P0-F. GT4 argues the version should be 0.1.0; connector dev's package.json
-says 0.0.14. The maintainer chooses before tagging.
+0.1.0, set on connector dev by PR #76: the first release carrying the backoff
+change (P0-F), which is caller-visible under 0.x semantics.
 
 ## What an operator would notice
 
@@ -45,43 +47,50 @@ says 0.0.14. The maintainer chooses before tagging.
 > readings from a CGM vendor's online service. It stops the connector
 > writing vendor credentials, session tokens and readings to the log, stops
 > a CareLink "no reading" marker being stored as a glucose value of 0, and
-> carries the retry fixes in P0-F. Nothing reaches anyone until the version
-> is tagged and a Nightscout release is updated to use it (P0-PIN).
+> carries the retry fixes in P0-F. A test version (0.1.0-dev.1) is published
+> for people who ask for it; the full version is not released yet, and
+> nothing reaches Nightscout users until a Nightscout release is updated to
+> use it (P0-PIN).
 
 ## Who should review this, and why
 
-maintainer - choosing the version and pushing the tag are the deliberate human
-acts. With P0-PUBLISH merged and npm configured, pushing the tag also
-publishes to npm after an approval; without it, the tag publishes nothing by
-itself.
+maintainer - when to cut the full release is the decision. Pushing tag v0.1.0
+on dev runs publish.yml, which waits for a reviewer from team c-r-m-dev on the
+npm-publish environment and then publishes to npm as `latest`. After it, merge
+#70 and open the next version bump on dev.
 
 ## What was measured
 
-**`for c in 9fa2c3c 5349d47 77e2396 8406edf 51b6e6e 234d47c; do git -C externals/nightscout-connect merge-base --`** &nbsp;·&nbsp; kind: `static`
+**`for c in 9fa2c3c 5349d47 77e2396 8406edf 51b6e6e 234d47c c1cce2a; do git -C externals/nightscout-connect merge`** &nbsp;·&nbsp; kind: `static`
 
-the six fixes #64 carried are in connector dev. Passes at d208c7d.
+all seven programme connector commits are in connector dev
+
+**`test "$(git -C externals/nightscout-connect show official/dev:package.json | python3 -c 'import json,sys; prin`** &nbsp;·&nbsp; kind: `static`
+
+connector dev declares 0.1.0, the version the full release must match
 
 **`! git -C externals/nightscout-connect rev-parse -q --verify refs/tags/v0.0.14`** &nbsp;·&nbsp; kind: `static`
 
 no local v0.0.14 tag exists. RED while the retired local tag (649a7de,
-release/v0.0.14) is still present: it names a different tree and would be
-pushed by mistake. Delete it with `git tag -d v0.0.14` before tagging dev.
+release/v0.0.14) is still present: it names a tree that is not the release.
+Delete it with `git tag -d v0.0.14`.
 
-**`git -C externals/nightscout-connect ls-remote --tags origin v0.0.14 | grep -q . && exit 1 || exit 0`** &nbsp;·&nbsp; kind: `network`
+**`git -C externals/nightscout-connect merge-base --is-ancestor c1cce2a "$(npm view nightscout-connect@next gitHe`** &nbsp;·&nbsp; kind: `network`
 
-RULE 0. PASSES only while no v0.0.14 tag is on the remote - the machine-
-checkable form of "nothing has been pushed". Read-only.
+npm's `next` prerelease was built from a commit carrying the whole fix set.
+Read-only.
+
+**`git -C externals/nightscout-connect ls-remote --tags origin v0.1.0 | grep -q . && exit 1 || exit 0`** &nbsp;·&nbsp; kind: `network`
+
+RULE 0. PASSES only while no v0.1.0 tag is on the remote - the machine-
+checkable form of "the full release has not been cut". Read-only.
 
 ## What these gates do NOT prove
 
 *Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
 
-- Release content and number are the maintainer's decision. Two shapes: tag
-  dev now as 0.0.14 without #68, with #68 following in the next release
-  (release-readiness-15.0.9 §5.2); or merge #68 first and tag that. Under
-  the versioning policy, the first release carrying the backoff change
-  (c1cce2a) is 0.1.0. `git -C externals/nightscout-connect merge-base --is-
-  ancestor c1cce2a official/dev` says which shape dev is in.
+- Whether 0.1.0-dev.1 has been exercised enough to cut 0.1.0 is the
+  maintainer's judgement.
 
 ## Evidence
 
@@ -91,7 +100,8 @@ checkable form of "nothing has been pushed". Read-only.
 ## Notes carried on the item
 
 The programme's local release/v0.0.14 branch and v0.0.14 tag are retired:
-every commit on them is in connector dev or in #68. Tag dev, not that branch.
+every commit on them is in connector dev. No 0.0.14 will be published; the
+line is 0.1.0.
 
 ---
 

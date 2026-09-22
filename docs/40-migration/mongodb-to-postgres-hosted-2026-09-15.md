@@ -11,6 +11,11 @@ Date: 2026-09-15 · Main repo HEAD `08753474` · seam worktree `externals/work/c
 trace, site export, device log, hostname, token or identifier from any real deployment appears
 anywhere in it.
 
+> **Connector status, 2026-09-22:** no `v0.0.14` was published and none will be. The connector
+> line is `0.1.0`: connector `dev` `1946beb` carries every fix this document attributes to
+> `v0.0.14`, and prerelease `0.1.0-dev.1` is on npm. Where this document says `v0.0.14`, read the
+> full `0.1.0` release (queue `P0-TAG`); the pin move is `P0-PIN`.
+
 **Adversarially reviewed 2026-09-15, same HEAD.** Corrections made during that review are marked
 in place rather than silently applied, and each says what it replaced. The load-bearing one is in
 **§4.3** — the transform this document recommends converts only two BSON types, so the fidelity

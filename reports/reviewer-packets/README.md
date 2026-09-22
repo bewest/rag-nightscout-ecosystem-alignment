@@ -21,8 +21,7 @@ repository.
 
 | packet | PR | claimed state | what it is |
 |---|---|---|---|
-| [`P0-F`](p0-f-fix-connect-timer-jitter.md) | #68 | `in-flight-upstream` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter |
-| [`P0-TAG`](p0-tag-dev.md) | #70 | `needs-decision` | nightscout-connect 0.0.14 - tag connector dev |
+| [`P0-TAG`](p0-tag-dev.md) | #70 | `needs-decision` | nightscout-connect 0.1.0 - the full release, from connector dev |
 | [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
@@ -32,7 +31,6 @@ repository.
 | [`DOC-VIEWS`](doc-views-main.md) | &mdash; | `ready-to-push` | A reviewer-facing surface over the queue: three overview pages and a packet per PR |
 | [`FU-PRBODIES`](fu-prbodies.md) | &mdash; | `needs-decision` | Five merged PR bodies have drifted from the files they were posted from |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
-| [`P0-PUBLISH`](p0-publish-ci-npm-trusted-publish.md) | &mdash; | `ready-to-push` | ci/npm-trusted-publish - publish nightscout-connect to npm from a version tag |
 | [`RT-4`](rt-4.md) | &mdash; | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes |
 | [`RT-D3`](rt-d3-origin-dev.md) | &mdash; | `needs-decision` | Answer the D3 question before 15.0.9 ships |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |
