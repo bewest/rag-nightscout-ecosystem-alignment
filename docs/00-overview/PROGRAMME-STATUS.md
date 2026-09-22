@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 59 | 21 | 12 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 60 | 21 | 13 |
 | **Modernization** | `release-train` | 12 | 1 | 3 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **89** | **31** | **18** |
+| | **total** | **90** | **31** | **19** |
 
 <!-- END GENERATED: horizons -->
 
@@ -144,7 +144,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 | parcel | `not-started` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `unsettled` | total |
 |---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 1 | 3 | 1 | 3 | 1 | 9 | 2 |  | **20** |
+| `phase0` | 1 | 3 | 2 | 3 | 1 | 9 | 2 |  | **21** |
 | `release-train` | 1 | 4 |  | 4 |  |  | 3 |  | **12** |
 | `register-open` | 14 | 6 |  |  |  | 4 | 4 | 2 | **30** |
 | `tenancy` | 9 | 1 | 1 | 5 |  |  | 1 | 1 | **18** |
@@ -186,13 +186,13 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 61 | 69% |
-| SECURITY reviewer | 13 | 15% |
-| Maintainer + a second human | 6 | 7% |
+| Maintainer | 61 | 68% |
+| SECURITY reviewer | 13 | 14% |
+| Maintainer + a second human | 7 | 8% |
 | SAFETY reviewer | 5 | 6% |
 | Whoever edits it next | 3 | 3% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **89** | |
+| **total** | **90** | |
 
 <!-- END GENERATED: reviewer-load -->
 
@@ -255,6 +255,6 @@ measurement.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-22**, against cgm-remote-monitor-official `74fc6619` and this repository at `1d97eda4`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-22**, against cgm-remote-monitor-official `74fc6619` and this repository at `75d95921`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

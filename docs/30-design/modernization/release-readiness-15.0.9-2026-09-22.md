@@ -8,6 +8,11 @@ Supersedes [the 2026-09-14 readiness snapshot](cgm-remote-monitor-release-readin
 for 15.0.9 and [the 2026-09-15 roadmap](../post-phase0-roadmap-2026-09-15.md)
 for ordering.*
 
+> **Connector status, later on 2026-09-22:** connector PR #64 merged into connector `dev` as
+> `d208c7d`, carrying #61, #66 and #67 (steps 1 and 2 of §5.2, and #66). PR #68 is under review.
+> Current state: queue items `P0-TAG`, `P0-F` and `P0-PIN` in
+> [`queue/work-queue.yaml`](../../../queue/work-queue.yaml).
+
 ## 1. Verdict
 
 **15.0.9 is ready to release from an engineering standpoint. What it's waiting
@@ -75,9 +80,9 @@ under `reports/reviewer-packets/` are scoped for that.
    instance with `AUTH_DEFAULT_ROLES=denied`, log in at the prompt, trigger an
    alarm, and confirm it arrives. No automated test covers this client path.
 2. **The D3 drag check** above.
-3. **The connector pin stays installable.** `234d47c` exists only on connector
-   branches (`fix/8714-opt-in-debug-logging`, PR #67 open), not on `dev`,
-   `main`, or any tag. The connector repository allows squash merges and has
+3. **The connector pin stays installable.** `234d47c` is in connector `dev`
+   since `d208c7d` (#67 merged with a merge commit, 2026-09-22), so it stays
+   reachable; it is in no connector tag. The connector repository allows squash merges and has
    used them (#72). If #67 is squash-merged and the branch deleted, the commit
    15.0.9 pins could become unreachable, and installs from its archive URL could
    start failing. Before tagging, either merge #67 with a merge commit or put a
@@ -154,15 +159,16 @@ Dexcom access; the tree carries Glooko (#71), connector CI (#72) and LibreLinkUp
 real-account validation (#73). **The programme's local `v0.0.14` tag should be retired, not
 pushed.** Everything it carries already exists as an upstream PR:
 
-| programme fix | upstream PR | state against `official/dev` `8e26786`, 2026-09-22 |
+| programme fix | upstream PR | state against `official/dev` `d208c7d`, 2026-09-22 |
 |---|---|---|
-| credential- and session-safe logging for Dexcom and MiniMed; internal payloads kept out of logs | **#64** | rebased today, 0 behind, **merges cleanly** |
-| CareLink zero-reading filter (**BF-85**) and measurement-time status (`8406edf`, from #65) | carried in **#64** | as above |
-| debug logging opt-in; the connector's own logger; reads `CONNECT_DEBUG` (`234d47c`) | **#67** | 25 behind, **conflicts in 8 files** |
-| retry interval, delay cap and pool jitter (BF-08, BF-34) | **#68** | 24 behind, conflicts in 11 files |
-| release listeners and settle output waits on stop | **#66** | targets #64's branch; conflicting |
+| credential- and session-safe logging for Dexcom and MiniMed; internal payloads kept out of logs | **#64** | **merged** (`d208c7d`) |
+| CareLink zero-reading filter (**BF-85**) and measurement-time status (`8406edf`, from #65) | carried in **#64** | merged |
+| debug logging opt-in; the connector's own logger; reads `CONNECT_DEBUG` (`234d47c`) | **#67**, folded into #64 | merged |
+| retry interval, delay cap and pool jitter (BF-08, BF-34) | **#68** | under review, head `635cc9f`, merges into `d208c7d` cleanly |
+| release listeners and settle output waits on stop | **#66**, folded into #64 | merged |
 
-**Upstream `dev` as it stands would regress 15.0.9.** It has no `lib/logging.js`, and it logs
+*(Measured on `8e26786`, before #64 merged; `d208c7d` has `lib/logging.js`.)* **Upstream `dev` at
+`8e26786` would have regressed 15.0.9.** It has no `lib/logging.js`, and it logs
 CareLink login responses (headers and bodies) and Dexcom Share error bodies unconditionally.
 That is the BF-42/BF-43 behaviour that 15.0.9's pin `234d47c` removes. It also does not read
 `CONNECT_DEBUG`, which 15.0.9 adds and documents. Measured: 135 unguarded `console.*` sites in

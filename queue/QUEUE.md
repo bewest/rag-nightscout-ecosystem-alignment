@@ -22,8 +22,8 @@ Generated from `queue/work-queue.yaml` by `tools/queue/emit.py`. **Do not hand-e
 - Manifest schema version: `1`
 - Measured at: 2026-09-22
 - Measured against cgm-remote-monitor-official: `74fc6619`
-- Measured against nightscout-connect: `8e26786`
-- Measured against main_repo_head: `1d97eda4`
+- Measured against nightscout-connect: `d208c7d`
+- Measured against main_repo_head: `75d95921`
 
 One queue spans every programme on purpose, so that a tenancy task colliding with a release train is visible in one place. The `parcel` field does the separating.
 
@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 89 |
+| items | 90 |
 | runnable gates | 151 |
-| explicit `no-gate:` markers | 141 |
+| explicit `no-gate:` markers | 143 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 141 of the 292 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 143 of the 294 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,7 +43,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 31 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 15 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, DOC-VIEWS, DOC-LINKS |
+| `ready-to-push` | 5 | P0-C-REMEDIATE, P0-PUBLISH, T30-AUTH, DOC-VIEWS, DOC-LINKS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 1 | P0-F |
 | `merged-upstream` | 13 | P0-A, P0-B, P0-D, P0-E, P0-G, P0-H, P0-I, P0-K, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
@@ -79,22 +79,23 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 
 ## Phase 0 backfixes - ships to every existing operator
 
-`parcel: phase0` &mdash; 20 items
+`parcel: phase0` &mdash; 21 items
 
 Eight of the ten cgm-remote-monitor Phase 0 branches are merged into
 origin/dev (PRs #8733 to #8743, 2026-09-17 to 2026-09-20); their items are
 `merged-upstream`, meaning in dev and not released. Until RT-0 ships 15.0.9,
 no operator carries any of them. Remaining on the cgm-remote-monitor side:
 bf/auth (P0-C) and bf/throttle (P0-J), both behind origin/dev and trial-
-merging clean. Remaining on the connector side: nightscout-connect's
-official/dev (8e26786) has taken #71 (Glooko), #72 (CI) and #73 (LibreLinkUp
-v4) and its package.json says 0.0.14, while the programme's local, unpushed
-tag v0.0.14 (649a7de) is 11 ahead and 24 behind that and conflicts with it in
-11 files (`git merge-tree --write-tree --name-only official/dev v0.0.14` in
-externals/nightscout-connect, 2026-09-22). PR #68 (backoff and jitter, P0-F)
-is open and in neither. P0-TAG is needs-decision on which 0.0.14 is the
-release; P0-PIN and P0-LOCK are blocked behind it. None of these needs a
-tenancy decision.
+merging clean. Connector side, measured against nightscout-connect
+official/dev d208c7d (2026-09-22): PR #64 merged there as d208c7d, carrying
+#61, #66 and #67 with it, so connector dev now has the credential-safe
+logging, the opt-in debug logger that reads CONNECT_DEBUG, listener release on
+stop and the BF-85 CareLink zero filter. PR #68 (backoff and jitter, P0-F) is
+open at 635cc9f with CI green. Nothing is released: the remote's newest tag is
+v0.0.13 and npm's latest is 0.0.12. The release is connector dev, tagged
+(P0-TAG); whether #68 is in it or follows in the next release is part of that
+decision. P0-PIN and P0-LOCK are blocked behind the tag, and P0-PUBLISH is the
+optional publish-from-tag workflow. None of these needs a tenancy decision.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
@@ -105,14 +106,15 @@ tenancy decision.
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `ready-to-push` | `-` | n/a | 1 run + 2 no-gate |
 | `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `merged-upstream` | `bf/coercion` | minor | 7 run + 1 no-gate |
 | `P0-E` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion | `merged-upstream` | `bf/reads` | major | 10 run + 5 no-gate |
-| `P0-F` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | `in-flight-upstream` | `fix/connect-timer-jitter` | minor | 3 run + 2 no-gate |
+| `P0-F` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | `in-flight-upstream` | `fix/connect-timer-jitter` | minor | 4 run + 2 no-gate |
 | `P0-G` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | `merged-upstream` | `bf/food` | minor | 6 run + 1 no-gate |
 | `P0-H` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | `merged-upstream` | `bf/merge` | patch | 5 run + 2 no-gate |
 | `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `merged-upstream` | `bf/parms` | patch | 6 run + 1 no-gate |
 | `P0-K` | bf/operators - PR #8743, BF-04 extracted, BF-70 found | `merged-upstream` | `bf/operators` | minor | 7 run + 2 no-gate |
-| `P0-TAG` | nightscout-connect release/v0.0.14 and tag - prepared, needs a human push | `needs-decision` | `release/v0.0.14` | minor | 6 run + 1 no-gate |
+| `P0-TAG` | nightscout-connect 0.0.14 - tag connector dev | `needs-decision` | `dev` | minor | 3 run + 1 no-gate |
 | `P0-PIN` | bf/connect-pin - move dev's connector pin to the v0.0.14 tarball | `blocked` | `bf/connect-pin` | patch | 3 run + 1 no-gate |
 | `P0-LOCK` | Regenerate package-lock.json after the v0.0.14 tag is pushed | `blocked` | `bf/connect-pin` | n/a | 2 run |
+| `P0-PUBLISH` | ci/npm-trusted-publish - publish nightscout-connect to npm from a version tag | `ready-to-push` | `ci/npm-trusted-publish` | n/a | 2 run + 2 no-gate |
 | `P0-T01` | T0.1 - PR #8733, the two quadratic treatment scans | `merged-upstream` | `fix/quadratic-treatment-processing` | patch | 1 run + 1 no-gate |
 | `FU-LIMIT` | Follow-up 2 - the limit rule is written twice, and that is the root cause | `blocked` | `-` | patch | 2 run + 1 no-gate |
 | `FU-RESIDUALS` | Follow-ups 3, 4, 7 - three named residuals beside branches already prepared | `gate-not-met` | `-` | patch | 3 run + 1 no-gate |
@@ -435,34 +437,36 @@ tenancy decision.
 | state (claimed) | `in-flight-upstream` |
 | repo | `nightscout-connect` |
 | branch | `fix/connect-timer-jitter` |
-| base | `b77e5bb` |
+| base | `official/dev@d208c7d` |
 | worktree | `externals/work/nc-jitter` |
 | semver | `minor` |
-| review | maintainer - the sequencing document says land this one first if anything is landed first. Open as nightscout-connect PR #68, base dev. One approval there covers four PRs' worth of change; see notes. |
+| review | maintainer, plus one reviewer other than the author of c1cce2a. Merge with a merge commit so c1cce2a stays an ancestor of dev. |
 | register | `BF-08`, `BF-34` |
 
-**Blast radius.** lib/backoff.js, lib/machines/cycle.js. 19 new tests, 135 pass / 0 fail, every part reverted in turn and caught.
+**Blast radius.** Against connector official/dev d208c7d (2026-09-22): README.md, index.js, lib/backoff.js, lib/builder.js, lib/machines/cycle.js and four test files, +430/-38 (`git diff --stat official/dev...official/fix/connect-timer-jitter` in externals/nightscout-connect). Head 635cc9f contains #64's head 19af0c3, not dev's merge commit d208c7d; trial merge into dev clean.
 
-**What an operator sees.** This changes the connector, the part of Nightscout that fetches readings from a CGM (continuous glucose monitor) vendor's online service. When that service is refusing requests, the connector used to retry roughly 586 times faster than it was configured to, and every account retried at the same instant. With this fix it waits the interval it was told to wait and spreads the retries out. Something that may seem backwards: after this fix a vendor outage can look like it recovers more slowly, because the connector no longer retries in a burst that could not have worked. Your data does not arrive any later than it would have; the burst was never getting through. The connector can also spread out its first contact with the vendor after a restart; both of these spreading settings default to 0, so nothing changes for anyone who does not set them. This is merged nowhere yet and reaches no one until a connector release is cut and Nightscout is updated to use it (P0-TAG, P0-PIN).
+**What an operator sees.** This changes the connector, the part of Nightscout that fetches readings from a CGM (continuous glucose monitor) vendor's online service. When that service is refusing requests, the connector used to retry roughly 586 times faster than it was configured to, and every account retried at the same instant. With this fix it waits the interval it was told to wait and spreads the retries out. Something that may seem backwards: after this fix a vendor outage can look like it recovers more slowly, because the connector no longer retries in a burst that could not have worked. For LibreLinkUp in particular, after a failed fetch the next attempt comes one to two and a half minutes later, as the connector is configured, rather than almost immediately. The connector can also spread out its first contact with the vendor after a restart; the spreading settings default to 0, so nothing changes for anyone who does not set them. This reaches no one until it is merged, a connector release is cut, and Nightscout is updated to use it (P0-TAG, P0-PIN).
 
-**Why `minor`.** GT4 argues for 0.1.0 rather than 0.0.14 and the argument is sound - option precedence reversed, a changed default (use_random_slot:false -> jitter:'equal'), a new throw on an unknown jitter mode, and duration_for became non-deterministic. Each is breaking for a caller. It costs nothing because ^0.0.13 matches only 0.0.13 and cgm-remote-monitor pins by tarball anyway. Unresolved disagreement: the prepared tag says 0.0.14.
+**Why `minor`.** GT4 argues for 0.1.0 rather than 0.0.14 and the argument is sound - option precedence reversed, a changed default (use_random_slot:false -> jitter:'equal'), a new throw on an unknown jitter mode, and duration_for became non-deterministic. Each is breaking for a caller. It costs nothing because ^0.0.13 matches only 0.0.13 and cgm-remote-monitor pins by exact URL. Connector dev's package.json says 0.0.14; the choice is P0-TAG's.
 
 **Gates.**
 
 - `[unit]` _(cwd: `externals/work/nc-jitter`)_ `npm test`
-  - 135 passing / 0 failing; the connector suite needs no database
+  - 283 passing / 0 failing at 635cc9f; the connector suite needs no database
 - `[unit]` _(cwd: `externals/work/nc-jitter`)_ `node -e "const b=require('./lib/backoff.js'); try { b({jitter:'wild'}); process.exit(1); } catch(e) { process.exit(/unknown jitter mode/.test(e.message)?0:1); }"`
   - the new throw on an unknown jitter mode is the observable half of the precedence fix - if options were still being discarded, the bad mode would never be read and this would not throw
-- **NO GATE** &mdash; Vendor rate limits are unmeasured (EXP-MT-051) and need real credentials, which rule 0 forbids here. T0.4 shipped CONNECT_START_JITTER_MS so the pool CAN be spread - but the window to set it is exactly the number that is unmeasured.
-- `[network]` `git -C externals/nightscout-connect ls-remote --heads origin fix/connect-timer-jitter | grep -q c1cce2a2f9623e1164d85b1625a65d27e3116b51`
-  - the branch behind nightscout-connect PR #68 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- `[static]` `git -C externals/nightscout-connect merge-tree --write-tree official/dev official/fix/connect-timer-jitter`
+  - the PR branch merges into connector dev without conflicts. It contains #64's head 19af0c3, so against dev d208c7d its diff is only this item's files. Reads local remote-tracking refs; fetch official first.
+- **NO GATE** &mdash; Vendor rate limits are unmeasured (EXP-MT-051) and need real credentials, which rule 0 forbids here. CONNECT_START_JITTER_MS lets a pool be spread, but the window to set is exactly the number that is unmeasured.
+- `[network]` `git -C externals/nightscout-connect ls-remote --heads origin fix/connect-timer-jitter | grep -q 635cc9f43a5b92e04640f4e4136eeb1b6b87ed02`
+  - the branch behind nightscout-connect PR #68 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-22.
 - **NO GATE** &mdash; Review and merge state of PR #68 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven - the same marker P0-T01 carries.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** Sequencing letter F. Merging this in the connector repository ships it to nobody - cgm-remote-monitor pins the connector by tarball. P0-TAG and P0-PIN are what deliver it. As of official/dev 8e26786 (2026-09-22) the backoff-and- jitter commit c1cce2a is NOT in connector dev (`git merge-base --is-ancestor c1cce2a official/dev` exits 1), so it is in neither candidate 0.0.14 that dev could release. PR target (maintainer, 2026-09-16): base `dev`, head `fix/connect-timer-jitter`, ONE PR carrying 11 commits. Measured at the time: `origin/dev` 6dfc4f0 was tree-identical to `origin/main` b394411 (main was only the merge commit of PR #26), and #64 and #67 both target `dev`, so `dev` is the release line for this batch. `git rev-list --count origin/dev..fix/connect-timer-jitter` = 11; 27 files, +1359/-309; trial merge into that `dev` clean. Connector dev has since moved to 8e26786 and this has not been re-trial-merged against it. What the one PR approves: only c1cce2a is this branch's work. Nine of the other ten commits belong to four other pull requests - #64 (open, -> dev), #65 (merged into `fix/dexcom-safe-logging`, NOT into dev or main), #66 (open, -> `fix/dexcom-safe-logging`), #67 (open, -> dev; its commit 234d47c is what cgm-remote-monitor dev pins today) - plus the integration merge b77e5bb (`origin/fix/modernization-debug-logging`, no PR). So one approval covers four PRs' worth of change. The maintainer chose this over stacking on `fix/modernization-debug-logging` (which would reduce the PR to the single commit c1cce2a) with the tradeoff on the table, and the PR body says so; its description of those nine commits is that they are not yet merged. Why c1cce2a is not rebased alone onto dev (measured 2026-09-16): `git cherry-pick c1cce2a` onto the then origin/dev conflicts in three files, one hunk each (README.md, index.js, lib/builder.js); lib/backoff.js and lib/machines/cycle.js auto-merge clean. The builder.js resolution would have to delete `logger: config.logger`, which comes from 234d47c - the commit genuinely assumes #67 is in place, as its own message says ("The precedence fix cannot ship alone"). The 135-test and per-part-ablation evidence was taken on the stacked base and would need re-taking.
+**Notes.** Sequencing letter F. Merging this in the connector repository ships it to nobody; P0-TAG and P0-PIN deliver it. `git merge-base --is-ancestor c1cce2a official/dev` exits 1 until #68 merges. The branch carries the merge of #64's head 19af0c3 (ffe5fb0), so c1cce2a is unchanged. dev's LibreLinkUp v4 code had its own jitter (CONNECT_LINK_UP_STARTUP_JITTER_MS, CONNECT_LINK_UP_INTERVAL_JITTER_MS); the two are one mechanism in lib/machines/cycle.js: one start delay on Init over the wider of the deployment and source windows; the wider of the two on the unaligned interval; only the source window on the aligned interval; every window capped at five minutes. LibreLinkUp's fixed frame retry, noRetryStatuses and the 429 throttle path are unchanged and are still checked before the backoff. LibreLinkUp's configured cycle backoff (2.5 minutes x 2^attempt, capped at six poll intervals) is now honoured; its recovery test asserts that (676b80e) and fails with dev's backoff.js. The combined jitter rules are tested in 635cc9f, and breaking each rule fails at least one test. The LibreLinkUp real-Nightscout lab passes locally and in CI at 635cc9f. Not re-measured on this tree: the pool figures in c1cce2a's message (100 actors, 800 requests across 3 s before and 67 s after under refused authentication; 400 actors, busiest second 400 to 15 with 60 s of start jitter) were taken on the pre-dev base b77e5bb.
 
 ### `P0-G` &mdash; bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser
 
@@ -632,47 +636,41 @@ tenancy decision.
 
 **Notes.** Sequencing letter K. PR #8737 does not disallow $where or other dangerous operators and was never meant to - $where is in that branch's NON_VALUE_OPERATORS table as an exemption from type conversion, not a refusal. Measuring what API v1 actually carries is BF-04. BF-04 had been `fixed-in- seam` since 2026-09-14, high severity, live for every operator, and in no open-work list: a fix that exists only on the seam branch is invisible to operators and needs its own queue item. The allowlist and the JavaScript guard are extracted from the seam branch (seam/t2-4-allowlist 987e9657) rather than written fresh, with the framing inverted: on the seam that module is a better error message in front of a structural guard, and on dev there is no AST behind it, so there it IS the guard. lib/storage/assert-no-query-javascript.js is carried across byte-identical at the same path so the seam merge is free.
 
-### `P0-TAG` &mdash; nightscout-connect release/v0.0.14 and tag - prepared, needs a human push
+### `P0-TAG` &mdash; nightscout-connect 0.0.14 - tag connector dev
 
 | | |
 |---|---|
 | state (claimed) | `needs-decision` |
 | repo | `nightscout-connect` |
-| branch | `release/v0.0.14` |
-| base | `v0.0.13@b394411` |
+| branch | `dev` |
+| base | `official/dev@d208c7d` |
 | worktree | `externals/nightscout-connect` |
 | semver | `minor` |
-| review | maintainer - pushing the tag is the deliberate human act; the connector repository has no release workflow, so the tag publishes nothing by itself |
-| register | `BF-08`, `BF-34` |
-| blocks on | `P0-F` |
+| review | maintainer - choosing the version and pushing the tag are the deliberate human acts. With P0-PUBLISH merged and npm configured, pushing the tag also publishes to npm after an approval; without it, the tag publishes nothing by itself. |
+| register | `BF-08`, `BF-34`, `BF-42`, `BF-85` |
 
-**Blast radius.** Two candidate 0.0.14s exist. Measured 2026-09-22 against connector official/dev 8e26786: official/dev's package.json says 0.0.14 (bumped upstream in e231600), and the programme's local, unpushed annotated tag v0.0.14 points at release/v0.0.14 649a7de, whose package.json also says 0.0.14 - two different trees with one version. `git rev-list --left-right --count official/dev...release/v0.0.14` = 24 behind / 11 ahead. The 24 include LibreLinkUp v4 (PR #73), the Glooko work (#71), the connector regression-CI restore (#72) and the main->dev merge (#69). `git merge-tree --write-tree official/dev release/v0.0.14` conflicts in 11 files at 8e26786: .github/workflows/test.yml (added in both), index.js, lib/builder.js, lib/machines/{cycle,fetch,poller,session}.js, lib/outputs/internal.js, lib/sources/glooko/{convert,index}.js and lib/sources/librelinkup.js. Pushing the prepared tag would therefore mint a v0.0.14 that is not dev's 0.0.14, and the tarball P0-PIN pins would omit work upstream considers part of that version. That is a release-content decision, not a mechanical reconciliation. RECOMMENDED 2026-09-22, after upstream opened its own 0.0.14 release as connector PR #70 (dev -> main, head 8e26786, with connectivity fixes the maintainer reports include confirmed Dexcom access): retire the local tag and land its content upstream, where it already exists as PRs - #64 (credential- safe logging plus the BF-85 CareLink zero filter; rebased 2026-09-22, merges cleanly), #67 (debug opt-in and the logger that reads CONNECT_DEBUG; conflicts in 8 files), #68 (retry/jitter; conflicts in 11), #66. #64 and #67 must be in upstream 0.0.14 before cgm-remote-monitor pins it: 8e26786 alone logs CareLink login responses and Dexcom error bodies unconditionally (BF-42/43 again) and ignores CONNECT_DEBUG. See release-readiness-15.0.9 §5.2. Nothing has been pushed; the remote's newest tag is v0.0.13. The prepared release itself: 11 commits, 29 files, +1362/-312, of which 887 lines are new test files; b394411 fast-forwards to 649a7de.
+**Blast radius.** The release is connector dev; there is no release branch. Measured 2026-09-22 at official/dev d208c7d: dev carries 9fa2c3c, 5349d47, 77e2396 (credential- safe logging, BF-42), 8406edf (the BF-85 CareLink zero filter), 51b6e6e (listener release on stop) and 234d47c (the opt-in logger, the commit cgm- remote-monitor dev pins), plus LibreLinkUp v4 (#73), Glooko (#71) and connector CI (#72). It does not yet carry c1cce2a (#68). Upstream PR #70 (dev -> main) is the release PR. The remote's newest tag is v0.0.13.
 
-**What an operator sees.** A new version of the CGM connector, the part of Nightscout that fetches readings from a CGM vendor's online service. See P0-F for what changes in behaviour. Nothing reaches anyone until the connector version is decided, tagged, and a Nightscout release is updated to use it.
+**What an operator sees.** A new version of the CGM connector, the part of Nightscout that fetches readings from a CGM vendor's online service. It stops the connector writing vendor credentials, session tokens and readings to the log, stops a CareLink "no reading" marker being stored as a glucose value of 0, and carries the retry fixes in P0-F. Nothing reaches anyone until the version is tagged and a Nightscout release is updated to use it (P0-PIN).
 
-**Why `minor`.** see P0-F. GT4 argues the version should be 0.1.0; the prepared tag says 0.0.14, and upstream dev has independently declared 0.0.14. Unresolved.
+**Why `minor`.** see P0-F. GT4 argues the version should be 0.1.0; connector dev's package.json says 0.0.14. The maintainer chooses before tagging.
 
 **Gates.**
 
-- `[static]` `git -C externals/nightscout-connect merge-base --is-ancestor v0.0.13 release/v0.0.14`
-  - v0.0.13 fast-forwards to the release - no divergence to reconcile
-- `[static]` `test "$(git -C externals/nightscout-connect cat-file -t v0.0.14)" = tag`
-  - v0.0.14 is an ANNOTATED tag, not a lightweight one
-- `[static]` `test "$(git -C externals/nightscout-connect rev-parse v0.0.14^{commit})" = "$(git -C externals/nightscout-connect rev-parse release/v0.0.14)"`
-  - the tag points at the release branch tip
-- `[static]` `test "$(git -C externals/nightscout-connect show release/v0.0.14:package.json | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')" = 0.0.14`
-  - package.json version matches the tag
+- `[static]` `for c in 9fa2c3c 5349d47 77e2396 8406edf 51b6e6e 234d47c; do git -C externals/nightscout-connect merge-base --is-ancestor $c official/dev || exit 1; done`
+  - the six fixes #64 carried are in connector dev. Passes at d208c7d.
+- `[static]` `! git -C externals/nightscout-connect rev-parse -q --verify refs/tags/v0.0.14`
+  - no local v0.0.14 tag exists. RED while the retired local tag (649a7de, release/v0.0.14) is still present: it names a different tree and would be pushed by mistake. Delete it with `git tag -d v0.0.14` before tagging dev.
 - `[network]` `git -C externals/nightscout-connect ls-remote --tags origin v0.0.14 | grep -q . && exit 1 || exit 0`
-  - RULE 0. This gate PASSES only while the tag is NOT on origin. It is the machine-checkable form of "nothing has been pushed". Read-only.
-- `[static]` `git -C externals/nightscout-connect merge-base --is-ancestor official/dev release/v0.0.14`
-  - The release branch must contain everything on upstream dev, or the tag names a tree missing work upstream already considers released. RED: release/v0.0.14 is 24 commits behind official/dev 8e26786 (2026-09-22). The other five gates measure the prepared artefact against itself - tag type, tag target, version string, fast-forward from the previous tag; this is the one that measures it against the tree it would be pushed into.
-- **NO GATE** &mdash; Whether all seven connector commits are the RIGHT content for a release is a release-content decision, not a mechanical bump, and it is the maintainer's. Nothing can gate it.
+  - RULE 0. PASSES only while no v0.0.14 tag is on the remote - the machine-checkable form of "nothing has been pushed". Read-only.
+- **NO GATE** &mdash; Release content and number are the maintainer's decision. Two shapes: tag dev now as 0.0.14 without #68, with #68 following in the next release (release-readiness-15.0.9 §5.2); or merge #68 first and tag that. Under the versioning policy, the first release carrying the backoff change (c1cce2a) is 0.1.0. `git -C externals/nightscout-connect merge-base --is-ancestor c1cce2a official/dev` says which shape dev is in.
 
 **Evidence.**
 
-- `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`
+- `docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md`
+- `docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`
 
-**Notes.** v0.0.14 is the FIRST ref carrying all seven connector commits - both the debug-logging narrowing that cgm-remote-monitor dev's pin (234d47c, connector PR #67, open) has and the three log-redaction fixes that cut 4's pin has. GT4 found the two mitigations split across the two release trains. That is why abandoning the branch outright is not obviously the right shape either: connector dev at 8e26786 does NOT carry c1cce2a, the backoff-and-jitter commit, because PR #68 is still open. Whatever is decided has to keep all seven.
+**Notes.** The programme's local release/v0.0.14 branch and v0.0.14 tag are retired: every commit on them is in connector dev or in #68. Tag dev, not that branch.
 
 ### `P0-PIN` &mdash; bf/connect-pin - move dev's connector pin to the v0.0.14 tarball
 
@@ -707,7 +705,7 @@ tenancy decision.
 
 - `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`
 
-**Notes.** This is the branch that closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. If P0-TAG is resolved as something other than the prepared v0.0.14 (for example upstream tags dev, or ours becomes 0.0.15), this branch's target tarball changes with it.
+**Notes.** This is the branch that closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. The target is the connector release P0-TAG cuts from connector dev: either that tag's tarball, or the exact npm version if P0-PUBLISH is used to publish it. If the version is 0.1.0 rather than 0.0.14, the pin and this item's gates change with it.
 
 ### `P0-LOCK` &mdash; Regenerate package-lock.json after the v0.0.14 tag is pushed
 
@@ -740,6 +738,39 @@ tenancy decision.
 - `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`
 
 **Notes.** Deliberately undone and it must not be papered over. Regenerate with `npm install` once the tag is pushed, in the same PR.
+
+### `P0-PUBLISH` &mdash; ci/npm-trusted-publish - publish nightscout-connect to npm from a version tag
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `nightscout-connect` |
+| branch | `ci/npm-trusted-publish` |
+| base | `official/dev@8e26786` |
+| worktree | `externals/nightscout-connect` |
+| semver | `n/a` |
+| review | maintainer. Two settings outside the repository must exist before the first tag: a trusted-publisher entry on the npm package (an npm owner) and a GitHub environment npm-publish with required reviewers (a repository admin). docs/releasing.md on the branch lists both. |
+
+**Blast radius.** 1 commit, e3e018e: .github/workflows/publish.yml and docs/releasing.md, +170. No library code. Trial merge into official/dev d208c7d clean (2026-09-22).
+
+**What an operator sees.** Nothing changes for anyone running Nightscout. It changes how the connector is published: a version tag publishes it to npm after a person approves, with a public record linking the published package to the exact source it was built from, and with no stored npm password or token.
+
+**Why `n/a`.** release tooling only; no published surface of the package moves
+
+**Gates.**
+
+- `[static]` `git -C externals/nightscout-connect cat-file -e ci/npm-trusted-publish:.github/workflows/publish.yml`
+  - the workflow exists on the branch
+- `[static]` `git -C externals/nightscout-connect merge-tree --write-tree official/dev ci/npm-trusted-publish`
+  - the branch merges into connector dev without conflicts
+- **NO GATE** &mdash; The publish step can only run on GitHub against a configured npm package. Measured locally on 2026-09-22: actionlint clean (a broken control workflow was reported), and each refusal the workflow makes (tag/version mismatch, commit not on dev or main, version already on npm, npm older than 11.5.1) exercised with a passing and a failing case.
+- **NO GATE** &mdash; The npm trusted-publisher entry and the GitHub environment are settings on npmjs.com and GitHub, not in any repository.
+
+**Evidence.**
+
+- `docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`
+
+**Notes.** Optional for the release: without it P0-TAG's tag publishes nothing and cgm- remote-monitor pins the tag tarball. npm's latest published version is 0.0.12, and the package has one owner account.
 
 ### `P0-T01` &mdash; T0.1 - PR #8733, the two quadratic treatment scans
 
@@ -1996,7 +2027,7 @@ distinction is the only thing that makes the register mean anything - widening
 **Gates.**
 
 - `[static]` `node tools/queue/gates/connector-pin-exposure.js --refs origin/master,origin/dev`
-  - FAILS on origin/master for both arms - the v0.0.13 tag tarball (112 live console.* sites, 101 passing a non-literal argument, no debug guard anywhere) and an axios override of 1.16.0 against the connector's declared ^1.18.1. origin/dev is the control and passes both, which proves the gate reads the pins and not the command: dev's pin 234d47c deletes the leaking call sites (so "dev only makes the logging opt-in" is inaccurate). Note that 234d47c is on an unmerged connector branch (connector PR #67), not on a connector release.
+  - FAILS on origin/master for both arms - the v0.0.13 tag tarball (112 live console.* sites, 101 passing a non-literal argument, no debug guard anywhere) and an axios override of 1.16.0 against the connector's declared ^1.18.1. origin/dev is the control and passes both, which proves the gate reads the pins and not the command: dev's pin 234d47c deletes the leaking call sites (so "dev only makes the logging opt-in" is inaccurate). 234d47c is in connector dev (d208c7d, 2026-09-22) and in no connector release.
 - **NO GATE** &mdash; No live run and no vendor account. The census is a source census of a git archive extraction, and rule 0 forbids creating an account or contacting a vendor. It is non-vacuous in the way that matters - the same scanner returns 112/101 on the leaking tree, 22/20 on the redacted ones, and correctly reports cut 4's commented-out MiniMed block as 47 calls with zero dynamic arguments, so it distinguishes deletion from commenting-out.
 - **NO GATE** &mdash; No runtime failure is claimed for the axios override, and no axios API was identified that the connector uses and 1.16.0 lacks. The defect is the silent constraint violation - `overrides` exists precisely to suppress the ERESOLVE that would report it - and nothing gates "a constraint was overridden into violation" in general.
 
@@ -2005,7 +2036,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/40-migration/connector-pin-consolidation-2026-09-15.md`
 
-**Notes.** The fix is the same one-line pin move as P0-PIN, applied to master rather than dev, and it cannot be prepared until a connector 0.0.14 release exists. That is P0-TAG's open decision: connector official/dev (8e26786) now declares 0.0.14 in its own package.json, while the programme's local, unpushed v0.0.14 tag (649a7de) is 11 ahead / 24 behind it and conflicts in 11 files. RT- CONNECT-PIN-CUTS is the same change on cuts 1-3 and is filed separately because those are pre-release (§1b) and this is not.
+**Notes.** The fix is the same one-line pin move as P0-PIN, applied to master rather than dev, and it cannot be prepared until a connector release exists. Connector dev d208c7d (2026-09-22) carries the fixes; P0-TAG tags it after #68. RT-CONNECT- PIN-CUTS is the same change on cuts 1-3 and is filed separately because those are pre-release (§1b) and this is not.
 
 ### `BFQ-MINIMED` &mdash; BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading
 
@@ -2038,7 +2069,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/40-migration/legacy-cgm-ingestion-to-connect-2026-09-15.md`
 
-**Notes.** Also recorded on BF-44 and not separately filed: pump.clock is not parsed at all, deviceStatusEntry assigns data['sMedicalDeviceTime'] verbatim, so a client doing new Date(pump.clock) can get Invalid Date. And the legacy transform throws RangeError on a Z-suffixed payload outside the MMCONNECT_SERVER=EU / GUARDIAN branch rather than producing a comparison value, so the reproduction arms hold only with MMCONNECT_SERVER=EU. GRADING CAVEAT: the grades assume the legacy mmconnect path (minimed-connect-to- nightscout) is live. The maintainer reported on 2026-09-21, as operational knowledge not measured here, that mmconnect has been broken for some time. If so, BF-45's double ingestion and BF-44's divergence are latent for most deployments. BF-44 and BF-45 have not been re-graded against that report, and nothing here can measure whether mmconnect works against the live CareLink service.
+**Notes.** Also recorded on BF-44 and not separately filed: pump.clock is not parsed at all, deviceStatusEntry assigns data['sMedicalDeviceTime'] verbatim, so a client doing new Date(pump.clock) can get Invalid Date. And the legacy transform throws RangeError on a Z-suffixed payload outside the MMCONNECT_SERVER=EU / GUARDIAN branch rather than producing a comparison value, so the reproduction arms hold only with MMCONNECT_SERVER=EU. BF-44 and BF-45 are graded low: the maintainer confirms the legacy mmconnect path does not work, which is operational knowledge and not measured here. BF-85's connector fix, 8406edf, is in connector dev (d208c7d, via PR #64, 2026-09-22) and in no connector release; it reaches operators through P0-TAG and P0-PIN.
 
 ### `BFQ-46` &mdash; BF-46 - eleven API v3 variables bypass env.js, one family deletes data
 

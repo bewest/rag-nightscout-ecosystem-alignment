@@ -31,7 +31,7 @@ their date and commit.
   advisory PRs listed in the [maintainer release brief](../remedial/maintainer-release-brief-2026-09-15.md)
   and the queue. **Every §1 register defect, including those merged, is still present for every
   operator on 15.0.8** until a release ships. Not merged: `bf/auth`, `bf/throttle`,
-  `bf/connect-pin`; connector PR #68 (T0.4) is open.
+  `bf/connect-pin`; connector PR #68 (T0.4) is under review, rebased onto connector `dev` `d208c7d`.
 - **Tenancy work (Phases 1–4) is local and unpushed.** The seam chain ends at
   `seam/t1-2-storage-interface` `81a1f6ce` (worktree `externals/work/crm-seam`), cut from
   `chore/nightscout-modernization` at `0a4109f6`. That base has since moved to `b1bdaca0`; the
@@ -729,9 +729,11 @@ The queue records `P0-B` with an explicit no-gate marker. **Work owed: write the
 re-measure**, not a harness that reproduces the threshold. *Evidence*: {R} §12.3.
 
 **T0.4 · Start and interval jitter in `nightscout-connect` — DONE on `fix/connect-timer-jitter`
-`c1cce2a`; connector PR #68, open** (queue `P0-F`). Based on `b77e5bb` (the commit
-`chore/nightscout-modernization` pins). 19 new tests, suite **135 pass / 0 fail**, every part of the
-change reverted in turn and caught by at least one test. Harness `tools/mt-bench/vcherd.js`
+`c1cce2a`; connector PR #68, under review** (queue `P0-F`, head `635cc9f`, which contains #64's head `19af0c3`,
+merges into connector `dev` `d208c7d` cleanly, and unifies this jitter with LibreLinkUp's own; suite 283 pass / 0 fail). The
+measurements below were taken on `b77e5bb` (the commit `chore/nightscout-modernization` pins): 19
+new tests, suite 135 pass / 0 fail, every part of the change reverted in turn and caught by at least
+one test. Harness `tools/mt-bench/vcherd.js`
 (EXP-MT-048b), local mock only — no vendor endpoint contacted, no credentials used.
 - **The phase-lock is at start and on the unaligned interval.** All four vendor drivers already put
   an 18-second random window into the timestamp they align to: at 400 actors over 700 s, later cycles

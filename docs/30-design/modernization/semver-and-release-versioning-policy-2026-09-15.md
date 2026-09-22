@@ -499,7 +499,7 @@ sources** (`dexcomshare`, `minimedcarelink`, `glooko`, `nightscout` each declare
 `opts.linkUpInterval * 60 * 1000` (`lib/sources/librelinkup.js:220`), so its ceiling is the
 operator's configured interval × 6. With `'equal'` jitter the delay at the ceiling spreads over
 [15 min, 30 min] (2,000 samples at attempt 10 fell in [900,351 ms, 1,799,757 ms]). The fix is
-connector PR #68, **open** (queue `P0-F`); it is in neither candidate 0.0.14 (§4.3).*
+connector PR #68 (queue `P0-F`), not yet in connector `dev` `d208c7d` (§4.3).*
 
 **Answer: MINOR in `cgm-remote-monitor` (a default change, question 11). A `y` bump in
 `nightscout-connect` (§4). And the release note is the entire point**, because the change looks
@@ -659,12 +659,12 @@ Every pin is a **tarball URL**, not an npm range. Measured 2026-09-22 with
 | ref | pin |
 |---|---|
 | `origin/master` (15.0.8) | `refs/tags/v0.0.13.tar.gz` |
-| `origin/dev` (15.0.9 candidate) | commit `234d47c` — on the unmerged connector branch `fix/8714-opt-in-debug-logging`, connector PR #67 open |
+| `origin/dev` (15.0.9 candidate) | commit `234d47c` — in connector `dev` since `d208c7d` (PR #64, 2026-09-22), in no connector release |
 | cuts 1, 2, 3 (published tips) | `refs/tags/v0.0.13.tar.gz` |
 | cut 4 `chore/mime-exposure-review` | commit `c962a13f` |
 | cut 5 `chore/nightscout-modernization` (`b1bdaca0`) | commit `b77e5bb` |
 | `rt/cut1` (local rebase, unpushed) | commit `234d47c` |
-| `bf/connect-pin` (local, unpushed; queue `P0-PIN`) | `refs/tags/v0.0.14.tar.gz` — a tag that exists only locally |
+| `bf/connect-pin` (local, unpushed; queue `P0-PIN`) | `refs/tags/v0.0.14.tar.gz` — no such tag on the remote yet (P0-TAG) |
 
 The `^0.2.12` on master belongs to `share2nightscout-bridge`, a different package. There is no
 npm-range pin for `nightscout-connect` anywhere in the tree, so **the version-number choice
@@ -687,12 +687,12 @@ tests), by executing `lib/backoff.js` at both revisions — five caller-visible 
 
 (1) alone is question 3: a configured value went from ignored to honoured, moving timing 585.94×.
 
-**Two candidate 0.0.14s exist (queue `P0-TAG`, needs-decision).** Connector `official/dev`
-`8e26786` declares `0.0.14` in its own package.json and carries work the local tag does not (#71
-Glooko, #72 CI, #73 LibreLinkUp v4, merged 2026-09-21/22). The local tag `v0.0.14` (`649a7de`) is
-11 commits ahead of and 24 behind `official/dev` and conflicts with it in 11 files (`git -C externals/nightscout-connect merge-tree --write-tree official/dev v0.0.14 | grep -c ^CONFLICT`); it is the only
-ref carrying all seven programme connector commits (backoff/jitter and the three log-redaction
-fixes). Whichever release first carries the backoff change is, under this policy, `0.1.0`.
+**The release is connector `dev`, tagged (queue `P0-TAG`, needs-decision on content and
+number).** Connector `official/dev` `d208c7d` (2026-09-22) declares `0.0.14` in its package.json
+and carries six of the seven programme connector commits (the three log-redaction fixes, the
+CareLink zero filter, listener release on stop, and the opt-in logger `234d47c`); the seventh,
+the backoff change `c1cce2a`, is PR #68. Whichever release first carries the backoff change is,
+under this policy, `0.1.0`.
 
 **Two things that do not change with the number:**
 
@@ -1084,7 +1084,7 @@ of these is a rule violation. Measured 2026-09-22 unless marked.
 | D-f | **Deprecation warnings name a version that does not do the thing.** Both cut-4 shims say "retired in Nightscout 15.0.9" | GT4, executed |
 | D-g | **A deletion ships in the same release as its own migration shim** — `mmconnect-connect-compat.js` is born in the branch that deletes `mmconnect.js` | §5.5 |
 | D-h | **A documented escape hatch is removed without a word** — `DEXCOM_BRIDGE_USE_LEGACY` becomes accepted-and-ignored in cut 4 | BF-62 |
-| D-i | **Release dependencies are pinned to untagged commit SHAs**: dev → `234d47c` (on an unmerged connector branch, PR #67 open), cut 4 → `c962a13f`, cut 5 → `b77e5bb` | §4.2 |
+| D-i | **Release dependencies are pinned to untagged commit SHAs**: dev → `234d47c` (in connector `dev`, in no connector release), cut 4 → `c962a13f`, cut 5 → `b77e5bb` | §4.2 |
 | D-j | **Shipping the published cut 1 after 15.0.9 would remove two environment variables and regress the connector.** Published cut 1 (`bce12ecc`) is 133 commits behind dev and reads neither `DEBUG_LOGGING` nor `CONNECT_DEBUG`, and pins `v0.0.13`. The local rebase `rt/cut1` (`ed21961f`, 9 behind dev, unpushed) reads both and pins `234d47c`, so the published branch, not the train, carries this defect | §6.3 run G; `git grep` of `lib/server/env.js` at both refs |
 | D-k | **15.0.9 as it stands classifies above a patch.** See §8.1 | queue `semver` fields |
 | D-m | **There is no PR field for semver impact** | §6.2 closes this |
