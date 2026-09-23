@@ -32,19 +32,19 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 98 |
-| runnable gates | 167 |
-| explicit `no-gate:` markers | 147 |
+| runnable gates | 169 |
+| explicit `no-gate:` markers | 146 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 147 of the 314 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 146 of the 315 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 37 | BFQ-91, RT-VERSION, RT-COUNT0, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-47, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 36 | BFQ-91, RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-47, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
 | `gate-not-met` | 16 | P0-C, P0-J, P0-CONNECT-ROLE, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 5 | P0-C-REMEDIATE, T30-AUTH, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
+| `ready-to-push` | 6 | P0-C-REMEDIATE, RT-COUNT0, T30-AUTH, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `merged-upstream` | 15 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
 | `needs-decision` | 8 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
@@ -987,7 +987,7 @@ that costs.
 |---|---|---|---|---|---|
 | `RT-D3` | Answer the D3 question before 15.0.9 ships | `in-progress` | `origin/dev` | minor | 2 run + 1 no-gate |
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | `-` | n/a | 1 run + 1 no-gate |
-| `RT-COUNT0` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `RT-COUNT0` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | `ready-to-push` | `bf/count-zero-empty` | patch | 2 run |
 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 1 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
@@ -1068,15 +1068,15 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `origin/dev` |
-| worktree | `externals/cgm-remote-monitor-official` |
+| branch | `bf/count-zero-empty` |
+| base | `origin/dev@74fc6619` |
+| worktree | `externals/work/crm-count-zero` |
 | semver | `patch` |
 | review | maintainer |
 
-**Blast radius.** lib/api/index.js validateCount and lib/api/count-param (or wherever parseCount lives on dev), plus their tests.
+**Blast radius.** Tip 7b32d9ab, one commit, 5 files - lib/server/count.js (isZeroCount; applyCount answers zero without querying), lib/api/index.js validateCount (GET/HEAD only, zero allowed), lib/api/devicestatus/index.js (kept 0 instead of its default 10), lib/server/profile.js list(), and tests/api.count- parameter.test.js (19 new, 2 changed, each marked).
 
 **What an operator sees.** 15.0.9 will refuse a request for a nonsense number of records (for example "abc" or "-3") with an error, where earlier versions guessed a number. A request for zero records will answer with an empty list, not an error and not the whole collection. Uploading data is not affected.
 
@@ -1084,13 +1084,16 @@ that costs.
 
 **Gates.**
 
-- **NO GATE** &mdash; No branch yet. The test to add: count=0 answers 200 with an empty array on every v1 read route and never reaches .limit(0); 0x10, 2.5, -3, 1e2, abc and values above Number.MAX_SAFE_INTEGER still answer 400; a write route ignores count entirely.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/count-zero-empty >/dev/null`
+  - Merges into origin/dev with no conflict.
+- `[integration]` `cd externals/work/crm-count-zero && TEST=api.count-parameter npm run test-single`
+  - 31 cases. Control, re-run by the coordinator 2026-09-23 against a private mongo - with dev's lib the 21 new or changed cases fail and 10 pass. Break-its (agent) - zero back to unbounded fails 9, zero back to 400 fails 11, the check back on writes fails 6.
 
 **Evidence.**
 
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 
-**Notes.** DECIDED 2026-09-23 (maintainer) - "count=0 should return a 0 length array of results." #8738 (merged to dev) answers HTTP 400 for count=0 because MongoDB reads .limit(0) as no limit; the maintainer wants an empty list instead. Malformed counts stay 400, and the check runs on read routes only, so writes ignore count. Ships in 15.0.9.
+**Notes.** PREPARED 2026-09-23. Read matrix (30 entries, 120 treatments, 30 devicestatus, 15 profile, 15 activity, counted in mongo) - the ONLY change from dev is the 0 and 00 columns, now 200 with no rows on every v1 read route; 0x10, 2.5, -3, 1e2, abc, MAX_SAFE+1, %2B5 and count=1&count=2 stay 400. Suite Node 20.20.0 - dev 2386/0/3, branch 2404/0/3. FOR THE MAINTAINER, measured - (1) dev (#8738) refuses every WRITE that carries any invalid count, including count=0, with 400 and no change; the branch makes writes ignore count as decided. (2) Neither tree limits a DELETE by count - DELETE with a find and count=2 removed all 5 matching rows on both - so on the branch a delete carrying count=0 removes everything its filter matches, where dev refused it. (3) Routes that never apply count (/entries/current, /count/.../where, /status, /echo, /food) now answer count=0 normally instead of 400. (4) v1 now accepts zero while v3 limit=0 stays 400, so FU-LIMIT's "two implementations that agree" no longer holds. PR body draft at reports/phase0-pr-bodies/count-zero-empty.md. DECIDED 2026-09-23 (maintainer) - "count=0 should return a 0 length array of results." #8738 (merged to dev) answers HTTP 400 for count=0 because MongoDB reads .limit(0) as no limit; the maintainer wants an empty list instead. Malformed counts stay 400, and the check runs on read routes only, so writes ignore count. Ships in 15.0.9.
 
 ### `RT-REBASE` &mdash; Cuts 1-4 are 133 commits behind dev and now all five conflict
 
