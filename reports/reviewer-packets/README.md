@@ -30,7 +30,7 @@ repository.
 | [`BF2-BACKPORT`](bf2-backport-bf2-backports.md) | &mdash; | `in-flight-upstream` | Which modernization-only security commits fix a defect that dev has |
 | [`BFQ-100`](bfq-100-bf-object-id-other-collections.md) | &mdash; | `ready-to-push` | BF-100 - devicestatus, food and activity store a hex _id as a string |
 | [`BFQ-101`](bfq-101-bf-api3-string-id.md) | &mdash; | `ready-to-push` | BF-101 - API v3 id filters miss records stored with a string _id |
-| [`BFQ-102`](bfq-102-bf-object-id-consistency.md) | &mdash; | `ready-to-push` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 |
+| [`BFQ-102`](bfq-102-bf-object-id-crud.md) | &mdash; | `ready-to-push` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 |
 | [`BFQ-47`](bfq-47-bf2-subject-edit-keeps-fields.md) | &mdash; | `ready-to-push` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | [`BFQ-69`](bfq-69-bf3-quickpick-rebuild.md) | &mdash; | `ready-to-push` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |

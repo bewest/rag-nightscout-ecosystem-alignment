@@ -1572,7 +1572,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-99` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted | `ready-to-push` | `bf/profile-object-id` | patch | 0 run + 1 no-gate |
 | `BFQ-100` | BF-100 - devicestatus, food and activity store a hex _id as a string | `ready-to-push` | `bf/object-id-other-collections` | patch | 0 run + 1 no-gate |
 | `BFQ-101` | BF-101 - API v3 id filters miss records stored with a string _id | `ready-to-push` | `bf/api3-string-id` | patch | 0 run + 1 no-gate |
-| `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 | `ready-to-push` | `bf/object-id-consistency` | patch | 0 run + 1 no-gate |
+| `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 | `ready-to-push` | `bf/object-id-crud` | patch | 0 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -2989,15 +2989,15 @@ distinction is the only thing that makes the register mean anything - widening
 |---|---|
 | state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `bf/object-id-consistency` |
+| branch | `bf/object-id-crud` |
 | base | `origin/dev@1f9a9d10` |
-| worktree | `externals/work/crm-bf-object-id-all` |
+| worktree | `externals/work/crm-bf-object-id-crud` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-99`, `BF-100`, `BF-101`, `BF-102` |
 
-**Blast radius.** Five commits to 597e2899: the helper lib/server/object-id-forms.js; profile (BF-99); devicestatus, food, activity (BF-100); treatments and entries, moved onto the helper with the UUID path unchanged (BF-102); API v3 filters (BF-101). 84 new tests; no existing test changed.
+**Blast radius.** Five commits to 597e2899: the helper lib/server/object-id-forms.js; profile (BF-99); devicestatus, food, activity (BF-100); treatments and entries, moved onto the helper with the UUID path unchanged (BF-102); API v3 filters (BF-101). Then bf/object-id-crud adds four commits to c721e202: entry re-POST with its own _id ($setOnInsert), upper-case hex on /entries/<id>, websocket dbAdd/dbUpdate/dbRemove through the helper, and a 336-cell CRUD-by-id matrix over v1, v3 and the websocket. No existing test changed.
 
 **What an operator sees.** Records that arrive with their own id (copied from another Nightscout by the connector, restored from an export, or saved by 15.0.6 or earlier) can be edited and deleted normally: an edit replaces the record instead of adding a second copy. Nothing in the database changes until a record is edited or deleted. This is not medical advice; if settings or history look wrong, check them with your care team.
 
@@ -3005,14 +3005,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; New tests red on dev (11/13, 27/31, 13/15, 9/10); each commit's full suite green on Node 20 and 22 (2401, 2414, 2445, 2460, 2470 passing, 0 failing, 3 pending); every hunk broken singly goes red. No queue gate runs them yet.
+- **NO GATE** &mdash; New tests red on dev (11/13, 27/31, 13/15, 9/10); each commit's full suite green on Node 20 and 22 (2401, 2414, 2445, 2460, 2470 passing, 0 failing, 3 pending); every hunk broken singly goes red. bf/object-id-crud: 2478, 2483, 2496, 2832 passing, 0 failing, 3 pending per commit on Node 20 and 22; matrix 336/336 on MongoDB 7 and 4.4 (dev: 194/336). No queue gate runs them yet.
 
 **Evidence.**
 
 - `docs/60-research/remedial/object-id-other-collections-2026-09-23.md`
 - `docs/60-research/remedial/profile-object-id-2026-09-23.md`
+- `docs/60-research/remedial/crud-by-id-matrix-2026-09-23.md`
 
-**Notes.** Built 2026-09-23 on the maintainer's question whether one PR could carry the through-line. Merge-tree clean with every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; conflicts with bf/profile-object-id (BFQ-99) in lib/server/profile.js, so land one. Merged trees not run through the suite. DECIDED 2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan section 1a, "15.0.9 ID consistency"). PR body draft reports/phase0-pr-bodies/bf-object-id- consistency.md.
+**Notes.** One PR from bf/object-id-crud (contains bf/object-id-consistency 597e2899). Open for the maintainer: D1 devicestatus re-send check, D2 API v3 reaching non-hex v1 _ids (patch measured, not committed; changes two filter-shape tests), D3 entries POST response _id when matched, D4 upper-case string ids on disk (evidence section 5). Built 2026-09-23 on the maintainer's question whether one PR could carry the through-line. Merge-tree clean with every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; conflicts with bf/profile- object-id (BFQ-99) in lib/server/profile.js, so land one. Merged trees not run through the suite. DECIDED 2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan section 1a, "15.0.9 ID consistency"). PR body draft reports/phase0-pr-bodies/bf- object-id-consistency.md.
 
 ---
 
