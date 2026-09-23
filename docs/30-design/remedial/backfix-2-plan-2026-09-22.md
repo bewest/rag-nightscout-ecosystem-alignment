@@ -5,7 +5,7 @@ queue (`queue/work-queue.yaml`) is authoritative for item state. Measured
 2026-09-22 against cgm-remote-monitor `origin/dev` `74fc6619`, `origin/master`
 `92d08342` (tag 15.0.8), `origin/chore/nightscout-modernization` `b1bdaca0`, and
 nightscout-connect `official/dev` `1946beb`. Re-run the command beside any count
-before relying on it.*
+before relying on it. §3 and §5 were re-measured on 2026-09-23 against `origin/dev` `4011193e`.*
 
 BF-72 appears here by mechanism only. It is live on the shipping release, has no
 fix, and this repository is public; the reproducing material is kept outside
@@ -105,38 +105,50 @@ The units are integrated on a scratch `rc/backfix-2` branch pinned to `dev` by S
 
 ### Into 15.0.9 (before the tag)
 
-| branch | content | reviewer | waits on |
+State on 2026-09-23 against `dev` `4011193e`. The queue holds the authoritative state; this is the list.
+
+| PR | branch | content | state |
 |---|---|---|---|
-| `bf/connect-pin-0.1.0` (`338deb7f`, pinned to `0.1.0-dev.1`) | exact `nightscout-connect` `0.1.0` pin + regenerated lockfile (P0-PIN, P0-LOCK) | maintainer | connector tag `v0.1.0` (P0-TAG) |
-| `docs/mongodb-floor` (`aabce4b1`, prepared) | `dev`'s README (from #8516, merged 2026-09-04) says MongoDB 4.4 is *not supported*, but CI tests 4.4, 5.0 and 6.0, and the full suite passes on 4.4.24 exactly as on 7.0.43 (2386/0/3). 15.0.8's README says "4.4 or later". The branch marks 4.4 as deprecated and still tested, which is the wording a reviewer asked for on #8516. Follow-up, not prepared: add 7.0 to the CI matrix | maintainer | nothing |
-| `bf2/backports` (`b5038500`; moved here 2026-09-23) | the two modernization-only security fixes that reproduce on `dev` and 15.0.8 (alarm-socket credential logging; per-collection read grant on two shared routes), content-identical cherry-picks | security reviewer | nothing |
-| `bf/count-zero-empty` (`ce9503ac`; `7b32d9ab` pushed) | `?count=0` answers `[]` on v1 reads; saves and updates ignore `count`; deletes keep dev's refusal (RT-COUNT0) | maintainer | nothing |
-| `bf/qs-6.16` (`46b20b38`) | both `qs` overrides to 6.16.0 (BF-87) | maintainer | nothing |
+| #8750 | `docs/mongodb-floor` | README: MongoDB 4.4 deprecated, not unsupported (RT-MONGO-FLOOR) | merged |
+| #8752 | `bf/connect-pin-0.1.0` | connector pin, exact `0.1.0-dev.2` (P0-PIN) | merged, superseded by #8759 |
+| #8759 | `bf/connect-pin-0.1.0-dev.3` | connector pin, exact `0.1.0-dev.3` (P0-PIN; BF-97 and BF-98 fixed) | merged |
+| #8757 | `bf3/mmconnect-deprecation-warning` | the MiniMed warning names its replacement settings (RT-4) | merged |
+| #8749 | `bf/qs-6.16` | both `qs` overrides to 6.16.0 (BF-87) | merged |
+| #8748 | `bf/count-zero-empty` | `?count=0` answers `[]`; saves and updates ignore `count`; deletes keep dev's refusal (RT-COUNT0) | merged |
+| #8755 | `bf3/alarm-no-reading` | an alarm at a page with no reading no longer throws (BF-90) | merged |
+| #8756 | `bf3/quickpick-rebuild` | the Bolus Wizard quick-pick list is rebuilt when the drawer opens (BF-69) | merged |
+| #8753 | `bf2/ops` | compose `ulimits` (BF-10), the boot error page (BF-63 renderer half), Alexa default, `isPluginEnabled` | merged |
+| #8751 | `bf2/backports` | the two modernization-only security fixes (BF-104, BF-105) | merged |
+| #8754 | `bf2/auth-hardening` | BF-17, BF-30, `TRUST_PROXY` (with hop counts and `true`), BF-47's admin-page fix; withheld-style body | **open**: security review, maintainer and Andy |
+| #8758 | `bf/object-id-crud` | records keep their own `_id` across v1, v3 and the websocket (BF-99 to BF-102) | **open**: review |
+| — | a pin to exact `0.1.0` | after connector `v0.1.0` is tagged (P0-TAG) | not started |
 
-Evidence prepared for human sign-off, not code:
+"merged" means merged into `dev`, not released.
 
-- **RT-D3**: an automated browser drag of a treatment on 15.0.8 and on `dev`. It
-  records the treatment's stored time before and after. The drag check stays a
-  human decision; the automation gives it evidence.
-- **`/alarm` client path under `AUTH_DEFAULT_ROLES=denied`**: authenticate at the
-  prompt, fire an alarm, confirm it arrives. No test covers this.
-- **15.0.9 release notes**: the connector 0.1.0 changes, #8738 and #8743 as
-  declared corrections, and the retirement notice for the legacy MiniMed and
-  Dexcom bridges (RT-4 folded in).
+**Tested together.** `rc/15.0.9-combined-36b` `d087588f` merged every PR above except the final pin, in PR
+order, each merge clean: 3015/0/3 on Node 20, 22 and 24 with MongoDB 4.4 and 7, the create/read/update/delete
+matrix 336/336, and a Nightscout-to-Nightscout lab run on `0.1.0-dev.3` with no duplicates or gaps
+([record](rc-15.0.9-combined-2026-09-23.md)). No re-run is owed unless #8754 or #8758 changes head; one is owed
+after the pin to exact `0.1.0`.
+
+**Checked by hand** on the combined rc `ec70aab0` (2026-09-23): the treatment drag (RT-D3) with mouse in mg/dL and
+mmol/L and with touch, the same as 15.0.8; alarms under `AUTH_DEFAULT_ROLES=denied` and with
+`AUTHENTICATION_PROMPT_ON_LOAD`; BF-90, BF-69, #8729, #8732 and the COB display. The drag check found BF-103
+(a split drag keeps the old time), which is on 15.0.8 too.
 
 ### Backfix 2 (into 15.0.9, decided 2026-09-23; see §1a)
 
 | branch | content | reviewer |
 |---|---|---|
-| `bf2/auth-hardening` | `bf/auth` + `bf/throttle` refreshed onto `dev`, plus the `client-ip.js` backport behind `TRUST_PROXY` with today's behaviour as the default; flag registry entries; P0-C-REMEDIATE's operator text | security reviewer (none assigned) |
-| `bf2/ops` | BF-10 compose `ulimits`, FU-RESIDUALS follow-ups 3 and 7, BF-63 error-renderer fix | maintainer |
+| `bf2/auth-hardening` | `bf/auth` + `bf/throttle` refreshed onto `dev`, plus the `client-ip.js` backport behind `TRUST_PROXY` with today's behaviour as the default; flag registry entries; P0-C-REMEDIATE's operator text. Open as #8754 | the maintainer and Andy |
+| `bf2/ops` | BF-10 compose `ulimits`, FU-RESIDUALS follow-ups 3 and 7, BF-63 error-renderer fix. Merged as #8753 | maintainer |
 | BF-72 | no branch in any public repository; a private recommendation first | security reviewer; disclosure route is the maintainer's |
 
 BF-47 (the subject-field allow-list on `bf/auth`) was decided on 2026-09-23 (§1a): the
 allow-list is intended and stays, with no compatibility flag. The remaining defect is the
 admin page, which clears `notes` and `created_at` on every edit (BFQ-47).
 
-**Integrated 2026-09-23** on scratch `rc/backfix-2` `e9a4ef62`, pinned to `dev` `74fc6619`: `bf2/ops`, then
+*Superseded by the combined rc above; kept as the record of the first integration.* **Integrated 2026-09-23** on scratch `rc/backfix-2` `e9a4ef62`, pinned to `dev` `74fc6619`: `bf2/ops`, then
 `bf2/backports`, then `bf2/auth-hardening`, one `--no-ff` merge each, with no conflicts and nothing dropped. Suite
 2386 → 2392 → 2404 → 2480 passing, 0 failing, on Node 20.20.0, and 2480/0/3 on 22.23.2, which is exactly the
 additive total. Each unit's break-its still fail on the integrated tree. `rc/backfix-2` merges cleanly with
@@ -187,24 +199,16 @@ major one. It is the maintainer's decision.
 
 ## 5. Human steps, in order
 
-Re-ordered 2026-09-23. State is in the queue; this is only the order.
+Re-ordered 2026-09-23, after ten of the twelve 15.0.9 PRs merged. State is in the queue; this is only the order.
 
-1. **Connector:** open the PR for `fix/nightscout-reader-roles` (BF-89, P0-CONNECT-ROLE) into
-   connector `dev`, and merge it.
-2. **Connector:** fix BF-91 (BFQ-91). No branch exists yet.
-3. **Connector:** tag a new prerelease from `dev` with both fixes, and test it for as long as
-   the maintainer judges enough (P0-TAG). Then tag `v0.1.0` and approve the `npm-publish`
-   environment.
-4. **Nightscout:** push `bf/count-zero-empty`, `bf/qs-6.16`, `docs/mongodb-floor` and
-   `bf2/backports`, and open a PR for each into `dev`. Merge them one at a time, evaluating
-   between merges.
-5. **Nightscout:** move `bf/connect-pin-0.1.0` from `0.1.0-dev.1` to `0.1.0` and regenerate the
-   lockfile (P0-PIN, P0-LOCK). Push it, open its PR, and merge.
-6. **Nightscout:** finish the 15.0.9 release notes. Get #8598 approved by at least one reviewer
-   who is not the author, merge it, and tag 15.0.9.
-7. **Advisories:** apply the metadata corrections (`advisories/apply-metadata.sh --apply`) at any
-   time; they stay drafts. After 15.0.9 ships, restore the withheld write-ups from `ef376ecb`,
+1. **Review and merge #8754** (security review: the maintainer and Andy) and **#8758**. Neither conflicts with
+   anything; merge #8758 last. Check `dev`'s CI after each.
+2. **Connector 0.1.0:** when `0.1.0-dev.3` has had the testing the maintainer wants (P0-TAG), tag `v0.1.0` on
+   connector `dev` and approve the `npm-publish` environment.
+3. **Nightscout pin:** open the PR moving `dev` from `0.1.0-dev.3` to exact `0.1.0`, and re-run the combined rc
+   with it (P0-PIN).
+4. **Release:** finish the 15.0.9 release notes; get #8598 approved by at least one reviewer who is not the author;
+   merge it; tag 15.0.9.
+5. **Advisories:** the metadata corrections can be applied at any time (`advisories/apply-metadata.sh --apply`);
+   they stay drafts. After 15.0.9 ships, restore the withheld write-ups and PR descriptions from `ef376ecb`,
    send the replies, and publish.
-8. **Backfix 2 (moved into 15.0.9, §1a):** once `rc/15.0.9-additions-c` is green, push `bf2/ops`,
-   `bf2/auth-hardening` and `bf2/subject-edit-keeps-fields` and open their PRs before step 6, merging
-   them one at a time like step 4.

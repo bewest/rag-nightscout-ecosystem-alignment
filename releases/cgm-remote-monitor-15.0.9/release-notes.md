@@ -172,6 +172,8 @@ labels to believe:
 | not set (the default) | forwarded headers from anyone — **exactly as today** | nobody needs to change anything to upgrade |
 | `false` | no forwarded headers at all; only the address actually connecting, and whether that connection itself is https | sites that visitors reach directly, with no proxy in front |
 | your proxy's IP address(es) or ranges, comma-separated (for example `10.0.0.5` or `10.0.0.0/24`) | forwarded headers only when they come from those addresses | sites behind a proxy whose address you know |
+| a whole number of proxies, such as `1` | forwarded headers from that many proxies closest to Nightscout | sites behind a known number of proxies whose addresses change |
+| `true` | every forwarded address; the visitor is taken to be the left-most one | only sites where every proxy in front of Nightscout rewrites these labels |
 
 Once it is set, the failed-login delay counts attempts against an address a visitor cannot make
 up, and it starts doing its job. **While it is unset, Nightscout writes a message to its log at
@@ -183,8 +185,10 @@ that does not include your proxy, Nightscout stops believing the proxy's "the vi
 label, decides the visitor used plain http, and redirects them to https — over and over. **If
 your site stops loading after you set `TRUST_PROXY`, remove the setting and check your proxy's
 address.** The address to list is the one Nightscout *sees* the proxy connecting from, which on
-hosting platforms can change or be shared; do not guess a range. Values such as `true`, a number
-of hops, or names like `loopback` are refused at startup. Nightscout's README links to a proxy
+hosting platforms can change or be shared; do not guess a range. With `true`, the startup message
+warns that the visitor's address is only as trustworthy as the outermost proxy, because a visitor
+can put any address first. Names like `loopback` are refused at startup, and a number of proxies
+cannot be combined with addresses. Nightscout's README links to a proxy
 configuration guide with more detail.
 
 No release has been chosen in which the default will change; until one is, unset is a permanent,
@@ -306,7 +310,19 @@ Dexcom `BRIDGE_` settings, which the connector handles — compared with 15.0.8:
   copy from uses `AUTH_DEFAULT_ROLES=denied`, earlier versions could not read from it. **If an
   earlier version already created a user called `nightscout-connect-reader` on that site**, it is
   reused as it is and still cannot read: on that site's admin page, give that user the
-  `readable` role, or delete it so the connector creates it again.
+  `readable` role, or delete it so the connector creates it again. The connector now says this
+  once in its log when it finds such a user.
+<!-- PENDING: connector v0.1.0 tag -->
+- **When copying from another Nightscout site, profile changes are copied too.** A profile (basal
+  rates, insulin sensitivity, carb ratios) saved on the site you copy **from** reaches this site
+  at the next poll. 15.0.8 copied only new profiles. **Make profile changes on the site you copy
+  from:** a profile edited on the receiving site is overwritten when the source's copy changes,
+  and can also be overwritten when the connector restarts. A profile changed on the source
+  without the profile editor (for example by a script) is noticed only if it is the newest one.
+  The connector now downloads only the profiles that are new or changed since its last check,
+  instead of every profile every five minutes. If a profile on the receiving site does not match
+  the source, check it on both sites before relying on the receiving site's reports, and talk to
+  your care team about any settings you are unsure of.
 - **It shuts down cleanly when Nightscout stops.**
 <!-- PENDING: connector v0.1.0 tag -->
 - For developers: the connector's standalone `capture` command no longer fails for the
@@ -367,7 +383,6 @@ choosing the last entry did nothing. This release fixes the mismatch. Hidden qui
 hidden, the order follows the position numbers you set, and quick picks saved by other apps
 are no longer left out of the list other apps can read.
 
-<!-- PENDING: rc record for BF-69 (bf3/quickpick-rebuild 83cfff14) -->
 **The quick-pick list now shows your quick picks.** On 15.0.8 and earlier, the Quickpick list
 in the bolus calculator only ever showed "(none)", however many quick picks were saved, because
 the list was built before your food data had loaded. People had to add foods one at a time with
@@ -383,7 +398,6 @@ Two things to know:
 - **A quick pick added or changed elsewhere does not appear on a page that is already open.** It
   appears after that page reloads or reconnects. This is how Nightscout already sends food data
   to open pages, and this release does not change it.
-<!-- PENDING: rc record for BF-69 (bf3/quickpick-rebuild 83cfff14) -->
 
 The bolus calculator is a calculator, not a recommendation, and this release does not change
 that. It does not decide a dose. **Always check that the carbohydrate amount shown is the one you
@@ -394,7 +408,6 @@ medical advice.
 
 ### A page with no reading no longer hits an error when a device alarm arrives
 
-<!-- PENDING: rc record for BF-90 (bf3/alarm-no-reading 92544d8f) -->
 Nightscout can raise alarms for things other than glucose, if you have switched them on: for
 example a pump reservoir running low (`PUMP_ENABLE_ALERTS`), a loop that has stopped, or a
 cannula or sensor that is overdue for a change. These are off unless you turned them on.
@@ -416,7 +429,25 @@ If you rely on a Nightscout page for device alarms such as pump, loop or site-ch
 **do not assume a page showing `---` will alert you. Keep the alarms on your devices themselves
 (pump, phone app, CGM receiver) switched on.** This is not medical advice. Talk to your care team
 about how you get alerted.
-<!-- PENDING: rc record for BF-90 (bf3/alarm-no-reading 92544d8f) -->
+
+<!-- PENDING: #8758 merge -->
+### Edited records no longer leave an old copy behind
+
+Some records were saved with their ID (the label Nightscout uses to find a record again) in a
+different form from the one Nightscout looks up: profiles, device status reports, foods and
+activity records that arrived with their own ID, for example **copied from another Nightscout
+site** or **restored from an export**, and treatments and glucose readings saved that way by
+**Nightscout 15.0.6 or earlier**. Nightscout showed them, but **editing** one saved a **second copy**
+and kept the old one, and **deleting** it by its ID did nothing. Apps using the newer API
+(version 3), or the live connection some apps keep open, had the same trouble.
+
+In this release those records are found. The first time one is edited, the edit replaces the old
+copy and you are left with one record; deleting one removes it. Nothing in your database changes
+until a record is edited or deleted. **If your site receives data from another Nightscout site, or
+you have restored data from an export, or it has run since 15.0.6 or earlier**, look at any profile
+or treatment you have edited there. If you see an old copy beside the one you edited, you can now
+delete it. If you are unsure which settings or entries are correct, check with your care team.
+<!-- PENDING: #8758 merge -->
 
 ### Searches, reports and filters return the right records
 
@@ -578,8 +609,6 @@ software library updates.
 
 ## Known issues — not fixed in this release
 
-<!-- PENDING: rc record for BF-69 (bf3/quickpick-rebuild 83cfff14). If BF-69 does not ship in
-     15.0.9, restore this item: "The bolus calculator's quick-pick list may show only "(none)"". -->
 - **A page with no glucose reading does not sound or show any server alarm.** When the big
   number reads `---`, a Nightscout page ignores every alarm the server sends, including pump,
   loop, cannula, sensor and insulin-age alarms that have nothing to do with glucose. This is the
@@ -598,6 +627,12 @@ software library updates.
   the warning off: Nightscout skips readings dated in the future when it decides whether your
   data is stale.) This is not medical advice; talk to your care team about what you rely on
   Nightscout for.
+- **Splitting a treatment by dragging it keeps the old time for insulin and carbs on board.**
+  If you drag a treatment on the chart into the "Move carbs" or "Move insulin" area to split
+  it, the chart shows the moved part at its new time, but Nightscout keeps using the **old** time
+  when it works out insulin on board (IOB) and carbs on board (COB). This is the same on 15.0.8.
+  Until it is fixed, avoid splitting a treatment by dragging it into those areas. This is not
+  medical advice; talk to your care team about any treatment record you are unsure of.
 - **While `TRUST_PROXY` is unset, the failed-login delay can be avoided**, as on earlier
   releases. Nightscout says so in its log at startup. Set `TRUST_PROXY`, or restrict access at
   your proxy or hosting provider.

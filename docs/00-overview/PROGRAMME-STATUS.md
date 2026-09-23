@@ -1,7 +1,7 @@
 # Programme status — cgm-remote-monitor
 
 *Maintained by the Nightscout Foundation. Contributor-facing; technical throughout.
-Prose revised 2026-09-22 against cgm-remote-monitor `origin/dev` `74fc6619` and
+Prose revised 2026-09-23 against cgm-remote-monitor `origin/dev` `4011193e` and
 `origin/master` `92d08342` (tag `15.0.8`). The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
 
@@ -21,43 +21,41 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 75 | 23 | 17 |
-| **Modernization** | `release-train` | 15 | 1 | 4 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 76 | 24 | 11 |
+| **Modernization** | `release-train` | 15 | 1 | 1 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **110** | **33** | **26** |
+| | **total** | **111** | **34** | **16** |
 
 <!-- END GENERATED: horizons -->
 
-**Remedial** — finding and fixing defects that already ship. Thirteen backfix
-pull requests are merged into cgm-remote-monitor `dev`: this programme's #8733,
-#8734, #8735, #8736, #8737, #8738, #8739, #8740, #8743 (2026-09-17 to 2026-09-20) and
-the three advisory fixes #8744, #8745, #8746 (2026-09-21), plus #8741 from an external
-contributor (2026-09-20). None is released. The open
-work is `bf/auth` (`P0-C`) and `bf/throttle` (`P0-J`), both behind `dev`, and the
-connector release: every programme connector fix is in `nightscout-connect` `dev` `1946beb`
-and in prerelease `0.1.0-dev.1` (2026-09-22), waiting on the full `0.1.0` (`P0-TAG`) and the pin
-that delivers it (`P0-PIN`). The [backfix register](../30-design/remedial/nightscout-backfix-register.md)
-holds the defect facts; `make queue-coverage` proves the queue names every entry that
-is not fixed.
+**Remedial** — finding and fixing defects that already ship. Twenty-three pull requests
+from this work are merged into cgm-remote-monitor `dev`: this programme's #8733, #8734,
+#8735, #8736, #8737, #8738, #8739, #8740 and #8743 (2026-09-17 to 2026-09-20), the three
+advisory fixes #8744, #8745 and #8746 (2026-09-21), #8741 from an external contributor
+(2026-09-20), and ten of the twelve 15.0.9 additions (#8748 to #8753, #8755 to #8757, #8759,
+2026-09-23). None is released. Open: #8754 (login security fixes and `TRUST_PROXY`, waiting on
+the security review) and #8758 (records keep their own `_id`). Every programme connector fix is
+in `nightscout-connect` `dev` `977da8a` and in prerelease `0.1.0-dev.3`, which Nightscout `dev`
+now installs (#8759); the full `0.1.0` (`P0-TAG`) and a last pin to it remain. The
+[backfix register](../30-design/remedial/nightscout-backfix-register.md) holds the defect facts;
+`make queue-coverage` proves the queue names every entry that is not fixed.
 
 **Modernization** — bringing dependencies and code up to date. The adopted release
-train is 15.0.9, then cut 1 (`chore/retire-jsdom`) alone, then cut 2, then cuts 3+5
-combined, then a deprecation release, then cut 4. Cut 4 is held behind its own
-deprecation release because it removes two CGM ingestion paths (MiniMed CareLink via
-mmconnect, and the legacy Dexcom Share bridge), and the failure mode is a user's
-glucose readings silently stopping. Caveat, from the maintainer on 2026-09-21
-(operational knowledge, not measured here): mmconnect has been broken for some time,
-and legacy Dexcom Share is intended to map to `nightscout-connect`; the register's
-BF-44/BF-45 were graded assuming mmconnect works and have not been re-graded. Nothing
-on the train has shipped. Measured 2026-09-22 against `origin/dev` `74fc6619`:
+train is 15.0.9, then cut 1 (`chore/retire-jsdom`), then cut 2, then cuts 3+5 combined,
+then cut 4. The separate deprecation release was dropped (`RT-4`): the MiniMed warning in
+15.0.9 (#8757) names the replacement settings, and on 2026-09-23 the maintainer moved the
+legacy MiniMed and Dexcom bridge removal onto cut 1, keeping the hard stop at boot
+(BF-61, option A). mmconnect is reported not to work, and Dexcom `BRIDGE_*` settings have
+been served by `nightscout-connect` since 15.0.8, so BF-44/BF-45 are graded low. Nothing on
+the train has shipped. Measured 2026-09-23 against `origin/dev` `4011193e`:
 
 | cut | branch | behind `dev` | conflicting paths |
 |---|---|---:|---:|
-| 1 | `chore/retire-jsdom` | 133 | 7 |
-| 2 | `chore/build-runtime-separation` | 133 | 14 |
-| 3 | `chore/compose-mongodb6` | 133 | 16 |
-| 4 | `chore/mime-exposure-review` | 133 | 18 |
-| 5 | `chore/nightscout-modernization` | 9 | 1 (`lib/server/bootevent.js`) |
+| 1 | `chore/retire-jsdom` | 168 | 8 |
+| 2 | `chore/build-runtime-separation` | 168 | 14 |
+| 3 | `chore/compose-mongodb6` | 168 | 16 |
+| 4 | `chore/mime-exposure-review` | 168 | 21 |
+| 5 | `chore/nightscout-modernization` | 44 | 8 |
 
 Reproduce with `git -C externals/cgm-remote-monitor-official rev-list --count
 origin/chore/<branch>..origin/dev` and `git merge-tree --write-tree --name-only
@@ -80,11 +78,11 @@ replacement.
 **In the backfix register, neither `fixed` nor `merged` means an operator is safe.**
 `fixed` means repaired on a branch that has not been merged. `merged` means merged
 into `origin/dev` and not released. `released` means in a tagged release operators
-run, and no programme fix is released: `origin/master` is 308 commits behind `dev`
+run, and no programme fix is released: `origin/master` is 343 commits behind `dev`
 (`git -C externals/cgm-remote-monitor-official rev-list --count origin/master..origin/dev`,
-2026-09-22) and the shipping tag is 15.0.8. Merging to `dev` publishes a Docker Hub
+2026-09-23) and the shipping tag is 15.0.8. Merging to `dev` publishes a Docker Hub
 image; that is not a release. `RT-0` (release 15.0.9) is the item that changes this;
-release PR #8598 is open, mergeable, green on every CI check, and has no approving
+release PR #8598 is open at `4011193e`, green on every CI check, and has no approving
 review.
 
 For somebody running Nightscout today:
@@ -120,26 +118,27 @@ cover more than one `BF-`:
 | `BFQ-04` | `merged-upstream` | BF-04 - the v1 operator allowlist - superseded by P0-K |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value |
 | `BFQ-10` | `not-started` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
-| `BFQ-100` | `ready-to-push` | BF-100 - devicestatus, food and activity store a hex _id as a string |
-| `BFQ-101` | `ready-to-push` | BF-101 - API v3 id filters miss records stored with a string _id |
+| `BFQ-100` | `blocked` | BF-100 - devicestatus, food and activity store a hex _id as a string |
+| `BFQ-101` | `blocked` | BF-101 - API v3 id filters miss records stored with a string _id |
 | `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu |
+| `BFQ-103` | `not-started` | BF-103 - a split drag stores the old time, so IOB and COB ignore the move |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
-| `BFQ-47` | `ready-to-push` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
+| `BFQ-47` | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | `BFQ-52` | `blocked` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent |
 | `BFQ-67` | `gate-not-met` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
-| `BFQ-69` | `ready-to-push` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
+| `BFQ-69` | `merged-upstream` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
 | `BFQ-71` | `gate-not-met` | BF-71 - any dateString key drops the default date window, and the window is not a control |
 | `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
-| `BFQ-87` | `in-flight-upstream` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
-| `BFQ-90` | `ready-to-push` | BF-90 - an alarm at a page with no reading throws in the client |
+| `BFQ-87` | `merged-upstream` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
+| `BFQ-90` | `merged-upstream` | BF-90 - an alarm at a page with no reading throws in the client |
 | `BFQ-91` | `merged-upstream` | BF-91 - connector capture mode cannot find trace-axios for two sources |
 | `BFQ-92` | `not-started` | BF-92 - a page with no glucose reading never presents a server alarm, including device ala |
 | `BFQ-93` | `not-started` | BF-93 - food changes never reach an open page |
 | `BFQ-94` | `unsettled` | BF-94 - a kept profile instance can return a temp basal that has been replaced |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | `BFQ-98` | `merged-upstream` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
-| `BFQ-99` | `ready-to-push` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str |
+| `BFQ-99` | `blocked` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `gate-not-met` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
@@ -158,11 +157,11 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | `closed` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 1 |  | 3 | 1 | 2 |  | 13 | 2 |  |  |  | **22** |
-| `release-train` | 1 | 1 | 4 |  | 4 | 2 | 1 | 2 |  |  |  | **15** |
-| `register-open` | 16 |  | 5 | 6 | 1 | 2 | 7 | 4 |  | 2 | 1 | **44** |
+| `release-train` | 1 | 1 | 4 |  | 4 |  | 4 | 1 |  |  |  | **15** |
+| `register-open` | 17 |  | 5 |  | 4 | 2 | 10 | 4 |  | 2 | 1 | **45** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  | **18** |
 | `docs-truth` | 6 |  | 1 |  |  |  |  |  | 2 |  |  | **9** |
-| `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
+| `backfix2` |  |  |  |  |  | 1 | 1 |  |  |  |  | **2** |
 
 <!-- END GENERATED: state-matrix -->
 
@@ -200,23 +199,22 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 78 | 71% |
+| Maintainer | 78 | 70% |
 | SECURITY reviewer | 15 | 14% |
 | Maintainer + a second human | 6 | 5% |
-| SAFETY reviewer | 5 | 5% |
+| SAFETY reviewer | 6 | 5% |
 | Whoever edits it next | 3 | 3% |
 | Unassigned | 2 | 2% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **110** | |
+| **total** | **111** | |
 
 <!-- END GENERATED: reviewer-load -->
 
-The SECURITY and SAFETY rows name a *kind* of reviewer, not a person; no individual
-is assigned to any of them. Two concrete consequences: `P0-C` (`bf/auth`) waits on a
-security reviewer and needs a `git merge dev` first (trial merge measured
-conflict-free); and `BFQ-72` — BF-72, an unauthenticated request that can occupy the
-database for minutes, live on 15.0.8 and on `dev`, with no fix — is blocked on whether
-Nightscout's security contact process is invoked.
+The SECURITY and SAFETY rows name a *kind* of reviewer. For the one security PR still open,
+#8754 (login security fixes and `TRUST_PROXY`), the reviewers are the maintainer and Andy. The
+other SECURITY and SAFETY rows still have no individual assigned. `BFQ-72` (BF-72, an
+unauthenticated request that can occupy the database for minutes, live on 15.0.8 and `dev`)
+has a disposition decided by the maintainer and held outside version control.
 
 If you are considering reviewing, [REVIEWER-ONBOARDING.md](REVIEWER-ONBOARDING.md)
 is the read-this-first path, and `reports/reviewer-packets/` has one bounded packet
@@ -231,11 +229,14 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 
 | | decision | why it blocks a train |
 |---|---|---|
-| `RT-D3` | Does a two-major charting upgrade (D3 5.16 → 7.9) ship under a **patch** version, with no real-browser coverage on `dev`? | It is first on the adopted release train. 15.0.9 does not cut until it is answered. |
-| `RT-0` | Release 15.0.9 (PR #8598). | Every merged fix reaches operators only through it, and every later cut waits behind it. |
-| `P0-TAG` | When to cut `nightscout-connect` 0.1.0. Connector `dev` `1946beb` declares `0.1.0` and carries every fix; prerelease `0.1.0-dev.1` is on npm (2026-09-22). | `P0-PIN` and `P0-LOCK` are blocked behind it, and the connector fixes reach operators only through a pin. |
-| `BFQ-47` | BF-47: an ordinary subject edit destroys stored fields on 15.0.8. Intent before code. | It ships to operators now, and the fix depends on whether the behaviour was deliberate. |
-| `BFQ-72` | Is the security contact process invoked for BF-72? | It is live on the shipping release with no fix. |
+| `RT-0` | Release 15.0.9 (PR #8598, at `4011193e`, no approving review). | Every merged fix reaches operators only through it, and every later cut waits behind it. Before the tag: #8754, #8758, connector `0.1.0` and its pin, the release notes. |
+| `P0-TAG` | When to cut `nightscout-connect` 0.1.0. Connector `dev` `977da8a` declares `0.1.0` and carries every fix; prerelease `0.1.0-dev.3` is on npm and is what Nightscout `dev` installs (#8759). | A pin to exact `0.1.0` follows it; 15.0.9 must not ship on a prerelease pin. |
+| `BFQ-09` | BF-09: is a zero-valued temp basal a real value in the socket dedup? Measured; waits on the maintainer. | It ships to operators now. |
+| `A7A-7` | The clock question inside the alarm path. The maintainer owns it. | It gates alarms under `TENANCY_MODE=multi`. |
+
+`RT-D3` (answered: the drag check passed in automation and by hand, and 15.0.9 ships as numbered),
+`BFQ-47` (decided: the allow-list is intended; the admin-page fix is in #8754) and `BFQ-72` (decided
+privately) left this table on 2026-09-23.
 
 ---
 
@@ -270,6 +271,6 @@ measurement.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-22**, against cgm-remote-monitor-official `74fc6619` and this repository at `4c7f7cfa`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-23**, against cgm-remote-monitor-official `4011193e` and this repository at `0c022da5`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

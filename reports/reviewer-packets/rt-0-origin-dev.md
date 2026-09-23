@@ -120,13 +120,21 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-2026-09-23 - COMBINED CANDIDATE VERIFIED (-1f): rc/15.0.9-additions-e 1b1977e0
-(local only) on dev 74fc6619 contains the live heads of all nine 15.0.9 PRs -
-#8748 d19043b2, #8749 46b20b38, #8750 aabce4b1, #8751 b5038500, #8752
-adf5120c, #8753 e6a50e9a, #8754 0a74ef4e, #8755 92544d8f, #8756 83cfff14
-(containment checked). 2534/0/3 on all 12 cells (Node 20/22/24 x MongoDB
-4.4.24/7.0.43, nofile 64000); break-its red for the original reason; connector
-control dev.2 23/23, v0.0.13 18/5. Record:
+2026-09-23 (late) - dev 4011193e carries #8750, #8752, #8759, #8757, #8749,
+#8748, #8755, #8756, #8753 and #8751; open: #8754 (security review: maintainer
+and Andy) and #8758. The combined rc (rc/15.0.9-combined-36b d087588f,
+3015/0/3 on all six Node x MongoDB cells) tested exactly this set, so no re-
+run is owed unless #8754 or #8758 changes head. Manual checks passed on
+ec70aab0 (-6d): RT-D3, alarms under AUTH_DEFAULT_ROLES=denied and with
+AUTHENTICATION_PROMPT_ON_LOAD. Still before the tag - connector v0.1.0 and a
+pin to exact 0.1.0 (with a re-run), release notes, #8598 review. 2026-09-23 -
+COMBINED CANDIDATE VERIFIED (-1f): rc/15.0.9-additions-e 1b1977e0 (local only)
+on dev 74fc6619 contains the live heads of all nine 15.0.9 PRs - #8748
+d19043b2, #8749 46b20b38, #8750 aabce4b1, #8751 b5038500, #8752 adf5120c,
+#8753 e6a50e9a, #8754 0a74ef4e, #8755 92544d8f, #8756 83cfff14 (containment
+checked). 2534/0/3 on all 12 cells (Node 20/22/24 x MongoDB 4.4.24/7.0.43,
+nofile 64000); break-its red for the original reason; connector control dev.2
+23/23, v0.0.13 18/5. Record:
 docs/30-design/remedial/rc-15.0.9-additions-e-2026-09-23.md. Still before the
 tag - the swap of #8752 to exact 0.1.0 (a re-run is owed then), reviews,
 release notes, #8598. DECIDED 2026-09-23 (maintainer) - what 15.0.9 carries
@@ -153,4 +161,4 @@ P0-TAG.
 - [ ] `make queue-status ID=RT-0` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-22, against cgm-remote-monitor-official `74fc6619`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `4011193e`.*

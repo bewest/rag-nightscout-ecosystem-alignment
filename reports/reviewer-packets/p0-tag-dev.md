@@ -103,6 +103,10 @@ checkable form of "the full release has not been cut". Read-only.
 
 ## Notes carried on the item
 
+2026-09-23 - v0.1.0-dev.3 TAGGED at 977da8a and PUBLISHED to npm next with
+provenance (the maintainer approved the publish); Nightscout dev installs it
+via #8759. Still owed - the maintainer judges the prerelease tested enough,
+tags v0.1.0, then a Nightscout pin to exact 0.1.0 and a combined re-run.
 2026-09-23 - connector dev is 977da8a after #79 (BF-97 stall fix, bounded
 profile fetch, update-on-change, BF-98 warning). Next: tag v0.1.0-dev.3 on
 977da8a (maintainer), then the P0-PIN move to dev.3 and the combined rc re-
@@ -136,4 +140,4 @@ commit on them is in connector dev. No 0.0.14 will be published; the line is
 - [ ] `make queue-status ID=P0-TAG` — do the gates still agree with the claimed state?
 - [ ] **Do not merge, push or tag.** Publication is a separate, deliberate human act; pushing `dev` or `master` builds and publishes a Docker image.
 
-*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-22, against cgm-remote-monitor-official `74fc6619`.*
+*Generated from `queue/work-queue.yaml`, `measured_at` 2026-09-23, against cgm-remote-monitor-official `4011193e`.*

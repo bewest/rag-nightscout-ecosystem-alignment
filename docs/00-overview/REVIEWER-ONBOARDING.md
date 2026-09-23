@@ -1,8 +1,8 @@
 # Reviewer onboarding — read this first
 
 *Contributor-facing. Written for somebody who has never seen this repository and
-is considering reviewing work in it. Prose revised 2026-09-22 against
-cgm-remote-monitor `origin/dev` `74fc6619` and `origin/master` `92d08342` (tag
+is considering reviewing work in it. Prose revised 2026-09-23 against
+cgm-remote-monitor `origin/dev` `4011193e` and `origin/master` `92d08342` (tag
 `15.0.8`).*
 
 Thank you for looking. What you would be taking on, so you can decide quickly:
@@ -88,11 +88,11 @@ that is the thing to be suspicious of.
 **5. Neither `fixed` nor `merged` means released.** In the register, `fixed` means
 repaired on a branch that has not been merged; `merged` means merged into
 `origin/dev` and not released; `released` means in a tagged release operators run.
-No programme fix is released: `origin/master` is 308 commits behind `dev`
-(2026-09-22) and the shipping tag is 15.0.8. The register's open count is therefore
-not "the defects still shipping". As computed from the register's §1 on 2026-09-21,
-**55 defects reach every self-hoster on 15.0.8**: 23 open, 27 merged, 1 partly
-merged, 4 fixed. See [PROGRAMME-STATUS.md](PROGRAMME-STATUS.md#status-words-merged-is-not-released).
+No programme fix is released: `origin/master` is 343 commits behind `dev`
+(2026-09-23) and the shipping tag is 15.0.8. The register's open count is therefore
+not "the defects still shipping". As computed from the register's §1 on 2026-09-23,
+**71 defects reach every self-hoster on 15.0.8**: of the 72 in §1, 26 are open (one of
+them, BF-80, exists only on `dev`), 38 merged, 1 partly merged and 7 fixed on a branch. See [PROGRAMME-STATUS.md](PROGRAMME-STATUS.md#status-words-merged-is-not-released).
 
 ---
 
@@ -102,22 +102,24 @@ Three entry points, easiest first:
 
 1. **An open pull request.** [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md) lists them with a
    one-line description, and `reports/reviewer-packets/` has a bounded packet for
-   each item awaiting review. All thirteen cgm-remote-monitor backfix pull requests
-   (twelve from this programme, plus #8741 from an external contributor) are merged
-   into `dev`, none released. The connector's are merged into `nightscout-connect` `dev`
-   (#64 and #68, 2026-09-22) and published as prerelease `0.1.0-dev.1`; its full release is
-   `P0-TAG`.
-2. **A security or safety item.** These are the rows with *nobody assigned*, and
-   the highest-value place to start. `P0-C` (`bf/auth`) waits on a security
-   reviewer; it needs a `git merge dev` first (trial merge measured conflict-free).
-   While it is behind `dev` its state is `gate-not-met`, so it has no reviewer
-   packet. `BFQ-72` (BF-72) is an unauthenticated request that can occupy the
-   database for minutes, live on 15.0.8 and `dev` with no fix; it is blocked on
-   whether Nightscout's security contact process is invoked — a decision, not code.
-3. **The release.** `RT-0` (release PR #8598, 15.0.9) is open, mergeable and green
-   on CI, and has no approving review. It is 48 first-parent merges; its readiness assessment is
-   [`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md).
-4. **An `unsettled` item.** `BFQ-09`, `BFQ-52`, `A7A-7` — it is not yet established
+   each item awaiting review. Two 15.0.9 pull requests are open: #8758 (records keep
+   their own `_id` across API v1, v3 and the websocket; a large change to core data
+   paths, where careful review is most useful) and #8754 (below). Twenty-three others
+   are merged into `dev`, none released. The connector's fixes are merged into
+   `nightscout-connect` `dev` and published as prerelease `0.1.0-dev.3`; its full
+   release is `P0-TAG`.
+2. **A security or safety item.** #8754 (login security fixes and `TRUST_PROXY`) is
+   the open security PR; its reviewers are the maintainer and Andy, and a second
+   pair of eyes on the evidence is still welcome. Among safety items, `BFQ-92` (a page
+   with no glucose reading presents no server alarm, including device alarms) and
+   `BFQ-103` (a split treatment drag keeps the old time, so IOB and COB ignore the
+   move) have no fix yet.
+3. **The release.** `RT-0` (release PR #8598, 15.0.9) is open, green on CI, and has no
+   approving review. It is 58 first-parent merges; its readiness assessment is
+   [`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md)
+   (a 2026-09-22 snapshot), and the combined test run of everything since is
+   [`rc-15.0.9-combined-2026-09-23.md`](../30-design/remedial/rc-15.0.9-combined-2026-09-23.md).
+4. **An `unsettled` item.** `BFQ-09`, `A7A-7` — it is not yet established
    that these are defects at all. Settling one either way is a complete,
    self-contained contribution.
 
@@ -178,6 +180,6 @@ they read. The standard these documents are held to is
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-22**, against cgm-remote-monitor-official `74fc6619` and this repository at `4c7f7cfa`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-23**, against cgm-remote-monitor-official `4011193e` and this repository at `0c022da5`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->

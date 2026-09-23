@@ -2,8 +2,8 @@
 
 *Contributor-facing. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
-2026-09-22 against cgm-remote-monitor `origin/dev` `74fc6619` and nightscout-connect
-`official/dev` `1946beb`; tables generated.*
+2026-09-23 against cgm-remote-monitor `origin/dev` `4011193e` and nightscout-connect
+`official/dev` `977da8a`; tables generated.*
 
 This page lists only the items whose claimed state means **the next move belongs to
 a person**, grouped by the kind of person, so that "what is blocked on me" is one
@@ -30,45 +30,35 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 20 items
+### Maintainer &mdash; 11 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BF2-OPS` | `in-flight-upstream` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | #8753 |
 | `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | #8758 |
-| `BFQ-87` | `in-flight-upstream` | BF-87 - the root qs override holds the connector below its range and pins the se | &mdash; |
-| `RT-COUNT0` | `in-flight-upstream` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `FU-PRBODIES` | `needs-decision` | Merged PR bodies have drifted from the files they were posted from | &mdash; |
 | `P0-TAG` | `needs-decision` | nightscout-connect 0.1.0 - the full release, from connector dev | #70 |
-| `RT-4` | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `BFQ-100` | `ready-to-push` | BF-100 - devicestatus, food and activity store a hex _id as a string | &mdash; |
-| `BFQ-101` | `ready-to-push` | BF-101 - API v3 id filters miss records stored with a string _id | &mdash; |
-| `BFQ-69` | `ready-to-push` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing | &mdash; |
-| `BFQ-90` | `ready-to-push` | BF-90 - an alarm at a page with no reading throws in the client | &mdash; |
-| `BFQ-99` | `ready-to-push` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectI | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
 | `BFQ-94` | `unsettled` | BF-94 - a kept profile instance can return a temp basal that has been replaced | &mdash; |
 
-### SECURITY reviewer &mdash; 3 items
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `BF2-AUTH` | `in-flight-upstream` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | #8754 |
-| `BF2-BACKPORT` | `in-flight-upstream` | Which modernization-only security commits fix a defect that dev has | &mdash; |
-| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
-
 ### Maintainer + a second human &mdash; 2 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
+| `BFQ-47` | `in-flight-upstream` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | &mdash; |
 | `RT-0` | `needs-decision` | Release 15.0.9 | #8598, #8605 |
-| `BFQ-47` | `ready-to-push` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | &mdash; |
+
+### SECURITY reviewer &mdash; 2 items
+
+| id | claimed state | what it is | PR |
+|---|---|---|---|
+| `BF2-AUTH` | `in-flight-upstream` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | #8754 |
+| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
 
 ### SAFETY reviewer &mdash; 1 item
 
@@ -88,24 +78,24 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8753** | `BF2-OPS` | `bf2/ops` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 | Maintainer |
 | **#8754** | `BF2-AUTH` | `bf2/auth-hardening` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.j | SECURITY reviewer |
 | **#8758** | `BFQ-102` | `bf/object-id-crud` | bf/object-id-consistency - one rule for a record's own hex _ | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 
-All thirteen cgm-remote-monitor backfix pull requests (twelve from this programme,
-plus #8741 from an external contributor) are merged into `dev`; none is released. The connector
-half, in `nightscout-connect`, measured 2026-09-22 against connector `dev` `1946beb`: every
-programme fix is merged there (PRs #64 with #61, #66 and #67; #68), `dev` declares `0.1.0`, and
-prerelease `0.1.0-dev.1` is published on npm under `next` through the tag workflow (`P0-PUBLISH`,
-#74 and #75). `P0-TAG` is the maintainer's call on when to cut the full `0.1.0`; PR #70 (`dev` →
-`main`) follows it. `P0-PIN` and `P0-LOCK` are blocked behind that release.
+Twenty-three cgm-remote-monitor pull requests from this work are merged into `dev` and none is
+released: the thirteen backfix PRs (twelve from this programme, plus #8741 from an external
+contributor), and ten of the twelve 15.0.9 additions (#8748, #8749, #8750, #8751, #8752, #8753, #8755,
+#8756, #8757, #8759). Two are open: #8754 (login security fixes and `TRUST_PROXY`, waiting on the
+security review by the maintainer and Andy) and #8758 (records keep their own `_id`). Tested together
+before merging: `rc/15.0.9-combined-36b`, 3015/0/3 on every Node and MongoDB pair.
 
-**Merging in the connector repository ships to nobody.** cgm-remote-monitor pins the connector by
-tarball — `dev` pins commit `234d47c` and `master` pins tag `v0.0.13` — so `P0-TAG` and `P0-PIN`
-are what deliver the connector fixes. `P0-PIN` is the security-relevant half, because `dev`'s
-current pin omits three log-redaction fixes.
+The connector half, in `nightscout-connect`, measured 2026-09-23 against connector `dev` `977da8a`:
+every programme fix is merged there (PRs #64 with #61, #66 and #67; #68; #77; #78; #79), `dev`
+declares `0.1.0`, and prerelease `0.1.0-dev.3` is published on npm under `next`. cgm-remote-monitor
+`dev` pins exactly `0.1.0-dev.3` (#8759); `master` still pins tag `v0.0.13`. `P0-TAG` is the
+maintainer's call on when to cut the full `0.1.0`; a last Nightscout pin to exact `0.1.0` follows it,
+and PR #70 (`dev` → `main`) follows the tag.
 
 ---
 
@@ -113,62 +103,54 @@ current pin omits three log-redaction fixes.
 
 Engineering cannot advance these. Each needs somebody to choose.
 
-### `RT-D3` — does a two-major charting upgrade ship under a patch number?
+### `RT-D3` — answered for 15.0.9
 
-15.0.9 carries D3 5.16 → 7.9: two major versions of a charting library arriving under
-a **patch** version, and `dev` has no real-browser coverage to catch what breaks. The
-adopted release train puts 15.0.9 first, so every later cut waits behind this answer.
-
-The question is not "is D3 7.9 fine" but whether the project's version numbers mean
-something. Semver for an application means something only once the public surface is
-*declared*: the API v1/v3 contracts, the plugin interface, the env-var configuration
-surface, the database schema, the Node floor, and the ingestion paths. That
-declaration does not exist yet, and this decision is where its absence first costs
-something.
+The version question was settled with `RT-VERSION` (15.0.9 ships as numbered), and the drag check
+passed on 2026-09-23 in automation and by hand: mouse in mg/dL and mmol/L, and touch, the same as
+15.0.8. The hand check found BF-103 (a split drag keeps the old time, so IOB and COB ignore the move),
+which is on 15.0.8 as well and is tracked as `BFQ-103`.
 
 ### `RT-0` — release 15.0.9
 
-Downstream of `RT-D3`, and the most consequential row on this page. 15.0.9
-(`origin/master..origin/dev`) is 48 first-parent merges (`git rev-list --first-parent --count origin/master..origin/dev`, 2026-09-22), including the thirteen backfix
-PRs; `master` is 308 commits behind `dev`. Until 15.0.9 ships, every one of those fixes
-exists in code and protects nobody. They include the fixes for two published-advisory
-defects that survive `AUTH_DEFAULT_ROLES=denied` — GHSA-gjhc (BF-79, #8744) and
-GHSA-8849 (BF-75/76, #8745) — plus the boot notice for world-readable sites (#8746);
-every instance on 15.0.8 is still exposed to all three. BF-70's mechanism is described
-in a merged public pull request body while 15.0.8 remains affected. Release PR #8598 is
-open, mergeable, green on every CI check, and has no approving review. It is also the
-first release that would exercise the three-decision publication rule end to end:
-merge the code, push the tag, publish the package. What 15.0.9 contains and whether it
-is ready: [`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md).
-
-The urgency is a reason not to let `RT-D3` sit unanswered, not a reason to release past
-it.
+The most consequential row on this page. 15.0.9 (`origin/master..origin/dev`) is 58 first-parent merges
+(`git rev-list --first-parent --count origin/master..origin/dev`, 2026-09-23); `master` is 343 commits
+behind `dev`. Until 15.0.9 ships, every one of those fixes exists in code and protects nobody. They
+include the fixes for two published-advisory defects that survive `AUTH_DEFAULT_ROLES=denied`,
+GHSA-gjhc (BF-79, #8744) and GHSA-8849 (BF-75/76, #8745), the boot notice for world-readable sites
+(#8746), and the two backported security fixes (BF-104, BF-105, #8751); every instance on 15.0.8 is
+still exposed to all of them. Release PR #8598 is open at `4011193e`, green on every CI check, and has
+no approving review. Still before the tag: #8754 and #8758, connector `0.1.0` and its pin, the release
+notes, and that review. What 15.0.9 contains and whether it is ready:
+[`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/release-readiness-15.0.9-2026-09-22.md)
+(a 2026-09-22 snapshot; the combined rc record is
+[`rc-15.0.9-combined-2026-09-23.md`](../30-design/remedial/rc-15.0.9-combined-2026-09-23.md)).
 
 ### `P0-TAG` — when to cut `nightscout-connect` 0.1.0
 
 Every programme connector fix is in connector `dev`, which declares `0.1.0`, and prerelease
-`0.1.0-dev.1` is on npm. Cutting the full release is a tag on `dev` plus an approval; it is the
-maintainer's judgement when the prerelease has been exercised enough. The connector fixes reach
-operators only through a cgm-remote-monitor pin (`P0-PIN`), and that pin waits on this release.
+`0.1.0-dev.3` is on npm and is what Nightscout `dev` installs. Cutting the full release is a tag on
+`dev` plus an approval; it is the maintainer's judgement when the prerelease has been exercised
+enough. A Nightscout pin to exact `0.1.0`, with a re-run of the combined rc, follows it.
 
-### `BFQ-47` — BF-47 needs intent before it needs code
+### `BFQ-47` — decided, and in review
 
-An ordinary subject edit destroys stored fields on 15.0.8. The fix depends on whether
-that behaviour was deliberate, and nobody has established which. A fix written first
-would be a guess at intent.
+The maintainer decided on 2026-09-23 that the subject allow-list is intended. The remaining defect,
+the admin page clearing `notes` and `created_at` on every edit, is fixed by `7103f657`, which is part
+of #8754.
 
-### `BFQ-72` — whether the security contact process is invoked
+### `BFQ-72`
 
-BF-72: an unauthenticated query can occupy the database for minutes. It is live on
-15.0.8 and on `dev`, and there is no fix. Mechanism only is recorded in this public
-repository. The blocking question is whether Nightscout's security contact process is
-invoked.
+BF-72: an unauthenticated query can occupy the database for minutes. It is live on 15.0.8 and on
+`dev`. Mechanism only is recorded in this public repository. The maintainer has decided its
+disposition; the details are held outside version control.
 
-### `BFQ-09`, `BFQ-52`, `A7A-7` — `unsettled`, which is not the same as open
+### `BFQ-09`, `A7A-7` — `unsettled`, which is not the same as open
 
-These are not yet established as defects. `unsettled` exists so that "we looked and
-could not settle it" does not silently become either "fixed" or "open". `A7A-7` carries
-a safety dimension: it is the clock question inside the alarm path.
+These are not yet established as defects. `unsettled` exists so that "we looked and could not settle
+it" does not silently become either "fixed" or "open". `BFQ-09` has been measured (zero-is-real fixes
+six dedup cases and changes no control) and waits on the maintainer. `A7A-7` carries a safety
+dimension, the clock question inside the alarm path, and the maintainer owns it. (`BFQ-52` was settled
+on 2026-09-23 and has a prepared fix, now blocked on `BFQ-92`.)
 
 ---
 
@@ -198,6 +180,6 @@ gate disagrees. Run it before acting on any row here.
 
 <!-- BEGIN GENERATED: provenance -->
 
-*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-22**, against cgm-remote-monitor-official `74fc6619` and this repository at `4c7f7cfa`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
+*Generated from `queue/work-queue.yaml` by `tools/queue/emit_views.py`. Manifest `measured_at` **2026-09-23**, against cgm-remote-monitor-official `4011193e` and this repository at `0c022da5`. Every state above is a **claim** about what the gates will say &mdash; `make queue-status` is the measurement.*
 
 <!-- END GENERATED: provenance -->
