@@ -75,8 +75,10 @@ Built 2026-09-23 on the maintainer's question whether one PR could carry the
 through-line. Merge-tree clean with every open 15.0.9 PR head and
 rc/15.0.9-additions-e 1b1977e0; conflicts with bf/profile-object-id (BFQ-99)
 in lib/server/profile.js, so land one. Merged trees not run through the suite.
-Recommended order: BFQ-99 for 15.0.9, this one after it. PR body draft
-reports/phase0-pr-bodies/bf-object-id-consistency.md.
+DECIDED 2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with
+consistent working CRUD across the API (plan section 1a, "15.0.9 ID
+consistency"). PR body draft reports/phase0-pr-bodies/bf-object-id-
+consistency.md.
 
 ---
 

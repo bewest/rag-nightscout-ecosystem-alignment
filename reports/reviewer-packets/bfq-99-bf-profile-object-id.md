@@ -77,10 +77,12 @@ Merge-tree clean against every open 15.0.9 PR head and rc/15.0.9-additions-e
 1b1977e0; the merged tree with 1b1977e0 passes the profile and count tests
 112/0. Destination release not decided. Unblocks the connector's profile
 update-on-change (BFQ-97). PR body draft reports/phase0-pr-bodies/bf-profile-
-object-id.md. Conflicts in lib/server/profile.js with bf/object-id-consistency
-(BFQ-102), which carries the same fix on a shared helper; land one.
-modernization b1bdaca0 reproduces it (11 of 13 red on Node 22.23.2 and
-24.20.0).
+object-id.md. SUPERSEDED BY BFQ-102 (2026-09-23, maintainer): 15.0.9 takes
+bf/object-id-consistency; this branch is not pushed. The queue has no
+superseded state, so the state is left as measured. Conflicts in
+lib/server/profile.js with bf/object-id-consistency (BFQ-102), which carries
+the same fix on a shared helper; land one. modernization b1bdaca0 reproduces
+it (11 of 13 red on Node 22.23.2 and 24.20.0).
 
 ---
 

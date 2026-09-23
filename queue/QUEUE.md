@@ -2919,7 +2919,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/profile-object-id-2026-09-23.md`
 
-**Notes.** PREPARED 2026-09-23 on the maintainer's instruction ("another backfix issue"). Merge-tree clean against every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; the merged tree with 1b1977e0 passes the profile and count tests 112/0. Destination release not decided. Unblocks the connector's profile update-on-change (BFQ-97). PR body draft reports/phase0-pr-bodies/bf-profile- object-id.md. Conflicts in lib/server/profile.js with bf/object-id-consistency (BFQ-102), which carries the same fix on a shared helper; land one. modernization b1bdaca0 reproduces it (11 of 13 red on Node 22.23.2 and 24.20.0).
+**Notes.** PREPARED 2026-09-23 on the maintainer's instruction ("another backfix issue"). Merge-tree clean against every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; the merged tree with 1b1977e0 passes the profile and count tests 112/0. Destination release not decided. Unblocks the connector's profile update-on-change (BFQ-97). PR body draft reports/phase0-pr-bodies/bf-profile- object-id.md. SUPERSEDED BY BFQ-102 (2026-09-23, maintainer): 15.0.9 takes bf/object-id-consistency; this branch is not pushed. The queue has no superseded state, so the state is left as measured. Conflicts in lib/server/profile.js with bf/object-id-consistency (BFQ-102), which carries the same fix on a shared helper; land one. modernization b1bdaca0 reproduces it (11 of 13 red on Node 22.23.2 and 24.20.0).
 
 ### `BFQ-100` &mdash; BF-100 - devicestatus, food and activity store a hex _id as a string
 
@@ -3012,7 +3012,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/object-id-other-collections-2026-09-23.md`
 - `docs/60-research/remedial/profile-object-id-2026-09-23.md`
 
-**Notes.** Built 2026-09-23 on the maintainer's question whether one PR could carry the through-line. Merge-tree clean with every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; conflicts with bf/profile-object-id (BFQ-99) in lib/server/profile.js, so land one. Merged trees not run through the suite. Recommended order: BFQ-99 for 15.0.9, this one after it. PR body draft reports/phase0-pr-bodies/bf-object-id-consistency.md.
+**Notes.** Built 2026-09-23 on the maintainer's question whether one PR could carry the through-line. Merge-tree clean with every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; conflicts with bf/profile-object-id (BFQ-99) in lib/server/profile.js, so land one. Merged trees not run through the suite. DECIDED 2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan section 1a, "15.0.9 ID consistency"). PR body draft reports/phase0-pr-bodies/bf-object-id- consistency.md.
 
 ---
 
