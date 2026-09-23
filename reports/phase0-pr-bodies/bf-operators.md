@@ -1,282 +1,42 @@
-# `bf/operators` — API v1 accepted any MongoDB operator a caller named, including the ones that run JavaScript
-
-Three commits plus a merge of `dev`, tip `9745cae2`. 15 files, +1032/−3 against the merge base.
-**Updated 2026-09-18**: `dev` moved `a8888f0d..fdd08706` while this was open, taking #8733, #8737,
-#8738 and #8734. Merged in; see [Landing order](#landing-order) for what that cost.
-
-> **READ THIS BEFORE THE REST.** This branch closes **one of the three** proof-of-concepts in the
-> reported NoSQL-injection advisory, plus a second defect the advisory does not mention.
-> **It does not close that advisory.** Exactly what is and is not fixed is in
-> [What this does not fix](#what-this-does-not-fix), stated before the good news rather than after
-> it, because a partial fix that reads as a complete one is worse than no fix.
+> **Details withheld.** This PR fixes security issues, and part of the related report is still open in a private GitHub security advisory. The fix is merged into `dev`, but no release contains it yet. We removed the detailed description on purpose, and will restore it once a fixed release is out and the advisory is published.
 
 ## What changes for you
 
 **Your stored data is not touched.** What changes is which requests the API answers at all.
 
-### 1. A web address could ask the database to run a program
+- API v1 query filters now accept a fixed, documented set of MongoDB operators. The API refuses anything else with HTTP 400 and an error that names the operator. Ordinary filters work as before: date ranges, event types, glucose thresholds, `$exists` and text matching. A survey of 14 Nightscout client projects found 157 filter uses, and none of them uses a refused operator.
+- The undocumented `pipeline` parameter on `/api/v1/count/…` is now refused.
+- A refused filter now returns `400` instead of a `500` that looks like the server is down.
 
-Nightscout's older API lets you filter records by putting conditions in the web address —
-`?find[sgv][$gte]=100` means "glucose readings of 100 or more". Those conditions were passed to the
-database **without any check on which ones were allowed**, and MongoDB has conditions that are not
-filters at all: `$where` and `$function` hand it a piece of JavaScript and ask it to run that
-against your records.
+**If a report, dashboard or script you use starts returning a 400 after this change, the request used a filter condition the API does not support. It does not mean your data is gone.** The error names the condition and lists the supported ones.
 
-On a default Nightscout this needed **no password and no token**, because the shipped setting
-`AUTH_DEFAULT_ROLES=readable` lets anyone who knows your address read your glucose data. Those are
-now refused with a clear error.
-
-### 2. One address could ask questions about parts of the database it had no business reading
-
-`/api/v1/count/…/where` counts matching records. It also accepted a `pipeline` setting that let the
-request add its own processing steps — including a step that reads a **different** collection and
-folds the result into the count. Nothing documents this setting and no known app uses it. Repeated
-with different guesses, the count answers questions about data the address was never meant to
-reach. **Also unauthenticated on a default install.** The setting is now refused.
-
-### 3. Unusual filters now say so instead of appearing to work
-
-The API now supports a fixed, documented list of filter conditions and refuses anything else with
-an error naming it. Ordinary filters are unaffected — date ranges, event types, glucose thresholds,
-`$exists`, text searches. A survey of 14 Nightscout client projects found **157** filter uses and
-**none** of them uses anything now refused.
-
-Two things that work today are deliberately refused: `$expr` on `/api/v1/profiles/`, and `$type`.
-See [The accept set](#the-accept-set).
-
-### 4. A refused filter no longer looks like the server breaking
-
-Every read endpoint reported a bad filter as HTTP 500 under a name blaming the database — `Mongo
-Error`, `Query Error` — and two did worse: `/api/v1/activity` never checked for the error and threw
-while formatting nothing, and `/api/v1/profiles/` ignored it and answered `200` with an empty body.
-A 500 on a read is indistinguishable from your server being down. These now answer `400` and name
-the operator.
-
-### What you should do
-
-**If a report, dashboard or script you use starts returning a 400 after this lands, it is telling
-you the request used a filter condition the API does not support — it is not a sign your data is
-gone.** The error names the condition and lists the supported ones. Nothing stored changes.
-
-Nightscout is not a medical device and this is not medical advice. If you rely on a tool that
-breaks, raise it with that tool's author; if a gap in your data display worries you, talk it through
-with your care team rather than acting on it alone.
-
----
-
-<a name="what-this-does-not-fix"></a>
-## What this does not fix
-
-Measured against the reported advisory's own proof-of-concepts, on this branch:
-
-| advisory PoC | status on `bf/operators` |
-|---|---|
-| **B** — `find[$where]=…`, server-side JavaScript execution | **refused, 400** |
-| **A** — `find[dateString][$ne]=x`, bypasses the server's date window and returns the whole history | **still works** |
-| **C** — `find[notes][$regex]=…`, blind extraction of free-text PII from treatments | **still works** |
-
-**PoC A is the advisory's headline impact and its primary evidence.** `$ne` is an ordinary
-comparison and is on the accept set; `enforceDateFilter()` applies its bound only when neither the
-date field nor `dateString` appears in the query at all, so naming the date field in any form
-removes the bound. An allowlist cannot close that — the operator is legitimate and the defect is in
-where the bound is applied.
-
-**That is deliberately not fixed here, and it is not a small fix.** Always AND-ing the window onto
-every query breaks every historical read: 105 of the 157 measured client filter uses are
-time-ranging, and asking for an older window is the normal thing for a report to do. The real fix is
-to refuse an *unbounded* date predicate while still honouring a bounded one, which is a
-compatibility decision with its own evidence requirement. **It needs its own issue and its own
-change.**
-
-**PoC C is also not fixed, and `$regex` is allowed on purpose.** `lib/server/treatments.js`
-compiles `notes`, `eventType` and `enteredBy` through `parseRegEx` regardless, so
-`find[eventType]=Bolus` is already a regular expression by the time it reaches the driver, and
-`eventType` is the most common non-temporal field in the measured client surface. Removing regex
-matching is a capability removal, not a bug fix.
-
-Against the advisory's five remediation items: **1 and 2 are done here. 3, 4 and 5 are not.**
+Nightscout is not a medical device, and this is not medical advice. If a tool you rely on breaks, raise it with that tool's author. If a gap in your data worries you, talk it through with your care team.
 
 ## The accept set
 
 ```
 on a field   $eq $ne $gt $gte $lt $lte $in $nin $exists $type $regex (with $options)
-at the top   $and $or, and their branches, including the indexed form
-             find[$and][0][field][$op]=value
+at the top   $and $or, and their branches
 ```
 
-Everything else is refused with HTTP 400 naming the operator and listing what is supported.
-
-**Why this set and not a shorter one.** The census of 14 client projects measured `$gte` 55, `$eq`
-36, `$lte` 32, `$gt` 22, `$lt` 5, `$ne` 4, `$exists` 3, `$or` 2, `$and` 1 — all of them in the set
-above, and nothing sending `$where`, `$expr`, `$elemMatch` or `$near`. **Read that with its limit:
-it measured client source code, so a filter assembled at runtime or typed into a browser is
-invisible to it.** It is a lower bound, not proof of absence.
-
-So the set is **not trimmed to the measured set**. It is the set the in-progress storage seam can
-already express — a superset of everything measured — so that whatever this refuses today, the seam
-would have refused later anyway. That makes this one narrowing instead of the first of two.
-
-**One operator that works today is refused:** **`$expr`**, reachable through
-`/api/v1/profiles/`. It embeds the aggregation expression language in a find filter, with
-`$function` and `$accumulator` held out of it only by a denylist that enumerates them by name
-against a language that grows each release; it cannot use an index; and every future storage backend
-would owe it an expression evaluator.
-
-### `$type`, and how #8737 merging settled it
-
-An earlier revision of this branch **refused `$type`**, on the ground that the storage seam's AST
-cannot express it and no surveyed client sends it, and left the collision with #8737 as an open
-question for the maintainer. #8737 has since merged, which settles it the other way.
-
-`readTypeOperand()` exists on `dev` because `find[sgv][$type]=2` must reach MongoDB as the **number**
-`2` — as the string `"2"` the server answers *"Unknown type name alias: 2"* and a working request
-becomes a 500. That is code, a test and a measurement against mongod 3.6.8 and 7.0.43, shipped in
-this same release train. Refusing `$type` would regress a fix that landed a week earlier, to gain
-nothing: it executes nothing, evaluates nothing and reads nothing outside the document.
-
-**`$type` is therefore allowed, and it is the one place this set departs from the seam's.** Priced
-here rather than discovered later: **when the storage seam lands, its AST needs a `$type` node, or
-v1 narrows by one operator at that point.**
-
-`$not` and `$text` stay refused. Both appeared in #8737's tests as *fixtures* rather than subjects,
-and neither has a measured caller; `$text` could never have worked on a field anyway. Those two
-assertions are rewritten rather than deleted — the depth property they pinned is now asserted
-through `$and`, and each file gains an explicit assertion that the operator is now refused, so that
-a removed capability does not look like a removed test.
-
-## How it works
-
-Three commits, split at the revert boundary so any one can be dropped alone.
-
-**`3e8ce695` — the JavaScript operators.** `assertNoQueryJavascript()` refuses `$where`,
-`$function` and `$accumulator` wherever they appear — inside `$and`/`$or` branches, inside
-`$all`/`$elemMatch`, inside an `$expr` expression context. It runs in `lib/server/query.js`
-`create()`, the one entry point every v1 `find` passes through, on the caller's literal input,
-before `enforceDateFilter()` adds its own `$gte` and `updateIdQuery()` mints ObjectIds — so the
-operator named in the error is one the caller actually typed.
-
-**Values are not recursed into, deliberately.** `{payload: {$eq: {$where: 'x'}}}` asks whether the
-stored document has a field literally named `$where`. It is data, MongoDB treats it as data, and
-refusing it would be a compatibility break invented here.
-
-The same commit adds `lib/api/shared/query-error.js` and wires it into all five v1 modules, which
-is what turns the refusal into a 400 rather than a 500.
-
-**`71506cf8` — the allowlist**, as above.
-
-**`52b7b640` — the count endpoint's pipeline.** `lib/server/aggregate.js` built its aggregation as
-`[{$match: find}].concat(conf.pipeline || []).concat(opts.pipeline || [])`, and `opts` is the
-caller's parsed query string: `count_records` passes `req.query` straight to
-`storage.aggregate()`. So `GET /api/v1/count/:storage/where` accepted arbitrary **aggregation
-stages** from the URL, not merely filter operators — a wider surface than `find`, because
-aggregation carries `$lookup`, which reads a collection the endpoint is not about, and the
-`{$group: {count: {$sum: 1}}}` the module appends returns the joined result as a number.
-
-The parameter is **refused, not silently dropped**: dropping it would answer a different question
-under HTTP 200, which is the failure mode this whole branch exists to remove. `conf.pipeline` — set
-by the code, never by a request, and `{}` at all three construction sites — is kept and still works.
-
-`lib/storage/assert-no-query-javascript.js` is carried across from the storage-seam branch
-byte-identical at the same path, so landing this ahead of the seam costs that branch nothing.
+This list is a superset of every operator in the client survey. `$expr` on `/api/v1/profiles/` used to work and is now refused. `$type` stays allowed so that #8737 keeps working.
 
 ## Verifying it
 
 ```
-TEST=mongo-query-javascript npm run test-single      # 23 passing,  49 ms, no database
-TEST=api-v1-operator-allowlist npm run test-single   # 63 passing + 16 pending, no database
-TEST=api-v1-count-pipeline npm run test-single       #  8 passing,  30 ms, no database
-CUSTOMCONNSTR_mongo=… TEST=api-v1-operator-allowlist npm run test-single   # 79 passing
+TEST=mongo-query-javascript npm run test-single
+TEST=api-v1-operator-allowlist npm run test-single
+TEST=api-v1-count-pipeline npm run test-single
 npm test                                             # 2223 passing, 3 pending, 0 failing
 ```
 
-The 16 pending are the end-to-end section — the only place the **allowed** operators are proved to
-still *select* correctly rather than merely to pass the guard. It skips without a database; CI has
-one. All three new files are outside `npm run test:unit`'s brace list, so a green run there is not
-evidence for this branch; `npm test` is what CI runs.
-
-**Ablations, each confirmed applied by `grep` before the run** rather than assumed:
-
-| ablation | result |
-|---|---|
-| comment out the JavaScript guard in `create()` | 7 of 23 fail |
-| comment out the allowlist in `create()` | 14 fail |
-| make `refuse()` return instead of throwing | 35 fail |
-| restore the two lines commit 3 changes | 3 of 8 fail |
-
-**The first row was 14 before the `dev` merge and is 7 now, and the drop is informative rather than
-a weakening.** The two guards overlap: with the JavaScript guard removed, the allowlist still
-refuses `$where` — as an unlisted operator, with the generic message. The 7 are the cases asserting
-the *specific* "server-side JavaScript is not allowed" wording. So that guard is now mostly about
-the message rather than about the refusal, which is worth knowing before anyone considers dropping
-it.
-
-The strongest control is not a unit test: the unmodified reproduction for commit 3 recovers a
-seeded value over unauthenticated HTTP on `a8888f0d` and recovers nothing on `52b7b640` — same
-machine, same database, same session.
-
-<a name="landing-order"></a>
-## Landing order
-
-Merges clean against `dev`, `bf/alarms`, `bf/auth`, `bf/cache`, `bf/coercion`, `bf/connect-pin`,
-`bf/food`, `bf/merge`, `bf/parms` and `bf/throttle`.
-
-**`dev` moved while this was open** (`a8888f0d..fdd08706`: #8733, #8737, #8738, #8734) and is
-merged in at `9745cae2`. Two conflicts:
-
-- **`lib/server/aggregate.js`, textual.** #8738 makes the function build its `$match` through the
-  collection's own `query_for` and deletes two `console.log`s; this branch refuses `opts.pipeline`
-  and adds the JavaScript backstop. The edits compose — keep both. `lib/server/query.js`
-  auto-merged, and the result is correct by inspection: guards on the caller's literal input, then
-  the schema walker, then `normalizeOperands`.
-- **`$type`, semantic** — see above. This is the one that mattered.
+Ablating each guard makes its tests fail.
 
 ## Semver: minor
 
-It removes reachable behaviour — `$expr` on `/profiles/` and the undocumented `pipeline`
-parameter — so it is not a patch. It is not major either: no route removed,
-no required input added, no documented contract broken, and no surveyed client sends anything now
-refused. No operator action, no configuration break, stored data untouched.
+This removes reachable but undocumented behaviour. No route is removed, no documented contract breaks, and no operator action or configuration change is needed. The "What changes for you" section above is the source for the release notes.
 
-**The "What changes for you" text above is the release-note source.** Two things must reach the
-release notes: that unsupported filter conditions now answer 400 instead of appearing to work, and
-that the `pipeline` parameter on the count endpoint is gone.
+## Follow-ups
 
-## Follow-ups deliberately not in this PR
+The private advisory tracks the remaining related items.
 
-- **The date-window bypass (advisory PoC A)** — the largest remaining item, and the one most likely
-  to be mistaken for fixed. Needs its own issue.
-- **`parseRegEx` compiles raw client input into a `RegExp`** on `notes`, `eventType` and
-  `enteredBy` (advisory remediation item 3, and PoC C).
-- **The `AUTH_DEFAULT_ROLES=readable` default** (remediation item 5) is a project policy decision,
-  not a code fix.
-- **API v3 needs no equivalent, and that is measured rather than assumed.** Asked during review, so
-  the answer is recorded here. v3 is not injectable, and the reason is structural:
-  `lib/api3/storage/mongoCollection/utils.js` `parseFilter()` assigns
-  `filter[field]['$eq'] = value` — a client value only ever becomes the **operand** of one of nine
-  hard-coded operators (`eq ne gt gte lt lte in nin re`), and anything else is refused with a 400 at
-  `lib/api3/generic/search/input.js:71`. A value can therefore never become a key, which is the
-  position an operator has to occupy. The only client-controlled key is the field *name*, and every
-  dangerous operator in that position errors on mongod 7.0, because none accepts an operand of the
-  shape those nine produce:
-
-  ```
-  {$where:{$eq:…}}       -> $where got bad type        {$or:{$eq:…}}   -> $or must be an array
-  {$expr:{$eq:…}}        -> takes exactly 2 arguments  {$nor:{$eq:…}}  -> $nor must be an array
-  {$text:{$eq:…}}        -> missing "$search"          {$jsonSchema:…} -> unknown keyword
-  {$comment:{$eq:…}}     -> accepted, and inert
-  ```
-
-  The write paths already wrap client values in `$eq` deliberately — `identifyingFilter()` carries a
-  comment saying it is there to stop `{$ne: null}` in a posted document becoming a query operator —
-  and `deleteManyOr()` is reached only from `autoPrune()` with a server-built filter. Projections are
-  `0`/`1` only.
-
-  **The real v3 caveat is not injection: it is `re`.** That operator hands a client-supplied string
-  to `$regex`, which is the same exposure as PoC C above, reached by a documented and supported
-  operator rather than by injection. Whatever is decided about `parseRegEx` on v1 should be decided
-  for v3's `re` at the same time.
-- **User-controlled `sort`.** `opts.sort` reaches `.sort()` unvalidated; a caller can force an
-  unindexed sort over a large collection. Not measured.
-- **A numeric comparison nested in `$and`/`$or`** is never type-converted — the walker visits only
-  top-level `find[field]` keys — so it reaches MongoDB as a string and matches nothing under BSON
-  type ordering. Older than this change; noted at the fixture that would otherwise have hidden it.

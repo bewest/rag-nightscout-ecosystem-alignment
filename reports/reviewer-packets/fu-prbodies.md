@@ -27,8 +27,8 @@
 
 No code. Pull request bodies and the files under reports/phase0-pr-bodies/
 they were posted from. Measured 2026-09-23 by tools/queue/gates/pr-body-
-parity.js over its eight pairs: #8738 and #8740 match; #8734, #8735, #8736,
-#8737, #8739 and #8743 differ. The drift runs in two directions. #8734, #8735,
+parity.js over its eight pairs: #8738, #8740 and #8743 match; #8734, #8735,
+#8736, #8737 and #8739 differ. The drift runs in two directions. #8734, #8735,
 #8736 and #8737 differ only in documentation paths - the local files were
 updated when the docs tree moved into programme subdirectories, so the LIVE
 bodies still cite the pre-move spellings (the backfix register without its
@@ -39,14 +39,15 @@ indistinguishable to it from a dead path being relied on. Word counts are
 identical each way. #8739 is the opposite: the live body is 1640 words to the
 file's 1537 and carries paragraphs the file does not have - the urgent-
 severity versus notification-delivery distinction, and a note about Alexa and
-Google Home locale handling - added upstream after posting. #8743 is newer
-still: its live body was edited on GitHub at 2026-09-23T00:28:08Z from the
-maintainer's account, together with #8744 (00:28:09Z) and #8745 (00:28:11Z),
-the other two advisory fixes. The live bodies are now 419, 180 and 305 words;
-bf-operators.md, the file #8743 was posted from, is 2641. The parity gate
-judges direction by word count, so it reports #8743's FILE as ahead and prints
-an overwrite command. That command would undo the edit. #8744 and #8745 have
-no file under reports/phase0-pr-bodies/, so the gate does not see them.
+Google Home locale handling - added upstream after posting. #8743, #8744 and
+#8745, the three advisory fixes, were edited on GitHub on 2026-09-23
+(00:28:08Z to 00:28:11Z) from the maintainer's account to withhold detail
+until a fixed release ships and the advisories are published; each now opens
+"Details withheld". They are 396, 189 and 318 words (`wc -w`). bf-operators.md
+was trimmed to #8743's text the same day; the full text is at 9ddad0cc (2641
+words) for restoring after release. #8744 and #8745 have no file under
+reports/phase0-pr-bodies/, so the gate does not see them; their full drafts
+are under docs/30-design/remedial/advisory-response-2026-09/pull-requests/.
 
 ## Why that semver
 
@@ -62,18 +63,15 @@ push. If the answer is yes, #8739 must be handled differently from the other
 four. Its live body is ahead; the upstream text has to be reconciled INTO
 reports/phase0-pr-bodies/bf-alarms.md before anything is pushed, or that work
 is destroyed. A one-way `gh pr edit <pr> --body-file <local>` on #8739 would
-overwrite it and then report green. #8743, #8744 and #8745 need the
-maintainer's intent first. If their bodies were shortened on purpose - for
-example to keep detail about defects still live on 15.0.8 out of public view -
-then bf-operators.md, which is in this public repository, carries the detail
-the edit removed, and the file is what needs changing; see the disclosure rule
-in the backfix register's header.
+overwrite it and then report green. Do not restore #8743, #8744 or #8745 to
+their long form, and do not overwrite them from any file, until a release
+containing their fixes ships and the advisories are published.
 
 ## What was measured
 
 **`node tools/queue/gates/pr-body-parity.js`** &nbsp;·&nbsp; kind: `network`
 
-All eight bodies match their files. Red with six failing as of 2026-09-23.
+All eight bodies match their files. Red with five failing as of 2026-09-23.
 Read-only - it fetches bodies and never edits one. Its direction advice is a
 word-count heuristic: read the PR's last-edited time before acting on it.
 
