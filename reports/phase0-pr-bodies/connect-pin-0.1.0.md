@@ -43,7 +43,9 @@ when sites contact the vendor. Both default to 0, so nothing changes unless you 
 
 ### Your CGM account password
 
-**Consider changing your CGM account password** if both of these are true:
+**Most people do not need to do anything here.** A Nightscout log is normally seen only by the
+person who runs the site, and sharing a whole log is uncommon. Consider changing your CGM account
+password only if both of these are true:
 
 - you ran Nightscout 15.0.8 or an earlier release with the built-in connector on (`connect` in
   your `ENABLE` setting), or you used Dexcom `BRIDGE_` settings on 15.0.8, which the connector
