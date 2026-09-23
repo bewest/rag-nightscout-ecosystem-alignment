@@ -3643,11 +3643,13 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 
 ---
 
-## Backfix 2 - the patch release after 15.0.9
+## Backfix 2 - folded into 15.0.9
 
 `parcel: backfix2` &mdash; 2 items
 
-Prepared now, PRs opened after 15.0.9 is tagged. Plan and flag rule:
+Decided 2026-09-23 (maintainer) to ship inside 15.0.9 rather than after it;
+bf2/backports is #8751, and bf2/ops and bf2/auth-hardening (with the subject-
+edit fix folded in as its last commit) open next. Plan and flag rule:
 docs/30-design/remedial/backfix-2-plan-2026-09-22.md. Units are grouped by the
 reviewer they need and integrated on a scratch rc/backfix-2 branch pinned to
 dev by SHA, evaluating between each merge.

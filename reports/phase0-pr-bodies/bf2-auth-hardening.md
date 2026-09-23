@@ -7,9 +7,13 @@ run with the other 15.0.9 additions is recorded in
 `docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`. Its posting summary is "Tested
 together with the other 15.0.9 changes" below.
 
-**Posted in full (maintainer, 2026-09-23).** This body is posted in full, not in the withheld style
-used for `bf2/backports` (#8751), because the branch ships in 15.0.9. BF-17 and BF-30 are live on
-15.0.8, so the body gives mechanisms and operator remediation, and no reproduction steps.
+**Posted in the withheld style (maintainer, 2026-09-23, in answer to the question put directly;
+this supersedes an earlier record in this file that said "posted in full").** BF-17 and BF-30 are
+live on 15.0.8, so the public PR carries a short summary like #8744, #8745 and #8751: the four
+changes, the `TRUST_PROXY` table and caution, the startup message, and the evidence. The posting
+copy is [bf2-auth-hardening.withheld.md](bf2-auth-hardening.withheld.md). **This file is the full
+text**, for the PR once a fixed release ships and the advisory is published; the rotation section
+goes into the 15.0.9 release notes.
 
 **`bf2/subject-edit-keeps-fields` (`7103f657`) is folded in as the final commit** (maintainer,
 2026-09-23). Its parent is `29e6430e`, the previous tip of this branch, so it adds one commit and

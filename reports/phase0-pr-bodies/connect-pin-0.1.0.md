@@ -85,8 +85,8 @@ data that worries you.
 **Who the password section applies to.** The connector was first included in 15.0.0
 (`"nightscout-connect": "^0.0.12"`, which resolves to 0.0.12 only); 15.0.8 installs `v0.0.13`.
 Both write `console.log("INPUT PARAMS", spec, validated.config)` at `index.js:54` on every boot
-(read at tags `v0.0.12` and `v0.0.13`; BF-42's census covers `v0.0.13`, and `v0.0.12` was not
-executed). Dexcom `BRIDGE_` settings are routed to the connector from 15.0.8
+(read at tags `v0.0.12` and `v0.0.13`; confirmed by running `v0.0.13`; `v0.0.12` was read, not
+run). Dexcom `BRIDGE_` settings are routed to the connector from 15.0.8
 (`lib/server/bridge-connect-compat.js`, absent at 15.0.7) unless `DEXCOM_BRIDGE_USE_LEGACY=true`.
 
 ```diff

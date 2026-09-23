@@ -46,10 +46,10 @@ commits behind `origin/dev` and 0 ahead**
 (`git -C externals/cgm-remote-monitor-official rev-list --count official/master..official/dev`),
 and the release PR #8598 (`dev` → `master`) is open with green CI and no approving review.
 
-| question | answer, 2026-09-22 | reproduce with |
+| question | answer, 2026-09-23 | reproduce with |
 |---|---|---|
-| How many §1 defects are there, and how many reach an operator on 15.0.8? | **57** §1 defects (every §1 entry except BF-12, invalid): **25 open, 27 merged, 1 partly merged (BF-07), 4 fixed on an unmerged branch** (BF-08, BF-17, BF-30, BF-34). **56** reach an operator on 15.0.8 — BF-80 exists only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (its word-matching counts BF-07 as open) |
-| How much work is outstanding? | **50 ids not repaired** | `make queue-coverage` (counts `partly merged` as not fixed) |
+| How many §1 defects are there, and how many reach an operator on 15.0.8? | **64** §1 defects (every §1 entry except BF-12, invalid): **28 open, 28 merged, 1 partly merged (BF-07), 7 fixed on an unmerged branch** (BF-08, BF-17, BF-30, BF-34, BF-52, BF-69, BF-90). **63** reach an operator on 15.0.8 — BF-80 exists only on `dev` (below) | `node tools/queue/gates/register-exposure-legend.js` (its word-matching counts BF-07 as open) |
+| How much work is outstanding? | **54 ids not repaired** | `make queue-coverage` (counts `partly merged` as not fixed) |
 
 One §1 count is an overstatement to know about: BF-80 is a cost of BF-75's fix, so it is present
 where that fix is (`dev`) and not on 15.0.8; it is filed in §1 because it will ship to every
@@ -74,7 +74,7 @@ belongs in this file.
 
 **Allocating an id.** Read the highest `BF-` id in §1 and §1b at the moment you write the entry
 and take the next one — never the id a brief or plan quoted, because concurrent sessions file here.
-On 2026-09-23 the highest is BF-91. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
+On 2026-09-23 the highest is BF-94. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
 defects on the unmerged seam branch
 ([pgbouncer-tenant-binding](../../60-research/tenancy/pgbouncer-tenant-binding-2026-09-15.md)),
 which belong in §1b and are not yet filed.
