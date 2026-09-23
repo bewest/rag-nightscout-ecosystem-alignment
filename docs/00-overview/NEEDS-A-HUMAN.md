@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 19 items
+### Maintainer &mdash; 22 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -45,6 +45,9 @@ that it was reviewed.
 | `P0-TAG` | `needs-decision` | nightscout-connect 0.1.0 - the full release, from connector dev | #70 |
 | `RT-4` | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
+| `BFQ-100` | `ready-to-push` | BF-100 - devicestatus, food and activity store a hex _id as a string | &mdash; |
+| `BFQ-101` | `ready-to-push` | BF-101 - API v3 id filters miss records stored with a string _id | &mdash; |
+| `BFQ-102` | `ready-to-push` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | &mdash; |
 | `BFQ-69` | `ready-to-push` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing | &mdash; |
 | `BFQ-90` | `ready-to-push` | BF-90 - an alarm at a page with no reading throws in the client | &mdash; |
 | `BFQ-98` | `ready-to-push` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix do | &mdash; |

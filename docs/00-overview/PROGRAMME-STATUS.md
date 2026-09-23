@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 74 | 25 | 16 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 75 | 23 | 19 |
 | **Modernization** | `release-train` | 15 | 1 | 4 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **109** | **35** | **25** |
+| | **total** | **110** | **33** | **28** |
 
 <!-- END GENERATED: horizons -->
 
@@ -120,8 +120,9 @@ cover more than one `BF-`:
 | `BFQ-04` | `merged-upstream` | BF-04 - the v1 operator allowlist - superseded by P0-K |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value |
 | `BFQ-10` | `not-started` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
-| `BFQ-100` | `not-started` | BF-100 - devicestatus, food and activity store a hex _id as a string |
-| `BFQ-101` | `not-started` | BF-101 - API v3 id filters miss records stored with a string _id |
+| `BFQ-100` | `ready-to-push` | BF-100 - devicestatus, food and activity store a hex _id as a string |
+| `BFQ-101` | `ready-to-push` | BF-101 - API v3 id filters miss records stored with a string _id |
+| `BFQ-102` | `ready-to-push` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `ready-to-push` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -158,7 +159,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 1 |  | 3 | 1 | 2 |  | 13 | 2 |  |  |  | **22** |
 | `release-train` | 1 | 1 | 4 |  | 4 | 2 | 1 | 2 |  |  |  | **15** |
-| `register-open` | 18 |  | 5 | 5 | 1 | 1 | 5 | 5 |  | 2 | 1 | **43** |
+| `register-open` | 16 |  | 5 | 8 | 1 | 1 | 5 | 5 |  | 2 | 1 | **44** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  | **18** |
 | `docs-truth` | 6 |  | 1 |  |  |  |  |  | 2 |  |  | **9** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -199,14 +200,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 77 | 71% |
+| Maintainer | 78 | 71% |
 | SECURITY reviewer | 15 | 14% |
-| Maintainer + a second human | 6 | 6% |
+| Maintainer + a second human | 6 | 5% |
 | SAFETY reviewer | 5 | 5% |
 | Whoever edits it next | 3 | 3% |
 | Unassigned | 2 | 2% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **109** | |
+| **total** | **110** | |
 
 <!-- END GENERATED: reviewer-load -->
 

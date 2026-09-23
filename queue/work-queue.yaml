@@ -7120,18 +7120,23 @@ items:
       1b1977e0; the merged tree with 1b1977e0 passes the profile and count tests 112/0.
       Destination release not decided. Unblocks the connector's profile
       update-on-change (BFQ-97). PR body draft reports/phase0-pr-bodies/bf-profile-object-id.md.
+      Conflicts in lib/server/profile.js with bf/object-id-consistency (BFQ-102), which
+      carries the same fix on a shared helper; land one. modernization b1bdaca0 reproduces
+      it (11 of 13 red on Node 22.23.2 and 24.20.0).
 
   - id: BFQ-100
     title: BF-100 - devicestatus, food and activity store a hex _id as a string
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/object-id-other-collections
     base: origin/dev@1f9a9d10
-    worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    worktree: externals/work/crm-bf-object-id
+    state: ready-to-push
     ships_to_operators_today: true
     blast_radius: >
-      lib/server/devicestatus.js, lib/server/food.js and lib/server/activity.js create.
+      lib/server/devicestatus.js, food.js and activity.js create, update, remove and
+      find[_id], plus the shared helper lib/server/object-id-forms.js. Two commits,
+      1a445864 and 2fac53f5.
     review: maintainer
     operator_visible: >
       Records sent with their own id by another program can end up impossible to delete
@@ -7142,25 +7147,30 @@ items:
     register: [BF-100]
     gates:
       - no-gate: >
-          Reproduced by probes in the BF-99 work (evidence section 4.1); no queue gate yet.
+          New tests fail 27 of 31 on dev 1f9a9d10 and pass on the branch; suite
+          2432/0/3 on Node 20 and 22. No queue gate runs them yet.
     blocks_on: []
     evidence:
       - docs/60-research/remedial/profile-object-id-2026-09-23.md
+      - docs/60-research/remedial/object-id-other-collections-2026-09-23.md
     notes: >
-      Filed 2026-09-23 beside BF-99. The BF-99 branch's approach (convert hex on create,
-      match both forms on update and delete) is the likely fix.
+      Filed 2026-09-23 beside BF-99; built the same day. Narrow alternative to
+      BFQ-102, which includes it as commit c. devicestatus has no create guard; the
+      connector's in-process output does not re-send (strict created_at watermark,
+      measured). PR body draft reports/phase0-pr-bodies/bf-object-id-other-collections.md.
 
   - id: BFQ-101
     title: BF-101 - API v3 id filters miss records stored with a string _id
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/api3-string-id
     base: origin/dev@1f9a9d10
-    worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    worktree: externals/work/crm-bf-api3-id
+    state: ready-to-push
     ships_to_operators_today: true
     blast_radius: >
-      lib/api3/storage/mongoCollection/utils.js filterForOne and identifyingFilter.
+      lib/api3/storage/mongoCollection/utils.js filterForOne and identifyingFilter,
+      plus the shared helper. Two commits, 96eaca1b and 7295bc8c.
     review: maintainer
     operator_visible: >
       Apps that use Nightscout's newer API cannot find, by id, records that were saved
@@ -7169,10 +7179,56 @@ items:
     semver_reason: Bug fix.
     register: [BF-101]
     gates:
-      - no-gate: Reproduced at the filter level only; the v3 route was not booted.
+      - no-gate: >
+          New v3 route tests fail 9 of 10 on dev and pass on the branch; suite 2411/0/3
+          on Node 20 and 22; explain() keeps IXSCAN, no COLLSCAN. No queue gate yet.
     blocks_on: []
     evidence:
       - docs/60-research/remedial/profile-object-id-2026-09-23.md
+      - docs/60-research/remedial/object-id-other-collections-2026-09-23.md
     notes: >
-      Filed 2026-09-23 beside BF-99.
+      Filed 2026-09-23 beside BF-99; built the same day. Narrow alternative to
+      BFQ-102 (its commit e). PR body draft reports/phase0-pr-bodies/bf-api3-string-id.md.
+
+  - id: BFQ-102
+    title: bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/object-id-consistency
+    base: origin/dev@1f9a9d10
+    worktree: externals/work/crm-bf-object-id-all
+    state: ready-to-push
+    ships_to_operators_today: true
+    blast_radius: >
+      Five commits to 597e2899: the helper lib/server/object-id-forms.js; profile
+      (BF-99); devicestatus, food, activity (BF-100); treatments and entries, moved onto
+      the helper with the UUID path unchanged (BF-102); API v3 filters (BF-101). 84 new
+      tests; no existing test changed.
+    review: maintainer
+    operator_visible: >
+      Records that arrive with their own id (copied from another Nightscout by the
+      connector, restored from an export, or saved by 15.0.6 or earlier) can be edited
+      and deleted normally: an edit replaces the record instead of adding a second copy.
+      Nothing in the database changes until a record is edited or deleted. This is not
+      medical advice; if settings or history look wrong, check them with your care team.
+    semver: patch
+    semver_reason: Bug fixes; no API or setting moves.
+    register: [BF-99, BF-100, BF-101, BF-102]
+    gates:
+      - no-gate: >
+          New tests red on dev (11/13, 27/31, 13/15, 9/10); each commit's full suite green
+          on Node 20 and 22 (2401, 2414, 2445, 2460, 2470 passing, 0 failing, 3 pending);
+          every hunk broken singly goes red. No queue gate runs them yet.
+    blocks_on: []
+    evidence:
+      - docs/60-research/remedial/object-id-other-collections-2026-09-23.md
+      - docs/60-research/remedial/profile-object-id-2026-09-23.md
+    notes: >
+      Built 2026-09-23 on the maintainer's question whether one PR could carry the
+      through-line. Merge-tree clean with every open 15.0.9 PR head and
+      rc/15.0.9-additions-e 1b1977e0; conflicts with bf/profile-object-id (BFQ-99) in
+      lib/server/profile.js, so land one. Merged trees not run through the suite.
+      Recommended order: BFQ-99 for 15.0.9, this one after it. PR body draft
+      reports/phase0-pr-bodies/bf-object-id-consistency.md.
+
 

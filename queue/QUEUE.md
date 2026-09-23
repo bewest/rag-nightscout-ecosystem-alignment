@@ -31,20 +31,20 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 109 |
+| items | 110 |
 | runnable gates | 181 |
-| explicit `no-gate:` markers | 155 |
+| explicit `no-gate:` markers | 156 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 155 of the 336 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 156 of the 337 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 35 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-HYGIENE, BFQ-100, BFQ-101 |
+| `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
 | `gate-not-met` | 14 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 7 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-90, BFQ-98, BFQ-99 |
+| `ready-to-push` | 10 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-90, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102 |
 | `blocked` | 12 | P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 5 | RT-COUNT0, BFQ-87, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `merged-upstream` | 19 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-PUBLISH, P0-T01, RT-MONGO-FLOOR, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
@@ -87,6 +87,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-99** bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted
 - **BFQ-100** BF-100 - devicestatus, food and activity store a hex _id as a string
 - **BFQ-101** BF-101 - API v3 id filters miss records stored with a string _id
+- **BFQ-102** bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3
 
 ---
 
@@ -1520,7 +1521,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 43 items
+`parcel: register-open` &mdash; 44 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1569,8 +1570,9 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-97` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll | `needs-decision` | `fix/profile-duplicate-stall` | patch | 0 run + 1 no-gate |
 | `BFQ-98` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it | `ready-to-push` | `fix/profile-duplicate-stall` | patch | 0 run + 1 no-gate |
 | `BFQ-99` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted | `ready-to-push` | `bf/profile-object-id` | patch | 0 run + 1 no-gate |
-| `BFQ-100` | BF-100 - devicestatus, food and activity store a hex _id as a string | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `BFQ-101` | BF-101 - API v3 id filters miss records stored with a string _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-100` | BF-100 - devicestatus, food and activity store a hex _id as a string | `ready-to-push` | `bf/object-id-other-collections` | patch | 0 run + 1 no-gate |
+| `BFQ-101` | BF-101 - API v3 id filters miss records stored with a string _id | `ready-to-push` | `bf/api3-string-id` | patch | 0 run + 1 no-gate |
+| `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 | `ready-to-push` | `bf/object-id-consistency` | patch | 0 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -2917,23 +2919,23 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/profile-object-id-2026-09-23.md`
 
-**Notes.** PREPARED 2026-09-23 on the maintainer's instruction ("another backfix issue"). Merge-tree clean against every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; the merged tree with 1b1977e0 passes the profile and count tests 112/0. Destination release not decided. Unblocks the connector's profile update-on-change (BFQ-97). PR body draft reports/phase0-pr-bodies/bf-profile- object-id.md.
+**Notes.** PREPARED 2026-09-23 on the maintainer's instruction ("another backfix issue"). Merge-tree clean against every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; the merged tree with 1b1977e0 passes the profile and count tests 112/0. Destination release not decided. Unblocks the connector's profile update-on-change (BFQ-97). PR body draft reports/phase0-pr-bodies/bf-profile- object-id.md. Conflicts in lib/server/profile.js with bf/object-id-consistency (BFQ-102), which carries the same fix on a shared helper; land one. modernization b1bdaca0 reproduces it (11 of 13 red on Node 22.23.2 and 24.20.0).
 
 ### `BFQ-100` &mdash; BF-100 - devicestatus, food and activity store a hex _id as a string
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/object-id-other-collections` |
 | base | `origin/dev@1f9a9d10` |
-| worktree | `externals/cgm-remote-monitor-official` |
+| worktree | `externals/work/crm-bf-object-id` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-100` |
 
-**Blast radius.** lib/server/devicestatus.js, lib/server/food.js and lib/server/activity.js create.
+**Blast radius.** lib/server/devicestatus.js, food.js and activity.js create, update, remove and find[_id], plus the shared helper lib/server/object-id-forms.js. Two commits, 1a445864 and 2fac53f5.
 
 **What an operator sees.** Records sent with their own id by another program can end up impossible to delete by that id, and editing a food or activity record that way adds a second copy. This is how today's release (15.0.8) behaves.
 
@@ -2941,29 +2943,30 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Reproduced by probes in the BF-99 work (evidence section 4.1); no queue gate yet.
+- **NO GATE** &mdash; New tests fail 27 of 31 on dev 1f9a9d10 and pass on the branch; suite 2432/0/3 on Node 20 and 22. No queue gate runs them yet.
 
 **Evidence.**
 
 - `docs/60-research/remedial/profile-object-id-2026-09-23.md`
+- `docs/60-research/remedial/object-id-other-collections-2026-09-23.md`
 
-**Notes.** Filed 2026-09-23 beside BF-99. The BF-99 branch's approach (convert hex on create, match both forms on update and delete) is the likely fix.
+**Notes.** Filed 2026-09-23 beside BF-99; built the same day. Narrow alternative to BFQ-102, which includes it as commit c. devicestatus has no create guard; the connector's in-process output does not re-send (strict created_at watermark, measured). PR body draft reports/phase0-pr-bodies/bf-object-id-other- collections.md.
 
 ### `BFQ-101` &mdash; BF-101 - API v3 id filters miss records stored with a string _id
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/api3-string-id` |
 | base | `origin/dev@1f9a9d10` |
-| worktree | `externals/cgm-remote-monitor-official` |
+| worktree | `externals/work/crm-bf-api3-id` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
 | register | `BF-101` |
 
-**Blast radius.** lib/api3/storage/mongoCollection/utils.js filterForOne and identifyingFilter.
+**Blast radius.** lib/api3/storage/mongoCollection/utils.js filterForOne and identifyingFilter, plus the shared helper. Two commits, 96eaca1b and 7295bc8c.
 
 **What an operator sees.** Apps that use Nightscout's newer API cannot find, by id, records that were saved with a text id through the older API. This is how today's release (15.0.8) behaves.
 
@@ -2971,13 +2974,45 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Reproduced at the filter level only; the v3 route was not booted.
+- **NO GATE** &mdash; New v3 route tests fail 9 of 10 on dev and pass on the branch; suite 2411/0/3 on Node 20 and 22; explain() keeps IXSCAN, no COLLSCAN. No queue gate yet.
 
 **Evidence.**
 
 - `docs/60-research/remedial/profile-object-id-2026-09-23.md`
+- `docs/60-research/remedial/object-id-other-collections-2026-09-23.md`
 
-**Notes.** Filed 2026-09-23 beside BF-99.
+**Notes.** Filed 2026-09-23 beside BF-99; built the same day. Narrow alternative to BFQ-102 (its commit e). PR body draft reports/phase0-pr-bodies/bf-api3-string- id.md.
+
+### `BFQ-102` &mdash; bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/object-id-consistency` |
+| base | `origin/dev@1f9a9d10` |
+| worktree | `externals/work/crm-bf-object-id-all` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-99`, `BF-100`, `BF-101`, `BF-102` |
+
+**Blast radius.** Five commits to 597e2899: the helper lib/server/object-id-forms.js; profile (BF-99); devicestatus, food, activity (BF-100); treatments and entries, moved onto the helper with the UUID path unchanged (BF-102); API v3 filters (BF-101). 84 new tests; no existing test changed.
+
+**What an operator sees.** Records that arrive with their own id (copied from another Nightscout by the connector, restored from an export, or saved by 15.0.6 or earlier) can be edited and deleted normally: an edit replaces the record instead of adding a second copy. Nothing in the database changes until a record is edited or deleted. This is not medical advice; if settings or history look wrong, check them with your care team.
+
+**Why `patch`.** Bug fixes; no API or setting moves.
+
+**Gates.**
+
+- **NO GATE** &mdash; New tests red on dev (11/13, 27/31, 13/15, 9/10); each commit's full suite green on Node 20 and 22 (2401, 2414, 2445, 2460, 2470 passing, 0 failing, 3 pending); every hunk broken singly goes red. No queue gate runs them yet.
+
+**Evidence.**
+
+- `docs/60-research/remedial/object-id-other-collections-2026-09-23.md`
+- `docs/60-research/remedial/profile-object-id-2026-09-23.md`
+
+**Notes.** Built 2026-09-23 on the maintainer's question whether one PR could carry the through-line. Merge-tree clean with every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; conflicts with bf/profile-object-id (BFQ-99) in lib/server/profile.js, so land one. Merged trees not run through the suite. Recommended order: BFQ-99 for 15.0.9, this one after it. PR body draft reports/phase0-pr-bodies/bf-object-id-consistency.md.
 
 ---
 
