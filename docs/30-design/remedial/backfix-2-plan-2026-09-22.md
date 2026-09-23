@@ -123,8 +123,23 @@ be documented as one.
 
 | setting | default now | hardened value | planned flip | introduced by |
 |---|---|---|---|---|
-| `TRUST_PROXY` | today's proxy behaviour (trust forwarded headers) | explicit trusted-proxy list | not yet planned | `bf2/auth-hardening` |
-| throttle keying (name to be taken from `bf/throttle`) | today's behaviour | keyed on the trusted client address | the same release as `TRUST_PROXY` | `bf2/auth-hardening` |
+| `TRUST_PROXY` | unset: forwarded headers are believed from any peer. That is today's behaviour for client address, HTTPS detection and hostname, and the failed-authentication delay keys on the result | `false`, or an explicit list of proxy addresses/CIDRs | not yet planned | `bf2/auth-hardening` (`29e6430e`) |
+
+**One flag, not two.** The throttle keys on `data.ip`, and `06c83f2f` already routes that through
+`client-ip.js`, so the throttle's key follows `TRUST_PROXY` without a setting of its own. BF-30 is
+closed only when `TRUST_PROXY` names a boundary. Under the default, the boot message says the delay
+does not protect against guessing passwords or tokens.
+
+**The unset default is dev's behaviour, not the modernization branch's.** `395f3207`'s unset
+default differs from `dev` in four edge cases (BF-88), so `bf2/auth-hardening` keeps `dev`'s
+resolution for the unset case (`8b975b41`) and uses `395f3207`'s code unchanged for the trusted
+path. Which normalisation the cuts keep is an open decision, recorded on RT-3.
+
+**Candidate, not adopted: BF-47.** A compat flag for the subject-field allow-list would look like
+`AUTH_SUBJECT_FIELDS=passthrough|owned` (the name is illustrative). Under `passthrough` (the
+default), `save()` strips only the token fields, which is enough for BF-17. Under `owned`, it writes
+only today's allow-list. Adopting it would make `bf2/auth-hardening` a minor change instead of a
+major one. It is the maintainer's decision.
 
 ## 5. Human steps, in order
 

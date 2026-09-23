@@ -32,18 +32,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 94 |
-| runnable gates | 160 |
-| explicit `no-gate:` markers | 145 |
+| runnable gates | 162 |
+| explicit `no-gate:` markers | 144 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 145 of the 305 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 144 of the 306 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 35 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
+| `not-started` | 34 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE, BF2-BACKPORT, BF2-OPS |
 | `gate-not-met` | 15 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, DOC-VIEWS, DOC-LINKS |
+| `ready-to-push` | 5 | P0-C-REMEDIATE, T30-AUTH, DOC-VIEWS, DOC-LINKS, BF2-AUTH |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `merged-upstream` | 15 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
 | `needs-decision` | 10 | P0-TAG, RT-D3, RT-0, RT-4, T30-RESEARCH, BFQ-72, BFQ-47, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
@@ -1177,7 +1177,7 @@ that costs.
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `major` |
 | review | maintainer plus a human reviewer |
-| register | `BF-64` |
+| register | `BF-64`, `BF-88` |
 | blocks on | `RT-2` |
 
 **Blast radius.** Cut 3: 63 commits, prod 23 files +294/-54 (MongoDB driver 7, jQuery UI). Cut 5: prod 36 files +397/-131 (Express 5, Helmet, EJS, Axios, Mocha 12, Swagger); of its 154 commits as §5 counted them, 95 are modernization work and 59 were dev's, pulled in by the merge 0a4109f6 (GT2, 2026-09-15). Cut 5's tip is b1bdaca0: an external contributor merged dev into it as e3b22034 ("Merge dev into modernization and reconcile regression coverage") and added two fixture commits, so it carries the Phase 0 PRs merged before 2026-09-21. Measured 2026-09-22 against origin/dev 74fc6619: origin/chore/nightscout-modernization is 9 behind dev and 498 ahead, and its trial-merge into dev conflicts in lib/server/bootevent.js (see RT-REBASE, which measures all five cuts). This item is PR #8605, declared in `pr:`.
@@ -3323,7 +3323,7 @@ dev by SHA, evaluating between each merge.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `BF2-AUTH` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY | `not-started` | `bf2/auth-hardening` | major | 3 run + 1 no-gate |
+| `BF2-AUTH` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY | `ready-to-push` | `bf2/auth-hardening` | major | 5 run |
 | `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `not-started` | `-` | n/a | 1 run + 1 no-gate |
 | `BF2-OPS` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | `not-started` | `bf2/ops` | patch | 2 run + 1 no-gate |
 
@@ -3331,7 +3331,7 @@ dev by SHA, evaluating between each merge.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf2/auth-hardening` |
 | base | `origin/dev@74fc6619` |
@@ -3340,7 +3340,7 @@ dev by SHA, evaluating between each merge.
 | review | SECURITY - the reviewer P0-C already names; none assigned. |
 | register | `BF-17`, `BF-30` |
 
-**Blast radius.** lib/authorization/endpoints.js, storage.js, delaylist.js, index.js from bf/auth and bf/throttle, plus lib/server/client-ip.js and its env.js setting extracted from chore/nightscout-modernization (06c83f2f, 395f3207).
+**Blast radius.** Tip 29e6430e on origin/dev 74fc6619. lib/authorization/{index,delaylist, storage,endpoints}.js; lib/server/{client-ip,env,app,websocket}.js; lib/api/{index,status}.js; lib/api3/{index,security,alarmSocket, storageSocket}.js; package.json and lock (proxy-addr declared, forwarded-for kept); README and docs/proposals/trusted-proxy-migration.md. Against chore/nightscout-modernization b1bdaca0 it conflicts in 10 paths, two of them pre-existing (bootevent.js from dev, storage.js from bf/auth).
 
 **What an operator sees.** Not released. Combines the two login-security fixes already described under P0-C and P0-J with a setting that lets you tell Nightscout which proxy in front of it to trust. If you change nothing, Nightscout behaves as it does today; the stronger protection against password guessing applies only once you name your trusted proxy.
 
@@ -3354,13 +3354,16 @@ dev by SHA, evaluating between each merge.
   - Merges into origin/dev with no conflict.
 - `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e bf2/auth-hardening:lib/server/client-ip.js`
   - The client-address module is present. Its default being today's behaviour is asserted by the branch's own tests, not here.
-- **NO GATE** &mdash; The compatibility default (TRUST_PROXY unset = today's forwarded-header behaviour) is a behavioural claim; it needs a test on the branch that fails when the default is flipped, and that test does not exist yet.
+- `[unit]` `cd externals/work/crm-bf2-auth && n exec 20.20.0 npx mocha --timeout 10000 --exit tests/client-ip.test.js`
+  - 48 cases, no database. Pins dev's client address, HTTPS detection and hostname with TRUST_PROXY unset (0, 1 and 2 hops, history dependence). Control, re-run 2026-09-22 - restoring 395f3207's client-ip.js fails exactly 7; flipping the unset default to trust nothing fails 23.
+- `[integration]` `cd externals/work/crm-bf2-auth && TEST=authdelay npm run test-single`
+  - 19 cases - default keying, the documented default gap, throttling under a configured TRUST_PROXY, and the boot message's claims. Flipping the unset default fails 5; bypassing TRUST_PROXY in authorization/index.js fails 4.
 
 **Evidence.**
 
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 
-**Notes.** PRs open after 15.0.9 is tagged (plan section 3). BF-30 is closed only when TRUST_PROXY names a boundary; with the default it remains open, and the branch must say so in its boot message and PR body.
+**Notes.** PREPARED 2026-09-22, held until 15.0.9 is tagged. Commits: merges of bf/auth and bf/throttle; cherry-pick -x of 06c83f2f and 395f3207 (hunks for files absent on dev dropped); 1114228d adapts two cherry-picked tests to bf/throttle's keysFor(); 8b975b41 is a PORT - with TRUST_PROXY unset the address comes from forwarded-for exactly as on dev, because 395f3207's default differs in four cases (BF-88); the trusted path is 395f3207's code unchanged. ONE flag, not two - the throttle keys on data.ip, which now comes from client- ip.js. Suite on Node 20.20.0 - dev 2386/0/3, branch 2462/0/3, +76 exactly. Semver stays major for BF-47; a compat flag for BF-47 (sketched in the PR body) would make it minor. PRs open after 15.0.9 is tagged (plan section 3). BF-30 is closed only when TRUST_PROXY names a boundary; with the default it remains open, and the branch must say so in its boot message and PR body.
 
 ### `BF2-BACKPORT` &mdash; Which modernization-only security commits fix a defect that dev has
 

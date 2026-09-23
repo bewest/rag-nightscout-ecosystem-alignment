@@ -55,17 +55,18 @@ that it was reviewed.
 | `BFQ-47` | `needs-decision` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | &mdash; |
 | `RT-0` | `needs-decision` | Release 15.0.9 | #8598, #8605 |
 
+### SECURITY reviewer &mdash; 2 items
+
+| id | claimed state | what it is | PR |
+|---|---|---|---|
+| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
+| `BF2-AUTH` | `ready-to-push` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | &mdash; |
+
 ### SAFETY reviewer &mdash; 1 item
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
-
-### SECURITY reviewer &mdash; 1 item
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
 
 <!-- END GENERATED: needs-a-human -->
 

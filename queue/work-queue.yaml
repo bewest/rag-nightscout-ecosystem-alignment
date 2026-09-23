@@ -2206,7 +2206,7 @@ items:
       docker-compose default moves. Cut 5 is classified major on dependency major
       bumps (Express 4->5, Helmet 4->8) and a 36-file production diff, NOT on a
       measured contract break. Combined, the release is major.
-    register: [BF-64]
+    register: [BF-64, BF-88]
     gates:
       - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/nightscout-modernization >/dev/null
         kind: static
@@ -6114,11 +6114,15 @@ items:
     branch: bf2/auth-hardening
     base: origin/dev@74fc6619
     worktree: externals/work/crm-bf2-auth
-    state: not-started
+    state: ready-to-push
     blast_radius: >
-      lib/authorization/endpoints.js, storage.js, delaylist.js, index.js from
-      bf/auth and bf/throttle, plus lib/server/client-ip.js and its env.js
-      setting extracted from chore/nightscout-modernization (06c83f2f, 395f3207).
+      Tip 29e6430e on origin/dev 74fc6619. lib/authorization/{index,delaylist,
+      storage,endpoints}.js; lib/server/{client-ip,env,app,websocket}.js;
+      lib/api/{index,status}.js; lib/api3/{index,security,alarmSocket,
+      storageSocket}.js; package.json and lock (proxy-addr declared,
+      forwarded-for kept); README and docs/proposals/trusted-proxy-migration.md.
+      Against chore/nightscout-modernization b1bdaca0 it conflicts in 10 paths,
+      two of them pre-existing (bootevent.js from dev, storage.js from bf/auth).
     review: SECURITY - the reviewer P0-C already names; none assigned.
     operator_visible: >
       Not released. Combines the two login-security fixes already described
@@ -6144,14 +6148,34 @@ items:
       - run: 'git -C externals/cgm-remote-monitor-official cat-file -e bf2/auth-hardening:lib/server/client-ip.js'
         kind: static
         describe: The client-address module is present. Its default being today's behaviour is asserted by the branch's own tests, not here.
-      - no-gate: >
-          The compatibility default (TRUST_PROXY unset = today's forwarded-header
-          behaviour) is a behavioural claim; it needs a test on the branch that
-          fails when the default is flipped, and that test does not exist yet.
+      - run: 'cd externals/work/crm-bf2-auth && n exec 20.20.0 npx mocha --timeout 10000 --exit tests/client-ip.test.js'
+        kind: unit
+        describe: >
+          48 cases, no database. Pins dev's client address, HTTPS detection and
+          hostname with TRUST_PROXY unset (0, 1 and 2 hops, history dependence).
+          Control, re-run 2026-09-22 - restoring 395f3207's client-ip.js fails
+          exactly 7; flipping the unset default to trust nothing fails 23.
+      - run: 'cd externals/work/crm-bf2-auth && TEST=authdelay npm run test-single'
+        kind: integration
+        describe: >
+          19 cases - default keying, the documented default gap, throttling under
+          a configured TRUST_PROXY, and the boot message's claims. Flipping the
+          unset default fails 5; bypassing TRUST_PROXY in authorization/index.js
+          fails 4.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
     notes: >
+      PREPARED 2026-09-22, held until 15.0.9 is tagged. Commits: merges of
+      bf/auth and bf/throttle; cherry-pick -x of 06c83f2f and 395f3207 (hunks for
+      files absent on dev dropped); 1114228d adapts two cherry-picked tests to
+      bf/throttle's keysFor(); 8b975b41 is a PORT - with TRUST_PROXY unset the
+      address comes from forwarded-for exactly as on dev, because 395f3207's
+      default differs in four cases (BF-88); the trusted path is 395f3207's code
+      unchanged. ONE flag, not two - the throttle keys on data.ip, which now
+      comes from client-ip.js. Suite on Node 20.20.0 - dev 2386/0/3, branch
+      2462/0/3, +76 exactly. Semver stays major for BF-47; a compat flag for
+      BF-47 (sketched in the PR body) would make it minor.
       PRs open after 15.0.9 is tagged (plan section 3). BF-30 is closed only when
       TRUST_PROXY names a boundary; with the default it remains open, and the
       branch must say so in its boot message and PR body.
