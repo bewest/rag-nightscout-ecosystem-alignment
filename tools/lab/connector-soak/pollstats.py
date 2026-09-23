@@ -3,7 +3,7 @@
 
     pollstats.py <proxy-container> [--since ISO] [--until ISO] [--series]
 
-Maps client addresses to container names on cksoak-net, then for each client:
+Maps client addresses to container names on $LAB_NET (default cksoak-net), then for each client:
   * groups GET /api/v1/entries.json into CYCLES (a request more than 60 s after
     the previous one starts a new cycle; a frame's retries land 10 s apart),
   * reports attempts per cycle, the interval between cycle starts, status
@@ -13,6 +13,7 @@ Nothing from request headers or bodies is in the proxy log to begin with.
 """
 import collections
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -28,7 +29,7 @@ def ts(s):
     return datetime.fromisoformat(s.replace('Z', '+00:00')).timestamp()
 
 
-net = json.loads(subprocess.run(['docker', 'network', 'inspect', 'cksoak-net'], capture_output=True, text=True).stdout)[0]
+net = json.loads(subprocess.run(['docker', 'network', 'inspect', os.environ.get('LAB_NET', 'cksoak-net')], capture_output=True, text=True).stdout)[0]
 ipname = {v['IPv4Address'].split('/')[0]: v['Name'] for v in net['Containers'].values()}
 logs = subprocess.run(['docker', 'logs', proxy], capture_output=True, text=True, errors='replace')
 rows = []

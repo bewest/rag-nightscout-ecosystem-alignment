@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 71 | 23 | 14 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 71 | 23 | 16 |
 | **Modernization** | `release-train` | 15 | 1 | 5 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **106** | **33** | **24** |
+| | **total** | **106** | **33** | **26** |
 
 <!-- END GENERATED: horizons -->
 
@@ -135,7 +135,7 @@ cover more than one `BF-`:
 | `BFQ-93` | `not-started` | BF-93 - food changes never reach an open page |
 | `BFQ-94` | `unsettled` | BF-94 - a kept profile instance can return a temp basal that has been replaced |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
-| `BFQ-98` | `in-progress` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
+| `BFQ-98` | `ready-to-push` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `gate-not-met` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
@@ -155,7 +155,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 1 |  | 3 | 1 | 2 | 1 | 12 | 2 |  |  |  | **22** |
 | `release-train` | 1 | 1 | 4 |  | 4 | 3 |  | 2 |  |  |  | **15** |
-| `register-open` | 16 | 2 | 5 | 3 | 1 | 1 | 5 | 4 |  | 2 | 1 | **40** |
+| `register-open` | 16 |  | 5 | 5 | 1 | 1 | 5 | 4 |  | 2 | 1 | **40** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  | **18** |
 | `docs-truth` | 6 |  | 1 |  |  |  |  |  | 2 |  |  | **9** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 18 items
+### Maintainer &mdash; 20 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -48,6 +48,8 @@ that it was reviewed.
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `BFQ-69` | `ready-to-push` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing | &mdash; |
 | `BFQ-90` | `ready-to-push` | BF-90 - an alarm at a page with no reading throws in the client | &mdash; |
+| `BFQ-97` | `ready-to-push` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll | &mdash; |
+| `BFQ-98` | `ready-to-push` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix do | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |

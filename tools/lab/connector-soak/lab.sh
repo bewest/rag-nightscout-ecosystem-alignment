@@ -8,8 +8,8 @@
 #
 # All state (secrets, ledger, samples, logs) lives under $CKSOAK_STATE, which
 # must be outside any git tree. Secrets are generated here at runtime and are
-# never printed. Containers and the network are named cksoak-*; `down`
-# removes only the names this script creates.
+# never printed. Containers and the network are named $LAB_PREFIX-* (default
+# cksoak-*); `down` removes only the names with that prefix.
 #
 # Usage (see the soak report for the full run order):
 #   CKSOAK_STATE=/path lab.sh build <connector-version>   # e.g. 0.1.0-dev.2
@@ -21,10 +21,16 @@
 #   lab.sh analyze <outdir> <ledger> <src:src-mongo> <name:sink:sink-mongo=firstFetchISO>...
 #   lab.sh disturb <outdir> <source> <source-mongo> update-treatment|update-entry|delete|backdate
 #   lab.sh mongo-eval <container> <db> <js>  # authoritative reads
-#   lab.sh down                              # remove every cksoak-* container this script made
+#   lab.sh build-local <tarball>             # an `npm pack` tarball instead of an npm version
+#   lab.sh up-profile-arm <local-image> <control-version>
+#       one source with a profile; sink F on the local image, sink C on the
+#       npm control version, both with a readable token (as K1), plus sampler
+#   lab.sh down                              # remove every $LAB_PREFIX-* container this script made
 #
 # Environment: NS_REPO (cgm-remote-monitor clone), NS_COMMIT (default 74fc6619),
-# NODE_VER for lockfile regeneration (default 22.23.2, run with `n exec`).
+# NODE_VER for lockfile regeneration (default 22.23.2, run with `n exec`),
+# LAB_PREFIX for container and network names (default cksoak), ARM_PORT for
+# up-profile-arm's first host port (default 3491; S, F and C take three).
 set -euo pipefail
 
 HERE=$(cd "$(dirname "$0")" && pwd)
@@ -33,7 +39,8 @@ STATE=${CKSOAK_STATE:?set CKSOAK_STATE to a directory outside the repo}
 NS_REPO=${NS_REPO:-$ROOT/externals/cgm-remote-monitor-official}
 NS_COMMIT=${NS_COMMIT:-74fc6619}
 NODE_VER=${NODE_VER:-22.23.2}
-NET=cksoak-net
+PFX=${LAB_PREFIX:-cksoak}
+NET=$PFX-net
 BASE=cksoak-ns:$NS_COMMIT
 mkdir -p "$STATE"/{secrets,out,build,logs}
 chmod 700 "$STATE/secrets"
@@ -67,6 +74,37 @@ EOF
   [ "$want" = "$got" ] || { echo "lockfile integrity $got does not match npm $want" >&2; exit 1; }
   (cd "$d" && docker build -q -t "$BASE-nc$v" .)
   docker run --rm --entrypoint node "$BASE-nc$v" -p 'require("/opt/app/node_modules/nightscout-connect/package.json").version'
+}
+
+build_local () { # build_local <tarball>: as build, with an `npm pack` tarball as the dependency
+  local tgz; tgz=$(readlink -f "$1"); [ -s "$tgz" ] || { echo "no tarball $1" >&2; exit 1; }
+  local sum; sum=$(sha256sum "$tgz" | cut -c1-12)
+  docker image inspect "$BASE" >/dev/null 2>&1 || { echo "build the base first (lab.sh build <version>)" >&2; exit 1; }
+  local d="$STATE/build/ns-$NS_COMMIT-nclocal-$sum" img="$BASE-nclocal-$sum"
+  rm -rf "$d"; mkdir -p "$d"; git -C "$NS_REPO" archive "$NS_COMMIT" | tar -x -C "$d"
+  mkdir -p "$d/vendor"; cp "$tgz" "$d/vendor/nightscout-connect.tgz"
+  python3 - "$d/package.json" <<'EOF'
+import json,sys
+p=json.load(open(sys.argv[1])); p['dependencies']['nightscout-connect']='file:vendor/nightscout-connect.tgz'
+open(sys.argv[1],'w').write(json.dumps(p,indent=2)+'\n')
+EOF
+  # The image's Dockerfile copies an explicit file list; add the tarball before npm ci.
+  python3 - "$d/Dockerfile" <<'EOF'
+import sys
+p=sys.argv[1]; s=open(p).read()
+a='COPY package.json package-lock.json .babelrc ./\n'
+assert a in s, 'Dockerfile layout changed'
+open(p,'w').write(s.replace(a, a+'COPY vendor/ ./vendor/\n',1))
+EOF
+  (cd "$d" && n exec "$NODE_VER" npm install --package-lock-only --ignore-scripts --no-audit --no-fund >/dev/null)
+  local want got
+  want="sha512-$(openssl dgst -sha512 -binary "$tgz" | base64 -w0)"
+  got=$(python3 -c "import json;print(json.load(open('$d/package-lock.json'))['packages']['node_modules/nightscout-connect']['integrity'])")
+  [ "$want" = "$got" ] || { echo "lockfile integrity $got does not match the tarball $want" >&2; exit 1; }
+  (cd "$d" && docker build -q -t "$img" .) >/dev/null
+  # version, then one digest over the installed lib/ (compare with the packed tree, sorted with LC_ALL=C)
+  docker run --rm --entrypoint sh "$img" -c 'node -p "require(\"/opt/app/node_modules/nightscout-connect/package.json\").version"; cd /opt/app/node_modules/nightscout-connect && find lib -name "*.js" | sort | xargs sha256sum | sha256sum'
+  echo "$img"
 }
 
 mongo () { # mongo <name> <hostport>
@@ -158,27 +196,44 @@ sampler () { # sampler <name> <outdir> <target specs...>  spec: name:container:m
 up_main () { # up_main <connector-version>
   local img="$BASE-nc$1"
   net
-  mongo cksoak-mongo-s 27471; mongo cksoak-mongo-k1 27472; mongo cksoak-mongo-k2 27473
-  source_ns cksoak-s 3471 denied cksoak-mongo-s "$BASE"
-  writer cksoak-writer cksoak-s ledger.jsonl
-  until grep -q '"kind":"live"\|seeded' <(docker logs cksoak-writer 2>&1); do sleep 2; done
-  proxy cksoak-proxy cksoak-s
-  sink_ns cksoak-k1 3472 "$img" token  cksoak-proxy cksoak-s false cksoak-mongo-k1
-  sink_ns cksoak-k2 3473 "$img" secret cksoak-proxy cksoak-s true  cksoak-mongo-k2
+  mongo $PFX-mongo-s 27471; mongo $PFX-mongo-k1 27472; mongo $PFX-mongo-k2 27473
+  source_ns $PFX-s 3471 denied $PFX-mongo-s "$BASE"
+  writer $PFX-writer $PFX-s ledger.jsonl
+  until grep -q '"kind":"live"\|seeded' <(docker logs $PFX-writer 2>&1); do sleep 2; done
+  proxy $PFX-proxy $PFX-s
+  sink_ns $PFX-k1 3472 "$img" token  $PFX-proxy $PFX-s false $PFX-mongo-k1
+  sink_ns $PFX-k2 3473 "$img" secret $PFX-proxy $PFX-s true  $PFX-mongo-k2
   add_k3 "$1"
 }
 
 add_k3 () { # K3: as K1 but without profiles, the configuration that avoids the profile write failure
-  mongo cksoak-mongo-k3 27474
+  mongo $PFX-mongo-k3 27474
   SINK_EXTRA_ENV=CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus \
-    sink_ns cksoak-k3 3474 "$BASE-nc$1" token cksoak-proxy cksoak-s false cksoak-mongo-k3
-  sampler cksoak-sampler main s:cksoak-s:cksoak-mongo-s k1:cksoak-k1:cksoak-mongo-k1 k2:cksoak-k2:cksoak-mongo-k2 k3:cksoak-k3:cksoak-mongo-k3
+    sink_ns $PFX-k3 3474 "$BASE-nc$1" token $PFX-proxy $PFX-s false $PFX-mongo-k3
+  sampler $PFX-sampler main s:$PFX-s:$PFX-mongo-s k1:$PFX-k1:$PFX-mongo-k1 k2:$PFX-k2:$PFX-mongo-k2 k3:$PFX-k3:$PFX-mongo-k3
+}
+
+up_profile_arm () { # up_profile_arm <local-image> <control-version>
+  # One denied source with a profile (the writer seeds one), one proxy, and two
+  # sinks reading it with a readable token as K1 does: F on the local image,
+  # C on the npm control version. Same source, same proxy, same cadence.
+  local fimg=$1 cimg="$BASE-nc$2" p=${ARM_PORT:-3491}
+  docker image inspect "$fimg" >/dev/null && docker image inspect "$cimg" >/dev/null
+  net
+  mongo $PFX-mongo-s 0; mongo $PFX-mongo-f 0; mongo $PFX-mongo-c 0
+  source_ns $PFX-s "$p" denied $PFX-mongo-s "$BASE"
+  writer $PFX-writer $PFX-s ledger.jsonl
+  until grep -q '"kind":"live"\|seeded' <(docker logs $PFX-writer 2>&1); do sleep 2; done
+  proxy $PFX-proxy $PFX-s
+  sink_ns $PFX-f $((p + 1)) "$fimg" token $PFX-proxy $PFX-s false $PFX-mongo-f
+  sink_ns $PFX-c $((p + 2)) "$cimg" token $PFX-proxy $PFX-s false $PFX-mongo-c
+  sampler $PFX-sampler arm s:$PFX-s:$PFX-mongo-s f:$PFX-f:$PFX-mongo-f c:$PFX-c:$PFX-mongo-c
 }
 
 control () { # control <tag> <connector-version> <source-roles> <token|secret> [preseed-subject-version]
   # A self-contained pair: its own source (seeded by its own writer), proxy and sink.
   local tag=$1 v=$2 roles=$3 mode=$4 pre=${5:-}
-  local s=cksoak-c$tag-s k=cksoak-c$tag-k p=cksoak-c$tag-proxy w=cksoak-c$tag-writer
+  local s=$PFX-c$tag-s k=$PFX-c$tag-k p=$PFX-c$tag-proxy w=$PFX-c$tag-writer
   # "shipped" = the NS_COMMIT image with whatever connector its own package.json pins.
   local kimg="$BASE-nc$v"; [ "$v" = shipped ] && kimg="$BASE"
   net
@@ -194,13 +249,13 @@ control () { # control <tag> <connector-version> <source-roles> <token|secret> [
     docker rm -f "$k" >/dev/null
   fi
   sink_ns "$k" "${CPORT_K:?}" "$kimg" "$mode" "$p" "$s" true "$k-mongo"
-  sampler "cksoak-c$tag-sampler" "c$tag" "s:$s:$s-mongo" "k:$k:$k-mongo"
+  sampler "$PFX-c$tag-sampler" "c$tag" "s:$s:$s-mongo" "k:$k:$k-mongo"
 }
 
 stats_loop () { # host-side: one JSON line per container per minute
   while :; do
     local t; t=$(date -u +%FT%TZ)
-    for c in $(docker ps --format '{{.Names}}' | grep '^cksoak-' | grep -v mongo | sort); do
+    for c in $(docker ps --format '{{.Names}}' | grep "^$PFX-" | grep -v mongo | sort); do
       local rss fds; rss=$(docker exec "$c" sh -c 'grep VmRSS /proc/1/status' 2>/dev/null | awk '{print $2}' || true)
       fds=$(docker exec "$c" sh -c 'ls /proc/1/fd | wc -l' 2>/dev/null | tr -d ' ' || true)
       docker stats --no-stream --format "{\"t\":\"$t\",\"name\":\"{{.Name}}\",\"cpu\":\"{{.CPUPerc}}\",\"mem\":\"{{.MemUsage}}\",\"rss_kb\":\"${rss:-}\",\"fds\":\"${fds:-}\"}" "$c" 2>/dev/null || true
@@ -232,13 +287,15 @@ disturb () { # disturb <outdir> <source> <source-mongo> <action>
 mongo_eval () { docker exec "$1" mongosh --quiet "$2" --eval "$3"; }
 
 down () {
-  for c in $(docker ps -a --format '{{.Names}}' | grep '^cksoak-'); do docker rm -f "$c" >/dev/null; done
+  for c in $(docker ps -a --format '{{.Names}}' | grep "^$PFX-"); do docker rm -f "$c" >/dev/null; done
   docker network rm $NET >/dev/null 2>&1 || true
 }
 
 cmd=${1:-help}; shift || true
 case $cmd in
   build) build "$@" ;;
+  build-local) build_local "$@" ;;
+  up-profile-arm) up_profile_arm "$@" ;;
   up-main) up_main "$@" ;;
   add-k3) add_k3 "$@" ;;
   sampler) sampler "$@" ;;
@@ -251,5 +308,5 @@ case $cmd in
   analyze) analyze "$@" ;;
   disturb) disturb "$@" ;;
   down) down ;;
-  *) sed -n '2,25p' "$0" ;;
+  *) sed -n '2,33p' "$0" ;;
 esac

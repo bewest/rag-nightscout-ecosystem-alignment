@@ -6969,7 +6969,7 @@ items:
     branch: fix/profile-duplicate-stall
     base: official/dev@fbd4e55
     worktree: externals/work/nc-profile-dup
-    state: in-progress
+    state: ready-to-push
     ships_to_operators_today: false
     blast_radius: >
       Connector lib/outputs/internal.js safePersist and lib/outputs/nightscout.js
@@ -6997,6 +6997,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md
     notes: >
+      PREPARED 2026-09-23 - f6359b4 on fix/profile-duplicate-stall (tip f924de2, on fbd4e55, not pushed): profiles already stored on the sink, by _id or identifier, are skipped instead of failing the poll, in both the internal and REST outputs; every other write failure still fails it. Connector suite 292 -> 304 -> 308 on Node 20/22/24. 96-minute soak arm: fix polls every 5.0 min median with 0 lag before the outage, 0 profile errors; the dev.2 control in the same run stalls at 28.9 min. A source edit to an existing profile is skipped (as in 0.0.13); the stored set is cached per process (open question for the maintainer). REST output covered by fake-transport tests only. Evidence docs/60-research/remedial/connector-profile-duplicate-stall-2026-09-23.md.
       DECIDED 2026-09-23 (maintainer) - fix in the connector first, tag 0.1.0-dev.3,
       then 0.1.0; #8752 (P0-PIN) holds for dev.3. Fix being built in this session on
       fix/profile-duplicate-stall (not pushed). Workaround until then:
@@ -7009,7 +7010,7 @@ items:
     branch: fix/profile-duplicate-stall
     base: official/dev@fbd4e55
     worktree: externals/work/nc-profile-dup
-    state: in-progress
+    state: ready-to-push
     ships_to_operators_today: true
     blast_radius: >
       Connector lib/sources/nightscout.js reader-subject lookup (v0.0.13 lines 75-77),
@@ -7036,6 +7037,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md
     notes: >
+      PREPARED 2026-09-23 - f924de2 on fix/profile-duplicate-stall (not pushed): one warning per process when the reused nightscout-connect-reader has no roles, or when a read returns 401, naming the subject and both fixes; no writes to the source; no token, secret or URL in the message. Exact wording in the evidence doc for the release notes.
       DECIDED 2026-09-23 (maintainer) - warn clearly, don't repair: one plain log
       message naming the subject and both fixes, no writes to the source; the release
       notes carry the same steps. Being built as a second commit on
