@@ -103,25 +103,29 @@ checkable form of "the full release has not been cut". Read-only.
 
 ## Notes carried on the item
 
-HELD 2026-09-23 (maintainer) - v0.1.0 waits for the idempotent-profile-write
-fix (the dev.2 soak's sync stall) in a dev.3 prerelease, and for a clear log
-warning when the reused nightscout-connect-reader subject has no roles
-(maintainer: warn clearly, don't repair; the release notes keep the manual
-steps). 2026-09-23 - v0.1.0-dev.2 tagged at fbd4e55 (dev, carrying BF-89 and
-BF-91) and published to npm next with provenance (publish run 35809963748).
-The longer prerelease testing the maintainer asked for starts here; v0.1.0 is
-still not tagged. DECIDED 2026-09-23 (maintainer) - tag 0.1.0 only after the
-additional needed connector fixes are merged into connector dev; the set is
-exactly BF-89 (P0-CONNECT-ROLE, prepared as fix/nightscout-reader-roles
-dea2bec) and BF-91 (BFQ-91). #54 and #52 are not required for 0.1.0. DECIDED
-2026-09-23 (maintainer) - 0.1.0 is pinned in 15.0.9, but only after the
-prerelease has been tested longer; tagging waits for that. Before the full
-release, connector dev also fixes BF-89 (the nightscout source sends role for
-roles; P0-CONNECT-ROLE). Tagging remains the maintainer's action. DECIDED
-2026-09-22 (maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging remains
-the maintainer's action. The programme's local release/v0.0.14 branch and
-v0.0.14 tag are retired: every commit on them is in connector dev. No 0.0.14
-will be published; the line is 0.1.0.
+2026-09-23 - connector dev is 977da8a after #79 (BF-97 stall fix, bounded
+profile fetch, update-on-change, BF-98 warning). Next: tag v0.1.0-dev.3 on
+977da8a (maintainer), then the P0-PIN move to dev.3 and the combined rc re-
+run; exact 0.1.0 after testing. HELD 2026-09-23 (maintainer) - v0.1.0 waits
+for the idempotent-profile-write fix (the dev.2 soak's sync stall) in a dev.3
+prerelease, and for a clear log warning when the reused nightscout-connect-
+reader subject has no roles (maintainer: warn clearly, don't repair; the
+release notes keep the manual steps). 2026-09-23 - v0.1.0-dev.2 tagged at
+fbd4e55 (dev, carrying BF-89 and BF-91) and published to npm next with
+provenance (publish run 35809963748). The longer prerelease testing the
+maintainer asked for starts here; v0.1.0 is still not tagged. DECIDED
+2026-09-23 (maintainer) - tag 0.1.0 only after the additional needed connector
+fixes are merged into connector dev; the set is exactly BF-89 (P0-CONNECT-
+ROLE, prepared as fix/nightscout-reader-roles dea2bec) and BF-91 (BFQ-91). #54
+and #52 are not required for 0.1.0. DECIDED 2026-09-23 (maintainer) - 0.1.0 is
+pinned in 15.0.9, but only after the prerelease has been tested longer;
+tagging waits for that. Before the full release, connector dev also fixes
+BF-89 (the nightscout source sends role for roles; P0-CONNECT-ROLE). Tagging
+remains the maintainer's action. DECIDED 2026-09-22 (maintainer) - tag 0.1.0
+and pin it inside 15.0.9. Tagging remains the maintainer's action. The
+programme's local release/v0.0.14 branch and v0.0.14 tag are retired: every
+commit on them is in connector dev. No 0.0.14 will be published; the line is
+0.1.0.
 
 ---
 

@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 75 | 23 | 19 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 75 | 23 | 17 |
 | **Modernization** | `release-train` | 15 | 1 | 4 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **110** | **33** | **28** |
+| | **total** | **110** | **33** | **26** |
 
 <!-- END GENERATED: horizons -->
 
@@ -138,7 +138,7 @@ cover more than one `BF-`:
 | `BFQ-93` | `not-started` | BF-93 - food changes never reach an open page |
 | `BFQ-94` | `unsettled` | BF-94 - a kept profile instance can return a temp basal that has been replaced |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
-| `BFQ-98` | `ready-to-push` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
+| `BFQ-98` | `merged-upstream` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
 | `BFQ-99` | `ready-to-push` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
@@ -159,7 +159,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 1 |  | 3 | 1 | 2 |  | 13 | 2 |  |  |  | **22** |
 | `release-train` | 1 | 1 | 4 |  | 4 | 2 | 1 | 2 |  |  |  | **15** |
-| `register-open` | 16 |  | 5 | 9 | 1 | 1 | 5 | 4 |  | 2 | 1 | **44** |
+| `register-open` | 16 |  | 5 | 7 | 1 | 1 | 7 | 4 |  | 2 | 1 | **44** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  | **18** |
 | `docs-truth` | 6 |  | 1 |  |  |  |  |  | 2 |  |  | **9** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

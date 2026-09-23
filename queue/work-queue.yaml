@@ -1560,6 +1560,9 @@ items:
       - docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-09-23 - connector dev is 977da8a after #79 (BF-97 stall fix, bounded profile
+      fetch, update-on-change, BF-98 warning). Next: tag v0.1.0-dev.3 on 977da8a (maintainer),
+      then the P0-PIN move to dev.3 and the combined rc re-run; exact 0.1.0 after testing.
       HELD 2026-09-23 (maintainer) - v0.1.0 waits for the idempotent-profile-write fix (the dev.2 soak's sync stall) in a dev.3 prerelease, and for a clear log warning when the reused nightscout-connect-reader subject has no roles (maintainer: warn clearly, don't repair; the release notes keep the manual steps).
       2026-09-23 - v0.1.0-dev.2 tagged at fbd4e55 (dev, carrying BF-89 and BF-91) and published to npm next with provenance (publish run 35809963748). The longer prerelease testing the maintainer asked for starts here; v0.1.0 is still not tagged.
       DECIDED 2026-09-23 (maintainer) - tag 0.1.0 only after the additional needed connector fixes are merged into connector dev; the set is exactly BF-89 (P0-CONNECT-ROLE, prepared as fix/nightscout-reader-roles dea2bec) and BF-91 (BFQ-91). #54 and #52 are not required for 0.1.0.
@@ -7010,7 +7013,8 @@ items:
     branch: fix/profile-sync-bounded-update
     base: official/dev@fbd4e55
     worktree: externals/work/nc-profile-sync
-    state: ready-to-push
+    state: merged-upstream
+    pr: [79]
     ships_to_operators_today: false
     blast_radius: >
       Connector lib/outputs/internal.js safePersist and lib/outputs/nightscout.js
@@ -7038,6 +7042,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md
     notes: >
+      MERGED 2026-09-23 - connector #79 (fix/profile-sync-bounded-update, de3cee1, all four
+      commits f6359b4, f924de2, 1d2ebc8, de3cee1) merged into connector dev as 977da8a, CI
+      green; verified here with merge-base. Not tagged: v0.1.0-dev.3 is the maintainer's
+      next step (npm next is still 0.1.0-dev.2). The pin PR to dev.3 and the combined
+      re-run follow its publish.
       2026-09-23 - #8752 MERGED into dev (f0954a6a, 08:37 UTC), so dev and the Docker image built from it install 0.1.0-dev.2, which carries this stall for Nightscout-to-Nightscout sites whose source has a profile. The pin must move to the fixed connector before 15.0.9 is tagged.
       DECIDED 2026-09-23 (maintainer) - (1) re-read what the sink stores each poll instead of caching per process, with the cost bounded (the maintainer asked whether it covers all profiles or only the latest); (2) update on change: a source edit to an existing profile replaces the sink copy. NOT BUILDABLE AS ASKED, found by a lab probe on 74fc6619 (no code written, f924de2 unchanged): the connector's copies are stored with string _ids, and Nightscout's save/remove/_id lookups convert to ObjectId, so a PUT duplicates instead of replacing and DELETE cannot remove the copy (filed as a cgm-remote-monitor backfix, branch bf/profile-object-id in preparation). API-style in-place edits leave no timestamp. Reports use older profiles, so a bounded fetch misses edits to non-newest documents. Cost today at 500 profiles of about 7 KB: about 3.5 MB per poll; bounded shape about 14 KB. Waiting on the maintainer: what 0.1.0 ships (bounded insert-only, or wait for the Nightscout fix). #8752 still holds.
       PREPARED 2026-09-23 - f6359b4 on fix/profile-duplicate-stall (tip f924de2, on fbd4e55, not pushed): profiles already stored on the sink, by _id or identifier, are skipped instead of failing the poll, in both the internal and REST outputs; every other write failure still fails it. Connector suite 292 -> 304 -> 308 on Node 20/22/24. 96-minute soak arm: fix polls every 5.0 min median with 0 lag before the outage, 0 profile errors; the dev.2 control in the same run stalls at 28.9 min. A source edit to an existing profile is skipped (as in 0.0.13); the stored set is cached per process (open question for the maintainer). REST output covered by fake-transport tests only. Evidence docs/60-research/remedial/connector-profile-duplicate-stall-2026-09-23.md.
@@ -7066,7 +7075,8 @@ items:
     branch: fix/profile-duplicate-stall
     base: official/dev@fbd4e55
     worktree: externals/work/nc-profile-dup
-    state: ready-to-push
+    state: merged-upstream
+    pr: [79]
     ships_to_operators_today: true
     blast_radius: >
       Connector lib/sources/nightscout.js reader-subject lookup (v0.0.13 lines 75-77),
@@ -7093,6 +7103,11 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md
     notes: >
+      MERGED 2026-09-23 - connector #79 (fix/profile-sync-bounded-update, de3cee1, all four
+      commits f6359b4, f924de2, 1d2ebc8, de3cee1) merged into connector dev as 977da8a, CI
+      green; verified here with merge-base. Not tagged: v0.1.0-dev.3 is the maintainer's
+      next step (npm next is still 0.1.0-dev.2). The pin PR to dev.3 and the combined
+      re-run follow its publish.
       PREPARED 2026-09-23 - f924de2 on fix/profile-duplicate-stall (not pushed): one warning per process when the reused nightscout-connect-reader has no roles, or when a read returns 401, naming the subject and both fixes; no writes to the source; no token, secret or URL in the message. Exact wording in the evidence doc for the release notes.
       DECIDED 2026-09-23 (maintainer) - warn clearly, don't repair: one plain log
       message naming the subject and both fixes, no writes to the source; the release

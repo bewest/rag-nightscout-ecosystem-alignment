@@ -37,8 +37,6 @@ repository.
 | [`BFQ-87`](bfq-87-bf-qs-6-16.md) | &mdash; | `in-flight-upstream` | BF-87 - the root qs override holds the connector below its range and pins the server's query parser |
 | [`BFQ-90`](bfq-90-bf3-alarm-no-reading.md) | &mdash; | `ready-to-push` | BF-90 - an alarm at a page with no reading throws in the client |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
-| [`BFQ-97`](bfq-97-fix-profile-sync-bounded-update.md) | &mdash; | `ready-to-push` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll |
-| [`BFQ-98`](bfq-98-fix-profile-duplicate-stall.md) | &mdash; | `ready-to-push` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it |
 | [`BFQ-99`](bfq-99-bf-profile-object-id.md) | &mdash; | `ready-to-push` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted |
 | [`FU-PRBODIES`](fu-prbodies.md) | &mdash; | `needs-decision` | Merged PR bodies have drifted from the files they were posted from |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
