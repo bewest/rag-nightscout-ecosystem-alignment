@@ -31,20 +31,20 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 106 |
+| items | 109 |
 | runnable gates | 181 |
-| explicit `no-gate:` markers | 152 |
+| explicit `no-gate:` markers | 155 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 152 of the 333 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 155 of the 336 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 35 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-HYGIENE, BFQ-100, BFQ-101 |
 | `in-progress` | 1 | RT-D3 |
 | `gate-not-met` | 14 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 6 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-90, BFQ-98 |
+| `ready-to-push` | 7 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-90, BFQ-98, BFQ-99 |
 | `blocked` | 12 | P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 7 | P0-PIN, RT-COUNT0, RT-MONGO-FLOOR, BFQ-87, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `merged-upstream` | 17 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
@@ -84,6 +84,9 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **ADV-XSS-META** GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74)
 - **ADV-CONFIG** The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81)
 - **BFQ-98** BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it
+- **BFQ-99** bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted
+- **BFQ-100** BF-100 - devicestatus, food and activity store a hex _id as a string
+- **BFQ-101** BF-101 - API v3 id filters miss records stored with a string _id
 
 ---
 
@@ -1517,7 +1520,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 40 items
+`parcel: register-open` &mdash; 43 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1565,6 +1568,9 @@ distinction is the only thing that makes the register mean anything - widening
 | `ADV-CONFIG` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) | `needs-decision` | `-` | patch | 2 run + 1 no-gate |
 | `BFQ-97` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll | `needs-decision` | `fix/profile-duplicate-stall` | patch | 0 run + 1 no-gate |
 | `BFQ-98` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it | `ready-to-push` | `fix/profile-duplicate-stall` | patch | 0 run + 1 no-gate |
+| `BFQ-99` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted | `ready-to-push` | `bf/profile-object-id` | patch | 0 run + 1 no-gate |
+| `BFQ-100` | BF-100 - devicestatus, food and activity store a hex _id as a string | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-101` | BF-101 - API v3 id filters miss records stored with a string _id | `not-started` | `-` | patch | 0 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -2849,7 +2855,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md`
 
-**Notes.** DECIDED 2026-09-23 (maintainer) - (1) re-read what the sink stores each poll instead of caching per process, with the cost bounded (the maintainer asked whether it covers all profiles or only the latest); (2) update on change: a source edit to an existing profile replaces the sink copy. NOT BUILDABLE AS ASKED, found by a lab probe on 74fc6619 (no code written, f924de2 unchanged): the connector's copies are stored with string _ids, and Nightscout's save/remove/_id lookups convert to ObjectId, so a PUT duplicates instead of replacing and DELETE cannot remove the copy (filed as a cgm-remote-monitor backfix, branch bf/profile-object-id in preparation). API-style in-place edits leave no timestamp. Reports use older profiles, so a bounded fetch misses edits to non-newest documents. Cost today at 500 profiles of about 7 KB: about 3.5 MB per poll; bounded shape about 14 KB. Waiting on the maintainer: what 0.1.0 ships (bounded insert-only, or wait for the Nightscout fix). #8752 still holds. PREPARED 2026-09-23 - f6359b4 on fix/profile-duplicate-stall (tip f924de2, on fbd4e55, not pushed): profiles already stored on the sink, by _id or identifier, are skipped instead of failing the poll, in both the internal and REST outputs; every other write failure still fails it. Connector suite 292 -> 304 -> 308 on Node 20/22/24. 96-minute soak arm: fix polls every 5.0 min median with 0 lag before the outage, 0 profile errors; the dev.2 control in the same run stalls at 28.9 min. A source edit to an existing profile is skipped (as in 0.0.13); the stored set is cached per process (open question for the maintainer). REST output covered by fake-transport tests only. Evidence docs/60-research/remedial/connector-profile-duplicate- stall-2026-09-23.md. DECIDED 2026-09-23 (maintainer) - fix in the connector first, tag 0.1.0-dev.3, then 0.1.0; #8752 (P0-PIN) holds for dev.3. Fix being built in this session on fix/profile-duplicate-stall (not pushed). Workaround until then: CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus.
+**Notes.** 2026-09-23 - #8752 MERGED into dev (f0954a6a, 08:37 UTC), so dev and the Docker image built from it install 0.1.0-dev.2, which carries this stall for Nightscout-to-Nightscout sites whose source has a profile. The pin must move to the fixed connector before 15.0.9 is tagged. DECIDED 2026-09-23 (maintainer) - (1) re-read what the sink stores each poll instead of caching per process, with the cost bounded (the maintainer asked whether it covers all profiles or only the latest); (2) update on change: a source edit to an existing profile replaces the sink copy. NOT BUILDABLE AS ASKED, found by a lab probe on 74fc6619 (no code written, f924de2 unchanged): the connector's copies are stored with string _ids, and Nightscout's save/remove/_id lookups convert to ObjectId, so a PUT duplicates instead of replacing and DELETE cannot remove the copy (filed as a cgm-remote-monitor backfix, branch bf/profile-object-id in preparation). API-style in-place edits leave no timestamp. Reports use older profiles, so a bounded fetch misses edits to non- newest documents. Cost today at 500 profiles of about 7 KB: about 3.5 MB per poll; bounded shape about 14 KB. Waiting on the maintainer: what 0.1.0 ships (bounded insert-only, or wait for the Nightscout fix). #8752 still holds. PREPARED 2026-09-23 - f6359b4 on fix/profile-duplicate-stall (tip f924de2, on fbd4e55, not pushed): profiles already stored on the sink, by _id or identifier, are skipped instead of failing the poll, in both the internal and REST outputs; every other write failure still fails it. Connector suite 292 -> 304 -> 308 on Node 20/22/24. 96-minute soak arm: fix polls every 5.0 min median with 0 lag before the outage, 0 profile errors; the dev.2 control in the same run stalls at 28.9 min. A source edit to an existing profile is skipped (as in 0.0.13); the stored set is cached per process (open question for the maintainer). REST output covered by fake-transport tests only. Evidence docs/60-research/remedial/connector-profile-duplicate- stall-2026-09-23.md. DECIDED 2026-09-23 (maintainer) - fix in the connector first, tag 0.1.0-dev.3, then 0.1.0; #8752 (P0-PIN) holds for dev.3. Fix being built in this session on fix/profile-duplicate-stall (not pushed). Workaround until then: CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus.
 
 ### `BFQ-98` &mdash; BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it
 
@@ -2881,6 +2887,97 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md`
 
 **Notes.** PREPARED 2026-09-23 - f924de2 on fix/profile-duplicate-stall (not pushed): one warning per process when the reused nightscout-connect-reader has no roles, or when a read returns 401, naming the subject and both fixes; no writes to the source; no token, secret or URL in the message. Exact wording in the evidence doc for the release notes. DECIDED 2026-09-23 (maintainer) - warn clearly, don't repair: one plain log message naming the subject and both fixes, no writes to the source; the release notes carry the same steps. Being built as a second commit on fix/profile-duplicate-stall (not pushed).
+
+### `BFQ-99` &mdash; bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/profile-object-id` |
+| base | `origin/dev@1f9a9d10` |
+| worktree | `externals/work/crm-bf-profile-id` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-99` |
+
+**Blast radius.** lib/server/profile.js create, save, remove and the find[_id] path, plus tests/api.profiles.object-id.test.js (13 tests). One commit, 9b8cc2f9.
+
+**What an operator sees.** If your Nightscout copies data from another Nightscout, or you restored profiles from an export, editing one of those profiles on today's release (15.0.8) adds a second profile and keeps the old one, and deleting it does not remove the old one. With this fix an edit replaces the profile and a delete removes it, including profiles saved before you upgrade. Reports that show basal rates or insulin-on-board for past days read the profiles that were active then, so a leftover old copy can affect what they show. This is not medical advice; if a report looks wrong, check the profile against your care team's settings.
+
+**Why `patch`.** Bug fix; no API or setting moves. Stored _id type changes from string to ObjectId for new hex _ids, as treatments already do.
+
+**Gates.**
+
+- **NO GATE** &mdash; The new test file passes on the branch and fails 11 of 13 on dev 1f9a9d10 and on 15.0.8; a queue gate running it against both trees does not exist yet.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/60-research/remedial/profile-object-id-2026-09-23.md`
+
+**Notes.** PREPARED 2026-09-23 on the maintainer's instruction ("another backfix issue"). Merge-tree clean against every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; the merged tree with 1b1977e0 passes the profile and count tests 112/0. Destination release not decided. Unblocks the connector's profile update-on-change (BFQ-97). PR body draft reports/phase0-pr-bodies/bf-profile- object-id.md.
+
+### `BFQ-100` &mdash; BF-100 - devicestatus, food and activity store a hex _id as a string
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@1f9a9d10` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-100` |
+
+**Blast radius.** lib/server/devicestatus.js, lib/server/food.js and lib/server/activity.js create.
+
+**What an operator sees.** Records sent with their own id by another program can end up impossible to delete by that id, and editing a food or activity record that way adds a second copy. This is how today's release (15.0.8) behaves.
+
+**Why `patch`.** Bug fix, same shape as BF-99.
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced by probes in the BF-99 work (evidence section 4.1); no queue gate yet.
+
+**Evidence.**
+
+- `docs/60-research/remedial/profile-object-id-2026-09-23.md`
+
+**Notes.** Filed 2026-09-23 beside BF-99. The BF-99 branch's approach (convert hex on create, match both forms on update and delete) is the likely fix.
+
+### `BFQ-101` &mdash; BF-101 - API v3 id filters miss records stored with a string _id
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@1f9a9d10` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-101` |
+
+**Blast radius.** lib/api3/storage/mongoCollection/utils.js filterForOne and identifyingFilter.
+
+**What an operator sees.** Apps that use Nightscout's newer API cannot find, by id, records that were saved with a text id through the older API. This is how today's release (15.0.8) behaves.
+
+**Why `patch`.** Bug fix.
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced at the filter level only; the v3 route was not booted.
+
+**Evidence.**
+
+- `docs/60-research/remedial/profile-object-id-2026-09-23.md`
+
+**Notes.** Filed 2026-09-23 beside BF-99.
 
 ---
 

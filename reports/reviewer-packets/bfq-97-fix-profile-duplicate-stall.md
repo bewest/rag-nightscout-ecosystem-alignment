@@ -66,26 +66,30 @@ maintainer
 
 ## Notes carried on the item
 
-DECIDED 2026-09-23 (maintainer) - (1) re-read what the sink stores each poll
-instead of caching per process, with the cost bounded (the maintainer asked
-whether it covers all profiles or only the latest); (2) update on change: a
-source edit to an existing profile replaces the sink copy. NOT BUILDABLE AS
-ASKED, found by a lab probe on 74fc6619 (no code written, f924de2 unchanged):
-the connector's copies are stored with string _ids, and Nightscout's
-save/remove/_id lookups convert to ObjectId, so a PUT duplicates instead of
-replacing and DELETE cannot remove the copy (filed as a cgm-remote-monitor
-backfix, branch bf/profile-object-id in preparation). API-style in-place edits
-leave no timestamp. Reports use older profiles, so a bounded fetch misses
-edits to non-newest documents. Cost today at 500 profiles of about 7 KB: about
-3.5 MB per poll; bounded shape about 14 KB. Waiting on the maintainer: what
-0.1.0 ships (bounded insert-only, or wait for the Nightscout fix). #8752 still
-holds. PREPARED 2026-09-23 - f6359b4 on fix/profile-duplicate-stall (tip
-f924de2, on fbd4e55, not pushed): profiles already stored on the sink, by _id
-or identifier, are skipped instead of failing the poll, in both the internal
-and REST outputs; every other write failure still fails it. Connector suite
-292 -> 304 -> 308 on Node 20/22/24. 96-minute soak arm: fix polls every 5.0
-min median with 0 lag before the outage, 0 profile errors; the dev.2 control
-in the same run stalls at 28.9 min. A source edit to an existing profile is
+2026-09-23 - #8752 MERGED into dev (f0954a6a, 08:37 UTC), so dev and the
+Docker image built from it install 0.1.0-dev.2, which carries this stall for
+Nightscout-to-Nightscout sites whose source has a profile. The pin must move
+to the fixed connector before 15.0.9 is tagged. DECIDED 2026-09-23
+(maintainer) - (1) re-read what the sink stores each poll instead of caching
+per process, with the cost bounded (the maintainer asked whether it covers all
+profiles or only the latest); (2) update on change: a source edit to an
+existing profile replaces the sink copy. NOT BUILDABLE AS ASKED, found by a
+lab probe on 74fc6619 (no code written, f924de2 unchanged): the connector's
+copies are stored with string _ids, and Nightscout's save/remove/_id lookups
+convert to ObjectId, so a PUT duplicates instead of replacing and DELETE
+cannot remove the copy (filed as a cgm-remote-monitor backfix, branch
+bf/profile-object-id in preparation). API-style in-place edits leave no
+timestamp. Reports use older profiles, so a bounded fetch misses edits to non-
+newest documents. Cost today at 500 profiles of about 7 KB: about 3.5 MB per
+poll; bounded shape about 14 KB. Waiting on the maintainer: what 0.1.0 ships
+(bounded insert-only, or wait for the Nightscout fix). #8752 still holds.
+PREPARED 2026-09-23 - f6359b4 on fix/profile-duplicate-stall (tip f924de2, on
+fbd4e55, not pushed): profiles already stored on the sink, by _id or
+identifier, are skipped instead of failing the poll, in both the internal and
+REST outputs; every other write failure still fails it. Connector suite 292 ->
+304 -> 308 on Node 20/22/24. 96-minute soak arm: fix polls every 5.0 min
+median with 0 lag before the outage, 0 profile errors; the dev.2 control in
+the same run stalls at 28.9 min. A source edit to an existing profile is
 skipped (as in 0.0.13); the stored set is cached per process (open question
 for the maintainer). REST output covered by fake-transport tests only.
 Evidence docs/60-research/remedial/connector-profile-duplicate-

@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 71 | 23 | 16 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 74 | 25 | 17 |
 | **Modernization** | `release-train` | 15 | 1 | 5 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **106** | **33** | **26** |
+| | **total** | **109** | **35** | **27** |
 
 <!-- END GENERATED: horizons -->
 
@@ -120,6 +120,8 @@ cover more than one `BF-`:
 | `BFQ-04` | `merged-upstream` | BF-04 - the v1 operator allowlist - superseded by P0-K |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value |
 | `BFQ-10` | `not-started` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
+| `BFQ-100` | `not-started` | BF-100 - devicestatus, food and activity store a hex _id as a string |
+| `BFQ-101` | `not-started` | BF-101 - API v3 id filters miss records stored with a string _id |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `ready-to-push` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -136,6 +138,7 @@ cover more than one `BF-`:
 | `BFQ-94` | `unsettled` | BF-94 - a kept profile instance can return a temp basal that has been replaced |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | `BFQ-98` | `ready-to-push` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not rep |
+| `BFQ-99` | `ready-to-push` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and str |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `gate-not-met` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
@@ -155,7 +158,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 1 |  | 3 | 1 | 2 | 1 | 12 | 2 |  |  |  | **22** |
 | `release-train` | 1 | 1 | 4 |  | 4 | 3 |  | 2 |  |  |  | **15** |
-| `register-open` | 16 |  | 5 | 4 | 1 | 1 | 5 | 5 |  | 2 | 1 | **40** |
+| `register-open` | 18 |  | 5 | 5 | 1 | 1 | 5 | 5 |  | 2 | 1 | **43** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  | **18** |
 | `docs-truth` | 6 |  | 1 |  |  |  |  |  | 2 |  |  | **9** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -196,14 +199,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 74 | 70% |
+| Maintainer | 77 | 71% |
 | SECURITY reviewer | 15 | 14% |
 | Maintainer + a second human | 6 | 6% |
 | SAFETY reviewer | 5 | 5% |
 | Whoever edits it next | 3 | 3% |
 | Unassigned | 2 | 2% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **106** | |
+| **total** | **109** | |
 
 <!-- END GENERATED: reviewer-load -->
 

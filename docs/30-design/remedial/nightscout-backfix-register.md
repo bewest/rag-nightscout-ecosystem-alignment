@@ -74,7 +74,7 @@ belongs in this file.
 
 **Allocating an id.** Read the highest `BF-` id in §1 and §1b at the moment you write the entry
 and take the next one — never the id a brief or plan quoted, because concurrent sessions file here.
-On 2026-09-23 the highest is BF-98. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
+On 2026-09-23 the highest is BF-101. BF-82, BF-83 and BF-84 are reserved for three connection-pooler
 defects on the unmerged seam branch
 ([pgbouncer-tenant-binding](../../60-research/tenancy/pgbouncer-tenant-binding-2026-09-15.md)),
 which belong in §1b and are not yet filed.
@@ -171,6 +171,9 @@ they claim. Suppressions outside `lib/` (the client bundle, `tests/`) are not au
 | **BF-94** | `prevBasalTreatment` is kept at **module scope**, and `tempBasalTreatment()` returns it whenever the time falls inside it. Only `profile.clear()` resets it, which runs when an instance is created, not when `updateTreatments()` replaces the treatments. So an instance that is kept and given new treatments can return a temp basal that has since been replaced | `lib/profilefunctions.js:19` (declaration), `:455-456` (the early return), `updateTreatments` at `:292-311` (clears the cache, not this), on `origin/dev` `74fc6619`; the same on `15.0.8` | **unsettled** — the server builds a new instance on every tick and is not affected. The browser keeps one `client.profilefunctions` and calls `updateTreatments` on each data update (`lib/client/index.js:1366`), so a pill or chart lookup there could show a replaced temp; **the browser was not measured** | yes | open — **reproduced at module level** 2026-09-23 on `dev` and `15.0.8`: a 1.2 U/h temp later cut by a zero temp, the same instance returned 1.2 after `updateTreatments` (expected 0), and a new instance returned the right value ([evidence](../../60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md) §3.2). Not BF-09 |
 | **BF-95** | **An uploader clock running ahead delays the stale-data alarm by the size of the error.** Once the wall clock passes a future-dated reading's timestamp, `lastEntry` returns it and the timeago plugin treats it as current. With an uploader 60 minutes ahead that stops sending, the warning a correct clock raises 15 minutes after the feed stops comes about 75 minutes after it stops, on the browser path and the server push path alike. v1 entries store no server-receipt time (`lib/server/entries.js:118-126` derives `sysTime` from the reading), so an arrival-based check needs new data | `lib/sandbox.js` `lastEntry` (`notInTheFuture`), `lib/plugins/timeago.js` `checkStatus`/`isStale`, `lib/server/entries.js:118-126`; the same on `origin/dev` `74fc6619` and `15.0.8` | **medium** — the one continuous "my data stopped" detector arrives late by the skew; it does not stay silent. BF-44 is a shipping source of forward skew | yes | open — **reproduced** 2026-09-23 through the shipping sandbox and plugin, no booted server (cases F7 and F8, `tools/remedial/bf3/bf41-real-sandbox.js`, identical on `74fc6619` and `15.0.8`; [evidence](../../60-research/remedial/bf41-future-reading-2026-09-23.md) §2, §3). Split out of BF-41 when BF-41 was closed (maintainer, 2026-09-23). **Needs a design decision**: one option is a notice when readings arrive already ahead of the clock by more than a tolerance (evidence §5, option 3); the BF-41 decision of 2026-09-23 added no new warning. 15.0.9 carries it as a known issue. No fix prescribed |
 | **BF-98** | **The BF-89 fix does not repair a reader subject an earlier connector already created.** `0.1.0-dev.2` looks up `nightscout-connect-reader` on the source by name and reuses it without checking its roles. Every released version creates that subject with `role` instead of `roles` (BF-89), so a site that ever tried the API-secret path against a source with `AUTH_DEFAULT_ROLES=denied` keeps getting HTTP 401 after upgrading | connector Nightscout source reader-subject lookup: `v0.0.13` `lib/sources/nightscout.js:75-77` takes the `accessToken` of any subject named `nightscout-connect-reader` without checking its roles, and `dev` `fbd4e55` does the same; `v0.0.12`, `v0.0.13` and `234d47c` create that subject without roles (BF-89) | **low** — affects only sites that already hit BF-89, and a one-time admin step on the source clears it | yes | open — **reproduced** 2026-09-23 (soak control (c): started on dev.1 then moved to dev.2, never synced in 4 h 20 min; [evidence](../../60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md)). **Maintainer, 2026-09-23: warn clearly, don't repair.** The connector logs one plain message naming the subject and the two fixes (add `readable`, or delete it so the connector re-creates it) when the reused subject has no roles or its reads return 401, and writes nothing to the source; the 0.1.0 and 15.0.9 release notes carry the same steps. Warning in progress on `fix/profile-duplicate-stall` |
+| **BF-99** | **A profile POSTed with a 24-hex `_id` is stored with a string `_id`, while PUT, DELETE and `find[_id]` look profiles up by ObjectId.** An edit adds a second profile and keeps the stale one, DELETE by id cannot remove the original, and `find[_id]` returns nothing | `lib/server/profile.js` `create()` (`insertMany` with `_id` as given) against `save()` (`new ObjectID`, then upsert), `remove()` and `lib/server/query.js` `updateIdQuery`; the same on `origin/dev` `1f9a9d10` and `15.0.8` `92d08342`. `chore/nightscout-modernization` `b1bdaca0` carries it too (read-derived) | **medium** — every Nightscout-to-Nightscout connector sink (every connector version) and every restored export. Reports load every profile in their date range, so a stale copy is among the profiles they read; report output not measured | yes | fixed 2026-09-23 on local branch `bf/profile-object-id` `9b8cc2f9` (not pushed) — **reproduced** red on dev and 15.0.8 (11 of 13 new tests); suite 2399/0/3 on Node 20 and 22 against dev 2386/0/3; break-its give the original symptoms. Existing string-`_id` profiles become editable and deletable by id with no boot migration ([evidence](../../60-research/remedial/profile-object-id-2026-09-23.md)). Blocks the maintainer's profile update-on-change for the connector (BFQ-97) |
+| **BF-100** | **devicestatus, food and activity also store a 24-hex `_id` as a string.** DELETE by id leaves the string document; a food or activity PUT adds an ObjectId duplicate; devicestatus and activity `find[_id]` return nothing | `lib/server/devicestatus.js` `create` (`insertMany`), `lib/server/food.js` and `lib/server/activity.js` `create` (upsert with the id as given); the same on `1f9a9d10` and `15.0.8` | **low to medium** — reached by clients that send their own `_id` (the connector's Nightscout source passes devicestatus `_id`s through, read-derived) | yes | open — **reproduced** 2026-09-23 on both trees ([evidence](../../60-research/remedial/profile-object-id-2026-09-23.md) §4.1). Found beside BF-99; not fixed on its branch |
+| **BF-101** | **API v3's id filters do not match a string `_id`,** so records stored with a string `_id` through v1 cannot be found or deduplicated by id through v3 | `lib/api3/storage/mongoCollection/utils.js` `filterForOne` and `identifyingFilter`, shared by every v3 collection; the same on `1f9a9d10` and `15.0.8` | **low** — a legacy string-`_id` profile is invisible to v3 id lookup until it is edited through v1 | yes | open — **reproduced** at the filter level on both trees; the v3 route itself was not booted ([evidence](../../60-research/remedial/profile-object-id-2026-09-23.md)) |
 
 ## 1b. Pre-release findings
 
@@ -4303,6 +4306,28 @@ and on `0.1.0-dev.2` alike. Released connectors create it with `role` rather tha
 control (c). The maintainer chose a warning over a repair: the connector says once, in plain words, which
 subject is wrong and how to fix it (add `readable`, or delete it so it is re-created), and never
 writes to the source site.
+
+### BF-99 · a profile posted with its own `_id` cannot be edited, deleted or found by it
+
+`create()` stores a 24-hex `_id` as a string; `save()`, `remove()` and `find[_id]` convert to
+ObjectId. So on 15.0.8 and `dev`, a PUT of that profile inserts a second document beside the stale
+one, and DELETE removes only the new twin. Nightscout-to-Nightscout connector sinks hold these copies
+for every profile they have synced. The fix on `bf/profile-object-id` stores hex `_id`s as ObjectId,
+as `treatments.js` already does, and makes PUT, DELETE and `find[_id]` match both forms, so existing
+string copies are replaced on their next edit rather than duplicated. A POST that re-sends an id
+already stored as a string keeps today's duplicate-key refusal instead of adding an ObjectId copy.
+Non-hex `_id`s are already refused with 400 by the v1 routes and are unchanged.
+
+### BF-100 · devicestatus, food and activity store a hex `_id` as a string
+
+The same create-without-conversion pattern, reproduced on both trees: devicestatus and activity
+`find[_id]` return nothing, food and activity PUT add an ObjectId duplicate, and DELETE by id keeps
+the string document in all three. Not fixed.
+
+### BF-101 · API v3 id filters miss string `_id`s
+
+`filterForOne` and `identifyingFilter` match only ObjectId, so a v1-stored string `_id` is
+unreachable by v3 id lookup and dedup. Reproduced at the filter level; not fixed.
 
 ## 3. How to use this register
 

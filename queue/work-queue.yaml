@@ -7011,6 +7011,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md
     notes: >
+      2026-09-23 - #8752 MERGED into dev (f0954a6a, 08:37 UTC), so dev and the Docker image built from it install 0.1.0-dev.2, which carries this stall for Nightscout-to-Nightscout sites whose source has a profile. The pin must move to the fixed connector before 15.0.9 is tagged.
       DECIDED 2026-09-23 (maintainer) - (1) re-read what the sink stores each poll instead of caching per process, with the cost bounded (the maintainer asked whether it covers all profiles or only the latest); (2) update on change: a source edit to an existing profile replaces the sink copy. NOT BUILDABLE AS ASKED, found by a lab probe on 74fc6619 (no code written, f924de2 unchanged): the connector's copies are stored with string _ids, and Nightscout's save/remove/_id lookups convert to ObjectId, so a PUT duplicates instead of replacing and DELETE cannot remove the copy (filed as a cgm-remote-monitor backfix, branch bf/profile-object-id in preparation). API-style in-place edits leave no timestamp. Reports use older profiles, so a bounded fetch misses edits to non-newest documents. Cost today at 500 profiles of about 7 KB: about 3.5 MB per poll; bounded shape about 14 KB. Waiting on the maintainer: what 0.1.0 ships (bounded insert-only, or wait for the Nightscout fix). #8752 still holds.
       PREPARED 2026-09-23 - f6359b4 on fix/profile-duplicate-stall (tip f924de2, on fbd4e55, not pushed): profiles already stored on the sink, by _id or identifier, are skipped instead of failing the poll, in both the internal and REST outputs; every other write failure still fails it. Connector suite 292 -> 304 -> 308 on Node 20/22/24. 96-minute soak arm: fix polls every 5.0 min median with 0 lag before the outage, 0 profile errors; the dev.2 control in the same run stalls at 28.9 min. A source edit to an existing profile is skipped (as in 0.0.13); the stored set is cached per process (open question for the maintainer). REST output covered by fake-transport tests only. Evidence docs/60-research/remedial/connector-profile-duplicate-stall-2026-09-23.md.
       DECIDED 2026-09-23 (maintainer) - fix in the connector first, tag 0.1.0-dev.3,
@@ -7057,3 +7058,101 @@ items:
       message naming the subject and both fixes, no writes to the source; the release
       notes carry the same steps. Being built as a second commit on
       fix/profile-duplicate-stall (not pushed).
+
+  - id: BFQ-99
+    title: bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/profile-object-id
+    base: origin/dev@1f9a9d10
+    worktree: externals/work/crm-bf-profile-id
+    state: ready-to-push
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/profile.js create, save, remove and the find[_id] path, plus
+      tests/api.profiles.object-id.test.js (13 tests). One commit, 9b8cc2f9.
+    review: maintainer
+    operator_visible: >
+      If your Nightscout copies data from another Nightscout, or you restored profiles
+      from an export, editing one of those profiles on today's release (15.0.8) adds a
+      second profile and keeps the old one, and deleting it does not remove the old one.
+      With this fix an edit replaces the profile and a delete removes it, including
+      profiles saved before you upgrade. Reports that show basal rates or
+      insulin-on-board for past days read the profiles that were active then, so a
+      leftover old copy can affect what they show. This is not medical advice; if a
+      report looks wrong, check the profile against your care team's settings.
+    semver: patch
+    semver_reason: >
+      Bug fix; no API or setting moves. Stored _id type changes from string to
+      ObjectId for new hex _ids, as treatments already do.
+    register: [BF-99]
+    gates:
+      - no-gate: >
+          The new test file passes on the branch and fails 11 of 13 on dev 1f9a9d10 and
+          on 15.0.8; a queue gate running it against both trees does not exist yet.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/60-research/remedial/profile-object-id-2026-09-23.md
+    notes: >
+      PREPARED 2026-09-23 on the maintainer's instruction ("another backfix issue").
+      Merge-tree clean against every open 15.0.9 PR head and rc/15.0.9-additions-e
+      1b1977e0; the merged tree with 1b1977e0 passes the profile and count tests 112/0.
+      Destination release not decided. Unblocks the connector's profile
+      update-on-change (BFQ-97). PR body draft reports/phase0-pr-bodies/bf-profile-object-id.md.
+
+  - id: BFQ-100
+    title: BF-100 - devicestatus, food and activity store a hex _id as a string
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@1f9a9d10
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/devicestatus.js, lib/server/food.js and lib/server/activity.js create.
+    review: maintainer
+    operator_visible: >
+      Records sent with their own id by another program can end up impossible to delete
+      by that id, and editing a food or activity record that way adds a second copy.
+      This is how today's release (15.0.8) behaves.
+    semver: patch
+    semver_reason: Bug fix, same shape as BF-99.
+    register: [BF-100]
+    gates:
+      - no-gate: >
+          Reproduced by probes in the BF-99 work (evidence section 4.1); no queue gate yet.
+    blocks_on: []
+    evidence:
+      - docs/60-research/remedial/profile-object-id-2026-09-23.md
+    notes: >
+      Filed 2026-09-23 beside BF-99. The BF-99 branch's approach (convert hex on create,
+      match both forms on update and delete) is the likely fix.
+
+  - id: BFQ-101
+    title: BF-101 - API v3 id filters miss records stored with a string _id
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@1f9a9d10
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api3/storage/mongoCollection/utils.js filterForOne and identifyingFilter.
+    review: maintainer
+    operator_visible: >
+      Apps that use Nightscout's newer API cannot find, by id, records that were saved
+      with a text id through the older API. This is how today's release (15.0.8) behaves.
+    semver: patch
+    semver_reason: Bug fix.
+    register: [BF-101]
+    gates:
+      - no-gate: Reproduced at the filter level only; the v3 route was not booted.
+    blocks_on: []
+    evidence:
+      - docs/60-research/remedial/profile-object-id-2026-09-23.md
+    notes: >
+      Filed 2026-09-23 beside BF-99.
+
