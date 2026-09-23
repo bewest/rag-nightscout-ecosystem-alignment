@@ -13,7 +13,7 @@
 
 # Review packet — FU-PRBODIES
 
-**Five merged PR bodies have drifted from the files they were posted from**
+**Merged PR bodies have drifted from the files they were posted from**
 
 | | |
 |---|---|
@@ -25,10 +25,10 @@
 
 ## What this changes
 
-No code. Five pull request bodies and up to five files under
-reports/phase0-pr-bodies/. Measured 2026-09-21 by tools/queue/gates/pr-body-
-parity.js over all eight pairs: #8738, #8740 and #8743 match; #8734, #8735,
-#8736, #8737 and #8739 differ. The drift runs in two directions. #8734, #8735,
+No code. Pull request bodies and the files under reports/phase0-pr-bodies/
+they were posted from. Measured 2026-09-23 by tools/queue/gates/pr-body-
+parity.js over its eight pairs: #8738 and #8740 match; #8734, #8735, #8736,
+#8737, #8739 and #8743 differ. The drift runs in two directions. #8734, #8735,
 #8736 and #8737 differ only in documentation paths - the local files were
 updated when the docs tree moved into programme subdirectories, so the LIVE
 bodies still cite the pre-move spellings (the backfix register without its
@@ -39,7 +39,14 @@ indistinguishable to it from a dead path being relied on. Word counts are
 identical each way. #8739 is the opposite: the live body is 1640 words to the
 file's 1537 and carries paragraphs the file does not have - the urgent-
 severity versus notification-delivery distinction, and a note about Alexa and
-Google Home locale handling - added upstream after posting.
+Google Home locale handling - added upstream after posting. #8743 is newer
+still: its live body was edited on GitHub at 2026-09-23T00:28:08Z from the
+maintainer's account, together with #8744 (00:28:09Z) and #8745 (00:28:11Z),
+the other two advisory fixes. The live bodies are now 419, 180 and 305 words;
+bf-operators.md, the file #8743 was posted from, is 2641. The parity gate
+judges direction by word count, so it reports #8743's FILE as ahead and prints
+an overwrite command. That command would undo the edit. #8744 and #8745 have
+no file under reports/phase0-pr-bodies/, so the gate does not see them.
 
 ## Why that semver
 
@@ -55,14 +62,20 @@ push. If the answer is yes, #8739 must be handled differently from the other
 four. Its live body is ahead; the upstream text has to be reconciled INTO
 reports/phase0-pr-bodies/bf-alarms.md before anything is pushed, or that work
 is destroyed. A one-way `gh pr edit <pr> --body-file <local>` on #8739 would
-overwrite it and then report green.
+overwrite it and then report green. #8743, #8744 and #8745 need the
+maintainer's intent first. If their bodies were shortened on purpose - for
+example to keep detail about defects still live on 15.0.8 out of public view -
+then bf-operators.md, which is in this public repository, carries the detail
+the edit removed, and the file is what needs changing; see the disclosure rule
+in the backfix register's header.
 
 ## What was measured
 
 **`node tools/queue/gates/pr-body-parity.js`** &nbsp;·&nbsp; kind: `network`
 
-All eight bodies match their files. Red with five failing as of 2026-09-21.
-Read-only - it fetches bodies and never edits one.
+All eight bodies match their files. Red with six failing as of 2026-09-23.
+Read-only - it fetches bodies and never edits one. Its direction advice is a
+word-count heuristic: read the PR's last-edited time before acting on it.
 
 ## What these gates do NOT prove
 
@@ -85,7 +98,8 @@ Read-only - it fetches bodies and never edits one.
 
 The parity gate belonged to eight Phase 0 items that are all merged-upstream,
 so its red reads as expected post-merge noise on rows nobody revisits; this
-item gives it an owner. No PR body was edited; five were read.
+item gives it an owner. No PR body was edited; all twelve Phase 0 and advisory
+PR bodies were read on 2026-09-23 with their last-edited times.
 
 ---
 

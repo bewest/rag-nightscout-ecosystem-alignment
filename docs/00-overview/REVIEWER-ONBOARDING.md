@@ -104,8 +104,9 @@ Three entry points, easiest first:
    one-line description, and `reports/reviewer-packets/` has a bounded packet for
    each item awaiting review. All thirteen cgm-remote-monitor backfix pull requests
    (twelve from this programme, plus #8741 from an external contributor) are merged
-   into `dev`, none released; the open one is in the connector
-   repository (`nightscout-connect` PR #68).
+   into `dev`, none released. The connector's are merged into `nightscout-connect` `dev`
+   (#64 and #68, 2026-09-22) and published as prerelease `0.1.0-dev.1`; its full release is
+   `P0-TAG`.
 2. **A security or safety item.** These are the rows with *nobody assigned*, and
    the highest-value place to start. `P0-C` (`bf/auth`) waits on a security
    reviewer; it needs a `git merge dev` first (trial merge measured conflict-free).

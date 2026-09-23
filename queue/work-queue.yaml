@@ -203,11 +203,12 @@ items:
           Nothing exercises the ENABLE warning through a booted plugin registry.
           GT4 had to hand-reconstruct the plugin-name list to test it, and a
           reconstructed registry is not the registry. Needs a boot-level test.
-      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/alarms | grep -q 5dcf783fdbb20188c378d79121dcbe860425eede
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5dcf783fdbb20188c378d79121dcbe860425eede origin/dev
+        kind: static
         describe: >
-          the branch behind PR #8739 is on the remote at the exact tip this item
-          was measured against. Read-only. Verified 2026-09-16.
+          containment: the measured tip of bf/alarms is in origin/dev, so the merge
+          carried it. Holds after the branch moves or is deleted; reads local
+          remote-tracking refs, so fetch origin first.
       - no-gate: >
           Review and merge state of PR #8739 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
@@ -305,11 +306,12 @@ items:
           writes to a device-status document. A grep is not that proof when the
           failure mode is a field silently vanishing from every API read served
           out of the cache. There is no test that would catch it.
-      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/cache | grep -q 4f86bab1637e926502c9b02af008cbba4f424c28
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 4f86bab1637e926502c9b02af008cbba4f424c28 origin/dev
+        kind: static
         describe: >
-          the branch behind PR #8740 is on the remote at the exact tip this item
-          was measured against. Read-only. Verified 2026-09-16.
+          containment: the measured tip of bf/cache is in origin/dev, so the merge
+          carried it. Holds after the branch moves or is deleted; reads local
+          remote-tracking refs, so fetch origin first.
       - run: node tools/queue/gates/pr-body-parity.js --only 8740
         kind: network
         describe: >
@@ -787,11 +789,12 @@ items:
           exited 0 while printing "DRIFT vs the shipping walkers: 157
           disagreements") and compares against a hardcoded transcription of
           origin/dev's walkers, so it says nothing about bf/coercion.
-      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/coercion | grep -q b72347538ba29f965c531bdd47f81dc52d895a13
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b72347538ba29f965c531bdd47f81dc52d895a13 origin/dev
+        kind: static
         describe: >
-          the branch behind PR #8737 is on the remote at the exact tip this item
-          was measured against. Read-only. Verified 2026-09-16.
+          containment: the measured tip of bf/coercion is in origin/dev, so the merge
+          carried it. Holds after the branch moves or is deleted; reads local
+          remote-tracking refs, so fetch origin first.
       - no-gate: >
           Review and merge state of PR #8737 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
@@ -915,11 +918,12 @@ items:
           The CHANGELOG on this branch lists read routes only, while the ?count=
           validator covers writes too. Nothing checks a release note against the
           code it describes.
-      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/reads | grep -q 2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa origin/dev
+        kind: static
         describe: >
-          the branch behind PR #8738 is on the remote at the exact tip this item
-          was measured against. Read-only. Verified 2026-09-16.
+          containment: the measured tip of bf/reads is in origin/dev, so the merge
+          carried it. Holds after the branch moves or is deleted; reads local
+          remote-tracking refs, so fetch origin first.
       - no-gate: >
           Review and merge state of PR #8738 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
@@ -1121,11 +1125,12 @@ items:
         cwd: externals/work/crm-bf-food
         kind: integration
         describe: BF-16 over the real HTTP path; needs MongoDB
-      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/food | grep -q 73495331e68c4cda3a63e8c047387bdf404b89b0
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331e68c4cda3a63e8c047387bdf404b89b0 origin/dev
+        kind: static
         describe: >
-          the branch behind PR #8735 is on the remote at the exact tip this item
-          was measured against. Read-only. Verified 2026-09-16.
+          containment: the measured tip of bf/food is in origin/dev, so the merge
+          carried it. Holds after the branch moves or is deleted; reads local
+          remote-tracking refs, so fetch origin first.
       - no-gate: >
           Review and merge state of PR #8735 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
@@ -1201,11 +1206,12 @@ items:
           the merge path has the same effect. This branch fixes one throw, not
           the missing boundary. No test asserts the boundary exists because it
           does not.
-      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/merge | grep -q b06c6faf882ebd84d627468c75dade0fe1fd01a1
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf882ebd84d627468c75dade0fe1fd01a1 origin/dev
+        kind: static
         describe: >
-          the branch behind PR #8734 is on the remote at the exact tip this item
-          was measured against. Read-only. Verified 2026-09-16.
+          containment: the measured tip of bf/merge is in origin/dev, so the merge
+          carried it. Holds after the branch moves or is deleted; reads local
+          remote-tracking refs, so fetch origin first.
       - no-gate: >
           Review and merge state of PR #8734 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
@@ -1275,11 +1281,12 @@ items:
         describe: >
           BF-38. Non-vacuous by GT1's control - 1 failing when the fix is
           removed from pristine dev code.
-      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/parms | grep -q eb0bc918036a7802a0b88156e9722f45fd9107f3
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918036a7802a0b88156e9722f45fd9107f3 origin/dev
+        kind: static
         describe: >
-          the branch behind PR #8736 is on the remote at the exact tip this item
-          was measured against. Read-only. Verified 2026-09-16.
+          containment: the measured tip of bf/parms is in origin/dev, so the merge
+          carried it. Holds after the branch moves or is deleted; reads local
+          remote-tracking refs, so fetch origin first.
       - no-gate: >
           Review and merge state of PR #8736 is upstream's, and cannot be gated
           from here without a GitHub API call. Tracked, not driven.
@@ -1700,11 +1707,12 @@ items:
     semver_reason: performance only
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official ls-remote --heads origin bewest/wip/optimize-treatment-processing | grep -q dfe2753d
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dfe2753d origin/dev
+        kind: static
         describe: >
-          the one Phase 0 branch that was pushed from outside the backfix
-          worktrees. GT1 verified this live. Read-only.
+          containment: the measured tip of bewest/wip/optimize-treatment-processing is in origin/dev, so the merge
+          carried it. Holds after the branch moves or is deleted; reads local
+          remote-tracking refs, so fetch origin first.
       - no-gate: >
           PR merge state is upstream's and cannot be gated from here without a
           GitHub API call. This item is tracked, not driven.
@@ -1930,8 +1938,10 @@ items:
       The connector pin at cut 4 was a real fork: dev's 234d47c8 and cut 4's
       c962a13f are neither an ancestor of the other, so either side loses
       something. Resolved to b77e5bb7, which has both, is pushed to the
-      connector remote, and is what the local tip pins. This makes P0-PIN and
-      the v0.0.14 question more urgent.
+      connector remote, and is what the local tip pins. Every connector commit
+      in b77e5bb7 is also in connector dev and in the 0.1.0 line, so when the
+      rebased cuts land they move to the same exact npm pin as dev (P0-PIN,
+      RT-CONNECT-PIN-CUTS).
 
       Test results on Node 24.20.0 against mongod 7.0.43 (the Node version
       matters - see RT-NODE-FLOOR-TESTED): cut 1 348 passing, cut 2 357, cut 3
@@ -5377,7 +5387,7 @@ items:
       that bf/alarms (P0-A, merged) changed.
 
   - id: FU-PRBODIES
-    title: Five merged PR bodies have drifted from the files they were posted from
+    title: Merged PR bodies have drifted from the files they were posted from
     parcel: phase0
     repo: cgm-remote-monitor
     branch: ""
@@ -5388,10 +5398,10 @@ items:
     ships_to_operators_today: false
     register: []
     blast_radius: >
-      No code. Five pull request bodies and up to five files under
-      reports/phase0-pr-bodies/. Measured 2026-09-21 by
-      tools/queue/gates/pr-body-parity.js over all eight pairs: #8738, #8740 and
-      #8743 match; #8734, #8735, #8736, #8737 and #8739 differ.
+      No code. Pull request bodies and the files under reports/phase0-pr-bodies/
+      they were posted from. Measured 2026-09-23 by
+      tools/queue/gates/pr-body-parity.js over its eight pairs: #8738 and #8740
+      match; #8734, #8735, #8736, #8737, #8739 and #8743 differ.
 
       The drift runs in two directions. #8734, #8735, #8736 and #8737 differ
       only in documentation paths - the local files were updated when the docs
@@ -5405,6 +5415,15 @@ items:
       the file's 1537 and carries paragraphs the file does not have - the
       urgent-severity versus notification-delivery distinction, and a note about
       Alexa and Google Home locale handling - added upstream after posting.
+
+      #8743 is newer still: its live body was edited on GitHub at
+      2026-09-23T00:28:08Z from the maintainer's account, together with #8744
+      (00:28:09Z) and #8745 (00:28:11Z), the other two advisory fixes. The live
+      bodies are now 419, 180 and 305 words; bf-operators.md, the file #8743 was
+      posted from, is 2641. The parity gate judges direction by word count, so
+      it reports #8743's FILE as ahead and prints an overwrite command. That
+      command would undo the edit. #8744 and #8745 have no file under
+      reports/phase0-pr-bodies/, so the gate does not see them.
     review: >
       MAINTAINER, and the decision is narrow: are merged pull request bodies worth
       correcting at all? For: a merged PR body is the durable public record of
@@ -5417,6 +5436,13 @@ items:
       reports/phase0-pr-bodies/bf-alarms.md before anything is pushed, or that
       work is destroyed. A one-way `gh pr edit <pr> --body-file <local>` on
       #8739 would overwrite it and then report green.
+
+      #8743, #8744 and #8745 need the maintainer's intent first. If their
+      bodies were shortened on purpose - for example to keep detail about
+      defects still live on 15.0.8 out of public view - then bf-operators.md,
+      which is in this public repository, carries the detail the edit removed,
+      and the file is what needs changing; see the disclosure rule in the
+      backfix register's header.
     operator_visible: ""
     semver: n/a
     semver_reason: documentation of changes already merged; no shipped behaviour
@@ -5424,8 +5450,10 @@ items:
       - run: node tools/queue/gates/pr-body-parity.js
         kind: network
         describe: >
-          All eight bodies match their files. Red with five failing as of
-          2026-09-21. Read-only - it fetches bodies and never edits one.
+          All eight bodies match their files. Red with six failing as of
+          2026-09-23. Read-only - it fetches bodies and never edits one. Its
+          direction advice is a word-count heuristic: read the PR's last-edited
+          time before acting on it.
       - no-gate: >
           Whether a body is TRUE is not measured by anything here, and parity with
           a wrong file is still parity. Figures in these bodies have been wrong
@@ -5444,7 +5472,8 @@ items:
       merged-upstream, so its red reads as expected post-merge noise on rows
       nobody revisits; this item gives it an owner.
 
-      No PR body was edited; five were read.
+      No PR body was edited; all twelve Phase 0 and advisory PR bodies were
+      read on 2026-09-23 with their last-edited times.
 
   - id: FU-HYGIENE
     title: Follow-ups 9, 10 - the two audits that have no instrument

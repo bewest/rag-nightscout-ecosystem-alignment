@@ -34,7 +34,9 @@ pull requests are merged into cgm-remote-monitor `dev`: this programme's #8733,
 the three advisory fixes #8744, #8745, #8746 (2026-09-21), plus #8741 from an external
 contributor (2026-09-20). None is released. The open
 work is `bf/auth` (`P0-C`) and `bf/throttle` (`P0-J`), both behind `dev`, and the
-connector half (below). The [backfix register](../30-design/remedial/nightscout-backfix-register.md)
+connector release: every programme connector fix is in `nightscout-connect` `dev` `1946beb`
+and in prerelease `0.1.0-dev.1` (2026-09-22), waiting on the full `0.1.0` (`P0-TAG`) and the pin
+that delivers it (`P0-PIN`). The [backfix register](../30-design/remedial/nightscout-backfix-register.md)
 holds the defect facts; `make queue-coverage` proves the queue names every entry that
 is not fixed.
 
@@ -219,7 +221,7 @@ expanded in [NEEDS-A-HUMAN.md](NEEDS-A-HUMAN.md).
 |---|---|---|
 | `RT-D3` | Does a two-major charting upgrade (D3 5.16 → 7.9) ship under a **patch** version, with no real-browser coverage on `dev`? | It is first on the adopted release train. 15.0.9 does not cut until it is answered. |
 | `RT-0` | Release 15.0.9 (PR #8598). | Every merged fix reaches operators only through it, and every later cut waits behind it. |
-| `P0-TAG` | Which `nightscout-connect` 0.0.14 is the release: upstream `dev` (`8e26786`, package.json 0.0.14) or the programme's unpushed tag (`649a7de`, 11 ahead / 24 behind, conflicting in 11 files under `git merge-tree`, 2026-09-22)? | `P0-PIN` and `P0-LOCK` are blocked behind it, and the connector fixes reach operators only through a pin. |
+| `P0-TAG` | When to cut `nightscout-connect` 0.1.0. Connector `dev` `1946beb` declares `0.1.0` and carries every fix; prerelease `0.1.0-dev.1` is on npm (2026-09-22). | `P0-PIN` and `P0-LOCK` are blocked behind it, and the connector fixes reach operators only through a pin. |
 | `BFQ-47` | BF-47: an ordinary subject edit destroys stored fields on 15.0.8. Intent before code. | It ships to operators now, and the fix depends on whether the behaviour was deliberate. |
 | `BFQ-72` | Is the security contact process invoked for BF-72? | It is live on the shipping release with no fix. |
 

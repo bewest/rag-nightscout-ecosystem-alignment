@@ -3,7 +3,7 @@
 *Contributor-facing. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
 2026-09-22 against cgm-remote-monitor `origin/dev` `74fc6619` and nightscout-connect
-`official/dev` `8e26786`; tables generated.*
+`official/dev` `1946beb`; tables generated.*
 
 This page lists only the items whose claimed state means **the next move belongs to
 a person**, grouped by the kind of person, so that "what is blocked on me" is one
@@ -36,7 +36,7 @@ that it was reviewed.
 |---|---|---|---|
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
-| `FU-PRBODIES` | `needs-decision` | Five merged PR bodies have drifted from the files they were posted from | &mdash; |
+| `FU-PRBODIES` | `needs-decision` | Merged PR bodies have drifted from the files they were posted from | &mdash; |
 | `P0-TAG` | `needs-decision` | nightscout-connect 0.1.0 - the full release, from connector dev | #70 |
 | `RT-4` | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes | &mdash; |
 | `RT-D3` | `needs-decision` | Answer the D3 question before 15.0.9 ships | &mdash; |
@@ -132,10 +132,12 @@ is ready: [`release-readiness-15.0.9-2026-09-22.md`](../30-design/modernization/
 The urgency is a reason not to let `RT-D3` sit unanswered, not a reason to release past
 it.
 
-### `P0-TAG` — which `nightscout-connect` 0.0.14 is the release
+### `P0-TAG` — when to cut `nightscout-connect` 0.1.0
 
-Described above under the open pull requests. The connector fixes reach operators only
-through a cgm-remote-monitor pin, and that pin waits on this answer.
+Every programme connector fix is in connector `dev`, which declares `0.1.0`, and prerelease
+`0.1.0-dev.1` is on npm. Cutting the full release is a tag on `dev` plus an approval; it is the
+maintainer's judgement when the prerelease has been exercised enough. The connector fixes reach
+operators only through a cgm-remote-monitor pin (`P0-PIN`), and that pin waits on this release.
 
 ### `BFQ-47` — BF-47 needs intent before it needs code
 

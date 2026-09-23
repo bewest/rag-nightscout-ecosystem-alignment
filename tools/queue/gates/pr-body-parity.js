@@ -33,6 +33,14 @@
  * the live side is strictly behind. A gate whose printed remedy can destroy the
  * thing it is checking is worse than no gate.
  *
+ * Line counts alone are not enough to say "behind". On 2026-09-23 #8743's live
+ * body was edited down from the posted text to about a sixth of it, on purpose;
+ * by counts the file looked ahead and this gate printed the overwrite that would
+ * have undone the edit. So it also reads when the live body was last edited and
+ * when the file last changed (its last commit, or its mtime if it has none). An
+ * overwrite is offered only when the file is the newer of the two; if either time
+ * cannot be read, none is offered.
+ *
  * The in-gate signal is coarser than the by-hand check above: it counts lines
  * unique to each side, so an edited line scores on both. That is enough to refuse
  * to print a destructive command, and deliberately not enough to pretend it knows
@@ -95,6 +103,33 @@ try {
 
 const findings = [];
 
+// When the live body was last edited on GitHub, or null if unknown.
+function liveEditedAt (pr) {
+  try {
+    const out = execFileSync('gh', ['api', 'graphql', '-f',
+      `query=query{repository(owner:"nightscout",name:"cgm-remote-monitor"){pullRequest(number:${pr}){lastEditedAt createdAt}}}`,
+      '--jq', '.data.repository.pullRequest | (.lastEditedAt // .createdAt)'],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000 }).trim();
+    return Number.isFinite(Date.parse(out)) ? out : null;
+  } catch (err) { return null; }
+}
+
+// When the local file last changed: its last commit, or its mtime if uncommitted.
+function fileChangedAt (local) {
+  let committed = null;
+  try {
+    committed = execFileSync('git', ['-C', path.dirname(local), 'log', '-1', '--format=%cI', '--', path.basename(local)],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 20000 }).trim() || null;
+  } catch (err) { committed = null; }
+  let dirty = true;
+  try {
+    dirty = execFileSync('git', ['-C', path.dirname(local), 'status', '--porcelain', '--', path.basename(local)],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 20000 }).trim() !== '';
+  } catch (err) { dirty = true; }
+  if (committed && !dirty) return committed;
+  return fs.statSync(local).mtime.toISOString();
+}
+
 for (const [pr, file] of PAIRS) {
   const local = path.join(BODY_DIR, file);
   if (!fs.existsSync(local)) {
@@ -127,15 +162,24 @@ for (const [pr, file] of PAIRS) {
   const onlyLocal = [...B].filter((l) => !A.has(l)).length;
   const where = `live-only ${onlyLive}, file-only ${onlyLocal}`;
 
-  /* Only when the live side is strictly behind is an overwrite offered. Equal
-   * counts are the ambiguous case - typically a line-for-line edit, which is what
-   * the docs-path reorganisation produced on #8734..#8737 - and ambiguity does not
+  /* Only when the live side is strictly behind is an overwrite offered: fewer
+   * unique lines AND last edited before the file last changed. Equal counts are
+   * the ambiguous case - typically a line-for-line edit, which is what the
+   * docs-path reorganisation produced on #8734..#8737 - and ambiguity does not
    * earn a command that cannot be undone from here. */
+  const editedAt = liveEditedAt(pr);
+  const changedAt = fileChangedAt(local);
+  const fileNewer = editedAt && changedAt && Date.parse(changedAt) > Date.parse(editedAt);
   findings.push({
     ok: false,
-    text: onlyLive < onlyLocal
-      ? `#${pr} DIFFERS from ${file} (${where}) — the file is ahead; overwrite with: `
+    text: onlyLive < onlyLocal && fileNewer
+      ? `#${pr} DIFFERS from ${file} (${where}) — the file is ahead (changed ${changedAt}, `
+        + `live body last edited ${editedAt}); overwrite with: `
         + `gh pr edit ${pr} --repo ${REPO} --body-file ${path.relative(REPO_ROOT, local)}`
+      : onlyLive < onlyLocal
+        ? `#${pr} DIFFERS from ${file} (${where}) — the file has more, but the live body was `
+          + (editedAt ? `edited ${editedAt}, after the file last changed (${changedAt}). ` : `edit time could not be read. `)
+          + `The edit may be deliberate. Do NOT overwrite; decide which side is right.`
       : onlyLive > onlyLocal
         ? `#${pr} DIFFERS from ${file} (${where}) — THE LIVE BODY IS AHEAD. Do NOT `
           + `overwrite it; reconcile into ${path.relative(REPO_ROOT, local)} first.`

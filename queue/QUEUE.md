@@ -117,7 +117,7 @@ needs a tenancy decision.
 | `P0-T01` | T0.1 - PR #8733, the two quadratic treatment scans | `merged-upstream` | `fix/quadratic-treatment-processing` | patch | 1 run + 1 no-gate |
 | `FU-LIMIT` | Follow-up 2 - the limit rule is written twice, and that is the root cause | `blocked` | `-` | patch | 2 run + 1 no-gate |
 | `FU-RESIDUALS` | Follow-ups 3, 4, 7 - three named residuals beside branches already prepared | `gate-not-met` | `-` | patch | 3 run + 1 no-gate |
-| `FU-PRBODIES` | Five merged PR bodies have drifted from the files they were posted from | `needs-decision` | `-` | n/a | 1 run + 2 no-gate |
+| `FU-PRBODIES` | Merged PR bodies have drifted from the files they were posted from | `needs-decision` | `-` | n/a | 1 run + 2 no-gate |
 | `FU-HYGIENE` | Follow-ups 9, 10 - the two audits that have no instrument | `not-started` | `-` | n/a | 0 run + 2 no-gate |
 
 ### `P0-A` &mdash; bf/alarms - PR #8739, BF-28, BF-29, BF-31
@@ -157,8 +157,8 @@ needs a tenancy decision.
 - `[static]` `test -f externals/work/crm-bf-alarms/node_modules/.cache/_ns_cache/public/js/bundle.app.js`
   - The worktree has its client bundle. Without it the suite shows an extra test failure that looks like a defect and is not. This tests a LOCAL build product, not the branch: it goes red in any fresh worktree or after `npm ci`, and `npm run bundle` in that worktree clears it.
 - **NO GATE** &mdash; Nothing exercises the ENABLE warning through a booted plugin registry. GT4 had to hand-reconstruct the plugin-name list to test it, and a reconstructed registry is not the registry. Needs a boot-level test.
-- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/alarms | grep -q 5dcf783fdbb20188c378d79121dcbe860425eede`
-  - the branch behind PR #8739 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5dcf783fdbb20188c378d79121dcbe860425eede origin/dev`
+  - containment: the measured tip of bf/alarms is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.
 - **NO GATE** &mdash; Review and merge state of PR #8739 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
 - `[network]` `node tools/queue/gates/pr-body-parity.js --only 8739`
   - the live body of PR #8739 still matches the file it was posted from. Corrections are written into the file first, so this catches a body that was not updated after its file. It does NOT measure whether the body is true: parity with a wrong file is still parity. Non-vacuity, reproduced 2026-09-16: one altered file gives 1 failing, an empty body dir gives 6 failing. SKIPS with exit 0 when gh is unauthenticated.
@@ -201,8 +201,8 @@ needs a tenancy decision.
 - `[integration]` `node tools/queue/gates/t03-cycle-clone-budget.js`
   - T0.3's stated gate, run live, and red by design - the budget is under 1 ms and the three cycle calls are 2.66. The workload is recorded in docs/60-research/remedial/t02-t03-cache-clone-2026-09-15.md: §2 names the harness (tools/mt-bench/apitier.js, arm `cycle`) and the fixture - 576 entries, 600 treatments of which 361 survive retention, 576 device statuses with 72-point prediction arrays, DEVICESTATUS_DAYS=2 - and §10 gives the command. Measured 2026-09-16 on Node v24.15.0: branch 2.656 ms (recorded 2.657), origin/dev 3.929 ms (recorded 3.747) - ordinary variance on a timing bench, same direction and magnitude. Non-vacuity is structural: the harness reads the live call sites out of the worktree and prints them (dev entries=insertData, branch entries=insertDataRef) and throws on a tree it cannot recognise, so it cannot report the branch's number for dev's code. Positive control: --budget 5 passes. SKIPS when the worktree has no node_modules.
 - **NO GATE** &mdash; The 98% of the remaining cost is devicestatus, whose caller rewrites fields in place. Taking it needs proof that nothing in the plugin tier writes to a device-status document. A grep is not that proof when the failure mode is a field silently vanishing from every API read served out of the cache. There is no test that would catch it.
-- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/cache | grep -q 4f86bab1637e926502c9b02af008cbba4f424c28`
-  - the branch behind PR #8740 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 4f86bab1637e926502c9b02af008cbba4f424c28 origin/dev`
+  - containment: the measured tip of bf/cache is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.
 - `[network]` `node tools/queue/gates/pr-body-parity.js --only 8740`
   - the live body of PR #8740 still matches the file it was posted from. It does NOT measure whether the body is true; parity with a wrong file is still parity.
 - **NO GATE** &mdash; Review and merge state of PR #8740 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
@@ -361,8 +361,8 @@ needs a tenancy decision.
   - 29 passing, database-free (measured against a dead mongo port). Ablated behaviourally: reverting ONLY lib/server/query.js and keeping the new table gives 24 passing / 4 failing on assertions ("expected '1.5' to be 1.5"). (Running the file against pristine dev fails at module resolution, which is not a behavioural control.)
 - `[static]` `T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && python3 -m tools.nsschema.emit.coercion_emit --bundle "$T/emitted.json" >/dev/null && diff -q "$T/emitted.json" externals/work/crm-bf-coercion/lib/server/query-coercion.json`
   - The coercion table vendored into the branch is byte-identical to what the emitter produces today, so the branch is not shipping a stale generated file ("emit, then check the emission"). `coercion_emit --drift` is not usable as a gate: it returns 0 unconditionally (it exited 0 while printing "DRIFT vs the shipping walkers: 157 disagreements") and compares against a hardcoded transcription of origin/dev's walkers, so it says nothing about bf/coercion.
-- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/coercion | grep -q b72347538ba29f965c531bdd47f81dc52d895a13`
-  - the branch behind PR #8737 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b72347538ba29f965c531bdd47f81dc52d895a13 origin/dev`
+  - containment: the measured tip of bf/coercion is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.
 - **NO GATE** &mdash; Review and merge state of PR #8737 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
 - `[network]` `node tools/queue/gates/pr-body-parity.js --only 8737`
   - the live body of PR #8737 still matches the file it was posted from. Corrections are written into the file first, so this catches a body that was not updated after its file. It does NOT measure whether the body is true: parity with a wrong file is still parity. Non-vacuity, reproduced 2026-09-16: one altered file gives 1 failing, an empty body dir gives 6 failing. SKIPS with exit 0 when gh is unauthenticated.
@@ -414,8 +414,8 @@ needs a tenancy decision.
 - **NO GATE** &mdash; `npm run test:unit` is not a gate here: not one of the five test files this branch adds is in its 44-file brace list - all five are api*/api3* and match test:integration's glob - so the suite could pass in full with every fix reverted.
 - **NO GATE** &mdash; The ordering constraint inside the branch (BF-05's commit must follow BF-01's) is not machine-checked. The two commits are 3b588098 and 4772b983 on the current tip; any gate quoting other SHAs is stale. A real gate would assert the relative order of the two by subject line, and nobody has written it.
 - **NO GATE** &mdash; The CHANGELOG on this branch lists read routes only, while the ?count= validator covers writes too. Nothing checks a release note against the code it describes.
-- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/reads | grep -q 2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa`
-  - the branch behind PR #8738 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa origin/dev`
+  - containment: the measured tip of bf/reads is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.
 - **NO GATE** &mdash; Review and merge state of PR #8738 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
 - **NO GATE** &mdash; The two-path behaviour of ?count=0 is measured but not asserted. tools/probes/count0-two-paths.js reproduces it - 0 rows from the cache and all 24 from the database on dev, 400 on both after this branch, with two controls that stay sane on each tree - but it PRINTS rather than exits non-zero, so it is a probe and not a gate. Making it one means deciding what the contract IS, and that is a reviewer's call, not this queue's. It also needs two worktrees and a mongod.
 - `[network]` `node tools/queue/gates/pr-body-parity.js --only 8738`
@@ -495,8 +495,8 @@ needs a tenancy decision.
   - BF-35's own test, 11 cases. The file is in NEITHER the test:unit nor the test:integration brace list (GT1), so a green `npm run test:unit` on this branch is not evidence that BF-35's fix works; it is named explicitly here for that reason.
 - `[integration]` _(cwd: `externals/work/crm-bf-food`)_ `TEST=api.food.quickpicks npm run test-single`
   - BF-16 over the real HTTP path; needs MongoDB
-- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/food | grep -q 73495331e68c4cda3a63e8c047387bdf404b89b0`
-  - the branch behind PR #8735 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331e68c4cda3a63e8c047387bdf404b89b0 origin/dev`
+  - containment: the measured tip of bf/food is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.
 - **NO GATE** &mdash; Review and merge state of PR #8735 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
 - `[network]` `node tools/queue/gates/pr-body-parity.js --only 8735`
   - the live body of PR #8735 still matches the file it was posted from. A correction is written into the file first, so drift runs from file to live body. It does NOT measure whether the body is true: parity with a wrong file is still parity. NON-VACUITY, reproduced 2026-09-16: one altered file gives 1 failing, an empty body dir gives 6 failing. SKIPS with exit 0 when gh is unauthenticated.
@@ -535,8 +535,8 @@ needs a tenancy decision.
 - `[unit]` _(cwd: `externals/work/crm-bf-merge`)_ `TEST=receiveddata.merge npm run test-single`
   - in NEITHER local brace list (GT1). Named here so the gate actually runs the file that proves the fix.
 - **NO GATE** &mdash; `dataUpdate` still has no try/catch, so the NEXT throw from anywhere in the merge path has the same effect. This branch fixes one throw, not the missing boundary. No test asserts the boundary exists because it does not.
-- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/merge | grep -q b06c6faf882ebd84d627468c75dade0fe1fd01a1`
-  - the branch behind PR #8734 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf882ebd84d627468c75dade0fe1fd01a1 origin/dev`
+  - containment: the measured tip of bf/merge is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.
 - **NO GATE** &mdash; Review and merge state of PR #8734 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
 - `[network]` `node tools/queue/gates/pr-body-parity.js --only 8734`
   - the live body of PR #8734 still matches the file it was posted from. A correction is written into the file first, so drift runs from file to live body. It does NOT measure whether the body is true: parity with a wrong file is still parity. NON-VACUITY, reproduced 2026-09-16: one altered file gives 1 failing, an empty body dir gives 6 failing. SKIPS with exit 0 when gh is unauthenticated.
@@ -576,8 +576,8 @@ needs a tenancy decision.
   - BF-37 and BF-39; in NEITHER local brace list (GT1)
 - `[unit]` _(cwd: `externals/work/crm-bf-parms`)_ `TEST=language npm run test-single`
   - BF-38. Non-vacuous by GT1's control - 1 failing when the fix is removed from pristine dev code.
-- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bf/parms | grep -q eb0bc918036a7802a0b88156e9722f45fd9107f3`
-  - the branch behind PR #8736 is on the remote at the exact tip this item was measured against. Read-only. Verified 2026-09-16.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918036a7802a0b88156e9722f45fd9107f3 origin/dev`
+  - containment: the measured tip of bf/parms is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.
 - **NO GATE** &mdash; Review and merge state of PR #8736 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.
 - `[network]` `node tools/queue/gates/pr-body-parity.js --only 8736`
   - the live body of PR #8736 still matches the file it was posted from. A correction is written into the file first, so drift runs from file to live body. It does NOT measure whether the body is true: parity with a wrong file is still parity. NON-VACUITY, reproduced 2026-09-16: one altered file gives 1 failing, an empty body dir gives 6 failing. SKIPS with exit 0 when gh is unauthenticated.
@@ -793,8 +793,8 @@ needs a tenancy decision.
 
 **Gates.**
 
-- `[network]` `git -C externals/cgm-remote-monitor-official ls-remote --heads origin bewest/wip/optimize-treatment-processing | grep -q dfe2753d`
-  - the one Phase 0 branch that was pushed from outside the backfix worktrees. GT1 verified this live. Read-only.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dfe2753d origin/dev`
+  - containment: the measured tip of bewest/wip/optimize-treatment-processing is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.
 - **NO GATE** &mdash; PR merge state is upstream's and cannot be gated from here without a GitHub API call. This item is tracked, not driven.
 
 **Evidence.**
@@ -870,7 +870,7 @@ needs a tenancy decision.
 
 **Notes.** Three small residuals the sequencing document named together, each one file and each measurable. Follow-up 4 (the console.log in lib/authorization/storage.js) is fixed on bf/auth as commit ce82f0cd and must not be fixed here as well - this is a cross-reference, not a second item. Its gate fails, correctly, because it reads origin/dev and P0-C has not merged; when P0-C merges it goes green on its own and only follow-ups 3 and 7 remain. Follow-up 7 sits beside the ctx.language.set(locale) line that bf/alarms (P0-A, merged) changed.
 
-### `FU-PRBODIES` &mdash; Five merged PR bodies have drifted from the files they were posted from
+### `FU-PRBODIES` &mdash; Merged PR bodies have drifted from the files they were posted from
 
 | | |
 |---|---|
@@ -880,10 +880,10 @@ needs a tenancy decision.
 | base | `origin/dev@74fc6619` |
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `n/a` |
-| review | MAINTAINER, and the decision is narrow: are merged pull request bodies worth correcting at all? For: a merged PR body is the durable public record of why a change was made, and four of these cite file paths that 404 for anybody who follows them. Against: few people read a merged PR body and the edit costs a push. If the answer is yes, #8739 must be handled differently from the other four. Its live body is ahead; the upstream text has to be reconciled INTO reports/phase0-pr-bodies/bf-alarms.md before anything is pushed, or that work is destroyed. A one-way `gh pr edit <pr> --body-file <local>` on #8739 would overwrite it and then report green. |
+| review | MAINTAINER, and the decision is narrow: are merged pull request bodies worth correcting at all? For: a merged PR body is the durable public record of why a change was made, and four of these cite file paths that 404 for anybody who follows them. Against: few people read a merged PR body and the edit costs a push. If the answer is yes, #8739 must be handled differently from the other four. Its live body is ahead; the upstream text has to be reconciled INTO reports/phase0-pr-bodies/bf-alarms.md before anything is pushed, or that work is destroyed. A one-way `gh pr edit <pr> --body-file <local>` on #8739 would overwrite it and then report green. #8743, #8744 and #8745 need the maintainer's intent first. If their bodies were shortened on purpose - for example to keep detail about defects still live on 15.0.8 out of public view - then bf-operators.md, which is in this public repository, carries the detail the edit removed, and the file is what needs changing; see the disclosure rule in the backfix register's header. |
 | ships to operators today | no (pre-release) |
 
-**Blast radius.** No code. Five pull request bodies and up to five files under reports/phase0-pr-bodies/. Measured 2026-09-21 by tools/queue/gates/pr-body- parity.js over all eight pairs: #8738, #8740 and #8743 match; #8734, #8735, #8736, #8737 and #8739 differ. The drift runs in two directions. #8734, #8735, #8736 and #8737 differ only in documentation paths - the local files were updated when the docs tree moved into programme subdirectories, so the LIVE bodies still cite the pre-move spellings (the backfix register without its `remedial/` segment, the semver classification without `modernization/`), and those paths no longer resolve. The spellings are deliberately not written out here: doc-links.js gates this file, and a dead path quoted in a note is indistinguishable to it from a dead path being relied on. Word counts are identical each way. #8739 is the opposite: the live body is 1640 words to the file's 1537 and carries paragraphs the file does not have - the urgent- severity versus notification-delivery distinction, and a note about Alexa and Google Home locale handling - added upstream after posting.
+**Blast radius.** No code. Pull request bodies and the files under reports/phase0-pr-bodies/ they were posted from. Measured 2026-09-23 by tools/queue/gates/pr-body- parity.js over its eight pairs: #8738 and #8740 match; #8734, #8735, #8736, #8737, #8739 and #8743 differ. The drift runs in two directions. #8734, #8735, #8736 and #8737 differ only in documentation paths - the local files were updated when the docs tree moved into programme subdirectories, so the LIVE bodies still cite the pre-move spellings (the backfix register without its `remedial/` segment, the semver classification without `modernization/`), and those paths no longer resolve. The spellings are deliberately not written out here: doc-links.js gates this file, and a dead path quoted in a note is indistinguishable to it from a dead path being relied on. Word counts are identical each way. #8739 is the opposite: the live body is 1640 words to the file's 1537 and carries paragraphs the file does not have - the urgent- severity versus notification-delivery distinction, and a note about Alexa and Google Home locale handling - added upstream after posting. #8743 is newer still: its live body was edited on GitHub at 2026-09-23T00:28:08Z from the maintainer's account, together with #8744 (00:28:09Z) and #8745 (00:28:11Z), the other two advisory fixes. The live bodies are now 419, 180 and 305 words; bf-operators.md, the file #8743 was posted from, is 2641. The parity gate judges direction by word count, so it reports #8743's FILE as ahead and prints an overwrite command. That command would undo the edit. #8744 and #8745 have no file under reports/phase0-pr-bodies/, so the gate does not see them.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -892,7 +892,7 @@ needs a tenancy decision.
 **Gates.**
 
 - `[network]` `node tools/queue/gates/pr-body-parity.js`
-  - All eight bodies match their files. Red with five failing as of 2026-09-21. Read-only - it fetches bodies and never edits one.
+  - All eight bodies match their files. Red with six failing as of 2026-09-23. Read-only - it fetches bodies and never edits one. Its direction advice is a word-count heuristic: read the PR's last-edited time before acting on it.
 - **NO GATE** &mdash; Whether a body is TRUE is not measured by anything here, and parity with a wrong file is still parity. Figures in these bodies have been wrong before - bf/parms had two, bf/reads had four - and only re-running the claim catches that.
 - **NO GATE** &mdash; Nothing gates the reconciliation of #8739. Merging upstream prose into a local file is an editorial act; a gate can say the two differ and cannot say the merge was faithful.
 
@@ -901,7 +901,7 @@ needs a tenancy decision.
 - `tools/queue/gates/pr-body-parity.js`
 - `reports/phase0-pr-bodies/bf-alarms.md`
 
-**Notes.** The parity gate belonged to eight Phase 0 items that are all merged-upstream, so its red reads as expected post-merge noise on rows nobody revisits; this item gives it an owner. No PR body was edited; five were read.
+**Notes.** The parity gate belonged to eight Phase 0 items that are all merged-upstream, so its red reads as expected post-merge noise on rows nobody revisits; this item gives it an owner. No PR body was edited; all twelve Phase 0 and advisory PR bodies were read on 2026-09-23 with their last-edited times.
 
 ### `FU-HYGIENE` &mdash; Follow-ups 9, 10 - the two audits that have no instrument
 
@@ -1062,7 +1062,7 @@ that costs.
 
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 
-**Notes.** A rebase is prepared locally (2026-09-21, on the maintainer's instruction) in externals/work/crm-cuts: rt/cut1 77d6ffaf, rt/cut2 6106332e, rt/cut3 5bff9225, rt/cut4 8a692d88. NOT PUSHED. The published cut branches the gates measure are unchanged. Method: dev was propagated UP the stack (dev into cut 1, cut 1 into cut 2, and so on), so the prefix property is preserved and cut 1's resolutions are inherited. Measured: each cut is an ancestor of the next, each contains origin/dev, and all four trial-merge into dev cleanly. Propagation needed 7 conflict resolutions at cut 1, then 9 / 5 / 4, against the 14 / 16 / 18 each would have had against dev directly. Nine of the 25 conflicts were Phase 0 fixes the cuts predate, and taking the cut's side would have reintroduced each: BF-01 (?count=0 answering with the whole collection), BF-07 (cloning the retained window), BF-16 and BF-35 (the bolus calculator quick-pick filter and chooser), BF-36 (delta merge past the end), plus the BF-04 allowlist and BF-70 pipeline refusal. All seven verified present on cut 4 after the merges. The cut 5 tip carries only two thirds of BF-07, and these branches do not copy that: b1bdaca0 keeps getDataRef in lib/server/cache.js and both lib/data/dataloader.js callers but reverted lib/api/entries/index.js to getData - origin/dev has 7 occurrences under lib/, b1bdaca0 has 6, these branches have 7. Worth raising against e3b22034 upstream. The connector pin at cut 4 was a real fork: dev's 234d47c8 and cut 4's c962a13f are neither an ancestor of the other, so either side loses something. Resolved to b77e5bb7, which has both, is pushed to the connector remote, and is what the local tip pins. This makes P0-PIN and the v0.0.14 question more urgent. Test results on Node 24.20.0 against mongod 7.0.43 (the Node version matters - see RT-NODE- FLOOR-TESTED): cut 1 348 passing, cut 2 357, cut 3 324, cut 4 310, zero failures. Counts differ because later cuts remove suites (cut 4 retires the bridge and mmconnect tests). Cut 1's ported browser coverage was ablated: removing dev's 06372e1d takes it from 21 passing to 12 passing / 9 failing, so it measures the fix. Not done: the coverage of tests/pluginbase.modern.test.js and tests/profile-sinks.test.js, both deleted by cut 1's jsdom retirement, has not been audited against cut 1's Playwright replacements - 12 it() cases in the first and 6 in the second are unaccounted for. Only clock-client's was audited, because it had a named production fix behind it. Release-readiness §5's "each costs zero rebase work today" was false when written: the cut tips date to 2026-09-05/06 and dev's tip to 2026-09-09. "0 commits behind dev" was true of the stack tip only, because of one commit, 0a4109f6.
+**Notes.** A rebase is prepared locally (2026-09-21, on the maintainer's instruction) in externals/work/crm-cuts: rt/cut1 77d6ffaf, rt/cut2 6106332e, rt/cut3 5bff9225, rt/cut4 8a692d88. NOT PUSHED. The published cut branches the gates measure are unchanged. Method: dev was propagated UP the stack (dev into cut 1, cut 1 into cut 2, and so on), so the prefix property is preserved and cut 1's resolutions are inherited. Measured: each cut is an ancestor of the next, each contains origin/dev, and all four trial-merge into dev cleanly. Propagation needed 7 conflict resolutions at cut 1, then 9 / 5 / 4, against the 14 / 16 / 18 each would have had against dev directly. Nine of the 25 conflicts were Phase 0 fixes the cuts predate, and taking the cut's side would have reintroduced each: BF-01 (?count=0 answering with the whole collection), BF-07 (cloning the retained window), BF-16 and BF-35 (the bolus calculator quick-pick filter and chooser), BF-36 (delta merge past the end), plus the BF-04 allowlist and BF-70 pipeline refusal. All seven verified present on cut 4 after the merges. The cut 5 tip carries only two thirds of BF-07, and these branches do not copy that: b1bdaca0 keeps getDataRef in lib/server/cache.js and both lib/data/dataloader.js callers but reverted lib/api/entries/index.js to getData - origin/dev has 7 occurrences under lib/, b1bdaca0 has 6, these branches have 7. Worth raising against e3b22034 upstream. The connector pin at cut 4 was a real fork: dev's 234d47c8 and cut 4's c962a13f are neither an ancestor of the other, so either side loses something. Resolved to b77e5bb7, which has both, is pushed to the connector remote, and is what the local tip pins. Every connector commit in b77e5bb7 is also in connector dev and in the 0.1.0 line, so when the rebased cuts land they move to the same exact npm pin as dev (P0-PIN, RT-CONNECT-PIN-CUTS). Test results on Node 24.20.0 against mongod 7.0.43 (the Node version matters - see RT-NODE-FLOOR-TESTED): cut 1 348 passing, cut 2 357, cut 3 324, cut 4 310, zero failures. Counts differ because later cuts remove suites (cut 4 retires the bridge and mmconnect tests). Cut 1's ported browser coverage was ablated: removing dev's 06372e1d takes it from 21 passing to 12 passing / 9 failing, so it measures the fix. Not done: the coverage of tests/pluginbase.modern.test.js and tests/profile-sinks.test.js, both deleted by cut 1's jsdom retirement, has not been audited against cut 1's Playwright replacements - 12 it() cases in the first and 6 in the second are unaccounted for. Only clock-client's was audited, because it had a named production fix behind it. Release-readiness §5's "each costs zero rebase work today" was false when written: the cut tips date to 2026-09-05/06 and dev's tip to 2026-09-09. "0 commits behind dev" was true of the stack tip only, because of one commit, 0a4109f6.
 
 ### `RT-0` &mdash; Release 15.0.9
 

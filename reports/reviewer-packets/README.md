@@ -29,7 +29,7 @@ repository.
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`DOC-LINKS`](doc-links-main.md) | &mdash; | `ready-to-push` | Every path the programme's documents and tooling cite must resolve |
 | [`DOC-VIEWS`](doc-views-main.md) | &mdash; | `ready-to-push` | A reviewer-facing surface over the queue: three overview pages and a packet per PR |
-| [`FU-PRBODIES`](fu-prbodies.md) | &mdash; | `needs-decision` | Five merged PR bodies have drifted from the files they were posted from |
+| [`FU-PRBODIES`](fu-prbodies.md) | &mdash; | `needs-decision` | Merged PR bodies have drifted from the files they were posted from |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
 | [`RT-4`](rt-4.md) | &mdash; | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes |
 | [`RT-D3`](rt-d3-origin-dev.md) | &mdash; | `needs-decision` | Answer the D3 question before 15.0.9 ships |
