@@ -112,22 +112,27 @@ times. 4/4 on the branch against dev and against 15.0.8, 2026-09-23.
 - [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md)
 - [`docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md`](../../docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md)
 - [`docs/30-design/remedial/dev-cycle-review-harness-plan-2026-09-17.md`](../../docs/30-design/remedial/dev-cycle-review-harness-plan-2026-09-17.md)
+- [`docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md`](../../docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md)
 
 ## Notes carried on the item
 
 PREPARED 2026-09-23 - bf3/quickpick-rebuild 83cfff14, one commit on 74fc6619,
 not pushed. BF-35's probes still pass on the branch (food-boluscalc-browser.js
 5/5 against 15.0.8). The register's one-line candidate was not used as
-written, because it stacks one more change handler per open. Destination
-release not decided. Reproduced 2026-09-17 in a browser against the review
-harness, on a8888f0d and on rc/2026-09-dev-cycle: 8 food records present,
-chooser empty on both. SEQUENCING, MEASURED: the one-line change applied to
-a8888f0d without bf/food makes the chooser offer eight entries - every plain
-food plus the quick pick the user hid - and selecting them throws five times.
-BF-35's dose consequence is latent on 15.0.8 only because BF-69 hides it.
-Repairing the chooser first converts a latent high-severity defect into a live
-one in a bolus calculator. Ship with P0-G (merged to dev as #8735) or after
-it, never before.
+written, because it stacks one more change handler per open. SHIPS IN 15.0.9
+(maintainer, 2026-09-23). Integrated on rc/15.0.9-additions-d 5764156e,
+2520/0/3 on every Node and MongoDB pair
+(docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md); PR body drafted
+in reports/phase0-pr-bodies/bf3-quickpick-rebuild.md. Food edits made while a
+page is open still do not reach it (BFQ-93). Reproduced 2026-09-17 in a
+browser against the review harness, on a8888f0d and on rc/2026-09-dev-cycle: 8
+food records present, chooser empty on both. SEQUENCING, MEASURED: the one-
+line change applied to a8888f0d without bf/food makes the chooser offer eight
+entries - every plain food plus the quick pick the user hid - and selecting
+them throws five times. BF-35's dose consequence is latent on 15.0.8 only
+because BF-69 hides it. Repairing the chooser first converts a latent high-
+severity defect into a live one in a bolus calculator. Ship with P0-G (merged
+to dev as #8735) or after it, never before.
 
 ---
 

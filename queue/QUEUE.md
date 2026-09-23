@@ -31,26 +31,27 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 102 |
+| items | 104 |
 | runnable gates | 181 |
-| explicit `no-gate:` markers | 149 |
+| explicit `no-gate:` markers | 150 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 149 of the 330 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 150 of the 331 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 31 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-93, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
 | `gate-not-met` | 14 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 6 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-52, BFQ-90 |
-| `blocked` | 11 | P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
+| `ready-to-push` | 5 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-90 |
+| `blocked` | 12 | P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 7 | P0-PIN, RT-COUNT0, RT-MONGO-FLOOR, BFQ-87, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `merged-upstream` | 17 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
-| `needs-decision` | 9 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, BFQ-41, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
+| `needs-decision` | 9 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, BFQ-95, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
 | `done` | 2 | DOC-VIEWS, DOC-LINKS |
-| `unsettled` | 4 | BFQ-09, A7A-7, BFQ-92, BFQ-94 |
+| `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
+| `closed` | 1 | BFQ-41 |
 
 ### Reaches an operator on today's release
 
@@ -65,7 +66,6 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-71** BF-71 - any dateString key drops the default date window, and the window is not a control
 - **BFQ-72** BF-72 - an unauthenticated $regex can spend minutes of database CPU
 - **BFQ-40** BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
-- **BFQ-41** BF-41 - a future-dated reading does not silence the stale-data alarm as registered; a clock running ahead delays it
 - **BFQ-87** BF-87 - the root qs override holds the connector below its range and pins the server's query parser
 - **BFQ-CONNECTOR** BF-42, BF-43 - master pins the leaking connector, with a violated axios override
 - **BFQ-MINIMED** BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading
@@ -77,6 +77,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-92** BF-92 - a page with no glucose reading never presents a server alarm, including device alarms
 - **BFQ-93** BF-93 - food changes never reach an open page
 - **BFQ-94** BF-94 - a kept profile instance can return a temp basal that has been replaced
+- **BFQ-95** BF-95 - an uploader clock running ahead delays the stale-data alarm
 - **BFQ-67** BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work
 - **ADV-RETRO** GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79)
 - **ADV-ALARM** GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76)
@@ -1515,7 +1516,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 36 items
+`parcel: register-open` &mdash; 38 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1542,18 +1543,20 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-71` | BF-71 - any dateString key drops the default date window, and the window is not a control | `gate-not-met` | `-` | patch | 2 run + 2 no-gate |
 | `BFQ-72` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | `needs-decision` | `-` | minor | 1 run + 3 no-gate |
 | `BFQ-40` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion | `merged-upstream` | `-` | minor | 1 run |
-| `BFQ-41` | BF-41 - a future-dated reading does not silence the stale-data alarm as registered; a clock running ahead delays it | `needs-decision` | `-` | minor | 1 run + 2 no-gate |
+| `BFQ-41` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm (closed, does not reproduce) | `closed` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-87` | BF-87 - the root qs override holds the connector below its range and pins the server's query parser | `in-flight-upstream` | `bf/qs-6.16` | patch | 3 run + 1 no-gate |
 | `BFQ-CONNECTOR` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override | `gate-not-met` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-MINIMED` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading | `not-started` | `-` | minor | 0 run + 3 no-gate |
 | `BFQ-46` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
 | `BFQ-47` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | `ready-to-push` | `bf2/subject-edit-keeps-fields` | major | 2 run + 1 no-gate |
 | `BFQ-ENV` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | `gate-not-met` | `-` | minor | 4 run + 2 no-gate |
-| `BFQ-52` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent | `ready-to-push` | `bf3/age-push-once` | patch | 2 run + 1 no-gate |
+| `BFQ-52` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent | `blocked` | `bf3/age-push-once` | patch | 2 run + 1 no-gate |
 | `BFQ-90` | BF-90 - an alarm at a page with no reading throws in the client | `ready-to-push` | `bf3/alarm-no-reading` | patch | 1 run + 2 no-gate |
-| `BFQ-92` | BF-92 - a page with no glucose reading never presents a server alarm, including device alarms | `unsettled` | `-` | n/a | 0 run + 1 no-gate |
+| `BFQ-92` | BF-92 - a page with no glucose reading never presents a server alarm, including device alarms | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-93` | BF-93 - food changes never reach an open page | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-94` | BF-94 - a kept profile instance can return a temp basal that has been replaced | `unsettled` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-95` | BF-95 - an uploader clock running ahead delays the stale-data alarm | `needs-decision` | `-` | minor | 0 run + 1 no-gate |
+| `BFQ-96` | BF-96 - the headless test fixture's bundle cache key is an un-normalised path | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-67` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
 | `ADV-RETRO` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) | `merged-upstream` | `bf/ws-loadretro-auth` | patch | 2 run + 1 no-gate |
 | `ADV-ALARM` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) | `merged-upstream` | `bf/alarm-socket-scope` | minor | 2 run + 2 no-gate |
@@ -2057,8 +2060,9 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md`
 - `docs/30-design/remedial/dev-cycle-review-harness-plan-2026-09-17.md`
+- `docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md`
 
-**Notes.** PREPARED 2026-09-23 - bf3/quickpick-rebuild 83cfff14, one commit on 74fc6619, not pushed. BF-35's probes still pass on the branch (food-boluscalc-browser.js 5/5 against 15.0.8). The register's one-line candidate was not used as written, because it stacks one more change handler per open. Destination release not decided. Reproduced 2026-09-17 in a browser against the review harness, on a8888f0d and on rc/2026-09-dev-cycle: 8 food records present, chooser empty on both. SEQUENCING, MEASURED: the one-line change applied to a8888f0d without bf/food makes the chooser offer eight entries - every plain food plus the quick pick the user hid - and selecting them throws five times. BF-35's dose consequence is latent on 15.0.8 only because BF-69 hides it. Repairing the chooser first converts a latent high-severity defect into a live one in a bolus calculator. Ship with P0-G (merged to dev as #8735) or after it, never before.
+**Notes.** PREPARED 2026-09-23 - bf3/quickpick-rebuild 83cfff14, one commit on 74fc6619, not pushed. BF-35's probes still pass on the branch (food-boluscalc-browser.js 5/5 against 15.0.8). The register's one-line candidate was not used as written, because it stacks one more change handler per open. SHIPS IN 15.0.9 (maintainer, 2026-09-23). Integrated on rc/15.0.9-additions-d 5764156e, 2520/0/3 on every Node and MongoDB pair (docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md); PR body drafted in reports/phase0-pr-bodies/bf3-quickpick-rebuild.md. Food edits made while a page is open still do not reach it (BFQ-93). Reproduced 2026-09-17 in a browser against the review harness, on a8888f0d and on rc/2026-09-dev-cycle: 8 food records present, chooser empty on both. SEQUENCING, MEASURED: the one- line change applied to a8888f0d without bf/food makes the chooser offer eight entries - every plain food plus the quick pick the user hid - and selecting them throws five times. BF-35's dose consequence is latent on 15.0.8 only because BF-69 hides it. Repairing the chooser first converts a latent high- severity defect into a live one in a bolus calculator. Ship with P0-G (merged to dev as #8735) or after it, never before.
 
 ### `BFQ-71` &mdash; BF-71 - any dateString key drops the default date window, and the window is not a control
 
@@ -2160,31 +2164,30 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Notes.** The merged PR #8737 body's operator-facing text says find[sgv][$exists]=true "became $exists: NaN, which MongoDB reads as false, so the query returned exactly the records you did not ask for". That sentence is false - $exists=true is answered correctly before and after - and a release note must not repeat it, because it tells operators to distrust queries that were right. What #8737 repairs is $exists=false (this entry, BF-40) and the $regex server error (BF-32).
 
-### `BFQ-41` &mdash; BF-41 - a future-dated reading does not silence the stale-data alarm as registered; a clock running ahead delays it
+### `BFQ-41` &mdash; BF-41 - a reading dated ahead of the clock silences the stale-data alarm (closed, does not reproduce)
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@74fc6619` |
 | worktree | `externals/cgm-remote-monitor-official` |
-| semver | `minor` |
-| review | maintainer, and it needs a decision before it needs code. The registered symptom does not reproduce through the real sandbox, and the decided 5-minute tolerance would loosen an alarm that fires today. The four options are in the evidence: close as not reproducing; build the tolerance and name the loosening; take on the clock-ahead delay; take on "no usable reading means no alarm". |
-| ships to operators today | **yes** |
+| semver | `n/a` |
+| review | maintainer - decided 2026-09-23: closed as not reproducing (evidence section 5, option 1), no tolerance setting. |
+| ships to operators today | no (pre-release) |
 | register | `BF-41` |
 
 **Blast radius.** Nothing built. The behaviour lives in lib/sandbox.js lastEntry (the notInTheFuture filter, since 556091bf, 2015) and lib/plugins/timeago.js checkStatus and checkNotifications. Local branch bf3/future-reading-stale exists at 74fc6619 with no commits.
 
-**What an operator sees.** Nightscout can warn you when no new glucose reading has arrived for a while. By default it warns in the browser at 15 and 30 minutes. An earlier note said that one reading stamped with a time in the future would switch that warning off. That is not what happens: Nightscout skips readings dated in the future when it decides whether your data is stale, and the warning still comes. One related thing does happen. If the phone or device uploading your readings has its clock set AHEAD of the real time, Nightscout treats each reading as newer than it is, so if your readings then stop, the warning comes late, by roughly how far ahead that clock is. For example, if the clock is an hour fast, the 15-minute warning comes after about an hour and a quarter. You might see the "minutes ago" display reading "future" or staying at "1m" while readings are arriving; if you do, check the date, time and time zone on the uploading device. Also, when Nightscout has no usable reading at all, it gives no stale-data warning. If you depend on the stale-data warning, make sure you have another way to notice that readings have stopped, and talk to your care team about what you rely on Nightscout for. This is not medical advice.
+**What an operator sees.** Nightscout can warn you when no new glucose reading has arrived for a while. By default it warns in the browser at 15 and 30 minutes. An earlier note said that one reading stamped with a time in the future would switch that warning off. That is not what happens: Nightscout skips readings that are dated in the future when it decides whether your data is stale, and the warning still comes. The related case that does happen, a device clock set ahead making the warning come late, is BFQ-95. This is not medical advice.
 
-**Why `minor`.** Closing the entry as not reproducing ships nothing. Any of the other options changes when an alarm that is on by default fires - the tolerance loosens it, a clock-ahead notice adds one - which is a behaviour change on a safety- adjacent surface and cannot arrive as a silent patch.
+**Why `n/a`.** nothing ships; the item is closed as not reproducing
 
 **Gates.**
 
 - `[static]` `node tools/queue/gates/timeago-future-reading.js`
   - Loads readings into the data the sandbox is built from and lets the shipping lib/sandbox.js lastEntry choose the reading, on the server path (serverInit, checkStatus, checkNotifications with alerts on, the push request recorded) and the browser path (clientInit, checkStatus). PASSES when the registered defect does not reproduce - a real reading 40 or 20 minutes old still gives urgent or warn on both paths, and the push alarm, when a reading 3 to 120 minutes ahead is also loaded - and FAILS if a future-dated reading ever silences either path. Three controls (2, 20, 40 minutes, no future reading) must come out current, warn and urgent. Measured 2026-09-23 - green, 8 checked / 0 failing, on the official checkout; with the notInTheFuture filter replaced by `return true` in a scratch copy of the dev tree (--tree), the four future arms go current with no push, 4 failing, exit 1, and the controls stay green. The earlier version of this gate stubbed sbx.lastSGVEntry past that filter and was vacuous.
-- **NO GATE** &mdash; Nothing gates the residual that does reproduce - an uploader clock running ahead delays the stale-data alarm by the size of the skew (F7/F8 in the evidence, measured with tools/remedial/bf3/bf41-real-sandbox.js, which is a characterisation that always exits 0). A gate for it waits on the maintainer's choice of option, because which way it should go red depends on the product decided.
 - **NO GATE** &mdash; "No usable reading means no alarm" (every loaded reading in the future, or none loaded) is the checkStatus no-reading branch assuming current. It is not specific to future readings, and nothing gates it.
 
 **Evidence.**
@@ -2193,7 +2196,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/bf41-future-reading-2026-09-23.md`
 - `tools/remedial/bf3/bf41-real-sandbox.js`
 
-**Notes.** MEASURED 2026-09-23 - does NOT reproduce as registered (reproduced-negative through the real sandbox on 74fc6619 and 15.0.8, with a break-it that removes the 556091bf filter and brings the symptom back). The decided tolerance was not built: in the case "a real reading 20 minutes old plus one 3 minutes ahead" the warning fires today and would stop firing. It changes nothing in the clock-ahead case, which is the consequential one. DECIDED 2026-09-23 (maintainer) - a reading dated ahead of the clock is kept as sent, and the stale-data check uses the newest reading that is not in the future; no new warning. "In the future" means more than a tolerance ahead of the server clock, configurable, default 5 minutes. Snooze runs on the wall clock. The hosted evaluator may apply the same rule, but never to live alarms. BF-44 is a concrete, shipping way to produce a future-dated reading, which is why BFQ- MINIMED carries the same severity argument from the other end.
+**Notes.** CLOSED 2026-09-23 (maintainer) - does not reproduce as stated; no tolerance setting is added. The evidence section 7 text ships as a 15.0.9 known issue. The gate above runs through the real sandbox since b248bb73. The clock-ahead residual is BFQ-95 (BF-95). MEASURED 2026-09-23 - does NOT reproduce as registered (reproduced-negative through the real sandbox on 74fc6619 and 15.0.8, with a break-it that removes the 556091bf filter and brings the symptom back). The decided tolerance was not built: in the case "a real reading 20 minutes old plus one 3 minutes ahead" the warning fires today and would stop firing. It changes nothing in the clock-ahead case, which is the consequential one. SUPERSEDED by the closure above - DECIDED 2026-09-23 (maintainer) - a reading dated ahead of the clock is kept as sent, and the stale-data check uses the newest reading that is not in the future; no new warning. "In the future" means more than a tolerance ahead of the server clock, configurable, default 5 minutes. Snooze runs on the wall clock. The hosted evaluator may apply the same rule, but never to live alarms. BF-44 is a concrete, shipping way to produce a future-dated reading, which is why BFQ- MINIMED carries the same severity argument from the other end.
 
 ### `BFQ-87` &mdash; BF-87 - the root qs override holds the connector below its range and pins the server's query parser
 
@@ -2410,7 +2413,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `blocked` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf3/age-push-once` |
 | base | `origin/dev@74fc6619` |
@@ -2419,6 +2422,7 @@ distinction is the only thing that makes the register mean anything - widening
 | review | maintainer, who should confirm the behaviour choices named in the evidence - all three levels rather than urgent only; the record lives in memory, so a restart re-sends one reminder for an item already overdue; the first check after upgrading sends one reminder per overdue item; a catch-up request can be swallowed by an active silence (not measured). |
 | ships to operators today | **yes** |
 | register | `BF-52` |
+| blocks on | `BFQ-92` |
 
 **Blast radius.** One commit, 896629f8, 8 files, +338/-66. lib/plugins/agenotify.js (new, shared), lib/plugins/{cannulaage,sensorage,insulinage,batteryage}.js, tests/age-notify-once.test.js (new, 24 tests), tests/sensorage.test.js (one expectation changed: it asserted the defect), README.md (the *_ENABLE_ALERTS entries and IAGE_URGENT).
 
@@ -2439,7 +2443,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf52-age-push-once-2026-09-23.md`
 
-**Notes.** PREPARED 2026-09-23 - bf3/age-push-once 896629f8, one commit on 74fc6619, not pushed. Reproduced red on dev and on 15.0.8 first. The window is minutes 0-20 of the threshold hour, not a single evaluation, and the shape is the same at all three levels in all four plugins. Destination release not decided (plan section 1a, "backfix 3"). DECIDED 2026-09-23 (maintainer) - send once, even if the exact check is missed: fire the push the first time the age is at or past the threshold and remember that it was sent, so a restart or a data gap cannot swallow it and it does not repeat every check. That makes today's exact-match behaviour a defect; the fix is on bf3/age-push-once (above). BF-28 masked this on insulinage for years - the level line was broken, so nobody reached the notification line. The three sibling plugins have shipped with the same shape unmasked. Any release note for BF-28 (merged to dev via #8739, arriving in 15.0.9) must get two things right - the push alarm is opt-in and off by default, and what does reach everyone is the on-screen pill, because the level is assigned outside the alerts guard.
+**Notes.** PREPARED 2026-09-23 - bf3/age-push-once 896629f8, one commit on 74fc6619, not pushed. Reproduced red on dev and on 15.0.8 first. The window is minutes 0-20 of the threshold hour, not a single evaluation, and the shape is the same at all three levels in all four plugins. DEFERRED 2026-09-23 (maintainer) - not in 15.0.9. It ships in a later release, paired with BFQ-92, and delivery after requestNotify through pushnotify and Pushover is measured first. The branch stays prepared at 896629f8. DECIDED 2026-09-23 (maintainer) - send once, even if the exact check is missed: fire the push the first time the age is at or past the threshold and remember that it was sent, so a restart or a data gap cannot swallow it and it does not repeat every check. That makes today's exact-match behaviour a defect; the fix is on bf3/age-push-once (above). BF-28 masked this on insulinage for years - the level line was broken, so nobody reached the notification line. The three sibling plugins have shipped with the same shape unmasked. Any release note for BF-28 (merged to dev via #8739, arriving in 15.0.9) must get two things right - the push alarm is opt-in and off by default, and what does reach everyone is the on-screen pill, because the level is assigned outside the alerts guard.
 
 ### `BFQ-90` &mdash; BF-90 - an alarm at a page with no reading throws in the client
 
@@ -2473,20 +2477,21 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md`
 - `docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md`
+- `docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md`
 
-**Notes.** PREPARED 2026-09-23 - bf3/alarm-no-reading 92544d8f, one commit on 74fc6619, not pushed. Reachability corrected: it is reached with no forcing, on 15.0.8 and dev, by any opt-in device alert at a site with no stored CGM reading (and on 15.0.8 also by a page that may not read data, BF-75). It was first seen with the /alarm gate forced open. Register grade re-stated 2026-09-23 as low - reachable, not latent - because the throw's own cost is a skipped chart redraw; "no alarm is lost" holds only because the page drops every server alarm when it has no reading (BF-92, BFQ-92). A second throw behind the first (no chart on a page that never received data) is why each handler needs two guards. Destination release not decided.
+**Notes.** PREPARED 2026-09-23 - bf3/alarm-no-reading 92544d8f, one commit on 74fc6619, not pushed. Reachability corrected: it is reached with no forcing, on 15.0.8 and dev, by any opt-in device alert at a site with no stored CGM reading (and on 15.0.8 also by a page that may not read data, BF-75). It was first seen with the /alarm gate forced open. Register grade re-stated 2026-09-23 as low - reachable, not latent - because the throw's own cost is a skipped chart redraw; "no alarm is lost" holds only because the page drops every server alarm when it has no reading (BF-92, BFQ-92). A second throw behind the first (no chart on a page that never received data) is why each handler needs two guards. SHIPS IN 15.0.9 (maintainer, 2026-09-23). Integrated on rc/15.0.9-additions-d 5764156e, 2520/0/3 on every Node and MongoDB pair (docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md); PR body drafted in reports/phase0-pr-bodies/bf3-alarm-no-reading.md.
 
 ### `BFQ-92` &mdash; BF-92 - a page with no glucose reading never presents a server alarm, including device alarms
 
 | | |
 |---|---|
-| state (claimed) | `unsettled` |
+| state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@74fc6619` |
 | worktree | `externals/cgm-remote-monitor-official` |
-| semver | `n/a` |
-| review | maintainer - a clinical-behaviour decision before any code. Should a page with no reading present device alarms (pump, loop, site and sensor age) that the site owner switched on? It should not ride along on BFQ-90's crash fix. |
+| semver | `minor` |
+| review | maintainer. Position taken 2026-09-23 - non-glucose alarms (pump, loop, age) should present on a page with no reading. It should not ride along on BFQ-90's crash fix. |
 | ships to operators today | **yes** |
 | register | `BF-92` |
 
@@ -2494,18 +2499,18 @@ distinction is the only thing that makes the register mean anything - widening
 
 **What an operator sees.** Nightscout can raise alarms for things other than glucose if the site owner has switched them on - for example a pump reservoir running low, a loop that has stopped, or a cannula or sensor that is overdue for a change. A Nightscout page decides whether to sound a server alarm by looking at the latest glucose reading. When the page has no reading to show (the big number reads ---), it treats every alarm as "not for me", including a pump or loop alarm that has nothing to do with glucose. In our test the same "URGENT: Pump Reservoir Low" alarm filled the page's title bar in red and played the alarm sound when readings were on screen, and the page showed nothing at all when there were none. This is how today's release (15.0.8) and the development version behave. If you rely on a Nightscout page for device alarms, do not assume a page showing --- will alert you; keep the alarms on the devices themselves (pump, phone app, CGM receiver) switched on. This is not medical advice; talk to your care team about how you get alerted.
 
-**Why `n/a`.** Nothing is built. If the maintainer decides device alarms should be presented with no reading, that changes when alarms sound and is at least minor.
+**Why `minor`.** Changes which alarms a page presents; safety-adjacent, so not a silent patch.
 
 **Gates.**
 
-- **NO GATE** &mdash; Measured in a real browser, not by a queue gate: tools/review/probes/alarm-no-reading-browser.js with --reading none and --reading present, on 15.0.8, dev and bf3/alarm-no-reading (evidence section 4). It needs two booted instances and MongoDB. A unit gate would be the headless test's "still does not sound with no reading" invariant inverted, and which way it should go red is the maintainer's decision.
+- **NO GATE** &mdash; Measured in a real browser, not by a queue gate: tools/review/probes/alarm-no-reading-browser.js with --reading none and --reading present, on 15.0.8, dev and bf3/alarm-no-reading (evidence section 4). It needs two booted instances and MongoDB. A unit gate would be the headless test's "still does not sound with no reading" invariant inverted for non-glucose alarms, per the maintainer's 2026-09-23 position; it does not exist yet.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md`
 
-**Notes.** Filed 2026-09-23 from the BF-90 work. Safety-relevant - graded high in the register if unintended. Reproduced with ordinary pump-status uploads and PUMP_ENABLE_ALERTS=true; no server decision was forced.
+**Notes.** Filed 2026-09-23 from the BF-90 work. Safety-relevant - graded high in the register if unintended. Reproduced with ordinary pump-status uploads and PUMP_ENABLE_ALERTS=true; no server decision was forced. MAINTAINER POSITION 2026-09-23 - non-glucose alarms should present on a page with no reading. A later release, not 15.0.9, paired with BFQ-52. 15.0.9 carries it as a known issue.
 
 ### `BFQ-93` &mdash; BF-93 - food changes never reach an open page
 
@@ -2568,6 +2573,68 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/bf09-dedup-zero-measurement-2026-09-23.md`
 
 **Notes.** Filed 2026-09-23, a side finding of the BF-09 measurement. Not BF-09.
+
+### `BFQ-95` &mdash; BF-95 - an uploader clock running ahead delays the stale-data alarm
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@74fc6619` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `minor` |
+| review | maintainer - a design decision before code |
+| ships to operators today | **yes** |
+| register | `BF-95` |
+
+**Blast radius.** lib/sandbox.js lastEntry, lib/plugins/timeago.js checkStatus. v1 entries store no server-receipt time (lib/server/entries.js:118-126), so an arrival-based check needs new data.
+
+**What an operator sees.** If the phone or device uploading your readings has its clock set ahead of the real time, Nightscout treats each reading as newer than it is. If your readings then stop, the stale-data warning comes late, by roughly how far ahead that clock is: an hour fast means the 15-minute warning comes after about an hour and a quarter. Check the date, time and time zone on the uploading device, and have another way to notice that readings have stopped. This is not medical advice; talk to your care team about what you rely on Nightscout for.
+
+**Why `minor`.** any fix changes when an alarm that is on by default fires
+
+**Gates.**
+
+- **NO GATE** &mdash; Characterised by tools/remedial/bf3/bf41-real-sandbox.js cases F7 and F8 (it always exits 0 - a characterisation, not a gate). A gate needs the decided product first, because which way it should go red depends on it.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/60-research/remedial/bf41-future-reading-2026-09-23.md`
+
+**Notes.** Filed 2026-09-23 from the BF-41 measurement (F7/F8) when BF-41 was closed. Open, needs a design decision; one option is a notice for readings that arrive already ahead of the clock (evidence section 5, option 3). 15.0.9 carries it as a known issue. BF-44 (BFQ-MINIMED) is a shipping source of forward skew.
+
+### `BFQ-96` &mdash; BF-96 - the headless test fixture's bundle cache key is an un-normalised path
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@74fc6619` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `n/a` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-96` |
+
+**Blast radius.** tests/fixtures/headless.js and tests/fixtures/benv-shim.js only; test harness, nothing an operator runs.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** test harness only
+
+**Gates.**
+
+- **NO GATE** &mdash; Seen while writing BF-90's tests/client.alarm-no-reading.test.js, which clears the resolved key itself. A gate would load two headless suites in one mocha process and assert the second gets a fresh bundle; it does not exist yet.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md`
+
+**Notes.** Filed 2026-09-23 from the BF-90 work; found, not fixed. The candidate fix (path.resolve in the shim) is unverified.
 
 ### `BFQ-67` &mdash; BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work
 
@@ -3696,7 +3763,7 @@ dev by SHA, evaluating between each merge.
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 - `docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`
 
-**Notes.** OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8754 (head 7103f657, base dev) - subject-edit folded in as its last commit (maintainer, relayed 2026-09-23); withheld-style description; the head is expected to move to 81623f9b (TRUST_PROXY hop count and true) when the maintainer pushes it. DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence - the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on every Node and MongoDB pair, break-its on the final tree. Three things for the maintainer from that record. (1) The auth-hardening line in lib/api/index.js (app.set('trust proxy', ...)) is inert - the v1 sub-app inherits trust proxy from lib/server/app.js - so removing it fails nothing, full suite included. (2) The record recommends folding bf2/subject-edit-keeps-fields (BFQ-47) into the auth-hardening PR as its last commit, and leaves the choice to the maintainer. (3) The record leaves the PR-body style (full or withheld) to the maintainer. The PR body as committed at b248bb73 (reports/phase0-pr- bodies/bf2-auth-hardening.md) records both as decided by the maintainer on 2026-09-23 - posted in full, and 7103f657 folded in as the final commit. rc-c contains the connector pin at 338deb7f (0.1.0-dev.1), now superseded by bf/connect-pin-0.1.0 adf5120c (0.1.0-dev.2), so the rc needs a re-merge before it is evidence for the pin. PREPARED 2026-09-22. Commits: merges of bf/auth and bf/throttle; cherry-pick -x of 06c83f2f and 395f3207 (hunks for files absent on dev dropped); 1114228d adapts two cherry-picked tests to bf/throttle's keysFor(); 8b975b41 is a PORT - with TRUST_PROXY unset the address comes from forwarded-for exactly as on dev, because 395f3207's default differs in four cases (BF-88); the trusted path is 395f3207's code unchanged. ONE flag, not two - the throttle keys on data.ip, which now comes from client- ip.js. Suite on Node 20.20.0 - dev 2386/0/3, branch 2462/0/3, +76 exactly. Semver stays major for BF-47; a compat flag for BF-47 (sketched in the PR body) would make it minor. Plan section 3's "PRs open after 15.0.9 is tagged" is superseded by the section 1a decision above. BF-30 is closed only when TRUST_PROXY names a boundary; with the default it remains open, and the branch must say so in its boot message and PR body.
+**Notes.** OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8754 (head 7103f657, base dev) - subject-edit folded in as its last commit (maintainer, relayed 2026-09-23); withheld-style description. PUSHED 2026-09-23 - #8754's head is 81623f9b ("TRUST_PROXY accepts a hop count and true, with Express's meaning for each"), checks green; suite 2481/0/3; the withheld description covers hop counts and true. Express's subnet aliases (loopback, linklocal, uniquelocal) are refused on a separate path and are undecided. chore/nightscout- modernization b1bdaca0's lib/server/client-ip.js still refuses hop counts and true, and needs the same change. DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence - the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on every Node and MongoDB pair, break-its on the final tree. Three things for the maintainer from that record. (1) The auth-hardening line in lib/api/index.js (app.set('trust proxy', ...)) is inert - the v1 sub-app inherits trust proxy from lib/server/app.js - so removing it fails nothing, full suite included. (2) The record recommends folding bf2/subject-edit-keeps-fields (BFQ-47) into the auth-hardening PR as its last commit, and leaves the choice to the maintainer. (3) The record leaves the PR-body style (full or withheld) to the maintainer. The PR body as committed at b248bb73 (reports/phase0-pr-bodies/bf2-auth-hardening.md) records both as decided by the maintainer on 2026-09-23 - posted in full, and 7103f657 folded in as the final commit. rc-c contains the connector pin at 338deb7f (0.1.0-dev.1), now superseded by bf/connect-pin-0.1.0 adf5120c (0.1.0-dev.2), so the rc needs a re-merge before it is evidence for the pin. PREPARED 2026-09-22. Commits: merges of bf/auth and bf/throttle; cherry-pick -x of 06c83f2f and 395f3207 (hunks for files absent on dev dropped); 1114228d adapts two cherry-picked tests to bf/throttle's keysFor(); 8b975b41 is a PORT - with TRUST_PROXY unset the address comes from forwarded-for exactly as on dev, because 395f3207's default differs in four cases (BF-88); the trusted path is 395f3207's code unchanged. ONE flag, not two - the throttle keys on data.ip, which now comes from client-ip.js. Suite on Node 20.20.0 - dev 2386/0/3, branch 2462/0/3, +76 exactly. Semver stays major for BF-47; a compat flag for BF-47 (sketched in the PR body) would make it minor. Plan section 3's "PRs open after 15.0.9 is tagged" is superseded by the section 1a decision above. BF-30 is closed only when TRUST_PROXY names a boundary; with the default it remains open, and the branch must say so in its boot message and PR body.
 
 ### `BF2-OPS` &mdash; bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer
 

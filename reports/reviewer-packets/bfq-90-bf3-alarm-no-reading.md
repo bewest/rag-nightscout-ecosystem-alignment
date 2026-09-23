@@ -90,6 +90,7 @@ Merges into origin/dev with no conflict.
 - [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md)
 - [`docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md`](../../docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md)
 - [`docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md`](../../docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md)
+- [`docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md`](../../docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md)
 
 ## Notes carried on the item
 
@@ -102,7 +103,10 @@ reachable, not latent - because the throw's own cost is a skipped chart
 redraw; "no alarm is lost" holds only because the page drops every server
 alarm when it has no reading (BF-92, BFQ-92). A second throw behind the first
 (no chart on a page that never received data) is why each handler needs two
-guards. Destination release not decided.
+guards. SHIPS IN 15.0.9 (maintainer, 2026-09-23). Integrated on
+rc/15.0.9-additions-d 5764156e, 2520/0/3 on every Node and MongoDB pair
+(docs/30-design/remedial/rc-15.0.9-additions-d-2026-09-23.md); PR body drafted
+in reports/phase0-pr-bodies/bf3-alarm-no-reading.md.
 
 ---
 
