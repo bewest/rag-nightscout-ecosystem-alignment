@@ -103,9 +103,13 @@ checkable form of "the full release has not been cut". Read-only.
 
 ## Notes carried on the item
 
-2026-09-23 - v0.1.0-dev.2 tagged at fbd4e55 (dev, carrying BF-89 and BF-91)
-and published to npm next with provenance (publish run 35809963748). The
-longer prerelease testing the maintainer asked for starts here; v0.1.0 is
+HELD 2026-09-23 (maintainer) - v0.1.0 waits for the idempotent-profile-write
+fix (the dev.2 soak's sync stall) in a dev.3 prerelease, and for a clear log
+warning when the reused nightscout-connect-reader subject has no roles
+(maintainer: warn clearly, don't repair; the release notes keep the manual
+steps). 2026-09-23 - v0.1.0-dev.2 tagged at fbd4e55 (dev, carrying BF-89 and
+BF-91) and published to npm next with provenance (publish run 35809963748).
+The longer prerelease testing the maintainer asked for starts here; v0.1.0 is
 still not tagged. DECIDED 2026-09-23 (maintainer) - tag 0.1.0 only after the
 additional needed connector fixes are merged into connector dev; the set is
 exactly BF-89 (P0-CONNECT-ROLE, prepared as fix/nightscout-reader-roles
