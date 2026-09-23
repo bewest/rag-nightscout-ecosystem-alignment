@@ -168,7 +168,9 @@ default differs from `dev` in four edge cases (BF-88), so `bf2/auth-hardening` k
 resolution for the unset case (`8b975b41`) and uses `395f3207`'s code unchanged for the trusted
 path. Which normalisation the cuts keep is an open decision, recorded on RT-3.
 
-**Candidate, not adopted: BF-47.** A compat flag for the subject-field allow-list would look like
+**Decided 2026-09-23: no flag for BF-47.** The maintainer ruled that the allow-list is the declared schema for subjects and roles, so fields outside it are not part of the contract. The paragraph below is kept as the option that was considered.
+
+**Considered, not adopted: BF-47.** A compat flag for the subject-field allow-list would look like
 `AUTH_SUBJECT_FIELDS=passthrough|owned` (the name is illustrative). Under `passthrough` (the
 default), `save()` strips only the token fields, which is enough for BF-17. Under `owned`, it writes
 only today's allow-list. Adopting it would make `bf2/auth-hardening` a minor change instead of a

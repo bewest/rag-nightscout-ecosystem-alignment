@@ -99,8 +99,11 @@ checkable form of "the full release has not been cut". Read-only.
 
 ## Notes carried on the item
 
-DECIDED 2026-09-23 (maintainer) - 0.1.0 is pinned in 15.0.9, but only after
-the prerelease has been tested longer; tagging waits for that. Before the full
+DECIDED 2026-09-23 (maintainer) - tag 0.1.0 only after the additional needed
+connector fixes are merged into connector dev; which fixes is being settled
+(BF-89 prepared as fix/nightscout-reader-roles dea2bec; BF-91 found). DECIDED
+2026-09-23 (maintainer) - 0.1.0 is pinned in 15.0.9, but only after the
+prerelease has been tested longer; tagging waits for that. Before the full
 release, connector dev also fixes BF-89 (the nightscout source sends role for
 roles; P0-CONNECT-ROLE). Tagging remains the maintainer's action. DECIDED
 2026-09-22 (maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging remains
