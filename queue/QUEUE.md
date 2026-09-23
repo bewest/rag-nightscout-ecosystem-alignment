@@ -44,11 +44,11 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
 | `gate-not-met` | 14 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 7 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-90, BFQ-97, BFQ-98 |
+| `ready-to-push` | 6 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-90, BFQ-98 |
 | `blocked` | 12 | P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, FU-LIMIT |
 | `in-flight-upstream` | 7 | P0-PIN, RT-COUNT0, RT-MONGO-FLOOR, BFQ-87, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `merged-upstream` | 17 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
-| `needs-decision` | 9 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, BFQ-95, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
+| `needs-decision` | 10 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, BFQ-95, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG, BFQ-97 |
 | `done` | 2 | DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
 | `closed` | 1 | BFQ-41 |
@@ -1563,7 +1563,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `ADV-ALARM` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) | `merged-upstream` | `bf/alarm-socket-scope` | minor | 2 run + 2 no-gate |
 | `ADV-XSS-META` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | `needs-decision` | `-` | n/a | 2 run + 1 no-gate |
 | `ADV-CONFIG` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) | `needs-decision` | `-` | patch | 2 run + 1 no-gate |
-| `BFQ-97` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll | `ready-to-push` | `fix/profile-duplicate-stall` | patch | 0 run + 1 no-gate |
+| `BFQ-97` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll | `needs-decision` | `fix/profile-duplicate-stall` | patch | 0 run + 1 no-gate |
 | `BFQ-98` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it | `ready-to-push` | `fix/profile-duplicate-stall` | patch | 0 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
@@ -2824,7 +2824,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `needs-decision` |
 | repo | `nightscout-connect` |
 | branch | `fix/profile-duplicate-stall` |
 | base | `official/dev@fbd4e55` |
@@ -2849,7 +2849,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md`
 
-**Notes.** PREPARED 2026-09-23 - f6359b4 on fix/profile-duplicate-stall (tip f924de2, on fbd4e55, not pushed): profiles already stored on the sink, by _id or identifier, are skipped instead of failing the poll, in both the internal and REST outputs; every other write failure still fails it. Connector suite 292 -> 304 -> 308 on Node 20/22/24. 96-minute soak arm: fix polls every 5.0 min median with 0 lag before the outage, 0 profile errors; the dev.2 control in the same run stalls at 28.9 min. A source edit to an existing profile is skipped (as in 0.0.13); the stored set is cached per process (open question for the maintainer). REST output covered by fake-transport tests only. Evidence docs/60-research/remedial/connector-profile-duplicate- stall-2026-09-23.md. DECIDED 2026-09-23 (maintainer) - fix in the connector first, tag 0.1.0-dev.3, then 0.1.0; #8752 (P0-PIN) holds for dev.3. Fix being built in this session on fix/profile-duplicate-stall (not pushed). Workaround until then: CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus.
+**Notes.** DECIDED 2026-09-23 (maintainer) - (1) re-read what the sink stores each poll instead of caching per process, with the cost bounded (the maintainer asked whether it covers all profiles or only the latest); (2) update on change: a source edit to an existing profile replaces the sink copy. NOT BUILDABLE AS ASKED, found by a lab probe on 74fc6619 (no code written, f924de2 unchanged): the connector's copies are stored with string _ids, and Nightscout's save/remove/_id lookups convert to ObjectId, so a PUT duplicates instead of replacing and DELETE cannot remove the copy (filed as a cgm-remote-monitor backfix, branch bf/profile-object-id in preparation). API-style in-place edits leave no timestamp. Reports use older profiles, so a bounded fetch misses edits to non-newest documents. Cost today at 500 profiles of about 7 KB: about 3.5 MB per poll; bounded shape about 14 KB. Waiting on the maintainer: what 0.1.0 ships (bounded insert-only, or wait for the Nightscout fix). #8752 still holds. PREPARED 2026-09-23 - f6359b4 on fix/profile-duplicate-stall (tip f924de2, on fbd4e55, not pushed): profiles already stored on the sink, by _id or identifier, are skipped instead of failing the poll, in both the internal and REST outputs; every other write failure still fails it. Connector suite 292 -> 304 -> 308 on Node 20/22/24. 96-minute soak arm: fix polls every 5.0 min median with 0 lag before the outage, 0 profile errors; the dev.2 control in the same run stalls at 28.9 min. A source edit to an existing profile is skipped (as in 0.0.13); the stored set is cached per process (open question for the maintainer). REST output covered by fake-transport tests only. Evidence docs/60-research/remedial/connector-profile-duplicate- stall-2026-09-23.md. DECIDED 2026-09-23 (maintainer) - fix in the connector first, tag 0.1.0-dev.3, then 0.1.0; #8752 (P0-PIN) holds for dev.3. Fix being built in this session on fix/profile-duplicate-stall (not pushed). Workaround until then: CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus.
 
 ### `BFQ-98` &mdash; BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it
 
