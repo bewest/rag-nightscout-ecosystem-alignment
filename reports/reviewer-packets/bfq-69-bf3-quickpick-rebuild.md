@@ -108,6 +108,7 @@ times. 4/4 on the branch against dev and against 15.0.8, 2026-09-23.
 
 ## Evidence
 
+- Drafted PR body: [`reports/phase0-pr-bodies/bf3-quickpick-rebuild.md`](../../reports/phase0-pr-bodies/bf3-quickpick-rebuild.md)
 - [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md)
 - [`docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md`](../../docs/60-research/remedial/bf69-quickpick-rebuild-2026-09-23.md)
 - [`docs/30-design/remedial/dev-cycle-review-harness-plan-2026-09-17.md`](../../docs/30-design/remedial/dev-cycle-review-harness-plan-2026-09-17.md)

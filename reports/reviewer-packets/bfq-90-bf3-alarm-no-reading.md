@@ -86,6 +86,7 @@ Merges into origin/dev with no conflict.
 
 ## Evidence
 
+- Drafted PR body: [`reports/phase0-pr-bodies/bf3-alarm-no-reading.md`](../../reports/phase0-pr-bodies/bf3-alarm-no-reading.md)
 - [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md)
 - [`docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md`](../../docs/60-research/remedial/bf90-alarm-no-reading-2026-09-23.md)
 - [`docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md`](../../docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md)
