@@ -2,38 +2,49 @@
 /*
  * timeago-future-reading.js  —  BF-41
  *
- * A CGM reading stamped ahead of the server clock silently switches off the
- * browser stale-data alarm. `timeago.checkStatus` computes staleness as
- * `sbx.time - lastSGVEntry.mills`, which is NEGATIVE for a future reading, so
- * `isStale(mins)` is false at every threshold and the status never leaves
- * `'current'`. `lib/client/index.js` only raises the alarm on `'warn'` or
- * `'urgent'`, so both alarm paths go quiet.
+ * BF-41 claimed that a CGM reading stamped ahead of the server clock switches
+ * off both stale-data alarm paths: `timeago.checkStatus` computes staleness
+ * as `sbx.time - lastSGVEntry.mills`, which would be negative for a future
+ * reading, so the status would never leave `'current'`.
  *
- * WHY THIS GATE EXISTS RATHER THAN A NOTE. The register filed BF-41 as
- * DERIVED FROM SOURCE and said so: "the arithmetic is not in doubt, but no
- * end-to-end run was made... that run is the fix for this entry's provenance,
- * and it is cheap". Measured across this programme, every register claim that
- * had to be retracted was derived from reading; not one that began with a
- * reproduction has been. This is that run, at the level the defect lives:
- * the shipping plugin, executed.
+ * WHAT THIS GATE MEASURES. The arithmetic is right, but `lastSGVEntry` comes
+ * from `lib/sandbox.js` `lastEntry`, which skips every entry later than
+ * `sbx.time` (`notInTheFuture`, since 556091bf, 2015; in every tag from
+ * 0.10.0, including 15.0.8). This gate loads readings into the data the
+ * sandbox is built from and lets the shipping `lastEntry` choose the reading,
+ * on both paths:
  *
- * THIS GATE FAILS TODAY, BY DESIGN. It is the residual, expressed as a
- * measurement, exactly like RT-D3's drag-clamp gate and P0-C's console.log
- * gate. It goes green when a reading ahead of the clock stops being treated
- * as fresh.
+ *   - server: `serverInit(env, ctx)` from `ctx.ddata`, then `checkStatus`
+ *     and `checkNotifications` with `enableAlerts` on, recording what the
+ *     plugin passes to `requestNotify` (the push alarm);
+ *   - browser: `clientInit(ctx, now, { sgvs })`, then `checkStatus`.
  *
- * NON-VACUITY. Three controls run through the same harness and must come out
- * the other way: a fresh reading is `'current'`, a 20-minute-old reading is
- * `'warn'`, a 40-minute-old reading is `'urgent'`. If the harness could not
- * tell those apart, the future arm's `'current'` would mean nothing. Ablation
- * recorded in docs/60-research/remedial/e4-queue-register-reconciliation-2026-09-15.md
- * §6: with a one-line future guard patched into an isolated copy of
- * timeago.js, this gate goes green and the three controls stay green.
+ * An earlier version of this gate replaced `sbx.lastSGVEntry` with a stub
+ * that returned the future reading. That skipped the one step that prevents
+ * the symptom, so it reproduced a state the shipping code does not reach.
+ * Measurement and write-up:
+ * docs/60-research/remedial/bf41-future-reading-2026-09-23.md.
  *
- * READS ONLY. It requires the shipping plugin by path out of the official
- * checkout and calls one pure-ish function; it writes nothing, opens no
- * socket and needs no database. `--source <path>` points it at a copy, which
- * is how the ablation above is run without touching a worktree (rule 5).
+ * THIS GATE PASSES WHEN THE DEFECT DOES NOT REPRODUCE: a real reading that
+ * has gone stale still raises the warn or urgent status and the push alarm
+ * when a future-dated reading is also loaded. It fails if a future-dated
+ * reading ever silences either path.
+ *
+ * NON-VACUITY. Three controls (2, 20 and 40 minutes old, no future reading)
+ * must come out `current`, `warn` and `urgent` on both paths. Sharper
+ * control, run by hand 2026-09-23: with `lastEntry`'s filter replaced by
+ * `return true` in a scratch worktree (`--tree`), the future arms go to
+ * `current` with no push alarm and this gate fails, while the controls stay
+ * green. The record is in queue/gate-controls.yaml.
+ *
+ * NOT MEASURED HERE: an uploader whose clock runs ahead (the stale warning
+ * arrives late by the size of the error once the wall clock passes the
+ * readings' timestamps), and "only future readings loaded" (the no-reading
+ * branch, which assumes current). Both are characterised in the write-up.
+ *
+ * READS ONLY. It requires shipping modules by path out of the official
+ * checkout (or `--tree <path>`), builds sandboxes in memory, writes nothing,
+ * opens no socket and needs no database.
  */
 
 const path = require('path');
@@ -44,96 +55,136 @@ function argValue(flag, fallback) {
   return at > -1 && process.argv[at + 1] ? process.argv[at + 1] : fallback;
 }
 
-const SOURCE = argValue('--source', path.join(CRM, 'lib', 'plugins', 'timeago.js'));
+const TREE = path.resolve(argValue('--tree', CRM));
+const OFFICIAL = TREE === path.resolve(CRM);
+const NAME = 'timeago-future-reading (BF-41)';
+
+let head = 'unknown';
+try { head = git(['rev-parse', '--short', 'HEAD'], TREE); } catch (e) { /* reported below */ }
 
 const findings = [];
 
-// Name the ref the shipping source came from, so a green result can never be
-// read as a statement about a commit nobody measured.
-const OFFICIAL = SOURCE.startsWith(CRM);
-let head = 'not the official checkout';
-if (OFFICIAL) {
-  try { head = git(['rev-parse', '--short', 'HEAD']); } catch (e) { head = 'unknown'; }
-}
-
-let timeago;
+let sandbox, timeagoInit, ddataInit, levels;
 try {
-  // ctx is minimal on purpose: checkStatus touches only settings, time and
-  // lastSGVEntry. translate and levels are needed by init(), not by the
-  // function under test.
-  timeago = require(SOURCE)({
-    language: { translate: (s) => s },
-    levels: { URGENT: 2, WARN: 1, INFO: 0 },
-  });
+  sandbox = require(path.join(TREE, 'lib', 'sandbox.js'));
+  timeagoInit = require(path.join(TREE, 'lib', 'plugins', 'timeago.js'));
+  ddataInit = require(path.join(TREE, 'lib', 'data', 'ddata.js'));
+  levels = require(path.join(TREE, 'lib', 'levels.js'));
 } catch (e) {
-  report('timeago-future-reading (BF-41)', [{
-    ok: false, text: `could not load ${SOURCE}: ${e.message}`,
-  }]);
-}
-
-const NOW = Date.UTC(2026, 8, 15, 12, 0, 0);
-const MIN = 60 * 1000;
-
-function status(offsetMinutes) {
-  return timeago.checkStatus({
-    // 'server' is the branch that never claims hibernation, so the arms differ
-    // only in the entry's timestamp. On 'client' a >20s gap between calls
-    // returns 'current' for an unrelated reason and every arm would agree —
-    // which is a vacuity trap, not a result.
-    runtimeEnvironment: 'server',
-    time: NOW,
-    settings: {
-      alarmTimeagoWarn: true,
-      alarmTimeagoWarnMins: 15,
-      alarmTimeagoUrgent: true,
-      alarmTimeagoUrgentMins: 30,
-    },
-    lastSGVEntry: () => ({ mills: NOW - offsetMinutes * MIN }),
-  });
+  report(NAME, [{ ok: false, text: `could not load the sandbox or timeago plugin from ${TREE}: ${e.message}` }]);
 }
 
 findings.push({
   ok: true,
   text: OFFICIAL
-    ? `shipping plugin ${path.relative(CRM, SOURCE)} at ${head}`
-    : `NOT the shipping plugin — reading ${SOURCE} (an --source override; a result here `
-      + 'is about that copy and about nothing that ships)',
+    ? `shipping lib/sandbox.js and lib/plugins/timeago.js at ${head}`
+    : `NOT the official checkout: reading ${TREE} at ${head} (a --tree override; a result here `
+      + 'is about that tree and about nothing that ships)',
 });
+
+const MIN = 60 * 1000;
+const language = { translate: (s) => s };
+const settings = {
+  alarmTimeagoWarn: true,
+  alarmTimeagoWarnMins: 15,
+  alarmTimeagoUrgent: true,
+  alarmTimeagoUrgentMins: 30,
+};
+
+function levelName(level) {
+  if (level === levels.URGENT) return 'URGENT';
+  if (level === levels.WARN) return 'WARN';
+  return String(level);
+}
+
+// offsets: minutes relative to the clock; negative = past, positive = future.
+function measure(offsets) {
+  const timeago = timeagoInit({ language, levels });
+  const now = Date.now();
+  const sgvs = offsets.map((o) => ({ mills: now + o * MIN, mgdl: 120, type: 'sgv' }));
+
+  // Server path, as the server's plugin tick builds it.
+  const requested = [];
+  const ctx = {
+    language,
+    levels,
+    ddata: ddataInit(),
+    notifications: {
+      requestNotify: (n) => requested.push(n),
+      requestSnooze: () => {},
+      requestClear: () => {},
+    },
+  };
+  ctx.ddata.sgvs = sgvs;
+  const env = { settings, extendedSettings: { timeago: { enableAlerts: true } } };
+  const ssbx = sandbox().serverInit(env, ctx).withExtendedSettings(timeago);
+  const used = ssbx.lastSGVEntry();
+  const server = timeago.checkStatus(ssbx);
+  timeago.checkNotifications(ssbx);
+  const push = requested.filter((n) => n.group === 'Time Ago').map((n) => levelName(n.level));
+
+  // Browser path, as lib/client/index.js builds it (clientInit, wall clock).
+  // runtimeEnvironment is set to 'server' after init so the client's
+  // hibernation heuristic (a >20 s gap between calls returns 'current' for an
+  // unrelated reason) cannot make every arm agree. That would be a vacuity
+  // trap, not a result.
+  const csbx = sandbox().clientInit({ settings, language, levels, pluginBase: null }, now, { sgvs });
+  csbx.runtimeEnvironment = 'server';
+  const browser = timeago.checkStatus(csbx);
+
+  return {
+    usedOffset: used ? Math.round((used.mills - now) / MIN) : null,
+    server,
+    push: push.length ? push.join('+') : 'none',
+    browser,
+  };
+}
+
+function describe(offsets) {
+  return offsets.map((o) => (o > 0 ? `+${o}` : String(o))).join(', ') + ' min';
+}
 
 /* --- controls: the harness must distinguish the branches ----------------- */
 const controls = [
-  { minutes: 2, expect: 'current', label: 'a 2-minute-old reading is current' },
-  { minutes: 20, expect: 'warn', label: 'a 20-minute-old reading raises the warn alarm' },
-  { minutes: 40, expect: 'urgent', label: 'a 40-minute-old reading raises the urgent alarm' },
+  { offsets: [-2], status: 'current', push: 'none', label: 'a 2-minute-old reading is current' },
+  { offsets: [-20], status: 'warn', push: 'WARN', label: 'a 20-minute-old reading raises warn' },
+  { offsets: [-40], status: 'urgent', push: 'URGENT', label: 'a 40-minute-old reading raises urgent' },
 ];
 for (const c of controls) {
-  const got = status(c.minutes);
-  findings.push({
-    ok: got === c.expect,
-    text: `control: ${c.label} — checkStatus returned '${got}', expected '${c.expect}'`,
-  });
-}
-
-/* --- the arm ------------------------------------------------------------ */
-/*
- * Two future offsets, because the two are different failures. A reading five
- * minutes ahead is an ordinary clock skew; a reading two hours ahead is what
- * BF-44's MiniMed time-derivation divergence produces (UTC+2 files readings
- * exactly two hours forward). Both silence the alarm identically today, and
- * the second is the one with a named shipping cause.
- */
-for (const ahead of [5, 120]) {
-  const got = status(-ahead);
-  const ok = got !== 'current';
+  const got = measure(c.offsets);
+  const ok = got.server === c.status && got.browser === c.status && got.push === c.push;
   findings.push({
     ok,
-    text: `a reading ${ahead} minutes AHEAD of the server clock: checkStatus returned `
-        + `'${got}' — ` + (ok
-          ? 'a future reading is no longer treated as fresh'
-          : 'both stale-data alarm paths are silent. The browser alarm (on by default, '
-          + 'lib/settings.js:27-30) never fires because the status never leaves current; '
-          + 'the push alarm (opt-in) returns early at timeago.js:26 on mills >= sbx.time'),
+    text: `control: ${c.label} — server '${got.server}', push ${got.push}, browser '${got.browser}'; `
+        + `expected '${c.status}', ${c.push}, '${c.status}'`,
   });
 }
 
-report('timeago-future-reading (BF-41)', findings);
+/* --- the arms: a stale real reading plus one dated ahead of the clock ---- */
+/*
+ * Two future offsets. Five minutes ahead is ordinary clock skew; two hours
+ * ahead is what BF-44's MiniMed time-derivation divergence produces (UTC+2
+ * files readings exactly two hours forward). The register's claim is that
+ * either silences the alarm for the stale real reading loaded before it.
+ */
+const arms = [
+  { offsets: [-40, 5], status: 'urgent', push: 'URGENT' },
+  { offsets: [-40, 120], status: 'urgent', push: 'URGENT' },
+  { offsets: [-20, 3], status: 'warn', push: 'WARN' },
+  { offsets: [-20, 120], status: 'warn', push: 'WARN' },
+];
+for (const a of arms) {
+  const got = measure(a.offsets);
+  const real = a.offsets[0];
+  const ok = got.usedOffset === real && got.server === a.status
+          && got.browser === a.status && got.push === a.push;
+  findings.push({
+    ok,
+    text: `readings at ${describe(a.offsets)}: lastSGVEntry used ${got.usedOffset} min, server `
+        + `'${got.server}', push ${got.push}, browser '${got.browser}' — ` + (ok
+          ? 'the future-dated reading is skipped and the stale real reading still alarms'
+          : `BF-41's symptom: expected the ${real} min reading to be used and '${a.status}' / ${a.push}`),
+  });
+}
+
+report(NAME, findings);

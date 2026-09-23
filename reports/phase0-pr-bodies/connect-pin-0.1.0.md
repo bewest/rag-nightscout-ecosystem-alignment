@@ -41,13 +41,38 @@ Compared with 15.0.8, the connector in this release:
 Two new optional settings, `CONNECT_START_JITTER_MS` and `CONNECT_INTERVAL_JITTER_MS`, spread out
 when sites contact the vendor. Both default to 0, so nothing changes unless you set them.
 
-### If you ran 15.0.8 with the connector turned on
+### Your CGM account password
 
-**Treat the password for your CGM account as exposed.** Change it at the CGM company's own site,
-and change it anywhere else you have used the same password. Delete old Nightscout log files you
-still have, and check anywhere you may have pasted a log: a GitHub issue, a forum or group post, a
-screenshot, a message to someone helping you. Updating Nightscout stops new logs containing the
-password; it cannot remove a password that is already in an old log.
+**Consider changing your CGM account password** if both of these are true:
+
+- you ran Nightscout 15.0.8 or an earlier release with the built-in connector on (`connect` in
+  your `ENABLE` setting), or you used Dexcom `BRIDGE_` settings on 15.0.8, which the connector
+  handles; **and**
+- you shared a Nightscout log with anyone (in a forum, an issue, a chat, or with a person
+  helping you), or your hosting provider keeps logs that other people can read.
+
+On those releases the connector wrote your CGM account username and password into Nightscout's
+log. Upgrading stops new logs containing them. It cannot remove them from a log that already
+exists.
+
+If this applies to you:
+
+1. **Change the password** at the CGM company's own website or app, and anywhere else you use
+   the same password.
+2. **Then update it in Nightscout's connector settings straight away, or readings will stop
+   arriving.** That is the setting ending in `_PASSWORD` for your source, for example
+   `CONNECT_SHARE_PASSWORD`, `CONNECT_CARELINK_PASSWORD` or `CONNECT_LINK_UP_PASSWORD`, or
+   `BRIDGE_PASSWORD` if you use the Dexcom `BRIDGE_` settings. Until Nightscout has the new
+   password it keeps trying the old one, and some CGM services lock an account for a while after
+   repeated failed logins.
+3. **Check that new readings arrive** afterwards, and keep your CGM app or meter to hand until
+   they do.
+4. **Delete old Nightscout log files you still have.**
+5. **Check places where you pasted a log**, such as a GitHub issue, a forum or group post, a
+   screenshot or a message, and remove the log where you can.
+
+Whatever release you run, read a log before sharing it, and turn debugging off again when you
+are done.
 
 Nightscout is not a medical device, and this is not medical advice. If you rely on Nightscout's
 alarms, keep a second way to see your readings, and talk to your care team about any gap in your
@@ -56,6 +81,13 @@ data that worries you.
 ---
 
 ## Technical detail
+
+**Who the password section applies to.** The connector was first included in 15.0.0
+(`"nightscout-connect": "^0.0.12"`, which resolves to 0.0.12 only); 15.0.8 installs `v0.0.13`.
+Both write `console.log("INPUT PARAMS", spec, validated.config)` at `index.js:54` on every boot
+(read at tags `v0.0.12` and `v0.0.13`; BF-42's census covers `v0.0.13`, and `v0.0.12` was not
+executed). Dexcom `BRIDGE_` settings are routed to the connector from 15.0.8
+(`lib/server/bridge-connect-compat.js`, absent at 15.0.7) unless `DEXCOM_BRIDGE_USE_LEGACY=true`.
 
 ```diff
 -"nightscout-connect": "https://github.com/nightscout/nightscout-connect/archive/234d47c85510a77f07b3be0d2c026dd0272715d6.tar.gz",
@@ -178,8 +210,9 @@ If the lockfile diff in step 3 touches anything beyond the root dependency spec 
 A dependency pin moves; no Nightscout route, response shape, environment variable or default
 changes. The two new jitter settings belong to the connector and default to 0. The behaviour
 change is the connector's, and the release notes should carry "What changes for you" above,
-including "If you ran 15.0.8 with the connector turned on". That section is the only place most
-operators will be told to change their password.
+including "Your CGM account password", which the 15.0.9 release notes carry with the same
+wording. That section is the only place most operators will be told to consider changing their
+password.
 
 ## Follow-ups not in this PR
 

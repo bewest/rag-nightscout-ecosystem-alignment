@@ -1269,8 +1269,18 @@ controls:
       run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of
       the files it reads exist, the gate does not exit 0. THIS IS THE
       WEAK FORM: it proves the gate is coupled to its inputs, not that
-      it is coupled to the right property of them. Where a sharper
-      control was run by hand the audit says so.
+      it is coupled to the right property of them. The sharper control
+      was run by hand, 2026-09-23: the gate now builds the sandbox with
+      serverInit and clientInit and lets lib/sandbox.js lastEntry choose
+      the reading (the earlier version stubbed sbx.lastSGVEntry). It is
+      green, 8 checked / 0 failing, on the official checkout (a8888f0d)
+      and on 15.0.8 (92d08342, --tree externals/work/crm-bf3-1508). With
+      lastEntry's notInTheFuture filter replaced by `return true` in the
+      scratch worktree externals/work/crm-bf3-future (74fc6619, --tree),
+      all four future arms went to server 'current', no push alarm,
+      browser 'current' (4 failing, exit 1: BF-41's registered symptom),
+      and the three controls stayed green. Restored with git checkout;
+      the worktree is clean and the gate is green on it again.
 
   - gate: |-
       node tools/queue/gates/version-collision.js

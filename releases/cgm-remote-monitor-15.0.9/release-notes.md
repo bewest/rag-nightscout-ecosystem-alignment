@@ -316,9 +316,38 @@ Two new optional settings, `CONNECT_START_JITTER_MS` and `CONNECT_INTERVAL_JITTE
 when many connectors sharing one server contact the CGM service. Both default to `0`, so nothing
 changes unless you set them. A single self-hosted site does not need them.
 
-> **If you have ever pasted a Nightscout log from an earlier release into a public place**
-> (a forum, an issue, a chat), consider changing your CGM account password. Whatever release
-> you run, read a log before sharing it, and turn debugging off again when you are done.
+### Your CGM account password
+
+**Consider changing your CGM account password** if both of these are true:
+
+- you ran Nightscout 15.0.8 or an earlier release with the built-in connector on (`connect` in
+  your `ENABLE` setting), or you used Dexcom `BRIDGE_` settings on 15.0.8, which the connector
+  handles; **and**
+- you shared a Nightscout log with anyone (in a forum, an issue, a chat, or with a person
+  helping you), or your hosting provider keeps logs that other people can read.
+
+On those releases the connector wrote your CGM account username and password into Nightscout's
+log. Upgrading stops new logs containing them. It cannot remove them from a log that already
+exists.
+
+If this applies to you:
+
+1. **Change the password** at the CGM company's own website or app, and anywhere else you use
+   the same password.
+2. **Then update it in Nightscout's connector settings straight away, or readings will stop
+   arriving.** That is the setting ending in `_PASSWORD` for your source, for example
+   `CONNECT_SHARE_PASSWORD`, `CONNECT_CARELINK_PASSWORD` or `CONNECT_LINK_UP_PASSWORD`, or
+   `BRIDGE_PASSWORD` if you use the Dexcom `BRIDGE_` settings. Until Nightscout has the new
+   password it keeps trying the old one, and some CGM services lock an account for a while after
+   repeated failed logins.
+3. **Check that new readings arrive** afterwards, and keep your CGM app or meter to hand until
+   they do.
+4. **Delete old Nightscout log files you still have.**
+5. **Check places where you pasted a log**, such as a GitHub issue, a forum or group post, a
+   screenshot or a message, and remove the log where you can.
+
+Whatever release you run, read a log before sharing it, and turn debugging off again when you
+are done.
 
 ---
 
@@ -336,14 +365,56 @@ choosing the last entry did nothing. This release fixes the mismatch. Hidden qui
 hidden, the order follows the position numbers you set, and quick picks saved by other apps
 are no longer left out of the list other apps can read.
 
-**Known issue in the same place:** on this release the quick-pick list in the bolus
-calculator may still show only "(none)", because the list is built before your food data has
-loaded. A fix for that is being worked on; it depends on the fix above, which is why the two
-are being released in this order. Until then, add foods from the database one at a time.
+<!-- PENDING: rc record for BF-69 (bf3/quickpick-rebuild 83cfff14) -->
+**The quick-pick list now shows your quick picks.** On 15.0.8 and earlier, the Quickpick list
+in the bolus calculator only ever showed "(none)", however many quick picks were saved, because
+the list was built before your food data had loaded. People had to add foods one at a time with
+*Add from database* instead. The list is now built each time you open the bolus calculator. It
+shows your saved quick picks in the order you set, and choosing one fills in the carbs with that
+quick pick's own total. Quick picks marked hidden are not listed. A quick pick set to "hide after
+use" disappears from the list the next time you open the calculator, after you submit with it.
+
+Two things to know:
+
+- **The bolus calculator is not shown to everyone.** It appears only if `boluscalc` is in your
+  `SHOW_PLUGINS` setting, and only to someone who is allowed to enter treatments.
+- **A quick pick added or changed elsewhere does not appear on a page that is already open.** It
+  appears after that page reloads or reconnects. This is how Nightscout already sends food data
+  to open pages, and this release does not change it.
+<!-- PENDING: rc record for BF-69 (bf3/quickpick-rebuild 83cfff14) -->
 
 The bolus calculator is a calculator, not a recommendation, and this release does not change
-that. **Always check that the carbohydrate amount shown is the one you meant.** If you think a
-past calculation used an amount you did not choose, raise it with your care team.
+that. It does not decide a dose. **Always check that the carbohydrate amount shown is the one you
+meant: check the carbs against the meal you are actually eating before you rely on them.** If you
+use quick picks for meal dosing, go over how you use them with your care team. If you think a
+past calculation used an amount you did not choose, raise it with your care team. This is not
+medical advice.
+
+### A page with no reading no longer hits an error when a device alarm arrives
+
+<!-- PENDING: rc record for BF-90 (bf3/alarm-no-reading 92544d8f) -->
+Nightscout can raise alarms for things other than glucose, if you have switched them on: for
+example a pump reservoir running low (`PUMP_ENABLE_ALERTS`), a loop that has stopped, or a
+cannula or sensor that is overdue for a change. These are off unless you turned them on.
+
+On 15.0.8 and earlier, if one of these alarms reached a Nightscout page that had **no glucose
+reading to show** (the big number reads `---`), the page hit an internal error while handling it.
+Nothing on screen changed, and the error was visible only in the browser's developer console.
+This release removes that error.
+
+**This fix does not make a `---` page sound device alarms.** What you see does not change. A
+Nightscout page decides whether to sound an alarm from the server by looking at the latest glucose
+reading. With no reading, it does not sound or show any of them, including pump, loop and age
+alarms that have nothing to do with glucose. In testing, the same "URGENT: Pump Reservoir Low"
+alarm turned the page red and played the alarm sound when a reading was on screen, and showed
+nothing when no reading was on screen. This is listed under
+[Known issues](#known-issues--not-fixed-in-this-release).
+
+If you rely on a Nightscout page for device alarms such as pump, loop or site-change alerts,
+**do not assume a page showing `---` will alert you. Keep the alarms on your devices themselves
+(pump, phone app, CGM receiver) switched on.** This is not medical advice. Talk to your care team
+about how you get alerted.
+<!-- PENDING: rc record for BF-90 (bf3/alarm-no-reading 92544d8f) -->
 
 ### Searches, reports and filters return the right records
 
@@ -473,12 +544,16 @@ software library updates.
 5. **If you use `MMCONNECT_` settings, or `DEXCOM_BRIDGE_USE_LEGACY=true`**, move to the built-in
    connector's settings (see
    [The old MiniMed and Dexcom connections are being retired](#the-old-minimed-and-dexcom-connections-are-being-retired)).
-6. **If you copied `docker-compose.yml`**, add the open-file limit to your `mongo:` service.
-7. **If you use `TREATMENTS_AUTH=off`**, read the new admin warning and decide whether to keep it.
-8. **If you want the stronger protection against password guessing**, set `TRUST_PROXY` as
+6. **If you ran the built-in connector on 15.0.8 or earlier and shared a log, or your hosting
+   provider keeps logs others can read**, consider changing your CGM account password, and then
+   update it in Nightscout's connector settings so readings keep arriving — see
+   [Your CGM account password](#your-cgm-account-password).
+7. **If you copied `docker-compose.yml`**, add the open-file limit to your `mongo:` service.
+8. **If you use `TREATMENTS_AUTH=off`**, read the new admin warning and decide whether to keep it.
+9. **If you want the stronger protection against password guessing**, set `TRUST_PROXY` as
    described in [The new `TRUST_PROXY` setting](#the-new-trust_proxy-setting). Otherwise leave it
    unset.
-9. **After upgrading, check that everything connected to your site still works**, and watch for
+10. **After upgrading, check that everything connected to your site still works**, and watch for
    a day.
 
 ## What to check afterwards
@@ -494,12 +569,33 @@ software library updates.
 - If you set `TRUST_PROXY`: your site still loads over https, and the startup warning about the
   failed-login delay is gone from the log.
 - If you moved from `MMCONNECT_` or `BRIDGE_` settings: readings arrive through the connector.
+- If you changed your CGM account password: the new password is in Nightscout's connector
+  settings, and readings arrive.
 
 ---
 
 ## Known issues — not fixed in this release
 
-- **The bolus calculator's quick-pick list may show only "(none)"** (see above).
+<!-- PENDING: rc record for BF-69 (bf3/quickpick-rebuild 83cfff14). If BF-69 does not ship in
+     15.0.9, restore this item: "The bolus calculator's quick-pick list may show only "(none)"". -->
+- **A page with no glucose reading does not sound or show any server alarm.** When the big
+  number reads `---`, a Nightscout page ignores every alarm the server sends, including pump,
+  loop, cannula, sensor and insulin-age alarms that have nothing to do with glucose. This is the
+  same on 15.0.8 and earlier. A change is planned for a later release. Until then, keep your
+  devices' own alarms on and do not rely on a `---` page to alert you.
+- **If the device uploading your readings has its clock set ahead, the stale-data warning comes
+  late.** Nightscout can warn you when no new glucose reading has arrived for a while; by default
+  it warns in the browser at 15 and 30 minutes. If the phone or device uploading your readings
+  has its clock set **ahead** of the real time, Nightscout treats each reading as newer than it
+  is. If your readings then stop, the warning comes late, by roughly how far ahead that clock is.
+  For example, if the clock is an hour fast, the 15-minute warning comes after about an hour and
+  a quarter. What you might see is the "minutes ago" display reading "future", or staying at
+  "1m" while readings are arriving. If you see that, check the date, time and time zone on the
+  uploading device. If you depend on the stale-data warning, make sure you have another way to
+  notice that readings have stopped. (A single reading dated in the future does **not** switch
+  the warning off: Nightscout skips readings dated in the future when it decides whether your
+  data is stale.) This is not medical advice; talk to your care team about what you rely on
+  Nightscout for.
 - **While `TRUST_PROXY` is unset, the failed-login delay can be avoided**, as on earlier
   releases. Nightscout says so in its log at startup. Set `TRUST_PROXY`, or restrict access at
   your proxy or hosting provider.

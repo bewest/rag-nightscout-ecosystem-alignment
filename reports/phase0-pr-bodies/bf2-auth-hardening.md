@@ -1,24 +1,30 @@
 # `bf2/auth-hardening` — login security fixes, plus a setting that tells Nightscout which proxy to trust
 
-**DRAFT — for the security reviewer. Not pushed, not opened.** Branch `bf2/auth-hardening` on
-`origin/dev` `74fc6619`, tip `29e6430e`. **Ships in 15.0.9** (decided 2026-09-23, backfix-2 plan §1a,
-superseding §3's "after 15.0.9 is tagged"). The combined run with the other 15.0.9 additions is
-recorded in `docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`. Its posting summary is
-"Tested together with the other 15.0.9 changes" below.
+**For the security reviewer. Not pushed, not opened.** Branch `bf2/auth-hardening` on
+`origin/dev` `74fc6619`, tip `7103f657` (14 commits, 10 of them non-merge). **Ships in 15.0.9**
+(decided 2026-09-23, backfix-2 plan §1a, superseding §3's "after 15.0.9 is tagged"). The combined
+run with the other 15.0.9 additions is recorded in
+`docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`. Its posting summary is "Tested
+together with the other 15.0.9 changes" below.
 
-Before posting, note that BF-17 and BF-30 are live on 15.0.8. `bf2/backports` (#8751) was posted in
-the withheld style for that reason. This body gives mechanisms and operator remediation, with no
-reproduction steps. Whether to post it in full or in the withheld style is the maintainer's
-decision.
+**Posted in full (maintainer, 2026-09-23).** This body is posted in full, not in the withheld style
+used for `bf2/backports` (#8751), because the branch ships in 15.0.9. BF-17 and BF-30 are live on
+15.0.8, so the body gives mechanisms and operator remediation, and no reproduction steps.
 
-This branch combines two branches that were already reviewed on their own, and adds one new
-setting:
+**`bf2/subject-edit-keeps-fields` (`7103f657`) is folded in as the final commit** (maintainer,
+2026-09-23). Its parent is `29e6430e`, the previous tip of this branch, so it adds one commit and
+changes nothing before it. The local `bf2/auth-hardening` ref still points at `29e6430e`;
+fast-forward it to `7103f657` before pushing.
+
+This branch combines two branches that were already reviewed on their own, adds one new setting,
+and ends with one fix to the admin page's save:
 
 | part | what it is | how it got here |
 |---|---|---|
 | `bf/auth` (BF-17, BF-47) | an access token was written into the database in readable form when a subject was edited | `git merge --no-ff`, ancestry kept |
 | `bf/throttle` (BF-30) | the failed-login delay was charged to the wrong request, and its list was never cleared | `git merge --no-ff`, ancestry kept |
 | `TRUST_PROXY` | a setting that tells Nightscout which proxy in front of it to trust | cherry-picked from `chore/nightscout-modernization` (#8605), `06c83f2f` and `395f3207`, plus one port commit |
+| `bf2/subject-edit-keeps-fields` (BF-47) | editing a subject or role on the admin page wiped its `notes` and replaced its `created_at` | one commit, `7103f657`, on `29e6430e` |
 
 No `CHANGELOG.md` edit. Merges clean into `dev`.
 
@@ -104,6 +110,13 @@ While `TRUST_PROXY` is unset, Nightscout logs this at startup:
 
 **Until you set it, restricting access at your proxy or hosting provider is what actually helps.**
 
+### 4. Editing a subject keeps its notes and creation date
+
+Opening a subject on the admin page and saving it, for example to give it another role, wiped its
+notes and replaced the date it was created with the date of the edit. Both are now kept, for
+subjects and for roles. You can still clear the notes on purpose by emptying the notes box and
+saving. Notes and dates already lost to earlier edits cannot be recovered.
+
 ---
 
 ## If you have ever edited a subject: rotating the exposed tokens
@@ -182,6 +195,7 @@ works too (the Azure convention).
 | `8b975b41` | **port commit**: with `TRUST_PROXY` unset, the client address comes from `forwarded-for` exactly as on `dev` |
 | `e701900a` | throttle tests under `TRUST_PROXY`, and the boot message |
 | `29e6430e` | the proxy guide corrected to this branch's default |
+| `7103f657` | `bf2/subject-edit-keeps-fields`: a subject or role save fills in `notes` and `created_at` from the stored document when the request leaves them out; `notes: ''` still clears; `roles` and `permissions` are never filled in |
 
 ### What was backported, and what it depends on
 
@@ -258,7 +272,7 @@ TEST=env          npm run test-single    # 28 passing
 npm test                                 # 2462 passing, 0 failing, 3 pending
 ```
 
-`origin/dev` `74fc6619`, same machine, same Node (20.20.0), back to back: 2386 passing, 0 failing, 3 pending. The difference, 76, is exactly the four files above (48 + 19 + 8, plus one new `env` test). Against mongod 7 started with `--ulimit nofile=64000:64000`, and with a database name containing `test` — `tests/mongo-storage.test.js` fails on both arms otherwise.
+`origin/dev` `74fc6619`, same machine, same Node (20.20.0), back to back: 2386 passing, 0 failing, 3 pending. The difference, 76, is exactly the four files above (48 + 19 + 8, plus one new `env` test). These counts are at `29e6430e`. `7103f657` adds 5 `authsubjects` tests (13 in all); its step on the integrated tree is recorded under "Tested together with the other 15.0.9 changes". Against mongod 7 started with `--ulimit nofile=64000:64000`, and with a database name containing `test` — `tests/mongo-storage.test.js` fails on both arms otherwise.
 
 **None of `client-ip`, `authdelay` or `authsubjects` is in `npm run test:unit` or `npm run
 test:integration`.** A green `test:unit` is not evidence for any of this; use `npm test`, which is
@@ -297,7 +311,7 @@ flag. The branch ships in 15.0.9, and the release notes declare the allow-list a
 `TRUST_PROXY` is a new setting with today's behaviour by default, and the throttle changes are fixes.
 
 The remaining BF-47 defect, the admin page clearing `notes` and `created_at` on every edit, is fixed
-by `bf2/subject-edit-keeps-fields` (`7103f657`, one commit on this branch).
+by `bf2/subject-edit-keeps-fields` (`7103f657`), the final commit on this branch.
 
 **The operator text above belongs in the release notes, not `CHANGELOG.md`.** What must survive
 verbatim: the whole "If you have ever edited a subject" section, including the rotation table and
@@ -317,11 +331,13 @@ the fixes would leave an operator believing guessing is handled.
 
 ## Tested together with the other 15.0.9 changes
 
-On a local integration branch cut from `dev` `74fc6619`, this branch was merged sixth of eight:
-after #8750, #8749, #8748, #8751 and `bf2/ops`, and before `bf2/subject-edit-keeps-fields` and the
-connector pin. The merge had no conflicts. The full suite went from 2427 to 2503 passing, with 0
-failing and 3 pending, on Node 20.20.0 and MongoDB 7.0.43. The difference is this branch's 76
-tests, and no other test changed state. After all eight merges, the full suite passes on Node 20,
+On a local integration branch cut from `dev` `74fc6619`, this branch at `29e6430e` was merged sixth
+of eight: after #8750, #8749, #8748, #8751 and `bf2/ops`, and before `bf2/subject-edit-keeps-fields`
+and the connector pin. The merge had no conflicts. The full suite went from 2427 to 2503 passing,
+with 0 failing and 3 pending, on Node 20.20.0 and MongoDB 7.0.43. The difference is this branch's
+76 tests, and no other test changed state. `bf2/subject-edit-keeps-fields` (`7103f657`, now this
+branch's final commit) was merged seventh, as its own step: 2503 to 2508 passing, 0 failing,
+3 pending, the difference being its 5 tests. After all eight merges, the full suite passes on Node 20,
 22 and 24 against both MongoDB 4.4.24 and 7.0.43 (2508/0/3 each).
 
 **`lib/api/index.js` is also edited by #8748** (the v1 `count` rule). This branch adds one line near
@@ -335,7 +351,10 @@ tree, the full suite still passes (2508/0/3). This is because Express gives a mo
 parent's `trust proxy`, and `lib/server/app.js` sets the same value on the parent. A direct check
 with Express showed the same `req.ip` and `req.secure` with and without the line, when mounted,
 for `TRUST_PROXY` unset, `false` and a list. No code under `lib/api/` reads `req.ip`, `req.secure`,
-`req.protocol` or `req.hostname`. The line comes unchanged from #8605 (`06c83f2f`).
+`req.protocol` or `req.hostname`. The line is inert under `lib/server/app.js` today, because
+Express 4 sub-apps inherit the parent's `trust proxy` setting. It is kept because it comes from
+`712c8854`, the cherry-pick of `06c83f2f` that is content-identical in every path it carries, and
+trimming it would break the backport-identical rule.
 
 Each break was repeated on the integrated tree, and each failed on its original symptom:
 
