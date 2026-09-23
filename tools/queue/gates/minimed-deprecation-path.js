@@ -22,8 +22,10 @@
 
 const { show, report } = require('./_gate');
 
+// QUEUE_GATE_REF lets a branch be checked before it merges; the queue runs dev.
+const REF = process.env.QUEUE_GATE_REF || 'origin/dev';
 const findings = [];
-const boot = show('origin/dev', 'lib/server/bootevent.js');
+const boot = show(REF, 'lib/server/bootevent.js');
 
 if (boot === null) {
   findings.push({ ok: false, text: 'origin/dev has no lib/server/bootevent.js' });
@@ -45,8 +47,14 @@ const mmLines = boot.split('\n')
   .map((line, i) => ({ line, n: i + 1 }))
   .filter((x) => /DEPRECATION WARNING/.test(x.line));
 
+// A warning line may log mmconnect.DEPRECATION_WARNING instead of a literal;
+// then the text it logs is the constant in lib/plugins/mmconnect.js.
+const plugin = show(REF, 'lib/plugins/mmconnect.js') || '';
+const constant = (plugin.match(/var DEPRECATION_WARNING = ([\s\S]*?);\n/) || [])[1] || '';
+const logged = (x) => (/mmconnect\.DEPRECATION_WARNING/.test(x.line) ? constant : x.line);
+
 // A named setting is an ALL_CAPS token an operator can put in their env.
-const mmNamed = mmLines.filter((x) => /MMCONNECT|CONNECT_COUNTRY_CODE|CONNECT_SOURCE/.test(x.line));
+const mmNamed = mmLines.filter((x) => /MMCONNECT|CONNECT_COUNTRY_CODE|CONNECT_SOURCE/.test(logged(x)));
 
 findings.push({
   ok: mmNamed.length > 0,
@@ -54,7 +62,7 @@ findings.push({
       + `(${mmNamed.length} of ${mmLines.length} DEPRECATION WARNING lines name one)`,
 });
 
-const shim = show('origin/dev', 'lib/server/mmconnect-connect-compat.js');
+const shim = show(REF, 'lib/server/mmconnect-connect-compat.js');
 findings.push({
   ok: shim !== null,
   text: 'dev ships lib/server/mmconnect-connect-compat.js, so the migration can be '
