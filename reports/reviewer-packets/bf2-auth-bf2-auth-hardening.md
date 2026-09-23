@@ -93,49 +93,58 @@ default fails 5; bypassing TRUST_PROXY in authorization/index.js fails 4.
 
 ## Notes carried on the item
 
-2026-09-23 - #8754 head is 22953b77 (pushed): the inert trust proxy line in
-lib/api/index.js is trimmed (maintainer decision), so that file is identical
-to dev; suite 2481/0/3 on Node 20 and 22, unchanged from 81623f9b; BACKPORT
-DIFFERENCE vs 06c83f2f in the commit message. Prepared, not pushed: 0a74ef4e
-on bf2/auth-hardening-trim-api3 trims the same inert line in lib/api3/index.js
-(54/54 answers identical, control 30/54 different; 2481/0/3); pushing it makes
-#8754 head 0a74ef4e. OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8754
-(head 7103f657, base dev) - subject-edit folded in as its last commit
-(maintainer, relayed 2026-09-23); withheld-style description. PUSHED
-2026-09-23 - #8754's head is 81623f9b ("TRUST_PROXY accepts a hop count and
-true, with Express's meaning for each"), checks green; suite 2481/0/3; the
-withheld description covers hop counts and true. Express's subnet aliases
-(loopback, linklocal, uniquelocal) are refused on a separate path; accepting
-them is deferred to a later release (maintainer, 2026-09-23).
-chore/nightscout-modernization b1bdaca0's lib/server/client-ip.js still
-refuses hop counts and true, and needs the same change. DESTINATION 15.0.9
-(plan section 1a, "backfix 2 scope", 2026-09-23). Evidence - the rc-c
-integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on every Node and
-MongoDB pair, break-its on the final tree. Three things for the maintainer
-from that record. (1) The auth-hardening line in lib/api/index.js
-(app.set('trust proxy', ...)) is inert - the v1 sub-app inherits trust proxy
-from lib/server/app.js - so removing it fails nothing, full suite included.
-(2) The record recommends folding bf2/subject-edit-keeps-fields (BFQ-47) into
-the auth-hardening PR as its last commit, and leaves the choice to the
-maintainer. (3) The record leaves the PR-body style (full or withheld) to the
-maintainer. The PR body as committed at b248bb73 (reports/phase0-pr-
-bodies/bf2-auth-hardening.md) records both as decided by the maintainer on
-2026-09-23 - posted in full, and 7103f657 folded in as the final commit. rc-c
-contains the connector pin at 338deb7f (0.1.0-dev.1), now superseded by
-bf/connect-pin-0.1.0 adf5120c (0.1.0-dev.2), so the rc needs a re-merge before
-it is evidence for the pin. PREPARED 2026-09-22. Commits: merges of bf/auth
-and bf/throttle; cherry-pick -x of 06c83f2f and 395f3207 (hunks for files
-absent on dev dropped); 1114228d adapts two cherry-picked tests to
-bf/throttle's keysFor(); 8b975b41 is a PORT - with TRUST_PROXY unset the
-address comes from forwarded-for exactly as on dev, because 395f3207's default
-differs in four cases (BF-88); the trusted path is 395f3207's code unchanged.
-ONE flag, not two - the throttle keys on data.ip, which now comes from client-
-ip.js. Suite on Node 20.20.0 - dev 2386/0/3, branch 2462/0/3, +76 exactly.
-Semver stays major for BF-47; a compat flag for BF-47 (sketched in the PR
-body) would make it minor. Plan section 3's "PRs open after 15.0.9 is tagged"
-is superseded by the section 1a decision above. BF-30 is closed only when
-TRUST_PROXY names a boundary; with the default it remains open, and the branch
-must say so in its boot message and PR body.
+2026-09-23 - #8754's head is 0a74ef4e (pushed by the maintainer, description
+updated): the API v3 trust proxy line is dropped as inert, like v1's in
+22953b77; suite 2481/0/3 on Node 20 and 22. Correction to 0a74ef4e's commit
+message (pushed, so not rewritten; a PR comment is drafted):
+lib/api3/security.js:34 DOES read app.get('trust proxy fn') for the v3 token
+throttle key. -1f measured the inherited fn === the parent's for unset, false,
+10.0.0.0/8, 1 and true, with the legacy marker surviving and the resolved IP
+matching, so the trim is still inert in production. FOLLOW-UP -
+tests/fixtures/api3/instance.js has no parent trust proxy, so no test covers
+the v3 throttle key under the production default. 2026-09-23 - #8754 head is
+22953b77 (pushed): the inert trust proxy line in lib/api/index.js is trimmed
+(maintainer decision), so that file is identical to dev; suite 2481/0/3 on
+Node 20 and 22, unchanged from 81623f9b; BACKPORT DIFFERENCE vs 06c83f2f in
+the commit message. Prepared, not pushed: 0a74ef4e on bf2/auth-hardening-trim-
+api3 trims the same inert line in lib/api3/index.js (54/54 answers identical,
+control 30/54 different; 2481/0/3); pushing it makes #8754 head 0a74ef4e.
+OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8754 (head 7103f657, base
+dev) - subject-edit folded in as its last commit (maintainer, relayed
+2026-09-23); withheld-style description. PUSHED 2026-09-23 - #8754's head is
+81623f9b ("TRUST_PROXY accepts a hop count and true, with Express's meaning
+for each"), checks green; suite 2481/0/3; the withheld description covers hop
+counts and true. Express's subnet aliases (loopback, linklocal, uniquelocal)
+are refused on a separate path; accepting them is deferred to a later release
+(maintainer, 2026-09-23). chore/nightscout-modernization b1bdaca0's
+lib/server/client-ip.js still refuses hop counts and true, and needs the same
+change. DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23).
+Evidence - the rc-c integration record, rc/15.0.9-additions-c b9c9828b,
+2508/0/3 on every Node and MongoDB pair, break-its on the final tree. Three
+things for the maintainer from that record. (1) The auth-hardening line in
+lib/api/index.js (app.set('trust proxy', ...)) is inert - the v1 sub-app
+inherits trust proxy from lib/server/app.js - so removing it fails nothing,
+full suite included. (2) The record recommends folding bf2/subject-edit-keeps-
+fields (BFQ-47) into the auth-hardening PR as its last commit, and leaves the
+choice to the maintainer. (3) The record leaves the PR-body style (full or
+withheld) to the maintainer. The PR body as committed at b248bb73
+(reports/phase0-pr-bodies/bf2-auth-hardening.md) records both as decided by
+the maintainer on 2026-09-23 - posted in full, and 7103f657 folded in as the
+final commit. rc-c contains the connector pin at 338deb7f (0.1.0-dev.1), now
+superseded by bf/connect-pin-0.1.0 adf5120c (0.1.0-dev.2), so the rc needs a
+re-merge before it is evidence for the pin. PREPARED 2026-09-22. Commits:
+merges of bf/auth and bf/throttle; cherry-pick -x of 06c83f2f and 395f3207
+(hunks for files absent on dev dropped); 1114228d adapts two cherry-picked
+tests to bf/throttle's keysFor(); 8b975b41 is a PORT - with TRUST_PROXY unset
+the address comes from forwarded-for exactly as on dev, because 395f3207's
+default differs in four cases (BF-88); the trusted path is 395f3207's code
+unchanged. ONE flag, not two - the throttle keys on data.ip, which now comes
+from client-ip.js. Suite on Node 20.20.0 - dev 2386/0/3, branch 2462/0/3, +76
+exactly. Semver stays major for BF-47; a compat flag for BF-47 (sketched in
+the PR body) would make it minor. Plan section 3's "PRs open after 15.0.9 is
+tagged" is superseded by the section 1a decision above. BF-30 is closed only
+when TRUST_PROXY names a boundary; with the default it remains open, and the
+branch must say so in its boot message and PR body.
 
 ---
 
