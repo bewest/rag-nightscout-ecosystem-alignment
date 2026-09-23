@@ -1561,17 +1561,23 @@ items:
     title: nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89)
     parcel: phase0
     repo: nightscout-connect
-    branch: ""
-    base: official/dev
-    worktree: externals/nightscout-connect
-    state: not-started
+    branch: fix/nightscout-reader-roles
+    base: official/dev@1946beb
+    worktree: externals/work/nc-roles-typo
+    state: gate-not-met
     blast_radius: lib/sources/nightscout.js (the subject it POSTs to /api/v2/authorization/subjects) and a test.
     review: maintainer
     operator_visible: >
       If you use nightscout-connect to copy data from one Nightscout site to
       another, it creates an access entry on the source site so that it can
       read. That entry is created without any permission, because the field
-      name is misspelled. The fix gives it read permission as intended.
+      name is misspelled. If the source site does not allow anonymous reading
+      (AUTH_DEFAULT_ROLES=denied), copying has never worked - every attempt is
+      refused - and on the default setting the mistake is invisible. The fix
+      gives the entry read permission as intended. IMPORTANT: an entry already
+      created by the old version is reused and stays without permission after
+      upgrading. Either give it the "readable" role on the source site's admin
+      page, or delete it so the connector recreates it correctly.
     semver: patch
     semver_reason: a bug fix inside the 0.1.0 line before its full release
     register: [BF-89]
@@ -1582,13 +1588,67 @@ items:
         describe: >
           FAILS while connector dev's nightscout source still sends the misspelled
           role field. Red on 2026-09-23 (line 83).
+      - run: >-
+          sh -c 'git -C externals/nightscout-connect show fix/nightscout-reader-roles:lib/sources/nightscout.js | grep -q "roles: \[ .readable. \]" && ! git -C externals/nightscout-connect show fix/nightscout-reader-roles:lib/sources/nightscout.js | grep -q "role: \["'
+        kind: static
+        describe: The prepared branch sends roles, and no longer sends role.
+      - run: 'cd externals/work/nc-roles-typo && n exec 22.23.2 node --test test/nightscout-source.test.js'
+        kind: unit
+        describe: >
+          6 cases. Control, re-run by the coordinator 2026-09-23 - with dev's
+          lib/sources/nightscout.js the new case fails (actual undefined,
+          expected ['readable']) and the other 5 pass.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      The one red gate reads official/dev and goes green only when the fix
+      merges there; both branch gates pass, and the next step is a human push.
+      PREPARED 2026-09-23 - fix/nightscout-reader-roles dea2bec on official/dev
+      1946beb, one commit. Measured end to end against Nightscout dev 74fc6619:
+      under denied the created subject gets no permissions and every poll is
+      401 with 0 entries copied; with the fix, reads succeed and the entry
+      arrives. Invisible on readable. Connector suite 290/290 on Node 20, 22
+      and 24 (dev 289/289). An existing subject is reused by name, so the
+      release notes must carry the repair step. PR body draft at
+      reports/connector-pr-bodies/nightscout-reader-roles.md.
       DECIDED 2026-09-23 (maintainer) - fix in connector dev before the full 0.1.0 release (P0-TAG).
       Found while checking BF-47: Nightscout's subject allow-list stores roles, so this subject
       is stored with no roles at all.
+
+  - id: BFQ-91
+    title: BF-91 - connector capture mode cannot find trace-axios for two sources
+    parcel: register-open
+    repo: nightscout-connect
+    branch: ""
+    base: official/dev@1946beb
+    worktree: externals/nightscout-connect
+    state: not-started
+    ships_to_operators_today: true
+    blast_radius: Two require paths - lib/sources/nightscout.js:190 and lib/sources/dexcomshare.js:243.
+    review: maintainer
+    operator_visible: >
+      Only affects people who run the connector's "capture" command by hand to
+      record test data. For the nightscout and Dexcom Share sources it stops
+      straight away with a "module not found" error. Fetching readings is not
+      affected.
+    semver: patch
+    semver_reason: a broken import path in a developer command
+    register: [BF-91]
+    gates:
+      - run: >-
+          sh -c 'git -C externals/nightscout-connect grep -q "require(.../../trace-axios.)" official/dev -- lib/sources/nightscout.js lib/sources/dexcomshare.js && exit 1 || exit 0'
+        kind: static
+        describe: FAILS while either top-level source still requires ../../trace-axios.
+      - no-gate: >
+          The crash itself needs the capture CLI to run against a source; the
+          static check stands in for it, and the path is the whole defect.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Found 2026-09-23 while running the BF-89 end-to-end test. Small enough to
+      ride with P0-CONNECT-ROLE before the full 0.1.0, if the maintainer wants it.
 
   - id: P0-PIN
     title: bf/connect-pin - pin dev to the published nightscout-connect 0.1.0

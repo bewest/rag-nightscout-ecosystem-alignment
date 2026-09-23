@@ -5,6 +5,12 @@
 > a cgm-remote-monitor release pins only a full connector release. When `nightscout-connect`
 > 0.1.0 is published, this PR becomes a one-token swap, `0.1.0-dev.1` → `0.1.0`, plus a
 > regenerated lockfile. The exact commands are under "Swapping to 0.1.0" below.
+>
+> **Sequencing (maintainer, 2026-09-23):** 0.1.0 is tagged only after `0.1.0-dev.1` has had longer
+> prerelease testing on this branch, and after BF-89 (the nightscout source's reader subject sent
+> `role` for `roles`) is fixed in connector `dev`. The fix is prepared as `fix/nightscout-reader-roles`
+> `dea2bec`. After 0.1.0 is published, re-run this branch's suite and the debug-logging control against
+> it before the swap commit, because 0.1.0 will then carry at least one commit that `0.1.0-dev.1` does not.
 
 ## What changes for you
 

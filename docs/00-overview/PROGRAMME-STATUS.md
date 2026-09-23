@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 63 | 26 | 7 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 64 | 26 | 7 |
 | **Modernization** | `release-train` | 13 | 2 | 2 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **97** | **37** | **15** |
+| | **total** | **98** | **37** | **15** |
 
 <!-- END GENERATED: horizons -->
 
@@ -131,6 +131,7 @@ cover more than one `BF-`:
 | `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | `BFQ-87` | `not-started` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
 | `BFQ-90` | `not-started` | BF-90 - an alarm at a page with no reading throws in the client |
+| `BFQ-91` | `not-started` | BF-91 - connector capture mode cannot find trace-axios for two sources |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `gate-not-met` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
@@ -148,9 +149,9 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | total |
 |---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 2 |  | 3 | 1 | 3 | 11 | 2 |  |  | **22** |
+| `phase0` | 1 |  | 4 | 1 | 3 | 11 | 2 |  |  | **22** |
 | `release-train` | 2 | 1 | 4 |  | 4 |  | 2 |  |  | **13** |
-| `register-open` | 18 |  | 6 |  |  | 4 | 3 |  | 1 | **32** |
+| `register-open` | 19 |  | 6 |  |  | 4 | 3 |  | 1 | **33** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  | 1 |  | 1 | **18** |
 | `docs-truth` | 6 |  | 1 |  |  |  |  | 2 |  | **9** |
 | `backfix2` |  |  |  | 3 |  |  |  |  |  | **3** |
@@ -191,14 +192,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 65 | 67% |
+| Maintainer | 66 | 67% |
 | SECURITY reviewer | 15 | 15% |
 | Maintainer + a second human | 6 | 6% |
 | SAFETY reviewer | 5 | 5% |
 | Whoever edits it next | 3 | 3% |
 | Unassigned | 2 | 2% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **97** | |
+| **total** | **98** | |
 
 <!-- END GENERATED: reviewer-load -->
 

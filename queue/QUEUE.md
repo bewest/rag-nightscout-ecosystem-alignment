@@ -31,19 +31,19 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 97 |
-| runnable gates | 164 |
-| explicit `no-gate:` markers | 146 |
+| items | 98 |
+| runnable gates | 167 |
+| explicit `no-gate:` markers | 147 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 146 of the 310 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 147 of the 314 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 37 | P0-CONNECT-ROLE, RT-VERSION, RT-COUNT0, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-47, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 37 | BFQ-91, RT-VERSION, RT-COUNT0, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-47, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
-| `gate-not-met` | 15 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
+| `gate-not-met` | 16 | P0-C, P0-J, P0-CONNECT-ROLE, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 5 | P0-C-REMEDIATE, T30-AUTH, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `merged-upstream` | 15 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
@@ -55,6 +55,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today`. Preserving it is the only thing that makes the register mean anything.
 
+- **BFQ-91** BF-91 - connector capture mode cannot find trace-axios for two sources
 - **BFQ-09** BF-09 - socket dedup truthiness skips a falsy value
 - **BFQ-10** BF-10 - mongod fatal-asserts at Docker's default nofile=1024
 - **BFQ-04** BF-04 - the v1 operator allowlist - superseded by P0-K
@@ -115,7 +116,7 @@ needs a tenancy decision.
 | `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `merged-upstream` | `bf/parms` | patch | 6 run + 1 no-gate |
 | `P0-K` | bf/operators - PR #8743, BF-04 extracted, BF-70 found | `merged-upstream` | `bf/operators` | minor | 7 run + 2 no-gate |
 | `P0-TAG` | nightscout-connect 0.1.0 - the full release, from connector dev | `needs-decision` | `dev` | minor | 5 run + 1 no-gate |
-| `P0-CONNECT-ROLE` | nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89) | `not-started` | `-` | patch | 1 run |
+| `P0-CONNECT-ROLE` | nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89) | `gate-not-met` | `fix/nightscout-reader-roles` | patch | 3 run |
 | `P0-PIN` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 | `blocked` | `bf/connect-pin-0.1.0` | patch | 2 run + 1 no-gate |
 | `P0-LOCK` | Regenerate package-lock.json for the nightscout-connect 0.1.0 pin | `blocked` | `bf/connect-pin-0.1.0` | n/a | 2 run |
 | `P0-PUBLISH` | nightscout-connect publishes to npm from a version tag | `merged-upstream` | `ci/npm-trusted-publish, ci/prerelease-tags` | n/a | 3 run + 1 no-gate |
@@ -683,18 +684,18 @@ needs a tenancy decision.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `gate-not-met` |
 | repo | `nightscout-connect` |
-| branch | `-` |
-| base | `official/dev` |
-| worktree | `externals/nightscout-connect` |
+| branch | `fix/nightscout-reader-roles` |
+| base | `official/dev@1946beb` |
+| worktree | `externals/work/nc-roles-typo` |
 | semver | `patch` |
 | review | maintainer |
 | register | `BF-89` |
 
 **Blast radius.** lib/sources/nightscout.js (the subject it POSTs to /api/v2/authorization/subjects) and a test.
 
-**What an operator sees.** If you use nightscout-connect to copy data from one Nightscout site to another, it creates an access entry on the source site so that it can read. That entry is created without any permission, because the field name is misspelled. The fix gives it read permission as intended.
+**What an operator sees.** If you use nightscout-connect to copy data from one Nightscout site to another, it creates an access entry on the source site so that it can read. That entry is created without any permission, because the field name is misspelled. If the source site does not allow anonymous reading (AUTH_DEFAULT_ROLES=denied), copying has never worked - every attempt is refused - and on the default setting the mistake is invisible. The fix gives the entry read permission as intended. IMPORTANT: an entry already created by the old version is reused and stays without permission after upgrading. Either give it the "readable" role on the source site's admin page, or delete it so the connector recreates it correctly.
 
 **Why `patch`.** a bug fix inside the 0.1.0 line before its full release
 
@@ -702,12 +703,16 @@ needs a tenancy decision.
 
 - `[static]` `sh -c 'git -C externals/nightscout-connect show official/dev:lib/sources/nightscout.js | grep -q "role: \[" && exit 1 || exit 0'`
   - FAILS while connector dev's nightscout source still sends the misspelled role field. Red on 2026-09-23 (line 83).
+- `[static]` `sh -c 'git -C externals/nightscout-connect show fix/nightscout-reader-roles:lib/sources/nightscout.js | grep -q "roles: \[ .readable. \]" && ! git -C externals/nightscout-connect show fix/nightscout-reader-roles:lib/sources/nightscout.js | grep -q "role: \["'`
+  - The prepared branch sends roles, and no longer sends role.
+- `[unit]` `cd externals/work/nc-roles-typo && n exec 22.23.2 node --test test/nightscout-source.test.js`
+  - 6 cases. Control, re-run by the coordinator 2026-09-23 - with dev's lib/sources/nightscout.js the new case fails (actual undefined, expected ['readable']) and the other 5 pass.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** DECIDED 2026-09-23 (maintainer) - fix in connector dev before the full 0.1.0 release (P0-TAG). Found while checking BF-47: Nightscout's subject allow-list stores roles, so this subject is stored with no roles at all.
+**Notes.** The one red gate reads official/dev and goes green only when the fix merges there; both branch gates pass, and the next step is a human push. PREPARED 2026-09-23 - fix/nightscout-reader-roles dea2bec on official/dev 1946beb, one commit. Measured end to end against Nightscout dev 74fc6619: under denied the created subject gets no permissions and every poll is 401 with 0 entries copied; with the fix, reads succeed and the entry arrives. Invisible on readable. Connector suite 290/290 on Node 20, 22 and 24 (dev 289/289). An existing subject is reused by name, so the release notes must carry the repair step. PR body draft at reports/connector-pr-bodies/nightscout-reader-roles.md. DECIDED 2026-09-23 (maintainer) - fix in connector dev before the full 0.1.0 release (P0-TAG). Found while checking BF-47: Nightscout's subject allow-list stores roles, so this subject is stored with no roles at all.
 
 ### `P0-PIN` &mdash; bf/connect-pin - pin dev to the published nightscout-connect 0.1.0
 
@@ -1437,7 +1442,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 32 items
+`parcel: register-open` &mdash; 33 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1445,6 +1450,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
+| `BFQ-91` | BF-91 - connector capture mode cannot find trace-axios for two sources | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-09` | BF-09 - socket dedup truthiness skips a falsy value | `unsettled` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-10` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-04` | BF-04 - the v1 operator allowlist - superseded by P0-K | `merged-upstream` | `bf/operators` | minor | 0 run + 1 no-gate |
@@ -1477,6 +1483,38 @@ distinction is the only thing that makes the register mean anything - widening
 | `ADV-ALARM` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) | `merged-upstream` | `bf/alarm-socket-scope` | minor | 2 run + 2 no-gate |
 | `ADV-XSS-META` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | `needs-decision` | `-` | n/a | 2 run + 1 no-gate |
 | `ADV-CONFIG` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) | `needs-decision` | `-` | patch | 2 run + 1 no-gate |
+
+### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `nightscout-connect` |
+| branch | `-` |
+| base | `official/dev@1946beb` |
+| worktree | `externals/nightscout-connect` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-91` |
+
+**Blast radius.** Two require paths - lib/sources/nightscout.js:190 and lib/sources/dexcomshare.js:243.
+
+**What an operator sees.** Only affects people who run the connector's "capture" command by hand to record test data. For the nightscout and Dexcom Share sources it stops straight away with a "module not found" error. Fetching readings is not affected.
+
+**Why `patch`.** a broken import path in a developer command
+
+**Gates.**
+
+- `[static]` `sh -c 'git -C externals/nightscout-connect grep -q "require(.../../trace-axios.)" official/dev -- lib/sources/nightscout.js lib/sources/dexcomshare.js && exit 1 || exit 0'`
+  - FAILS while either top-level source still requires ../../trace-axios.
+- **NO GATE** &mdash; The crash itself needs the capture CLI to run against a source; the static check stands in for it, and the path is the whole defect.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Found 2026-09-23 while running the BF-89 end-to-end test. Small enough to ride with P0-CONNECT-ROLE before the full 0.1.0, if the maintainer wants it.
 
 ### `BFQ-09` &mdash; BF-09 - socket dedup truthiness skips a falsy value
 
