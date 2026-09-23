@@ -20,7 +20,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `bf/count-zero-empty` |
 | base | `origin/dev@74fc6619` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=RT-COUNT0` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=RT-COUNT0` is the measurement |
 | semver | `patch` |
 
 ## What this changes
@@ -71,7 +71,8 @@ on dev by design; they pin dev's rule.
 
 ## Notes carried on the item
 
-REVERSED 2026-09-23 (maintainer) - the record below that the maintainer
+OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8748 (head ce9503ac, base
+dev). REVERSED 2026-09-23 (maintainer) - the record below that the maintainer
 "accepted that a DELETE ignores count" is withdrawn; the maintainer had not
 realised the branch changed dev's delete behaviour. A DELETE carrying a count
 that is not a whole number of 1 or more, count=0 included, is refused with 400

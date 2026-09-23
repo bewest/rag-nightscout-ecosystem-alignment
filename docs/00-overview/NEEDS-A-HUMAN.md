@@ -30,11 +30,11 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 13 items
+### Maintainer &mdash; 12 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `P0-CONNECT-ROLE` | `in-flight-upstream` | nightscout-connect's nightscout source creates its reader subject with role, not | &mdash; |
+| `RT-COUNT0` | `in-flight-upstream` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `FU-PRBODIES` | `needs-decision` | Merged PR bodies have drifted from the files they were posted from | &mdash; |
@@ -43,7 +43,6 @@ that it was reviewed.
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `BF2-OPS` | `ready-to-push` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
-| `RT-COUNT0` | `ready-to-push` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | &mdash; |
 | `RT-MONGO-FLOOR` | `ready-to-push` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |

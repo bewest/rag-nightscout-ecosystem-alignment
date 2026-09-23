@@ -57,6 +57,7 @@ The two backports merge into origin/dev with no conflict.
 
 ## Evidence
 
+- Drafted PR body: [`reports/phase0-pr-bodies/bf2-backports.md`](../../reports/phase0-pr-bodies/bf2-backports.md)
 - [`docs/30-design/remedial/backfix-2-plan-2026-09-22.md`](../../docs/30-design/remedial/backfix-2-plan-2026-09-22.md)
 
 ## Notes carried on the item

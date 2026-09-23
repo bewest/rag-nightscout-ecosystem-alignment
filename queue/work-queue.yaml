@@ -1552,6 +1552,7 @@ items:
       - docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      2026-09-23 - v0.1.0-dev.2 tagged at fbd4e55 (dev, carrying BF-89 and BF-91) and published to npm next with provenance (publish run 35809963748). The longer prerelease testing the maintainer asked for starts here; v0.1.0 is still not tagged.
       DECIDED 2026-09-23 (maintainer) - tag 0.1.0 only after the additional needed connector fixes are merged into connector dev; the set is exactly BF-89 (P0-CONNECT-ROLE, prepared as fix/nightscout-reader-roles dea2bec) and BF-91 (BFQ-91). #54 and #52 are not required for 0.1.0.
       DECIDED 2026-09-23 (maintainer) - 0.1.0 is pinned in 15.0.9, but only after the prerelease has been tested longer; tagging waits for that. Before the full release, connector dev also fixes BF-89 (the nightscout source sends role for roles; P0-CONNECT-ROLE). Tagging remains the maintainer's action.
       DECIDED 2026-09-22 (maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging remains the maintainer's action.
@@ -1565,7 +1566,7 @@ items:
     branch: fix/nightscout-reader-roles
     base: official/dev@1946beb
     worktree: externals/work/nc-roles-typo
-    state: in-flight-upstream
+    state: merged-upstream
     blast_radius: lib/sources/nightscout.js (the subject it POSTs to /api/v2/authorization/subjects) and a test.
     review: maintainer
     operator_visible: >
@@ -1603,6 +1604,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      MERGED 2026-09-23 - #77 (dea2bec) is in connector official/dev fbd4e55, and in prerelease 0.1.0-dev.2. Not in a full connector release yet.
       OPENED 2026-09-23 as nightscout/nightscout-connect PR #77 (head dea2bec, base dev) by the maintainer. The red gate reads official/dev and turns green when it merges.
       The one red gate reads official/dev and goes green only when the fix
       merges there; both branch gates pass, and the next step is a human push.
@@ -1625,7 +1627,7 @@ items:
     branch: fix/trace-axios-path
     base: official/dev@1946beb
     worktree: externals/work/nc-trace-axios
-    state: gate-not-met
+    state: merged-upstream
     ships_to_operators_today: true
     blast_radius: Two require paths - lib/sources/nightscout.js:190 and lib/sources/dexcomshare.js:243.
     review: maintainer
@@ -1656,6 +1658,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      MERGED 2026-09-23 - #78 (894b132) is in connector official/dev fbd4e55, and in prerelease 0.1.0-dev.2. Not in a full connector release yet.
       PREPARED 2026-09-23 - fix/trace-axios-path 894b132 on official/dev 1946beb.
       Reproduced by running capture for both sources (exit 1 at the require,
       before any request). Suite 291/291 on Node 20, 22 and 24 (dev 289/289).
@@ -1960,7 +1963,7 @@ items:
     branch: bf/count-zero-empty
     base: origin/dev@74fc6619
     worktree: externals/work/crm-count-zero
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Tip ce9503ac, two commits, 5 files - lib/server/count.js (isZeroCount;
       applyCount answers zero without querying), lib/api/index.js validateCount
@@ -1995,6 +1998,7 @@ items:
     evidence:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
     notes: >
+      OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8748 (head ce9503ac, base dev).
       REVERSED 2026-09-23 (maintainer) - the record below that the maintainer "accepted that a DELETE ignores count" is withdrawn; the maintainer had not realised the branch changed dev's delete behaviour. A DELETE carrying a count that is not a whole number of 1 or more, count=0 included, is refused with 400 and deletes nothing, as on dev. A valid count on a DELETE is accepted and, as on dev, does not limit it. Saves and updates still ignore count. Implemented as ce9503ac on top of the pushed 7b32d9ab; suite Node 20.20.0 2409/0/3. Not yet pushed.
       WITHDRAWN - accepted that a DELETE ignores count, so a delete carrying count=0 removes everything its filter matches, as 15.0.8 already did.
       PREPARED 2026-09-23. Read matrix (30 entries, 120 treatments, 30

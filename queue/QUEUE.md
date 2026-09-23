@@ -43,11 +43,11 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
-| `gate-not-met` | 17 | P0-C, P0-J, BFQ-91, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-87, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 8 | P0-C-REMEDIATE, RT-COUNT0, RT-MONGO-FLOOR, T30-AUTH, BFQ-47, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
+| `gate-not-met` | 16 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-87, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
+| `ready-to-push` | 7 | P0-C-REMEDIATE, RT-MONGO-FLOOR, T30-AUTH, BFQ-47, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
-| `in-flight-upstream` | 1 | P0-CONNECT-ROLE |
-| `merged-upstream` | 15 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
+| `in-flight-upstream` | 1 | RT-COUNT0 |
+| `merged-upstream` | 17 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
 | `needs-decision` | 8 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
 | `done` | 2 | DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 2 | BFQ-09, A7A-7 |
@@ -117,7 +117,7 @@ needs a tenancy decision.
 | `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `merged-upstream` | `bf/parms` | patch | 6 run + 1 no-gate |
 | `P0-K` | bf/operators - PR #8743, BF-04 extracted, BF-70 found | `merged-upstream` | `bf/operators` | minor | 7 run + 2 no-gate |
 | `P0-TAG` | nightscout-connect 0.1.0 - the full release, from connector dev | `needs-decision` | `dev` | minor | 5 run + 1 no-gate |
-| `P0-CONNECT-ROLE` | nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89) | `in-flight-upstream` | `fix/nightscout-reader-roles` | patch | 3 run |
+| `P0-CONNECT-ROLE` | nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89) | `merged-upstream` | `fix/nightscout-reader-roles` | patch | 3 run |
 | `P0-PIN` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 | `blocked` | `bf/connect-pin-0.1.0` | patch | 2 run + 1 no-gate |
 | `P0-LOCK` | Regenerate package-lock.json for the nightscout-connect 0.1.0 pin | `blocked` | `bf/connect-pin-0.1.0` | n/a | 2 run |
 | `P0-PUBLISH` | nightscout-connect publishes to npm from a version tag | `merged-upstream` | `ci/npm-trusted-publish, ci/prerelease-tags` | n/a | 3 run + 1 no-gate |
@@ -680,13 +680,13 @@ needs a tenancy decision.
 - `docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md`
 - `docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`
 
-**Notes.** DECIDED 2026-09-23 (maintainer) - tag 0.1.0 only after the additional needed connector fixes are merged into connector dev; the set is exactly BF-89 (P0-CONNECT-ROLE, prepared as fix/nightscout-reader-roles dea2bec) and BF-91 (BFQ-91). #54 and #52 are not required for 0.1.0. DECIDED 2026-09-23 (maintainer) - 0.1.0 is pinned in 15.0.9, but only after the prerelease has been tested longer; tagging waits for that. Before the full release, connector dev also fixes BF-89 (the nightscout source sends role for roles; P0-CONNECT- ROLE). Tagging remains the maintainer's action. DECIDED 2026-09-22 (maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging remains the maintainer's action. The programme's local release/v0.0.14 branch and v0.0.14 tag are retired: every commit on them is in connector dev. No 0.0.14 will be published; the line is 0.1.0.
+**Notes.** 2026-09-23 - v0.1.0-dev.2 tagged at fbd4e55 (dev, carrying BF-89 and BF-91) and published to npm next with provenance (publish run 35809963748). The longer prerelease testing the maintainer asked for starts here; v0.1.0 is still not tagged. DECIDED 2026-09-23 (maintainer) - tag 0.1.0 only after the additional needed connector fixes are merged into connector dev; the set is exactly BF-89 (P0-CONNECT-ROLE, prepared as fix/nightscout-reader-roles dea2bec) and BF-91 (BFQ-91). #54 and #52 are not required for 0.1.0. DECIDED 2026-09-23 (maintainer) - 0.1.0 is pinned in 15.0.9, but only after the prerelease has been tested longer; tagging waits for that. Before the full release, connector dev also fixes BF-89 (the nightscout source sends role for roles; P0-CONNECT-ROLE). Tagging remains the maintainer's action. DECIDED 2026-09-22 (maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging remains the maintainer's action. The programme's local release/v0.0.14 branch and v0.0.14 tag are retired: every commit on them is in connector dev. No 0.0.14 will be published; the line is 0.1.0.
 
 ### `P0-CONNECT-ROLE` &mdash; nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89)
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `nightscout-connect` |
 | branch | `fix/nightscout-reader-roles` |
 | base | `official/dev@1946beb` |
@@ -714,7 +714,7 @@ needs a tenancy decision.
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** OPENED 2026-09-23 as nightscout/nightscout-connect PR #77 (head dea2bec, base dev) by the maintainer. The red gate reads official/dev and turns green when it merges. The one red gate reads official/dev and goes green only when the fix merges there; both branch gates pass, and the next step is a human push. PREPARED 2026-09-23 - fix/nightscout-reader-roles dea2bec on official/dev 1946beb, one commit. Measured end to end against Nightscout dev 74fc6619: under denied the created subject gets no permissions and every poll is 401 with 0 entries copied; with the fix, reads succeed and the entry arrives. Invisible on readable. Connector suite 290/290 on Node 20, 22 and 24 (dev 289/289). An existing subject is reused by name, so the release notes must carry the repair step. PR body draft at reports/connector-pr- bodies/nightscout-reader-roles.md. DECIDED 2026-09-23 (maintainer) - fix in connector dev before the full 0.1.0 release (P0-TAG). Found while checking BF-47: Nightscout's subject allow-list stores roles, so this subject is stored with no roles at all.
+**Notes.** MERGED 2026-09-23 - #77 (dea2bec) is in connector official/dev fbd4e55, and in prerelease 0.1.0-dev.2. Not in a full connector release yet. OPENED 2026-09-23 as nightscout/nightscout-connect PR #77 (head dea2bec, base dev) by the maintainer. The red gate reads official/dev and turns green when it merges. The one red gate reads official/dev and goes green only when the fix merges there; both branch gates pass, and the next step is a human push. PREPARED 2026-09-23 - fix/nightscout-reader-roles dea2bec on official/dev 1946beb, one commit. Measured end to end against Nightscout dev 74fc6619: under denied the created subject gets no permissions and every poll is 401 with 0 entries copied; with the fix, reads succeed and the entry arrives. Invisible on readable. Connector suite 290/290 on Node 20, 22 and 24 (dev 289/289). An existing subject is reused by name, so the release notes must carry the repair step. PR body draft at reports/connector-pr-bodies/nightscout-reader-roles.md. DECIDED 2026-09-23 (maintainer) - fix in connector dev before the full 0.1.0 release (P0-TAG). Found while checking BF-47: Nightscout's subject allow-list stores roles, so this subject is stored with no roles at all.
 
 ### `P0-PIN` &mdash; bf/connect-pin - pin dev to the published nightscout-connect 0.1.0
 
@@ -989,7 +989,7 @@ that costs.
 |---|---|---|---|---|---|
 | `RT-D3` | Answer the D3 question before 15.0.9 ships | `in-progress` | `origin/dev` | minor | 2 run + 1 no-gate |
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | `-` | n/a | 1 run + 1 no-gate |
-| `RT-COUNT0` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | `ready-to-push` | `bf/count-zero-empty` | patch | 2 run |
+| `RT-COUNT0` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | `in-flight-upstream` | `bf/count-zero-empty` | patch | 2 run |
 | `RT-MONGO-FLOOR` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | `ready-to-push` | `docs/mongodb-floor` | patch | 2 run |
 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 1 run + 2 no-gate |
@@ -1072,7 +1072,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/count-zero-empty` |
 | base | `origin/dev@74fc6619` |
@@ -1097,7 +1097,7 @@ that costs.
 
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 
-**Notes.** REVERSED 2026-09-23 (maintainer) - the record below that the maintainer "accepted that a DELETE ignores count" is withdrawn; the maintainer had not realised the branch changed dev's delete behaviour. A DELETE carrying a count that is not a whole number of 1 or more, count=0 included, is refused with 400 and deletes nothing, as on dev. A valid count on a DELETE is accepted and, as on dev, does not limit it. Saves and updates still ignore count. Implemented as ce9503ac on top of the pushed 7b32d9ab; suite Node 20.20.0 2409/0/3. Not yet pushed. WITHDRAWN - accepted that a DELETE ignores count, so a delete carrying count=0 removes everything its filter matches, as 15.0.8 already did. PREPARED 2026-09-23. Read matrix (30 entries, 120 treatments, 30 devicestatus, 15 profile, 15 activity, counted in mongo) - the ONLY change from dev is the 0 and 00 columns, now 200 with no rows on every v1 read route; 0x10, 2.5, -3, 1e2, abc, MAX_SAFE+1, %2B5 and count=1&count=2 stay 400. Suite Node 20.20.0 - dev 2386/0/3, branch 2404/0/3. FOR THE MAINTAINER, measured - (1) dev (#8738) refuses every WRITE that carries any invalid count, including count=0, with 400 and no change; the branch makes writes ignore count as decided. (2) Neither tree limits a DELETE by count - DELETE with a find and count=2 removed all 5 matching rows on both - so on the branch a delete carrying count=0 removes everything its filter matches, where dev refused it. (3) Routes that never apply count (/entries/current, /count/.../where, /status, /echo, /food) now answer count=0 normally instead of 400. (4) v1 now accepts zero while v3 limit=0 stays 400, so FU-LIMIT's "two implementations that agree" no longer holds. PR body draft at reports/phase0-pr-bodies/count-zero-empty.md. DECIDED 2026-09-23 (maintainer) - "count=0 should return a 0 length array of results." #8738 (merged to dev) answers HTTP 400 for count=0 because MongoDB reads .limit(0) as no limit; the maintainer wants an empty list instead. Malformed counts stay 400, and the check runs on read routes and deletes (see REVERSED above); saves and updates ignore count. Ships in 15.0.9.
+**Notes.** OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8748 (head ce9503ac, base dev). REVERSED 2026-09-23 (maintainer) - the record below that the maintainer "accepted that a DELETE ignores count" is withdrawn; the maintainer had not realised the branch changed dev's delete behaviour. A DELETE carrying a count that is not a whole number of 1 or more, count=0 included, is refused with 400 and deletes nothing, as on dev. A valid count on a DELETE is accepted and, as on dev, does not limit it. Saves and updates still ignore count. Implemented as ce9503ac on top of the pushed 7b32d9ab; suite Node 20.20.0 2409/0/3. Not yet pushed. WITHDRAWN - accepted that a DELETE ignores count, so a delete carrying count=0 removes everything its filter matches, as 15.0.8 already did. PREPARED 2026-09-23. Read matrix (30 entries, 120 treatments, 30 devicestatus, 15 profile, 15 activity, counted in mongo) - the ONLY change from dev is the 0 and 00 columns, now 200 with no rows on every v1 read route; 0x10, 2.5, -3, 1e2, abc, MAX_SAFE+1, %2B5 and count=1&count=2 stay 400. Suite Node 20.20.0 - dev 2386/0/3, branch 2404/0/3. FOR THE MAINTAINER, measured - (1) dev (#8738) refuses every WRITE that carries any invalid count, including count=0, with 400 and no change; the branch makes writes ignore count as decided. (2) Neither tree limits a DELETE by count - DELETE with a find and count=2 removed all 5 matching rows on both - so on the branch a delete carrying count=0 removes everything its filter matches, where dev refused it. (3) Routes that never apply count (/entries/current, /count/.../where, /status, /echo, /food) now answer count=0 normally instead of 400. (4) v1 now accepts zero while v3 limit=0 stays 400, so FU-LIMIT's "two implementations that agree" no longer holds. PR body draft at reports/phase0-pr-bodies/count-zero-empty.md. DECIDED 2026-09-23 (maintainer) - "count=0 should return a 0 length array of results." #8738 (merged to dev) answers HTTP 400 for count=0 because MongoDB reads .limit(0) as no limit; the maintainer wants an empty list instead. Malformed counts stay 400, and the check runs on read routes and deletes (see REVERSED above); saves and updates ignore count. Ships in 15.0.9.
 
 ### `RT-MONGO-FLOOR` &mdash; README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9
 
@@ -1520,7 +1520,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `BFQ-91` | BF-91 - connector capture mode cannot find trace-axios for two sources | `gate-not-met` | `fix/trace-axios-path` | patch | 2 run + 1 no-gate |
+| `BFQ-91` | BF-91 - connector capture mode cannot find trace-axios for two sources | `merged-upstream` | `fix/trace-axios-path` | patch | 2 run + 1 no-gate |
 | `BFQ-09` | BF-09 - socket dedup truthiness skips a falsy value | `unsettled` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-10` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-04` | BF-04 - the v1 operator allowlist - superseded by P0-K | `merged-upstream` | `bf/operators` | minor | 0 run + 1 no-gate |
@@ -1558,7 +1558,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `merged-upstream` |
 | repo | `nightscout-connect` |
 | branch | `fix/trace-axios-path` |
 | base | `official/dev@1946beb` |
@@ -1586,7 +1586,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** PREPARED 2026-09-23 - fix/trace-axios-path 894b132 on official/dev 1946beb. Reproduced by running capture for both sources (exit 1 at the require, before any request). Suite 291/291 on Node 20, 22 and 24 (dev 289/289). Merges cleanly with fix/nightscout-reader-roles. The red gate reads official/dev and turns green when the fix merges there. Found 2026-09-23 while running the BF-89 end-to-end test. Small enough to ride with P0-CONNECT-ROLE before the full 0.1.0, if the maintainer wants it.
+**Notes.** MERGED 2026-09-23 - #78 (894b132) is in connector official/dev fbd4e55, and in prerelease 0.1.0-dev.2. Not in a full connector release yet. PREPARED 2026-09-23 - fix/trace-axios-path 894b132 on official/dev 1946beb. Reproduced by running capture for both sources (exit 1 at the require, before any request). Suite 291/291 on Node 20, 22 and 24 (dev 289/289). Merges cleanly with fix/nightscout-reader-roles. The red gate reads official/dev and turns green when the fix merges there. Found 2026-09-23 while running the BF-89 end- to-end test. Small enough to ride with P0-CONNECT-ROLE before the full 0.1.0, if the maintainer wants it.
 
 ### `BFQ-09` &mdash; BF-09 - socket dedup truthiness skips a falsy value
 
