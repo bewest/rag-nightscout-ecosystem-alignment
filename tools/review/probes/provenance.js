@@ -39,6 +39,8 @@ const TOKENS = {
   'bf/parms': ['Deliberately NOT decodeURIComponent', 'queryParms'],
   'bf/merge': ['mergeTreatmentUpdate'],
   '#8729': ['chartContainer'],
+  'bf3/alarm-no-reading': ['latestMgdlForLog', 'updateChartAfterAlarm'],
+  'bf3/quickpick-rebuild': ['rebuildQuickpickChooser'],
 };
 
 function get(url) {

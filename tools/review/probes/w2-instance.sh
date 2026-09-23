@@ -14,11 +14,11 @@
 #   w2-instance.sh reset <name> <worktree> <port> <db> <roles> [VAR=val ...]   stop, DROP db, boot
 #
 # Env: W2_STATE (dir for logs + the generated API secret; default ./w2-state),
-#      W2_MONGO_CONTAINER (default ns-w2-mongo, published on 127.0.0.1:27082),
+#      W2_MONGO_CONTAINER (default ns-w2-mongo), W2_MONGO_PORT (default 27082, where it is published),
 #      W2_NODE (default 22.22.0; engines >=20, CI matrix 20/22/24).
 # The secret is generated into $W2_STATE/secret (mode 600) and never printed.
 set -euo pipefail
-: "${W2_STATE:=$PWD/w2-state}"; : "${W2_MONGO_CONTAINER:=ns-w2-mongo}"; : "${W2_NODE:=22.22.0}"
+: "${W2_STATE:=$PWD/w2-state}"; : "${W2_MONGO_CONTAINER:=ns-w2-mongo}"; : "${W2_NODE:=22.22.0}"; : "${W2_MONGO_PORT:=27082}"
 export N_PREFIX="${N_PREFIX:-$HOME/n}"
 mkdir -p "$W2_STATE"
 [ -f "$W2_STATE/secret" ] || { head -c 24 /dev/urandom | base64 | tr -d '/+=' > "$W2_STATE/secret"; chmod 600 "$W2_STATE/secret"; }
@@ -38,7 +38,7 @@ boot() {
   # NODE_ENV=development is required: production bundles live inside
   # node_modules and a browser probe would not be measuring the worktree.
   env -i PATH="$PATH" HOME="$HOME" N_PREFIX="$N_PREFIX" TZ=UTC W2_RUN="ns-w2-$name" \
-    MONGODB_URI="mongodb://127.0.0.1:27082/$db" API_SECRET="$(cat "$W2_STATE/secret")" \
+    MONGODB_URI="mongodb://127.0.0.1:$W2_MONGO_PORT/$db" API_SECRET="$(cat "$W2_STATE/secret")" \
     PORT="$port" HOSTNAME=127.0.0.1 INSECURE_USE_HTTP=true NODE_ENV=development \
     DISPLAY_UNITS=mg/dl AUTH_DEFAULT_ROLES="$roles" TIME_FORMAT=24 \
     ENABLE="${ENABLE:-careportal basal iob cob bwp boluscalc}" \
