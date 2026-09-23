@@ -28,9 +28,11 @@ repository.
 | [`BF2-AUTH`](bf2-auth-bf2-auth-hardening.md) | &mdash; | `ready-to-push` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY |
 | [`BF2-BACKPORT`](bf2-backport-bf2-backports.md) | &mdash; | `ready-to-push` | Which modernization-only security commits fix a defect that dev has |
 | [`BF2-OPS`](bf2-ops-bf2-ops.md) | &mdash; | `ready-to-push` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer |
+| [`BFQ-47`](bfq-47-bf2-subject-edit-keeps-fields.md) | &mdash; | `ready-to-push` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`FU-PRBODIES`](fu-prbodies.md) | &mdash; | `needs-decision` | Merged PR bodies have drifted from the files they were posted from |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
+| [`P0-CONNECT-ROLE`](p0-connect-role-fix-nightscout-reader-roles.md) | &mdash; | `in-flight-upstream` | nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89) |
 | [`RT-4`](rt-4.md) | &mdash; | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes |
 | [`RT-COUNT0`](rt-count0-bf-count-zero-empty.md) | &mdash; | `ready-to-push` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 |
 | [`RT-MONGO-FLOOR`](rt-mongo-floor-docs-mongodb-floor.md) | &mdash; | `ready-to-push` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 |

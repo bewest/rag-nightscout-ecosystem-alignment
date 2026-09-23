@@ -30,10 +30,11 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 12 items
+### Maintainer &mdash; 13 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
+| `P0-CONNECT-ROLE` | `in-flight-upstream` | nightscout-connect's nightscout source creates its reader subject with role, not | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `FU-PRBODIES` | `needs-decision` | Merged PR bodies have drifted from the files they were posted from | &mdash; |
@@ -55,11 +56,12 @@ that it was reviewed.
 | `BF2-AUTH` | `ready-to-push` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | &mdash; |
 | `BF2-BACKPORT` | `ready-to-push` | Which modernization-only security commits fix a defect that dev has | &mdash; |
 
-### Maintainer + a second human &mdash; 1 item
+### Maintainer + a second human &mdash; 2 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `RT-0` | `needs-decision` | Release 15.0.9 | #8598, #8605 |
+| `BFQ-47` | `ready-to-push` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | &mdash; |
 
 ### SAFETY reviewer &mdash; 1 item
 

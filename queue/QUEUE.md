@@ -32,20 +32,21 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 99 |
-| runnable gates | 174 |
-| explicit `no-gate:` markers | 146 |
+| runnable gates | 176 |
+| explicit `no-gate:` markers | 145 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 146 of the 320 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 145 of the 321 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 34 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-47, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
-| `gate-not-met` | 18 | P0-C, P0-J, P0-CONNECT-ROLE, BFQ-91, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-87, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 7 | P0-C-REMEDIATE, RT-COUNT0, RT-MONGO-FLOOR, T30-AUTH, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
+| `gate-not-met` | 17 | P0-C, P0-J, BFQ-91, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-87, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
+| `ready-to-push` | 8 | P0-C-REMEDIATE, RT-COUNT0, RT-MONGO-FLOOR, T30-AUTH, BFQ-47, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
+| `in-flight-upstream` | 1 | P0-CONNECT-ROLE |
 | `merged-upstream` | 15 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
 | `needs-decision` | 8 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
 | `done` | 2 | DOC-VIEWS, DOC-LINKS |
@@ -116,7 +117,7 @@ needs a tenancy decision.
 | `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `merged-upstream` | `bf/parms` | patch | 6 run + 1 no-gate |
 | `P0-K` | bf/operators - PR #8743, BF-04 extracted, BF-70 found | `merged-upstream` | `bf/operators` | minor | 7 run + 2 no-gate |
 | `P0-TAG` | nightscout-connect 0.1.0 - the full release, from connector dev | `needs-decision` | `dev` | minor | 5 run + 1 no-gate |
-| `P0-CONNECT-ROLE` | nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89) | `gate-not-met` | `fix/nightscout-reader-roles` | patch | 3 run |
+| `P0-CONNECT-ROLE` | nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89) | `in-flight-upstream` | `fix/nightscout-reader-roles` | patch | 3 run |
 | `P0-PIN` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 | `blocked` | `bf/connect-pin-0.1.0` | patch | 2 run + 1 no-gate |
 | `P0-LOCK` | Regenerate package-lock.json for the nightscout-connect 0.1.0 pin | `blocked` | `bf/connect-pin-0.1.0` | n/a | 2 run |
 | `P0-PUBLISH` | nightscout-connect publishes to npm from a version tag | `merged-upstream` | `ci/npm-trusted-publish, ci/prerelease-tags` | n/a | 3 run + 1 no-gate |
@@ -685,7 +686,7 @@ needs a tenancy decision.
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `nightscout-connect` |
 | branch | `fix/nightscout-reader-roles` |
 | base | `official/dev@1946beb` |
@@ -713,7 +714,7 @@ needs a tenancy decision.
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** The one red gate reads official/dev and goes green only when the fix merges there; both branch gates pass, and the next step is a human push. PREPARED 2026-09-23 - fix/nightscout-reader-roles dea2bec on official/dev 1946beb, one commit. Measured end to end against Nightscout dev 74fc6619: under denied the created subject gets no permissions and every poll is 401 with 0 entries copied; with the fix, reads succeed and the entry arrives. Invisible on readable. Connector suite 290/290 on Node 20, 22 and 24 (dev 289/289). An existing subject is reused by name, so the release notes must carry the repair step. PR body draft at reports/connector-pr-bodies/nightscout-reader-roles.md. DECIDED 2026-09-23 (maintainer) - fix in connector dev before the full 0.1.0 release (P0-TAG). Found while checking BF-47: Nightscout's subject allow-list stores roles, so this subject is stored with no roles at all.
+**Notes.** OPENED 2026-09-23 as nightscout/nightscout-connect PR #77 (head dea2bec, base dev) by the maintainer. The red gate reads official/dev and turns green when it merges. The one red gate reads official/dev and goes green only when the fix merges there; both branch gates pass, and the next step is a human push. PREPARED 2026-09-23 - fix/nightscout-reader-roles dea2bec on official/dev 1946beb, one commit. Measured end to end against Nightscout dev 74fc6619: under denied the created subject gets no permissions and every poll is 401 with 0 entries copied; with the fix, reads succeed and the entry arrives. Invisible on readable. Connector suite 290/290 on Node 20, 22 and 24 (dev 289/289). An existing subject is reused by name, so the release notes must carry the repair step. PR body draft at reports/connector-pr- bodies/nightscout-reader-roles.md. DECIDED 2026-09-23 (maintainer) - fix in connector dev before the full 0.1.0 release (P0-TAG). Found while checking BF-47: Nightscout's subject allow-list stores roles, so this subject is stored with no roles at all.
 
 ### `P0-PIN` &mdash; bf/connect-pin - pin dev to the published nightscout-connect 0.1.0
 
@@ -1543,7 +1544,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-CONNECTOR` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override | `gate-not-met` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-MINIMED` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading | `not-started` | `-` | minor | 0 run + 3 no-gate |
 | `BFQ-46` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
-| `BFQ-47` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | `not-started` | `-` | major | 0 run + 2 no-gate |
+| `BFQ-47` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | `ready-to-push` | `bf2/subject-edit-keeps-fields` | major | 2 run + 1 no-gate |
 | `BFQ-ENV` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | `gate-not-met` | `-` | minor | 4 run + 2 no-gate |
 | `BFQ-52` | BF-52 - the age plugins can only ask for their urgent alarm in one window | `not-started` | `-` | patch | 0 run + 2 no-gate |
 | `BFQ-90` | BF-90 - an alarm at a page with no reading throws in the client | `not-started` | `-` | patch | 0 run + 1 no-gate |
@@ -2319,11 +2320,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `origin/dev@a8888f0d` |
-| worktree | `externals/work/crm-bf-auth` |
+| branch | `bf2/subject-edit-keeps-fields` |
+| base | `bf2/auth-hardening@29e6430e` |
+| worktree | `externals/work/crm-bf47` |
 | semver | `major` |
 | review | maintainer, AND the security reviewer who takes P0-C, together - this is the one irreversible change in the Phase 0 batch and the question has to be answered BEFORE merge, not after |
 | ships to operators today | **yes** |
@@ -2338,14 +2339,17 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Read-derived from source on origin/dev and on bf/auth; not reproduced against a deployment. A gate would need a database with a subject row carrying an extra field planted on it, an edit through the admin path, and an assertion that the field survived - with a control row that has no extra field so a green result is known to distinguish the two. Nobody has built it.
-- **NO GATE** &mdash; The missing fact is not code, it is an inventory. No list exists of third-party tools that store extra fields on subjects or roles, and nothing in this repository can produce one. That inventory decides whether the narrower repair - delete only the derived accessToken/accessTokenDigest/digest and pass unknown fields through - is required or merely tidier.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 29e6430e bf2/subject-edit-keeps-fields`
+  - Built on bf2/auth-hardening, whose allow-list is the declared schema.
+- `[integration]` `cd externals/work/crm-bf47 && TEST=authsubjects npm run test-single`
+  - 13 cases, 5 of them new - an admin-page form edit, removing every role, a PUT omitting notes and created_at, a PUT clearing notes, and the role variants. Control, re-run by the coordinator 2026-09-23 - with 29e6430e's storage.js the 5 new cases fail and 8 pass.
+- **NO GATE** &mdash; The admin-page path in a real browser is shown by tools/review/probes/subject-edit-keeps-fields-browser.js (passes --expect base on 29e6430e, --expect fixed on the branch); a browser run is not a queue gate.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** DECIDED 2026-09-23 (maintainer) - NO compatibility flag for the subject-field allow-list. The allow-list IS the declared schema for subjects (name, roles, notes, created_at) and roles (name, permissions, notes, created_at); fields outside it are not part of the contract. What remains is the admin-page defect - an edit through the admin page must keep notes and created_at. DECIDED 2026-09-23 (maintainer) - the allow-list is intended and stays (option 2). No open-source client in the corpus depends on storing other subject fields. The loss that remains is the admin page: it fetches subjects without notes and created_at, then saves the whole subject back, so an ordinary edit clears both. That is the defect to fix. A verifier's review of bf/auth established that the field loss already happens on the current release, not only on the unmerged branch. Keeping the security goal of BF-17 - the derived token never reaches the database - does not require the allow-list.
+**Notes.** PREPARED 2026-09-23 - bf2/subject-edit-keeps-fields 7103f657, one commit on bf2/auth-hardening. REPRODUCED in a real browser, read back from mongo - on dev an admin-page subject edit sets notes to "" and replaces created_at with the edit time; on bf2/auth-hardening notes survive but created_at is still replaced; the role editor keeps both on every base (its GET serves whole documents), so the admin-page defect is subjects only. Fix is a server-side fill-in in storage.js save() for notes and created_at only - an absent notes key keeps the stored value, a present one (even '') is written, so clearing still works. roles is deliberately NOT filled in - the admin page sends no roles field when the last role is removed, and filling it would silently keep access. Suite 2462/0/3 -> 2467/0/3. DECIDED 2026-09-23 (maintainer) - NO compatibility flag for the subject-field allow-list. The allow-list IS the declared schema for subjects (name, roles, notes, created_at) and roles (name, permissions, notes, created_at); fields outside it are not part of the contract. What remains is the admin-page defect - an edit through the admin page must keep notes and created_at. DECIDED 2026-09-23 (maintainer) - the allow-list is intended and stays (option 2). No open-source client in the corpus depends on storing other subject fields. The loss that remains is the admin page: it fetches subjects without notes and created_at, then saves the whole subject back, so an ordinary edit clears both. That is the defect to fix. A verifier's review of bf/auth established that the field loss already happens on the current release, not only on the unmerged branch. Keeping the security goal of BF-17 - the derived token never reaches the database - does not require the allow-list.
 
 ### `BFQ-ENV` &mdash; BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies
 

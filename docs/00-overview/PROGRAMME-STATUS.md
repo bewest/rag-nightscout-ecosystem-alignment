@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 64 | 24 | 7 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 64 | 23 | 9 |
 | **Modernization** | `release-train` | 15 | 1 | 5 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **99** | **34** | **17** |
+| | **total** | **99** | **33** | **19** |
 
 <!-- END GENERATED: horizons -->
 
@@ -123,7 +123,7 @@ cover more than one `BF-`:
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-41` | `gate-not-met` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
-| `BFQ-47` | `not-started` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
+| `BFQ-47` | `ready-to-push` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | `BFQ-52` | `not-started` | BF-52 - the age plugins can only ask for their urgent alarm in one window |
 | `BFQ-67` | `gate-not-met` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
 | `BFQ-69` | `not-started` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
@@ -147,14 +147,14 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 
 <!-- BEGIN GENERATED: state-matrix -->
 
-| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | total |
-|---|---|---|---|---|---|---|---|---|---|---|
-| `phase0` | 1 |  | 4 | 1 | 3 | 11 | 2 |  |  | **22** |
-| `release-train` | 1 | 1 | 4 | 3 | 4 |  | 2 |  |  | **15** |
-| `register-open` | 17 |  | 8 |  |  | 4 | 3 |  | 1 | **33** |
-| `tenancy` | 9 |  | 1 | 1 | 5 |  | 1 |  | 1 | **18** |
-| `docs-truth` | 6 |  | 1 |  |  |  |  | 2 |  | **9** |
-| `backfix2` |  |  |  | 2 |  |  |  |  |  | **2** |
+| parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `needs-decision` | `done` | `unsettled` | total |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| `phase0` | 1 |  | 3 | 1 | 3 | 1 | 11 | 2 |  |  | **22** |
+| `release-train` | 1 | 1 | 4 | 3 | 4 |  |  | 2 |  |  | **15** |
+| `register-open` | 16 |  | 8 | 1 |  |  | 4 | 3 |  | 1 | **33** |
+| `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 | **18** |
+| `docs-truth` | 6 |  | 1 |  |  |  |  |  | 2 |  | **9** |
+| `backfix2` |  |  |  | 2 |  |  |  |  |  |  | **2** |
 
 <!-- END GENERATED: state-matrix -->
 

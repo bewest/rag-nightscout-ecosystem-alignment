@@ -1565,7 +1565,7 @@ items:
     branch: fix/nightscout-reader-roles
     base: official/dev@1946beb
     worktree: externals/work/nc-roles-typo
-    state: gate-not-met
+    state: in-flight-upstream
     blast_radius: lib/sources/nightscout.js (the subject it POSTs to /api/v2/authorization/subjects) and a test.
     review: maintainer
     operator_visible: >
@@ -1603,6 +1603,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      OPENED 2026-09-23 as nightscout/nightscout-connect PR #77 (head dea2bec, base dev) by the maintainer. The red gate reads official/dev and turns green when it merges.
       The one red gate reads official/dev and goes green only when the fix
       merges there; both branch gates pass, and the next step is a human push.
       PREPARED 2026-09-23 - fix/nightscout-reader-roles dea2bec on official/dev
@@ -4950,10 +4951,10 @@ items:
     title: BF-47 - an ordinary subject edit destroys stored fields, on today's release
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: origin/dev@a8888f0d
-    worktree: externals/work/crm-bf-auth
-    state: not-started
+    branch: bf2/subject-edit-keeps-fields
+    base: bf2/auth-hardening@29e6430e
+    worktree: externals/work/crm-bf47
+    state: ready-to-push
     ships_to_operators_today: true
     blast_radius: >
       lib/authorization/endpoints.js:40 pick(), lib/admin_plugins/subjects.js
@@ -4979,24 +4980,36 @@ items:
       capability removal on an HTTP surface.
     register: [BF-47]
     gates:
+      - run: 'git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 29e6430e bf2/subject-edit-keeps-fields'
+        kind: static
+        describe: Built on bf2/auth-hardening, whose allow-list is the declared schema.
+      - run: 'cd externals/work/crm-bf47 && TEST=authsubjects npm run test-single'
+        kind: integration
+        describe: >
+          13 cases, 5 of them new - an admin-page form edit, removing every role,
+          a PUT omitting notes and created_at, a PUT clearing notes, and the role
+          variants. Control, re-run by the coordinator 2026-09-23 - with
+          29e6430e's storage.js the 5 new cases fail and 8 pass.
       - no-gate: >
-          Read-derived from source on origin/dev and on bf/auth; not reproduced
-          against a deployment. A gate would need a database with a subject row
-          carrying an extra field planted on it, an edit through the admin path,
-          and an assertion that the field survived - with a control row that has
-          no extra field so a green result is known to distinguish the two.
-          Nobody has built it.
-      - no-gate: >
-          The missing fact is not code, it is an inventory. No list exists of
-          third-party tools that store extra fields on subjects or roles, and
-          nothing in this repository can produce one. That inventory decides
-          whether the narrower repair - delete only the derived
-          accessToken/accessTokenDigest/digest and pass unknown fields through -
-          is required or merely tidier.
+          The admin-page path in a real browser is shown by
+          tools/review/probes/subject-edit-keeps-fields-browser.js (passes
+          --expect base on 29e6430e, --expect fixed on the branch); a browser
+          run is not a queue gate.
     blocks_on: [P0-C]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      PREPARED 2026-09-23 - bf2/subject-edit-keeps-fields 7103f657, one commit on
+      bf2/auth-hardening. REPRODUCED in a real browser, read back from mongo -
+      on dev an admin-page subject edit sets notes to "" and replaces created_at
+      with the edit time; on bf2/auth-hardening notes survive but created_at is
+      still replaced; the role editor keeps both on every base (its GET serves
+      whole documents), so the admin-page defect is subjects only. Fix is a
+      server-side fill-in in storage.js save() for notes and created_at only -
+      an absent notes key keeps the stored value, a present one (even '') is
+      written, so clearing still works. roles is deliberately NOT filled in -
+      the admin page sends no roles field when the last role is removed, and
+      filling it would silently keep access. Suite 2462/0/3 -> 2467/0/3.
       DECIDED 2026-09-23 (maintainer) - NO compatibility flag for the subject-field allow-list. The allow-list IS the declared schema for subjects (name, roles, notes, created_at) and roles (name, permissions, notes, created_at); fields outside it are not part of the contract. What remains is the admin-page defect - an edit through the admin page must keep notes and created_at.
       DECIDED 2026-09-23 (maintainer) - the allow-list is intended and stays (option 2). No open-source client in the corpus depends on storing other subject fields. The loss that remains is the admin page: it fetches subjects without notes and created_at, then saves the whole subject back, so an ordinary edit clears both. That is the defect to fix.
       A verifier's review of bf/auth established that the field loss already
