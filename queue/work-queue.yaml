@@ -6824,6 +6824,7 @@ items:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
       - docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md
     notes: >
+      2026-09-23 - #8754 head is 22953b77 (pushed): the inert trust proxy line in lib/api/index.js is trimmed (maintainer decision), so that file is identical to dev; suite 2481/0/3 on Node 20 and 22, unchanged from 81623f9b; BACKPORT DIFFERENCE vs 06c83f2f in the commit message. Prepared, not pushed: 0a74ef4e on bf2/auth-hardening-trim-api3 trims the same inert line in lib/api3/index.js (54/54 answers identical, control 30/54 different; 2481/0/3); pushing it makes #8754 head 0a74ef4e.
       OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8754 (head 7103f657, base dev) - subject-edit folded in as its last commit (maintainer, relayed 2026-09-23); withheld-style description.
       PUSHED 2026-09-23 - #8754's head is 81623f9b ("TRUST_PROXY accepts a hop count and true, with Express's meaning for each"), checks green; suite 2481/0/3; the withheld description covers hop counts and true. Express's subnet aliases (loopback, linklocal, uniquelocal) are refused on a separate path; accepting them is deferred to a later release (maintainer, 2026-09-23). chore/nightscout-modernization b1bdaca0's lib/server/client-ip.js still refuses hop counts and true, and needs the same change.
       DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence -
