@@ -30,11 +30,13 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 19 items
+### Maintainer &mdash; 20 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
+| `BF2-OPS` | `in-flight-upstream` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | #8753 |
 | `BFQ-87` | `in-flight-upstream` | BF-87 - the root qs override holds the connector below its range and pins the se | &mdash; |
+| `P0-PIN` | `in-flight-upstream` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 | #8752 |
 | `RT-COUNT0` | `in-flight-upstream` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | &mdash; |
 | `RT-MONGO-FLOOR` | `in-flight-upstream` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
@@ -44,7 +46,6 @@ that it was reviewed.
 | `P0-TAG` | `needs-decision` | nightscout-connect 0.1.0 - the full release, from connector dev | #70 |
 | `RT-4` | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `BF2-OPS` | `ready-to-push` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | &mdash; |
 | `BFQ-52` | `ready-to-push` | BF-52 - an age reminder whose 20-minute window passed without a check was never  | &mdash; |
 | `BFQ-69` | `ready-to-push` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing | &mdash; |
 | `BFQ-90` | `ready-to-push` | BF-90 - an alarm at a page with no reading throws in the client | &mdash; |
@@ -58,9 +59,9 @@ that it was reviewed.
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
+| `BF2-AUTH` | `in-flight-upstream` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | #8754 |
 | `BF2-BACKPORT` | `in-flight-upstream` | Which modernization-only security commits fix a defect that dev has | &mdash; |
 | `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
-| `BF2-AUTH` | `ready-to-push` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | &mdash; |
 
 ### Maintainer + a second human &mdash; 2 items
 
@@ -87,6 +88,9 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
+| **#8752** | `P0-PIN` | `bf/connect-pin-0.1.0` | bf/connect-pin - pin dev to the published nightscout-connect | Maintainer |
+| **#8753** | `BF2-OPS` | `bf2/ops` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 | Maintainer |
+| **#8754** | `BF2-AUTH` | `bf2/auth-hardening` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.j | SECURITY reviewer |
 
 <!-- END GENERATED: open-prs -->
 

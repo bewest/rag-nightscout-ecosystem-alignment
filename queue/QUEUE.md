@@ -44,9 +44,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 31 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-93, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
 | `gate-not-met` | 14 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 8 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-52, BFQ-90, BF2-AUTH, BF2-OPS |
-| `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
-| `in-flight-upstream` | 4 | RT-COUNT0, RT-MONGO-FLOOR, BFQ-87, BF2-BACKPORT |
+| `ready-to-push` | 6 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-52, BFQ-90 |
+| `blocked` | 11 | P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
+| `in-flight-upstream` | 7 | P0-PIN, RT-COUNT0, RT-MONGO-FLOOR, BFQ-87, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `merged-upstream` | 17 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
 | `needs-decision` | 9 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, BFQ-41, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
 | `done` | 2 | DOC-VIEWS, DOC-LINKS |
@@ -121,7 +121,7 @@ needs a tenancy decision.
 | `P0-K` | bf/operators - PR #8743, BF-04 extracted, BF-70 found | `merged-upstream` | `bf/operators` | minor | 7 run + 2 no-gate |
 | `P0-TAG` | nightscout-connect 0.1.0 - the full release, from connector dev | `needs-decision` | `dev` | minor | 5 run + 1 no-gate |
 | `P0-CONNECT-ROLE` | nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89) | `merged-upstream` | `fix/nightscout-reader-roles` | patch | 3 run |
-| `P0-PIN` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 | `blocked` | `bf/connect-pin-0.1.0` | patch | 2 run + 1 no-gate |
+| `P0-PIN` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 | `in-flight-upstream` | `bf/connect-pin-0.1.0` | patch | 2 run + 1 no-gate |
 | `P0-LOCK` | Regenerate package-lock.json for the nightscout-connect 0.1.0 pin | `blocked` | `bf/connect-pin-0.1.0` | n/a | 2 run |
 | `P0-PUBLISH` | nightscout-connect publishes to npm from a version tag | `merged-upstream` | `ci/npm-trusted-publish, ci/prerelease-tags` | n/a | 3 run + 1 no-gate |
 | `P0-T01` | T0.1 - PR #8733, the two quadratic treatment scans | `merged-upstream` | `fix/quadratic-treatment-processing` | patch | 1 run + 1 no-gate |
@@ -723,7 +723,7 @@ needs a tenancy decision.
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/connect-pin-0.1.0` |
 | base | `origin/dev@74fc6619` |
@@ -750,7 +750,7 @@ needs a tenancy decision.
 
 - `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`
 
-**Notes.** 2026-09-23 - moved to 0.1.0-dev.2: bf/connect-pin-0.1.0 is now adf5120c (the dev.1 commit 338deb7f amended; never pushed). Lock moves only the connector entry; installed package carries #77 and #78. Suite 2386/0/3 on Node 20.20.0 and 22.23.2 against mongo:7 with nofile 64000; debug-logging 23/23, and with a checkout of tag v0.0.13 swapped in exactly 5 fail. With Docker's default nofile the suite kills mongod whichever connector is installed (BF-10). The maintainer may open this into dev now so that dev tests the prerelease; gate 1 stays red until the swap to exact 0.1.0 for the release. DECIDED 2026-09-23 (maintainer) - this pin swaps to 0.1.0 only after the prerelease testing P0-TAG now waits on, and after BF-89 is fixed in connector dev. PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr-bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified. This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. Pin the exact version rather than a range, so package.json and not only the lockfile says which connector ships. COMPATIBILITY MEASURED 2026-09-22 (connector 1946beb = v0.1.0-dev.1 source swapped into cgm-remote-monitor dev 74fc6619, no dependency change between the two): full suite 2386 passing / 0 failing / 3 pending, identical to the shipped 234d47c arm, against a private mongo:7. Red control: with v0.0.13 swapped in, tests/debug-logging.test.js fails exactly its five installed- connector cases (18 pass), so the suite distinguishes connectors. Connector's own suite 289/289 on Node 20.20.0, 22.23.2 and 24.20.0 (its CI covers only 22 and 24). Evidence: release-readiness-15.0.9 §5.2.
+**Notes.** OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8752 (head adf5120c, base dev) - exact 0.1.0-dev.2. Whether it merges on dev.2 or moves to exact 0.1.0 after the P0-TAG release first is open. 2026-09-23 - moved to 0.1.0-dev.2: bf/connect-pin-0.1.0 is now adf5120c (the dev.1 commit 338deb7f amended; never pushed). Lock moves only the connector entry; installed package carries #77 and #78. Suite 2386/0/3 on Node 20.20.0 and 22.23.2 against mongo:7 with nofile 64000; debug-logging 23/23, and with a checkout of tag v0.0.13 swapped in exactly 5 fail. With Docker's default nofile the suite kills mongod whichever connector is installed (BF-10). The maintainer may open this into dev now so that dev tests the prerelease; gate 1 stays red until the swap to exact 0.1.0 for the release. DECIDED 2026-09-23 (maintainer) - this pin swaps to 0.1.0 only after the prerelease testing P0-TAG now waits on, and after BF-89 is fixed in connector dev. PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr- bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified. This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. Pin the exact version rather than a range, so package.json and not only the lockfile says which connector ships. COMPATIBILITY MEASURED 2026-09-22 (connector 1946beb = v0.1.0-dev.1 source swapped into cgm-remote- monitor dev 74fc6619, no dependency change between the two): full suite 2386 passing / 0 failing / 3 pending, identical to the shipped 234d47c arm, against a private mongo:7. Red control: with v0.0.13 swapped in, tests/debug- logging.test.js fails exactly its five installed-connector cases (18 pass), so the suite distinguishes connectors. Connector's own suite 289/289 on Node 20.20.0, 22.23.2 and 24.20.0 (its CI covers only 22 and 24). Evidence: release-readiness-15.0.9 §5.2.
 
 ### `P0-LOCK` &mdash; Regenerate package-lock.json for the nightscout-connect 0.1.0 pin
 
@@ -3656,14 +3656,14 @@ dev by SHA, evaluating between each merge.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `BF2-AUTH` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY | `ready-to-push` | `bf2/auth-hardening` | major | 5 run |
-| `BF2-OPS` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | `ready-to-push` | `bf2/ops` | patch | 2 run + 1 no-gate |
+| `BF2-AUTH` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY | `in-flight-upstream` | `bf2/auth-hardening` | major | 5 run |
+| `BF2-OPS` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | `in-flight-upstream` | `bf2/ops` | patch | 2 run + 1 no-gate |
 
 ### `BF2-AUTH` &mdash; bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf2/auth-hardening` |
 | base | `origin/dev@74fc6619` |
@@ -3696,13 +3696,13 @@ dev by SHA, evaluating between each merge.
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 - `docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`
 
-**Notes.** DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence - the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on every Node and MongoDB pair, break-its on the final tree. Three things for the maintainer from that record. (1) The auth-hardening line in lib/api/index.js (app.set('trust proxy', ...)) is inert - the v1 sub-app inherits trust proxy from lib/server/app.js - so removing it fails nothing, full suite included. (2) The record recommends folding bf2/subject-edit-keeps-fields (BFQ-47) into the auth-hardening PR as its last commit, and leaves the choice to the maintainer. (3) The record leaves the PR-body style (full or withheld) to the maintainer. The PR body as committed at b248bb73 (reports/phase0-pr- bodies/bf2-auth-hardening.md) records both as decided by the maintainer on 2026-09-23 - posted in full, and 7103f657 folded in as the final commit. rc-c contains the connector pin at 338deb7f (0.1.0-dev.1), now superseded by bf/connect-pin-0.1.0 adf5120c (0.1.0-dev.2), so the rc needs a re-merge before it is evidence for the pin. PREPARED 2026-09-22. Commits: merges of bf/auth and bf/throttle; cherry-pick -x of 06c83f2f and 395f3207 (hunks for files absent on dev dropped); 1114228d adapts two cherry-picked tests to bf/throttle's keysFor(); 8b975b41 is a PORT - with TRUST_PROXY unset the address comes from forwarded-for exactly as on dev, because 395f3207's default differs in four cases (BF-88); the trusted path is 395f3207's code unchanged. ONE flag, not two - the throttle keys on data.ip, which now comes from client- ip.js. Suite on Node 20.20.0 - dev 2386/0/3, branch 2462/0/3, +76 exactly. Semver stays major for BF-47; a compat flag for BF-47 (sketched in the PR body) would make it minor. Plan section 3's "PRs open after 15.0.9 is tagged" is superseded by the section 1a decision above. BF-30 is closed only when TRUST_PROXY names a boundary; with the default it remains open, and the branch must say so in its boot message and PR body.
+**Notes.** OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8754 (head 7103f657, base dev) - subject-edit folded in as its last commit (maintainer, relayed 2026-09-23); withheld-style description; the head is expected to move to 81623f9b (TRUST_PROXY hop count and true) when the maintainer pushes it. DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence - the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on every Node and MongoDB pair, break-its on the final tree. Three things for the maintainer from that record. (1) The auth-hardening line in lib/api/index.js (app.set('trust proxy', ...)) is inert - the v1 sub-app inherits trust proxy from lib/server/app.js - so removing it fails nothing, full suite included. (2) The record recommends folding bf2/subject-edit-keeps-fields (BFQ-47) into the auth-hardening PR as its last commit, and leaves the choice to the maintainer. (3) The record leaves the PR-body style (full or withheld) to the maintainer. The PR body as committed at b248bb73 (reports/phase0-pr- bodies/bf2-auth-hardening.md) records both as decided by the maintainer on 2026-09-23 - posted in full, and 7103f657 folded in as the final commit. rc-c contains the connector pin at 338deb7f (0.1.0-dev.1), now superseded by bf/connect-pin-0.1.0 adf5120c (0.1.0-dev.2), so the rc needs a re-merge before it is evidence for the pin. PREPARED 2026-09-22. Commits: merges of bf/auth and bf/throttle; cherry-pick -x of 06c83f2f and 395f3207 (hunks for files absent on dev dropped); 1114228d adapts two cherry-picked tests to bf/throttle's keysFor(); 8b975b41 is a PORT - with TRUST_PROXY unset the address comes from forwarded-for exactly as on dev, because 395f3207's default differs in four cases (BF-88); the trusted path is 395f3207's code unchanged. ONE flag, not two - the throttle keys on data.ip, which now comes from client- ip.js. Suite on Node 20.20.0 - dev 2386/0/3, branch 2462/0/3, +76 exactly. Semver stays major for BF-47; a compat flag for BF-47 (sketched in the PR body) would make it minor. Plan section 3's "PRs open after 15.0.9 is tagged" is superseded by the section 1a decision above. BF-30 is closed only when TRUST_PROXY names a boundary; with the default it remains open, and the branch must say so in its boot message and PR body.
 
 ### `BF2-OPS` &mdash; bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf2/ops` |
 | base | `origin/dev@74fc6619` |
@@ -3730,7 +3730,7 @@ dev by SHA, evaluating between each merge.
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 - `docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`
 
-**Notes.** DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence - the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on every Node and MongoDB pair; this unit's step added +6 and its three break-its are red on the final tree. rc-c carries the superseded connector pin 338deb7f and needs a re-merge (see BF2-AUTH). PREPARED 2026-09-22 - tip e6a50e9a on origin/dev 74fc6619, four commits (03fba725 BF-10, e72ba30d follow-up 3, af8eee45 follow-up 7, e6a50e9a BF-63 renderer guard). Suite Node 20.20.0, mongo 7.0.43 - dev 2386/0/3, branch 2392/0/3, +6 exactly the new tests. Follow-up 4 stays on bf/auth (ce82f0cd) and is not repeated here.
+**Notes.** OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8753 (head e6a50e9a, base dev) - withheld-style description. DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence - the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on every Node and MongoDB pair; this unit's step added +6 and its three break-its are red on the final tree. rc-c carries the superseded connector pin 338deb7f and needs a re-merge (see BF2-AUTH). PREPARED 2026-09-22 - tip e6a50e9a on origin/dev 74fc6619, four commits (03fba725 BF-10, e72ba30d follow-up 3, af8eee45 follow-up 7, e6a50e9a BF-63 renderer guard). Suite Node 20.20.0, mongo 7.0.43 - dev 2386/0/3, branch 2392/0/3, +6 exactly the new tests. Follow-up 4 stays on bf/auth (ce82f0cd) and is not repeated here.
 
 ---
 

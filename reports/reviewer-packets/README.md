@@ -24,10 +24,11 @@ repository.
 | [`P0-TAG`](p0-tag-dev.md) | #70 | `needs-decision` | nightscout-connect 0.1.0 - the full release, from connector dev |
 | [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
+| [`P0-PIN`](p0-pin-bf-connect-pin-0-1-0.md) | #8752 | `in-flight-upstream` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 |
+| [`BF2-OPS`](bf2-ops-bf2-ops.md) | #8753 | `in-flight-upstream` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer |
+| [`BF2-AUTH`](bf2-auth-bf2-auth-hardening.md) | #8754 | `in-flight-upstream` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
-| [`BF2-AUTH`](bf2-auth-bf2-auth-hardening.md) | &mdash; | `ready-to-push` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY |
 | [`BF2-BACKPORT`](bf2-backport-bf2-backports.md) | &mdash; | `in-flight-upstream` | Which modernization-only security commits fix a defect that dev has |
-| [`BF2-OPS`](bf2-ops-bf2-ops.md) | &mdash; | `ready-to-push` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer |
 | [`BFQ-41`](bfq-41.md) | &mdash; | `needs-decision` | BF-41 - a future-dated reading does not silence the stale-data alarm as registered; a clock running ahead delays it |
 | [`BFQ-47`](bfq-47-bf2-subject-edit-keeps-fields.md) | &mdash; | `ready-to-push` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
 | [`BFQ-52`](bfq-52-bf3-age-push-once.md) | &mdash; | `ready-to-push` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent |

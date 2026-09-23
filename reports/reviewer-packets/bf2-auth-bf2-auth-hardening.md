@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BF2-AUTH
+# Review packet — BF2-AUTH (PR #8754)
 
 **bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind
 TRUST_PROXY**
@@ -21,7 +21,7 @@ TRUST_PROXY**
 | repository | `cgm-remote-monitor` |
 | branch | `bf2/auth-hardening` |
 | base | `origin/dev@74fc6619` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BF2-AUTH` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BF2-AUTH` is the measurement |
 | semver | `major` |
 | register entries | `BF-17`, `BF-30` |
 
@@ -93,6 +93,10 @@ default fails 5; bypassing TRUST_PROXY in authorization/index.js fails 4.
 
 ## Notes carried on the item
 
+OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8754 (head 7103f657, base
+dev) - subject-edit folded in as its last commit (maintainer, relayed
+2026-09-23); withheld-style description; the head is expected to move to
+81623f9b (TRUST_PROXY hop count and true) when the maintainer pushes it.
 DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence
 - the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on
 every Node and MongoDB pair, break-its on the final tree. Three things for the

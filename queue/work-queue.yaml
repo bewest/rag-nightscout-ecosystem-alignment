@@ -1678,7 +1678,8 @@ items:
     branch: bf/connect-pin-0.1.0
     base: origin/dev@74fc6619
     worktree: externals/work/crm-connect-pin-010
-    state: blocked
+    state: in-flight-upstream
+    pr: [8752]
     blast_radius: >
       One line of package.json (the nightscout-connect dependency) plus the
       lockfile entry that follows it (P0-LOCK). The branch today holds 0807eb1c,
@@ -1718,6 +1719,7 @@ items:
     evidence:
       - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
+      OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8752 (head adf5120c, base dev) - exact 0.1.0-dev.2. Whether it merges on dev.2 or moves to exact 0.1.0 after the P0-TAG release first is open.
       2026-09-23 - moved to 0.1.0-dev.2: bf/connect-pin-0.1.0 is now adf5120c (the dev.1 commit 338deb7f amended; never pushed). Lock moves only the connector entry; installed package carries #77 and #78. Suite 2386/0/3 on Node 20.20.0 and 22.23.2 against mongo:7 with nofile 64000; debug-logging 23/23, and with a checkout of tag v0.0.13 swapped in exactly 5 fail. With Docker's default nofile the suite kills mongod whichever connector is installed (BF-10). The maintainer may open this into dev now so that dev tests the prerelease; gate 1 stays red until the swap to exact 0.1.0 for the release.
       DECIDED 2026-09-23 (maintainer) - this pin swaps to 0.1.0 only after the prerelease testing P0-TAG now waits on, and after BF-89 is fixed in connector dev.
       PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr-bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified.
@@ -6695,7 +6697,8 @@ items:
     branch: bf2/auth-hardening
     base: origin/dev@74fc6619
     worktree: externals/work/crm-bf2-auth
-    state: ready-to-push
+    state: in-flight-upstream
+    pr: [8754]
     blast_radius: >
       Tip 29e6430e on origin/dev 74fc6619. lib/authorization/{index,delaylist,
       storage,endpoints}.js; lib/server/{client-ip,env,app,websocket}.js;
@@ -6748,6 +6751,7 @@ items:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
       - docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md
     notes: >
+      OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8754 (head 7103f657, base dev) - subject-edit folded in as its last commit (maintainer, relayed 2026-09-23); withheld-style description; the head is expected to move to 81623f9b (TRUST_PROXY hop count and true) when the maintainer pushes it.
       DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence -
       the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on
       every Node and MongoDB pair, break-its on the final tree. Three things for
@@ -6836,7 +6840,8 @@ items:
     branch: bf2/ops
     base: origin/dev@74fc6619
     worktree: externals/work/crm-bf2-ops
-    state: ready-to-push
+    state: in-flight-upstream
+    pr: [8753]
     blast_radius: >
       docker-compose.yml, lib/plugins/index.js, lib/api/alexa/index.js,
       lib/server/booterror.js.
@@ -6866,6 +6871,7 @@ items:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
       - docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md
     notes: >
+      OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8753 (head e6a50e9a, base dev) - withheld-style description.
       DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence -
       the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on
       every Node and MongoDB pair; this unit's step added +6 and its three

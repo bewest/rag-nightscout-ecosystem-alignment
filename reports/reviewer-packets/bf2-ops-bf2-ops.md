@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BF2-OPS
+# Review packet — BF2-OPS (PR #8753)
 
 **bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer**
 
@@ -20,7 +20,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `bf2/ops` |
 | base | `origin/dev@74fc6619` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BF2-OPS` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BF2-OPS` is the measurement |
 | semver | `patch` |
 | register entries | `BF-10`, `BF-63` |
 
@@ -69,15 +69,17 @@ BF-10 - the compose file raises the open-file limit.
 
 ## Notes carried on the item
 
-DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence
-- the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on
-every Node and MongoDB pair; this unit's step added +6 and its three break-its
-are red on the final tree. rc-c carries the superseded connector pin 338deb7f
-and needs a re-merge (see BF2-AUTH). PREPARED 2026-09-22 - tip e6a50e9a on
-origin/dev 74fc6619, four commits (03fba725 BF-10, e72ba30d follow-up 3,
-af8eee45 follow-up 7, e6a50e9a BF-63 renderer guard). Suite Node 20.20.0,
-mongo 7.0.43 - dev 2386/0/3, branch 2392/0/3, +6 exactly the new tests.
-Follow-up 4 stays on bf/auth (ce82f0cd) and is not repeated here.
+OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8753 (head e6a50e9a, base
+dev) - withheld-style description. DESTINATION 15.0.9 (plan section 1a,
+"backfix 2 scope", 2026-09-23). Evidence - the rc-c integration record,
+rc/15.0.9-additions-c b9c9828b, 2508/0/3 on every Node and MongoDB pair; this
+unit's step added +6 and its three break-its are red on the final tree. rc-c
+carries the superseded connector pin 338deb7f and needs a re-merge (see
+BF2-AUTH). PREPARED 2026-09-22 - tip e6a50e9a on origin/dev 74fc6619, four
+commits (03fba725 BF-10, e72ba30d follow-up 3, af8eee45 follow-up 7, e6a50e9a
+BF-63 renderer guard). Suite Node 20.20.0, mongo 7.0.43 - dev 2386/0/3, branch
+2392/0/3, +6 exactly the new tests. Follow-up 4 stays on bf/auth (ce82f0cd)
+and is not repeated here.
 
 ---
 
