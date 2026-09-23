@@ -2997,7 +2997,7 @@ distinction is the only thing that makes the register mean anything - widening
 | ships to operators today | **yes** |
 | register | `BF-99`, `BF-100`, `BF-101`, `BF-102` |
 
-**Blast radius.** Five commits to 597e2899: the helper lib/server/object-id-forms.js; profile (BF-99); devicestatus, food, activity (BF-100); treatments and entries, moved onto the helper with the UUID path unchanged (BF-102); API v3 filters (BF-101). Then bf/object-id-crud adds four commits to c721e202: entry re-POST with its own _id ($setOnInsert), upper-case hex on /entries/<id>, websocket dbAdd/dbUpdate/dbRemove through the helper, and a 336-cell CRUD-by-id matrix over v1, v3 and the websocket. No existing test changed.
+**Blast radius.** Five commits to 597e2899: the helper lib/server/object-id-forms.js; profile (BF-99); devicestatus, food, activity (BF-100); treatments and entries, moved onto the helper with the UUID path unchanged (BF-102); API v3 filters (BF-101). Then bf/object-id-crud adds eight commits to 6d120fa2: entry re-POST with its own _id ($setOnInsert), upper-case hex on /entries/<id>, websocket dbAdd/dbUpdate/dbRemove through the helper, a 336-cell CRUD-by-id matrix over v1, v3 and the websocket, then the maintainer's D2 (v3 reaches non-hex string _ids), D3 (entries POST answers the stored _id), D1 (devicestatus re-send guard) and D4 (helper header). The only existing test changed is tests/api3.storage.modify.test.js, three filter-shape assertions (D2).
 
 **What an operator sees.** Records that arrive with their own id (copied from another Nightscout by the connector, restored from an export, or saved by 15.0.6 or earlier) can be edited and deleted normally: an edit replaces the record instead of adding a second copy. Nothing in the database changes until a record is edited or deleted. This is not medical advice; if settings or history look wrong, check them with your care team.
 
@@ -3005,7 +3005,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; New tests red on dev (11/13, 27/31, 13/15, 9/10); each commit's full suite green on Node 20 and 22 (2401, 2414, 2445, 2460, 2470 passing, 0 failing, 3 pending); every hunk broken singly goes red. bf/object-id-crud: 2478, 2483, 2496, 2832 passing, 0 failing, 3 pending per commit on Node 20 and 22; matrix 336/336 on MongoDB 7 and 4.4 (dev: 194/336). No queue gate runs them yet.
+- **NO GATE** &mdash; New tests red on dev (11/13, 27/31, 13/15, 9/10); each commit's full suite green on Node 20 and 22 (2401, 2414, 2445, 2460, 2470 passing, 0 failing, 3 pending); every hunk broken singly goes red. bf/object-id-crud: 2478, 2483, 2496, 2832, 2848, 2858, 2866, 2866 passing, 0 failing, 3 pending per commit on Node 20 and 22; matrix 336/336 on MongoDB 7 and 4.4 (dev: 176/336). No queue gate runs them yet.
 
 **Evidence.**
 
@@ -3013,7 +3013,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/profile-object-id-2026-09-23.md`
 - `docs/60-research/remedial/crud-by-id-matrix-2026-09-23.md`
 
-**Notes.** One PR from bf/object-id-crud (contains bf/object-id-consistency 597e2899). Open for the maintainer: D1 devicestatus re-send check, D2 API v3 reaching non-hex v1 _ids (patch measured, not committed; changes two filter-shape tests), D3 entries POST response _id when matched, D4 upper-case string ids on disk (evidence section 5). Built 2026-09-23 on the maintainer's question whether one PR could carry the through-line. Merge-tree clean with every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; conflicts with bf/profile- object-id (BFQ-99) in lib/server/profile.js, so land one. Merged trees not run through the suite. DECIDED 2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan section 1a, "15.0.9 ID consistency"). PR body draft reports/phase0-pr-bodies/bf- object-id-consistency.md.
+**Notes.** One PR from bf/object-id-crud (contains bf/object-id-consistency 597e2899). D1 to D4 decided 2026-09-23 (plan section 1a) and applied. The D1 check adds about 1 ms to a 100-row devicestatus batch that carries hex _ids and nothing without. Merge-tree clean with every open 15.0.9 PR head incl. #8757 5d342ac1 and rc-e; the narrow alternatives 2fac53f5 and 7295bc8c now conflict with it and are not to land. Built 2026-09-23 on the maintainer's question whether one PR could carry the through-line. Merge-tree clean with every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; conflicts with bf/profile-object-id (BFQ-99) in lib/server/profile.js, so land one. Merged trees not run through the suite. DECIDED 2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan section 1a, "15.0.9 ID consistency"). PR body draft reports/phase0-pr-bodies/bf-object-id- consistency.md.
 
 ---
 
