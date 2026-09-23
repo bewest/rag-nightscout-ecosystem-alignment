@@ -43,6 +43,10 @@ These amend §1 where they overlap. Item state stays in the queue.
 | BFQ-47 | **The subject allow-list is intended.** | The fix is the admin page, which clears `notes` and `created_at` on every edit. |
 | BFQ-52 | **The age push is sent once, even if the exact check is missed.** | Today's exact-match check becomes a defect to fix. |
 | tenancy | Taken up in a separate session later. | |
+| backfix 2 scope | **Backfix 2 ships inside 15.0.9**: `bf2/ops`, `bf2/auth-hardening` and `bf2/subject-edit-keeps-fields`. Supersedes §3's "PRs opened after 15.0.9 is tagged". | Integrated with the other 15.0.9 additions on a scratch `rc/15.0.9-additions-c`, with the combined suite and break-its run there before any PR opens. The release notes declare BF-47's allow-list as a correction, name `TRUST_PROXY`, and carry P0-C-REMEDIATE's text. |
+| P0-TAG exit | **Lab soak, then the maintainer's judgement.** The soak includes a seeded source Nightscout and a second lab Nightscout syncing from it through the connector's Nightscout source. | The soak is evidence for the tag; it does not replace the decision. |
+| backfix 3 | **Build BFQ-41, BFQ-52, BFQ-90 and BFQ-69, and measure BFQ-09**, on local branches off `dev`. | Destination release not yet decided. |
+| modernization | **Prepare the cuts now, against the 15.0.9 rc**; ship them after 15.0.9. Whether they ship as separate releases or as one combined major is still open. | The rehearsal reports per-cut conflicts, suites and the BF-58 image result, so that choice can be made on numbers. |
 
 ## 2. Where each piece of backfix 2 comes from
 
@@ -117,7 +121,7 @@ Evidence prepared for human sign-off, not code:
   declared corrections, and the retirement notice for the legacy MiniMed and
   Dexcom bridges (RT-4 folded in).
 
-### Backfix 2 (prepared now; PRs opened after 15.0.9 is tagged)
+### Backfix 2 (into 15.0.9, decided 2026-09-23; see §1a)
 
 | branch | content | reviewer |
 |---|---|---|
@@ -133,8 +137,8 @@ admin page, which clears `notes` and `created_at` on every edit (BFQ-47).
 `bf2/backports`, then `bf2/auth-hardening`, one `--no-ff` merge each, with no conflicts and nothing dropped. Suite
 2386 → 2392 → 2404 → 2480 passing, 0 failing, on Node 20.20.0, and 2480/0/3 on 22.23.2, which is exactly the
 additive total. Each unit's break-its still fail on the integrated tree. `rc/backfix-2` merges cleanly with
-`bf/count-zero-empty` and `bf/connect-pin-0.1.0` (merge-tree only; the combined suite is still owed after 15.0.9
-lands, because `bf/count-zero-empty` and `bf2/auth-hardening` both edit `lib/api/index.js`). Against the modernization branch it
+`bf/count-zero-empty` and `bf/connect-pin-0.1.0` (merge-tree only; the combined suite is owed on `rc/15.0.9-additions-c`,
+because `bf/count-zero-empty` and `bf2/auth-hardening` both edit `lib/api/index.js`). Against the modernization branch it
 conflicts in 12 paths. Record:
 [backfix-2-integration-2026-09-23](backfix-2-integration-2026-09-23.md).
 
@@ -197,4 +201,6 @@ Re-ordered 2026-09-23. State is in the queue; this is only the order.
 7. **Advisories:** apply the metadata corrections (`advisories/apply-metadata.sh --apply`) at any
    time; they stay drafts. After 15.0.9 ships, restore the withheld write-ups from `ef376ecb`,
    send the replies, and publish.
-8. **Backfix 2:** push `bf2/auth-hardening` and `bf2/ops` and open their PRs.
+8. **Backfix 2 (moved into 15.0.9, §1a):** once `rc/15.0.9-additions-c` is green, push `bf2/ops`,
+   `bf2/auth-hardening` and `bf2/subject-edit-keeps-fields` and open their PRs before step 6, merging
+   them one at a time like step 4.
