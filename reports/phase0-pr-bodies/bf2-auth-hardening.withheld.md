@@ -22,8 +22,10 @@ This combines two branches that were already reviewed on their own, backports th
 | not set (default) | forwarded headers from anyone, as today | upgrading without changes |
 | `false` | no forwarded headers; the connecting address, and whether that connection itself is https | sites reached directly, with no proxy |
 | proxy IPs or CIDR ranges, comma-separated | forwarded headers only from those addresses | sites behind a proxy whose address is known |
+| a whole number of hops, such as `1` | the closest that many proxies, as Express's numeric `trust proxy` | sites behind a known number of proxies whose addresses change |
+| `true` | every hop, as Express's `true`: the client address is the left-most forwarded entry | only where every proxy in front of Nightscout rewrites the header |
 
-`true`, hop counts and names such as `loopback` are rejected at startup. `CUSTOMCONNSTR_TRUST_PROXY` also works.
+Each value has Express's meaning. Subnet names such as `loopback` are refused at startup, and a hop count cannot be combined with addresses. `CUSTOMCONNSTR_TRUST_PROXY` also works. With `true`, the startup message says the client address is only as trustworthy as the outermost proxy, because a caller can put any address at the left of the header.
 
 **Behind a proxy that terminates https, set it with care.** With `false`, or a list that leaves out the proxy, Nightscout stops believing the proxy's "the visitor used https" header and redirects to https in a loop. If the site stops loading after setting it, unset it and check the address Nightscout actually sees the proxy connect from.
 
@@ -31,8 +33,8 @@ While `TRUST_PROXY` is unset, Nightscout logs a `SECURITY:` line at startup sayi
 
 ### Evidence
 
-- New and changed tests: `client-ip` 48, `authdelay` 19, `authsubjects` 13, plus one `env` test. Each was checked by breaking the code it covers; every break fails on the original symptom.
-- Full suite, Node 20.20.0, MongoDB 7 with a raised open-file limit: `dev` 2386 → **2467 passing**, 3 pending, 0 failing.
+- New and changed tests in `client-ip`, `authdelay`, `authsubjects` and `env`. Each was checked by breaking the code it covers; every break fails on the original symptom.
+- Full suite, Node 20.20.0, MongoDB 7 with a raised open-file limit: `dev` 2386 → **2481 passing**, 3 pending, 0 failing.
 - None of `client-ip`, `authdelay` or `authsubjects` is in `test:unit` or `test:integration`; use `npm test`, as CI does.
-- Merges cleanly into `dev`, and with #8748, #8749, #8750 and #8751; integrated with all of them and the other 15.0.9 changes, the suite passes on Node 20, 22 and 24 against MongoDB 4.4 and 7.0.
-- Against #8605 it conflicts in adjacent lines only. The one deliberate difference: with `TRUST_PROXY` unset, the client address is resolved exactly as `dev` does, not as #8605's default does.
+- Merges cleanly into `dev`, and with #8748, #8749, #8750 and #8751. Integrated with all of them and the other 15.0.9 changes before the hop-count commit, the suite passed on Node 20, 22 and 24 against MongoDB 4.4 and 7.0; that combined run still has to be repeated with this tip.
+- Against #8605 it conflicts in adjacent lines only. Two deliberate differences: with `TRUST_PROXY` unset, the client address is resolved exactly as `dev` does, not as #8605's default does; and `TRUST_PROXY` here also accepts hop counts and `true`, which #8605 refuses.
