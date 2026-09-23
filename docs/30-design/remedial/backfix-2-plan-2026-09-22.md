@@ -76,8 +76,8 @@ The units are integrated on a scratch `rc/backfix-2` branch pinned to `dev` by S
 
 | branch | content | reviewer | waits on |
 |---|---|---|---|
-| `bf/connect-pin` | exact `nightscout-connect` `0.1.0` pin + regenerated lockfile (P0-PIN, P0-LOCK) | maintainer | connector tag `v0.1.0` (P0-TAG) |
-| `docs/mongodb-floor` (if the measurement says so) | README's MongoDB floor made to match what CI runs (#8516) | maintainer | measurement against a `mongo:4.4` container |
+| `bf/connect-pin-0.1.0` (`338deb7f`, pinned to `0.1.0-dev.1`) | exact `nightscout-connect` `0.1.0` pin + regenerated lockfile (P0-PIN, P0-LOCK) | maintainer | connector tag `v0.1.0` (P0-TAG) |
+| `docs/mongodb-floor` (`aabce4b1`, prepared) | `dev`'s README (from #8516, merged 2026-09-04) says MongoDB 4.4 is *not supported*, but CI tests 4.4, 5.0 and 6.0, and the full suite passes on 4.4.24 exactly as on 7.0.43 (2386/0/3). 15.0.8's README says "4.4 or later". The branch marks 4.4 as deprecated and still tested, which is the wording a reviewer asked for on #8516. Follow-up, not prepared: add 7.0 to the CI matrix | maintainer | nothing |
 
 Evidence prepared for human sign-off, not code:
 
