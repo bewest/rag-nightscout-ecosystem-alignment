@@ -120,19 +120,29 @@ dev descends from master with no divergence to reconcile
 
 ## Notes carried on the item
 
-DECIDED 2026-09-23 (maintainer) - what 15.0.9 carries beyond dev as it stands:
-?count=0 answers an empty list (RT-COUNT0); MongoDB 4.4 is declared deprecated
-in the release notes and dropped in a later release; the legacy-ingestion
-notice goes in the release notes and RT-4 is dropped; nightscout-connect 0.1.0
-is pinned only after longer prerelease testing (P0-TAG); RT-D3 is answered by
-a manual check plus an automated browser test. See
-docs/30-design/remedial/backfix-2-plan-2026-09-22.md section 1a. First on the
-adopted train. Every merged backfix in dev - the items in state merged-
-upstream - reaches operators only through this release; until it ships they
-are in code nobody runs. Merging dev publishes a Docker Hub image, which is
-not a release. dev pins nightscout-connect at 234d47c by source URL (the
-commit is in connector dev since #64 merged; measured 2026-09-23 with merge-
-base --is-ancestor), where master pins tag v0.0.13 - see P0-PIN and P0-TAG.
+2026-09-23 - COMBINED CANDIDATE VERIFIED (-1f): rc/15.0.9-additions-e 1b1977e0
+(local only) on dev 74fc6619 contains the live heads of all nine 15.0.9 PRs -
+#8748 d19043b2, #8749 46b20b38, #8750 aabce4b1, #8751 b5038500, #8752
+adf5120c, #8753 e6a50e9a, #8754 0a74ef4e, #8755 92544d8f, #8756 83cfff14
+(containment checked). 2534/0/3 on all 12 cells (Node 20/22/24 x MongoDB
+4.4.24/7.0.43, nofile 64000); break-its red for the original reason; connector
+control dev.2 23/23, v0.0.13 18/5. Record:
+docs/30-design/remedial/rc-15.0.9-additions-e-2026-09-23.md. Still before the
+tag - the swap of #8752 to exact 0.1.0 (a re-run is owed then), reviews,
+release notes, #8598. DECIDED 2026-09-23 (maintainer) - what 15.0.9 carries
+beyond dev as it stands: ?count=0 answers an empty list (RT-COUNT0); MongoDB
+4.4 is declared deprecated in the release notes and dropped in a later
+release; the legacy-ingestion notice goes in the release notes and RT-4 is
+dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease
+testing (P0-TAG); RT-D3 is answered by a manual check plus an automated
+browser test. See docs/30-design/remedial/backfix-2-plan-2026-09-22.md section
+1a. First on the adopted train. Every merged backfix in dev - the items in
+state merged-upstream - reaches operators only through this release; until it
+ships they are in code nobody runs. Merging dev publishes a Docker Hub image,
+which is not a release. dev pins nightscout-connect at 234d47c by source URL
+(the commit is in connector dev since #64 merged; measured 2026-09-23 with
+merge-base --is-ancestor), where master pins tag v0.0.13 - see P0-PIN and
+P0-TAG.
 
 ---
 
