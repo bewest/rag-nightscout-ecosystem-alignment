@@ -1621,10 +1621,10 @@ items:
     title: BF-91 - connector capture mode cannot find trace-axios for two sources
     parcel: register-open
     repo: nightscout-connect
-    branch: ""
+    branch: fix/trace-axios-path
     base: official/dev@1946beb
-    worktree: externals/nightscout-connect
-    state: not-started
+    worktree: externals/work/nc-trace-axios
+    state: gate-not-met
     ships_to_operators_today: true
     blast_radius: Two require paths - lib/sources/nightscout.js:190 and lib/sources/dexcomshare.js:243.
     review: maintainer
@@ -1641,6 +1641,13 @@ items:
           sh -c 'git -C externals/nightscout-connect grep -q "require(.../../trace-axios.)" official/dev -- lib/sources/nightscout.js lib/sources/dexcomshare.js && exit 1 || exit 0'
         kind: static
         describe: FAILS while either top-level source still requires ../../trace-axios.
+      - run: 'cd externals/work/nc-trace-axios && n exec 22.23.2 node --test test/capture-tracker.test.js'
+        kind: unit
+        describe: >
+          2 cases - every source's capture tracker starts, and every literal
+          relative require in lib/ and commands/ resolves. Control, re-run by the
+          coordinator - restoring dev's dexcomshare.js fails with MODULE_NOT_FOUND
+          at dexcomshare.js:243.
       - no-gate: >
           The crash itself needs the capture CLI to run against a source; the
           static check stands in for it, and the path is the whole defect.
@@ -1648,6 +1655,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      PREPARED 2026-09-23 - fix/trace-axios-path 894b132 on official/dev 1946beb.
+      Reproduced by running capture for both sources (exit 1 at the require,
+      before any request). Suite 291/291 on Node 20, 22 and 24 (dev 289/289).
+      Merges cleanly with fix/nightscout-reader-roles. The red gate reads
+      official/dev and turns green when the fix merges there.
       Found 2026-09-23 while running the BF-89 end-to-end test. Small enough to
       ride with P0-CONNECT-ROLE before the full 0.1.0, if the maintainer wants it.
 

@@ -32,18 +32,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 98 |
-| runnable gates | 171 |
+| runnable gates | 172 |
 | explicit `no-gate:` markers | 146 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 146 of the 317 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 146 of the 318 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 35 | BFQ-91, RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-47, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 34 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-47, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
-| `gate-not-met` | 17 | P0-C, P0-J, P0-CONNECT-ROLE, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-87, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
+| `gate-not-met` | 18 | P0-C, P0-J, P0-CONNECT-ROLE, BFQ-91, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-87, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 6 | P0-C-REMEDIATE, RT-COUNT0, T30-AUTH, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `merged-upstream` | 15 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
@@ -1487,7 +1487,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `BFQ-91` | BF-91 - connector capture mode cannot find trace-axios for two sources | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-91` | BF-91 - connector capture mode cannot find trace-axios for two sources | `gate-not-met` | `fix/trace-axios-path` | patch | 2 run + 1 no-gate |
 | `BFQ-09` | BF-09 - socket dedup truthiness skips a falsy value | `unsettled` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-10` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-04` | BF-04 - the v1 operator allowlist - superseded by P0-K | `merged-upstream` | `bf/operators` | minor | 0 run + 1 no-gate |
@@ -1525,11 +1525,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `gate-not-met` |
 | repo | `nightscout-connect` |
-| branch | `-` |
+| branch | `fix/trace-axios-path` |
 | base | `official/dev@1946beb` |
-| worktree | `externals/nightscout-connect` |
+| worktree | `externals/work/nc-trace-axios` |
 | semver | `patch` |
 | review | maintainer |
 | ships to operators today | **yes** |
@@ -1545,13 +1545,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `[static]` `sh -c 'git -C externals/nightscout-connect grep -q "require(.../../trace-axios.)" official/dev -- lib/sources/nightscout.js lib/sources/dexcomshare.js && exit 1 || exit 0'`
   - FAILS while either top-level source still requires ../../trace-axios.
+- `[unit]` `cd externals/work/nc-trace-axios && n exec 22.23.2 node --test test/capture-tracker.test.js`
+  - 2 cases - every source's capture tracker starts, and every literal relative require in lib/ and commands/ resolves. Control, re-run by the coordinator - restoring dev's dexcomshare.js fails with MODULE_NOT_FOUND at dexcomshare.js:243.
 - **NO GATE** &mdash; The crash itself needs the capture CLI to run against a source; the static check stands in for it, and the path is the whole defect.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Found 2026-09-23 while running the BF-89 end-to-end test. Small enough to ride with P0-CONNECT-ROLE before the full 0.1.0, if the maintainer wants it.
+**Notes.** PREPARED 2026-09-23 - fix/trace-axios-path 894b132 on official/dev 1946beb. Reproduced by running capture for both sources (exit 1 at the require, before any request). Suite 291/291 on Node 20, 22 and 24 (dev 289/289). Merges cleanly with fix/nightscout-reader-roles. The red gate reads official/dev and turns green when the fix merges there. Found 2026-09-23 while running the BF-89 end-to-end test. Small enough to ride with P0-CONNECT-ROLE before the full 0.1.0, if the maintainer wants it.
 
 ### `BFQ-09` &mdash; BF-09 - socket dedup truthiness skips a falsy value
 
