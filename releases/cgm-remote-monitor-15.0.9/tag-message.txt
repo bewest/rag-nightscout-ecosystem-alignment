@@ -1,17 +1,23 @@
 cgm-remote-monitor 15.0.9
 
-DRAFT tag body, not applied. Delete these two lines and fix the subject's
-version number when the tag is cut; the number is not yet settled.
+DRAFT tag body, not applied. Delete these four lines when the tag is
+cut. The eight additions are not yet merged to dev; the SHAs below are
+branch tips on the candidate rc (rc/15.0.9-additions-c b9c9828b), and
+the merge SHAs into dev replace them. The connector pin needs v0.1.0.
 
 15.0.8..dev at 74fc6619: 48 first-parent PR merges, 308 commits,
-200 files, +14381/-1262.
+200 files, +14381/-1262. Candidate rc adds 8 merges, 34 commits,
+38 files, +2248/-137 over dev.
 
 Query and API correctness
   #8737 025f1310  schema-driven query coercion; $exists operand;
                   $type operand (BF-02 BF-03 BF-11 BF-32 BF-40 BF-68)
   #8738 d3358e91  count endpoint filters; v1 ?count= and v3 ?limit=
-                  validation, 400 on 0/non-integer; v3 paging and
-                  dotted ?fields= (BF-01 BF-05 BF-13 BF-14 BF-15 BF-33)
+                  validation; v3 paging and dotted ?fields=
+                  (BF-01 BF-05 BF-13 BF-14 BF-15 BF-33)
+  #8748 d19043b2  amends #8738: v1 count=0 reads answer []; malformed
+                  counts 400; saves and updates ignore count; DELETE
+                  with 0 or a malformed count 400, nothing deleted
   #8743 1a36f023  v1 query-operator allowlist; URL pipeline refused;
                   400 naming the operator (BF-04 BF-70)
   #8697 0ab266a3  failed treatments queries no longer crash the server
@@ -21,6 +27,16 @@ Security
   #8745 2b22c0ce  /alarm delivery scoped to read-entitled room;
                   token ack requires ack permission (BF-75 BF-76)
   #8746 74fc6619  readable-by-world notice on role membership (BF-77)
+  #8751 b5038500  backports from #8605: alarm-socket credential
+                  logging; per-collection read on two shared routes
+  bf2/auth-hardening 29e6430e
+                  admin subject edit no longer stores the access token
+                  (BF-17); failed-auth delay on the failure path, swept
+                  and capped (BF-30); TRUST_PROXY, unset = dev's
+                  client-address resolution (BF-88); subject and role
+                  field allow-list (BF-47, declared correction)
+  bf2/subject-edit-keeps-fields 7103f657
+                  save keeps stored notes and created_at (BF-47)
   #8583 4f6151d7  Loop remote-command errors without diagnostics
 
 Alarms and client
@@ -47,13 +63,27 @@ Performance and cache
   #8740 49f562d8  cache clone cost (BF-06, BF-07 partly)
   #8567 948aafac  deleted documents not resurrected in cache
 
-Configuration and logging
+Configuration, operations and logging
   #8726 a8888f0d  routine logs off by default; DEBUG_LOGGING,
-                  CONNECT_DEBUG; connector pinned to 234d47c
+                  CONNECT_DEBUG
   #8741 bcd171cb  credential settings kept as strings
   #8601 56ebbf30  npm 12: allow-remote=root; Node 24/npm 12 CI
+  bf2/ops e6a50e9a
+                  docker-compose mongo ulimits nofile 64000 (BF-10);
+                  Alexa answers unhandled request types; isPluginEnabled
+                  miss; boot error page with no err (BF-63 renderer)
+
+Connector  <!-- PENDING: connector v0.1.0 tag -->
+  bf/connect-pin-0.1.0 338deb7f
+                  nightscout-connect pinned exactly to 0.1.0 (tip pins
+                  0.1.0-dev.1; swap on the v0.1.0 tag): credential-safe
+                  logging (BF-42), opt-in debug logger, listener release
+                  on stop, CareLink sg 0 filtered (BF-85), backoff and
+                  jitter (BF-34 BF-08), reader subject roles (BF-89),
+                  capture require path (BF-91)
 
 Dependencies
+  #8749 46b20b38  qs 6.15.1 -> 6.16.0, both overrides (BF-87)
   #8573 e7c0cd6f  D3 5.16 -> 7.9.0
   #8529 #8544 #8550 #8565 #8566 #8571 #8575 #8576 #8577 #8578
   #8579 #8581 #8582 #8586  (UUID, jsdom/ws, Babel, Axios, Socket.IO,
@@ -63,18 +93,23 @@ Dependencies
 Translations, docs, version
   #8599 #8603  Crowdin
   #8516 85fed44b  README: MongoDB 4.4 not supported
+  #8750 aabce4b1  README: MongoDB 4.4 deprecated, still tested
   #7338 57d1cac9  docs
   #8597 5c26c9d2  version 15.0.9
 
 Behaviour changes operators will see: insulin-age URGENT level and a
-one-shot notification (IAGE_ENABLE_ALERTS, default off); ?count=0
-and non-integer counts return 400 on every v1 route after the
-validator, reads and writes; refused query operators return 400;
+one-shot notification (IAGE_ENABLE_ALERTS, default off); v1 ?count=0
+reads answer [], malformed counts and DELETE with count 0 answer 400,
+saves and updates ignore count; refused query operators return 400;
+subject and role fields outside the allow-list are not stored;
 filters return different (correct) rows; _ no longer becomes a
-space in query parameters; voice endpoints ignore request locale.
+space in query parameters; voice endpoints ignore request locale;
+new TRUST_PROXY setting, unset = previous behaviour, with a boot
+message; MongoDB 4.4 deprecated; legacy mmconnect and
+DEXCOM_BRIDGE_USE_LEGACY to be retired.
 
-Not in this release: bf/auth (BF-17), bf/throttle (BF-30), the move
-to nightscout-connect 0.1.0; BF-72 has no fix.
+Not in this release: BF-69 quick-pick chooser; BF-86/BF-67 threshold
+units; BF-76 silenceTime bound; a planned TRUST_PROXY default flip.
 
 BF- ids refer to the backfix register in the nightscout ecosystem
 alignment repository; each PR body carries its evidence.

@@ -8,7 +8,7 @@ of `cgm-remote-monitor` and `nightscout-connect`, one directory per release.
 
 | Directory | Describes | Status |
 |---|---|---|
-| [`cgm-remote-monitor-15.0.9/`](cgm-remote-monitor-15.0.9/) | `official/master..official/dev` at `74fc6619` — 48 merged PRs, unreleased | draft; version number not settled |
+| [`cgm-remote-monitor-15.0.9/`](cgm-remote-monitor-15.0.9/) | `official/master..official/dev` at `74fc6619` (48 merged PRs) plus eight additions not yet on `dev` (candidate rc `rc/15.0.9-additions-c` `b9c9828b`), unreleased | draft; version 15.0.9 settled; connector pin waits on the `v0.1.0` tag |
 | [`nightscout-connect-v0.0.14/`](nightscout-connect-v0.0.14/) | the retired local tag `v0.0.14` (`649a7de`) | **superseded**: no 0.0.14 will be published; the line is `0.1.0` (queue P0-TAG) |
 | [`_template/`](_template/) | copy to start a new release directory | — |
 
