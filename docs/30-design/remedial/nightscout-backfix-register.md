@@ -1396,6 +1396,16 @@ own suites with a `before all` hook timing out, which reads as a code regression
 The positive control is cheap and was run: the same image with
 `--ulimit nofile=64000:64000` logs the warning **zero** times against **two** on the default.
 
+**Measured 2026-09-23: how close a `dev`-based suite runs to the limit.** Sampling `mongod`'s open
+descriptors (`/proc/1/fd`) every half second on a default-limit `mongo:7`, the full Node 20.20.0
+suite of a `dev` `74fc6619`-based branch peaked at **995 of 1024** and passed. `dev` plus only a
+connector pin change crossed it about 59 s in (1007, 1023, then exit 14, 28 tests failing
+downstream), and it did so **with either connector installed**, so the connector is not the
+cause. Whether a given `dev`-based branch passes on the default limit is therefore close to
+chance. With `--ulimit nofile=64000:64000` the same branch passes 2386/0/3 with a sampled peak
+of 989. Any suite result from a default-limit container that shows mass `before all` failures
+should be re-run on a raised limit before it is read as a regression.
+
 ### BF-11 · `treatments.duration` and `rate` filters match nothing
 
 **FIXED 2026-09-15** by plan T0.5 — cgm-remote-monitor `bf/coercion` `f829ea11` (PR #8737), emitter `tools/nsschema/emit/coercion_emit.py`, write-up in [T0.5](../../60-research/remedial/t05-schema-driven-coercion-2026-09-15.md).

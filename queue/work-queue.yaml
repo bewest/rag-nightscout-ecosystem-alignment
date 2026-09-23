@@ -1714,6 +1714,7 @@ items:
     evidence:
       - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
+      2026-09-23 - moved to 0.1.0-dev.2: bf/connect-pin-0.1.0 is now adf5120c (the dev.1 commit 338deb7f amended; never pushed). Lock moves only the connector entry; installed package carries #77 and #78. Suite 2386/0/3 on Node 20.20.0 and 22.23.2 against mongo:7 with nofile 64000; debug-logging 23/23, and with a checkout of tag v0.0.13 swapped in exactly 5 fail. With Docker's default nofile the suite kills mongod whichever connector is installed (BF-10). The maintainer may open this into dev now so that dev tests the prerelease; gate 1 stays red until the swap to exact 0.1.0 for the release.
       DECIDED 2026-09-23 (maintainer) - this pin swaps to 0.1.0 only after the prerelease testing P0-TAG now waits on, and after BF-89 is fixed in connector dev.
       PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr-bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified.
       This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's
@@ -1998,6 +1999,7 @@ items:
     evidence:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
     notes: >
+      2026-09-23 - CodeQL on #8748 reported 2 high alerts, both in the test file: the write suites built the api-secret header with sha1(API_SECRET) at run time. d19043b2 (local, not pushed) uses the precomputed header value the other API tests use; test-only, 36/36.
       OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8748 (head ce9503ac, base dev).
       REVERSED 2026-09-23 (maintainer) - the record below that the maintainer "accepted that a DELETE ignores count" is withdrawn; the maintainer had not realised the branch changed dev's delete behaviour. A DELETE carrying a count that is not a whole number of 1 or more, count=0 included, is refused with 400 and deletes nothing, as on dev. A valid count on a DELETE is accepted and, as on dev, does not limit it. Saves and updates still ignore count. Implemented as ce9503ac on top of the pushed 7b32d9ab; suite Node 20.20.0 2409/0/3. Not yet pushed.
       WITHDRAWN - accepted that a DELETE ignores count, so a delete carrying count=0 removes everything its filter matches, as 15.0.8 already did.
@@ -2028,7 +2030,7 @@ items:
     branch: docs/mongodb-floor
     base: origin/dev@74fc6619
     worktree: externals/cgm-remote-monitor-official
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: README.md, one line of the installation requirements. No code.
     review: maintainer
     operator_visible: >
@@ -2051,6 +2053,7 @@ items:
     evidence:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
     notes: >
+      OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8750 (head aabce4b1, base dev).
       DECIDED 2026-09-23 (maintainer) - deprecate 4.4 now, drop it later.
       Prepared as aabce4b1 by the other session; this item was added
       2026-09-23 because the branch had none. The commit message serves as the
@@ -4675,7 +4678,7 @@ items:
     branch: bf/qs-6.16
     base: origin/dev@74fc6619
     worktree: externals/work/crm-qs-616
-    state: gate-not-met
+    state: in-flight-upstream
     ships_to_operators_today: true
     blast_radius: >
       package.json overrides.qs and overrides.request.qs (both 6.15.1, from
@@ -4712,6 +4715,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8749 (head 46b20b38, base dev).
       DECIDED 2026-09-23 (maintainer) - qs 6.16.0 goes into 15.0.9. The only measured behaviour change is that 15 malformed bracket spellings no longer get silently rewritten into a different filter.
       PREPARED 2026-09-23 - bf/qs-6.16 46b20b38, one commit; the lock moves qs
       6.15.1 -> 6.16.0 and side-channel 1.1.0 -> 1.1.1 (required by qs), nothing
@@ -6488,7 +6492,7 @@ items:
     branch: bf2/backports
     base: origin/dev@74fc6619
     worktree: externals/work/crm-bf2-backports
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Six candidate commits on chore/nightscout-modernization b1bdaca0 -
       31c354d8, d3ac8026, 973a2849, 71c42c9a, d48be5e5, ad4a8cd5. Only 31c354d8
@@ -6512,6 +6516,7 @@ items:
     evidence:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
     notes: >
+      OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8751 (head b5038500, base dev), with the withheld-style body in reports/phase0-pr-bodies/bf2-backports.md.
       DECIDED 2026-09-23 (maintainer) - the two backports (9c50788e, b5038500)
       move INTO 15.0.9 rather than backfix 2, because their fix code is already
       public on the modernization branch and 15.0.8 users otherwise wait a

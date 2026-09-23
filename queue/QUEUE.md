@@ -43,10 +43,10 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
-| `gate-not-met` | 16 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-87, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 7 | P0-C-REMEDIATE, RT-MONGO-FLOOR, T30-AUTH, BFQ-47, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
+| `gate-not-met` | 15 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
+| `ready-to-push` | 5 | P0-C-REMEDIATE, T30-AUTH, BFQ-47, BF2-AUTH, BF2-OPS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
-| `in-flight-upstream` | 1 | RT-COUNT0 |
+| `in-flight-upstream` | 4 | RT-COUNT0, RT-MONGO-FLOOR, BFQ-87, BF2-BACKPORT |
 | `merged-upstream` | 17 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
 | `needs-decision` | 8 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
 | `done` | 2 | DOC-VIEWS, DOC-LINKS |
@@ -747,7 +747,7 @@ needs a tenancy decision.
 
 - `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`
 
-**Notes.** DECIDED 2026-09-23 (maintainer) - this pin swaps to 0.1.0 only after the prerelease testing P0-TAG now waits on, and after BF-89 is fixed in connector dev. PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr-bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified. This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. Pin the exact version rather than a range, so package.json and not only the lockfile says which connector ships. COMPATIBILITY MEASURED 2026-09-22 (connector 1946beb = v0.1.0-dev.1 source swapped into cgm-remote-monitor dev 74fc6619, no dependency change between the two): full suite 2386 passing / 0 failing / 3 pending, identical to the shipped 234d47c arm, against a private mongo:7. Red control: with v0.0.13 swapped in, tests/debug-logging.test.js fails exactly its five installed-connector cases (18 pass), so the suite distinguishes connectors. Connector's own suite 289/289 on Node 20.20.0, 22.23.2 and 24.20.0 (its CI covers only 22 and 24). Evidence: release-readiness-15.0.9 §5.2.
+**Notes.** 2026-09-23 - moved to 0.1.0-dev.2: bf/connect-pin-0.1.0 is now adf5120c (the dev.1 commit 338deb7f amended; never pushed). Lock moves only the connector entry; installed package carries #77 and #78. Suite 2386/0/3 on Node 20.20.0 and 22.23.2 against mongo:7 with nofile 64000; debug-logging 23/23, and with a checkout of tag v0.0.13 swapped in exactly 5 fail. With Docker's default nofile the suite kills mongod whichever connector is installed (BF-10). The maintainer may open this into dev now so that dev tests the prerelease; gate 1 stays red until the swap to exact 0.1.0 for the release. DECIDED 2026-09-23 (maintainer) - this pin swaps to 0.1.0 only after the prerelease testing P0-TAG now waits on, and after BF-89 is fixed in connector dev. PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr-bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified. This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. Pin the exact version rather than a range, so package.json and not only the lockfile says which connector ships. COMPATIBILITY MEASURED 2026-09-22 (connector 1946beb = v0.1.0-dev.1 source swapped into cgm-remote-monitor dev 74fc6619, no dependency change between the two): full suite 2386 passing / 0 failing / 3 pending, identical to the shipped 234d47c arm, against a private mongo:7. Red control: with v0.0.13 swapped in, tests/debug-logging.test.js fails exactly its five installed- connector cases (18 pass), so the suite distinguishes connectors. Connector's own suite 289/289 on Node 20.20.0, 22.23.2 and 24.20.0 (its CI covers only 22 and 24). Evidence: release-readiness-15.0.9 §5.2.
 
 ### `P0-LOCK` &mdash; Regenerate package-lock.json for the nightscout-connect 0.1.0 pin
 
@@ -990,7 +990,7 @@ that costs.
 | `RT-D3` | Answer the D3 question before 15.0.9 ships | `in-progress` | `origin/dev` | minor | 2 run + 1 no-gate |
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | `-` | n/a | 1 run + 1 no-gate |
 | `RT-COUNT0` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | `in-flight-upstream` | `bf/count-zero-empty` | patch | 2 run |
-| `RT-MONGO-FLOOR` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | `ready-to-push` | `docs/mongodb-floor` | patch | 2 run |
+| `RT-MONGO-FLOOR` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | `in-flight-upstream` | `docs/mongodb-floor` | patch | 2 run |
 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 1 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
@@ -1001,7 +1001,7 @@ that costs.
 | `RT-CONNECT-PIN-CUTS` | BF-65 - cuts 1-3 ship the leaking connector to upgraders first | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6` | patch | 1 run + 1 no-gate |
 | `RT-NODE-FLOOR-TESTED` | BF-58, BF-59 - the enforced Node floor is not the Node anything exercises | `gate-not-met` | `chore/compose-mongodb6, chore/mime-exposure-review, chore/nightscout-modernization` | n/a | 2 run + 2 no-gate |
 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | `-` | patch | 2 run + 1 no-gate |
-| `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `ready-to-push` | `bf2/backports` | n/a | 2 run + 1 no-gate |
+| `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `in-flight-upstream` | `bf2/backports` | n/a | 2 run + 1 no-gate |
 
 ### `RT-D3` &mdash; Answer the D3 question before 15.0.9 ships
 
@@ -1097,13 +1097,13 @@ that costs.
 
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 
-**Notes.** OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8748 (head ce9503ac, base dev). REVERSED 2026-09-23 (maintainer) - the record below that the maintainer "accepted that a DELETE ignores count" is withdrawn; the maintainer had not realised the branch changed dev's delete behaviour. A DELETE carrying a count that is not a whole number of 1 or more, count=0 included, is refused with 400 and deletes nothing, as on dev. A valid count on a DELETE is accepted and, as on dev, does not limit it. Saves and updates still ignore count. Implemented as ce9503ac on top of the pushed 7b32d9ab; suite Node 20.20.0 2409/0/3. Not yet pushed. WITHDRAWN - accepted that a DELETE ignores count, so a delete carrying count=0 removes everything its filter matches, as 15.0.8 already did. PREPARED 2026-09-23. Read matrix (30 entries, 120 treatments, 30 devicestatus, 15 profile, 15 activity, counted in mongo) - the ONLY change from dev is the 0 and 00 columns, now 200 with no rows on every v1 read route; 0x10, 2.5, -3, 1e2, abc, MAX_SAFE+1, %2B5 and count=1&count=2 stay 400. Suite Node 20.20.0 - dev 2386/0/3, branch 2404/0/3. FOR THE MAINTAINER, measured - (1) dev (#8738) refuses every WRITE that carries any invalid count, including count=0, with 400 and no change; the branch makes writes ignore count as decided. (2) Neither tree limits a DELETE by count - DELETE with a find and count=2 removed all 5 matching rows on both - so on the branch a delete carrying count=0 removes everything its filter matches, where dev refused it. (3) Routes that never apply count (/entries/current, /count/.../where, /status, /echo, /food) now answer count=0 normally instead of 400. (4) v1 now accepts zero while v3 limit=0 stays 400, so FU-LIMIT's "two implementations that agree" no longer holds. PR body draft at reports/phase0-pr-bodies/count-zero-empty.md. DECIDED 2026-09-23 (maintainer) - "count=0 should return a 0 length array of results." #8738 (merged to dev) answers HTTP 400 for count=0 because MongoDB reads .limit(0) as no limit; the maintainer wants an empty list instead. Malformed counts stay 400, and the check runs on read routes and deletes (see REVERSED above); saves and updates ignore count. Ships in 15.0.9.
+**Notes.** 2026-09-23 - CodeQL on #8748 reported 2 high alerts, both in the test file: the write suites built the api-secret header with sha1(API_SECRET) at run time. d19043b2 (local, not pushed) uses the precomputed header value the other API tests use; test-only, 36/36. OPENED 2026-09-23 as nightscout/cgm-remote- monitor #8748 (head ce9503ac, base dev). REVERSED 2026-09-23 (maintainer) - the record below that the maintainer "accepted that a DELETE ignores count" is withdrawn; the maintainer had not realised the branch changed dev's delete behaviour. A DELETE carrying a count that is not a whole number of 1 or more, count=0 included, is refused with 400 and deletes nothing, as on dev. A valid count on a DELETE is accepted and, as on dev, does not limit it. Saves and updates still ignore count. Implemented as ce9503ac on top of the pushed 7b32d9ab; suite Node 20.20.0 2409/0/3. Not yet pushed. WITHDRAWN - accepted that a DELETE ignores count, so a delete carrying count=0 removes everything its filter matches, as 15.0.8 already did. PREPARED 2026-09-23. Read matrix (30 entries, 120 treatments, 30 devicestatus, 15 profile, 15 activity, counted in mongo) - the ONLY change from dev is the 0 and 00 columns, now 200 with no rows on every v1 read route; 0x10, 2.5, -3, 1e2, abc, MAX_SAFE+1, %2B5 and count=1&count=2 stay 400. Suite Node 20.20.0 - dev 2386/0/3, branch 2404/0/3. FOR THE MAINTAINER, measured - (1) dev (#8738) refuses every WRITE that carries any invalid count, including count=0, with 400 and no change; the branch makes writes ignore count as decided. (2) Neither tree limits a DELETE by count - DELETE with a find and count=2 removed all 5 matching rows on both - so on the branch a delete carrying count=0 removes everything its filter matches, where dev refused it. (3) Routes that never apply count (/entries/current, /count/.../where, /status, /echo, /food) now answer count=0 normally instead of 400. (4) v1 now accepts zero while v3 limit=0 stays 400, so FU-LIMIT's "two implementations that agree" no longer holds. PR body draft at reports/phase0-pr-bodies/count-zero-empty.md. DECIDED 2026-09-23 (maintainer) - "count=0 should return a 0 length array of results." #8738 (merged to dev) answers HTTP 400 for count=0 because MongoDB reads .limit(0) as no limit; the maintainer wants an empty list instead. Malformed counts stay 400, and the check runs on read routes and deletes (see REVERSED above); saves and updates ignore count. Ships in 15.0.9.
 
 ### `RT-MONGO-FLOOR` &mdash; README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `docs/mongodb-floor` |
 | base | `origin/dev@74fc6619` |
@@ -1128,7 +1128,7 @@ that costs.
 
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 
-**Notes.** DECIDED 2026-09-23 (maintainer) - deprecate 4.4 now, drop it later. Prepared as aabce4b1 by the other session; this item was added 2026-09-23 because the branch had none. The commit message serves as the PR body (gh pr create --fill).
+**Notes.** OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8750 (head aabce4b1, base dev). DECIDED 2026-09-23 (maintainer) - deprecate 4.4 now, drop it later. Prepared as aabce4b1 by the other session; this item was added 2026-09-23 because the branch had none. The commit message serves as the PR body (gh pr create --fill).
 
 ### `RT-REBASE` &mdash; Cuts 1-4 are 133 commits behind dev and now all five conflict
 
@@ -1480,7 +1480,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf2/backports` |
 | base | `origin/dev@74fc6619` |
@@ -1506,7 +1506,7 @@ that costs.
 
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 
-**Notes.** DECIDED 2026-09-23 (maintainer) - the two backports (9c50788e, b5038500) move INTO 15.0.9 rather than backfix 2, because their fix code is already public on the modernization branch and 15.0.8 users otherwise wait a release. The two unbuilt findings (status credential in the URL, IMPORT_CONFIG diagnostics) stay follow-ups. MEASURED 2026-09-22 - 11 candidates (6 named + 5 from a path/content sweep). DEFECT-ON-DEV and live on 15.0.8: 31c354d8 (alarm socket logs the submitted credential), d3ac8026 (a per-collection read grant not checked on two shared routes; bites scoped-token installs under denied), 973a2849 (status credential in the URL), 8458f39e (IMPORT_CONFIG diagnostics). d48be5e5 is real but not security. 71c42c9a not a defect; Helmet pair and 479a6a4d/924aa8d7 not on dev; f2ebd7d4 unsettled. bf2/backports carries 9c50788e and b5038500 (code verbatim, tests adapted where dev's socket differs); suite on Node 22.23.2 - dev 2386/0/3, branch 2398/0/3. Control re- run by the coordinator - with dev's lib the two new test files fail 7 of 12. Register entries are pending id allocation. Backports carry the modernization commit's content unchanged (cherry-pick -x) so the later cut rebase sees agreement, not a second implementation.
+**Notes.** OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8751 (head b5038500, base dev), with the withheld-style body in reports/phase0-pr- bodies/bf2-backports.md. DECIDED 2026-09-23 (maintainer) - the two backports (9c50788e, b5038500) move INTO 15.0.9 rather than backfix 2, because their fix code is already public on the modernization branch and 15.0.8 users otherwise wait a release. The two unbuilt findings (status credential in the URL, IMPORT_CONFIG diagnostics) stay follow-ups. MEASURED 2026-09-22 - 11 candidates (6 named + 5 from a path/content sweep). DEFECT-ON-DEV and live on 15.0.8: 31c354d8 (alarm socket logs the submitted credential), d3ac8026 (a per-collection read grant not checked on two shared routes; bites scoped-token installs under denied), 973a2849 (status credential in the URL), 8458f39e (IMPORT_CONFIG diagnostics). d48be5e5 is real but not security. 71c42c9a not a defect; Helmet pair and 479a6a4d/924aa8d7 not on dev; f2ebd7d4 unsettled. bf2/backports carries 9c50788e and b5038500 (code verbatim, tests adapted where dev's socket differs); suite on Node 22.23.2 - dev 2386/0/3, branch 2398/0/3. Control re-run by the coordinator - with dev's lib the two new test files fail 7 of 12. Register entries are pending id allocation. Backports carry the modernization commit's content unchanged (cherry-pick -x) so the later cut rebase sees agreement, not a second implementation.
 
 ---
 
@@ -1540,7 +1540,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-72` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | `needs-decision` | `-` | minor | 1 run + 3 no-gate |
 | `BFQ-40` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion | `merged-upstream` | `-` | minor | 1 run |
 | `BFQ-41` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
-| `BFQ-87` | BF-87 - the root qs override holds the connector below its range and pins the server's query parser | `gate-not-met` | `bf/qs-6.16` | patch | 3 run + 1 no-gate |
+| `BFQ-87` | BF-87 - the root qs override holds the connector below its range and pins the server's query parser | `in-flight-upstream` | `bf/qs-6.16` | patch | 3 run + 1 no-gate |
 | `BFQ-CONNECTOR` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override | `gate-not-met` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-MINIMED` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading | `not-started` | `-` | minor | 0 run + 3 no-gate |
 | `BFQ-46` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
@@ -2184,7 +2184,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/qs-6.16` |
 | base | `origin/dev@74fc6619` |
@@ -2214,7 +2214,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** DECIDED 2026-09-23 (maintainer) - qs 6.16.0 goes into 15.0.9. The only measured behaviour change is that 15 malformed bracket spellings no longer get silently rewritten into a different filter. PREPARED 2026-09-23 - bf/qs-6.16 46b20b38, one commit; the lock moves qs 6.15.1 -> 6.16.0 and side-channel 1.1.0 -> 1.1.1 (required by qs), nothing else; one qs@6.16.0 resolves for all five consumers. Parse differential under express's and body-parser's own options - 638 inputs (README, swagger, tests, census, eventTypes, depth/array/parameter limits), 1,914 comparisons, 45 differences, all from 15 malformed bracket keys (e.g. nested brackets, an unclosed bracket); every documented or client shape is identical. Those keys now match nothing or get a 400 from the operator allowlist instead of being silently rewritten. Control - the 6.15.2 changelog's nested-bracket example is detected. Suite dev 2386/0/3 = branch 2386/0/3 on Node 20.20.0 and 24.20.0. npm audit --omit=dev - qs and its three dependants leave the list; no new findings. Advisory reachability is read, not run (PR body). Candidate for 15.0.9. Found 2026-09-22 while pinning the connector (P0-PIN). The same class as BF-43. Candidate for 15.0.9 given it is one override value, but that is the maintainer's call.
+**Notes.** OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8749 (head 46b20b38, base dev). DECIDED 2026-09-23 (maintainer) - qs 6.16.0 goes into 15.0.9. The only measured behaviour change is that 15 malformed bracket spellings no longer get silently rewritten into a different filter. PREPARED 2026-09-23 - bf/qs-6.16 46b20b38, one commit; the lock moves qs 6.15.1 -> 6.16.0 and side-channel 1.1.0 -> 1.1.1 (required by qs), nothing else; one qs@6.16.0 resolves for all five consumers. Parse differential under express's and body-parser's own options - 638 inputs (README, swagger, tests, census, eventTypes, depth/array/parameter limits), 1,914 comparisons, 45 differences, all from 15 malformed bracket keys (e.g. nested brackets, an unclosed bracket); every documented or client shape is identical. Those keys now match nothing or get a 400 from the operator allowlist instead of being silently rewritten. Control - the 6.15.2 changelog's nested-bracket example is detected. Suite dev 2386/0/3 = branch 2386/0/3 on Node 20.20.0 and 24.20.0. npm audit --omit=dev - qs and its three dependants leave the list; no new findings. Advisory reachability is read, not run (PR body). Candidate for 15.0.9. Found 2026-09-22 while pinning the connector (P0-PIN). The same class as BF-43. Candidate for 15.0.9 given it is one override value, but that is the maintainer's call.
 
 ### `BFQ-CONNECTOR` &mdash; BF-42, BF-43 - master pins the leaking connector, with a violated axios override
 

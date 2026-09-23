@@ -30,11 +30,13 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 12 items
+### Maintainer &mdash; 13 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
+| `BFQ-87` | `in-flight-upstream` | BF-87 - the root qs override holds the connector below its range and pins the se | &mdash; |
 | `RT-COUNT0` | `in-flight-upstream` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | &mdash; |
+| `RT-MONGO-FLOOR` | `in-flight-upstream` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `FU-PRBODIES` | `needs-decision` | Merged PR bodies have drifted from the files they were posted from | &mdash; |
@@ -43,7 +45,6 @@ that it was reviewed.
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `BF2-OPS` | `ready-to-push` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
-| `RT-MONGO-FLOOR` | `ready-to-push` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
 
@@ -51,9 +52,9 @@ that it was reviewed.
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
+| `BF2-BACKPORT` | `in-flight-upstream` | Which modernization-only security commits fix a defect that dev has | &mdash; |
 | `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
 | `BF2-AUTH` | `ready-to-push` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | &mdash; |
-| `BF2-BACKPORT` | `ready-to-push` | Which modernization-only security commits fix a defect that dev has | &mdash; |
 
 ### Maintainer + a second human &mdash; 2 items
 

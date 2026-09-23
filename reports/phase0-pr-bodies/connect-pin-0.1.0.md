@@ -1,16 +1,16 @@
 # `bf/connect-pin-0.1.0`: install nightscout-connect from npm as an exact version
 
-> **DRAFT, not yet opened as a PR.** Prepared 2026-09-22 against `origin/dev` `74fc6619`. The
-> branch pins the prerelease `0.1.0-dev.1`. **15.0.9 must not be released on a prerelease pin:**
-> a cgm-remote-monitor release pins only a full connector release. When `nightscout-connect`
-> 0.1.0 is published, this PR becomes a one-token swap, `0.1.0-dev.1` → `0.1.0`, plus a
-> regenerated lockfile. The exact commands are under "Swapping to 0.1.0" below.
+> **DRAFT, not yet opened as a PR.** Prepared 2026-09-22 against `origin/dev` `74fc6619`, moved to
+> `0.1.0-dev.2` on 2026-09-23 (`adf5120c`, one commit). The branch pins the prerelease
+> `0.1.0-dev.2`, so that anyone running `dev` tests it. **15.0.9 must not be released on a
+> prerelease pin:** a cgm-remote-monitor release pins only a full connector release. When
+> `nightscout-connect` 0.1.0 is published, this becomes a one-token swap, `0.1.0-dev.2` → `0.1.0`,
+> plus a regenerated lockfile. The exact commands are under "Swapping to 0.1.0" below.
 >
-> **Sequencing (maintainer, 2026-09-23):** 0.1.0 is tagged only after `0.1.0-dev.1` has had longer
-> prerelease testing on this branch, and after BF-89 (the nightscout source's reader subject sent
-> `role` for `roles`) is fixed in connector `dev`. The fix is prepared as `fix/nightscout-reader-roles`
-> `dea2bec`. After 0.1.0 is published, re-run this branch's suite and the debug-logging control against
-> it before the swap commit, because 0.1.0 will then carry at least one commit that `0.1.0-dev.1` does not.
+> **Sequencing (maintainer, 2026-09-23):** 0.1.0 is tagged only after the prerelease has had
+> longer testing. `0.1.0-dev.2` carries both connector fixes that gate it (nightscout-connect #77,
+> the reader subject's `roles`; #78, the capture tracer path). After 0.1.0 is published, re-run
+> this branch's suite and the debug-logging control against it before the swap commit.
 
 ## What changes for you
 
@@ -31,6 +31,10 @@ Compared with 15.0.8, the connector in this release:
 - waits a sensible time between retries after a vendor outage, capped at 30 minutes, instead of
   retrying every quarter of a second and then, after enough failures, not retrying for days.
 - shuts down cleanly when Nightscout stops.
+- can copy data from a Nightscout site that does not allow anonymous reading. Before, the
+  access entry the connector created for itself on that site had no permissions, so nothing was
+  copied. An entry created by the old connector is not repaired by upgrading: on the source site,
+  add the `readable` role to `nightscout-connect-reader`, or delete it so it is created again.
 - carries updated LibreLinkUp support (the current v4 service, its regional servers and its
   lockout recovery) and a more complete Glooko import.
 
@@ -55,27 +59,27 @@ data that worries you.
 
 ```diff
 -"nightscout-connect": "https://github.com/nightscout/nightscout-connect/archive/234d47c85510a77f07b3be0d2c026dd0272715d6.tar.gz",
-+"nightscout-connect": "0.1.0-dev.1",
++"nightscout-connect": "0.1.0-dev.2",
 ```
 
 `package-lock.json` changes in two places: the root dependency spec, and the
 `node_modules/nightscout-connect` entry, which now reads
 
 ```
-"version": "0.1.0-dev.1",
-"resolved": "https://registry.npmjs.org/nightscout-connect/-/nightscout-connect-0.1.0-dev.1.tgz",
-"integrity": "sha512-r3exLBmzjKQVZOm0d0L0L6g0QcwzvFMsSBfMMPFV8gSmfjyyVVoWSRkdLhwj1Y/YgHPmK4kPJOIQEVBFe6lCpw==",
+"version": "0.1.0-dev.2",
+"resolved": "https://registry.npmjs.org/nightscout-connect/-/nightscout-connect-0.1.0-dev.2.tgz",
+"integrity": "sha512-3nPDKlXosi9i8xKaKBqR1pmeIniFoItFmJhW7rOlHrf+Q1BIRrsbMwDXGGDnrNx1X8xMqnlJ2yvNze48+nAYmg==",
 ```
 
 Diff stat: `package.json` 1 insertion / 1 deletion, `package-lock.json` 4 / 4.
 
 - **The pin is an exact version, not a range**, so `package.json` itself names the connector that
   ships, and `npm ci` checks the tarball against the registry's integrity hash.
-- `0.1.0-dev.1` was published from tag `v0.1.0-dev.1`, which points at connector commit `1946beb`
+- `0.1.0-dev.2` was published from tag `v0.1.0-dev.2`, which points at connector commit `fbd4e55`
   (`gitHead` in the registry metadata agrees), with npm provenance (SLSA v1 attestation).
-- `1946beb` contains `234d47c`, the commit `dev` pinned before, plus 44 non-merge commits.
-- The connector's runtime `dependencies` are identical at `234d47c` and `1946beb`, so no other
-  lockfile entry moves.
+- `fbd4e55` contains `234d47c`, the commit `dev` pinned before, plus 46 non-merge commits.
+- The connector's runtime `dependencies` are identical at `234d47c` and `fbd4e55` (its
+  `package.json` differs only in `version` and test scripts), so no other lockfile entry moves.
 - The embedding contract Nightscout uses is unchanged: `require('nightscout-connect')(env, ctx)`,
   `connect.debug`.
 - The `.npmrc` line `allow-remote=root` (added in `9f181789` so npm 12 would accept the GitHub
@@ -85,7 +89,7 @@ Diff stat: `package.json` 1 insertion / 1 deletion, `package-lock.json` 4 / 4.
 ### `overrides` and the connector's dependency tree
 
 - `overrides['nightscout-connect'].axios = "1.20.0"` satisfies the connector's declared
-  `axios ^1.18.1`. This is the constraint that is violated on `master` (BF-43: `1.16.0` against
+  `axios ^1.18.1`. This is the constraint that is violated on `master` (`1.16.0` against
   `^1.18.1`); on this branch it holds.
 - **The root-level `"qs": "6.15.1"` override does not.** The connector declares `qs ^6.15.3`, and
   the global override installs `qs` 6.15.1 for it (`npm ls qs` shows
@@ -94,20 +98,27 @@ Diff stat: `package.json` 1 insertion / 1 deletion, `package-lock.json` 4 / 4.
   GHSA-x5fp-wj9c-mxmx affects `<=6.15.3`; GHSA-4mjr-xmp4-gh2g affects `<6.16.0`). The same
   override and the same connector range are on `origin/dev` today, so this PR does not introduce
   it, and it does not fix it: the override also governs `express`, `body-parser` and `request`,
-  and moving it is a separate change.
+  and moving it is a separate change: #8749.
 
 ## Verifying it
 
-Node 24.20.0 / npm 11.19.0 unless noted, against a private `mongo:7`, full suite
-(`mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/*.test.js` with
-`tests/ci.test.env`, Mongo URI and port changed to the private container). Arms run back to back:
+Full suite (`mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/*.test.js`) against a
+private `mongo:7` started with `--ulimit nofile=64000:64000`, re-run 2026-09-23 at `adf5120c`:
 
-| arm | connector installed | passing | failing | pending |
+| Node | connector installed | passing | failing | pending |
 |---|---|---|---|---|
-| this branch | 0.1.0-dev.1 (registry) | 2386 | 0 | 3 |
-| `origin/dev` `74fc6619`, unmodified | 0.0.13 (self-reported; GitHub archive of `234d47c`) | 2386 | 0 | 3 |
+| 20.20.0 | 0.1.0-dev.2 (registry) | 2386 | 0 | 3 |
+| 22.23.2 | 0.1.0-dev.2 (registry) | 2386 | 0 | 3 |
 
-Install checks:
+The same total as `origin/dev` `74fc6619` (2386/0/3), which pins the GitHub archive of `234d47c`.
+
+**Run the suite against a mongo with a raised open-file limit.** With Docker's default
+`nofile=1024`, `mongod` exits partway through with "Too many open files" on this branch, and it
+does so with the old connector swapped in as well, so it is not the connector: `dev`'s own suite
+sits within a few descriptors of 1024 (a `dev`-based branch measured 995 at peak). The compose
+file's missing `ulimits` is a known, separate issue.
+
+Install checks (2026-09-22, at `0.1.0-dev.1`; the lockfile shape is unchanged):
 
 - `npm ci` from an empty `node_modules` succeeds on Node 24.20.0 (npm 11.19.0), Node 20.20.0
   (npm 10.8.2), and with npm 12 on Node 24.20.0.
@@ -117,9 +128,11 @@ Install checks:
 **The suite can tell connectors apart.** `tests/debug-logging.test.js` boots the installed
 connector under five `DEBUG_LOGGING` × `CONNECT_DEBUG` combinations and asserts how many console
 lines it writes. With connector `v0.0.13` (the version 15.0.8 installs) put in place of
-`0.1.0-dev.1`, exactly those five cases fail and the other 18 pass. Each failure is an assertion
+`0.1.0-dev.2`, exactly those five cases fail and the other 18 pass (re-run 2026-09-23 on Node
+22.23.2 with the `v0.1.0-dev.2` package swapped for a checkout of tag `v0.0.13`). Each failure is an assertion
 on the log line count (`2 == 0` or `2 == 1`): the old connector writes two lines whatever the
-debug settings say. It is not a load error. With `0.1.0-dev.1` restored, 23/23 pass.
+debug settings say. It is not a load error. With `0.1.0-dev.2` restored, 23/23 pass. (The GitHub archive of `234d47c` that `dev` pins today
+also passes 23/23: it already carries the logging fix, though it calls itself 0.0.13.)
 
 ```
 TEST=debug-logging npm run test-single
@@ -138,7 +151,7 @@ npm view nightscout-connect@0.1.0 version gitHead dist.integrity dist.attestatio
 git -C ../../nightscout-connect fetch --tags origin && git -C ../../nightscout-connect rev-parse 'v0.1.0^{commit}'
 
 # 2. The one-token swap.
-sed -i 's/"nightscout-connect": "0.1.0-dev.1"/"nightscout-connect": "0.1.0"/' package.json
+sed -i 's/"nightscout-connect": "0.1.0-dev.2"/"nightscout-connect": "0.1.0"/' package.json
 grep -n '"nightscout-connect": "' package.json   # must print exactly one line: "nightscout-connect": "0.1.0",
 
 # 3. Regenerate the lockfile from the registry (Node 24; package.json engines is >=20).
@@ -158,7 +171,7 @@ git commit -am 'Nightscout installs the connector from npm as exactly 0.1.0'
 
 If the lockfile diff in step 3 touches anything beyond the root dependency spec and the
 `node_modules/nightscout-connect` entry, the connector's own dependency ranges changed between
-`0.1.0-dev.1` and `0.1.0`. Stop and review that before committing.
+`0.1.0-dev.2` and `0.1.0`. Stop and review that before committing.
 
 ## Semver: patch
 
@@ -172,6 +185,6 @@ operators will be told to change their password.
 
 - The swap to `0.1.0`, once published (above).
 - The root `qs` override (6.15.1) against the connector's `^6.15.3` and the three `qs`
-  advisories. It also governs `express`, `body-parser` and `request`.
+  advisories: #8749.
 - The `.npmrc` `allow-remote=root` line and its comment now describe a dependency that is gone.
 - `master` (15.0.8) still installs connector `v0.0.13`; that is a separate release decision.

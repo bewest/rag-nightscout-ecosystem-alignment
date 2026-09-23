@@ -20,7 +20,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `docs/mongodb-floor` |
 | base | `origin/dev@74fc6619` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=RT-MONGO-FLOOR` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=RT-MONGO-FLOOR` is the measurement |
 | semver | `patch` |
 
 ## What this changes
@@ -62,10 +62,11 @@ the branch merges into dev without conflict
 
 ## Notes carried on the item
 
-DECIDED 2026-09-23 (maintainer) - deprecate 4.4 now, drop it later. Prepared
-as aabce4b1 by the other session; this item was added 2026-09-23 because the
-branch had none. The commit message serves as the PR body (gh pr create
---fill).
+OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8750 (head aabce4b1, base
+dev). DECIDED 2026-09-23 (maintainer) - deprecate 4.4 now, drop it later.
+Prepared as aabce4b1 by the other session; this item was added 2026-09-23
+because the branch had none. The commit message serves as the PR body (gh pr
+create --fill).
 
 ---
 
