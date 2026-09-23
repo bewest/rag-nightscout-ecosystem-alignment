@@ -116,14 +116,16 @@ The router-wide read gate BF-78 is about is present on the shipping release.
 
 ## Notes carried on the item
 
-Found while building the configuration matrix that answers "were the right
-flags set when the five advisories were evaluated"; these two fell out of
-enumerating what AUTH_DEFAULT_ROLES actually gates. REPRODUCED on v15.0.8 AND
-dev 59430336, mongod 7.0, with both controls in the same run. BF-77: default
--> notifyCount 1, title "Nightscout readable by world" (POSITIVE CONTROL, the
-notice does fire when it should); TREATMENTS_AUTH=off -> notifyCount 0 while
-anonymous read is 200 and anonymous POST /api/v1/treatments is 200 with the
-record stored; AUTH_DEFAULT_ROLES=denied -> notifyCount 0, correctly (NEGATIVE
+DECIDED 2026-09-23 (maintainer) - BF-78 (the careportal role) is documented
+and warned about at boot; no behaviour change. Found while building the
+configuration matrix that answers "were the right flags set when the five
+advisories were evaluated"; these two fell out of enumerating what
+AUTH_DEFAULT_ROLES actually gates. REPRODUCED on v15.0.8 AND dev 59430336,
+mongod 7.0, with both controls in the same run. BF-77: default -> notifyCount
+1, title "Nightscout readable by world" (POSITIVE CONTROL, the notice does
+fire when it should); TREATMENTS_AUTH=off -> notifyCount 0 while anonymous
+read is 200 and anonymous POST /api/v1/treatments is 200 with the record
+stored; AUTH_DEFAULT_ROLES=denied -> notifyCount 0, correctly (NEGATIVE
 CONTROL, so absence in the middle row is attributable to the string compare
 and not to the notice being broken generally). These are documented
 configurations, not a bypass. BF-78, anonymous POST /api/v1/treatments:

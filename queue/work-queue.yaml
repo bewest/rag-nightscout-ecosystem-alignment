@@ -55,6 +55,10 @@ meta:
       rev-list --count origin/master..origin/dev`). Only a release (RT-0) moves
       an item out of this state.
     needs-decision: waiting on a maintainer decision, not on work
+    done: >
+      finished work in THIS repository, which ships nothing to operators; never
+      used for cgm-remote-monitor or connector work, which ends at merged-upstream
+      and then a release
     unsettled: it is not yet established that this is a defect at all
 
 parcels:
@@ -443,6 +447,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - the security reviewers are the maintainer and Andy (a connector maintainer).
       Sequencing letter C. GT3 found BF-17's created_at residual: the pick() at
       endpoints.js:44 is ['_id','name','accessToken','roles','notes'] - notes was
       added by the fix, created_at was not.
@@ -1547,10 +1552,44 @@ items:
       - docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - 0.1.0 is pinned in 15.0.9, but only after the prerelease has been tested longer; tagging waits for that. Before the full release, connector dev also fixes BF-89 (the nightscout source sends role for roles; P0-CONNECT-ROLE). Tagging remains the maintainer's action.
       DECIDED 2026-09-22 (maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging remains the maintainer's action.
       The programme's local release/v0.0.14 branch and v0.0.14 tag are retired:
       every commit on them is in connector dev. No 0.0.14 will be published;
       the line is 0.1.0.
+  - id: P0-CONNECT-ROLE
+    title: nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89)
+    parcel: phase0
+    repo: nightscout-connect
+    branch: ""
+    base: official/dev
+    worktree: externals/nightscout-connect
+    state: not-started
+    blast_radius: lib/sources/nightscout.js (the subject it POSTs to /api/v2/authorization/subjects) and a test.
+    review: maintainer
+    operator_visible: >
+      If you use nightscout-connect to copy data from one Nightscout site to
+      another, it creates an access entry on the source site so that it can
+      read. That entry is created without any permission, because the field
+      name is misspelled. The fix gives it read permission as intended.
+    semver: patch
+    semver_reason: a bug fix inside the 0.1.0 line before its full release
+    register: [BF-89]
+    gates:
+      - run: >-
+          sh -c 'git -C externals/nightscout-connect show official/dev:lib/sources/nightscout.js | grep -q "role: \[" && exit 1 || exit 0'
+        kind: static
+        describe: >
+          FAILS while connector dev's nightscout source still sends the misspelled
+          role field. Red on 2026-09-23 (line 83).
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      DECIDED 2026-09-23 (maintainer) - fix in connector dev before the full 0.1.0 release (P0-TAG).
+      Found while checking BF-47: Nightscout's subject allow-list stores roles, so this subject
+      is stored with no roles at all.
+
   - id: P0-PIN
     title: bf/connect-pin - pin dev to the published nightscout-connect 0.1.0
     parcel: phase0
@@ -1598,6 +1637,7 @@ items:
     evidence:
       - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - this pin swaps to 0.1.0 only after the prerelease testing P0-TAG now waits on, and after BF-89 is fixed in connector dev.
       PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr-bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified.
       This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's
       pin carries both the logging narrowing and the redaction commits. Master
@@ -1744,7 +1784,7 @@ items:
     branch: origin/dev
     base: origin/master
     worktree: externals/cgm-remote-monitor-official
-    state: needs-decision
+    state: in-progress
     blast_radius: >
       Commit 48075a18 touches three production files - lib/client/renderer.js
       +25/-25, lib/client/chart.js +2/-2, lib/report_plugins/daytoday.js +3/-3,
@@ -1794,6 +1834,7 @@ items:
       - docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md
       - docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - answered two ways: a manual check in a browser, plus an automated browser test (possibly driven through a Chrome DevTools MCP as a hybrid). The automated half has a first run: docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md (7e86ab91) finds 15.0.8 and dev identical on every drag measured, with 0 page errors, and deleting the clamps turns 2 of 19 checks red. Its probe, tools/review/probes/rt-d3-drag-browser.js, is untracked, so no gate can run it yet. The manual check is still owed.
       The clamps bound a user-initiated rewrite of a treatment's created_at
       emitted over the socket, and a treatment's timestamp is what IOB/COB key
       off. They are the exact lines the D3 6 migration rewrote and the least
@@ -1833,10 +1874,43 @@ items:
     evidence:
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
-      DECIDED 2026-09-22 (maintainer) - the dev to master release is 15.0.9; #8738 and #8743 ship as-is, declared as corrections in the release notes, with no compatibility flag. The cut tips still need distinct numbers; see docs/30-design/remedial/backfix-2-plan-2026-09-22.md.
+      DECIDED 2026-09-22, amended 2026-09-23 (maintainer) - the dev to master release is 15.0.9. #8743 ships as-is. #8738 is amended before the tag (RT-COUNT0): ?count=0 answers an empty list, malformed counts stay HTTP 400, and write routes ignore count. Both are declared as corrections in the release notes, with no compatibility flag. The cut tips still need distinct numbers - DECIDED 2026-09-23: each cut is renumbered when it is rebased; see docs/30-design/remedial/backfix-2-plan-2026-09-22.md.
       Given the governance gap - 100 self-merged PRs, zero human reviews - the
       version number is the only warning an operator gets, and right now it does
       not distinguish these builds.
+
+  - id: RT-COUNT0
+    title: "v1 ?count=0 answers an empty list, amending #8738 before 15.0.9"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    blast_radius: lib/api/index.js validateCount and lib/api/count-param (or wherever parseCount lives on dev), plus their tests.
+    review: maintainer
+    operator_visible: >
+      15.0.9 will refuse a request for a nonsense number of records (for
+      example "abc" or "-3") with an error, where earlier versions guessed a
+      number. A request for zero records will answer with an empty list, not
+      an error and not the whole collection. Uploading data is not affected.
+    semver: patch
+    semver_reason: "narrows #8738's new refusal before any release has shipped it"
+    register: []
+    gates:
+      - no-gate: >
+          No branch yet. The test to add: count=0 answers 200 with an empty
+          array on every v1 read route and never reaches .limit(0); 0x10, 2.5,
+          -3, 1e2, abc and values above Number.MAX_SAFE_INTEGER still answer
+          400; a write route ignores count entirely.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
+    notes: >
+      DECIDED 2026-09-23 (maintainer) - "count=0 should return a 0 length
+      array of results." #8738 (merged to dev) answers HTTP 400 for count=0 because MongoDB reads
+      .limit(0) as no limit; the maintainer wants an empty list instead. Malformed counts stay 400,
+      and the check runs on read routes only, so writes ignore count. Ships in 15.0.9.
 
   - id: RT-REBASE
     title: Cuts 1-4 are 133 commits behind dev and now all five conflict
@@ -2062,12 +2136,11 @@ items:
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
       - docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - what 15.0.9 carries beyond dev as it stands: ?count=0 answers an empty list (RT-COUNT0); MongoDB 4.4 is declared deprecated in the release notes and dropped in a later release; the legacy-ingestion notice goes in the release notes and RT-4 is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease testing (P0-TAG); RT-D3 is answered by a manual check plus an automated browser test. See docs/30-design/remedial/backfix-2-plan-2026-09-22.md section 1a.
       First on the adopted train. Every merged backfix in dev - the items in
       state merged-upstream - reaches operators only through this release;
       until it ships they are in code nobody runs. Merging dev publishes a
-      Docker Hub image, which is not a release. dev pins nightscout-connect at
-      234d47c (unmerged connector branch fix/8714-opt-in-debug-logging,
-      connector PR #67), where master pins tag v0.0.13 - see P0-PIN and P0-TAG.
+      Docker Hub image, which is not a release. dev pins nightscout-connect at 234d47c by source URL (the commit is in connector dev since #64 merged; measured 2026-09-23 with merge-base --is-ancestor), where master pins tag v0.0.13 - see P0-PIN and P0-TAG.
 
   - id: RT-1
     title: Cut 1 - chore/retire-jsdom
@@ -2274,6 +2347,7 @@ items:
     evidence:
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - dropped. The notice goes in 15.0.9's release notes, as recommended below; no separate deprecation release.
       The maintainer confirms (2026-09-22, operational knowledge) that legacy
       mmconnect does not work, and Dexcom BRIDGE_* settings have been served by
       nightscout-connect by default since 15.0.8 (a91e8ee4, with a deprecation
@@ -2411,6 +2485,7 @@ items:
       - docs/60-research/remedial/gt3-register-truth-2026-09-15.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - measure first, then decide. The maintainer leans towards treating zero as a real value (a zero temp basal is a real value in AID terms), but recalls a temp-basal display problem when AAPS issues zero temps seconds apart, fixed at some point (bec641ca, rendering, is the candidate); the fix must not bring it back. Measure the impact on the corpus before choosing. New from reading (not yet reproduced): because a falsy field is left out of the lookup, the lookup can end up keyed on fields another eventType also has, so a zero temp can match a different eventType within the window. Only uploaders using the socket path without NSCLIENT_ID reach this. tools/queue/gates/bf09-corpus-divergence.js undercounts and needs fixing before the measurement is trusted.
       The register entry names the wrong fields. Measured over 277,690
       treatments: ZERO zero-valued `insulin` (0 of 107,732) and ZERO zero-valued
       `carbs` (0 of 12,394). The field that actually carries falsy values is
@@ -3474,7 +3549,8 @@ items:
     blocks_on: []
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
-    notes: ""
+    notes: >
+      DECIDED 2026-09-23 (maintainer) - the maintainer owns this question. Answers already given with BF-41: snooze runs on the wall clock, and an evaluator may own its clock, but never for live alarms. Still unsettled until the maintainer writes up the rest.
 
   - id: A7A-GATE
     title: The alarms-on gate itself - nothing here may be marked done by inference
@@ -3945,7 +4021,7 @@ items:
     branch: main
     base: main@1a10007b
     worktree: .
-    state: ready-to-push
+    state: done
     blast_radius: >
       docs/00-overview/{PROGRAMME-STATUS,NEEDS-A-HUMAN,REVIEWER-ONBOARDING}.md,
       reports/reviewer-packets/ (one generated packet per item awaiting review,
@@ -4003,6 +4079,7 @@ items:
       - docs/00-overview/REVIEWER-ONBOARDING.md
       - reports/reviewer-packets/README.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - done.
       Built 2026-09-16 on the maintainer's instruction: a view of progress and a
       place where reviewers and teammates can collaborate. Hybrid generation for
       the overview pages, full generation for the packets, audience the
@@ -4018,7 +4095,7 @@ items:
     branch: main
     base: main@6574b28d
     worktree: .
-    state: ready-to-push
+    state: done
     blast_radius: >
       tools/queue/gates/doc-links.js (new), and the 55 September documents moved
       into programme subdirectories on 2026-09-16 with 280 links and 212
@@ -4064,6 +4141,7 @@ items:
     evidence:
       - docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - done.
       Non-vacuity, run 2026-09-16: three ablations, one per detection pass, each
       confirmed to land before its result was read. A markdown link repointed to
       a nonexistent name - caught. A repo-root path in this manifest reverted to
@@ -4311,6 +4389,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      Disposition decided by the maintainer 2026-09-23; details are held outside version control.
       Found 2026-09-21 while re-measuring the security advisory's third proof of concept,
       which the advisory frames as $regex data extraction. On the shipped `readable`
       default that is close to vacuous - entries, treatments and devicestatus are the
@@ -4441,6 +4520,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - a reading dated ahead of the clock is kept as sent, and the stale-data check uses the newest reading that is not in the future; no new warning. "In the future" means more than a tolerance ahead of the server clock, configurable, default 5 minutes. Snooze runs on the wall clock. The hosted evaluator may apply the same rule, but never to live alarms.
       BF-44 is a concrete, shipping way to produce a future-dated reading, which
       is why BFQ-MINIMED carries the same severity argument from the other end.
 
@@ -4719,7 +4799,7 @@ items:
     branch: ""
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-auth
-    state: needs-decision
+    state: not-started
     ships_to_operators_today: true
     blast_radius: >
       lib/authorization/endpoints.js:40 pick(), lib/admin_plugins/subjects.js
@@ -4763,6 +4843,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - the allow-list is intended and stays (option 2). No open-source client in the corpus depends on storing other subject fields. The loss that remains is the admin page: it fetches subjects without notes and created_at, then saves the whole subject back, so an ordinary edit clears both. That is the defect to fix.
       A verifier's review of bf/auth established that the field loss already
       happens on the current release, not only on the unmerged branch. Keeping
       the security goal of BF-17 - the derived token never reaches the database -
@@ -4859,7 +4940,7 @@ items:
     branch: ""
     base: origin/dev@a8888f0d
     worktree: externals/work/crm-bf-alarms
-    state: unsettled
+    state: not-started
     ships_to_operators_today: true
     blast_radius: >
       lib/plugins/insulinage.js:92 and the same shape in cannulaage, sensorage
@@ -4891,20 +4972,57 @@ items:
           invisible to a one-shot test. That run would settle the grade, and it
           is the instrument this item needs.
       - no-gate: >
-          Marked `unsettled` deliberately. One-shot may be the intent. What is
-          not defensible is that :90 uses >= and :92 uses === without saying
-          why, and no check anywhere asserts an intended relationship between
-          the two.
+          Settled 2026-09-23 by the maintainer: one push, sent the first time
+          the age is at or past the threshold and remembered. :90 uses >= and
+          :92 uses ===, and no check asserts the relationship between the two;
+          the fix needs a sequence test that skips the exact-threshold check.
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - send once, even if the exact check is missed: fire the push the first time the age is at or past the threshold and remember that it was sent, so a restart or a data gap cannot swallow it and it does not repeat every check. That makes today's exact-match behaviour a defect; the fix is not built.
       BF-28 masked this on insulinage for years - the level line was broken, so
       nobody reached the notification line. The three sibling plugins have
       shipped with the same shape unmasked. Any release note for BF-28 (merged
       to dev via #8739, arriving in 15.0.9) must get two things right - the push
       alarm is opt-in and off by default, and what does reach everyone is the
       on-screen pill, because the level is assigned outside the alerts guard.
+
+  - id: BFQ-90
+    title: BF-90 - an alarm at a page with no reading throws in the client
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@74fc6619
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/client/index.js:1230 and :1242, the log argument in the "disabled
+      locally" branch of the alarm and urgent_alarm handlers. One guard each.
+    review: maintainer
+    operator_visible: >
+      If an alarm reaches a Nightscout page that has no glucose reading loaded,
+      the page hits an internal error and skips redrawing the chart. It does not
+      stop an alarm from sounding, because this only happens on the path where
+      the page has already decided not to sound one. It was seen only in a test
+      that forced alarms to reach such a page.
+    semver: patch
+    semver_reason: a client-side bug fix with no change to what is shown when data exists
+    register: [BF-90]
+    gates:
+      - no-gate: >
+          Reproduced in a browser by the RT-D3 probe run
+          (docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md),
+          but that probe is untracked, so no gate can run it. A gate needs the
+          probe committed, or a jsdom test of the two handlers with no latestSGV.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md
+    notes: >
+      Filed 2026-09-23 from the other session's RT-D3 browser run; latent,
+      graded low.
 
   - id: BFQ-67
     title: BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work
@@ -5523,6 +5641,7 @@ items:
       - tools/queue/gates/pr-body-parity.js
       - reports/phase0-pr-bodies/bf-alarms.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - fix only the dead links in the bodies of #8734-#8737; do not otherwise re-sync them. Reconcile #8739 the other way: its file follows the live body. #8743-#8745 are withheld and are not touched until release.
       The parity gate belonged to eight Phase 0 items that are all
       merged-upstream, so its red reads as expected post-merge noise on rows
       nobody revisits; this item gives it an owner.
@@ -5967,6 +6086,7 @@ items:
       - docs/30-design/remedial/security-advisory-disposition-2026-09-21.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - apply all four metadata corrections to the draft advisories. The advisories stay drafts; applying is a human step (advisories/apply-metadata.sh --apply).
       REPRODUCED, and every "fixed" cell is paired with a positive v15.0.7
       control from the same run - four write paths across three refs,
       end-to-end over real HTTP and socket, with the document read back out of
@@ -6083,6 +6203,7 @@ items:
       - docs/30-design/remedial/security-advisory-disposition-2026-09-21.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - BF-78 (the careportal role) is documented and warned about at boot; no behaviour change.
       Found while building the configuration matrix that answers "were the
       right flags set when the five advisories were evaluated"; these two fell
       out of enumerating what AUTH_DEFAULT_ROLES actually gates.

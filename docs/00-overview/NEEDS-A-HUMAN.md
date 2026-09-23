@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 14 items
+### Maintainer &mdash; 10 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -39,15 +39,11 @@ that it was reviewed.
 | `FU-PRBODIES` | `needs-decision` | Merged PR bodies have drifted from the files they were posted from | &mdash; |
 | `P0-TAG` | `needs-decision` | nightscout-connect 0.1.0 - the full release, from connector dev | #70 |
 | `RT-4` | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes | &mdash; |
-| `RT-D3` | `needs-decision` | Answer the D3 question before 15.0.9 ships | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `BF2-OPS` | `ready-to-push` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | &mdash; |
-| `DOC-LINKS` | `ready-to-push` | Every path the programme's documents and tooling cite must resolve | &mdash; |
-| `DOC-VIEWS` | `ready-to-push` | A reviewer-facing surface over the queue: three overview pages and a packet per  | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
-| `BFQ-52` | `unsettled` | BF-52 - the age plugins can only ask for their urgent alarm in one window | &mdash; |
 
 ### SECURITY reviewer &mdash; 3 items
 
@@ -57,11 +53,10 @@ that it was reviewed.
 | `BF2-AUTH` | `ready-to-push` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | &mdash; |
 | `BF2-BACKPORT` | `ready-to-push` | Which modernization-only security commits fix a defect that dev has | &mdash; |
 
-### Maintainer + a second human &mdash; 2 items
+### Maintainer + a second human &mdash; 1 item
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BFQ-47` | `needs-decision` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | &mdash; |
 | `RT-0` | `needs-decision` | Release 15.0.9 | #8598, #8605 |
 
 ### SAFETY reviewer &mdash; 1 item

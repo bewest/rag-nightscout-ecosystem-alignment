@@ -20,6 +20,30 @@ version control.
 | BFQ-72 | Candidate remedies are **measured privately**. | Branches and benchmarks live in gitignored scratch space. Nothing about BF-72 goes into a PR, an issue or a tracked file beyond the mechanism already in the register. |
 | flag rule | **Fixes where the old behaviour is itself the defect ship on by default. A compatibility flag, defaulting to today's behaviour, is used where a legitimate deployment may depend on the old behaviour**, and it has a planned release in which its default flips. | This rule applies first to client-address trust (`TRUST_PROXY`) and the failed-authentication delay (BF-30). Other areas are decided case by case, and each case is recorded in §4. |
 
+## 1a. Decisions taken 2026-09-23
+
+These amend §1 where they overlap. Item state stays in the queue.
+
+| id | decision | consequence |
+|---|---|---|
+| RT-COUNT0 | **`?count=0` answers an empty list.** Malformed counts (`abc`, `-3`, `2.5`, `1e2`, `0x10`, values above `Number.MAX_SAFE_INTEGER`) still answer HTTP 400. The check applies to read routes only; write routes ignore `count`. | Amends #8738 before 15.0.9 is tagged. §1's "#8738 ships as-is" no longer holds; #8743 still does. |
+| P0-TAG / P0-PIN | **0.1.0 is pinned in 15.0.9, after the prerelease has been tested for longer.** BF-89 (the Nightscout source sends `role` for `roles`) is fixed in connector dev before the full release. | Tagging waits for the testing and for `P0-CONNECT-ROLE`. `bf/connect-pin-0.1.0` stays on `0.1.0-dev.1` until then. |
+| RT-4 | **No separate deprecation release.** | The legacy-ingestion notice goes in 15.0.9's release notes. |
+| MongoDB 4.4 | **Deprecated in 15.0.9, dropped later.** | The release notes say it is deprecated. |
+| RT-D3 | **A manual check plus an automated browser test.** | First automated run: [browser evidence](../../60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md). The manual check is still owed. |
+| cut numbering | **Each cut is renumbered when it is rebased.** | RT-VERSION's collision gate stays red until then. |
+| BFQ-72 | Disposition decided. | Held outside version control, as in §1. |
+| ADV-CONFIG | **BF-78 is documented and warned about at boot.** | No behaviour change. |
+| ADV-XSS-META | **Apply all four metadata corrections to the draft advisories.** | A human runs `advisories/apply-metadata.sh --apply`; the advisories stay drafts. |
+| advisory write-ups | **Trimmed to match the shortened PR descriptions** of #8743, #8744 and #8745 until a release with the fixes ships and the advisories are published. | Done in `dcb04102`; the full text is at `ef376ecb`. |
+| FU-PRBODIES | **Fix only the dead links in #8734–#8737.** #8739's file follows its live body. | #8743–#8745 are not touched until release. |
+| P0-C | **The security reviewers are the maintainer and Andy.** | |
+| BFQ-09 | **Measure first, then decide.** The maintainer leans towards zero being a real value. | The measurement must check the AAPS rapid-zero-temp display problem (`bec641ca`) does not come back. |
+| BFQ-41 | **The stale-data check ignores a future-dated reading**, keeping the reading as sent. The tolerance is configurable, default 5 minutes. Snoozes run on the wall clock. An evaluator may take an "as of" time, but never for live alarms. | A7A-7 is the maintainer's to write up. |
+| BFQ-47 | **The subject allow-list is intended.** | The fix is the admin page, which clears `notes` and `created_at` on every edit. |
+| BFQ-52 | **The age push is sent once, even if the exact check is missed.** | Today's exact-match check becomes a defect to fix. |
+| tenancy | Taken up in a separate session later. | |
+
 ## 2. Where each piece of backfix 2 comes from
 
 Most of backfix 2 was built on `dev` and needs only a refresh. One part lives only

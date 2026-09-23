@@ -77,15 +77,17 @@ naming no setting.
 
 ## Notes carried on the item
 
-The maintainer confirms (2026-09-22, operational knowledge) that legacy
-mmconnect does not work, and Dexcom BRIDGE_* settings have been served by
-nightscout-connect by default since 15.0.8 (a91e8ee4, with a deprecation
-warning and the DEXCOM_BRIDGE_USE_LEGACY escape hatch). No working path is
-left for a separate release to protect. Recommended: put the notice in
-15.0.9's release notes (MiniMed users: move to CONNECT_SOURCE with your
-CareLink country; Dexcom legacy-flag users: the escape hatch goes with cut 4)
-and drop this release. The MiniMed shim is still real code and ships with cut
-4. BF-44/BF-45 re-graded low.
+DECIDED 2026-09-23 (maintainer) - dropped. The notice goes in 15.0.9's release
+notes, as recommended below; no separate deprecation release. The maintainer
+confirms (2026-09-22, operational knowledge) that legacy mmconnect does not
+work, and Dexcom BRIDGE_* settings have been served by nightscout-connect by
+default since 15.0.8 (a91e8ee4, with a deprecation warning and the
+DEXCOM_BRIDGE_USE_LEGACY escape hatch). No working path is left for a separate
+release to protect. Recommended: put the notice in 15.0.9's release notes
+(MiniMed users: move to CONNECT_SOURCE with your CareLink country; Dexcom
+legacy-flag users: the escape hatch goes with cut 4) and drop this release.
+The MiniMed shim is still real code and ships with cut 4. BF-44/BF-45 re-
+graded low.
 
 ---
 

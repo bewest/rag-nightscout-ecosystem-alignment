@@ -94,10 +94,13 @@ word-count heuristic: read the PR's last-edited time before acting on it.
 
 ## Notes carried on the item
 
-The parity gate belonged to eight Phase 0 items that are all merged-upstream,
-so its red reads as expected post-merge noise on rows nobody revisits; this
-item gives it an owner. No PR body was edited; all twelve Phase 0 and advisory
-PR bodies were read on 2026-09-23 with their last-edited times.
+DECIDED 2026-09-23 (maintainer) - fix only the dead links in the bodies of
+#8734-#8737; do not otherwise re-sync them. Reconcile #8739 the other way: its
+file follows the live body. #8743-#8745 are withheld and are not touched until
+release. The parity gate belonged to eight Phase 0 items that are all merged-
+upstream, so its red reads as expected post-merge noise on rows nobody
+revisits; this item gives it an owner. No PR body was edited; all twelve Phase
+0 and advisory PR bodies were read on 2026-09-23 with their last-edited times.
 
 ---
 

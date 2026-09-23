@@ -111,29 +111,32 @@ The socket write path calls the purifier at v15.0.8; it does not at v15.0.7.
 
 ## Notes carried on the item
 
-REPRODUCED, and every "fixed" cell is paired with a positive v15.0.7 control
-from the same run - four write paths across three refs, end-to-end over real
-HTTP and socket, with the document read back out of mongo, and v3 driven with
-a real JWT on all three refs. The fix is broader than either advisory claims:
-PUT /api/v1/treatments/, POST /api/v1/food and POST /api/v1/activity also had
-no purification at 15.0.7 and now do. The headline, which source-reading could
-not have answered: a payload a 15.0.7 server had ALREADY STORED does not fire
-on a patched server. At 15.0.7 the day-to-day report executed it in a real
-browser; at 15.0.8 and dev it renders as visible text. That is true only
-because the output-escaping half of the fix (da548d2a) landed alongside the
-purification half - had only the purifier shipped, the answer would be the
-opposite. Both advisories should say so. Residual sinks: none. 32 `.html(`
-sites on dev classified; a mechanical scan for unescaped free-text
-interpolation found 25 hits across 10 files at v15.0.7 and zero at v15.0.8 and
-dev. The internal report's sweep claim names 4 files; the shipped sweep covers
-10. Sanitizer bounds: a string over the size budget is NOT passed through
-unsanitized - it throws RangeError and the write is REFUSED on all four paths,
-fail-closed. The POSSIBLE_HTML_MARKUP pre-filter is evadable, but none of the
-three evading forms executes at any sink on any ref, including v15.0.7 - the
-defence-in-depth argument the purifier's own header makes, now measured. BF-73
-was filed because the XSS fix created its trigger: the new RangeError escapes
-uncaught to the error page. Independently reproduced against v15.0.8 - the 500
-body named six absolute paths and the deployment's directory layout.
+DECIDED 2026-09-23 (maintainer) - apply all four metadata corrections to the
+draft advisories. The advisories stay drafts; applying is a human step
+(advisories/apply-metadata.sh --apply). REPRODUCED, and every "fixed" cell is
+paired with a positive v15.0.7 control from the same run - four write paths
+across three refs, end-to-end over real HTTP and socket, with the document
+read back out of mongo, and v3 driven with a real JWT on all three refs. The
+fix is broader than either advisory claims: PUT /api/v1/treatments/, POST
+/api/v1/food and POST /api/v1/activity also had no purification at 15.0.7 and
+now do. The headline, which source-reading could not have answered: a payload
+a 15.0.7 server had ALREADY STORED does not fire on a patched server. At
+15.0.7 the day-to-day report executed it in a real browser; at 15.0.8 and dev
+it renders as visible text. That is true only because the output-escaping half
+of the fix (da548d2a) landed alongside the purification half - had only the
+purifier shipped, the answer would be the opposite. Both advisories should say
+so. Residual sinks: none. 32 `.html(` sites on dev classified; a mechanical
+scan for unescaped free-text interpolation found 25 hits across 10 files at
+v15.0.7 and zero at v15.0.8 and dev. The internal report's sweep claim names 4
+files; the shipped sweep covers 10. Sanitizer bounds: a string over the size
+budget is NOT passed through unsanitized - it throws RangeError and the write
+is REFUSED on all four paths, fail-closed. The POSSIBLE_HTML_MARKUP pre-filter
+is evadable, but none of the three evading forms executes at any sink on any
+ref, including v15.0.7 - the defence-in-depth argument the purifier's own
+header makes, now measured. BF-73 was filed because the XSS fix created its
+trigger: the new RangeError escapes uncaught to the error page. Independently
+reproduced against v15.0.8 - the 500 body named six absolute paths and the
+deployment's directory layout.
 
 ---
 

@@ -117,14 +117,15 @@ same ablation.
 
 ## Notes carried on the item
 
-Found 2026-09-21 while re-measuring the security advisory's third proof of
-concept, which the advisory frames as $regex data extraction. On the shipped
-`readable` default that is close to vacuous - entries, treatments and
-devicestatus are the three collections prep_storage admits, all three are
-already readable, and the API returns whole documents, so a regex oracle
-reveals nothing a plain read does not. What the same operator does do is cost
-the database, which the advisory does not describe. Sequencing with P0-K:
-#8743 merged on 2026-09-18 and did not narrow $regex, because the client
+Disposition decided by the maintainer 2026-09-23; details are held outside
+version control. Found 2026-09-21 while re-measuring the security advisory's
+third proof of concept, which the advisory frames as $regex data extraction.
+On the shipped `readable` default that is close to vacuous - entries,
+treatments and devicestatus are the three collections prep_storage admits, all
+three are already readable, and the API returns whole documents, so a regex
+oracle reveals nothing a plain read does not. What the same operator does do
+is cost the database, which the advisory does not describe. Sequencing with
+P0-K: #8743 merged on 2026-09-18 and did not narrow $regex, because the client
 census found real clients sending it. So this entry is not a regression from
 that branch and is not fixed by it. State is needs-decision rather than gate-
 not-met: a gate fails, but the blocking thing is not work. It is whether

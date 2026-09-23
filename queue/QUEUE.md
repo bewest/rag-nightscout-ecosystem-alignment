@@ -31,23 +31,25 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 94 |
-| runnable gates | 163 |
-| explicit `no-gate:` markers | 144 |
+| items | 97 |
+| runnable gates | 164 |
+| explicit `no-gate:` markers | 146 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 144 of the 307 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 146 of the 310 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 32 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 37 | P0-CONNECT-ROLE, RT-VERSION, RT-COUNT0, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-47, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
+| `in-progress` | 1 | RT-D3 |
 | `gate-not-met` | 15 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 7 | P0-C-REMEDIATE, T30-AUTH, DOC-VIEWS, DOC-LINKS, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
+| `ready-to-push` | 5 | P0-C-REMEDIATE, T30-AUTH, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `merged-upstream` | 15 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
-| `needs-decision` | 10 | P0-TAG, RT-D3, RT-0, RT-4, T30-RESEARCH, BFQ-72, BFQ-47, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
-| `unsettled` | 3 | BFQ-09, A7A-7, BFQ-52 |
+| `needs-decision` | 8 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
+| `done` | 2 | DOC-VIEWS, DOC-LINKS |
+| `unsettled` | 2 | BFQ-09, A7A-7 |
 
 ### Reaches an operator on today's release
 
@@ -69,6 +71,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-47** BF-47 - an ordinary subject edit destroys stored fields, on today's release
 - **BFQ-ENV** BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies
 - **BFQ-52** BF-52 - the age plugins can only ask for their urgent alarm in one window
+- **BFQ-90** BF-90 - an alarm at a page with no reading throws in the client
 - **BFQ-67** BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work
 - **ADV-RETRO** GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79)
 - **ADV-ALARM** GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76)
@@ -79,7 +82,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 
 ## Phase 0 backfixes - ships to every existing operator
 
-`parcel: phase0` &mdash; 21 items
+`parcel: phase0` &mdash; 22 items
 
 Eight of the ten cgm-remote-monitor Phase 0 branches are merged into
 origin/dev (PRs #8733 to #8743, 2026-09-17 to 2026-09-20); their items are
@@ -112,6 +115,7 @@ needs a tenancy decision.
 | `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `merged-upstream` | `bf/parms` | patch | 6 run + 1 no-gate |
 | `P0-K` | bf/operators - PR #8743, BF-04 extracted, BF-70 found | `merged-upstream` | `bf/operators` | minor | 7 run + 2 no-gate |
 | `P0-TAG` | nightscout-connect 0.1.0 - the full release, from connector dev | `needs-decision` | `dev` | minor | 5 run + 1 no-gate |
+| `P0-CONNECT-ROLE` | nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89) | `not-started` | `-` | patch | 1 run |
 | `P0-PIN` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 | `blocked` | `bf/connect-pin-0.1.0` | patch | 2 run + 1 no-gate |
 | `P0-LOCK` | Regenerate package-lock.json for the nightscout-connect 0.1.0 pin | `blocked` | `bf/connect-pin-0.1.0` | n/a | 2 run |
 | `P0-PUBLISH` | nightscout-connect publishes to npm from a version tag | `merged-upstream` | `ci/npm-trusted-publish, ci/prerelease-tags` | n/a | 3 run + 1 no-gate |
@@ -253,7 +257,7 @@ needs a tenancy decision.
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Sequencing letter C. GT3 found BF-17's created_at residual: the pick() at endpoints.js:44 is ['_id','name','accessToken','roles','notes'] - notes was added by the fix, created_at was not. Commit 56ed29d2 removes the leftover console.log('Loading',opts). That line was not introduced by this branch - it is on origin/dev at storage.js:84 - and it is taken here because it sits in a file this branch already rewrites and is the same defect class as the count- path filter leak fixed on bf/reads. FU-RESIDUALS follow-up 4 is carried BY THIS BRANCH and should not be fixed there a second time; it is `fixed` (on a branch), not merged, and FU-RESIDUALS' gate, which reads origin/dev, correctly still fails. Green gates here do not mean an operator is safe - tokens written in plaintext before the upgrade are untouched by it. The remediation is TEXT, not tooling (P0-C-REMEDIATE): no detector and no migration, rotation instructions carried by this branch's PR body and the 15.0.9 release notes, and a gate guarding what they say, including that renaming a subject is not a rotation because the matcher is name-independent. --- The 2026-09-21 merge-up (tip 404e714c, origin/dev 59430336 merged into ce82f0cd, on the maintainer's instruction). Exactly one file is touched by both sides, lib/authorization/storage.js, in different functions: dev's 06b133a7 (BF-01, from bf/reads) replaces the limit() helper on the READ path, while this branch narrows save() to a field allow-list and removes the console.log('Loading',opts) on that same read path. The merge changed 2 lines and removed 4 in lib/authorization/. merge-tree is not trusted alone here (the register's BF-04 detail records a merge-tree CLEAN result that hid a semantic collision), so it was measured: TEST=authsubjects 8 passing at ce82f0cd and 8 passing at 404e714c; tracking gate green; full suite 2319 passing, 3 pending, 0 failing at 404e714c against mongod 7.0.43 started with --ulimit nofile=64000:64000. That qualifier matters - at Docker's default descriptor limit mongod dies mid-suite (BF-10) and every downstream timeout looks like a regression. --- Current state (2026-09-22): behind origin/dev 74fc6619 by the three advisory merges; trial merge clean. The merge is not done here because a merge without re-running the full suite would trade a red gate for an unmeasured green one. While this branch is ready and unpushed it goes stale every time dev moves, and at gate-not-met it has no reviewer packet (emit_packets builds only for in-flight-upstream, ready-to-push and needs- decision). Pushing it is what stops that.
+**Notes.** DECIDED 2026-09-23 (maintainer) - the security reviewers are the maintainer and Andy (a connector maintainer). Sequencing letter C. GT3 found BF-17's created_at residual: the pick() at endpoints.js:44 is ['_id','name','accessToken','roles','notes'] - notes was added by the fix, created_at was not. Commit 56ed29d2 removes the leftover console.log('Loading',opts). That line was not introduced by this branch - it is on origin/dev at storage.js:84 - and it is taken here because it sits in a file this branch already rewrites and is the same defect class as the count- path filter leak fixed on bf/reads. FU-RESIDUALS follow-up 4 is carried BY THIS BRANCH and should not be fixed there a second time; it is `fixed` (on a branch), not merged, and FU-RESIDUALS' gate, which reads origin/dev, correctly still fails. Green gates here do not mean an operator is safe - tokens written in plaintext before the upgrade are untouched by it. The remediation is TEXT, not tooling (P0-C-REMEDIATE): no detector and no migration, rotation instructions carried by this branch's PR body and the 15.0.9 release notes, and a gate guarding what they say, including that renaming a subject is not a rotation because the matcher is name-independent. --- The 2026-09-21 merge-up (tip 404e714c, origin/dev 59430336 merged into ce82f0cd, on the maintainer's instruction). Exactly one file is touched by both sides, lib/authorization/storage.js, in different functions: dev's 06b133a7 (BF-01, from bf/reads) replaces the limit() helper on the READ path, while this branch narrows save() to a field allow-list and removes the console.log('Loading',opts) on that same read path. The merge changed 2 lines and removed 4 in lib/authorization/. merge-tree is not trusted alone here (the register's BF-04 detail records a merge-tree CLEAN result that hid a semantic collision), so it was measured: TEST=authsubjects 8 passing at ce82f0cd and 8 passing at 404e714c; tracking gate green; full suite 2319 passing, 3 pending, 0 failing at 404e714c against mongod 7.0.43 started with --ulimit nofile=64000:64000. That qualifier matters - at Docker's default descriptor limit mongod dies mid-suite (BF-10) and every downstream timeout looks like a regression. --- Current state (2026-09-22): behind origin/dev 74fc6619 by the three advisory merges; trial merge clean. The merge is not done here because a merge without re-running the full suite would trade a red gate for an unmeasured green one. While this branch is ready and unpushed it goes stale every time dev moves, and at gate-not-met it has no reviewer packet (emit_packets builds only for in-flight-upstream, ready-to-push and needs- decision). Pushing it is what stops that.
 
 ### `P0-J` &mdash; bf/throttle - BF-30, failed-auth throttling, compatibility default
 
@@ -673,7 +677,37 @@ needs a tenancy decision.
 - `docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md`
 - `docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`
 
-**Notes.** DECIDED 2026-09-22 (maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging remains the maintainer's action. The programme's local release/v0.0.14 branch and v0.0.14 tag are retired: every commit on them is in connector dev. No 0.0.14 will be published; the line is 0.1.0.
+**Notes.** DECIDED 2026-09-23 (maintainer) - 0.1.0 is pinned in 15.0.9, but only after the prerelease has been tested longer; tagging waits for that. Before the full release, connector dev also fixes BF-89 (the nightscout source sends role for roles; P0-CONNECT-ROLE). Tagging remains the maintainer's action. DECIDED 2026-09-22 (maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging remains the maintainer's action. The programme's local release/v0.0.14 branch and v0.0.14 tag are retired: every commit on them is in connector dev. No 0.0.14 will be published; the line is 0.1.0.
+
+### `P0-CONNECT-ROLE` &mdash; nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `nightscout-connect` |
+| branch | `-` |
+| base | `official/dev` |
+| worktree | `externals/nightscout-connect` |
+| semver | `patch` |
+| review | maintainer |
+| register | `BF-89` |
+
+**Blast radius.** lib/sources/nightscout.js (the subject it POSTs to /api/v2/authorization/subjects) and a test.
+
+**What an operator sees.** If you use nightscout-connect to copy data from one Nightscout site to another, it creates an access entry on the source site so that it can read. That entry is created without any permission, because the field name is misspelled. The fix gives it read permission as intended.
+
+**Why `patch`.** a bug fix inside the 0.1.0 line before its full release
+
+**Gates.**
+
+- `[static]` `sh -c 'git -C externals/nightscout-connect show official/dev:lib/sources/nightscout.js | grep -q "role: \[" && exit 1 || exit 0'`
+  - FAILS while connector dev's nightscout source still sends the misspelled role field. Red on 2026-09-23 (line 83).
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** DECIDED 2026-09-23 (maintainer) - fix in connector dev before the full 0.1.0 release (P0-TAG). Found while checking BF-47: Nightscout's subject allow-list stores roles, so this subject is stored with no roles at all.
 
 ### `P0-PIN` &mdash; bf/connect-pin - pin dev to the published nightscout-connect 0.1.0
 
@@ -706,7 +740,7 @@ needs a tenancy decision.
 
 - `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`
 
-**Notes.** PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr-bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified. This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. Pin the exact version rather than a range, so package.json and not only the lockfile says which connector ships. COMPATIBILITY MEASURED 2026-09-22 (connector 1946beb = v0.1.0-dev.1 source swapped into cgm-remote-monitor dev 74fc6619, no dependency change between the two): full suite 2386 passing / 0 failing / 3 pending, identical to the shipped 234d47c arm, against a private mongo:7. Red control: with v0.0.13 swapped in, tests/debug-logging.test.js fails exactly its five installed- connector cases (18 pass), so the suite distinguishes connectors. Connector's own suite 289/289 on Node 20.20.0, 22.23.2 and 24.20.0 (its CI covers only 22 and 24). Evidence: release-readiness-15.0.9 §5.2.
+**Notes.** DECIDED 2026-09-23 (maintainer) - this pin swaps to 0.1.0 only after the prerelease testing P0-TAG now waits on, and after BF-89 is fixed in connector dev. PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr-bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified. This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. Pin the exact version rather than a range, so package.json and not only the lockfile says which connector ships. COMPATIBILITY MEASURED 2026-09-22 (connector 1946beb = v0.1.0-dev.1 source swapped into cgm-remote-monitor dev 74fc6619, no dependency change between the two): full suite 2386 passing / 0 failing / 3 pending, identical to the shipped 234d47c arm, against a private mongo:7. Red control: with v0.0.13 swapped in, tests/debug-logging.test.js fails exactly its five installed-connector cases (18 pass), so the suite distinguishes connectors. Connector's own suite 289/289 on Node 20.20.0, 22.23.2 and 24.20.0 (its CI covers only 22 and 24). Evidence: release-readiness-15.0.9 §5.2.
 
 ### `P0-LOCK` &mdash; Regenerate package-lock.json for the nightscout-connect 0.1.0 pin
 
@@ -902,7 +936,7 @@ needs a tenancy decision.
 - `tools/queue/gates/pr-body-parity.js`
 - `reports/phase0-pr-bodies/bf-alarms.md`
 
-**Notes.** The parity gate belonged to eight Phase 0 items that are all merged-upstream, so its red reads as expected post-merge noise on rows nobody revisits; this item gives it an owner. No PR body was edited; all twelve Phase 0 and advisory PR bodies were read on 2026-09-23 with their last-edited times.
+**Notes.** DECIDED 2026-09-23 (maintainer) - fix only the dead links in the bodies of #8734-#8737; do not otherwise re-sync them. Reconcile #8739 the other way: its file follows the live body. #8743-#8745 are withheld and are not touched until release. The parity gate belonged to eight Phase 0 items that are all merged- upstream, so its red reads as expected post-merge noise on rows nobody revisits; this item gives it an owner. No PR body was edited; all twelve Phase 0 and advisory PR bodies were read on 2026-09-23 with their last-edited times.
 
 ### `FU-HYGIENE` &mdash; Follow-ups 9, 10 - the two audits that have no instrument
 
@@ -937,7 +971,7 @@ needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 12 items
+`parcel: release-train` &mdash; 13 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -946,8 +980,9 @@ that costs.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `RT-D3` | Answer the D3 question before 15.0.9 ships | `needs-decision` | `origin/dev` | minor | 2 run + 1 no-gate |
+| `RT-D3` | Answer the D3 question before 15.0.9 ships | `in-progress` | `origin/dev` | minor | 2 run + 1 no-gate |
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | `-` | n/a | 1 run + 1 no-gate |
+| `RT-COUNT0` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 1 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
@@ -963,7 +998,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
 | branch | `origin/dev` |
 | base | `origin/master` |
@@ -991,7 +1026,7 @@ that costs.
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 - `docs/30-design/modernization/cgm-remote-monitor-release-readiness-2026-09-14.md`
 
-**Notes.** The clamps bound a user-initiated rewrite of a treatment's created_at emitted over the socket, and a treatment's timestamp is what IOB/COB key off. They are the exact lines the D3 6 migration rewrote and the least covered lines it touched.
+**Notes.** DECIDED 2026-09-23 (maintainer) - answered two ways: a manual check in a browser, plus an automated browser test (possibly driven through a Chrome DevTools MCP as a hybrid). The automated half has a first run: docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md (7e86ab91) finds 15.0.8 and dev identical on every drag measured, with 0 page errors, and deleting the clamps turns 2 of 19 checks red. Its probe, tools/review/probes/rt-d3-drag-browser.js, is untracked, so no gate can run it yet. The manual check is still owed. The clamps bound a user-initiated rewrite of a treatment's created_at emitted over the socket, and a treatment's timestamp is what IOB/COB key off. They are the exact lines the D3 6 migration rewrote and the least covered lines it touched.
 
 ### `RT-VERSION` &mdash; Two artefacts claim version 15.0.9 with different Node floors
 
@@ -1022,7 +1057,35 @@ that costs.
 
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 
-**Notes.** DECIDED 2026-09-22 (maintainer) - the dev to master release is 15.0.9; #8738 and #8743 ship as-is, declared as corrections in the release notes, with no compatibility flag. The cut tips still need distinct numbers; see docs/30-design/remedial/backfix-2-plan-2026-09-22.md. Given the governance gap - 100 self-merged PRs, zero human reviews - the version number is the only warning an operator gets, and right now it does not distinguish these builds.
+**Notes.** DECIDED 2026-09-22, amended 2026-09-23 (maintainer) - the dev to master release is 15.0.9. #8743 ships as-is. #8738 is amended before the tag (RT- COUNT0): ?count=0 answers an empty list, malformed counts stay HTTP 400, and write routes ignore count. Both are declared as corrections in the release notes, with no compatibility flag. The cut tips still need distinct numbers - DECIDED 2026-09-23: each cut is renumbered when it is rebased; see docs/30-design/remedial/backfix-2-plan-2026-09-22.md. Given the governance gap - 100 self-merged PRs, zero human reviews - the version number is the only warning an operator gets, and right now it does not distinguish these builds.
+
+### `RT-COUNT0` &mdash; v1 ?count=0 answers an empty list, amending #8738 before 15.0.9
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `patch` |
+| review | maintainer |
+
+**Blast radius.** lib/api/index.js validateCount and lib/api/count-param (or wherever parseCount lives on dev), plus their tests.
+
+**What an operator sees.** 15.0.9 will refuse a request for a nonsense number of records (for example "abc" or "-3") with an error, where earlier versions guessed a number. A request for zero records will answer with an empty list, not an error and not the whole collection. Uploading data is not affected.
+
+**Why `patch`.** narrows #8738's new refusal before any release has shipped it
+
+**Gates.**
+
+- **NO GATE** &mdash; No branch yet. The test to add: count=0 answers 200 with an empty array on every v1 read route and never reaches .limit(0); 0x10, 2.5, -3, 1e2, abc and values above Number.MAX_SAFE_INTEGER still answer 400; a write route ignores count entirely.
+
+**Evidence.**
+
+- `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
+
+**Notes.** DECIDED 2026-09-23 (maintainer) - "count=0 should return a 0 length array of results." #8738 (merged to dev) answers HTTP 400 for count=0 because MongoDB reads .limit(0) as no limit; the maintainer wants an empty list instead. Malformed counts stay 400, and the check runs on read routes only, so writes ignore count. Ships in 15.0.9.
 
 ### `RT-REBASE` &mdash; Cuts 1-4 are 133 commits behind dev and now all five conflict
 
@@ -1097,7 +1160,7 @@ that costs.
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 - `docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md`
 
-**Notes.** First on the adopted train. Every merged backfix in dev - the items in state merged-upstream - reaches operators only through this release; until it ships they are in code nobody runs. Merging dev publishes a Docker Hub image, which is not a release. dev pins nightscout-connect at 234d47c (unmerged connector branch fix/8714-opt-in-debug-logging, connector PR #67), where master pins tag v0.0.13 - see P0-PIN and P0-TAG.
+**Notes.** DECIDED 2026-09-23 (maintainer) - what 15.0.9 carries beyond dev as it stands: ?count=0 answers an empty list (RT-COUNT0); MongoDB 4.4 is declared deprecated in the release notes and dropped in a later release; the legacy-ingestion notice goes in the release notes and RT-4 is dropped; nightscout-connect 0.1.0 is pinned only after longer prerelease testing (P0-TAG); RT-D3 is answered by a manual check plus an automated browser test. See docs/30-design/remedial/backfix-2-plan-2026-09-22.md section 1a. First on the adopted train. Every merged backfix in dev - the items in state merged- upstream - reaches operators only through this release; until it ships they are in code nobody runs. Merging dev publishes a Docker Hub image, which is not a release. dev pins nightscout-connect at 234d47c by source URL (the commit is in connector dev since #64 merged; measured 2026-09-23 with merge- base --is-ancestor), where master pins tag v0.0.13 - see P0-PIN and P0-TAG.
 
 ### `RT-1` &mdash; Cut 1 - chore/retire-jsdom
 
@@ -1229,7 +1292,7 @@ that costs.
 
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 
-**Notes.** The maintainer confirms (2026-09-22, operational knowledge) that legacy mmconnect does not work, and Dexcom BRIDGE_* settings have been served by nightscout-connect by default since 15.0.8 (a91e8ee4, with a deprecation warning and the DEXCOM_BRIDGE_USE_LEGACY escape hatch). No working path is left for a separate release to protect. Recommended: put the notice in 15.0.9's release notes (MiniMed users: move to CONNECT_SOURCE with your CareLink country; Dexcom legacy-flag users: the escape hatch goes with cut 4) and drop this release. The MiniMed shim is still real code and ships with cut 4. BF-44/BF-45 re-graded low.
+**Notes.** DECIDED 2026-09-23 (maintainer) - dropped. The notice goes in 15.0.9's release notes, as recommended below; no separate deprecation release. The maintainer confirms (2026-09-22, operational knowledge) that legacy mmconnect does not work, and Dexcom BRIDGE_* settings have been served by nightscout-connect by default since 15.0.8 (a91e8ee4, with a deprecation warning and the DEXCOM_BRIDGE_USE_LEGACY escape hatch). No working path is left for a separate release to protect. Recommended: put the notice in 15.0.9's release notes (MiniMed users: move to CONNECT_SOURCE with your CareLink country; Dexcom legacy-flag users: the escape hatch goes with cut 4) and drop this release. The MiniMed shim is still real code and ships with cut 4. BF-44/BF-45 re- graded low.
 
 ### `RT-5` &mdash; Cut 4 - chore/mime-exposure-review, the one to slow down on
 
@@ -1374,7 +1437,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 31 items
+`parcel: register-open` &mdash; 32 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1405,9 +1468,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-CONNECTOR` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override | `gate-not-met` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-MINIMED` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading | `not-started` | `-` | minor | 0 run + 3 no-gate |
 | `BFQ-46` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
-| `BFQ-47` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | `needs-decision` | `-` | major | 0 run + 2 no-gate |
+| `BFQ-47` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | `not-started` | `-` | major | 0 run + 2 no-gate |
 | `BFQ-ENV` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | `gate-not-met` | `-` | minor | 4 run + 2 no-gate |
-| `BFQ-52` | BF-52 - the age plugins can only ask for their urgent alarm in one window | `unsettled` | `-` | patch | 0 run + 2 no-gate |
+| `BFQ-52` | BF-52 - the age plugins can only ask for their urgent alarm in one window | `not-started` | `-` | patch | 0 run + 2 no-gate |
+| `BFQ-90` | BF-90 - an alarm at a page with no reading throws in the client | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-67` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
 | `ADV-RETRO` | GHSA-gjhc - loadRetro serves devicestatus to any socket (BF-79) | `merged-upstream` | `bf/ws-loadretro-auth` | patch | 2 run + 1 no-gate |
 | `ADV-ALARM` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) | `merged-upstream` | `bf/alarm-socket-scope` | minor | 2 run + 2 no-gate |
@@ -1446,7 +1510,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/gt3-register-truth-2026-09-15.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** The register entry names the wrong fields. Measured over 277,690 treatments: ZERO zero-valued `insulin` (0 of 107,732) and ZERO zero-valued `carbs` (0 of 12,394). The field that actually carries falsy values is `absolute` - 67,521 of 153,315, 44% - the zero temp basal. `duration:0` adds 2,094. The entry also omits the ±2s window (maxtimediff). GT3's reading: a bug, not intent - the author built an explicit selected/fallback mechanism, so truthiness on `absolute` means the code treats a zero temp as "no value here", which is false in AID terms.
+**Notes.** DECIDED 2026-09-23 (maintainer) - measure first, then decide. The maintainer leans towards treating zero as a real value (a zero temp basal is a real value in AID terms), but recalls a temp-basal display problem when AAPS issues zero temps seconds apart, fixed at some point (bec641ca, rendering, is the candidate); the fix must not bring it back. Measure the impact on the corpus before choosing. New from reading (not yet reproduced): because a falsy field is left out of the lookup, the lookup can end up keyed on fields another eventType also has, so a zero temp can match a different eventType within the window. Only uploaders using the socket path without NSCLIENT_ID reach this. tools/queue/gates/bf09-corpus-divergence.js undercounts and needs fixing before the measurement is trusted. The register entry names the wrong fields. Measured over 277,690 treatments: ZERO zero-valued `insulin` (0 of 107,732) and ZERO zero-valued `carbs` (0 of 12,394). The field that actually carries falsy values is `absolute` - 67,521 of 153,315, 44% - the zero temp basal. `duration:0` adds 2,094. The entry also omits the ±2s window (maxtimediff). GT3's reading: a bug, not intent - the author built an explicit selected/fallback mechanism, so truthiness on `absolute` means the code treats a zero temp as "no value here", which is false in AID terms.
 
 ### `BFQ-10` &mdash; BF-10 - mongod fatal-asserts at Docker's default nofile=1024
 
@@ -1941,7 +2005,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Found 2026-09-21 while re-measuring the security advisory's third proof of concept, which the advisory frames as $regex data extraction. On the shipped `readable` default that is close to vacuous - entries, treatments and devicestatus are the three collections prep_storage admits, all three are already readable, and the API returns whole documents, so a regex oracle reveals nothing a plain read does not. What the same operator does do is cost the database, which the advisory does not describe. Sequencing with P0-K: #8743 merged on 2026-09-18 and did not narrow $regex, because the client census found real clients sending it. So this entry is not a regression from that branch and is not fixed by it. State is needs-decision rather than gate- not-met: a gate fails, but the blocking thing is not work. It is whether Nightscout's security contact process is invoked and in what order - the same question P0-K left open, still unanswered.
+**Notes.** Disposition decided by the maintainer 2026-09-23; details are held outside version control. Found 2026-09-21 while re-measuring the security advisory's third proof of concept, which the advisory frames as $regex data extraction. On the shipped `readable` default that is close to vacuous - entries, treatments and devicestatus are the three collections prep_storage admits, all three are already readable, and the API returns whole documents, so a regex oracle reveals nothing a plain read does not. What the same operator does do is cost the database, which the advisory does not describe. Sequencing with P0-K: #8743 merged on 2026-09-18 and did not narrow $regex, because the client census found real clients sending it. So this entry is not a regression from that branch and is not fixed by it. State is needs-decision rather than gate- not-met: a gate fails, but the blocking thing is not work. It is whether Nightscout's security contact process is invoked and in what order - the same question P0-K left open, still unanswered.
 
 ### `BFQ-40` &mdash; BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
 
@@ -2004,7 +2068,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** BF-44 is a concrete, shipping way to produce a future-dated reading, which is why BFQ-MINIMED carries the same severity argument from the other end.
+**Notes.** DECIDED 2026-09-23 (maintainer) - a reading dated ahead of the clock is kept as sent, and the stale-data check uses the newest reading that is not in the future; no new warning. "In the future" means more than a tolerance ahead of the server clock, configurable, default 5 minutes. Snooze runs on the wall clock. The hosted evaluator may apply the same rule, but never to live alarms. BF-44 is a concrete, shipping way to produce a future-dated reading, which is why BFQ-MINIMED carries the same severity argument from the other end.
 
 ### `BFQ-87` &mdash; BF-87 - the root qs override holds the connector below its range and pins the server's query parser
 
@@ -2142,7 +2206,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@a8888f0d` |
@@ -2168,7 +2232,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** A verifier's review of bf/auth established that the field loss already happens on the current release, not only on the unmerged branch. Keeping the security goal of BF-17 - the derived token never reaches the database - does not require the allow-list.
+**Notes.** DECIDED 2026-09-23 (maintainer) - the allow-list is intended and stays (option 2). No open-source client in the corpus depends on storing other subject fields. The loss that remains is the admin page: it fetches subjects without notes and created_at, then saves the whole subject back, so an ordinary edit clears both. That is the defect to fix. A verifier's review of bf/auth established that the field loss already happens on the current release, not only on the unmerged branch. Keeping the security goal of BF-17 - the derived token never reaches the database - does not require the allow-list.
 
 ### `BFQ-ENV` &mdash; BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies
 
@@ -2213,7 +2277,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `unsettled` |
+| state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `origin/dev@a8888f0d` |
@@ -2232,13 +2296,44 @@ distinction is the only thing that makes the register mean anything - widening
 **Gates.**
 
 - **NO GATE** &mdash; Read-derived, not reproduced. No run across a sequence of evaluations was made, and a sequence is the only thing that can show the notification is missed when a window is skipped - a single evaluation at the exact threshold sends it, which is what makes the defect invisible to a one-shot test. That run would settle the grade, and it is the instrument this item needs.
-- **NO GATE** &mdash; Marked `unsettled` deliberately. One-shot may be the intent. What is not defensible is that :90 uses >= and :92 uses === without saying why, and no check anywhere asserts an intended relationship between the two.
+- **NO GATE** &mdash; Settled 2026-09-23 by the maintainer: one push, sent the first time the age is at or past the threshold and remembered. :90 uses >= and :92 uses ===, and no check asserts the relationship between the two; the fix needs a sequence test that skips the exact-threshold check.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** BF-28 masked this on insulinage for years - the level line was broken, so nobody reached the notification line. The three sibling plugins have shipped with the same shape unmasked. Any release note for BF-28 (merged to dev via #8739, arriving in 15.0.9) must get two things right - the push alarm is opt- in and off by default, and what does reach everyone is the on-screen pill, because the level is assigned outside the alerts guard.
+**Notes.** DECIDED 2026-09-23 (maintainer) - send once, even if the exact check is missed: fire the push the first time the age is at or past the threshold and remember that it was sent, so a restart or a data gap cannot swallow it and it does not repeat every check. That makes today's exact-match behaviour a defect; the fix is not built. BF-28 masked this on insulinage for years - the level line was broken, so nobody reached the notification line. The three sibling plugins have shipped with the same shape unmasked. Any release note for BF-28 (merged to dev via #8739, arriving in 15.0.9) must get two things right - the push alarm is opt-in and off by default, and what does reach everyone is the on-screen pill, because the level is assigned outside the alerts guard.
+
+### `BFQ-90` &mdash; BF-90 - an alarm at a page with no reading throws in the client
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@74fc6619` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-90` |
+
+**Blast radius.** lib/client/index.js:1230 and :1242, the log argument in the "disabled locally" branch of the alarm and urgent_alarm handlers. One guard each.
+
+**What an operator sees.** If an alarm reaches a Nightscout page that has no glucose reading loaded, the page hits an internal error and skips redrawing the chart. It does not stop an alarm from sounding, because this only happens on the path where the page has already decided not to sound one. It was seen only in a test that forced alarms to reach such a page.
+
+**Why `patch`.** a client-side bug fix with no change to what is shown when data exists
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced in a browser by the RT-D3 probe run (docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md), but that probe is untracked, so no gate can run it. A gate needs the probe committed, or a jsdom test of the two handlers with no latestSGV.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/60-research/modernization/rt-d3-and-alarm-browser-evidence-2026-09-22.md`
+
+**Notes.** Filed 2026-09-23 from the other session's RT-D3 browser run; latent, graded low.
 
 ### `BFQ-67` &mdash; BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work
 
@@ -2383,7 +2478,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/security-advisory-disposition-2026-09-21.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** REPRODUCED, and every "fixed" cell is paired with a positive v15.0.7 control from the same run - four write paths across three refs, end-to-end over real HTTP and socket, with the document read back out of mongo, and v3 driven with a real JWT on all three refs. The fix is broader than either advisory claims: PUT /api/v1/treatments/, POST /api/v1/food and POST /api/v1/activity also had no purification at 15.0.7 and now do. The headline, which source-reading could not have answered: a payload a 15.0.7 server had ALREADY STORED does not fire on a patched server. At 15.0.7 the day-to-day report executed it in a real browser; at 15.0.8 and dev it renders as visible text. That is true only because the output-escaping half of the fix (da548d2a) landed alongside the purification half - had only the purifier shipped, the answer would be the opposite. Both advisories should say so. Residual sinks: none. 32 `.html(` sites on dev classified; a mechanical scan for unescaped free-text interpolation found 25 hits across 10 files at v15.0.7 and zero at v15.0.8 and dev. The internal report's sweep claim names 4 files; the shipped sweep covers 10. Sanitizer bounds: a string over the size budget is NOT passed through unsanitized - it throws RangeError and the write is REFUSED on all four paths, fail-closed. The POSSIBLE_HTML_MARKUP pre-filter is evadable, but none of the three evading forms executes at any sink on any ref, including v15.0.7 - the defence-in-depth argument the purifier's own header makes, now measured. BF-73 was filed because the XSS fix created its trigger: the new RangeError escapes uncaught to the error page. Independently reproduced against v15.0.8 - the 500 body named six absolute paths and the deployment's directory layout.
+**Notes.** DECIDED 2026-09-23 (maintainer) - apply all four metadata corrections to the draft advisories. The advisories stay drafts; applying is a human step (advisories/apply-metadata.sh --apply). REPRODUCED, and every "fixed" cell is paired with a positive v15.0.7 control from the same run - four write paths across three refs, end-to-end over real HTTP and socket, with the document read back out of mongo, and v3 driven with a real JWT on all three refs. The fix is broader than either advisory claims: PUT /api/v1/treatments/, POST /api/v1/food and POST /api/v1/activity also had no purification at 15.0.7 and now do. The headline, which source-reading could not have answered: a payload a 15.0.7 server had ALREADY STORED does not fire on a patched server. At 15.0.7 the day-to-day report executed it in a real browser; at 15.0.8 and dev it renders as visible text. That is true only because the output-escaping half of the fix (da548d2a) landed alongside the purification half - had only the purifier shipped, the answer would be the opposite. Both advisories should say so. Residual sinks: none. 32 `.html(` sites on dev classified; a mechanical scan for unescaped free-text interpolation found 25 hits across 10 files at v15.0.7 and zero at v15.0.8 and dev. The internal report's sweep claim names 4 files; the shipped sweep covers 10. Sanitizer bounds: a string over the size budget is NOT passed through unsanitized - it throws RangeError and the write is REFUSED on all four paths, fail-closed. The POSSIBLE_HTML_MARKUP pre-filter is evadable, but none of the three evading forms executes at any sink on any ref, including v15.0.7 - the defence-in-depth argument the purifier's own header makes, now measured. BF-73 was filed because the XSS fix created its trigger: the new RangeError escapes uncaught to the error page. Independently reproduced against v15.0.8 - the 500 body named six absolute paths and the deployment's directory layout.
 
 ### `ADV-CONFIG` &mdash; The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81)
 
@@ -2419,7 +2514,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/security-advisory-disposition-2026-09-21.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Found while building the configuration matrix that answers "were the right flags set when the five advisories were evaluated"; these two fell out of enumerating what AUTH_DEFAULT_ROLES actually gates. REPRODUCED on v15.0.8 AND dev 59430336, mongod 7.0, with both controls in the same run. BF-77: default -> notifyCount 1, title "Nightscout readable by world" (POSITIVE CONTROL, the notice does fire when it should); TREATMENTS_AUTH=off -> notifyCount 0 while anonymous read is 200 and anonymous POST /api/v1/treatments is 200 with the record stored; AUTH_DEFAULT_ROLES=denied -> notifyCount 0, correctly (NEGATIVE CONTROL, so absence in the middle row is attributable to the string compare and not to the notice being broken generally). These are documented configurations, not a bypass. BF-78, anonymous POST /api/v1/treatments: `readable careportal` 200 stored, `careportal` 401, `denied careportal` 401, `denied` 401. BF-81 was filed on the maintainer's instruction, 2026-09-21, as the shared root of the other two: the configuration surface carries two authorization-shaped settings with adjacent names - AUTH_DEFAULT_ROLES, which is the boundary, and AUTHENTICATION_PROMPT_ON_LOAD, which is a client prompt that grants nothing - and nothing documents the difference. Its strongest evidence is that the reporter of GHSA-8849 keyed their own security patch to the wrong one. It is prose in README.md and the swagger documents, there is no branch, and the wording is a maintainer's to write.
+**Notes.** DECIDED 2026-09-23 (maintainer) - BF-78 (the careportal role) is documented and warned about at boot; no behaviour change. Found while building the configuration matrix that answers "were the right flags set when the five advisories were evaluated"; these two fell out of enumerating what AUTH_DEFAULT_ROLES actually gates. REPRODUCED on v15.0.8 AND dev 59430336, mongod 7.0, with both controls in the same run. BF-77: default -> notifyCount 1, title "Nightscout readable by world" (POSITIVE CONTROL, the notice does fire when it should); TREATMENTS_AUTH=off -> notifyCount 0 while anonymous read is 200 and anonymous POST /api/v1/treatments is 200 with the record stored; AUTH_DEFAULT_ROLES=denied -> notifyCount 0, correctly (NEGATIVE CONTROL, so absence in the middle row is attributable to the string compare and not to the notice being broken generally). These are documented configurations, not a bypass. BF-78, anonymous POST /api/v1/treatments: `readable careportal` 200 stored, `careportal` 401, `denied careportal` 401, `denied` 401. BF-81 was filed on the maintainer's instruction, 2026-09-21, as the shared root of the other two: the configuration surface carries two authorization-shaped settings with adjacent names - AUTH_DEFAULT_ROLES, which is the boundary, and AUTHENTICATION_PROMPT_ON_LOAD, which is a client prompt that grants nothing - and nothing documents the difference. Its strongest evidence is that the reporter of GHSA-8849 keyed their own security patch to the wrong one. It is prose in README.md and the swagger documents, there is no branch, and the wording is a maintainer's to write.
 
 ---
 
@@ -2879,6 +2974,8 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
+**Notes.** DECIDED 2026-09-23 (maintainer) - the maintainer owns this question. Answers already given with BF-41: snooze runs on the wall clock, and an evaluator may own its clock, but never for live alarms. Still unsettled until the maintainer writes up the rest.
+
 ### `A7A-GATE` &mdash; The alarms-on gate itself - nothing here may be marked done by inference
 
 | | |
@@ -3023,8 +3120,8 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | `DOC-MEMORY` | The two memory files disagree with each other, and one cites a file that does not exist | `not-started` | `main` | n/a | 2 run + 1 no-gate |
 | `DOC-LAYOUT` | The repository-layout preamble names the wrong shipping checkout | `not-started` | `main` | n/a | 1 run + 1 no-gate |
 | `DOC-TESTSCRIPTS` | 52 test files match neither local test script | `not-started` | `origin/dev` | n/a | 1 run + 1 no-gate |
-| `DOC-VIEWS` | A reviewer-facing surface over the queue: three overview pages and a packet per PR | `ready-to-push` | `main` | n/a | 2 run + 3 no-gate |
-| `DOC-LINKS` | Every path the programme's documents and tooling cite must resolve | `ready-to-push` | `main` | n/a | 1 run + 2 no-gate |
+| `DOC-VIEWS` | A reviewer-facing surface over the queue: three overview pages and a packet per PR | `done` | `main` | n/a | 2 run + 3 no-gate |
+| `DOC-LINKS` | Every path the programme's documents and tooling cite must resolve | `done` | `main` | n/a | 1 run + 2 no-gate |
 
 ### `DOC-SEQUENCING` &mdash; phase0-pr-sequencing contradicts itself on the branch count
 
@@ -3246,7 +3343,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `main` |
 | base | `main@1a10007b` |
@@ -3277,13 +3374,13 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 - `docs/00-overview/REVIEWER-ONBOARDING.md`
 - `reports/reviewer-packets/README.md`
 
-**Notes.** Built 2026-09-16 on the maintainer's instruction: a view of progress and a place where reviewers and teammates can collaborate. Hybrid generation for the overview pages, full generation for the packets, audience the maintainer plus reviewers being recruited. The pages are built around the reviewer-load table (generated in PROGRAMME-STATUS.md): most items route to the maintainer, and the SECURITY and SAFETY rows name a kind of reviewer with no individual attached.
+**Notes.** DECIDED 2026-09-23 (maintainer) - done. Built 2026-09-16 on the maintainer's instruction: a view of progress and a place where reviewers and teammates can collaborate. Hybrid generation for the overview pages, full generation for the packets, audience the maintainer plus reviewers being recruited. The pages are built around the reviewer-load table (generated in PROGRAMME-STATUS.md): most items route to the maintainer, and the SECURITY and SAFETY rows name a kind of reviewer with no individual attached.
 
 ### `DOC-LINKS` &mdash; Every path the programme's documents and tooling cite must resolve
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `main` |
 | base | `main@6574b28d` |
@@ -3308,7 +3405,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 
 - `docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md`
 
-**Notes.** Non-vacuity, run 2026-09-16: three ablations, one per detection pass, each confirmed to land before its result was read. A markdown link repointed to a nonexistent name - caught. A repo-root path in this manifest reverted to its pre-move spelling - caught. doc-branch-count.js's path.join reverted to the pre-move segments - caught. Empty-root negative control via QUEUE_GATE_ROOT exits 1 rather than passing on an empty tree.
+**Notes.** DECIDED 2026-09-23 (maintainer) - done. Non-vacuity, run 2026-09-16: three ablations, one per detection pass, each confirmed to land before its result was read. A markdown link repointed to a nonexistent name - caught. A repo- root path in this manifest reverted to its pre-move spelling - caught. doc- branch-count.js's path.join reverted to the pre-move segments - caught. Empty- root negative control via QUEUE_GATE_ROOT exits 1 rather than passing on an empty tree.
 
 ---
 
