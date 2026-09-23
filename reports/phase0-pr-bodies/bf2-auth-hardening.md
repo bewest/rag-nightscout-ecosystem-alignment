@@ -1,7 +1,15 @@
 # `bf2/auth-hardening` — login security fixes, plus a setting that tells Nightscout which proxy to trust
 
-**DRAFT — for the security reviewer. Not to be opened as a PR until 15.0.9 is tagged** (backfix 2
-plan, §3). Branch `bf2/auth-hardening` on `origin/dev` `74fc6619`, tip ``29e6430e``. Not pushed.
+**DRAFT — for the security reviewer. Not pushed, not opened.** Branch `bf2/auth-hardening` on
+`origin/dev` `74fc6619`, tip `29e6430e`. **Ships in 15.0.9** (decided 2026-09-23, backfix-2 plan §1a,
+superseding §3's "after 15.0.9 is tagged"). The combined run with the other 15.0.9 additions is
+recorded in `docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`. Its posting summary is
+"Tested together with the other 15.0.9 changes" below.
+
+Before posting, note that BF-17 and BF-30 are live on 15.0.8. `bf2/backports` (#8751) was posted in
+the withheld style for that reason. This body gives mechanisms and operator remediation, with no
+reproduction steps. Whether to post it in full or in the withheld style is the maintainer's
+decision.
 
 This branch combines two branches that were already reviewed on their own, and adds one new
 setting:
@@ -147,7 +155,7 @@ planned to flip.
 |---|---|---|---|---|
 | `TRUST_PROXY` | unset: today's behaviour — forwarded headers believed from any peer, for client address, https detection and hostname | `false`, or an explicit list of proxy IPs/CIDRs | not yet planned | client-address trust, **and** the failed-login delay's keying (BF-30) |
 | *(none)* — BF-17 token not written | on for everyone | — | — | not a flag: the old behaviour is the defect |
-| *(none)* — BF-47 subject-field allow-list | on for everyone, as `bf/auth` has it | — | — | **undecided by the maintainer**; see Semver |
+| *(none)* — BF-47 subject-field allow-list | on for everyone, as `bf/auth` has it | — | — | not a flag: decided 2026-09-23 that the allow-list is the intended schema; see Semver |
 
 **There is one flag, not two.** The backfix-2 plan's flag registry lists a second row, "throttle
 keying (name to be taken from `bf/throttle`)". `bf/throttle` has no such setting: it keys on
@@ -279,18 +287,17 @@ upgrades — adjacent-line conflicts, not disagreements about client-address tru
 
 ## Semver
 
-**Major while BF-47 stands as written.** The subject allow-list means `save()` writes only
-`name`, `roles`, `notes`, `created_at` (subjects) and `name`, `permissions`, `notes`, `created_at`
-(roles), so a field a third-party admin tool stored on a subject or role, and sends back in its own
-save, is dropped. That is a capability removal. `TRUST_PROXY` alone would be a minor (a new setting,
-today's behaviour by default), and the throttle changes a patch.
+The subject allow-list means `save()` writes only `name`, `roles`, `notes`, `created_at`
+(subjects) and `name`, `permissions`, `notes`, `created_at` (roles). A field a third-party admin tool
+stored on a subject or role, and sends back in its own save, is dropped.
 
-BF-47 is undecided by the maintainer and this branch keeps it as `bf/auth` has it, with no flag. If
-the decision is a compatibility flag, it would look like this: a setting (for example
-`AUTH_SUBJECT_FIELDS=passthrough|owned`), default `passthrough` — `save()` removes only the three
-derived fields (`accessToken`, `accessTokenDigest`, `digest`) and writes every other field the caller
-sent, which is enough for BF-17 — hardened value `owned`, the allow-list as it is now; planned flip
-not yet planned. That would make this branch a minor.
+**Decided 2026-09-23 (maintainer):** the allow-list is the declared schema for subjects and roles, so
+fields outside it are not part of the contract. It stays as `bf/auth` has it, with no compatibility
+flag. The branch ships in 15.0.9, and the release notes declare the allow-list as a correction.
+`TRUST_PROXY` is a new setting with today's behaviour by default, and the throttle changes are fixes.
+
+The remaining BF-47 defect, the admin page clearing `notes` and `created_at` on every edit, is fixed
+by `bf2/subject-edit-keeps-fields` (`7103f657`, one commit on this branch).
 
 **The operator text above belongs in the release notes, not `CHANGELOG.md`.** What must survive
 verbatim: the whole "If you have ever edited a subject" section, including the rotation table and
@@ -307,3 +314,39 @@ the fixes would leave an operator believing guessing is handled.
   address would turn the boot warning into a signal. It belongs in `client-ip.js`.
 - **BF-17's `created_at` residual** (`endpoints.js` does not return `created_at`), carried from
   `bf/auth`.
+
+## Tested together with the other 15.0.9 changes
+
+On a local integration branch cut from `dev` `74fc6619`, this branch was merged sixth of eight:
+after #8750, #8749, #8748, #8751 and `bf2/ops`, and before `bf2/subject-edit-keeps-fields` and the
+connector pin. The merge had no conflicts. The full suite went from 2427 to 2503 passing, with 0
+failing and 3 pending, on Node 20.20.0 and MongoDB 7.0.43. The difference is this branch's 76
+tests, and no other test changed state. After all eight merges, the full suite passes on Node 20,
+22 and 24 against both MongoDB 4.4.24 and 7.0.43 (2508/0/3 each).
+
+**`lib/api/index.js` is also edited by #8748** (the v1 `count` rule). This branch adds one line near
+the top of the file, which sets the v1 app's `trust proxy` from `TRUST_PROXY`. #8748 changes the
+`validateCount` middleware further down, which reads only the request method and `req.query`. The
+hunks are textually and functionally disjoint. On the merged file, all of #8748's count rules were
+checked against a running server, and this branch's client-address tests all pass.
+
+That one line in `lib/api/index.js` is not covered by any test. With it removed from the integrated
+tree, the full suite still passes (2508/0/3). This is because Express gives a mounted sub-app its
+parent's `trust proxy`, and `lib/server/app.js` sets the same value on the parent. A direct check
+with Express showed the same `req.ip` and `req.secure` with and without the line, when mounted,
+for `TRUST_PROXY` unset, `false` and a list. No code under `lib/api/` reads `req.ip`, `req.secure`,
+`req.protocol` or `req.hostname`. The line comes unchanged from #8605 (`06c83f2f`).
+
+Each break was repeated on the integrated tree, and each failed on its original symptom:
+
+| break | failing |
+|---|---|
+| `client-ip.js` restored to `395f3207` | 7 (`client-ip`) |
+| unset default flipped to trust nothing | 28: 23 `client-ip`, 5 `authdelay` |
+| `lib/authorization/index.js` resolves the address without `TRUST_PROXY` | 5: 4 `authdelay`, 1 `client-ip` (the configured address through HTTP authorization) |
+| every address shares one key | 5: 3 `authdelay`, 2 `client-ip` |
+| the address key dropped from `keysFor()` | 9: 7 `authdelay`, 2 `client-ip` |
+| `save()` writes the request body unfiltered | 5 of 13 `authsubjects`: the three token tests and the two allow-list tests; the access token is found in the stored document |
+
+The counts across two files are larger than those in "Test evidence" above, which counted the file
+named in each row.

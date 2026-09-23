@@ -2,7 +2,15 @@
 
 **DRAFT — for maintainer and security review. Not pushed, not opened.** Branch
 `bf2/subject-edit-keeps-fields`, one commit `7103f657` on `bf2/auth-hardening` `29e6430e`
-(register BF-47, queue BFQ-47). No `CHANGELOG.md` edit.
+(register BF-47, queue BFQ-47). No `CHANGELOG.md` edit. **Ships in 15.0.9** (decided 2026-09-23,
+backfix-2 plan §1a). The combined run with the other 15.0.9 additions is recorded in
+`docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`.
+
+**This commit cannot go into `dev` without `bf2/auth-hardening`.** Merged onto `dev` `74fc6619`
+alone, it conflicts in `lib/authorization/storage.js`, and `tests/authsubjects.test.js` does not
+exist there (modify/delete). Opened as its own PR against `dev` before `bf2/auth-hardening` merges,
+its diff would show all 14 commits. Whether it is its own PR or part of the auth-hardening PR is
+still open; the options are in the rc record.
 
 ---
 
@@ -156,3 +164,16 @@ reads MongoDB. It passes on this branch, fails on `29e6430e`, and produced the t
 3. The fill-in is limited to `notes` and `created_at` on purpose (see "Why not keep every field").
    If a later change adds fields to the allow-list, it has to decide for each one whether leaving it
    out means "unchanged" or "remove it".
+
+### Tested together with the other 15.0.9 changes
+
+On a local integration branch cut from `dev` `74fc6619`, this commit was merged seventh of eight,
+directly after `bf2/auth-hardening` and before the connector pin. The merge had no conflicts. The
+full suite went from 2503 to 2508 passing, with 0 failing and 3 pending, on Node 20.20.0 and MongoDB
+7.0.43. The difference is the 5 tests above, and no other test changed state. After all eight
+merges, the full suite passes on Node 20, 22 and 24 against both MongoDB 4.4.24 and 7.0.43
+(2508/0/3 each).
+
+The three breaks above were repeated on the integrated tree, with the same results: 5 fail, 2 fail
+(`expected 'to be cleared' to be ''`) and 1 fails (`expected Array [ 'admin' ] to equal Array []`).
+The browser check was not repeated on the integrated tree.

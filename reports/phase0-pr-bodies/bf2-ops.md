@@ -1,7 +1,10 @@
 # `bf2/ops`: the bundled database could abort, an Alexa request could hang, and two guards
 
 **DRAFT. Not pushed, not opened.** Branch `bf2/ops` on `origin/dev` `74fc6619`, tip `e6a50e9a`,
-four commits. No `CHANGELOG.md` edit. Merges clean into `dev`.
+four commits. No `CHANGELOG.md` edit. Merges clean into `dev`. Ships in 15.0.9 (decided
+2026-09-23, backfix-2 plan §1a). The combined run with the other 15.0.9 additions is recorded in
+`docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`. The section "Tested together with
+the other 15.0.9 changes" below is its posting summary.
 
 | commit | what it fixes | who can see it today |
 |---|---|---|
@@ -163,3 +166,25 @@ with that `TypeError` (`booterror.js:27`) and render on this branch.
 - `booterror.js` inserts `desc` and `err` into the page without HTML-escaping. Every current
   source is server-side configuration or an error message, not request input. This is noted
   here, not changed here.
+
+### Tested together with the other 15.0.9 changes
+
+On a local integration branch cut from `dev` `74fc6619`, this branch was merged fifth of eight:
+after #8750, #8749, #8748 and #8751, and before `bf2/auth-hardening`,
+`bf2/subject-edit-keeps-fields` and the connector pin. The merge had no conflicts. The full suite
+went from 2421 to 2427 passing, with 0 failing and 3 pending, on Node 20.20.0 and MongoDB 7.0.43.
+The difference is the six tests above, and no other test changed state. After all eight merges,
+the full suite passes on Node 20, 22 and 24 against both MongoDB 4.4.24 and 7.0.43
+(2508/0/3 each).
+
+On the final integrated tree, each library change was reverted by itself to `dev`'s version, and
+its test failed with the symptom described above:
+
+| reverted | failing | message |
+|---|---|---|
+| `lib/plugins/index.js` | 1 of 14 | `AssertionError: expected true to be false` |
+| `lib/api/alexa/index.js` | 1 of 5 | `Error: Timeout of 2000ms exceeded` |
+| `lib/server/booterror.js` | 2 of 4 | `TypeError: Cannot convert undefined or null to object` at `booterror.js:27`; the two controls pass |
+
+`docker-compose.yml` on the integrated tree is identical to this branch's. The compose abort
+measurement was not repeated there.
