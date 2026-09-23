@@ -41,9 +41,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 34 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE, BF2-BACKPORT, BF2-OPS |
+| `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE, BF2-BACKPORT |
 | `gate-not-met` | 15 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 5 | P0-C-REMEDIATE, T30-AUTH, DOC-VIEWS, DOC-LINKS, BF2-AUTH |
+| `ready-to-push` | 6 | P0-C-REMEDIATE, T30-AUTH, DOC-VIEWS, DOC-LINKS, BF2-AUTH, BF2-OPS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `merged-upstream` | 15 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
 | `needs-decision` | 10 | P0-TAG, RT-D3, RT-0, RT-4, T30-RESEARCH, BFQ-72, BFQ-47, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
@@ -851,7 +851,7 @@ needs a tenancy decision.
 
 **Blast radius.** Three one-line changes in three files - lib/plugins/index.js:241, lib/authorization/storage.js:82, lib/api/alexa/index.js switch (line numbers on origin/dev 74fc6619).
 
-**What an operator sees.** One of these three is visible to you. If an Amazon Alexa request arrives that Nightscout does not recognise, Nightscout answers nothing at all and the request hangs until Alexa gives up, rather than saying it did not understand. The other two are internal - a check that always answers "yes" but that nothing currently asks, and a leftover log line that prints request details to the server log.
+**What an operator sees.** One of these three is visible to you. If an Amazon Alexa request arrives that Nightscout does not recognise, Nightscout answers nothing at all and the request hangs until Alexa gives up, rather than saying it did not understand (the fix answers without speech, because Amazon does not accept a spoken reply to these request types). The other two are internal - a check that always answers "yes" but that nothing currently asks, and a leftover log line that prints request details to the server log.
 
 **Why `patch`.** Three bug fixes. None moves a declared surface. The alexa change adds a response where there is currently none, which is a repair of a hang rather than a new capability.
 
@@ -869,7 +869,7 @@ needs a tenancy decision.
 
 - `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`
 
-**Notes.** Three small residuals the sequencing document named together, each one file and each measurable. Follow-up 4 (the console.log in lib/authorization/storage.js) is fixed on bf/auth as commit ce82f0cd and must not be fixed here as well - this is a cross-reference, not a second item. Its gate fails, correctly, because it reads origin/dev and P0-C has not merged; when P0-C merges it goes green on its own and only follow-ups 3 and 7 remain. Follow-up 7 sits beside the ctx.language.set(locale) line that bf/alarms (P0-A, merged) changed.
+**Notes.** PREPARED 2026-09-22 on bf2/ops - follow-up 3 at e72ba30d, follow-up 7 at af8eee45; each test fails on dev with the original symptom. Correction to operator_visible - Amazon forbids a spoken reply to these request types (System.ExceptionEncountered, SessionEndedRequest), so the fix answers with an empty 200, mirroring the SessionEndedRequest branch, rather than saying it did not understand. Three small residuals the sequencing document named together, each one file and each measurable. Follow-up 4 (the console.log in lib/authorization/storage.js) is fixed on bf/auth as commit ce82f0cd and must not be fixed here as well - this is a cross-reference, not a second item. Its gate fails, correctly, because it reads origin/dev and P0-C has not merged; when P0-C merges it goes green on its own and only follow-ups 3 and 7 remain. Follow-up 7 sits beside the ctx.language.set(locale) line that bf/alarms (P0-A, merged) changed.
 
 ### `FU-PRBODIES` &mdash; Merged PR bodies have drifted from the files they were posted from
 
@@ -1368,7 +1368,7 @@ that costs.
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** The gate's caller-count arm matches ES6 shorthand `err` as well as `err:` - dev's `bootErrors.push({desc: synopsis.join(' '), err})` has no colon and is not an err-less site. It reproduces the register exactly: 7/7/9 push sites, 0/0/2 err-less, on master/dev/cut 4.
+**Notes.** 2026-09-22 - the renderer half is on bf2/ops e6a50e9a as a guard: on dev all 7 bootErrors.push sites pass a non-null err, so the crash is not reachable on dev today. The call-site half at cut 4 bootevent.js:330 and :335 is still open. Separately, booterror.js interpolates desc and err into HTML unescaped; every input today is server-side. The gate's caller-count arm matches ES6 shorthand `err` as well as `err:` - dev's `bootErrors.push({desc: synopsis.join(' '), err})` has no colon and is not an err-less site. It reproduces the register exactly: 7/7/9 push sites, 0/0/2 err-less, on master/dev/cut 4.
 
 ---
 
@@ -1471,14 +1471,14 @@ distinction is the only thing that makes the register mean anything - widening
 **Gates.**
 
 - `[static]` _(cwd: `externals/cgm-remote-monitor-official`)_ `grep -q 'ulimits' docker-compose.yml`
-  - FAILS today. GT3 verified the mongo service carries no ulimits block on EITHER master (mongo:5.0.32) or dev (mongo:4.4), and grep for ulimit/nofile over the whole released tree returns nothing.
-- **NO GATE** &mdash; REPRODUCED 2026-09-21: one branch's full suite (~2200 tests) against a plain `docker run -d mongo:7` with no ulimits killed the server. Startup warning `Soft rlimits for open file descriptors too low` (currentValue 1024, recommendedMinimum 64000), then during index creation `__posix_directory_sync` / `Too many open files` / error_code 24, then `Fatal assertion 23089 msgid 50853` at wiredtiger_util.cpp:772, then abort; container exit 14. Control: the same image with `--ulimit nofile=64000:64000` logs that warning ZERO times against TWO on the default. It is not a gate because reaching it takes a full suite against a deliberately under-provisioned mongod, and the side effect is a DEAD server - sibling worktrees sharing that mongod then fail their own suites with a `before all` timeout, which reads like a code regression. A gate whose failure mode breaks other items' gates does not belong in a shared runner. Evidence is in the register's BF-10 detail. The reproduction also shows it is not specific to the 4.4/5.0 images the shipped compose files pin - 7.0.43 does it too - and it does not need tenant scale: EXP-MT-040b reached it at 50 tenant databases; one ordinary test run is enough.
+  - FAILS today. GT3 verified the mongo service carries no ulimits block on EITHER master or dev (both mongo:5.0.32 since d91a9b4c, 2026-03-17; an earlier "dev (mongo:4.4)" here was wrong), and grep for ulimit/nofile over the whole released tree returns nothing.
+- **NO GATE** &mdash; REPRODUCED 2026-09-21: one branch's full suite (~2200 tests) against a plain `docker run -d mongo:7` with no ulimits killed the server. Startup warning `Soft rlimits for open file descriptors too low` (currentValue 1024, recommendedMinimum 64000), then during index creation `__posix_directory_sync` / `Too many open files` / error_code 24, then `Fatal assertion 23089 msgid 50853` at wiredtiger_util.cpp:772, then abort; container exit 14. Control: the same image with `--ulimit nofile=64000:64000` logs that warning ZERO times against TWO on the default. It is not a gate because reaching it takes a full suite against a deliberately under-provisioned mongod, and the side effect is a DEAD server - sibling worktrees sharing that mongod then fail their own suites with a `before all` timeout, which reads like a code regression. A gate whose failure mode breaks other items' gates does not belong in a shared runner. Evidence is in the register's BF-10 detail. The reproduction also shows it is not specific to the 5.0.32 image the shipped compose files pin - 7.0.43 does it too - and it does not need tenant scale: EXP-MT-040b reached it at 50 tenant databases; one ordinary test run is enough.
 
 **Evidence.**
 
 - `docs/60-research/remedial/gt3-register-truth-2026-09-15.md`
 
-**Notes.** The register entry's "Not a code defect; it belongs in the operator documentation" does not hold: there is a one-block landing site in the file most self-hosters actually use. The fix is that file first, docs second.
+**Notes.** PREPARED 2026-09-22 on bf2/ops 03fba725. Reproduced with the SHIPPED compose file (mongo 5.0.32) - ulimit -n 1024 in the container and a WiredTiger error-24 abort, exit 14, about 35 s into the FIRST full suite (one run, not repeated); the branch file gives 64000 and three consecutive clean full runs of 2386. The gate reads origin/dev and goes green when bf2/ops merges. The register entry's "Not a code defect; it belongs in the operator documentation" does not hold: there is a one-block landing site in the file most self-hosters actually use. The fix is that file first, docs second.
 
 ### `BFQ-04` &mdash; BF-04 - the v1 operator allowlist - superseded by P0-K
 
@@ -3325,7 +3325,7 @@ dev by SHA, evaluating between each merge.
 |---|---|---|---|---|---|
 | `BF2-AUTH` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY | `ready-to-push` | `bf2/auth-hardening` | major | 5 run |
 | `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `not-started` | `-` | n/a | 1 run + 1 no-gate |
-| `BF2-OPS` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | `not-started` | `bf2/ops` | patch | 2 run + 1 no-gate |
+| `BF2-OPS` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | `ready-to-push` | `bf2/ops` | patch | 2 run + 1 no-gate |
 
 ### `BF2-AUTH` &mdash; bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY
 
@@ -3399,7 +3399,7 @@ dev by SHA, evaluating between each merge.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf2/ops` |
 | base | `origin/dev@74fc6619` |
@@ -3426,7 +3426,7 @@ dev by SHA, evaluating between each merge.
 
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 
-**Notes.** Follow-up 4 stays on bf/auth (ce82f0cd) and is not repeated here.
+**Notes.** PREPARED 2026-09-22 - tip e6a50e9a on origin/dev 74fc6619, four commits (03fba725 BF-10, e72ba30d follow-up 3, af8eee45 follow-up 7, e6a50e9a BF-63 renderer guard). Suite Node 20.20.0, mongo 7.0.43 - dev 2386/0/3, branch 2392/0/3, +6 exactly the new tests. Follow-up 4 stays on bf/auth (ce82f0cd) and is not repeated here.
 
 ---
 
