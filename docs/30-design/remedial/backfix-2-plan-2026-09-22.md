@@ -26,7 +26,7 @@ These amend §1 where they overlap. Item state stays in the queue.
 
 | id | decision | consequence |
 |---|---|---|
-| RT-COUNT0 | **`?count=0` answers an empty list.** Malformed counts (`abc`, `-3`, `2.5`, `1e2`, `0x10`, values above `Number.MAX_SAFE_INTEGER`) still answer HTTP 400. The check applies to read routes only; write routes ignore `count`. | Amends #8738 before 15.0.9 is tagged. §1's "#8738 ships as-is" no longer holds; #8743 still does. |
+| RT-COUNT0 | **`?count=0` answers an empty list.** Malformed counts (`abc`, `-3`, `2.5`, `1e2`, `0x10`, values above `Number.MAX_SAFE_INTEGER`) still answer HTTP 400. Saves and updates ignore `count`. **Deletes keep dev's rule** (amended 2026-09-23, same day): a count that is not a whole number of 1 or more, `0` included, is refused and nothing is deleted, because `count` never limits a delete and "delete zero" must not become "delete everything". | Amends #8738 before 15.0.9 is tagged. §1's "#8738 ships as-is" no longer holds; #8743 still does. |
 | P0-TAG / P0-PIN | **0.1.0 is pinned in 15.0.9, after the prerelease has been tested for longer.** BF-89 (the Nightscout source sends `role` for `roles`) is fixed in connector dev before the full release. | Tagging waits for the testing and for `P0-CONNECT-ROLE`. `bf/connect-pin-0.1.0` stays on `0.1.0-dev.1` until then. |
 | RT-4 | **No separate deprecation release.** | The legacy-ingestion notice goes in 15.0.9's release notes. |
 | MongoDB 4.4 | **Deprecated in 15.0.9, dropped later.** | The release notes say it is deprecated. |
@@ -103,7 +103,7 @@ The units are integrated on a scratch `rc/backfix-2` branch pinned to `dev` by S
 | `bf/connect-pin-0.1.0` (`338deb7f`, pinned to `0.1.0-dev.1`) | exact `nightscout-connect` `0.1.0` pin + regenerated lockfile (P0-PIN, P0-LOCK) | maintainer | connector tag `v0.1.0` (P0-TAG) |
 | `docs/mongodb-floor` (`aabce4b1`, prepared) | `dev`'s README (from #8516, merged 2026-09-04) says MongoDB 4.4 is *not supported*, but CI tests 4.4, 5.0 and 6.0, and the full suite passes on 4.4.24 exactly as on 7.0.43 (2386/0/3). 15.0.8's README says "4.4 or later". The branch marks 4.4 as deprecated and still tested, which is the wording a reviewer asked for on #8516. Follow-up, not prepared: add 7.0 to the CI matrix | maintainer | nothing |
 | `bf2/backports` (`b5038500`; moved here 2026-09-23) | the two modernization-only security fixes that reproduce on `dev` and 15.0.8 (alarm-socket credential logging; per-collection read grant on two shared routes), content-identical cherry-picks | security reviewer | nothing |
-| `bf/count-zero-empty` (`7b32d9ab`) | `?count=0` answers `[]` on v1 reads; writes ignore `count` (RT-COUNT0) | maintainer | nothing |
+| `bf/count-zero-empty` (`ce9503ac`; `7b32d9ab` pushed) | `?count=0` answers `[]` on v1 reads; saves and updates ignore `count`; deletes keep dev's refusal (RT-COUNT0) | maintainer | nothing |
 | `bf/qs-6.16` (`46b20b38`) | both `qs` overrides to 6.16.0 (BF-87) | maintainer | nothing |
 
 Evidence prepared for human sign-off, not code:

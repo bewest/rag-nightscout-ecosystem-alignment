@@ -25,11 +25,11 @@
 
 ## What this changes
 
-Tip 7b32d9ab, one commit, 5 files - lib/server/count.js (isZeroCount;
+Tip ce9503ac, two commits, 5 files - lib/server/count.js (isZeroCount;
 applyCount answers zero without querying), lib/api/index.js validateCount
-(GET/HEAD only, zero allowed), lib/api/devicestatus/index.js (kept 0 instead
-of its default 10), lib/server/profile.js list(), and tests/api.count-
-parameter.test.js (19 new, 2 changed, each marked).
+(GET/HEAD - zero allowed; DELETE - dev's rule, zero refused; POST/PUT/PATCH -
+not checked), lib/api/devicestatus/index.js (kept 0 instead of its default
+10), lib/server/profile.js list(), and tests/api.count-parameter.test.js.
 
 ## Why that semver
 
@@ -54,10 +54,12 @@ Merges into origin/dev with no conflict.
 
 **`cd externals/work/crm-count-zero && TEST=api.count-parameter npm run test-single`** &nbsp;·&nbsp; kind: `integration`
 
-31 cases. Control, re-run by the coordinator 2026-09-23 against a private
-mongo - with dev's lib the 21 new or changed cases fail and 10 pass. Break-its
-(agent) - zero back to unbounded fails 9, zero back to 400 fails 11, the check
-back on writes fails 6.
+36 cases at ce9503ac (the env file expects mongo on 127.0.0.1:27087, which
+must be started first). Break-its, re-run 2026-09-23 at ce9503ac - zero back
+to unbounded (applyCount only) fails 8, zero back to 400 on reads fails 11,
+deletes skipping the check (the first commit) fails 6, deletes letting zero
+through fails 3, deletes refusing every count fails 1. The 8 delete cases pass
+on dev by design; they pin dev's rule.
 
 ## What these gates do NOT prove
 
@@ -69,27 +71,34 @@ back on writes fails 6.
 
 ## Notes carried on the item
 
-DECIDED 2026-09-23 (maintainer) - accepted that a DELETE ignores count, so a
-delete carrying count=0 removes everything its filter matches, as 15.0.8
-already did. PREPARED 2026-09-23. Read matrix (30 entries, 120 treatments, 30
-devicestatus, 15 profile, 15 activity, counted in mongo) - the ONLY change
-from dev is the 0 and 00 columns, now 200 with no rows on every v1 read route;
-0x10, 2.5, -3, 1e2, abc, MAX_SAFE+1, %2B5 and count=1&count=2 stay 400. Suite
-Node 20.20.0 - dev 2386/0/3, branch 2404/0/3. FOR THE MAINTAINER, measured -
-(1) dev (#8738) refuses every WRITE that carries any invalid count, including
-count=0, with 400 and no change; the branch makes writes ignore count as
-decided. (2) Neither tree limits a DELETE by count - DELETE with a find and
-count=2 removed all 5 matching rows on both - so on the branch a delete
-carrying count=0 removes everything its filter matches, where dev refused it.
-(3) Routes that never apply count (/entries/current, /count/.../where,
-/status, /echo, /food) now answer count=0 normally instead of 400. (4) v1 now
-accepts zero while v3 limit=0 stays 400, so FU-LIMIT's "two implementations
-that agree" no longer holds. PR body draft at reports/phase0-pr-bodies/count-
-zero-empty.md. DECIDED 2026-09-23 (maintainer) - "count=0 should return a 0
-length array of results." #8738 (merged to dev) answers HTTP 400 for count=0
-because MongoDB reads .limit(0) as no limit; the maintainer wants an empty
-list instead. Malformed counts stay 400, and the check runs on read routes
-only, so writes ignore count. Ships in 15.0.9.
+REVERSED 2026-09-23 (maintainer) - the record below that the maintainer
+"accepted that a DELETE ignores count" is withdrawn; the maintainer had not
+realised the branch changed dev's delete behaviour. A DELETE carrying a count
+that is not a whole number of 1 or more, count=0 included, is refused with 400
+and deletes nothing, as on dev. A valid count on a DELETE is accepted and, as
+on dev, does not limit it. Saves and updates still ignore count. Implemented
+as ce9503ac on top of the pushed 7b32d9ab; suite Node 20.20.0 2409/0/3. Not
+yet pushed. WITHDRAWN - accepted that a DELETE ignores count, so a delete
+carrying count=0 removes everything its filter matches, as 15.0.8 already did.
+PREPARED 2026-09-23. Read matrix (30 entries, 120 treatments, 30 devicestatus,
+15 profile, 15 activity, counted in mongo) - the ONLY change from dev is the 0
+and 00 columns, now 200 with no rows on every v1 read route; 0x10, 2.5, -3,
+1e2, abc, MAX_SAFE+1, %2B5 and count=1&count=2 stay 400. Suite Node 20.20.0 -
+dev 2386/0/3, branch 2404/0/3. FOR THE MAINTAINER, measured - (1) dev (#8738)
+refuses every WRITE that carries any invalid count, including count=0, with
+400 and no change; the branch makes writes ignore count as decided. (2)
+Neither tree limits a DELETE by count - DELETE with a find and count=2 removed
+all 5 matching rows on both - so on the branch a delete carrying count=0
+removes everything its filter matches, where dev refused it. (3) Routes that
+never apply count (/entries/current, /count/.../where, /status, /echo, /food)
+now answer count=0 normally instead of 400. (4) v1 now accepts zero while v3
+limit=0 stays 400, so FU-LIMIT's "two implementations that agree" no longer
+holds. PR body draft at reports/phase0-pr-bodies/count-zero-empty.md. DECIDED
+2026-09-23 (maintainer) - "count=0 should return a 0 length array of results."
+#8738 (merged to dev) answers HTTP 400 for count=0 because MongoDB reads
+.limit(0) as no limit; the maintainer wants an empty list instead. Malformed
+counts stay 400, and the check runs on read routes and deletes (see REVERSED
+above); saves and updates ignore count. Ships in 15.0.9.
 
 ---
 

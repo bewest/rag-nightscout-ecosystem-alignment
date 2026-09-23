@@ -1,13 +1,14 @@
-# `bf/count-zero-empty`: a request for zero records gets an empty answer, and writes ignore `count`
+# `bf/count-zero-empty`: a request for zero records gets an empty answer, and saves and updates ignore `count`
 
-**DRAFT. Not pushed, not opened.** Branch `bf/count-zero-empty` on `origin/dev` `74fc6619`, tip
-`7b32d9ab`, one commit. No `CHANGELOG.md` edit. The version stays 15.0.9. This implements the
+**DRAFT. Pushed, not opened.** Branch `bf/count-zero-empty` on `origin/dev` `74fc6619`, tip
+`ce9503ac`, two commits (the second, 2026-09-23, keeps dev's refusal for deletes). No `CHANGELOG.md` edit. The version stays 15.0.9. This implements the
 maintainer's 2026-09-23 decision on how PR #8738 treats `?count=`.
 
 | what changes | who can see it |
 |---|---|
 | a read with `count=0` gets `200` and an empty list, where `dev` answers `400` | any app or script that asks the API for zero records |
-| a write (save, update or delete) that carries a `count` is carried out, where `dev` answers `400` and does not make the write | any app or script that sends a `count` along with a write |
+| a save or update that carries a `count` is carried out, where `dev` answers `400` and does not make the change | any app or script that sends a `count` along with a save or update |
+| a delete is unchanged from `dev`: one carrying a `count` that is not a whole number of 1 or more, `0` included, is refused with `400` and deletes nothing | nobody; stated so a reviewer does not have to infer it |
 
 ---
 
@@ -43,13 +44,17 @@ last 10).
 ### Saving, changing and deleting records
 
 In the current development version, a save, change or delete that happened to include a `count`
-that Nightscout could not read was **refused, and the change was not made**. No write uses `count`,
-so this was never needed. With this change, writes ignore `count` completely and work exactly as
-they do without it.
+that Nightscout could not read was **refused, and nothing was changed**.
 
-One thing to know: a delete deletes **every record it matches**, and `count` does not limit that.
-That was already true before 15.0.9 and has not changed. `count=0` on a delete does **not** mean
-"delete nothing".
+With this change, **saves and changes** ignore `count` completely and work exactly as they do
+without it. No save or change uses `count`, so refusing them was never needed.
+
+**Deletes stay as they are in the development version.** A delete that includes a `count` that is
+not a whole number of 1 or more is still refused, and nothing is deleted. That includes
+`count=0`: a delete deletes **every record it matches**, and `count` does not limit that, so
+"delete zero records" cannot be honoured and is refused rather than carried out as "delete
+everything". A delete with a valid `count` works as it always has, and still deletes every record
+it matches.
 
 **What you should do:** nothing. Apps that already work keep working. If you use an app that asks
 for zero records, it now gets an empty answer instead of an error.
@@ -65,8 +70,10 @@ for zero records, it now gets an empty answer instead of an error.
   whose `toArray()` resolves `[]`, so the driver is never called. `.limit(0)` means *no limit* in
   MongoDB and there is no limit that means "none". Every `list()` helper ends its chain with
   `.toArray()` straight after `applyCount`.
-- `lib/api/index.js` `validateCount`: runs on `GET` and `HEAD` only, and lets a zero count through.
-  The 400 description now says "0 or greater".
+- `lib/api/index.js` `validateCount`: on `GET` and `HEAD` it lets a zero count through, and the
+  400 description now says "0 or greater". On `DELETE` it keeps dev's rule: a count that is not a
+  whole number of 1 or more, zero included, is refused ("1 or greater") and nothing is deleted. On
+  `POST`, `PUT` and `PATCH` it does not look at `count`.
 - `lib/api/devicestatus/index.js`: the route's own parse turned `0` into its default of 10. It now
   keeps 0 (the cache slice and the storage layer then both return `[]`).
 - `lib/server/profile.js` `list(fn, count)` (behind `GET /api/v1/profile`): a zero count returns
@@ -145,40 +152,46 @@ POST `/entries`, `/entries/preview`, `/treatments`, `/devicestatus`, `/profile`,
 `/entries/:id`, `/treatments?find`, `/treatments/:id`, `/devicestatus?find`, `/devicestatus/:id`,
 `/profile/:id`, `/profile?keep=10000`, `/food/:id`, `/activity/:id`.
 
-On this branch every one of those answers 200 and makes the write, for every spelling, exactly as
-without `count`. `count` limits no delete on either tree: `DELETE /entries/?find[...]&count=2`
-removed all 5 of 5 matching rows on `dev` and on this branch.
+On this branch's first commit (`7b32d9ab`) every one of those answered 200 and made the write, for
+every spelling, exactly as without `count`. The second commit (`ce9503ac`) restores dev's refusal for
+the DELETE routes, because `validateCount` sees the method before any route; the tests below check
+it on `DELETE /entries?find` and `DELETE /entries/:id`, and the POST and PUT rows are unchanged.
+`count` limits no delete on either tree: `DELETE /entries/?find[...]&count=2` removed all 5 of 5
+matching rows on `dev` and on this branch.
 
 ### Tests
 
 `tests/api.count-parameter.test.js`. New: 9 read routes answer `count=0` (or `00`) with `[]` over
 collections that hold matching documents, so a read that lost its bound shows up as non-empty; the
-storage layer's `list()` answers `'0'`, `0` and `'00'` with `[]`; 9 write tests (POST entries,
-DELETE entries by `find`, POST devicestatus, each with `count=abc`, `0` and `-3`) check the write
-in the database.
+storage layer's `list()` answers `'0'`, `0` and `'00'` with `[]`; 6 save tests (POST entries and
+POST devicestatus, each with `count=abc`, `0` and `-3`) check the save in the database; 8 delete
+tests check that `count=abc`, `0`, `00`, `-3` and `2.5` on `DELETE /entries?find`, and `count=0` on
+`DELETE /entries/:id`, answer 400 and leave all 24 stored entries in place, and that a valid count,
+and no count, still delete everything the filter matches.
 
 **Changed expectations** (each marked in the file as a 2026-09-23 decision): `count=0` on entries,
 on `/profiles` and on `/treatments` was expected to be 400 and is now 200 with `[]`.
 
-Non-vacuity: all 21 new or changed tests fail on `origin/dev`'s `lib/`: 20 with `400`, and the
-storage test with 24 rows where it expected none. Breaking the fix:
+The 8 delete tests pass on `origin/dev` too, by design: they pin dev's behaviour so this branch
+cannot lose it. Breaking the fix:
 
 | break | result |
 |---|---|
-| zero falls through to no limit (`applyCount` and `profile.list`) | 9 fail, "length of 0 (got 24)" / "(got 3)" |
-| `validateCount` refuses zero again | 11 fail, `expected 200, got 400` |
-| `validateCount` runs on writes again | 6 fail (the `abc` and `-3` writes), `expected 200, got 400` |
-| devicestatus route turns 0 into 10 again | 2 fail, "length of 0 (got 3)" |
+| zero falls through to no limit (`applyCount` only) | 8 fail, "length of 0 (got 24)" |
+| `validateCount` refuses zero on reads again | 11 fail, `expected 200, got 400` |
+| `validateCount` skips deletes, as the first commit did | 6 fail, `expected 400, got 200` |
+| `validateCount` lets a zero count through on deletes | 3 fail (`0`, `00`, and `0` by id) |
+| `validateCount` refuses every count on deletes | 1 fails (the valid-count delete) |
+| devicestatus route turns 0 into 10 again | 2 fail, "length of 0 (got 3)" (measured on the first commit) |
 
 Full suite (`mocha --timeout 5000 --require ./tests/hooks.js --exit ./tests/*.test.js`, Node
-20.20.0, `mongo:7`), run back to back:
+20.20.0, `mongo:7`):
 
 | tree | passing | failing | pending |
 |---|---:|---:|---:|
 | `origin/dev` `74fc6619` | 2386 | 0 | 3 |
-| `bf/count-zero-empty` `7b32d9ab` | 2404 | 0 | 3 |
-
-The difference of 18: 19 new tests, minus the `count=0` case that left the refusal list.
+| `bf/count-zero-empty` `7b32d9ab` (first commit) | 2404 | 0 | 3 |
+| `bf/count-zero-empty` `ce9503ac` | 2409 | 0 | 3 |
 
 ### Not in this branch
 
