@@ -1376,7 +1376,7 @@ that costs.
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 
-**Notes.** HELD BACK on the adopted train, behind a deprecation release. If the Connect migration misbehaves the symptom is a user's glucose data stops arriving - a data-availability failure for someone managing diabetes.
+**Notes.** DECIDED 2026-09-23 (maintainer) - BF-61's hard stop is intended: MMCONNECT_* is usually the primary data source, so a misconfigured one shows the error page naming the fix. Still owed under that decision: the named fix must boot (CONNECT_COUNTRY_CODE alone does not, unless connect is in ENABLE), the messages must not say 15.0.9, and cut4-total-outage.js must be rewritten to pass when each stopping shape names a fix that boots. Also directed: deprecate and remove mmconnect as early as possible (it does not work and carries deprecated dependencies), partly in the current cycle where appropriate; with RT-4 dropped, the separate hold below is moot. HELD BACK on the adopted train, behind a deprecation release. If the Connect migration misbehaves the symptom is a user's glucose data stops arriving - a data-availability failure for someone managing diabetes.
 
 ### `RT-CONNECT-PIN-CUTS` &mdash; BF-65 - cuts 1-3 ship the leaking connector to upgraders first
 
