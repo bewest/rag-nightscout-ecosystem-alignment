@@ -6414,7 +6414,7 @@ items:
 
   - id: BF2-BACKPORT
     title: Which modernization-only security commits fix a defect that dev has
-    parcel: backfix2
+    parcel: release-train
     repo: cgm-remote-monitor
     branch: bf2/backports
     base: origin/dev@74fc6619
@@ -6443,6 +6443,11 @@ items:
     evidence:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
     notes: >
+      DECIDED 2026-09-23 (maintainer) - the two backports (9c50788e, b5038500)
+      move INTO 15.0.9 rather than backfix 2, because their fix code is already
+      public on the modernization branch and 15.0.8 users otherwise wait a
+      release. The two unbuilt findings (status credential in the URL,
+      IMPORT_CONFIG diagnostics) stay follow-ups.
       MEASURED 2026-09-22 - 11 candidates (6 named + 5 from a path/content
       sweep). DEFECT-ON-DEV and live on 15.0.8: 31c354d8 (alarm socket logs the
       submitted credential), d3ac8026 (a per-collection read grant not checked

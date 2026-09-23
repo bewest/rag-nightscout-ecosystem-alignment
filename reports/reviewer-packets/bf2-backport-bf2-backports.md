@@ -61,19 +61,23 @@ The two backports merge into origin/dev with no conflict.
 
 ## Notes carried on the item
 
-MEASURED 2026-09-22 - 11 candidates (6 named + 5 from a path/content sweep).
-DEFECT-ON-DEV and live on 15.0.8: 31c354d8 (alarm socket logs the submitted
-credential), d3ac8026 (a per-collection read grant not checked on two shared
-routes; bites scoped-token installs under denied), 973a2849 (status credential
-in the URL), 8458f39e (IMPORT_CONFIG diagnostics). d48be5e5 is real but not
-security. 71c42c9a not a defect; Helmet pair and 479a6a4d/924aa8d7 not on dev;
-f2ebd7d4 unsettled. bf2/backports carries 9c50788e and b5038500 (code
-verbatim, tests adapted where dev's socket differs); suite on Node 22.23.2 -
-dev 2386/0/3, branch 2398/0/3. Control re-run by the coordinator - with dev's
-lib the two new test files fail 7 of 12. Register entries are pending id
-allocation. Backports carry the modernization commit's content unchanged
-(cherry-pick -x) so the later cut rebase sees agreement, not a second
-implementation.
+DECIDED 2026-09-23 (maintainer) - the two backports (9c50788e, b5038500) move
+INTO 15.0.9 rather than backfix 2, because their fix code is already public on
+the modernization branch and 15.0.8 users otherwise wait a release. The two
+unbuilt findings (status credential in the URL, IMPORT_CONFIG diagnostics)
+stay follow-ups. MEASURED 2026-09-22 - 11 candidates (6 named + 5 from a
+path/content sweep). DEFECT-ON-DEV and live on 15.0.8: 31c354d8 (alarm socket
+logs the submitted credential), d3ac8026 (a per-collection read grant not
+checked on two shared routes; bites scoped-token installs under denied),
+973a2849 (status credential in the URL), 8458f39e (IMPORT_CONFIG diagnostics).
+d48be5e5 is real but not security. 71c42c9a not a defect; Helmet pair and
+479a6a4d/924aa8d7 not on dev; f2ebd7d4 unsettled. bf2/backports carries
+9c50788e and b5038500 (code verbatim, tests adapted where dev's socket
+differs); suite on Node 22.23.2 - dev 2386/0/3, branch 2398/0/3. Control re-
+run by the coordinator - with dev's lib the two new test files fail 7 of 12.
+Register entries are pending id allocation. Backports carry the modernization
+commit's content unchanged (cherry-pick -x) so the later cut rebase sees
+agreement, not a second implementation.
 
 ---
 

@@ -102,6 +102,9 @@ The units are integrated on a scratch `rc/backfix-2` branch pinned to `dev` by S
 |---|---|---|---|
 | `bf/connect-pin-0.1.0` (`338deb7f`, pinned to `0.1.0-dev.1`) | exact `nightscout-connect` `0.1.0` pin + regenerated lockfile (P0-PIN, P0-LOCK) | maintainer | connector tag `v0.1.0` (P0-TAG) |
 | `docs/mongodb-floor` (`aabce4b1`, prepared) | `dev`'s README (from #8516, merged 2026-09-04) says MongoDB 4.4 is *not supported*, but CI tests 4.4, 5.0 and 6.0, and the full suite passes on 4.4.24 exactly as on 7.0.43 (2386/0/3). 15.0.8's README says "4.4 or later". The branch marks 4.4 as deprecated and still tested, which is the wording a reviewer asked for on #8516. Follow-up, not prepared: add 7.0 to the CI matrix | maintainer | nothing |
+| `bf2/backports` (`b5038500`; moved here 2026-09-23) | the two modernization-only security fixes that reproduce on `dev` and 15.0.8 (alarm-socket credential logging; per-collection read grant on two shared routes), content-identical cherry-picks | security reviewer | nothing |
+| `bf/count-zero-empty` (`7b32d9ab`) | `?count=0` answers `[]` on v1 reads; writes ignore `count` (RT-COUNT0) | maintainer | nothing |
+| `bf/qs-6.16` (`46b20b38`) | both `qs` overrides to 6.16.0 (BF-87) | maintainer | nothing |
 
 Evidence prepared for human sign-off, not code:
 
@@ -119,7 +122,6 @@ Evidence prepared for human sign-off, not code:
 | branch | content | reviewer |
 |---|---|---|
 | `bf2/auth-hardening` | `bf/auth` + `bf/throttle` refreshed onto `dev`, plus the `client-ip.js` backport behind `TRUST_PROXY` with today's behaviour as the default; flag registry entries; P0-C-REMEDIATE's operator text | security reviewer (none assigned) |
-| `bf2/backports` | whichever §2.1 commits reproduce as defects on `dev` | security reviewer |
 | `bf2/ops` | BF-10 compose `ulimits`, FU-RESIDUALS follow-ups 3 and 7, BF-63 error-renderer fix | maintainer |
 | BF-72 | no branch in any public repository; a private recommendation first | security reviewer; disclosure route is the maintainer's |
 
