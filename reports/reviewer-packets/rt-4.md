@@ -78,10 +78,15 @@ naming no setting.
 ## Notes carried on the item
 
 DECIDED 2026-09-23 (maintainer) - dropped. The notice goes in 15.0.9's release
-notes, as recommended below; no separate deprecation release. The maintainer
-confirms (2026-09-22, operational knowledge) that legacy mmconnect does not
-work, and Dexcom BRIDGE_* settings have been served by nightscout-connect by
-default since 15.0.8 (a91e8ee4, with a deprecation warning and the
+notes, as recommended below; no separate deprecation release. 2026-09-23:
+local branch bf3/mmconnect-deprecation-warning (5d342ac1, on dev 1f9a9d10, not
+pushed) replaces the generic MiniMed warning with one naming every replacement
+setting, for 15.0.9. With QUEUE_GATE_REF set to it, the gate's settings check
+passes; the shim check stays red by design, because the shim ships with the
+removal, which the maintainer lifted onto cut 1. The maintainer confirms
+(2026-09-22, operational knowledge) that legacy mmconnect does not work, and
+Dexcom BRIDGE_* settings have been served by nightscout-connect by default
+since 15.0.8 (a91e8ee4, with a deprecation warning and the
 DEXCOM_BRIDGE_USE_LEGACY escape hatch). No working path is left for a separate
 release to protect. Recommended: put the notice in 15.0.9's release notes
 (MiniMed users: move to CONNECT_SOURCE with your CareLink country; Dexcom
