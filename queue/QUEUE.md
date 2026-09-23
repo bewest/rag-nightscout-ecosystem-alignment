@@ -32,18 +32,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 98 |
-| runnable gates | 169 |
+| runnable gates | 171 |
 | explicit `no-gate:` markers | 146 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 146 of the 315 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 146 of the 317 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 36 | BFQ-91, RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-47, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 35 | BFQ-91, RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-47, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
-| `gate-not-met` | 16 | P0-C, P0-J, P0-CONNECT-ROLE, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
+| `gate-not-met` | 17 | P0-C, P0-J, P0-CONNECT-ROLE, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-87, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 6 | P0-C-REMEDIATE, RT-COUNT0, T30-AUTH, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `merged-upstream` | 15 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
@@ -1473,7 +1473,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-72` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | `needs-decision` | `-` | minor | 1 run + 3 no-gate |
 | `BFQ-40` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion | `merged-upstream` | `-` | minor | 1 run |
 | `BFQ-41` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
-| `BFQ-87` | BF-87 - the root qs override holds the connector below its range and pins the server's query parser | `not-started` | `-` | patch | 1 run + 1 no-gate |
+| `BFQ-87` | BF-87 - the root qs override holds the connector below its range and pins the server's query parser | `gate-not-met` | `bf/qs-6.16` | patch | 3 run + 1 no-gate |
 | `BFQ-CONNECTOR` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override | `gate-not-met` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-MINIMED` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading | `not-started` | `-` | minor | 0 run + 3 no-gate |
 | `BFQ-46` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
@@ -2115,11 +2115,11 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `gate-not-met` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/qs-6.16` |
 | base | `origin/dev@74fc6619` |
-| worktree | `externals/cgm-remote-monitor-official` |
+| worktree | `externals/work/crm-qs-616` |
 | semver | `patch` |
 | review | maintainer - whether it rides in 15.0.9 or backfix 2 is a release decision |
 | ships to operators today | **yes** |
@@ -2135,13 +2135,17 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `[static]` `git -C externals/cgm-remote-monitor-official show origin/dev:package.json | python3 -c "import json,sys; o=json.load(sys.stdin)[\"overrides\"]; sys.exit(1 if o.get(\"qs\")==\"6.15.1\" or o.get(\"request\",{}).get(\"qs\")==\"6.15.1\" else 0)"`
   - FAILS today - origin/dev still overrides qs to 6.15.1 at the root or under request.
+- `[static]` `git -C externals/cgm-remote-monitor-official show bf/qs-6.16:package.json | python3 -c "import json,sys; o=json.load(sys.stdin)[\"overrides\"]; sys.exit(0 if o.get(\"qs\")==\"6.16.0\" and o.get(\"request\",{}).get(\"qs\")==\"6.16.0\" else 1)"`
+  - The prepared branch sets both qs overrides to 6.16.0.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/qs-6.16 >/dev/null`
+  - Merges into origin/dev with no conflict.
 - **NO GATE** &mdash; Exploitability through Nightscout's routes is not measured, and the remedy (6.16.0) changes the parser every request passes through; the full suite plus Nightscout's documented query shapes are the evidence it needs, and neither is a static gate.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** Found 2026-09-22 while pinning the connector (P0-PIN). The same class as BF-43. Candidate for 15.0.9 given it is one override value, but that is the maintainer's call.
+**Notes.** PREPARED 2026-09-23 - bf/qs-6.16 46b20b38, one commit; the lock moves qs 6.15.1 -> 6.16.0 and side-channel 1.1.0 -> 1.1.1 (required by qs), nothing else; one qs@6.16.0 resolves for all five consumers. Parse differential under express's and body-parser's own options - 638 inputs (README, swagger, tests, census, eventTypes, depth/array/parameter limits), 1,914 comparisons, 45 differences, all from 15 malformed bracket keys (e.g. nested brackets, an unclosed bracket); every documented or client shape is identical. Those keys now match nothing or get a 400 from the operator allowlist instead of being silently rewritten. Control - the 6.15.2 changelog's nested-bracket example is detected. Suite dev 2386/0/3 = branch 2386/0/3 on Node 20.20.0 and 24.20.0. npm audit --omit=dev - qs and its three dependants leave the list; no new findings. Advisory reachability is read, not run (PR body). Candidate for 15.0.9. Found 2026-09-22 while pinning the connector (P0-PIN). The same class as BF-43. Candidate for 15.0.9 given it is one override value, but that is the maintainer's call.
 
 ### `BFQ-CONNECTOR` &mdash; BF-42, BF-43 - master pins the leaking connector, with a violated axios override
 

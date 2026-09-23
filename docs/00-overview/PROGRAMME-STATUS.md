@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 64 | 26 | 7 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 64 | 25 | 7 |
 | **Modernization** | `release-train` | 13 | 1 | 3 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **98** | **36** | **16** |
+| | **total** | **98** | **35** | **16** |
 
 <!-- END GENERATED: horizons -->
 
@@ -129,7 +129,7 @@ cover more than one `BF-`:
 | `BFQ-69` | `not-started` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
 | `BFQ-71` | `gate-not-met` | BF-71 - any dateString key drops the default date window, and the window is not a control |
 | `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
-| `BFQ-87` | `not-started` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
+| `BFQ-87` | `gate-not-met` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
 | `BFQ-90` | `not-started` | BF-90 - an alarm at a page with no reading throws in the client |
 | `BFQ-91` | `not-started` | BF-91 - connector capture mode cannot find trace-axios for two sources |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
@@ -151,7 +151,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 1 |  | 4 | 1 | 3 | 11 | 2 |  |  | **22** |
 | `release-train` | 1 | 1 | 4 | 1 | 4 |  | 2 |  |  | **13** |
-| `register-open` | 19 |  | 6 |  |  | 4 | 3 |  | 1 | **33** |
+| `register-open` | 18 |  | 7 |  |  | 4 | 3 |  | 1 | **33** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  | 1 |  | 1 | **18** |
 | `docs-truth` | 6 |  | 1 |  |  |  |  | 2 |  | **9** |
 | `backfix2` |  |  |  | 3 |  |  |  |  |  | **3** |

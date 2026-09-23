@@ -4613,10 +4613,10 @@ items:
     title: BF-87 - the root qs override holds the connector below its range and pins the server's query parser
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/qs-6.16
     base: origin/dev@74fc6619
-    worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    worktree: externals/work/crm-qs-616
+    state: gate-not-met
     ships_to_operators_today: true
     blast_radius: >
       package.json overrides.qs and overrides.request.qs (both 6.15.1, from
@@ -4638,6 +4638,12 @@ items:
       - run: 'git -C externals/cgm-remote-monitor-official show origin/dev:package.json | python3 -c "import json,sys; o=json.load(sys.stdin)[\"overrides\"]; sys.exit(1 if o.get(\"qs\")==\"6.15.1\" or o.get(\"request\",{}).get(\"qs\")==\"6.15.1\" else 0)"'
         kind: static
         describe: FAILS today - origin/dev still overrides qs to 6.15.1 at the root or under request.
+      - run: 'git -C externals/cgm-remote-monitor-official show bf/qs-6.16:package.json | python3 -c "import json,sys; o=json.load(sys.stdin)[\"overrides\"]; sys.exit(0 if o.get(\"qs\")==\"6.16.0\" and o.get(\"request\",{}).get(\"qs\")==\"6.16.0\" else 1)"'
+        kind: static
+        describe: The prepared branch sets both qs overrides to 6.16.0.
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/qs-6.16 >/dev/null'
+        kind: static
+        describe: Merges into origin/dev with no conflict.
       - no-gate: >
           Exploitability through Nightscout's routes is not measured, and the
           remedy (6.16.0) changes the parser every request passes through; the
@@ -4647,6 +4653,19 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      PREPARED 2026-09-23 - bf/qs-6.16 46b20b38, one commit; the lock moves qs
+      6.15.1 -> 6.16.0 and side-channel 1.1.0 -> 1.1.1 (required by qs), nothing
+      else; one qs@6.16.0 resolves for all five consumers. Parse differential
+      under express's and body-parser's own options - 638 inputs (README,
+      swagger, tests, census, eventTypes, depth/array/parameter limits), 1,914
+      comparisons, 45 differences, all from 15 malformed bracket keys (e.g.
+      nested brackets, an unclosed bracket); every documented or client shape
+      is identical. Those keys now match nothing or get a 400 from the operator
+      allowlist instead of being silently rewritten. Control - the 6.15.2
+      changelog's nested-bracket example is detected. Suite dev 2386/0/3 =
+      branch 2386/0/3 on Node 20.20.0 and 24.20.0. npm audit --omit=dev - qs and
+      its three dependants leave the list; no new findings. Advisory
+      reachability is read, not run (PR body). Candidate for 15.0.9.
       Found 2026-09-22 while pinning the connector (P0-PIN). The same class as
       BF-43. Candidate for 15.0.9 given it is one override value, but that is
       the maintainer's call.
