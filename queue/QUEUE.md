@@ -31,18 +31,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 104 |
+| items | 106 |
 | runnable gates | 181 |
-| explicit `no-gate:` markers | 150 |
+| explicit `no-gate:` markers | 152 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 150 of the 331 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 152 of the 333 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-HYGIENE |
-| `in-progress` | 1 | RT-D3 |
+| `in-progress` | 3 | RT-D3, BFQ-97, BFQ-98 |
 | `gate-not-met` | 14 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 5 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-90 |
 | `blocked` | 12 | P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, FU-LIMIT |
@@ -83,6 +83,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **ADV-ALARM** GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76)
 - **ADV-XSS-META** GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74)
 - **ADV-CONFIG** The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81)
+- **BFQ-98** BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it
 
 ---
 
@@ -1516,7 +1517,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 38 items
+`parcel: register-open` &mdash; 40 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1562,6 +1563,8 @@ distinction is the only thing that makes the register mean anything - widening
 | `ADV-ALARM` | GHSA-8849 - /alarm broadcasts to the whole namespace (BF-75, BF-76) | `merged-upstream` | `bf/alarm-socket-scope` | minor | 2 run + 2 no-gate |
 | `ADV-XSS-META` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | `needs-decision` | `-` | n/a | 2 run + 1 no-gate |
 | `ADV-CONFIG` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) | `needs-decision` | `-` | patch | 2 run + 1 no-gate |
+| `BFQ-97` | BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll | `in-progress` | `fix/profile-duplicate-stall` | patch | 0 run + 1 no-gate |
+| `BFQ-98` | BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it | `in-progress` | `fix/profile-duplicate-stall` | patch | 0 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -2816,6 +2819,68 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** DECIDED 2026-09-23 (maintainer) - BF-78 (the careportal role) is documented and warned about at boot; no behaviour change. Found while building the configuration matrix that answers "were the right flags set when the five advisories were evaluated"; these two fell out of enumerating what AUTH_DEFAULT_ROLES actually gates. REPRODUCED on v15.0.8 AND dev 59430336, mongod 7.0, with both controls in the same run. BF-77: default -> notifyCount 1, title "Nightscout readable by world" (POSITIVE CONTROL, the notice does fire when it should); TREATMENTS_AUTH=off -> notifyCount 0 while anonymous read is 200 and anonymous POST /api/v1/treatments is 200 with the record stored; AUTH_DEFAULT_ROLES=denied -> notifyCount 0, correctly (NEGATIVE CONTROL, so absence in the middle row is attributable to the string compare and not to the notice being broken generally). These are documented configurations, not a bypass. BF-78, anonymous POST /api/v1/treatments: `readable careportal` 200 stored, `careportal` 401, `denied careportal` 401, `denied` 401. BF-81 was filed on the maintainer's instruction, 2026-09-21, as the shared root of the other two: the configuration surface carries two authorization-shaped settings with adjacent names - AUTH_DEFAULT_ROLES, which is the boundary, and AUTHENTICATION_PROMPT_ON_LOAD, which is a client prompt that grants nothing - and nothing documents the difference. Its strongest evidence is that the reporter of GHSA-8849 keyed their own security patch to the wrong one. It is prose in README.md and the swagger documents, there is no branch, and the wording is a maintainer's to write.
+
+### `BFQ-97` &mdash; BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `nightscout-connect` |
+| branch | `fix/profile-duplicate-stall` |
+| base | `official/dev@fbd4e55` |
+| worktree | `externals/work/nc-profile-dup` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-97` |
+
+**Blast radius.** Connector lib/outputs/internal.js safePersist and lib/outputs/nightscout.js recordingError, changed by 808ab1c (2026-09-21) to fail the whole poll on any write failure; the Nightscout source re-inserts every profile with its source _id each poll, so a duplicate key fails every poll after the first.
+
+**What an operator sees.** Not in any release yet. With the connector version that 15.0.9 was going to use, a Nightscout site that copies its data from another Nightscout site fell 20 to 55 minutes behind whenever the other site had a profile saved, and showed no error. Nothing was lost; readings arrived late. It is being fixed before that connector version is released.
+
+**Why `patch`.** A regression fix on an unreleased line; no setting or API moves.
+
+**Gates.**
+
+- **NO GATE** &mdash; Measured by the lab soak (tools/lab/connector-soak/), not a queue gate. The fix branch is to carry a unit test that a second poll with the same profile does not fail, and that a genuine write failure still does.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md`
+
+**Notes.** DECIDED 2026-09-23 (maintainer) - fix in the connector first, tag 0.1.0-dev.3, then 0.1.0; #8752 (P0-PIN) holds for dev.3. Fix being built in this session on fix/profile-duplicate-stall (not pushed). Workaround until then: CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus.
+
+### `BFQ-98` &mdash; BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `nightscout-connect` |
+| branch | `fix/profile-duplicate-stall` |
+| base | `official/dev@fbd4e55` |
+| worktree | `externals/work/nc-profile-dup` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-98` |
+
+**Blast radius.** Connector lib/sources/nightscout.js reader-subject lookup (v0.0.13 lines 75-77), which takes the accessToken of any subject named nightscout-connect- reader without checking its roles.
+
+**What an operator sees.** If your Nightscout copies data from another Nightscout site that requires sign-in (AUTH_DEFAULT_ROLES=denied), and it has never managed to read from it, an access entry named nightscout-connect-reader on the other site was probably created without a role. Upgrading the connector does not fix that entry. On the other site's admin page, either give nightscout-connect-reader the readable role or delete it so the connector creates it again.
+
+**Why `patch`.** Adds one log message; no setting or API moves.
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced by the lab soak's control (c), not a queue gate. The warning commit is to carry tests for both triggers and for logging once.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md`
+
+**Notes.** DECIDED 2026-09-23 (maintainer) - warn clearly, don't repair: one plain log message naming the subject and both fixes, no writes to the source; the release notes carry the same steps. Being built as a second commit on fix/profile-duplicate-stall (not pushed).
 
 ---
 

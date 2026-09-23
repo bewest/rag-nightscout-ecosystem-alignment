@@ -6961,3 +6961,82 @@ items:
       renderer guard). Suite Node 20.20.0, mongo 7.0.43 - dev 2386/0/3, branch
       2392/0/3, +6 exactly the new tests. Follow-up 4 stays on bf/auth
       (ce82f0cd) and is not repeated here.
+
+  - id: BFQ-97
+    title: BF-97 - on the connector 0.1.0 line, a source with a profile stalls every poll
+    parcel: register-open
+    repo: nightscout-connect
+    branch: fix/profile-duplicate-stall
+    base: official/dev@fbd4e55
+    worktree: externals/work/nc-profile-dup
+    state: in-progress
+    ships_to_operators_today: false
+    blast_radius: >
+      Connector lib/outputs/internal.js safePersist and lib/outputs/nightscout.js
+      recordingError, changed by 808ab1c (2026-09-21) to fail the whole poll on any
+      write failure; the Nightscout source re-inserts every profile with its source
+      _id each poll, so a duplicate key fails every poll after the first.
+    review: maintainer
+    operator_visible: >
+      Not in any release yet. With the connector version that 15.0.9 was going to
+      use, a Nightscout site that copies its data from another Nightscout site fell
+      20 to 55 minutes behind whenever the other site had a profile saved, and showed
+      no error. Nothing was lost; readings arrived late. It is being fixed before
+      that connector version is released.
+    semver: patch
+    semver_reason: >
+      A regression fix on an unreleased line; no setting or API moves.
+    register: [BF-97]
+    gates:
+      - no-gate: >
+          Measured by the lab soak (tools/lab/connector-soak/), not a queue gate. The
+          fix branch is to carry a unit test that a second poll with the same profile
+          does not fail, and that a genuine write failure still does.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md
+    notes: >
+      DECIDED 2026-09-23 (maintainer) - fix in the connector first, tag 0.1.0-dev.3,
+      then 0.1.0; #8752 (P0-PIN) holds for dev.3. Fix being built in this session on
+      fix/profile-duplicate-stall (not pushed). Workaround until then:
+      CONNECT_SOURCE_COLLECTIONS=entries,treatments,devicestatus.
+
+  - id: BFQ-98
+    title: BF-98 - the connector reuses a reader subject without roles, so the BF-89 fix does not repair it
+    parcel: register-open
+    repo: nightscout-connect
+    branch: fix/profile-duplicate-stall
+    base: official/dev@fbd4e55
+    worktree: externals/work/nc-profile-dup
+    state: in-progress
+    ships_to_operators_today: true
+    blast_radius: >
+      Connector lib/sources/nightscout.js reader-subject lookup (v0.0.13 lines 75-77),
+      which takes the accessToken of any subject named nightscout-connect-reader
+      without checking its roles.
+    review: maintainer
+    operator_visible: >
+      If your Nightscout copies data from another Nightscout site that requires sign-in
+      (AUTH_DEFAULT_ROLES=denied), and it has never managed to read from it, an access
+      entry named nightscout-connect-reader on the other site was probably created
+      without a role. Upgrading the connector does not fix that entry. On the other
+      site's admin page, either give nightscout-connect-reader the readable role or
+      delete it so the connector creates it again.
+    semver: patch
+    semver_reason: >
+      Adds one log message; no setting or API moves.
+    register: [BF-98]
+    gates:
+      - no-gate: >
+          Reproduced by the lab soak's control (c), not a queue gate. The warning
+          commit is to carry tests for both triggers and for logging once.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md
+    notes: >
+      DECIDED 2026-09-23 (maintainer) - warn clearly, don't repair: one plain log
+      message naming the subject and both fixes, no writes to the source; the release
+      notes carry the same steps. Being built as a second commit on
+      fix/profile-duplicate-stall (not pushed).
