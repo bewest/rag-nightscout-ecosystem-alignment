@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 90 |
-| runnable gates | 153 |
-| explicit `no-gate:` markers | 141 |
+| items | 93 |
+| runnable gates | 159 |
+| explicit `no-gate:` markers | 144 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 141 of the 294 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 144 of the 303 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 31 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
+| `not-started` | 34 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `gate-not-met` | 15 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, DOC-VIEWS, DOC-LINKS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
@@ -672,7 +672,7 @@ needs a tenancy decision.
 - `docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md`
 - `docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`
 
-**Notes.** The programme's local release/v0.0.14 branch and v0.0.14 tag are retired: every commit on them is in connector dev. No 0.0.14 will be published; the line is 0.1.0.
+**Notes.** DECIDED 2026-09-22 (maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging remains the maintainer's action. The programme's local release/v0.0.14 branch and v0.0.14 tag are retired: every commit on them is in connector dev. No 0.0.14 will be published; the line is 0.1.0.
 
 ### `P0-PIN` &mdash; bf/connect-pin - pin dev to the published nightscout-connect 0.1.0
 
@@ -1021,7 +1021,7 @@ that costs.
 
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 
-**Notes.** Given the governance gap - 100 self-merged PRs, zero human reviews - the version number is the only warning an operator gets, and right now it does not distinguish these builds.
+**Notes.** DECIDED 2026-09-22 (maintainer) - the dev to master release is 15.0.9; #8738 and #8743 ship as-is, declared as corrections in the release notes, with no compatibility flag. The cut tips still need distinct numbers; see docs/30-design/remedial/backfix-2-plan-2026-09-22.md. Given the governance gap - 100 self-merged PRs, zero human reviews - the version number is the only warning an operator gets, and right now it does not distinguish these builds.
 
 ### `RT-REBASE` &mdash; Cuts 1-4 are 133 commits behind dev and now all five conflict
 
@@ -3275,6 +3275,121 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 - `docs/60-research/remedial/e3-gate-vacuity-audit-2026-09-15.md`
 
 **Notes.** Non-vacuity, run 2026-09-16: three ablations, one per detection pass, each confirmed to land before its result was read. A markdown link repointed to a nonexistent name - caught. A repo-root path in this manifest reverted to its pre-move spelling - caught. doc-branch-count.js's path.join reverted to the pre-move segments - caught. Empty-root negative control via QUEUE_GATE_ROOT exits 1 rather than passing on an empty tree.
+
+---
+
+## Backfix 2 - the patch release after 15.0.9
+
+`parcel: backfix2` &mdash; 3 items
+
+Prepared now, PRs opened after 15.0.9 is tagged. Plan and flag rule:
+docs/30-design/remedial/backfix-2-plan-2026-09-22.md. Units are grouped by the
+reviewer they need and integrated on a scratch rc/backfix-2 branch pinned to
+dev by SHA, evaluating between each merge.
+
+| id | title | state | branch | semver | gates |
+|---|---|---|---|---|---|
+| `BF2-AUTH` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY | `not-started` | `bf2/auth-hardening` | major | 3 run + 1 no-gate |
+| `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `not-started` | `-` | n/a | 1 run + 1 no-gate |
+| `BF2-OPS` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | `not-started` | `bf2/ops` | patch | 2 run + 1 no-gate |
+
+### `BF2-AUTH` &mdash; bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf2/auth-hardening` |
+| base | `origin/dev@74fc6619` |
+| worktree | `externals/work/crm-bf2-auth` |
+| semver | `major` |
+| review | SECURITY - the reviewer P0-C already names; none assigned. |
+| register | `BF-17`, `BF-30` |
+
+**Blast radius.** lib/authorization/endpoints.js, storage.js, delaylist.js, index.js from bf/auth and bf/throttle, plus lib/server/client-ip.js and its env.js setting extracted from chore/nightscout-modernization (06c83f2f, 395f3207).
+
+**What an operator sees.** Not released. Combines the two login-security fixes already described under P0-C and P0-J with a setting that lets you tell Nightscout which proxy in front of it to trust. If you change nothing, Nightscout behaves as it does today; the stronger protection against password guessing applies only once you name your trusted proxy.
+
+**Why `major`.** Inherits P0-C's major (the BF-47 allow-list), unless the maintainer's BF-47 decision puts that behind a compatibility flag, which would make this minor (a new setting, today's behaviour by default).
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth bf2/auth-hardening && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle bf2/auth-hardening`
+  - Contains both source branches by ancestry, not re-implementation.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf2/auth-hardening >/dev/null`
+  - Merges into origin/dev with no conflict.
+- `[static]` `git -C externals/cgm-remote-monitor-official cat-file -e bf2/auth-hardening:lib/server/client-ip.js`
+  - The client-address module is present. Its default being today's behaviour is asserted by the branch's own tests, not here.
+- **NO GATE** &mdash; The compatibility default (TRUST_PROXY unset = today's forwarded-header behaviour) is a behavioural claim; it needs a test on the branch that fails when the default is flipped, and that test does not exist yet.
+
+**Evidence.**
+
+- `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
+
+**Notes.** PRs open after 15.0.9 is tagged (plan section 3). BF-30 is closed only when TRUST_PROXY names a boundary; with the default it remains open, and the branch must say so in its boot message and PR body.
+
+### `BF2-BACKPORT` &mdash; Which modernization-only security commits fix a defect that dev has
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@74fc6619` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `n/a` |
+| review | SECURITY for anything that reproduces; maintainer for the triage. |
+
+**Blast radius.** Six candidate commits on chore/nightscout-modernization b1bdaca0 - 31c354d8, d3ac8026, 973a2849, 71c42c9a, d48be5e5, ad4a8cd5. Only 31c354d8 cherry-picks cleanly onto origin/dev.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** triage; each confirmed backport is classified on its own branch
+
+**Gates.**
+
+- `[static]` `grep -q "^## Verdicts" docs/60-research/remedial/modernization-backport-triage-2026-09-22.md`
+  - The triage exists. It must carry, per commit, a reproduction on dev and a control.
+- **NO GATE** &mdash; Whether each commit fixes a live defect is established by running a probe on dev, not by reading the diff. The probes live with the triage.
+
+**Evidence.**
+
+- `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
+
+**Notes.** Backports carry the modernization commit's content unchanged (cherry-pick -x) so the later cut rebase sees agreement, not a second implementation.
+
+### `BF2-OPS` &mdash; bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf2/ops` |
+| base | `origin/dev@74fc6619` |
+| worktree | `externals/work/crm-bf2-ops` |
+| semver | `patch` |
+| review | maintainer |
+| register | `BF-10`, `BF-63` |
+
+**Blast radius.** docker-compose.yml, lib/plugins/index.js, lib/api/alexa/index.js, lib/server/booterror.js.
+
+**What an operator sees.** Not released. Three small repairs: the bundled Docker setup stops the database crashing for lack of open files, an unrecognised Alexa request gets an answer instead of hanging, and the page that explains a start-up error stops failing for one kind of error.
+
+**Why `patch`.** bug fixes and a shipped configuration file; no declared surface moves
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf2/ops >/dev/null`
+  - Merges into origin/dev with no conflict.
+- `[static]` `git -C externals/cgm-remote-monitor-official show bf2/ops:docker-compose.yml | grep -q nofile`
+  - BF-10 - the compose file raises the open-file limit.
+- **NO GATE** &mdash; Follow-ups 3 and 7 and BF-63 keep their existing gates on FU-RESIDUALS and RT-BOOTERROR, which read origin/dev and go green when this merges.
+
+**Evidence.**
+
+- `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
+
+**Notes.** Follow-up 4 stays on bf/auth (ce82f0cd) and is not repeated here.
 
 ---
 

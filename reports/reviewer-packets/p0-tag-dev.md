@@ -99,9 +99,10 @@ checkable form of "the full release has not been cut". Read-only.
 
 ## Notes carried on the item
 
-The programme's local release/v0.0.14 branch and v0.0.14 tag are retired:
-every commit on them is in connector dev. No 0.0.14 will be published; the
-line is 0.1.0.
+DECIDED 2026-09-22 (maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging
+remains the maintainer's action. The programme's local release/v0.0.14 branch
+and v0.0.14 tag are retired: every commit on them is in connector dev. No
+0.0.14 will be published; the line is 0.1.0.
 
 ---
 

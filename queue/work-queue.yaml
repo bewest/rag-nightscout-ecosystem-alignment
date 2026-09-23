@@ -101,6 +101,14 @@ parcels:
       and differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated
       these.
 
+  backfix2:
+    title: Backfix 2 - the patch release after 15.0.9
+    summary: >
+      Prepared now, PRs opened after 15.0.9 is tagged. Plan and flag rule:
+      docs/30-design/remedial/backfix-2-plan-2026-09-22.md. Units are grouped
+      by the reviewer they need and integrated on a scratch rc/backfix-2 branch
+      pinned to dev by SHA, evaluating between each merge.
+
 items:
 
 # ---------------------------------------------------------------------------
@@ -1539,6 +1547,7 @@ items:
       - docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md
       - docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     notes: >
+      DECIDED 2026-09-22 (maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging remains the maintainer's action.
       The programme's local release/v0.0.14 branch and v0.0.14 tag are retired:
       every commit on them is in connector dev. No 0.0.14 will be published;
       the line is 0.1.0.
@@ -1823,6 +1832,7 @@ items:
     evidence:
       - docs/60-research/modernization/gt4-semver-classification-2026-09-15.md
     notes: >
+      DECIDED 2026-09-22 (maintainer) - the dev to master release is 15.0.9; #8738 and #8743 ship as-is, declared as corrections in the release notes, with no compatibility flag. The cut tips still need distinct numbers; see docs/30-design/remedial/backfix-2-plan-2026-09-22.md.
       Given the governance gap - 100 self-merged PRs, zero human reviews - the
       version number is the only warning an operator gets, and right now it does
       not distinguish these builds.
@@ -6048,3 +6058,124 @@ items:
       Its strongest evidence is that the reporter of GHSA-8849 keyed their own
       security patch to the wrong one. It is prose in README.md and the swagger
       documents, there is no branch, and the wording is a maintainer's to write.
+
+# ---------------------------------------------------------------------------
+# PARCEL: backfix2
+# ---------------------------------------------------------------------------
+
+  - id: BF2-AUTH
+    title: bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY
+    parcel: backfix2
+    repo: cgm-remote-monitor
+    branch: bf2/auth-hardening
+    base: origin/dev@74fc6619
+    worktree: externals/work/crm-bf2-auth
+    state: not-started
+    blast_radius: >
+      lib/authorization/endpoints.js, storage.js, delaylist.js, index.js from
+      bf/auth and bf/throttle, plus lib/server/client-ip.js and its env.js
+      setting extracted from chore/nightscout-modernization (06c83f2f, 395f3207).
+    review: SECURITY - the reviewer P0-C already names; none assigned.
+    operator_visible: >
+      Not released. Combines the two login-security fixes already described
+      under P0-C and P0-J with a setting that lets you tell Nightscout which
+      proxy in front of it to trust. If you change nothing, Nightscout behaves
+      as it does today; the stronger protection against password guessing
+      applies only once you name your trusted proxy.
+    semver: major
+    semver_reason: >
+      Inherits P0-C's major (the BF-47 allow-list), unless the maintainer's
+      BF-47 decision puts that behind a compatibility flag, which would make
+      this minor (a new setting, today's behaviour by default).
+    register:
+      - BF-17
+      - BF-30
+    gates:
+      - run: 'git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth bf2/auth-hardening && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle bf2/auth-hardening'
+        kind: static
+        describe: Contains both source branches by ancestry, not re-implementation.
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf2/auth-hardening >/dev/null'
+        kind: static
+        describe: Merges into origin/dev with no conflict.
+      - run: 'git -C externals/cgm-remote-monitor-official cat-file -e bf2/auth-hardening:lib/server/client-ip.js'
+        kind: static
+        describe: The client-address module is present. Its default being today's behaviour is asserted by the branch's own tests, not here.
+      - no-gate: >
+          The compatibility default (TRUST_PROXY unset = today's forwarded-header
+          behaviour) is a behavioural claim; it needs a test on the branch that
+          fails when the default is flipped, and that test does not exist yet.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
+    notes: >
+      PRs open after 15.0.9 is tagged (plan section 3). BF-30 is closed only when
+      TRUST_PROXY names a boundary; with the default it remains open, and the
+      branch must say so in its boot message and PR body.
+
+  - id: BF2-BACKPORT
+    title: Which modernization-only security commits fix a defect that dev has
+    parcel: backfix2
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@74fc6619
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    blast_radius: >
+      Six candidate commits on chore/nightscout-modernization b1bdaca0 -
+      31c354d8, d3ac8026, 973a2849, 71c42c9a, d48be5e5, ad4a8cd5. Only 31c354d8
+      cherry-picks cleanly onto origin/dev.
+    review: SECURITY for anything that reproduces; maintainer for the triage.
+    operator_visible: ""
+    semver: n/a
+    semver_reason: triage; each confirmed backport is classified on its own branch
+    register: []
+    gates:
+      - run: 'grep -q "^## Verdicts" docs/60-research/remedial/modernization-backport-triage-2026-09-22.md'
+        kind: static
+        describe: The triage exists. It must carry, per commit, a reproduction on dev and a control.
+      - no-gate: >
+          Whether each commit fixes a live defect is established by running a
+          probe on dev, not by reading the diff. The probes live with the triage.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
+    notes: >
+      Backports carry the modernization commit's content unchanged (cherry-pick
+      -x) so the later cut rebase sees agreement, not a second implementation.
+
+  - id: BF2-OPS
+    title: bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer
+    parcel: backfix2
+    repo: cgm-remote-monitor
+    branch: bf2/ops
+    base: origin/dev@74fc6619
+    worktree: externals/work/crm-bf2-ops
+    state: not-started
+    blast_radius: >
+      docker-compose.yml, lib/plugins/index.js, lib/api/alexa/index.js,
+      lib/server/booterror.js.
+    review: maintainer
+    operator_visible: >
+      Not released. Three small repairs: the bundled Docker setup stops the
+      database crashing for lack of open files, an unrecognised Alexa request
+      gets an answer instead of hanging, and the page that explains a start-up
+      error stops failing for one kind of error.
+    semver: patch
+    semver_reason: bug fixes and a shipped configuration file; no declared surface moves
+    register:
+      - BF-10
+      - BF-63
+    gates:
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf2/ops >/dev/null'
+        kind: static
+        describe: Merges into origin/dev with no conflict.
+      - run: 'git -C externals/cgm-remote-monitor-official show bf2/ops:docker-compose.yml | grep -q nofile'
+        kind: static
+        describe: BF-10 - the compose file raises the open-file limit.
+      - no-gate: >
+          Follow-ups 3 and 7 and BF-63 keep their existing gates on FU-RESIDUALS
+          and RT-BOOTERROR, which read origin/dev and go green when this merges.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
+    notes: Follow-up 4 stays on bf/auth (ce82f0cd) and is not repeated here.
