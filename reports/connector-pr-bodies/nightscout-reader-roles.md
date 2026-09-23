@@ -8,7 +8,7 @@ This fix is for people who use nightscout-connect to **copy data from one Nights
 
 It matters only when the site being copied **from** does not let anonymous visitors read it. That is set by `AUTH_DEFAULT_ROLES=denied` on that site.
 
-- **If the source site is readable without logging in** (`AUTH_DEFAULT_ROLES=readable`, the older default), nothing changes. The connector reads that site anonymously and never uses the code this fix changes.
+- **If the source site is readable without logging in** (`AUTH_DEFAULT_ROLES=readable`, Nightscout's default), nothing changes. The connector reads that site anonymously and never uses the code this fix changes.
 - **If the source site is locked down** (`AUTH_DEFAULT_ROLES=denied`), copying has never worked. The connector makes an access token for itself on the source site, but that token was created without permission to read. Every attempt to fetch data fails with "Polling frame failed (HTTP 401)", and **no glucose readings, treatments, device status or profiles reach the destination site.**
 
 The connector keeps retrying and never pauses, but nothing gets copied. If you rely on the destination site for glucose data or alarms, it has had no data from this source.
@@ -33,7 +33,7 @@ This is a software fix, not medical advice. If a gap in copied data affected tre
 - `GET /subjects` returns `pick(subject, ['_id', 'name', 'accessToken', 'roles'])`
 - the admin Subjects plugin reads and writes `subject.roles`
 
-On current Nightscout dev the misspelled `role` field is saved to the database but ignored, so the subject has no roles and its token gets only `AUTH_DEFAULT_ROLES`. The auth-hardening subject allow-list (`name, roles, notes, created_at`) drops `role` when the subject is created, so the subject ends up without roles there too. The fix is the same in both cases.
+On current Nightscout dev the misspelled `role` field is saved to the database but ignored, so the subject has no roles and its token gets only `AUTH_DEFAULT_ROLES`. A pending Nightscout change that stores only a subject's known fields (`name`, `roles`, `notes`, `created_at`) would drop `role` when the subject is created, so the subject would end up without roles there too. The fix is the same in both cases.
 
 The change is one field name, `role` → `roles`, and a test.
 

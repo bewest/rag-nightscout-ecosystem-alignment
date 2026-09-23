@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 98 |
-| runnable gates | 172 |
+| items | 99 |
+| runnable gates | 174 |
 | explicit `no-gate:` markers | 146 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 146 of the 318 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 146 of the 320 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -44,7 +44,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 34 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-47, BFQ-52, BFQ-90, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
 | `gate-not-met` | 18 | P0-C, P0-J, P0-CONNECT-ROLE, BFQ-91, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-87, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 6 | P0-C-REMEDIATE, RT-COUNT0, T30-AUTH, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
+| `ready-to-push` | 7 | P0-C-REMEDIATE, RT-COUNT0, RT-MONGO-FLOOR, T30-AUTH, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `merged-upstream` | 15 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
 | `needs-decision` | 8 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
@@ -977,7 +977,7 @@ needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 14 items
+`parcel: release-train` &mdash; 15 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -989,6 +989,7 @@ that costs.
 | `RT-D3` | Answer the D3 question before 15.0.9 ships | `in-progress` | `origin/dev` | minor | 2 run + 1 no-gate |
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | `-` | n/a | 1 run + 1 no-gate |
 | `RT-COUNT0` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | `ready-to-push` | `bf/count-zero-empty` | patch | 2 run |
+| `RT-MONGO-FLOOR` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | `ready-to-push` | `docs/mongodb-floor` | patch | 2 run |
 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 1 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
@@ -1096,6 +1097,37 @@ that costs.
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 
 **Notes.** DECIDED 2026-09-23 (maintainer) - accepted that a DELETE ignores count, so a delete carrying count=0 removes everything its filter matches, as 15.0.8 already did. PREPARED 2026-09-23. Read matrix (30 entries, 120 treatments, 30 devicestatus, 15 profile, 15 activity, counted in mongo) - the ONLY change from dev is the 0 and 00 columns, now 200 with no rows on every v1 read route; 0x10, 2.5, -3, 1e2, abc, MAX_SAFE+1, %2B5 and count=1&count=2 stay 400. Suite Node 20.20.0 - dev 2386/0/3, branch 2404/0/3. FOR THE MAINTAINER, measured - (1) dev (#8738) refuses every WRITE that carries any invalid count, including count=0, with 400 and no change; the branch makes writes ignore count as decided. (2) Neither tree limits a DELETE by count - DELETE with a find and count=2 removed all 5 matching rows on both - so on the branch a delete carrying count=0 removes everything its filter matches, where dev refused it. (3) Routes that never apply count (/entries/current, /count/.../where, /status, /echo, /food) now answer count=0 normally instead of 400. (4) v1 now accepts zero while v3 limit=0 stays 400, so FU-LIMIT's "two implementations that agree" no longer holds. PR body draft at reports/phase0-pr-bodies/count- zero-empty.md. DECIDED 2026-09-23 (maintainer) - "count=0 should return a 0 length array of results." #8738 (merged to dev) answers HTTP 400 for count=0 because MongoDB reads .limit(0) as no limit; the maintainer wants an empty list instead. Malformed counts stay 400, and the check runs on read routes only, so writes ignore count. Ships in 15.0.9.
+
+### `RT-MONGO-FLOOR` &mdash; README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `docs/mongodb-floor` |
+| base | `origin/dev@74fc6619` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `patch` |
+| review | maintainer |
+
+**Blast radius.** README.md, one line of the installation requirements. No code.
+
+**What an operator sees.** The installation instructions said MongoDB 4.4 no longer works with this version. It does still work and is still tested. 15.0.9 will say instead that 4.4 is deprecated and support will be removed in a later release, so plan to upgrade the database one major version at a time.
+
+**Why `patch`.** documentation only
+
+**Gates.**
+
+- `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official show docs/mongodb-floor:README.md | grep -q "MongoDB 4.4 is \*deprecated\*"'`
+  - the prepared branch carries the deprecation wording
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev docs/mongodb-floor >/dev/null`
+  - the branch merges into dev without conflict
+
+**Evidence.**
+
+- `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
+
+**Notes.** DECIDED 2026-09-23 (maintainer) - deprecate 4.4 now, drop it later. Prepared as aabce4b1 by the other session; this item was added 2026-09-23 because the branch had none. The commit message serves as the PR body (gh pr create --fill).
 
 ### `RT-REBASE` &mdash; Cuts 1-4 are 133 commits behind dev and now all five conflict
 

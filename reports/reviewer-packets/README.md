@@ -33,6 +33,7 @@ repository.
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
 | [`RT-4`](rt-4.md) | &mdash; | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes |
 | [`RT-COUNT0`](rt-count0-bf-count-zero-empty.md) | &mdash; | `ready-to-push` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 |
+| [`RT-MONGO-FLOOR`](rt-mongo-floor-docs-mongodb-floor.md) | &mdash; | `ready-to-push` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |
 | [`T30-RESEARCH`](t30-research.md) | &mdash; | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface |
 

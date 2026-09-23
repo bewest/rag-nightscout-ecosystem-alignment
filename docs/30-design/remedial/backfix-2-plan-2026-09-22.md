@@ -125,10 +125,9 @@ Evidence prepared for human sign-off, not code:
 | `bf2/ops` | BF-10 compose `ulimits`, FU-RESIDUALS follow-ups 3 and 7, BF-63 error-renderer fix | maintainer |
 | BF-72 | no branch in any public repository; a private recommendation first | security reviewer; disclosure route is the maintainer's |
 
-BF-47 (the subject-field allow-list on `bf/auth`) is still `needs-decision`. The
-flag rule suggests a compatibility flag that preserves fields today's `save()`
-keeps, because third-party tools may rely on that. The maintainer has not ruled
-on it, and until they do the branch keeps the allow-list as written.
+BF-47 (the subject-field allow-list on `bf/auth`) was decided on 2026-09-23 (§1a): the
+allow-list is intended and stays, with no compatibility flag. The remaining defect is the
+admin page, which clears `notes` and `created_at` on every edit (BFQ-47).
 
 **Integrated 2026-09-23** on scratch `rc/backfix-2` `e9a4ef62`, pinned to `dev` `74fc6619`: `bf2/ops`, then
 `bf2/backports`, then `bf2/auth-hardening`, one `--no-ff` merge each, with no conflicts and nothing dropped. Suite
@@ -180,11 +179,22 @@ major one. It is the maintainer's decision.
 
 ## 5. Human steps, in order
 
-1. Tag connector `v0.1.0` on `dev` and approve the `npm-publish` environment.
-2. Push `bf/connect-pin` and open its PR into `dev`; merge.
-3. Review and approve #8598 (at least one reviewer who is not the author); merge;
-   tag 15.0.9.
-4. Send the drafted advisory replies and metadata corrections
-   (`docs/30-design/remedial/advisory-response-2026-09/`).
-5. Push the backfix-2 branches and open their PRs.
-6. Decide BF-47 and BF-72's disclosure route.
+Re-ordered 2026-09-23. State is in the queue; this is only the order.
+
+1. **Connector:** open the PR for `fix/nightscout-reader-roles` (BF-89, P0-CONNECT-ROLE) into
+   connector `dev`, and merge it.
+2. **Connector:** fix BF-91 (BFQ-91). No branch exists yet.
+3. **Connector:** tag a new prerelease from `dev` with both fixes, and test it for as long as
+   the maintainer judges enough (P0-TAG). Then tag `v0.1.0` and approve the `npm-publish`
+   environment.
+4. **Nightscout:** push `bf/count-zero-empty`, `bf/qs-6.16`, `docs/mongodb-floor` and
+   `bf2/backports`, and open a PR for each into `dev`. Merge them one at a time, evaluating
+   between merges.
+5. **Nightscout:** move `bf/connect-pin-0.1.0` from `0.1.0-dev.1` to `0.1.0` and regenerate the
+   lockfile (P0-PIN, P0-LOCK). Push it, open its PR, and merge.
+6. **Nightscout:** finish the 15.0.9 release notes. Get #8598 approved by at least one reviewer
+   who is not the author, merge it, and tag 15.0.9.
+7. **Advisories:** apply the metadata corrections (`advisories/apply-metadata.sh --apply`) at any
+   time; they stay drafts. After 15.0.9 ships, restore the withheld write-ups from `ef376ecb`,
+   send the replies, and publish.
+8. **Backfix 2:** push `bf2/auth-hardening` and `bf2/ops` and open their PRs.

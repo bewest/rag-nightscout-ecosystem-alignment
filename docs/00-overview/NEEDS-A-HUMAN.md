@@ -30,7 +30,7 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 11 items
+### Maintainer &mdash; 12 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -43,6 +43,7 @@ that it was reviewed.
 | `BF2-OPS` | `ready-to-push` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `RT-COUNT0` | `ready-to-push` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | &mdash; |
+| `RT-MONGO-FLOOR` | `ready-to-push` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
 
