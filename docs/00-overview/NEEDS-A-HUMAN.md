@@ -35,6 +35,7 @@ that it was reviewed.
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BF2-OPS` | `in-flight-upstream` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | #8753 |
+| `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | #8758 |
 | `BFQ-87` | `in-flight-upstream` | BF-87 - the root qs override holds the connector below its range and pins the se | &mdash; |
 | `RT-COUNT0` | `in-flight-upstream` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
@@ -46,7 +47,6 @@ that it was reviewed.
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
 | `BFQ-100` | `ready-to-push` | BF-100 - devicestatus, food and activity store a hex _id as a string | &mdash; |
 | `BFQ-101` | `ready-to-push` | BF-101 - API v3 id filters miss records stored with a string _id | &mdash; |
-| `BFQ-102` | `ready-to-push` | bf/object-id-consistency - one rule for a record's own hex _id across profile, d | &mdash; |
 | `BFQ-69` | `ready-to-push` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing | &mdash; |
 | `BFQ-90` | `ready-to-push` | BF-90 - an alarm at a page with no reading throws in the client | &mdash; |
 | `BFQ-99` | `ready-to-push` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectI | &mdash; |
@@ -90,6 +90,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 |---|---|---|---|---|
 | **#8753** | `BF2-OPS` | `bf2/ops` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 | Maintainer |
 | **#8754** | `BF2-AUTH` | `bf2/auth-hardening` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.j | SECURITY reviewer |
+| **#8758** | `BFQ-102` | `bf/object-id-crud` | bf/object-id-consistency - one rule for a record's own hex _ | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

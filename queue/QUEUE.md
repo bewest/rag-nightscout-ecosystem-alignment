@@ -44,9 +44,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-92, BFQ-93, BFQ-96, BFQ-CAP02, FU-HYGIENE |
 | `in-progress` | 1 | RT-D3 |
 | `gate-not-met` | 14 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 9 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-90, BFQ-99, BFQ-100, BFQ-101, BFQ-102 |
+| `ready-to-push` | 8 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-90, BFQ-99, BFQ-100, BFQ-101 |
 | `blocked` | 12 | P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, FU-LIMIT |
-| `in-flight-upstream` | 5 | RT-COUNT0, BFQ-87, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
+| `in-flight-upstream` | 6 | RT-COUNT0, BFQ-87, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-102 |
 | `merged-upstream` | 21 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-PUBLISH, P0-T01, RT-MONGO-FLOOR, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM, BFQ-97, BFQ-98 |
 | `needs-decision` | 9 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, BFQ-95, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
 | `done` | 2 | DOC-VIEWS, DOC-LINKS |
@@ -1572,7 +1572,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-99` | bf/profile-object-id - a profile posted with its own _id is stored as an ObjectId, and string-_id profiles can be edited and deleted | `ready-to-push` | `bf/profile-object-id` | patch | 0 run + 1 no-gate |
 | `BFQ-100` | BF-100 - devicestatus, food and activity store a hex _id as a string | `ready-to-push` | `bf/object-id-other-collections` | patch | 0 run + 1 no-gate |
 | `BFQ-101` | BF-101 - API v3 id filters miss records stored with a string _id | `ready-to-push` | `bf/api3-string-id` | patch | 0 run + 1 no-gate |
-| `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 | `ready-to-push` | `bf/object-id-crud` | patch | 0 run + 1 no-gate |
+| `BFQ-102` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatus, food, activity, treatments, entries and API v3 | `in-flight-upstream` | `bf/object-id-crud` | patch | 0 run + 1 no-gate |
 
 ### `BFQ-91` &mdash; BF-91 - connector capture mode cannot find trace-axios for two sources
 
@@ -2987,7 +2987,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/object-id-crud` |
 | base | `origin/dev@1f9a9d10` |
@@ -3013,7 +3013,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/60-research/remedial/profile-object-id-2026-09-23.md`
 - `docs/60-research/remedial/crud-by-id-matrix-2026-09-23.md`
 
-**Notes.** One PR from bf/object-id-crud (contains bf/object-id-consistency 597e2899). D1 to D4 decided 2026-09-23 (plan section 1a) and applied. The D1 check adds about 1 ms to a 100-row devicestatus batch that carries hex _ids and nothing without. Merge-tree clean with every open 15.0.9 PR head incl. #8757 5d342ac1 and rc-e; the narrow alternatives 2fac53f5 and 7295bc8c now conflict with it and are not to land. Built 2026-09-23 on the maintainer's question whether one PR could carry the through-line. Merge-tree clean with every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; conflicts with bf/profile-object-id (BFQ-99) in lib/server/profile.js, so land one. Merged trees not run through the suite. DECIDED 2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan section 1a, "15.0.9 ID consistency"). PR body draft reports/phase0-pr-bodies/bf-object-id- consistency.md.
+**Notes.** 2026-09-23 - OPEN upstream as #8758 (head 6d120fa2, verified with ls-remote), CI green. One PR from bf/object-id-crud (contains bf/object-id-consistency 597e2899). D1 to D4 decided 2026-09-23 (plan section 1a) and applied. The D1 check adds about 1 ms to a 100-row devicestatus batch that carries hex _ids and nothing without. Merge-tree clean with every open 15.0.9 PR head incl. #8757 5d342ac1 and rc-e; the narrow alternatives 2fac53f5 and 7295bc8c now conflict with it and are not to land. Built 2026-09-23 on the maintainer's question whether one PR could carry the through-line. Merge-tree clean with every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; conflicts with bf/profile-object-id (BFQ-99) in lib/server/profile.js, so land one. Merged trees not run through the suite. DECIDED 2026-09-23 (maintainer): this ships in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan section 1a, "15.0.9 ID consistency"). PR body draft reports/phase0-pr- bodies/bf-object-id-consistency.md.
 
 ---
 

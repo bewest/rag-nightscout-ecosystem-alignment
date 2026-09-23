@@ -122,7 +122,7 @@ cover more than one `BF-`:
 | `BFQ-10` | `not-started` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
 | `BFQ-100` | `ready-to-push` | BF-100 - devicestatus, food and activity store a hex _id as a string |
 | `BFQ-101` | `ready-to-push` | BF-101 - API v3 id filters miss records stored with a string _id |
-| `BFQ-102` | `ready-to-push` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu |
+| `BFQ-102` | `in-flight-upstream` | bf/object-id-consistency - one rule for a record's own hex _id across profile, devicestatu |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `ready-to-push` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -159,7 +159,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 1 |  | 3 | 1 | 2 |  | 13 | 2 |  |  |  | **22** |
 | `release-train` | 1 | 1 | 4 |  | 4 | 2 | 1 | 2 |  |  |  | **15** |
-| `register-open` | 16 |  | 5 | 7 | 1 | 1 | 7 | 4 |  | 2 | 1 | **44** |
+| `register-open` | 16 |  | 5 | 6 | 1 | 2 | 7 | 4 |  | 2 | 1 | **44** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 |  | **18** |
 | `docs-truth` | 6 |  | 1 |  |  |  |  |  | 2 |  |  | **9** |
 | `backfix2` |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

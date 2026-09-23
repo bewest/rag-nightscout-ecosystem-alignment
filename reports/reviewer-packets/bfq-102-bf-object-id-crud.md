@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-102
+# Review packet — BFQ-102 (PR #8758)
 
 **bf/object-id-consistency - one rule for a record's own hex _id across profile,
 devicestatus, food, activity, treatments, entries and API v3**
@@ -21,7 +21,7 @@ devicestatus, food, activity, treatments, entries and API v3**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/object-id-crud` |
 | base | `origin/dev@1f9a9d10` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-102` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-102` is the measurement |
 | semver | `patch` |
 | register entries | `BF-99`, `BF-100`, `BF-101`, `BF-102` |
 | operator exposure | **reaches an operator on today's release** |
@@ -80,19 +80,20 @@ maintainer
 
 ## Notes carried on the item
 
-One PR from bf/object-id-crud (contains bf/object-id-consistency 597e2899). D1
-to D4 decided 2026-09-23 (plan section 1a) and applied. The D1 check adds
-about 1 ms to a 100-row devicestatus batch that carries hex _ids and nothing
-without. Merge-tree clean with every open 15.0.9 PR head incl. #8757 5d342ac1
-and rc-e; the narrow alternatives 2fac53f5 and 7295bc8c now conflict with it
-and are not to land. Built 2026-09-23 on the maintainer's question whether one
-PR could carry the through-line. Merge-tree clean with every open 15.0.9 PR
-head and rc/15.0.9-additions-e 1b1977e0; conflicts with bf/profile-object-id
-(BFQ-99) in lib/server/profile.js, so land one. Merged trees not run through
-the suite. DECIDED 2026-09-23 (maintainer): this ships in 15.0.9 instead of
-BFQ-99, with consistent working CRUD across the API (plan section 1a, "15.0.9
-ID consistency"). PR body draft reports/phase0-pr-bodies/bf-object-id-
-consistency.md.
+2026-09-23 - OPEN upstream as #8758 (head 6d120fa2, verified with ls-remote),
+CI green. One PR from bf/object-id-crud (contains bf/object-id-consistency
+597e2899). D1 to D4 decided 2026-09-23 (plan section 1a) and applied. The D1
+check adds about 1 ms to a 100-row devicestatus batch that carries hex _ids
+and nothing without. Merge-tree clean with every open 15.0.9 PR head incl.
+#8757 5d342ac1 and rc-e; the narrow alternatives 2fac53f5 and 7295bc8c now
+conflict with it and are not to land. Built 2026-09-23 on the maintainer's
+question whether one PR could carry the through-line. Merge-tree clean with
+every open 15.0.9 PR head and rc/15.0.9-additions-e 1b1977e0; conflicts with
+bf/profile-object-id (BFQ-99) in lib/server/profile.js, so land one. Merged
+trees not run through the suite. DECIDED 2026-09-23 (maintainer): this ships
+in 15.0.9 instead of BFQ-99, with consistent working CRUD across the API (plan
+section 1a, "15.0.9 ID consistency"). PR body draft reports/phase0-pr-
+bodies/bf-object-id-consistency.md.
 
 ---
 

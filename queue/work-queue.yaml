@@ -7234,7 +7234,8 @@ items:
     branch: bf/object-id-crud
     base: origin/dev@1f9a9d10
     worktree: externals/work/crm-bf-object-id-crud
-    state: ready-to-push
+    state: in-flight-upstream
+    pr: [8758]
     ships_to_operators_today: true
     blast_radius: >
       Five commits to 597e2899: the helper lib/server/object-id-forms.js; profile
@@ -7270,6 +7271,7 @@ items:
       - docs/60-research/remedial/profile-object-id-2026-09-23.md
       - docs/60-research/remedial/crud-by-id-matrix-2026-09-23.md
     notes: >
+      2026-09-23 - OPEN upstream as #8758 (head 6d120fa2, verified with ls-remote), CI green.
       One PR from bf/object-id-crud (contains bf/object-id-consistency 597e2899).
       D1 to D4 decided 2026-09-23 (plan section 1a) and applied. The D1 check adds about
       1 ms to a 100-row devicestatus batch that carries hex _ids and nothing without.
