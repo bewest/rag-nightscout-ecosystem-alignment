@@ -173,7 +173,8 @@ does not protect against guessing passwords or tokens.
 **The unset default is dev's behaviour, not the modernization branch's.** `395f3207`'s unset
 default differs from `dev` in four edge cases (BF-88), so `bf2/auth-hardening` keeps `dev`'s
 resolution for the unset case (`8b975b41`) and uses `395f3207`'s code unchanged for the trusted
-path. Which normalisation the cuts keep is an open decision, recorded on RT-3.
+path. Decided 2026-09-23 (maintainer): the cuts keep this unset default too, not `395f3207`'s
+normalisation; recorded on RT-3.
 
 **Decided 2026-09-23: no flag for BF-47.** The maintainer ruled that the allow-list is the declared schema for subjects and roles, so fields outside it are not part of the contract. The paragraph below is kept as the option that was considered.
 

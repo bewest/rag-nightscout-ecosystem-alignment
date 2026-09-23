@@ -386,8 +386,8 @@ and at cut 3+5 through a three-way merge with `395f3207` as base. Consequence at
 replaced by the candidate's, and `forwarded-for` stays a dependency. Taking cut 5's
 side instead would change the client address an upgrader's failed-login delay keys on
 in those four cases, with no warning, and would fail 7 of 48 `tests/client-ip.test.js`
-cases (register figure). **Flagged for the maintainer's decision** (RT-3 records it
-as open).
+cases (register figure). **Decided 2026-09-23 by the maintainer: keep the candidate's
+(15.0.9's) side**, as the rehearsal did; RT-3 records it.
 
 **Operators:** with this choice, upgrading from 15.0.9 to any cut does not change how
 Nightscout works out a visitor's address when `TRUST_PROXY` is not set.
@@ -459,7 +459,7 @@ Cut 3's and cut 4's own rows, for reference: cut 3 26 files +314/−65; cut 4 65
    and BF-61 is live on `rh/cut35` (§4.5). Either cut 4's hold ends, or cut 4's
    removals are separated out of cut 5, which is unmeasured work.
 2. BF-61 and the `ENABLE` gap in its remedy (§4.5), wherever cut 4's code ships.
-3. BF-88 needs the maintainer's decision (§5); the rehearsal kept 15.0.9's behaviour.
+3. BF-88: decided 2026-09-23, the cuts keep 15.0.9's behaviour (§5), as the rehearsal did.
 4. The rt/* propagation is not a usable base as it stands: its reused resolutions
    carried two production defects (`event-stream` at cut 2, the quick-pick batch
    bound at cut 3), four jsdom test files it could not load at cut 1, and cut-5-only

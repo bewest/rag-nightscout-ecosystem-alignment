@@ -1313,7 +1313,7 @@ that costs.
 - `docs/60-research/modernization/gt2-cut-remeasure-2026-09-15.md`
 - `docs/60-research/modernization/gt4-semver-classification-2026-09-15.md`
 
-**Notes.** §5's commits column sums to 554 against a 495-commit stack (GT2). Counted as modernization work, cut 5 is 95, and 95 + 400 = 495.
+**Notes.** §5's commits column sums to 554 against a 495-commit stack (GT2). Counted as modernization work, cut 5 is 95, and 95 + 400 = 495. BF-88 DECIDED 2026-09-23 (maintainer): with TRUST_PROXY unset the cuts keep 15.0.9's resolution (forwarded-for, 8b975b41), not 395f3207's fixed-precedence normalisation; when cut 5 is rebased its four tests/client-ip.test.js expectations take 15.0.9's values and forwarded-for stays a dependency, as in the cut rehearsal. No flag for the other normalisation. Separate from BF-88 and still to carry: cut 5's client-ip.js (b1bdaca0) refuses the hop counts and true that #8754 (81623f9b) accepts.
 
 ### `RT-4` &mdash; Deprecation release - recommended folded into 15.0.9's release notes
 

@@ -201,7 +201,8 @@ With the removal on cut 1:
   MIME, webpack and ESLint, so the reason for holding it back is gone.
 
 What does still need a decision in cut 4 is the trusted-proxy change (`06c83f2f`): BF-88 and
-the 15.0.9 `TRUST_PROXY` design already differ from it. That is outside this lift.
+the 15.0.9 `TRUST_PROXY` design already differ from it. That is outside this lift. (BF-88 was
+decided on 2026-09-23: the cuts keep 15.0.9's unset default.)
 
 ## 8. For operators (plain language)
 
