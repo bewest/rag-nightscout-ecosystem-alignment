@@ -1,86 +1,17 @@
-The main Socket.IO namespace registered `loadRetro` with no authorization check of any kind. It
-emitted the cached `devicestatus` array to whoever asked for it.
+> **Details withheld.** This PR fixes a security issue that is tracked in a private GitHub security advisory. The fix is merged into `dev`, but no release contains it yet. We removed the detailed description on purpose, and will restore it once a fixed release is out and the advisory is published.
 
-That namespace has seven handlers and **six of them do check**. `dbAdd`, `dbUpdate`,
-`dbUpdateUnset` and `dbRemove` all answer `Not authorized` and write nothing — confirmed against
-the collection rather than the reply string. `authorize` establishes the authorization. The
-periodic `dataUpdate` goes to the `DataReceivers` room that only an authorized reader joins.
-`loadRetro` was the one omission, which is both why it is easy to have missed and why it is
-cheap to close.
+### Summary
 
-### Who is affected, and who is not
+A Socket.IO handler on the main namespace now applies the same read authorization as the rest of the API. The decision comes from `AUTH_DEFAULT_ROLES`, through the existing `verifyAuthorization()` path, so this adds no new policy.
 
-**On the shipped `AUTH_DEFAULT_ROLES=readable` default: nobody, and this should not alarm anyone
-running a default install.** Measured field by field against the same instance, every record id
-the socket returned is in the anonymous `GET /api/v1/devicestatus.json` answer, no JSON field
-path exists only on the socket, and REST returns *more* — 1730 records against the socket's 574.
-The payload is a strict subset of what the site already serves the public by design.
-
-**On an install that has closed anonymous access, it is an authorization bypass.** With
-`AUTH_DEFAULT_ROLES=denied`, where `/api/v1/status.json`, `/entries.json`, `/devicestatus.json`
-and `/treatments.json` all answered 401 in the same run, an unauthenticated socket that **never
-sends `authorize`** received 576 device-status records: the loop suggestion block, pump battery
-and reservoir, bolusing and suspended state, `pump.pumpID`, `pump.manufacturer`, `pump.model`,
-`uploader.name` — usually a person's given name — and the rig hostname.
-
-Three further measurements worth having in the record:
-
-* **No setting stopped it.** `denied`, `status-only`, `AUTHENTICATION_PROMPT_ON_LOAD=true` and
-  `TREATMENTS_AUTH=off` were each tested; all still returned 576. `DEVICESTATUS_DAYS=2` — the
-  only knob that touches this path — **doubled** it to 1150.
-* **It returned more than an authorized reader gets.** `authorize` trims to ten per
-  device-and-type, so a legitimate reader's `dataUpdate` carried 20 records where the
-  unauthenticated socket got 576.
-* **The caller never invokes `authorize`.** Calling it with bad credentials disconnects the
-  socket, so this was a gate to walk around rather than through — which is why auditing
-  `authorize` finds nothing.
-
-### What changed
-
-`resolveReadAccess()` gates the handler on the authorization the file already computes.
-
-A socket that authorized keeps the `socketAuthorization.read` it was given. One that never
-authorized is resolved through `verifyAuthorization({}, remoteIP, …)` — the same function the
-`authorize` handler calls — which takes `authorization.resolve()`'s `!authAttempted` branch and
-returns the `AUTH_DEFAULT_ROLES` shiros the REST surface answers with. Refusal replies
-`{result: 'Not permitted'}`, the string `checkConditions` already uses.
-
-So an instance on the documented `readable` default keeps serving anonymous clients exactly as
-before, and one on `denied` refuses here as it does everywhere else. **No new policy was
-invented** — the clean way to ask "may this socket read?" already existed in the same file.
-
-Verified not to interact with the failed-login throttle: an empty auth message takes the
-`!authAttempted` branch and never reaches `addFailedRequest`, so a public instance cannot
-throttle itself by accepting connections.
-
-`loadedMills` is still ignored. Honouring it is a behaviour change with client-side consequences
-and does not belong in a security fix.
+- **Default install (`AUTH_DEFAULT_ROLES=readable`):** nothing changes for clients.
+- **Installs that have turned off anonymous access:** the socket now refuses unauthorized clients, just as the REST routes already do.
 
 ### Evidence
 
-`tests/websocket.loadretro-authorization.test.js`, 4 cases.
+- `tests/websocket.loadretro-authorization.test.js`: 4 cases, covering both authorization arms. With the fix reverted, the two negative cases fail and the two positive cases still pass.
+- Suite: 2311 → 2315 passing, 3 pending, 0 failing.
+- Cherry-picks cleanly onto `v15.0.8`. The suite there goes 1533 → 1588 passing, 0 failing, if we want a backport.
 
-* **Ablation** — revert `lib/server/websocket.js`, keep the test, and the two negative cases go
-  red printing the symptom itself: `expected {retroUpdate: true, canary: true, records: 1} to
-  equal {retroUpdate: false, canary: false, records: 0}`. Canaried devicestatus arriving at a
-  socket the server had already resolved as unable to read. The two positive cases stay green in
-  the same ablated run, so it is red for the right reason.
-* **Positive control, live** — on the `readable` default the fixed build still serves an
-  anonymous client its 576 canaried records; on `denied`, an authorized reader still gets its
-  570, from the same process seconds after it refused an anonymous socket.
-* **Liveness** — every negative arm was re-run with the server's aliveness asserted in the same
-  invocation, because a dead server answers a negative probe exactly like a fixed one.
-* **Suite** — 2311 → 2315 passing, 3 pending, 0 failing. Delta is exactly the four new cases.
+Independent of #8745: the two PRs touch different files and merge cleanly in either order.
 
-Reproduced on v15.0.7, v15.0.8 and `dev`, both authorization arms, against mongod 7.0.43. The
-same commit also cherry-picks cleanly onto `v15.0.8` and the suite there goes 1533 → 1588, 0
-failing, if a backport is ever wanted.
-
-### Notes for the reviewer
-
-* The advisory's affected range says `>0.8.1`. Measured, `loadRetro` is **absent** from tags
-  0.8.1 through 0.8.4 and first appears in **0.9.0** — which is also the first tag carrying
-  `DataReceivers` and `authDefaultRoles`, so the handler and the authorization it skips shipped
-  in the same release. The advisory metadata is being corrected separately.
-* This is independent of the `/alarm` fix in its sibling PR: disjoint files, `git merge-tree`
-  clean, either order.

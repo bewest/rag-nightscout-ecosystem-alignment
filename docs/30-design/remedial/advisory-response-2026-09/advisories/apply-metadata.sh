@@ -77,8 +77,9 @@ send GHSA-5mrq-gpqw-q5v5 '{
 cat <<'NOTE'
 NOT DONE BY THIS SCRIPT, on purpose:
   - the description/summary rewrites. They are prose and belong in the web UI
-    where you can see the rendered result; each advisory's .md file here has the
-    exact text.
+    where you can see the rendered result. The XSS advisories' .md files here
+    have the exact text; for GHSA-gjhc, GHSA-8849 and GHSA-r3gv it is withheld
+    from this public repo until release: `git show ef376ecb:<path>`.
   - publication. Every advisory stays `draft`.
   - credits. Both reporters are already on the advisories as collaborating
     users; confirm the credit type reads the way you want before publishing.

@@ -22,10 +22,10 @@ carries the fixes, and leave `patched_versions` empty until then.
 
 | file | what |
 |---|---|
-| [`ghsa-gjhc-loadretro.md`](./ghsa-gjhc-loadretro.md) | metadata patch + revised text + the range correction |
-| [`ghsa-gjhc-comment.md`](./ghsa-gjhc-comment.md) | the comment to the reporter on GHSA-gjhc (draft, not sent) |
-| [`ghsa-8849-alarm.md`](./ghsa-8849-alarm.md) | metadata patch + revised text + reporter credit |
-| [`ghsa-r3gv-injection.md`](./ghsa-r3gv-injection.md) | metadata patch; the package name is wrong and one of three PoCs stands |
+| [`ghsa-gjhc-loadretro.md`](./ghsa-gjhc-loadretro.md) | withheld until release |
+| [`ghsa-gjhc-comment.md`](./ghsa-gjhc-comment.md) | withheld until release (draft, not sent) |
+| [`ghsa-8849-alarm.md`](./ghsa-8849-alarm.md) | withheld until release |
+| [`ghsa-r3gv-injection.md`](./ghsa-r3gv-injection.md) | withheld until release |
 | [`ghsa-mjp4-v3-notes-xss.md`](./ghsa-mjp4-v3-notes-xss.md) | `patched_versions` is blank against a closed range; fix it |
 | [`ghsa-5mrq-websocket-xss.md`](./ghsa-5mrq-websocket-xss.md) | severity `critical` overstates it; recommend `high` |
 | [`apply-metadata.sh`](./apply-metadata.sh) | `gh api` calls for every metadata patch above — dry run unless `--apply`; never touches `state` |

@@ -6,20 +6,25 @@ The pull requests and the responses to the five security advisories on
 `nightscout/cgm-remote-monitor`. Current verdicts and what is still owed live in
 [the disposition](../security-advisory-disposition-2026-09-21.md); this directory holds the text.
 
-**State as of 2026-09-22.** All three PRs **merged into `dev` on 2026-09-21** (#8744, #8745, #8746;
-`origin/dev` `74fc6619`) and are **not released** — `v15.0.8` (`origin/master` `92d08342`) is
-still affected by GHSA-gjhc and GHSA-8849. The reporter replies and the metadata corrections are
-**drafted and not sent**. No advisory is published.
+**State as of 2026-09-23.** All three PRs **merged into `dev` on 2026-09-21** (#8744, #8745, #8746)
+and are **not released**. The reporter replies and the metadata corrections are **drafted and not
+sent**. No advisory is published.
+
+**Details withheld (2026-09-23).** Three of the five advisories concern defects still present in
+the shipping release, 15.0.8. Their write-ups in this pack, the disposition and the research notes
+are withheld until a release containing the fixes ships and the advisories are published, matching
+the shortened descriptions of #8743, #8744 and #8745. The full text is in git history at
+`ef376ecb`. Current state is in queue items `ADV-*` and `RT-0`.
 
 ## The five advisories at a glance
 
-| advisory | verdict | v15.0.8 | what this pack contains | sent? |
-|---|---|---|---|---|
-| `GHSA-gjhc-pc29-r3m6` `loadRetro` | real, bypasses `denied` | **affected**; fix merged to `dev` (#8744) | PR 1 (sent), reply to the advisory, metadata + text | reply and metadata: **no** |
-| `GHSA-8849-qjp5-vrrj` `/alarm` | real, bypasses `denied` | **affected**; fix merged to `dev` (#8745) | PR 2 (sent), reply to the reporter, metadata + text | reply and metadata: **no** |
-| `GHSA-r3gv-x7fw-j2v5` operator injection | 1 of 3 PoCs stands; 1 is availability | `$where` affected (fix merged to `dev`, #8743); `$regex` affected, no fix | metadata + text corrections | **no** |
-| `GHSA-mjp4-84fw-gj4v` v3 notes XSS | real, **fixed in 15.0.8** | not affected | metadata only | **no** |
-| `GHSA-5mrq-gpqw-q5v5` websocket XSS | real, **fixed in 15.0.8** | not affected | metadata only — `critical` overstates it | **no** |
+| advisory | v15.0.8 | what this pack contains | sent? |
+|---|---|---|---|
+| `GHSA-gjhc-pc29-r3m6` `loadRetro` | withheld until release | PR 1 (sent); reply and metadata withheld | reply and metadata: **no** |
+| `GHSA-8849-qjp5-vrrj` `/alarm` | withheld until release | PR 2 (sent); reply and metadata withheld | reply and metadata: **no** |
+| `GHSA-r3gv-x7fw-j2v5` operator injection | withheld until release | metadata withheld | **no** |
+| `GHSA-mjp4-84fw-gj4v` v3 notes XSS | **fixed in 15.0.8**, not affected | metadata only | **no** |
+| `GHSA-5mrq-gpqw-q5v5` websocket XSS | **fixed in 15.0.8**, not affected | metadata only — `critical` overstates it | **no** |
 
 ## Pull requests — record of what was sent
 
@@ -31,10 +36,11 @@ still affected by GHSA-gjhc and GHSA-8849. The reporter replies and the metadata
 | [pr-2-alarm-socket.md](./pull-requests/pr-2-alarm-socket.md) | #8745 | `bf/alarm-socket-scope` | 2026-09-21 | `a198e308` (measured `012f1623` + an integration merge of `dev`, not re-measured) |
 | [pr-3-readable-warning.md](./pull-requests/pr-3-readable-warning.md) | #8746 | `bf/readable-warning` | 2026-09-21 | `91ed8d95` (measured `74731433` + an integration merge of `dev`, not re-measured) |
 
-The `*.body.md` files are **byte-identical to the live PR bodies** (compared 2026-09-22 with
+The `*.body.md` files are **byte-identical to the live PR bodies** (compared 2026-09-23 with
 `gh pr view <n> -R nightscout/cgm-remote-monitor --json body`, ignoring trailing newline and CR;
-no drift in either direction), and so carry no header of their own. The `## BODY` section of each
-`pr-N-*.md` wrapper is identical to its `*.body.md`.
+no drift in either direction), and so carry no header of their own. #8744 and #8745 were shortened
+on 2026-09-23 and their files follow; their `pr-N-*.md` wrappers are withheld stubs. The `## BODY`
+section of `pr-3-readable-warning.md` is identical to its `*.body.md`.
 
 ## Drafts not yet sent
 
@@ -45,19 +51,11 @@ no drift in either direction), and so carry no header of their own. The `## BODY
 | [advisories/](./advisories/README.md) — one file per advisory | the metadata fields and the prose to add or replace, edited in the advisory UI |
 | [advisories/apply-metadata.sh](./advisories/apply-metadata.sh) | sends the metadata patches — **dry run by default**, `--apply` to send; never publishes and never touches `state` |
 
-## The through-line
+## Configuration matters
 
-Four of the five advisories argue from anonymous access. Nightscout ships
-`AUTH_DEFAULT_ROLES=readable`, documents it as "readable by anyone who knows the URL", and warns
-about it at every boot. **Anonymous read on a default install is the documented product, so the
-question for each advisory is whether the access survives `AUTH_DEFAULT_ROLES=denied`** —
-measured as a control first; `denied` does lock the REST surface down completely on both `dev`
-and v15.0.8.
-
-The two socket defects survive it. The others do not, or never depended on it. That single
-distinction reorders the severities, strengthens two findings that were being understated,
-corrects one that was being overstated, and explains why the reporter's own proposed fix for
-`/alarm` does not work — it keys on `AUTHENTICATION_PROMPT_ON_LOAD` instead.
+Nightscout ships `AUTH_DEFAULT_ROLES=readable`, documents it as "readable by anyone who knows the
+URL", and warns about it at every boot, so anonymous read on a default install is the documented
+product. Each advisory's severity names the configuration it was scored against.
 
 *See also*: [disposition](../security-advisory-disposition-2026-09-21.md) ·
 [sequencing (snapshot)](../security-advisory-sequencing-2026-09-21.md) ·
