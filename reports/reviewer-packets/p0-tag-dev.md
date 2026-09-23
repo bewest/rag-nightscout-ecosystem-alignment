@@ -92,6 +92,10 @@ checkable form of "the full release has not been cut". Read-only.
 - Whether 0.1.0-dev.1 has been exercised enough to cut 0.1.0 is the
   maintainer's judgement.
 
+## Blocked on
+
+`P0-CONNECT-ROLE`, `BFQ-91`
+
 ## Evidence
 
 - [`docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md`](../../docs/30-design/modernization/release-readiness-15.0.9-2026-09-22.md)
@@ -100,16 +104,17 @@ checkable form of "the full release has not been cut". Read-only.
 ## Notes carried on the item
 
 DECIDED 2026-09-23 (maintainer) - tag 0.1.0 only after the additional needed
-connector fixes are merged into connector dev; which fixes is being settled
-(BF-89 prepared as fix/nightscout-reader-roles dea2bec; BF-91 found). DECIDED
-2026-09-23 (maintainer) - 0.1.0 is pinned in 15.0.9, but only after the
-prerelease has been tested longer; tagging waits for that. Before the full
-release, connector dev also fixes BF-89 (the nightscout source sends role for
-roles; P0-CONNECT-ROLE). Tagging remains the maintainer's action. DECIDED
-2026-09-22 (maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging remains
-the maintainer's action. The programme's local release/v0.0.14 branch and
-v0.0.14 tag are retired: every commit on them is in connector dev. No 0.0.14
-will be published; the line is 0.1.0.
+connector fixes are merged into connector dev; the set is exactly BF-89
+(P0-CONNECT-ROLE, prepared as fix/nightscout-reader-roles dea2bec) and BF-91
+(BFQ-91). #54 and #52 are not required for 0.1.0. DECIDED 2026-09-23
+(maintainer) - 0.1.0 is pinned in 15.0.9, but only after the prerelease has
+been tested longer; tagging waits for that. Before the full release, connector
+dev also fixes BF-89 (the nightscout source sends role for roles; P0-CONNECT-
+ROLE). Tagging remains the maintainer's action. DECIDED 2026-09-22
+(maintainer) - tag 0.1.0 and pin it inside 15.0.9. Tagging remains the
+maintainer's action. The programme's local release/v0.0.14 branch and v0.0.14
+tag are retired: every commit on them is in connector dev. No 0.0.14 will be
+published; the line is 0.1.0.
 
 ---
 
