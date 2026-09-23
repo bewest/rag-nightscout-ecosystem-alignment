@@ -49,19 +49,20 @@ that it was reviewed.
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value | &mdash; |
 | `BFQ-52` | `unsettled` | BF-52 - the age plugins can only ask for their urgent alarm in one window | &mdash; |
 
+### SECURITY reviewer &mdash; 3 items
+
+| id | claimed state | what it is | PR |
+|---|---|---|---|
+| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
+| `BF2-AUTH` | `ready-to-push` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | &mdash; |
+| `BF2-BACKPORT` | `ready-to-push` | Which modernization-only security commits fix a defect that dev has | &mdash; |
+
 ### Maintainer + a second human &mdash; 2 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-47` | `needs-decision` | BF-47 - an ordinary subject edit destroys stored fields, on today's release | &mdash; |
 | `RT-0` | `needs-decision` | Release 15.0.9 | #8598, #8605 |
-
-### SECURITY reviewer &mdash; 2 items
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
-| `BF2-AUTH` | `ready-to-push` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TR | &mdash; |
 
 ### SAFETY reviewer &mdash; 1 item
 

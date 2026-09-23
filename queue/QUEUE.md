@@ -32,18 +32,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 94 |
-| runnable gates | 162 |
+| runnable gates | 163 |
 | explicit `no-gate:` markers | 144 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 144 of the 306 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 144 of the 307 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 33 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE, BF2-BACKPORT |
+| `not-started` | 32 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE |
 | `gate-not-met` | 15 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
-| `ready-to-push` | 6 | P0-C-REMEDIATE, T30-AUTH, DOC-VIEWS, DOC-LINKS, BF2-AUTH, BF2-OPS |
+| `ready-to-push` | 7 | P0-C-REMEDIATE, T30-AUTH, DOC-VIEWS, DOC-LINKS, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
 | `merged-upstream` | 15 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
 | `needs-decision` | 10 | P0-TAG, RT-D3, RT-0, RT-4, T30-RESEARCH, BFQ-72, BFQ-47, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG |
@@ -3324,7 +3324,7 @@ dev by SHA, evaluating between each merge.
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
 | `BF2-AUTH` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY | `ready-to-push` | `bf2/auth-hardening` | major | 5 run |
-| `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `not-started` | `-` | n/a | 1 run + 1 no-gate |
+| `BF2-BACKPORT` | Which modernization-only security commits fix a defect that dev has | `ready-to-push` | `bf2/backports` | n/a | 2 run + 1 no-gate |
 | `BF2-OPS` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | `ready-to-push` | `bf2/ops` | patch | 2 run + 1 no-gate |
 
 ### `BF2-AUTH` &mdash; bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY
@@ -3369,11 +3369,11 @@ dev by SHA, evaluating between each merge.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf2/backports` |
 | base | `origin/dev@74fc6619` |
-| worktree | `externals/cgm-remote-monitor-official` |
+| worktree | `externals/work/crm-bf2-backports` |
 | semver | `n/a` |
 | review | SECURITY for anything that reproduces; maintainer for the triage. |
 
@@ -3387,13 +3387,15 @@ dev by SHA, evaluating between each merge.
 
 - `[static]` `grep -q "^## Verdicts" docs/60-research/remedial/modernization-backport-triage-2026-09-22.md`
   - The triage exists. It must carry, per commit, a reproduction on dev and a control.
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf2/backports >/dev/null`
+  - The two backports merge into origin/dev with no conflict.
 - **NO GATE** &mdash; Whether each commit fixes a live defect is established by running a probe on dev, not by reading the diff. The probes live with the triage.
 
 **Evidence.**
 
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 
-**Notes.** Backports carry the modernization commit's content unchanged (cherry-pick -x) so the later cut rebase sees agreement, not a second implementation.
+**Notes.** MEASURED 2026-09-22 - 11 candidates (6 named + 5 from a path/content sweep). DEFECT-ON-DEV and live on 15.0.8: 31c354d8 (alarm socket logs the submitted credential), d3ac8026 (a per-collection read grant not checked on two shared routes; bites scoped-token installs under denied), 973a2849 (status credential in the URL), 8458f39e (IMPORT_CONFIG diagnostics). d48be5e5 is real but not security. 71c42c9a not a defect; Helmet pair and 479a6a4d/924aa8d7 not on dev; f2ebd7d4 unsettled. bf2/backports carries 9c50788e and b5038500 (code verbatim, tests adapted where dev's socket differs); suite on Node 22.23.2 - dev 2386/0/3, branch 2398/0/3. Control re-run by the coordinator - with dev's lib the two new test files fail 7 of 12. Register entries are pending id allocation. Backports carry the modernization commit's content unchanged (cherry-pick -x) so the later cut rebase sees agreement, not a second implementation.
 
 ### `BF2-OPS` &mdash; bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer
 

@@ -6187,10 +6187,10 @@ items:
     title: Which modernization-only security commits fix a defect that dev has
     parcel: backfix2
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf2/backports
     base: origin/dev@74fc6619
-    worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    worktree: externals/work/crm-bf2-backports
+    state: ready-to-push
     blast_radius: >
       Six candidate commits on chore/nightscout-modernization b1bdaca0 -
       31c354d8, d3ac8026, 973a2849, 71c42c9a, d48be5e5, ad4a8cd5. Only 31c354d8
@@ -6204,6 +6204,9 @@ items:
       - run: 'grep -q "^## Verdicts" docs/60-research/remedial/modernization-backport-triage-2026-09-22.md'
         kind: static
         describe: The triage exists. It must carry, per commit, a reproduction on dev and a control.
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf2/backports >/dev/null'
+        kind: static
+        describe: The two backports merge into origin/dev with no conflict.
       - no-gate: >
           Whether each commit fixes a live defect is established by running a
           probe on dev, not by reading the diff. The probes live with the triage.
@@ -6211,6 +6214,17 @@ items:
     evidence:
       - docs/30-design/remedial/backfix-2-plan-2026-09-22.md
     notes: >
+      MEASURED 2026-09-22 - 11 candidates (6 named + 5 from a path/content
+      sweep). DEFECT-ON-DEV and live on 15.0.8: 31c354d8 (alarm socket logs the
+      submitted credential), d3ac8026 (a per-collection read grant not checked
+      on two shared routes; bites scoped-token installs under denied), 973a2849
+      (status credential in the URL), 8458f39e (IMPORT_CONFIG diagnostics).
+      d48be5e5 is real but not security. 71c42c9a not a defect; Helmet pair and
+      479a6a4d/924aa8d7 not on dev; f2ebd7d4 unsettled. bf2/backports carries
+      9c50788e and b5038500 (code verbatim, tests adapted where dev's socket
+      differs); suite on Node 22.23.2 - dev 2386/0/3, branch 2398/0/3. Control
+      re-run by the coordinator - with dev's lib the two new test files fail 7
+      of 12. Register entries are pending id allocation.
       Backports carry the modernization commit's content unchanged (cherry-pick
       -x) so the later cut rebase sees agreement, not a second implementation.
 
