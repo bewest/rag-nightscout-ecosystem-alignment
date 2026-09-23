@@ -63,8 +63,10 @@ branch, reports the MiniMed warning naming an actionable setting (1 of 5 `DEPREC
 lines; 0 of 5 on `dev`). Its other check, a migration shim on `dev`, stays red by design: the shim
 ships with the removal, not in 15.0.9.
 
-**Not yet run:** the full suite on this branch alone. It is to be covered by the combined 15.0.9
-re-run with the connector pin move.
+Full suite on Node 20: 2387 passing, 0 failing, 3 pending, which is `dev` `1f9a9d10`'s 2386 plus
+the one new test (run by the release session in its own worktree). The `CONNECT_*` names match
+what `extendedSettings` camel-cases and what the CareLink source reads (`carelinkUsername`,
+`carelinkPassword`, `carelinkRegion`, `countryCode`).
 
 ## For the reviewer to decide or verify
 
