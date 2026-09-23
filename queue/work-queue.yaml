@@ -1727,6 +1727,13 @@ items:
     evidence:
       - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
+      2026-09-23 - NEXT PIN PREPARED: bf/connect-pin-0.1.0-dev.3 f61870f0 on dev 1f9a9d10
+      (worktree externals/work/crm-connect-pin-dev3, built by session -59, verified here:
+      one package.json token plus the lockfile's connector entry, 2 files). npm
+      0.1.0-dev.3 is from connector dev 977da8a (gitHead verified), integrity
+      sha512-rkL4364OZdPM0...; suite 2386/0/3 on Node 20 and 22; debug-logging 23/23 with
+      dev.3 (v0.0.13 fails 5). Not pushed. The combined rc re-run merges it. Exact 0.1.0
+      follows after testing.
       MERGED 2026-09-23 08:37 UTC - #8752 merged into dev as f0954a6a (dev now 1f9a9d10), although the plan had it holding for dev.3. dev, and the Docker image a dev push publishes, now install connector 0.1.0-dev.2, which carries BF-97 (Nightscout-to-Nightscout sync with a source profile stalls 20-35 min). SUPERSEDES the HELD note below. Still owed before 15.0.9 is tagged: a new PR moving the pin to the fixed connector (dev.3, then exact 0.1.0 for the release), and a combined re-run with it.
       HELD 2026-09-23 (maintainer) - #8752 is not merged at 0.1.0-dev.2. The dev.2 soak (docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md, e916d3fe) found Nightscout-to-Nightscout sync with a source profile stalls: the profile is re-inserted with its source _id each poll, and since connector 808ab1c the duplicate-key error fails the whole poll (0.0.13 logged it and continued), so the destination runs 20-35 min behind. Decided: make profile writes idempotent in the connector (-29 is building it), cut dev.3, move #8752 to dev.3 and re-test, then 0.1.0. 15.0.9 waits on this.
       OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8752 (head adf5120c, base dev) - exact 0.1.0-dev.2. Whether it merges on dev.2 or moves to exact 0.1.0 after the P0-TAG release first is open.
