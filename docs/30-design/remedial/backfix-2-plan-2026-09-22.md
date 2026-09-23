@@ -133,7 +133,7 @@ on it, and until they do the branch keeps the allow-list as written.
 2386 → 2392 → 2404 → 2480 passing, 0 failing, on Node 20.20.0, and 2480/0/3 on 22.23.2, which is exactly the
 additive total. Each unit's break-its still fail on the integrated tree. `rc/backfix-2` merges cleanly with
 `bf/count-zero-empty` and `bf/connect-pin-0.1.0` (merge-tree only; the combined suite is still owed after 15.0.9
-lands, because `bf/count-zero-empty` and `bf2/ops` both edit `lib/api/index.js`). Against the modernization branch it
+lands, because `bf/count-zero-empty` and `bf2/auth-hardening` both edit `lib/api/index.js`). Against the modernization branch it
 conflicts in 12 paths. Record:
 [backfix-2-integration-2026-09-23](backfix-2-integration-2026-09-23.md).
 
