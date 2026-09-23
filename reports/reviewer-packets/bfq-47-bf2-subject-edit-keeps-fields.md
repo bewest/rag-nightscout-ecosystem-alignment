@@ -84,33 +84,40 @@ Control, re-run by the coordinator 2026-09-23 - with 29e6430e's storage.js the
 
 - Drafted PR body: [`reports/phase0-pr-bodies/bf2-subject-edit-keeps-fields.md`](../../reports/phase0-pr-bodies/bf2-subject-edit-keeps-fields.md)
 - [`docs/30-design/remedial/nightscout-backfix-register.md`](../../docs/30-design/remedial/nightscout-backfix-register.md)
+- [`docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`](../../docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md)
 
 ## Notes carried on the item
 
-PREPARED 2026-09-23 - bf2/subject-edit-keeps-fields 7103f657, one commit on
-bf2/auth-hardening. REPRODUCED in a real browser, read back from mongo - on
-dev an admin-page subject edit sets notes to "" and replaces created_at with
-the edit time; on bf2/auth-hardening notes survive but created_at is still
-replaced; the role editor keeps both on every base (its GET serves whole
-documents), so the admin-page defect is subjects only. Fix is a server-side
-fill-in in storage.js save() for notes and created_at only - an absent notes
-key keeps the stored value, a present one (even '') is written, so clearing
-still works. roles is deliberately NOT filled in - the admin page sends no
-roles field when the last role is removed, and filling it would silently keep
-access. Suite 2462/0/3 -> 2467/0/3. DECIDED 2026-09-23 (maintainer) - NO
-compatibility flag for the subject-field allow-list. The allow-list IS the
-declared schema for subjects (name, roles, notes, created_at) and roles (name,
-permissions, notes, created_at); fields outside it are not part of the
-contract. What remains is the admin-page defect - an edit through the admin
-page must keep notes and created_at. DECIDED 2026-09-23 (maintainer) - the
-allow-list is intended and stays (option 2). No open-source client in the
-corpus depends on storing other subject fields. The loss that remains is the
-admin page: it fetches subjects without notes and created_at, then saves the
-whole subject back, so an ordinary edit clears both. That is the defect to
-fix. A verifier's review of bf/auth established that the field loss already
-happens on the current release, not only on the unmerged branch. Keeping the
-security goal of BF-17 - the derived token never reaches the database - does
-not require the allow-list.
+DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence
+- the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on
+every Node and MongoDB pair; this unit's step added +5 and its three break-its
+are red. The record recommends folding this branch into the auth-hardening PR
+as its last commit; the auth-hardening PR body at b248bb73 records that as the
+maintainer's 2026-09-23 decision (see BF2-AUTH). PREPARED 2026-09-23 -
+bf2/subject-edit-keeps-fields 7103f657, one commit on bf2/auth-hardening.
+REPRODUCED in a real browser, read back from mongo - on dev an admin-page
+subject edit sets notes to "" and replaces created_at with the edit time; on
+bf2/auth-hardening notes survive but created_at is still replaced; the role
+editor keeps both on every base (its GET serves whole documents), so the
+admin-page defect is subjects only. Fix is a server-side fill-in in storage.js
+save() for notes and created_at only - an absent notes key keeps the stored
+value, a present one (even '') is written, so clearing still works. roles is
+deliberately NOT filled in - the admin page sends no roles field when the last
+role is removed, and filling it would silently keep access. Suite 2462/0/3 ->
+2467/0/3. DECIDED 2026-09-23 (maintainer) - NO compatibility flag for the
+subject-field allow-list. The allow-list IS the declared schema for subjects
+(name, roles, notes, created_at) and roles (name, permissions, notes,
+created_at); fields outside it are not part of the contract. What remains is
+the admin-page defect - an edit through the admin page must keep notes and
+created_at. DECIDED 2026-09-23 (maintainer) - the allow-list is intended and
+stays (option 2). No open-source client in the corpus depends on storing other
+subject fields. The loss that remains is the admin page: it fetches subjects
+without notes and created_at, then saves the whole subject back, so an
+ordinary edit clears both. That is the defect to fix. A verifier's review of
+bf/auth established that the field loss already happens on the current
+release, not only on the unmerged branch. Keeping the security goal of BF-17 -
+the derived token never reaches the database - does not require the allow-
+list.
 
 ---
 

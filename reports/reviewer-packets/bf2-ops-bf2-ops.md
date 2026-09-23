@@ -65,14 +65,19 @@ BF-10 - the compose file raises the open-file limit.
 
 - Drafted PR body: [`reports/phase0-pr-bodies/bf2-ops.md`](../../reports/phase0-pr-bodies/bf2-ops.md)
 - [`docs/30-design/remedial/backfix-2-plan-2026-09-22.md`](../../docs/30-design/remedial/backfix-2-plan-2026-09-22.md)
+- [`docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md`](../../docs/30-design/remedial/rc-15.0.9-additions-c-2026-09-23.md)
 
 ## Notes carried on the item
 
-PREPARED 2026-09-22 - tip e6a50e9a on origin/dev 74fc6619, four commits
-(03fba725 BF-10, e72ba30d follow-up 3, af8eee45 follow-up 7, e6a50e9a BF-63
-renderer guard). Suite Node 20.20.0, mongo 7.0.43 - dev 2386/0/3, branch
-2392/0/3, +6 exactly the new tests. Follow-up 4 stays on bf/auth (ce82f0cd)
-and is not repeated here.
+DESTINATION 15.0.9 (plan section 1a, "backfix 2 scope", 2026-09-23). Evidence
+- the rc-c integration record, rc/15.0.9-additions-c b9c9828b, 2508/0/3 on
+every Node and MongoDB pair; this unit's step added +6 and its three break-its
+are red on the final tree. rc-c carries the superseded connector pin 338deb7f
+and needs a re-merge (see BF2-AUTH). PREPARED 2026-09-22 - tip e6a50e9a on
+origin/dev 74fc6619, four commits (03fba725 BF-10, e72ba30d follow-up 3,
+af8eee45 follow-up 7, e6a50e9a BF-63 renderer guard). Suite Node 20.20.0,
+mongo 7.0.43 - dev 2386/0/3, branch 2392/0/3, +6 exactly the new tests.
+Follow-up 4 stays on bf/auth (ce82f0cd) and is not repeated here.
 
 ---
 

@@ -28,9 +28,13 @@ repository.
 | [`BF2-AUTH`](bf2-auth-bf2-auth-hardening.md) | &mdash; | `ready-to-push` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY |
 | [`BF2-BACKPORT`](bf2-backport-bf2-backports.md) | &mdash; | `in-flight-upstream` | Which modernization-only security commits fix a defect that dev has |
 | [`BF2-OPS`](bf2-ops-bf2-ops.md) | &mdash; | `ready-to-push` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer |
+| [`BFQ-41`](bfq-41.md) | &mdash; | `needs-decision` | BF-41 - a future-dated reading does not silence the stale-data alarm as registered; a clock running ahead delays it |
 | [`BFQ-47`](bfq-47-bf2-subject-edit-keeps-fields.md) | &mdash; | `ready-to-push` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
+| [`BFQ-52`](bfq-52-bf3-age-push-once.md) | &mdash; | `ready-to-push` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent |
+| [`BFQ-69`](bfq-69-bf3-quickpick-rebuild.md) | &mdash; | `ready-to-push` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
 | [`BFQ-72`](bfq-72.md) | &mdash; | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-87`](bfq-87-bf-qs-6-16.md) | &mdash; | `in-flight-upstream` | BF-87 - the root qs override holds the connector below its range and pins the server's query parser |
+| [`BFQ-90`](bfq-90-bf3-alarm-no-reading.md) | &mdash; | `ready-to-push` | BF-90 - an alarm at a page with no reading throws in the client |
 | [`FU-PRBODIES`](fu-prbodies.md) | &mdash; | `needs-decision` | Merged PR bodies have drifted from the files they were posted from |
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
 | [`RT-4`](rt-4.md) | &mdash; | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes |

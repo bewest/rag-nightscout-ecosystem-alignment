@@ -21,10 +21,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 64 | 23 | 9 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 67 | 21 | 15 |
 | **Modernization** | `release-train` | 15 | 1 | 5 |
 | **Multitenant** | `tenancy` | 18 | 9 | 3 |
-| | **total** | **99** | **33** | **19** |
+| | **total** | **102** | **31** | **25** |
 
 <!-- END GENERATED: horizons -->
 
@@ -121,17 +121,20 @@ cover more than one `BF-`:
 | `BFQ-09` | `unsettled` | BF-09 - socket dedup truthiness skips a falsy value |
 | `BFQ-10` | `not-started` | BF-10 - mongod fatal-asserts at Docker's default nofile=1024 |
 | `BFQ-40` | `merged-upstream` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
-| `BFQ-41` | `gate-not-met` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm |
+| `BFQ-41` | `needs-decision` | BF-41 - a future-dated reading does not silence the stale-data alarm as registered; a cloc |
 | `BFQ-46` | `gate-not-met` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `ready-to-push` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
-| `BFQ-52` | `not-started` | BF-52 - the age plugins can only ask for their urgent alarm in one window |
+| `BFQ-52` | `ready-to-push` | BF-52 - an age reminder whose 20-minute window passed without a check was never sent |
 | `BFQ-67` | `gate-not-met` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
-| `BFQ-69` | `not-started` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
+| `BFQ-69` | `ready-to-push` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
 | `BFQ-71` | `gate-not-met` | BF-71 - any dateString key drops the default date window, and the window is not a control |
 | `BFQ-72` | `needs-decision` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | `BFQ-87` | `in-flight-upstream` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
-| `BFQ-90` | `not-started` | BF-90 - an alarm at a page with no reading throws in the client |
+| `BFQ-90` | `ready-to-push` | BF-90 - an alarm at a page with no reading throws in the client |
 | `BFQ-91` | `merged-upstream` | BF-91 - connector capture mode cannot find trace-axios for two sources |
+| `BFQ-92` | `unsettled` | BF-92 - a page with no glucose reading never presents a server alarm, including device ala |
+| `BFQ-93` | `not-started` | BF-93 - food changes never reach an open page |
+| `BFQ-94` | `unsettled` | BF-94 - a kept profile instance can return a temp basal that has been replaced |
 | `BFQ-CAP01` | `not-started` | CAP-01 - Nightscout cannot be served from a sub-path |
 | `BFQ-CONNECTOR` | `gate-not-met` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override |
 | `BFQ-ENV` | `gate-not-met` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies |
@@ -151,7 +154,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 1 |  | 3 | 1 | 3 |  | 12 | 2 |  |  | **22** |
 | `release-train` | 1 | 1 | 4 |  | 4 | 3 |  | 2 |  |  | **15** |
-| `register-open` | 16 |  | 6 | 1 |  | 1 | 5 | 3 |  | 1 | **33** |
+| `register-open` | 14 |  | 5 | 4 |  | 1 | 5 | 4 |  | 3 | **36** |
 | `tenancy` | 9 |  | 1 | 1 | 5 |  |  | 1 |  | 1 | **18** |
 | `docs-truth` | 6 |  | 1 |  |  |  |  |  | 2 |  | **9** |
 | `backfix2` |  |  |  | 2 |  |  |  |  |  |  | **2** |
@@ -192,14 +195,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 67 | 68% |
+| Maintainer | 70 | 69% |
 | SECURITY reviewer | 15 | 15% |
 | Maintainer + a second human | 6 | 6% |
 | SAFETY reviewer | 5 | 5% |
 | Whoever edits it next | 3 | 3% |
 | Unassigned | 2 | 2% |
 | Upstream reviewers | 1 | 1% |
-| **total** | **99** | |
+| **total** | **102** | |
 
 <!-- END GENERATED: reviewer-load -->
 
