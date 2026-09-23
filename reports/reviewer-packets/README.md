@@ -24,7 +24,6 @@ repository.
 | [`P0-TAG`](p0-tag-dev.md) | #70 | `needs-decision` | nightscout-connect 0.1.0 - the full release, from connector dev |
 | [`RT-0`](rt-0-origin-dev.md) | #8598 | `needs-decision` | Release 15.0.9 |
 | [`ADV-CONFIG`](adv-config.md) | #8746 | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind both (BF-77, BF-78, BF-81) |
-| [`P0-PIN`](p0-pin-bf-connect-pin-0-1-0.md) | #8752 | `in-flight-upstream` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 |
 | [`BF2-OPS`](bf2-ops-bf2-ops.md) | #8753 | `in-flight-upstream` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer |
 | [`BF2-AUTH`](bf2-auth-bf2-auth-hardening.md) | #8754 | `in-flight-upstream` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.js backport behind TRUST_PROXY |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
@@ -42,7 +41,6 @@ repository.
 | [`P0-C-REMEDIATE`](p0-c-remediate.md) | &mdash; | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling |
 | [`RT-4`](rt-4.md) | &mdash; | `needs-decision` | Deprecation release - recommended folded into 15.0.9's release notes |
 | [`RT-COUNT0`](rt-count0-bf-count-zero-empty.md) | &mdash; | `in-flight-upstream` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 |
-| [`RT-MONGO-FLOOR`](rt-mongo-floor-docs-mongodb-floor.md) | &mdash; | `in-flight-upstream` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 |
 | [`T30-AUTH`](t30-auth-main.md) | &mdash; | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split |
 | [`T30-RESEARCH`](t30-research.md) | &mdash; | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface |
 

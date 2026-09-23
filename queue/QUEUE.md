@@ -46,8 +46,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `gate-not-met` | 14 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 7 | P0-C-REMEDIATE, T30-AUTH, BFQ-69, BFQ-47, BFQ-90, BFQ-98, BFQ-99 |
 | `blocked` | 12 | P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-52, BFQ-66, FU-LIMIT |
-| `in-flight-upstream` | 7 | P0-PIN, RT-COUNT0, RT-MONGO-FLOOR, BFQ-87, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
-| `merged-upstream` | 17 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PUBLISH, P0-T01, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
+| `in-flight-upstream` | 5 | RT-COUNT0, BFQ-87, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
+| `merged-upstream` | 19 | P0-A, P0-B, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-PUBLISH, P0-T01, RT-MONGO-FLOOR, BFQ-04, BFQ-40, ADV-RETRO, ADV-ALARM |
 | `needs-decision` | 10 | P0-TAG, RT-0, RT-4, T30-RESEARCH, BFQ-72, BFQ-95, FU-PRBODIES, ADV-XSS-META, ADV-CONFIG, BFQ-97 |
 | `done` | 2 | DOC-VIEWS, DOC-LINKS |
 | `unsettled` | 3 | BFQ-09, A7A-7, BFQ-94 |
@@ -126,7 +126,7 @@ needs a tenancy decision.
 | `P0-K` | bf/operators - PR #8743, BF-04 extracted, BF-70 found | `merged-upstream` | `bf/operators` | minor | 7 run + 2 no-gate |
 | `P0-TAG` | nightscout-connect 0.1.0 - the full release, from connector dev | `needs-decision` | `dev` | minor | 5 run + 1 no-gate |
 | `P0-CONNECT-ROLE` | nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89) | `merged-upstream` | `fix/nightscout-reader-roles` | patch | 3 run |
-| `P0-PIN` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 | `in-flight-upstream` | `bf/connect-pin-0.1.0` | patch | 2 run + 1 no-gate |
+| `P0-PIN` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 | `merged-upstream` | `bf/connect-pin-0.1.0` | patch | 2 run + 1 no-gate |
 | `P0-LOCK` | Regenerate package-lock.json for the nightscout-connect 0.1.0 pin | `blocked` | `bf/connect-pin-0.1.0` | n/a | 2 run |
 | `P0-PUBLISH` | nightscout-connect publishes to npm from a version tag | `merged-upstream` | `ci/npm-trusted-publish, ci/prerelease-tags` | n/a | 3 run + 1 no-gate |
 | `P0-T01` | T0.1 - PR #8733, the two quadratic treatment scans | `merged-upstream` | `fix/quadratic-treatment-processing` | patch | 1 run + 1 no-gate |
@@ -728,7 +728,7 @@ needs a tenancy decision.
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/connect-pin-0.1.0` |
 | base | `origin/dev@74fc6619` |
@@ -755,7 +755,7 @@ needs a tenancy decision.
 
 - `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`
 
-**Notes.** HELD 2026-09-23 (maintainer) - #8752 is not merged at 0.1.0-dev.2. The dev.2 soak (docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md, e916d3fe) found Nightscout-to-Nightscout sync with a source profile stalls: the profile is re-inserted with its source _id each poll, and since connector 808ab1c the duplicate-key error fails the whole poll (0.0.13 logged it and continued), so the destination runs 20-35 min behind. Decided: make profile writes idempotent in the connector (-29 is building it), cut dev.3, move #8752 to dev.3 and re-test, then 0.1.0. 15.0.9 waits on this. OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8752 (head adf5120c, base dev) - exact 0.1.0-dev.2. Whether it merges on dev.2 or moves to exact 0.1.0 after the P0-TAG release first is open. 2026-09-23 - moved to 0.1.0-dev.2: bf/connect- pin-0.1.0 is now adf5120c (the dev.1 commit 338deb7f amended; never pushed). Lock moves only the connector entry; installed package carries #77 and #78. Suite 2386/0/3 on Node 20.20.0 and 22.23.2 against mongo:7 with nofile 64000; debug-logging 23/23, and with a checkout of tag v0.0.13 swapped in exactly 5 fail. With Docker's default nofile the suite kills mongod whichever connector is installed (BF-10). The maintainer may open this into dev now so that dev tests the prerelease; gate 1 stays red until the swap to exact 0.1.0 for the release. DECIDED 2026-09-23 (maintainer) - this pin swaps to 0.1.0 only after the prerelease testing P0-TAG now waits on, and after BF-89 is fixed in connector dev. PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr-bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified. This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. Pin the exact version rather than a range, so package.json and not only the lockfile says which connector ships. COMPATIBILITY MEASURED 2026-09-22 (connector 1946beb = v0.1.0-dev.1 source swapped into cgm-remote-monitor dev 74fc6619, no dependency change between the two): full suite 2386 passing / 0 failing / 3 pending, identical to the shipped 234d47c arm, against a private mongo:7. Red control: with v0.0.13 swapped in, tests/debug-logging.test.js fails exactly its five installed-connector cases (18 pass), so the suite distinguishes connectors. Connector's own suite 289/289 on Node 20.20.0, 22.23.2 and 24.20.0 (its CI covers only 22 and 24). Evidence: release-readiness-15.0.9 §5.2.
+**Notes.** MERGED 2026-09-23 08:37 UTC - #8752 merged into dev as f0954a6a (dev now 1f9a9d10), although the plan had it holding for dev.3. dev, and the Docker image a dev push publishes, now install connector 0.1.0-dev.2, which carries BF-97 (Nightscout-to-Nightscout sync with a source profile stalls 20-35 min). SUPERSEDES the HELD note below. Still owed before 15.0.9 is tagged: a new PR moving the pin to the fixed connector (dev.3, then exact 0.1.0 for the release), and a combined re-run with it. HELD 2026-09-23 (maintainer) - #8752 is not merged at 0.1.0-dev.2. The dev.2 soak (docs/60-research/remedial/connector-0.1.0-dev.2-soak-2026-09-23.md, e916d3fe) found Nightscout-to-Nightscout sync with a source profile stalls: the profile is re-inserted with its source _id each poll, and since connector 808ab1c the duplicate-key error fails the whole poll (0.0.13 logged it and continued), so the destination runs 20-35 min behind. Decided: make profile writes idempotent in the connector (-29 is building it), cut dev.3, move #8752 to dev.3 and re- test, then 0.1.0. 15.0.9 waits on this. OPENED 2026-09-23 as nightscout/cgm- remote-monitor #8752 (head adf5120c, base dev) - exact 0.1.0-dev.2. Whether it merges on dev.2 or moves to exact 0.1.0 after the P0-TAG release first is open. 2026-09-23 - moved to 0.1.0-dev.2: bf/connect-pin-0.1.0 is now adf5120c (the dev.1 commit 338deb7f amended; never pushed). Lock moves only the connector entry; installed package carries #77 and #78. Suite 2386/0/3 on Node 20.20.0 and 22.23.2 against mongo:7 with nofile 64000; debug-logging 23/23, and with a checkout of tag v0.0.13 swapped in exactly 5 fail. With Docker's default nofile the suite kills mongod whichever connector is installed (BF-10). The maintainer may open this into dev now so that dev tests the prerelease; gate 1 stays red until the swap to exact 0.1.0 for the release. DECIDED 2026-09-23 (maintainer) - this pin swaps to 0.1.0 only after the prerelease testing P0-TAG now waits on, and after BF-89 is fixed in connector dev. PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr-bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified. This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. Pin the exact version rather than a range, so package.json and not only the lockfile says which connector ships. COMPATIBILITY MEASURED 2026-09-22 (connector 1946beb = v0.1.0-dev.1 source swapped into cgm-remote-monitor dev 74fc6619, no dependency change between the two): full suite 2386 passing / 0 failing / 3 pending, identical to the shipped 234d47c arm, against a private mongo:7. Red control: with v0.0.13 swapped in, tests/debug-logging.test.js fails exactly its five installed-connector cases (18 pass), so the suite distinguishes connectors. Connector's own suite 289/289 on Node 20.20.0, 22.23.2 and 24.20.0 (its CI covers only 22 and 24). Evidence: release-readiness-15.0.9 §5.2.
 
 ### `P0-LOCK` &mdash; Regenerate package-lock.json for the nightscout-connect 0.1.0 pin
 
@@ -998,7 +998,7 @@ that costs.
 | `RT-D3` | Answer the D3 question before 15.0.9 ships | `in-progress` | `origin/dev` | minor | 2 run + 1 no-gate |
 | `RT-VERSION` | Two artefacts claim version 15.0.9 with different Node floors | `not-started` | `-` | n/a | 1 run + 1 no-gate |
 | `RT-COUNT0` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | `in-flight-upstream` | `bf/count-zero-empty` | patch | 2 run |
-| `RT-MONGO-FLOOR` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | `in-flight-upstream` | `docs/mongodb-floor` | patch | 2 run |
+| `RT-MONGO-FLOOR` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | `merged-upstream` | `docs/mongodb-floor` | patch | 2 run |
 | `RT-REBASE` | Cuts 1-4 are 133 commits behind dev and now all five conflict | `gate-not-met` | `chore/retire-jsdom, chore/build-runtime-separation, chore/compose-mongodb6, chore/mime-exposure-review` | n/a | 6 run + 1 no-gate |
 | `RT-0` | Release 15.0.9 | `needs-decision` | `origin/dev` | minor | 1 run + 2 no-gate |
 | `RT-1` | Cut 1 - chore/retire-jsdom | `blocked` | `chore/retire-jsdom` | major | 2 run + 2 no-gate |
@@ -1111,7 +1111,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `docs/mongodb-floor` |
 | base | `origin/dev@74fc6619` |
@@ -1136,7 +1136,7 @@ that costs.
 
 - `docs/30-design/remedial/backfix-2-plan-2026-09-22.md`
 
-**Notes.** OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8750 (head aabce4b1, base dev). DECIDED 2026-09-23 (maintainer) - deprecate 4.4 now, drop it later. Prepared as aabce4b1 by the other session; this item was added 2026-09-23 because the branch had none. The commit message serves as the PR body (gh pr create --fill).
+**Notes.** MERGED 2026-09-23 - #8750 is in dev (1f9a9d10). Not released. OPENED 2026-09-23 as nightscout/cgm-remote-monitor #8750 (head aabce4b1, base dev). DECIDED 2026-09-23 (maintainer) - deprecate 4.4 now, drop it later. Prepared as aabce4b1 by the other session; this item was added 2026-09-23 because the branch had none. The commit message serves as the PR body (gh pr create --fill).
 
 ### `RT-REBASE` &mdash; Cuts 1-4 are 133 commits behind dev and now all five conflict
 

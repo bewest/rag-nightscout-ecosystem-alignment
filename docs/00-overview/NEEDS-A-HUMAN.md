@@ -30,15 +30,13 @@ that it was reviewed.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 21 items
+### Maintainer &mdash; 19 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BF2-OPS` | `in-flight-upstream` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 renderer | #8753 |
 | `BFQ-87` | `in-flight-upstream` | BF-87 - the root qs override holds the connector below its range and pins the se | &mdash; |
-| `P0-PIN` | `in-flight-upstream` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 | #8752 |
 | `RT-COUNT0` | `in-flight-upstream` | v1 ?count=0 answers an empty list, amending #8738 before 15.0.9 | &mdash; |
-| `RT-MONGO-FLOOR` | `in-flight-upstream` | README: MongoDB 4.4 is deprecated, not unsupported, in 15.0.9 | &mdash; |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
@@ -89,7 +87,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
-| **#8752** | `P0-PIN` | `bf/connect-pin-0.1.0` | bf/connect-pin - pin dev to the published nightscout-connect | Maintainer |
 | **#8753** | `BF2-OPS` | `bf2/ops` | bf2/ops - BF-10 compose ulimits, FU-RESIDUALS 3 and 7, BF-63 | Maintainer |
 | **#8754** | `BF2-AUTH` | `bf2/auth-hardening` | bf2/auth-hardening - bf/auth + bf/throttle + the client-ip.j | SECURITY reviewer |
 
