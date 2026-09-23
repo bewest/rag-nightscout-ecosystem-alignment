@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 93 |
-| runnable gates | 159 |
-| explicit `no-gate:` markers | 144 |
+| items | 94 |
+| runnable gates | 160 |
+| explicit `no-gate:` markers | 145 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 144 of the 303 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that nobody has yet built a way to measure the property, and it carries the reason. 145 of the 305 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 34 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
+| `not-started` | 35 | RT-VERSION, BFQ-10, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CRED, T30-SCHEMA-CONFIG, T30-ORY-PROOF, T30-WIRING, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-69, BFQ-87, BFQ-MINIMED, BFQ-CAP02, FU-HYGIENE, BF2-AUTH, BF2-BACKPORT, BF2-OPS |
 | `gate-not-met` | 15 | P0-C, P0-J, RT-REBASE, SEAM-REFRESH, DOC-EXPOSURE, BFQ-71, BFQ-41, BFQ-CONNECTOR, BFQ-46, BFQ-ENV, BFQ-67, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, RT-BOOTERROR, FU-RESIDUALS |
 | `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, DOC-VIEWS, DOC-LINKS |
 | `blocked` | 12 | P0-PIN, P0-LOCK, RT-1, RT-2, RT-3, RT-5, T31-REM, T32-REM, T33-REM, A7A-GATE, BFQ-66, FU-LIMIT |
@@ -62,6 +62,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-72** BF-72 - an unauthenticated $regex can spend minutes of database CPU
 - **BFQ-40** BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion
 - **BFQ-41** BF-41 - a reading dated ahead of the clock silences the stale-data alarm
+- **BFQ-87** BF-87 - the root qs override holds the connector below its range and pins the server's query parser
 - **BFQ-CONNECTOR** BF-42, BF-43 - master pins the leaking connector, with a violated axios override
 - **BFQ-MINIMED** BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading
 - **BFQ-46** BF-46 - eleven API v3 variables bypass env.js, one family deletes data
@@ -111,8 +112,8 @@ needs a tenancy decision.
 | `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `merged-upstream` | `bf/parms` | patch | 6 run + 1 no-gate |
 | `P0-K` | bf/operators - PR #8743, BF-04 extracted, BF-70 found | `merged-upstream` | `bf/operators` | minor | 7 run + 2 no-gate |
 | `P0-TAG` | nightscout-connect 0.1.0 - the full release, from connector dev | `needs-decision` | `dev` | minor | 5 run + 1 no-gate |
-| `P0-PIN` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 | `blocked` | `bf/connect-pin` | patch | 2 run + 1 no-gate |
-| `P0-LOCK` | Regenerate package-lock.json for the nightscout-connect 0.1.0 pin | `blocked` | `bf/connect-pin` | n/a | 2 run |
+| `P0-PIN` | bf/connect-pin - pin dev to the published nightscout-connect 0.1.0 | `blocked` | `bf/connect-pin-0.1.0` | patch | 2 run + 1 no-gate |
+| `P0-LOCK` | Regenerate package-lock.json for the nightscout-connect 0.1.0 pin | `blocked` | `bf/connect-pin-0.1.0` | n/a | 2 run |
 | `P0-PUBLISH` | nightscout-connect publishes to npm from a version tag | `merged-upstream` | `ci/npm-trusted-publish, ci/prerelease-tags` | n/a | 3 run + 1 no-gate |
 | `P0-T01` | T0.1 - PR #8733, the two quadratic treatment scans | `merged-upstream` | `fix/quadratic-treatment-processing` | patch | 1 run + 1 no-gate |
 | `FU-LIMIT` | Follow-up 2 - the limit rule is written twice, and that is the root cause | `blocked` | `-` | patch | 2 run + 1 no-gate |
@@ -680,9 +681,9 @@ needs a tenancy decision.
 |---|---|
 | state (claimed) | `blocked` |
 | repo | `cgm-remote-monitor` |
-| branch | `bf/connect-pin` |
-| base | `origin/dev@a8888f0d` |
-| worktree | `externals/work/crm-bf-connect-pin` |
+| branch | `bf/connect-pin-0.1.0` |
+| base | `origin/dev@74fc6619` |
+| worktree | `externals/work/crm-connect-pin-010` |
 | semver | `patch` |
 | review | maintainer |
 | blocks on | `P0-TAG` |
@@ -695,9 +696,9 @@ needs a tenancy decision.
 
 **Gates.**
 
-- `[static]` _(cwd: `externals/work/crm-bf-connect-pin`)_ `grep -q '"nightscout-connect": "0.1.0"' package.json`
+- `[static]` _(cwd: `externals/work/crm-connect-pin-010`)_ `grep -q '"nightscout-connect": "0.1.0"' package.json`
   - package.json pins the exact published 0.1.0 from npm. RED until the pin is written; it waits on P0-TAG.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/connect-pin`
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/connect-pin-0.1.0`
   - bf/connect-pin has not fallen behind origin/dev. RED: dev at 74fc6619 carries the Phase 0 merges this branch does not. The remedy is a `git merge dev`; the trial merge was measured conflict-free on 2026-09-21.
 - **NO GATE** &mdash; A cgm-remote-monitor dev branch can pin a prerelease (for example "0.1.0-dev.1") to test it; a cgm-remote-monitor release pins only a full connector release.
 
@@ -705,7 +706,7 @@ needs a tenancy decision.
 
 - `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md`
 
-**Notes.** This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. Pin the exact version rather than a range, so package.json and not only the lockfile says which connector ships. COMPATIBILITY MEASURED 2026-09-22 (connector 1946beb = v0.1.0-dev.1 source swapped into cgm-remote-monitor dev 74fc6619, no dependency change between the two): full suite 2386 passing / 0 failing / 3 pending, identical to the shipped 234d47c arm, against a private mongo:7. Red control: with v0.0.13 swapped in, tests/debug-logging.test.js fails exactly its five installed- connector cases (18 pass), so the suite distinguishes connectors. Connector's own suite 289/289 on Node 20.20.0, 22.23.2 and 24.20.0 (its CI covers only 22 and 24). Evidence: release-readiness-15.0.9 §5.2.
+**Notes.** PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr-bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified. This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's pin carries both the logging narrowing and the redaction commits. Master pins connector tag v0.0.13. Pin the exact version rather than a range, so package.json and not only the lockfile says which connector ships. COMPATIBILITY MEASURED 2026-09-22 (connector 1946beb = v0.1.0-dev.1 source swapped into cgm-remote-monitor dev 74fc6619, no dependency change between the two): full suite 2386 passing / 0 failing / 3 pending, identical to the shipped 234d47c arm, against a private mongo:7. Red control: with v0.0.13 swapped in, tests/debug-logging.test.js fails exactly its five installed- connector cases (18 pass), so the suite distinguishes connectors. Connector's own suite 289/289 on Node 20.20.0, 22.23.2 and 24.20.0 (its CI covers only 22 and 24). Evidence: release-readiness-15.0.9 §5.2.
 
 ### `P0-LOCK` &mdash; Regenerate package-lock.json for the nightscout-connect 0.1.0 pin
 
@@ -713,9 +714,9 @@ needs a tenancy decision.
 |---|---|
 | state (claimed) | `blocked` |
 | repo | `cgm-remote-monitor` |
-| branch | `bf/connect-pin` |
-| base | `bf/connect-pin@0807eb1c` |
-| worktree | `externals/work/crm-bf-connect-pin` |
+| branch | `bf/connect-pin-0.1.0` |
+| base | `bf/connect-pin-0.1.0@338deb7f` |
+| worktree | `externals/work/crm-connect-pin-010` |
 | semver | `n/a` |
 | review | maintainer - same PR as P0-PIN |
 | blocks on | `P0-PIN`, `P0-TAG` |
@@ -728,9 +729,9 @@ needs a tenancy decision.
 
 **Gates.**
 
-- `[static]` _(cwd: `externals/work/crm-bf-connect-pin`)_ `python3 -c "import json,sys; e=json.load(open('package-lock.json'))['packages']['node_modules/nightscout-connect']; sys.exit(0 if e.get('version')=='0.1.0' and e.get('resolved','').startswith('https://registry.npmjs.org/') else 1)"`
+- `[static]` _(cwd: `externals/work/crm-connect-pin-010`)_ `python3 -c "import json,sys; e=json.load(open('package-lock.json'))['packages']['node_modules/nightscout-connect']; sys.exit(0 if e.get('version')=='0.1.0' and e.get('resolved','').startswith('https://registry.npmjs.org/') else 1)"`
   - the lockfile resolves nightscout-connect 0.1.0 from the npm registry. RED until P0-PIN's pin is written and the lock regenerated.
-- `[network]` _(cwd: `externals/work/crm-bf-connect-pin`)_ `npm ci --dry-run`
+- `[network]` _(cwd: `externals/work/crm-connect-pin-010`)_ `npm ci --dry-run`
   - npm ci resolves against the registry
 
 **Evidence.**
@@ -1373,7 +1374,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 30 items
+`parcel: register-open` &mdash; 31 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -1400,6 +1401,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-72` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | `needs-decision` | `-` | minor | 1 run + 3 no-gate |
 | `BFQ-40` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion | `merged-upstream` | `-` | minor | 1 run |
 | `BFQ-41` | BF-41 - a reading dated ahead of the clock silences the stale-data alarm | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
+| `BFQ-87` | BF-87 - the root qs override holds the connector below its range and pins the server's query parser | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `BFQ-CONNECTOR` | BF-42, BF-43 - master pins the leaking connector, with a violated axios override | `gate-not-met` | `-` | patch | 1 run + 2 no-gate |
 | `BFQ-MINIMED` | BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading | `not-started` | `-` | minor | 0 run + 3 no-gate |
 | `BFQ-46` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data | `gate-not-met` | `-` | minor | 1 run + 1 no-gate |
@@ -2004,6 +2006,38 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Notes.** BF-44 is a concrete, shipping way to produce a future-dated reading, which is why BFQ-MINIMED carries the same severity argument from the other end.
 
+### `BFQ-87` &mdash; BF-87 - the root qs override holds the connector below its range and pins the server's query parser
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `origin/dev@74fc6619` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `patch` |
+| review | maintainer - whether it rides in 15.0.9 or backfix 2 is a release decision |
+| ships to operators today | **yes** |
+| register | `BF-87` |
+
+**Blast radius.** package.json overrides.qs and overrides.request.qs (both 6.15.1, from 5ab0af7a) and the lockfile. The single resolved qs is the one express and body-parser parse every query string with.
+
+**What an operator sees.** Not released. Nightscout forces an older version of a small library that reads the part of a web address after the "?". That version sits inside three published security advisories rated moderate, and it is older than the connector says it needs. Whether any of those advisories can be used against Nightscout has not been measured. The fix is to move to the library's newer version.
+
+**Why `patch`.** a dependency override moves; no declared surface changes unless the parser's behaviour does, which the suite must show it does not
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official show origin/dev:package.json | python3 -c "import json,sys; o=json.load(sys.stdin)[\"overrides\"]; sys.exit(1 if o.get(\"qs\")==\"6.15.1\" or o.get(\"request\",{}).get(\"qs\")==\"6.15.1\" else 0)"`
+  - FAILS today - origin/dev still overrides qs to 6.15.1 at the root or under request.
+- **NO GATE** &mdash; Exploitability through Nightscout's routes is not measured, and the remedy (6.16.0) changes the parser every request passes through; the full suite plus Nightscout's documented query shapes are the evidence it needs, and neither is a static gate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Found 2026-09-22 while pinning the connector (P0-PIN). The same class as BF-43. Candidate for 15.0.9 given it is one override value, but that is the maintainer's call.
+
 ### `BFQ-CONNECTOR` &mdash; BF-42, BF-43 - master pins the leaking connector, with a violated axios override
 
 | | |
@@ -2037,7 +2071,7 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/40-migration/connector-pin-consolidation-2026-09-15.md`
 
-**Notes.** The fix is the same one-line pin move as P0-PIN, applied to master rather than dev, and it cannot be prepared until a full connector release exists. Connector dev 1946beb (2026-09-22) carries the fixes and prerelease 0.1.0-dev.1 is on npm; P0-TAG is the full 0.1.0 release. RT-CONNECT-PIN-CUTS is the same change on cuts 1-3 and is filed separately because those are pre- release (§1b) and this is not.
+**Notes.** 2026-09-22 - connector-pin-exposure.js reports BF-43 UNRESOLVED for a registry-version pin (bf/connect-pin-0.1.0): it only maps tarball URLs to a connector revision. It needs to resolve a registry pin via tag v<version> or the registry gitHead before it can certify the 15.0.9 pin. Checked by hand meanwhile - 1946beb declares axios ^1.18.1, the override is 1.20.0. BF-87 (qs) is the same override class, tracked on BFQ-87. The fix is the same one-line pin move as P0-PIN, applied to master rather than dev, and it cannot be prepared until a full connector release exists. Connector dev 1946beb (2026-09-22) carries the fixes and prerelease 0.1.0-dev.1 is on npm; P0-TAG is the full 0.1.0 release. RT-CONNECT-PIN-CUTS is the same change on cuts 1-3 and is filed separately because those are pre-release (§1b) and this is not.
 
 ### `BFQ-MINIMED` &mdash; BF-44, BF-45, BF-85 - MiniMed ingestion divergences and the CareLink zero reading
 

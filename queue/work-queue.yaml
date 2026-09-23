@@ -1555,9 +1555,9 @@ items:
     title: bf/connect-pin - pin dev to the published nightscout-connect 0.1.0
     parcel: phase0
     repo: cgm-remote-monitor
-    branch: bf/connect-pin
-    base: origin/dev@a8888f0d
-    worktree: externals/work/crm-bf-connect-pin
+    branch: bf/connect-pin-0.1.0
+    base: origin/dev@74fc6619
+    worktree: externals/work/crm-connect-pin-010
     state: blocked
     blast_radius: >
       One line of package.json (the nightscout-connect dependency) plus the
@@ -1579,12 +1579,12 @@ items:
     gates:
       - run: >-
           grep -q '"nightscout-connect": "0.1.0"' package.json
-        cwd: externals/work/crm-bf-connect-pin
+        cwd: externals/work/crm-connect-pin-010
         kind: static
         describe: >
           package.json pins the exact published 0.1.0 from npm. RED until the
           pin is written; it waits on P0-TAG.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/connect-pin
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/connect-pin-0.1.0
         kind: static
         describe: >
           bf/connect-pin has not fallen behind origin/dev. RED: dev at 74fc6619
@@ -1598,6 +1598,7 @@ items:
     evidence:
       - docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md
     notes: >
+      PREPARED 2026-09-22 - bf/connect-pin-0.1.0 at 338deb7f pins exact 0.1.0-dev.1 from the registry (package.json 1+/1-, lock 4+/4-); full suite 2386/0/3 on both arms; the debug-logging control fails exactly its five cases on v0.0.13. The swap to 0.1.0 is one token plus lock regeneration once 0.1.0 is on npm; commands in reports/phase0-pr-bodies/connect-pin-0.1.0.md. Gate 1 stays red until then, by design. The old bf/connect-pin (0807eb1c) is superseded and was not modified.
       This closes the split GT4 found: neither dev's pin (234d47c) nor cut 4's
       pin carries both the logging narrowing and the redaction commits. Master
       pins connector tag v0.0.13. Pin the exact version rather than a range, so
@@ -1614,9 +1615,9 @@ items:
     title: Regenerate package-lock.json for the nightscout-connect 0.1.0 pin
     parcel: phase0
     repo: cgm-remote-monitor
-    branch: bf/connect-pin
-    base: bf/connect-pin@0807eb1c
-    worktree: externals/work/crm-bf-connect-pin
+    branch: bf/connect-pin-0.1.0
+    base: bf/connect-pin-0.1.0@338deb7f
+    worktree: externals/work/crm-connect-pin-010
     state: blocked
     blast_radius: package-lock.json, the nightscout-connect entries.
     review: maintainer - same PR as P0-PIN
@@ -1629,13 +1630,13 @@ items:
     register: []
     gates:
       - run: "python3 -c \"import json,sys; e=json.load(open('package-lock.json'))['packages']['node_modules/nightscout-connect']; sys.exit(0 if e.get('version')=='0.1.0' and e.get('resolved','').startswith('https://registry.npmjs.org/') else 1)\""
-        cwd: externals/work/crm-bf-connect-pin
+        cwd: externals/work/crm-connect-pin-010
         kind: static
         describe: >
           the lockfile resolves nightscout-connect 0.1.0 from the npm registry.
           RED until P0-PIN's pin is written and the lock regenerated.
       - run: npm ci --dry-run
-        cwd: externals/work/crm-bf-connect-pin
+        cwd: externals/work/crm-connect-pin-010
         kind: network
         describe: npm ci resolves against the registry
     blocks_on: [P0-PIN, P0-TAG]
@@ -4442,6 +4443,48 @@ items:
       BF-44 is a concrete, shipping way to produce a future-dated reading, which
       is why BFQ-MINIMED carries the same severity argument from the other end.
 
+  - id: BFQ-87
+    title: BF-87 - the root qs override holds the connector below its range and pins the server's query parser
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: origin/dev@74fc6619
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    ships_to_operators_today: true
+    blast_radius: >
+      package.json overrides.qs and overrides.request.qs (both 6.15.1, from
+      5ab0af7a) and the lockfile. The single resolved qs is the one express and
+      body-parser parse every query string with.
+    review: maintainer - whether it rides in 15.0.9 or backfix 2 is a release decision
+    operator_visible: >
+      Not released. Nightscout forces an older version of a small library that
+      reads the part of a web address after the "?". That version sits inside
+      three published security advisories rated moderate, and it is older than
+      the connector says it needs. Whether any of those advisories can be used
+      against Nightscout has not been measured. The fix is to move to the
+      library's newer version.
+    semver: patch
+    semver_reason: a dependency override moves; no declared surface changes unless the parser's behaviour does, which the suite must show it does not
+    register:
+      - BF-87
+    gates:
+      - run: 'git -C externals/cgm-remote-monitor-official show origin/dev:package.json | python3 -c "import json,sys; o=json.load(sys.stdin)[\"overrides\"]; sys.exit(1 if o.get(\"qs\")==\"6.15.1\" or o.get(\"request\",{}).get(\"qs\")==\"6.15.1\" else 0)"'
+        kind: static
+        describe: FAILS today - origin/dev still overrides qs to 6.15.1 at the root or under request.
+      - no-gate: >
+          Exploitability through Nightscout's routes is not measured, and the
+          remedy (6.16.0) changes the parser every request passes through; the
+          full suite plus Nightscout's documented query shapes are the evidence
+          it needs, and neither is a static gate.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Found 2026-09-22 while pinning the connector (P0-PIN). The same class as
+      BF-43. Candidate for 15.0.9 given it is one override value, but that is
+      the maintainer's call.
+
   - id: BFQ-CONNECTOR
     title: BF-42, BF-43 - master pins the leaking connector, with a violated axios override
     parcel: register-open
@@ -4508,6 +4551,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/40-migration/connector-pin-consolidation-2026-09-15.md
     notes: >
+      2026-09-22 - connector-pin-exposure.js reports BF-43 UNRESOLVED for a registry-version pin (bf/connect-pin-0.1.0): it only maps tarball URLs to a connector revision. It needs to resolve a registry pin via tag v<version> or the registry gitHead before it can certify the 15.0.9 pin. Checked by hand meanwhile - 1946beb declares axios ^1.18.1, the override is 1.20.0. BF-87 (qs) is the same override class, tracked on BFQ-87.
       The fix is the same one-line pin move as P0-PIN, applied to master rather
       than dev, and it cannot be prepared until a full connector release
       exists. Connector dev 1946beb (2026-09-22) carries the fixes and
